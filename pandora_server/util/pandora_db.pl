@@ -23,6 +23,7 @@ use strict;
 use Time::Local;			# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
+use PandoraFMS::Tools;
 
 # version: define la version actual del programa
 my $version = "2.1 PS090105";
@@ -99,71 +100,13 @@ sub pandora_purgedb {
 	print "[PURGE] Delete old data (string) ... \n";
 	$dbh->do ("DELETE FROM tagente_datos_string WHERE  utimestamp < '$ulimit_timestamp'");
 
+	# TODO: Delete data from tagente_modulo items marked for deletion
 
 	print "[PURGE] Delete old session data \n";
-    db_delete ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
+	db_delete ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
 
-    print "[PURGE] Delete old data from SNMP Traps \n"; 
+	print "[PURGE] Delete old data from SNMP Traps \n"; 
 	db_delete("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'", $dbh);
-
-return;
-
-# Performance killer !
-
-	# Lets insert the last value on $limit_timestamp + 1 minute for each id_agente_modulo
-	my $query_idag = "select count(distinct(id_agente_modulo)) from tagente_datos where utimestamp < '$ulimit_timestamp'";
-	my $idag = $dbh->prepare($query_idag);
-	$idag ->execute;
-	my @datarow;
-	@datarow = $idag->fetchrow_array();
-	if ($verbosity > 0){
-		print "[PURGE] Total different Modules delete: ".$datarow[0]."\n";
-	}
-	my $different_modules = $datarow[0];
-	$idag->finish;
-
-	my $query_idag = "select distinct(id_agente_modulo) from tagente_datos WHERE utimestamp < '$ulimit_timestamp'";
-	my $idag = $dbh->prepare($query_idag);
-	$idag ->execute;
-	my @datarow;
-	if ($idag->rows != 0) {
-		my $counter =0;
-		while (@datarow = $idag->fetchrow_array()) {
-			$counter++;
-			if ($verbosity > 0){
-				print "\r[PURGE] ".$counter / ($different_modules / 100)."% Deleted";
-			}
-			$buffer = $datarow[0];
-			my $query_idag2 = "select * from tagente_datos where utimestamp < '$ulimit_timestamp' and id_agente_modulo = $buffer ORDER BY by utimestamp DESC limit 1";
-
-			my $idag2 = $dbh->prepare($query_idag2);
-			$idag2 ->execute;
-			my @datarow2;
-			if ($idag2->rows != 0) {
-				while (@datarow2 = $idag2->fetchrow_array()) {
-					# Create Insert SQL for this data
-					my $limit_utimestamp = &UnixDate($limit_timestamp,"%s");
-					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,utimestamp,id_agente) values ($buffer,$datarow2[2],'$limit_timestamp',$limit_utimestamp,$datarow2[4])";
-				}
-			}
-			# Execute DELETE
-			my $query_idag3 = "DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp' and id_agente_modulo = $buffer ";
-			my $idag3 = $dbh->prepare($query_idag3);
-			$idag3->execute;
-			$idag3->finish();
-
-			# Execute INSERT with last data
-			my $idag3 = $dbh->prepare($buffer3);
-			$idag3->execute;
-			$idag3->finish();
-
-			$idag2->finish();
-		}
-	}
-	$idag->finish();
-	if ($verbosity > 0){	
-		print "\n[PURGE] Deleting string data until $limit_timestamp \n";
-	}
 
     $dbh->disconnect();
 }
@@ -277,9 +220,9 @@ sub pandora_compactdb {
 				                       "%Y-%m-%d %H:%M:%S");
 
 				$dbh->do("INSERT INTO tagente_datos (id_agente_modulo,
-				         id_agente, datos, timestamp, utimestamp) VALUES
-				         ($key, $id_agent_hash{$key}, $value_hash{$key} ,
-				         '$stop_date', $stop_utime)");
+					  datos, utimestamp) VALUES
+				         ($key, $value_hash{$key} ,
+				         $stop_utime)");
 
 				delete($value_hash{$key});
 				delete($count_hash{$key});
@@ -526,10 +469,7 @@ sub pandora_checkdb_consistency {
 	$prep0 ->execute;
 	$prep0->finish();
 
-	print "[CHECKDB] Deleting agentless data... \n";
-	# Delete from tagente_datos with id_agente = 0
-	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente = 0");
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente = 0");
+
 }
 
 ##############################################################################

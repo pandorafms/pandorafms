@@ -74,8 +74,11 @@ our @EXPORT = qw(
 		give_network_component_profile_name
 		pandora_create_incident 
 		get_db_value
-        get_db_free_row
-        get_db_free_field
+		get_db_free_row
+		get_db_free_field
+		db_delete
+		db_insert
+		db_update
 	);
 
 # Spanish translation note:
@@ -2264,6 +2267,41 @@ sub export_module_data {
 	         `module_name`, `module_type`, `data`, `timestamp`)
 	         VALUES ($id_export, '$agent_name', '$module_name', '$module_type',
 	         '$data', '$timestamp')");
+}
+
+# ---------------------------------------------------------------
+# Insert SQL sentence. Returns ID of row inserted
+# ---------------------------------------------------------------
+
+sub db_insert ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
+	return $dbh->{'mysql_insertid'};
+}
+
+
+# ---------------------------------------------------------------
+# UPDATE SQL sentence. 
+# ---------------------------------------------------------------
+
+sub db_update ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
+}
+
+# ---------------------------------------------------------------
+# DELETE SQL sentence. 
+# ---------------------------------------------------------------
+
+sub db_delete ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
 }
 
 # End of function declaration

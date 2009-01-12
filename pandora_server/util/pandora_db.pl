@@ -23,9 +23,10 @@ use strict;
 use Time::Local;			# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
+use PandoraFMS::DB;
 
 # version: define la version actual del programa
-my $version = "2.0 PS080903";
+my $version = "2.0 PS090112";
 
 # Setup variables
 my $dirname="";
@@ -42,7 +43,7 @@ my $config_days_purge;
 my $config_step_compact;# Step compact variable defines "how-fine" is thecompact algorithm. 1 Hour its very fine, 24 hours is bad value
 
 # FLUSH in each IO
-$| = 1;
+$| = 0;
 
 pandora_init();
 
@@ -63,101 +64,48 @@ pandoradb_main();
 ###############################################################################
 sub pandora_purgedb {
 
-	# 1) Obtain last value for date limit
-	# 2) Delete all elements below date limit
-	# 3) Insert last value in date_limit position
+    # 1) Obtain last value for date limit
+    # 2) Delete all elements below date limit
+    # 3) Insert last value in date_limit position
 
-	my $days = $_[0];
-	my $dbname = $_[1];
-	my $dbuser = $_[2];
-	my $dbpass = $_[3];
-	my $dbhost = $_[4];
- 	my @query;
- 	my $counter;
-	my $buffer; my $buffer2; my $buffer3;
-	my $err; # error code in datecalc function
- 	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
- 	# Calculate limit for deletion, today - $days
- 	my $limit_timestamp = DateCalc("today","-$days days",\$err);
-	my $limit_timestamp2 = DateCalc($limit_timestamp,"+1 minute",\$err);
- 	$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
-	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $limit_access = DateCalc("today","-24 hours",\$err);
-	$limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
-	print "[PURGE] Deleting old access data (More than 24hr) \n";
-	$dbh->do("DELETE FROM tagent_access WHERE timestamp < '$limit_access'");
+    my $days = $_[0];
+    my $dbname = $_[1];
+    my $dbuser = $_[2];
+    my $dbpass = $_[3];
+    my $dbhost = $_[4];
+    my @query;
+    my $counter;
+    my $buffer; my $buffer2; my $buffer3;
+    my $err; # error code in datecalc function
+    my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
 
+    # Calculate limit for deletion, today - $days
+    my $limit_timestamp = DateCalc("today","-$days days",\$err);
+    my $limit_timestamp2 = DateCalc($limit_timestamp,"+1 minute",\$err);
+    $limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
+    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+    my $limit_access = DateCalc("today","-24 hours",\$err);
+    $limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
+    my $ulimit_timestamp =  &UnixDate($limit_access,"%s");
+    print "[PURGE] Deleting old access data (More than 24hr) \n";
+    $dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_timestamp'");
 
     my $limit_event = DateCalc("today","-$config_days_purge days",\$err);
     $limit_event = &UnixDate($limit_event,"%Y-%m-%d %H:%M:%S");
     print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
-    $dbh->do("DELETE FROM tevento WHERE timestamp < '$limit_event'");
+    $dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
-	print "[PURGE] Deleting old data... \n";
-	# Lets insert the last value on $limit_timestamp + 1 minute for each id_agente_modulo
-	my $query_idag = "select count(distinct(id_agente_modulo)) from tagente_datos where timestamp < '$limit_timestamp'";
-	my $idag = $dbh->prepare($query_idag);
-	$idag ->execute;
-	my @datarow;
-	@datarow = $idag->fetchrow_array();
-	if ($verbosity > 0){
-		print "[PURGE] Total different Modules delete: ".$datarow[0]."\n";
-	}
-	my $different_modules = $datarow[0];
-	$idag->finish;
+    print "[PURGE] Deleting old data... \n";
+    $dbh->do ("DELETE FROM tagente_datos WHERE  utimestamp < '$ulimit_timestamp'");
+    print "[PURGE] Delete old data (string) ... \n";
+    $dbh->do ("DELETE FROM tagente_datos_string WHERE  utimestamp < '$ulimit_timestamp'");
 
-	my $query_idag = "select distinct(id_agente_modulo) from tagente_datos WHERE timestamp < '$limit_timestamp'";
-	my $idag = $dbh->prepare($query_idag);
-	$idag ->execute;
-	my @datarow;
-	if ($idag->rows != 0) {
-		my $counter =0;
-		while (@datarow = $idag->fetchrow_array()) {
-			$counter++;
-			if ($verbosity > 0){
-				print "\r[PURGE] ".$counter / ($different_modules / 100)."% Deleted";
-			}
-			$buffer = $datarow[0];
-			my $query_idag2 = "select * from tagente_datos where timestamp < '$limit_timestamp' and id_agente_modulo = $buffer order by timestamp desc limit 1";
 
-			my $idag2 = $dbh->prepare($query_idag2);
-			$idag2 ->execute;
-			my @datarow2;
-			if ($idag2->rows != 0) {
-				while (@datarow2 = $idag2->fetchrow_array()) {
-					# Create Insert SQL for this data
-					my $limit_utimestamp = &UnixDate($limit_timestamp,"%s");
-					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,utimestamp,id_agente) values ($buffer,$datarow2[2],'$limit_timestamp',$limit_utimestamp,$datarow2[4])";
-				}
-			}
-			# Execute DELETE
-			my $query_idag3 = "delete from tagente_datos where timestamp < '$limit_timestamp' and id_agente_modulo = $buffer ";
-			my $idag3 = $dbh->prepare($query_idag3);
-			$idag3->execute;
-			$idag3->finish();
+    print "[PURGE] Delete old session data \n";
+    db_delete ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
 
-			# Execute INSERT with last data
-			my $idag3 = $dbh->prepare($buffer3);
-			$idag3->execute;
-			$idag3->finish();
-
-			$idag2->finish();
-		}
-	}
-	$idag->finish();
-	if ($verbosity > 0){	
-		print "\n[PURGE] Deleting string data until $limit_timestamp \n";
-	}
-	my $limit_utimestamp = &UnixDate($limit_timestamp, "%s");
-
-	# Deleting string data
- 	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < $limit_utimestamp");
-
-	# Deleting session data
- 	$dbh->do ("DELETE FROM tsesion WHERE utimestamp < $limit_utimestamp");
-
-	# Deleting SNMP data
- 	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
+    print "[PURGE] Delete old data from SNMP Traps \n"; 
+    db_delete("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'", $dbh);
     $dbh->disconnect();
 }
 
@@ -176,6 +124,10 @@ sub pandora_compactdb {
 	my %value_hash;
 	my $err;
 
+	if ($days == 0){
+		return;
+	}
+
 	# Connect to the database
 	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,
 	                       { RaiseError => 1, AutoCommit => 1 });
@@ -183,6 +135,7 @@ sub pandora_compactdb {
 	if ($config_step_compact < 1) {
 		return;
 	}
+
 
 	# Compact interval length in seconds
 	# $config_step_compact varies between 1 (36 samples/day) and
@@ -204,6 +157,7 @@ sub pandora_compactdb {
 	if ($limit_utime < 1) {
 		return;
 	}
+
 
 	# Calculate the start date
 	my $start_date = DateCalc("today","-$days days",\$err);
@@ -514,11 +468,6 @@ sub pandora_checkdb_consistency {
 	my $prep0 = $dbh->prepare($query0);
 	$prep0 ->execute;
 	$prep0->finish();
-
-	print "[CHECKDB] Deleting agentless data... \n";
-	# Delete from tagente_datos with id_agente = 0
-	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente = 0");
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente = 0");
 }
 
 ##############################################################################

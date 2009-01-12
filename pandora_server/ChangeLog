@@ -1,3 +1,13 @@
+2000-01-12  Sancho Lerena <slerena@artica.es>
+
+	* DB.pm: Added generic functions db_delete, db_update and db_insert.
+
+	* util/pandora_db.pl: Optimized maintance script. Solves some detected
+	performance issues.
+
+	* pandora_server_upgrade: Script to easy upgrade your running 
+	Pandora FMS servers from code or Update Manager.
+
 2008-12-27  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_recon: Added a timeout to pandora_getparent(). The call

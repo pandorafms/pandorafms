@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Jorge Gonzalez <jorge.gonzalez@artica.es>, 2009.
+# Jorge González <jorgegonz@svn.gnome.org>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-01-12 16:50+0100\n"
-"PO-Revision-Date: 2009-01-12 16:53+0100\n"
-"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
-"Language-Team: Español <artica@artica.es>\n"
+"PO-Revision-Date: 2009-01-12 17:11+0100\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -440,7 +441,7 @@ msgstr "del total de módulos funcionando"
 #: ../../enterprise/dashboard/widgets/monitor_health.php:77
 #: ../../operation/agentes/tactical.php:85
 msgid "Module sanity"
-msgstr "Salud del módulo"
+msgstr "Salud de los módulos"
 
 #: ../../general/logon_ok.php:86 ../../operation/agentes/tactical.php:88
 msgid "of total modules inited"
@@ -869,7 +870,7 @@ msgstr "Desactivado"
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 #: ../../godmode/setup/setup.php:136
 msgid "Database"
-msgstr "Base de Datos"
+msgstr "Base de datos"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -3269,7 +3270,7 @@ msgstr "Opciones avanzadas"
 
 #: ../../godmode/agentes/alert_manager.php:218
 msgid "matches of the alert"
-msgstr ""
+msgstr "coincidencias de la alerta"
 
 #: ../../godmode/agentes/manage_config.php:53
 #: ../../godmode/agentes/manage_config.php:241
@@ -3306,8 +3307,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:325
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:328
 msgid "Successfully removed module data"
@@ -3659,7 +3662,8 @@ msgid "Alert text"
 msgstr "Texto de la alerta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:138
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -3979,8 +3983,9 @@ msgid ""
 "This user has permissions to manage all. This is admin user and overwrites "
 "all permissions given in profiles/groups"
 msgstr ""
-"Este usuario tiene permisos para gestionar todo. Este es el usuario administrador y sobreescribe todos "
-"los permisos otorgados en los perfiles/grupos"
+"Este usuario tiene permisos para gestionar todo. Este es el usuario "
+"administrador y sobreescribe todos los permisos otorgados en los perfiles/"
+"grupos"
 
 #: ../../godmode/users/configure_user.php:204
 msgid "Standard user"
@@ -5293,7 +5298,8 @@ msgstr ""
 "derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:26
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
 "en el lugar deseado."
@@ -6227,7 +6233,7 @@ msgstr "No se encontró ninguna alerta combinada"
 #: ../../operation/agentes/tactical.php:100
 #: ../../operation/agentes/tactical.php:103
 msgid "Monitor checks"
-msgstr "Comprobaciones de monitor"
+msgstr "Comprobaciones de monitores"
 
 #: ../../operation/agentes/tactical.php:108
 msgid "Monitors good"
@@ -6548,4 +6554,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

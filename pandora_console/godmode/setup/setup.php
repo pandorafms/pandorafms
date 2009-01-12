@@ -125,7 +125,7 @@ $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '',
 $table->data[14][0] = __('Default hours for event view');
 $table->data[14][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[15][0] = __('Timestamp or time comparation');
+$table->data[15][0] = __('Timestamp or time comparation') . pandora_help("time_stamp-comparation", true);
 $table->data[15][1] = __('Comparation in rollover').' ';
 $table->data[15][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 $table->data[15][1] .= '<br />'.__('Timestamp in rollover').' ';

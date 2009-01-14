@@ -1586,13 +1586,11 @@ function get_db_all_fields_in_table ($table, $field = '', $condition = '', $orde
  * values. Example code:
  *
  * <code>
- * <?php
  * $values = array ();
  * $values['name'] = "Name";
  * $values['description'] = "Long description";
  * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
  * echo $sql;
- * ?>
  * </code>
  * Will return:
  * <code>
@@ -2415,5 +2413,111 @@ function get_modulegroups () {
  */	
 function get_modulegroup_name ($modulegroup_id) {
 	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
+}
+
+/**
+ * ￼Inserts strings into database￼￼￼
+ *
+ * The number of values should be the same or a positive integer multiple as the number of rows
+ * If you have an associate array (eg. array ("row1" => "value1")) you can use this function with ($table, array_keys ($array), $array) in it's options
+ * All arrays and values should have been cleaned before passing. It's not neccessary to add quotes.
+ *
+ * @param string $table Table to insert into
+ * @param ￼￼￼mixed￼ $rows A single row or array of rows to insert to￼
+ * @param ￼￼mixed ￼$￼values A single value or array of values to insert (can be a multiple amount of rows)
+ *
+ * @result ￼￼mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function process_sql_insert ($table, $rows, $values) {
+	if (empty ($rows) || empty ($values)) { //Empty rows or values not processed
+		return false;
+	}	
+	
+	$rows = (array) $rows; //Convert single strings to array
+	$values = (array) $values;
+	$row_count = count ($rows); //We're reusing so we put it in a variable
+	$value_count = count ($values);
+
+	if (($value_count % $row_count) != 0) { 
+		//If values are not a clean multiple of rows, don't process
+		return false;
+	}
+	
+	$query = sprintf ("INSERT INTO `%s` ", $table);
+	
+	foreach ($rows as $idx => $row) { //Add ` to each row name
+		if ($row[0] != '`') {
+			$rows[$idx] = '`'.$row.'`';
+		}
+	}
+	
+	foreach ($values as $idx => $value) { //Add the correct escaping to values
+		if ($value[0] == "'") {
+			continue; //The value is already escaped
+		}
+		if ($value === NULL) {
+			$values[$idx] = (string) "NULL";
+		} elseif (is_numeric ($value)) {
+			continue; //The value doesn't need esaped.
+		} elseif (is_bool ($value)) {
+			$values[$idx] = (int) $value; //SQL doesn't know boolean so we convert
+		} else {
+			$values[$idx] = sprintf ("'%s'", $value);
+		}
+	}
+	
+	$query .= "(".implode (", ", $rows).")";
+	$query .= " VALUES ";
+	
+	for ($i = 0; $i < ($value_count / $row_count); $i++) {
+		//For the times the values are multiplied
+		$array = array_slice ($values, $i * $row_count, ($i+1) * $row_count);
+		$query .= "(".implode (",", $array).")";
+		if ($i != ($value_count / $row_count) - 1) {
+			$query .= ",";
+		}
+	}
+	
+	return process_sql ($query);
+}
+
+/**
+ * ￼Inserts strings into database￼￼￼
+ *
+ * All values should be cleaned before passing. Quoting isn't necessary
+ *
+ * @param string $table Table to insert into
+ * @param ￼￼array ￼$rows An associative array of values to update
+ *
+ * @result ￼￼mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function process_sql_update ($table, $values) {
+	$query = sprintf ("UPDATE `%s` SET ", $table);
+	
+	$i = 0;
+	$max = count ($values);
+	foreach ($values as $field => $value) {
+		if ($field[0] != "`") {
+			$field = "`".$field."`";
+		}
+		
+		if (is_null ($value)) {
+			$query .= sprintf ("%s = NULL", $field);
+		} elseif (is_int ($value) || is_bool ($value)) {
+			$query .= sprintf ("%s = %d", $field, $value);
+		} else if (is_float ($value) || is_double ($value)) {
+			$query .= sprintf ("%s = %f", $field, $value);
+		} else {
+			$query .= sprintf ("%s = '%s'", $field, $value);
+		}
+		
+		if ($i < $max) {
+			$query .= ",";
+		}
+		
+		$i++;
+	}
+	
+	return process_sql ($query);
 }
 ?>

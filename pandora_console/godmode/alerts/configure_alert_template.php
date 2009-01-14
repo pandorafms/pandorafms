@@ -35,7 +35,7 @@ function print_alert_template_steps ($step, $id) {
 	/* Step 1 */
 	if ($step == 1)
 		echo '<strong>';
-	if ($id) {
+	if ($id && ! isset ($_POST['create_template'])) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'">';
 		echo __('Step').' 1 : '.__('Conditions');
 		echo '</a>';
@@ -50,7 +50,7 @@ function print_alert_template_steps ($step, $id) {
 	
 	if ($step == 2)
 		echo '<strong>';
-	if ($id) {
+	if ($id && ! isset ($_POST['create_template'])) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2">';
 		echo __('Step').' 2 : '.__('Firing');
 		echo '</a>';
@@ -65,7 +65,7 @@ function print_alert_template_steps ($step, $id) {
 	
 	if ($step == 3)
 		echo '<strong>';
-	if ($id) {
+	if ($id && ! isset ($_POST['create_template'])) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3">';
 		echo __('Step').' 3 : '.__('Recovery');
 		echo '</a>';
@@ -220,6 +220,8 @@ if ($create_template) {
 	/* Go to previous step in case of error */
 	if ($result === false)
 		$step = $step - 1;
+	else
+		$id = $result;
 }
 
 if ($update_template) {
@@ -233,7 +235,7 @@ if ($update_template) {
 	}
 }
 
-if ($id) {
+if ($id && ! $create_template) {
 	$template = get_alert_template ($id);
 	$name = $template['name'];
 	$description = $template['description'];

@@ -1,3 +1,13 @@
+2009-01-14  Sancho Lerena <slerena@artica.es>
+
+	* DB.pm: Solved an invalid reference to hash variable affecting to
+	postprocess calculation.
+
+	* pandora_recon: Now is compatible with the latest changes. Solved a
+	problem in eval() block. Also fixed a old bug mixing network profiles.
+	This fix will be ported to stable version ASAP.
+
+
 2009-01-12  Sancho Lerena <slerena@artica.es>
 
 	* Makefile.PL: Path to libs was wrong. Fixed.

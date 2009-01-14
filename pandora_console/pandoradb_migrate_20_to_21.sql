@@ -111,7 +111,7 @@ talert_template_modules(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- If you have custom stuff here, please make sure you manually  
-migrate it.
+-- migrate it.
 
 -- DROP TABLE  `talerta`
 

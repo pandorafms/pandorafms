@@ -1,4 +1,12 @@
-2009-01-12  Sancho Lerena <lsrena@artica.es>
+2009-01-12  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Fixed a bug when going
+	forward from step 2 when creating a template.
+
+	* pandoradb_migrate_20_to_21.sql: Added a comment on a line which was
+	missing it.
+
+2009-01-12  Sancho Lerena <slrena@artica.es>
 
 	* functions_db.php, 
 	* godmode/agentes/configurar_agente.php: Delete module deletes 

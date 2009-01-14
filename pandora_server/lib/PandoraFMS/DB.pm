@@ -596,7 +596,6 @@ sub pandora_writestate (%$$$$$$$) {
 	my $dbh = $_[5];
 	my $needs_update = $_[6];
 	
-	my @data;
 	my $cambio = 0;
 
 	# Get current timestamp / unix numeric time
@@ -610,6 +609,7 @@ sub pandora_writestate (%$$$$$$$) {
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
 	# TO DO: Verify errors
+
 	my $agent_data = get_db_free_row ("SELECT * FROM tagente WHERE nombre = '$nombre_agente'", $dbh);
 	if ($agent_data == -1){
 		return -1;
@@ -624,7 +624,7 @@ sub pandora_writestate (%$$$$$$$) {
 	}
 
 	my $module_data = get_db_free_row ("SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo", $dbh);
-	
+
 	# Valid string data ? (not null)
 	if (($id_modulo == 3) || ($id_modulo == 17) || ($id_modulo == 10) || ($id_modulo == 23)){
 			if ($datos eq "") {
@@ -636,16 +636,16 @@ sub pandora_writestate (%$$$$$$$) {
 	my $id_grupo = dame_grupo_agente($pa_config, $agent_data->{'id_agente'}, $dbh);
 
 	# Postprocess management
-	if ( defined($data->{'post_process'}) && ($data->{'post_process'}> 0)) {
+	if ( defined($module_data->{'post_process'}) && ($module_data->{'post_process'}> 0)) {
 		if (($id_modulo == 1) || ($id_modulo == 7) || ($id_modulo == 15) || ($id_modulo == 22) || ($id_modulo == 4) || ($id_modulo == 8) || ($id_modulo == 16) ){
-			$datos = $datos * $data->{'post_process'};
+			$datos = $datos * $module_data->{'post_process'};
 		}
 	}
 
 	# Status management
 	my $estado = 0; # Normal (OK) by default
 	
-	
+
 	# Only PROC modules have min_critical/max_critical default
 	if ( $tipo_modulo  =~ m/proc/ ){
 		if ($module_data->{'min_critical'} eq $module_data->{'max_critical'}){

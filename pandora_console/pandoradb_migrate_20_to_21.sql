@@ -1,3 +1,7 @@
+ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
+ALTER TABLE tagente_modulo ADD `custom_id` varchar(255) default '';
+ALTER TABLE tgrupo ADD `custom_id` varchar(255) default '';
+
 ALTER TABLE `tagente_datos` DROP INDEX `data_index2`;
 ALTER TABLE `tagente_datos` DROP `timestamp`, DROP `id_agente`;
 ALTER TABLE `tagente_datos_inc` DROP `timestamp`;
@@ -16,6 +20,14 @@ DEFAULT  '0', ADD  `min_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT
 '0', ADD  `max_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT  '0', ADD   
 `min_ff_event` INT( 4 ) UNSIGNED NOT NULL DEFAULT  '0', ADD   
 `delete_pending` INT( 1 ) UNSIGNED NOT NULL DEFAULT  '0';
+
+ALTER TABLE  `tagente_modulo`  ADD `min_warning` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `max_warning` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `min_critical` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `max_critical` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `min_ff_event` int(4) unsigned default '0';
+ALTER TABLE tagente_modulo ADD `delete_pending` int(1) unsigned default 0;
+
 
 ALTER TABLE  `tagente_modulo` DROP INDEX  `tam_plugin`;
 ALTER TABLE  `tagente_modulo` DROP PRIMARY KEY , ADD PRIMARY KEY  

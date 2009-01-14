@@ -1,3 +1,15 @@
+2009-01-14  Sancho Lerena <slerena@artica.es>
+
+	* operation/servers/view_server_detail.php: Fixed missing parameter.
+	Probably because function interface change.
+
+	* pandoradb_migrate_20_to_21.sql: Added some ALTER table sentences
+	was missing.
+
+	* general/login_page.php: Fixed typo.
+
+	* godmode/menu.php: Bad page rendered for module manage. Fixed.
+
 2009-01-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: New functions process_sql_insert and 

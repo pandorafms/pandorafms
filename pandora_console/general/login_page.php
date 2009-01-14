@@ -40,7 +40,7 @@ echo '<tr><td rowspan="3" align="left" style="border-right: solid 1px #678;">';
 
 if (!empty ($page) && !empty ($sec)) {
 	foreach ($_POST as $key => $value) {
-		print_input_hidden ($key, $vale);
+		print_input_hidden ($key, $value);
 	}
 }
 

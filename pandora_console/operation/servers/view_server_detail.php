@@ -52,11 +52,12 @@ echo "<h2>". __('Configuration detail') . " - ".$server_name;
 echo '&nbsp;<a href="index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id='.$id_server.'"><img src="images/refresh.png" /></a>';
 echo "</h2>";
 
+
 // Show network tasks for Recon Server
 if ($recon_tasks === false) {
 	$recon_tasks = array ();
-}
 
+}
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->width = 725;
@@ -119,7 +120,7 @@ foreach ($recon_tasks as $task) {
 	
 	$data[6] = print_group_icon ($task["id_group"], true);
 	
-	$data[7] = print_os_icon ($task["id_os"], true);
+	$data[7] = print_os_icon ($task["id_os"], false, true);
 	
 	if ($task["status"] < 0 || $task["status"] > 100) {
 		$data[8] = "-";

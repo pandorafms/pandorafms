@@ -1,3 +1,8 @@
+2009-01-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: New functions process_sql_insert and 
+	process_sql_update. They seem to work great, let me know of any bugs.
+
 2009-01-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/networkmap.php: .dot files are written to disk to

@@ -327,22 +327,35 @@ $graph = generate_dot ($simple, $font_size);
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
 $filename_map = $config["attachment_store"]."/networkmap_".$layout;
 $filename_img = "attachment/networkmap_".$layout."_".$font_size;
+$filename_dot = $config["attachment_store"]."/networkmap_".$layout;
 if($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";
+	$filename_dot .= "_simple";
 }
 if($nooverlap) {
 	$filename_map .= "_nooverlap";
 	$filename_img .= "_nooverlap";
+	$filename_dot .= "_nooverlap";
 }
 $filename_map .= ".map";
 $filename_img .= ".png";
+$filename_dot .= ".dot";
 
 if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
 	$result = true;
 } else {
-	$cmd = "echo " . escapeshellarg($graph) . " | $filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img;
+	$fh = fopen($filename_dot, 'w');
+	if ($fh === false) {
+		$result = false;
+		break;
+	}
+	
+	fwrite ($fh, $graph);
+	$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
 	$result = system ($cmd);
+	fclose ($fh);
+	unlink ($filename_dot);
 }
 
 if ($result !== false) {

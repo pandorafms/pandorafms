@@ -1,3 +1,11 @@
+2009-01-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: .dot files are written to disk to
+	  avoid problems with huge graphs.
+
+	* godmode/agentes/agent_template.php: Fixed, column
+	  tagente_estado.cambio does not exist anymore.
+
 2009-01-12  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Fixed a bug when going

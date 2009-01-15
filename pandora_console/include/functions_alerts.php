@@ -672,4 +672,57 @@ function get_alert_agent_module_actions ($id_alert_agent_module) {
 	
 	return $retval;
 }
+
+/**
+ *  Validates an alert id or an array of alert id's
+ *
+ * @param mixed Array of alerts ids or single id
+ *
+ * @return bool True if it was successful, false otherwise.
+ */
+function validate_alert_agent_module ($id_alert_agent_module) {
+	global $config;
+	require_once ("include/functions_events.php");
+	
+	$alerts = safe_int ($id_alert_agent_module, 1);
+	
+	if (empty ($alerts)) {
+		return false;
+	}
+	
+	$alerts = (array) $alerts;
+	
+	foreach ($alerts as $id) {
+		$alert = get_alert_agent_module ($id);
+		
+		if (! empty ($alert["id_agent_module"])) {
+			//Simple alert
+			$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
+			$group_id = get_agentmodule_group ($agent_id);
+		} else {
+			//Combined alert
+			$agent_id = $alert["id_agent"];
+			$group_id = get_agent_group ($agent_id);
+		}
+		
+		if (! give_acl ($config['id_user'], $group_id, "AW")) {
+			continue;
+		}
+		$result = process_sql_update ('talert_template_modules',
+			array ('times_fired' => 0,
+				'internal_counter' => 0),
+			array ('id' => $id));
+		
+		if ($result > 0) {
+			create_event ("Manual validation of alert for ".
+				get_alert_template_description ($alert["id_alert_template"]),
+				$group_id, $agent_id, 1, $config["id_user"],
+				"alert_manual_validation", 1, $alert["id_agent_module"],
+				$id);
+		} elseif ($result === false) {
+			return false;
+		}
+	}
+	return true;
+}
 ?>

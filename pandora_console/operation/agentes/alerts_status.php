@@ -87,9 +87,14 @@ if ($tab != '') {
 echo "<h3>".__('Alerts').'</h3>';
 
 if (get_parameter ('alert_validate')) {
-	$validate = get_parameter_post ("validate", array ());
-	$result = process_alerts_validate ($validate);
-	print_error_message ($result, __('Alert(s) validated'), __('Error processing alert(s)'));
+	$ids = (array) get_parameter_post ("validate", array ());
+	if (! empty ($ids)) {
+		require_once ("include/functions_alerts.php");
+		$result = validate_alert_agent_module ($ids);
+	
+		print_error_message ($result, __('Alert(s) validated'),
+			__('Error processing alert(s)'));
+	}
 }
 
 echo '<form method="post" action="'.$url.'">';

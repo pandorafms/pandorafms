@@ -1,5 +1,9 @@
 2009-01-15  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DB.pm: min_alerts now works as expected.
+
+2009-01-15  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Partially rewrote the alert core to support the
 	  new DB schemas. Compound alerts have been temporarily disabled.
 	  Rewrote alert macro substitution code.

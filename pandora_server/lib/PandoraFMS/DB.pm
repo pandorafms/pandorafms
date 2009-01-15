@@ -161,6 +161,7 @@ sub pandora_generate_alerts (%$$$$$$$$) {
 ##  2 Do not execute the alert, but increment its internal counter.
 ##  3 Cease the alert.
 ##  4 Recover the alert.
+##  5 Reset internal counter (alert not fired, interval elapsed).
 ##########################################################################
 
 sub pandora_evaluate_alert (%$%$$$) {
@@ -211,6 +212,8 @@ sub pandora_evaluate_alert (%$%$$$) {
 		if ($alert_data->{'recovery_notify'} == 1) {
 			$status = 4;
 		}
+	} elsif (Date_Cmp ($date, $limit_date) >= 0) {
+		$status = 5;
 	}
 
 	# Check for valid data
@@ -305,6 +308,13 @@ sub pandora_process_alert (%$$$$$%$$) {
 					   $module_data, 0, $dbh);
 		# Send a status change report
 		enterprise_hook('pandora_mcast_change_report', [$pa_config, $alert_data->{'id_agent_module'}, $timestamp, 'OK', $dbh]);
+		return;
+	}
+
+	# Reset internal counter
+	if ($rc == 5) {
+		db_do("UPDATE talert_template_modules SET internal_counter = 0 WHERE id = " .
+				 $alert_data->{'id_template_module'}, $dbh);
 		return;
 	}
 

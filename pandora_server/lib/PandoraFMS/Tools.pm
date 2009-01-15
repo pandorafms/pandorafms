@@ -41,6 +41,8 @@ our @EXPORT = qw(
         pandora_sendmail
 		pandora_get_os
 		pandora_trash_ascii
+		enterprise_hook
+		enterprise_load
     );
 
 ##########################################################################

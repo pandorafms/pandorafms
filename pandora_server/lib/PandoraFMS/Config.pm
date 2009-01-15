@@ -203,6 +203,10 @@ sub pandora_loadconfig {
 	# max log size (bytes)
 	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
 
+	# Multicast status report
+	$pa_config->{'mcast_group'} = '226.1.1.2';
+	$pa_config->{'mcast_port'} = '2000';	
+	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
 	    if ($> == 0){
@@ -413,6 +417,12 @@ sub pandora_loadconfig {
         }
 		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
             $pa_config->{'max_log_size'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^mcast_group\s([0-9\.]*)/i) {
+            $pa_config->{'mcast_group'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^mcast_port\s([0-9]*)/i) {
+            $pa_config->{'mcast_port'}= clean_blank($1); 
         }
     } # end of loop for parameter #
 

@@ -1,3 +1,50 @@
+2009-01-15  Esteban Sanchez  <estebans@artica.es>
+
+	* include/styles/menu.css: Changed the z-index property of the menu
+	which was overlapped in some cases.
+	
+	* include/functions.php: format_alert_row() moved to functions_ui.php
+
+	* include/functions_ui.php: Added format_alert_row() from function.php
+
+	* include/functions_agents.php: Added to repository.
+
+	* include/functions_alerts.php: Added new functions
+	get_alerts_agent_module_disabled(),
+	set_alerts_agent_module_force_execution(),
+	get_alerts_agent_module_last_fired().
+
+	* include/functions_db.php, operation/agentes/estado_agente.php,
+	operation/agentes/networkmap.php: Style correction.
+
+	* include/functions_reporting.php: Use new functions_agent.php. Added
+	a bit of documentation and style correction.
+
+	* godmode/alerts/alert_templates.php: Improved a bit the template
+	tooltip.
+
+	* operation/agentes/alerts_status.php: Added to repository. New
+	interface to list agent alerts.
+
+	* operation/agentes/estado_alertas.php: Removed from repository.
+	Replaced by alert_status.php.
+
+	* operation/agentes/ver_agente.php: Removed flag_alert code snippet.
+	Use new files added. Style correction.
+
+	* operation/menu.php: Old files references replaced by new ones.
+
+	* index.php: Removed build and pandora version references.
+
+	* pandoradb.sql: Removed useless module_type field in
+	talert_templates.
+
+	* pandoradb_migrate_20_to_21.sql: Removed duplicate fields addition.
+	Fixed some warnings. Added custom_id field to tagente. Style
+	correction.
+
+	* include/config_process.php: Updated build version.
+
 2009-01-14  Sancho Lerena <slerena@artica.es>
 
 	* operation/servers/view_server_detail.php: Fixed missing parameter.

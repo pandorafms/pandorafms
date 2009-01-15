@@ -33,7 +33,7 @@ $group_id = get_parameter ("group_id", 0);
 $ag_group = get_parameter ("ag_group", $group_id);
 $ag_group = get_parameter_get ("ag_group_refresh", $ag_group); //if it isn't set, defaults to prev. value
 
-$search = get_parameter ("search", "");
+$search = get_parameter ("search");
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
 
@@ -242,11 +242,11 @@ if ($agents !== false) {
 			echo "<a href='index.php?sec=gagente&amp;
 			sec2=godmode/agentes/configurar_agente&amp;
 			id_agente=".$id_agente."'>
-			<img src='images/setup.png' border=0 width=16></a>";
+			<img src='images/setup.png' border=0 width=16></a>&nbsp;";
 		}
-		echo "&nbsp;<a href='index.php?sec=estado&amp;
-		sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
-		<b>".$nombre_agente."</b></a></td>";
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'"><strong>';
+		echo $nombre_agente;
+		echo "</strong></a></td>";
 
 		// Show SO icon :)
 		echo "<td class='$tdcolor' align='center'>";
@@ -267,7 +267,7 @@ if ($agents !== false) {
 		//echo '&nbsp;(<b>';
 		//echo get_group_name ($id_grupo);
 		//echo "</b>)";
-		echo "</A>";
+		echo "</a>";
 
 
 		echo "<td class='$tdcolor'><b>".$numero_modulos." : ";

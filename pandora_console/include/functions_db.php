@@ -291,87 +291,6 @@ function get_agent_modules ($id_agent, $details = false) {
 	}
 	return $modules;
 }
-
-/**
- * Get all the simple alerts of an agent.
- *
- * @param int Agent id
- * @param string Filter on "fired", "notfired" or "disabled". Any other value
- * will not do any filter.
- *
- * @return array All simple alerts defined for an agent. Empty array if no
- * alerts found.
- */
-function get_agent_alerts_simple ($id_agent, $filter = false) {
-	switch ($filter) {
-	case "notfired":
-		$filter = ' AND times_fired = 0 AND disable = 0';
-		break;
-	case "fired":
-		$filter = ' AND times_fired > 0 AND disable = 0';
-		break;
-	case "disabled":
-		$filter = ' AND disable = 1';
-		break;
-	default:
-		$filter = '';
-	}
-	
-	$sql = sprintf ("SELECT talerta_agente_modulo.*
-		FROM talerta_agente_modulo, tagente_modulo
-		WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.id_agente = %d %s",
-		$id_agent, $filter);
-	$alerts = get_db_all_rows_sql ($sql);
-	
-	if ($alerts === false)
-		return array ();
-	return $alerts;
-}
-
-/**
- * Get all the combined alerts of an agent.
- *
- * @param int $id_agent Agent id
- *
- * @return array An array with all combined alerts defined for an agent.
- */
-function get_agent_alerts_combined ($id_agent, $filter = false) {
-	switch ($filter) {
-		case "notfired":
-			$filter = ' AND times_fired = 0 AND disable = 0';
-			break;
-		case "fired":
-			$filter = ' AND times_fired > 0 AND disable = 0';
-			break;
-		case "disabled":
-			$filter = ' AND disable = 1';
-			break;
-		default:
-			$filter = '';
-	}
-	$sql = sprintf ("SELECT * FROM talerta_agente_modulo WHERE id_agent = %d%s", $id_agent, $filter);
-	$alerts = get_db_all_rows_sql ($sql);
-	
-	if ($alerts === false)
-		return array ();
-	return $alerts;
-}
-
-/**
- * Get all the alerts of an agent, simple and combined.
- *
- * @param int $id_agent Agent id
- *
- * @return array An array with all alerts defined for an agent.
- */
-function get_agent_alerts ($id_agent, $filter = false) {
-	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter);
-	$combined_alerts = get_agent_alerts_combined ($id_agent, $filter);
-	
-	return array_merge ($simple_alerts, $combined_alerts);
-}
-
 /**
  * Get a list of the reports the user can view.
  *
@@ -2273,7 +2192,7 @@ function get_server_info ($id_server = -1) {
 		}
 		
 		//Push the raw data on the return stack
-		$return[$server["id_server"]] = $server;	
+		$return[$server["id_server"]] = $server;
 	}
 	return $return;
 }

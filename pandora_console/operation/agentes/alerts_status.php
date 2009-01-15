@@ -16,10 +16,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// Load global vars
-require_once ("include/config.php");
-
 check_login ();
+
+require_once ("include/functions_agents.php");
 
 $filter = get_parameter_get ("filter", "all");
 $offset = (int) get_parameter_get ("offset", 0);
@@ -33,6 +32,13 @@ $sec = safe_url_extraclean ($sec);
 
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&ag_group='.$id_group;
 
+// Force alert execution
+$flag_alert = (bool) get_parameter ('force_execution');
+if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+	require_once ("include/functions_alerts.php");
+	$id_alert = (int) get_parameter ('id_alert');
+	set_alerts_agent_module_force_execution ($id_alert);
+}
 
 // Show alerts for specific agent
 if (isset ($_GET["id_agente"])) {
@@ -49,7 +55,7 @@ if (isset ($_GET["id_agente"])) {
 	
 	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter);
 	$alerts_combined = get_agent_alerts_combined ($id_agent, $filter);
-	$print_agent = 0;
+	$print_agent = false;
 } else {
 	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
@@ -70,122 +76,134 @@ if (isset ($_GET["id_agente"])) {
 		$alerts_combined = array_merge ($alerts_combined, $combined);
 	}
 	
-	$print_agent = 1;
+	$print_agent = true;
 }
 
 $tab = get_parameter_get ("tab");
 if ($tab != '') {
-	echo "<h2>".__('Pandora Agents')." &gt; ".__('Full list of Alerts')."</h2>";
 	$url = $url.'&tab='.$tab;
-} else {
-	echo "<h3>".__('Full list of alerts').'</h3>';
 }
-	
 
-echo '<form method="post" action="'.$url.'">';
-if (isset ($_POST["alert_validate"])) {
+echo "<h3>".__('Alerts').'</h3>';
+
+if (get_parameter ('alert_validate')) {
 	$validate = get_parameter_post ("validate", array ());
 	$result = process_alerts_validate ($validate);
 	print_error_message ($result, __('Alert(s) validated'), __('Error processing alert(s)'));
 }
 
+echo '<form method="post" action="'.$url.'">';
 
-if ($print_agent == 1) {
-	echo '<table cellpadding="4" cellspacing="4" class="databox">';
-	echo '<tr><td>'.__('Group').'</td><td valign="middle">';
+if ($print_agent) {
+	$table->width = '90%';
+	$table->data = array ();
+	$table->style = array ();
 	
-	//Select box
-	$fields = get_user_groups ($config["id_user"]);	
-	print_select ($fields, "ag_group", $id_group, 'javascript:this.form.submit();" class="w150','');
+	$table->data[0][0] = __('Group');
+	$table->data[0][1] = print_select (get_user_groups (), "ag_group", $id_group,
+		'javascript:this.form.submit();', '', '', true);
 	
-	//And submit button
-	echo '</td><td valign="middle"><noscript><input name="uptbutton" type="submit" class="sub" value="'.__('Show').'"></noscript></td>';
+	$table->data[0][2] = '<a href="'.$url.'&filter=fired"><img src="images/pixel_red.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert fired').'</a>';
+	$table->data[0][3] = '<a href="'.$url.'&filter=notfired"><img src="images/pixel_green.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert not fired').'</a>';
+	$table->data[0][4] = '<a href="'.$url.'&filter=disabled"><img src="images/pixel_gray.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert disabled').'</a>';
 	
-	//And finish the table here
-	echo '<td class="f9" style="padding-left:30px;'.($filter == "fired" ? ' font-weight: bold;' : '').'"><a href="'.$url.'&filter=fired"><img src="images/pixel_red.png" width="18" height="18" title="'.__('Click to filter').'"></a>&nbsp;'.__('Alert fired').'</td>';
-	echo '<td class="f9" style="padding-left:30px;'.($filter == "notfired" ? ' font-weight: bold;' : '').'"><a href="'.$url.'&filter=notfired"><img src="images/pixel_green.png" width="18" height="18" title="'.__('Click to filter').'"></a>&nbsp;'.__('Alert not fired').'</td>';
-	echo '<td class="f9" style="padding-left:30px;'.($filter == "disabled" ? ' font-weight: bold;' : '').'"><a href="'.$url.'&filter=disabled"><img src="images/pixel_gray.png" width="18" height="18" title="'.__('Click to filter').'"></a>&nbsp;'.__('Alert disabled').'</td></tr></table>';
+	switch ($filter) {
+	case 'fired':
+		$table->style[2] = 'font-weight: bold';
+		
+		break;
+	case 'notfired':
+		$table->style[3] = 'font-weight: bold';
+		
+		break;
+	case 'disabled':
+		$table->style[4] = 'font-weight: bold';
+		
+		break;
+	}
+	
+	print_table ($table);
 }
 
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = 750;
-$table->border = 0;
+$table->width = '90%';
 $table->class = "databox";
-
 $table->head = array ();
-
 $table->head[0] = '';
-$table->head[1] = __('Type');
-$table->head[2] = ''; //Placeholder for name
-$table->head[3] = __('Description');
-$table->head[4] = __('Info');
-$table->head[5] = __('Min.').'/'.__('Max.');
-$table->head[6] = __('Last fired');
-$table->head[7] = __('Status');
-$table->head[8] = __('Validate') . pandora_help('alert_validation', true);
-$table->align = array ();
-$table->align[0] = "center";
-$table->align[1] = "center";
-$table->align[4] = "center";
-$table->align[5] = "center";
-$table->align[6] = "center";
-$table->align[7] = "center";
-$table->align[8] = "center";
-
+$table->head[1] = ''; //Placeholder for name
+$table->head[2] = __('Template');
+$table->head[3] = __('Last fired');
+$table->head[4] = __('Status');
+$table->head[5] = __('Validate').pandora_help ('alert_validation', true);
 $table->title = __('Single alerts');
-if ($print_agent == 0) {
-	$table->head[2] = __('Module name');
-} else {
-	$table->head[2] = __('Agent name');	
-}
 
+if ($print_agent == 0) {
+	$table->head[1] = __('Module');
+} else {
+	$table->head[1] = __('Agent');
+}
+$table->align = array ();
+$table->align[4] = 'center';
+$table->align[5] = 'center';
 $table->data = array ();
 
-$counter[0] = 0; //Dual counter. This one counts the total number of alerts
-$counter[1] = 0; //Dual counter. This one counts only the printed alerts
+$total = 0;
+$printed = 0;
 foreach ($alerts_simple as $alert) {
-	$counter[0]++;
-	if (empty ($alert) || $counter[1] >= $config["block_size"] || $counter[0] <= $offset) {
+	$total++;
+	if (empty ($alert) || $printed >= $config["block_size"] || $total <= $offset) {
 		continue;
 	}
-	$counter[1]++;
-	array_push ($table->data, format_alert_row ($alert, 0, $print_agent, 'alert'));
+	$printed++;
+	array_push ($table->data, format_alert_row ($alert, 0, $print_agent, $url));
 }
 
 if (!empty ($table->data)) {
-	pagination ($counter[0], $url, $offset);
+	pagination ($total, $url, $offset);
 	print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
 }
 
 $table->title = __('Combined alerts');
-$table->head[1] = __('Agent name');
+$table->head[1] = __('Agent');
 $table->data = array ();
 
-$counter[2] = 0;
-$counter[3] = 0;
+$combined_total = 0;
+$combined_printed = 0;
 foreach ($alerts_combined as $alert) {
-	$counter[2]++;
-	if (empty ($alert) || $counter[3] >= $config["block_size"] || $counter[2] <= $offset) {
+	$combined_total++;
+	if (empty ($alert) || $combined_printed >= $config["block_size"] || $combined_total <= $offset) {
 		continue;
 	}
-	$counter[3]++;
+	$combined_printed++;
 	array_push ($table->data, format_alert_row ($alert, 1, $print_agent));
 }	
 
 if (!empty ($table->data)) {
-	pagination ($counter[0], $url, $offset);
+	pagination ($total, $url, $offset);
 	print_table ($table);
-} else {
-	echo '<div class="nf">'.__('No combined alerts found').'</div>';
 }
 
-if ($counter[1] > 0 || $counter[2] > 0) {
-	echo '<div style="text-align: right; width: 750px;">';
+if ($printed > 0 || $combined_total > 0) {
+	echo '<div class="action-buttons" style="width: '.$table->width.';">';
 	print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);
 	echo '</div>';
 }
+
 echo '</form>';
 ?>
+<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
+<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("a.template_details").cluetip ({
+		arrows: true,
+		attribute: 'href',
+		cluetipClass: 'default',
+		fx: { open: 'fadeIn', openSpeed: 'slow' },
+	}).click (function () {
+		return false;
+	});
+});
+</script>

@@ -13,21 +13,13 @@ NULL DEFAULT  '0', ADD  `last_status` TINYINT( 4 ) NOT NULL DEFAULT
 ALTER TABLE  `tagente_estado` ADD INDEX (  `current_interval` );
 ALTER TABLE  `tagente_estado` ADD INDEX (  `running_by` );
 ALTER TABLE  `tagente_estado` ADD INDEX (  `last_execution_try` );
-ALTER TABLE  `tagente_modulo` ADD  `history_data` TINYINT( 1 )  
-UNSIGNED NOT NULL DEFAULT  '1', ADD  `min_warning` DOUBLE( 18, 2 ) NOT  
-NULL DEFAULT  '0', ADD  `max_warning` DOUBLE( 18, 2 ) NOT NULL  
-DEFAULT  '0', ADD  `min_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT   
-'0', ADD  `max_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT  '0', ADD   
-`min_ff_event` INT( 4 ) UNSIGNED NOT NULL DEFAULT  '0', ADD   
-`delete_pending` INT( 1 ) UNSIGNED NOT NULL DEFAULT  '0';
 
 ALTER TABLE  `tagente_modulo`  ADD `min_warning` double(18,2) default 0;
 ALTER TABLE  `tagente_modulo`  ADD `max_warning` double(18,2) default 0;
 ALTER TABLE  `tagente_modulo`  ADD `min_critical` double(18,2) default 0;
 ALTER TABLE  `tagente_modulo`  ADD `max_critical` double(18,2) default 0;
 ALTER TABLE  `tagente_modulo`  ADD `min_ff_event` int(4) unsigned default '0';
-ALTER TABLE tagente_modulo ADD `delete_pending` int(1) unsigned default 0;
-
+ALTER TABLE  `tagente_modulo` ADD `delete_pending` int(1) unsigned default 0;
 
 ALTER TABLE  `tagente_modulo` DROP INDEX  `tam_plugin`;
 ALTER TABLE  `tagente_modulo` DROP PRIMARY KEY , ADD PRIMARY KEY  
@@ -60,7 +52,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 CREATE TABLE IF NOT EXISTS `talert_templates` (
    `id` int(10) unsigned NOT NULL auto_increment,
    `name` varchar(255) default '',
-   `description` mediumtext default '',
+   `description` mediumtext,
    `id_alert_action` int(10) unsigned NULL,
    `field1` varchar(255) default '',
    `field2` varchar(255) default '',
@@ -102,8 +94,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
    `priority` tinyint(4) default '0',
    `force_execution` tinyint(1) default '0',
    PRIMARY KEY (`id`),
-   FOREIGN KEY (`id_agent_module`) REFERENCES  
-tagente_modulo(`id_agente_modulo`)
+   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
      ON DELETE CASCADE ON UPDATE CASCADE,
    FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
      ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -121,6 +112,8 @@ talert_template_modules(`id`)
    FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
      ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
 
 -- If you have custom stuff here, please make sure you manually  
 -- migrate it.

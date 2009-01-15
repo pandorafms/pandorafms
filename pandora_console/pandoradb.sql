@@ -235,7 +235,6 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `min_value` double(18,2) default NULL,
   `time_threshold` int(10) NOT NULL default '0',
   `max_alerts` int(4) unsigned NOT NULL default '1',
-  `module_type` int(10) unsigned NOT NULL default '0',
   `min_alerts` int(4) unsigned NOT NULL default '0',
   `alert_text` varchar(255) default '',
   `time_from` time default '00:00:00',
@@ -290,46 +289,6 @@ CREATE TABLE  IF NOT EXISTS `tcompound_alert` (
   `operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
   PRIMARY KEY  (`id`, `id_aam`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `talerta_agente_modulo` (
-  `id_aam` int(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-  `id_alerta` int(10) unsigned NOT NULL default '0',
-  `al_campo1` varchar(255) default '',
-  `al_campo2` varchar(255) default '',
-  `al_campo3` mediumtext NOT NULL,
-  `descripcion` varchar(255) default '',
-  `dis_max` double(18,2) default NULL,
-  `dis_min` double(18,2) default NULL,
-  `time_threshold` int(10) NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-  `max_alerts` int(4) unsigned NOT NULL default '1',
-  `times_fired` int(3) NOT NULL default '0',
-  `module_type` int(10) unsigned NOT NULL default '0',
-  `min_alerts` int(4) unsigned NOT NULL default '0',
-  `internal_counter` int(4) default '0',
-  `alert_text` varchar(255) default '',
-  `disable` tinyint(3) default '0',
-  `time_from` time default '00:00:00',
-  `time_to` time default '00:00:00',
-  `id_agent` int(10) default NULL,
-  `monday` tinyint(1) default '1',
-  `tuesday` tinyint(1) default '1',
-  `wednesday` tinyint(1) default '1',
-  `thursday` tinyint(1) default '1',
-  `friday` tinyint(1) default '1',
-  `saturday` tinyint(1) default '1',
-  `sunday` tinyint(1) default '1',
-  `recovery_notify` tinyint(1) default '0',
-  `priority` tinyint(4) default '0',
-  `al_f2_recovery` varchar(255) NOT NULL default '',
-  `al_f3_recovery` mediumtext NOT NULL,
-  `flag` tinyint(1) unsigned default '0',
-  PRIMARY KEY  (`id_aam`),
-  KEY `id_agente_modulo` (`id_agente_modulo`),
-  KEY `disable` (`disable`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 -- Priority : 0 - Maintance (grey)
 -- Priority : 1 - Low (green)

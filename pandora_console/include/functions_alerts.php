@@ -589,10 +589,33 @@ function get_alert_agent_module ($id_alert_agent_module) {
 }
 
 function get_alerts_agent_module ($id_agent_module) {
+	$id_alert_agent_module = safe_int ($id_agent_module, 1);
 	$sql = sprintf ('SELECT * FROM talert_template_modules
 		WHERE id_agent_module = %d
 		AND disabled = 0', $id_agent_module);
 	return get_db_all_rows_sql ($sql);
+}
+
+function get_alerts_agent_module_disabled ($id_alert_agent_module) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	return get_db_value ('disabled', 'talert_template_modules', 'id',
+		$id_alert_agent_module);
+}
+
+function set_alerts_agent_module_force_execution ($id_alert_agent_module) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	$sql = sprintf ('UPDATE talert_template_modules
+		SET force_execution = 1
+		WHERE id = %d',
+		$id_alert_agent_module);
+	
+	return process_sql ($sql) !== false;
+}
+
+function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	return get_db_value ('last_fired', 'talert_template_modules', 'id',
+		$id_alert_agent_module);
 }
 
 function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action, $options = false) {

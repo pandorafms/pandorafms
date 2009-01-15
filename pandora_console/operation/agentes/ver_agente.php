@@ -140,13 +140,6 @@ if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 	return;
 }
 
-// Check for validate alert request
-$validate_alert = get_parameter ("validate_alert", 0);
-if ($validate_alert > 0) {
-	$result = process_alerts_validate ($validate_alert);
-	print_error_message ($result, __('Alert(s) validated'), __('Error processing alert(s)'));
-}
-
 // Check for Network FLAG change request
 if (isset($_GET["flag"])) {
 	if ($_GET["flag"] == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {

@@ -2252,54 +2252,6 @@ function get_agent_group ($id_agent) {
 function get_group_name ($id_group) {
 	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 }
-/**
- *  Validates an alert id or an array of alert id's
- *
- * Validates an alert id or an array of alert id's
- *
- * @param mixed Array of alerts ids or single id
- *
- * @return bool True if it was successful, false otherwise.
- */
-function process_alerts_validate ($id_alert) {
-	global $config;
-	require_once ("include/functions_events.php");
-	
-	$id_alert = safe_int ($id_alert, 1);
-	
-	if (empty ($id_alert)) {
-		return false;
-	} else {
-		$id_alert = (array) $id_alert;
-	}
-	
-	foreach ($id_alert as $id_aam) {
-		$alert = get_db_row ("talerta_agente_modulo", "id_aam", $id_aam);
-		
-		if (empty ($alert["id_agent"])) {
-			//Simple alert
-			$agent_id = get_agentmodule_agent ($alert["id_agente_modulo"]);
-			$group_id = get_agentmodule_group ($alert["id_agente_modulo"]);	
-		} else {
-			//Combined alert
-			$agent_id = $alert["id_agent"];
-			$group_id = get_agent_group ($agent_id);
-		}
-		
-		if (give_acl ($config['id_user'], $group_id, "AW") == 0) {
-			continue;
-		}
-		
-		$sql = sprintf ("UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = %d", $id_aam);
-		$result = process_sql ($sql);
-		if ($result > 0) {
-			create_event ("Manual validation of alert for ".$alert["descripcion"], $group_id, $agent_id, 1, $config["id_user"], "alert_manual_validation", 1, $alert["id_agente_modulo"], $id_aam);
-		} elseif ($result === false) {
-			return false;
-		}
-	}
-	return true;
-}
 
 /**
  * Gets all module groups. (General, Networking, System).
@@ -2335,17 +2287,17 @@ function get_modulegroup_name ($modulegroup_id) {
 }
 
 /**
- * ￼Inserts strings into database￼￼￼
+ * Inserts strings into database
  *
  * The number of values should be the same or a positive integer multiple as the number of rows
  * If you have an associate array (eg. array ("row1" => "value1")) you can use this function with ($table, array_keys ($array), $array) in it's options
  * All arrays and values should have been cleaned before passing. It's not neccessary to add quotes.
  *
- * @param string $table Table to insert into
- * @param ￼￼￼mixed￼ $rows A single row or array of rows to insert to￼
- * @param ￼￼mixed ￼$￼values A single value or array of values to insert (can be a multiple amount of rows)
+ * @param string Table to insert into
+ * @param mixed A single row or array of rows to insert to￼
+ * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
  *
- * @result ￼￼mixed False in case of error or invalid values passed. Affected rows otherwise
+ * @result mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function process_sql_insert ($table, $rows, $values) {
 	if (empty ($rows) || empty ($values)) { //Empty rows or values not processed
@@ -2401,19 +2353,33 @@ function process_sql_insert ($table, $rows, $values) {
 }
 
 /**
- * ￼Inserts strings into database￼￼￼
+ * Inserts strings into database
  *
- * All values should be cleaned before passing. Quoting isn't necessary
+ * All values should be cleaned before passing. Quoting isn't necessary.
+ * Examples:
  *
- * @param string $table Table to insert into
- * @param ￼￼array ￼$rows An associative array of values to update
+ * <code>
+process_sql_update ('table', array ('field' => 1), array ('id' => $id));
+process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
+process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
+process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
+ * <code>
  *
- * @result ￼￼mixed False in case of error or invalid values passed. Affected rows otherwise
+ * @param string Table to insert into
+ * @param array An associative array of values to update
+ * @param mixed An associative array of field and value matches. Will be joined
+ * with operator specified by $where_join. A custom string can also be provided.
+ * If nothing is provided, the update will affect all rows.
+ * @param string When a $where parameter is given, this will work as the glue
+ * between the fields. "AND" operator will be use by default. Other values might
+ * be "OR", "AND NOT", "XOR"
+ *
+ * @result mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function process_sql_update ($table, $values) {
+function process_sql_update ($table, $values, $where = false, $where_join = 'AND') {
 	$query = sprintf ("UPDATE `%s` SET ", $table);
 	
-	$i = 0;
+	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
 		if ($field[0] != "`") {
@@ -2433,8 +2399,38 @@ function process_sql_update ($table, $values) {
 		if ($i < $max) {
 			$query .= ",";
 		}
-		
 		$i++;
+	}
+	
+	if ($where) {
+		$query .= ' WHERE ';
+		if (is_string ($where)) {
+			/* FIXME: Should we clean the string for sanity? */
+			$query .= $where;
+		} else if (is_array ($where)) {
+			$i = 1;
+			$max = count ($where);
+			foreach ($where as $field => $value) {
+				if ($field[0] != "`") {
+					$field = "`".$field."`";
+				}
+				
+				if (is_null ($value)) {
+					$query .= sprintf ("%s IS NULL", $field);
+				} elseif (is_int ($value) || is_bool ($value)) {
+					$query .= sprintf ("%s = %d", $field, $value);
+				} else if (is_float ($value) || is_double ($value)) {
+					$query .= sprintf ("%s = %f", $field, $value);
+				} else {
+					$query .= sprintf ("%s = '%s'", $field, $value);
+				}
+		
+				if ($i < $max) {
+					$query .= $where_join;
+				}
+				$i++;
+			}
+		}
 	}
 	
 	return process_sql ($query);

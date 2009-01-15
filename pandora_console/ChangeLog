@@ -1,5 +1,23 @@
 2009-01-15  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/alerts/configure_alert_template.php: The steps are now
+	available as soon as the alert is created.
+
+	* include/functions_alerts.php: Added validate_alert_agent_module().
+
+	* include/functions_db.php: Removed deprecated
+	process_alerts_validate(). Improved process_sql_update() to add
+	a row selection parameter, the documentation and a bit fix when
+	joining the fields with a coma.
+
+	* operation/agentes/alerts_status.php: Use new functions to validate
+	an alert.
+
+	* operation/agentes/ver_agente.php: Removed validation alert codes
+	since it doesn't belong here.
+
+2009-01-15  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/alerts/configure_alert_template.php: Max and min alerts
 	were ignored.
 

@@ -37,6 +37,7 @@ use threads::shared;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+enterprise_load ();
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -108,6 +109,7 @@ my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
 
 while (1) {
 	pandora_serverkeepaliver (\%pa_config, 1, $dbh);
+	enterprise_hook('mcast_status_report', [\%pa_config, $dbh]);
 	threads->yield;
 	sleep ($pa_config{"server_threshold"});
 }

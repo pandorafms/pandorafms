@@ -1,3 +1,16 @@
+2009-01-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Partially rewrote the alert core to support the
+	  new DB schemas. Compound alerts have been temporarily disabled.
+	  Rewrote alert macro substitution code.
+
+	* lib/PandoraFMS/Tools.pm,
+	  bin/pandora_snmpconsole: Aesthetic changes to enterprise code.
+
+	* lib/PandoraFMS/Config.pm,
+	  bin/pandora_network: Added support for UDP multicast status reports
+	  (enterprise version).
+
 2009-01-14  Sancho Lerena <slerena@artica.es>
 
 	* DB.pm: Solved an invalid reference to hash variable affecting to

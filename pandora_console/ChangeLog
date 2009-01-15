@@ -1,5 +1,13 @@
 2009-01-15  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/alerts/configure_alert_template.php: Max and min alerts
+	were ignored.
+
+	* include/functions_alerts.php: Ensure the max and min alert values
+	order.
+
+2009-01-15  Esteban Sanchez  <estebans@artica.es>
+
 	* include/styles/menu.css: Changed the z-index property of the menu
 	which was overlapped in some cases.
 	

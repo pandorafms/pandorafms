@@ -312,6 +312,11 @@ function clean_alert_template_values ($values, $set_empty = true) {
 		$retvalues['max_alerts'] = (int) $values['max_alerts'];
 	if (isset ($values['min_alerts']))
 		$retvalues['min_alerts'] = (int) $values['min_alerts'];
+	/* Ensure max an min orders */
+	$max = max ($retvalues['max_alerts'], $retvalues['min_alerts']);
+	$min = min ($retvalues['max_alerts'], $retvalues['min_alerts']);
+	$retvalues['max_alerts'] = $max;
+	$retvalues['min_alerts'] = $min;
 	if (isset ($values['monday']))
 		$retvalues['monday'] = (bool) $values['monday'];
 	if (isset ($values['tuesday']))

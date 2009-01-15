@@ -112,6 +112,8 @@ function update_template ($step) {
 		$time_to = (string) get_parameter ('time_to');
 		$time_to = date ("H:s:00", strtotime ($time_to));
 		$threshold = (int) get_parameter ('threshold');
+		$max_alerts = (int) get_parameter ('max_alerts');
+		$min_alerts = (int) get_parameter ('min_alerts');
 		if ($threshold == -1)
 			$threshold = (int) get_parameter ('other_threshold');
 		$field1 = (string) get_parameter ('field1');
@@ -138,7 +140,9 @@ function update_template ($step) {
 			'default_action' => $default_action,
 			'field1' => $field1,
 			'field2' => $field2,
-			'field3' => $field3
+			'field3' => $field3,
+			'max_alerts' => $max_alerts,
+			'min_alerts' => $min_alerts
 			);
 		
 		if ($default_action) {

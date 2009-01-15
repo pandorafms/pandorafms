@@ -17,10 +17,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-if (!isset ($build_version))
-	$build_version="PC081016";
-if (!isset ($pandora_version))
-	$pandora_version="v2.1-dev";
+$build_version = "PC090115";
+$pandora_version = "v2.1-dev";
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 

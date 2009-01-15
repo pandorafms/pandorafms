@@ -78,7 +78,7 @@
 	top:-25px;
 	left:155px;
 	width:130px;
-	z-index:1;
+	z-index:5;
 	background: #E9F3D2 url(../../images/arrow.png) no-repeat scroll 6px 4px;
 	padding-left: 8px;
 }

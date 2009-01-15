@@ -17,6 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require_once ("include/functions_agents.php");
+
 /** 
  * Get SLA of a module.
  * 
@@ -111,7 +113,7 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 /** 
  * Get general stats info on a group
  * 
- * @param int $id_group
+ * @param int Group Id to get info.
  * 
  * @return array
  */
@@ -125,10 +127,13 @@ function get_group_stats ($id_group) {
 
 	//Select all modules in group
 	$sql = sprintf ("SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, 
-			tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo FROM tagente, tagente_estado, tagente_modulo 
+			tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo
+			FROM tagente, tagente_estado, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente.id_grupo IN (%s)
-			AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-			AND tagente_modulo.disabled = 0", implode (",",$groups));
+			AND tagente.id_agente = tagente_estado.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+			AND tagente_modulo.disabled = 0",
+			implode (",",$groups));
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false)
@@ -152,7 +157,6 @@ function get_group_stats ($id_group) {
 	$data["data_alerts_fired"] = 0;
 	$data["data_alerts_fire_count"] = 0;
 	
-
 	$cur_time = get_system_time ();
 
 	foreach ($result as $row) {

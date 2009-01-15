@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
 
 check_login ();
 
@@ -43,22 +43,26 @@ function generate_dot ($simple = 0, $font_size) {
 	$graph = open_graph ();
 
 	// Get agent data	
-	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
-	if ($agents)
-	foreach ($agents as $agent) {
-		if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
-			continue;
-		// Save node parent information to define edges later
-		if ($agent['id_parent'] != "0") {
-			$parents[$agent['id_agente']] = $agent['id_parent'];
-		} else {
-			$orphans[$agent['id_agente']] = 1;
-		}
+	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente
+		FROM tagente
+		WHERE disabled = 0
+		ORDER BY id_grupo');
+	if ($agents){
+		foreach ($agents as $agent) {
+			if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
+				continue;
+			// Save node parent information to define edges later
+			if ($agent['id_parent'] != "0") {
+				$parents[$agent['id_agente']] = $agent['id_parent'];
+			} else {
+				$orphans[$agent['id_agente']] = 1;
+			}
 		
-		// Add node
-		$graph .= create_node ($agent , $simple, $font_size)."\n\t\t";
+			// Add node
+			$graph .= create_node ($agent , $simple, $font_size)."\n\t\t";
+		}
 	}
-
+	
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
 		$graph .= create_pandora_node ($pandora_name, $font_size);
@@ -94,7 +98,8 @@ function create_node ($agent, $simple = 0, $font_size = 10) {
 			AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND tagente_modulo.disabled = 0 
-			AND tagente_estado.estado = 1', $agent['id_agente']);
+			AND tagente_estado.estado = 1',
+			$agent['id_agente']);
 	$bad_modules = get_db_sql ($sql);
 	
 	// Set node status
@@ -105,7 +110,15 @@ function create_node ($agent, $simple = 0, $font_size = 10) {
 	}
 
 	// Check for alert
-	$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam) from talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $agent['id_agente']);
+	$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam)
+		FROM talerta_agente_modulo, tagente_modulo, tagente
+		WHERE tagente.id_agente = %d
+		AND tagente.disabled = 0
+		AND tagente.id_agente = tagente_modulo.id_agente
+		AND tagente_modulo.disabled = 0
+		AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo
+		AND talerta_agente_modulo.times_fired > 0 ',
+		$agent['id_agente']);
 	$alert_modules = get_db_sql ($sql);
 	if ($alert_modules) 
 		$status_color = '#FFE308';
@@ -151,7 +164,7 @@ function create_pandora_node ($name, $font_size = 10) {
 
 // Opens a group definition
 function open_group ($id) {
-	$img = 'images/' . dame_grupo_icono($id) . '.png';
+	$img = 'images/'.dame_grupo_icono ($id).'.png';
 	$name = get_group_name ($id);
 	
 	$group = 'subgraph cluster_' . $id . 
@@ -160,7 +173,7 @@ function open_group ($id) {
 		</TABLE>>; tooltip="'.$name.'";
 		URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='
 		. $id . '";';
-
+	
 	return $group;
 }
 
@@ -180,27 +193,19 @@ function open_graph () {
 	if ($layout == 'radial') 
 		$overlap = 'true';
 	
-	if (($layout == 'flat') OR ($layout == 'radial') OR ($layout == 'spring1')  OR ($layout == "spring2"))
+	if ($layout == 'flat' || $layout == 'radial' || $layout == 'spring1' || $layout == "spring2")
 		if ($nooverlap != '')
 			$overlap = 'scalexy';
-
 	
 	if ($pure == 1  && $zoom > 1 ) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
 	}
 	$size = $size_x . ',' . $size_y;
-// 
-/*
-echo "SIZE $size <br>";
-echo "NO OVERLAP $nooverlap <br>";
-echo "LAYOUT $layout <br>";
-echo "FONTSIZE $font_size <br>";
-echo "RANKSEP  $ranksep <br>";
-*/
+	
 	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { labeljust=l; margin=0; ";
-	if ($nooverlap != ''){
+	if ($nooverlap != '') {
 		$head .= "overlap=\"$overlap\";";
 		$head .= "ranksep=\"$ranksep\";";
 		$head .= "outputorder=edgesfirst;";
@@ -208,6 +213,7 @@ echo "RANKSEP  $ranksep <br>";
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
 	$head .= "size=\"$size\";";
+	
 	return $head;
 }
 
@@ -217,7 +223,7 @@ function close_graph () {
 }
 
 // Returns the filter used to achieve the desired layout
-function set_filter () {	
+function set_filter () {
 	global $layout;
 	
 	switch($layout) {
@@ -263,7 +269,7 @@ $layout_array = array (
 			'spring2' => 'spring 2',
 			'flat' => 'flat');
 
-echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=' . $pure . '" method="post">';
+echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure='.$pure.'" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
 echo '<tr>';
 echo '<td valign="top">' . __('Layout') . ' &nbsp;';
@@ -318,7 +324,7 @@ echo '</td></tr>';
 echo '</table></form>';
 
 // Set filter
-$filter = set_filter();
+$filter = set_filter ();
 
 // Generate dot file
 $graph = generate_dot ($simple, $font_size);
@@ -328,12 +334,12 @@ $graph = generate_dot ($simple, $font_size);
 $filename_map = $config["attachment_store"]."/networkmap_".$layout;
 $filename_img = "attachment/networkmap_".$layout."_".$font_size;
 $filename_dot = $config["attachment_store"]."/networkmap_".$layout;
-if($simple) {
+if ($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";
 	$filename_dot .= "_simple";
 }
-if($nooverlap) {
+if ($nooverlap) {
 	$filename_map .= "_nooverlap";
 	$filename_img .= "_nooverlap";
 	$filename_dot .= "_nooverlap";
@@ -345,7 +351,7 @@ $filename_dot .= ".dot";
 if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
 	$result = true;
 } else {
-	$fh = fopen($filename_dot, 'w');
+	$fh = fopen ($filename_dot, 'w');
 	if ($fh === false) {
 		$result = false;
 		break;
@@ -367,13 +373,14 @@ if ($result !== false) {
 		return;
 	}
 	echo '<img src="'.$filename_img.'" usemap="#networkmap" />';
-	include $filename_map;
+	include ($filename_map);
 } else {
 	echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
 	echo $result;
 	echo "<br /> Apparently something went wrong executing the command.";
 	echo "<br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver?";
-	echo "<br /> Is your webserver restricted from executing command line tools through the system() call (PHP Safe Mode or SELinux)";
+	echo "<br /> Is your webserver restricted from executing command line tools through the <code>system()</code> call (PHP Safe Mode or SELinux)";
+	
 	return;
 }
 ?>

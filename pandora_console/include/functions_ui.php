@@ -220,4 +220,75 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
 	
 	echo $output;
 }
+
+/** 
+ * Formats a row from the alert table and returns an array usable in the table function
+ * 
+ * @param array A valid (non empty) row from the alert table
+ * @param bool Whether or not this is a combined alert
+ * @param bool Whether to print the agent information with the module information
+ * @param string Tab where the function was called from (used for urls)
+ * 
+ * @return array A formatted array with proper html for use in $table->data (6 columns)
+ */
+function format_alert_row ($alert, $combined = false, $agent = true, $url = '') {
+	require_once ("include/functions_alerts.php");
+	
+	if (empty ($alert))
+		return array ("", "", "", "", "", "", "");
+	
+	// Get agent id
+	$id_agente = get_agentmodule_agent ($alert["id_agent_module"]);
+	$template = get_alert_template ($alert['id_alert_template']);
+	
+	$data = array ();
+	
+	// Force alert execution
+	$data[0] = '';
+	if (! $combined) {
+		if ($alert["force_execution"] == 0) {
+			$data[0] = '<a href="'.$url.'&id_alert='.$alert["id"].'&force_execution=1&refr=60"><img src="images/target.png" ></a>';
+		} else {
+			$data[0] = '<a href="'.$url.'&id_alert='.$alert["id"].'&refr=60"><img src="images/refresh.png" /></a>';
+		}
+	}
+	
+	if ($combined == 1) {
+		$data[1] =  print_agent_name ($id_agente, true, 20);
+	} elseif ($agent == 0) {
+		$data[1] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
+	} else {
+		$data[1] = print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20);
+	}
+	
+	$data[2] = '<span class="left">';
+	$data[2] .= mb_substr (safe_input ($template["description"]), 0, 35);
+	$data[2] .= '</span> <span class="right">';
+	$data[2] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
+	$data[2] .= '<img src="images/zoom.png" />';
+	$data[2] .= '</a></span>';
+	
+	$data[3] = print_timestamp ($alert["last_fired"], true);
+	
+	$options = array ();
+	$options["height"] = 9;
+	$options["width"] = 20;
+	
+	if ($alert["times_fired"] > 0) {
+		$options["src"] = "images/pixel_red.png";
+		$options["title"] = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+	} elseif ($alert["disabled"] > 0) {
+		$options["src"] = "images/pixel_gray.png";
+		$options["title"] = __('Alert disabled');
+	} else {
+		$options["src"] = "images/pixel_green.png";
+		$options["title"] = __('Alert not fired');
+	}
+	
+	$data[4] = print_image ($options["src"], true, $options);
+	
+	$data[5] = print_checkbox ("validate[]", $alert["id"], false, true);	
+	
+	return $data;
+}
 ?>

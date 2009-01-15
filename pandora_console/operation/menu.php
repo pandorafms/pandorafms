@@ -43,8 +43,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 60;
 				
-	$sub["operation/agentes/estado_alertas"]["text"] = __('Alert detail');
-	$sub["operation/agentes/estado_alertas"]["refr"] = 60;
+	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
+	$sub["operation/agentes/alerts_status"]["refr"] = 60;
 	
 	$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
 	$sub["operation/agentes/status_monitor"]["refr"] = 60;

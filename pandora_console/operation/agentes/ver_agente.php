@@ -161,13 +161,6 @@ if (isset($_GET["flag_agent"])){
 		process_sql ($sql);
 	}
 }
-// Force alert execution
-$flag_alert = (int) get_parameter ('flag_alert', 0);
-$id_agente_modulo = (int) get_parameter ('id_agente_modulo', 0);
-if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
-	$sql = "UPDATE talerta_agente_modulo SET flag = 1 WHERE id_agente_modulo = " . $id_agente_modulo;
-	process_sql ($sql);
-}
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
@@ -197,7 +190,7 @@ echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=
 echo "</li>";
 
 // Data
-if (($tab == "data") OR ($tab == "data_view")){
+if (($tab == "data") OR ($tab == "data_view")) {
 	echo "<li class='nomn_high'>";
 } else {
 	echo "<li class='nomn'>";
@@ -230,7 +223,6 @@ echo "<img src='images/god4.png' class='top' border=0>&nbsp;";
 echo __("Group");
 echo "</a></li>";
 
-
 // Inventory
 enterprise_hook ('inventory_tab');
 
@@ -241,27 +233,27 @@ echo "<div style='height: 25px'> </div>";
 
 switch ($tab) {
 case "sla":
-	require "sla_view.php";
+	require ("sla_view.php");
 	break;
 case "manage":	
-	require "estado_generalagente.php";
+	require ("estado_generalagente.php");
 	break;
 case "main":	
-	require "estado_generalagente.php";
-	require "estado_monitores.php";
-	require "estado_alertas.php";
-	require "status_events.php";
+	require ("estado_generalagente.php");
+	require ("estado_monitores.php");
+	require ("alerts_status.php");
+	require ("status_events.php");
 	break;
 case "data_view":
-	require "datos_agente.php";
+	require ("datos_agente.php");
 	break;
-case "data": 	
-	require "estado_ultimopaquete.php";
+case "data":
+	require ("estado_ultimopaquete.php");
 	break;
-case "alert": 	
-	require "estado_alertas.php";
+case "alert":
+	require ("alerts_status.php");
 	break;
-case "inventory": 	
+case "inventory":
 	enterprise_include ('operation/agentes/agent_inventory.php');
 	break;
 }

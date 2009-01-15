@@ -20,11 +20,6 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-$build_version="PC090106";
-$pandora_version="v2.1-dev";
-global $build_version;
-global $pandora_version;
-
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 if (function_exists (mb_internal_encoding)) {
 	mb_internal_encoding ("UTF-8");

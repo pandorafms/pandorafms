@@ -40,34 +40,32 @@ if (defined ('AJAX')) {
 			return;
 		
 		echo '<h3>'.$template['name'].'</h3>';
-		echo '<strong>'.__('Type').':</strong> '.get_alert_templates_type_name ($template['type']).'<br />';
+		echo '<strong>'.get_alert_templates_type_name ($template['type']).':</strong> ';
 		
 		switch ($template['type']) {
 		case 'regex':
 		case 'equal':
 		case 'not_equal':
-			echo '<strong>'.__('Value').':</strong> ';
 			if (empty ($template['value']))
 				echo '<em>'.__('Empty').'</em>';
 			else
 				echo '<code>'.$template['value'].'</code>';
-			echo '<br />';
 			
 			break;
-		case 'max':
 		case 'max_min':
-			echo '<strong>'.__('Max. Value').':</strong> ';
+			echo __('Between').' ';
+		case 'max':
 			echo format_numeric ($template['max_value']);
-			echo '<br />';
 			
 			/* Break on max to not show min */
 			if ($template['type'] == 'max')
 				break;
+			echo ''.__('and').' ';
 		case 'min':
-			echo '<strong>'.__('Min. Value').':</strong> ';
 			echo format_numeric ($template['min_value']);
-			echo '<br />';
 		}
+		
+		echo '<br />';
 		
 		if ($template['description'] != '') {
 			echo '<strong>'.__('Description').':</strong><br />';

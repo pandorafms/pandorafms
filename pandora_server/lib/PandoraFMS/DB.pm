@@ -18,6 +18,7 @@ package PandoraFMS::DB;
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
 
+use strict;
 use warnings;
 use Time::Local;
 use Time::Format qw(%time %strftime %manip); # For data mangling
@@ -109,20 +110,19 @@ sub subst_alert_macros ($\%) {
 ##########################################################################
 ## SUB pandora_generate_alerts
 ## (paconfig, timestamp, agent_name, $id_agent, id_agent_module,
-## id_module_type, id_group, module_data, module_type, dbh)
+## id_group, module_data, module_type, dbh)
 ## Generate alerts for a given module.
 ##########################################################################
 
-sub pandora_generate_alerts (%$$$$$$$$) {
+sub pandora_generate_alerts (%$$$$$$$) {
 	my $pa_config = $_[0];
 	my $timestamp = $_[1];
 	my $agent_name = $_[2];
 	my $id_agent = $_[3];
 	my $id_agent_module = $_[4];
-	my $id_module_type = $_[5];
-	my $id_group = $_[6];
-	my $module_data = $_[7];
-	my $dbh = $_[8];
+	my $id_group = $_[5];
+	my $module_data = $_[6];
+	my $dbh = $_[7];
 
 	# Do not generate alerts for disabled groups
 	if (give_group_disabled ($pa_config, $id_group, $dbh) == 1) {
@@ -138,7 +138,7 @@ sub pandora_generate_alerts (%$$$$$$$$) {
 
 	foreach my $alert_data (@alerts) {
 		my $rc = pandora_evaluate_alert($pa_config, $timestamp, $alert_data,
-										$module_data, $id_module_type, $dbh);
+										$module_data, $dbh);
 		pandora_process_alert ($pa_config, $timestamp, $rc, $agent_name,
 							   $id_agent, $id_group, $alert_data, $module_data,
 							   $dbh);
@@ -154,7 +154,7 @@ sub pandora_generate_alerts (%$$$$$$$$) {
 
 ##########################################################################
 ## SUB pandora_evaluate_alert
-## (paconfig, timestamp, alert_data, module_data, id_module_type, dbh)
+## (paconfig, timestamp, alert_data, module_data, dbh)
 ## Evaluate trigger conditions for a given alert. Returns:
 ##  0 Execute the alert.
 ##  1 Do not execute the alert.
@@ -169,8 +169,7 @@ sub pandora_evaluate_alert (%$%$$$) {
 	my $timestamp = $_[1];
 	my $alert_data = $_[2];
 	my $module_data = $_[3];
-	my $id_module_type = $_[4];
-	my $dbh = $_[5];
+	my $dbh = $_[4];
 
 	my $status = 1; # Value returned on valid data
 	my $err;
@@ -486,7 +485,7 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 
 		# Evaluate the alert
 		my $rc = pandora_evaluate_alert($pa_config, $timestamp, $data_alert,
-										'', -1, $dbh);
+										'', $dbh);
 
 		pandora_process_alert ($pa_config, $timestamp, $rc, $agent_name, $id_agent,
 							   $id_group, $data_alert, '', $dbh);
@@ -538,9 +537,9 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 
 	# Execute actions
 	foreach my $action (@actions) {
-		$field1 =  $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
-		$field2 =  $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
-		$field3 =  $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};
+		my $field1 =  $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
+		my $field2 =  $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
+		my $field3 =  $action->{'field3'} ne "" ? $action->{'field3'} : $alert->{'field3'};
 		
 		# Recovery fields, thanks to Kato Atsushi
 		if ($alert_mode == 0){
@@ -558,18 +557,17 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 					  _alert_description_ => $alert->{'descripcion'},
 					  _alert_threshold_ => $alert->{'time_threshold'},
 					  _alert_times_fired_ => $alert->{'times_fired'},
-					  _module_name_ => $module_name,
 					 );
 
 		logger($pa_config, "Alert (" . $alert->{'name'} . ") executed for agent $agent", 2);
 
 		# User defined alerts
 		if ($action->{'internal'} == 0) {
-			$command = subst_alert_macros ($action->{'command'}, %macros);
+			my $command = subst_alert_macros ($action->{'command'}, %macros);
 			$command = decode_entities($command);
 			eval {
 				system ($command);
-				$rc = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
+				my $rc = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
 				if ($rc != 0) {
 					logger($pa_config, "Executed command for alert " . $alert->{'name'} . " returned with errorlevel $rc", 1);
 				}
@@ -582,7 +580,7 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 		} elsif ($action->{'name'} eq "Internal Audit") {
 			logger($pa_config, "Internal audit for agent $agent", 3);
 			$field1 = subst_alert_macros ($field1, %macros);
-			pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
+			pandora_audit ($pa_config, $field1, $agent, "Alert (" . $alert->{'description'} . ")", $dbh);
 			
 			# Return without creating an event
 			return;
@@ -612,11 +610,11 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 
 ##########################################################################
 ## SUB pandora_writestate (pa_config, nombre_agente,tipo_modulo,
-#							nombre_modulo,valor_datos, estado, dbh, needupdate)
+#							nombre_modulo,valor_datos, dbh, needupdate)
 ## Alter data, chaning status of modules in state table
 ##########################################################################
 
-sub pandora_writestate (%$$$$$$$) {
+sub pandora_writestate (%$$$$$$) {
 	# slerena, 05/10/04 : Fixed bug because differences between agent / server time source.
 	# now we use only local timestamp to stamp state of modules
 	my $pa_config = $_[0];
@@ -712,7 +710,7 @@ sub pandora_writestate (%$$$$$$$) {
 	# Check alert subroutine - Protect execution on an eval block
 
 	eval {
-		pandora_generate_alerts ($pa_config, $timestamp, $nombre_agente, $module_data->{'id_agente'}, $id_agente_modulo, $id_module_type, $id_grupo, $datos, $dbh);
+		pandora_generate_alerts ($pa_config, $timestamp, $nombre_agente, $module_data->{'id_agente'}, $id_agente_modulo, $id_grupo, $datos, $dbh);
 	};
 	if ($@) {
 		logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente", 4);

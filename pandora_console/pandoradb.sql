@@ -260,6 +260,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `id_alert_template` int(10) unsigned NOT NULL,
   `internal_counter` int(4) default '0',
   `last_fired` bigint(20) NOT NULL default '0',
+  `last_reference` bigint(20) NOT NULL default '0',
   `times_fired` int(3) NOT NULL default '0',
   `disabled` tinyint(1) default '0',
   `priority` tinyint(4) default '0',

@@ -1,3 +1,8 @@
+2009-01-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql: Updated alert schema to work with the new alert
+	  engine.
+
 2009-01-15  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: The steps are now

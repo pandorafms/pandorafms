@@ -37,6 +37,7 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
         crea_agente_modulo			
+		update_on_error
 		dame_server_id				
 		dame_agente_id
 		dame_agente_modulo_id
@@ -813,15 +814,28 @@ sub module_generic_proc (%$$$$$) {
 	my $dbh = $_[5];
 	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	my $estado;
-	# Leemos datos de la estructura
-	my $a_datos = $datos->{data}->[0];
+	my $a_datos;
 
-	if ((ref($a_datos) eq "HASH")){
-		$a_datos = 0;	# If get bad data, then this is bad value, not "unknown" (> 1.3 version)
+	# Leemos datos de la estructura
+	if (!defined($datos->{data}->[0])){
+		$a_datos = 0;
 	} else {
-		$a_datos = sprintf("%.2f", $a_datos);		# Two decimal float. We cannot store more
-	}							# to change this, you need to change mysql structure
-	$a_datos =~ s/\,/\./g; 				# replace "," by "." avoiding locale problems
+		$a_datos = $datos->{data}->[0];
+	}	
+
+	if ($a_datos =~ m/false/i){
+		$a_datos = 0;
+	}
+	elsif ($a_datos =~ m/true/i){
+		$a_datos = 1;
+	} else {
+		$a_datos = sprintf("%.2f", $a_datos);		
+		# Two decimal float. We cannot store more
+	}
+
+	$a_datos =~ s/\,/\./g; 				
+	# replace "," by "." avoiding locale problems
+
 	my $a_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $a_max = $datos->{max}->[0];
@@ -2282,6 +2296,26 @@ sub db_delete ($$) {
 	my $dbh = $_[1];
 	
 	$dbh->do($query);
+}
+
+##########################################################################
+# SUB update_on_error (pa_config, id_agent_module, dbh )
+# Modules who cannot connect or something go bad, update last_execution_try field
+##########################################################################
+sub update_on_error {
+        my $pa_config = $_[0];
+        my $id_agent_module = $_[1];
+        my $dbh = $_[2];
+
+        my $utimestamp = &UnixDate("today","%s");
+
+        # Modules who cannot connect or something go bad, update last_execution_try field
+        logger ($pa_config, "Cannot obtain Module from IdAgentModule $id_agent_module", 3);
+        db_update ("UPDATE tagente_estado 
+		SET current_interval = 300, last_execution_try = $utimestamp 
+		WHERE id_agente_modulo = $id_agent_module", $dbh);
+;
+
 }
 
 # End of function declaration

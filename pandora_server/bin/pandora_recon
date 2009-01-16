@@ -47,6 +47,8 @@ use threads::shared;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+# Alarm signal management
+$SIG{ALRM} = sub { return 0; };
 
 # Queue management
 my @pending_task : shared;
@@ -168,7 +170,7 @@ sub pandora_recon_producer ($) {
 			# Skip modules already queued
 			if ((!defined($pending_task_hash{$data_id_task})) &&
 				(!defined($current_task_hash{$data_id_task}))) {
-                pandora_update_reconstatus ($pa_config, $dbh, $data_id_task, 0);
+                			pandora_update_reconstatus ($pa_config, $dbh, $data_id_task, 0);
 				# Locking scope, do not remove redundant { }
 				{
 					lock $queue_lock;
@@ -313,7 +315,6 @@ sub pandora_recon_exec_task {
 	if (!defined($space)){
 		logger ($pa_config, "Bad network $target_network for task $task_name", 2);
 		pandora_update_reconstatus ($pa_config, $dbh, $id_task, -1);
-		pandora_task_set_utimestamp ($pa_config, $dbh, $id_task);
 		return -1;
 	}
 
@@ -364,7 +365,6 @@ sub pandora_recon_exec_task {
 
 		my $progress = ceil($position / ($total_hosts / 100));
 		pandora_update_reconstatus ($pa_config, $dbh, $id_task, $progress);
-        pandora_task_set_utimestamp ($pa_config, $dbh, $id_task);
 	} while ($space < $space->broadcast); # fin del buclie principal de iteracion de Ips
 
 	# Create incident
@@ -379,7 +379,6 @@ sub pandora_recon_exec_task {
 	}
 	# Mark RECON TASK as done (-1)
 	pandora_update_reconstatus ($pa_config, $dbh, $id_task, -1);
-	pandora_task_set_utimestamp ($pa_config, $dbh, $id_task);
 }
 
 
@@ -490,6 +489,9 @@ sub pandora_get_agent_from_ip {
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
 	my $ip_address = $_[2];
+	if ((!defined($ip_address)) || ($ip_address eq "")){
+		return 0;
+	}
 
 	return get_db_free_field ("SELECT id_agent FROM taddress, taddress_agent WHERE taddress_agent.id_a = taddress.id_a  AND ip = '$ip_address'", $dbh);
 }
@@ -504,22 +506,8 @@ sub pandora_update_reconstatus {
 	my $id_task = $_[2];
 	my $status  = $_[3];
 
-	my $query_sql2 = "UPDATE trecon_task SET status = $status WHERE id_rt = $id_task";
-	$dbh->do($query_sql2);
-}
-
-##########################################################################
-# SUB pandora_task_set_utimestamp (pa_config, dbh, id_task)
-# Update utimestamp to current timestamp
-##########################################################################
-sub pandora_task_set_utimestamp {
-	my $pa_config = $_[0];
-	my $dbh = $_[1];
-	my $id_task = $_[2];
-	my $my_timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $my_utimestamp = &UnixDate($my_timestamp, "%s"); # convert from human to integer
-	
-	my $query_sql2 = "UPDATE trecon_task SET utimestamp = '$my_utimestamp' WHERE id_rt = $id_task";
+	my $my_utimestamp = &UnixDate("today", "%s");
+	my $query_sql2 = "UPDATE trecon_task SET utimestamp = $my_utimestamp, status = $status WHERE id_rt = $id_task";
 	$dbh->do($query_sql2);
 }
 
@@ -567,15 +555,17 @@ sub pandora_task_create_agentmodules {
 	my $agent_id = $_[2];
 	my $ncprofile_id = $_[3];
 	my $ip_adress = $_[4];
-	my @sql_data;
+	my $sql_data;
+
 	
 	# Search each network component that belongs to ncprofile_id
-	my $query_sql = "SELECT * FROM tnetwork_profile_component where id_np = $ncprofile_id ";
+	my $query_sql = "SELECT * FROM tnetwork_profile_component WHERE id_np = $ncprofile_id ";
+
 	my $exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
-	while (@sql_data = $exec_sql->fetchrow_array()) {
-		my $id_nc = $sql_data[1];
-		my $query_sql2 = "SELECT * FROM tnetwork_component where id_nc = $id_nc ";
+	while ($sql_data = $exec_sql->fetchrow_hashref()) {
+		my $query_sql2 = "SELECT * FROM tnetwork_component wHERE id_nc = ". $sql_data->{"id_nc"};
+
 		my $exec_sql2 = $dbh->prepare($query_sql2);
 		$exec_sql2 ->execute;
 		if ($exec_sql2->rows != 0) {
@@ -646,8 +636,10 @@ sub pandora_task_create_agentmodules {
 				$query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 100, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
 			}
 			$dbh->do($query_sql4);
+			undef $sql_data2;
 		}
 		$exec_sql2->finish();
+		undef $sql_data;
 	}
 	$exec_sql->finish();
 }
@@ -673,12 +665,15 @@ sub pandora_getparent ($$){
     );
 
 	my $success = 0;
+
 	eval {
-		local $SIG{ALRM} = sub { die "alarm" };
 		alarm($pa_config->{"networktimeout"});
 		$success = $t->traceroute();
 		alarm(0);
 	};
+	if ($@){
+                return 0;
+        }
 
 	if ($t->hops > 1){
 		if ($success){
@@ -686,7 +681,6 @@ sub pandora_getparent ($$){
 			return pandora_get_agent_from_ip ($pa_config, $dbh, $parent_ip);
 		}
 	} 
-
 	return 0;
 }
 

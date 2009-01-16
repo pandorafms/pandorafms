@@ -1,3 +1,10 @@
+2009-01-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Updated year in header. Solved small notice error.
+	
+	* operation/agentes/alerts_status.php: Use h2 instead h3 on title. Some
+	separation should be between code color and text.
+
 2009-01-16  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql: Added new field to talert_templates to specify if the

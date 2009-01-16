@@ -84,7 +84,7 @@ if ($tab != '') {
 	$url = $url.'&tab='.$tab;
 }
 
-echo "<h3>".__('Alerts').'</h3>';
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Alerts').'</h2>';
 
 if (get_parameter ('alert_validate')) {
 	$ids = (array) get_parameter_post ("validate", array ());

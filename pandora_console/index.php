@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 // Pandora FMS uses Pear Image::Graph code
 
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
-if (function_exists (mb_internal_encoding)) {
+if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
 }
 

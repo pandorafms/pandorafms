@@ -1,3 +1,38 @@
+2009-01-16  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql: Added new field to talert_templates to specify if the
+	alert should fire when on match or mismatch of the values.
+
+	* general/header.php: Fixed the columns width. Added a control when
+	the autorefresh is clicked so the user can select the refresh time. A
+	countdown is also shown when the page is set to refresh.
+
+	* godmode/alerts/configure_alert_template.php: Control the new flag on
+	templates. Added an explanation to explain when the alert is going to
+	fire.
+
+	* include/javascript/jquery.js: Updated to v1.3. It promise to be
+	quicker in a lot of situations.
+	
+	* include/javascript/jquery.countdown.js: Updated to latest version.
+
+	* include/styles/pandora.css: Fixed duplicated input.ok. Style
+	correction. Added invisible class and a style for alert templates
+	page.
+
+	* include/functions_alerts.php: Fixed a notice error on
+	clean_alert_template_values().
+
+	* operation/visual_console/render_view.php: Removed jquery inclusion
+	because it's already done in the index page.
+
+	* general/main_menu.php: Do not add refr if it's zero.
+
+	* index.php: Avoid the recursive addition of 1=1 when autorefresh is
+	set.
+	
+	* pandoradb_migrate_20_to_21.sql: Added new fields on the tables.
+
 2009-01-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Updated alert schema to work with the new alert

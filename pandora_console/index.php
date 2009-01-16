@@ -80,23 +80,28 @@ $config["pure"] = (bool) get_parameter ("pure", 0);
 $config["refr"] = (int) get_parameter ("refr", 0);
 if ($config["refr"] > 0) {
 	// Agent selection filters and refresh
-	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+	$query = 'http' . (isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
 	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443)) {
 		$query .= ":" . $_SERVER['SERVER_PORT'];
 	}
 	
 	$query .= $_SERVER['SCRIPT_NAME'];
-	$query .= '?1=1'; //Some (old) browsers don't like the ?&key=var
+	if (sizeof ($_REQUEST))
+		 //Some (old) browsers don't like the ?&key=var
+		$query .= '?1=1';
 		
 	//We don't clean these variables up as they're only being passed along
 	foreach ($_GET as $key => $value) {
+		/* Avoid the 1=1 */
+		if ($key == 1)
+			continue;
 		$query .= '&'.$key.'='.$value;
 	}
 	foreach ($_POST as $key => $value) {
 		$query .= '&'.$key.'='.$value;
 	}
 	
-	echo '<meta http-equiv="refresh" content="' . $config["refr"] . '; URL=' . $query . '">';
+	echo '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'">';
 }
 
 enterprise_include ('index.php');
@@ -136,7 +141,6 @@ $page = $sec2; //Reference variable for old time sake
 
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
-	
 
 // Login process 
 if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
@@ -182,7 +186,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 
 // Log off
 if (isset ($_GET["bye"])) {
-	include "general/logoff.php";
+	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
 	logoff_db ($iduser, $REMOTE_ADDR);
 	session_unregister ("id_usuario");
@@ -231,7 +235,7 @@ if ($page != "") {
 	}
 }
 
-if ($config["pure"] == 0) {    
+if ($config["pure"] == 0) {
 	echo '</div>'; // main
 	echo '<div style="clear:both">&nbsp;</div>';
 	echo '</div>'; // page (id = page)

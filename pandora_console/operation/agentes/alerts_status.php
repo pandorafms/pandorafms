@@ -91,7 +91,7 @@ if (get_parameter ('alert_validate')) {
 	if (! empty ($ids)) {
 		require_once ("include/functions_alerts.php");
 		$result = validate_alert_agent_module ($ids);
-	
+		
 		print_error_message ($result, __('Alert(s) validated'),
 			__('Error processing alert(s)'));
 	}

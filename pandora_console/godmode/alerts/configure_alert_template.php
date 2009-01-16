@@ -78,6 +78,71 @@ function print_alert_template_steps ($step, $id) {
 	echo '</div>';
 }
 
+function print_alert_template_example ($id, $return = false) {
+	$output = '';
+	
+	$is = false;
+	$is_not = false;
+	$matches = false;
+	$matches_not = false;
+	$between = false;
+	$between_not = false;
+	$under = false;
+	$over = false;
+	$max = false;
+	$min = false;
+	$value = false;
+	
+	$output .= '<img src="images/information.png" /> ';
+	$output .= '<span id="example">';
+	
+	if ($id) {
+		$template = get_alert_template ($id);
+		
+		switch ($template['type']) {
+		case 'not_equal':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is <span id="value"></span>');
+			break;
+		case 'equal':
+		/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is not <span id="value"></span>');
+			break;
+		case 'regex':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value matches <span id="value"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
+			$value = $template['value'];
+			break;
+		case 'max_min':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
+			break;
+		case 'max':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is over <span id="max"></span>');
+			
+			break;
+		case 'min':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is under <span id="min"></span>');
+			break;
+		}
+	}
+	
+	$output .= '</span>';
+	if ($return)
+		return $output;
+	echo $output;
+}
+
 function update_template ($step) {
 	$id = (int) get_parameter ('id');
 	
@@ -92,13 +157,15 @@ function update_template ($step) {
 		$value = (string) get_parameter ('value');
 		$max = (float) get_parameter ('max');
 		$min = (float) get_parameter ('min');
+		$matches = (bool) get_parameter ('matches_value');
 		
 		$result = update_alert_template ($id,
 			array ('type' => $type,
 				'description' => $description,
 				'value' => $value,
 				'max_value' => $max,
-				'min_value' => $min));
+				'min_value' => $min,
+				'matches_value' => $matches));
 	} elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
@@ -247,6 +314,7 @@ if ($id && ! $create_template) {
 	$value = $template['value'];
 	$max = $template['max_value'];
 	$min = $template['min_value'];
+	$matches = $template['matches_value'];
 	$time_from = $template['time_from'];
 	$time_to = $template['time_to'];
 	$monday = (bool) $template['monday'];
@@ -392,15 +460,18 @@ if ($step == 2) {
 	$table->rowstyle['value'] = 'display: none';
 	$table->rowstyle['max'] = 'display: none';
 	$table->rowstyle['min'] = 'display: none';
+	$table->rowstyle['example'] = 'display: none';
 	
+	$show_matches = false;
 	if ($id) {
+		$table->rowstyle['example'] = '';
 		switch ($type) {
-		case "equal":
-		case "not_equal":
 		case "regex":
+			$show_matches = true;
 			$table->rowstyle['value'] = '';
 			break;
 		case "max_min":
+			$show_matches = true;
 		case "max":
 			$table->rowstyle['max'] = '';
 			if ($type == 'max')
@@ -421,6 +492,11 @@ if ($step == 2) {
 	$table->data[2][0] = __('Condition type');
 	$table->data[2][1] = print_select (get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
+	$table->data[2][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+	$table->data[2][1] .= print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[2][1] .= print_label (__('Trigger when matches the value'),
+		'checkbox-matches_value', true);
+	$table->data[2][1] .= '</span>';
 
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = print_input_text ('value', $value, '',
@@ -441,6 +517,9 @@ if ($step == 2) {
 
 	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = print_input_text ('min', $min, '', 5, 255, true);
+	
+	$table->data['example'][1] = print_alert_template_example ($id, true);
+	$table->colspan['example'][1] = 2;
 }
 
 /* If it's the last step it will redirect to template lists */
@@ -476,6 +555,16 @@ echo '</form>';
 <script src="include/languages/time_<?php echo $config['language']; ?>.js"></script>
 
 <script type="text/javascript">
+
+var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";
+var matches_not = "<?php echo __('The alert would fire when the value doesn\'t match <span id=\"value\"></span>');?>";
+var is = "<?php echo __('The alert would fire when the value is <span id=\"value\"></span>');?>";
+var is_not = "<?php echo __('The alert would fire when the value is not <span id=\"value\"></span>');?>";
+var between = "<?php echo __('The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
+var between_not = "<?php echo __('The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
+var under = "<?php echo __('The alert would fire when the value is under <span id=\"min\"></span>');?>";
+var over = "<?php echo __('The alert would fire when the value is over <span id=\"max\"></span>');?>";
+
 function check_regex () {
 	if ($("#type").attr ('value') != 'regex') {
 		$("img#regex_good, img#regex_bad").hide ();
@@ -493,71 +582,140 @@ function check_regex () {
 	$("img#regex_good").show ();
 }
 
+function render_example () {
+	/* Set max */
+	max = $("input#text-max").attr ("value")
+	if (max == '') {
+		$("span#max").empty ().append ("0");
+	} else {
+		$("span#max").empty ().append (max);
+	}
+	
+	/* Set min */
+	min = $("input#text-min").attr ("value")
+	if (min == '') {
+		$("span#min").empty ().append ("0");
+	} else {
+		$("span#min").empty ().append (min);
+	}
+	
+	/* Set value */
+	value = $("input#text-value").attr ("value")
+	if (value == '') {
+		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
+	} else {
+		$("span#value").empty ().append (value);
+	}
+}
+
 $(document).ready (function () {
+	render_example ();
 	$("#text-time_from, #text-time_to").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0]
 		}
 	);
 	
+	$("input#text-value").keyup (render_example);
+	$("input#text-max").keyup (render_example);
+	$("input#text-min").keyup (render_example);
+	
 	$("#type").change (function () {
 		switch (this.value) {
 		case "equal":
 		case "not_equal":
-			$("img#regex_good, img#regex_bad").hide ();
+			$("img#regex_good, img#regex_bad, span#matches_value").hide ();
+			$("#template-max, #template-min").hide ();
+			$("#template-value, #template-example").show ();
+			
+			/* Show example */
+			if (this.value == "equal")
+				$("span#example").empty ().append (is);
+			else
+				$("span#example").empty ().append (is_not);
+			
+			break;
 		case "regex":
-			$("#template-max, #template-min").fadeOut ('normal',
-				function () {
-					$("#template-value").fadeIn ();
-					check_regex ();
-				}
-			);
+			$("#template-max, #template-min").hide ();
+			$("#template-value, #template-example, span#matches_value").show ();
+			check_regex ();
+			
+			/* Show example */
+			if ($("#checkbox-matches_value")[0].checked)
+				$("span#example").empty ().append (matches);
+			else
+				$("span#example").empty ().append (matches_not);
+			
 			break;
 		case "max_min":
-			$("#template-value").fadeOut ('normal',
-				function () {
-					$("#template-max").fadeIn ();
-					$("#template-min").fadeIn ();
-				}
-			);
+			$("#template-value").hide ();
+			$("#template-max, #template-min, #template-example, span#matches_value").show ();
+			
+			/* Show example */
+			if ($("#checkbox-matches_value")[0].checked)
+				$("span#example").empty ().append (between);
+			else
+				$("span#example").empty ().append (between_not);
+			
 			break;
 		case "max":
-			$("#template-value, #template-min").fadeOut ('normal',
-				function () {
-					$("#template-max").fadeIn ();
-				}
-			);
+			$("#template-value, #template-min, span#matches_value").hide ();
+			$("#template-max, #template-example").show ();
+			
+			/* Show example */
+			$("span#example").empty ().append (over);
 			break;
 		case "min":
-			$("#template-value, #template-max").fadeOut ('normal',
-				function () {
-					$("#template-min").fadeIn ();
-				}
-			);
+			$("#template-value, #template-max, span#matches_value").hide ();
+			$("#template-min, #template-example").show ();
+			
+			/* Show example */
+			$("span#example").empty ().append (under);
 			break;
 		default:
-			$("#template-value, #template-max, #template-min").fadeOut ();
+			$("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();
 			break;
 		}
+		
+		render_example ();
+	});
+	
+	$("#checkbox-matches_value").click (function () {
+		enabled = this.checked;
+		type = $("#type").attr ("value");
+		if (type == "regex") {
+			if (enabled) {
+				$("span#example").empty ().append (matches);
+			} else {
+				$("span#example").empty ().append (matches_not);
+			}
+		} else if (type == "max_min") {
+			if (enabled) {
+				$("span#example").empty ().append (between);
+			} else {
+				$("span#example").empty ().append (between_not);
+			}
+		}
+		render_example ();
 	});
 	
 	$("#text-value").keyup (check_regex);
 	$("#threshold").change (function () {
 		if (this.value == -1) {
 			$("#text-other_threshold").attr ("value", "");
-			$("#template-threshold-other_label").fadeIn ();
-			$("#template-threshold-other_input").fadeIn ();
+			$("#template-threshold-other_label").show ();
+			$("#template-threshold-other_input").show ();
 		} else {
-			$("#template-threshold-other_label").fadeOut ();
-			$("#template-threshold-other_input").fadeOut ();
+			$("#template-threshold-other_label").hide ();
+			$("#template-threshold-other_input").hide ();
 		}
 	});
 	
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {
-			$("#template-field2, #template-field3").fadeIn ();
+			$("#template-field2, #template-field3").show ();
 		} else {
-			$("#template-field2, #template-field3").fadeOut ();
+			$("#template-field2, #template-field3").hide ();
 		}
 	});
 	
@@ -579,13 +737,13 @@ $(document).ready (function () {
 					original_command = html_entity_decode (data["command"]["command"]);
 					render_command_preview ();
 					
-					$("#template-field1, #template-field2, #template-field3, #template-preview")
-						.fadeIn ();
+					$("#template-field1, #template-field2, #template-field3, #template-example")
+						.show ();
 				},
 				"json"
 			);
 		} else {
-			$("#template-field1, #template-field2, #template-field3, #template-preview").fadeOut ();
+			$("#template-field1, #template-field2, #template-field3").hide ();
 		}
 	});
 	

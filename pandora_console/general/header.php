@@ -33,14 +33,14 @@ echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" sty
 echo '</td><td width="20">&nbsp;</td>';
 
 // First column (identifier)
-echo '<td><img src="images/user_'.((dame_admin ($_SESSION["id_usuario"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$_SESSION["id_usuario"].'</b>]</a>';
+echo '<td width="20%"><img src="images/user_'.((dame_admin ($_SESSION["id_usuario"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$_SESSION["id_usuario"].'</b>]</a>';
 
 //First column, second row (logout button)
 echo '<br /><br />';
 echo '<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" class="bot">&nbsp;'. __('Logout').'</a>';
 
 // Second column (link to main page)
-echo '</td><td>';
+echo '</td><td width="20%">';
 echo '<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" class="bot">&nbsp;'.__('General information').'</a>';
 
 //Second column, second row (System up/down)
@@ -65,11 +65,27 @@ echo "</a>";
 
 // Third column
 // Autorefresh
-echo "</td><td>";
-if (get_parameter ("refr") != 0) { 
-	echo '<a class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" />&nbsp;'. __('Autorefresh').'</a>';
+echo '</td><td width="20%">';
+$refr = (int) get_parameter ("refr");
+if ($refr) {
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" />&nbsp;'. __('Autorefresh');
+	echo ' (<span id="refr">'.date ("i:s", $refr).'</span>)';
+	echo '</a>';
 } else {
-	echo '<a class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).'&refr=5"><img src="images/page_lightning.png" class="bot" />&nbsp;'.__('Autorefresh').'</a>';
+	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).(count($_GET)?"&":"?").'refr="><img src="images/page_lightning.png" class="bot" />&nbsp;'.__('Autorefresh').'</a>';
+	$values = array ('5' => '5 '.__('seconds'),
+		'10' => '10 '.__('seconds'),
+		'15' => '15 '.__('seconds'),
+		'30' => '30 '.__('seconds'),
+		'60' => '1 '.__('minute'),
+		'120' => '2 '.__('minutes'),
+		'300' => '5 '.__('minutes'),
+		'900' => '15 '.__('minutes'),
+		'1800' => '30 '.__('minutes'),
+		'3600' => '1 '.__('hour'));
+	echo '<span id="combo_refr" style="display: none">';
+	print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+	echo '</span>';
 }
 
 //Events
@@ -77,5 +93,35 @@ echo '<br /><br />';
 echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" class="bot" />&nbsp;'.__('Events').'</a>';
 
 // Styled text
-echo '</td><td><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
+echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
 ?>
+
+<script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
+<script language="javascript" type="text/javascript">
+$(document).ready (function () {
+<?php if ($refr): ?>
+	t = new Date();
+	t.setTime (t.getTime () + <?php echo $refr * 1000; ?>);
+	$("#refr").countdown ({until: t, 
+		layout: '%M%nn%M:%S%nn%S',
+		labels: ['', '', '', '', '', '', ''],
+		onExpiry: function () {
+				$(this).text ("...");
+			}
+		});
+<?php else: ?>
+	$("a#autorefresh").click (function () {
+		var a = this;
+		
+		$(this).hide ().unbind ("click");
+		$("#combo_refr").show ();
+		$("select#ref").change (function () {
+			href = $(a).attr ("href");
+			$(document).attr ("location", href + this.value);
+		});
+		
+		return false;
+	});
+<?php endif; ?>
+});
+</script>

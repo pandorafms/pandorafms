@@ -106,7 +106,6 @@ echo "</form>";
 ?>
 
 <link rel="stylesheet" href="include/styles/countdown.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
 <script type="text/javascript" src="include/languages/countdown_<?php echo $config['language']?>.js"></script>
 <script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>

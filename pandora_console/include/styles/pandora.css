@@ -276,7 +276,7 @@ input.copy {
 input.ok {
 	background: #e5e5e5 url(../../images/ok.png) no-repeat right 3px;
 }
-input.ok {
+input.add {
 	background: #e5e5e5 url(../../images/add.png) no-repeat right 3px;
 }
 table, img {
@@ -341,14 +341,15 @@ td.datos_id {
 	color: #fff;
 	text-align: center;
 }
+.suc, .error {
+	padding: 4px 1px 6px 30px;
+}
 .suc {
 	color: #5a8629;
 	background: url(../../images/suc.png) no-repeat 1px;
-	padding: 4px 1px 6px 30px;
 }
 .error {
 	background: url(../../images/err.png) no-repeat;
-	padding: 4px 1px 6px 30px;
 }
 .red, .redb, .redi, .error {
 	color: #f00;
@@ -742,4 +743,10 @@ code {
 }
 select#template, select#action {
 	width: 250px;
+}
+.invisible {
+	display: none;
+}
+#label-checkbox-matches_value {
+	display: inline;
 }

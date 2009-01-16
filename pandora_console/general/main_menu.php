@@ -50,7 +50,7 @@ function temp_print_menu ($menu, $type) {
 		//Print out the first level
 		echo '<ul'.($class ? ' class="'.$class.'"' : '').'>';
 		echo '<li class="mainmenu '.$class.'" id="'.$main["id"].'">';
-		echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].'&amp;refr='.$main["refr"].'">'.$main["text"].'</a>';
+		echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
 		echo '</li>';
 		
 		foreach ($main["sub"] as $subsec2 => $sub) {
@@ -85,7 +85,7 @@ function temp_print_menu ($menu, $type) {
 					$link_add = "";
 				}
 				echo '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.'&amp;refr='.$sub["refr"].$link_add.'">'.$sub["text"].'</a>';
+				echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
 				echo '</li>';
 			}
 		}

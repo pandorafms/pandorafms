@@ -3,8 +3,8 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2009 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License 
@@ -39,7 +39,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.1-dev";
-my $pandora_build="PS081109";
+my $pandora_build="PS090115";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -54,12 +54,12 @@ my %pa_config;
 sub help_screen {
 	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	printf "Following options are optional : \n";
-	printf "      -v        :  Verbose mode activated, give more information in logfile \n";
-	printf "      -d        :  Debug mode activated, give extensive information in logfile \n";
-	printf "      -D        :  Daemon mode (runs in backgroup)\n";
+	printf "      -v        :  Verbose mode activated, write more information in logfile \n";
+	printf "      -d        :  Debug mode activated, write extensive information in logfile \n";
+	printf "      -D        :  Daemon mode (runs in background)\n";
     printf "      -P <file> :  Store PID to file.\n";
     printf "      -q        :  Quiet startup\n";
-	printf "      -h        :  This screen, show a little help screen \n";
+	printf "      -h        :  This screen. It shows a little help screen \n";
 	printf " \n";
 	exit;
 }
@@ -72,13 +72,13 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2008 ArticaST\n";
+	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2009 ArticaST\n";
 	printf "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	printf "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
+		print "I need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
 		help_screen;
 		exit;
 	}
@@ -115,7 +115,7 @@ sub pandora_init {
         }
     }
 	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
         print "         For example: ./pandora_server /etc/pandora/pandora_server.conf\n\n";
 		exit;
 	}

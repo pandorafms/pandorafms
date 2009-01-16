@@ -1,3 +1,8 @@
+2009-01-16  Raul Mateos <raulofpandora@gmail.com>
+	
+	* lib/PandoraFMS/Config.pm: Updated Build and Headers.
+	Changed some texts.
+
 2009-01-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Several fixes.

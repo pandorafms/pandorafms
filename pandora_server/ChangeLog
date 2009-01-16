@@ -1,3 +1,7 @@
+2009-01-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Several fixes.
+
 2009-01-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: min_alerts now works as expected.

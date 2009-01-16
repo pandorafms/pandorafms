@@ -271,6 +271,7 @@ $threshold = 300;
 $recovery_notify = false;
 $field2_recovery = '';
 $field3_recovery = '';
+$matches = true;
 
 if ($create_template) {
 	$name = (string) get_parameter ('name');
@@ -279,6 +280,7 @@ if ($create_template) {
 	$value = (string) get_parameter ('value');
 	$max = (float) get_parameter ('max');
 	$min = (float) get_parameter ('min');
+	
 	
 	$result = create_alert_template ($name, $type,
 		array ('description' => $description,
@@ -493,7 +495,7 @@ if ($step == 2) {
 	$table->data[2][1] = print_select (get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
 	$table->data[2][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[2][1] .= print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[2][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);
 	$table->data[2][1] .= print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[2][1] .= '</span>';
@@ -501,7 +503,7 @@ if ($step == 2) {
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = print_input_text ('value', $value, '',
 		35, 255, true);
-	$table->data['value'][1] .= '<span id="regex_ok">';
+	$table->data['value'][1] .= '&nbsp;<span id="regex_ok">';
 	$table->data['value'][1] .= print_image ('images/suc.png', true,
 		array ('style' => 'display:none',
 			'id' => 'regex_good',
@@ -512,11 +514,12 @@ if ($step == 2) {
 			'title' => __('The regular expression is not valid')));
 	$table->data['value'][1] .= '</span>';
 
-	$table->data['max'][0] = __('Max.');
-	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
-
+	//Min first, then max, that's more logical
 	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = print_input_text ('min', $min, '', 5, 255, true);
+
+	$table->data['max'][0] = __('Max.');
+	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
 	
 	$table->data['example'][1] = print_alert_template_example ($id, true);
 	$table->colspan['example'][1] = 2;

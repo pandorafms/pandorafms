@@ -118,27 +118,6 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
  * @return array
  */
 function get_group_stats ($id_group) {
-	$groups = array_keys (get_user_groups ());
-	if ($id_group > 0 && in_array ($groups, $id_group)) {
-		//If a group is selected, and we have permissions to it then we don't need to look for them
-		$groups = array ();
-		$groups[0] = $id_group;
-	}
-
-	//Select all modules in group
-	$sql = sprintf ("SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, 
-			tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo
-			FROM tagente, tagente_estado, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente.id_grupo IN (%s)
-			AND tagente.id_agente = tagente_estado.id_agente
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-			AND tagente_modulo.disabled = 0",
-			implode (",",$groups));
-	$result = get_db_all_rows_sql ($sql);
-	
-	if ($result === false)
-		$result = array ();
-	
 	$data = array ();
 	$data["monitor_checks"] = 0;
 	$data["monitor_not_init"] = 0;
@@ -156,12 +135,54 @@ function get_group_stats ($id_group) {
 	$data["data_alerts"] = 0;
 	$data["data_alerts_fired"] = 0;
 	$data["data_alerts_fire_count"] = 0;
-	
+	$data["total_agents"] = 0;
+	$data["total_checks"] = 0;
+	$data["total_ok"] = 0;
+	$data["total_alerts"] = 0;
+	$data["total_alerts_fired"] = 0;
+	$data["total_alerts_fire_count"] = 0;
+	$data["monitor_bad"] = 0;
+	$data["data_bad"] = 0;
+	$data["total_bad"] = 0;
+	$data["total_not_init"] = 0;
+	$data["total_down"] = 0;
+	$data["monitor_health"] = 100;
+	$data["data_health"] = 100;
+	$data["global_health"] = 100;
+	$data["alert_level"] = 100;
+	$data["module_sanity"] = 100;
+	$data["server_sanity"] = 100;
 	$cur_time = get_system_time ();
+	
+	$groups = array_keys (get_user_groups ());
+	if ($id_group > 0 && in_array ($groups, $id_group)) {
+		//If a group is selected, and we have permissions to it then we don't need to look for them
+		$groups = array ();
+		$groups[0] = $id_group;
+	}
+
+	//Select all modules in group
+	$agents = get_group_agents ($groups);
+	$modules = array ();
+	$module_ids = array ();
+	
+	if (empty ($agents)) {
+		//No agents in this group, means no data
+		return $data;
+	}
+	
+	$sql = sprintf ("SELECT tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo, estado, datos, current_interval, utimestamp FROM tagente_estado, tagente_modulo WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente IN (%s)", implode (",", array_keys ($agents)));
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false) {
+		return $data;
+	}
+
+	$module_remote = get_moduletypes ("remote");
 
 	foreach ($result as $row) {
 		$last_update = $cur_time - $row["utimestamp"];
-		if ($row["estado"] != 100) {
+		if (in_array ($row["id_tipo_modulo"], $module_remote)) {
 			//This module is a monitor (remote)
 			$data["monitor_checks"]++; 
 			
@@ -172,12 +193,10 @@ function get_group_stats ($id_group) {
 			} elseif ($last_update >= ($row["current_interval"] * 2)) {
 				//The utimestamp is greater than 2x the interval (it has timed out)
 				$data["monitor_unknown"]++;
-			} elseif ($row["datos"] != 0) {
-				//Status is something
-				$data["monitor_ok"]++;
-			} else {
-				//Otherwise it's down
+			} elseif ($row["estado"] == 1 || $row["estado"] == 2) {
 				$data["monitor_down"]++;
+			} else {
+				$data["monitor_ok"]++;
 			}
 
 			$sql = sprintf ("SELECT times_fired FROM talerta_agente_modulo WHERE id_agente_modulo = %d", $row["id_agente_modulo"]);
@@ -200,12 +219,10 @@ function get_group_stats ($id_group) {
 			} elseif ($last_update >= ($row["current_interval"] * 2)) {
 				//The utimestamp is greater than 2x the interval (it has timed out)
 				$data["data_unknown"]++;
-			} elseif ($row["datos"]) {
-				//Status is something
-				$data["data_ok"]++;
-			} else {
-				//Otherwise it's down
+			} elseif ($row["estado"] == 1 || $row["estado"] == 2) {
 				$data["data_down"]++;
+			} else {
+				$data["data_ok"]++;
 			}
 			
 			$sql = sprintf ("SELECT times_fired FROM talerta_agente_modulo WHERE id_agente_modulo = %d", $row["id_agente_modulo"]);
@@ -220,7 +237,7 @@ function get_group_stats ($id_group) {
 		} //End module check
 	} //End foreach module
 	
-	$data["total_agents"] = count (get_group_agents ($groups, false, "none"));
+	$data["total_agents"] = count ($agents);
 	$data["total_checks"] = $data["data_checks"] + $data["monitor_checks"];
 	$data["total_ok"] = $data["data_ok"] + $data["monitor_ok"];
 	$data["total_alerts"] = $data["data_alerts"] + $data["monitor_alerts"];
@@ -242,7 +259,7 @@ function get_group_stats ($id_group) {
 	 Server Sanity	0% Uninitialized modules
 	 
 	 */
-	if ($data["monitor_bad"] > 0 && $data["monitor_checks"]) {
+	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
 	} else {
 		$data["monitor_health"] = 100;

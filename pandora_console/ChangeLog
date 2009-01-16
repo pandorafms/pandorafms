@@ -1,3 +1,14 @@
+2009-01-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/alerts/configure_alert_template.php: Some aesthetic fixes	and
+	non-init variable fixes
+	
+	* include/functions_db.php: Added get_moduletypes since I needed it and
+	fixed the documentation tags for 2 functions. Reparsed all documentation
+	
+	* include/functions_reporting.php: Fixed get_group_stats to work faster
+	and now correctly returns the status even if data modules report 0.00
+
 2009-01-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Updated year in header. Solved small notice error.

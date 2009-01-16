@@ -747,6 +747,43 @@ function get_moduletype_name ($id_type) {
 	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
+/**
+ * Returns an array with all module types (default) or if "remote" or "agent" 
+ * is passed it will return only remote (ICMP, SNMP, TCP...) module types 
+ * otherwise the full list + the column you specify 
+ *
+ * @param string Specifies which type to return (will return an array with id's)
+ * @param string Which rows to select (defaults to nombre)
+ *
+ * @return array Either the full table or if a type is specified, an array with id's
+ */
+function get_moduletypes ($type = "all", $rows = "nombre") {
+	$return = array ();
+	$rows = (array) $rows; //Cast as array
+	$row_cnt = count ($rows);
+	if ($type == "remote") {
+		return array_merge (range (6,18), (array) 100);
+	} elseif ($type == "agent") {
+		return array_merge (range (1,4), range (19,24));
+	}
+	
+	$sql = sprintf ("SELECT id_tipo,%s FROM ttipo_modulo", implode (",", $rows));
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false) {
+		return $return;
+	}
+	
+	foreach ($result as $type) {
+		if ($row_cnt > 1) {
+			$return[$type["id_tipo"]] = $type;
+		} else {
+			$return[$type["id_tipo"]] = $type[reset ($rows)];
+		}
+	}
+	return $return;
+}
+
+
 /** 
  * @deprecated Use get_agent_group ($id) now (fully compatible)
  */
@@ -2297,7 +2334,7 @@ function get_modulegroup_name ($modulegroup_id) {
  * @param mixed A single row or array of rows to insert to￼
  * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
  *
- * @result mixed False in case of error or invalid values passed. Affected rows otherwise
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function process_sql_insert ($table, $rows, $values) {
 	if (empty ($rows) || empty ($values)) { //Empty rows or values not processed
@@ -2374,7 +2411,7 @@ process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10')
  * between the fields. "AND" operator will be use by default. Other values might
  * be "OR", "AND NOT", "XOR"
  *
- * @result mixed False in case of error or invalid values passed. Affected rows otherwise
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function process_sql_update ($table, $values, $where = false, $where_join = 'AND') {
 	$query = sprintf ("UPDATE `%s` SET ", $table);

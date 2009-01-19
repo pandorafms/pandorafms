@@ -110,14 +110,14 @@ function create_node ($agent, $simple = 0, $font_size = 10) {
 	}
 
 	// Check for alert
-	$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam)
-		FROM talerta_agente_modulo, tagente_modulo, tagente
+	$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
+		FROM talert_template_modules, tagente_modulo, tagente
 		WHERE tagente.id_agente = %d
 		AND tagente.disabled = 0
 		AND tagente.id_agente = tagente_modulo.id_agente
 		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo
-		AND talerta_agente_modulo.times_fired > 0 ',
+		AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+		AND talert_template_modules.times_fired > 0 ',
 		$agent['id_agente']);
 	$alert_modules = get_db_sql ($sql);
 	if ($alert_modules) 
@@ -394,8 +394,7 @@ $(document).ready (function () {
 	$("area[title!='<?php echo $pandora_name; ?>']").cluetip ({
 		arrows: true,
 		attribute: 'title',
-		cluetipClass: 'default',
-		fx: { open: 'fadeIn', openSpeed: 'slow' },
+		cluetipClass: 'default'
 	});
 });
 </script>

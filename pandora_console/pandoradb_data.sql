@@ -23,7 +23,7 @@
 
 
 --
--- Dumping data for table `talerta`
+-- Dumping data for table `talert_commands`
 --
 
 INSERT INTO `talert_commands` VALUES (1,'Compound only', 'Internal type', 'This alert will not be executed individually', 1);

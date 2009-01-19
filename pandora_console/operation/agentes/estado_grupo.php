@@ -104,14 +104,14 @@ foreach ($groups as $id_group => $group_name) {
 	if ($config["show_lastalerts"] == 1) {
 		// How many alerts has been fired recently for this group:
 		// SQL Join to get alert status for agents belong this group
-		$sql = sprintf ("SELECT SUM(talerta_agente_modulo.times_fired)
-				FROM tagente_modulo, talerta_agente_modulo, tagente
+		$sql = sprintf ("SELECT SUM(talert_template_modules.times_fired)
+				FROM tagente_modulo, talert_template_modules, tagente
 				WHERE tagente.disabled = 0
 				AND tagente.id_grupo = %d
 				AND tagente.id_agente = tagente_modulo.id_agente
-				AND talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo",
+				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo",
 				$id_group);
-		$group_info["alerts"] = 0 + get_db_sql ($sql);
+		$group_info["alerts"] = (int) get_db_sql ($sql);
 	}
 	array_push ($groups_info, $group_info);
 }

@@ -155,12 +155,12 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$alert_low = 10000000;
 		if ($show_alert == 1){
 			// If we want to show alerts limits
-			$sql1="SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
+			$sql1="SELECT * FROM talert_template_modules WHERE id_agent_module = ".$id_agente_modulo;
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				if ($row["dis_max"] > $alert_high)
+				if ($row["max_value"] > $alert_high)
 					$alert_high = $row["dis_max"];
-				if ($row["dis_min"] < $alert_low)
+				if ($row["max_value"] < $alert_low)
 					$alert_low = $row["dis_min"];
 			}
 		}
@@ -427,8 +427,8 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		$alert_low = false;
 		// If we want to show alerts limits
 		
-		$alert_high = get_db_value ('MAX(dis_max)', 'talerta_agente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
-		$alert_low = get_db_value ('MIN(dis_min)', 'talerta_agente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		$alert_low = get_db_value ('MIN(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
 		
 		// if no valid alert defined to render limits, disable it
 		if (($alert_low === false) && ($alert_high === false)) {
@@ -1714,7 +1714,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		$alert_high = 0;
 		$alert_low = 10000000;
 		// If we want to show alerts limits
-		$sql1 = "SELECT MAX(dis_max), MIN(dis_min) FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
+		$sql1 = "SELECT MAX(max_value), MIN(min_value) FROM talert_template_modules WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result = get_db_row_sql ($sql1);
 		if ($result !== false) {
 			$alert_high = $result["max"];

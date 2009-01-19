@@ -65,7 +65,8 @@ if (isset ($_GET["submit"])) {
 	
 	if ($id_as < 1) {
 		$sql = sprintf ("INSERT INTO talert_snmp 
-			(id_alert, al_field1, al_field2, al_field3, description, alert_type, agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
+			(id_alert, al_field1, al_field2, al_field3, description, alert_type,
+			agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
 			VALUES
 			(%d, '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d) ",
 			$alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);

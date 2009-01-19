@@ -224,7 +224,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 CREATE TABLE IF NOT EXISTS `talert_templates` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) default '',
-  `description` mediumtext default '',
+  `description` mediumtext,
   `id_alert_action` int(10) unsigned NULL,
   `field1` varchar(255) default '',
   `field2` varchar(255) default '',
@@ -307,7 +307,6 @@ CREATE TABLE IF NOT EXISTS `tattachment` (
   `size` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_attachment`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS `tconfig` (
   `id_config` int(10) unsigned NOT NULL auto_increment,
@@ -703,7 +702,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 CREATE TABLE IF NOT EXISTS tplugin (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` varchar(200) NOT NULL,
-    `description` mediumtext default "",
+    `description` mediumtext,
     `max_timeout` int(4) UNSIGNED NOT NULL default 0,
     `execute`varchar(250) NOT NULL,
     `net_dst_opt` varchar(50) default '',

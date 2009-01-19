@@ -1,3 +1,31 @@
+2009-01-19  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Removed references to old
+	talerta and talerta_modulo tables.
+
+	* godmode/agentes/alert_manager_editor.php,
+	godmode/alerts/configure_alert.php: Removed from repository. It became
+	a useless file since the new alert system is implemented.
+
+	* godmode/agentes/manage_config.php: Style correction. Copy alerts
+	among agents using the new tables and structures.
+
+	* godmode/reporting/reporting_builder.php: Do not sort report time
+	period, it was not human readable if it was alphanumeric sorted.
+
+	* include/functions_agents.php: Fixed get_agent_alerts_simple() and
+	commented get_agent_alerts_combined() code since it's not implemented
+	yet.
+
+	* include/functions_db.php, include/functions_reporting.php: Fixed
+	function documentation format. Use structures, functions and tables of
+	the new alert system.
+
+	* operation/reporting/reporting_viewer.php: Style correction.
+
+	* pandoradb.sql: Removed default values on mediumtext fields because
+	it was causing a SQL warning.
+
 2009-01-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/alerts/configure_alert_template.php: Some aesthetic fixes	and

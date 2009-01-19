@@ -273,22 +273,6 @@ if (isset($_GET["fix_module"])){
 	}
 }
 
-// Delete Alert
-// =============
-if (isset($_GET["delete_alert"])){ // if modified some parameter
-	$id_borrar_modulo = get_parameter_get ("delete_alert",0);
-	// get info about agent
-	$sql = sprintf ("DELETE FROM talerta_agente_modulo WHERE id_aam = %d", $id_borrar_modulo);
-	$result = process_sql ($sql);
-	
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
-	}
-
-}
-
 // Delete Alert component (from a combined)
 // ==========================================
 if (isset($_GET["delete_alert_comp"])) { // if modified some parameter
@@ -302,88 +286,6 @@ if (isset($_GET["delete_alert_comp"])) { // if modified some parameter
 	} else {
 		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
 	}
-}
-
-// Create alert
-// =============
-if (isset($_POST["insert_alert"])){ // if created alert
-	$combined = get_parameter ("combined",0);
-	$id_agente_modulo = get_parameter ("agente_modulo",0);
-	$maximo = get_parameter ("maximo",0);
-	$minimo = get_parameter ("minimo",0);
-	$descripcion= get_parameter ('descripcion', '');
-	$campo_1 = get_parameter ('campo_1', '');
-	$campo_2 = get_parameter ('campo_2', '');
-	$campo_3 = get_parameter ('campo_3', '');
-	$tipo_alerta = get_parameter ("tipo_alerta",3);
-	$alert_text = get_parameter ("alert_text",'');
-	$time_threshold = get_parameter ("time_threshold",900);
-	$max_alerts = get_parameter ("max_alerts",1);
-	$min_alerts = get_parameter ("min_alerts",0);
-	$time_from = get_parameter ("time_from");
-	$time_to= get_parameter ("time_to");
-	$other = get_parameter ("other",0);
-	$disable_alert = get_parameter ("disable_alert");
-	$alert_d1 = get_parameter("alert_d1",0);
-	$alert_d2 = get_parameter("alert_d2",0);
-	$alert_d3 = get_parameter("alert_d3",0);
-	$alert_d4 = get_parameter("alert_d4",0);
-	$alert_d5 = get_parameter("alert_d5",0);
-	$alert_d6 = get_parameter("alert_d6",0);
-	$alert_d7 = get_parameter("alert_d7",0);
-	$alert_recovery = get_parameter("alert_recovery", 1);
-	$alert_priority = get_parameter("alert_priority", 0);
-	$campo2_rec = get_parameter ("campo_2_rec","");
-	$campo3_rec = get_parameter ("campo_3_rec","");
-
-	if ($combined == 1) {
-		$alert_id_agent = $id_agente;
-	} else {
-		$alert_id_agent = 0;
-	}
-	if ($time_threshold == -1) {
-		$time_threshold = $other;
-	}
-	
-	$sql = sprintf ("INSERT INTO talerta_agente_modulo
-			(id_agente_modulo,
-			id_alerta,
-			al_campo1,
-			al_campo2,
-			al_campo3,
-			descripcion,
-			dis_max,
-			dis_min,
-			time_threshold,
-			max_alerts,
-			min_alerts,
-			alert_text,
-			disable,
-			time_from,
-			time_to,
-			id_agent,
-			monday,
-			tuesday,
-			wednesday,
-			thursday,
-			friday,
-			saturday,
-			sunday,
-			recovery_notify,
-			priority,
-			al_f2_recovery,
-			al_f3_recovery) VALUES
-			(%d,%d,'%s','%s','%s','%s',%f,%f,%d,%d,%d,'%s',%d,'%s','%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s')", 
-			$id_agente_modulo, $tipo_alerta, $campo_1, $campo_2, $campo_3, $descripcion, $maximo, $minimo, $time_threshold, $max_alerts, $min_alerts, $alert_text, $disable_alert,
-			$time_from, $time_to, $alert_id_agent, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority, $campo2_rec, $campo3_rec);
-	$id_alerta_agente_modulo = process_sql ($sql, "insert_id");
-	//False or 0 is invalid
-	if (empty ($id_alerta_agente_modulo)) {
-		echo '<h3 class="error">'.__('There was a problem creating alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Alert successfully created').'</h3>';
-	}
-	
 }
 
 // Combined ALERT - Add component
@@ -400,89 +302,6 @@ if (isset($_POST["add_alert_combined"])){ // Update an existing alert
 		echo '<h3 class="suc">'.__('Combined alert successfully created').'</h3>';
 	}
 
-}
-
-// Update ALERT
-// =============
-if (isset($_POST["update_alert"])) { // Update an existing alert
-	$id_agente_modulo = get_parameter ("agente_modulo",0);
-	$id_aam = get_parameter ("id_aam",0);
-	$maximo = get_parameter ("maximo",0);
-	$minimo = get_parameter ("minimo",0);
-	$descripcion= get_parameter ('descripcion', '');
-	$campo_1 = get_parameter ('campo_1', '');
-	$campo_2 = get_parameter ('campo_2', '');
-	$campo_3 = get_parameter ('campo_3', '');
-	$tipo_alerta = get_parameter ("tipo_alerta",3);
-	$alert_text = get_parameter ("alert_text",'');
-	$time_threshold = get_parameter ("time_threshold",900);
-	$max_alerts = get_parameter ("max_alerts",1);
-	$min_alerts = get_parameter ("min_alerts",0);
-	$time_from = get_parameter ("time_from");
-	$time_to= get_parameter ("time_to");
-	$other = get_parameter ("other",0);
-	$disable_alert = get_parameter ("disable_alert");
-	$alert_d1 = get_parameter("alert_d1",0);
-	$alert_d2 = get_parameter("alert_d2",0);
-	$alert_d3 = get_parameter("alert_d3",0);
-	$alert_d4 = get_parameter("alert_d4",0);
-	$alert_d5 = get_parameter("alert_d5",0);
-	$alert_d6 = get_parameter("alert_d6",0);
-	$alert_d7 = get_parameter("alert_d7",0);
-	$alert_recovery = get_parameter("alert_recovery", 1);
-	$alert_priority = get_parameter("alert_priority", 0);
-	$campo2_rec = get_parameter ("campo_2_rec","");
-	$campo3_rec = get_parameter ("campo_3_rec",""); 
-	$alert_d1 = get_parameter("alert_d1",0);
-	$alert_d2 = get_parameter("alert_d2",0);
-	$alert_d3 = get_parameter("alert_d3",0);
-	$alert_d4 = get_parameter("alert_d4",0);
-	$alert_d5 = get_parameter("alert_d5",0);
-	$alert_d6 = get_parameter("alert_d6",0);
-	$alert_d7 = get_parameter("alert_d7",0);
-	$alert_recovery = get_parameter("alert_recovery", 1);
-	$alert_priority = get_parameter("alert_priority", 0);
-	$campo2_rec = get_parameter ("campo_2_rec","");
-	$campo3_rec = get_parameter ("campo_3_rec","");
-	if ($time_threshold == -1) {
-		$time_threshold = $other;
-	}
-
-	$sql = sprintf ("UPDATE talerta_agente_modulo SET
-		id_alerta = %d,
-		max_alerts = %d,
-		min_alerts = %d,
-		time_threshold = '%s',
-		dis_min = %f,
-		dis_max = %f,
-		al_campo3 = '%s',
-		al_campo2 = '%s',
-		al_campo1 = '%s',
-		descripcion = '%s',
-		alert_text = '%s',
-		time_to = '%s',
-		time_from = '%s',
-		disable = %d,
-		monday = %d,
-		tuesday = %d,
-		wednesday = %d,
-		thursday = %d,
-		friday = %d,
-		saturday = %d,
-		sunday = %d,
-		recovery_notify = %d,
-		priority = %d,
-		al_f2_recovery = '%s',
-		al_f3_recovery = '%s'
-		WHERE id_aam = %d", $tipo_alerta, $max_alerts, $min_alerts, $time_threshold, $minimo, $maximo, $campo_3, $campo_2, $campo_1, $descripcion, $alert_text, 
-		$time_to, $time_from, $disable_alert, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority,
-		$campo2_rec, $campo3_rec, $id_aam);
-	$result = process_sql ($sql);
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem updating alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Alert successfully updated').'</h3>';
-	}
 }
 
 // ================
@@ -622,54 +441,6 @@ if ((isset ($_GET["update_module"])) && (!isset ($_POST["oid"])) && (!isset ($_P
 		if (empty ($modulo_min))
 			$modulo_min = "N/A";	
 		$custom_id = $module["custom_id"];
-	}
-}
-
-// Read ALERT data if editing alert
-// ==================================
-if (isset ($_GET["update_alert"])) {
-	$id_grupo = dame_id_grupo ($id_agente);
-	if (give_acl ($config["id_user"], $id_grupo, "LW") == 0){
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to update an alert without admin rights");
-		require ("general/noaccess.php");
-		exit;
-	}
-	
-	$update_alert = 1;
-	$id_aam = (int) get_parameter_get ("update_alert",0);
-	$alert = get_db_row ('talerta_agente_modulo', 'id_aam', $id_aam);
-	
-	if ($alert === false) {
-		echo '<h3 class="error">'.__('There was a problem loading the alert').'</h3>';
-	} else {
-		$alerta_id_aam = $alert["id_aam"];
-		$alerta_campo1 = $alert["al_campo1"];
-		$alerta_campo2 = $alert["al_campo2"];
-		$alerta_campo3 = $alert["al_campo3"];
-		$alerta_campo2_rec = $alert["al_f2_recovery"];
-		$alerta_campo3_rec = $alert["al_f3_recovery"];
-		$alerta_dis_max = $alert["dis_max"];
-		$alerta_dis_min = $alert["dis_min"];
-		$tipo_alerta = $alert["id_alerta"];
-		$alert_text = $alert["alert_text"];
-		$alerta_max_alerts = $alert["max_alerts"];
-		$alerta_min_alerts = $alert["min_alerts"];
-		$alerta_time_threshold = $alert["time_threshold"];
-		$alerta_descripcion = $alert["descripcion"];
-		$alerta_disable = $alert["disable"];
-		$time_from = $alert["time_from"];
-		$time_to = $alert["time_to"];
-		$alerta_id_agentemodulo = $alert["id_agente_modulo"]; // Only to show, cannot be changed
-		$alert_id_agent = $alert["id_agent"];
-		$alert_d1 = $alert["monday"];
-		$alert_d2 = $alert["tuesday"];
-		$alert_d3 = $alert["wednesday"];
-		$alert_d4 = $alert["thursday"];
-		$alert_d5 = $alert["friday"];
-		$alert_d6 = $alert["saturday"];
-		$alert_d7 = $alert["sunday"];
-		$alert_recovery = $alert["recovery_notify"];
-		$alert_priority = $alert["priority"];
 	}
 }
 
@@ -889,24 +660,20 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 
 switch ($tab) {
 	case "main":
-		require "agent_manager.php";
+		require ("agent_manager.php");
 		break;
 	case "module":
 		if (($form_moduletype == "") && ($moduletype == "")) {
-			require "module_manager.php";
+			require ("module_manager.php");
 		} else {
-			require "module_manager_editor.php";
+			require ("module_manager_editor.php");
 		}
 		break;
 	case "alert":
-		if (($form_alerttype == "") && (!isset($_GET["update_alert"]))) {
-			require "alert_manager.php";
-		} else {
-			require "alert_manager_editor.php";
-		}
+		require ("alert_manager.php");
 		break;
 	case "template":
-		require "agent_template.php";
+		require ("agent_template.php");
 		break;
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab)))

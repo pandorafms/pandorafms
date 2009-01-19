@@ -635,22 +635,22 @@ function get_monitors_down ($monitors, $period = 0, $date = 0) {
 /**
  * Get all the times an alerts fired during a period.
  * 
- * @param int $id_agent_module Agent module of the alert.
- * @param int $period Period timed to check from date
- * @param int $date Date to check (now by default)
+ * @param int Alert module id.
+ * @param int Period timed to check from date
+ * @param int Date to check (current time by default)
  *
  * @return int The number of times an alert fired.
  */
-function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
+function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
 	if (!$date)
 		$date = get_system_time ();
 	$datelimit = $date - $period;
 	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
 			`event_type` = 'alert_fired'
-			AND `id_agentmodule` = %d
+			AND `id_alert_am` = %d
 			AND `utimestamp` > %d 
 			AND `utimestamp` <= %d",
-			$id_agent_module, $datelimit, $date);
+			$id_alert_module, $datelimit, $date);
 	return (int) get_db_sql ($sql);
 }
 
@@ -666,7 +666,7 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 function get_group_alerts ($id_group) {
 	$alerts = array ();
 	$agents = get_group_agents ($id_group, false, "none");
-	
+	require_once ('include/functions_agents.php');
 	foreach ($agents as $agent_id => $agent_name) {
 		$agent_alerts = get_agent_alerts ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);
@@ -678,9 +678,9 @@ function get_group_alerts ($id_group) {
 /** 
  * Get all the alerts fired during a period, given a list of alerts.
  * 
- * @param array $alerts A list of alerts to check. See get_alerts_in_group()
- * @param int $period Period of time to check fired alerts.
- * @param int $date Beginning date to check fired alerts in UNIX format (current date by default)
+ * @param array A list of alert modules to check. See get_alerts_in_group()
+ * @param int Period of time to check fired alerts.
+ * @param int Beginning date to check fired alerts in UNIX format (current date by default)
  * 
  * @return array An array with the alert id as key and the number of times
  * the alert was fired (only included if it was fired).
@@ -693,11 +693,11 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 	$alerts_fired = array ();
 	$agents = array ();
 	foreach ($alerts as $alert) {
-		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
+		$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
 		if (! $fires) {
 			continue;
 		}
-		$alerts_fired[$alert['id_aam']] = $fires;
+		$alerts_fired[$alert['id']] = $fires;
 	}
 	return $alerts_fired;
 }
@@ -705,30 +705,30 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 /**
  * Get the last time an alert fired during a period.
  * 
- * @param int $id_agent_module Agent module of the monitor.
- * @param int $period Period timed to check from date
- * @param int $date Date to check (now by default)
+ * @param int Alert agent module id.
+ * @param int Period timed to check from date
+ * @param int Date to check (current date by default)
  *
- * @return int The last time an alert fired.
+ * @return int The last time an alert fired. It's an UNIX timestamp.
  */
-function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+function get_alert_last_fire_timestamp_in_period ($id_alert_module, $period, $date = 0) {
 	if ($date == 0) {
 		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
-	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
+	$sql = sprintf ("SELECT MAX(`utimestamp`) FROM `tevento` WHERE
 			`event_type` = 'alert_fired'
-			AND `id_agentmodule` = %d
+			AND `id_alert_am` = %d
 			AND `utimestamp` > %d 
 			AND `utimestamp` <= %d",
-			$id_agent_module, $datelimit, $date);
+			$id_alert_module, $datelimit, $date);
 	return get_db_sql ($sql);
 }
 
 /** 
  * Get the server name.
  * 
- * @param int $id_server Server id.
+ * @param int Server id.
  * 
  * @return string Name of the given server
  */
@@ -798,7 +798,7 @@ function dame_id_grupo ($id_agent) {
  * In case an array is passed, it will have a value for every agent passed 
  * incl. a total otherwise it will just return the total
  * 
- * @param mixed $id_agent Agent id or array of agent id's, 0 for all
+ * @param mixed Agent id or array of agent id's, 0 for all
  *
  * @return mixed The number of data in the database
  */
@@ -846,7 +846,7 @@ function get_agent_modules_data_count ($id_agent = 0) {
 /** 
  * Get the operating system name.
  * 
- * @param int id_os Operating system id.
+ * @param int Operating system id.
  * 
  * @return string Name of the given operating system.
  */
@@ -869,7 +869,7 @@ function update_user_contact ($id_user) {
 /** 
  * Get the user email
  * 
- * @param string $id_user User id.
+ * @param string User id.
  * 
  * @return string Get the email address of an user
  */
@@ -880,7 +880,7 @@ function dame_email ($id_user) {
 /** 
  * Checks if a user is administrator.
  * 
- * @param string $id_user User id.
+ * @param string User id.
  * 
  * @return bool True is the user is admin
  */
@@ -903,14 +903,16 @@ function comprueba_login () {
 /** 
  * Check if an agent has alerts fired.
  * 
- * @param int $id_agent Agent id.
+ * @param int Agent id.
  * 
  * @return bool True if the agent has fired alerts.
  */
 function check_alert_fired ($id_agent) {
-	$sql = "SELECT COUNT(*) FROM talerta_agente_modulo, tagente_modulo
-		WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND times_fired > 0 AND id_agente = ".$id_agent;
+	$sql = sprintf ("SELECT COUNT(*)
+		FROM talert_template_modules, tagente_modulo
+		WHERE talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
+		AND times_fired > 0 AND id_agente = %d",
+		$id_agent);
 	
 	$value = get_db_sql ($sql);
 	if ($value > 0)
@@ -921,7 +923,7 @@ function check_alert_fired ($id_agent) {
 /** 
  * Check is a user exists in the system
  * 
- * @param string $id_user User id.
+ * @param string User id.
  * 
  * @return bool True if the user exists.
  */
@@ -937,7 +939,7 @@ function existe ($id_user) {
  *
  * If the module interval is not set, the agent interval is returned
  * 
- * @param int $id_agent_module Id agent module to get the interval value.
+ * @param int Id agent module to get the interval value.
  * 
  * @return int Module interval or agent interval if no module interval
  */
@@ -953,7 +955,7 @@ function get_module_interval ($id_agent_module) {
 /** 
  * Get the interval of an agent.
  * 
- * @param int $id_agent Agent id.
+ * @param int Agent id.
  * 
  * @return int The interval value of a given agent
  */
@@ -964,7 +966,7 @@ function get_agent_interval ($id_agent) {
 /** 
  * Get the flag value of an agent module.
  * 
- * @param int $id_agent_module Agent module id.
+ * @param int Agent module id.
  * 
  * @return bool The flag value of an agent module.
  */
@@ -979,8 +981,8 @@ function give_agentmodule_flag ($id_agent_module) {
  * @deprecated Use get_user_groups () in combination with print_select ()
  * instead
  * 
- * @param string $id_user User id
- * @param bool $show_all Flag to show all the groups or not. True by default.
+ * @param string User id
+ * @param bool Flag to show all the groups or not. True by default.
  * 
  * @return array An array with all the groups
  */
@@ -1005,7 +1007,7 @@ function list_group ($id_user, $show_all = 1){
  *
  * @deprecated Use get_user_groups () instead
  * 
- * @param int $id_user User id
+ * @param int User id
  * 
  * @return array A list of the groupid => groups the user has reading privileges.
  */
@@ -1026,7 +1028,7 @@ function list_group2 ($id_user) {
 /**
  * Get a list of all users in an array [username] => real name
  * 
- * @param string $order by (id_usuario, nombre_real or fecha_registro)
+ * @param string Field to order by (id_usuario, nombre_real or fecha_registro)
  *
  * @return array An array of users
  */
@@ -1055,8 +1057,9 @@ function list_users ($order = "nombre_real") {
 /** 
  * Get all the groups a user has reading privileges.
  * 
- * @param string $id_user User id
- * @param string $privilege The privilege to evaluate
+ * @param string User id
+ * @param string The privilege to evaluate
+ *
  * @return array A list of the groups the user has certain privileges.
  */
 function get_user_groups ($id_user = 0, $privilege = "AR") {
@@ -1086,7 +1089,7 @@ function get_user_groups ($id_user = 0, $privilege = "AR") {
  * TODO: Create print_moduletype_icon and print the full tag including hover etc.
  * @deprecated Use print_moduletype_icon instead
  * 
- * @param int $id_type Module type id
+ * @param int Module type id
  * 
  * @return string Icon filename of the given group
  */
@@ -1100,7 +1103,7 @@ function show_icon_type ($id_type) {
  *
  * @deprecated Use print_servertype_icon instead
  *
- * @param int $id Server type id
+ * @param int Server type id
  *
  * @return string Fully formatted  IMG HTML tag with icon
  */
@@ -1129,7 +1132,7 @@ function show_server_type ($id) {
 /** 
  * Get a module category name
  * 
- * @param id_category Id category
+ * @param int Id category
  * 
  * @return Name of the given category
  */
@@ -1154,7 +1157,7 @@ function give_modulecategory_name ($id_category) {
 /** 
  * Get a network component group name
  * 
- * @param int $id_network_component_group Id network component group.
+ * @param int Id network component group.
  * 
  * @return string Name of the given network component group
  */
@@ -1165,7 +1168,7 @@ function give_network_component_group_name ($id_network_component_group) {
 /** 
  * Get a network profile name.
  * 
- * @param int $id_network_profile Id network profile
+ * @param int Id network profile
  * 
  * @return string Name of the given network profile.
  */
@@ -1176,8 +1179,8 @@ function get_networkprofile_name ($id_network_profile) {
 /** 
  * Assign an IP address to an agent.
  * 
- * @param int id_agent Agent id
- * @param string ip_address IP address to assign
+ * @param int Agent id
+ * @param string IP address to assign
  */
 function agent_add_address ($id_agent, $ip_address) {
 	// Check if already is attached to agent
@@ -1207,8 +1210,8 @@ function agent_add_address ($id_agent, $ip_address) {
 /** 
  * Unassign an IP address from an agent.
  * 
- * @param int $id_agent Agent id
- * @param string $ip_address IP address to unassign
+ * @param int Agent id
+ * @param string IP address to unassign
  */
 function agent_delete_address ($id_agent, $ip_address) {
 	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
@@ -1231,7 +1234,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 /** 
  * Get address of an agent.
  * 
- * @param int $id_agent Agent id
+ * @param int Agent id
  * 
  * @return string The address of the given agent 
  */
@@ -1242,7 +1245,7 @@ function get_agent_address ($id_agent) {
 /**
  * Get the agent that matches an IP address
  *
- * @param string $ip_address IP address to get the agents.
+ * @param string IP address to get the agents.
  *
  * @return mixed The agent that has the IP address given. False if none were found.
  */
@@ -1258,7 +1261,7 @@ function get_agent_with_ip ($ip_address) {
 /** 
  * Get all IP addresses of an agent
  * 
- * @param int $id_agent Agent id
+ * @param int Agent id
  * 
  * @return array Array with the IP address of the given agent or an empty array.
  */
@@ -1284,7 +1287,7 @@ function get_agent_addresses ($id_agent) {
 /** 
  * Get agent id from an agent module.
  * 
- * @param int id_agent_module Id of the agent module.
+ * @param int Id of the agent module.
  * 
  * @return int The agent if of the given module.
  */
@@ -1297,10 +1300,10 @@ $sql_cache = array ('saved' => 0);
 /** 
  * Get the first value of the first row of a table in the database.
  * 
- * @param string $field Field name to get
- * @param string $table Table to retrieve the data
- * @param string $field_search Field to filter elements
- * @param string $condition Condition the field must have
+ * @param string Field name to get
+ * @param string Table to retrieve the data
+ * @param string Field to filter elements
+ * @param string Condition the field must have
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */  
@@ -1326,7 +1329,7 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 /** 
  * Get the first row of an SQL database query.
  * 
- * @param string $sql SQL select statement to execute.
+ * @param string SQL select statement to execute.
  * 
  * @return mixed The first row of the result or false
  */
@@ -1346,9 +1349,9 @@ function get_db_row_sql ($sql) {
  * The SQL statement executed would be something like:
  * "SELECT * FROM $table WHERE $field_search = $condition"
  *
- * @param string $table Table to get the row
- * @param string $field_search Field to filter elementes
- * @param string $condition Condition the field must have.
+ * @param string Table to get the row
+ * @param string Field to filter elementes
+ * @param string Condition the field must have.
  * 
  * @return mixed The first row of a database query or false.
  */
@@ -1372,8 +1375,8 @@ function get_db_row ($table, $field_search, $condition) {
 /** 
  * Get a single field in the databse from a SQL query.
  *
- * @param string $sql SQL statement to execute
- * @param mixed $field Field number or row to get, beggining by 0. Default: 0
+ * @param string SQL statement to execute
+ * @param mixed Field number or row to get, beggining by 0. Default: 0
  *
  * @return mixed The selected field of the first row in a select statement.
  */
@@ -1388,7 +1391,7 @@ function get_db_sql ($sql, $field = 0) {
 /**
  * Get all the result rows using an SQL statement.
  * 
- * @param string $sql SQL statement to execute.
+ * @param string SQL statement to execute.
  *
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
@@ -1405,10 +1408,10 @@ function get_db_all_rows_sql ($sql) {
 /**
  * Error handler function when an SQL error is triggered.
  * 
- * @param int $errno Level of the error raised (not used, but required by set_error_handler()).
- * @param string $errstr Contains the error message.
+ * @param int Level of the error raised (not used, but required by set_error_handler()).
+ * @param string Contains the error message.
  *
- * @return bool
+ * @return bool True if error level is lower or equal than errno.
  */
 function sql_error_handler ($errno, $errstr) {
 	if (error_reporting () <= $errno)
@@ -1423,9 +1426,9 @@ function sql_error_handler ($errno, $errstr) {
  * an empty array in case of SELECT without results
  * Queries that return data will be cached so queries don't get repeated
  *
- * @param string $sql SQL statement to execute
+ * @param string SQL statement to execute
  *
- * @param string $rettype (optional) What type of info to return in case of INSERT/UPDATE.
+ * @param string What type of info to return in case of INSERT/UPDATE.
  *		'affected_rows' will return mysql_affected_rows (default value)
  *		'insert_id' will return the ID of an autoincrement value
  *		'info' will return the full (debug) information of a query
@@ -1478,8 +1481,8 @@ function process_sql ($sql, $rettype = "affected_rows") {
 /**
  * Get all the rows in a table of the database.
  * 
- * @param string $table Database table name.
- * @param string $order_field Field to order by.
+ * @param string Database table name.
+ * @param string Field to order by.
  *
  * @return mixed A matrix with all the values in the table
  */
@@ -1494,10 +1497,10 @@ function get_db_all_rows_in_table ($table, $order_field = "") {
 /**
  * Get all the rows in a table of the databes filtering from a field.
  * 
- * @param string $table Database table name.
- * @param string $field Field of the table.
- * @param string $condition Condition the field must have to be selected.
- * @param string $order_field Field to order by.
+ * @param string Database table name.
+ * @param string Field of the table.
+ * @param string Condition the field must have to be selected.
+ * @param string Field to order by.
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field or false
  */
@@ -1518,8 +1521,8 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
 /**
  * Get all the rows in a table of the databes filtering from a field.
  * 
- * @param string $table Database table name.
- * @param string $field Field of the table.
+ * @param string Database table name.
+ * @param string Field of the table.
  *
  * @return mixed A matrix with all the values in the table that matches the condition in the field
  */
@@ -1583,7 +1586,7 @@ function format_array_to_update_sql ($values) {
 /** 
  * Get the status of an alert assigned to an agent module.
  * 
- * @param int id_agentmodule Id agent module to check.
+ * @param int Id agent module to check.
  * 
  * @return bool True if there were alerts fired.
  */
@@ -1592,8 +1595,8 @@ function return_status_agent_module ($id_agentmodule = 0) {
 	
 	if ($status == 100) {
 		// We need to check if there are any alert on this item
-		$times_fired = get_db_value ('SUM(times_fired)', 'talerta_agente_modulo',
-			'id_agente_modulo', $id_agentmodule);
+		$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules',
+			'id_agent_module', $id_agentmodule);
 		if ($times_fired > 0) {
 			return 0;
 		}
@@ -1613,7 +1616,7 @@ function return_status_agent_module ($id_agentmodule = 0) {
  * layouts), and makes an AND operation to be sure that all the items
  * are OK. If any of them is down, then result is down (0)
  * 
- * @param int $id_layout Id of the layout
+ * @param int Id of the layout
  * 
  * @return bool The status of the given layout.
  */
@@ -1644,7 +1647,7 @@ function return_status_layout ($id_layout = 0) {
 /** 
  * Get the current value of an agent module.
  * 
- * @param int $id_agentmodule 
+ * @param int Agent module id.
  * 
  * @return int a numerically formatted value 
  */
@@ -1656,7 +1659,7 @@ function return_value_agent_module ($id_agentmodule) {
 /** 
  * Get the X axis coordinate of a layout item
  * 
- * @param int $id_layoutdata Id of the layout to get.
+ * @param int Id of the layout to get.
  * 
  * @return int The X axis coordinate value.
  */
@@ -1667,7 +1670,7 @@ function get_layoutdata_x ($id_layoutdata) {
 /** 
  * Get the Y axis coordinate of a layout item
  * 
- * @param int $id_layoutdata Id of the layout to get.
+ * @param int Id of the layout to get.
  * 
  * @return int The Y axis coordinate value.
  */
@@ -1683,8 +1686,8 @@ function get_layoutdata_y ($id_layoutdata){
  * before the beginning of the interval. All this calculation is due
  * to the data compression algorithm.
  *
- * @param int $id_agent_module Agent module id
- * @param int $utimestamp The timestamp to look backwards from and get the data.
+ * @param int Agent module id
+ * @param int The timestamp to look backwards from and get the data.
  *
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
@@ -1706,9 +1709,9 @@ function get_previous_data ($id_agent_module, $utimestamp = 0) {
 /** 
  * Get the average value of an agent module in a period of time.
  * 
- * @param int $id_agent_module Agent module id
- * @param int $period Period of time to check (in seconds)
- * @param int $date Top date to check the values. Default current time.
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
  * 
  * @return int The average module value in the interval.
  */
@@ -1738,9 +1741,9 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 /** 
  * Get the maximum value of an agent module in a period of time.
  * 
- * @param int $id_agent_module Agent module id to get the maximum value.
- * @param int $period Period of time to check (in seconds)
- * @param int $date Top date to check the values. Default current time.
+ * @param int Agent module id to get the maximum value.
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
  * 
  * @return float The maximum module value in the interval.
  */
@@ -1793,9 +1796,9 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 /** 
  * Get the sum of values of an agent module in a period of time.
  * 
- * @param int $id_agent_module Agent module id to get the sumatory.
- * @param int $period Period of time to check (in seconds)
- * @param int $date Top date to check the values. Default current time.
+ * @param int Agent module id to get the sumatory.
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
  * 
  * @return int The sumatory of the module values in the interval.
  */
@@ -1872,7 +1875,7 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 /** 
  * Get a translated string
  * 
- * @param string $string String to translate
+ * @param string String to translate
  * 
  * @return string The translated string. If not defined, the same string will be returned
  */
@@ -1904,16 +1907,12 @@ function check_server_status () {
 
 /** 
  * @deprecated Will show a small HTML table with some compound alert information
- * 
- * @param int $id_combined_alert 
- * 
- * @return string HTML block
  */
 function show_alert_row_mini ($id_combined_alert) {
 	$color=1;
-	$sql = sprintf ("SELECT talerta_agente_modulo.*,tcompound_alert.operation
-			FROM talerta_agente_modulo, tcompound_alert
-			WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam
+	$sql = sprintf ("SELECT talert_template_modules.*,tcompound_alert.operation
+			FROM talert_template_modules, tcompound_alert
+			WHERE tcompound_alert.id_aam = talert_template_modules.id
 			AND tcompound_alert.id = %d", $id_combined_alert);
 	$result = get_db_all_rows_sql ($sql);
 	
@@ -2026,7 +2025,8 @@ function show_alert_row_mini ($id_combined_alert) {
  * @deprecated use get_server_info instead 
  * Get statistical information for a given server
  *
- * @param int Server id to get status
+ * @param int Server id to get status.
+ *
  * @return array Server info array
 */
 function server_status ($id_server) {
@@ -2096,9 +2096,9 @@ function delete_agent ($id_agents) {
 		// daily maintance process, all data for that modules are deleted
 		
 		//Alert
-		temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");
-		temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $tmodbase);
-		temp_sql_delete ("talerta_agente_modulo", "id_agent", $id_agent);
+		/* TODO: Compound alert */
+		//temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");
+		temp_sql_delete ("talert_template_modules", "id_agent_module", $tmodbase);
 		
 		//Events (up/down monitors)
 		temp_sql_delete ("tevento", "id_agente", $id_agent);
@@ -2124,7 +2124,7 @@ function delete_agent ($id_agents) {
 		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
 		//tagente_datos_inc
-                temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
+		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
 
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
@@ -2331,62 +2331,50 @@ function get_modulegroup_name ($modulegroup_id) {
  * All arrays and values should have been cleaned before passing. It's not neccessary to add quotes.
  *
  * @param string Table to insert into
- * @param mixed A single row or array of rows to insert to￼
  * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
  *
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
-function process_sql_insert ($table, $rows, $values) {
-	if (empty ($rows) || empty ($values)) { //Empty rows or values not processed
+function process_sql_insert ($table, $values) {
+	 //Empty rows or values not processed
+	if (empty ($values))
 		return false;
-	}	
 	
-	$rows = (array) $rows; //Convert single strings to array
 	$values = (array) $values;
-	$row_count = count ($rows); //We're reusing so we put it in a variable
-	$value_count = count ($values);
-
-	if (($value_count % $row_count) != 0) { 
-		//If values are not a clean multiple of rows, don't process
-		return false;
-	}
-	
+		
 	$query = sprintf ("INSERT INTO `%s` ", $table);
-	
-	foreach ($rows as $idx => $row) { //Add ` to each row name
-		if ($row[0] != '`') {
-			$rows[$idx] = '`'.$row.'`';
+	$fields = array ();
+	$values_str = '';
+	$i = 1;
+	$max = count ($values);
+	foreach ($values as $field => $value) { //Add the correct escaping to values
+		if ($field[0] != "`") {
+			$field = "`".$field."`";
 		}
-	}
-	
-	foreach ($values as $idx => $value) { //Add the correct escaping to values
-		if ($value[0] == "'") {
-			continue; //The value is already escaped
-		}
-		if ($value === NULL) {
-			$values[$idx] = (string) "NULL";
-		} elseif (is_numeric ($value)) {
-			continue; //The value doesn't need esaped.
-		} elseif (is_bool ($value)) {
-			$values[$idx] = (int) $value; //SQL doesn't know boolean so we convert
+		
+		array_push ($fields, $field);
+		
+		if (is_null ($value)) {
+			$values_str .= "NULL";
+		} elseif (is_int ($value) || is_bool ($value)) {
+			$values_str .= sprintf ("%d", $value);
+		} else if (is_float ($value) || is_double ($value)) {
+			$values_str .= sprintf ("%f", $value);
 		} else {
-			$values[$idx] = sprintf ("'%s'", $value);
+			$values_str .= sprintf ("'%s'", $value);
 		}
+		
+		if ($i < $max) {
+			$values_str .= ",";
+		}
+		$i++;
 	}
 	
-	$query .= "(".implode (", ", $rows).")";
-	$query .= " VALUES ";
+	$query .= '('.implode (', ', $fields).')';
 	
-	for ($i = 0; $i < ($value_count / $row_count); $i++) {
-		//For the times the values are multiplied
-		$array = array_slice ($values, $i * $row_count, ($i+1) * $row_count);
-		$query .= "(".implode (",", $array).")";
-		if ($i != ($value_count / $row_count) - 1) {
-			$query .= ",";
-		}
-	}
+	$query .= ' VALUES ('.$values_str.')';
 	
-	return process_sql ($query);
+	return process_sql ($query, 'insert_id');
 }
 
 /**

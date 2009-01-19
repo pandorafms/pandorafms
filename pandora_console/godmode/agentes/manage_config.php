@@ -29,12 +29,12 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 }
 
 
-$id_group = get_parameter ("id_group", 0);
-$origen = get_parameter ("origen", -1);
-$update_agent = get_parameter ("update_agent", -1);
-$update_group = get_parameter ("update_group", -1);
-$destino = get_parameter_post ("destino",array ());
-$origen_modulo = get_parameter_post ("origen_modulo", array ());
+$id_group = (int) get_parameter ("id_group");
+$origen = (int) get_parameter_post ("origen", -1);
+$update_agent = (int) get_parameter ("update_agent", -1);
+$update_group = (int) get_parameter ("update_group", -1);
+$destino = (array) get_parameter_post ("destino", array ());
+$origen_modulo = (array) get_parameter_post ("origen_modulo", array ());
 
 // Operations
 // ---------------
@@ -53,31 +53,24 @@ if (isset($_POST["copy"])) {
 		echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
 		return;
 	}
-
-	// If selected modules or alerts
-	if (isset($_POST["modules"])) {
-		$modulos = 1;
-	} else {
-		$modulos = 0;
-	}
-		
-	if (isset($_POST["alerts"])) {
-		$alertas = 1;
-	} else {
-		$alertas = 0;
-	}
 	
-	if (($alertas + $modulos) == 0){
+	$copy_modules = (bool) get_parameter ('modules');
+	$copy_alerts = (bool) get_parameter ('alerts');
+	
+	if (! $copy_alerts && ! $copy_modules) {
 		echo '<h3 class="error">ERROR: '.__('You must check modules and/or alerts to be copied').'</h3>';
 		return;
 	}
-		
+	
+	require_once ("include/functions_alerts.php");
+	
+	$origin_name = get_agent_name ($origen);
+	
 	// Copy
-	// ----	
 	$errors = 0;
 	$id_new_module = 0;
 	process_sql ("SET AUTOCOMMIT = 0;");
-	process_sql ("START TRANSACTION;"); //Start a transaction
+	process_sql ("START TRANSACTION;");
 	
 	foreach ($origen_modulo as $id_module) {
 		//For each selected module
@@ -85,9 +78,10 @@ if (isset($_POST["copy"])) {
 		
 		foreach ($destino as $id_agent_dest) {
 			//For each destination agent
+			$destiny_name = get_agent_name ($id_agent_dest);
 			
-			if ($modulos == 1) {
-				echo '<br /><br />'.__('Copying module').'<b> ['.get_agent_name ($origen).' - '.$module["nombre"].'] -> ['.get_agent_name ($id_agent_dest).']</b>';
+			if ($copy_modules) {
+				echo '<br /><br />'.__('Copying module').'<b> ['.$origin_name.' - '.$module["nombre"].'] -> ['.$destiny_name.']</b>';
 				$sql = sprintf ('INSERT INTO tagente_modulo 
 					(id_agente, id_tipo_modulo, descripcion,
 					nombre, max, min, module_interval,
@@ -151,70 +145,64 @@ if (isset($_POST["copy"])) {
 				}//If empty id_new_module
 			} //If modulos
 			
-			if ($alertas == 1) {
+			if ($copy_alerts) {
 				if (empty ($id_new_module)) {
 					//If we didn't copy modules or if we
 					//didn't create new modules we have to
 					//look for the module id
-					$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = '%s' AND id_agente = %d", $module["nombre"], $id_agent_dest);
+					$sql = sprintf ('SELECT id_agente_modulo
+						FROM tagente_modulo
+						WHERE nombre = "%s"
+						AND id_agente = %d',
+						$module['nombre'], $id_agent_dest);
 					$id_new_module = get_db_sql ($sql);
-					if (empty ($id_new_module)) {
-						continue; //If we can't find a module belonging to this agent with the same name, skip the loop
-					}
-				}
-
-				
-				$module_alerts = get_db_all_rows_field_filter ("talerta_agente_modulo", "id_agente_modulo", $id_module);	
-				if (empty ($module_alerts)) {
-					$module_alerts = array ();
+					if (empty ($id_new_module))
+						// We can't find a module belonging to this agent
+						continue;
 				}
 				
-				foreach ($module_alerts as $alert) {
-					echo '<br /><br />'.__('Copying alert').'<b> ['.get_agent_name ($origen).' - '.$module["nombre"].'] -> ['.get_agent_name ($id_agent_dest).']</b>';
+				$alerts = get_db_all_rows_field_filter ('talert_template_modules',
+					'id_agent_module', $id_module);
+				if (empty ($alerts))
+					// The module doesn't have alerts
+					continue;
+				
+				foreach ($alerts as $alert) {
+					echo '<br />'.__('Copying alert').'<b> ['.$origin_name.' - '.$module["nombre"].'] -> ['.$destiny_name.']</b>';
 					if (!empty ($alert["id_agent"])) {
 						//Compound alert
 						$alert["id_agent"] = $id_agent_dest;
 					}
-					$sql = sprintf ("INSERT INTO talerta_agente_modulo 
-						(id_agente_modulo, id_alerta, al_campo1, al_campo2, al_campo3, descripcion, dis_max, dis_min,
-						time_threshold, max_alerts, module_type, min_alerts, alert_text, disable, time_from,
-						time_to, id_agent, monday, tuesday, wednesday, thursday, friday, saturday, sunday,
-						recovery_notify, priority, al_f2_recovery, al_f3_recovery) 
-						VALUES (
-						%d,%d,'%s','%s','%s','%s',%d,%d,
-						%d,%d,%d,%d,'%s',%d,'%s',
-						'%s',%d,%d,%d,%d,%d,%d,%d,%d,
-						%d,%d,'%s','%s')",
-						$id_new_module,$alert["id_alerta"],$alert["al_campo1"],$alert["al_campo2"],$alert["al_campo3"],$alert["descripcion"],$alert["dis_max"],$alert["dis_min"],
-						$alert["time_threshold"],$alert["max_alerts"],$alert["module_type"],$alert["min_alerts"],$alert["alert_text"],$alert["disable"],$alert["time_from"],
-						$alert["time_to"],$alert["id_agent"],$alert["monday"],$alert["tuesday"],$alert["wednesday"],$alert["thursday"],$alert["friday"],$alert["saturday"],$alert["sunday"],
-						$alert["recovery_notify"],$alert["priority"],$alert["al_f2_recovery"],$alert["al_f3_recovery"]);
+					$values = array ('id_agent_module' => (int) $id_new_module,
+						'id_alert_template' => (int) $alert['id_alert_template']);
+					$id_alert = process_sql_insert ('talert_template_modules',
+						$values);
 					
-					$new_alert = process_sql ($sql, "insert_id");
-					
-					if ($new_alert === false) {
+					if ($id_alert === false) {
 						$errors++;
-					} elseif (!empty ($alert["id_agent"])) {
-						$sql = sprintf ("SELECT operation FROM tcompound_alert WHERE id_aam = %d", $alert["id_aam"]);
-						$result = get_db_all_row_sql ($sql);
-						
+						continue;
+					}
+					
+					$actions = get_alert_agent_module_actions ($alert['id']);
+					if (empty ($actions))
+						continue;
+					foreach ($actions as $action) {
+						$values = array ('id_alert_template_module' => (int) $id_alert,
+							'id_alert_action' => (int) $action['id'],
+							'fires_min' => (int) $action['fires_min'],
+							'fires_max' => (int) $action['fires_max']);
+						$result = process_sql_insert ('talert_template_module_actions',
+							$values);
 						if ($result === false)
-							/* This alert is supposed to be part of a 
-							 compound alert but there is no entry for 
-							 it in the tcompound_alert table so we skip this */
-							continue;
-						foreach ($result as $comp_alert) {
-							$sql = sprintf ("INSERT INTO tcompound_alert (id_aam, operation) VALUES (%d, '%s')",$new_alert,$comp_alert["operation"]);
-							$result = process_sql ($sql);
-							if ($result === false)
-								$errors++;
-						} //foreach compound alert
-					} //if-elseif compound alert
+							$errors++;
+					}
+					
+					/* TODO: Copy compound alerts */
+					
 				} //foreach alert
 			} //if alerts
 		} //Foreach destino
 	} //Foreach origen_modulo
-
 	if ($errors > 1) {
 		echo '<h3 class="error">'.__('There was an error copying the module, the copy has been cancelled').'</h3>';
 		process_sql ("ROLLBACK;");
@@ -289,8 +277,9 @@ if (isset ($_POST["delete"])) {
 
 			if ($alertas == 1) {
 				//Alert
-				temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_module_dest.")");
-				temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $id_module_dest);
+				/* TODO: Delete compound alerts */
+				
+				temp_sql_delete ('talert_template_modules', "id_agent_module", $id_module_dest);
 			}
 			
 			if ($modulos == 1) {

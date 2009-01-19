@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-require("include/config.php");
+require ("include/config.php");
 
 check_login();
 

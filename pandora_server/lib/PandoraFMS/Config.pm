@@ -39,7 +39,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.1-dev";
-my $pandora_build="PS090115";
+my $pandora_build="PS090116";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -54,12 +54,12 @@ my %pa_config;
 sub help_screen {
 	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	printf "Following options are optional : \n";
-	printf "      -v        :  Verbose mode activated, write more information in logfile \n";
-	printf "      -d        :  Debug mode activated, write extensive information in logfile \n";
-	printf "      -D        :  Daemon mode (runs in background)\n";
+	printf "      -v        :  Verbose mode activated, give more information in logfile \n";
+	printf "      -d        :  Debug mode activated, give extensive information in logfile \n";
+	printf "      -D        :  Daemon mode (runs in backgroup)\n";
     printf "      -P <file> :  Store PID to file.\n";
     printf "      -q        :  Quiet startup\n";
-	printf "      -h        :  This screen. It shows a little help screen \n";
+	printf "      -h        :  This screen, show a little help screen \n";
 	printf " \n";
 	exit;
 }
@@ -78,11 +78,11 @@ sub pandora_init {
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
 		help_screen;
 		exit;
 	}
-   	$pa_config->{"verbosity"}=1; 	# Verbose 1 by default
+   	$pa_config->{"verbosity"}=0; 	# Verbose 1 by default
 	$pa_config->{"daemon"}=0; 	# Daemon 0 by default
     $pa_config->{'PID'}=""; # PID file not exist by default
     $pa_config->{"quiet"}=0;   # Daemon 0 by default
@@ -115,7 +115,7 @@ sub pandora_init {
         }
     }
 	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
         print "         For example: ./pandora_server /etc/pandora/pandora_server.conf\n\n";
 		exit;
 	}
@@ -150,23 +150,21 @@ sub pandora_loadconfig {
     $pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
     $pa_config->{"networktimeout"} = 5; 	# By default, not in config file yet
     $pa_config->{"pandora_master"} = 1; 	# on by default
-    $pa_config->{"pandora_check"} = 0; 	# on by default
-    $pa_config->{"version"} = $pandora_version;
-    $pa_config->{"build"} = $pandora_build;
+    $pa_config->{"pandora_check"} = 0; 	# Deprecated since 2.0
     $pa_config->{"servername"} = `hostname`;
     $pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
-    $pa_config->{"dataserver"} = 0;
-    $pa_config->{"networkserver"} = 0;
-    $pa_config->{"snmpconsole"} = 0;
-    $pa_config->{"reconserver"} = 0;
-    $pa_config->{"wmiserver"} = 0; # Introduced on 2.0
-    $pa_config->{"pluginserver"} = 0; # Introduced on 2.0
-    $pa_config->{"predictionserver"} = 0; # Introduced on 2.0
-    $pa_config->{"exportserver"} = 0; # 2.0
-    $pa_config->{"inventoryserver"} = 0; # 2.1
+    $pa_config->{"dataserver"} = 1; # default
+    $pa_config->{"networkserver"} = 1; # default
+    $pa_config->{"snmpconsole"} = 1; # default
+    $pa_config->{"reconserver"} = 1; # default
+    $pa_config->{"wmiserver"} = 1; # default
+    $pa_config->{"pluginserver"} = 1; # default
+    $pa_config->{"predictionserver"} = 1; # default
+    $pa_config->{"exportserver"} = 1; # default
+    $pa_config->{"inventoryserver"} = 1; # default
     $pa_config->{"servermode"} = "";
     $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
-    $pa_config->{"network_threads"} = 5; # Fixed default
+    $pa_config->{"network_threads"} = 3; # Fixed default
     $pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
     $pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
     $pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
@@ -175,16 +173,16 @@ sub pandora_loadconfig {
     $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
     $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
     $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
-    $pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
-    $pa_config->{"plugin_threads"} = 3; # Introduced on 2.0
-    $pa_config->{"recon_threads"} = 3; # Introduced on 2.0
-    $pa_config->{"prediction_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"snmp_proc_deadresponse"} = 1; # Introduced on 1.3.1 10 Feb08
+    $pa_config->{"plugin_threads"} = 2; # Introduced on 2.0
+    $pa_config->{"recon_threads"} = 2; # Introduced on 2.0
+    $pa_config->{"prediction_threads"} = 1; # Introduced on 2.0
     $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
-    $pa_config->{"wmi_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"wmi_threads"} = 2; # Introduced on 2.0
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
-    $pa_config->{"dataserver_threads"} = 3; # Introduced on 2.0
-    $pa_config->{"inventory_threads"} = 5; # 2.1
+    $pa_config->{"dataserver_threads"} = 2; # Introduced on 2.0
+    $pa_config->{"inventory_threads"} = 2; # 2.1
 
     # Internal MTA for alerts, each server need its own config.
     $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -198,7 +196,6 @@ sub pandora_loadconfig {
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 	$pa_config->{'autocreate_group'} = 2;
 	$pa_config->{'autocreate'} = 1;
-    $pa_config->{'recon_threads'} = 3;
 
 	# max log size (bytes)
 	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
@@ -427,7 +424,7 @@ sub pandora_loadconfig {
     } # end of loop for parameter #
 
 
-	if (($pa_config->{"verbosity"} > 0) && ($pa_config->{"quiet"} == 0)){
+	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
         if ($pa_config->{"PID"} ne ""){
             print " [*] PID File is written at ".$pa_config->{'PID'}."\n";
         }
@@ -476,7 +473,7 @@ sub pandora_loadconfig {
         exit;
     }
     # Show some config options in startup
-    if ($pa_config->{"quiet"} == 0){
+    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 	    if ($opmode == 0){
 		    print " [*] You are running Pandora FMS Data Server. \n";
 		    $parametro ="Pandora FMS Data Server";
@@ -544,14 +541,13 @@ sub pandora_loadconfig {
 		print $@;
 		exit;
 	}
-    if ($pa_config->{"quiet"} == 0){
+    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)){
 	    print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
     }
 	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
     pandora_event ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}." going UP", 0,
                                    0, 3, 0, 0, "system", $dbh);
 }
-
 
 
 sub pandora_startlog ($){

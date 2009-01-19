@@ -33,7 +33,6 @@ use NetAddr::IP;		# To manage IP Addresses
 # Detect if Net:Traceroute::Pureperl is available.
 # If not, parent detection will be disabled
 my $traceroute_loaded = 1;
-
 # Traceroute needs traceroute command
 unless ( eval "use Net::Traceroute::PurePerl; 1" ) {
      $traceroute_loaded = 0;
@@ -48,7 +47,6 @@ use threads::shared;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-
 # Alarm signal management
 $SIG{ALRM} = sub { return 0; };
 
@@ -300,7 +298,6 @@ sub pandora_recon_exec_task {
 	my $target_network = $sql_data->{"subnet"};
 	my $task_name = $sql_data->{"name"};
 	my $task_ncprofile = $sql_data->{"id_network_profile"};
-
 	my $task_group = $sql_data->{"id_group"};
 	my $task_create_incident = $sql_data->{"create_incident"};
 	my $task_id_os = $sql_data->{"id_os"};
@@ -634,8 +631,10 @@ sub pandora_task_create_agentmodules {
 			$query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 1, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
 
 			$dbh->do($query_sql4);
+			undef $sql_data2;
 		}
 		$exec_sql2->finish();
+		undef $sql_data;
 	}
 	$exec_sql->finish();
 }

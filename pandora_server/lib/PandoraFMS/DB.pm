@@ -38,7 +38,8 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
-		crea_agente_modulo			
+        crea_agente_modulo			
+		update_on_error
 		dame_server_id				
 		dame_agente_id
 		dame_agente_modulo_id
@@ -290,8 +291,6 @@ sub pandora_process_alert (%$$$$$%$$) {
 					   $id_agent, $alert_data->{'priority'}, $alert_data->{'id_template_module'}, $alert_data->{'id_agent_module'}, 
 					   "alert_recovered", $dbh);
 
-		# Send a status change report
-		enterprise_hook('pandora_mcast_change_report', [$pa_config, $alert_data->{'id_agent_module'}, $timestamp, 'OK', $dbh]);
 		return;
 	}
 
@@ -305,8 +304,6 @@ sub pandora_process_alert (%$$$$$%$$) {
 
 		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name,
 					   $module_data, 0, $dbh);
-		# Send a status change report
-		enterprise_hook('pandora_mcast_change_report', [$pa_config, $alert_data->{'id_agent_module'}, $timestamp, 'OK', $dbh]);
 		return;
 	}
 
@@ -360,8 +357,6 @@ sub pandora_process_alert (%$$$$$%$$) {
 		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name, 
 						$module_data, 1, $dbh);
 
-		# Send a status change report
-		enterprise_hook('pandora_mcast_change_report', [$pa_config, $alert_data->{'id_agent_module'}, $timestamp, 'ERR', $dbh]);
 		return;
 	}
 }
@@ -753,18 +748,22 @@ sub pandora_writestate (%$$$$$$) {
 					$event_type = "going_up_warning";
 					$status_name = "going up to WARNING";
 					$severity = 3;
+					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'WARN', $dbh]);
 				} elsif (($data_status->{'last_status'} == 1) && ($data_status->{'estado'} == 2)){
 					$event_type = "going_down_warning";
 					$status_name = "going down to WARNING";
 					$severity = 3;
+					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'WARN', $dbh]);
 				} elsif ($data_status->{'estado'} == 1){
 					$event_type = "going_up_critical";
 					$status_name = "going up to CRITICAL";
 					$severity = 4;
+					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'ERR', $dbh]);
 				} elsif ($data_status->{'estado'} == 0){
 					$event_type = "going_down_normal";
 					$status_name = "going down to NORMAL";
 					$severity = 2;
+                    enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'OK', $dbh]);
 				}
 				$data_status->{'status_changes'} = 0;
 				$data_status->{'last_status'} = $data_status->{'estado'};
@@ -861,9 +860,13 @@ sub module_generic_proc (%$$$$$) {
 	my $a_datos = $datos->{data}->[0];
 
 	if ((ref($a_datos) eq "HASH")){
-		$a_datos = 0;# If get bad data, then this is bad value, not "unknown" (> 1.3 version)
+		$a_datos = 0;	# If get bad data, then this is bad value, not "unknown" (> 1.3 version)
 	} else {
-		$a_datos = sprintf("%.2f", $a_datos);# Two decimal float. We cannot store more
+		if (!is_numeric($a_datos)){
+			$a_datos = 0;
+		} else {
+			$a_datos = sprintf("%.2f", $a_datos);		# Two decimal float. We cannot store more
+		}
 	}							# to change this, you need to change mysql structure
 	$a_datos =~ s/\,/\./g; 				# replace "," by "." avoiding locale problems
 	my $a_name = $datos->{name}->[0];
@@ -2363,6 +2366,26 @@ sub export_module_data {
 			 '$data', '$timestamp')");
 }
 
+
+##########################################################################
+# SUB update_on_error (pa_config, id_agent_module, dbh )
+# Modules who cannot connect or something go bad, update last_execution_try field
+##########################################################################
+sub update_on_error {
+        my $pa_config = $_[0];
+        my $id_agent_module = $_[1];
+        my $dbh = $_[2];
+
+        my $utimestamp = &UnixDate("today","%s");
+
+        # Modules who cannot connect or something go bad, update last_execution_try field
+        logger ($pa_config, "Cannot obtain Module from IdAgentModule $id_agent_module", 3);
+        db_update ("UPDATE tagente_estado 
+		SET current_interval = 300, last_execution_try = $utimestamp 
+		WHERE id_agente_modulo = $id_agent_module", $dbh);
+;
+
+}
 # End of function declaration
 # End of defined Code
 

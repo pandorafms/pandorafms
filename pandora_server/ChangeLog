@@ -1,3 +1,19 @@
+2009-01-16  Sancho Lerena <slerena@artica.es>
+
+	* pandora_wmi, pandora_plugin, pandora_recon: Updates merged from
+	2.0 version. Different small fixes and improved performance.
+
+	* DB.pm: Support for fixes in wmi/plugin server. Call of enterprise 
+	function pandora_mcast_change_report() is done now on real status change
+	code not in alert. Added update_on_error() function to update status table
+	when remote modules cannot init (update last_try field to avoid unnecesary
+	attempts).
+
+	* Config.pm: Build update, some stuff cleaned. Server startup info is show
+	only when verbose level is activated.
+	
+	* pandora_network: Startup messages are not shown if verbose < 5.
+
 2009-01-16  Raul Mateos <raulofpandora@gmail.com>
 	
 	* lib/PandoraFMS/Config.pm: Updated Build and Headers.

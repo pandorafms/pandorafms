@@ -68,13 +68,14 @@ pandora_loadconfig (\%pa_config,1);
 pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "System");
 
 # Thread startup
-if ($pa_config{"quiet"} == 0){
+
+if ($pa_config{"verbosity"} > 4){
     print " [*] Starting up network threads\n";
 }
 
 # Daemonize and put in background
 if ( $pa_config{"daemon"} eq "1" ){
-    if ($pa_config{"quiet"} eq "0"){
+    if (($pa_config{"quiet"} == 0) && ($pa_config{"verbosity"} > 4)){
         print " [*] Backgrounding Pandora FMS Network Server process.\n\n";
     }
     &pandora_daemonize ( \%pa_config);
@@ -91,7 +92,7 @@ for (my $ax=0; $ax < $pa_config{'network_threads'}; $ax++){
 threads->new( \&pandora_network_producer, \%pa_config);
 
 
-if ($pa_config{"quiet"} == 0){
+if ($pa_config{"verbosity"} > 4){
     print " [*] All threads loaded and running \n\n";
 }
 
@@ -132,7 +133,7 @@ sub pandora_network_consumer ($$) {
 	my $pa_config = $_[0];
 	my $thread_id = $_[1];
 
-    if ($pa_config->{"quiet"} == 0){
+    if ($pa_config->{"verbosity"} > 4){
 	    print " [*] Starting up Network Consumer Thread # $thread_id \n";
     }
 	
@@ -185,7 +186,7 @@ sub pandora_network_consumer ($$) {
 sub pandora_network_producer ($) {
 	my $pa_config = $_[0];
 
-    if ($pa_config->{"quiet"} == 0){
+    if ($pa_config->{"verbosity"} > 4){
 	    print " [*] Starting up Network Producer Thread ...\n";
     }
 
@@ -706,7 +707,9 @@ sub exec_network_module {
 sub pandora_shutdown {
     logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
 	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 1, $dbh);
-    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+	if ($pa_config{"quiet"} == 0){
+        print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+    }
     pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
                                    0, 4, 0, 0, "system", $dbh);
     exit;

@@ -4,8 +4,8 @@
 # Pandora FMS Plugin Server
 # http://www.pandorafms.com
 ##########################################################################
-# Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
-#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2008-2009 Sancho Lerena, slerena@gmail.com
+#           (c) 2008-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -286,87 +286,79 @@ sub pandora_plugin_producer ($) {
 # Execute plugin module task 
 ##########################################################################
 sub exec_plugin_module {
-    my $pa_config       = $_[0];
-    my $id_am           = $_[1];
-    my $dbh             = $_[2];
+	my $pa_config       = $_[0];
+	my $id_am           = $_[1];
+	my $dbh             = $_[2];
 
-    # Set global variables for this sub
-    my $timeout = $pa_config->{'plugin_timeout'};
+	# Set global variables for this sub
+	my $timeout = $pa_config->{'plugin_timeout'};
 	my $agent_module; # hash container for tagente_modulo record
-    my $plugin; # hash container for tplugin
+	my $plugin; # hash container for tplugin
 
-    # Get a full hash for agent_plugin record reference ($agent_module)
+	# Get a full hash for agent_plugin record reference ($agent_module)
 	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am";
 	my $exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
 	$agent_module = $exec_sql->fetchrow_hashref;
 
-    # Get a full hash for plugin record reference ($plugin)
-    $query_sql = "SELECT * FROM tplugin WHERE id = ".$agent_module->{'id_plugin'};
-    $exec_sql = $dbh->prepare($query_sql);
-    $exec_sql->execute();
-    $plugin = $exec_sql->fetchrow_hashref;
+	# Get a full hash for plugin record reference ($plugin)
+	$query_sql = "SELECT * FROM tplugin WHERE id = ".$agent_module->{'id_plugin'};
+	$exec_sql = $dbh->prepare($query_sql);
+	$exec_sql->execute();
+	$plugin = $exec_sql->fetchrow_hashref;
 
-    # Calculate min timeout for this call
-    if ($plugin->{'max_timeout'} < $timeout){
-        $timeout = $plugin->{'max_timeout'};
-    }
+	# Calculate min timeout for this call
+	if ($plugin->{'max_timeout'} < $timeout){
+		$timeout = $plugin->{'max_timeout'};
+	}
 
-    # Initialize another global sub variables.
+	# Initialize another global sub variables.
 	my $agent_name = dame_agente_nombre ($pa_config, $agent_module->{'id_agente'}, $dbh);
-	my $module_result = 1;  # Fail by default
 	my $module_data = 0;    # 0 data for default
-    my $module_interval = 0;
+	my $module_interval = 0;
 
-    # Build execution command to plugin
-    my $exec_output = "";
-    my $plugin_command = $plugin->{"execute"};
-    if ($plugin->{'net_dst_opt'} ne ""){
-        $plugin_command = $plugin_command . " ". $plugin->{'net_dst_opt'} ." ". $agent_module->{'ip_target'};
-    } 
-    if ($plugin->{'net_port_opt'} ne "") {
-        $plugin_command = $plugin_command . " ". $plugin->{'net_port_opt'} ." ". $agent_module->{'tcp_port'};
-    }
-    if ($plugin->{'user_opt'} ne "") {
-        $plugin_command = $plugin_command . " ". $plugin->{'user_opt'} ." ". $agent_module->{'plugin_user'};
-    }
-    if ($plugin->{'pass_opt'} ne "") {
-        $plugin_command = $plugin_command . " ". $plugin->{'pass_opt'} ." ". $agent_module->{'plugin_pass'};
-    }
+	# Build execution command to plugin
+	my $exec_output = "";
+	my $plugin_command = $plugin->{"execute"};
+	if ($plugin->{'net_dst_opt'} ne ""){
+		$plugin_command = $plugin_command . " ". $plugin->{'net_dst_opt'} ." ". $agent_module->{'ip_target'};
+	} 
+	if ($plugin->{'net_port_opt'} ne "") {
+		$plugin_command = $plugin_command . " ". $plugin->{'net_port_opt'} ." ". $agent_module->{'tcp_port'};
+	}
+	if ($plugin->{'user_opt'} ne "") {
+		$plugin_command = $plugin_command . " ". $plugin->{'user_opt'} ." ". $agent_module->{'plugin_user'};
+	}
+	if ($plugin->{'pass_opt'} ne "") {
+		$plugin_command = $plugin_command . " ". $plugin->{'pass_opt'} ." ". $agent_module->{'plugin_pass'};
+	}
 
-    # Proccess field / optional / dynamic field
-    if ($agent_module->{'plugin_parameter'} ne "") {
-        $plugin_command = $plugin_command . " ". $agent_module->{'plugin_parameter'};
-    }
+	# Proccess field / optional / dynamic field
+	if ($agent_module->{'plugin_parameter'} ne "") {
+		$plugin_command = $plugin_command . " ". $agent_module->{'plugin_parameter'};
+	}
 
-    $plugin_command = decode_entities($plugin_command);
+	$plugin_command = decode_entities($plugin_command);
 
-    logger ($pa_config, "Executing AM # $id_am plugin command '$plugin_command'", 9);
-    # Final command line execution is stored at "plugin_command"
+	logger ($pa_config, "Executing AM # $id_am plugin command '$plugin_command'", 9);
+	# Final command line execution is stored at "plugin_command"
 
-    $module_data = `$pandora_exec $timeout $plugin_command`;
-    if ($module_data eq "") {
-		$module_result = 1;    	
-    } else {
-    	$module_result = 0;
-    }
-
-    # Error
-	if ($module_result == 1) { 
-        logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_module->{'id_agente_modulo'}." causes an unknown system error", 1);
-        logger ($pa_config, "[ERROR] $@", 1);
-    }
+	$module_data = `$pandora_exec $timeout $plugin_command`;
+	if ($module_data eq "") {
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $plugin;
+		undef $agent_module;
+		return;
+	} 
 
 	# Get current timestamp
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp = &UnixDate("today","%s");
 
-    # If module execution get a valid value
-	if ($module_result == 0) {
-		my %part;
-		$part{'name'}[0] = $agent_module->{'nombre'};
-		$part{'description'}[0] = "";
-		$part{'data'}[0] = $module_data;
+	my %part;
+	$part{'name'}[0] = $agent_module->{'nombre'};
+	$part{'description'}[0] = "";
+	$part{'data'}[0] = $module_data;
         my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_module->{'id_tipo_modulo'}, $dbh);
 
         # 1 - generic_data
@@ -375,44 +367,31 @@ sub exec_plugin_module {
         # 4 - generic_data_inc
         # 19, 20 - image
 
-		if (1 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-		elsif (4 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-		elsif (3 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
+	if (1 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	elsif (4 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	elsif (3 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
         # Generic_proc
-		elsif (2 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
+	elsif (2 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
         elsif ( (19 == $agent_module->{'id_tipo_modulo'}) || (20 == $agent_module->{'id_tipo_modulo'}) ) {
             module_generic_image ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
         }
-		else { # Unknown module!, this IS a problem
-			logger ($pa_config, "Plugin Server Problem with unknown module type '$tipo_modulo'", 0);
-            $module_result = 1;
-		}
-		# Update agent last contact
-		# Insert Pandora version as agent version
-		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
-	} 
-
-    # If something went wrong in module processing...
-    if ($module_result != 0){ 
-
-        # If module execution get a INVALID value
-		if ($agent_module->{'intervalo'} == 0){
-            $module_interval = dame_intervalo ($pa_config, $agent_module->{'id_agente'}, $dbh);
-        }
-
-		# Modules who cannot connect or something go bad, update last_execution_try field
-		logger ($pa_config, "Cannot obtain exec plugin Module ".$agent_module->{'nombre'}." from agent $agent_name", 2);
-		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval, last_execution_try = $utimestamp WHERE id_agente_modulo = ".$agent_module->{'id_agente_modulo'};
-        $dbh->do($query_act);
+	else { # Unknown module!, this IS a problem
+		logger ($pa_config, "Plugin Server Problem with unknown module type '$tipo_modulo'", 0);
 	}
-
+	# Update agent last contact
+	# Insert Pandora version as agent version
+	pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
+	 
 	$exec_sql->finish(); #close tagent_plugin hash reference
+	undef $plugin;
+	undef $agent_module;
+	undef %part;
 }

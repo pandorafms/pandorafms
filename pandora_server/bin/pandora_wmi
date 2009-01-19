@@ -3,8 +3,7 @@
 # Pandora FMS WMI Server
 # http://www.pandorafms.com
 ##########################################################################
-# Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
-#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2008-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -105,37 +104,6 @@ while (1) {
 	sleep ($pa_config{"server_threshold"});
 }
 
-
-
-# New samples
-
-# Process executing (return PID)
-# SELECT ProcessId FROM Win32_Process WHERE Caption = "spoolsv.exe"
-
-# Service State of a service (Running or Stopped)
-# SELECT State FROM Win32_Service WHERE Name = "Eventlog"
-
-# CPU de CPU0
-# SELECT LoadPercentage from Win32_Processor WHERE DeviceID = "CPU0"
-
-# Available memory (bytes)
-# SELECT AvailableBytes from Win32_PerfRawData_PerfOS_Memory
-
-# Available cache memory (bytes)
-# SELECT CacheBytes from Win32_PerfRawData_PerfOS_Memory
-
-# AvgDiskBytesPerTransfer 
-# DiskReadsPersec
-# DiskTransfersPersec
-# FreeMegabytes
-# SELECT * from Win32_PerfRawData_PerfDisk_LogicalDisk WHERE Name = "F:"
-
-
-# FragmentedDatagramsPersec
-# FragmentationFailures
-# DatagramsReceivedPersec
-# DatagramsSentPersec
-# SELECT * from Win32_PerfFormattedData_Tcpip_IP
 
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
@@ -303,69 +271,62 @@ sub pandora_wmi_producer ($) {
 	} # Main loop
 }
 
-
 ##########################################################################
 # SUB exec_wmi_module (paconfig, id_agente_modulo, dbh )
 # Execute WMI module task 
 ##########################################################################
 sub exec_wmi_module {
-    my $pa_config       = $_[0];
-    my $id_am           = $_[1];
-    my $dbh             = $_[2];
+	my $pa_config       = $_[0];
+	my $id_am           = $_[1];
+	my $dbh             = $_[2];
 
-    # Set global variables for this sub
-    my $timeout = $pa_config->{'wmi_timeout'};
+	# Set global variables for this sub
+	my $timeout = $pa_config->{'wmi_timeout'};
 	my $agent_module; # hash container for tagente_modulo record
 
-    # Get a full hash for agent_plugin record reference ($agent_module)
+	# Get a full hash for agent_plugin record reference ($agent_module)
 	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am";
 	my $exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
 	$agent_module = $exec_sql->fetchrow_hashref;
 
-    # Calculate min timeout for this call
-    if ($agent_module->{'max_timeout'} < $timeout){
-        $timeout = $agent_module->{'max_timeout'};
-    }
+	# Calculate min timeout for this call
+	if ($agent_module->{'max_timeout'} < $timeout){
+		$timeout = $agent_module->{'max_timeout'};
+	}
 
-    # Initialize another global sub variables.
+	# Initialize another global sub variables.
 	my $agent_name = dame_agente_nombre ($pa_config, $agent_module->{'id_agente'}, $dbh);
-	my $module_result = 1;  # Fail by default
-	my $module_data = '';
-    my $module_interval = 0;
+	my $module_interval =  $agent_module->{'module_interval'};
 
-    # Build execution command to plugin
-	# Sample exec:  wmic -U Administrador%none //192.168.50.123 "SELECT State FROM Win32_Service WHERE Name = \"Eventlog\""
-
-	# This returns several lines that needs to be processed
-	# OM Win32_Service WHERE Name = \"Eventlog\""
-	# CLASS: Win32_Service
-	# Name|State
-	# Eventlog|Running
+	# Build execution command to plugin
 
 	my $wmi_query = decode_entities($agent_module->{'snmp_oid'});
 	$wmi_query =~ s/\"/\'/g;
 
-    my $wmi_command = "$wmi_client -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
+	my $wmi_command = "$wmi_client -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
     
-    # Custom namespace
-    if ($agent_module->{'tcp_send'} ne '') {
+	# Custom namespace
+	if ($agent_module->{'tcp_send'} ne '') {
 		$agent_module->{'tcp_send'} =~ s/\"/\'/g;
-    	$wmi_command .= " --namespace=\"" . $agent_module->{'tcp_send'} . "\"";
-    }
-    $wmi_command .= " //". $agent_module->{'ip_target'};
-    $wmi_command .= " \"". $wmi_query . "\"";
-    logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);
+		$wmi_command .= " --namespace=\"" . $agent_module->{'tcp_send'} . "\"";
+	}
+
+	$wmi_command .= " //". $agent_module->{'ip_target'};
+	$wmi_command .= " \"". $wmi_query . "\"";
+	logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);
     
-    $module_data = `$wmi_command`;
+	my $module_data = `$wmi_command`;
 	if (! defined($module_data)) {
-		#logger ($pa_config, "[ERROR] Unexpected response from $wmi_client\n");
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $agent_module;
 		return;
 	}
 
 	my @data = split("\n", $module_data);
 	if ($#data < 2) {
-		#logger ($pa_config, "[ERROR] Unexpected response from $wmi_client\n");
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $agent_module;
 		return;
 	}
 
@@ -378,10 +339,10 @@ sub exec_wmi_module {
 		
 	# Look for errors
 	if ($module_data =~ /ERROR/) {
-		$module_result = 1;
-	} else {
-       	$module_result = 0; # If comes here, this is a successfull exec
-	}
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $agent_module;
+		return 0;
+	} 
 
 	# Special word to know is something is OK or not, 
 	# for example "Running". Defined by user in console. It uses snmp_community 
@@ -396,68 +357,47 @@ sub exec_wmi_module {
 		}
 	}
 
-    # Error
-    if ($module_result == 1) { 
-        logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_module->{'id_agente_modulo'}." causes an unknown system error", 1);
-        logger ($pa_config, "[ERROR] $@", 1);
-    }
-
 	# Get current timestamp
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp = &UnixDate("today","%s");
 
-    # If module execution get a valid value
-	if ($module_result == 0) {
-		my %part;
-		$part{'name'}[0] = $agent_module->{'nombre'};
-		$part{'description'}[0] = "";
-		$part{'data'}[0] = $module_data;
+	# If module execution get a valid value
+	my %part;
+	$part{'name'}[0] = $agent_module->{'nombre'};
+	$part{'description'}[0] = "";
+	$part{'data'}[0] = $module_data;
         my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_module->{'id_tipo_modulo'}, $dbh);
 
         # 1 - generic_data
         # 2 - generic_proc
         # 3 - generic_data_string
         # 4 - generic_data_inc
-        # 19, 20 - image
 
-		if (1 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-		elsif (4 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-		elsif (3 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-        # Generic_proc
-		elsif (2 == $agent_module->{'id_tipo_modulo'}) {
-			module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-		}
-        elsif ( (19 == $agent_module->{'id_tipo_modulo'}) || (20 == $agent_module->{'id_tipo_modulo'}) ) {
-            module_generic_image ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-        }
-		else { # Unknown module!, this IS a problem
-			logger ($pa_config, "WMI Server Problem with unknown module type '$tipo_modulo'", 0);
-            $module_result = 1;
-		}
-		# Update agent last contact
-		# Insert Pandora version as agent version
-		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
-	} 
-
-    # If something went wrong in module processing...
-    if ($module_result != 0){ 
-
-        # If module execution get a INVALID value
-		if ($agent_module->{'intervalo'} == 0){
-            $module_interval = dame_intervalo ($pa_config, $agent_module->{'id_agente'}, $dbh);
-        }
-
-		# Modules who cannot connect or something go bad, update last_execution_try field
-		logger ($pa_config, "Cannot obtain exec WMI  Module ".$agent_module->{'nombre'}." from agent $agent_name", 2);
-		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval, last_execution_try = $utimestamp WHERE id_agente_modulo = ".$agent_module->{'id_agente_modulo'};
-        $dbh->do($query_act);
+	if (1 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
+	elsif (4 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	elsif (3 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+        # Generic_proc
+	elsif (2 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	else { # Unknown module!, this IS a problem
+		logger ($pa_config, "WMI Server Problem with unknown module type '$tipo_modulo'", 0);
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $agent_module;
+		undef %part;
+		return 0;
+	}
+	# Update agent last contact
+	# Insert Pandora version as agent version
+	pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
 
 	$exec_sql->finish(); #close tagent_plugin hash reference
+	undef %part;
+	undef $agent_module;
 }

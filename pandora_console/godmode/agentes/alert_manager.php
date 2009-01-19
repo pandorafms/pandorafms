@@ -307,8 +307,7 @@ $(document).ready (function () {
 	$("a.template_details").cluetip ({
 		arrows: true,
 		attribute: 'href',
-		cluetipClass: 'default',
-		fx: { open: 'fadeIn', openSpeed: 'slow' },
+		cluetipClass: 'default'
 	}).click (function () {
 		return false;
 	});;

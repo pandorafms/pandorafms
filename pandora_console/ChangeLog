@@ -1,5 +1,21 @@
 2009-01-19  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/alert_manager.php: Removed effect on AJAX tip.
+
+	* include/functions.php: Removed deprecated function.
+
+	* operation/agentes/estado_grupo.php, pandoradb_data.sql,
+	operation/agentes/ver_agente.php, reporting/fgraph.php,
+	operation/agentes/networkmap.php: Replaced references to old alert
+	system with new one.
+
+	* operation/agentes/networkmap.php: Replaced references to old alert
+	system with new one. Removed effect on AJAX tip.
+
+	* godmode/snmpconsole/snmp_alert.php: Style correction.
+
+2009-01-19  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/configurar_agente.php: Removed references to old
 	talerta and talerta_modulo tables.
 

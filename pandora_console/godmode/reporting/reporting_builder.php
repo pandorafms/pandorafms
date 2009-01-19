@@ -400,7 +400,7 @@ if ($edit_sla_report_content) {
 		$periods[360] = __('2 weeks');
 		$periods[720] = __('1 month');
 		$periods[4320] = __('6 months');
-		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true);
+		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true, false, false);
 
 		$table->data[2][0] = __('Source agent');
 		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);

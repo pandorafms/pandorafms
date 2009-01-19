@@ -43,13 +43,13 @@ function get_agent_alerts_simple ($id_agent, $filter = false) {
 	}
 	
 	$id_modules = array_keys (get_agent_modules ($id_agent));
-	
-	//$modules = ();
+	if (empty ($id_modules))
+		return array ();
 	
 	$sql = sprintf ("SELECT talert_template_modules.*
 		FROM talert_template_modules
-		WHERE id_agent_module in (%s)",
-		$id_agent, implode (",", $id_modules));
+		WHERE id_agent_module in (%s)%s",
+		implode (",", $id_modules), $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	
@@ -66,6 +66,8 @@ function get_agent_alerts_simple ($id_agent, $filter = false) {
  * @return array An array with all combined alerts defined for an agent.
  */
 function get_agent_alerts_combined ($id_agent, $filter = false) {
+	/* TODO: Combined alerts */
+	return array ();
 	switch ($filter) {
 		case "notfired":
 			$filter = ' AND times_fired = 0 AND disable = 0';
@@ -79,7 +81,14 @@ function get_agent_alerts_combined ($id_agent, $filter = false) {
 		default:
 			$filter = '';
 	}
-	$sql = sprintf ("SELECT * FROM talerta_agente_modulo WHERE id_agent = %d%s", $id_agent, $filter);
+	
+	$id_modules = array_keys (get_agent_modules ($id_agent));
+	if (empty ($id_modules))
+		return array ();
+	
+	$sql = sprintf ("SELECT * FROM talert_template_modules
+		WHERE id_agent_module IN (%s)%s",
+		implode (',', $id_modules), $filter);
 	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)

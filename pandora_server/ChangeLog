@@ -1,3 +1,7 @@
+2009-01-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* lib/PandoraFMS/Config.pm: Commented 2 lines that broke the server
+
 2009-01-20  Raul Mateos <raulofpandora@gmail.com>
 	
 	* lib/PandoraFMS/Config.pm: Changed some texts again.

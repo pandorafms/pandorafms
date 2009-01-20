@@ -473,7 +473,7 @@ sub pandora_loadconfig {
         exit;
     }
     # Show some config options in startup
-    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
+    #if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) { #<-- This breaks the server as you don't allow  pa_config->{"servermode"} to be set
 	    if ($opmode == 0){
 		    print " [*] You are running Pandora FMS Data Server. \n";
 		    $parametro ="Pandora FMS Data Server";
@@ -525,7 +525,7 @@ sub pandora_loadconfig {
 	    if ($pa_config->{"pandora_master"} == 1) {
 		    print " [*] This server is running in MASTER mode.\n";
 	    }
-    }
+    #}
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options", 1);

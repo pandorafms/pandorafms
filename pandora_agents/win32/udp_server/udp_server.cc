@@ -233,8 +233,7 @@ int Pandora::process_command (Pandora_Windows_Service *service, char *command) {
             pandoraLog ("UDP Server: Unauthorised access to process %s", target);
             return 1;
         }
-        
-        system (value.c_str());
+        Pandora_Wmi::runProgram (value.c_str());
     }
 
 	return 0;

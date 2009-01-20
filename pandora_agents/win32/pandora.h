@@ -32,6 +32,19 @@ using namespace std;
 
 #define	PANDORA_DEBUG 1
 
+#define	PANDORA_EXCEPTION       11
+#define	AUTHENTICATION_FAILED   12
+#define	UNKNOWN_HOST            13
+#define	FTP_EXCEPTION           14
+#define SESSION_ALREADY_OPENED  15
+#define RESOLV_FAILED           16
+#define CONNECTION_FAILED       17
+#define SESSION_ERROR           18
+#define SESSION_NOT_OPENED      19
+#define FILE_NOT_FOUND          20
+#define SCP_FAILED              21
+#define DELETE_ERROR            22
+
 /**
  * Main application.
  */

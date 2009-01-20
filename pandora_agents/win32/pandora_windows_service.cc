@@ -199,7 +199,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	return agent;
 }
 
-void
+int
 Pandora_Windows_Service::copyTentacleDataFile (string host,
 					       string filename,
 					       string port,
@@ -207,7 +207,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 					       string pass,
 					       string opts)
 {
-	int     rc;
+	int     rc = 0;
 	string  var, filepath;
 	string	tentacle_cmd;
 	
@@ -250,7 +250,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 		/* system() error */
 	case -1:
 		pandoraLog ("Unable to copy %s", filename.c_str ());
-		throw Pandora_Exception ();
+		break;
 	
 		/* tentacle_client.exe returned OK */
 	case 0:
@@ -260,17 +260,18 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	default:
 		pandoraDebug ("Tentacle client was unable to copy %s",
 			      filename.c_str ());
-		throw Pandora_Exception ();
+		break;
 	}
 
-	return;
+	return rc;
 }
 
-void
+int
 Pandora_Windows_Service::copyScpDataFile (string host,
 					  string remote_path,
 					  string filename)
 {
+	int rc = 0;
 	SSH::Pandora_Ssh_Client ssh_client;
 	string                  tmp_dir, filepath;
 	string                  pubkey_file, privkey_file;
@@ -283,48 +284,48 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 
 	pandoraDebug ("Connecting with %s", host.c_str ());
 
-	try {
-		pubkey_file   = Pandora::getPandoraInstallDir ();
-		pubkey_file  += "key\\id_dsa.pub";
-		privkey_file  = Pandora::getPandoraInstallDir ();
-		privkey_file += "key\\id_dsa";
+	pubkey_file   = Pandora::getPandoraInstallDir ();
+	pubkey_file  += "key\\id_dsa.pub";
+	privkey_file  = Pandora::getPandoraInstallDir ();
+	privkey_file += "key\\id_dsa";
 	
-		ssh_client.connectWithPublicKey (host.c_str (), 22, "pandora",
+	rc = ssh_client.connectWithPublicKey (host.c_str (), 22, "pandora",
 						 pubkey_file, privkey_file, "");
-	} catch (SSH::Authentication_Failed e) {
+	if (rc == AUTHENTICATION_FAILED) {
 		pandoraLog ("Pandora Agent: Authentication Failed "
 			    "when connecting to %s",
 			    host.c_str ());
-		throw e;
-	} catch (Pandora_Exception e) {
+		return rc;
+	} else if (rc == PANDORA_EXCEPTION) {
 		pandoraLog ("Pandora Agent: Failed when copying to %s",
 			    host.c_str ());
-		throw e;
+		return rc;
 	}
 
 	pandoraDebug ("Remote copying XML %s on server %s at %s%s",
 		      filepath.c_str (), host.c_str (),
 		      remote_path.c_str (), filename.c_str ());
-	try {
-		ssh_client.scpFileFilename (remote_path + filename,
+	
+	rc = ssh_client.scpFileFilename (remote_path + filename,
 					    filepath);
-	} catch (Pandora_Exception e) {
+	if (rc = PANDORA_EXCEPTION) {
 		pandoraLog ("Unable to copy at %s%s", remote_path.c_str (),
 			    filename.c_str ());
 		ssh_client.disconnect();
-	
-		throw e;
+		return rc;
 	}
 
 	ssh_client.disconnect();
+	return rc;
 }
 
-void
+int
 Pandora_Windows_Service::copyFtpDataFile (string host,
 					  string remote_path,
 					  string filename,
 					  string password)
 {
+	int rc = 0;
 	FTP::Pandora_Ftp_Client ftp_client;
 	string                  filepath;
 
@@ -339,33 +340,34 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 			    "pandora",
 			    password);
 
-	try {
-		ftp_client.ftpFileFilename (remote_path + filename,
+	rc = ftp_client.ftpFileFilename (remote_path + filename,
 					    filepath);
-	} catch (FTP::Unknown_Host e) {
+	if (rc == UNKNOWN_HOST) {
 		pandoraLog ("Pandora Agent: Failed when copying to %s (%s)",
 			    host.c_str (), ftp_client.getError ().c_str ());
 		ftp_client.disconnect ();
-		throw e;
-	} catch (FTP::Authentication_Failed e) {
+		return rc;
+	} else if (rc == AUTHENTICATION_FAILED) {
 		pandoraLog ("Pandora Agent: Authentication Failed "
 			    "when connecting to %s (%s)",
 			    host.c_str (), ftp_client.getError ().c_str ());
 		ftp_client.disconnect ();
-		throw e;
-	} catch (FTP::FTP_Exception e) {
+		return rc;
+	} else if (rc == FTP_EXCEPTION) {
 		pandoraLog ("Pandora Agent: Failed when copying to %s (%s)",
 			    host.c_str (), ftp_client.getError ().c_str ());
 		ftp_client.disconnect ();
-		throw e;
+		return rc;
 	}
 
 	ftp_client.disconnect ();
+	return rc;
 }
 
-void
+int
 Pandora_Windows_Service::copyDataFile (string filename)
 {
+	int rc = 0;
 	unsigned char copy_to_secondary = 0;
 	string mode, host, remote_path;
 
@@ -379,28 +381,27 @@ Pandora_Windows_Service::copyDataFile (string filename)
 		remote_path += "\\";
 	}
 
-	try {
-		if (mode == "ftp") {
-			copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"));
-		} else if (mode == "tentacle" || mode == "") {
-			copyTentacleDataFile (host, filename, conf->getValue ("server_port"),
+	if (mode == "ftp") {
+		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"));
+	} else if (mode == "tentacle" || mode == "") {
+		rc = copyTentacleDataFile (host, filename, conf->getValue ("server_port"),
 			                      conf->getValue ("server_ssl"), conf->getValue ("server_pwd"),
 			                      conf->getValue ("server_opts"));
-		} else if (mode == "ssh") {
-			copyScpDataFile (host, remote_path, filename);
-		} else if (mode == "local") {
-			copyLocalDataFile (remote_path, filename);
-		} else {
-			pandoraLog ("Invalid transfer mode: %s."
-				    "Please recheck transfer_mode option "
-				    "in configuration file.");
-		}
-	
+	} else if (mode == "ssh") {
+		rc =copyScpDataFile (host, remote_path, filename);
+	} else if (mode == "local") {
+		rc = copyLocalDataFile (remote_path, filename);
+	} else {
+		rc = PANDORA_EXCEPTION;
+		pandoraLog ("Invalid transfer mode: %s."
+			    "Please recheck transfer_mode option "
+			    "in configuration file.");
+	}
+
+	if (rc == 0) {
 		pandoraDebug ("Successfuly copied XML file to server.");
-	} catch (Pandora_Exception e) {
-		if (conf->getValue ("secondary_mode") == "on_error") {
-			copy_to_secondary = 1;
-		}
+	} else if (conf->getValue ("secondary_mode") == "on_error") {
+		copy_to_secondary = 1;
 	}
 	
 	if (conf->getValue ("secondary_mode") == "always") {
@@ -409,27 +410,29 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 	// Copy the file to the secondary server if needed
 	if (copy_to_secondary == 0) {
-		return;
+		return rc;
 	}
 	
-	try {
-		if (mode == "ftp") {
-			copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
-		} else if (mode == "tentacle") {
-			copyTentacleDataFile (host, filename, conf->getValue ("secondary_server_port"),
+	if (mode == "ftp") {
+		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
+	} else if (mode == "tentacle" || mode == "") {
+		rc = copyTentacleDataFile (host, filename, conf->getValue ("secondary_server_port"),
 			                      conf->getValue ("secondary_server_ssl"), conf->getValue ("secondary_server_pwd"),
 			                      conf->getValue ("secondary_server_opts"));
-		} else if (mode == "ssh" || mode == "") {
-			copyScpDataFile (host, remote_path, filename);
-		} else {
-			pandoraLog ("Invalid transfer mode: %s."
-				    "Please recheck transfer_mode option "
-				    "in configuration file.");
-		}
-	
-		pandoraDebug ("Successfuly copied XML file to secondary server.");
-	} catch (Pandora_Exception e) {
+	} else if (mode == "ssh") {
+		rc = copyScpDataFile (host, remote_path, filename);
+	} else {
+		rc = PANDORA_EXCEPTION;
+		pandoraLog ("Invalid transfer mode: %s."
+			    "Please recheck transfer_mode option "
+			    "in configuration file.");
 	}
+	
+	if (rc == 0) {
+		pandoraDebug ("Successfuly copied XML file to secondary server.");
+	}
+	
+	return rc;
 }
 
 void
@@ -523,7 +526,7 @@ Pandora_Windows_Service::recvDataFile (string filename) {
 	}
 }
 
-void
+int
 Pandora_Windows_Service::copyLocalDataFile (string remote_path,
 					  string filename)
 {
@@ -536,7 +539,7 @@ Pandora_Windows_Service::copyLocalDataFile (string remote_path,
 	local_file = local_path + filename;
 	remote_file = remote_path + filename;
 	if (!CopyFile (local_file.c_str (), remote_file.c_str (), TRUE)) {
-        throw Pandora_Exception ();
+        return PANDORA_EXCEPTION;
     }
 }
 
@@ -675,8 +678,9 @@ Pandora_Windows_Service::checkConfig () {
 	this->pandora_init ();
 }
 
-void
+int
 Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
+    int rc = 0;
 	TiXmlDeclaration *decl;
 	TiXmlDocument    *doc;
 	TiXmlElement     *local_xml, *agent;
@@ -746,17 +750,13 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 		pandoraLog ("Error when saving the XML in %s",
 			    tmp_filepath.c_str ());
 		ReleaseMutex (mutex);
-		return;
+		return PANDORA_EXCEPTION;
 	}
 
 	/* Only send if debug is not activated */
 	if (getPandoraDebug () == false) {
 		this->copyDataFile (tmp_filename);
-	
-		try {
-			Pandora_File::removeFile (tmp_filepath);
-		} catch (Pandora_File::Delete_Error e) {
-		}
+        Pandora_File::removeFile (tmp_filepath);
 	}
 	
 	ReleaseMutex (mutex);

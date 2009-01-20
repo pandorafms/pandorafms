@@ -117,7 +117,7 @@ Pandora_Ssh_Client::disconnect () {
 	}
 }
 
-void
+int
 Pandora_Ssh_Client::newConnection (const string host, const int port) {
 	struct sockaddr_in sin;
 	struct hostent    *resolv = NULL;
@@ -126,21 +126,21 @@ Pandora_Ssh_Client::newConnection (const string host, const int port) {
 	char               char_aux[3];
 	
 	if (session != NULL) {
-		throw Session_Already_Opened ();
+		return SESSION_ALREADY_OPENED;
 	}
 	
 	WSAStartup (2, &wsadata);
 	
 	sock = socket (AF_INET, SOCK_STREAM, 0);
 	if (sock == -1) {
-		throw Socket_Error ();
+		return SOCKET_ERROR;
 	} 
 	
 	resolv = (struct hostent *) gethostbyname (host.c_str ());
 	
 	if (resolv == NULL) {
 		disconnect ();
-		throw Resolv_Failed ();
+		return RESOLV_FAILED;
 	}
 	
 	sin.sin_family = AF_INET;
@@ -150,13 +150,13 @@ Pandora_Ssh_Client::newConnection (const string host, const int port) {
 	if (connect (sock, (struct sockaddr*) (&sin),
 		sizeof (struct sockaddr_in)) == -1) {
 		disconnect ();
-		throw Connection_Failed (WSAGetLastError ());
+		return CONNECTION_FAILED;
 	}
 	
 	session = libssh2_session_init();
 	if (libssh2_session_startup (session, sock) != 0) {
 		disconnect ();
-		throw Session_Error ();
+		return SESSION_ERROR;
 	}
 	
 	/* Get the fingerprint and transform it to a hexadecimal readable
@@ -170,6 +170,7 @@ Pandora_Ssh_Client::newConnection (const string host, const int port) {
 	}
 	
 	fingerprint.erase (fingerprint.length () - 1, 2);
+	return 0;
 }
 
 /**
@@ -188,14 +189,13 @@ Pandora_Ssh_Client::newConnection (const string host, const int port) {
  * @exception Authentication_Failed throwed when the atuhentication could not
  *            be done.
  */
-void
+int
 Pandora_Ssh_Client::connectWithPublicKey (const string host, const int port,
 					const string username, const string filename_pubkey,
 					const string filename_privkey, const string passphrase) {
-	try {
-		newConnection (host, port);
-	} catch (Session_Already_Opened e) {
-	}
+	int rc = 0;
+
+	newConnection (host, port);
 	
 	if (session != NULL) {
 		if (libssh2_userauth_publickey_fromfile (session,
@@ -204,10 +204,10 @@ Pandora_Ssh_Client::connectWithPublicKey (const string host, const int port,
 							 filename_privkey.c_str (),
 							 passphrase.c_str ())) {
 			disconnect ();
-			throw Authentication_Failed ();
+			return AUTHENTICATION_FAILED;
 		}
 	}
-	return;
+	return 0;
 }
 			     
 /**
@@ -229,9 +229,10 @@ Pandora_Ssh_Client::connectWithPublicKey (const string host, const int port,
  * @exception Scp_Failed Throwed if the scp operations failed when copying the
  *            file.
  */
-void
+int
 Pandora_Ssh_Client::scpFileFilename (const string remote_filename,
 				     const string filename) {
+	int rc = 0;
 	LIBSSH2_CHANNEL *scp_channel;
 	size_t           to_send, sent;
 	char            *errmsg;
@@ -239,14 +240,14 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename,
 	string           buffer;
 	
 	if (session == NULL) {
-		throw Session_Not_Opened ();
+		return SESSION_NOT_OPENED;
 	}
-	try {
-		buffer = Pandora_File::readFile (filename);
-	} catch (Pandora_File::File_Not_Found e) {
+	
+	rc = Pandora_File::readFile (filename, buffer);
+	if (rc == FILE_NOT_FOUND) {
 		pandoraLog ("Pandora_Ssh_Client: File %s not found",
 			  filename.c_str());
-		throw e;
+		return rc;
 	}
 	
 	to_send = buffer.length ();
@@ -263,23 +264,22 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename,
 	sent = libssh2_channel_write (scp_channel, buffer.c_str (), to_send);
 	
 	if (sent < 0) {
-		Scp_Failed *e;
 		errmsg = (char *) malloc (sizeof (char) * 1000);
 		libssh2_session_last_error (session, &errmsg, &errmsg_len, 1);
 		pandoraLog ("Error %d on SCP %s", sent, errmsg);
-		e = new Scp_Failed (errmsg);
+		Pandora::pandoraFree (errmsg);
 			
 		libssh2_channel_close (scp_channel);
 		libssh2_channel_wait_closed (scp_channel);
 		libssh2_channel_free (scp_channel);
-		Pandora::pandoraFree (errmsg);
-		throw *e;
+		return SCP_FAILED;
 	}
 	libssh2_channel_send_eof (scp_channel);
 	
 	libssh2_channel_close (scp_channel);
 	libssh2_channel_wait_closed (scp_channel);
 	libssh2_channel_free (scp_channel);
+	return 0;
 }
 
 /** 

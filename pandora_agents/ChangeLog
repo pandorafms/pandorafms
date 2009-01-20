@@ -1,3 +1,18 @@
+2009-01-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/ftp/pandora_ftp_client.cc,
+	  win32/ftp/pandora_ftp_client.h,
+	  win32/windows/pandora_wmi.cc,
+	  win32/pandora_windows_service.h,
+	  win32/pandora.h,
+	  win32/udp_server/udp_server.cc,
+	  win32/misc/pandora_file.cc,
+	  win32/misc/pandora_file.h,
+	  win32/ssh/pandora_ssh_client.cc,
+	  win32/ssh/pandora_ssh_client.h,
+	  win32/pandora_windows_service.cc: Removed some exceptions that made
+	  the agent crash when the watchdog thread was running.
+
 2008-12-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/pandora_windows_service.h,

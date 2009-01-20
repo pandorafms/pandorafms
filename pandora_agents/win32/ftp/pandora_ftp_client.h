@@ -71,7 +71,7 @@ namespace FTP {
 		
 		void   disconnect      ();
 					     
-		void   ftpFileFilename (const string remote_filename,
+		int   ftpFileFilename (const string remote_filename,
 					const string filepath);
 
 		string getError        ();

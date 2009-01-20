@@ -55,13 +55,13 @@ Pandora_File::fileExists (const string filepath) {
  * @exception File_Not_Found throwed if the path is incorrect or the
  *            file does not exists or could not be opened.
  **/
-string
-Pandora_File::readFile (const string filepath) {
-	string   line, result;
+int
+Pandora_File::readFile (const string filepath, string &result) {
+	string   line;
 	ifstream myfile (filepath.c_str ());
 	
 	if (! myfile.is_open ()) {
-		throw File_Not_Found ();
+		return FILE_NOT_FOUND;
 	}
 	
 	if (myfile.is_open()) {
@@ -71,7 +71,7 @@ Pandora_File::readFile (const string filepath) {
 		}
 		myfile.close();
 	}
-	return result;
+	return 0;
 }
 
 /**
@@ -126,10 +126,10 @@ Pandora_File::readBinFile (const string filepath, char **buffer) {
  *
  * @exception Delete_Error if the file could not be deleted.
  */
-void
+int
 Pandora_File::removeFile (const string filepath) {
 	if (remove (filepath.c_str ()) == -1) {
-		 throw Delete_Error ();
+		 return DELETE_ERROR;
 	}
 }
 

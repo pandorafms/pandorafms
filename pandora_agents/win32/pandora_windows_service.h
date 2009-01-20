@@ -47,21 +47,21 @@ namespace Pandora {
 		bool                 started;
 		
 		TiXmlElement  *getXmlHeader    ();
-		void           copyDataFile    (string filename);
-		void           copyTentacleDataFile (string host,
+		int           copyDataFile    (string filename);
+		int           copyTentacleDataFile (string host,
 						     string filename,
 						     string port,
 						     string ssl,
 						     string pass,
 						     string opts);
-		void           copyScpDataFile (string host,
+		int           copyScpDataFile (string host,
 						string remote_path,
 						string filename);
-		void           copyFtpDataFile (string host,
+		int           copyFtpDataFile (string host,
 						string remote_path,
 						string filename,
 						string password);
-		void           copyLocalDataFile (string remote_path,
+		int           copyLocalDataFile (string remote_path,
 						string filename);
 		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
@@ -82,7 +82,7 @@ namespace Pandora {
 					     const char *svc_description);
 		
 		void           start        ();
-		void           sendXml      (Pandora_Module_List *modules);
+		int           sendXml      (Pandora_Module_List *modules);
 		Pandora_Agent_Conf  *getConf ();
 	};
 }

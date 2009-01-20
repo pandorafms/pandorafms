@@ -119,19 +119,19 @@ namespace SSH {
 		LIBSSH2_SESSION *session;
 		LIBSSH2_CHANNEL *channel;
 		
-		void newConnection (const string host, const int port);
+		int newConnection (const string host, const int port);
 	public:
 		Pandora_Ssh_Client          ();
 		~Pandora_Ssh_Client         ();
 	    
-		void connectWithPublicKey (const string host, const int port,
+		int connectWithPublicKey (const string host, const int port,
 					   const string username, const string filename_pubkey,
 					   const string filename_privkey, const string passphrase);
 		
 	    
 		void disconnect           ();
 					     
-		void scpFileFilename      (const string remote_filename, 
+		int scpFileFilename      (const string remote_filename, 
 					   const string filename);
 					   
 		string getFingerprint     ();

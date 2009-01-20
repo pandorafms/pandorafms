@@ -603,7 +603,8 @@ bool
 Pandora_Wmi::stopService (string service_name) {
 	SC_HANDLE manager, service;
 	bool      success;
-	
+	SERVICE_STATUS ssStatus; 
+
 	manager = OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
 	if (manager == NULL) {
 		pandoraLog ("Could not access to service \"%s\" to stop.",
@@ -619,7 +620,7 @@ Pandora_Wmi::stopService (string service_name) {
 		return false;
 	}
 	
-	success = ControlService (service, SERVICE_CONTROL_STOP, NULL);
+	success = ControlService (service, SERVICE_CONTROL_STOP, &ssStatus);
 	
 	CloseServiceHandle (service);
 	CloseServiceHandle (manager);
@@ -659,7 +660,9 @@ Pandora_Wmi::runWMIQuery (string wmi_query, string column, list<string> &rows) {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &value, quickfix,
 				    column_w.c_str ());
-			rows.push_back (value);
+			if (value != NULL) {
+		  	   rows.push_back (value);
+		  	}
 			dhFreeString (value);		
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {

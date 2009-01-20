@@ -105,7 +105,7 @@ read_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
  * @param remote_filename Remote path to copy the local file in.
  * @param filename Path to the local file.
  */
-void
+int
 Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 				     const string filepath)
 {
@@ -119,7 +119,7 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 	string             url;
 
 	if (this->host == "")
-		throw Unknown_Host ();
+		return UNKNOWN_HOST;
 	
 	filename = Pandora_File::fileName (filepath);
 	
@@ -179,15 +179,15 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 				       Transfer was OK, moving wasn't. */
 		break;
 	case CURLE_COULDNT_CONNECT:
-		throw Unknown_Host ();
+		return UNKNOWN_HOST;
 		
 		break;
 	case CURLE_FTP_ACCESS_DENIED:
-		throw Authentication_Failed ();
+		return AUTHENTICATION_FAILED;
 		
 		break;
 	default:
-		throw FTP_Exception ();
+		return FTP_EXCEPTION;
 	}
 }
 

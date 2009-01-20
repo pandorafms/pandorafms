@@ -116,7 +116,7 @@ if ($ag_group > 1){
         AND $search_sql ORDER BY nombre";
 } else {
         // Is admin user ??
-        if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='".$config["id_user"]."'", "nivel") == 1){
+        if (is_user_admin ($config["id_user"])) {
                 $sql1 = "SELECT * FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
                 $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo";
         } else {

@@ -24,8 +24,14 @@ require_once ('include/config.php');
 require_once ('include/functions.php');
 require_once ('include/functions_db.php');
 
+if (!isset ($config["auth"])) {
+	require_once ("include/auth/mysql.php");
+} else {
+	require_once ("include/auth/".$config["auth"]["scheme"].".php");
+}
+
 // Real start
-session_start();
+session_start ();
 
 // Check user
 check_login ();

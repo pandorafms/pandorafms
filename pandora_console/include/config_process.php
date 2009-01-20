@@ -81,8 +81,22 @@ foreach ($configs as $c) {
 	switch ($c["token"]) {
 	case "language_code":
 		$config['language'] = $c['value'];
-		
 		break;
+	case "auth":
+		exit ('<html><head><title>Pandora FMS Error</title>
+				<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
+				</head><body><div align="center">
+				<div id="db_f">
+				<div>
+				<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
+				</div>
+				<div id="db_ftxt">
+				<h1 id="log_f" class="error">Pandora FMS Console Error DB-003</h1>
+				Cannot override auth variables from database. Remove them from your database by executing:
+				DELETE FROM tconfig WHERE token = "auth";
+				<br />
+				</div>
+				</div></body></html>');
 	default:
 		$config[$c['token']] = $c['value'];
 	}

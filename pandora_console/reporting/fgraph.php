@@ -18,18 +18,23 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require_once ('../include/config.php');
+if (!isset ($config["auth"])) {
+	require_once ($config["homedir"]."/include/auth/mysql.php");
+} else {
+	require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
+}
+
 require_once ($config["homedir"].'/include/functions.php');
 require_once ($config["homedir"].'/include/functions_db.php');
 require_once ('Image/Graph.php');
 
 ini_set ('display_errors', 0); //This is to prevent notices from making the thing not graph
 
-global $config;
-
 if (!isset($_SESSION["id_user"])){
-	session_start();
-	session_write_close();
+	session_start ();
+	session_write_close ();
 }
+
 $config["id_user"] = $_SESSION["id_usuario"];
 
 // Session check

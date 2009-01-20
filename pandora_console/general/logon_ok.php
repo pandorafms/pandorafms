@@ -116,7 +116,7 @@ $cells[3]["color"] = "#000";
 $cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60";
 
 $cells[4][0] = __('Users defined');
-$cells[4][1] = count (list_users ());
+$cells[4][1] = count (get_users ());
 $cells[4]["color"] = "#000";
 $cells[4]["href"] = "index.php?sec=usuarios&sec2=operation/users/user";
 

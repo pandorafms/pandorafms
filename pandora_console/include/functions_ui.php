@@ -131,7 +131,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
  * @return string HTML code if return parameter is true.
  */
 function print_username ($username, $return = false) {
-	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$username.'">'.dame_nombre_real ($username).'</a>';
+	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$username.'">'.get_user_realname ($username).'</a>';
 	
 	if ($return)
 		return $string;
@@ -290,5 +290,22 @@ function format_alert_row ($alert, $combined = false, $agent = true, $url = '') 
 	$data[5] = print_checkbox ("validate[]", $alert["id"], false, true);	
 	
 	return $data;
+}
+
+/**
+ * Prints a substracted string, length specified by cutoff, the full string will be in a rollover. 
+ *
+ * @param string The string to be cut
+ * @param int At how much characters to cut
+ * @param bool Whether to return or print it out
+ *
+ * @return An HTML string
+ */
+function print_string_substr ($string, $cutoff = 16, $return = false) {
+	$string = '<span title="'.safe_input ($string).'">'.mb_substr ($string, 0, $cutoff, "UTF-8").(mb_strlen ($string. "UTF-8") > $cutoff ? '...' : '').'</span>';
+	if ($return === false) {
+		echo $string;
+	} 
+	return $string;
 }
 ?>

@@ -1,3 +1,17 @@
+2009-01-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* ajax.php, include/config.inc.php, include/config_process.php,
+	include/functions.php, include/functions_db.php, 
+	include/functions_ui.php, index.php, install.php, 
+	operation/users/user.php, operation/users/user_edit.php,
+	reporting/fgraph.php: Added pluggable authentication and moved functions
+
+	* general/login_page.php, general/logon_ok.php, 
+	godmode/agentes/modificar_agente.php, 
+	godmode/users/configure_users.php, godmode/users/user_list.php, 
+	operation/agentes/estado_agente.php, operation/incidents/incident.php, 
+	operation/incidents/incident_search.php: Updated functions
+
 2009-01-20  Esteban Sanchez  <estebans@artica.es>
 
 	* ChangeLog: Fixed tabs. Removed some conflict markups and a bit of

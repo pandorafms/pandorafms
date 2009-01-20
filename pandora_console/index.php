@@ -64,6 +64,12 @@ require_once ("include/config.php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
 
+if (!isset ($config["auth"])) {
+	require_once ("include/auth/mysql.php");
+} else {
+	require_once ("include/auth/".$config["auth"]["scheme"].".php");
+}
+
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 	include (ENTERPRISE_DIR."/load_enterprise.php");
@@ -161,34 +167,30 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 
 // Login process 
 elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
-	$nick = get_parameter_post ("nick");
-	$pass = get_parameter_post ("pass");
-	// Connect to Database
-	$sql = sprintf ("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'", $nick);
-	$row = get_db_row_sql ($sql);
+	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
+	$nick = get_parameter_post ("nick"); //This is the variable with the login
+	$pass = get_parameter_post ("pass"); //This is the variable with the password
 	
-	// For every registry
-	if ($row !== false && $row["password"] == md5 ($pass)) {
-		// Login OK
-		// Nick could be uppercase or lowercase (select in MySQL
-		// is not case sensitive)
-		// We get DB nick to put in PHP Session variable,
-		// to avoid problems with case-sensitive usernames.
-		// Thanks to David Muñiz for Bug discovery :)
-		$nick = $row["id_usuario"];
+	// process_user_login is a virtual function which should be defined in each auth file.
+	// It accepts username and password. The rest should be internal to the auth file.
+	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
+	// process_user_login should return false in case of errors or invalid login, the nickname if correct
+	$nick = process_user_login ($nick, $pass);
+			
+	if ($nick !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
 		update_user_contact ($nick);
 		logon_db ($nick, $REMOTE_ADDR);
 		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;
-		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass']);
+		//Remove everything that might have to do with people's passwords or logins
+		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
 	} else {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-			  "Invalid login: ".$nick);
+		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
 		exit;
 	}
 } elseif (! isset ($_SESSION['id_usuario'])) {

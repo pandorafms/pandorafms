@@ -18,171 +18,126 @@
 
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
-if (comprueba_login() == 0) {
+check_login ();
 
-?>
+echo '<h2>'.__('Pandora users').' &gt '.__('Users defined in Pandora').'</h2>';
 
-<h2><?php echo __('Pandora users') ?> &gt; 
-<?php echo __('Users defined in Pandora') ?></h2>
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = 700;
+$table->class = "databox";
+$table->head = array ();
+$table->data = array ();
+$table->align = array ();
 
-<table cellpadding="4" cellspacing="4" width="700" class='databox'>
-<th width="80px"><?php echo __('UserID')?></th>
-<th width="155px"><?php echo __('Last contact')?></th>
-<th width="45px"><?php echo __('Profile')?></th>
-<th width="120px"><?php echo __('Name')?></th>
-<th><?php echo __('Description')?></th>
+$table->head[0] = __('User ID');
+$table->head[1] = __('Name');
+$table->head[2] = __('Last contact');
+$table->head[3] = __('Profile');
+$table->head[4] = __('Description');
 
-<?php
-$color = 1;
+$table->align[2] = "center";
+$table->align[3] = "center";
 
-
-if (give_acl($config["id_user"], 0, "UM") == 1)
-    $query1="SELECT * FROM tusuario";
-else
-    $query1="SELECT * FROM tusuario WHERE id_usuario = '".$config["id_user"]."'";
-
-$resq1=mysql_query($query1);
-while ($rowdup=mysql_fetch_array($resq1)){
-	$name=$rowdup["id_usuario"];
-	$nivel=$rowdup["nivel"];
-	$real_name=$rowdup["nombre_real"];
-	$comments=$rowdup["comentarios"];
-	$fecha_registro =$rowdup["fecha_registro"];
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-		$tip = "tip";
-	}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-		$tip = "tip2";
-	}
-	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$name."'><b>".$name."</b></a>";
-	echo "<td class='$tdcolor'><font size=1>".$fecha_registro."</font>";
-	echo "<td class='$tdcolor'>";
-	if ($nivel == 1) 
-		echo "<img src='images/user_suit.png'>";
-	else
-		echo "<img src='images/user_green.png'>";
-	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
-	$result=mysql_query($sql1);
-	echo "<a href='#' class='$tip'>&nbsp;<span>";
-	if (mysql_num_rows($result)){
-		while ($row=mysql_fetch_array($result)){
-			echo dame_perfil ($row["id_perfil"])."/ ";
-			echo get_group_name ($row["id_grupo"])."<br>";
-		}
-	}
-	else { echo __('This user doesn\'t have any assigned profile/group'); }
-	echo "</span></a>";
-	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
-	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "</tr>";
+$info = array ();
+if (give_acl ($config["id_user"], 0, "UM") == 1) {
+	$info = get_users ();
+} else {
+	$info[$config["id_user"]] = get_user_info ($config["id_user"]);
 }
 
-echo "</table><br>";
-
-?>
-
-
-<h3><?php echo __('Profiles defined in Pandora') ?></h3>
-
-<table cellpadding='4' cellspacing='4' class='databox'>
-<?php
-
-	$query_del1="SELECT * FROM tperfil";
-	$resq1=mysql_query($query_del1);
-	echo "<tr>";
-	echo "<th width='180px'>
-	<font size=1>".__('Profiles')."</th>";
-	echo "<th width='40px'><font size=1>IR";
-	print_help_tip (__('System incidents reading'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>IW";
-	print_help_tip (__('System incidents writing'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>IM";
-	print_help_tip (__('System incidents management'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>AR";
-	print_help_tip (__('Agents reading'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>AW";
-	print_help_tip (__('Agents management'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>LW";
-	print_help_tip (__('Alerts edition'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>UM";
-	print_help_tip (__('Users management'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>DM";
-	print_help_tip (__('Database management'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>LM";
-	print_help_tip (__('Alerts management'));
-	echo "</font></th>";
-	echo "<th width='40px'><font size=1>PM";
-	print_help_tip (__('Pandora system management'));
-	echo "</font></th>";
-	$color = 1;
-	while ($rowdup=mysql_fetch_array($resq1)){
-		$id_perfil = $rowdup["id_perfil"];
-		$nombre=$rowdup["name"];
-		$incident_view = $rowdup["incident_view"];
-		$incident_edit = $rowdup["incident_edit"];
-		$incident_management = $rowdup["incident_management"];
-		$agent_view = $rowdup["agent_view"];
-		$agent_edit =$rowdup["agent_edit"];
-		$alert_edit = $rowdup["alert_edit"];
-		$user_management = $rowdup["user_management"];
-		$db_management = $rowdup["db_management"];
-		$alert_management = $rowdup["alert_management"];
-		$pandora_management = $rowdup["pandora_management"];
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr><td class='$tdcolor"."_id'>".$nombre;
-		
-		echo "<td class='$tdcolor'>";
-		if ($incident_view == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($incident_edit == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($incident_management == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($agent_view == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($agent_edit == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($alert_edit == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($user_management == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($db_management == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($alert_management == 1) echo "<img src='images/ok.png' border=0>";
-			
-		echo "<td class='$tdcolor'>";
-		if ($pandora_management == 1) echo "<img src='images/ok.png' border=0>";
-
+foreach ($info as $user_id => $user_info) {
+	$data[0] = $user_id;
+	$data[1] = $user_info["nombre_real"];
+	$data[2] = print_timestamp ($user_info["fecha_registro"], true);
+	
+	if ($user_info["nivel"]) {
+		$data[3] = '<img src="images/user_suit.png" />&nbsp;';
+	} else {
+		$data[3] = '<img src="images/user_green.png" />&nbsp;';
 	}
-} //end of page
+	
+	$data[3] .= '<a href="#" class="tip"><span>';
+	$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
+	if ($result !== false) {
+		foreach ($result as $row) {
+			$data[3] .= get_profile_name ($row["id_perfil"]);
+			$data[3] .= " / ";
+			$data[3] .= get_group_name ($row["id_grupo"]);
+			$data[3] .= "<br />";
+		}
+	} else {
+		$data[3] .= __('The user doesn\'t have any assigned profile/group');
+	}
+	$data[3] .= "</span></a>";
+	
+	$data[4] = print_string_substr ($user_info["comentarios"], 24, true);
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
+unset ($table);
+
+echo '<h3>'.__('Profiles defined in Pandora').'</h3>';
+
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = 'databox';
+$table->width = 700;
+
+$table->head = array ();
+$table->data = array ();
+$table->size = array ();
+
+$table->head[0] = __('Profiles');
+
+$table->head[1] = "IR".print_help_tip (__('System incidents reading'), true);
+$table->head[2] = "IW".print_help_tip (__('System incidents writing'), true);
+$table->head[3] = "IM".print_help_tip (__('System incidents management'), true);
+$table->head[4] = "AR".print_help_tip (__('Agents reading'), true);
+$table->head[5] = "AW".print_help_tip (__('Agents management'), true);
+$table->head[6] = "LW".print_help_tip (__('Alerts editing'), true);
+$table->head[7] = "UM".print_help_tip (__('Users management'), true);
+$table->head[8] = "DM".print_help_tip (__('Database management'), true);
+$table->head[9] = "LM".print_help_tip (__('Alerts management'), true);
+$table->head[10] = "PM".print_help_tip (__('Systems management'), true);
+
+$table->size[1] = 40;
+$table->size[2] = 40;
+$table->size[3] = 40;
+$table->size[4] = 40;
+$table->size[5] = 40;
+$table->size[6] = 40;
+$table->size[7] = 40;
+$table->size[8] = 40;
+$table->size[9] = 40;
+$table->size[10] = 40;
+
+$profiles = get_db_all_rows_in_table ("tperfil");
+
+$img = print_image ("images/ok.png", true, array ("border" => 0)); 
+
+foreach ($profiles as $profile) {
+	$data[0] = $profile["name"];
+
+	$data[1] = ($profile["incident_view"] ? $img : '');
+	$data[2] = ($profile["incident_edit"] ? $img : '');
+	$data[3] = ($profile["incident_management"] ? $img : '');
+	$data[4] = ($profile["agent_view"] ? $img : '');
+	$data[5] = ($profile["agent_edit"] ? $img : '');
+	$data[6] = ($profile["alert_edit"] ? $img : '');
+	$data[7] = ($profile["user_management"] ? $img : '');
+	$data[8] = ($profile["db_management"] ? $img : '');
+	$data[9] = ($profile["alert_management"] ? $img : '');
+	$data[10] = ($profile["pandora_management"] ? $img : '');
+
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
+unset ($table);
+
 ?>
 </tr></table>

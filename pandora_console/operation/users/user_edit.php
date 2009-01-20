@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
@@ -16,21 +15,23 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
 $view_mode = 0;
 
 if (isset ($_GET["ver"])){ // Only view mode, 
-	$id = $_GET["ver"]; // ID given as parameter
-	if ($config['id_user'] == $id)
+	$id = get_parameter_get ("ver"); // ID given as parameter
+	if ($config['id_user'] == $id) {
 		$view_mode = 0;
-	else
+	} else {
 		$view_mode = 1;
+	}
 }
+
+
 
 $query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
 $resq1=mysql_query($query1);
@@ -153,7 +154,7 @@ if (mysql_num_rows ($result)) {
 			$color = 1;
 		}
 		echo '<td class="'.$tdcolor.'">';
-		echo "<b>".dame_perfil($row["id_perfil"])."</b> / ";
+		echo "<b>".get_profile_name ($row["id_perfil"])."</b> / ";
 		echo "<b>".get_group_name ($row["id_grupo"])."</b><tr>";	
 	}
 } else { 

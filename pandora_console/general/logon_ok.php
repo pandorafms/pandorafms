@@ -19,6 +19,9 @@
 
 require_once ("include/config.php");
 
+// This solves problems in enterprise load
+global $config;
+
 check_login ();
 
 /* Call all extensions login function */
@@ -76,17 +79,11 @@ $table->width = "100%";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 $table->data[1][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["monitor_health"].'" title="'.$data["monitor_health"].'% '.__('of monitors up').'" />';
 
-$table->data[2][0] = '<b>'.__('Data health').'</b>';
-$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["data_health"].'" title="'.$data["data_health"].'% '.__('of data modules up').'" />';
+$table->data[2][0] = '<b>'.__('Module sanity').'</b>';
+$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
 
-$table->data[4][0] = '<b>'.__('Global health').'</b>';
-$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["global_health"].'" title="'.$data["global_health"].'% '.__('of total modules up').'" />';
-
-$table->data[6][0] = '<b>'.__('Module sanity').'</b>';
-$table->data[7][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
-
-$table->data[8][0] = '<b>'.__('Alert level').'</b>';
-$table->data[9][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
+$table->data[4][0] = '<b>'.__('Alert level').'</b>';
+$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
 
 print_table ($table);
 unset ($table);
@@ -103,22 +100,37 @@ $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&r
 $cells[1][0] = __('Total checks');
 $cells[1][1] = $data["total_checks"];
 $cells[1]["color"] = "#000";
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1";
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1";
 
-$cells[2][0] = __('Modules Down');
-$cells[2][1] = $data["total_down"];
+$cells[2][0] = __('Modules critical');
+$cells[2][1] = $data["monitor_critical"];
 $cells[2]["color"] = "#f00";
-$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0";
+$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2";
 
-$cells[3][0] = __('Alerts defined');
-$cells[3][1] = $data["total_alerts"];
-$cells[3]["color"] = "#000";
-$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60";
+$cells[3][0] = __('Modules warning');
+$cells[3][1] = $data["monitor_warning"];
+$cells[3]["color"] = "#FFB900";
+$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1";
 
-$cells[4][0] = __('Users defined');
-$cells[4][1] = count (get_users ());
-$cells[4]["color"] = "#000";
-$cells[4]["href"] = "index.php?sec=usuarios&sec2=operation/users/user";
+$cells[4][0] = __('Modules normal');
+$cells[4][1] = $data["monitor_ok"];
+$cells[4]["color"] = "#00ff00";
+$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0";
+
+$cells[5][0] = __('Modules unknown');
+$cells[5][1] = $data["monitor_unknown"];
+$cells[5]["color"] = "#aaaaaa";
+$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=3";
+
+$cells[6][0] = __('Alerts defined');
+$cells[6][1] = $data["total_alerts"];
+$cells[6]["color"] = "#000";
+$cells[6]["href"] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&refr=60";
+
+$cells[7][0] = __('Users defined');
+$cells[7][1] = count (get_users ());
+$cells[7]["color"] = "#000";
+$cells[7]["href"] = "index.php?sec=usuarios&sec2=operation/users/user";
 
 foreach ($cells as $key => $row) {
 	//Switch class around

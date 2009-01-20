@@ -123,32 +123,15 @@ function get_group_stats ($id_group) {
 	$data["monitor_not_init"] = 0;
 	$data["monitor_unknown"] = 0;
 	$data["monitor_ok"] = 0;
-	$data["monitor_down"] = 0;
+	$data["monitor_bad"] = 0; // Critical + Unknown + Warning
+	$data["monitor_warning"] = 0;
+	$data["monitor_critical"] = 0;
 	$data["monitor_alerts"] = 0;
 	$data["monitor_alerts_fired"] = 0;
 	$data["monitor_alerts_fire_count"] = 0;
-	$data["data_checks"] = 0;
-	$data["data_not_init"] = 0;
-	$data["data_unknown"] = 0;
-	$data["data_ok"] = 0;
-	$data["data_down"] = 0;
-	$data["data_alerts"] = 0;
-	$data["data_alerts_fired"] = 0;
-	$data["data_alerts_fire_count"] = 0;
+
 	$data["total_agents"] = 0;
-	$data["total_checks"] = 0;
-	$data["total_ok"] = 0;
-	$data["total_alerts"] = 0;
-	$data["total_alerts_fired"] = 0;
-	$data["total_alerts_fire_count"] = 0;
-	$data["monitor_bad"] = 0;
-	$data["data_bad"] = 0;
-	$data["total_bad"] = 0;
-	$data["total_not_init"] = 0;
-	$data["total_down"] = 0;
 	$data["monitor_health"] = 100;
-	$data["data_health"] = 100;
-	$data["global_health"] = 100;
 	$data["alert_level"] = 100;
 	$data["module_sanity"] = 100;
 	$data["server_sanity"] = 100;
@@ -171,83 +154,62 @@ function get_group_stats ($id_group) {
 		return $data;
 	}
 	
-	$sql = sprintf ("SELECT tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo, estado, datos, current_interval, utimestamp FROM tagente_estado, tagente_modulo WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_agente IN (%s)", implode (",", array_keys ($agents)));
+	$sql = sprintf ("SELECT tagente_estado.id_agente_modulo, 
+							tagente_modulo.id_tipo_modulo, 
+							estado, datos, 
+							current_interval, 
+							utimestamp 
+					FROM tagente_estado, tagente_modulo 
+					WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+						AND	tagente_modulo.id_agente IN (%s)", implode (",", array_keys ($agents)));
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false) {
 		return $data;
 	}
 
-	$module_remote = get_moduletypes ("remote");
-
 	foreach ($result as $row) {
 		$last_update = $cur_time - $row["utimestamp"];
-		if (in_array ($row["id_tipo_modulo"], $module_remote)) {
-			//This module is a monitor (remote)
-			$data["monitor_checks"]++; 
+
+		$data["monitor_checks"]++; 
 			
-			//Check whether it's down, not init, unknown or OK
-			if ($last_update == $cur_time) {
-				//The utimestamp is 0 and has never been updated
-				$data["monitor_not_init"]++;
-			} elseif ($last_update >= ($row["current_interval"] * 2)) {
-				//The utimestamp is greater than 2x the interval (it has timed out)
-				$data["monitor_unknown"]++;
-			} elseif ($row["estado"] == 1 || $row["estado"] == 2) {
-				$data["monitor_down"]++;
-			} else {
-				$data["monitor_ok"]++;
+		//Check whether it's down, not init, unknown or OK
+		if ($last_update == $cur_time) {
+			//The utimestamp is 0 and has never been updated
+			$data["monitor_not_init"]++;
+		} elseif ($last_update >= ($row["current_interval"] * 2)) {
+			//The utimestamp is greater than 2x the interval (it has timed out)
+			$data["monitor_unknown"]++;
+		} elseif ($row["estado"] == 1){
+			$data["monitor_critical"]++;
+		} elseif ($row["estado"] == 2){
+			$data["monitor_warning"]++;
+		}
+		 else {
+			$data["monitor_ok"]++;
+		}
+	
+		$fired = get_db_value ('times_fired', 'talert_template_modules', 'id_agent_module', $row["id_agente_modulo"]);
+		if ($fired !== false) {
+			$data["monitor_alerts"]++;
+			if ($fired > 0) {
+				$data["monitor_alerts_fired"]++;
+				$data["monitor_alerts_fire_count"] += $fired;
 			}
-			
-			$fired = get_db_value ('times_fired', 'talert_template_modules',
-				'id_agent_module', $row["id_agente_modulo"]);
-			if ($fired !== false) {
-				$data["monitor_alerts"]++;
-				if ($fired > 0) {
-					$data["monitor_alerts_fired"]++;
-					$data["monitor_alerts_fire_count"] += $fired;
-				}
-			}
-		} else {
-			//This module is a data check (agent)
-			$data["data_checks"]++;
-			
-			//Check whether it's down, not init, unknown or OK
-			if ($last_update == $cur_time) {
-				//The utimestamp is 0 and has never been updated
-				$data["data_not_init"]++;
-			} elseif ($last_update >= ($row["current_interval"] * 2)) {
-				//The utimestamp is greater than 2x the interval (it has timed out)
-				$data["data_unknown"]++;
-			} elseif ($row["estado"] == 1 || $row["estado"] == 2) {
-				$data["data_down"]++;
-			} else {
-				$data["data_ok"]++;
-			}
-			
-			$fired = get_db_value ('times_fired', 'talert_template_modules',
-				'id_agent_module', $row["id_agente_modulo"]);
-			if ($fired !== false) {
-				$data["data_alerts"]++;
-				if ($fired > 0) {
-					$data["data_alerts_fired"]++;
-					$data["data_alerts_fire_count"] += $fired;
-				}
-			}
-		} //End module check
+		}
 	} //End foreach module
 	
 	$data["total_agents"] = count ($agents);
-	$data["total_checks"] = $data["data_checks"] + $data["monitor_checks"];
-	$data["total_ok"] = $data["data_ok"] + $data["monitor_ok"];
-	$data["total_alerts"] = $data["data_alerts"] + $data["monitor_alerts"];
-	$data["total_alerts_fired"] = $data["data_alerts_fired"] + $data["monitor_alerts_fired"];
-	$data["total_alerts_fire_count"] = $data["data_alerts_fire_count"] + $data["monitor_alerts_fire_count"];
-	$data["monitor_bad"] = $data["monitor_down"] + $data["monitor_unknown"];
-	$data["data_bad"] = $data["data_down"] + $data["data_unknown"];
-	$data["total_bad"] = $data["data_bad"] + $data["monitor_bad"];
-	$data["total_not_init"] = $data["data_not_init"] + $data["monitor_not_init"];
-	$data["total_down"] = $data["data_down"] + $data["monitor_down"];
+	$data["total_checks"] = $data["monitor_checks"];
+	$data["total_ok"] = $data["monitor_ok"];
+	// Todo, count SNMP Alerts and Inventory alerts here
+	$data["total_alerts"] = $data["monitor_alerts"];
+	$data["total_alerts_fired"] =  $data["monitor_alerts_fired"];
+	$data["total_alerts_fire_count"] =  $data["monitor_alerts_fire_count"];
+	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_unknown"] +$data["monitor_warning"];
+	$data["total_bad"] =  $data["monitor_bad"];
+	$data["total_not_init"] = $data["monitor_not_init"];
+	$data["total_down"] = $data["monitor_critical"];
 
 	/*
 	 Monitor health (percentage)
@@ -263,12 +225,6 @@ function get_group_stats ($id_group) {
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
 	} else {
 		$data["monitor_health"] = 100;
-	}
-	
-	if ($data["data_bad"] > 0 && $data["data_checks"] > 0) {
-		$data["data_health"] = format_numeric (100 - ($data["data_bad"] / ($data["data_checks"] / 100)), 1);
-	} else {
-		$data["data_health"] = 100;
 	}
 	
 	if ($data["total_bad"] > 0 && $data["total_checks"] > 0) {

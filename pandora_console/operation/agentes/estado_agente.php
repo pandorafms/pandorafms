@@ -89,8 +89,7 @@ if ($ag_group > 1){
 // Not selected any specific group
 } else {
 	// Is admin user ??
-	$sql = sprintf ("SELECT * FROM tusuario WHERE id_usuario ='%s'", $config['id_user']);
-	if (get_db_sql ($sql, "nivel") == 1) {
+	if (is_user_admin ($config["id_user"])) {
 		$sql = "SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
 		$sql2 = "SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
 	// standard user

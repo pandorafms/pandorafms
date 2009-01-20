@@ -988,7 +988,6 @@ if (!function_exists ("mb_strtoupper")) {
  *
  * @param string Text string to be stripped of magic_quotes protection
  */
-
 function unsafe_string ($string) {
 	if (get_magic_quotes_gpc ()) 
 		return stripslashes ($string);
@@ -1000,7 +999,6 @@ function unsafe_string ($string) {
  *
  * @param string Text string to be protected with quotes if magic_quotes protection is disabled
  */
-
 function safe_sql_string ($string) {
 	if (get_magic_quotes_gpc () == 0) 
 		return $string;

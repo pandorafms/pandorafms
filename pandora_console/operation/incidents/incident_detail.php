@@ -223,9 +223,9 @@ echo '<td class="datos2"><b>'.__('Updated at').'</b><td class="datos2"><i>'.date
 echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
 
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_select (list_users (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
+	print_select (get_users_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135");
 } else {
-	print_select (list_users (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
+	print_select (get_users_info (), "usuario_form", $usuario, '', 'SYSTEM', '', false, false, true, "w135", true);
 }
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 

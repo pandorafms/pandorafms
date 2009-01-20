@@ -33,10 +33,7 @@ if (isset($_GET["borrar_usuario"])) { // if delete user
 	// Delete user
 	// Delete cols from table tgrupo_usuario
 	
-	$sql = "DELETE FROM tgrupo_usuario WHERE usuario = '".$nombre."'";
-	$result = process_sql ($sql);
-	$sql = "DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
-	$result = process_sql ($sql);
+	$result = delete_user ($nombre);
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting user').'</h3>';
 	} else {
@@ -78,8 +75,8 @@ $result = get_db_all_rows_in_table ('tusuario');
 foreach ($result as $row) {
 	$data = array ();
 
-	$data[0] = '<a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$row["id_usuario"].'"><b>'.$row["id_usuario"].'</b></a>';
-	$data[1] = $row["fecha_registro"];
+	$data[0] = print_username ($row["id_usuario"], true);
+	$data[1] = print_timestamp ($row["fecha_registro"], true);
 	if ($row["nivel"] == 1) {
 		$data[2] = '<img src="images/user_suit.png" />';
 	} else {
@@ -94,7 +91,7 @@ foreach ($result as $row) {
 	}
 	
 	foreach ($profiles as $profile) {
-		$data[2] .= dame_perfil ($profile["id_perfil"])." / ";
+		$data[2] .= get_profile_name ($profile["id_perfil"])." / ";
 		$data[2] .= get_group_name ($profile["id_grupo"])."<br />";
 	}
 	

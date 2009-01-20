@@ -27,14 +27,14 @@
 
 function check_login () {
 	global $config;
-	if (! isset ($config["homedir"])) {
+	
+	if (!isset ($config["homedir"])) {
 		// No exists $config. Exit inmediatly
 		include("general/noaccess.php");
 		exit;
 	}
 	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
-		$id = get_db_value("id_usuario","tusuario","id_usuario",$_SESSION["id_usuario"]);
-		if ( $_SESSION["id_usuario"] == $id) {
+		if (is_user ($_SESSION["id_usuario"])) {
 			return 0;
 		}
 	}
@@ -68,8 +68,8 @@ function give_acl ($id_user, $id_group, $access) {
 	// IF user is level = 1 then always return 1
 
 	global $config;
-	$nivel = get_db_value("nivel","tusuario","id_usuario",$id_user);
-	if ($nivel == 1) {
+	$nivel = is_user_admin ($id_user);
+	if ($nivel) {
 		return 1;
 		//Apparently nivel is 1 if user has full admin access
 	} 
@@ -153,8 +153,7 @@ function audit_db ($id, $ip, $accion, $descripcion){
 function logon_db ($id_user, $ip) {
 	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
-	$sql = sprintf ("UPDATE tusuario SET fecha_registro = NOW() WHERE id_usuario = '%s'", $id_user);
-	process_sql ($sql);
+	update_user_contact ($id_user);
 }
 
 /**
@@ -174,9 +173,39 @@ function logoff_db ($id_user, $ip) {
  * 
  * @return string Profile name of the given id
  */
-function dame_perfil ($id_profile) {
+function get_profile_name ($id_profile) {
 	return (string) get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
+
+/**
+ * Create Profile for User
+ *
+ * @param string User ID
+ * @param int Profile ID (default 1 => AR)
+ * @param int Group ID (default 1 => All) 
+ *
+ * @return bool True if succesful, false if not
+ */
+function create_user_profile ($id_user, $id_profile = 1, $id_group = 1) {
+	global $config;
+	
+	if (isset ($config["id_user"])) {
+		//Usually this is set unless we call it while logging in (user known by auth scheme but not by pandora)
+		$assign = $config["id_user"];
+	} else {
+		$assign = $id_user;
+	}
+	
+	$insert = array (
+		"id_usuario"  => $id_user,
+		"id_perfil"   => $id_profile,
+		"id_grupo"    => $id_group,
+		"assigned_by" => $assign
+	);
+
+	return (bool) process_sql_insert ("tusuario_perfil", $insert);
+}
+
 
 /** 
  * Get disabled field of a group
@@ -366,11 +395,7 @@ function get_agent_name ($id_agent, $case = "upper") {
 }
 
 /** 
- * Get MD5 encrypted password of a user.
- * 
- * @param string id_usuario User id.
- * 
- * @return string Password of a user (should be compared to MD5 string)
+ * DEPRECATED: Don't use this anymore. Use pre-defined functions according to authorization scheme. Passwords can't always be retrieved
  */
 function get_user_password ($id_user) {
 	return (string) get_db_value ('password', 'tusuario', 'id_usuario', $id_user);
@@ -477,14 +502,10 @@ function get_agentmodule_type ($id_agentmodule) {
 }
 
 /** 
- * Get the real name of an user.
- * 
- * @param string $id_user User id
- * 
- * @return string Real name of given user.
+ * DEPRECATED: User get_user_realname
  */
 function dame_nombre_real ($id_user) {
-	return (string) get_db_value ('nombre_real', 'tusuario', 'id_usuario', $id_user);
+	return get_user_realname ($id_user);
 }
 
 /**
@@ -855,42 +876,17 @@ function get_os_name ($id_os) {
 }
 
 /** 
- * Update user last login timestamp.
- * 
- * @param string $id_user User id
- */
-function update_user_contact ($id_user) {
-	global $config;
-	
-	$sql = sprintf ("UPDATE `tusuario` set `fecha_registro` = NOW() WHERE 'id_usuario' = %d",$id_user);
-	process_sql ($sql);
-}
-
-/** 
- * Get the user email
- * 
- * @param string User id.
- * 
- * @return string Get the email address of an user
+ * DEPRECATED: Use get_user_email
  */
 function dame_email ($id_user) {
-	return (string) get_db_value ('direccion', 'tusuario', 'id_usuario', $id_user);
+	return get_user_email ($id_user);
 }
 
 /** 
- * Checks if a user is administrator.
- * 
- * @param string User id.
- * 
- * @return bool True is the user is admin
+ * DEPRECATED: Use is_user_admin
  */
 function dame_admin ($id_user) {
-	$level = get_db_value ('nivel', 'tusuario', 'id_usuario', $id_user);
-	if ($level == 1) {
-		return true;
-	} else {
-		return false;
-	}
+	return is_user_admin ($id_user);
 }
 
 /** 
@@ -928,10 +924,7 @@ function check_alert_fired ($id_agent) {
  * @return bool True if the user exists.
  */
 function existe ($id_user) {
-	$user = get_db_row ('tusuario', 'id_usuario', $id_user);
-	if (! $user)
-		return false;
-	return true;
+	return is_user ($id_user);
 }
 
 /** 
@@ -1026,32 +1019,20 @@ function list_group2 ($id_user) {
 }
 
 /**
- * Get a list of all users in an array [username] => real name
+ * Get a list of all users in an array [username] => (info)
  * 
  * @param string Field to order by (id_usuario, nombre_real or fecha_registro)
+ * @param string Which info to get (defaults to nombre_real)
  *
  * @return array An array of users
  */
-function list_users ($order = "nombre_real") {
-	switch ($order) {
-	case "id_usuario":
-	case "fecha_registro":
-	case "nombre_real":
-		break;
-	default:
-		$order = "nombre_real";
+function get_users_info ($order = "nombre_real", $info = "nombre_real") {
+	$users = get_users ($order);
+	$ret = array ();
+	foreach ($users as $user_id => $user_info) {
+		$ret[$user_id] = $user_info[$info];
 	}
-	
-	$output = array();
-	
-	$result = get_db_all_rows_sql ("SELECT id_usuario, nombre_real FROM tusuario ORDER BY ".$order);
-	if ($result !== false) {
-		foreach ($result as $row) {
-			$output[$row["id_usuario"]] = $row["nombre_real"];
-		}
-	}
-	
-	return $output;
+	return $ret;
 }
  
 /** 

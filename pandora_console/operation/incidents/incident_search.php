@@ -34,7 +34,7 @@ echo '<div style="width:650px;"><div style="float:right;"><img src="images/pulpo
 	<table width="500px" cellpadding="4" cellspacing="4" class="databox">
 	<tr><td class="datos">'.__('Created by:').'</td><td class="datos">';
 
-print_select (list_users (), "usuario", "All", '', __('All'), "All", false, false, false, "w120");
+print_select (get_users_info (), "usuario", "All", '', __('All'), "All", false, false, false, "w120");
 
 echo '</td></tr><tr><td class="datos2">'.__('Search text').': (*)</td>
 	<td class="datos2">';

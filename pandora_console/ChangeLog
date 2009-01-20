@@ -1,5 +1,27 @@
 2009-01-20  Esteban Sanchez  <estebans@artica.es>
 
+	* ChangeLog: Fixed tabs. Removed some conflict markups and a bit of
+	style here and there.
+
+	* index.php, godmode/setup/setup.php, include/styles/menu.css,
+	operation/agentes/estado_agente.php,
+	operation/agentes/estado_monitores.php,
+	operation/agentes/estado_ultimopaquete.php,
+	include/functions.php: Tab and spaces style correction.
+
+	* godmode/reporting/map_builder.php: Use generic database functions
+	for the insert. Now a node can represent a whole agent, changing to
+	bad if any module has failed.
+
+	* include/config_process.php: Use generic databse functions for
+	inserts. Fixed an error when inserting loginhash_pwd token. Make the
+	token a bit more complicated by multiplying two numbers.
+
+	* include/functions_visual_map.php: Add support to agent nodes that
+	will turn to bad icon when any module fails.
+
+2009-01-20  Esteban Sanchez  <estebans@artica.es>
+
 	* include/javascript/jquery.js: Downgraded to 1.2. It was causing some
 	errors in visual map edition.
 

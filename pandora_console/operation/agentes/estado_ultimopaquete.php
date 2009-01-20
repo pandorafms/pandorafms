@@ -123,44 +123,44 @@ if (mysql_num_rows ($result3)) {
 			$real_interval = $intervalo_agente;
 		}
 
-        if (($row3["id_tipo_modulo"] != 3)
+		if (($row3["id_tipo_modulo"] != 3)
 		AND ($row3["id_tipo_modulo"] != 10)
 		AND ($row3["id_tipo_modulo"] != 17)
 		AND ($row3["id_tipo_modulo"] != 23)){
-            echo "</td><td class='".$tdcolor."f9' title='".salida_limpia($row3["descripcion"])."'>"; 
-            echo salida_limpia(substr($row3["descripcion"],0,32));
+			echo "</td><td class='".$tdcolor."f9' title='".salida_limpia($row3["descripcion"])."'>"; 
+			echo salida_limpia(substr($row3["descripcion"],0,32));
 			if (strlen($row3["descripcion"]) > 32){
 				echo "...";
 			}
-            echo "</td>";
-        } 
+			echo "</td>";
+		} 
 		if (($row3["id_tipo_modulo"] == 100) OR ($row3['history_data'] == 0)) {
-            echo "<td class='".$tdcolor."f9' colspan='2' title='".$row3["datos"]."'>";
+			echo "<td class='".$tdcolor."f9' colspan='2' title='".$row3["datos"]."'>";
 			echo substr(salida_limpia($row3["datos"]),0,12);
-   		} else {
-            // String uses colspan2 and different graphtype
-            if (($row3["id_tipo_modulo"] == 3)
+		} else {
+			// String uses colspan2 and different graphtype
+			if (($row3["id_tipo_modulo"] == 3)
 			OR ($row3["id_tipo_modulo"] == 10)
 			OR ($row3["id_tipo_modulo"] == 17)
 			OR ($row3["id_tipo_modulo"] == 23)){
 				$graph_type = "string";
-                echo "<td class='".$tdcolor."f9' colspan=2 title='".salida_limpia($row3["datos"])."'>";
-            }
-            elseif (($row3["id_tipo_modulo"] == 2)
+				echo "<td class='".$tdcolor."f9' colspan=2 title='".salida_limpia($row3["datos"])."'>";
+			}
+			elseif (($row3["id_tipo_modulo"] == 2)
 			OR ($row3["id_tipo_modulo"] == 6)
 			OR ($row3["id_tipo_modulo"] == 21)
 			OR ($row3["id_tipo_modulo"] == 18)
 			OR ($row3["id_tipo_modulo"] == 9)) {
 				$graph_type = "boolean";
-                echo "<td class=".$tdcolor.">";
-            }
+				echo "<td class=".$tdcolor.">";
+			}
 			else {
 				$graph_type = "sparse";
 				echo "<td class=".$tdcolor.">";
-            }
+			}
 
-            // Kind of data
-            if (is_numeric($row3["datos"])) {
+			// Kind of data
+			if (is_numeric($row3["datos"])) {
 				echo format_for_graph($row3["datos"] );
 			} else
 				echo substr(salida_limpia($row3["datos"]),0,42);
@@ -214,8 +214,8 @@ if (mysql_num_rows ($result3)) {
 			}
 		}
 		echo "</td></tr>";
-    }
-    echo '</table>';
+	}
+	echo '</table>';
 }
 else {
 	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";

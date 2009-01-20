@@ -80,13 +80,11 @@ foreach ($modules as $module) {
 		$data[4] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('NORMAL'). ' : ';
 	}
 	
-    if (is_numeric($module["datos"])) {
-        $data[4] .= format_for_graph($module["datos"]). '">';
-    } else {
-        $data[4] .= substr(salida_limpia($module["datos"]),0,42) . '">';
-    }
-    
-			
+	if (is_numeric($module["datos"])) {
+		$data[4] .= format_for_graph($module["datos"]). '">';
+	} else {
+		$data[4] .= substr(salida_limpia($module["datos"]),0,42) . '">';
+	}
 	
 	if ($module["module_interval"] > 0) {
 		$data[5] = $module["module_interval"];

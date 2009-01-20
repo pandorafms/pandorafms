@@ -147,18 +147,19 @@ if ($create_layout_data) {
 	$layout_data_width = (int) get_parameter ("width");
 	$layout_data_height = (int) get_parameter ("height");
 	
-	$sql = sprintf ('INSERT INTO tlayout_data (id_layout, label, id_layout_linked,
-			label_color, image, type, id_agente_modulo, parent_item, period, no_link_color,
-			width, height) 
-			VALUES (%d, "%s", %d, "%s", "%s", %d, %d, %d, %d, 1, %d, %d)',
-			$id_layout, $layout_data_label,
-			$layout_data_map_linked,
-			$layout_data_label_color,
-			$layout_data_image, $layout_data_type,
-			$layout_data_id_agent_module,
-			$layout_data_parent_item, $layout_data_period * 3600,
-			$layout_data_width, $layout_data_height);
-	$result = process_sql ($sql, 'insert_id');
+	$values = array ('id_layout' => $id_layout,
+		'label' => $layout_data_label,
+		'id_layout_linked' => $layout_data_map_linked,
+		'label_color' => $layout_data_label_color,
+		'image' => $layout_data_image,
+		'type' => $layout_data_type,
+		'id_agente_modulo' => $layout_data_id_agent_module,
+		'parent_item' => $layout_data_parent_item,
+		'period' => $layout_data_period * 3600,
+		'no_link_color' => 1,
+		'width' => $layout_data_width,
+		'height' => $layout_data_height);
+	$result = process_sql_insert ('tlayout_data', $values);
 	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
@@ -446,7 +447,7 @@ function agent_changed (event, id_agent, selected) {
 		},
 		function (data) {
 			$('#form_layout_data_editor #module').empty ();
-			$('#form_layout_data_editor #module').append ($('<option></option>').html ("--").attr ("value", 0));
+			$('#form_layout_data_editor #module').append ($('<option></option>').html ("<?php echo __('Any')?>").attr ("value", 0));
 			jQuery.each (data, function (i, val) {
 				s = html_entity_decode (val['nombre']);
 				$('#form_layout_data_editor #module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));

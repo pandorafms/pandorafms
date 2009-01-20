@@ -17,20 +17,20 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-$build_version = "PC090115";
-$pandora_version = "v2.1-dev";
+$build_version = 'PC090120';
+$pandora_version = 'v2.1-dev';
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir
 
-$config["attachment_store"] = $config["homedir"]."/attachment";
+$config['attachment_store'] = $config['homedir'].'/attachment';
 
 // Default font used for graphics (a Free TrueType font included with Pandora FMS)
-$config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
+$config['fontpath'] = $config['homedir'].'/reporting/FreeSans.ttf';
 
 // Style (pandora by default)
-$config["style"] = "pandora";
+$config['style'] = 'pandora';
 
 // Read remaining config tokens from DB
 if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
@@ -58,7 +58,7 @@ mysql_select_db ($config["dbname"]);
 require_once ('functions_db.php');
 $configs = get_db_all_rows_in_table ('tconfig');
 
-if (sizeof ($configs) == 0) {
+if (empty ($configs)) {
 	exit ('<html><head><title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
 		</head><body><div align="center">
@@ -76,18 +76,19 @@ if (sizeof ($configs) == 0) {
 		</div></body></html>');
 }
 
+/* Compatibility fix */
 foreach ($configs as $c) {
 	switch ($c["token"]) {
 	case "language_code":
-		$config["language"] = $c["value"];
+		$config['language'] = $c['value'];
 		
 		break;
 	default:
-		$config[$c["token"]] = $c["value"];
+		$config[$c['token']] = $c['value'];
 	}
 }
 
-if ($config["language"] == 'ast_es') {
+if ($config['language'] == 'ast_es') {
 	$help_code = 'ast';
 } else {
 	$help_code = substr ($config["language"], 0, 2);
@@ -112,47 +113,54 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n->load_tables();
 }
 
-if (!isset ($config['date_format'])) {
-	$config['date_format'] = 'F j, Y, g:i a';
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('date_format', '".$config['date_format']."')");
-}
-
-if (!isset($config["event_view_hr"])){
-	$config["event_view_hr"] = 8;
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('event_view_hr', ".$config["event_view_hr"].")");
-}
-
-if (!isset($config["loginhash_pwd"])){
-	$config["loginhash_pwd"] = rand(0,1000)."pandorahash";
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('loginhash_pwd', ".$config["loginhash_pwd"].")");
-}
-
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 	$config['homeurl'] = '/'.$config['homeurl'];
 }
 
+if (!isset ($config['date_format'])) {
+	$config['date_format'] = 'F j, Y, g:i a';
+	process_sql_insert ('tconfig', array ('token' => 'date_format',
+		'value' => $config['date_format']));
+}
 
-// If first time, make the trap2agent disable in DB
+if (! isset ($config['event_view_hr'])) {
+	$config['event_view_hr'] = 8;
+	process_sql_insert ('tconfig', array ('token' => 'event_view_hr',
+		'value' => $config['event_view_hr']));
+}
+
+if (! isset ($config['loginhash_pwd'])) {
+	$config['loginhash_pwd'] = rand (0, 1000) * rand (0, 1000)."pandorahash";
+	process_sql_insert ('tconfig', array ('token' => 'loginhash_pwd',
+		'value' => $config["loginhash_pwd"]));
+}
+
 if (!isset($config["trap2agent"])){
 	$config["trap2agent"] = 0;
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('trap2agent', 0)");
+	process_sql_insert ('tconfig', array ('token' => 'trap2agent',
+		'value' => $config['trap2agent']));
 }
 
 if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
 	// Default period (in secs) for auto SLA calculation (for monitors)
 	$config["sla_period"] = 604800;
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('sla_period',604800)");
+	process_sql_insert ('tconfig', array ('token' => 'sla_period',
+		'value' => $config['sla_period']));
 }
 
 if (!isset ($config["prominent_time"])) {
-	// Prominent time tells us what to show prominently when a timestamp is displayed. The comparation (... days ago) or the timestamp (full date)
+	// Prominent time tells us what to show prominently when a timestamp is
+	// displayed. The comparation (... days ago) or the timestamp (full date)
 	$config["prominent_time"] = "comparation";
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('prominent_time','comparation')");	
+	process_sql_insert ('tconfig', array ('token' => 'prominent_time',
+		'value' => $config['prominent_time']));
 }
 
 if (!isset ($config["timesource"])) {
-	// Prominent time tells us what to show prominently when a timestamp is displayed. The comparation (... days ago) or the timestamp (full date)
+	// Prominent time tells us what to show prominently when a timestamp is
+	// displayed. The comparation (... days ago) or the timestamp (full date)
 	$config["timesource"] = "system";
-	process_sql ("INSERT INTO tconfig (token,value) VALUES ('timesource','system')");	
+	process_sql_insert ('tconfig', array ('token' => 'timesource',
+		'value' => $config['timesource']));
 }
 ?>

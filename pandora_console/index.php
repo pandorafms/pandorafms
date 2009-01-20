@@ -46,8 +46,8 @@ if ($develop_bypass != 1) {
 	}
 	// Check perms for config.php
 	if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
-	    (substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
-	    (substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
+		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
+		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
 		include "general/error_perms.php";
 		exit;
 	}
@@ -144,19 +144,19 @@ $sec = safe_url_extraclean ($sec);
 
 // Hash login process
 if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
-    $loginhash_data = get_parameter("loginhash_data", "");
-    $loginhash_user = get_parameter("loginhash_user", "");
-   
-    if ($loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+	$loginhash_data = get_parameter("loginhash_data", "");
+	$loginhash_user = get_parameter("loginhash_user", "");
+	
+	if ($loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
 		update_user_contact ($loginhash_user);
 		logon_db ($loginhash_user, $REMOTE_ADDR);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
-    } else {
-        require_once ('general/login_page.php');
-    	audit_db ("system", $REMOTE_ADDR, "Logon Failed (loginhash", "");
-    	exit;
-    }
+	} else {
+		require_once ('general/login_page.php');
+		audit_db ("system", $REMOTE_ADDR, "Logon Failed (loginhash", "");
+		exit;
+	}
 }
 
 // Login process 

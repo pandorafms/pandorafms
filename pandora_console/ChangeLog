@@ -1,5 +1,10 @@
 2009-01-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
+	* include/help/es/help_alert_validation.php,
+	  include/help/es/help_alert_type.php: Added inline help files.
+
+2009-01-20  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* include/help/en/help_map_builder.php, 
 	include/help/en/help_plugin_definition.php, 
 	include/help/es/help_map_builder.php: Style formatting.

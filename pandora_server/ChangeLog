@@ -1,4 +1,9 @@
-2009-01-16  Sancho Lerena <slerena@artica.es>
+2009-01-20  Raul Mateos <raulofpandora@gmail.com>
+	
+	* lib/PandoraFMS/Config.pm: Changed some texts again.
+	* Changelog: Changed last commit date.
+
+2009-01-19  Sancho Lerena <slerena@artica.es>
 
 	* pandora_wmi, pandora_plugin, pandora_recon: Updates merged from
 	2.0 version. Different small fixes and improved performance.

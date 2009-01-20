@@ -64,16 +64,18 @@ echo "</td>";
 echo "<td>".__('Monitor status')."</td><td>";
 
 $fields = array ();
-$fields[0] = __('Monitors down'); //default
-$fields[1] = __('Monitors up');
-$fields[2] = __('Monitors unknown');
+$fields[0] = __('Normal'); //default
+$fields[1] = __('Warning');
+$fields[2] = __('Critical');
+$fields[3] = __('Unknown');
+$fields[4] = __('Not normal');
 
 print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
 
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
-$result = get_db_all_rows_sql ("SELECT DISTINCT(nombre) FROM tagente_modulo WHERE id_tipo_modulo IN (2, 6, 9, 18, 21, 100) ORDER BY nombre");
+$result = get_db_all_rows_sql ("SELECT DISTINCT(nombre) FROM tagente_modulo ORDER BY nombre");
 if ($result === false) {
 	$result = array ();
 }
@@ -89,6 +91,7 @@ echo '</td><td valign="middle">'.__('Free text').'</td>';
 
 echo '<td valign="middle">';
 print_input_text ("ag_freestring", $ag_freestring, '', 15);
+
 echo '</td><td valign="middle">';
 print_submit_button (__('Show'), "uptbutton", false, 'class="sub"');
 
@@ -100,7 +103,6 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 	WHERE tagente.id_agente = tagente_modulo.id_agente 
 	AND tagente_modulo.disabled = 0 
 	AND tagente.disabled = 0 
-	AND tagente_modulo.id_tipo_modulo IN (2, 9, 12, 18, 6, 100) 
 	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
@@ -122,11 +124,15 @@ if ($ag_freestring != "") {
 }
 
 // Status selector
-if ($status == 1) { //Up
+if ($status == 0) { //Up
 	$sql .= " AND tagente_estado.estado = 0 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";
-} elseif ($status == 0) { //Down
-	$sql .= " AND tagente_estado.estado = 1";
-} elseif ($status == 2) { //Unknown
+} elseif ($status == 2) { //Critical
+	$sql .= " AND tagente_estado.estado = 1 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";
+} elseif ($status == 1) { //warning
+	$sql .= " AND tagente_estado.estado = 2 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";	
+} elseif ($status == 4) { //not normal
+	$sql .= " AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) ";
+} elseif ($status == 3) { //Unknown
 	$sql .= " AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
 }
 
@@ -144,6 +150,7 @@ $sql = "SELECT tagente_modulo.id_agente_modulo,
 	tagente_modulo.id_tipo_modulo AS module_type,
 	tagente_modulo.module_interval, 
 	tagente_estado.datos, 
+	tagente_estado.estado,
 	tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
 $result = get_db_all_rows_sql ($sql);
 
@@ -205,10 +212,12 @@ foreach ($result as $row) {
 	
 	$data[4] = $row["agent_interval"];
 	
-	if ($row["datos"] > 0) {
-		$data[5] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('Monitor up').'">';
+	if ($row["estado"] == 0) {
+		$data[5] = '<img src="images/pixel_green.png" width="40" height="18" title="'.$row["datos"].'">';
+	} elseif ($row["estado"] == 1) {
+		$data[5] = '<img src="images/pixel_red.png" width="40" height="18" title="'.$row["datos"].'">';
 	} else {
-		$data[5] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('Monitor down').'">';
+		$data[5] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.$row["datos"].'">';
 	}
 
 	$seconds = get_system_time () - $row["utimestamp"];
@@ -226,7 +235,6 @@ foreach ($result as $row) {
 }
 if (!empty ($table->data)) {
 	print_table ($table);
-	echo '<div style="width:700px;"><img src="images/pixel_green.png" width="40" height="18">&nbsp;&nbsp;'.__('Monitor up').'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/pixel_red.png" width="40" height="18">&nbsp;&nbsp;'.__('Monitor down').'</div>';
 } else {
 	echo '<div class="nf">'.__('This group doesn\'t have any monitor').'</div>';
 }

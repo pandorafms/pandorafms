@@ -70,28 +70,16 @@ $table->style[1] = "padding-top:4px; padding-bottom:4px;";
 $table->data[1][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["monitor_health"].'" title="'.$data["monitor_health"].'% '.__('of monitors up').'" />';
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
-$table->data[2][0] = '<b>'.__('Data health').'</b>';
+$table->data[2][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["data_health"].'" title="'.$data["data_health"].'% '.__('of data modules up').'" />';
+$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
-$table->data[4][0] = '<b>'.__('Global health').'</b>';
+$table->data[4][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["global_health"].'" title="'.$data["global_health"].'% '.__('of total modules up').'" />';
-	
-$table->style[6] = "padding-top:4px; padding-bottom:4px;";
-$table->data[6][0] = '<b>'.__('Module sanity').'</b>';
-
-$table->style[7] = "padding-top:4px; padding-bottom:4px;";
-$table->data[7][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
-
-$table->style[8] = "padding-top:4px; padding-bottom:4px;";
-$table->data[8][0] = '<b>'.__('Alert level').'</b>';
-
-$table->style[9] = "padding-top:4px; padding-bottom:4px;";
-$table->data[9][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
+$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
 	
 print_table ($table);
 unset ($table);
@@ -105,75 +93,40 @@ $cells[0][1] = $data["monitor_checks"];
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
 $cells[0]["color"] = "#000";
 
-$cells[1][0] = __('Monitors good');
+$cells[1][0] = __('Monitors normal');
 $cells[1][1] = $data["monitor_ok"];
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Up
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Up
 $cells[1]["color"] = "#000";
 
-$cells[2][0] = __('Monitors down');
-$cells[2][1] = $data["monitor_down"];
-$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Down
+$cells[2][0] = __('Monitors warning');
+$cells[2][1] = $data["monitor_warning"];
+$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Down
 $cells[2]["color"] = "#f00";
 	
-$cells[3][0] = __('Monitors unknown');
-$cells[3][1] = $data["monitor_unknown"];
-$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
-$cells[3]["color"] = "#C0C0C0";
+$cells[3][0] = __('Monitors critical');
+$cells[3][1] = $data["monitor_critical"];
+$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Down
+$cells[3]["color"] = "#f00";
 
-$cells[4][0] = __('Monitors not init');
-$cells[4][1] = $data["monitor_not_init"];
-$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
-$cells[4]["color"] = "#f00";
+$cells[4][0] = __('Monitors unknown');
+$cells[4][1] = $data["monitor_unknown"];
+$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=3"; //Unknown
+$cells[4]["color"] = "#C0C0C0";
 
-$cells[5][0] = __('Alerts defined');
-$cells[5][1] = $data["monitor_alerts"];
-$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60"; //All alerts defined
-$cells[5]["color"] = "#000";
+$cells[5][0] = __('Monitors not init');
+$cells[5][1] = $data["monitor_not_init"];
+$cells[5]["color"] = "#f00";
+$cells[5]["href"] = "#";
 
-$cells[6][0] = __('Alerts fired');
-$cells[6][1] = $data["monitor_alerts_fired"];
-$cells[6]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
-$cells[6]["color"] = "#f00";
+$cells[6][0] = __('Alerts defined');
+$cells[6][1] = $data["monitor_alerts"];
+$cells[6]["href"] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&refr=60"; //All alerts defined
+$cells[6]["color"] = "#000";
 
-print_cells_temp ($cells);
-	
-echo '<tr><th colspan="2">'.__('Data checks').'</th></tr>';
-	
-$cells = array ();
-$cells[0][0] = __('Data checks');
-$cells[0][1] = $data["data_checks"];
-$cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
-$cells[0]["color"] = "#000";
-	
-$cells[1][0] = __('Data good');
-$cells[1][1] = $data["data_ok"];
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Up
-$cells[1]["color"] = "#000";
-	
-$cells[2][0] = __('Data down');
-$cells[2][1] = $data["data_down"];
-$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Down
-$cells[2]["color"] = "#f00";
-	
-$cells[3][0] = __('Data unknown');
-$cells[3][1] = $data["data_unknown"];
-$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
-$cells[3]["color"] = "#C0C0C0";
-	
-$cells[4][0] = __('Data not init');
-$cells[4][1] = $data["data_not_init"];
-$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
-$cells[4]["color"] = "#f00";
-	
-$cells[5][0] = __('Alerts defined');
-$cells[5][1] = $data["data_alerts"];
-$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60"; //All alerts defined
-$cells[5]["color"] = "#000";
-	
-$cells[6][0] = __('Alerts fired');
-$cells[6][1] = $data["data_alerts_fired"];
-$cells[6]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
-$cells[6]["color"] = "#f00";
+$cells[7][0] = __('Alerts fired');
+$cells[7][1] = $data["monitor_alerts_fired"];
+$cells[7]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
+$cells[7]["color"] = "#f00";
 
 print_cells_temp ($cells);
 	

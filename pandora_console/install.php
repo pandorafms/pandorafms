@@ -237,6 +237,7 @@ function install_step2() {
 			$res += check_variable(phpversion(),"5.2","PHP version >= 5.2",1);
 			$res += check_extension("mysql","PHP MySQL extension");
 			$res += check_extension("gd","PHP GD extension");
+			$res += check_extension("ldap","PHP LDAP extension");
 			$res += check_extension("snmp","PHP SNMP extension");
 			$res += check_extension("session","PHP session extension");
 			$res += check_extension("gettext","PHP gettext extension");

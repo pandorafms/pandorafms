@@ -1,3 +1,11 @@
+2009-01-20  Sancho Lerena <slerena@artica.es>
+
+	* install.php: Added ldap module dep.
+	
+	* include/functions_reporting.php, operation/agentes/status_monitor.php
+	operation/agentes/tactical.php, general/logon_ok.php: New filter options for
+	warning/critical, removed old data stats and improved filters in module view
+
 2009-01-20  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_visual_map.php: Fixed a notice when the node looks

@@ -61,7 +61,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 if (give_acl ($config['id_user'], 0, "LM")) {
 	$menu["galertas"]["text"] = __('Manage alerts');
-	$menu["galertas"]["sec2"] = "godmode/alerts/modify_alert";
+	$menu["galertas"]["sec2"] = "godmode/alerts/alert_templates";
 	$menu["galertas"]["id"] = "god-alerts";
 	
 	$sub = array ();

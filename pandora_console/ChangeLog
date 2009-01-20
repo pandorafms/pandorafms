@@ -1,3 +1,11 @@
+2009-01-20  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Fixed an error when
+	setting max and min values on template creation.
+
+	* godmode/menu.php: Default action on "Manage alerts" is showing the
+	templates now.
+
 2009-01-20  Sancho Lerena <slerena@artica.es>
 
 	* install.php: Added ldap module dep.

@@ -105,7 +105,7 @@ function print_alert_template_example ($id, $return = false) {
 			$output .= __('The alert would fire when the value is <span id="value"></span>');
 			break;
 		case 'equal':
-		/* Do not translate the HTML attributes */
+			/* Do not translate the HTML attributes */
 			$output .= __('The alert would fire when the value is not <span id="value"></span>');
 			break;
 		case 'regex':
@@ -285,8 +285,8 @@ if ($create_template) {
 	$result = create_alert_template ($name, $type,
 		array ('description' => $description,
 			'value' => $value,
-			'max' => $max,
-			'min' => $min));
+			'max_value' => $max,
+			'min_value' => $min));
 	
 	print_error_message ($result, __('Successfully created'),
 		__('Could not be created'));

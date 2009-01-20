@@ -49,7 +49,7 @@
 }
 /* a selected ul has a height set in the style tag */
 .menu.int ul.selected {
-    height: inherit;
+	height: inherit;
 }
 
 /* Force the hovered ul to be 28px unless the ul is selected */

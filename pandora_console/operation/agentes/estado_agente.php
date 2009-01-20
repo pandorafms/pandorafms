@@ -218,13 +218,13 @@ if ($agents !== false) {
 				$agent_down = 1;
 				if ($async == 0)
 					$monitor_down++;
-			} else{
+			} else {
 				if ($module["estado"] == 2) 
-					$monitor_warning ++;
+					$monitor_warning++;
 				elseif ($module["estado"]== 1) 
-					$monitor_critical ++;
+					$monitor_critical++;
 				else 
-					$monitor_normal ++;
+					$monitor_normal++;
 			}
 		}
 		// Color change for each line (1.2 beta2)
@@ -248,7 +248,7 @@ if ($agents !== false) {
 		echo $nombre_agente;
 		echo "</strong></a></td>";
 
-		// Show SO icon :)
+		// Show SO icon
 		echo "<td class='$tdcolor' align='center'>";
 		print_os_icon ($id_os, false);
 		echo "</td>";
@@ -285,8 +285,7 @@ if ($agents !== false) {
 		if ($numero_modulos > 0){
 			if ($agent_down > 0) {
 				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
-			}
-			elseif ($monitor_critical > 0){
+			} elseif ($monitor_critical > 0){
 					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one module in CRITICAL status').'" />';
 			} elseif ($monitor_warning > 0) {
 					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('At least one module in WARNING status').'" />';

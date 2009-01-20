@@ -423,12 +423,12 @@ function format_numeric ($number, $decimals = 1) {
  * @return string A string with the number and the multiplier
  */
 function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
-	$shorts = array("","K","M","G","T","P");
-    $pos = 0;
-    while ($number>=1000) { //as long as the number can be divided by 1000
-        $pos++; //Position in array starting with 0
-        $number = $number/1000;
-    }
+	$shorts = array ("","K","M","G","T","P");
+	$pos = 0;
+	while ($number >= 1000) { //as long as the number can be divided by 1000
+		$pos++; //Position in array starting with 0
+		$number = $number / 1000;
+	}
 	
 	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
@@ -990,8 +990,8 @@ if (!function_exists ("mb_strtoupper")) {
  */
 
 function unsafe_string ($string) {
-	if (get_magic_quotes_gpc () == 1) 
-		$string = stripslashes ($string);
+	if (get_magic_quotes_gpc ()) 
+		return stripslashes ($string);
 	return $string;
 }
 
@@ -1003,7 +1003,7 @@ function unsafe_string ($string) {
 
 function safe_sql_string ($string) {
 	if (get_magic_quotes_gpc () == 0) 
-		$string = mysql_escape_string ($string);
-	return $string;
+		return $string;
+	return mysql_escape_string ($string);
 }
 ?>

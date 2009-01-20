@@ -34,25 +34,37 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	$lines = array ();
 	
 	if ($layout_datas !== false) {
-		
 		foreach ($layout_datas as $layout_data) {
 			// Linked to other layout ?? - Only if not module defined
-			if (($layout_data['id_layout_linked'] != 0) && ($layout_data['id_agente_modulo'] == 0)) { 
+			if ($layout_data['id_layout_linked'] != 0) { 
 				$status = return_status_layout ($layout_data['id_layout_linked']);
 			} else {
 			 	$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
-				$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
-				// Item value
-				$status = return_status_agent_module ($layout_data['id_agente_modulo']);
-				if ($layout_data['no_link_color'] == 1)
-					$status_parent = -1;
-				else
-					$status_parent = return_status_agent_module ($id_agent_module_parent);
+				if ($layout_data['id_agente_modulo'] != 0) {
+					$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
+					// Item value
+					$status = return_status_agent_module ($layout_data['id_agente_modulo']);
+					if ($layout_data['no_link_color'] == 1)
+						$status_parent = -1;
+					else
+						$status_parent = return_status_agent_module ($id_agent_module_parent);
+				} else {
+					$interval = get_agent_interval ($id_agent);
+					$sql = sprintf ('SELECT COUNT(*)
+						FROM tagente_estado, tagente_modulo 
+						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente_modulo.disabled = 0 
+						AND tagente_modulo.id_agente = %d
+						AND (utimestamp >= UNIX_TIMESTAMP() - module_interval * 2
+							OR (module_interval = 0
+								AND utimestamp >= UNIX_TIMESTAMP() - %d))',
+						$id_agent, $interval * 2);
+					$status = get_db_sql ($sql);
+				}
 			}
-
+			
 			// STATIC IMAGE (type = 0)
 			if ($layout_data['type'] == 0) {
-
 				// Link image
 				//index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1
 				if ($status == 0) // Bad monitor
@@ -61,7 +73,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					$z_index = 3;
 				else
 					$z_index =  1; // Print BAD over good
-
+				
 				// Draw image
 				echo '<div style="z-index: '.$z_index.'; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				if ($show_links) {
@@ -76,7 +88,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						echo '<img src="images/console/icons/'.$layout_data['image'].'_bad.png" width="'.$layout_data['width'].'" height="'.$layout_data['height'].'" title="'.$layout_data['label'].'">';
 					else
 						echo '<img src="images/console/icons/'.$layout_data['image'].'_bad.png" 
-							title="'.$layout_data['label'].'">';	
+							title="'.$layout_data['label'].'">';
 				} else {
 					if ($layout_data['width'] != "" && $layout_data['width'] != 0)
 						echo '<img src="images/console/icons/'.$layout_data['image'].'_ok.png" width="'.$layout_data['width'].'" 
@@ -86,9 +98,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 							title="'.$layout_data['label'].'">';
 				}
 				echo "</a>";
-			
+				
 				// Draw label
-				echo "<br>";
+				echo "<br />";
 				echo $layout_data['label'];
 				echo "</div>";
 			}
@@ -116,7 +128,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				$line['color'] = $layout_data['label_color'];
 				array_push ($lines, $line);
 			}
-	
+			
 			// Get parent relationship - Create line data
 			if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
 				$line['id'] = $layout_data['id'];

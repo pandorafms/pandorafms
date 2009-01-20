@@ -39,7 +39,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.1-dev";
-my $pandora_build="PS090116";
+my $pandora_build="PS090120";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -54,12 +54,12 @@ my %pa_config;
 sub help_screen {
 	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	printf "Following options are optional : \n";
-	printf "      -v        :  Verbose mode activated, write more information in logfile \n";
-	printf "      -d        :  Debug mode activated, write extensive information in logfile \n";
-	printf "      -D        :  Daemon mode (runs in background)\n";
+	printf "      -v        :  Verbose mode activated, give more information in logfile \n";
+	printf "      -d        :  Debug mode activated, give extensive information in logfile \n";
+	printf "      -D        :  Daemon mode (runs in backgroup)\n";
     printf "      -P <file> :  Store PID to file.\n";
     printf "      -q        :  Quiet startup\n";
-	printf "      -h        :  This screen. It shows a little help screen \n";
+	printf "      -h        :  This screen, show a little help screen \n";
 	printf " \n";
 	exit;
 }
@@ -78,11 +78,11 @@ sub pandora_init {
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
 		help_screen;
 		exit;
 	}
-   	$pa_config->{"verbosity"}=0; 	# Verbose 0 by default
+   	$pa_config->{"verbosity"}=0; 	# Verbose 1 by default
 	$pa_config->{"daemon"}=0; 	# Daemon 0 by default
     $pa_config->{'PID'}=""; # PID file not exist by default
     $pa_config->{"quiet"}=0;   # Daemon 0 by default
@@ -115,7 +115,7 @@ sub pandora_init {
         }
     }
 	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
         print "         For example: ./pandora_server /etc/pandora/pandora_server.conf\n\n";
 		exit;
 	}
@@ -473,60 +473,80 @@ sub pandora_loadconfig {
         exit;
     }
     # Show some config options in startup
-    #if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) { #<-- This breaks the server as you don't allow  pa_config->{"servermode"} to be set
-	    if ($opmode == 0){
+    
+    if ($opmode == 0){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		    print " [*] You are running Pandora FMS Data Server. \n";
-		    $parametro ="Pandora FMS Data Server";
-		    $pa_config->{"servermode"}="_Data";
-	    }
-	    if ($opmode == 1){
+		}
+	    $parametro ="Pandora FMS Data Server";
+	    $pa_config->{"servermode"}="_Data";
+    }
+    if ($opmode == 1){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		    print " [*] You are running Pandora FMS Network Server. \n";
-		    $parametro ="Pandora FMS Network Server";
-		    $pa_config->{"servermode"}="_Net";
-	    }
-	    if ($opmode == 2){
+	  	}
+	    $parametro ="Pandora FMS Network Server";
+	    $pa_config->{"servermode"}="_Net";
+    }
+    if ($opmode == 2){
+	    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		    print " [*] You are running Pandora FMS SNMP Console. \n";
-		    $parametro ="Pandora FMS SNMP Console";
-		    $pa_config->{"servermode"}="_SNMP";
 	    }
-	    if ($opmode == 3){
+	    $parametro ="Pandora FMS SNMP Console";
+	    $pa_config->{"servermode"}="_SNMP";
+    }
+    if ($opmode == 3){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		    print " [*] You are running Pandora FMS Recon Server. \n";
-		    $parametro ="Pandora FMS Recon Server";
-		    $pa_config->{"servermode"}="_Recon";
 	    }
-        if ($opmode == 4){
+	    $parametro ="Pandora FMS Recon Server";
+	    $pa_config->{"servermode"}="_Recon";
+    }
+    if ($opmode == 4){
+		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
             print " [*] You are running Pandora FMS Plugin Server. \n";
-            $parametro ="Pandora FMS Plugin Server";
-            $pa_config->{"servermode"}="_Plugin";
         }
-        if ($opmode == 5){
+        $parametro ="Pandora FMS Plugin Server";
+        $pa_config->{"servermode"}="_Plugin";
+    }
+    if ($opmode == 5){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
             print " [*] You are running Pandora FMS Prediction Server. \n";
-            $parametro ="Pandora FMS Prediction Server";
-            $pa_config->{"servermode"}="_Prediction";
         }
-        if ($opmode == 6){
+        $parametro ="Pandora FMS Prediction Server";
+        $pa_config->{"servermode"}="_Prediction";
+    }
+    if ($opmode == 6){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
             print " [*] You are running Pandora FMS WMI Server. \n";
-            $parametro ="Pandora FMS WMI Server";
-            $pa_config->{"servermode"}="_WMI";
-        }
-        if ($opmode == 7){
+    	}
+        $parametro ="Pandora FMS WMI Server";
+        $pa_config->{"servermode"}="_WMI";
+    }
+    if ($opmode == 7){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
             print " [*] You are running Pandora FMS Export Server. \n";
-            $parametro ="Pandora FMS Export Server";
-            $pa_config->{"servermode"}="_Export";
-        }
-        if ($opmode == 8){
+       	}
+        $parametro ="Pandora FMS Export Server";
+        $pa_config->{"servermode"}="_Export";
+    }
+    if ($opmode == 8){
+    	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
             print " [*] You are running Pandora FMS Inventory Server. \n";
-            $parametro ="Pandora FMS Inventory Server";
-            $pa_config->{"servermode"}="_Inventory";
         }
+        $parametro ="Pandora FMS Inventory Server";
+        $pa_config->{"servermode"}="_Inventory";
+    }
+    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 	    if ($pa_config->{"pandora_check"} == 1) {
 		    print " [*] MD5 Security enabled.\n";
 	    }
 	    if ($pa_config->{"pandora_master"} == 1) {
 		    print " [*] This server is running in MASTER mode.\n";
 	    }
-    #}
-	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
+   	}
+
+	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options", 1);
 	my $dbh;
@@ -541,7 +561,7 @@ sub pandora_loadconfig {
 		print $@;
 		exit;
 	}
-    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)){
+    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 	    print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
     }
 	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
@@ -557,8 +577,7 @@ sub pandora_startlog ($){
     open STDERR, ">>$pa_config->{'errorlogfile'}" or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
     my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
     print STDERR "$time_now - ".$pa_config->{'servername'}.$pa_config->{"servermode"}." Starting Pandora FMS Server. Error logging activated \n";
-    # This redirect ANY output to errorlog.
-    # open STDOUT, ">>$pa_config->{'errorlogfile'}"
+    
 }
 # End of function declaration
 # End of defined Code

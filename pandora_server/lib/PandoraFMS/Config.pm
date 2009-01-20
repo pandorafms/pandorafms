@@ -54,12 +54,12 @@ my %pa_config;
 sub help_screen {
 	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	printf "Following options are optional : \n";
-	printf "      -v        :  Verbose mode activated, give more information in logfile \n";
-	printf "      -d        :  Debug mode activated, give extensive information in logfile \n";
-	printf "      -D        :  Daemon mode (runs in backgroup)\n";
+	printf "      -v        :  Verbose mode activated, write more information in logfile \n";
+	printf "      -d        :  Debug mode activated, write extensive information in logfile \n";
+	printf "      -D        :  Daemon mode (runs in background)\n";
     printf "      -P <file> :  Store PID to file.\n";
     printf "      -q        :  Quiet startup\n";
-	printf "      -h        :  This screen, show a little help screen \n";
+	printf "      -h        :  This screen. It shows a little help screen \n";
 	printf " \n";
 	exit;
 }
@@ -78,11 +78,11 @@ sub pandora_init {
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
+		print "I need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
 		help_screen;
 		exit;
 	}
-   	$pa_config->{"verbosity"}=0; 	# Verbose 1 by default
+   	$pa_config->{"verbosity"}=0; 	# Verbose 0 by default
 	$pa_config->{"daemon"}=0; 	# Daemon 0 by default
     $pa_config->{'PID'}=""; # PID file not exist by default
     $pa_config->{"quiet"}=0;   # Daemon 0 by default
@@ -115,7 +115,7 @@ sub pandora_init {
         }
     }
 	if ($pa_config->{"pandora_path"} eq ""){
-		print " [ERROR] I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
         print "         For example: ./pandora_server /etc/pandora/pandora_server.conf\n\n";
 		exit;
 	}

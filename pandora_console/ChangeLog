@@ -1,3 +1,29 @@
+2009-01-20  Sancho Lerena <slerena@artica.es>
+
+    * index.php: Added support for external authentication, based on a HASH.
+    
+    * pandoradb.sql: New tables for local templates.
+    
+    * pandoradb_migrate*: Updated script.
+    
+    * godmode/agentes/agent_manager.php: Fixed field for inventory server.
+    
+    * module_manager_editor.php: Fixed snmp community for WMI modules.
+    
+    * module_manager_editor_*.php: New fields in editor (War/Crit, FF).
+    
+    * config_process.php, 
+    godmode/setup/setup.php: Added new option for hash auth.
+    
+    * functions.php: Added again (please don't delete it) function to remove
+    quotes on automatic protection (magicquotes).
+    
+    * menu.css: Added icon to inventory server option in the menu.
+    
+    * estado_monitores.php: Fix module edit link, better data render on tooltip
+    
+    * estado_ultimopaquete.php: Fix module edit link.
+
 2009-01-19  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Removed effect on AJAX tip.

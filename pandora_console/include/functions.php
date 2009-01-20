@@ -982,4 +982,28 @@ if (!function_exists ("mb_strtoupper")) {
 		return strlen ($string);
 	}
 }
+
+/**
+ * Avoid magic_quotes protection
+ *
+ * @param string Text string to be stripped of magic_quotes protection
+ */
+
+function unsafe_string ($string) {
+	if (get_magic_quotes_gpc () == 1) 
+		$string = stripslashes ($string);
+	return $string;
+}
+
+/**
+ * Put quotes if magic_quotes protection
+ *
+ * @param string Text string to be protected with quotes if magic_quotes protection is disabled
+ */
+
+function safe_sql_string ($string) {
+	if (get_magic_quotes_gpc () == 0) 
+		$string = mysql_escape_string ($string);
+	return $string;
+}
 ?>

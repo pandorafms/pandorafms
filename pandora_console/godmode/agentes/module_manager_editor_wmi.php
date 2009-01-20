@@ -68,6 +68,12 @@ if ($update_module_id != NULL){
 		$form_prediction_module = $row['prediction_module'];
 		$form_max_timeout = $row['max_timeout'];
 		$form_custom_id = $row['custom_id'];
+		$form_history_data = $row['history_data'];
+		$form_min_warning = $row['min_warning'];
+		$form_max_warning = $row['max_warning'];
+		$form_min_critical = $row['min_critical'];
+		$form_max_critical = $row['max_critical'];
+		$form_ff_event = $row['min_ff_event'];
 	
 		if ($tbl_disabled == 1){
 			$disabled_status = 'checked="ckecked"';
@@ -217,6 +223,31 @@ echo '<td class="datos"><input type="text" name="form_minvalue" size="5" value="
 echo '<td class="datos">'.__('Max. Value')."</td>";
 echo '<td class="datos"><input type="text" name="form_maxvalue" size="5" value="'.$form_maxvalue.'"></td>';
 echo '</tr>';
+
+
+// Warning value threshold
+echo '<tr>';
+echo '<td class="datos2">'.__('Warning status')."</td>";
+echo '<td class="datos2">'.__("Min.").' <input type="text" name="form_min_warning" size="5" value="'.$form_min_warning.'">';
+echo ' '.__("Max.").' <input type="text" name="form_max_warning" size="5" value="'.$form_max_warning.'"></td>';
+
+// Critical value threshold
+echo '<td class="datos2">'.__('Critical status')."</td>";
+echo '<td class="datos2">'.__("Min.").' <input type="text" name="form_min_critical" size="5" value="'.$form_min_critical.'">';
+echo ' '.__("Max.").' <input type="text" name="form_max_critical" size="5" value="'.$form_max_critical.'"></td>';
+echo '</tr>';
+
+// History data ?
+echo "<tr>";
+echo '<td class="datos2">'.__('Historical data')."</td>";
+echo '<td class="datos2">';
+print_checkbox ("form_history_data", 1, $form_history_data, false);
+
+//FF stands for Flip-Flop
+echo '<td class="datos">'.__('FF threshold');
+pandora_help ("ff_threshold");
+echo '</td>';
+echo '<td class="datos"><input type="text" name="form_ff_event" size="5" value="'.$form_ff_event.'"></td>';
 
 // Post process / Export server
 echo '<tr>';

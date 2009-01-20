@@ -108,7 +108,11 @@ if (($form_moduletype == "networkserver" || $form_moduletype == "wmiserver") && 
 	$form_tcp_send = "";
 	$form_tcp_rcv = "";
 	$form_tcp_port = "";
-	$form_snmp_community = "public";
+	
+	if ($form_moduletype == "wmiserver")
+	    $form_snmp_community = "";
+	else
+    	$form_snmp_community = "public";
 	$form_snmp_oid = "";
 	$form_ip_target = $direccion_agente; // taken from configurar_agente.php
 	$form_plugin_user = "";

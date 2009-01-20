@@ -122,36 +122,37 @@ $table->data[8][1] = print_select_from_sql ('SELECT id_server, name FROM tserver
 $table->data[9][0] = '<b>'.__('Prediction Server').'</b>'.print_help_tip (__('You must select a Prediction Server for the Agent, so it can work properly with this kind of modules'), true);
 $table->data[9][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_server = 1 ORDER BY name', 'prediction_server', $id_prediction_server, '', '', 0, true);
 
+// 10
 enterprise_hook ('inventory_server');
 
 // Custom ID
-$table->data[10][0] = '<b>'.__('Custom ID').'</b>';
-$table->data[10][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[11][0] = '<b>'.__('Custom ID').'</b>';
+$table->data[11][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Description
-$table->data[11][0] = '<b>'.__('Description').'</b>';
-$table->data[11][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+$table->data[12][0] = '<b>'.__('Description').'</b>';
+$table->data[12][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
 
 // Learn mode / Normal mode
-$table->data[12][0] = '<b>'.__('Module definition').'</b>'.pandora_help("module_definition", true);
-$table->data[12][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[12][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[13][0] = '<b>'.__('Module definition').'</b>'.pandora_help("module_definition", true);
+$table->data[13][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[13][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
-$table->data[13][0] = '<b>'.__('Status').'</b>';
-$table->data[13][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[13][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[14][0] = '<b>'.__('Status').'</b>';
+$table->data[14][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[14][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
-$table->data[14][0] = '<b>'.__('Remote configuration').'</b>';
+$table->data[15][0] = '<b>'.__('Remote configuration').'</b>';
 
 
 if (file_exists ($filename['md5'])) {
-	$table->data[14][1] = date ("F d Y H:i:s.", fileatime ($filename['md5']));
+	$table->data[15][1] = date ("F d Y H:i:s.", fileatime ($filename['md5']));
 	// Delete remote configuration
-	$table->data[14][1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente=$id_agente"><img src="images/cross.png" /></a>';
+	$table->data[15][1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente=$id_agente"><img src="images/cross.png" /></a>';
 } else {
-	$table->data[14][1] = '<i>'.__('Not available').'</i>';
+	$table->data[15][1] = '<i>'.__('Not available').'</i>';
 }
 
 print_table ($table);

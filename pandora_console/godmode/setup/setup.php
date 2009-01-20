@@ -51,6 +51,8 @@ if ($update_settings) {
 	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
 	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
+	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);	
+	
 	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
 	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
@@ -73,6 +75,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["prominent_time"]."' WHERE token = 'prominent_time'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["timesource"]."' WHERE token = 'timesource'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
+    process_sql ("UPDATE tconfig SET VALUE='".$config["loginhash_pwd"]."' WHERE token = 'loginhash_pwd'");
 }
 
 echo "<h2>".__('Setup')." &gt; ";
@@ -116,6 +119,9 @@ $table->data[9][1] = print_input_text ('graph_res', $config["graph_res"], '', 5,
 $table->data[10][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[10][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
+$table->data[11][0] = __('Auto login (Hash) password');
+$table->data[11][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
+
 $table->data[13][0] = __('Style template');
 $table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
 
@@ -139,7 +145,18 @@ $table->data[16][1] = print_select ($sources, 'timesource', $config["timesource"
 $table->data[17][0] = __('Automatic update check');
 $table->data[17][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
 
+// 18
 enterprise_hook ('load_snmpforward_enterprise');
+
+$table->data[19][0] = __('Activate AD Authentication');
+$table->data[19][1] = print_checkbox ('ad_auth', 1, $config["ad_auth"], false);
+
+$table->data[20][0] = __('Activate AD Authentication');
+$table->data[20][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
+
+$table->data[21][0] = __('Activate AD Authentication');
+$table->data[21][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
+
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

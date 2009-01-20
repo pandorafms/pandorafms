@@ -766,3 +766,25 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
   `id_downtime` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- tlocal_component is a repository of local modules for
+-- physical agents on Windows / Unix physical agents
+CREATE TABLE IF NOT EXISTS `tlocal_component` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(80) NOT NULL,
+  `data` mediumtext NOT NULL,
+  `description` varchar(250) default NULL,
+  `id_os` int(10) unsigned default '0',
+  `os_version` varchar(100) default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `tlocal_component_group` (
+  `id`  int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(200) NOT NULL default '',
+  `parent` mediumint(8) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

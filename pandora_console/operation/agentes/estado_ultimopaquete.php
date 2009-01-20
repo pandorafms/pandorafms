@@ -111,7 +111,7 @@ if (mysql_num_rows ($result3)) {
 		echo "</td><td class='".$tdcolor."'>";
 		echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
 		if (give_acl ($config['id_user'], $id_grupo, "AW")) 
-		  echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=2505&tab=module&update_module='.$row3["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
+		  echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&update_module='.$row3["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
 		
 		
 		echo "</td><td class='".$tdcolor."'>";

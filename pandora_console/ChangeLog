@@ -1,3 +1,8 @@
+2009-01-20  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_visual_map.php: Fixed a notice when the node looks
+	for any monitor down in an agent.
+
 2009-01-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* ajax.php, include/config.inc.php, include/config_process.php,

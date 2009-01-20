@@ -62,7 +62,7 @@ pandora_audit (\%pa_config, "Pandora FMS Data Server Daemon starting", "SYSTEM",
 
 # Daemonize and put in background
 if ( $pa_config{"daemon"} eq "1" ){
-    if ($pa_config{"quiet"} eq "0"){
+    if ($pa_config{"verbosity"} > 0){
         print " [*] Backgrounding Pandora FMS Data Server process.\n\n";
     }
     &pandora_daemonize ( \%pa_config);
@@ -76,7 +76,7 @@ for (my $ax=0; $ax < $pa_config{"dataserver_threads"}; $ax++){
 # Launch producer thread
 threads->new( \&pandora_data_producer, \%pa_config);
 
-if ($pa_config{"quiet"} == 0){
+if ($pa_config{"verbosity"} > 0){
     print " [*] All threads loaded and running \n\n";
 }
 
@@ -107,7 +107,9 @@ while (1) {
 sub pandora_shutdown {
 	logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
 	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 0, $dbh);
-	print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+	if ($pa_config{"verbosity"} > 0){
+    	print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+	}
 	pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
    	                               0, 4, 0, 0, "system", $dbh);
 	exit;
@@ -176,8 +178,9 @@ sub pandora_data_consumer ($$) {
 	my $thread_id = $_[1];
 	my $file_name;
 	my $counter =0;
+    my $file;
 
-    if ($pa_config->{"quiet"} == 0){
+    if ($pa_config->{"verbosity"} > 0){
 	    print " [*] Starting up Data Consumer Thread # $thread_id \n";
     }
 
@@ -208,7 +211,7 @@ sub pandora_data_consumer ($$) {
 			$active_task_hash{$file_name} = 1;
 		}
 
-		my $file = "$pa_config->{'incomingdir'}/$file_name";
+		$file = "$pa_config->{'incomingdir'}/$file_name";
 		
 		# Check file really exists to avoid race conditions
 		if (! -e "$file") {
@@ -217,7 +220,7 @@ sub pandora_data_consumer ($$) {
 			next LOOP;
 		}
 		
-		my $data;
+		my $data; # Hash to store the XML data file
 
 		# Parse the XML file
 		eval {
@@ -254,7 +257,6 @@ sub pandora_data_consumer ($$) {
         }
 
 		process_datafile ($pa_config, $data, $dbh);
-
 		{
 			lock $queue_lock;
 			delete($active_task_hash{$file_name});
@@ -275,7 +277,19 @@ sub keep_alive_check {
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
 
-	my $query_idag = " SELECT tagente_modulo.id_agente_modulo, tagente_estado.id_agente, tagente.nombre as agentname, tagente_modulo.nombre as modulename FROM tagente_modulo, tagente_estado, tagente WHERE tagente.id_agente = tagente_estado.id_agente AND tagente.disabled = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_modulo.disabled = 0 AND tagente_estado.datos = 1 AND tagente_estado.estado = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP()) ";
+	my $query_idag = "SELECT tagente_modulo.id_agente_modulo, 
+	                    tagente_estado.id_agente, 
+                        tagente.nombre AS agentname, 
+                        tagente_modulo.nombre AS modulename 
+                    	FROM tagente_modulo, tagente_estado, tagente 
+                    	WHERE tagente.id_agente = tagente_estado.id_agente 
+                    	AND tagente.disabled = 0 
+                    	AND tagente_modulo.id_tipo_modulo = 100 
+                	    AND tagente_modulo.disabled = 0 
+                	    AND tagente_estado.datos = 1 
+                	    AND tagente_estado.estado = 0 
+                	    AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+                	    AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP()) ";
 
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
@@ -296,7 +310,8 @@ sub keep_alive_check {
 			$module_name = $data->{'modulename'};
 			pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
 		}
-	} 
+	}
+	undef $data;
 	$s_idag->finish();
 }
 
@@ -429,7 +444,7 @@ sub process_module_data {
 	elsif (($tipo_modulo eq 'generic_data_string') || ($tipo_modulo eq 'async_string')) {
 		module_generic_data_string ($pa_config, $module, $timestamp, $agent_name,$tipo_modulo, $dbh);
 	}
-	elsif (($tipo_modulo eq 'generic_proc') || ($tipo_modulo eq 'async_data')) {
+	elsif (($tipo_modulo eq 'generic_proc') || ($tipo_modulo eq 'async_proc')) {
 		module_generic_proc ($pa_config, $module, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
 	else {

@@ -1237,6 +1237,9 @@ sub pandora_writedata (%$$$$$$$$$$){
 			if (is_numeric($data[2])){
 				$data[2] = sprintf("%.2f", $data[2]);
 			}
+			if (is_numeric($datos)){
+				$datos = sprintf("%.2f", $datos);
+			}
 			# Two decimal float. We cannot store more
 			# to change this, you need to change mysql structure
 		}
@@ -1396,6 +1399,7 @@ sub pandora_planned_downtime (%$) {
 	}
 	$query_handle->finish();
 
+
 	# Deactivate a planned downtime: Set agents as disabled for Planned Downtime
 
 	$query_sql = "SELECT * FROM tplanned_downtime WHERE executed = 1 AND date_to <= $utimestamp";
@@ -1418,7 +1422,6 @@ sub pandora_planned_downtime (%$) {
 		}
 	}
 	$query_handle->finish();
-	
 }
 
 

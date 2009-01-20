@@ -1,3 +1,14 @@
+2009-01-20  Sancho Lerena <slerena@artica.es>
+
+	* Config.pm: Now works without breaking the server :-). Show verbose info
+	only when verbosity enabled (>4).
+	
+	* pandora_server: more issues with verbosity level. Fixed a typo on 
+	management of async_proc moduletypes. Freeing a hash reference on keepalive
+	solves a memleak.
+
+	* DB.pm: Converting to the same float when comparing two numbers.
+	
 2009-01-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* lib/PandoraFMS/Config.pm: Commented 2 lines that broke the server

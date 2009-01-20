@@ -40,10 +40,3 @@ There are always some sort of parameters which cannot be "generic", in this scen
 If you want to use another tablespace, just create another module with different string after "-T".
 <br><br>
 Of course, in "Plugin parameter" field, you can put more than one parameter. All data entered there is passed to the plugin "as is".
-
-
-
-
-
-
-

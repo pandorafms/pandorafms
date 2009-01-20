@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-05 09:11+0100\n"
+"POT-Creation-Date: 2009-01-20 17:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,40 +170,40 @@ msgstr ""
 msgid "Show alert"
 msgstr ""
 
-#: ../../reporting/fgraph.php:948
+#: ../../reporting/fgraph.php:949
 msgid "Data occurrence for module "
 msgstr ""
 
-#: ../../reporting/fgraph.php:1040 ../../operation/incidents/incident.php:191
+#: ../../reporting/fgraph.php:1041 ../../operation/incidents/incident.php:191
 #: ../../operation/incidents/incident.php:198
 #: ../../operation/incidents/incident_detail.php:292
 msgid "Informative"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1041 ../../operation/incidents/incident.php:190
+#: ../../reporting/fgraph.php:1042 ../../operation/incidents/incident.php:190
 #: ../../operation/incidents/incident.php:199
 #: ../../operation/incidents/incident_detail.php:293
 msgid "Low"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1042 ../../operation/incidents/incident.php:189
+#: ../../reporting/fgraph.php:1043 ../../operation/incidents/incident.php:189
 #: ../../operation/incidents/incident.php:200
 #: ../../operation/incidents/incident_detail.php:294
 msgid "Medium"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1043 ../../operation/incidents/incident.php:188
+#: ../../reporting/fgraph.php:1044 ../../operation/incidents/incident.php:188
 #: ../../operation/incidents/incident.php:201
 #: ../../operation/incidents/incident_detail.php:295
 msgid "Serious"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1044
+#: ../../reporting/fgraph.php:1045
 #: ../../operation/incidents/incident_detail.php:296
 msgid "Very serious"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1045 ../../reporting/fgraph.php:1265
+#: ../../reporting/fgraph.php:1046 ../../reporting/fgraph.php:1266
 #: ../../include/functions.php:676 ../../include/functions.php:1160
 #: ../../include/functions.php:1179 ../../operation/incidents/incident.php:192
 #: ../../operation/incidents/incident.php:203
@@ -211,69 +211,69 @@ msgstr ""
 msgid "Maintenance"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1273 ../../include/functions.php:679
+#: ../../reporting/fgraph.php:1274 ../../include/functions.php:679
 #: ../../include/functions.php:1161 ../../include/functions.php:1181
 msgid "Informational"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1280 ../../include/functions.php:682
+#: ../../reporting/fgraph.php:1281 ../../include/functions.php:682
 #: ../../include/functions.php:1162 ../../include/functions.php:1183
 msgid "Normal"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1287 ../../include/functions.php:685
+#: ../../reporting/fgraph.php:1288 ../../include/functions.php:685
 #: ../../include/functions.php:1163 ../../include/functions.php:1185
 msgid "Warning"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1294 ../../include/functions.php:688
+#: ../../reporting/fgraph.php:1295 ../../include/functions.php:688
 #: ../../include/functions.php:1164 ../../include/functions.php:1187
 msgid "Critical"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1469
+#: ../../reporting/fgraph.php:1470
 msgid "Today"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1470
+#: ../../reporting/fgraph.php:1471
 msgid "Week"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1471
+#: ../../reporting/fgraph.php:1472
 msgid "Month"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1472
+#: ../../reporting/fgraph.php:1473
 msgid "Months"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1473
+#: ../../reporting/fgraph.php:1474
 msgid "Older"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1505
+#: ../../reporting/fgraph.php:1506
 msgid "no data"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1572
+#: ../../reporting/fgraph.php:1573
 msgid "Out of limits"
 msgstr ""
 
-#: ../../reporting/fgraph.php:2130 ../../include/functions_reporting.php:363
+#: ../../reporting/fgraph.php:2131 ../../include/functions_reporting.php:363
 #: ../../operation/agentes/estado_grupo.php:168
 #: ../../operation/agentes/ver_agente.php:106
 msgid "Alerts fired"
 msgstr ""
 
-#: ../../reporting/fgraph.php:2131
+#: ../../reporting/fgraph.php:2132
 msgid "Alerts not fired"
 msgstr ""
 
-#: ../../reporting/fgraph.php:2140
+#: ../../reporting/fgraph.php:2141
 msgid "Monitors BAD"
 msgstr ""
 
-#: ../../reporting/fgraph.php:2141
+#: ../../reporting/fgraph.php:2142
 msgid "Monitors OK"
 msgstr ""
 
@@ -2546,11 +2546,11 @@ msgstr ""
 msgid "Status init unsuccessful"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:864
+#: ../../godmode/agentes/configurar_agente.php:863
 msgid "There was a problem deleting the module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:867
+#: ../../godmode/agentes/configurar_agente.php:866
 msgid "Module deleted successfully"
 msgstr ""
 
@@ -2781,7 +2781,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:229
 #: ../../godmode/users/user_list.php:49
-#: ../../operation/agentes/estado_generalagente.php:128
+#: ../../operation/agentes/estado_generalagente.php:117
 #: ../../operation/agentes/estado_monitores.php:41
 #: ../../operation/agentes/ver_agente.php:54
 #: ../../operation/agentes/sla_view.php:49
@@ -4073,8 +4073,8 @@ msgstr ""
 
 #: ../../include/functions.php:975
 #: ../../operation/snmpconsole/snmp_alert.php:324
-#: ../../operation/agentes/estado_generalagente.php:131
-#: ../../operation/agentes/estado_generalagente.php:139
+#: ../../operation/agentes/estado_generalagente.php:120
+#: ../../operation/agentes/estado_generalagente.php:128
 #: ../../operation/agentes/estado_ultimopaquete.php:192
 #: ../../operation/agentes/estado_monitores.php:113
 #: ../../operation/agentes/sla_view.php:125
@@ -4999,22 +4999,18 @@ msgid "Agent Version"
 msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:117
-msgid "Total packets"
-msgstr ""
-
-#: ../../operation/agentes/estado_generalagente.php:128
 msgid "Remote"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:161
+#: ../../operation/agentes/estado_generalagente.php:150
 msgid "Next agent contact"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:167
+#: ../../operation/agentes/estado_generalagente.php:156
 msgid "Agent access rate (24h)"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:171
+#: ../../operation/agentes/estado_generalagente.php:160
 msgid "Events generated -by module-"
 msgstr ""
 

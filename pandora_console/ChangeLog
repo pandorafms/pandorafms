@@ -1,28 +1,35 @@
+2009-01-20  Esteban Sanchez  <estebans@artica.es>
+
+	* include/javascript/jquery.js: Downgraded to 1.2. It was causing some
+	errors in visual map edition.
+
 2009-01-20  Sancho Lerena <slerena@artica.es>
 
-    * index.php: Added support for external authentication, based on a HASH.
-    
-    * pandoradb.sql: New tables for local templates.
-    
-    * pandoradb_migrate*: Updated script.
-    
-    * godmode/agentes/agent_manager.php: Fixed field for inventory server.
-    
-    * module_manager_editor.php: Fixed snmp community for WMI modules.
-    
-    * module_manager_editor_*.php: New fields in editor (War/Crit, FF).
-    
-    * config_process.php, 
-    godmode/setup/setup.php: Added new option for hash auth.
-    
-    * functions.php: Added again (please don't delete it) function to remove
-    quotes on automatic protection (magicquotes).
-    
-    * menu.css: Added icon to inventory server option in the menu.
-    
-    * estado_monitores.php: Fix module edit link, better data render on tooltip
-    
-    * estado_ultimopaquete.php: Fix module edit link.
+	* index.php: Added support for external authentication, based on a HASH.
+
+	* pandoradb.sql: New tables for local templates.
+
+	* pandoradb_migrate*: Updated script.
+
+	* godmode/agentes/agent_manager.php: Fixed field for inventory server.
+
+	* godmode/agentes/module_manager_editor.php: Fixed snmp community for
+	WMI modules.
+
+	* godmode/agentes/module_manager_editor_*.php: New fields in editor
+	warning, critical, flip-flop.
+
+	* include/config_process.php, 
+	godmode/setup/setup.php: Added new option for hash auth.
+
+	* include/functions.php: Added again (please don't delete it) function
+	to remove quotes on automatic protection (magicquotes).
+
+	* menu.css: Added icon to inventory server option in the menu.
+
+	* estado_monitores.php: Fix module edit link, better data render on tooltip
+
+	* estado_ultimopaquete.php: Fix module edit link.
 
 2009-01-19  Esteban Sanchez  <estebans@artica.es>
 
@@ -354,7 +361,6 @@
 	operation/reporting/reporting_viewer.php, 
 	godmode/agentes/manage_config.php: Style correction.
 
->>>>>>> .r1336
 2009-01-12  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Removed fields "timestamp" and "id_agente" (and altered
@@ -431,7 +437,8 @@
 
 2009-01-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
-	* general/footer.php: Made image link relative. It wasn't working for me.
+	* general/footer.php: Made image link relative. It wasn't working for
+	me.
 	
 	* include/functions.php, include/functions_exportserver.php,
 	include/functions_incidents.php, include/functions_visual_map.php, 
@@ -564,7 +571,7 @@
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish
 	  translation.
 
-	* include/languages/index.pot: Updated po template.                              
+	* include/languages/index.pot: Updated po template.							  
 
 2008-12-24  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
@@ -957,10 +964,10 @@
 
 2008-11-26  Sancho Lerena  <slerena@artica.es>
 
-        * godmode/agentes/configurar_agente.php: Fixed problem with agent module
-        groups.
+		* godmode/agentes/configurar_agente.php: Fixed problem with agent module
+		groups.
 
-        * include/config_process.php: Fixed typo on prominent_time config token.
+		* include/config_process.php: Fixed typo on prominent_time config token.
 
 
 2008-11-26  Jorge Gonzalez  <jorgegonz@artica.es>
@@ -3118,7 +3125,6 @@
 
 	* include/help/en/help_plugin_definition.php: Language corrections.
 
->>>>>>> .r1002
 2008-07-31  Sancho Lerena <slerena@gmail.com>
 	
 	* include/help/en/help_plugin_definition.php: New help page for 
@@ -3278,7 +3284,6 @@
 	* view_server.php: Fixed problem with lastupdate render. This was using
 	and incorrect function to render data. 
 
->>>>>>> .r996
 2008-07-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Last commit forgot a semicolon. Fixed.
@@ -4551,11 +4556,11 @@
 
 2008-06-09  Sancho Lerena <slerena@gmail.com>
 
-    * operation/agentes/status_monitor.php, 
-    operation/agentes/estado_agente.php: Data was presented for users with
-    access to specific groups (fixed also in 1.3.1 branch).
+	* operation/agentes/status_monitor.php, 
+	operation/agentes/estado_agente.php: Data was presented for users with
+	access to specific groups (fixed also in 1.3.1 branch).
 
-    * godmode/users/configure_user.php: Better management of password.  
+	* godmode/users/configure_user.php: Better management of password.  
 
 2008-06-09  Ramon Novoa  <rnovoa@artica.es>
 
@@ -4572,49 +4577,49 @@
 
 2008-06-10  Sancho Lerena <slerena@artica.es>
 
-    * pandoradb.sql: Updated tevent structure. Added criticity and 
-    other important and new fields.
+	* pandoradb.sql: Updated tevent structure. Added criticity and 
+	other important and new fields.
 
-    * pandoradb_data.sql: Added "remote_config" token for setup.
+	* pandoradb_data.sql: Added "remote_config" token for setup.
 
-    * setup.php: Added support for token remote_config.
+	* setup.php: Added support for token remote_config.
 
-    * config_process.php: Added support for token remote_config.
+	* config_process.php: Added support for token remote_config.
 
-    * incident_detail.php: Solved small problems in attachment.
+	* incident_detail.php: Solved small problems in attachment.
 
-    * snmp_view.php: Solved small problems in pagination.
+	* snmp_view.php: Solved small problems in pagination.
 
-    * fgraph.php: Added support to generate graphs on any interval 
-    in time, not only "last XX". Need to implement user interface
-    controls to work with it.
+	* fgraph.php: Added support to generate graphs on any interval 
+	in time, not only "last XX". Need to implement user interface
+	controls to work with it.
 
 2008-04-24  Sancho Lerena <slerena@artica.es>
 
-    * operation/reporting/reporting_viewer.php,
-    operation/reporting/graph_viewer.php
-    include/functions_reporting_pdf.php: Render stacked custom graphs.
+	* operation/reporting/reporting_viewer.php,
+	operation/reporting/graph_viewer.php
+	include/functions_reporting_pdf.php: Render stacked custom graphs.
 
-    * include/styles/pandora_red.css: Improved RED style :-)
+	* include/styles/pandora_red.css: Improved RED style :-)
 
-    * include/styles/pandora.css: Added background.
+	* include/styles/pandora.css: Added background.
 
-    * include/languages/language_en.php: Added stacked token.
+	* include/languages/language_en.php: Added stacked token.
 
-    * pandoradb.sql: Added field "stacked" to custom graphs.
+	* pandoradb.sql: Added field "stacked" to custom graphs.
 
-    * images/backgrounds/background_red.gif: Added cool background ;)
+	* images/backgrounds/background_red.gif: Added cool background ;)
 
-    * reporting/fgraph.php: stacked custom graph support.
+	* reporting/fgraph.php: stacked custom graph support.
 
-    * godmode/db/db_main.php: Uses new config tokens.
+	* godmode/db/db_main.php: Uses new config tokens.
 
-    * godmode/db/db_purge.php: Works also with "all" agents (like 1.1)
+	* godmode/db/db_purge.php: Works also with "all" agents (like 1.1)
 
-    * godmode/reporting/graph_builder.php: Able to define stacked or not.
+	* godmode/reporting/graph_builder.php: Able to define stacked or not.
 
 	* pandoradb_data.sql: Added several template modules contributed by 
-    Guguevi. 
+	Guguevi. 
 
 	* operation/events/events_rss.php: Added RSS events page, contributed
 	by guruevi.
@@ -4657,32 +4662,32 @@
 
 2008-04-17  Sancho Lerena <slerena@artica.es>
 
-    * include/functions_db.php: Fixed problem in show_alert_row_mini()
+	* include/functions_db.php: Fixed problem in show_alert_row_mini()
 
-    * operation/agentes/status_monitor.php: Almost all code changed.
-    Added pagination, replaced query for a paginated version and a lot
-    more efficient. Added freetext search on name / description of 
-    monitors.
+	* operation/agentes/status_monitor.php: Almost all code changed.
+	Added pagination, replaced query for a paginated version and a lot
+	more efficient. Added freetext search on name / description of 
+	monitors.
 
-    * operation/agentes/estado_ultimopaquete.php: Fixed problem with
-    refresh / push buttons on data server modules.
+	* operation/agentes/estado_ultimopaquete.php: Fixed problem with
+	refresh / push buttons on data server modules.
 
-    * godmode/admin_access_logs.php: Fixed several problems. Added a 
-    better pagination.
+	* godmode/admin_access_logs.php: Fixed several problems. Added a 
+	better pagination.
 
-    * godmode/agentes/module_manager_editor.php,
-    godmode/agentes/module_manager_editor_network.php: When pushed 
-    SNMP walk, lost all fields. Fixed. Also fixed problems with min/max.
-    
-    * godmode/agentes/module_manager_editor_data.php,
-    godmode/agentes/module_manager_editor_wmi.php,
-    godmode/agentes/module_manager_editor_plugin.php
-    godmode/agentes/module_manager_editor_prediction.php: Fixed problems
-    with inverted max/min.
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_network.php: When pushed 
+	SNMP walk, lost all fields. Fixed. Also fixed problems with min/max.
+	
+	* godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/agentes/module_manager_editor_prediction.php: Fixed problems
+	with inverted max/min.
 
-    * godmode/agentes/configurar_agente.php: Keepalive modules now are
-    from id_module=1 (data server). before was type 0 and that gives a lot
-    of problems.
+	* godmode/agentes/configurar_agente.php: Keepalive modules now are
+	from id_module=1 (data server). before was type 0 and that gives a lot
+	of problems.
 
 2008-04-10  Sancho Lerena <slerena@artica.es>
 
@@ -4767,103 +4772,103 @@
 
 2008-04-03  Sancho Lerena <slerena@gmail.com>
 
-    * pandoradb_data.sql: IA to prediction in description.
+	* pandoradb_data.sql: IA to prediction in description.
 
-    * pandoradb.sql: Added priority to alert and custom recovery fields.
+	* pandoradb.sql: Added priority to alert and custom recovery fields.
 
-    * include/styles/tip.css, include/styles/pandora.css: New styles
-    for tooltip info (combined and alerts) and some changes in frames for
-    agent management / view.
+	* include/styles/tip.css, include/styles/pandora.css: New styles
+	for tooltip info (combined and alerts) and some changes in frames for
+	agent management / view.
 
-    * include/functions_db.php: Added check_server_status() function to check
-    from console server status. If in 15 minutes there is no updated keepalive
-    from any server, they will be marked as down. And function return down. 
-    This function is now called on each page. Added funtions to display alert
-    status in a tooltip.
+	* include/functions_db.php: Added check_server_status() function to check
+	from console server status. If in 15 minutes there is no updated keepalive
+	from any server, they will be marked as down. And function return down. 
+	This function is now called on each page. Added funtions to display alert
+	status in a tooltip.
 
-    * include/languages/language_en.php: More strings.
+	* include/languages/language_en.php: More strings.
 
-    * include/functions.php: Added several funtions to simplify alert report.
+	* include/functions.php: Added several funtions to simplify alert report.
 
-    * operation/agentes/estado_alertas.php: Updated. Shows also combined 
-    alerts and give a lot of information in different tooltips.
+	* operation/agentes/estado_alertas.php: Updated. Shows also combined 
+	alerts and give a lot of information in different tooltips.
 
-    * operation/agentes/estado_ultimopaquete.php: Clean blank spaces in URL.
+	* operation/agentes/estado_ultimopaquete.php: Clean blank spaces in URL.
 
-    * operation/agentes/estado_monitores.php: now is possible to force a
-    module refresh from main view.
+	* operation/agentes/estado_monitores.php: now is possible to force a
+	module refresh from main view.
 
-    * operation/agentes/ver_agente.php: Tab has been upgraded.
+	* operation/agentes/ver_agente.php: Tab has been upgraded.
 
-    * images/mod_data.png,
-      images/mod_data_inc.png
-      images/mod_proc.png
-      images/mod_keepalive.png
-      images/mod_string.png: Added new type icons and updated old ones.
+	* images/mod_data.png,
+	  images/mod_data_inc.png
+	  images/mod_proc.png
+	  images/mod_keepalive.png
+	  images/mod_string.png: Added new type icons and updated old ones.
 
-    * general/header.php: Global check for servers and autorefresh control.
+	* general/header.php: Global check for servers and autorefresh control.
 
-    * godmode/agentes/alert_manager.php: New alert management for combined
-    alerts, visualization, etc.
+	* godmode/agentes/alert_manager.php: New alert management for combined
+	alerts, visualization, etc.
 
-    * godmode/agentes/configurar_agente.php: Included new alert management.
+	* godmode/agentes/configurar_agente.php: Included new alert management.
 
-    * godmode/agentes/alert_manager_editor.php: New alert management editor.
+	* godmode/agentes/alert_manager_editor.php: New alert management editor.
 
 2008-04-01 Sancho Lerena <slerena@gmail.com>
 
-    * pandoradb_data.sql: Alert type 0 is not 1. 1-3 are reserved. Removed 
-    prediction module (nosense since it uses normal modules).
+	* pandoradb_data.sql: Alert type 0 is not 1. 1-3 are reserved. Removed 
+	prediction module (nosense since it uses normal modules).
 
-    * include/functions_db.php: Added wrapper give_db_value to get_db_value
-    because A LOT of code uses old syntax and this makes too many errors.
+	* include/functions_db.php: Added wrapper give_db_value to get_db_value
+	because A LOT of code uses old syntax and this makes too many errors.
 
-    * include/functions.php: Fixed pagination issues with blocksize config.
+	* include/functions.php: Fixed pagination issues with blocksize config.
 
-    * pandoradb.sql: Change alert command lenght and added some comments
-    for future implementation of alert criticity and others.
+	* pandoradb.sql: Change alert command lenght and added some comments
+	for future implementation of alert criticity and others.
  
-    * operation/incidents/incident.php: Fixed some bugs calling to old
-    funcions / variables.
+	* operation/incidents/incident.php: Fixed some bugs calling to old
+	funcions / variables.
 
-    * operation/events/events.php: Fixed some bugs calling to old
-    funcions / variables. Removed graph and simplified header.
+	* operation/events/events.php: Fixed some bugs calling to old
+	funcions / variables. Removed graph and simplified header.
 
-    * operation/agentes/estado_alertas.php: Changed get_db_value call
-    and removed (Raul) button to create alert from here.
+	* operation/agentes/estado_alertas.php: Changed get_db_value call
+	and removed (Raul) button to create alert from here.
 
-    * operation/agentes/estado_grupo.php: Implemented support for optional
-    view of down modules and fired alerts.
+	* operation/agentes/estado_grupo.php: Implemented support for optional
+	view of down modules and fired alerts.
 
-    * operation/agentes/ver_agente.php, 
-    operation/agentes/datos_agente.php: Uses of new get_db_value and
-    new session id variable.
-    
-    * images/mod_async_string.png: Added image.
+	* operation/agentes/ver_agente.php, 
+	operation/agentes/datos_agente.php: Uses of new get_db_value and
+	new session id variable.
+	
+	* images/mod_async_string.png: Added image.
 
-    * images/mod_async_inc.png: Added image.
+	* images/mod_async_inc.png: Added image.
 
-    * images/mod_image_png.png: Added image.
+	* images/mod_image_png.png: Added image.
 
-    * images/mod_async_data.png: Added image.
+	* images/mod_async_data.png: Added image.
 
-    * images/mod_async_proc.png: Added image.
+	* images/mod_async_proc.png: Added image.
 
-    * images/mod_image_jpg.png: Added image.
+	* images/mod_image_jpg.png: Added image.
 
-    * godmode/setup/setup.php: Several fixes.
+	* godmode/setup/setup.php: Several fixes.
 
-    * godmode/agentes/alert_manager.php: Several changes for new alert manager. 
-    Not finished. Interim commit.
+	* godmode/agentes/alert_manager.php: Several changes for new alert manager. 
+	Not finished. Interim commit.
 
-    * godmode/agentes/configurar_agente.php: More changes needed to alert editor.
+	* godmode/agentes/configurar_agente.php: More changes needed to alert editor.
 
-    * godmode/agentes/alert_manager_editor.php: New file for alert management.
+	* godmode/agentes/alert_manager_editor.php: New file for alert management.
 
-    * godmode/modules/module_list.php: Some updates, removed invalid column.
+	* godmode/modules/module_list.php: Some updates, removed invalid column.
 
-    * godmode/alerts/modify_alert.php: Alert types < 4 cannot be modified (this
-    includes combined, internal audit and Pandora FMS log).
+	* godmode/alerts/modify_alert.php: Alert types < 4 cannot be modified (this
+	includes combined, internal audit and Pandora FMS log).
 
 2008-04-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
@@ -4882,80 +4887,80 @@
 
 2008-03-19 Manuel Arostegui <marostegui@artica.es>
 
-        * pandora_console.spec: Solved a problem with Suse based
-          distros regarding to dependencies and apache's path.
+		* pandora_console.spec: Solved a problem with Suse based
+		  distros regarding to dependencies and apache's path.
 
 2008-03-13  Sancho Lerena <slerena@gmail.com>
 
-        * include/functions_db.php: Added show_server_type (): Return a string 
-        containing image tag for a given target id. Updated some generic db
-        access calls to new function names.
+		* include/functions_db.php: Added show_server_type (): Return a string 
+		containing image tag for a given target id. Updated some generic db
+		access calls to new function names.
 
-        * pandoradb.sql: Removed unused field.
+		* pandoradb.sql: Removed unused field.
 
-        * operation/agentes/estado_generalagente.php: Some fixes for new schema
+		* operation/agentes/estado_generalagente.php: Some fixes for new schema
 
-        * reporting/stat_win.php: Uses new $config hash.
+		* reporting/stat_win.php: Uses new $config hash.
 
-        * godmode/agentes/module_manager.php: Some fixes. Added visualization
-        for module type (by server type).
+		* godmode/agentes/module_manager.php: Some fixes. Added visualization
+		for module type (by server type).
 
 
 2008-03-06  Sancho Lerena <slerena@gmail.com>
 
-        Pandora FMS 2.0 development first commit. 1.4 version is now 2.0
+		Pandora FMS 2.0 development first commit. 1.4 version is now 2.0
 
-        * pandoradb_data.sql: Added correct tnetwork_components, fixed
-        ttipo_modulo (categoria values).
+		* pandoradb_data.sql: Added correct tnetwork_components, fixed
+		ttipo_modulo (categoria values).
 
-        * include/styles/pandora.css: Added some server icons, tab style
-        for module editor has been improved.
+		* include/styles/pandora.css: Added some server icons, tab style
+		for module editor has been improved.
 
-        * include/functions_db.php: added new functions, lang_string and
-        check_login, and a first review of several functions that currently
-        need change for new config session parameters in array $config[]
+		* include/functions_db.php: added new functions, lang_string and
+		check_login, and a first review of several functions that currently
+		need change for new config session parameters in array $config[]
 
-        * include/javascript/pandora.js: Added a new global include for
-        spare javascript functions before included into a few pages.
+		* include/javascript/pandora.js: Added a new global include for
+		spare javascript functions before included into a few pages.
 
-        * include/languages/language_en.php: New tokens.
+		* include/languages/language_en.php: New tokens.
 
-        * include/help*: New contextual help system.
+		* include/help*: New contextual help system.
 
-        * include/config_process.php: New way to manage config.
+		* include/config_process.php: New way to manage config.
 
-        * include/functions.php: Added new functions to manage global
+		* include/functions.php: Added new functions to manage global
 
-        * operation/agentes/estado_ultimopaquete.php: removed old javascript
-        code from there.
+		* operation/agentes/estado_ultimopaquete.php: removed old javascript
+		code from there.
 
-        * operation/agentes/estado_agente.php: Removed references to deprecated
-        field "agent_type".
+		* operation/agentes/estado_agente.php: Removed references to deprecated
+		field "agent_type".
 
-        * operation/agentes/tactical.php: Some code cleanup and progressbar 
-        issues merged from 1.3.1 branch. Need to add support to new server 
-        types and new module types.
+		* operation/agentes/tactical.php: Some code cleanup and progressbar 
+		issues merged from 1.3.1 branch. Need to add support to new server 
+		types and new module types.
 
-        * operation/servers/view_server.php: Added support to new servers, code
-        cleanup.
+		* operation/servers/view_server.php: Added support to new servers, code
+		cleanup.
 
-        * reporting/fgraph.php: Code cleanup, changes to use new config method,
-        and a lot of style change. 
+		* reporting/fgraph.php: Code cleanup, changes to use new config method,
+		and a lot of style change. 
 
-        * general/pandora_help.php: New source for contextual help in the way 
-        of moodle.
+		* general/pandora_help.php: New source for contextual help in the way 
+		of moodle.
 
-        * general/footer.php, general/noaccess.php: Code cleanup and uses of
-         new config.
+		* general/footer.php, general/noaccess.php: Code cleanup and uses of
+		 new config.
 
-        * module_manager_editor: New editors for each module family. Need
-         finish and implement EDITION of data, now only inserts data.
+		* module_manager_editor: New editors for each module family. Need
+		 finish and implement EDITION of data, now only inserts data.
 
-        * godmode/agentes/agent_manager.php: Implemented new server assigment
-         and edition. 
+		* godmode/agentes/agent_manager.php: Implemented new server assigment
+		 and edition. 
 
-        * godmode/agentes/configurar_agente.php: Small changes that affects 
-        module management, visualization and agent management.
+		* godmode/agentes/configurar_agente.php: Small changes that affects 
+		module management, visualization and agent management.
 
 
 2008-03-01  Raul Mateos  <raulofpandora@gmail.com>
@@ -5034,22 +5039,22 @@
 
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
-        * functions_db.php: Some changes in future generic SQL interface access.
+		* functions_db.php: Some changes in future generic SQL interface access.
 
-        * pandora_console/include/functions.php: Added generic acces to HTTP 
-        parameters.
+		* pandora_console/include/functions.php: Added generic acces to HTTP 
+		parameters.
 
-        * status_monitor.php: Fixed problems detected by Pierre Gaxatte.
+		* status_monitor.php: Fixed problems detected by Pierre Gaxatte.
 
-        * estado_agente.php: Fixed the same kind of problems (ACL / Group acces)
-        and added a Agent search field as request by J.Corona.
+		* estado_agente.php: Fixed the same kind of problems (ACL / Group acces)
+		and added a Agent search field as request by J.Corona.
 
-        * tactical.php: Rename of generic SQL function access.
-        
-        * view_server.php: Rename of generic SQL function access.
+		* tactical.php: Rename of generic SQL function access.
+		
+		* view_server.php: Rename of generic SQL function access.
 
-        * modificar_agente.php: Fixed some render problems, added a Agent search
-        option and better formatting.
+		* modificar_agente.php: Fixed some render problems, added a Agent search
+		option and better formatting.
 
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
@@ -5081,15 +5086,15 @@
 
 2008-01-08  Sancho Lerena  <slerena@gmail.com>
 
-        * pandoradb_data.sql: Added keep_alive as module id 100 for the new keepalive
-        management. Old way (from 1.2) is now deprecated and not used.
+		* pandoradb_data.sql: Added keep_alive as module id 100 for the new keepalive
+		management. Old way (from 1.2) is now deprecated and not used.
 
-        * operation/agentes/estado_agente.php: Style changes, not code.
+		* operation/agentes/estado_agente.php: Style changes, not code.
 
-        * images/mod_keepalive.png: Added new icon for keepalive moduletype.
+		* images/mod_keepalive.png: Added new icon for keepalive moduletype.
 
-        * godmode/agentes/configurar_agente.php: Create an agent creates automatically 
-        a keepalive module AND a tagente_estado record.
+		* godmode/agentes/configurar_agente.php: Create an agent creates automatically 
+		a keepalive module AND a tagente_estado record.
 
 2007-12-16  Sancho Lerena <slerena@gmail.com>
 
@@ -5192,11 +5197,11 @@ filter. Added Logs text.
 
 2007-09-27  Manuel Arostegui <marostegui@artica.es>
 
-       * operation/events/events.php: Fixed some problems
+	   * operation/events/events.php: Fixed some problems
 	 similar to bug #1801301.
 
-       * godmode/agentes/modificar_agente.php: Fixed some problems
-         similar to bug #180130.
+	   * godmode/agentes/modificar_agente.php: Fixed some problems
+		 similar to bug #180130.
 
 2007-09-24  Sancho Lerena <slerena@gmail.com>
 
@@ -5261,12 +5266,12 @@ filter. Added Logs text.
 
 2007-08-29  Sancho Lerena <slerena@artica.es>
 
-        * include/config.inc.php: Change defaults to avoid problems with attachments.
+		* include/config.inc.php: Change defaults to avoid problems with attachments.
 
 2007-08-28  Sancho Lerena <slerena@artica.es>
 
-        * pandora_console/operation/reporting/graph_viewer.php: Fixed dimensions of graph
-        view
+		* pandora_console/operation/reporting/graph_viewer.php: Fixed dimensions of graph
+		view
 
 2007-08-27  Sancho Lerena <slerena@artica.es>
 
@@ -5318,7 +5323,7 @@ filter. Added Logs text.
 
 2007-08-20  Sancho Lerena  <slerena@artica.es>
 
-        * pandoradb.sql: Used UTF-8 by default
+		* pandoradb.sql: Used UTF-8 by default
 
 	* index.php. UTF-8 Default.
 	
@@ -5376,32 +5381,32 @@ filter. Added Logs text.
 
 2007-08-06  Sancho Lerena  <slerena@gmail.com>
 	
-        * pandoradb.sql, alert_manager.php: Alert time support uses TIME
+		* pandoradb.sql, alert_manager.php: Alert time support uses TIME
 	format instead numeric (changes requested by esanchezm).
 
 2007-08-06  Sancho Lerena  <slerena@artica.es>
 
-        * include/functions_db.php: Fixed unsorted render (E.Ross).
+		* include/functions_db.php: Fixed unsorted render (E.Ross).
 
-        * index.php: Several fixes from E.Ross and me (HTTP port, REFR bug
-        #1756143).
+		* index.php: Several fixes from E.Ross and me (HTTP port, REFR bug
+		#1756143).
 
-        * status_monitor.php: Small fixes for SQL sentences (E.Ross).
+		* status_monitor.php: Small fixes for SQL sentences (E.Ross).
 
-        * estado_grupo.php: Small fixes for SQL sentnces (E.Ross).
+		* estado_grupo.php: Small fixes for SQL sentnces (E.Ross).
 
-        * estado_ultimopaquete.php: Fix to use boolean graph from E.Ross.
+		* estado_ultimopaquete.php: Fix to use boolean graph from E.Ross.
 
-        * fgraph.php: Use simplified version of sparse to make a more
-        quick and simplified version of graph, useful for Boolean types
-        (E.Ross).
+		* fgraph.php: Use simplified version of sparse to make a more
+		quick and simplified version of graph, useful for Boolean types
+		(E.Ross).
 
-        * stat_win.php: Fixed problem with resizing (E.Ross).
+		* stat_win.php: Fixed problem with resizing (E.Ross).
 
-        * godmode/groups/configure_group.php: Fixed code for Non-dependant
-        groups (E.Ross).
+		* godmode/groups/configure_group.php: Fixed code for Non-dependant
+		groups (E.Ross).
 
-        * login_page.php: Fixes for non 80 HTTP port (E.Ross).
+		* login_page.php: Fixes for non 80 HTTP port (E.Ross).
 
 2007-08-06 Sancho Lerena <slerena@artica.es>
 
@@ -5431,13 +5436,13 @@ filter. Added Logs text.
 	more visible for operators using large screens (Javier Carranza).
 
 	* operation/agentes/status_monitor.php: Fixed layout of lights. Much
-        more visible for operators using large screens (Javier Carranza).
+		more visible for operators using large screens (Javier Carranza).
 
 	* operation/agentes/estado_monitores.php: Fixed layout of lights. Much
-        more visible for operators using large screens (Javier Carranza).
+		more visible for operators using large screens (Javier Carranza).
 
 	* operation/agentes/estado_agente.php: Fixed layout of lights. Much
-        more visible for operators using large screens (Javier Carranza).
+		more visible for operators using large screens (Javier Carranza).
 
 	* images/pixel_*.png: Added for use in previous fixes.
 
@@ -5472,27 +5477,27 @@ filter. Added Logs text.
 
 2007-07-18  Sancho Lerena  <slerena@artica.es>
 
-        * include/functions_reporting.php: With last change in server, we
-        have control of not initilizated modules (those who never got
-        data/contact), we need to take care of them here.
+		* include/functions_reporting.php: With last change in server, we
+		have control of not initilizated modules (those who never got
+		data/contact), we need to take care of them here.
 
-        * pandoradb.sql: last_execution_try field is added to
-        tagente_estado to be able to keep last execution try from network
-        server, later method was incompatible with automatic compatation
-        of data and with data server.
+		* pandoradb.sql: last_execution_try field is added to
+		tagente_estado to be able to keep last execution try from network
+		server, later method was incompatible with automatic compatation
+		of data and with data server.
 
-        * operation/agentes/estado_grupo.php: Unknown data not includes
-        non initialized data. It's possible that need to make changes of
-        this kind in other files because the nature of the problem
-        detected.
+		* operation/agentes/estado_grupo.php: Unknown data not includes
+		non initialized data. It's possible that need to make changes of
+		this kind in other files because the nature of the problem
+		detected.
 
-        * operation/agentes/tactical.php: BugFix: LAG is now correct and
-        makes reference to the oldest module that has been processed. Also
-        are shown non initialized data.
+		* operation/agentes/tactical.php: BugFix: LAG is now correct and
+		makes reference to the oldest module that has been processed. Also
+		are shown non initialized data.
 
 
-        * operation/servers/view_server.php: BugFix: LAG is now correct
-        (see above).
+		* operation/servers/view_server.php: BugFix: LAG is now correct
+		(see above).
 
 2007-07-16  Sancho Lerena <slerena@gmail.com>
 
@@ -5505,13 +5510,13 @@ filter. Added Logs text.
 	* operation/agentes/estado_monitores.php: Bugfix, Now show only initialized modules.
 
 	* operation/agentes/estado_agente.php: Bugfixed, "All" group problem,
-        and agent names are truncated if > 18 chars.
+		and agent names are truncated if > 18 chars.
 	
 	* operation/agentes/tactical.php: Bugfixed, now calculates LAG and module
 	count properly.
 
 	* operation/servers/view_server.php: Bugfixed, now calculates LAG and module
-        count properly.
+		count properly.
 
 	* reporting/fgraph.php: Bugfix: Renamed static problem image.
 
@@ -6496,7 +6501,7 @@ filter. Added Logs text.
 	* general/login_page.php: Updated login page.
 	
 	* godmode/agentes/alert_manager.php, configurar_agente.php: New
-	code for text alerts and better user help.       
+	code for text alerts and better user help.	   
 
 2007-04-18  Raul Mateos  <raulofpandora@gmail.com>
 
@@ -6578,11 +6583,11 @@ filter. Added Logs text.
 	project. Added tnews
 	
 	* index.php: VERY IMPORTANT: Added Session locking concurrency
-        speedup, taken from
-        http://es2.php.net/manual/en/ref.session.php#64525. This solve GUI
-        lookups when one page it's processing huge data and one user
-        cannot access to other pages. This is a common PHP issue for
-        bad-susing SESSION functions.
+		speedup, taken from
+		http://es2.php.net/manual/en/ref.session.php#64525. This solve GUI
+		lookups when one page it's processing huge data and one user
+		cannot access to other pages. This is a common PHP issue for
+		bad-susing SESSION functions.
 	
 
 	* operation/agentes/estado_grupo.php: Added checks for timeout in
@@ -6700,7 +6705,7 @@ filter. Added Logs text.
 
 	* operation/menu.php: Added reporting suboption: Custom Graph Builder.
 
-       	* operation/reporting/graph_builder.php: New custom and combined
+	   	* operation/reporting/graph_builder.php: New custom and combined
 	graphic generator that uses new function from fgraph
 	graphic_combined_module().
 
@@ -7012,7 +7017,7 @@ filter. Added Logs text.
 	update/inser goes to main incident view. More usable
 	interface. Pagination works fine, needs to adjust SQL to use LIMIT
 	syntax for more optimized code.
-       
+	   
 2007-02-05  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions_db.php: Added function to get
@@ -7301,7 +7306,7 @@ filter. Added Logs text.
 
 2006-12-03 Sancho Lerena <slerena@artica.es>
 
-        * godmode/agentes/configurar_agente.php: Fixed bug editing alerts.
+		* godmode/agentes/configurar_agente.php: Fixed bug editing alerts.
 
 2006-12-03 Raul Mateos  <raulofpandora@gmail.com>
 
@@ -7329,7 +7334,7 @@ filter. Added Logs text.
 
 2006-11-23  Sancho Lerena  <slerena@artica.es>
 
-    * agentes/estado_ultimopaquete.php: Added "border=0" to some graphic.
+	* agentes/estado_ultimopaquete.php: Added "border=0" to some graphic.
 	Fixed typo in hourly graph.
 
 	* agentes/estado_generalagente.php: Added "border=0" in setup icon.

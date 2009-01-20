@@ -164,6 +164,11 @@
 	
 }
 
+/* inventory */
+#oper-inventory {
+	background:transparent url(../../images/page_white_text.png) no-repeat 4px 3px;
+}
+
 .mainmenu.selected, .submenu.selected, .menu li:hover,
 #oper-agents.selected, #oper-servers.selected, #oper-incidents.selected, #oper-events.selected, #oper-users.selected, #oper-snmpc.selected, #oper-messages.selected, #oper-reporting.selected, #oper-visualc.selected, #oper-extensions.selected,
 #oper-agents:hover, #oper-servers:hover, #oper-incidents:hover, #oper-events:hover, #oper-users:hover, #oper-snmpc:hover, #oper-messages:hover, #oper-reporting:hover, #oper-visualc:hover, #oper-extensions:hover,

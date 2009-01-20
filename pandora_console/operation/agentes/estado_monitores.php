@@ -68,17 +68,25 @@ foreach ($modules as $module) {
 	
 	$data[1] = '<img src="images/'.show_icon_type ($module["id_tipo_modulo"]).'" border="0">';
 	if (give_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=2505&tab=module&update_module='.$module["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
+	  $data[1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&update_module='.$module["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
 	$data[2] = substr ($module["nombre"], 0, 25);
 	$data[3] = substr ($module["descripcion"], 0, 35);
 	
 	if ($module["estado"] == 2) {
-		$data[4] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('WARNING'). ' : '. $module["datos"].'">';
+		$data[4] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('WARNING'). ' : ';
 	} elseif ($module["estado"] == 1) {
-		$data[4] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('CRITICAL'). ' : '. $module["datos"].'">';
+		$data[4] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('CRITICAL'). ' : ';
 	} else {
-		$data[4] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('NORMAL'). ' : '. $module["datos"].'">';
+		$data[4] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('NORMAL'). ' : ';
 	}
+	
+    if (is_numeric($module["datos"])) {
+        $data[4] .= format_for_graph($module["datos"]). '">';
+    } else {
+        $data[4] .= substr(salida_limpia($module["datos"]),0,42) . '">';
+    }
+    
+			
 	
 	if ($module["module_interval"] > 0) {
 		$data[5] = $module["module_interval"];

@@ -119,7 +119,7 @@ if ($update_module_id != NULL){
 		echo "<option value='".$row["id_nc"]."'>";
 		echo substr($row["name"],0,30);
 		echo " / ";
-		echo substr($row["description"],0,15);
+		echo substr($row["description"],0,32);
 		echo "</option>";
 	}
 	echo "</select>";
@@ -258,6 +258,7 @@ echo '<td class="datos2">'.__("Min.").' <input type="text" name="form_min_critic
 echo ' '.__("Max.").' <input type="text" name="form_max_critical" size="5" value="'.$form_max_critical.'"></td>';
 echo '</tr>';
 
+// History data ?
 echo "<tr>";
 echo '<td class="datos2">'.__('Historical data')."</td>";
 echo '<td class="datos2">';

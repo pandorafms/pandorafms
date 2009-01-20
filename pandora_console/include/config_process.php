@@ -122,6 +122,11 @@ if (!isset($config["event_view_hr"])){
 	process_sql ("INSERT INTO tconfig (token,value) VALUES ('event_view_hr', ".$config["event_view_hr"].")");
 }
 
+if (!isset($config["loginhash_pwd"])){
+	$config["loginhash_pwd"] = rand(0,1000)."pandorahash";
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('loginhash_pwd', ".$config["loginhash_pwd"].")");
+}
+
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 	$config['homeurl'] = '/'.$config['homeurl'];
 }

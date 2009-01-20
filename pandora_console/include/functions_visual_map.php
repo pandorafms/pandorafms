@@ -60,6 +60,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 								AND utimestamp >= UNIX_TIMESTAMP() - %d))',
 						$id_agent, $interval * 2);
 					$status = get_db_sql ($sql);
+					$status_parent = $status;
 				}
 			}
 			

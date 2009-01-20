@@ -1,3 +1,10 @@
+2009-01-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Take into account the alert option
+	  'matches_value'.
+
+	* bin/pandora_server: Added support for forced alert execution.
+
 2009-01-20  Sancho Lerena <slerena@artica.es>
 
 	* Config.pm: Now works without breaking the server :-). Show verbose info

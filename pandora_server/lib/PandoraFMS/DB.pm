@@ -223,10 +223,17 @@ sub pandora_evaluate_alert (%$%$$$) {
 	elsif ($alert_data->{'type'} eq "max" && $module_data <= $alert_data->{'max_value'}) {
 		return $status;
 	}
-	elsif ($alert_data->{'type'} eq "max_min"
-	       && $module_data >= $alert_data->{'min_value'}
-	       && $module_data <= $alert_data->{'max_value'}) {
-		return $status;
+	elsif ($alert_data->{'type'} eq "max_min") {
+	    if ($alert_data->{'matches_value'} == 1 &&
+	    	$module_data <= $alert_data->{'min_value'} &&
+	        $module_data >= $alert_data->{'max_value'}) {
+			return $status;
+		}
+
+	    if ($module_data >= $alert_data->{'min_value'} &&
+	        $module_data <= $alert_data->{'max_value'}) {
+			return $status;
+		}
 	}
 	elsif ($alert_data->{'type'} eq "equal" && $module_data == $alert_data->{'value'}) {
 		return $status;
@@ -234,8 +241,14 @@ sub pandora_evaluate_alert (%$%$$$) {
 	elsif ($alert_data->{'type'} eq "not_equal" && $module_data != $alert_data->{'value'}) {
 		return $status;
 	}
-	elsif ($alert_data->{'type'} eq "regex" && $module_data !~ m/$alert_data->{'alert_text'}/i) {
-		return $status;
+	elsif ($alert_data->{'type'} eq "regex") {
+		if ($alert_data->{'matches_value'} == 1 && $module_data =~ m/$alert_data->{'alert_text'}/i) {
+			return $status;
+		}
+		
+		if ($module_data !~ m/$alert_data->{'alert_text'}/i) {
+			return $status;
+		}
 	}
 
 	#if ($id_module_type == -1) {

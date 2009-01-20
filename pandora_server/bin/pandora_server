@@ -95,6 +95,8 @@ while (1) {
 	pandora_serverkeepaliver (\%pa_config, 0, $dbh);
 	# Disabled until we can finish code from editor and update server code
 	pandora_planned_downtime (\%pa_config, $dbh);
+	# Ececute forced alerts
+	pandora_exec_forced_alerts (\%pa_config, $dbh);
 	keep_alive_check (\%pa_config, $dbh);
 	threads->yield;
 	sleep ($pa_config{"server_threshold"});
@@ -449,5 +451,31 @@ sub process_module_data {
 	}
 	else {
 		logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);
+	}
+}
+
+##########################################################################
+## SUB pandora_exec_forced_alerts ($pa_config, $dbh)
+## Execute forced alerts.
+##########################################################################
+
+sub pandora_exec_forced_alerts {
+	my $pa_config = $_[0];
+	my $dbh = $_[1];
+
+	# Get alerts marked for forced execution (even disabled alerts)
+	my @alerts = get_db_all_rows ("SELECT talert_template_modules.id as id_template_module, talert_template_modules.*, talert_templates.*, tagente.*
+	                               FROM talert_template_modules, talert_templates, tagente, tagente_modulo
+	                               WHERE talert_template_modules.id_alert_template = talert_templates.id
+	                               AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
+	                               AND tagente_modulo.id_agente = tagente.id_agente
+	                               AND force_execution = 1", $dbh);
+
+	foreach my $alert (@alerts) {
+		execute_alert ($pa_config, $alert, $alert->{'id_agente'}, $alert->{'id_grupo'}, $alert->{'nombre'}, 
+						'', 1, $dbh);
+
+		# Reset the force_execution flag, even if the alert could not be executed
+		db_do ("UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'}, $dbh);
 	}
 }

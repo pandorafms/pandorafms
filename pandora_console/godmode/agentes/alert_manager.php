@@ -30,6 +30,8 @@ $create_alert = (bool) get_parameter ('create_alert');
 $add_action = (bool) get_parameter ('add_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $delete_alert = (bool) get_parameter ('delete_alert');
+$disable_alert = (bool) get_parameter ('disable_alert');
+$enable_alert = (bool) get_parameter ('enable_alert');
 
 if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
@@ -85,17 +87,32 @@ if ($delete_action) {
 		__('Could not be deleted'));
 }
 
+if ($enable_alert) {
+	$id_alert = (int) get_parameter ('id_alert');
+	
+	$result = set_alerts_agent_module_disable ($id_alert, false);
+	print_error_message ($id, __('Successfully enabled'),
+		__('Could not be enabled'));
+}
+
+if ($disable_alert) {
+	$id_alert = (int) get_parameter ('id_alert');
+	
+	$result = set_alerts_agent_module_disable ($id_alert, true);
+	print_error_message ($id, __('Successfully disabled'),
+		__('Could not be disabled'));
+}
+
 $modules = get_agent_modules ($id_agente,
 	array ('id_tipo_modulo', 'nombre', 'id_agente'));
 
 echo "<h3>".__('Modules defined')."</h3>";
 
-$table->id = 'modules';
+$table->class = 'databox_color modules';
 $table->cellspacing = '0';
 $table->width = '90%';
-$table->head = array ();
-$table->head[0] = __('Module');
 $table->data = array ();
+$table->rowstyle = array ();
 $table->style = array ();
 $table->style[1] = 'vertical-align: top';
 
@@ -109,39 +126,40 @@ $table_alerts->style[0] = 'vertical-align: top';
 $table_alerts->style[1] = 'vertical-align: top';
 
 foreach ($modules as $id_agent_module => $module) {
-	$data = array ();
-	
 	$last_data = return_value_agent_module ($id_agent_module);
 	if ($last_data === false)
 		$last_data = '<em>'.__('N/A').'</em>';
 	
-	$data[0] = '<span>'.$module['nombre'].'</span>';
-	$data[0] .= '<div class="actions left" style="visibility: hidden;">';
-	$data[0] .= '<span class="module_values" style="float: right;">';
-	$data[0] .= '<em>'.__('Latest value').'</em>: ';
-	$data[0] .= $last_data;
-	$data[0] .= '</span>';
-	$data[0] .= '</div>';
-	$data[0] .= '<div class="actions right" style="visibility: hidden;">';
-	$data[0] .= '<span class="add">';
-	$data[0] .= '<a href="#" class="add_alert" id="module-'.$id_agent_module.'">';
-	$data[0] .= __('Add alert');
-	$data[0] .= '</a>';
-	$data[0] .= '</span>';
-	$data[0] .= '</div>';
+	$table->data[0][0] = '<span>'.$module['nombre'].'</span>';
+	$table->data[0][0] .= '<div class="actions left" style="visibility: hidden;">';
+	$table->data[0][0] .= '<span class="module_values" style="float: right;">';
+	$table->data[0][0] .= '<em>'.__('Latest value').'</em>: ';
+	$table->data[0][0] .= $last_data;
+	$table->data[0][0] .= '</span>';
+	$table->data[0][0] .= '</div>';
+	$table->data[0][0] .= '<div class="actions right" style="visibility: hidden;">';
+	$table->data[0][0] .= '<span class="add">';
+	$table->data[0][0] .= '<a href="#" class="add_alert" id="module-'.$id_agent_module.'">';
+	$table->data[0][0] .= __('Add alert');
+	$table->data[0][0] .= '</a>';
+	$table->data[0][0] .= '</span>';
+	$table->data[0][0] .= '</div>';
 	
 	
 	/* Alerts in module list */
 	$table_alerts->id = 'alerts-'.$id_agent_module;
 	$table_alerts->data = array ();
 	
-	$alerts = get_alerts_agent_module ($id_agent_module);
+	$alerts = get_alerts_agent_module ($id_agent_module, true);
 	if ($alerts === false) {
 		$alerts = array ();
+		$table->data[1][0] = '';
+		$table->rowstyle[1] = 'display: none';
 	} else {
-		$data[0] .= '<h4 class="left" style="clear: left">';
-		$data[0] .= __('Alerts');
-		$data[0] .= '</h4>';
+		$table->data[1][0] = '<h4 class="left" style="clear: left">';
+		$table->data[1][0] .= __('Alerts');
+		$table->data[1][0] .= '</h4>';
+		$table->rowstyle[1] = '';
 	}
 	
 	foreach ($alerts as $alert) {
@@ -150,7 +168,6 @@ foreach ($modules as $id_agent_module => $module) {
 		$alert_actions = get_alert_agent_module_actions ($alert['id']);
 		
 		$alert_data[0] = get_alert_template_name ($alert['id_alert_template']);
-		$alert_data[0] .= '<span class="actions" style="visibility: hidden">';
 		
 		if (empty ($alert_actions)) {
 			$alert_data[0] .= '<form style="display: inline" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'" method="post" class="delete_link">';
@@ -158,9 +175,21 @@ foreach ($modules as $id_agent_module => $module) {
 			$alert_data[0] .= print_input_hidden ('delete_alert', 1, true);
 			$alert_data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
 			$alert_data[0] .= '</form>';
+		} else {
+			$alert_data[0] .= '<form style="display: inline" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'" method="post">';
+			if ($alert['disabled']) {
+				$alert_data[0] .= print_input_image ('enable', 'images/lightbulb_off.png', 1, '', true);
+				$alert_data[0] .= print_input_hidden ('enable_alert', 1, true);
+			} else {
+				$alert_data[0] .= print_input_image ('disable', 'images/lightbulb.png', 1, '', true);
+				$alert_data[0] .= print_input_hidden ('disable_alert', 1, true);
+			}
+			$alert_data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
+			$alert_data[0] .= '</form>';
 		}
 		
-		$alert_data[0] .= '<a href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_action='.$alert['id_alert_template'].'"
+		$alert_data[0] .= '<span class="actions" style="visibility: hidden">';
+		$alert_data[0] .= '<a href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'"
 			class="template_details">';
 		$alert_data[0] .= print_image ("images/zoom.png", true,
 			array ("id" => 'template-details-'.$alert['id'],
@@ -213,11 +242,12 @@ foreach ($modules as $id_agent_module => $module) {
 		$table_alerts->data['alert-'.$alert['id']] = $alert_data;
 	}
 	
-	$data[0] .= print_table ($table_alerts, true);
-	array_push ($table->data, $data);
+	$table->data[1][0] .= print_table ($table_alerts, true);
+	
+	print_table ($table);
+	$table->data = array ();
 }
 
-print_table ($table);
 
 /* This hidden value is used in Javascript. It's a workaraound for IE because
    it doesn't allow input elements creation. */
@@ -262,7 +292,7 @@ echo '</div></form>';
 
 <script type="text/javascript">
 $(document).ready (function () {
-	$("table#modules tr, table#listing tr").hover (
+	$("table.modules tr").hover (
 		function () {
 			$(".actions", this).css ("visibility", "");
 		},
@@ -272,13 +302,14 @@ $(document).ready (function () {
 	);
 	
 	$("a.add_alert").click (function () {
-		if ($("form.add_alert_form", $(this).parents ("td")).length > 0) {
+		place = $(this).parents ("tbody").children ("tr:last").children ("td");
+		if ($("form.add_alert_form", place).length > 0) {
 			return false;
 		}
 		id = this.id.split ("-").pop ();
 		form = $("form.add_alert_form:last").clone (true);
 		$("input#hidden-id_agent_module", form).attr ("value", id);
-		$(this).parents ("td").append (form);
+		$(place).append (form);
 		$(form).show ();
 		return false;
 	});
@@ -359,5 +390,22 @@ $(document).ready (function () {
 			return false;
 		return true;
 	});
+	
+	$("input#image-disable").attr ("title", "<?php echo __('Disable')?>")
+		.hover (function () {
+				$(this).attr ("src", "images/lightbulb_off.png");
+			},
+			function () {
+				$(this).attr ("src", "images/lightbulb.png");
+			}
+		);
+	$("input#image-enable").attr ("title", "<?php echo __('Enable')?>")
+		.hover (function () {
+				$(this).attr ("src", "images/lightbulb.png");
+			},
+			function () {
+				$(this).attr ("src", "images/lightbulb_off.png");
+			}
+		);
 });
 </script>

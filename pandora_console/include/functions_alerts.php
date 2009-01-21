@@ -602,33 +602,49 @@ function delete_alert_agent_module ($id_alert_agent_module) {
 }
 
 function get_alert_agent_module ($id_alert_agent_module) {
-	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	if (empty ($id_alert_agent_module))
 		return false;
 	
 	return get_db_row ('talert_template_modules', 'id', $id_alert_agent_module);
 }
 
-function get_alerts_agent_module ($id_agent_module) {
-	$id_alert_agent_module = safe_int ($id_agent_module, 1);
+function get_alerts_agent_module ($id_agent_module, $disabled = false) {
+	$id_alert_agent_module = safe_int ($id_agent_module, 0);
+	
+	$filter = '';
+	if (! $disabled)
+		$filter .= 'AND disabled = 0';
+	
 	$sql = sprintf ('SELECT * FROM talert_template_modules
-		WHERE id_agent_module = %d
-		AND disabled = 0', $id_agent_module);
+		WHERE id_agent_module = %d %s',
+		$id_agent_module, $filter);
+	
 	return get_db_all_rows_sql ($sql);
 }
 
-function get_alerts_agent_module_disabled ($id_alert_agent_module) {
-	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+function get_alert_agent_module_disabled ($id_alert_agent_module) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	return get_db_value ('disabled', 'talert_template_modules', 'id',
 		$id_alert_agent_module);
 }
 
 function set_alerts_agent_module_force_execution ($id_alert_agent_module) {
-	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
 	$sql = sprintf ('UPDATE talert_template_modules
 		SET force_execution = 1
 		WHERE id = %d',
 		$id_alert_agent_module);
+	
+	return process_sql ($sql) !== false;
+}
+
+function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	$sql = sprintf ('UPDATE talert_template_modules
+		SET disabled = %d
+		WHERE id = %d',
+		$disabled ? 1 : 0, $id_alert_agent_module);
 	
 	return process_sql ($sql) !== false;
 }

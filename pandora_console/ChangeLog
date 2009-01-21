@@ -1,12 +1,24 @@
+2009-01-21  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Added support to disable or
+	enable an alert. Improved a bit the interface to make it cleaner
+	because the modules are a bit separated now.
+
+	* include/functions_alerts.php: Added support to disable or enable an
+	alert via set_alerts_agent_module_disable(). Added a flag to choose
+	wether to get disabled alerts on an agent or not.
+
+	* ChangeLog: Style correction again. Please, be careful.
+
 2009-01-21  Sancho Lerena <slerena@artica.es>
-      
+
 	* pandoradb_data.sql: Updated DB Schema version/build.
 	
-	* operation/agentes/status_monitor.php
-      operation/agentes/estado_agente.php: 
-      operation/agentes/estado_ultimopaquete.php, 
-      operation/agentes/estado_monitores.php: Manage correctly async modules
-      including keepalive. Show servertype with moduletype icon. 
+	* operation/agentes/status_monitor.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php: Manage correctly async modules
+	including keepalive. Show servertype with moduletype icon.
 
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 

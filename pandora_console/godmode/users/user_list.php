@@ -75,7 +75,7 @@ $result = get_db_all_rows_in_table ('tusuario');
 foreach ($result as $row) {
 	$data = array ();
 
-	$data[0] = print_username ($row["id_usuario"], true);
+	$data[0] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio=".$row["id_usuario"]."'><b>".$row["id_usuario"]."</b></a>";
 	$data[1] = print_timestamp ($row["fecha_registro"], true);
 	if ($row["nivel"] == 1) {
 		$data[2] = '<img src="images/user_suit.png" />';

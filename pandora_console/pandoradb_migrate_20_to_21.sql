@@ -1,8 +1,6 @@
 ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
 ALTER TABLE tagente_modulo ADD `custom_id` varchar(255) default '';
 ALTER TABLE tgrupo ADD `custom_id` varchar(255) default '';
-ALTER TABLE talert_template_modules ADD `last_reference` bigint(20) NOT
-NULL default '0';
 
 ALTER TABLE `tagente_datos` DROP INDEX `data_index2`;
 ALTER TABLE `tagente_datos` DROP `timestamp`, DROP `id_agente`;
@@ -18,6 +16,10 @@ ALTER TABLE  `tagente_estado` ADD INDEX (  `last_execution_try` );
 
 ALTER TABLE  `tagente_modulo`  ADD `min_warning` double(18,2) default 0;
 ALTER TABLE  `tagente_modulo`  ADD `max_warning` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `min_critical` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `max_critical` double(18,2) default 0;
+ALTER TABLE  `tagente_modulo`  ADD `history_data` tinyint(1) unsigned default '1';
+
 ALTER TABLE  `tagente_modulo`  ADD `min_ff_event` int(4) unsigned default '0';
 ALTER TABLE  `tagente_modulo` ADD `delete_pending` int(1) unsigned default 0;
 
@@ -25,8 +27,6 @@ ALTER TABLE  `tagente_modulo` DROP INDEX  `tam_plugin`;
 ALTER TABLE  `tagente_modulo` DROP PRIMARY KEY , ADD PRIMARY KEY  
 (  `id_agente_modulo` );
 
-ALTER TABLE  `tagente_modulo` ADD INDEX  `main_idx`  
-(  `id_agente_modulo` ,  `id_agente` );
 ALTER TABLE `tagent_access` DROP `timestamp`;
 
 CREATE TABLE  IF NOT EXISTS `talert_commands` (
@@ -114,8 +114,6 @@ talert_template_modules(`id`)
    FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
      ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
 
 -- If you have custom stuff here, please make sure you manually  
 -- migrate it.

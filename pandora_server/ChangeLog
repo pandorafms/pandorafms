@@ -1,3 +1,7 @@
+2009-01-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* lib/PandoraFMS/DB.pm: Fixes incremental modules
+
 2009-01-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server/lib/PandoraFMS/Config.pm: Updated configuration

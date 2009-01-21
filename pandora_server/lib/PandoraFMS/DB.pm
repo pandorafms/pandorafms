@@ -1039,8 +1039,8 @@ sub module_generic_data_inc (%$$$$$) {
 				if (is_numeric($data_row[2])){
 					$data_anterior = $data_row[2];
 				} 
-				if (is_numeric($data_row[4])){
-					$timestamp_anterior = $data_row[4];
+				if (is_numeric($data_row[3])){
+					$timestamp_anterior = $data_row[3];
 				} 
 				$diferencia = $m_data - $data_anterior;
 				$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
@@ -1062,7 +1062,7 @@ sub module_generic_data_inc (%$$$$$) {
 		} else {
 			# Data exists previously	
 			if ($diferencia != 0) {
-				my $query2 = "UPDATE tagente_datos_inc SET  utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
+				my $query2 = "UPDATE tagente_datos_inc SET utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
 				$dbh->do($query2);
 			}
 		}

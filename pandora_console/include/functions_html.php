@@ -686,11 +686,14 @@ function print_help_tip ($text, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function print_image ($src, $return = false, $options = false) {
-	$output = '<img src="'.$src.'"" ';
+	$output = '<img src="'.$src.'" ';
 	
 	if ($options) {
 		if (isset ($options['alt']))
 			$output .= 'alt="'.$options['alt'].'" ';
+		
+		if (isset ($options['border']))
+			$output .= 'border="'.$options['border'].'" ';
 		
 		if (isset ($options['style']))
 			$output .= 'style="'.$options['style'].'" ';
@@ -709,6 +712,10 @@ function print_image ($src, $return = false, $options = false) {
 		
 		if (isset ($options['id']))
 			$output .= 'id="'.$options['id'].'" ';
+		
+		if (isset ($options['onclick'])) {
+			$output .= 'onclick="'.$options['onclick'].'" ';
+		}
 	}
 	
 	$output .= '/>';

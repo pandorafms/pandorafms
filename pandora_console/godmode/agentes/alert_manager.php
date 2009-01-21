@@ -28,6 +28,8 @@ echo "<h2>".__('Agent configuration')." &gt; ".__('Alerts')."</h2>";
 
 $create_alert = (bool) get_parameter ('create_alert');
 $add_action = (bool) get_parameter ('add_action');
+$delete_action = (bool) get_parameter ('delete_action');
+$delete_alert = (bool) get_parameter ('delete_alert');
 
 if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
@@ -50,6 +52,14 @@ if ($create_alert) {
 	}
 }
 
+if ($delete_alert) {
+	$id_alert_agent_module = (int) get_parameter ('id_alert');
+	
+	$result = delete_alert_agent_module ($id_alert_agent_module);
+	print_error_message ($id, __('Successfully deleted'),
+		__('Could not be deleted'));
+}
+
 if ($add_action) {
 	$id_action = (int) get_parameter ('action');
 	$id_alert_module = (int) get_parameter ('id_alert_module');
@@ -64,6 +74,15 @@ if ($add_action) {
 	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
 	print_error_message ($id, __('Successfully added'),
 		__('Could not be added'));
+}
+
+if ($delete_action) {
+	$id_action = (int) get_parameter ('id_action');
+	$id_alert = (int) get_parameter ('id_alert');
+	
+	$result = delete_alert_agent_module_action ($id_alert, $id_action);
+	print_error_message ($id, __('Successfully deleted'),
+		__('Could not be deleted'));
 }
 
 $modules = get_agent_modules ($id_agente,
@@ -132,7 +151,16 @@ foreach ($modules as $id_agent_module => $module) {
 		
 		$alert_data[0] = get_alert_template_name ($alert['id_alert_template']);
 		$alert_data[0] .= '<span class="actions" style="visibility: hidden">';
-		$alert_data[0] .= '<a href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'"
+		
+		if (empty ($alert_actions)) {
+			$alert_data[0] .= '<form style="display: inline" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'" method="post" class="delete_link">';
+			$alert_data[0] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+			$alert_data[0] .= print_input_hidden ('delete_alert', 1, true);
+			$alert_data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
+			$alert_data[0] .= '</form>';
+		}
+		
+		$alert_data[0] .= '<a href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_action='.$alert['id_alert_template'].'"
 			class="template_details">';
 		$alert_data[0] .= print_image ("images/zoom.png", true,
 			array ("id" => 'template-details-'.$alert['id'],
@@ -159,14 +187,17 @@ foreach ($modules as $id_agent_module => $module) {
 					$alert_data[1] .= __('From').' '.$action['fires_min'].
 						' '.__('to').' '.$action['fires_max'];
 			}
-			
+			$url = '&delete_action=1&id_alert='.$alert['id'].'&id_action='.$action['id'];
 			$alert_data[1] .= ')</em>';
 			$alert_data[1] .= '</span>';
 			$alert_data[1] .= ' <span class="actions" style="visibility: hidden">';
 			$alert_data[1] .= '<span class="delete">';
-			$alert_data[1] .= '<a href="#">';
-			$alert_data[1] .= '<img src="images/cross.png" />';
-			$alert_data[1] .= '</a>';
+			$alert_data[1] .= '<form action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'" method="post" class="delete_link">';
+			$alert_data[1] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+			$alert_data[1] .= print_input_hidden ('delete_action', 1, true);
+			$alert_data[1] .= print_input_hidden ('id_alert', $alert['id'], true);
+			$alert_data[1] .= print_input_hidden ('id_action', $action['id'], true);
+			$alert_data[1] .= '</form>';
 			$alert_data[1] .= '</span>';
 			$alert_data[1] .= '</span>';
 			$alert_data[1] .= '</div></li>';
@@ -322,6 +353,11 @@ $(document).ready (function () {
 			.attr ("href",
 				"ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template=" + this.value);
 		$(this).after (details);
+	});
+	$("form.delete_link").submit (function () {
+		if (! confirm ("<?php echo __('Are you sure?')?>"))
+			return false;
+		return true;
 	});
 });
 </script>

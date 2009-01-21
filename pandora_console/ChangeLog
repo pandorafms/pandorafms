@@ -1,5 +1,13 @@
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/alert_manager.php: Added the hability to delete
+	actions and alert (only when it has no actions).
+
+	* include/functions_alerts.php: Added delete_alert_agent_module() and
+	delete_alert_agent_module_action().
+
+2009-01-21  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/alerts/configure_alert_template.php,
 	include/functions_alerts.php: Added missing matches_value field on
 	creation and updating.

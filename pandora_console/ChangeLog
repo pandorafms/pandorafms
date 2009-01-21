@@ -1,3 +1,13 @@
+2009-01-21  Sancho Lerena <slerena@artica.es>
+      
+	* pandoradb_data.sql: Updated DB Schema version/build.
+	
+	* operation/agentes/status_monitor.php
+      operation/agentes/estado_agente.php: 
+      operation/agentes/estado_ultimopaquete.php, 
+      operation/agentes/estado_monitores.php: Manage correctly async modules
+      including keepalive. Show servertype with moduletype icon. 
+
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql, pandoradb_migrate_20_to_21.sql: Added id_agent field

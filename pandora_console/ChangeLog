@@ -1,3 +1,13 @@
+2009-01-21  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* en/help_wmiquery.php: Modified html tags.
+
+	* es/help_plugin_parameters.php, es/help_wmiquery.php,
+	  es/help_snmpcommunity.php, es/help_wmikey.php,
+	  es/help_module_type.php, es/help_wminamespace.php,
+	  es/help_duplicateconfig.php, es/help_wmifield.php: Added Spanish
+	  help files.
+
 2009-01-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/help/es/help_alert_validation.php,

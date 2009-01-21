@@ -1,3 +1,10 @@
+2009-01-21  Sancho Leren <slerena@artica.es>
+
+	* pandora_server_upgrade: Script to upgrade to latest version
+	Pandora FMS server components / code.
+
+	* bin/panora_network: Banner on load are rendered.
+
 2009-01-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Take into account the alert option

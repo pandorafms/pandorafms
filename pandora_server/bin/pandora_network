@@ -75,7 +75,7 @@ if ($pa_config{"verbosity"} > 4){
 
 # Daemonize and put in background
 if ( $pa_config{"daemon"} eq "1" ){
-    if (($pa_config{"quiet"} == 0) && ($pa_config{"verbosity"} > 4)){
+    if ($pa_config{"verbosity"} > 0){
         print " [*] Backgrounding Pandora FMS Network Server process.\n\n";
     }
     &pandora_daemonize ( \%pa_config);

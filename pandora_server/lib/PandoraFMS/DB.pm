@@ -761,22 +761,22 @@ sub pandora_writestate (%$$$$$$) {
 					$event_type = "going_up_warning";
 					$status_name = "going up to WARNING";
 					$severity = 3;
-					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'WARN', $dbh]);
+					enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'WARN', $dbh]);
 				} elsif (($data_status->{'last_status'} == 1) && ($data_status->{'estado'} == 2)){
 					$event_type = "going_down_warning";
 					$status_name = "going down to WARNING";
 					$severity = 3;
-					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'WARN', $dbh]);
+					enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'WARN', $dbh]);
 				} elsif ($data_status->{'estado'} == 1){
 					$event_type = "going_up_critical";
 					$status_name = "going up to CRITICAL";
 					$severity = 4;
-					enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'ERR', $dbh]);
+					enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'ERR', $dbh]);
 				} elsif ($data_status->{'estado'} == 0){
 					$event_type = "going_down_normal";
 					$status_name = "going down to NORMAL";
 					$severity = 2;
-                    enterprise_hook('pandora_mcast_change_report', [$pa_config, $id_agente_modulo, $timestamp, 'OK', $dbh]);
+                    enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'OK', $dbh]);
 				}
 				$data_status->{'status_changes'} = 0;
 				$data_status->{'last_status'} = $data_status->{'estado'};

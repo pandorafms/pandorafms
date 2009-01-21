@@ -23,7 +23,7 @@ if (!isset ($config["auth"])) {
 } else {
 	require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
 }
-
+	
 require_once ($config["homedir"].'/include/functions.php');
 require_once ($config["homedir"].'/include/functions_db.php');
 require_once ('Image/Graph.php');
@@ -432,11 +432,11 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		$alert_low = false;
 		// If we want to show alerts limits
 		
-		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		$alert_low = get_db_value ('MIN(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		$alert_high = (int) get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		$alert_low = (int) get_db_value ('MIN(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
 		
 		// if no valid alert defined to render limits, disable it
-		if (($alert_low === false) && ($alert_high === false)) {
+		if (($alert_low == 0) && ($alert_high == 0)) {
 			$show_alert = 0;
 		}
 	}
@@ -461,6 +461,10 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		// If we want to show events in graphs
 		$sql = sprintf ('SELECT utimestamp FROM tevento WHERE id_agente = %d AND utimestamp > %d', $id_agente, $fechatope);
 		$eventos = get_db_all_rows_sql ($sql);
+		if ($eventos === false) {
+			$eventos = array ();
+		}
+		
 		foreach ($eventos as $row) {
 			$utimestamp = $row[0];
 			for ($i = 0; $i <= $resolution; $i++) {

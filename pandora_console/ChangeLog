@@ -1,3 +1,13 @@
+2009-01-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Removed auth init because I fixed stat_win.php
+	
+	* include/functions_html.php: Added border and onclick. Fixed double quote
+
+	* reporting/fgraph.php: Fixed some minor bugs
+	
+	* reporting/stat_win.php: Added authentication there too
+
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Fixed a little bug that avoids

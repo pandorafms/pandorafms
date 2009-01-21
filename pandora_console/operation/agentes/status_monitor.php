@@ -133,7 +133,7 @@ if ($status == 0) { //Up
 } elseif ($status == 4) { //not normal
 	$sql .= " AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) ";
 } elseif ($status == 3) { //Unknown
-	$sql .= " AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
+	$sql .= " AND tagente_modulo.id_tipo_modulo < 21 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
 }
 
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";

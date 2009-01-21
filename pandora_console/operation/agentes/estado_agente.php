@@ -207,13 +207,13 @@ if ($agents !== false) {
 				$seconds = $now - strtotime ($ultimo_contacto_modulo);
 			else 
 				$seconds = -1;
-			if ($module_type < 21 || $module_type == 100) {
+			if ($module_type < 21 || $module_type != 100) {
 				$async = 0;
 			} else {
 				$async = 1;
 			}
-			// Defines if Agent is down (interval x 2 > time last contact	
-			if ($seconds >= ($intervalo_comp * 2)) { // If (intervalx2) secs. ago we don't get anything, show alert
+			// Defines if Agent is down (interval x 2 > time last contact
+			if (($seconds >= ($intervalo_comp * 2)) AND ($module_type < 21)) { // If (intervalx2) secs. ago we don't get anything, show alert
 				$agent_down = 1;
 				if ($async == 0)
 					$monitor_down++;

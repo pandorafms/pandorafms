@@ -109,7 +109,9 @@ if (mysql_num_rows ($result3)) {
 		echo "<td class='".$tdcolor."_id' title='".salida_limpia($row3["nombre"])."'>";
 		echo salida_limpia(substr($row3["nombre"],0,15));
 		echo "</td><td class='".$tdcolor."'>";
-		echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
+		
+		echo show_server_type ($row3['id_modulo']);
+		echo " <img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
 		if (give_acl ($config['id_user'], $id_grupo, "AW")) 
 		  echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&update_module='.$row3["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
 		

@@ -1,0 +1,65 @@
+# Pandora FMS 2.0 Server Installer (c) 2009 Artica ST
+# Please see http://www.pandorafms.com
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+#!/bin/bash
+
+MODE=$1
+
+install () {
+
+	echo "Installing new libraries and server executables...."
+	perl Makefile.PL
+	make
+	make install
+
+	echo "Setting permissions..."
+
+	chmod 750 bin/*
+	chmod 750 pandora_* 
+	chmod 750 util/*.pl
+	chmod 750 util/pandora_exec
+	chmod 750 util/SLES10/*
+	chmod 750 util/plugin/*
+
+	echo "Copying utilities...."
+	cp -R util /usr/share/pandora
+
+	echo "Copying startup scripts to /etc/init.d...."
+        cp pandora_* /etc/init.d
+
+	if [ ! -e  /etc/cron.daily/pandora_purge_db ]
+	then
+		echo "You don't have a /etc/cron.daily/pandora_purge_db file, you should consider"
+		echo "to setup the Pandora FMS daily Database Maintance script: "
+		echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+	fi
+
+	echo " "
+	echo "DONE!. Don't forget to restart all your Pandora FMS servers"
+	echo " "
+}
+
+help () {
+        echo "     --upgrade           To upgrade Pandora FMS Servers on this system (You have to be root)"
+        echo " "
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS 2.0 Server Upgrade (c) 2009 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+case "$MODE" in
+
+'--upgrade')
+        install
+        exit
+        ;;
+
+*)
+        help
+esac
+

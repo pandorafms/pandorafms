@@ -1,5 +1,20 @@
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/alert_manager.php: Fixed a little bug that avoids
+	showing the alert editor.
+	
+	* godmode/alerts/alert_templates.php: Added the example text for
+	alert templates to the tooltip.
+
+	* godmode/alerts/configure_alert_template.php: Function
+	print_alert_template_example() moved to functions_ui.php. Little fix
+	when max or min values are not numerics.
+
+	* include/functions_ui.php: Added function
+	print_alert_template_example().
+
+2009-01-21  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/alert_manager.php: Added support to disable or
 	enable an alert. Improved a bit the interface to make it cleaner
 	because the modules are a bit separated now.

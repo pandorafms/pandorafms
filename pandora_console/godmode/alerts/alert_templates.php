@@ -40,30 +40,16 @@ if (defined ('AJAX')) {
 			return;
 		
 		echo '<h3>'.$template['name'].'</h3>';
-		echo '<strong>'.get_alert_templates_type_name ($template['type']).':</strong> ';
+		echo '<strong>'.__('Type').': </strong>';
+		echo get_alert_templates_type_name ($template['type']);
 		
-		switch ($template['type']) {
-		case 'regex':
-		case 'equal':
-		case 'not_equal':
-			if (empty ($template['value']))
-				echo '<em>'.__('Empty').'</em>';
-			else
-				echo '<code>'.$template['value'].'</code>';
-			
-			break;
-		case 'max_min':
-			echo __('Between').' ';
-		case 'max':
-			echo format_numeric ($template['max_value']);
-			
-			/* Break on max to not show min */
-			if ($template['type'] == 'max')
-				break;
-			echo ''.__('and').' ';
-		case 'min':
-			echo format_numeric ($template['min_value']);
-		}
+		echo '<br />';
+		$example = print_alert_template_example ($template['id'], true);
+		
+		$example = str_replace ('<span id="value"></span>', $template['value'], $example);
+		$example = str_replace ('<span id="max"></span>', $template['max_value'], $example);
+		$example = str_replace ('<span id="min"></span>', $template['min_value'], $example);
+		echo $example;
 		
 		echo '<br />';
 		

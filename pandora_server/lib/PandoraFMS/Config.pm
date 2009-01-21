@@ -201,8 +201,13 @@ sub pandora_loadconfig {
 	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
 
 	# Multicast status report
-	$pa_config->{'mcast_group'} = '226.1.1.2';
-	$pa_config->{'mcast_port'} = '2000';	
+	$pa_config->{'mcast_status_group'} = '226.1.1.2';
+	$pa_config->{'mcast_status_port'} = '2000';	
+
+
+	# Multicast change report
+	$pa_config->{'mcast_change_group'} = '226.1.1.2';
+	$pa_config->{'mcast_change_port'} = '2000';
 	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -415,11 +420,17 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
             $pa_config->{'max_log_size'}= clean_blank($1); 
         }
-		elsif ($parametro =~ m/^mcast_group\s([0-9\.]*)/i) {
-            $pa_config->{'mcast_group'}= clean_blank($1); 
+		elsif ($parametro =~ m/^mcast_status_group\s([0-9\.]*)/i) {
+            $pa_config->{'mcast_status_group'}= clean_blank($1); 
         }
-		elsif ($parametro =~ m/^mcast_port\s([0-9]*)/i) {
-            $pa_config->{'mcast_port'}= clean_blank($1); 
+		elsif ($parametro =~ m/^mcast_change_group\s([0-9\.]*)/i) {
+            $pa_config->{'mcast_change_group'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^mcast_status_port\s([0-9]*)/i) {
+            $pa_config->{'mcast_status_port'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^mcast_change_port\s([0-9]*)/i) {
+            $pa_config->{'mcast_change_port'}= clean_blank($1); 
         }
     } # end of loop for parameter #
 

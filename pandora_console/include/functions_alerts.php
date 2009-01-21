@@ -283,6 +283,7 @@ function clean_alert_template_values ($values, $set_empty = true) {
 		$retvalues['recovery_notify'] = '';
 		$retvalues['field2_recovery'] = '';
 		$retvalues['field2_recovery'] = '';
+		$retvalues['matches_value'] = true;
 	}
 	
 	if (empty ($values))
@@ -302,6 +303,8 @@ function clean_alert_template_values ($values, $set_empty = true) {
 		$retvalues['field3'] = (string) $values['field3'];
 	if (isset ($values['value']))
 		$retvalues['value'] = (string) $values['value'];
+	if (isset ($values['matches_value']))
+		$retvalues['matches_value'] = (bool) $values['matches_value'];
 	if (isset ($values['max_value']))
 		$retvalues['max_value'] = (float) $values['max_value'];
 	if (isset ($values['min_value']))
@@ -363,14 +366,14 @@ function create_alert_template ($name, $type, $values = false) {
 	
 	$sql = sprintf ('INSERT talert_templates (name, type, description,
 		field1, field2, field3, value, max_value, min_value,
-		time_threshold, max_alerts, min_alerts)
+		time_threshold, max_alerts, min_alerts, matches_value)
 		VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", %.2f,
-		%.2f, %d, %d, %d)',
+		%.2f, %d, %d, %d, %d)',
 		$name, $type, $values['description'], $values['field1'],
 		$values['field2'], $values['field3'], $values['value'],
 		$values['max_value'], $values['min_value'],
 		$values['time_threshold'], $values['max_alerts'],
-		$values['min_alerts']);
+		$values['min_alerts'], $values['matches_value']);
 	
 	return process_sql ($sql, 'insert_id');
 }

@@ -280,13 +280,14 @@ if ($create_template) {
 	$value = (string) get_parameter ('value');
 	$max = (float) get_parameter ('max');
 	$min = (float) get_parameter ('min');
-	
+	$matches = (bool) get_parameter ('matches_value');
 	
 	$result = create_alert_template ($name, $type,
 		array ('description' => $description,
 			'value' => $value,
 			'max_value' => $max,
-			'min_value' => $min));
+			'min_value' => $min,
+			'matches_value' => $matches));
 	
 	print_error_message ($result, __('Successfully created'),
 		__('Could not be created'));

@@ -1,12 +1,21 @@
+2009-01-21  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_template.php,
+	include/functions_alerts.php: Added missing matches_value field on
+	creation and updating.
+
+	* ChangeLog: Added missing path to files on previous commit.
+
 2009-01-21  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_migrate_20_to_21.sql: Fixes some problems.
 	
-	* setup.php: Removed AD setup tokens.
+	* godmode/setup/setup.php: Removed AD setup tokens.
 	
-	* user_list.php: Link to user edition was wrong. Restored.
+	* godmode/users/user_list.php: Link to user edition was wrong.
+	Restored.
 	
-	* functions_db.php: Support for new auth modules was missing
+	* include/functions_db.php: Support for new auth modules was missing
 	and fgraph fails to render graphs.
 
 2009-01-20  Esteban Sanchez  <estebans@artica.es>

@@ -225,9 +225,6 @@ label {
 th > label {
 	padding-top: 7px;
 }
-input:hover {
-	background-color: #d4dccd;
-}
 input.chk {margin-right: 0px;
 	border: 0px none;
 	height: 14px;
@@ -749,4 +746,7 @@ select#template, select#action {
 }
 #label-checkbox-matches_value {
 	display: inline;
+}
+input[type=image] {
+	border:0px;
 }

@@ -692,6 +692,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `type` tinyint(1) UNSIGNED NOT NULL default 0,
   `period` INTEGER UNSIGNED NOT NULL default 3600,
   `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
+  `id_agent` int(10) unsigned NOT NULL default 0,
   `id_layout_linked` INTEGER unsigned NOT NULL default '0',
   `parent_item` INTEGER UNSIGNED NOT NULL default 0,
   `label_color` varchar(20) DEFAULT "",

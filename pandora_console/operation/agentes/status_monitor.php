@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -36,7 +36,8 @@ $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");
 $ag_group = get_parameter ("ag_group", -1);
 $offset = get_parameter ("offset", 0);
-$status = get_parameter ("status", 0);
+$status = get_parameter ("status", 4);
+$modulegroup = get_parameter ("modulegroup", 0);
 
 $url = '';
 if ($ag_group > 0) {
@@ -51,10 +52,13 @@ if ($ag_freestring != "") {
 if ($status != 0) {
 	$url .= "&status=".$status;
 }
+if ($modulegroup != 0) {
+	$url .= "&modulegroup=".$modulegroup;
+}
 
 echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'.$url.'">';
 
-echo '<table cellspacing="4" cellpadding="4" width="600" class="databox">';
+echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
@@ -71,8 +75,17 @@ $fields[3] = __('Unknown');
 $fields[4] = __('Not normal');
 
 print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
+echo '</td>';
 
-echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
+
+
+echo '<td valign="middle">'.__('Module group').'</td>';
+echo '<td valign="middle">';
+print_select_from_sql ("SELECT * FROM tmodule_group order by name", "modulegroup",$modulegroup, '',__('All'), 0);
+
+
+
+echo '</tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $result = get_db_all_rows_sql ("SELECT DISTINCT(nombre) FROM tagente_modulo ORDER BY nombre");
@@ -112,6 +125,12 @@ if ($ag_group > 1 && give_acl ($config["id_user"], $ag_group, "AR")) {
 	// User has explicit permission on group 1 ?
 	$sql .= " AND tagente.id_grupo IN (".implode (",", array_keys (get_user_groups ())).")";
 }
+
+// Module group
+if ($modulegroup > 0) {
+	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
+}
+
 
 // Module name selector
 if ($ag_modulename != "") {

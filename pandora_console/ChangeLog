@@ -12,6 +12,16 @@
 
 2009-01-21  Sancho Lerena <slerena@artica.es>
 
+	* operation/agentes/status_monitor.php:  Added filter for modulegroup
+
+	* operation/agentes/estado_ultimopaquete.php: Removed link to edit.
+
+	* operation/agentes/estado_monitores.php: Fixed link to edit module
+
+	* godmode/agentes/configurar_agente.php: Edit tabs more tiny.
+
+2009-01-21  Sancho Lerena <slerena@artica.es>
+
 	* pandoradb_data.sql: Updated DB Schema version/build.
 	
 	* operation/agentes/status_monitor.php,

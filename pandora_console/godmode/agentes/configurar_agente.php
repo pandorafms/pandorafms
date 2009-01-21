@@ -188,7 +188,7 @@ echo "<div id='menu_tab_frame'>";
 echo "<div id='menu_tab_left'><ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(get_agent_name ($id_agente),0,15)." - ".__('Setup mode')."</a>";
+<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(get_agent_name ($id_agente),0,21)."</a>";
 echo "</li>";
 echo "</ul></div>";
 
@@ -203,7 +203,7 @@ if ($tab == "main") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('Setup Agent')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('Setup')."</a>";
 echo "</li>";
 
 if ($tab == "module") {

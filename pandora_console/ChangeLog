@@ -1,3 +1,14 @@
+2009-01-21  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_migrate_20_to_21.sql: Fixes some problems.
+	
+	* setup.php: Removed AD setup tokens.
+	
+	* user_list.php: Link to user edition was wrong. Restored.
+	
+	* functions_db.php: Support for new auth modules was missing
+	and fgraph fails to render graphs.
+
 2009-01-20  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Fixed an error when

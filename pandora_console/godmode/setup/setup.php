@@ -148,16 +148,6 @@ $table->data[17][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], tr
 // 18
 enterprise_hook ('load_snmpforward_enterprise');
 
-$table->data[19][0] = __('Activate AD Authentication');
-$table->data[19][1] = print_checkbox ('ad_auth', 1, $config["ad_auth"], false);
-
-$table->data[20][0] = __('Activate AD Authentication');
-$table->data[20][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
-
-$table->data[21][0] = __('Activate AD Authentication');
-$table->data[21][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
-
-
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);
 print_table ($table);

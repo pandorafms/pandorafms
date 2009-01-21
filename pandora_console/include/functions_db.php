@@ -17,6 +17,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+if (!isset ($config["auth"])) {
+	require_once ($config["homedir"]."/include/auth/mysql.php");
+} else {
+	require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
+}
+
 /** 
  * Check if login session variables are set.
  *

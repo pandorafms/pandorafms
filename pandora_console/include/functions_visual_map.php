@@ -39,8 +39,8 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			if ($layout_data['id_layout_linked'] != 0) { 
 				$status = return_status_layout ($layout_data['id_layout_linked']);
 			} else {
-			 	$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
 				if ($layout_data['id_agente_modulo'] != 0) {
+					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
 					$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
 					// Item value
 					$status = return_status_agent_module ($layout_data['id_agente_modulo']);
@@ -49,16 +49,19 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					else
 						$status_parent = return_status_agent_module ($id_agent_module_parent);
 				} else {
-					$interval = get_agent_interval ($id_agent);
+					$id_agent = $layout_data['id_agent'];
+					$agent_interval = get_agent_interval ($id_agent);
 					$sql = sprintf ('SELECT COUNT(*)
 						FROM tagente_estado, tagente_modulo 
 						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 						AND tagente_modulo.disabled = 0 
 						AND tagente_modulo.id_agente = %d
-						AND (utimestamp >= UNIX_TIMESTAMP() - module_interval * 2
+						AND ((module_interval > 0
+							AND utimestamp >= UNIX_TIMESTAMP() - module_interval * 2)
 							OR (module_interval = 0
 								AND utimestamp >= UNIX_TIMESTAMP() - %d))',
-						$id_agent, $interval * 2);
+						$id_agent, $agent_interval * 2);
+					
 					$status = get_db_sql ($sql);
 					$status_parent = $status;
 				}

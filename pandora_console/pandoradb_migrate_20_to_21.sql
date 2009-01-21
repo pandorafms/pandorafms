@@ -29,6 +29,8 @@ ALTER TABLE  `tagente_modulo` DROP PRIMARY KEY , ADD PRIMARY KEY
 
 ALTER TABLE `tagent_access` DROP `timestamp`;
 
+ALTER TABLE `tlayout_data` ADD `id_agent` int(10) unsigned NOT NULL default 0;
+
 CREATE TABLE  IF NOT EXISTS `talert_commands` (
    `id` int(10) unsigned NOT NULL auto_increment,
    `name` varchar(100) NOT NULL default '',

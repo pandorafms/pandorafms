@@ -139,6 +139,7 @@ if ($create_layout_data) {
 	$layout_data_type = (string) get_parameter ("type");
 	$layout_data_label = (string) get_parameter ("label");
 	$layout_data_image = (string) get_parameter ("image");
+	$layout_data_id_agent = (int) get_parameter ("agent");
 	$layout_data_id_agent_module = (int) get_parameter ("module");
 	$layout_data_label_color = (string) get_parameter ("label_color");
 	$layout_data_parent_item = (int) get_parameter ("parent_item");
@@ -153,6 +154,7 @@ if ($create_layout_data) {
 		'label_color' => $layout_data_label_color,
 		'image' => $layout_data_image,
 		'type' => $layout_data_type,
+		'id_agent' => $layout_data_id_agent,
 		'id_agente_modulo' => $layout_data_id_agent_module,
 		'parent_item' => $layout_data_parent_item,
 		'period' => $layout_data_period * 3600,
@@ -209,6 +211,7 @@ if ($update_layout_data) {
 	$layout_data_type = (int) get_parameter ("type");
 	$layout_data_label = (string) get_parameter ("label");
 	$layout_data_image = (string) get_parameter ("image");
+	$layout_data_id_agent = (int) get_parameter ("agent");
 	$layout_data_id_agent_module = (int) get_parameter ("module");
 	$layout_data_label_color = (string) get_parameter ("label_color");
 	$layout_data_parent_item = (int) get_parameter ("parent_item");
@@ -220,6 +223,7 @@ if ($update_layout_data) {
 	$sql = sprintf ('UPDATE tlayout_data SET
 			image = "%s", label = "%s",
 			label_color = "%s",
+			id_agent = %d,
 			id_agente_modulo = %d,
 			type = %d, parent_item = %d,
 			period = %d, id_layout_linked = %d,
@@ -227,6 +231,7 @@ if ($update_layout_data) {
 			WHERE id = %d',
 			$layout_data_image, $layout_data_label,
 			$layout_data_label_color,
+			$layout_data_id_agent,
 			$layout_data_id_agent_module,
 			$layout_data_type, $layout_data_parent_item,
 			$layout_data_period * 3600,
@@ -343,7 +348,7 @@ if (! $edit_layout && ! $id_layout) {
 		/* Layout data trash */
 		echo '<form id="form_layout_data_trash" action="" method="post">';
 		echo '<div id="layout_trash_drop">';
-		echo '<h1>'.__('Map element trash').'</h1>';	
+		echo '<h1>'.__('Map element trash').'</h1>';
 		echo __('Drag an element here to delete from the map');
 		echo '<span id="elements"> </span>';
 		print_input_hidden ('delete_layout_data', 1);

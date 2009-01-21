@@ -1,5 +1,24 @@
 2009-01-21  Esteban Sanchez  <estebans@artica.es>
 
+	* pandoradb.sql, pandoradb_migrate_20_to_21.sql: Added id_agent field
+	to tlayout_data. It's needed to give support to nodes in visual
+	console that represents a whole agent which turns red if any module is
+	down.
+
+	* operation/visual_console/render_view.php: Removed refresh countdown
+	and selection because it's now done in the page header.
+
+	* include/functions_visual_map.php: Some fixes to support id_agent
+	field in tlayout_data. Also fixed the SQL to check if any module on an
+	agent is down.
+
+	* godmode/reporting/map_builder.php: Update and insert id_agent when
+	managing a node element.
+
+	* include/styles/pandora.css: Added a style to input image elements.
+
+2009-01-21  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/alert_manager.php: Added the hability to delete
 	actions and alert (only when it has no actions).
 

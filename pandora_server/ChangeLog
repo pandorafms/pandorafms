@@ -1,3 +1,8 @@
+2009-01-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server/lib/PandoraFMS/Config.pm: Updated configuration
+	  options.
+
 2009-01-21  Sancho Leren <slerena@artica.es>
 
 	* pandora_server_upgrade: Script to upgrade to latest version

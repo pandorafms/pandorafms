@@ -590,6 +590,17 @@ function update_alert_agent_module ($id_alert_agent_module, $values = false) {
 	return process_sql ($sql) !== false;
 }
 
+function delete_alert_agent_module ($id_alert_agent_module) {
+	if (empty ($id_alert_agent_module))
+		return false;
+	
+	$sql = sprintf ('DELETE FROM talert_template_modules
+		WHERE id = %d',
+		$id_alert_agent_module);
+	
+	return process_sql ($sql) !== false;
+}
+
 function get_alert_agent_module ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
 	if (empty ($id_alert_agent_module))
@@ -651,6 +662,20 @@ function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action
 	$sql = sprintf ('INSERT INTO talert_template_module_actions
 		VALUES (%d, %d, %d, %d)',
 		$id_alert_agent_module, $id_alert_action, $fires_min, $fires_max);
+	
+	return process_sql ($sql) !== false;
+}
+
+function delete_alert_agent_module_action ($id_alert_agent_module, $id_alert_action) {
+	if (empty ($id_alert_agent_module))
+		return false;
+	if (empty ($id_alert_action))
+		return false;
+	
+	$sql = sprintf ('DELETE FROM talert_template_module_actions
+		WHERE id_alert_template_module = %d
+		AND id_alert_action = %d',
+		$id_alert_agent_module, $id_alert_action);
 	
 	return process_sql ($sql) !== false;
 }

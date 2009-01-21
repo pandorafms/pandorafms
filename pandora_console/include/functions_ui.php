@@ -308,4 +308,67 @@ function print_string_substr ($string, $cutoff = 16, $return = false) {
 	} 
 	return $string;
 }
+
+/**
+ * Gets a helper text explaining the requirement needs for an alert template
+ * to get it fired.
+ *
+ * @param int Alert template id.
+ * @param bool Wheter to return or print it out.
+ *
+ * @return An HTML string if return was true.
+ */
+function print_alert_template_example ($id_alert_template, $return = false) {
+	$output = '';
+	
+	$output .= '<img src="images/information.png" /> ';
+	$output .= '<span id="example">';
+	
+	if ($id_alert_template) {
+		$template = get_alert_template ($id_alert_template);
+		
+		switch ($template['type']) {
+		case 'not_equal':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is <span id="value"></span>');
+			break;
+		case 'equal':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is not <span id="value"></span>');
+			break;
+		case 'regex':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value matches <span id="value"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
+			$value = $template['value'];
+			break;
+		case 'max_min':
+			if ($template['matches_value'])
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
+			else
+				/* Do not translate the HTML attributes */
+				$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
+			break;
+		case 'max':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is over <span id="max"></span>');
+			
+			break;
+		case 'min':
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is under <span id="min"></span>');
+			break;
+		}
+	}
+	
+	$output .= '</span>';
+	if ($return)
+		return $output;
+	echo $output;
+}
+
 ?>

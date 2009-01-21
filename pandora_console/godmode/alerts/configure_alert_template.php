@@ -78,71 +78,6 @@ function print_alert_template_steps ($step, $id) {
 	echo '</div>';
 }
 
-function print_alert_template_example ($id, $return = false) {
-	$output = '';
-	
-	$is = false;
-	$is_not = false;
-	$matches = false;
-	$matches_not = false;
-	$between = false;
-	$between_not = false;
-	$under = false;
-	$over = false;
-	$max = false;
-	$min = false;
-	$value = false;
-	
-	$output .= '<img src="images/information.png" /> ';
-	$output .= '<span id="example">';
-	
-	if ($id) {
-		$template = get_alert_template ($id);
-		
-		switch ($template['type']) {
-		case 'not_equal':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is <span id="value"></span>');
-			break;
-		case 'equal':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is not <span id="value"></span>');
-			break;
-		case 'regex':
-			if ($template['matches_value'])
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value matches <span id="value"></span>');
-			else
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
-			$value = $template['value'];
-			break;
-		case 'max_min':
-			if ($template['matches_value'])
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
-			else
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
-			break;
-		case 'max':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is over <span id="max"></span>');
-			
-			break;
-		case 'min':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is under <span id="min"></span>');
-			break;
-		}
-	}
-	
-	$output .= '</span>';
-	if ($return)
-		return $output;
-	echo $output;
-}
-
 function update_template ($step) {
 	$id = (int) get_parameter ('id');
 	
@@ -588,23 +523,23 @@ function check_regex () {
 
 function render_example () {
 	/* Set max */
-	max = $("input#text-max").attr ("value")
-	if (max == '') {
+	max = parseInt ($("input#text-max").attr ("value"));
+	if (isNaN (max) || max == '') {
 		$("span#max").empty ().append ("0");
 	} else {
 		$("span#max").empty ().append (max);
 	}
 	
 	/* Set min */
-	min = $("input#text-min").attr ("value")
-	if (min == '') {
+	min = parseInt ($("input#text-min").attr ("value"));
+	if (isNaN (min) || min == '') {
 		$("span#min").empty ().append ("0");
 	} else {
 		$("span#min").empty ().append (min);
 	}
 	
 	/* Set value */
-	value = $("input#text-value").attr ("value")
+	value = $("input#text-value").attr ("value");
 	if (value == '') {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
 	} else {

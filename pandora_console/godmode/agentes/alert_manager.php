@@ -311,6 +311,7 @@ $(document).ready (function () {
 		$("input#hidden-id_agent_module", form).attr ("value", id);
 		$(place).append (form);
 		$(form).show ();
+		$(this).parents ("tbody").children ("tr:last").show ();
 		return false;
 	});
 	

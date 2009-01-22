@@ -216,7 +216,7 @@ function process_user_password ( $user, $password_old, $password_new ) {
 		return false;
 	}
 	
-	return process_sql_update ("tusuario", array ("password" => md5 ($password_new)), array ("id_user" => $id_user));
+	return process_sql_update ("tusuario", array ("password" => md5 ($password_new)), array ("id_user" => $user));
 }
 
 function process_user_info ($id_user, $user_info) {

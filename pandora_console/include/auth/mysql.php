@@ -185,9 +185,7 @@ function create_user ($id_user, $password, $user_info) {
 		}
 	}
 
-	process_sql_insert ("tusuario", $values);
-	
-	return (bool) process_sql ($sql);
+	return process_sql_insert ("tusuario", $values);
 }
 
 /**
@@ -240,6 +238,20 @@ function process_user_info ($id_user, $user_info) {
 		}
 	}
 	return process_sql_update ("tusuario", $values, array ("id_user" => $id_user));
+}
+
+/**
+ * Sets the user admin status (LDAP doesn't do this)
+ *
+ * @param string User id
+ */
+function process_user_isadmin ($id_user, $is_admin) {
+	if ($is_admin == true) {
+		$is_admin = 1;
+	} else {
+		$is_admin = 0;
+	}
+	return process_sql_update ("tusuario", array ("is_admin" => $is_admin), array ("id_user" => $id_user)); 
 }
 
 //Reference the global use authorization error to last auth error.

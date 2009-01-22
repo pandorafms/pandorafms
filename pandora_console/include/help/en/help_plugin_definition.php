@@ -10,25 +10,29 @@ This plugin has the following interface:
 	informix_plugin_pandora -H ip_address -U user -P password -T tablespace -O operation
 </pre>
 <br>
-Operation could be status, qps, load, fragment and memory. It returns a single value, used by Pandora FMS.  To define this plugin in pandora, you would need to fill fields as follows:
+Operation could be "status", "qps", "load", "fragment" and "memory". It returns a single value, used by Pandora FMS. To define this plugin in pandora, you would need to fill fields as follows:
 <br><br>
 
 <table cellpadding=4 cellspacing=4 class=databox width=80%>
 <tr>
-<td valign='top'>Plugin Command<td>/usr/share/pandora/util/plugins/informix_plugin_pandora (default location for plugins)
+<td valign='top'>Plugin command<td>/usr/share/pandora/util/plugins/informix_plugin_pandora (default location for plugins)
 <tr>
-<td>Max_timeout:<td> 15 (for example).
+<td>Max. timeout:<td> 15 (for example).
+</tr>
 <tr>
-<td>IP Address option:<td> -H
+<td>IP Address option<td> -H
 
 <tr>
-<td>Port option<td>Left it blank
+<td>Port option<td> Leave it blank.
+</tr>
 
 <tr>
-<td>User option<td>-U
+<td>User option<td> -U
+</tr>
 
 <tr>
-<td>Password option<td>-P
+<td>Password option<td> -P
+</tr>
 
 </table>
 <br>
@@ -40,10 +44,3 @@ There are always some sort of parameters which cannot be "generic", in this scen
 If you want to use another tablespace, just create another module with different string after "-T".
 <br><br>
 Of course, in "Plugin parameter" field, you can put more than one parameter. All data entered there is passed to the plugin "as is".
-
-
-
-
-
-
-

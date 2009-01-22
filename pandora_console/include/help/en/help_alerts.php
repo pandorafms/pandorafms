@@ -2,7 +2,7 @@
 
 Assigning Alerts to modules
 Adding new alert to a module
-Adding new alert to a module
+Editar an alert from a module
 <br /><br />
 The next step after adding an agent, having configured its modules, and defined the alerts, is assigning those alerts to the agent. This step is necessary to establish alert conditions in those desired cases. This is done by clicking on the agent to be conﬁgured in the "Manage agents" option, from Administration menu, or using the edition mode and selecting the tab "Alerts", from the agent view.
 <br /><br />

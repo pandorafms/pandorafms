@@ -37,6 +37,10 @@ function um_db_load_settings () {
 		return NULL;
 	}
 	$settings = new stdClass ();
+	$settings->proxy = '';
+	$settings->proxy_port = '';
+	$settings->proxy_user = '';
+	$settings->proxy_pass = '';
 	while ($result->fetchInto ($setting)) {
 		$key = $setting->key;
 		$settings->$key = $setting->value;

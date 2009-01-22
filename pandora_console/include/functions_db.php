@@ -1609,20 +1609,31 @@ function format_array_to_update_sql ($values) {
 function return_status_agent_module ($id_agentmodule = 0) {
 	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
 	
-	if ($status == 100) {
-		// We need to check if there are any alert on this item
-		$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules',
-			'id_agent_module', $id_agentmodule);
-		if ($times_fired > 0) {
-			return 0;
-		}
-		// No alerts fired for this agent module
-		return 1;
-	} elseif ($status == 0) { // 0 is ok for estado field
-		return 1;
-	} else {
-		return 0;
+	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
+	if ($times_fired > 0) {
+		return 4; // Alert
 	}
+	return $status;
+}
+
+/** 
+ * Get the worst status of all modules of a given agent.
+ * 
+ * @param int Id agent  to check.
+ * 
+ * @return int Worst status of an agent for all of its modules
+ */
+function return_status_agent ($id_agent = 0) {
+	$status = get_db_sql ("SELECT MAX(estado)
+						FROM tagente_estado, tagente_modulo 
+						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND tagente_modulo.disabled = 0 
+						AND tagente_modulo.delete_pending = 0 
+						AND tagente_modulo.id_agente = $id_agent");
+						
+	// TODO: Check any alert for that agent who has recept alerts fired
+	
+	return $status;
 }
 
 /** 
@@ -1639,25 +1650,34 @@ function return_status_agent_module ($id_agentmodule = 0) {
 function return_status_layout ($id_layout = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
-	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
+	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false)
 		return 0;
 	
 	foreach ($result as $rownum => $data) {
+	
+		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$temp_status += return_status_layout ($data["id_layout_linked"]);
-			$temp_total++;
+			$temp_status = return_status_layout ($data["id_layout_linked"]);
+			if ($temp_status > $temp_total){
+				$temp_total = $temp_status;
+			}
+			
+		// Module
+		} elseif ($data["id_agente_modulo"] != 0) {
+			$temp_status = return_status_agent_module ($data["id_agente_modulo"]);
+			if ($temp_status > $temp_total)
+				$temp_total = $temp_status;
+				
+		// Agent
 		} else {
-			$temp_status += return_status_agent_module ($data["id_agente_modulo"]);
-			$temp_total++;
+			$temp_status = return_status_agent ($data["id_agent"]);
+			if ($temp_status > $temp_total)
+				$temp_total = $temp_status;
 		}
 	}
-	if ($temp_status == $temp_total) {
-		return 1;
-	}
-	
-	return 0;
+	return $temp_total;
 }
 
 /** 

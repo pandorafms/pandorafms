@@ -171,9 +171,12 @@ DEFAULT  '0', ADD  `min_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT
 `min_ff_event` INT( 4 ) UNSIGNED NOT NULL DEFAULT  '0';
 
 ALTER TABLE  `tusuario` CHANGE  `nombre_real`  `fullname` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
+ALTER TABLE  `tusuario` CHANGE  `comentarios`  `comments` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
 ALTER TABLE  `tusuario` CHANGE  `id_usuario`  `id_user` VARCHAR( 60 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  '0';
 ALTER TABLE  `tusuario` CHANGE  `fecha_registro`  `last_connect` BIGINT( 20 ) NOT NULL DEFAULT  '0';
 ALTER TABLE  `tusuario` ADD UNIQUE (`id_user`);
 ALTER TABLE  `tusuario` ADD  `registered` BIGINT( 20 ) NOT NULL DEFAULT  '0' AFTER  `last_connect` ;
 ALTER TABLE  `tusuario` ADD  `firstname` VARCHAR( 255 ) NOT NULL AFTER  `fullname` , ADD  `lastname` VARCHAR( 255 ) NOT NULL AFTER  `firstname` , ADD  `middlename` VARCHAR( 255 ) NOT NULL AFTER  `lastname`;
-ALTER TABLE  `tusuario` CHANGE  `direccion`  `email` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL , CHANGE  `telefono`  `phone` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL , CHANGE  `nivel`  `is_admin` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0'
+ALTER TABLE  `tusuario` CHANGE  `direccion`  `email` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL , CHANGE  `telefono`  `phone` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL , CHANGE  `nivel`  `is_admin` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0';

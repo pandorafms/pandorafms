@@ -115,10 +115,11 @@ if ($update_layout) {
 
 if ($get_background_info) {
 	$file = (string) get_parameter ('background');
-	
-	$info = getimagesize ('images/console/background/'.$file);
-	$info['width'] = $info[0];
-	$info['height'] = $info[1];
+	if (file_exist('images/console/background/'.$file)){
+		$info = getimagesize ('images/console/background/'.$file);
+		$info['width'] = $info[0];
+		$info['height'] = $info[1];
+	}
 	if (defined ('AJAX')) {
 		echo json_encode ($info);
 		exit;
@@ -340,6 +341,8 @@ if (! $edit_layout && ! $id_layout) {
 				continue;
 			if (strpos ($image_file, "_ok"))
 				continue;
+			if (strpos ($image_file, "_warning"))
+				continue;	
 			$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
 			$images_list[$image_file] = $image_file;
 		}
@@ -577,6 +580,7 @@ $(document).ready (function () {
 		if (this.value != '') {
 			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '.png'));
 			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_ok.png'));
+			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_warning.png'));
 			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_bad.png'));
 		}
 	});

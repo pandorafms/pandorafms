@@ -20,12 +20,11 @@ if (!isset ($config)) {
 	die ('You cannot access this file directly!');
 }
 
-//TODO: Make the following 5 valid throughout Pandora FMS
 $config["user_can_update_info"] = false;
 $config["user_can_update_password"] = false;
 $config["admin_can_add_user"] = false;
 $config["admin_can_delete_user"] = false;
-$config["admin_can_disable_user"] = false;
+$config["admin_can_disable_user"] = false; //Not implemented
 $config["admin_can_make_admin"] = false;
 
 //Required and optional keys for this function to work
@@ -46,7 +45,7 @@ function process_user_login ($login, $pass) {
 	} 
 	global $config;
 		
-	$profile = get_db_value ("id_user", "tusuario_perfil", "id_user", $login);
+	$profile = get_db_value ("id_usuario", "tusuario_perfil", "id_usuario", $login);
 	
 	if ($profile === false && empty ($config["auth"]["create_user_undefined"])) {
 		$config["auth_error"] = "No profile"; //Error message, don't translate

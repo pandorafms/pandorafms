@@ -1,5 +1,15 @@
 2009-01-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
+	* include/auth/ldap.php: Finally fixed (hopefully) the last major bug
+	
+	* godmode/extensions.php: Fixed something that prevented links from 
+	generating
+	
+	* extensions/update_manager/lib/libupdate_manager.php: Fixed proxy not
+	being filled in and giving error messages. Now the thing works.
+
+2009-01-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
 	* include/auth/mysql.php, include/auth/ldap.php, 
 	operation/users/user_edit.php, godmode/users/configure_user.php, 
 	godmode/users/user_list.php: Fixed some minor problems and annoyances

@@ -8,7 +8,7 @@ When a new alert is created the following fields must be filled in:
 
 <ul>
 	<li>Alert name: The name of the alert. It is important to describe correctly its function, but briefly, for example: "Comm. log".</li>
-	<li>Command: Command that the alert will trigger, tis he most important field while defining an alert. Note that the macros _field1, _field2_, and _field3_ are used to replace the configured parameters at the alert definition. That way the execution of the command fired by the alert is built. While defining an alert, you should test the correct execution of the alert, and that the result is the expected (send an email, generate an entry in a log, etc) at the command line.</li>
+	<li>Command: Command that the alert will trigger, it is he most important field while defining an alert. Note that the macros _field1, _field2_, and _field3_ are used to replace the configured parameters at the alert definition. That way the execution of the command fired by the alert is built. While defining an alert, you should test the correct execution of the alert, and that the result is the expected (send an email, generate an entry in a log, etc) at the command line.</li>
 	<li>Description: Long description of the alert, optional.</li>
 </ul>
 

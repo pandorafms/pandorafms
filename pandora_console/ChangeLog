@@ -1,3 +1,50 @@
+2009-01-22  Jorge Gonzalez <jorgegonz@svn.gnome.org>
+
+	* include/help/en/help_wmiquery.php,
+	  include/help/en/help_map_builder.php,
+	  include/help/en/help_postprocess.php,
+	  include/help/en/help_date_format.php,
+	  include/help/en/help_prediction_source_module.php,
+	  include/help/en/help_planned_downtime.php,
+	  include/help/en/help_recontask.php,
+	  include/help/en/help_alerts.php,
+	  include/help/en/help_tcp_send.php,
+	  include/help/en/help_manage_alerts.php,
+	  include/help/en/help_plugin_definition.php,
+	  include/help/en/help_manageconfig.php,
+	  include/help/es/help_map_builder.php,
+	  include/help/es/help_network_component.php,
+	  include/help/es/help_module_definition.php: Modified HTML tags,
+	  fixed typos.
+
+	* include/help/es/help_plugin_parameters.php,
+	  include/help/es/help_alert_validation.php,
+	  include/help/es/help_snmpcommunity.php,
+	  include/help/es/help_wmiquery.php,
+	  include/help/es/help_postprocess.php,
+	  include/help/es/help_date_format.php,
+	  include/help/es/help_prediction_source_module.php,
+	  include/help/es/help_module_type.php,
+	  include/help/es/help_planned_downtime.php,
+	  include/help/es/help_recontask.php,
+	  include/help/es/help_alerts.php,
+	  include/help/es/help_snmpwalk.php,
+	  include/help/es/help_tcp_send.php,
+	  include/help/es/help_duplicateconfig.php,
+	  include/help/es/help_wmifield.php,
+	  include/help/es/help_manage_alerts.php,
+	  include/help/es/help_wmikey.php,
+	  include/help/es/help_plugin_definition.php,
+	  include/help/es/help_alert_type.php,
+	  include/help/es/help_snmpoid.php,
+	  include/help/es/help_wminamespace.php,
+	  include/help/es/help_manageconfig.php: Added Spanish help files.
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated po template.
+
 2009-01-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Removed auth init because I fixed stat_win.php

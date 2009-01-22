@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-01-12 16:50+0100\n"
-"PO-Revision-Date: 2009-01-12 17:11+0100\n"
+"PO-Revision-Date: 2009-01-22 13:20+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -3675,12 +3675,12 @@ msgstr "Otro"
 #: ../../godmode/agentes/alert_manager_editor.php:206
 #: ../../godmode/alerts/configure_alert_template.php:321
 msgid "Time from"
-msgstr "Fecha desde"
+msgstr "Hora desde"
 
 #: ../../godmode/agentes/alert_manager_editor.php:221
 #: ../../godmode/alerts/configure_alert_template.php:324
 msgid "Time to"
-msgstr "Fecha hasta"
+msgstr "Hora hasta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:237
 #: ../../godmode/alerts/configure_alert_template.php:305

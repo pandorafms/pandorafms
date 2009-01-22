@@ -1,5 +1,11 @@
 2009-01-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
+	* include/auth/mysql.php, include/auth/ldap.php, 
+	operation/users/user_edit.php, godmode/users/configure_user.php, 
+	godmode/users/user_list.php: Fixed some minor problems and annoyances
+
+2009-01-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
 	* pandoradb_migrate_20_to_21.sql, pandoradb.sql: Added user table updates
 	You'll have to do the alter tables before upgrading to the latest version
 	but it adds functionality and enforces unique usernames

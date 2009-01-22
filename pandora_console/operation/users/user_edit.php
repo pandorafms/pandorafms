@@ -53,7 +53,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	
 	$return = process_user_info ($id, $upd_info);
 	print_error_message ($return, __('User info successfully updated'), __('Error updating user info'));
-	$user_info = get_user_info ($id); //Reread it
+	$user_info = $upd_info;
 }
 
 echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";

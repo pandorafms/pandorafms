@@ -190,6 +190,15 @@ function process_user_contact ($id_user) {
 }
 
 /**
+ * Sets the user admin status (LDAP doesn't do this)
+ *
+ * @param string User id
+ */
+function process_user_isadmin ($id_user, $is_admin) {
+	return false;
+}
+	
+/**
  * LDAP user functions based on webcalendar's implementation
  *
  * File from webcalendar (GPL) project:

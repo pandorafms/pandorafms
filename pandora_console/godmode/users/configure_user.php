@@ -47,43 +47,52 @@ if (isset ($_GET["create"]) && $config["admin_can_add_user"]) {
 	$user_info["email"] = '';
 	$user_info["phone"] = '';
 	$user_info["comments"] = '';
+	$user_info["is_admin"] = 0;
 } elseif (isset ($_GET["create"])) {
 	print_error_message (false, '', __('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
 } elseif (isset ($_GET["user_mod"])) {
 	$mod = get_parameter_get ("user_mod", 0); //0 is no user info modify (can modify passwords and admin status), 1 is modify, 2 is create
 	
 	$upd_info = array ();
-	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
-	$upd_info["firstname"] = get_parameter_post ("firstname", $user_info["firstname"]);
-	$upd_info["lastname"] = get_parameter_post ("lastname", $user_info["lastname"]);
+	$upd_info["fullname"] = get_parameter_post ("fullname");
+	$upd_info["firstname"] = get_parameter_post ("firstname");
+	$upd_info["lastname"] = get_parameter_post ("lastname");
 	$password_old = get_parameter_post ("password_old", "-");
 	$password_new = get_parameter_post ("password_new", "-");
 	$password_confirm = get_parameter_post ("password_confirm", "-");
-	$upd_info["email"] = get_parameter_post ("email", $user_info["email"]);
-	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
-	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
-	$is_admin = get_parameter_post ("is_admin", $user_info["is_admin"]);
+	$upd_info["email"] = get_parameter_post ("email");
+	$upd_info["phone"] = get_parameter_post ("phone");
+	$upd_info["comments"] = get_parameter_post ("comments");
+	$is_admin = get_parameter_post ("is_admin", 0);
 	$group = get_parameter_post ("assign_group", 0);
 	$profile = get_parameter_post ("assign_profile", 0);
 	
 	
 	if ($config["admin_can_add_user"] && $mod == 2) {
-		if ($password_new !== $password_confirm) {
+		if ($password_new != $password_confirm) {
 			print_error_message (false, '', __('Passwords didn\t match'));
+			$id = '';
 			$user_info = $upd_info; //Fill in the blanks again
+			$user_info["is_admin"] = $is_admin;
+			$_GET["create"] = 1; //Set create mode back on
+			$password_old = "-";
+			$password_new = "-";
+			$password_confirm = "-";
 		} else {
 			$id = get_parameter_post ("id_user");
 			$return = create_user ($id, $password_new, $upd_info);
 			print_error_message ($return, __('User successfully created'), __('Error creating user'));
 			$user_info = get_user_info ($id);
 			$id = $user_info["id_user"];
-			$_GET["create"] = 1; //Set create mode back on
+			$password_old = "-";
+			$password_new = "-";
+			$password_confirm = "-";
 		}
-	} elseif ($config["user_can_update_info"] && mod == 1) {
+	} elseif ($config["user_can_update_info"] && $mod == 1) {
 		$return = process_user_info ($id, $upd_info);
-		print_error_message ($return, __('User info successfully updated'), __('Error updating user info'));
-		$user_info = get_user_info ($id);
-		$id = $user_info["id_user"];
+		print_error_message ($return, __('User info successfully updated'), __('Error updating user info (no change?)'));
+		$user_info = $upd_info;
+		$user_info["is_admin"] = $is_admin;
 	}
 	
 	//If User can update password and the new password is not the same as the old one, it's not the default and it's not empty and the new password is the same as the confirmed one
@@ -112,9 +121,9 @@ if (isset ($_GET["create"]) && $config["admin_can_add_user"]) {
 echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";
 
 if (!empty ($id)) {
-	echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=godmode/users/configure_user&id='.$id.'&user_mod=1">';
+	echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id='.$id.'&user_mod=1">';
 } else {
-	echo '<form name="user_create" method="post" action="index.php?sec=usuarios&sec2=godmode/users/configure_user&user_mod=2">';
+	echo '<form name="user_create" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&user_mod=2">';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox_color" width="600px">';
@@ -135,12 +144,12 @@ print_input_text_extended ("lastname", $user_info["lastname"], '', '', '', '', $
 echo '</td></tr><tr><td class="datos">'.__('Password').'</td><td class="datos">';
 if ($config["user_can_update_password"]) {
 	if (!isset ($_GET["create"])) {
-		print_input_text_extended ("password_old", "", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+		print_input_text_extended ("password_old", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
 	}
 	echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
-	print_input_text_extended ("password_new", "", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+	print_input_text_extended ("password_new", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
 	echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
-	print_input_text_extended ("password_conf", "", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+	print_input_text_extended ("password_confirm", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
 } else {
 	echo '<i>'.__('You can not change passwords from Pandora FMS under the current authentication scheme').'</i>';
 }
@@ -201,7 +210,7 @@ $table->align[1] = 'center';
 $table->align[2] = 'center';
 
 
-$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_info["id_user"]);
+$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
 	$result = array ();
 }

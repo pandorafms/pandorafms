@@ -65,7 +65,7 @@ $info = array ();
 $info = get_users ();
 
 foreach ($info as $user_id => $user_info) {
-	$data[0] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$user_id.'">'.$user_id.'</a>';
+	$data[0] = '<a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id='.$user_id.'">'.$user_id.'</a>';
 	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
 	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
 	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';

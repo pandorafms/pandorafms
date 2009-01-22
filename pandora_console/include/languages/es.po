@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2009-01-05 09:11+0100\n"
+"PO-Revision-Date: 2009-01-22 13:44+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -2174,7 +2174,7 @@ msgstr "Código de idioma para Pandora FMS"
 
 #: ../../godmode/setup/setup.php:87
 msgid "Date format string"
-msgstr "Información de la Base de Datos"
+msgstr "Información de la Base de datos"
 
 #: ../../godmode/setup/setup.php:90
 msgid "Remote config directory"
@@ -3342,7 +3342,7 @@ msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:130
 msgid "Alert text"
-msgstr "Alerta de texto"
+msgstr "Texto de la alerta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:135
 #: ../../operation/snmpconsole/snmp_alert.php:214
@@ -3388,11 +3388,11 @@ msgstr "Campo #3 (Texto completo)"
 
 #: ../../godmode/agentes/alert_manager_editor.php:204
 msgid "Time from"
-msgstr "Fecha desde"
+msgstr "Hora desde"
 
 #: ../../godmode/agentes/alert_manager_editor.php:219
 msgid "Time to"
-msgstr "Fecha hasta"
+msgstr "Hora hasta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:235
 msgid "Days of week"

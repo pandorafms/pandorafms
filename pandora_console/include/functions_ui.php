@@ -131,7 +131,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
  * @return string HTML code if return parameter is true.
  */
 function print_username ($username, $return = false) {
-	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$username.'">'.get_user_realname ($username).'</a>';
+	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&id='.$username.'">'.get_user_fullname ($username).'</a>';
 	
 	if ($return)
 		return $string;

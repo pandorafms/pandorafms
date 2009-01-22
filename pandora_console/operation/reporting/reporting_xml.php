@@ -53,47 +53,43 @@ if (isset ($_GET["direct"]))  {
 	}
 	*/
 	require_once ("../../include/config.php");
-	require_once ("../../include/functions.php");
-	require_once ("../../include/functions_db.php");
 	require_once ("../../include/functions_reporting.php");
+	
+	if (!isset ($config["auth"])) {
+		require_once ("include/auth/mysql.php");
+	} else {
+		require_once ("include/auth/".$config["auth"]["scheme"].".php");
+	}
 	
 	$nick = get_parameter ("nick");
 	$pass = get_parameter ("pass");
 	
-	$sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
-	$row = get_db_row_sql ($sql);
+	$nick = process_user_login ($nick, $pass);
 	
-	// For every registry
-	if ($row !== false) {
-		if ($row["password"] == md5 ($pass)) {
-			// Login OK
-			// Nick could be uppercase or lowercase (select in MySQL
-			// is not case sensitive)
-			// We get DB nick to put in PHP Session variable,
-			// to avoid problems with case-sensitive usernames.
-			// Thanks to David Muñiz for Bug discovery :)
-			$nick = $row["id_usuario"];
-			update_user_contact ($nick);
-			$_SESSION['id_usuario'] = $nick;
-			$config['id_user'] = $nick;
-			unset ($_GET['pass'], $pass);
-		} else {
-			// Login failed (bad password) 
-			echo "Logon failed";
-			audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
-					  "Incorrect password: " . $nick);
-			exit;
-		}
+	if ($nick !== false) {
+		unset ($_GET["sec2"]);
+		$_GET["sec"] = "general/logon_ok";
+		logon_db ($nick, $REMOTE_ADDR);
+		$_SESSION['id_usuario'] = $nick;
+		$config['id_user'] = $nick;
+		//Remove everything that might have to do with people's passwords or logins
+		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
 	} else {
 		// User not known
-		echo "Logon failed";
-		audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed", "Invalid username: " . $nick);
+		$login_failed = true;
+		require_once ('general/login_page.php');
+		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
 		exit;
 	}
-
 } else {
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
+
+	if (!isset ($config["auth"])) {
+		require_once ("include/auth/mysql.php");
+	} else {
+		require_once ("include/auth/".$config["auth"]["scheme"].".php");
+	}	
 }
 
 check_login();
@@ -102,7 +98,7 @@ $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
-		"Trying to access graph viewer withoud ID");
+		"Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
 	exit;
 }

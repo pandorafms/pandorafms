@@ -72,7 +72,7 @@ function is_user ($id_user) {
  * 
  * @return string The users full name
  */
-function get_user_realname ($id_user) {
+function get_user_fullname ($id_user) {
 	return "admin";
 	return "";
 	return false;
@@ -107,7 +107,7 @@ function get_users ($order = "nombre_real") {
  *
  * @param string User id
  */
-function update_user_contact ($id_user) {
+function process_user_contact ($id_user) {
 	//void
 }
 

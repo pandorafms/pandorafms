@@ -49,11 +49,16 @@ if (give_acl ($config["id_user"], 0, "UM") == 1) {
 }
 
 foreach ($info as $user_id => $user_info) {
-	$data[0] = $user_id;
-	$data[1] = $user_info["nombre_real"];
-	$data[2] = print_timestamp ($user_info["fecha_registro"], true);
+	$data[0] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$user_id.'">'.$user_id.'</a>';
+	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
+	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
+	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';
+	$data[1] .= __('Phone').': '.$user_info["phone"].'<br />';
+	$data[1] .= __('E-mail').': '.$user_info["email"].'<br />';
+	$data[1] .= '</span></a>';
+	$data[2] = print_timestamp ($user_info["last_connect"], true);
 	
-	if ($user_info["nivel"]) {
+	if ($user_info["is_admin"]) {
 		$data[3] = '<img src="images/user_suit.png" />&nbsp;';
 	} else {
 		$data[3] = '<img src="images/user_green.png" />&nbsp;';
@@ -73,7 +78,7 @@ foreach ($info as $user_id => $user_info) {
 	}
 	$data[3] .= "</span></a>";
 	
-	$data[4] = print_string_substr ($user_info["comentarios"], 24, true);
+	$data[4] = print_string_substr ($user_info["comments"], 24, true);
 	array_push ($table->data, $data);
 }
 
@@ -138,6 +143,4 @@ foreach ($profiles as $profile) {
 
 print_table ($table);
 unset ($table);
-
 ?>
-</tr></table>

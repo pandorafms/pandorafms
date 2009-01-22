@@ -1,3 +1,35 @@
+2009-01-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandoradb_migrate_20_to_21.sql, pandoradb.sql: Added user table updates
+	You'll have to do the alter tables before upgrading to the latest version
+	but it adds functionality and enforces unique usernames
+	
+	* general/header.php: Don't rely on session variables
+	
+	* include/auth/dev.php, include/functions_ui.php: Minimal changes to 
+	comply with guidelines and new links
+	
+	* include/auth/mysql.php, include/auth/ldap.php: Added functions and 
+	removed bugs.
+	
+	* include/functions_db.php: Added some functions for profile handling
+	
+	* include/functions_html.php: Text input is now readonly instead of 
+	disabled. This allows copying data from the textbox.
+	
+	* include/styles/tip.css: Set min-width instead of fixed width for tip
+	that way we can have bigger tips without overflowing
+	
+	* operation/reporting/reporting_xml.php: Added auth there as well
+	
+	* operation/users/user.php, operation/users/user_edit.php, 
+	operation/users/user_statistics.php: New auth functions, better look
+	
+	* index.php: Process_user_contact sits in logon_db. Saves a query
+	
+	* godmode/users/configure_user.php, godmode/users/user_list.php: New
+	auth functions, better look.
+
 2009-01-22  Jorge Gonzalez <jorgegonz@svn.gnome.org>
 
 	* include/help/en/help_wmiquery.php,

@@ -168,8 +168,8 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 		$htmlid = 'text-'.sprintf ('%04d', $idcounter);
 		$output .= ' id="'.$htmlid.'"';
 	}
-	if ($disabled)
-		$output .= ' disabled';
+	if ($disabled) //We want readonly, not disabled - disabled disables copying from the field as well
+		$output .= ' readonly';
 	
 	if ($attributes != '')
 		$output .= ' '.$attributes;

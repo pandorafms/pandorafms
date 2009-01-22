@@ -33,7 +33,7 @@ echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" sty
 echo '</td><td width="20">&nbsp;</td>';
 
 // First column (identifier)
-echo '<td width="20%"><img src="images/user_'.((dame_admin ($_SESSION["id_usuario"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$_SESSION["id_usuario"].'</b>]</a>';
+echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a>';
 
 //First column, second row (logout button)
 echo '<br /><br />';

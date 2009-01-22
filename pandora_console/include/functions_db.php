@@ -73,16 +73,16 @@ function give_acl ($id_user, $id_group, $access) {
 		return 1;
 		//Apparently nivel is 1 if user has full admin access
 	} 
-	
+
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
 		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'", $id_user);
 		//GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
 	} else {
 		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)", $id_user, $id_group);
+						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)", $id_user, $id_group);
 	}
-	
+
 	$rowdup = get_db_all_rows_sql ($query1);
 	$result = 0;
 
@@ -128,7 +128,7 @@ AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusu
 		$result = 1;
 	return $result; 
 } 
-
+	
 /** 
  * Adds an audit log entry.
  * 
@@ -153,7 +153,7 @@ function audit_db ($id, $ip, $accion, $descripcion){
 function logon_db ($id_user, $ip) {
 	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
-	update_user_contact ($id_user);
+	process_user_contact ($id_user);
 }
 
 /**
@@ -176,6 +176,24 @@ function logoff_db ($id_user, $ip) {
 function get_profile_name ($id_profile) {
 	return (string) get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
+
+/**
+ * Selects all profiles (array (id => name))
+ *
+ * @return array List of all profiles
+ */
+function get_profiles () {
+	$profiles = get_db_all_rows_in_table ("tperfil", "name");
+	$return = array ();
+	if ($profiles === false) {
+		return $return;
+	}
+	foreach ($profiles as $profile) {
+		$return[$profile["id_perfil"]] = $profile["name"];
+	}
+	return $return;
+}
+
 
 /**
  * Create Profile for User
@@ -206,6 +224,30 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 1) {
 	return (bool) process_sql_insert ("tusuario_perfil", $insert);
 }
 
+/** 
+ * Delete user profile from database
+ * 
+ * @param string User ID
+ * @param int Profile ID
+ * 
+ * @return bool Whether or not it's deleted
+ */
+function delete_user_profile ($id_user, $id_profile) {
+	$sql = sprintf ("DELETE FROM tusuario_perfil WHERE id_usuario = '%s' AND id_up = %d", $id_user, $id_profile);
+	return (bool) process_sql ($sql);
+}
+
+/** 
+ * Delete profile from database (not user-profile link (tusuario_perfil), but the actual profile (tperfil))
+ * 
+ * @param int Profile ID
+ * 
+ * @return bool Whether or not it's deleted
+ */
+function delete_profile ($id_profile) {
+	$sql = sprintf ("DELETE FROM tperfil WHERE id_perfil = %d", $id_profile);
+	return (bool) process_sql ($sql);
+}
 
 /** 
  * Get disabled field of a group
@@ -395,13 +437,6 @@ function get_agent_name ($id_agent, $case = "upper") {
 }
 
 /** 
- * DEPRECATED: Don't use this anymore. Use pre-defined functions according to authorization scheme. Passwords can't always be retrieved
- */
-function get_user_password ($id_user) {
-	return (string) get_db_value ('password', 'tusuario', 'id_usuario', $id_user);
-}
-
-/** 
  * Get type name for alerts (e-mail, text, internal, ...) based on type number
  * 
  * @param int id_alert Alert type id.
@@ -502,10 +537,10 @@ function get_agentmodule_type ($id_agentmodule) {
 }
 
 /** 
- * DEPRECATED: User get_user_realname
+ * DEPRECATED: User get_user_fullname
  */
 function dame_nombre_real ($id_user) {
-	return get_user_realname ($id_user);
+	return get_user_fullname ($id_user);
 }
 
 /**

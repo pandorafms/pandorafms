@@ -59,7 +59,7 @@ a.info2:hover span, a.help:hover span, a.info_table:hover span {
 	z-index: 99;
 	top: 20px;
 	left: 6px;
-	width: 150px;
+	min-width: 150px;
 	border: 1px solid #708090;
 	background-color: #d4ddc6;
 	color: #000;

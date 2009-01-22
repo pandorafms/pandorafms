@@ -16,14 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
-if (comprueba_login() == 0) {
-echo "<h2>".__('Users defined in Pandora')." &gt; ";
-echo __('User activity statistics')."</h2>";
-echo '<img src="reporting/fgraph.php?tipo=user_activity" border=0>';
-}
+check_login ();
+
+echo "<h2>".__('Users defined in Pandora')." &gt; ".__('User activity statistics')."</h2>";
+
+print_image ("reporting/fgraph.php?tipo=user_activity", false, array ("border" => 0));
 ?>

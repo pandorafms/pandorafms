@@ -154,7 +154,6 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
 	if ($loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		update_user_contact ($loginhash_user);
 		logon_db ($loginhash_user, $REMOTE_ADDR);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
@@ -180,7 +179,6 @@ elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	if ($nick !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
-		update_user_contact ($nick);
 		logon_db ($nick, $REMOTE_ADDR);
 		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;

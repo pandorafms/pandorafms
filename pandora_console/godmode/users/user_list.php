@@ -28,87 +28,150 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	exit;
 }
 
-if (isset($_GET["borrar_usuario"])) { // if delete user
-	$nombre = get_parameter_get ("borrar_usuario");
-	// Delete user
-	// Delete cols from table tgrupo_usuario
-	
-	$result = delete_user ($nombre);
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem deleting user').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('User successfully deleted').'</h3>';
-	}
+if (isset ($_GET["user_del"])) { //delete user
+	$id_user = get_parameter_post ("delete_user");
+	$result = delete_user ($id_user);
+	print_error_message ($result, __('User successfully deleted'), __('There was a problem deleting the user'));
+} elseif (isset ($_GET["profile_del"])) { //delete profile
+	$id_profile = (int) get_parameter_post ("delete_profile");
+	$result = delete_profile ($id_profile);
+	print_error_message ($result, __('Profile successfully deleted'), __('There was a problem deleting the profile'));
 }
 
 echo '<h2>'.__('User management').' &gt; '.__('Users defined in Pandora').'</h2>';
 
-$table->width = 700;
 $table->cellpadding = 4;
 $table->cellspacing = 4;
+$table->width = 700;
 $table->class = "databox";
-
 $table->head = array ();
-$table->size = array ();
 $table->data = array ();
 $table->align = array ();
+$table->size = array ();
 
 $table->head[0] = __('User ID');
-
-$table->head[1] = __('Last contact');
-$table->align[1] = "center";
-
-$table->head[2] = __('Profile');
-$table->align[2] = "center";
-
-$table->head[3] = __('Name');
-$table->align[3] = "center";
-
+$table->head[1] = __('Name');
+$table->head[2] = __('Last contact');
+$table->head[3] = __('Profile');
 $table->head[4] = __('Description');
-$table->align[4] = "center";
+$table->head[5] = '';
 
-$table->head[5] = __('Delete');
+$table->align[2] = "center";
+$table->align[3] = "center";
 $table->align[5] = "center";
+$table->size[5] = 40;
 
-$result = get_db_all_rows_in_table ('tusuario');
+$info = array ();
+$info = get_users ();
 
-foreach ($result as $row) {
-	$data = array ();
-
-	$data[0] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio=".$row["id_usuario"]."'><b>".$row["id_usuario"]."</b></a>";
-	$data[1] = print_timestamp ($row["fecha_registro"], true);
-	if ($row["nivel"] == 1) {
-		$data[2] = '<img src="images/user_suit.png" />';
+foreach ($info as $user_id => $user_info) {
+	$data[0] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$user_id.'">'.$user_id.'</a>';
+	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
+	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
+	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';
+	$data[1] .= __('Phone').': '.$user_info["phone"].'<br />';
+	$data[1] .= __('E-mail').': '.$user_info["email"].'<br />';
+	$data[1] .= '</span></a>';
+	$data[2] = print_timestamp ($user_info["last_connect"], true);
+	
+	if ($user_info["is_admin"]) {
+		$data[3] = '<img src="images/user_suit.png" />&nbsp;';
 	} else {
-		$data[2] = '<img src="images/user_green.png" />';
+		$data[3] = '<img src="images/user_green.png" />&nbsp;';
 	}
 	
-	$data[2] .= '<a href="#" class="tip"><span>';
-	$profiles = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $row["id_usuario"]);
-	if ($profiles === false) {
-		$data[2] .= __('This user doesn\'t have any assigned profile/group');
-		$profiles = array ();
+	$data[3] .= '<a href="#" class="tip"><span>';
+	$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
+	if ($result !== false) {
+		foreach ($result as $row) {
+			$data[3] .= get_profile_name ($row["id_perfil"]);
+			$data[3] .= " / ";
+			$data[3] .= get_group_name ($row["id_grupo"]);
+			$data[3] .= "<br />";
+		}
+	} else {
+		$data[3] .= __('The user doesn\'t have any assigned profile/group');
 	}
+	$data[3] .= "</span></a>";
 	
-	foreach ($profiles as $profile) {
-		$data[2] .= get_profile_name ($profile["id_perfil"])." / ";
-		$data[2] .= get_group_name ($profile["id_grupo"])."<br />";
+	$data[4] = print_string_substr ($user_info["comments"], 24, true);
+	if ($config["admin_can_delete_user"]) {
+		$data[5] = print_input_image ("delete_user", "images/delete.png", $user_id, 'border:0px;', true); //Delete user button
+	} else {
+		$data[5] = ''; //Delete button not in this mode
 	}
-	
-	$data[2] .= "</span></a>";
-	
-	$data[3] = substr ($row["nombre_real"], 0, 16);
-	$data[4] = $row["comentarios"];
-
-	$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario='.$row["id_usuario"].'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-	$data[5] .= '<img border="0" src="images/cross.png" /></a>';
 	array_push ($table->data, $data);
 }
 
+echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1">';
 print_table ($table);
+echo '</form>';
 unset ($table);
 
-echo '<div style="width:680px; text-align:right"><form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1">';
-print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
-echo "</form></div>";
+	
+echo '<div style="width:680px; text-align:right">';
+if ($config["admin_can_add_user"] !== false) {
+	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&create=1">';
+	print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
+	echo '</form>';
+} else {
+	echo '<i>'.__('The current authentication scheme doesn\'t support creating users from Pandora FMS').'</i>';
+}
+echo '</div>';
+
+echo '<h3>'.__('Profiles defined in Pandora').'</h3>';
+
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = 'databox';
+$table->width = 700;
+
+$table->head = array ();
+$table->data = array ();
+$table->size = array ();
+$table->align = array ();
+
+$table->head[0] = __('Profiles');
+
+$table->head[1] = "IR".print_help_tip (__('System incidents reading'), true);
+$table->head[2] = "IW".print_help_tip (__('System incidents writing'), true);
+$table->head[3] = "IM".print_help_tip (__('System incidents management'), true);
+$table->head[4] = "AR".print_help_tip (__('Agents reading'), true);
+$table->head[5] = "AW".print_help_tip (__('Agents management'), true);
+$table->head[6] = "LW".print_help_tip (__('Alerts editing'), true);
+$table->head[7] = "UM".print_help_tip (__('Users management'), true);
+$table->head[8] = "DM".print_help_tip (__('Database management'), true);
+$table->head[9] = "LM".print_help_tip (__('Alerts management'), true);
+$table->head[10] = "PM".print_help_tip (__('Systems management'), true);
+$table->head[11] = '';
+
+$table->align = array_fill (1, 10, "center");
+$table->size = array_fill (1, 10, 40);
+
+$profiles = get_db_all_rows_in_table ("tperfil");
+
+$img = print_image ("images/ok.png", true, array ("border" => 0)); 
+
+foreach ($profiles as $profile) {
+	$data[0] = $profile["name"];
+	
+	$data[1] = ($profile["incident_view"] ? $img : '');
+	$data[2] = ($profile["incident_edit"] ? $img : '');
+	$data[3] = ($profile["incident_management"] ? $img : '');
+	$data[4] = ($profile["agent_view"] ? $img : '');
+	$data[5] = ($profile["agent_edit"] ? $img : '');
+	$data[6] = ($profile["alert_edit"] ? $img : '');
+	$data[7] = ($profile["user_management"] ? $img : '');
+	$data[8] = ($profile["db_management"] ? $img : '');
+	$data[9] = ($profile["alert_management"] ? $img : '');
+	$data[10] = ($profile["pandora_management"] ? $img : '');
+	$data[11] = print_input_image ("delete_profile", "images/delete.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
+	
+	array_push ($table->data, $data);
+}
+
+echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/user_list&profile_del=1">';
+print_table ($table);
+echo '</form>';
+unset ($table);
 ?>

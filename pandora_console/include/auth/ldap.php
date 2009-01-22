@@ -20,11 +20,13 @@ if (!isset ($config)) {
 	die ('You cannot access this file directly!');
 }
 
-//TODO: Make the following 4 valid throughout Pandora FMS
+//TODO: Make the following 5 valid throughout Pandora FMS
+$config["user_can_update_info"] = false;
 $config["user_can_update_password"] = false;
 $config["admin_can_add_user"] = false;
 $config["admin_can_delete_user"] = false;
 $config["admin_can_disable_user"] = false;
+$config["admin_can_make_admin"] = false;
 
 //Required and optional keys for this function to work
 $req_keys = array ("ldap_server", "ldap_base_dn", "ldap_login_attr", "ldap_admin_group_name", "ldap_admin_group_attr", "ldap_admin_group_type", "ldap_user_filter", "ldap_user_attr");
@@ -44,7 +46,7 @@ function process_user_login ($login, $pass) {
 	} 
 	global $config;
 		
-	$profile = get_db_value ("id_usuario", "tusuario_perfil", "id_usuario", $login);
+	$profile = get_db_value ("id_user", "tusuario_perfil", "id_user", $login);
 	
 	if ($profile === false && empty ($config["auth"]["create_user_undefined"])) {
 		$config["auth_error"] = "No profile"; //Error message, don't translate
@@ -98,13 +100,13 @@ function is_user ($id_user) {
  * 
  * @return string The users full name
  */
-function get_user_realname ($id_user) {
+function get_user_fullname ($id_user) {
 	$info = get_user_info ($id_user);
 	if (empty ($info)) {
 		//User doesn't exist
 		return '';
 	}
-	return (string) $info["nombre_real"];
+	return (string) $info["fullname"];
 }
 
 /** 
@@ -116,7 +118,7 @@ function get_user_realname ($id_user) {
  */
 function get_user_email ($id_user) {
 	$info = get_user_info ($id_user);
-	return (string) $info["direccion"];
+	return (string) $info["email"];
 }
 
 /** 
@@ -183,7 +185,7 @@ function get_user_admins () {
  *
  * @param string User id
  */
-function update_user_contact ($id_user) {
+function process_user_contact ($id_user) {
 	//Empty function
 }
 
@@ -301,8 +303,9 @@ function ldap_load_user ($login) {
 			} else {
 				$ret = array ();
 				foreach ($config["auth"]["ldap_user_attr"] as $internal_key => $ldap_key) {
-					$ret["fecha_registro"] = get_system_time ();
-					$ret["nivel"] = is_user_admin ($info[0][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]);
+					$ret["last_connect"] = get_system_time ();
+					$ret["registered"] = get_system_time ();
+					$ret["is_admin"] = is_user_admin ($info[0][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
 					if (isset ($info[0][$ldap_key])) {
 						$ret[$internal_key] = $info[0][$ldap_key][0];
 					} else {
@@ -328,7 +331,7 @@ function ldap_load_user ($login) {
 function create_user () {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] .= 'Not yet supported.';
+	$ldap_cache["error"] = 'Not yet supported.';
 	return false;
 }
 
@@ -337,10 +340,10 @@ function create_user () {
  *
  * @return bool false
  */
-function update_user () {
+function process_user () {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] .= 'Not yet supported.';
+	$ldap_cache["error"] = 'Not yet supported.';
 	return false;
 }
 
@@ -349,10 +352,10 @@ function update_user () {
  *
  * @return bool false
  */
-function update_user_password ( $user, $password ) {
+function process_user_password ( $user, $password_old, $password_new ) {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] .= 'Not yet supported';
+	$ldap_cache["error"] = 'Not yet supported';
 	return false;
 }
 
@@ -366,7 +369,7 @@ function update_user_password ( $user, $password ) {
 function delete_user ($user) {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] .= 'Not yet supported';
+	$ldap_cache["error"] = 'Not yet supported';
 	return false;
 }
 
@@ -391,17 +394,17 @@ function get_users ($order = false) {
 		if (!$sr) {
 			$ldap_cache["error"] .= 'Error searching LDAP server (get_users): ' . ldap_error( $ldap_cache["ds"] );
 		} else {
-			ldap_sort ($ldap_cache["ds"], $sr, $config["auth"]["ldap_user_attr"]["nombre_real"]);
+			ldap_sort ($ldap_cache["ds"], $sr, $config["auth"]["ldap_user_attr"]["fullname"]);
 			$info = @ldap_get_entries( $ldap_cache["ds"], $sr );
 			for ( $i = 0; $i < $info['count']; $i++ ) {
 				foreach ($config["auth"]["ldap_user_attr"] as $internal_key => $ldap_key) {
-					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]]["fecha_registro"] = get_system_time ();
+					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["last_connect"] = get_system_time ();
 					if (isset ($info[$i][$ldap_key])) {
-						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]][$internal_key] = $info[$i][$ldap_key][0];
+						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = $info[$i][$ldap_key][0];
 					} else {
-						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]][$internal_key] = '';
+						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = '';
 					}
-					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]]["nivel"] = is_user_admin ($info[$i][$config["auth"]["ldap_user_attr"]["id_usuario"]][0]);
+					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["is_admin"] = is_user_admin ($info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
 				}
 			}
 			@ldap_free_result($sr);

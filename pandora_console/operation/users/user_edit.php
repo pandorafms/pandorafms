@@ -20,146 +20,117 @@ require_once ("include/config.php");
 
 check_login ();
 
-$view_mode = 0;
+$id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
+$user_info = get_user_info ($id);
+$id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
-if (isset ($_GET["ver"])){ // Only view mode, 
-	$id = get_parameter_get ("ver"); // ID given as parameter
-	if ($config['id_user'] == $id) {
-		$view_mode = 0;
+//If current user is editing himself or if the user has UM (User Management) rights on any groups the user is part of AND the authorization scheme allows for users/admins to update info
+if (($config["id_user"] == $id || give_acl ($config["id_user"], get_user_groups ($id), "UM")) && $config["user_can_update_info"]) {
+	$view_mode = false;
+} else {
+	$view_mode = true;
+}
+
+if (isset ($_GET["modified"]) && !$view_mode) {
+	$upd_info = array ();
+	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
+	$upd_info["firstname"] = get_parameter_post ("firstname", $user_info["firstname"]);
+	$upd_info["lastname"] = get_parameter_post ("lastname", $user_info["lastname"]);
+	$password_old = get_parameter_post ("password_old", "-");
+	$password_new = get_parameter_post ("password_new", "-");
+	$password_confirm = get_parameter_post ("password_confirm", "-");
+	$upd_info["email"] = get_parameter_post ("email", $user_info["email"]);
+	$upd_info["phone"] = get_parameter_post ("phone", $user_info["phone"]);
+	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
+	
+	//If User can update password and the new password is not the same as the old one, it's not the default and it's not empty and the new password is the same as the confirmed one
+	if ($config["user_can_update_password"] && $password_old !== $password_new && $password_new !== "-" && !empty ($password_new) && $password_confirm == $password_new) {
+		$return = process_user_password ($id, $pass);
+		print_error_message ($return, __('Password successfully updated'), __('Error updating passwords').": ".$config["auth_error"]);
+	} elseif ($password_new !== "-") {
+		print_error_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
+	}
+	
+	$return = process_user_info ($id, $upd_info);
+	print_error_message ($return, __('User info successfully updated'), __('Error updating user info'));
+	$user_info = get_user_info ($id); //Reread it
+}
+
+echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";
+
+echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=operation/users/user_edit&modified=1&id='.$id.'">';
+
+echo '<table cellpadding="4" cellspacing="4" class="databox_color" width="600px">';
+
+echo '<tr><td class="datos">'.__('User ID').'</td>';
+echo '<td class="datos">';
+print_input_text_extended ("id_user", $id, '', '', '', '', $view_mode, '', 'class="input"');
+
+echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';
+print_input_text_extended ("fullname", $user_info["fullname"], '', '', '', '', $view_mode, '', 'class="input"');
+
+echo '</td></tr><tr><td class="datos">'.__('First name').'</td><td class="datos">';
+print_input_text_extended ("firstname", $user_info["firstname"], '', '', '', '', $view_mode, '', 'class="input"');
+
+echo '</td></tr><tr><td class="datos2">'.__('Last name').'</td><td class="datos2">';
+print_input_text_extended ("lastname", $user_info["lastname"], '', '', '', '', $view_mode, '', 'class="input"');
+
+if ($view_mode === false) {
+	echo '</td></tr><tr><td class="datos">'.__('Current password').'</td><td class="datos">';
+	if ($config["user_can_update_password"]) {
+		print_input_text_extended ("password_old", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+		echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
+		print_input_text_extended ("password_new", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+		echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
+		print_input_text_extended ("password_conf", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
 	} else {
-		$view_mode = 1;
+		echo '<i>'.__('You can not change your password from Pandora FMS under the current authentication scheme').'</i>';
 	}
 }
 
+echo '</td></tr><tr><td class="datos2">'.__('E-mail').'</td><td class="datos2">';
+print_input_text_extended ("email", $user_info["email"], '', '', '', '', $view_mode, '', 'class="input"');
 
+echo '</td></tr><tr><td class="datos">'.__('Phone number').'</td><td class="datos">';
+print_input_text_extended ("phone", $user_info["phone"], '', '', '', '', $view_mode, '', 'class="input"');
 
-$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-$resq1=mysql_query($query1);
-$rowdup=mysql_fetch_array($resq1);
-$nombre=$rowdup["id_usuario"];
+echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos2">';
+print_textarea ("comments", 4, 55, $user_info["comments"], ($view_mode ? 'readonly' : ''));
+ 
+echo '</td></tr></table>';
 
-// Get user ID to modify data of current user.
-
-if (isset ($_GET["modificado"])){
-	// Se realiza la modificaci�n
-	if (isset ($_POST["pass1"])){
-		if ( isset($_POST["nombre"]) && ($_POST["nombre"] != $_SESSION["id_usuario"])) {
-			audit_db($_SESSION["id_usuario"],$REMOTE_ADDR,"Security Alert. Trying to modify another user: (".$_POST['nombre'].") ","Security Alert");
-			no_permission;
-		}
-			
-		// $nombre = $_POST["nombre"]; // Don't allow change name !!
-		$pass1 = entrada_limpia($_POST["pass1"]);
-		$pass2 = entrada_limpia($_POST["pass2"]);
-		$direccion = entrada_limpia($_POST["direccion"]);
-		$telefono = entrada_limpia($_POST["telefono"]);
-		$nombre_real = entrada_limpia($_POST["nombre_real"]);
-		if ($pass1 != $pass2) {
-			echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
-		}
-		else {echo "<h3 class='suc'>".__('User successfully updated')."</h3>";}
-		//echo "<br>DEBUG for ".$nombre;
-		//echo "<br>Comments:".$comentarios;	
-		$comentarios = entrada_limpia($_POST["comentarios"]);
-		if (get_user_password($nombre)!=$pass1){
-			// Only when change password
-			$pass1=md5($pass1);
-			$sql = "UPDATE tusuario SET nombre_real = '".$nombre_real."', password = '".$pass1."', telefono ='".$telefono."', direccion ='".$direccion." ', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre."'";
-		}
-		else 
-			$sql = "UPDATE tusuario SET nombre_real = '".$nombre_real."', telefono ='".$telefono."', direccion ='".$direccion." ', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre."'";
-		$resq2=mysql_query($sql);
-		
-		// Ahora volvemos a leer el registro para mostrar la info modificada
-		// $id is well known yet
-		$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-		$resq1=mysql_query($query1);
-		$rowdup=mysql_fetch_array($resq1);
-		$nombre=$rowdup["id_usuario"];			
-	}
-	else {
-		echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
-	}
-} 
-echo "<h2>".__('Pandora users')." &gt; ";
-echo __('User detail editor')."</h2>";
-
-// Si no se obtiene la variable "modificado" es que se esta visualizando la informacion y
-// preparandola para su modificacion, no se almacenan los datos
-
-$nombre = $rowdup["id_usuario"];
-if ($view_mode == 0)
-	$password=$rowdup["password"];
-else 	
-	$password="This is not a good idea :-)";
-
-$comentarios = $rowdup["comentarios"];
-$direccion = $rowdup["direccion"];
-$telefono = $rowdup["telefono"];
-$nombre_real = $rowdup["nombre_real"];
-
-?>
-<table cellpadding="4" cellspacing="4" class="databox_color" width="500px">
-<?php 
-if ($view_mode == 0) 
-	echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$config['id_user'].'&modificado=1">';
-else 	
-	echo '<form name="user_mod" method="post" action="">';
-?>
-<tr>
-<td class="datos"><?php echo __('User ID') ?></td>
-<td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled></td>
-<tr>
-<td class="datos2"><?php echo __('Real name') ?></td>
-<td class="datos2">
-<input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
-<tr><td class="datos"><?php echo __('Password') ?></td>
-<td class="datos">
-<input class=input type="password" name="pass1" value="<?php echo $password ?>"></td>
-<tr><td class="datos2">
-<?php echo __('Password'); echo " ".__('confirmation')?>
-<td class="datos2">
-<input class=input type="password" name="pass2" value="<?php echo $password ?>"></td>
-<tr>
-<td class="datos">E-Mail
-<td class="datos">
-<input class=input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
-<tr>
-<td class="datos2"><?php echo __('Telephone') ?>
-<td class="datos2"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
-<tr><td class="datos" colspan="2"><?php echo __('Comments') ?>
-<tr><td class="datos2" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
-</table>
-<table cellpadding="4" cellspacing="4" width="500px">
-<?php
-
-if ($view_mode == 0) {
-	echo '<tr><td colspan="3" align="right">';
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'></td></tr>";
+echo '<div style="width:600px; text-align:right;">';
+if (!$config["user_can_update_info"]) {
+	echo '<i>'.__('You can not change your user info from Pandora FMS under the current authentication scheme').'</i>';
+} else {
+	print_submit_button (__('Update'), 'uptbutton', $view_mode, 'class="sub upd"');
 }
-echo '</table></form><br>';
+echo '</div></form><br />';
+
+
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
-echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
-$sql = 'SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
-$result = mysql_query ($sql);
-if (mysql_num_rows ($result)) {
-	echo '<tr>';
-	$color=1;
-	while ($row = mysql_fetch_array ($result)) {
-		if ($color == 1) {
-			$tdcolor = "datos2";
-			$color = 0;
-		} else {
-			$tdcolor = "datos";
-			$color = 1;
-		}
-		echo '<td class="'.$tdcolor.'">';
-		echo "<b>".get_profile_name ($row["id_perfil"])."</b> / ";
-		echo "<b>".get_group_name ($row["id_grupo"])."</b><tr>";	
-	}
-} else { 
+
+$table->width = 500;
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+
+$table->data = array ();
+
+$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
+if ($result === false) {
+	$result = array ();
+}
+
+foreach ($result as $profile) {
+	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
+	$data[1] = '<b>'.get_group_name ($profile["id_grupo"]).'</b>';
+	array_push ($table->data, $data);
+}
+
+if (!empty ($table->data)) {
+	print_table ($table);
+} else {
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }
-echo '</table>';
-
 ?>

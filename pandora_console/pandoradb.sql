@@ -579,17 +579,20 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tusuario` (
-  `id_usuario` varchar(60) NOT NULL default '0',
-  `nombre_real` varchar(125) NOT NULL default '',
+  `id_user` varchar(60) NOT NULL default '0',
+  `fullname` varchar(255) NOT NULL,
+  `firstname` varchar(255) NOT NULL,
+  `lastname` varchar(255) NOT NULL,
+  `middlename` varchar(255) NOT NULL,
   `password` varchar(45) default NULL,
-  `comentarios` varchar(200) default NULL,
-  `fecha_registro` datetime NOT NULL default '0000-00-00 00:00:00',
-  `direccion` varchar(100) default '',
-  `telefono` varchar(100) default '',
-  `nivel` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY (`id_usuario`)
+  `comments` varchar(200) default NULL,
+  `last_connect` bigint(20) NOT NULL default '0',
+  `registered` bigint(20) NOT NULL default '0',
+  `email` varchar(100) default NULL,
+  `phone` varchar(100) default NULL,
+  `is_admin` tinyint(1) unsigned NOT NULL default '0',
+  UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS `tusuario_perfil` (
   `id_up` bigint(10) unsigned NOT NULL auto_increment,

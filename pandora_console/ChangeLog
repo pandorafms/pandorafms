@@ -1,3 +1,8 @@
+2009-01-23  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/map_builder.php: Fixed an error when getting
+	layout data on AJAX and any module was selected for the node.
+
 2009-01-22  Sancho Lerena <slerena@artica.es>
 
 	* images/*: Added more icons and backgrouns for visual console.
@@ -687,7 +692,6 @@
 
 	* fgraph.php: Some graphs are now fixed and uses tagente_datos and 
 	tagent_access with utimestamp and without id_agent index. Works faster
-
 
 2009-01-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 

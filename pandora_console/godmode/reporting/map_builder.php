@@ -129,7 +129,9 @@ if ($get_background_info) {
 if ($get_layout_data) {
 	$id_layout_data = (int) get_parameter ('id_layout_data');
 	$layout_data = get_db_row ('tlayout_data', 'id', $id_layout_data);
-	$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
+	if ($layout_data['id_agente_modulo'])
+		$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
+	
 	if (defined ('AJAX')) {
 		echo json_encode ($layout_data);
 		exit;

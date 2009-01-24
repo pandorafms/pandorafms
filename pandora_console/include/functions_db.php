@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -11,11 +11,11 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 /** 
  * Check if login session variables are set.
@@ -600,7 +600,7 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  */
 function get_monitors_in_group ($id_group) {
 	if ($id_group <= 1) {
-		//We select all groups the user has access  to if it's 0, -1 or 1
+		//We select all groups the user has access to if it's 0, -1 or 1
 		global $config;
 		$id_group = array_keys (get_user_groups ($config['id_user']));
 	}
@@ -1022,7 +1022,7 @@ function list_group ($id_user, $show_all = 1){
 		return $mis_grupos;
 	foreach ($result as $row) {
 		if (($row["id_grupo"] != 1 || $show_all == 1) && $row["id_grupo"] != 0 && give_acl($id_user,$row["id_grupo"], "AR") == 1) {
-			//Put in  an array all the groups the user belongs to
+			//Put in an array all the groups the user belongs to
 			array_push ($mis_grupos, $row["id_grupo"]);
 			echo '<option value="'.$row["id_grupo"].'">'.$row["nombre"].'</option>';
 		}
@@ -1061,7 +1061,7 @@ function list_group2 ($id_user) {
  *
  * @return array An array of users
  */
-function get_users_info ($order = "nombre_real", $info = "nombre_real") {
+function get_users_info ($order = "fullname", $info = "fullname") {
 	$users = get_users ($order);
 	$ret = array ();
 	foreach ($users as $user_id => $user_info) {
@@ -1121,7 +1121,7 @@ function show_icon_type ($id_type) {
  *
  * @param int Server type id
  *
- * @return string Fully formatted  IMG HTML tag with icon
+ * @return string Fully formatted IMG HTML tag with icon
  */
 function show_server_type ($id) {
 	global $config;
@@ -1322,7 +1322,7 @@ $sql_cache = array ('saved' => 0);
  * @param string Condition the field must have
  *
  * @return mixed Value of first column of the first row. False if there were no row.
- */  
+ */
 function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",

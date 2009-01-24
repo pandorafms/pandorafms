@@ -1,3 +1,19 @@
+2009-01-24  Raul Mateos  <raulofpandora@gmail.com>
+
+	* install.php: Added code to show current console URL in step 3. 
+	Updated header. Spaces changed to tabs.
+	
+	* include/functions_reporting.php: Give default value to several vars that
+	caused two notice errors. Updated header.
+	
+	* include/functions_db.php: Solved notice error in search page that caused
+	not to show the user. It uses get_users() function from mysql.php. 
+	ldap.php and dev.php define the same function, and uses different value, so
+	they could give an error in the search page, NOT TESTED. Updated header.
+	
+	* /extensions/update_manager/sql/update_manager.sql: Changed default text
+	value for description column, it was giving a SQL error.
+
 2009-01-23  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/map_builder.php: Fixed an error when getting

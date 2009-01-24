@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -11,11 +11,11 @@
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 require_once ("include/functions_agents.php");
 
@@ -129,7 +129,8 @@ function get_group_stats ($id_group) {
 	$data["monitor_alerts"] = 0;
 	$data["monitor_alerts_fired"] = 0;
 	$data["monitor_alerts_fire_count"] = 0;
-
+	$data["total_checks"] = 0;	
+	$data["total_alerts"] = 0;
 	$data["total_agents"] = 0;
 	$data["monitor_health"] = 100;
 	$data["alert_level"] = 100;

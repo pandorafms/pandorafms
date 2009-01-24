@@ -1,7 +1,8 @@
 <?php
+
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -9,11 +10,11 @@
 // as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -116,7 +117,6 @@ function check_writable ( $fullpath, $label ){
 
 }
 
-
 function check_variable ( $var, $value, $label, $mode ){
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
@@ -141,15 +141,15 @@ function check_variable ( $var, $value, $label, $mode ){
 
 function parse_mysql_dump($url){
 	if (file_exists($url)){
-   		$file_content = file($url);
-   		$query = "";
-   		foreach($file_content as $sql_line){
+		$file_content = file($url);
+		$query = "";
+		foreach($file_content as $sql_line){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
-                			//echo "DEBUG $query <br>"; //Uncomment for debug
+							// echo "DEBUG $query <br>"; //Uncomment for debug
 					if (!$result = mysql_query($query)) {
-					//	echo mysql_errno() . ": " . mysql_error(); //Uncomment for debug
+					// echo mysql_errno() . ": " . mysql_error(); //Uncomment for debug
 						return 0;
 					}
 					$query = "";
@@ -324,7 +324,7 @@ function install_step3() {
 				<span class='f9b'>For example '/pandora_console'</span>
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='/pandora_console'>
+				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
 				
 				<div align='right'>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>

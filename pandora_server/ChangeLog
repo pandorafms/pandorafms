@@ -1,3 +1,10 @@
+2009-01-24  Raul Mateos <raulofpandora@gmail.com>
+	
+	* lib/PandoraFMS/Config.pm: Changed some texts for last time. Use tabs
+	instead spaces.
+	
+	* lib/PandoraFMS/Tools.pm: Header updated. Use tabs instead spaces.
+
 2009-01-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Changes in multicast change reports.
@@ -11,7 +18,7 @@
 	* pandora_server/lib/PandoraFMS/Config.pm: Updated configuration
 	  options.
 
-2009-01-21  Sancho Leren <slerena@artica.es>
+2009-01-21  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_upgrade: Script to upgrade to latest version
 	Pandora FMS server components / code.

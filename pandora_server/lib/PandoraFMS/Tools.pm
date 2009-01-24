@@ -3,26 +3,26 @@ package PandoraFMS::Tools;
 # Tools Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2009 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; version 2
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; version 2
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
 
 use warnings;
 use Time::Local;
-use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
+use Date::Manip;	# Needed to manipulate DateTime formats of input, output and compare
 use POSIX qw(setsid);
-use Mail::Sendmail;             # New in 2.0. Used to sendmail internally, without external scripts
+use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 
 require Exporter;
 
@@ -30,20 +30,20 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
-        pandora_daemonize
-        logger
-        limpia_cadena
-        md5check
-        float_equal
-        sqlWrap
-        is_numeric
-        clean_blank
-        pandora_sendmail
-		pandora_get_os
-		pandora_trash_ascii
-		enterprise_hook
-		enterprise_load
-    );
+	pandora_daemonize
+	logger
+	limpia_cadena
+	md5check
+	float_equal
+	sqlWrap
+	is_numeric
+	clean_blank
+	pandora_sendmail
+	pandora_get_os
+	pandora_trash_ascii
+	enterprise_hook
+	enterprise_load
+);
 
 ##########################################################################
 ## SUB pandora_trash_ascii 
@@ -51,14 +51,14 @@ our @EXPORT = qw(
 ##########################################################################
 
 sub pandora_trash_ascii {
-    my $config_depth = $_[0];
-    my $a;
-    my $output;
+	my $config_depth = $_[0];
+	my $a;
+	my $output;
 
-    for ($a=0;$a<$config_depth;$a++){
-	    $output = $output.chr(int(rand(25)+97));
-    }
-    return $output
+	for ($a=0;$a<$config_depth;$a++){
+		$output = $output.chr(int(rand(25)+97));
+	}
+	return $output
 }
 
 
@@ -108,22 +108,22 @@ sub pandora_get_os ($) {
 ##########################################################################
 
 sub pandora_daemonize {
-    my $pa_config = $_[0];
-    open STDIN, '/dev/null'     or die "Can't read /dev/null: $!";
-    open STDOUT, '>>/dev/null'  or die "Can't write to /dev/null: $!";
-    open STDERR, '>>/dev/null'  or die "Can't write to /dev/null: $!";
-    chdir '/tmp'                or die "Can't chdir to /tmp: $!";
-    defined(my $pid = fork)     or die "Can't fork: $!";
-    exit if $pid;
-    setsid                      or die "Can't start a new session: $!";
-    umask 0;
+	my $pa_config = $_[0];
+	open STDIN, '/dev/null'     or die "Can't read /dev/null: $!";
+	open STDOUT, '>>/dev/null'  or die "Can't write to /dev/null: $!";
+	open STDERR, '>>/dev/null'  or die "Can't write to /dev/null: $!";
+	chdir '/tmp'                or die "Can't chdir to /tmp: $!";
+	defined(my $pid = fork)     or die "Can't fork: $!";
+	exit if $pid;
+	setsid                      or die "Can't start a new session: $!";
+	umask 0;
 
-    # Store PID of this process in file presented by config token
-    if ($pa_config->{'PID'} ne ""){
-        open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
-        print FILE "$$";
-        close (FILE);
-    }
+	# Store PID of this process in file presented by config token
+	if ($pa_config->{'PID'} ne ""){
+		open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
+		print FILE "$$";
+		close (FILE);
+	}
 }
 
 
@@ -142,29 +142,29 @@ sub pandora_daemonize {
 ##########################################################################
 
 sub pandora_sendmail {                  # added in 2.0 version
-    my $pa_config = $_[0];
-    my $to_address = $_[1];
-    my $subject = $_[2];
-    my $message = $_[3];
+	my $pa_config = $_[0];
+	my $to_address = $_[1];
+	my $subject = $_[2];
+	my $message = $_[3];
 
-    my %mail = ( To   => $to_address,
-              Message => $message,
-              Subject => $subject,
-              Smtp    => $pa_config->{"mta_address"},
-              Port    => $pa_config->{"mta_port"},
-              From    => $pa_config->{"mta_from"},
-    );
+	my %mail = ( To   => $to_address,
+			  Message => $message,
+			  Subject => $subject,
+			  Smtp    => $pa_config->{"mta_address"},
+			  Port    => $pa_config->{"mta_port"},
+			  From    => $pa_config->{"mta_from"},
+	);
 
-    if ($pa_config->{"mta_user"} ne ""){
-        $mail{auth} = {user=>$config->{"mta_user"}, password=>$config->{"mta_pass"}, method=>$config->{"mta_auth"}, required=>0 }
-    }
-    eval {
-        sendmail(%mail);
-    };
-    if ($@){
-        logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-        logger ($pa_config, "ERROR Code: $@", 4);
-    }
+	if ($pa_config->{"mta_user"} ne ""){
+		$mail{auth} = {user=>$config->{"mta_user"}, password=>$config->{"mta_pass"}, method=>$config->{"mta_auth"}, required=>0 }
+	}
+	eval {
+		sendmail(%mail);
+	};
+	if ($@){
+		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
+		logger ($pa_config, "ERROR Code: $@", 4);
+	}
 }
 
 ##########################################################################
@@ -286,9 +286,9 @@ sub limpia_cadena {
 # clean_blank (string) - Purge a string for any blank spaces in it
 ##########################################################################
 sub clean_blank {
-    my $input = $_[0];
-    $input =~ s/\s//g;
-    return $input;
+	my $input = $_[0];
+	$input =~ s/\s//g;
+	return $input;
 }
 
 ########################################################################################
@@ -299,9 +299,9 @@ sub clean_blank {
 sub sqlWrap {
 	my $toBeWrapped = shift(@_);
 	if (defined $toBeWrapped){
-     		$toBeWrapped =~ s/\'/\\\'/g;
-     		$toBeWrapped =~ s/\"/\\\'/g;
-     		return "'".$toBeWrapped."'";
+			$toBeWrapped =~ s/\'/\\\'/g;
+			$toBeWrapped =~ s/\"/\\\'/g;
+			return "'".$toBeWrapped."'";
 	}
 }
 
@@ -312,8 +312,8 @@ sub sqlWrap {
 # Taken from Perl Cookbook, O'Reilly. Thanks, guys.
 ##########################################################################
 sub float_equal {
-    my ($A, $B, $dp) = @_;
-    return sprintf("%.${dp}g", $A) eq sprintf("%.${dp}g", $B);
+	my ($A, $B, $dp) = @_;
+	return sprintf("%.${dp}g", $A) eq sprintf("%.${dp}g", $B);
 }
 
 ##########################################################################

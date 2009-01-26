@@ -4,7 +4,7 @@
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.comnt
 // Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
-// Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
+// Copyright (c) 2008-2009 Evi Vanoost, vanooste@rcbi.rochester.edu
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -35,17 +35,16 @@ textarea {
 }
 textarea.conf_editor {
 	padding: 5px;
-	width: 650;
-	height: 350;
+	width: 650px;
+	height: 350px;
 }
 input {
 	padding: 2px 3px 4px 3px;
 }
-input.button { 
-	margin: 0; 
+input.button {
 	font-family: Arial,Sans-serif; 
 	border: 1px solid #ccc;
-	background: #fff; 
+	background: #fff;
 	padding: 2px 3px; 
 	margin: 10px 15px;
 }
@@ -124,7 +123,7 @@ div#login {
 	border-left: solid 1px #000;
 	border-top: solid 1px #000;
 	border-bottom: solid 2px #000;
-	border-right: solid 2px #000
+	border-right: solid 2px #000;
 }
 div#login_in, #login_f {
 	margin: 0 auto;
@@ -245,7 +244,12 @@ input.sub {
 	font-weight: bold;
 	border-bottom-color: #708090;
 	border-right-color: #708090;
-	-moz-border-radius: 5%;
+	/*	These borders haven't made it yet in a valid standard 
+	 First one is for Mozilla, second for Webkit (Safari, Konqueror), third one for IE7+ and valid CSS3. 
+	 Percentage values are invalid here but .4em seems big enough */
+	-moz-border-radius: .4em;
+	-webkit-border-radius: .4em;
+	border-radius: .4em; 
 	font-size: 8pt;
 	background-color: #e5e5e5;
 }
@@ -283,11 +287,12 @@ th {
 	color: #fff;
 	background-color: #786;
 }
-tr.datos, tr.datost, tr.datosb , tr.datos_id, tr.datosf9,
-tr.datos2, tr.datos2t, tr.datos2b, tr.datos2_id , tr.datos2f9, {
+tr.datos, tr.datost, tr.datosb , tr.datos_id, 
+tr.datosf9, tr.datos2, tr.datos2t, 
+tr.datos2b, tr.datos2_id , tr.datos2f9 {
 	background-color: #f9f9f9;
 }
-tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover,
+tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover, 
 tr.datosf9:hover, tr.datos2:hover, tr.datos2t:hover,
 tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 	background-color: #efefef; 
@@ -723,7 +728,7 @@ a.big_data {
 	text-align: right;
 }
 .top {
-	vertical-align: top
+	vertical-align: top;
 	margin-top: 0;
 	padding-top: 0;
 }
@@ -736,7 +741,7 @@ span.actions {
 	margin-left: 30px;
 }
 code {
-	font-family: courier;
+	font-family: courier, serif;
 }
 select#template, select#action {
 	width: 250px;

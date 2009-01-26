@@ -1037,13 +1037,6 @@ function grafico_incidente_prioridad () {
 			$data[5] += 1;
 	}
 		
-	$mayor = 0;
-	$mayor_data =0;
-	for ($i = 0;$i < sizeof($data); $i++)
-		if ($data[$i] > $mayor_data){
-				$mayor = $i;
-				$mayor_data = $data[$i];
-		}
 	$legend = array (__('Informative'),
 			__('Low'),
 			__('Medium'),
@@ -1065,27 +1058,8 @@ function graphic_incident_group () {
 			$data[] = $row2[0];
 			$legend[] = get_group_name ($row[0])."(".$row2[0].")";
 	}
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-			for ($j = $i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]) {
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
-			}
-	}
-	$mayor = 0;
-	$mayor_data =0;
-	for ($i = 0; $i < sizeof($data); $i++) {
-		if ($data[$i] > $mayor_data) {
-				$mayor = $i;
-				$mayor_data = $data[$i];
-		}
-	}
+	array_multisort ($data, $legend);
+
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
@@ -1101,103 +1075,57 @@ function graphic_incident_user() {
 		$data[] = $row2[0];
 		$legend[] = $row[0]."(".$row2[0].")";
 	}
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-			for ($j = $i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]) {
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
-			}
-	}
-	$mayor = 0;
-	$mayor_data =0;
-	for ($i = 0; $i < sizeof($data); $i++) {
-			if ($data[$i] > $mayor_data) {
-					$mayor = $i;
-					$mayor_data = $data[$i];
-			}
-	}
+	array_multisort ($data, $legend);
+
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
 function graphic_user_activity ($width = 350, $height = 230) {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT DISTINCT ID_usuario FROM tsesion ";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		$entrada= entrada_limpia($row[0]);
-		$sql1='SELECT COUNT(ID_usuario) FROM tsesion WHERE ID_usuario = "'.$entrada.'"';
-		$result2=mysql_query($sql1);
-		$row2=mysql_fetch_array($result2);
-		$data[] = $row2[0];
-		$legend[] = str_pad(substr($row[0],0,16)."(".format_for_graph($row2[0],0).")", 15);
+	$loop = 0;
+	$sql = "SELECT COUNT(*) AS count, ID_usuario FROM tsesion GROUP BY ID_usuario ORDER BY count DESC";
+	$result = get_db_all_rows_sql ($sql);
+	foreach ($result as $row) {
+		if ($loop > 5) {
+			$data[5] += $row["count"];
+			$legend[5] = __('Other')." (".$data[5].")";
+		} else {
+			if (empty ($row["ID_usuario"])) {
+				$row["ID_usuario"] = __('Unknown');
+			} 
+			$data[] = $row["count"];
+			$legend[] = mb_substr ($row["ID_usuario"], 0, 14)." (".$row["count"].")";
+		}
+		$loop++;
 	}
 
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-		for ($j = $i; $j <sizeof($data); $j++)
-		if ($data[$j] > $data[$i]) {
-			$temp = $data[$i];
-			$temp_label = $legend[$i];
-			$data[$i] = $data[$j];
-			$legend[$i] = $legend[$j];
-			$data[$j] = $temp;
-			$legend[$j] = $temp_label;
-		}
-	}
-
-	// Take only the first 5 items
-	if (sizeof($data) >= 5){
-		for ($i = 0; $i < 5; $i++) {
-			$legend2[]= $legend[$i];
-			$data2[] = $data[$i];
-		}
-	 	generic_pie_graph ($width, $height, $data2, $legend2);
-	} else
-	 	generic_pie_graph ($width, $height, $data, $legend);
+	array_multisort ($data, $legend);
+		
+ 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function graphic_incident_source ($width=320, $height=200) {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT DISTINCT origen FROM tincidencia";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-			$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE origen = '".$row[0]."'";
-			$result2=mysql_query($sql1);
-			$row2=mysql_fetch_array($result2);
-			$data[] = $row2[0];
-			$legend[] = $row[0]."(".$row2[0].")";
-	}
-// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-			for ($j = $i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]) {
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
-			}
-	}
-	// Take only the first 5 items
-	if (sizeof($data) >= 5){
-		for ($i = 0; $i < 5; $i++) {
-			$legend2[]= $legend[$i];
-			$data2[] = $data[$i];
+	$loop = 0;
+	$sql = "SELECT COUNT(*) as count, origen FROM tincidencia GROUP BY origen";
+	$result = get_db_all_rows_sql ($sql);
+	
+	foreach ($result as $row) {
+		if ($loop > 5) {
+			$data[5] += $row["count"];
+			$legend[5] = __('Other')." (".$data[5].")";
+		} else {
+			$data[] = $row["count"];
+			$legend[] = mb_substr ($row["origen"], 0, 14)." (".$row["count"].")";
 		}
-	 	generic_pie_graph ($width, $height, $data2, $legend2);
-	} else
-	 	generic_pie_graph ($width, $height, $data, $legend);
+		$loop++;
+	}
+	
+	array_multisort ($data, $legend);
+	
+	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function grafico_db_agentes_modulos($width, $height) {
@@ -1217,42 +1145,30 @@ function grafico_db_agentes_modulos($width, $height) {
 	generic_bar_graph ($width, $height, $data, array_keys ($data));
 }
 
-function grafico_eventos_usuario( $width=420, $height=200) {
+function grafico_eventos_usuario ( $width=420, $height=200) {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT * FROM tusuario";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		$sql1="SELECT COUNT(id_evento) FROM tevento WHERE id_usuario = '".$row["id_usuario"]."'";
-		$result2=mysql_query($sql1);
-		$row2=mysql_fetch_array($result2);
-		if ($row2[0] > 0){
-			$data[] = $row2[0];
-			$legend[] = $row["id_usuario"]." ( $row2[0] )";
-		}
-	}
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-			for ($j = $i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]) {
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
+	$loop = 0;
+
+	$sql = "SELECT COUNT(*) as count, id_usuario FROM tevento GROUP BY id_usuario";
+	$result = get_db_all_rows_sql ($sql);	
+		
+	foreach ($result as $row) {
+		if ($loop > 5) {
+			$data[5] += $row["count"];
+			$legend[5] = __('Other')." (".$data[5].")";
+		} else {
+			if (empty ($row["id_usuario"])) {
+				$row["id_usuario"] = __('SYSTEM');
 			}
-	}
-	// Take only the first 5 items
-	if (sizeof($data) >= 5){
-		for ($i = 0; $i < 5; $i++) {
-			$legend2[]= $legend[$i];
-			$data2[] = $data[$i];
+			$data[] = $row["count"];
+			$legend[] = mb_substr ($row["id_usuario"], 0, 14)." (".$row["count"].")";
 		}
-	 	generic_pie_graph ($width, $height, $data2, $legend2);
-	} else
-	 	generic_pie_graph ($width, $height, $data, $legend);
+		$loop++;
+	}
+	array_multisort ($data, $legend);
+		
+	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function grafico_eventos_total ($filter = "") {
@@ -1296,19 +1212,8 @@ function grafico_eventos_total ($filter = "") {
 	$total = $total + $row[0];
 	$legend[] = __('Critical')." ( $row[0] )";
 
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-			for ($j = $i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]){
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
-			}
-	}
+	array_multisort ($data, $legend);
+	
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
@@ -1350,9 +1255,10 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	
-	$url = html_entity_decode (rawurldecode ($url),ENT_QUOTES); //It was urlencoded, so we urldecode it
+	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
 	$data = array();
 	$legend = array();
+	$loop = 0;
 
 	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ");	
 	$url = str_ireplace ($badstrings,"",$url); //remove bad strings from the query so queries like ; DELETE FROM  don't pass
@@ -1362,26 +1268,26 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	$sql = "SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count FROM tevento WHERE 1=1 ".$url." GROUP BY id_agente ORDER BY count DESC"; 
 	$result = get_db_all_rows_sql ($sql);
-	if ($result === false)
+	if ($result === false) {
 		$result = array();
-
-	foreach ($result as $row) {
-		if (give_acl ($config["id_user"], $row["id_grupo"], "AR") == 1) {
-			$data[] = $row["count"];
-			if ($row["id_agente"] == 0) {
-				//System event
-				$legend[] = "SYSTEM (".$row["count"].")";
-			} else {
-				//Other events
-				$legend[] = substr (get_agent_name ($row["id_agente"], "lower"), 0, 15)." (".$row["count"].")";
-			}
-		}
 	}
-	
-	$max_items = 6; //Maximum items on the piegraph
-	while (count($data) > $max_items) {
-		//Pops an element off the array until the array is small enough
-		array_pop ($data);
+ 
+	foreach ($result as $row) {
+		if (!give_acl ($config["id_user"], $row["id_grupo"], "AR") == 1) {
+			continue;
+		}
+		if ($loop > 5) {
+			$data[5] += $row["count"];
+			$legend[5] = __('Other')." (".$data[5].")";
+		} else {
+			if ($row["id_agente"] == 0) {
+				$legend = __('SYSTEM')." (".$row["count"].")";
+			} else {
+				$legend[] = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+			}
+			$data[] = $row["count"];
+		}
+		$loop++;
 	}
 	
 	generic_pie_graph ($width, $height, $data, $legend);

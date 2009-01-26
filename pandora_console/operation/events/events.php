@@ -197,7 +197,8 @@ echo "</td>";
 echo "<tr>";
 echo "<td>".__('User ack.')."</td>";
 echo "<td>";
-print_select_from_sql ("SELECT id_usuario, nombre_real FROM tusuario", "id_user_ack", $id_user_ack,'', __('Any'), '0',  false, false, true);
+$users = get_users ();
+print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
 

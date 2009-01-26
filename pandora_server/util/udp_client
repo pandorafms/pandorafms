@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+use strict;
+use IO::Socket;
+
+if ($#ARGV != 2) {
+        print "Usage: $0 <ip address> <port> <command>\n";
+        exit 1;
+}
+
+my $sock = IO::Socket::INET->new(Proto     => 'udp',
+                              PeerAddr  => $ARGV[0],
+                              PeerPort  => $ARGV[1])
+    or die "Creating socket: $!\n";
+
+$sock->send($ARGV[2]) or die "[error] $!";

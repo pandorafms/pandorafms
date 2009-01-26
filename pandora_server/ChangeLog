@@ -1,3 +1,9 @@
+2009-01-26  Manuel Arostegui <marostegui@artica.es>
+
+	* util/udp_client: Added to repository. Remote alert execution
+	script. To be used in "Command" section of the new alert
+	system.
+
 2009-01-24  Raul Mateos <raulofpandora@gmail.com>
 	
 	* lib/PandoraFMS/Config.pm: Changed some texts for last time. Use tabs

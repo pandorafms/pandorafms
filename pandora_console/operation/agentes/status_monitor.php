@@ -116,6 +116,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 	WHERE tagente.id_agente = tagente_modulo.id_agente 
 	AND tagente_modulo.disabled = 0 
 	AND tagente.disabled = 0 
+	AND tagente_modulo.delete_pending = 0 
 	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector

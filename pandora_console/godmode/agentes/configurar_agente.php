@@ -631,7 +631,7 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error
-	if (process_sql ("UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+	if (process_sql ("UPDATE tagente_modulo SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
 	
 	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)

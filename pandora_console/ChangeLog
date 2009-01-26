@@ -1,3 +1,23 @@
+2009-01-26  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_reporting.php: Fixed count of total alerts. Ignore
+	delete pending modules.
+	
+	* operation/agentes/status_monitor.php: Added filter for pending delete 
+	modules.
+	
+	* reporting/fgraph.php: Fixed typo in combined graphs that makes them
+	unusable. Now renders fine.
+	
+	* pandora_console_upgrade: New script to upgrade console from latest code. 
+	Also upgrade database (from 2.0 to 2.1/Trunk version).
+	
+	* godmode/agentes/alert_manager.php: Notice fix when no modules defined.
+
+	* godmode/agentes/configurar_agente.php: Delete agent renames modulename to
+	avoid that a pending delete module makes this module name unusable until
+	efective deletion.
+
 2009-01-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/styles/pandora.css: Fixed several small errors. Now it looks 

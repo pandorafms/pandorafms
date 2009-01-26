@@ -125,6 +125,7 @@ $table_alerts->style = array ();
 $table_alerts->style[0] = 'vertical-align: top';
 $table_alerts->style[1] = 'vertical-align: top';
 
+
 foreach ($modules as $id_agent_module => $module) {
 	$last_data = return_value_agent_module ($id_agent_module);
 	if ($last_data === false)
@@ -248,43 +249,44 @@ foreach ($modules as $id_agent_module => $module) {
 	$table->data = array ();
 }
 
+if (isset($module)){
 
-/* This hidden value is used in Javascript. It's a workaraound for IE because
-   it doesn't allow input elements creation. */
-print_input_hidden ('add_action', 1);
-print_input_hidden ('id_alert_module', 0);
+	/* This hidden value is used in Javascript. It's a workaraound for IE because
+	   it doesn't allow input elements creation. */
+	print_input_hidden ('add_action', 1);
+	print_input_hidden ('id_alert_module', 0);
 
-echo '<form class="add_alert_form" method="post" style="display: none"
-	action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.
-	$module['id_agente'].'">';
-echo '<div style="float:left">';
-print_label (__('Template'), 'template');
-$templates = get_alert_templates ();
-if (empty ($templates))
-	$templates = array ();
-print_select ($templates, 'template', '', '', __('None'), 0);
-echo '</div><div style="margin-left: 270px">';
-print_label (__('Action'), 'action');
-$actions = get_alert_actions ();
-if (empty ($actions))
-	$actions = array ();
-print_select ($actions, 'action', '', '', __('None'), 0);
-echo '<br />';
-echo '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
-echo '<span class="advanced_actions" style="display: none">';
-echo __('From').' ';
-print_input_text ('fires_min', -1, '', 4, 10);
-echo ' '.__('to').' ';
-print_input_text ('fires_max', -1, '', 4, 10);
-echo ' '.__('matches of the alert');
-echo pandora_help("alert-matches", true);
-echo '</span></div>';
-echo '<div style="float: right; margin-left: 30px;"><br />';
-print_submit_button (__('Add'), 'add', false, 'class="sub next"');
-print_input_hidden ('id_agent_module', 0);
-print_input_hidden ('create_alert', 1);
-echo '</div></form>';
-
+	echo '<form class="add_alert_form" method="post" style="display: none"
+		action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.
+		$module['id_agente'].'">';
+	echo '<div style="float:left">';
+	print_label (__('Template'), 'template');
+	$templates = get_alert_templates ();
+	if (empty ($templates))
+		$templates = array ();
+	print_select ($templates, 'template', '', '', __('None'), 0);
+	echo '</div><div style="margin-left: 270px">';
+	print_label (__('Action'), 'action');
+	$actions = get_alert_actions ();
+	if (empty ($actions))
+		$actions = array ();
+	print_select ($actions, 'action', '', '', __('None'), 0);
+	echo '<br />';
+	echo '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
+	echo '<span class="advanced_actions" style="display: none">';
+	echo __('From').' ';
+	print_input_text ('fires_min', -1, '', 4, 10);
+	echo ' '.__('to').' ';
+	print_input_text ('fires_max', -1, '', 4, 10);
+	echo ' '.__('matches of the alert');
+	echo pandora_help("alert-matches", true);
+	echo '</span></div>';
+	echo '<div style="float: right; margin-left: 30px;"><br />';
+	print_submit_button (__('Add'), 'add', false, 'class="sub next"');
+	print_input_hidden ('id_agent_module', 0);
+	print_input_hidden ('create_alert', 1);
+	echo '</div></form>';
+}
 ?>
 
 <link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />

@@ -162,6 +162,7 @@ function get_group_stats ($id_group) {
 							utimestamp 
 					FROM tagente_estado, tagente_modulo 
 					WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+					    AND tagente_modulo.delete_pending = 0 
 						AND	tagente_modulo.id_agente IN (%s)", implode (",", array_keys ($agents)));
 	$result = get_db_all_rows_sql ($sql);
 	
@@ -204,7 +205,7 @@ function get_group_stats ($id_group) {
 	$data["total_checks"] = $data["monitor_checks"];
 	$data["total_ok"] = $data["monitor_ok"];
 	// Todo, count SNMP Alerts and Inventory alerts here
-	$data["total_alerts"] = $data["monitor_alerts"];
+	$data["total_alerts"] = $data["monitor_alerts"] + $data["monitor_alerts_fired"];
 	$data["total_alerts_fired"] =  $data["monitor_alerts_fired"];
 	$data["total_alerts_fire_count"] =  $data["monitor_alerts_fire_count"];
 	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_unknown"] +$data["monitor_warning"];

@@ -1,3 +1,12 @@
+2009-01-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/styles/pandora.css: Fixed several small errors. Now it looks 
+	more similar on other browsers.
+	
+	* operation/events/events.php: Fixed filter to use get_users ()
+	
+	* reporting/fgraph.php: Fixed several issues with user graphs
+
 2009-01-26  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Decode HTML entities of

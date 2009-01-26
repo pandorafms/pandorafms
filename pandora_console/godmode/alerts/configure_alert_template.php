@@ -548,7 +548,6 @@ function render_example () {
 }
 
 $(document).ready (function () {
-	render_example ();
 	$("#text-time_from, #text-time_to").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0]

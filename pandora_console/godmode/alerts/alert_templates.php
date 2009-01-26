@@ -44,12 +44,7 @@ if (defined ('AJAX')) {
 		echo get_alert_templates_type_name ($template['type']);
 		
 		echo '<br />';
-		$example = print_alert_template_example ($template['id'], true);
-		
-		$example = str_replace ('<span id="value"></span>', $template['value'], $example);
-		$example = str_replace ('<span id="max"></span>', $template['max_value'], $example);
-		$example = str_replace ('<span id="min"></span>', $template['min_value'], $example);
-		echo $example;
+		echo print_alert_template_example ($template['id'], true);
 		
 		echo '<br />';
 		

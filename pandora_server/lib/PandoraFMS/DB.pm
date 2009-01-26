@@ -542,6 +542,9 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 	if ($#actions < 0) {
 		return;
 	}
+	
+	# Get agent address
+	my $address = get_db_value ('direccion',  'tagente', 'id_agente', $id_agent, $dbh);
 
 	# Execute actions
 	foreach my $action (@actions) {
@@ -560,6 +563,7 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 					  _field2_ => $field2,
 					  _field3_ => $field3,
 					  _agent_ => $agent,
+					  _address_ => $address,
 					  _timestamp_ => &UnixDate ("today", "%Y-%m-%d %H:%M:%S"),
 					  _data_ => $data,
 					  _alert_description_ => $alert->{'descripcion'},

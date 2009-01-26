@@ -1,3 +1,7 @@
+2009-01-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a new alert macro (_address_).
+
 2009-01-26  Manuel Arostegui <marostegui@artica.es>
 
 	* util/udp_client: Added to repository. Remote alert execution

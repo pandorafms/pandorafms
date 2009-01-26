@@ -1,3 +1,10 @@
+2009-01-26  Sancho Lerena <slerena@artica.es>
+
+	* DB.pm: Fixed NOT behaviour of alerts, now works as supposed to do.
+	
+	* pandora_db.pl: Deleted pending modules, fixed problems using bad DB
+	function.
+
 2009-01-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Added a new alert macro (_address_).

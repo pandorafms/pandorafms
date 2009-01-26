@@ -235,10 +235,10 @@ sub pandora_evaluate_alert (%$%$$$) {
 			return $status;
 		}
 	}
-	elsif ($alert_data->{'type'} eq "equal" && $module_data == $alert_data->{'value'}) {
+	elsif ($alert_data->{'type'} eq "equal" && $module_data != $alert_data->{'value'}) {
 		return $status;
 	}
-	elsif ($alert_data->{'type'} eq "not_equal" && $module_data != $alert_data->{'value'}) {
+	elsif ($alert_data->{'type'} eq "not_equal" && $module_data == $alert_data->{'value'}) {
 		return $status;
 	}
 	elsif ($alert_data->{'type'} eq "regex") {

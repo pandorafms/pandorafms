@@ -1,3 +1,12 @@
+2009-01-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module.h,
+	  win32/modules/pandora_module_factory.cc,
+	  win32/modules/pandora_module.cc: Added support for async data types.
+
+	* win32/modules/pandora_module_proc.cc: Removed unnecessary call
+	  to Pandora_Wmi::runProgram.
+
 2009-01-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/bin/PandoraAgent.exe: Updated to r1371.

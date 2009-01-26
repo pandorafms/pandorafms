@@ -295,11 +295,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	case TYPE_GENERIC_DATA:
 	case TYPE_GENERIC_DATA_INC:
 	case TYPE_GENERIC_PROC:
+	case TYPE_ASYNC_DATA:
+	case TYPE_ASYNC_PROC:
 		module->setType (module_type);
 		numeric = true;
 		
 		break;
 	case TYPE_GENERIC_DATA_STRING:
+	case TYPE_ASYNC_STRING:
 		module->setType (module_type);
 		numeric = false;
 		

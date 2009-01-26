@@ -91,6 +91,12 @@ Pandora_Module::parseModuleTypeFromString (string type) {
 		return TYPE_GENERIC_DATA_STRING;
 	} else if (type == module_generic_proc_str) {
 		return TYPE_GENERIC_PROC;
+	} else if (type == module_async_data_str) {
+		return TYPE_ASYNC_DATA;
+	} else if (type == module_async_proc_str) {
+		return TYPE_ASYNC_PROC;
+	} else if (type == module_async_string_str) {
+		return TYPE_ASYNC_STRING;
 	} else {
 		return TYPE_0;
 	}
@@ -214,7 +220,8 @@ string
 Pandora_Module::getDataOutput (Pandora_Data *data) {
 	double value;
 	
-	if (this->module_type == TYPE_GENERIC_DATA_STRING) {
+	if (this->module_type == TYPE_GENERIC_DATA_STRING || 
+        this->module_type == TYPE_ASYNC_STRING) {
 		return data->getValue ();
 	}
 	

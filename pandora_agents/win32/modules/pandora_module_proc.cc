@@ -132,10 +132,6 @@ async_run (Pandora_Module_Proc *module) {
 			Pandora_Windows_Service::getInstance ()->sendXml (modules);
 		}
 		
-		if (res == 0 && module->isWatchdog ()) {
-			Pandora_Wmi::runProgram (module->getStartCommand ());
-		}
-		
 		/* Free handles */
 		for (i = 0; i < nprocess; i++)
 			CloseHandle (processes[i]);

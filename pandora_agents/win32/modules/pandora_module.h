@@ -45,13 +45,19 @@ namespace Pandora_Modules {
 		TYPE_GENERIC_DATA_INC,   /**< The value is an integer with
 					  *  incremental diferences       */
 		TYPE_GENERIC_PROC,       /**< The value is a 0 or a 1     */
-		TYPE_GENERIC_DATA_STRING /**< The value is a string       */
+		TYPE_GENERIC_DATA_STRING, /**< The value is a string       */
+		TYPE_ASYNC_DATA, /**< Asynchronous generic_data */
+		TYPE_ASYNC_PROC, /**< Asynchronous generic_proc */
+		TYPE_ASYNC_STRING /**< Asynchronous generic_data_string */
 	} Module_Type;
 
 	const string module_generic_data_str        = "generic_data";
 	const string module_generic_data_inc_str    = "generic_data_inc";
 	const string module_generic_proc_str        = "generic_proc";
 	const string module_generic_data_string_str = "generic_data_string";
+	const string module_async_data_str          = "async_data";
+	const string module_async_proc_str          = "async_proc";
+	const string module_async_string_str        = "async_string";
 
 	/**
 	 * Defines the kind of the module.

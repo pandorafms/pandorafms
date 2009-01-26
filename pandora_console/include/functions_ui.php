@@ -323,47 +323,50 @@ function print_alert_template_example ($id_alert_template, $return = false) {
 	
 	$output .= '<img src="images/information.png" /> ';
 	$output .= '<span id="example">';
+	$template = get_alert_template ($id_alert_template);
 	
-	if ($id_alert_template) {
-		$template = get_alert_template ($id_alert_template);
+	switch ($template['type']) {
+	case 'equal':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the value is <span id="value"></span>');
+		break;
+	case 'not_equal':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the value is not <span id="value"></span>');
+		break;
+	case 'regex':
+		if ($template['matches_value'])
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value matches <span id="value"></span>');
+		else
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
+		$value = $template['value'];
+		break;
+	case 'max_min':
+		if ($template['matches_value'])
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
+		else
+			/* Do not translate the HTML attributes */
+			$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
+		break;
+	case 'max':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the value is over <span id="max"></span>');
 		
-		switch ($template['type']) {
-		case 'not_equal':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is <span id="value"></span>');
-			break;
-		case 'equal':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is not <span id="value"></span>');
-			break;
-		case 'regex':
-			if ($template['matches_value'])
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value matches <span id="value"></span>');
-			else
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value doesn\'t match <span id="value"></span>');
-			$value = $template['value'];
-			break;
-		case 'max_min':
-			if ($template['matches_value'])
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value is between <span id="min"></span> and <span id="max"></span>');
-			else
-				/* Do not translate the HTML attributes */
-				$output .= __('The alert would fire when the value is not between <span id="min"></span> and <span id="max"></span>');
-			break;
-		case 'max':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is over <span id="max"></span>');
-			
-			break;
-		case 'min':
-			/* Do not translate the HTML attributes */
-			$output .= __('The alert would fire when the value is under <span id="min"></span>');
-			break;
-		}
+		break;
+	case 'min':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the value is under <span id="min"></span>');
+		break;
 	}
+	
+	/* Replace span elements with real values. This is done in such way to avoid
+	 duplicating strings and make it easily modificable via Javascript. */
+	$output = str_replace ('<span id="value"></span>', $template['value'], $output);
+	$output = str_replace ('<span id="max"></span>', $template['max_value'], $output);
+	$output = str_replace ('<span id="min"></span>', $template['min_value'], $output);
 	
 	$output .= '</span>';
 	if ($return)

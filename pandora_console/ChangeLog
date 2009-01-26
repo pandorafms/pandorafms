@@ -1,5 +1,10 @@
 2009-01-26  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/alerts/configure_alert_template.php: Decode HTML entities of
+	value because it was giving unexpected results.
+
+2009-01-26  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_ui.php: print_alert_template_example() now
 	replaces also the value.
 

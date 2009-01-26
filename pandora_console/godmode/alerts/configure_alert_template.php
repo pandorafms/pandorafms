@@ -89,7 +89,7 @@ function update_template ($step) {
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
 		$type = (string) get_parameter ('type');
-		$value = (string) get_parameter ('value');
+		$value = (string) html_entity_decode (get_parameter ('value'));
 		$max = (float) get_parameter ('max');
 		$min = (float) get_parameter ('min');
 		$matches = (bool) get_parameter ('matches_value');
@@ -404,6 +404,8 @@ if ($step == 2) {
 	if ($id) {
 		$table->rowstyle['example'] = '';
 		switch ($type) {
+		case "equal":
+		case "not_equal":
 		case "regex":
 			$show_matches = true;
 			$table->rowstyle['value'] = '';
@@ -457,7 +459,7 @@ if ($step == 2) {
 	$table->data['max'][0] = __('Max.');
 	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
 	
-	$table->data['example'][1] = print_alert_template_example ($id, true);
+	$table->data['example'][1] = print_alert_template_example ($id, true, false);
 	$table->colspan['example'][1] = 2;
 }
 
@@ -540,6 +542,7 @@ function render_example () {
 	
 	/* Set value */
 	value = $("input#text-value").attr ("value");
+	console.log ("ADSAD");
 	if (value == '') {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
 	} else {
@@ -548,6 +551,7 @@ function render_example () {
 }
 
 $(document).ready (function () {
+	render_example ();
 	$("#text-time_from, #text-time_to").timeEntry ({
 		spinnerImage: 'images/time-entry.png',
 		spinnerSize: [20, 20, 0]

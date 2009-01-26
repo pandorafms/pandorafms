@@ -1,0 +1,100 @@
+# Pandora FMS 2.0 Console Upgrade (c) 2009 Artica ST
+# Please see http://www.pandorafms.com
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+#!/bin/bash
+
+USER=`whoami`
+
+if [ $USER != "root" ]
+then
+	echo "Upgrade process need to be executed by root"
+	exit -1
+fi
+
+MODE=$1
+
+pandora_upgrade () {
+
+	if [ ! -e "$PANDORAPATH/index.php" ]
+	then
+		echo "ERROR: Provided path for current Pandora FMS console, do not exist ($PANDORAPATH)"
+		exit -1
+	fi	
+	echo "Installing new console code in $PANDORAPATH"
+	cp -R * $PANDORAPATH
+	
+	if [ "$UPGRADEDB" == "1" ]
+	then
+		echo "Setting database schema changes"
+		DBUSER=`cat $PANDORAPATH/include/config.php | grep dbuser | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`
+		DBPASS=`cat $PANDORAPATH/include/config.php | grep dbpass | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`	
+		DBHOST=`cat $PANDORAPATH/include/config.php | grep dbhost | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`
+		DBNAME=`cat $PANDORAPATH/include/config.php | grep dbname | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`	
+		cat pandoradb_migrate_20_to_21.sql | mysql -u $DBUSER -p$DBPASS -h $DBHOST -D $DBNAME 	
+	fi
+
+	WWWUSER=`ls -la $PANDORAPATH/index.php | awk '{ print $3 }'` 
+	echo "Setting permissions for $WWWUSER in $PANDORAPATH"
+	chown -R $WWWUSER $PANDORAPATH
+	
+	echo "Setting permissions for $WWWUSER in /var/spool/pandora/data_in"
+	chgrp -R $WWWUSER /var/spool/pandora/data_in
+	
+	echo " "
+	echo "DONE!"
+	echo " "
+}
+
+help () {
+        echo "     -p <path>  Upgrade Pandora FMS Console in path (pe: /var/www/pandora_console)"
+        echo "     -d         Upgrade also Database (by default not upgrade Database)           "
+        echo " "
+        exit 0
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS 2.1 Console Upgrade (c) 2009 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+UPGRADEDB=0
+UPGRADE=0
+
+if [ $# -eq 0 ]
+then
+	help
+fi
+
+# Main parsing code
+
+while getopts ":hdp:" optname
+  do
+    case "$optname" in
+      "h")
+        help
+		;;
+	  "d")
+	    UPGRADEDB=1
+	  	;; 
+      "p")
+		PANDORAPATH=$OPTARG
+		UPGRADE=1
+        ;;
+        ?)
+		help
+		;;
+      default) 
+		help
+	;; 
+    esac
+done
+
+if [ "$UPGRADE" == "1" ]
+then
+	pandora_upgrade
+fi
+
+exit

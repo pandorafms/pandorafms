@@ -95,7 +95,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 				$title, $unit_name, $show_event = 0, $show_alert = 0, $pure = 0, $stacked = 0, $date = 0) {
 
 	global $config;
-	
+
 	require_once 'Image/Graph.php';
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -143,6 +143,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		}
 		// Init other general variables
 
+
+
 		if ($show_event == 1){
 			// If we want to show events in graphs
 			$sql1="SELECT utimestamp FROM tevento WHERE id_agentmodule = $id_agente_modulo AND utimestamp > $fechatope";
@@ -175,7 +177,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$previous = (float) get_db_sql ($sql);
 		
 		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente_modulo = $id_agente_modulo AND utimestamp >= $fechatope AND utimestamp < $date";
-		$result = (array) get_db_all_rows_sql ($sql);
+
+		$result = (array) get_db_all_rows_sql ($sql1);
 		foreach ($result as $row) {
 			$datos = $row["datos"];
 			$utimestamp = $row["utimestamp"];

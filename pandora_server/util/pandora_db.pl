@@ -24,6 +24,7 @@ use Time::Local;			# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 use PandoraFMS::Tools;
+use PandoraFMS::DB;
 
 # version: define la version actual del programa
 my $version = "2.1 PS090105";
@@ -100,13 +101,25 @@ sub pandora_purgedb {
 	print "[PURGE] Delete old data (string) ... \n";
 	$dbh->do ("DELETE FROM tagente_datos_string WHERE  utimestamp < '$ulimit_timestamp'");
 
-	# TODO: Delete data from tagente_modulo items marked for deletion
+	print "[PURGE] Delete pending deleted modules (data table)...\n";
+	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 
+	print "[PURGE] Delete pending deleted modules (data string table)...\n";
+	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+	
+	print "[PURGE] Delete pending deleted modules (data inc  table)...\n";
+	$dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+	
+	
+	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
+	$dbh->do ("DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+	$dbh->do ("DELETE FROM tagente_modulo WHERE delete_pending = 1");
+	
 	print "[PURGE] Delete old session data \n";
-	db_delete ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
+	db_do ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
 
 	print "[PURGE] Delete old data from SNMP Traps \n"; 
-	db_delete("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'", $dbh);
+	db_do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'", $dbh);
 
     $dbh->disconnect();
 }
@@ -407,7 +420,7 @@ sub pandora_checkdb_consistency {
 			# If have 0 items, we need to create tagente_estado record
 			if ($prep2->rows == 0) {
 				my $id_agente = $datarow1[1];
-				my $query3 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 0, 100, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0)";
+				my $query3 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 1, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0)";
 				print "[CHECKDB] Inserting module $id_agente_modulo in state table \n";
 				my $prep3 = $dbh->prepare($query3);
 				$prep3->execute;

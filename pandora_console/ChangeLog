@@ -1,3 +1,9 @@
+2009-01-28  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Removed a javascript
+	debug message that avoids normal operation if firebug is not
+	installed.
+
 2009-01-26  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions_reporting.php: Fixed count of total alerts. Ignore

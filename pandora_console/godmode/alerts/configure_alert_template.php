@@ -542,7 +542,6 @@ function render_example () {
 	
 	/* Set value */
 	value = $("input#text-value").attr ("value");
-	console.log ("ADSAD");
 	if (value == '') {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
 	} else {

@@ -214,7 +214,7 @@ if ($tab == "sla") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A.')." </a>";
 echo "</li>";
 
 // Group tab

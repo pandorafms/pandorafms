@@ -44,7 +44,7 @@ if (mysql_num_rows ($result_t)) {
 	echo "<tr><th>X</th>";
 	echo "<th>".__('Type')."</th>
 	<th>".__('Module name')."</th>
-	<th>".__('S.L.A')."</th>
+	<th>".__('S.L.A.')."</th>
 	<th>".__('Status')."</th>
 	<th>".__('Interval')."</th>
 	<th>".__('Last contact')."</th>";
@@ -145,7 +145,7 @@ if (mysql_num_rows ($result_t)) {
 	echo "<tr>";
 	echo "<th>" . __('Type') . "</th>";
 	echo "<th>" . __('Module name') . "</th>";
-	echo "<th>" . __('S.L.A') . "</th>";
+	echo "<th>" . __('S.L.A.') . "</th>";
 	echo "<th>" . __('Status') . "</th>";
 	
 	while ($module_data = mysql_fetch_array($result_t)){

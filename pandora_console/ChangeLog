@@ -1,3 +1,16 @@
+2009-01-28  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/functions.php, operation/agentes/sla_view.php,
+	  operation/agentes/ver_agente.php,
+	  operation/reporting/reporting_xml.php,
+	  operation/reporting/reporting_viewer.php: Fixed typo.
+
+	* include/languages/index.pot: Updated PO template.
+
+	* include/languages/pt_BR.po, include/languages/es.po,
+	  include/languages/pt_BR.mo, include/languages/es.mo: Updated
+	  translations.
+
 2009-01-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Removed a javascript

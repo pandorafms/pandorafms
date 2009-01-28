@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-22 13:44+0100\n"
+"POT-Creation-Date: 2009-01-28 12:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4117,7 +4117,7 @@ msgstr ""
 #: ../../operation/agentes/ver_agente.php:227
 #: ../../operation/agentes/sla_view.php:46
 #: ../../operation/agentes/sla_view.php:147
-msgid "S.L.A"
+msgid "S.L.A."
 msgstr ""
 
 #: ../../include/functions.php:1006

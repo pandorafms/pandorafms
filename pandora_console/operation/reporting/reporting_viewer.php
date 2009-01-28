@@ -189,7 +189,7 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$table->style[1] = 'text-align: right';
 		$data = array ();
-		$data[0] = '<h4>'.__('S.L.A').'</h4>';
+		$data[0] = '<h4>'.__('S.L.A.').'</h4>';
 		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
 		$n = array_push ($table->data, $data);
 		

@@ -706,7 +706,7 @@ function get_report_types () {
 	$types = array ();
 	$types['simple_graph'] = __('Simple graph');
 	$types['custom_graph'] = __('Custom graph');
-	$types['SLA'] = __('S.L.A');
+	$types['SLA'] = __('S.L.A.');
 	$types['event_report'] = __('Event report');
 	$types['alert_report'] = __('Alert report');
 	$types['monitor_report'] = __('Monitor report');

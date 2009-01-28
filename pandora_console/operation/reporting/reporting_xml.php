@@ -186,7 +186,7 @@ foreach ($contents as $content) {
 		break;
 	case 3:
 	case 'SLA':
-		$data["title"] = __('S.L.A');
+		$data["title"] = __('S.L.A.');
 		
 		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
 		if ($slas === false) {

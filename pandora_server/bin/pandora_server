@@ -310,7 +310,7 @@ sub keep_alive_check {
 			$id_agent = $data->{'id_agente'};
 			$agent_name = $data->{'agentname'};
 			$module_name = $data->{'modulename'};
-			pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
+			pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, $dbh, 1);
 		}
 	}
 	undef $data;

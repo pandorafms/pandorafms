@@ -315,10 +315,11 @@ function print_string_substr ($string, $cutoff = 16, $return = false) {
  *
  * @param int Alert template id.
  * @param bool Wheter to return or print it out.
+ * @param bool Wheter to put the values in the string or not.
  *
  * @return An HTML string if return was true.
  */
-function print_alert_template_example ($id_alert_template, $return = false) {
+function print_alert_template_example ($id_alert_template, $return = false, $print_values = true) {
 	$output = '';
 	
 	$output .= '<img src="images/information.png" /> ';
@@ -362,12 +363,13 @@ function print_alert_template_example ($id_alert_template, $return = false) {
 		break;
 	}
 	
-	/* Replace span elements with real values. This is done in such way to avoid
-	 duplicating strings and make it easily modificable via Javascript. */
-	$output = str_replace ('<span id="value"></span>', $template['value'], $output);
-	$output = str_replace ('<span id="max"></span>', $template['max_value'], $output);
-	$output = str_replace ('<span id="min"></span>', $template['min_value'], $output);
-	
+	if ($print_values) {
+		/* Replace span elements with real values. This is done in such way to avoid
+		 duplicating strings and make it easily modificable via Javascript. */
+		$output = str_replace ('<span id="value"></span>', $template['value'], $output);
+		$output = str_replace ('<span id="max"></span>', $template['max_value'], $output);
+		$output = str_replace ('<span id="min"></span>', $template['min_value'], $output);
+	}
 	$output .= '</span>';
 	if ($return)
 		return $output;

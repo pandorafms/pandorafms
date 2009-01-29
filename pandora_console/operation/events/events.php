@@ -198,7 +198,11 @@ echo "<tr>";
 echo "<td>".__('User ack.')."</td>";
 echo "<td>";
 $users = get_users ();
-print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
+$values = array ();
+foreach ($users as $id_user => $user) {
+	$values[$id_user] = $user['id_user'];
+}
+print_select ($values, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
 

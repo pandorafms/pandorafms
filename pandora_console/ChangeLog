@@ -1,3 +1,19 @@
+2009-01-29  Esteban Sanchez  <estebans@artica.es>
+
+	* include/auth/mysql.php: Style correction on switch statements.
+
+	* include/functions_ui.php: Added a flag to
+	print_alert_template_example() to allow values replacement.
+
+	* include/functions_reporting.php: Fixed a notice message for
+	unitialized values.
+
+	* operation/events/events.php: get_users() result can not be passed
+	directly to print_select().
+
+	* pandoradb_migrate_20_to_21.sql: Style correction. Please, put each
+	alter table in a row so it can be easier to read.
+
 2009-01-28  Sancho Lerena  <slerena@artica.es>
 
 	* estado_grupo.php: Async modules and keepalive module don't show as down
@@ -16,6 +32,7 @@
 	  include/languages/pt_BR.mo, include/languages/es.mo: Updated
 	  translations.
 
+>>>>>>> .r1409
 2009-01-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Removed a javascript

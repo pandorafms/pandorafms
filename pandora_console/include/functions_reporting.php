@@ -132,6 +132,8 @@ function get_group_stats ($id_group) {
 	$data["total_checks"] = 0;	
 	$data["total_alerts"] = 0;
 	$data["total_agents"] = 0;
+	$data["total_alerts"] = 0;
+	$data["total_checks"] = 0;
 	$data["monitor_health"] = 100;
 	$data["alert_level"] = 100;
 	$data["module_sanity"] = 100;

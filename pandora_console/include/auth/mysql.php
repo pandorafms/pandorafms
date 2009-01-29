@@ -126,13 +126,13 @@ function get_user_info ($id_user) {
  */
 function get_users ($order = "fullname") {
 	switch ($order) {
-		case "id_user":
-		case "registered":
-		case "last_connect":
-		case "fullname":
-			break;
-		default:
-			$order = "fullname";
+	case "id_user":
+	case "registered":
+	case "last_connect":
+	case "fullname":
+		break;
+	default:
+		$order = "fullname";
 	}
 	
 	$output = array();
@@ -170,18 +170,17 @@ function create_user ($id_user, $password, $user_info) {
 	
 	foreach ($user_info as $key => $value) {
 		switch ($key) {
-			case "fullname":
-			case "firstname":
-			case "lastname":
-			case "middlename":
-			case "comments":
-			case "email":
-			case "phone":
-				$values[$key] = $value;
+		case "fullname":
+		case "firstname":
+		case "lastname":
+		case "middlename":
+		case "comments":
+		case "email":
+		case "phone":
+			$values[$key] = $value;
 			break;
-			default:
-				continue; //ignore
-			break;
+		default:
+			continue; //ignore
 		}
 	}
 
@@ -223,18 +222,18 @@ function process_user_info ($id_user, $user_info) {
 	$values = array ();
 	foreach ($user_info as $key => $value) {
 		switch ($key) {
-			case "fullname":
-			case "firstname":
-			case "lastname":
-			case "middlename":
-			case "comments":
-			case "email":
-			case "phone":
-				$values[$key] = $value;
-				break;
-			default:
-				continue; //ignore
-				break;
+		case "fullname":
+		case "firstname":
+		case "lastname":
+		case "middlename":
+		case "comments":
+		case "email":
+		case "phone":
+			$values[$key] = $value;
+			break;
+		default:
+			continue; //ignore
+			break;
 		}
 	}
 	return process_sql_update ("tusuario", $values, array ("id_user" => $id_user));

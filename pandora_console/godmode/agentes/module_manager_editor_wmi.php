@@ -179,9 +179,9 @@ if ($update_module_id != NULL){
 	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
 } else {
 	echo '<select name="form_id_tipo_modulo">';
-	if ($form_id_tipo_modulo != 0) {
+	if ($form_id_tipo_modulo != 0)
 		echo "<option value='".$form_id_tipo_modulo."'>".giveme_module_type($form_id_tipo_modulo)."</option>";
-	}
+
 	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){

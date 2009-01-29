@@ -1,3 +1,10 @@
+2009-01-29  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* godmode/agentes/module_manager_editor_wmi.php: Fixed two bugs; the
+	  first one made the module_type 'generic_data' appear twice, the
+	  second one didn't show the correct 'generic_data' when selecting a
+	  prebuild WMI component.
+
 2009-01-28  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* include/functions.php, operation/agentes/sla_view.php,

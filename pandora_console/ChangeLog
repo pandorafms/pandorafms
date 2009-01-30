@@ -1,3 +1,12 @@
+2009-01-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/config.inc.php: Updated documentation on LDAP implementation.
+	
+	* include/functions_db.php: Restored get_agent_modules_count function.
+	
+	* index.php, include/config_process.php, godmode/setup/setup.php: Now you
+	can enforce https with a config variable
+
 2009-01-30  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Fixed the page title. Show the

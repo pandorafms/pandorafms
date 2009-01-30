@@ -171,10 +171,17 @@ if (!isset ($config["prominent_time"])) {
 }
 
 if (!isset ($config["timesource"])) {
-	// Prominent time tells us what to show prominently when a timestamp is
-	// displayed. The comparation (... days ago) or the timestamp (full date)
+	// Timesource says where time comes from (system or mysql)
 	$config["timesource"] = "system";
 	process_sql_insert ('tconfig', array ('token' => 'timesource',
 		'value' => $config['timesource']));
+}
+
+if (!isset ($config["https"])) {
+	// Sets whether or not we want to enforce https. We don't want to go to a
+	// potentially unexisting config by default
+	$config["https"] = false;
+	process_sql_insert ('tconfig', array ('token' => 'https', 
+		'value' => $config["https"])); 
 }
 ?>

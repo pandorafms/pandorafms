@@ -51,11 +51,11 @@ if ($update_settings) {
 	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
 	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
-	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);	
-	
+	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);
 	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
 	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
+	$config["https"] = (bool) get_parameter ('https', $config["https"]);
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
@@ -76,6 +76,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["timesource"]."' WHERE token = 'timesource'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["loginhash_pwd"]."' WHERE token = 'loginhash_pwd'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["https"]."' WHERE token = 'https'");
 }
 
 echo "<h2>".__('Setup')." &gt; ";
@@ -131,19 +132,22 @@ $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '',
 $table->data[14][0] = __('Default hours for event view');
 $table->data[14][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[15][0] = __('Timestamp or time comparation') . pandora_help("time_stamp-comparation", true);
+$table->data[15][0] = __('Timestamp or time comparation') . pandora_help ("time_stamp-comparation", true);
 $table->data[15][1] = __('Comparation in rollover').' ';
 $table->data[15][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 $table->data[15][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[15][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
-$table->data[16][0] = __('Time source') . pandora_help("timesource", true);
+$table->data[16][0] = __('Time source') . pandora_help ("timesource", true);
 $sources["system"] = __('System');
 $sources["sql"] = __('Database');
 $table->data[16][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
 
 $table->data[17][0] = __('Automatic update check');
 $table->data[17][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
+
+$table->data[18][0] = __('Enforce https');
+$table->data[18][1] = print_checkbox ('https', 1, $config["https"], true);
 
 // 18
 enterprise_hook ('load_snmpforward_enterprise');

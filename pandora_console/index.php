@@ -77,6 +77,26 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 
 load_extensions ($config['extensions']);
 
+if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
+	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
+	if (sizeof ($_REQUEST))
+		//Some (old) browsers don't like the ?&key=var
+		$query .= '?1=1';
+	
+	//We don't clean these variables up as they're only being passed along
+	foreach ($_GET as $key => $value) {
+		/* Avoid the 1=1 */
+		if ($key == 1)
+			continue;
+		$query .= '&'.$key.'='.$value;
+	}
+	foreach ($_POST as $key => $value) {
+		$query .= '&'.$key.'='.$value;
+	}
+	header ('Location: '.$query);
+	exit; //Always exit after sending location headers
+}
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
 
 // Pure mode (without menu, header and footer).

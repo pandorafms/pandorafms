@@ -408,6 +408,28 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 }
 
 /**
+ * Get the number of all agent modules in the database
+ *
+ * @param mixed Array of integers with agent(s) id or a single agent id. Default
+ * value will select all.
+ *
+ * @return int The number of agent modules
+ */
+function get_agent_modules_count ($id_agent = 0) {
+	//Make sure we're all int's and filter out bad stuff
+	$id_agent = safe_int ($id_agent, 1);
+		
+	if (empty ($id_agent)) {
+		//If the array proved empty or the agent is less than 1 (eg. -1)
+		$filter = '';
+	} else {
+		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
+	}
+	
+	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
+}
+
+/**
  * Get a list of the reports the user can view.
  *
  * A user can view a report by two ways:

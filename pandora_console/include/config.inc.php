@@ -27,8 +27,10 @@
 // $config["homedir"]="/var/www/pandora_console/";
 // $config["homeurl"]="/pandora_console/";
 
+// $config["auth"]["scheme"] = "mysql";
+
 ///*************************** Start LDAP Config *****************************/
-//------ LDAP General Server Settings ------//
+// Only use the following if you have LDAP. Unnecessary for built-in
 //
 //Name or address of the LDAP server
 //  For SSL (not TLS) use 'ldaps://localhost'
@@ -78,15 +80,17 @@
 // Attributes to fetch from LDAP and corresponding user variables in the
 // application. Do change according to your LDAP Schema
 //$config["auth"]["ldap_user_attr"] = array (
-//						 // LDAP attribute   //Pandora FMS variable
-//						 'id_usuario' =>      'uid',              //login
-//						 'lastname' =>        'sn',				  //last (sur) name
-//						 'firstname' =>       'givenname',        //first (given) name
-//						 'nombre_real' =>     'cn',               //full (common) name
-//						 'comentarios' =>	  'description',	  //comments - you can set this to anything
-//						 'fecha_registro' =>  'lastlogin',		  //last login utimestamp or don't define
-//						 'direccion' =>		  'mail',             //email - not necessary will default to empty
-//						 'telefono'  =>		  'phone'			  //phone
+//						 //Pandora attribute // LDAP attribute //Explanation
+//						 'id_user' =>		'uid',          //login
+//						 'lastname' =>      'sn',			//last (sur) name
+//						 'firstname' =>     'givenname',    //first (given) name
+//						 'fullname' =>		'cn',           //full (common) name
+//						 'comments' =>		'description',	//comments - you can set this to anything
+//						 'last_contact' =>  'lastlogin',	//last login utimestamp or don't define
+//						 'email' =>			'mail',         //email - not necessary will default to empty
+//						 'phone'  =>		'phone',		//phone
+//						 'middlename' =>	'mn',			//not yet used except for representational purposes
+//						 'registered' =>	'created'		//created utimestamp or don't define
 //);
 ///* You can uncomment the following only if you understand what it implies
 //

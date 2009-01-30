@@ -33,14 +33,14 @@ require_once ('lib/libupdate_manager.php');
 function get_user_key ($settings) {
 	if ($settings->customer_key != FREE_USER) {
 		if (! file_exists ($settings->keygen_path)) {
-			echo '<h3 class="err">';
+			echo '<h3 class="error">';
 			echo __('Keygen file does not exists');
 			echo '</h3>';
 			
 			return '';
 		}
 		if (! is_executable ($settings->keygen_path)) {
-			echo '<h3 class="err">';
+			echo '<h3 class="error">';
 			echo __('Keygen file is not executable');
 			echo '</h3>';
 			

@@ -1,3 +1,15 @@
+2009-01-30  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* include/help/en/help_alert-matches.php,
+	  include/help/en/help_serverlag.php,
+	  include/help/en/help_time_stamp-comparation.php,
+	  include/help/en/help_timesource.php: Modified help files.
+
+	* include/help/es/help_alert-matches.php,
+	  include/help/es/help_serverlag.php,
+	  include/help/es/help_time_stamp-comparation.php,
+	  include/help/es/help_timesource.php: Added Spanish help files.
+
 2009-01-29  Esteban Sanchez  <estebans@artica.es>
 
 	* include/auth/mysql.php: Style correction on switch statements.

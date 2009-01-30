@@ -1,3 +1,17 @@
+2009-01-30  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Fixed the page title. Show the
+	right latest value in non-numeric modules. jQuery selectors fixed to
+	work with many alerts.
+
+	* extensions/update_manager/load_updatemanager.php: Fixed setup error
+	messages.
+
+	* include/functions_db.php: Added get_agent_module(). Added filter
+	paremeter to get_agent_modules(). return_value_agent_module() renamed
+	to get_agent_module_last_value() and do not transform to integer.
+	Removed useless get_agent_modules_count().
+
 2009-01-30  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* include/help/en/help_alert-matches.php,
@@ -44,7 +58,6 @@
 	  include/languages/pt_BR.mo, include/languages/es.mo: Updated
 	  translations.
 
->>>>>>> .r1409
 2009-01-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Removed a javascript

@@ -315,22 +315,66 @@ function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
 }
 
 /**
+ * Get a singlemodule in an agent.
+ *
+ * @param mixed Agent id to get modules. It can also be an array of agent id's.
+ *
+ * @return array An array with all modules in the agent.
+ * If multiple rows are selected, they will be in an array
+ */
+function get_agent_module ($id_agent_module) {
+	return get_db_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
+}
+
+/**
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's.
  * @param mixed Array, comma delimited list or singular value of rows to
  * select. If nothing is specified, nombre will be selected.
+ * @param mixed Aditional filters to the modules. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+<code>
+Both are similars:
+$modules = get_agent_modules ($id_agent, false, array ('disabled', 0));
+$modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+
+Both are similars:
+$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+$modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+</code>
  *
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agent_modules ($id_agent, $details = false) {
+function get_agent_modules ($id_agent, $details = false, $filter = false) {
 	$id_agent = safe_int ($id_agent, 1);
 	
-	if (empty ($id_agent)) {
-		$filter = '';
+	$where = '';
+	if (! empty ($id_agent)) {
+		
 	} else {
-		$filter = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
+		$where = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
+	}
+	
+	if (! empty ($filter)) {
+		if ($where != '') {
+			$where .= ' AND ';
+		} else {
+			$where .= ' WHERE ';
+		}
+		
+		if (is_array ($filter)) {
+			$fields = array ();
+			foreach ($filter as $field => $value) {
+				array_push ($fields, $field.'='.$value);
+			}
+			$where .= implode (' AND ', $fields);
+		} else {
+			$where .= $filter;
+		}
 	}
 	
 	if (empty ($details)) {
@@ -344,7 +388,7 @@ function get_agent_modules ($id_agent, $details = false) {
 		%s
 		ORDER BY nombre',
 		implode (",", (array) $details),
-		$filter);
+		$where);
 	$result = get_db_all_rows_sql ($sql);
 	
 	if (empty ($result)) {
@@ -362,6 +406,7 @@ function get_agent_modules ($id_agent, $details = false) {
 	}
 	return $modules;
 }
+
 /**
  * Get a list of the reports the user can view.
  *
@@ -1561,12 +1606,12 @@ function get_db_all_fields_in_table ($table, $field = '', $condition = '', $orde
  * values. Example code:
  *
  * <code>
- * $values = array ();
- * $values['name'] = "Name";
- * $values['description'] = "Long description";
- * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
- * echo $sql;
- * </code>
+  $values = array ();
+  $values['name'] = "Name";
+  $values['description'] = "Long description";
+  $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
+  echo $sql;
+  </code>
  * Will return:
  * <code>
  * UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
@@ -1687,9 +1732,9 @@ function return_status_layout ($id_layout = 0) {
  * 
  * @return int a numerically formatted value 
  */
-function return_value_agent_module ($id_agentmodule) {
-	return format_numeric (get_db_value ('datos', 'tagente_estado', 
-		'id_agente_modulo', $id_agentmodule));
+function get_agent_module_last_value ($id_agentmodule) {
+	return get_db_value ('datos', 'tagente_estado', 
+		'id_agente_modulo', $id_agentmodule);
 }
 
 /** 
@@ -2268,28 +2313,6 @@ function get_server_info ($id_server = -1) {
 		$return[$server["id_server"]] = $server;
 	}
 	return $return;
-}
-
-/**
- * Get the number of all agent modules in the database
- *
- * @param mixed Array of integers with agent(s) id or a single agent id. Default
- * value will select all.
- *
- * @return int The number of agent modules
- */
-function get_agent_modules_count ($id_agent = 0) {
-	//Make sure we're all int's and filter out bad stuff
-	$id_agent = safe_int ($id_agent, 1);
-	
-	if (empty ($id_agent)) {
-		//If the array proved empty or the agent is less than 1 (eg. -1)
-		$filter = '';
-	} else {
-		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
-	}
-	
-	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
 }
 
 /**

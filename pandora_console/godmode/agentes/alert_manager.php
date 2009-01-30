@@ -106,7 +106,7 @@ if ($disable_alert) {
 $modules = get_agent_modules ($id_agente,
 	array ('id_tipo_modulo', 'nombre', 'id_agente'));
 
-echo "<h3>".__('Modules defined')."</h3>";
+echo "<h3>".__('Alerts defined')."</h3>";
 
 $table->class = 'databox_color modules';
 $table->cellspacing = '0';
@@ -125,17 +125,22 @@ $table_alerts->style = array ();
 $table_alerts->style[0] = 'vertical-align: top';
 $table_alerts->style[1] = 'vertical-align: top';
 
-
 foreach ($modules as $id_agent_module => $module) {
-	$last_data = return_value_agent_module ($id_agent_module);
+	$last_data = get_agent_module_last_value ($id_agent_module);
 	if ($last_data === false)
 		$last_data = '<em>'.__('N/A').'</em>';
 	
-	$table->data[0][0] = '<span>'.$module['nombre'].'</span>';
+	$table->data[0][0] = '<span><strong>Module</strong>: '.$module['nombre'].'</span>';
 	$table->data[0][0] .= '<div class="actions left" style="visibility: hidden;">';
 	$table->data[0][0] .= '<span class="module_values" style="float: right;">';
 	$table->data[0][0] .= '<em>'.__('Latest value').'</em>: ';
-	$table->data[0][0] .= $last_data;
+	if ($last_data == '')
+		$table->data[0][0] .= '<em>'.__('Empty').'</emp>';
+	elseif (is_numeric ($last_data))
+		$table->data[0][0] .= format_numeric ($last_data);
+	else
+		$table->data[0][0] .= $last_data;
+	
 	$table->data[0][0] .= '</span>';
 	$table->data[0][0] .= '</div>';
 	$table->data[0][0] .= '<div class="actions right" style="visibility: hidden;">';
@@ -158,7 +163,7 @@ foreach ($modules as $id_agent_module => $module) {
 		$table->rowstyle[1] = 'display: none';
 	} else {
 		$table->data[1][0] = '<h4 class="left" style="clear: left">';
-		$table->data[1][0] .= __('Alerts');
+		$table->data[1][0] .= __('Alerts assigned');
 		$table->data[1][0] .= '</h4>';
 		$table->rowstyle[1] = '';
 	}
@@ -394,7 +399,7 @@ $(document).ready (function () {
 		return true;
 	});
 	
-	$("input#image-disable").attr ("title", "<?php echo __('Disable')?>")
+	$("input[name=disable]").attr ("title", "<?php echo __('Disable')?>")
 		.hover (function () {
 				$(this).attr ("src", "images/lightbulb_off.png");
 			},
@@ -402,7 +407,7 @@ $(document).ready (function () {
 				$(this).attr ("src", "images/lightbulb.png");
 			}
 		);
-	$("input#image-enable").attr ("title", "<?php echo __('Enable')?>")
+	$("input[name=enable]").attr ("title", "<?php echo __('Enable')?>")
 		.hover (function () {
 				$(this).attr ("src", "images/lightbulb.png");
 			},

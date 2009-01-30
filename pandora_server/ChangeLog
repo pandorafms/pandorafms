@@ -1,3 +1,7 @@
+2009-01-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Fixed regexp alerts.
+
 2009-01-28  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_server: Fixed a typo in call to pandora_writestate() who

@@ -242,11 +242,11 @@ sub pandora_evaluate_alert (%$%$$$) {
 		return $status;
 	}
 	elsif ($alert_data->{'type'} eq "regex") {
-		if ($alert_data->{'matches_value'} == 1 && $module_data =~ m/$alert_data->{'alert_text'}/i) {
+		if ($alert_data->{'value'} == 1 && $module_data =~ m/$alert_data->{'value'}/i) {
 			return $status;
 		}
 		
-		if ($module_data !~ m/$alert_data->{'alert_text'}/i) {
+		if ($module_data !~ m/$alert_data->{'value'}/i) {
 			return $status;
 		}
 	}

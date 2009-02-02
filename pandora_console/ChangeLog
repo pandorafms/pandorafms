@@ -1,3 +1,8 @@
+2009-02-02  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Removed an unneccesary "k"
+	character on top of file.
+
 2009-01-29  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* godmode/agentes/module_manager_editor_wmi.php: Fixed two bugs; the

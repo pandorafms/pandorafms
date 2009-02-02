@@ -870,6 +870,17 @@ function get_moduletype_name ($id_type) {
 	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
+/** 
+ * Get the module type description
+ * 
+ * @param int $id_type Type id
+ * 
+ * @return string Description of the given type.
+ */
+function get_moduletype_description ($id_type) {
+	return (string) get_db_value ('descripcion', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
 /**
  * Returns an array with all module types (default) or if "remote" or "agent" 
  * is passed it will return only remote (ICMP, SNMP, TCP...) module types 

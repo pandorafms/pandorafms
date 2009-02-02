@@ -1,3 +1,40 @@
+2009-02-02  Esteban Sanchez  <estebans@artica.es>
+	
+	* godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/module_manager_editor_wmi.php: Agent module editions
+	rewritten. The interface should be clearer now and SNMP walking much
+	more faster, since it's done with AJAX. Some cleanup might be needed
+	yet.
+
+	* godmode/agentes/module_manager_editor_common.php: Added to
+	repository. Common part for agent module editors.
+
+	* images/edit.png, images/spinner.gif: Added to repository.
+
+	* include/javascript/jquery.form.js: Added to repository. jQuery form
+	plugin.
+
+	* include/javascript/jquery.pandora.js: Added to repository. Special
+	Pandora addons for jQuery library.
+
+	* include/javascript/pandora.js: Added an extension to Array
+	javascript objects to check if an array has an element.
+	
+	* include/styles/pandora.css: Added styling for new module editors.
+
+	* include/functions_db.php: Added get_moduletype_description().
+
+	* index.php: Added Pandora jQuery extensions.
+
+	* pandoradb.sql, pandoradb_migrate_20_to_21.sql: Removed alert_text
+	useless field from talert_templates.
+
 2009-01-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/config.inc.php: Updated documentation on LDAP implementation.

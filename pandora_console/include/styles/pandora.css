@@ -755,3 +755,18 @@ select#template, select#action {
 input[type=image] {
 	border:0px;
 }
+table#simple select#id_module_type {
+	width: 200px;
+}
+table#simple select#select_snmp_oid,
+table#simple select#id_plugin {
+	width: 270px;
+}
+table#simple input#text-plugin_parameter,
+table#simple input#text-snmp_oid,
+table#simple select#prediction_module {
+	width: 100%;
+}
+.clickable {
+	cursor: pointer;
+}

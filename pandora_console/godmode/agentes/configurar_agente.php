@@ -35,12 +35,10 @@ if (! give_acl($config["id_user"], $group, "AW")) {
 	exit;
 }
 
-
 // Get passed variables
-$tab = get_parameter_get ("tab", "main");
-$form_moduletype = get_parameter_post ("form_moduletype");
-$form_alerttype = get_parameter ("form_alerttype");
-$moduletype = get_parameter_get ("moduletype");
+$tab = get_parameter ('tab', 'main');
+$alerttype = get_parameter ('alerttype');
+$id_agent_module = (int) get_parameter ('id_agent_module');
 
 // Init vars
 $descripcion = "";
@@ -51,7 +49,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
-$direccion_agente = get_parameter ("direccion", "");
+$direccion_agente = get_parameter ('direccion');
 $intervalo = 300;
 $id_server = "";
 $max_alerts = 0;
@@ -108,26 +106,24 @@ $grupo = 0;
 $id_os = 0;
 $custom_id = "";
 
-// ================================
-// Create AGENT
-// ================================
-// We need to create agent BEFORE showing tabs, because we need to get agent_id
-// This is not very clean, but...
-if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
-	$nombre_agente =  get_parameter_post ("agente", "");
-	$direccion_agente = get_parameter_post ("direccion", "");
-	$grupo = get_parameter_post ("grupo", 0);
-	$intervalo = get_parameter_post ("intervalo", 300);
-	$comentarios = get_parameter_post ("comentarios", "");
-	$modo = get_parameter_post ("modo", 0);
-	$id_parent = get_parameter_post ("id_parent", 0);
-	$id_network_server = get_parameter_post ("network_server", 0);
-	$id_plugin_server = get_parameter_post ("plugin_server", 0);
-	$id_prediction_server = get_parameter_post ("prediction_server", 0);
-	$id_wmi_server = get_parameter_post ("wmi_server", 0);
-	$id_os = get_parameter_post ("id_os", 0);
-	$disabled = get_parameter_post ("disabled", 0);
-	$custom_id = get_parameter_post ("custom_id", "");
+$create_agent = (bool) get_parameter ('create_agent');
+
+// Create agent
+if ($create_agent) {
+	$nombre_agente = (string) get_parameter_post ("agente");
+	$direccion_agente = (string) get_parameter_post ("direccion");
+	$grupo = (int) get_parameter_post ("grupo");
+	$intervalo = (string) get_parameter_post ("intervalo", 300);
+	$comentarios = (string)get_parameter_post ("comentarios");
+	$modo = (int) get_parameter_post ("modo");
+	$id_parent = (int) get_parameter_post ("id_parent");
+	$id_network_server = (int) get_parameter_post ("network_server");
+	$id_plugin_server = (int) get_parameter_post ("plugin_server");
+	$id_prediction_server = (int) get_parameter_post ("prediction_server");
+	$id_wmi_server = (int) get_parameter_post ("wmi_server");
+	$id_os = (int) get_parameter_post ("id_os");
+	$disabled = (int) get_parameter_post ("disabled");
+	$custom_id = (string) get_parameter_post ("custom_id");
 
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
@@ -137,65 +133,72 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 		$agent_creation_error = __('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
 	} else {
-		$sql = sprintf ("INSERT INTO tagente 
-				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent, custom_id) 
-				VALUES 
-				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, '%s')",
-				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent, $custom_id);
-		$id_agente = process_sql ($sql, "insert_id");
+		$id_agente = process_sql_insert ('tagente', 
+			array ('nombre' => $nombre_agente,
+				'direccion' => $direccion_agente,
+				'id_grupo' => $grupo, 'intervalo' => $intervalo,
+				'comentarios' => $comentarios, 'modo' => $modo,
+				'id_os' => $id_os, 'disabled' => $disabled,
+				'id_network_server' => $id_network_server,
+				'id_plugin_server' => $id_plugin_server,
+				'id_wmi_server' => $id_wmi_server,
+				'id_prediction_server' => $id_prediction_server,
+				'id_parent' => $id_parent, 'custom_id' => $custom_id));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
-			$agent_created_ok = 1;
-			$agent_creation_error = "";
+			// Create address for this agent in taddress
+			agent_add_address ($id_agente, $direccion_agente);
+			
+			$agent_created_ok = true;
 			
 			// Create special module agent_keepalive
-			$sql = "INSERT INTO tagente_modulo 
-					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo,min_warning, max_warning ) 
-					VALUES 
-					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1 ,0,1)";
-			$id_agent_module = process_sql ($sql, "insert_id");
+			$id_agent_module = process_sql_insert ('tagente_modulo', 
+				array ('nombre' => 'agent_keepalive',
+					'id_agente' => $id_agente,
+					'id_tipo_modulo' => 100,
+					'descripcion' => __('Ageng keepalive monitor'),
+					'id_modulo' => 1,
+					'min_warning' => 0,
+					'max_warning' => 1));
 			
 			if ($id_agent_module !== false) {
 				// Create agent_keepalive in tagente_estado table
-				$sql = "INSERT INTO tagente_estado 
-					(id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) 
-					VALUES 
-					(".$id_agent_module.",'',0,0,".$id_agente.",0,0,0,0,0)";
-				$result = process_sql ($sql);
-				if ($result === false) {
-					$agent_created_ok = 0;
-					// Do not translate tagente_estado, is the table name
-					$agent_creation_error = __("There was a problem creating record in tagente_estado table");
-				}
+				$result = process_sql_insert ('tagente_modulo', 
+					array ('id_agente_modulo' => $id_agent_module,
+						'datos' => '',
+						'timestamp' => 0,
+						'estado' => 0,
+						'id_agente' => $id_agente,
+						'last_try' => 0,
+						'utimestamp' => 0,
+						'current_interval' => 0,
+						'running_by' => 0,
+						'last_execution_try' => 0));
+				if ($result === false)
+					$agent_created_ok = false;
 			} else {
-				$agent_created_ok = 0;
-				$agent_creation_error = __("There was a problem creating agent_keepalive module");
+				$agent_created_ok = false;
 			}
-			
-			// Create address for this agent in taddress
-			agent_add_address ($id_agente, $direccion_agente);
 		} else {
 			$id_agente = -1;
-			$agent_created_ok = 0;
 			$agent_creation_error = __("There was a problem creating the agent");
 		}
 	}
 }
 
 // Show tabs
-// -----------------
 echo "<div id='menu_tab_frame'>";
 echo "<div id='menu_tab_left'><ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(get_agent_name ($id_agente),0,21)."</a>";
+<img src='images/setup.png' class='top'>&nbsp; ".substr(get_agent_name ($id_agente),0,21)."</a>";
 echo "</li>";
 echo "</ul></div>";
 
 echo "<div id='menu_tab'><ul class='mn'>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border='0'>&nbsp;".__('View')."</a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top'>&nbsp;".__('View')."</a>";
 echo "</li>";
 
 if ($tab == "main") {
@@ -203,7 +206,7 @@ if ($tab == "main") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('Setup')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top'>&nbsp; ".__('Setup')."</a>";
 echo "</li>";
 
 if ($tab == "module") {
@@ -211,7 +214,7 @@ if ($tab == "module") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border='0'>&nbsp;".__('Modules')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top'>&nbsp;".__('Modules')."</a>";
 echo "</li>";
 
 if ($tab == "alert") {
@@ -219,7 +222,7 @@ if ($tab == "alert") {
 } else {
 	echo "<li class='nomn'>";
 }	
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border='0'>&nbsp;". __('Alerts')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top'>&nbsp;". __('Alerts')."</a>";
 echo "</li>";
 
 if ($tab == "template") {
@@ -237,13 +240,14 @@ echo "</div>";
 echo "</div>"; // menu_tab_frame
 
 // Make some space between tabs and title
-echo "<div style='height: 25px'>&nbsp;</div>"; //Some browsers (IE) might not always show an empty div, added space
+// IE might not always show an empty div, added space
+echo "<div style='height: 25px'>&nbsp;</div>";
 
 // Show agent creation results
-if (isset ($_POST["create_agent"])) {
-	if ($agent_created_ok == 0){
+if ($create_agent) {
+	if (! $agent_created_ok) {
 		echo "<h3 class='error'>".__('There was a problem creating agent')."</h3>";
-		echo $agent_creation_error;
+		echo __('There was a problem creating agent_keepalive module');
 	} else {
 		echo "<h3 class='suc'>".__('Agent successfully created')."</h3>";
 	}
@@ -290,11 +294,12 @@ if (isset($_GET["delete_alert_comp"])) { // if modified some parameter
 
 // Combined ALERT - Add component
 // ================================
-if (isset($_POST["add_alert_combined"])){ // Update an existing alert
-	$alerta_id_aam = get_parameter ("update_alert",-1);
-	$component_item = get_parameter ("component_item",-1);
-	$component_operation = get_parameter ("component_operation","AND");
-	$sql = sprintf ("INSERT INTO tcompound_alert (id, id_aam, operation) VALUES (%d, %d, '%s')", $alerta_id_aam, $component_item, $component_operation);
+if (isset($_POST["add_alert_combined"])) { // Update an existing alert
+	$alerta_id_aam = get_parameter ('update_alert', -1);
+	$component_item = get_parameter ('component_item', -1);
+	$component_operation = get_parameter ('component_operation', 'AND');
+	$sql = sprintf ("INSERT INTO tcompound_alert (id, id_aam, operation) VALUES (%d, %d, '%s')",
+		$alerta_id_aam, $component_item, $component_operation);
 	$result = process_sql ($sql);
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem creating the combined alert').'</h3>';
@@ -376,9 +381,9 @@ if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
 
 // Read agent data
 // This should be at the end of all operation checks, to read the changess
-if (isset($_GET["id_agente"])) {
+if (isset($_REQUEST["id_agente"])) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
-	$id_agente = get_parameter_get ("id_agente");
+	$id_agente = (int) get_parameter ('id_agente');
 	$id_grupo = dame_id_grupo ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an agent without access");
@@ -390,10 +395,7 @@ if (isset($_GET["id_agente"])) {
 	if (empty ($agent)) {
 		//Close out the page
 		echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
-		echo '</table></div><div id="foot">';
-		include ("general/footer.php");
-		echo "</div>";
-		exit;
+		return;
 	}
 	
 	$intervalo = $agent["intervalo"]; // Define interval in seconds
@@ -413,194 +415,140 @@ if (isset($_GET["id_agente"])) {
 	$custom_id = $agent["custom_id"];
 }
 
-// Read data module if editing module
-// ==================================
-if ((isset ($_GET["update_module"])) && (!isset ($_POST["oid"])) && (!isset ($_POST["update_module"]))) {
-	$update_module = 1;
-	$id_agente_modulo = (int) get_parameter_get ("update_module",0);
-
-	$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
-
-	if ($module === false) {
-		echo '<h3 class="error">'.__('There was a problem loading the module').'</h3>';
-	} else {
-		$modulo_id_agente = $module["id_agente"];
-		$modulo_id_tipo_modulo = $module["id_tipo_modulo"];
-		$modulo_nombre = $module["nombre"];
-		$modulo_descripcion = $module["descripcion"];
-		$tcp_send = $module["tcp_send"];
-		$tcp_rcv = $module["tcp_rcv"];
-		$ip_target = $module["ip_target"];
-		$snmp_community = $module["snmp_community"];
-		$snmp_oid = $module["snmp_oid"];
-		$id_module_group = $module["id_module_group"];
-		$module_interval = $module["module_interval"];
-		$modulo_max = $module["max"];
-		if (empty ($modulo_max))
-			$modulo_max = "N/A";
-		if (empty ($modulo_min))
-			$modulo_min = "N/A";	
-		$custom_id = $module["custom_id"];
-	}
-}
+$update_module = (bool) get_parameter ('update_module');
+$create_module = (bool) get_parameter ('create_module');
+$edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
-// ===========================================
-if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
-	if (isset ($_POST["update_module"])) {
-		$update_module = 1;
-		$id_agente_modulo = get_parameter_post ("id_agente_modulo",0);
-	}
-	
+if ($update_module || $create_module) {
 	$id_grupo = dame_id_grupo ($id_agente);
 	
-	if (give_acl ($config["id_user"], $id_grupo, "AW") == 0) {
-		audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
+	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
+		audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
+			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
-	$form_id_tipo_modulo = (int) get_parameter ("form_id_tipo_modulo",0);
-	$form_name = (string) get_parameter ("form_name",0);
-	$form_description = (string) get_parameter ("form_description","");
-	$form_id_module_group = (int) get_parameter ("form_id_module_group",0);
-	$form_flag = (bool) get_parameter ("form_flag",0);
-	$form_post_process = (float) get_parameter ("form_post_process",0);
-	$form_prediction_module = (int) get_parameter ("form_prediction_module",0);
-	$form_max_timeout = (int) get_parameter ("form_max_timeout",0);
-	$form_minvalue = (int) get_parameter_post ("form_minvalue",0);
-	$form_maxvalue = (int) get_parameter ("form_maxvalue",0);
-	$form_interval = (int) get_parameter ("form_interval",300);
-	$form_id_prediction_module = (int) get_parameter ("form_id_prediction_module",0);
-	$form_id_plugin = (int) get_parameter ("form_id_plugin",0);
-	$form_id_export = (int) get_parameter ("form_id_export",0);
-	$form_disabled = (bool) get_parameter ("form_disabled",0);
-	$form_tcp_send = (string) get_parameter ("form_tcp_send","");
-	$form_tcp_rcv = (string) get_parameter ("form_tcp_rcv","");
-	$form_tcp_port = (int) get_parameter ("form_tcp_port",0);
-	$form_snmp_community = (string) get_parameter ("form_snmp_community","");
-	$form_snmp_oid = (string) get_parameter ("form_snmp_oid","");
-	$form_ip_target = (string) get_parameter ("form_ip_target","");
-	$form_plugin_user = (string) get_parameter ("form_plugin_user","");
-	$form_plugin_pass = (string) get_parameter ("form_plugin_pass","");
-	$form_plugin_parameter = (string) get_parameter ("form_plugin_parameter","");
-	$form_id_modulo = (int) get_parameter ("form_id_modulo",0);
-	$form_custom_id = (string) get_parameter ("form_custom_id","");
-	$form_history_data = (int) get_parameter('form_history_data',0);
-	$form_min_warning = (float) get_parameter ('form_min_warning', 0);
-	$form_max_warning = (float) get_parameter ('form_max_warning', 0);
-	$form_min_critical = (float) get_parameter ('form_min_critical', 0);
-	$form_max_critical = (float) get_parameter ('form_max_critical', 0);
-	$form_ff_event = (int) get_parameter ('form_ff_event', 0);
+	$id_module_type = (int) get_parameter ('id_module_type');
+	$name = (string) get_parameter ('name');
+	$description = (string) get_parameter ('description');
+	$id_module_group = (int) get_parameter ('id_module_group');
+	$flag = (bool) get_parameter ('flag');
+	$post_process = (float) get_parameter ('post_process');
+	$prediction_module = (int) get_parameter ('prediction_module');
+	$max_timeout = (int) get_parameter ('max_timeout');
+	$minvalue = (int) get_parameter_post ("minvalue");
+	$maxvalue = (int) get_parameter ('maxvalue');
+	$interval = (int) get_parameter ("interval", 300);
+	$id_prediction_module = (int) get_parameter ('id_prediction_module');
+	$id_plugin = (int) get_parameter ('id_plugin');
+	$id_export = (int) get_parameter ('id_export');
+	$disabled = (bool) get_parameter ('disabled');
+	$tcp_send = (string) get_parameter ('tcp_send');
+	$tcp_rcv = (string) get_parameter ('tcp_rcv');
+	$tcp_port = (int) get_parameter ('tcp_port');
+	$snmp_community = (string) get_parameter ('snmp_community');
+	$snmp_oid = (string) get_parameter ('snmp_oid');
+	if (empty ($snmp_oid)) {
+		/* The user did not set any OID manually but did a SNMP walk */
+		$snmp_oid = (string) get_parameter ('select_snmp_oid');
+	}
+	$ip_target = (string) get_parameter ('ip_target');
+	$plugin_user = (string) get_parameter ('plugin_user');
+	$plugin_pass = (string) get_parameter ('plugin_pass');
+	$plugin_parameter = (string) get_parameter ('plugin_parameter');
+	$custom_id = (string) get_parameter ('custom_id');
+	$history_data = (int) get_parameter('history_data');
+	$min_warning = (float) get_parameter ('min_warning');
+	$max_warning = (float) get_parameter ('max_warning');
+	$min_critical = (float) get_parameter ('min_critical');
+	$max_critical = (float) get_parameter ('max_critical');
+	$ff_event = (int) get_parameter ('ff_event');
 }
 
 // MODULE UPDATE
-// =================
-if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modified something
-	if (isset ($_POST["form_combo_snmp_oid"])) {
-		$form_combo_snmp_oid = get_parameter_post ("form_combo_snmp_oid");
-		if ($snmp_oid == "") {
-			$snmp_oid = $form_combo_snmp_oid;
-		}
-	}
+if ($update_module) {
+	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$sql = sprintf ("UPDATE tagente_modulo SET 
-			descripcion = '%s', 
-			id_module_group = %d,
-			nombre = '%s', 
-			max = %d, 
-			min = %d, 
-			module_interval = %d, 
-			tcp_port = %d, 
-			tcp_send = '%s', 
-			tcp_rcv = '%s', 
-			snmp_community = '%s', 
-			snmp_oid = '%s', 
-			ip_target = '%s', 
-			flag = %d, 
-			id_modulo = %d, 
-			disabled = %d, 
-			id_export = %d, 
-			plugin_user = '%s', 
-			plugin_pass = '%s', 
-			plugin_parameter = '%s', 
-			id_plugin = %d, 
-			post_process = %f, 
-			prediction_module = %d, 
-			max_timeout = %d,
-			custom_id = '%s',
-			history_data = %d,
-			min_warning = %f,
-			max_warning = %f,
-			min_critical = %f,
-			max_critical = %f,
-			min_ff_event = %d 
-			WHERE id_agente_modulo = %d", $form_description, $form_id_module_group, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
-			$form_snmp_community, $form_snmp_oid, $form_ip_target, $form_flag, $form_id_modulo, $form_disabled, $form_id_export, $form_plugin_user, $form_plugin_pass,
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_custom_id, $form_history_data, $form_min_warning, $form_max_warning, $form_min_critical, $form_max_critical, $form_ff_event, $id_agente_modulo);
+	process_sql_update ('tagente_modulo',
+		array ('descripcion' => $description,
+			'id_module_group' => $id_module_group, 'nombre' => $name,
+			'max' => $maxvalue, 'min' => $minvalue, 'module_interval' => $interval,
+			'tcp_port' => $tcp_port, 'tcp_send' => $tcp_send,
+			'tcp_rcv' => $tcp_rcv, 'snmp_community' => $snmp_community,
+			'snmp_oid' => $snmp_oid, 'ip_target' => $ip_target,
+			'flag' => $flag, 'disabled' => $disabled,
+			'id_export' => $id_export, 'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass, 'plugin_parameter' => $plugin_parameter,
+			'id_plugin' => $id_plugin, 'post_process' => $post_process,
+			'prediction_module' => $prediction_module,
+			'max_timeout' => $max_timeout, 'custom_id' => $custom_id,
+			'history_data' => $history_data,
+			'min_warning' => $min_warning, 'max_warning' => $max_warning,
+			'min_critical' => $min_critical, 'max_critical' => $max_critical,
+			'min_ff_event' => $ff_event
+		),
+		'id_agente_modulo = '.$id_agent_module);
 	$result = process_sql ($sql);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
 	} else {
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
-	}
-
-}
-// =========================================================
-// OID Refresh button to get SNMPWALK from data in form
-// This code is also applied when submitting a new module (insert_module = 1)
-// =========================================================
-if (isset ($_POST["oid"])){
-	snmp_set_quick_print (1);
-	$snmpwalk = snmprealwalk ($form_ip_target, $form_snmp_community, '');
-	
-	if (empty ($snmpwalk)) {
-		echo '<h3 class="error">'.__('Cannot read from SNMP source').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('SNMP source has been scanned').'</h3>';
+		$id_agent_module = false;
+		$edit_module = false;
 	}
 }
 
-
-// =========================================================
 // MODULE INSERT
-// =========================================================
-
-if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])) && (isset ($_POST["insert_module"])) && (isset ($_POST['crtbutton']))) {
-
-	if (isset ($_POST["form_combo_snmp_oid"])) {
-		$combo_snmp_oid = get_parameter_post ("form_combo_snmp_oid");
+if ($create_module) {
+	if (isset ($_POST["combo_snmp_oid"])) {
+		$combo_snmp_oid = get_parameter_post ("combo_snmp_oid");
 	}
-	if ($form_snmp_oid == ""){
-		$form_snmp_oid = $combo_snmp_oid;
+	if ($snmp_oid == ""){
+		$snmp_oid = $combo_snmp_oid;
 	}
-	if ($form_tcp_port == "") {
-		$form_tcp_port= "0";
-	}
-	$sql = sprintf ("INSERT INTO tagente_modulo 
-		(id_agente, id_tipo_modulo, nombre, descripcion, max, min, snmp_oid, snmp_community,
-		id_module_group, module_interval, ip_target, tcp_port, tcp_rcv, tcp_send, id_export, 
-		plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module,
-		max_timeout, disabled, id_modulo, custom_id, history_data, min_warning, max_warning, min_critical, max_critical, min_ff_event) 
-		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,'%s', %d, %f, %f, %f, %f, %d)",
-			$id_agente, $form_id_tipo_modulo, $form_name, $form_description, $form_maxvalue, $form_minvalue, $form_snmp_oid, $form_snmp_community, 
-			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id, $form_history_data, $form_min_warning, $form_max_warning, $form_min_critical, $form_max_critical, $form_ff_event);
-	$id_agente_modulo = process_sql ($sql, 'insert_id');
-
-	if ($id_agente_modulo === false){
+	
+	$id_module = (int) get_parameter ('id_module');
+	
+	$id_agent_module = process_sql_insert ('tagente_modulo', 
+		array ('id_agente' => $id_agente,
+			'id_tipo_modulo' => $id_module_type,
+			'nombre' => $name, 'descripcion' => $description, 'max' => $maxvalue,
+			'min' => $minvalue, 'snmp_oid' => $snmp_oid,
+			'snmp_community' => $snmp_community,
+			'id_module_group' => $id_module_group, 'module_interval' => $interval,
+			'ip_target' => $ip_target, 'tcp_port' => $tcp_port,
+			'tcp_rcv' => $tcp_rcv, 'tcp_send' => $tcp_send,
+			'id_export' => $id_export, 'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass, 'plugin_parameter' => $plugin_parameter,
+			'id_plugin' => $id_plugin, 'post_process' => $post_process,
+			'prediction_module' => $id_prediction_module,
+			'max_timeout' => $max_timeout, 'disabled' => $disabled,
+			'id_modulo' => $id_module, 'custom_id' => $custom_id,
+			'history_data' => $history_data, 'min_warning' => $min_warning,
+			'max_warning' => $max_warning, 'min_critical' => $min_critical,
+			'max_critical' => $max_critical, 'min_ff_event' => $ff_event
+		));
+	
+	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
+		$edit_module = true;
 	} else {
-		$sql = sprintf ("INSERT INTO tagente_estado 
-			(id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp, status_changes, last_status) 
-			VALUES (%d, 0,'0000-00-00 00:00:00',0,%d,0,0,0)",$id_agente_modulo,$id_agente);
-		
-		$result = process_sql ($sql);
+		$result = process_sql_insert ('tagente_estado',
+			array ('id_agente_modulo' => $id_agent_module,
+				'datos' => 0, 'timestamp' => '0000-00-00 00:00:00',
+				'estado' => 0, 'id_agente' => $id_agente,
+				'utimestamp' => 0, 'status_changes' => 0,
+				'last_status' => 0
+			));
 		if ($result !== false) {
 			echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
 		} else {
 			echo '<h3 class="error">'.__('Module added successfully').' - '.__('Status init unsuccessful').'</h3>';
 		}
+		$id_agent_module = false;
+		$edit_module = false;
 	}
 }
 
@@ -610,7 +558,7 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
 	$id_grupo = (int) dame_id_grupo ($id_agente);	
 	
-	if (give_acl ($config["id_user"], $id_grupo, "AW") == 0){
+	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
@@ -657,16 +605,15 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
-
 switch ($tab) {
 	case "main":
 		require ("agent_manager.php");
 		break;
 	case "module":
-		if (($form_moduletype == "") && ($moduletype == "")) {
-			require ("module_manager.php");
-		} else {
+		if ($id_agent_module || $edit_module) {
 			require ("module_manager_editor.php");
+		} else {
+			require ("module_manager.php");
 		}
 		break;
 	case "alert":

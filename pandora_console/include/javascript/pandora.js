@@ -1,4 +1,3 @@
-
 /* Function to hide/unhide a specific Div id */
 function toggleDiv (divid){
 	if (document.getElementById(divid).style.display == 'none') {
@@ -33,3 +32,19 @@ function html_entity_decode (str) {
 	return ta.value;
 }
 
+/**
+ * Function to search an element in an array.
+ *
+ * Extends the array object to use it like a method in an array object. Example:
+ * <code>
+ a = Array (4, 7, 9);
+ alert (a.in_array (4)); // true
+ alert (a.in_array (5)); // false
+ */
+Array.prototype.in_array = function () {
+	for (var j in this) {
+		if(this[j] == arguments[0])
+			return true;
+	}
+	return false;
+}

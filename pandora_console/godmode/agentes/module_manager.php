@@ -31,7 +31,6 @@ echo "<h2>".__('Agent configuration')." &gt; ".__('Modules')."</h2>";
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo "<tr><td class='datos'>";
-echo '<select name="form_moduletype">';
 
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
@@ -48,16 +47,19 @@ if ($develop_bypass) {
 	$prediction_available = 1;
 }
 
-echo "<option value='dataserver'>".__('Create a new data server module');
-if ($network_available == 1)
-	echo "<option value='networkserver'>".__('Create a new network server module');
-if ($plugin_available == 1)
-	echo "<option value='pluginserver'>".__('Create a new plugin Server module');
-if ($wmi_available == 1)
-	echo "<option value='wmiserver'>".__('Create a new WMI Server module');
-if ($prediction_available == 1)
-	echo "<option value='predictionserver'>".__('Create a new prediction Server module');
-echo "</select></td>";
+$servers = array ();
+$servers['dataserver'] = __('Create a new data server module');
+if ($network_available)
+	$servers['networkserver'] = __('Create a new network server module');
+if ($plugin_available)
+	$servers['pluginserver'] = __('Create a new plugin Server module');
+if ($wmi_available)
+	$servers['wmiserver'] = __('Create a new WMI Server module');
+if ($prediction_available)
+	$servers['predictionserver'] = __('Create a new prediction Server module');
+print_select ($servers, 'moduletype', '', '', '', '', false, false, false);
+print_input_hidden ('edit_module', 1);
+echo '</td>';
 echo '<td class="datos">';
 echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 echo "</form>";
@@ -69,7 +71,7 @@ echo "</table>";
 
 echo "<h3>".__('Assigned modules')."</h3>";
 $sql1='SELECT * FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = "'.$id_agente.'"
-ORDER BY id_module_group, nombre ';
+	ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){
 	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
@@ -147,8 +149,8 @@ if ($row=mysql_num_rows($result)){
 		echo "<img src='images/cross.png' border=0 title='".__('Delete')."'>";
 		echo "</b></a>&nbsp;";
 		// Update module
-		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."&moduletype=$id_module#modules'>";
-		echo "<img src='images/config.png' border=0 title='".__('Update')."' onLoad='type_change()'></b></a>";
+		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&edit_module=1&id_agent_module=".$row["id_agente_modulo"]."'>";
+		echo "<img src='images/config.png' border=0 title='".__('Update')."'></b></a>";
 		
 		// Make a data normalization
 		if (($id_tipo == 22) OR ($id_tipo == 1) OR ($id_tipo == 4) OR ($id_tipo == 7) OR

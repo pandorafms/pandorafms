@@ -237,7 +237,6 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `time_threshold` int(10) NOT NULL default '0',
   `max_alerts` int(4) unsigned NOT NULL default '1',
   `min_alerts` int(4) unsigned NOT NULL default '0',
-  `alert_text` varchar(255) default '',
   `time_from` time default '00:00:00',
   `time_to` time default '00:00:00',
   `monday` tinyint(1) default 1,

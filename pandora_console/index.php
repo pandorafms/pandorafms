@@ -143,9 +143,10 @@ echo '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
 <meta name="robots" content="index, follow" />
 <link rel="icon" href="images/pandora.ico" type="image/ico" />
 <link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.js"></script>
-<script type="text/javascript" src="include/javascript/pandora.js"></script>';
+<script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
+<script type="text/javascript" src="include/javascript/pandora.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>';
 
 enterprise_hook ('load_html_header');
 

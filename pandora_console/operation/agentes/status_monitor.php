@@ -16,8 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
 require ("include/config.php");
 
@@ -39,24 +37,24 @@ $ag_group = get_parameter ("ag_group", -1);
 $offset = get_parameter ("offset", 0);
 $status = get_parameter ("status", 0);
 
-$URL = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60";
+$url = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60";
 echo "<form method='post' action='";
 if ($ag_group != -1)
-	$URL .= "&ag_group=".$ag_group;
+	$url .= "&ag_group=".$ag_group;
 
 // Module name selector
 // This code thanks for an idea from Nikum, nikun_h@hotmail.com
 if ($ag_modulename != "")
-    $URL .= "&ag_modulename=".$ag_modulename;
+	$url .= "&ag_modulename=".$ag_modulename;
 
 // Freestring selector
 if ($ag_freestring != "")
-    $URL .= "&ag_freestring=".$ag_freestring ;
+	$url .= "&ag_freestring=".$ag_freestring ;
 
 // Status selector
-$URL .= "&status=$status";
+$url .= "&status=$status";
 
-echo $URL;
+echo $url;
 
 // End FORM TAG
 echo "'>";
@@ -111,8 +109,8 @@ if ( isset($ag_modulename)){
 } 
 echo "<option>".__('All')."</option>";
 $sql='SELECT DISTINCT nombre 
-FROM tagente_modulo 
-WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
+	FROM tagente_modulo 
+	WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
 $result=mysql_query($sql);
 while ($row=mysql_fetch_array($result)){
 	echo "<option>".$row['0']."</option>";
@@ -137,13 +135,15 @@ $SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = 
 
 // Agent group selector
 if ($ag_group > 1)
-    $SQL .=" AND tagente.id_grupo = ".$ag_group;
+	$SQL .=" AND tagente.id_grupo = ".$ag_group;
 else {
 	// User has explicit permission on group 1 ?
 	$sql = sprintf ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='%s' AND id_grupo = 1", $config['id_user']);
+	
 	$all_group = get_db_sql ($sql);
-	if ($all_group == 0)
-		$SQL .= sprintf (" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='%s') ", $config['id_user']);
+	if (! $all_group)
+		$SQL .= sprintf (" AND tagente.id_grupo IN (%s) ",
+			implode (',', array_keys (get_user_groups ())));
 }
 
 // Module name selector
@@ -172,11 +172,11 @@ $SQL_COUNT = $SQL_pre_count . $SQL;
 
 $counter = get_db_sql ($SQL_COUNT);
 if ( $counter > $config["block_size"]) {
-	pagination ($counter, $URL, $offset);
+	pagination ($counter, $url, $offset);
 	$SQL_FINAL .= " LIMIT $offset , ".$config["block_size"];
 }
 
-
+$time = time ();
 if ($counter > 0) {
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 	<tr>
@@ -192,6 +192,7 @@ if ($counter > 0) {
 	$result=mysql_query($SQL_FINAL);
 
 	while ($data=mysql_fetch_array($result)){ //while there are agents
+		//print_r ($data);
 		if ($color == 1){
 			$tdcolor="datos";
 			$color =0;
@@ -232,7 +233,7 @@ if ($counter > 0) {
 		}
 
 		echo  "<td class='".$tdcolor."f9'>";
-		$seconds = time() - $data[9];
+		$seconds = $time - $data[9];
 		if ($seconds >= ($my_interval*2))
 			echo "<span class='redb'>";
 		else

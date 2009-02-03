@@ -1,3 +1,9 @@
+2009-02-03  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/agentes/status_monitor.php: Use get_user_groups() to
+	get the groups instead of querying the database directly. Style
+	correction. Set the time once before entering the loop.
+
 2009-02-02  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Removed an unneccesary "k"

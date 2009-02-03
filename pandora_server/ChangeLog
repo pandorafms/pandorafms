@@ -1,3 +1,12 @@
+2000-02-03  Sancho Lerena <slerena@artica.es>
+
+	* pandora_db.pl: BUGFIX. DB Maintance was deleting data older than 24hr
+	since commit of 12th January!.
+	
+	* pandora_wmi, pandora_network: Algorithm upgraded. First are executed 
+	modules with less margin until be considered down and modules with flag
+	of manual execution.
+	
 2000-01-16  Sancho Lerena <slerena@artica.es>
 
     * bin/pandora_plugin, pandora_wmi, pandora_recon: Updated server, better

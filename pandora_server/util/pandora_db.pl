@@ -38,8 +38,8 @@ my $dbpass='';
 my $server_threshold='';
 my $log_file="";
 my $pandora_path="";
-my $config_days_compact;
-my $config_days_purge;
+my $config_days_compact = 30; # Defaults 
+my $config_days_purge = 15; # Defaults
 my $config_step_compact;# Step compact variable defines "how-fine" is thecompact algorithm. 1 Hour its very fine, 24 hours is bad value
 
 # FLUSH in each IO
@@ -87,19 +87,21 @@ sub pandora_purgedb {
     my $limit_access = DateCalc("today","-24 hours",\$err);
     $limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
     my $ulimit_timestamp =  &UnixDate($limit_access,"%s");
+    
     print "[PURGE] Deleting old access data (More than 24hr) \n";
     $dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_timestamp'");
 
-    my $limit_event = DateCalc("today","-$config_days_purge days",\$err);
-    $limit_event = &UnixDate($limit_event,"%Y-%m-%d %H:%M:%S");
+	$limit_access = DateCalc("today","-$config_days_purge days",\$err);
+    $limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
+    $ulimit_timestamp =  &UnixDate($limit_access,"%s");
+
     print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
     $dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
     print "[PURGE] Deleting old data... \n";
-    $dbh->do ("DELETE FROM tagente_datos WHERE  utimestamp < '$ulimit_timestamp'");
+    $dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp'");
     print "[PURGE] Delete old data (string) ... \n";
-    $dbh->do ("DELETE FROM tagente_datos_string WHERE  utimestamp < '$ulimit_timestamp'");
-
+    $dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < '$ulimit_timestamp'");
 
     print "[PURGE] Delete old session data \n";
     db_delete ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);

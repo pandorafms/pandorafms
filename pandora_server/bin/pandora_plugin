@@ -209,6 +209,7 @@ sub pandora_plugin_producer ($) {
                         $query1 = "SELECT
                                 tagente_modulo.id_agente_modulo,
                                 tagente_modulo.flag
+                                UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left  
                         FROM
                                 tagente, tagente_modulo, tagente_estado
                         WHERE
@@ -229,11 +230,11 @@ sub pandora_plugin_producer ($) {
                                         (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()
                         )
                         ORDER BY
-                                        last_execution_try ASC  ";
+                                        tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC ";
                 } else {
                         # Query for MASTER SERVER !
                         $query1 = "SELECT
-                                        DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+                                        DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left  
                                 FROM
                                         tagente, tagente_modulo, tagente_estado
                                 WHERE
@@ -252,7 +253,8 @@ sub pandora_plugin_producer ($) {
                                         tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
                                 AND
                                         (tagente_modulo.flag = 1 OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() )
-                                ORDER BY last_execution_try ASC";
+                                ORDER BY 
+	                                	tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC";
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;

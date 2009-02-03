@@ -204,7 +204,7 @@ sub pandora_network_producer ($) {
 	while (1) {
 		if ($pa_config->{"pandora_master"} != 1) {
 		 # Query for normal server, not MASTER server
-                        $query1 = "SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag
+                        $query1 = "SELECT tagente_modulo.id_agente_modulo, tagente_modulo.flag, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left  
                         FROM
                                 tagente, tagente_modulo, tagente_estado
                         WHERE
@@ -227,11 +227,11 @@ sub pandora_network_producer ($) {
 			      ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()) 
                             ) 
                         ORDER BY
-                                last_execution_try ASC ";
+                                tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC ";
                 } else {
                         # Query for MASTER SERVER !
                         # Apparently the MASTER SERVER takes over a SLAVE SERVER tasks' when it's down. Made a subquery of it so it doesn't do 3-4 joins
-                        $query1 = "SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.last_execution_try
+                        $query1 = "SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.last_execution_try, UNIX_TIMESTAMP() - tagente_estado.current_interval - tagente_estado.last_execution_try  AS time_left  
                         FROM    
                                 tagente, tagente_modulo, tagente_estado
                         WHERE   
@@ -257,7 +257,7 @@ sub pandora_network_producer ($) {
 				OR 
 				((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() )
 			    )
-                        ORDER BY last_execution_try ASC";
+                        ORDER BY tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC";
                 }
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
@@ -686,17 +686,8 @@ sub exec_network_module {
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
 	
     } else {
-
-		if ($module_interval == 0){
-            $module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
-        }
-
 		# Modules who cannot connect or something go bad, update last_execution_try field
-		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 3);
-		my $query_act = "UPDATE tagente_estado SET current_interval = ($module_interval*5), last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
-		my $a_idages = $dbh->prepare($query_act);
-		$a_idages->execute;
-		$a_idages->finish();
+		update_on_error ($pa_config,  $id_agente_modulo, $dbh);
 	}
 }
 

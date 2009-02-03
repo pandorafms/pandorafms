@@ -91,15 +91,17 @@ sub pandora_purgedb {
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
 	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_timestamp'");
 
-	my $limit_event = DateCalc("today","-$config_days_purge days",\$err);
-	$limit_event = &UnixDate($limit_event,"%Y-%m-%d %H:%M:%S");
+	$limit_access = DateCalc("today","-$config_days_purge days",\$err);
+    $limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
+    $ulimit_timestamp =  &UnixDate($limit_access,"%s");
+
 	print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
 	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
 	print "[PURGE] Deleting old data... \n";
-	$dbh->do ("DELETE FROM tagente_datos WHERE  utimestamp < '$ulimit_timestamp'");
+	$dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp'");
 	print "[PURGE] Delete old data (string) ... \n";
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE  utimestamp < '$ulimit_timestamp'");
+	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < '$ulimit_timestamp'");
 
 	print "[PURGE] Delete pending deleted modules (data table)...\n";
 	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
@@ -109,7 +111,6 @@ sub pandora_purgedb {
 	
 	print "[PURGE] Delete pending deleted modules (data inc  table)...\n";
 	$dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	
 	
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
 	$dbh->do ("DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
@@ -504,9 +505,11 @@ sub help_screen{
 #
 ###############################################################################
 sub pandoradb_main {
+
+	print "Starting at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
 	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
 	pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
-	print "\n";
+	print "Ending at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
 	exit;
 }

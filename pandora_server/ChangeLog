@@ -1,3 +1,7 @@
+2009-02-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Use db_do instead of db_update.
+
 2000-02-03  Sancho Lerena <slerena@artica.es>
 
 	* pandora_db.pl: BUGFIX. DB Maintance was deleting data older than 24hr

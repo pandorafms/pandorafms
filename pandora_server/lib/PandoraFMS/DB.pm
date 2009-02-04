@@ -2400,7 +2400,7 @@ sub update_on_error {
 
         # Modules who cannot connect or something go bad, update last_execution_try field
         logger ($pa_config, "Cannot obtain Module from IdAgentModule $id_agent_module", 3);
-        db_update ("UPDATE tagente_estado 
+        db_do ("UPDATE tagente_estado 
 		SET current_interval = 300, last_execution_try = $utimestamp 
 		WHERE id_agente_modulo = $id_agent_module", $dbh);
 ;

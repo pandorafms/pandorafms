@@ -309,7 +309,7 @@ foreach ($traps as $trap) {
 	}
 	
 	//Custom
-	$data[4] = $trap["value_custom"];
+	$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
 
 	if (empty ($data[4])) {
 		$data[4] = __('N/A');

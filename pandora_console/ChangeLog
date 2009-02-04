@@ -1,3 +1,10 @@
+2009-02-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_db.php,
+	  godmode/snmpconsole/snmp_alert.php: Fixed SNMP alerts.
+
+	* operation/snmpconsole/snmp_view.php: Show Custom OID as a tooltip.
+
 2009-02-04  Esteban Sanchez  <estebans@artica.es>
 
 	* general/main_menu.php: The menu has been rewritten to be more

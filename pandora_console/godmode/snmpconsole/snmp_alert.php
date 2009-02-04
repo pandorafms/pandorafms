@@ -148,13 +148,13 @@ if (isset ($_GET["update_alert"])) {
 	echo '<tr><td class="datos">'.__('Alert type').'</td><td class="datos">';
 	
 	$fields = array ();
-	$result = get_db_all_rows_in_table ("talerta", "nombre");
+	$result = get_db_all_rows_in_table ("talert_templates", "name");
 	if ($result === false) {
 		$result = array ();
 	}
 
 	foreach ($result as $row) {
-		$fields[$row["id_alerta"]] = $row["nombre"];
+		$fields[$row["id"]] = $row["name"];
 	}
 	
 	print_select ($fields, "alert_type", $alert_type, '', '', '0', false, false, false);

@@ -511,7 +511,7 @@ function get_agent_name ($id_agent, $case = "upper") {
  * @return string Type name of the alert.
  */
 function get_alert_type ($id_type) {
-	return (string) get_db_value ('nombre', 'talerta', 'id_alerta', (int) $id_type);
+	return (string) get_db_value ('name', 'talert_templates', 'id', (int) $id_type);
 }
 
 /** 

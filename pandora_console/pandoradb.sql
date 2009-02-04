@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(1) unsigned default '1',
   `id_modulo` int(10) unsigned default '0',
-  `disabled` tinyint(1) unsigned default '0',
+  `disabled` tinyint(1) unsigned NOT NULL default '0',
   `id_export` smallint(4) unsigned default '0',
   `plugin_user` varchar(250) default '',
   `plugin_pass` varchar(250) default '',

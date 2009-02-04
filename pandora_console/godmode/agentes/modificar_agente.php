@@ -24,15 +24,23 @@ require_once ("include/config.php");
 check_login ();
 
 // Take some parameters (GET)
-$offset = get_parameter ("offset", 0);
-$group_id = get_parameter ("group_id", 0);
-$ag_group = get_parameter ("ag_group", -1);
-if (($ag_group == -1) && ($group_id != 0)) {
+$offset = (int) get_parameter ("offset");
+$group_id = (int) get_parameter ("group_id");
+$ag_group = get_parameter ("ag_group_refresh", -1);
+
+if ($ag_group == -1 )
+	$ag_group = (int) get_parameter ("ag_group", -1);
+
+if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
+
+if (! give_acl ($config["id_user"], $ag_group, "AW")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access agent manager");
+	require ("general/noaccess.php");
+	exit;
 }
-if (isset ($_GET["ag_group_refresh"])){
-	$ag_group = get_parameter_get ("ag_group_refresh", -1);
-}
+
 $search = get_parameter ("search", "");
 
 if (isset ($_GET["borrar_agente"])) { // if delete agent
@@ -68,7 +76,7 @@ echo "<td valign='top'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();'
 class='w130'>";
 
-if ( $ag_group > 1 ){
+if ($ag_group > 1) {
 	echo "<option value='".$ag_group."'>".get_group_name ($ag_group).
 	"</option>";
 }
@@ -77,8 +85,7 @@ $mis_grupos = list_group ($config["id_user"]); //Print combo for groups and set 
 echo "</select>";
 echo "<td valign='top'>
 <noscript>
-<input name='uptbutton' type='submit' class='sub upd'
-value='".__('Show')."'>
+<input name='uptbutton' type='submit' class='sub upd' value='".__('Show')."'>
 </noscript>
 </td>
 </form>
@@ -89,54 +96,65 @@ echo "</td><td>";
 
 // Show group selector
 if (isset($_POST["ag_group"])){
-        $group_mod = "&ag_group_refresh=".get_parameter_post ("ag_group");
+	$group_mod = "&ag_group_refresh=".get_parameter_post ("ag_group");
 } else {
-        $group_mod ="";
+	$group_mod ="";
 }
 
 echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60$group_mod'>";
 echo "<input type=text name='search' size='15' >";
 echo "</td><td valign='top'>";
-echo "<input name='srcbutton' type='submit' class='sub' 
-value='".__('Search')."'>";
+echo "<input name='srcbutton' type='submit' class='sub' value='".__('Search')."'>";
 echo "</form>";
 echo "</td></table>";
 
+$search_sql = '';
 if ($search != ""){
-        $search_sql = " nombre LIKE '%$search%' ";
+	$search_sql = " AND nombre LIKE '%$search%' ";
 } else {
-        $search_sql = " 1 = 1";
 }
 
 // Show only selected groups    
-if ($ag_group > 1){
-        $sql1="SELECT * FROM tagente WHERE id_grupo = $ag_group
-        AND $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
-        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo = $ag_group 
-        AND $search_sql ORDER BY nombre";
+if ($ag_group > 1) {
+	$sql = sprintf ('SELECT COUNT(*)
+		FROM tagente
+		WHERE id_grupo = %d
+		%s',
+		$ag_group, $search_sql);
+	$total_agents = get_db_sql ($sql);
+	
+	$sql = sprintf ('SELECT *
+		FROM tagente
+		WHERE id_grupo = %d
+		%s
+		ORDER BY nombre LIMIT %d, %d',
+		$ag_group, $search_sql, $offset, $config["block_size"]);
 } else {
-        // Is admin user ??
-        if (is_user_admin ($config["id_user"])) {
-                $sql1 = "SELECT * FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo";
-        } else {
-                $sql1="SELECT * FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='".$config["id_user"]."')  
-                ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='".$config["id_user"]."') ORDER BY nombre, id_grupo";
-        }
+	$sql = sprintf ('SELECT COUNT(*)
+		FROM tagente
+		WHERE id_grupo IN (%s)
+		%s',
+		implode (',', array_keys (get_user_groups ())),
+		$search_sql);
+	$total_agents = get_db_sql ($sql);
+	
+	$sql = sprintf ('SELECT *
+		FROM tagente
+		WHERE id_grupo IN (%s)
+		%s
+		ORDER BY nombre LIMIT %d, %d',
+		implode (',', array_keys (get_user_groups ())),
+		$search_sql, $offset, $config["block_size"]);
 }
 
-$result=mysql_query($sql1);
-$result2=mysql_query($sql2);
-$row2=mysql_fetch_array($result2);
-$total_events = $row2[0];
+$agents = get_db_all_rows_sql ($sql);
 
 // Prepare pagination
-pagination ($total_events, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group", $offset);
+pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group", $offset);
 echo "<div style='height: 20px'> </div>";
 
-if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
+if ($agents !== false) {
+	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='95%' class='databox'>";
 	echo "<th>".__('Agent name')."</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
 	echo "<th>".__('OS')."</th>";
@@ -144,8 +162,10 @@ if (mysql_num_rows($result)){
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('Delete')."</th>";
 	$color=1;
-	while ($row=mysql_fetch_array($result)){
-		$id_grupo = $row["id_grupo"];
+	foreach ($agents as $agent) {
+		$id_grupo = $agent["id_grupo"];
+		if (! give_acl ($config["id_user"], $id_grupo, "AW"))
+			continue;
 		if ($color == 1){
 			$tdcolor = "datos";
 			$color = 0;
@@ -154,58 +174,88 @@ if (mysql_num_rows($result)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		if (give_acl($config["id_user"], $id_grupo, "AW")==1){
-			// Agent name
-			echo "<tr><td class='$tdcolor'>";
-			if ($row["disabled"] == 1){
-				echo "<i>";
-			}
-			echo "<b><a href='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=main&
-			id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b>";
-			if ($row["disabled"] == 1){
-                                echo "<i>";
-                        }
-			echo "</td>";
-
-			echo "<td align='center' class='$tdcolor'>";
-			// Has remote configuration ?
-			$agent_md5 = md5($row["nombre"], FALSE);
-			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
-
-				echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$row["id_agente"]."&disk_conf=" . $agent_md5 . "'>";
-				echo "<img src='images/application_edit.png' border='0' align='middle' title='".__('Edit remote config')."'>";
-				echo "</A>";
-			}
-			echo "</td>";
-
-
-			// Operating System icon
-			echo "<td class='$tdcolor' align='center'>";
-			print_os_icon ($row["id_os"], false);
-			echo "</td>";
-			// Group icon and name
-			echo "<td class='$tdcolor' align='center'>".print_group_icon ($id_grupo, true)."</td>";
-			// Description
-			echo "<td class='".$tdcolor."f9'>".$row["comentarios"]."</td>";
-			// Action
-			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			borrar_agente=".$row["id_agente"]."'";
-			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			echo "<img border='0' src='images/cross.png'></a></td>";
+		
+		// Agent name
+		echo "<tr><td class='$tdcolor' width='40%'>";
+		if ($agent["disabled"]){
+			echo "<em>";
 		}
+		echo '<span class="left">';
+		echo "<strong><a href='index.php?sec=gagente&
+		sec2=godmode/agentes/configurar_agente&tab=main&
+		id_agente=".$agent["id_agente"]."'>".substr(strtoupper($agent["nombre"]),0,20)."</a></strong>";
+		if ($agent["disabled"]) {
+			echo "</em>";
+		}
+		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';
+		echo '<a href="index.php?sec=gagente&
+		sec2=godmode/agentes/configurar_agente&tab=main&
+		id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
+		echo ' | ';
+		echo '<a href="index.php?sec=gagente&
+			sec2=godmode/agentes/configurar_agente&tab=module&
+			id_agente='.$agent["id_agente"].'">'.__('Modules').'</a>';
+		echo ' | ';
+		echo '<a href="index.php?sec=gagente&
+			sec2=godmode/agentes/configurar_agente&tab=alert&
+			id_agente='.$agent["id_agente"].'">'.__('Alerts').'</a>';
+		echo ' | ';
+		echo '<a href="index.php?sec=estado
+			&sec2=operation/agentes/ver_agente
+			&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
+		
+		echo '</div>';
+		echo "</td>";
+
+		echo "<td align='center' class='$tdcolor'>";
+		// Has remote configuration ?
+		$agent_md5 = md5 ($agent["nombre"], false);
+		if (file_exists($config["remote_config"]."/".$agent_md5.".md5")) {
+
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=" . $agent_md5 . "'>";
+			echo "<img src='images/application_edit.png' border='0' align='middle' title='".__('Edit remote config')."'>";
+			echo "</a>";
+		}
+		echo "</td>";
+
+
+		// Operating System icon
+		echo "<td class='$tdcolor' align='center'>";
+		print_os_icon ($agent["id_os"], false);
+		echo "</td>";
+		// Group icon and name
+		echo "<td class='$tdcolor' align='center'>".print_group_icon ($id_grupo, true)."</td>";
+		// Description
+		echo "<td class='".$tdcolor."f9'>".$agent["comentarios"]."</td>";
+		// Action
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+		borrar_agente=".$agent["id_agente"]."'";
+		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		echo "<img border='0' src='images/cross.png'></a></td>";
 	}
 	echo "</table>";
-	echo "<table width='750'><tr><td align='right'>";
+	echo "<table width='95%'><tr><td align='right'>";
 } else {
 	echo "<div class='nf'>".__('There are no defined agents')."</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
-	// Create agent button
-	echo "<form method='post' action='index.php?sec=gagente&
-	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
-	echo "<input type='submit' class='sub next' name='crt'
-	value='".__('Create agent')."'>";
-	echo "</form></td></tr></table>";
+// Create agent button
+echo "<form method='post' action='index.php?sec=gagente&
+sec2=godmode/agentes/configurar_agente'>";
+print_input_hidden ('new_agent', 1);
+echo "<input type='submit' class='sub next' name='crt'
+value='".__('Create agent')."'>";
+echo "</form></td></tr></table>";
 ?>
+
+<script type="text/javascript">
+$(document).ready (function () {
+	$("table#agent_list tr").hover (function () {
+			$(".actions", this).css ("visibility", "");
+		},
+		function () {
+			$(".actions", this).css ("visibility", "hidden");
+		});
+});
+</script>

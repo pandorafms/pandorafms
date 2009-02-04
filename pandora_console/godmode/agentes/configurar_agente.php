@@ -28,7 +28,7 @@ $id_agente = (int) get_parameter ("id_agente", -1);
 
 $group = get_agent_group ($id_agente);
 
-if (! give_acl($config["id_user"], $group, "AW")) {
+if (! give_acl ($config["id_user"], $group, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
@@ -163,7 +163,7 @@ if ($create_agent) {
 			
 			if ($id_agent_module !== false) {
 				// Create agent_keepalive in tagente_estado table
-				$result = process_sql_insert ('tagente_modulo', 
+				$result = process_sql_insert ('tagente_estado', 
 					array ('id_agente_modulo' => $id_agent_module,
 						'datos' => '',
 						'timestamp' => 0,

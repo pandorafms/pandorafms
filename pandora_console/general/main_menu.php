@@ -18,65 +18,86 @@
 
 if (! isset ($config["id_user"])) {
 	require ("general/login_page.php");
-	exit();	
+	exit ();
 }
 
 //This is a helper function to print menu items
-function temp_print_menu ($menu, $type) {
-	echo '<div class="menu '.$type.'">';
+function temp_print_menu ($menu, $classtype) {
+	static $idcounter = 0;
 	
-	$sec = get_parameter ('sec');
-	$sec2 = get_parameter ('sec2');
+	echo '<div class="menu">';
+	
+	$sec = (string) get_parameter ('sec');
+	$sec2 = (string) get_parameter ('sec2');
+	
+	echo '<ul class="'.$classtype.'">';
 	
 	foreach ($menu as $mainsec => $main) {
-		//Set class
-		if (!isset ($main["sub"])) {
-			$main["sub"] = array ();
+		if (! isset ($main['id'])) {
+			$id = 'menu_'.++$idcounter;
+		} else {
+			$id = $main['id'];
 		}
 		
-		if (!isset ($main["refr"])) {
-			$main["refr"] = 0;
+		$submenu = false;
+		$classes = array ('menu_option');
+		if (isset ($main["sub"])) {
+			$classes[] = 'has_submenu';
+			$submenu = true;
 		}
+		if (!isset ($main["refr"]))
+			$main["refr"] = 0;
 		
 		if ($sec == $mainsec) {
-			$class = 'selected';
-			$selected = 1;
+			$classes[] = 'selected';
 		} else {
-			$class = '';
-			$selected = 0;
-			$style = "";
+			$classes[] = 'not_selected';
 		}
 		
-		//Print out the first level
-		echo '<ul'.($class ? ' class="'.$class.'"' : '').'>';
-		echo '<li class="mainmenu '.$class.'" id="'.$main["id"].'">';
-		echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
-		echo '</li>';
+		$output = '';
 		
+		if (! $submenu) {
+			$output .= '<li class="'.implode (" ", $classes).'" id="'.$id.'">';
+			$output .= '<div class="title">';
+			$output .= '<div class="menu_icon" id="icon_'.$id.'"><br /></div>';
+			//Print out the first level
+			$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
+			$output .= '</div>';
+			$output .= "</li>\n";
+			echo $output;
+			continue;
+		}
+		
+		$submenu_output = '';
+		$visible = false;
+		if (isset ($_COOKIE[$id]))
+			$visible = true;
+		$selected = false;
 		foreach ($main["sub"] as $subsec2 => $sub) {
 			//Set class
-			if (($sec2 == $subsec2) && (isset ($sub[$subsec2]["options"]))
+			if ($sec2 == $subsec2 && isset ($sub[$subsec2]["options"])
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
 				//If the subclass is selected and there are options and that options value is true 
-				$class = 'submenu selected';
-			} elseif ($sec2 == $subsec2 && (!isset ($sub[$subsec2]["options"]))) {
+				$class = ' submenu_selected';
+				$selected = true;
+				$visible = true;
+			} elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
 				//If the subclass is selected and there are no options
-				$class = 'submenu selected';
-			} elseif ($selected == 1) {
-				//If the mainclass is selected
-				$class = 'submenu';
+				$class = ' submenu_selected';
+				$selected = true;
+				$visible = true;
 			} else {
 				//Else it's invisible
-				$class = 'submenu invisible';
+				$class = '';
 			}
 			
-			if (!isset ($sub["refr"])) {
+			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
 			} 
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				echo '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"].'</a></li>';
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>\n";
 			} else {
 				//This is an internal link
 				if (isset ($sub[$subsec2]["options"])) {
@@ -84,13 +105,36 @@ function temp_print_menu ($menu, $type) {
 				} else {
 					$link_add = "";
 				}
-				echo '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
-				echo '</li>';
+				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
+				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
+				$submenu_output .= "</li>\n";
 			}
 		}
-		echo '</ul>';
+		
+		//Print out the first level
+		if ($visible)
+			$classes[] = 'has_submenu_visible';
+		
+		if ($selected) {
+			$classes[] = 'has_submenu_selected';
+		}
+		
+		$output .= '<li class="'.implode (" ", $classes).'" id="'.$id.'">';
+		$output .= '<div class="title">';
+		$output .= '<div class="menu_icon" id="icon_'.$id.'"><br /></div>';
+		$output .= '<div class="toggle"><br /></div>';
+		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
+		$output .= '</div>';
+		
+		$output .= '<div class="submenu'.$class.($visible ? '' : ' invisible').'">';
+		$output .= '<ul>';
+		$output .= $submenu_output;
+		$output .= '</ul>';
+		$output .= '</div>';
+		$output .= '</li>';
+		echo $output;
 	}
+	echo '</ul>';
 	//Invisible UL for adding border-top
 	echo '<ul style="height: 0px;">&nbsp;</ul></div>';
 }
@@ -98,12 +142,12 @@ function temp_print_menu ($menu, $type) {
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
 $menu = array ();
 require ("operation/menu.php");
-temp_print_menu ($menu, "int");
+temp_print_menu ($menu, "operation");
 
 echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
 $menu = array ();
 require ("godmode/menu.php");
-temp_print_menu ($menu, "int");
+temp_print_menu ($menu, "godmode");
 unset ($menu);
 
 require ("links_menu.php");

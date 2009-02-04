@@ -1,5 +1,22 @@
 2009-02-04  Esteban Sanchez  <estebans@artica.es>
 
+	* general/main_menu.php: The menu has been rewritten to be more
+	usable, bright and colorful. It's similar to Wordpress administration
+	menu. It requires a bit of javascript, but can still works without it.
+	Besides, Pandora can remember the menus positions using cookies.
+
+	* include/javascript/jquery.pandora.js: Added javascript code for
+	menu handling. Added cookie plugin.
+	
+	* include/styles/menu.css: Rewritten to be adapted to new menu system.
+
+	* include/styles/images/toggle.gif: Added to repository.
+
+	* include/styles/pandora.css: Set align-top to agent list table under
+	Manage agents.
+
+2009-02-04  Esteban Sanchez  <estebans@artica.es>
+
 	* general/login_page.php: Removed width of login error.
 
 	* godmode/agentes/agent_manager.php,

@@ -1,27 +1,29 @@
 /*
-// Pandora FMS - the Flexible Monitoring System
-// ============================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+ Pandora FMS - the Flexible Monitoring System
+ ============================================
+ Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
+ Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
+ Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+ Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
+ Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+ Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation version 2
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 .menu {
-	background-color: #e9f3d2;
-	border: 1px solid #dadbdc;
+	border-width: 1px 0 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
 	width: 155px;
 }
 .menu ul {
@@ -29,20 +31,28 @@
 	padding: 0;
 	margin: 0;
 }
-.menu li {
-	background-color: #e9f3d2;
+.menu li.menu_option {
 	border: 0px solid black;
 	border-bottom: 1px solid #d4d4d4;
-	padding: 5px 5px 5px 30px;
 	margin: 0;
 }
-.menu a, .menu a:hover {
-	font-family: Arial, Verdana, sans-serif, Helvetica;
+
+li.not_selected a {
+	background: #E9F3D2;
+}
+.menu a {
+	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
 	color: #000000;
 	display:block; /* This makes it so that the whole li is clickable */
 	text-decoration:none;
+	padding: 6px;
+	margin-left: 23px;
 }
 
+.menu a:hover {
+	text-decoration:none;
+	color: #D54E21;
+}
 /* This is for the dropout menu */
 .menu.int ul {
 	height: 26px;
@@ -63,117 +73,122 @@
 .menu.int ul.selected > .submenu {
 	height: 14px;
 }
-
 .submenu {
-	background:transparent url(../../images/arrow.png) no-repeat scroll 28px 4px;
+	background: #FFFFFF !important;
+	border-bottom-color: #AAAAAA !important;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-right-color: #D6D6D6 !important;
+	border-right-style: solid;
+	border-right-width: 1px;
+	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
+	margin: 0px 10px 0px 0;
+	
 }
-.submenu a {
-	padding-left: 10px;
+.submenu ul li a {
+	background: #FFFFFF !important;
+	border-style: none solid none none;
+	border-width: 0 1px 0 0;
+	border-color: #E9F3D2;
+	margin-left: 0;
 }
-
-/* Make invisible submenus invisible and take the text in */
-.submenu.invisible {
-	display:none;
-	position:relative;
-	top:-25px;
-	left:155px;
-	width:130px;
-	z-index:5;
-	background: #E9F3D2 url(../../images/arrow.png) no-repeat scroll 6px 4px;
-	padding-left: 8px;
+.submenu ul li a:hover {
+	background: #D6DCC6 !important;
 }
-
-/* But override on hover */
-.menu.int ul:hover > .submenu.invisible {
-	display: block;
+.submenu_selected {
+	font-weight: bold;
+	background-color: #F5F5F5 !important;
 }
-
-/* This is for ext links */
-.menu.links ul:hover {
-	height: inherit;
+.not_selected .submenu_not_selected a {
+	background-color: #FFFFFF !important;
 }
-
-.menu.links li {
-	background: #E9F3D2 url('../../images/link.png') no-repeat scroll 5px 8px;
+.menu li.selected .title {
+	background: #71AC6B;
 }
-
+.menu .not_selected .title {
+	background-color: #E9F3D2;
+}
+.menu .toggle {
+	clear: right;
+	float: right;
+	height: 27px;
+	width: 22px;
+	z-index: 1;
+}
+.menu .menu_icon {
+	clear: left;
+	float: left;
+	height: 27px;
+	width: 22px;
+}
+.menu ul li:hover > .title > .toggle, .menu ul li.selected > .title > .toggle {
+	background: transparent url(images/toggle.gif) no-repeat scroll !important;
+}
 /* Icons specified here */
-#oper-agents {
-	background:transparent url(../../images/bricks.png) no-repeat 4px 3px;
+div#icon_oper-agents {
+	background: transparent url(../../images/bricks.png) no-repeat 4px 8px;
 }
-#oper-servers {
-	background:transparent url(../../images/server_database.png) no-repeat 4px 3px;
+div#icon_oper-servers {
+	background: transparent url(../../images/server_database.png) no-repeat 4px 8px;
 }
-#oper-incidents {
-	background:transparent url(../../images/book_edit.png) no-repeat 4px 3px;
+div#icon_oper-incidents {
+	background: transparent url(../../images/book_edit.png) no-repeat 4px 8px;
 }
-#oper-events {
-	background:transparent url(../../images/lightning_go.png) no-repeat 4px 3px;
+div#icon_oper-events {
+	background: transparent url(../../images/lightning_go.png) no-repeat 4px 8px;
 }
 /* users */
-#oper-users {
-	background:transparent url(../../images/group.png) no-repeat 4px 3px;
+div#icon_oper-users {
+	background: transparent url(../../images/group.png) no-repeat 4px 8px;
 }
 /* trap console */
-#oper-snmpc, #god-snmpc {
-	background:transparent url(../../images/computer_error.png) no-repeat 4px 3px;
+div#icon_oper-snmpc, #god-snmpc {
+	background: transparent url(../../images/computer_error.png) no-repeat 4px 8px;
 }
-#oper-messages {
-	background:transparent url(../../images/email.png) no-repeat 4px 3px;
+div#icon_oper-messages {
+	background: transparent url(../../images/email.png) no-repeat 4px 8px;
 }
-#oper-reporting {
-	background:transparent url(../../images/reporting.png) no-repeat 4px 3px;
+div#icon_oper-reporting {
+	background: transparent url(../../images/reporting.png) no-repeat 4px 8px;
 }
-#oper-visualc {
-	background:transparent url(../../images/monitor.png) no-repeat 4px 3px;
+div#icon_oper-visualc {
+	background: transparent url(../../images/monitor.png) no-repeat 4px 8px;
 }
-#oper-extensions, #god-extensions {
-	background:transparent url(../../images/extensions.png) no-repeat 4px 3px;
+div#icon_oper-extensions, div#icon_god-extensions {
+	background: transparent url(../../images/extensions.png) no-repeat 4px 8px;
 }
 
 /* Godmode images */
-#god-agents {
-	background: url(../../images/god1.png) no-repeat 4px 3px;
+div#icon_god-agents {
+	background: transparent url(../../images/god1.png) no-repeat 4px 8px;
 }
-#god-modules {
-	background: url(../../images/brick.png) no-repeat 4px 3px;
+div#icon_god-modules {
+	background: transparent url(../../images/brick.png) no-repeat 4px 8px;
 }
-#god-alerts {
-	background: url(../../images/god2.png) no-repeat 4px 3px;
+div#icon_god-alerts {
+	background: transparent url(../../images/god2.png) no-repeat 4px 8px;
 }
-#god-dbmaint {
-	background: url(../../images/god8.png) no-repeat 4px 3px;
+div#icon_god-dbmaint {
+	background: transparent url(../../images/god8.png) no-repeat 4px 8px;
 }
-#god-users {
-	background: url(../../images/god3.png) no-repeat 4px 3px;
+div#icon_god-users {
+	background: transparent url(../../images/god3.png) no-repeat 4px 8px;
 }
-#god-reporting {
-	background: url(../../images/reporting_edit.png) no-repeat 4px 3px;
+div#icon_god-reporting {
+	background: transparent url(../../images/reporting_edit.png) no-repeat 4px 8px;
 }
-#god-profiles {
-	background: url(../../images/god4.png) no-repeat 4px 3px;
+div#icon_god-profiles {
+	background: transparent url(../../images/god4.png) no-repeat 4px 8px;
 }
-#god-servers {
-	background: url(../../images/god5.png) no-repeat 4px 3px;
+div#icon_god-servers {
+	background: transparent url(../../images/god5.png) no-repeat 4px 8px;
 }
-#god-audit {
-	background: url(../../images/god6.png) no-repeat 4px 3px;
+div#icon_god-audit {
+	background: transparent url(../../images/god6.png) no-repeat 4px 8px;
 }
-#god-setup {
-	background: url(../../images/god7.png) no-repeat 4px 3px;
-	
+div#icon_god-setup {
+	background: transparent url(../../images/god7.png) no-repeat 4px 8px;
 }
-
-/* inventory */
-#oper-inventory {
-	background:transparent url(../../images/page_white_text.png) no-repeat 4px 3px;
-}
-
-.mainmenu.selected, .submenu.selected, .menu li:hover,
-#oper-agents.selected, #oper-servers.selected, #oper-incidents.selected, #oper-events.selected, #oper-users.selected, #oper-snmpc.selected, #oper-messages.selected, #oper-reporting.selected, #oper-visualc.selected, #oper-extensions.selected,
-#oper-agents:hover, #oper-servers:hover, #oper-incidents:hover, #oper-events:hover, #oper-users:hover, #oper-snmpc:hover, #oper-messages:hover, #oper-reporting:hover, #oper-visualc:hover, #oper-extensions:hover,
-#god-agents:hover, #god-modules:hover, #god-alerts:hover, #god-dbmaint:hover, #god-users:hover, #god-reporting:hover, #god-profiles:hover, #god-servers:hover, #god-audit:hover, #god-setup:hover, #god-snmpc:hover, #god-extensions:hover,
-#god-agents.selected, #god-modules.selected, #god-alerts.selected, #god-dbmaint.selected, #god-users.selected, #god-reporting.selected, #god-profiles.selected, #god-servers.selected, #god-audit.selected, #god-setup.selected, #god-snmpc.selected, #god-extensions.selected
-{
-	background-color: #efefbd;
+div#icon_oper-inventory {
+	background: transparent url(../../images/page_white_text.png) no-repeat 4px 8px;
 }

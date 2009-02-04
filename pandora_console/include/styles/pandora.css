@@ -770,3 +770,6 @@ table#simple select#prediction_module {
 .clickable {
 	cursor: pointer;
 }
+table#agent_list tr {
+	vertical-align: top;
+}

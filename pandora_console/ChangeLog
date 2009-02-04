@@ -1,3 +1,21 @@
+2009-02-04  Esteban Sanchez  <estebans@artica.es>
+
+	* general/login_page.php: Removed width of login error.
+
+	* godmode/agentes/agent_manager.php,
+	godmode/agentes/configurar_agente.php: Fixed various errors when
+	creating an agent.
+
+	* godmode/agentes/alert_manager.php: Typo error on em closing element.
+	Use invisible class instead of style attribute.
+
+	* godmode/agentes/modificar_agente.php: Style correction. Improved a
+	bit the interface so the user can go directly to any tab. Fixed agent
+	creation parameter.
+
+	* pandoradb.sql: Make disabled field on tagente_modulo not null. It
+	could cause some server side errors.
+
 2009-02-02  Esteban Sanchez  <estebans@artica.es>
 	
 	* godmode/agentes/configurar_agente.php,

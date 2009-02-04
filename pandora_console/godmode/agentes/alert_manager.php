@@ -135,7 +135,7 @@ foreach ($modules as $id_agent_module => $module) {
 	$table->data[0][0] .= '<span class="module_values" style="float: right;">';
 	$table->data[0][0] .= '<em>'.__('Latest value').'</em>: ';
 	if ($last_data == '')
-		$table->data[0][0] .= '<em>'.__('Empty').'</emp>';
+		$table->data[0][0] .= '<em>'.__('Empty').'</em>';
 	elseif (is_numeric ($last_data))
 		$table->data[0][0] .= format_numeric ($last_data);
 	else
@@ -239,7 +239,7 @@ foreach ($modules as $id_agent_module => $module) {
 		}
 		$alert_data[1] .= '</ul>';
 		
-		$alert_data[1] .= '<div class="actions left" style="visibility: hidden; clear: left">';
+		$alert_data[1] .= '<div class="actions left invisible" style="clear: left">';
 		$alert_data[1] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
 		$alert_data[1] .= __('Add action');
 		$alert_data[1] .= '</a>';
@@ -261,7 +261,7 @@ if (isset($module)){
 	print_input_hidden ('add_action', 1);
 	print_input_hidden ('id_alert_module', 0);
 
-	echo '<form class="add_alert_form" method="post" style="display: none"
+	echo '<form class="add_alert_form" method="post" class="invisible"
 		action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.
 		$module['id_agente'].'">';
 	echo '<div style="float:left">';
@@ -278,7 +278,7 @@ if (isset($module)){
 	print_select ($actions, 'action', '', '', __('None'), 0);
 	echo '<br />';
 	echo '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
-	echo '<span class="advanced_actions" style="display: none">';
+	echo '<span class="advanced_actions invisible">';
 	echo __('From').' ';
 	print_input_text ('fires_min', -1, '', 4, 10);
 	echo ' '.__('to').' ';

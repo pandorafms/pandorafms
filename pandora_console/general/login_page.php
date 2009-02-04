@@ -32,7 +32,7 @@ echo '<div class="databox" id="login">
 
 if (isset ($login_failed)) {
 	echo '<tr><td colspan="3">';
-	echo '<h3 class="error" style="width: 200px">'.__('Login failed').': '.$config["auth_error"].'</h3>';
+	echo '<h3 class="error">'.__('Login failed').': '.$config["auth_error"].'</h3>';
 	echo '</td></tr>';
 }
 

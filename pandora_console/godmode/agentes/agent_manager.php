@@ -28,8 +28,8 @@ if (!isset ($id_agente)) {
 // ========================
 
 echo "<h2>".__('Agent configuration');
-if (isset($_GET["create_agent"])) {
-	$create_agent = 1;
+$new_agent = (bool) get_parameter ('new_agent');
+if ($new_agent) {
 	echo " &gt; ".__('Create agent');
 } else {
 	echo " &gt; ".__('Update agent');
@@ -82,7 +82,7 @@ if (file_exists ($filename['md5'])) {
 $table->data[1][0] = '<b>'.__('IP Address').'</b>';
 $table->data[1][1] = print_input_text ('direccion', $direccion_agente, '', 16, 100, true);
 
-if ($create_agent != 1) {
+if (! $new_agent) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
 	$ip_all = get_agent_addresses ($id_agente);
@@ -159,7 +159,7 @@ print_table ($table);
 unset ($table);
 
 echo '<div style="width: 650px; text-align: right;">';
-if ($create_agent == 1) {
+if ($new_agent) {
 	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	print_input_hidden ('create_agent', 1);
 } else {

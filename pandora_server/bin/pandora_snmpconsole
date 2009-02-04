@@ -197,8 +197,7 @@ sub calcula_alerta_snmp {
 	my $dbh = $_[6];
 	my $alert_fired = 0;
 	
-	my $query_idag = "select * from talert_snmp";
-	my $s_idag = $dbh->prepare($query_idag);
+	my $s_idag = $dbh->prepare("SELECT * FROM talert_snmp");
 	$s_idag ->execute;
 	my @data;
 	# Read all alerts and apply to this incoming trap 
@@ -273,15 +272,19 @@ sub calcula_alerta_snmp {
 					logger($pa_config,"Executing SNMP Trap alert for $agent - $alert_data",2);
 
                     # Create a hash for passing to execute_alert
-                    my %data_alert;
-                    $data_alert{'id_aam'} = 0;
-                    $data_alert{'id_agente_modulo'} = 0;
-                    $data_alert{'id_alerta'} = $id_alert;
-                    $data_alert{'al_campo1'} = $field1;
-                    $data_alert{'al_campo2'} = $field2;
-                    $data_alert{'al_campo3'} = $field3;
-                    $data_alert{'descripcion'} = $description;
-					$data_alert{'priority'} = $alert_priority;
+                    my %data_alert = (
+                    	'name' => '',
+                    	'id_agent_module' => 0,
+                    	'id_template_module' => 0,
+                    	'field1' => $field1,
+                    	'field2' => $field2,
+                    	'field3' => $field3,
+                    	'description' => $description,
+						'times_fired' => $times_fired,
+						'time_threshold' => 0,
+                    	'id_alert_action' => $id_alert,
+                    	'priority' => $alert_priority,
+					);
 
                     # Execute alert
 					execute_alert ($pa_config, \%data_alert, 0, 0, $agent, $trap_agente, 1, $dbh);

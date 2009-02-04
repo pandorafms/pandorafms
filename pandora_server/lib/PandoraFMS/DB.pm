@@ -540,7 +540,13 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 	                                      OR (" . $alert->{'times_fired'} . " >= fires_min AND " . $alert->{'times_fired'} . " <= fires_max))", $dbh);
 
 	if ($#actions < 0) {
-		return;
+		# Get default action
+		@actions = get_db_all_rows ("SELECT * FROM talert_actions, talert_commands
+	                                 WHERE talert_actions.id = " . $alert->{'id_alert_action'} .
+	                                 " AND talert_actions.id_alert_command = talert_commands.id", $dbh);
+		if ($#actions < 0) {
+			return;
+		}
 	}
 	
 	# Get agent address
@@ -566,7 +572,7 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 					  _address_ => $address,
 					  _timestamp_ => &UnixDate ("today", "%Y-%m-%d %H:%M:%S"),
 					  _data_ => $data,
-					  _alert_description_ => $alert->{'descripcion'},
+					  _alert_description_ => $alert->{'description'},
 					  _alert_threshold_ => $alert->{'time_threshold'},
 					  _alert_times_fired_ => $alert->{'times_fired'},
 					 );

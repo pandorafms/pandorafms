@@ -1,3 +1,17 @@
+2009-02-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/header.php: Added alt tags to images
+	
+	* include/functions_db.php: Fixed get_agent_modules function
+	
+	* include/functions_html.php: Fixed print_image and print_table to conform
+	to standards
+	
+	* index.php: Removed extra closing div that shouldn't be there and conform
+	to standards
+	
+	* godmode/agentes/alert_manager.php: Fixed JavaScript messyness for XHTML
+
 2009-02-05  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Hide actions and templates form.

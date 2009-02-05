@@ -97,7 +97,7 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	exit; //Always exit after sending location headers
 }
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>';
 
 // Pure mode (without menu, header and footer).
 $config["pure"] = (bool) get_parameter ("pure", 0);
@@ -157,9 +157,9 @@ echo '</head>';
 
 // Show custom background
 if ($config["pure"] == 0) {
-	echo '<body bgcolor="#555555">';
+	echo '<body style="background-color:#555555;">';
 } else {
-	echo '<body bgcolor="#ffffff">';
+	echo '<body>'; //Don't enforce a white background color. Let user style sheet do that
 }
 
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
@@ -287,7 +287,6 @@ if ($config["pure"] == 0) {
 if ($config["pure"] == 0) {
 	echo '<div id="foot">';
 	require ("general/footer.php");
-	echo '</div>';
 	echo '</div>';
 }
 

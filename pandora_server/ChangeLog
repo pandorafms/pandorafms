@@ -1,3 +1,7 @@
+2009-02-06  Sancho Lerena <slerena@artica.es>
+
+	* util/plugin/multicast.pl: Multicast check plugin.  
+
 2009-02-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Read template default action on alert

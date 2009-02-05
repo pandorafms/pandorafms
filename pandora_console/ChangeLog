@@ -1,4 +1,10 @@
 2009-02-05  Esteban Sanchez  <estebans@artica.es>
+	
+	* operation/visual_console/render_view.php: Recoverd countdown when
+	the map is on full screen. Autorefresh selector is also shown to be
+	easier to find.
+
+2009-02-05  Esteban Sanchez  <estebans@artica.es>
 
 	* general/links_menu.php: Added classes to links. Style correction.
 

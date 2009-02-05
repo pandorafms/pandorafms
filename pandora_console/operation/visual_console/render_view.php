@@ -25,7 +25,6 @@ $id_layout = (int) get_parameter ('id');
 $refr = (int) get_parameter ('refr');
 
 // Get input parameter for layout id
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (! $id_layout) {
 	audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access visual console without id layout");
 	include ("general/noaccess.php");
@@ -73,16 +72,51 @@ echo '</h1>';
 print_pandora_visual_map ($id_layout);
 
 
+$values = array ();
+$values[5] = "5 ". __('Seconds');
+$values[30] = "30 ". __('Seconds');
+$values[60] = "1 ". __('minutes');
+$values[120] = "2 ". __('minutes');
+$values[300] = "5 ". __('minutes');
+$values[600] = "10 ". __('minutes');
+$values[1800] = "30 ". __('minutes');
+
+$table->width = '500px';
+$table->data = array ();
+$table->data[0][0] = __('Autorefresh time');
+$table->data[0][1] = print_select ($values, 'refr', $refr, '', 'N/A', 0, true);
+$table->data[0][2] = print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
+
+echo "<div style='height:30px'>";
+echo "</div>";
+
+if ($config['pure'] && $refr != 0) {
+	echo '<div id="countdown"><br />';
+	echo '</div>';
+}
+
+echo "<div style='height:30px'>";
+echo "</div>";
+
 echo '<form method="post" action="index.php?sec=visualc&sec2=operation/visual_console/render_view">';
 print_input_hidden ('pure', $config["pure"]);
 print_input_hidden ('id', $id_layout);
 print_table ($table);
 echo "</form>";
-?>
 
+?>
+<?php if ($config["pure"] && $refr != 0): ?>
+<script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
+<link rel="stylesheet" href="include/styles/countdown.css" type="text/css" />
+<?php endif; ?>
 <script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
+<?php if ($config["pure"] && $refr != 0): ?>
+	t = new Date();
+	t.setTime (t.getTime() + 1);
+	$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
+<?php endif; ?>
 	draw_lines (lines, 'layout_map');
 });
 </script>

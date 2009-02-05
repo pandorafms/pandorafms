@@ -41,7 +41,6 @@ li.not_selected a {
 	background: #E9F3D2;
 }
 .menu a {
-	font-family: "Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif;
 	color: #000000;
 	display:block; /* This makes it so that the whole li is clickable */
 	text-decoration:none;

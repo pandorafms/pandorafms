@@ -1,0 +1,12 @@
+.title .toggle {
+	background: none;
+}
+.title .toggle {
+	background: transparent url(images/toggle.gif) no-repeat scroll !important;
+}
+
+.title a {
+	clear: none;
+	zoom: 100%;
+	padding: 1;
+}

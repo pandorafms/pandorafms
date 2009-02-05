@@ -1,3 +1,10 @@
+2009-02-05  Esteban Sanchez  <estebans@artica.es>
+
+	* general/links_menu.php: Added classes to links. Style correction.
+
+	* general/main_menu.php: Fixed an error when the selected option was
+	the last one in a submenu.
+
 2009-02-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php,

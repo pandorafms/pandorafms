@@ -302,10 +302,10 @@ function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
 	foreach ($result as $row) {
 		switch ($case) {
 		case "lower":
-			$agents[$row["id_agente"]] = mb_strtolower ($row["nombre"],"UTF-8");
+			$agents[$row["id_agente"]] = mb_strtolower ($row["nombre"], "UTF-8");
 		break;	
 		case "upper":
-			$agents[$row["id_agente"]] = mb_strtoupper ($row["nombre"],"UTF-8");
+			$agents[$row["id_agente"]] = mb_strtoupper ($row["nombre"], "UTF-8");
 		break;
 		default:
 			$agents[$row["id_agente"]] = $row["nombre"];

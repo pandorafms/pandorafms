@@ -1,4 +1,18 @@
 2009-02-05  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Hide actions and templates form.
+	Removed unncessary check when there's no module set.
+
+	* include/styles/ie.css: Added to repository. IE fixes. Added fixes
+	for menu, because IE doesn't support hover in other elements than a.
+
+	* include/styles/menu.css: Removed font-family property.
+
+	* include/functions_db.php: Style correction.
+
+	* index.php: Added IE CSS fixes if needed.
+
+2009-02-05  Esteban Sanchez  <estebans@artica.es>
 	
 	* operation/visual_console/render_view.php: Recoverd countdown when
 	the map is on full screen. Autorefresh selector is also shown to be

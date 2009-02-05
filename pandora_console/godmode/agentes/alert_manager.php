@@ -295,6 +295,7 @@ echo '</div></form>';
 <script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
 
 <script type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
 	$("table.modules tr").hover (
 		function () {
@@ -413,4 +414,5 @@ $(document).ready (function () {
 			}
 		);
 });
+/* ]]> */
 </script>

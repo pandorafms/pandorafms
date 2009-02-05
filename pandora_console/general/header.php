@@ -33,15 +33,15 @@ echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" sty
 echo '</td><td width="20">&nbsp;</td>';
 
 // First column (identifier)
-echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a>';
+echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot" alt="user" />&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a>';
 
 //First column, second row (logout button)
 echo '<br /><br />';
-echo '<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" class="bot">&nbsp;'. __('Logout').'</a>';
+echo '<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" alt="logout" class="bot" />&nbsp;'. __('Logout').'</a>';
 
 // Second column (link to main page)
 echo '</td><td width="20%">';
-echo '<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" class="bot">&nbsp;'.__('General information').'</a>';
+echo '<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" alt="info" class="bot" />&nbsp;'.__('General information').'</a>';
 
 //Second column, second row (System up/down)
 echo '<br /><br />';
@@ -51,13 +51,13 @@ $servers["up"] = (int) check_server_status ();
 $servers["down"] = $servers["all"] - $servers["up"];
 if ($servers["up"] == 0) {
 	//All Servers down or no servers at all
-	echo '<img src="images/cross.png" class="bot" />&nbsp;'.__('All systems').': '.__('Down');
+	echo '<img src="images/cross.png" alt="cross" class="bot" />&nbsp;'.__('All systems').': '.__('Down');
 } elseif ($servers["down"] != 0) {
 	//Some servers down
-	echo '<img src="images/error.png" class="bot" />&nbsp;'.$servers["down"].' '.__('servers down');
+	echo '<img src="images/error.png" alt="error" class="bot" />&nbsp;'.$servers["down"].' '.__('servers down');
 } else {
 	//All servers up
-    	echo '<img src="images/ok.png" class="bot" />&nbsp;'.__('All systems').': '.__('Ready');
+    	echo '<img src="images/ok.png" alt="ok" class="bot" />&nbsp;'.__('All systems').': '.__('Ready');
 }
 unset ($servers); // Since this is the header, we don't like to trickle down variables. 
 echo "</a>";
@@ -68,11 +68,11 @@ echo "</a>";
 echo '</td><td width="20%">';
 $refr = (int) get_parameter ("refr");
 if ($refr) {
-	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" />&nbsp;'. __('Autorefresh');
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
 	echo ' (<span id="refr">'.date ("i:s", $refr).'</span>)';
 	echo '</a>';
 } else {
-	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).(count($_GET)?"&":"?").'refr="><img src="images/page_lightning.png" class="bot" />&nbsp;'.__('Autorefresh').'</a>';
+	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).(count($_GET)?"&":"?").'refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
 	$values = array ('5' => '5 '.__('seconds'),
 		'10' => '10 '.__('seconds'),
 		'15' => '15 '.__('seconds'),
@@ -90,7 +90,7 @@ if ($refr) {
 
 //Events
 echo '<br /><br />';
-echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" class="bot" />&nbsp;'.__('Events').'</a>';
+echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot" />&nbsp;'.__('Events').'</a>';
 
 // Styled text
 echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
@@ -98,6 +98,7 @@ echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span>
 
 <script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
 <script language="javascript" type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
 <?php if ($refr): ?>
 	t = new Date();
@@ -124,4 +125,5 @@ $(document).ready (function () {
 	});
 <?php endif; ?>
 });
+/* ]]> */
 </script>

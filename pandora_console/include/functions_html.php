@@ -436,8 +436,10 @@ function print_table (&$table, $return = false) {
 		$table->border = '0px';
 	}
 	
-	if (empty ($table->tablealign)) {
-		$table->tablealign = 'center';
+	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
+		$table->tablealign = '';
+	} else {
+		$table->tablealign = 'float:'.$table->tablealign.';'; //Align is deprecated. Use float instead
 	}
 
 	if (!isset ($table->cellpadding)) {
@@ -454,7 +456,7 @@ function print_table (&$table, $return = false) {
 	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 
-	$output .= '<table width="'.$table->width.'" ';
+	$output .= '<table width="'.$table->width.'" style="'.$table->tablealign.'"';
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;
@@ -687,16 +689,19 @@ function print_help_tip ($text, $return = false) {
  */
 function print_image ($src, $return = false, $options = false) {
 	$output = '<img src="'.$src.'" ';
+	$style = '';
 	
 	if ($options) {
-		if (isset ($options['alt']))
-			$output .= 'alt="'.$options['alt'].'" ';
+		if (!isset ($options['alt']))
+			$options['alt'] = ''; //Alt is one of those tags that has to be set for w3 compliance
+			
+		$output .= 'alt="'.$options['alt'].'" ';
 		
 		if (isset ($options['border']))
-			$output .= 'border="'.$options['border'].'" ';
+			$style .= 'border:'.$options['border'].';'; //Border is deprecated. Use styles
 		
 		if (isset ($options['style']))
-			$output .= 'style="'.$options['style'].'" ';
+			$style .= $options['style'];
 		
 		if (isset ($options['title']))
 			$output .= 'title="'.$options['title'].'" ';
@@ -718,7 +723,7 @@ function print_image ($src, $return = false, $options = false) {
 		}
 	}
 	
-	$output .= '/>';
+	$output .= 'style="'.$style.'" />';
 	
 	if ($return)
 		return $output;

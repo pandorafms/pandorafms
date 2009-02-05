@@ -77,18 +77,18 @@ function temp_print_menu ($menu, $classtype) {
 			//Set class
 			if ($sec2 == $subsec2 && isset ($sub[$subsec2]["options"])
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
-				//If the subclass is selected and there are options and that options value is true 
-				$class = ' submenu_selected';
+				//If the subclass is selected and there are options and that options value is true
+				$class = 'submenu_selected';
 				$selected = true;
 				$visible = true;
 			} elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
 				//If the subclass is selected and there are no options
-				$class = ' submenu_selected';
+				$class = 'submenu_selected';
 				$selected = true;
 				$visible = true;
 			} else {
 				//Else it's invisible
-				$class = '';
+				$class = 'submenu_not_selected';
 			}
 			
 			if (! isset ($sub["refr"])) {
@@ -126,7 +126,7 @@ function temp_print_menu ($menu, $classtype) {
 		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
 		$output .= '</div>';
 		
-		$output .= '<div class="submenu'.$class.($visible ? '' : ' invisible').'">';
+		$output .= '<div class="submenu'.($visible ? '' : ' invisible').'">';
 		$output .= '<ul>';
 		$output .= $submenu_output;
 		$output .= '</ul>';

@@ -31,16 +31,14 @@
 	padding: 0;
 	margin: 0;
 }
-.menu li.menu_option {
+.menu li.selected, .menu li.not_selected {
 	border: 0px solid black;
 	border-bottom: 1px solid #d4d4d4;
 	margin: 0;
 }
 
-li.not_selected a {
-	background: #E9F3D2;
-}
-.menu a {
+.menu li a {
+	background-color: inherit;
 	color: #000000;
 	display:block; /* This makes it so that the whole li is clickable */
 	text-decoration:none;
@@ -52,142 +50,97 @@ li.not_selected a {
 	text-decoration:none;
 	color: #D54E21;
 }
-/* This is for the dropout menu */
-.menu.int ul {
-	height: 26px;
-}
-/* a selected ul has a height set in the style tag */
-.menu.int ul.selected {
-	height: inherit;
-}
-
-/* Force the hovered ul to be 28px unless the ul is selected */
-.menu.int ul:hover {
-	height: 26px;
-}
-.menu.int ul:hover.selected {
-	height: inherit;
-}
-
-.menu.int ul.selected > .submenu {
-	height: 14px;
-}
 .submenu {
-	background: #FFFFFF !important;
-	border-bottom-color: #AAAAAA !important;
-	border-bottom-style: solid;
-	border-bottom-width: 1px;
-	border-right-color: #D6D6D6 !important;
-	border-right-style: solid;
-	border-right-width: 1px;
 	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
 	margin: 0px 10px 0px 0;
-	
+	width:155px;
 }
-.submenu ul li a {
-	background: #FFFFFF !important;
-	border-style: none solid none none;
-	border-width: 0 1px 0 0;
-	border-color: #E9F3D2;
-	margin-left: 0;
-}
-.submenu ul li a:hover {
-	background: #D6DCC6 !important;
-}
-.submenu_selected {
-	font-weight: bold;
-	background-color: #F5F5F5 !important;
-}
-.not_selected .submenu_not_selected a {
-	background-color: #FFFFFF !important;
-}
-.menu li.selected .title {
-	background: #71AC6B;
-}
-.menu .not_selected .title {
+.submenu li a {
 	background-color: #E9F3D2;
+	margin-left: 0px;
+	padding-left: 29px;
+	display:block;
+	border-width: 1px 0 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
 }
-.menu .toggle {
-	clear: right;
-	float: right;
-	height: 27px;
-	width: 22px;
-	z-index: 1;
+.menu li.has_submenu.selected > a, .menu li:hover.has_submenu > a {
+	background: transparent url(images/toggle.gif) no-repeat 110px 2px;
 }
-.menu .menu_icon {
-	clear: left;
-	float: left;
-	height: 27px;
-	width: 22px;
+.menu li:hover.has_submenu ul.invisible {
+	display:block;
 }
-.menu ul li:hover > .title > .toggle, .menu ul li.selected > .title > .toggle {
-	background: transparent url(images/toggle.gif) no-repeat scroll !important;
+.menu li.links {
+	background: #E9F3D2 url(../../images/link.png) no-repeat 4px 8px;
+	border-width: 1px 0 0 1px;
+	border-style: solid;
+	border-color: #dadbdc;
 }
 /* Icons specified here */
-div#icon_oper-agents {
-	background: transparent url(../../images/bricks.png) no-repeat 4px 8px;
+#icon_oper-agents {
+	background: #E9F3D2 url(../../images/bricks.png) no-repeat 4px 4px;
 }
-div#icon_oper-servers {
-	background: transparent url(../../images/server_database.png) no-repeat 4px 8px;
+#icon_oper-servers {
+	background: #E9F3D2 url(../../images/server_database.png) no-repeat 4px 4px;
 }
-div#icon_oper-incidents {
-	background: transparent url(../../images/book_edit.png) no-repeat 4px 8px;
+#icon_oper-incidents {
+	background: #E9F3D2 url(../../images/book_edit.png) no-repeat 4px 4px;
 }
-div#icon_oper-events {
-	background: transparent url(../../images/lightning_go.png) no-repeat 4px 8px;
+#icon_oper-events {
+	background: #E9F3D2 url(../../images/lightning_go.png) no-repeat 4px 4px;
 }
 /* users */
-div#icon_oper-users {
-	background: transparent url(../../images/group.png) no-repeat 4px 8px;
+#icon_oper-users {
+	background: #E9F3D2 url(../../images/group.png) no-repeat 4px 4px;
 }
 /* trap console */
-div#icon_oper-snmpc, #god-snmpc {
-	background: transparent url(../../images/computer_error.png) no-repeat 4px 8px;
+#icon_oper-snmpc, #icon_god-snmpc {
+	background: #E9F3D2 url(../../images/computer_error.png) no-repeat 4px 4px;
 }
-div#icon_oper-messages {
-	background: transparent url(../../images/email.png) no-repeat 4px 8px;
+#icon_oper-messages {
+	background: #E9F3D2 url(../../images/email.png) no-repeat 4px 4px;
 }
-div#icon_oper-reporting {
-	background: transparent url(../../images/reporting.png) no-repeat 4px 8px;
+#icon_oper-reporting {
+	background: #E9F3D2 url(../../images/reporting.png) no-repeat 4px 4px;
 }
-div#icon_oper-visualc {
-	background: transparent url(../../images/monitor.png) no-repeat 4px 8px;
+#icon_oper-visualc {
+	background: #E9F3D2 url(../../images/monitor.png) no-repeat 4px 4px;
 }
-div#icon_oper-extensions, div#icon_god-extensions {
-	background: transparent url(../../images/extensions.png) no-repeat 4px 8px;
+#icon_oper-extensions, #icon_god-extensions {
+	background: #E9F3D2 url(../../images/extensions.png) no-repeat 4px 4px;
 }
 
 /* Godmode images */
-div#icon_god-agents {
-	background: transparent url(../../images/god1.png) no-repeat 4px 8px;
+#icon_god-agents {
+	background: #E9F3D2 url(../../images/god1.png) no-repeat 4px 4px;
 }
-div#icon_god-modules {
-	background: transparent url(../../images/brick.png) no-repeat 4px 8px;
+#icon_god-modules {
+	background: #E9F3D2 url(../../images/brick.png) no-repeat 4px 4px;
 }
-div#icon_god-alerts {
-	background: transparent url(../../images/god2.png) no-repeat 4px 8px;
+#icon_god-alerts {
+	background: #E9F3D2 url(../../images/god2.png) no-repeat 4px 4px;
 }
-div#icon_god-dbmaint {
-	background: transparent url(../../images/god8.png) no-repeat 4px 8px;
+#icon_god-dbmaint {
+	background: #E9F3D2 url(../../images/god8.png) no-repeat 4px 4px;
 }
-div#icon_god-users {
-	background: transparent url(../../images/god3.png) no-repeat 4px 8px;
+#icon_god-users {
+	background: #E9F3D2 url(../../images/god3.png) no-repeat 4px 4px;
 }
-div#icon_god-reporting {
-	background: transparent url(../../images/reporting_edit.png) no-repeat 4px 8px;
+#icon_god-reporting {
+	background: #E9F3D2 url(../../images/reporting_edit.png) no-repeat 4px 4px;
 }
-div#icon_god-profiles {
-	background: transparent url(../../images/god4.png) no-repeat 4px 8px;
+#icon_god-profiles {
+	background: #E9F3D2 url(../../images/god4.png) no-repeat 4px 4px;
 }
-div#icon_god-servers {
-	background: transparent url(../../images/god5.png) no-repeat 4px 8px;
+#icon_god-servers {
+	background: #E9F3D2 url(../../images/god5.png) no-repeat 4px 4px;
 }
-div#icon_god-audit {
-	background: transparent url(../../images/god6.png) no-repeat 4px 8px;
+#icon_god-audit {
+	background: #E9F3D2 url(../../images/god6.png) no-repeat 4px 4px;
 }
-div#icon_god-setup {
-	background: transparent url(../../images/god7.png) no-repeat 4px 8px;
+#icon_god-setup {
+	background: #E9F3D2 url(../../images/god7.png) no-repeat 4px 4px;
 }
-div#icon_oper-inventory {
-	background: transparent url(../../images/page_white_text.png) no-repeat 4px 8px;
+#icon_oper-inventory {
+	background: #E9F3D2 url(../../images/page_white_text.png) no-repeat 4px 4px;
 }

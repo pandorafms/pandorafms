@@ -1,3 +1,17 @@
+2009-02-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/styles/menu.css: Updated to make it look good again
+	
+	* general/main_menu.php: Updated to make it look good again. Also 
+	simplified to allow easier modification. If you want to make things
+	visible/selected again externally (JS or COOKIE), use the IF/ELSE 
+	construction with the big warning.
+	
+	* general/links_menu.php: Updated to conform to CSS
+	
+	* include/javascript/jquery.cookie.js: Added to mess with cookies for 
+	menu. I will do this in a future update
+
 2009-02-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/header.php: Added alt tags to images

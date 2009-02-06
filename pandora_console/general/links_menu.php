@@ -19,9 +19,9 @@ $sql = 'SELECT link, name FROM tlink ORDER BY name';
 $result = get_db_all_rows_sql ($sql);
 if ($result !== false) {
 	echo '<div class="tit bg4">:: '.__('Links').' ::</div>';
-	echo '<div class="menu links"><ul>';
+	echo '<div class="menu"><ul>';
 	foreach ($result as $link) {
-		echo '<li class="menu_option menu_link"><a href="'.$link["link"].'" target="_new">'.$link["name"].'</a></li>';
+		echo '<li class="links"><a href="'.$link["link"].'" target="_new">'.$link["name"].'</a></li>';
 	}
 	echo '</ul></div>';
 }

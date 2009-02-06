@@ -40,7 +40,7 @@ function temp_print_menu ($menu, $classtype) {
 		}
 		
 		$submenu = false;
-		$classes = array ('menu_option');
+		$classes = array ();
 		if (isset ($main["sub"])) {
 			$classes[] = 'has_submenu';
 			$submenu = true;
@@ -57,22 +57,13 @@ function temp_print_menu ($menu, $classtype) {
 		$output = '';
 		
 		if (! $submenu) {
-			$output .= '<li class="'.implode (" ", $classes).'" id="'.$id.'">';
-			$output .= '<div class="title">';
-			$output .= '<div class="menu_icon" id="icon_'.$id.'"><br /></div>';
-			//Print out the first level
-			$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
-			$output .= '</div>';
-			$output .= "</li>\n";
-			echo $output;
-			continue;
+			$main["sub"] = array (); //Empty array won't go through foreach
 		}
 		
 		$submenu_output = '';
-		$visible = false;
-		if (isset ($_COOKIE[$id]))
-			$visible = true;
 		$selected = false;
+		$visible = false;
+		
 		foreach ($main["sub"] as $subsec2 => $sub) {
 			//Set class
 			if ($sec2 == $subsec2 && isset ($sub[$subsec2]["options"])
@@ -87,7 +78,7 @@ function temp_print_menu ($menu, $classtype) {
 				$selected = true;
 				$visible = true;
 			} else {
-				//Else it's invisible
+				//Else it's not selected
 				$class = 'submenu_not_selected';
 			}
 			
@@ -97,7 +88,7 @@ function temp_print_menu ($menu, $classtype) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>\n";
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>";
 			} else {
 				//This is an internal link
 				if (isset ($sub[$subsec2]["options"])) {
@@ -106,37 +97,29 @@ function temp_print_menu ($menu, $classtype) {
 					$link_add = "";
 				}
 				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
-				$submenu_output .= "</li>\n";
+				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'"'.($class == 'submenu_selected' ? 'style="font-weight:bold;"' : '').'>'.$sub["text"].'</a>';
+				$submenu_output .= "</li>";
 			}
 		}
 		
 		//Print out the first level
-		if ($visible)
-			$classes[] = 'has_submenu_visible';
-		
-		if ($selected) {
-			$classes[] = 'has_submenu_selected';
+		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
+		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'"'.(($selected || in_array ("selected", $classes)) ? ' style="font-weight:bold;"' : '').'>'.$main["text"].'</a>';
+		if ($submenu_output != '') {
+			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
+			if ($visible || in_array ("selected", $classes)) {
+					$visible = true;
+			}
+			$output .= '<ul class="submenu'.($visible ? '' : ' invisible').'">';
+			$output .= $submenu_output;
+			$output .= '</ul>';			
 		}
-		
-		$output .= '<li class="'.implode (" ", $classes).'" id="'.$id.'">';
-		$output .= '<div class="title">';
-		$output .= '<div class="menu_icon" id="icon_'.$id.'"><br /></div>';
-		$output .= '<div class="toggle"><br /></div>';
-		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>';
-		$output .= '</div>';
-		
-		$output .= '<div class="submenu'.($visible ? '' : ' invisible').'">';
-		$output .= '<ul>';
-		$output .= $submenu_output;
-		$output .= '</ul>';
-		$output .= '</div>';
 		$output .= '</li>';
 		echo $output;
 	}
 	echo '</ul>';
 	//Invisible UL for adding border-top
-	echo '<ul style="height: 0px;">&nbsp;</ul></div>';
+	echo '<ul style="height: 0px;"><li>&nbsp;</li></ul></div>';
 }
 
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';

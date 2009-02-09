@@ -89,7 +89,7 @@ print_table ($table);
 unset ($table);
 
 echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
-echo '<thead><th colspan="2">'.__('Pandora FMS Overview').'</th></thead><tbody>';
+echo '<thead><tr><th colspan="2">'.__('Pandora FMS Overview').'</th></tr></thead><tbody>';
 
 $cells = array ();
 $cells[0][0] = __('Total agents');

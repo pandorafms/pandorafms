@@ -1,5 +1,13 @@
 2009-02-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* general/logon_ok.php: No tr in thead causes safari to spit an error
+	
+	* general/main_menu.php: Added jQuery animated menu rolling
+	
+	* include/styles/menu.css: Removed CSS-based menu rolling
+
+2009-02-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* general/header.php, general/footer.php: Made it comply with standards
 	
 	* general/main_menu.php: Fixed some typo's.

@@ -135,3 +135,14 @@ unset ($menu);
 
 require ("links_menu.php");
 ?>
+<script type="text/javascript" language="javascript">
+$(document).ready( function() {
+	$("li.has_submenu").bind("mouseenter", function() {
+		$(this).children("ul").slideDown ("slow");
+	});
+	
+	$("li.has_submenu.not_selected").click (function() {
+		$(this).children("ul").slideToggle ("slow");
+	});
+});
+</script>

@@ -67,9 +67,11 @@
 .menu li.has_submenu.selected > a, .menu li:hover.has_submenu > a {
 	background: transparent url(images/toggle.png) no-repeat 115px 5px;
 }
+/*
 .menu li:hover.has_submenu ul.invisible {
 	display:block;
 }
+*/
 .menu li.links {
 	background: #E9F3D2 url(../../images/link.png) no-repeat 4px 8px;
 	border-width: 1px 0 0 1px;

@@ -41,7 +41,6 @@ namespace Pandora {
 		Pandora_Module_List *modules;
 		long                 execution_number;
 		string               agent_name;
-		long                 interval;
 		long                 elapsed_transfer_time;
 		long                 transfer_interval;
 		bool                 started;
@@ -72,6 +71,8 @@ namespace Pandora {
 	public:
 		void           pandora_run  ();
 		void           pandora_init ();
+		
+		long           interval;
 	public:
 		static Pandora_Windows_Service *getInstance ();
 		

@@ -16,7 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// This is directory where placed "/attachment" directory, to upload files stores. 
+//Pandora Version
+$build_version = 'PC090120';
+$pandora_version = 'v2.1-dev';
+
+// Next is the directory where "/attachment" directory is placed, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir
 

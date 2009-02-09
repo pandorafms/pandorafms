@@ -25,10 +25,6 @@ if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
 }
 
-//Pandora Version
-$build_version = 'PC090209';
-$pandora_version = 'v2.1-dev';
-
 // Set to 1 to do not check for installer or config file (for development!).
 $develop_bypass = 1;
 

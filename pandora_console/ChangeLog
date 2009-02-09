@@ -1,3 +1,17 @@
+2009-02-09  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/images/toggle.png: Added png file. GIF will be removed.
+	
+	* include/styles/menu.css, ie.css: Updated to use toggle.png. Updated
+	headers.
+	
+	* include/config_process.php: Moved build to index (it was used by other
+	files that didn't included this file). Updated year.
+	
+	* index.php: Updated build.
+	
+	* general/error_noconfig.php: Updated year.
+
 2009-02-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/styles/menu.css: Updated to make it look good again

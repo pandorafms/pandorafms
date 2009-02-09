@@ -1,3 +1,11 @@
+2009-02-09  Esteban Sanchez  <estebans@artica.es>
+
+	* main.cc: Added a new parameter --process to run the agent as a
+	single process instead of a service.
+
+	* pandora_windows_service.h: Interval property is now public so it can
+	be readed if it's running as a single process.
+
 2008-12-03  Esteban Sanchez  <estebans@artica.es>
 
 	* bin/PandoraAgent.exe: Updated to last commit.

@@ -29,6 +29,7 @@
 #define SSH_TEST_CMDLINE_PARAM           "--test-ssh"
 #define FTP_TEST_CMDLINE_PARAM           "--test-ftp"
 #define HELP_CMDLINE_PARAM               "--help"
+#define PROCESS_CMDLINE_PARAM            "--process"
 
 int
 main (int argc, char *argv[]) {
@@ -36,6 +37,7 @@ main (int argc, char *argv[]) {
 	char                     buffer[PATH_SIZE];
 	string                   aux;
 	unsigned int             pos;
+	bool                     process = false;
 
 	service = Pandora_Windows_Service::getInstance ();
 	service->setValues (Pandora::name, Pandora::display_name,
@@ -91,8 +93,7 @@ main (int argc, char *argv[]) {
 			}
 		
 			return 0;
-		
-		}  else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
+		} else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
 			/* Help parameter */
 			cout << "Pandora agent for Windows. ";
 			cout << "Version " << getPandoraAgentVersion () << endl;
@@ -108,6 +109,8 @@ main (int argc, char *argv[]) {
 			cout << ":  Test the FTP Pandora Agent configuration." << endl;
 		
 			return 0;
+		} else if (_stricmp(argv[i], PROCESS_CMDLINE_PARAM) == 0) {
+			process = true;
 		} else {
 			/* No parameter recognized */
 			cout << "Pandora agent for Windows. ";
@@ -123,9 +126,18 @@ main (int argc, char *argv[]) {
 			return 1;
 		}
 	}
-	service->run ();
-
+	if (process) {
+		cout << "Pandora agent is now running" << endl;
+		service->pandora_init ();
+		while (1) {
+			service->pandora_run ();
+			Sleep (service->interval / 1000);
+		}
+	} else {
+		service->run ();
+	}
+	
 	delete service;
-
+	
 	return 0;
 }

@@ -97,8 +97,8 @@ function temp_print_menu ($menu, $classtype) {
 					$link_add = "";
 				}
 				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'"'.($class == 'submenu_selected' ? 'style="font-weight:bold;"' : '').'>'.$sub["text"].'</a>';
-				$submenu_output .= "</li>";
+				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'"'.($class == 'submenu_selected' ? ' style="font-weight:bold;"' : '').'>'.$sub["text"].'</a>';
+				$submenu_output .= '</li>';
 			}
 		}
 		

@@ -356,8 +356,6 @@ if (isset ($_GET["update_alert"])) {
 	echo '</div>';
 }
 ?>
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-
 <script language="javascript" type="text/javascript">
 function time_changed () {
 	var time = this.value;

@@ -289,11 +289,9 @@ print_submit_button (__('Add'), 'add', false, 'class="sub next"');
 print_input_hidden ('id_agent_module', 0);
 print_input_hidden ('create_alert', 1);
 echo '</div></form>';
+$config['jquery'][] = 'cluetip';
+$config['css'][] = 'cluetip';
 ?>
-
-<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {

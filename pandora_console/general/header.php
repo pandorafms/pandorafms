@@ -45,7 +45,7 @@ echo '<a class="white_bold" href="index.php?sec=main"><img src="images/informati
 
 //Second column, second row (System up/down)
 echo '<br /><br />';
-echo '<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">';
+echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
 $servers["all"] = (int) get_db_value ('COUNT(id_server)','tserver');
 $servers["up"] = (int) check_server_status ();
 $servers["down"] = $servers["all"] - $servers["up"];
@@ -68,11 +68,11 @@ echo "</a>";
 echo '</td><td width="20%">';
 $refr = (int) get_parameter ("refr");
 if ($refr) {
-	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : 'index.php?' ).'&amp;refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
 	echo ' (<span id="refr">'.date ("i:s", $refr).'</span>)';
 	echo '</a>';
 } else {
-	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).(count($_GET)?"&":"?").'refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
+	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : "index.php?" ).(count($_GET) ? "&amp;" : "?").'refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
 	$values = array ('5' => '5 '.__('seconds'),
 		'10' => '10 '.__('seconds'),
 		'15' => '15 '.__('seconds'),
@@ -90,13 +90,14 @@ if ($refr) {
 
 //Events
 echo '<br /><br />';
-echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot" />&nbsp;'.__('Events').'</a>';
+echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot" />&nbsp;'.__('Events').'</a>';
 
 // Styled text
 echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
+
+$config['jquery'][] = 'countdown';
 ?>
 
-<script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {

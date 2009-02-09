@@ -107,9 +107,6 @@ if ($id_group) {
 echo '</div>';
 echo '</form>';
 ?>
-
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-
 <script language="javascript" type="text/javascript">
 function icon_changed () {
 	var inputs = [];

@@ -438,7 +438,6 @@ if ($config["pure"]== 0) {
 	echo '</div><div style="clear:both;">&nbsp;</div>';
 }
 ?>
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script language="JavaScript" type="text/javascript">
 $(document).ready( function() {
 	$("INPUT[name='allbox']").click( function() {

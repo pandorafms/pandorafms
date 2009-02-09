@@ -432,18 +432,15 @@ if (! $edit_layout && ! $id_layout) {
 		echo '</div>';
 	}
 }
+
+$config['css'][] = 'color-picker';
+$config['jquery'][] = 'ui.core';
+$config['jquery'][] = 'ui.draggable';
+$config['jquery'][] = 'ui.droppable';
+$config['jquery'][] = 'colorpicker';
+$config['js'][] = 'pandora_visual_console';
 ?>
-
-<link rel="stylesheet" href="include/styles/color-picker.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-<script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.ui.core.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.ui.draggable.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.ui.droppable.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.colorpicker.js"></script>
-
 <script language="javascript" type="text/javascript">
-
 function agent_changed (event, id_agent, selected) {
 	if (id_agent == undefined)
 		id_agent = this.value;

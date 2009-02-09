@@ -207,10 +207,9 @@ if ($id_agent_module) {
 }
 echo '</div>';
 echo '</form>';
+$config['jquery'][] = 'ui';
+$config['jquery'][] = 'form';
 ?>
-
-<script type="text/javascript" src="include/javascript/jquery.ui.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.form.js"></script>
 
 <script language="javascript">
 /* Modules ids to check types */

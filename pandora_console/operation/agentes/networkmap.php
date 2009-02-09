@@ -383,12 +383,10 @@ if ($result !== false) {
 	
 	return;
 }
+
+$config['css'][] = 'cluetip';
+$config['jquery'][] = 'cluetip';
 ?>
-
-<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
-
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
 	$("area[title!='<?php echo $pandora_name; ?>']").cluetip ({

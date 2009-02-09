@@ -229,8 +229,9 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$date_to = $_POST["to_date"];
 		else 
 			$date_to = $ahora;
-		
-	echo "<script type='text/javaScript' src='include/javascript/calendar.js'></script>";
+	
+	$config['js'][] = 'calendar';
+
 	echo "<h2>".__('Pandora Agents')." &gt; ";
 	echo __('Export data')."</h2>";
 

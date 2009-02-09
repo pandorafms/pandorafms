@@ -179,7 +179,6 @@ elseif (isset ($_GET["insert_form"])) {
 // ********************************************************************************************************
 
 //This is for the pretty slide down attachment form
-echo '<script type="text/javascript" src="include/javascript/jquery.js"></script>';
 echo "<script type=\"text/javascript\">
 	$(document).ready(function() {
 		$('#file_control').hide();

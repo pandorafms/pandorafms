@@ -1,3 +1,36 @@
+2009-02-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/header.php, general/footer.php: Made it comply with standards
+	
+	* general/main_menu.php: Fixed some typo's.
+	
+	* include/javascript/jquery.pandora.js: This was loading an extension 
+	that has a separate file already
+	
+	* include/functions.php: Added process_page_head and process_page_body
+	these are callback functions for ob_start and add functionality like
+	conditional loading and external scripts in the correct places. Also adds
+	override functionality to certain items (like refresh) from anywhere
+	
+	* include/javascript/time_en.js: Added as a placeholder
+	
+	* extensions/update_manager.php: Fixed some typos
+	
+	* operation/agentes/exportdata.php, operation/agentes/networkmap.php,
+	operation/events/events.php, operation/extensions.php, 
+	operation/incidents/incident_detail.php, 
+	operation/reporting/reporting_viewer.php, 
+	operation/visual_console/render_view.php, 
+	godmode/agentes/alert_manager.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/planned_downtime.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/groups/configure_group.php, godmode/reporting/graph_builder.php,
+	godmode/reporting/map_builder.php, godmode/reporting/reporting_builder.php
+	godmode/snmpconsole/snmp_alert.php: Changed javascript, css and jquery 
+	loading to the new buffer callback handlers.
+
 2009-02-09  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php, general/error_noconfig.php, index.php:

@@ -97,70 +97,21 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	exit; //Always exit after sending location headers
 }
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>';
 
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>';
+ob_start ('process_page_head'); //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 // Pure mode (without menu, header and footer).
 $config["pure"] = (bool) get_parameter ("pure", 0);
 
-// Auto Refresh page
+// Auto Refresh page (can now be disabled anywhere in the script)
 $config["refr"] = (int) get_parameter ("refr", 0);
-if ($config["refr"] > 0) {
-	// Agent selection filters and refresh
-	$query = 'http' . (isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443)) {
-		$query .= ":" . $_SERVER['SERVER_PORT'];
-	}
-	
-	$query .= $_SERVER['SCRIPT_NAME'];
-	if (sizeof ($_REQUEST))
-		 //Some (old) browsers don't like the ?&key=var
-		$query .= '?1=1';
-		
-	//We don't clean these variables up as they're only being passed along
-	foreach ($_GET as $key => $value) {
-		/* Avoid the 1=1 */
-		if ($key == 1)
-			continue;
-		$query .= '&'.$key.'='.$value;
-	}
-	foreach ($_POST as $key => $value) {
-		$query .= '&'.$key.'='.$value;
-	}
-	
-	echo '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'">';
-}
 
 enterprise_include ('index.php');
-
-echo '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
-<meta http-equiv="expires" content="0" />
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="author" content="Sancho Lerena" />
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
-<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
-<meta name="robots" content="index, follow" />
-<link rel="icon" href="images/pandora.ico" type="image/ico" />
-<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css" />
-<!--[if gte IE 6]>
-<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
-<![endif]-->
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-<script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
-<script type="text/javascript" src="include/javascript/pandora.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>';
-
 enterprise_hook ('load_html_header');
 
-echo '</head>';
+echo '</head>'; //This tag is included in the buffer passed to process_page_head so technically it can be stripped
 
-// Show custom background
-if ($config["pure"] == 0) {
-	echo '<body style="background-color:#555555;">';
-} else {
-	echo '<body>'; //Don't enforce a white background color. Let user style sheet do that
-}
+ob_start ('process_page_body');
 
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
@@ -289,6 +240,7 @@ if ($config["pure"] == 0) {
 	require ("general/footer.php");
 	echo '</div>';
 }
-
-echo '</body></html>';
+echo '</div>'; //container div
+while (@ob_end_flush());
+echo '</html>';
 ?>

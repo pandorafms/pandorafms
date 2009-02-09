@@ -487,14 +487,14 @@ if ($step >= LAST_STEP) {
 }
 echo '</div>';
 echo '</form>';
+
+$config['jquery'][] = 'ui.core';
+$config['jquery'][] = 'timeentry';
+$config['jquery'][] = 'ui.core';
+$config['css'][] = 'timeentry';
+$config['js'][] = 'pandora_alerts';
+
 ?>
-
-<script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>
-<link rel="stylesheet" href="include/styles/timeentry.css" type="text/css" media="screen">
-<script src="include/javascript/jquery.ui.core.js"></script>
-<script src="include/javascript/jquery.timeentry.js"></script>
-<script src="include/languages/time_<?php echo $config['language']; ?>.js"></script>
-
 <script type="text/javascript">
 
 var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";

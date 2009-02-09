@@ -86,9 +86,8 @@ if ($id) {
 }
 echo '</div>';
 echo '</form>';
+$config['js'][] = 'pandora_alerts';
 ?>
-
-<script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>
 
 <script type="text/javascript">
 $(document).ready (function () {

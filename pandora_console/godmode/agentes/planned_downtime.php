@@ -310,17 +310,13 @@ if ($create_downtime || $update_downtime) {
 		echo "</form>";
 }
 
+$config['css'][] = 'datepicker';
+$config['css'][] 'timeentry';
+$config['jquery'][] = 'ui.core';
+$config['jquery'][] = 'ui.datepicker';
+$config['jquery'][] = 'timeentry';
+
 ?>
-
-<link rel="stylesheet" href="include/styles/datepicker.css" type="text/css" media="screen">
-<link rel="stylesheet" href="include/styles/timeentry.css" type="text/css" media="screen">
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-<script src="include/javascript/jquery.ui.core.js"></script>
-<script src="include/javascript/jquery.ui.datepicker.js"></script>
-<script src="include/languages/date_<?= $config['language'] ?>.js"></script>
-<script src="include/languages/time_<?= $config['language'] ?>.js"></script>
-<script src="include/javascript/jquery.timeentry.js"></script>
-
 <script language="javascript" type="text/javascript">
 
 $(document).ready (function () {

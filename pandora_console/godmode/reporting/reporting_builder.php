@@ -533,9 +533,6 @@ if ($edit_sla_report_content) {
 	echo "</form>";
 }
 ?>
-
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
-
 <script language="javascript" type="text/javascript">
 
 function refresh_table () {

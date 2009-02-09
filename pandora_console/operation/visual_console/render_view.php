@@ -104,12 +104,12 @@ print_input_hidden ('id', $id_layout);
 print_table ($table);
 echo "</form>";
 
+if ($config["pure"] && $refr != 0) {
+	$config['jquery'][] = 'countdown';
+	$config['css'][] = 'countdown';
+}
+$config['js'][] = 'pandora_visual_console';
 ?>
-<?php if ($config["pure"] && $refr != 0): ?>
-<script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
-<link rel="stylesheet" href="include/styles/countdown.css" type="text/css" />
-<?php endif; ?>
-<script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
 <?php if ($config["pure"] && $refr != 0): ?>

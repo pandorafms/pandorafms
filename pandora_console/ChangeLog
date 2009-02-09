@@ -1,5 +1,10 @@
 2009-02-09  Raul Mateos  <raulofpandora@gmail.com>
 
+	* include/config_process.php, general/error_noconfig.php, index.php:
+	Back to old build status. Now error_noconfig.php doesn't use build.
+
+2009-02-09  Raul Mateos  <raulofpandora@gmail.com>
+
 	* include/styles/images/toggle.png: Added png file. GIF will be removed.
 	
 	* include/styles/menu.css, ie.css: Updated to use toggle.png. Updated

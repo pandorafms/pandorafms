@@ -520,9 +520,10 @@ Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time)
  * Runs a program in a new process.
  *
  * @param command Command to run, with parameters
+ * @param flags Process creation flags
  */
 bool
-Pandora_Wmi::runProgram (string command) {
+Pandora_Wmi::runProgram (string command, DWORD flags) {
 	PROCESS_INFORMATION process_info;
 	STARTUPINFO         startup_info;
 	bool                success;
@@ -537,7 +538,7 @@ Pandora_Wmi::runProgram (string command) {
 	
 	pandoraDebug ("Start process \"%s\".", command.c_str ());
 	cmd = strdup (command.c_str ());
-	success = CreateProcess (NULL, cmd, NULL, NULL, FALSE, 0,
+	success = CreateProcess (NULL, cmd, NULL, NULL, FALSE, flags,
 				 NULL, NULL, &startup_info, &process_info);
 	pandoraFree (cmd);
 	

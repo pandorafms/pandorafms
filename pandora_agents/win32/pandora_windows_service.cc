@@ -207,7 +207,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 					       string pass,
 					       string opts)
 {
-	int     rc = 0;
+	bool    rc = false;
 	string  var, filepath;
 	string	tentacle_cmd;
 	
@@ -244,26 +244,14 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 		      filepath.c_str (), host.c_str ());
 	pandoraDebug ("Command %s", tentacle_cmd.c_str());
 
-	rc = system (tentacle_cmd.c_str());
-	switch (rc) {
-	
-		/* system() error */
-	case -1:
-		pandoraLog ("Unable to copy %s", filename.c_str ());
-		break;
-	
-		/* tentacle_client.exe returned OK */
-	case 0:
-		break;
-	
-		/* tentacle_client.exe error */
-	default:
-		pandoraDebug ("Tentacle client was unable to copy %s",
-			      filename.c_str ());
-		break;
+	rc = Pandora_Wmi::runProgram (tentacle_cmd.c_str(), CREATE_NO_WINDOW);
+	if (rc == true) {
+        return 0;
 	}
-
-	return rc;
+	
+    pandoraDebug ("Tentacle client was unable to copy %s",
+			      filename.c_str ());
+	return -1;
 }
 
 int

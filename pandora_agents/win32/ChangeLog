@@ -1,3 +1,11 @@
+2009-02-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc,
+	  windows/pandora_wmi.h: Allow custom process creation flags.
+
+	* pandora_windows_service.cc: Hide console window when calling
+	  tentacle client.
+
 2009-02-09  Esteban Sanchez  <estebans@artica.es>
 
 	* main.cc: Added a new parameter --process to run the agent as a

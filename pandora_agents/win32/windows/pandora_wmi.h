@@ -58,7 +58,7 @@ namespace Pandora_Wmi {
 	void          convertWMIDate        (string wmi_date,
 					     SYSTEMTIME *system_time);
 	
-	bool          runProgram            (string command);
+	bool          runProgram            (string command, DWORD flags = 0);
 	bool          startService          (string service_name);
 	bool          stopService           (string service_name);
  	void          runWMIQuery       (string wmi_query,

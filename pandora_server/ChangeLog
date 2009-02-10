@@ -1,3 +1,9 @@
+2009-02-10  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_network: An important BUG discovered in SNMP call locking
+	mechanism. Now calls to SNMP are using exec to snmpget command. Much  
+	faster due solved locking problems.
+
 2009-02-06  Sancho Lerena <slerena@artica.es>
 
 	* util/plugin/multicast.pl: Multicast check plugin.  

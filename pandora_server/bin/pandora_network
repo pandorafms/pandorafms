@@ -475,7 +475,7 @@ sub pandora_query_snmp (%$$$$$) {
 	my $snmp_retries = $pa_config->{'snmp_checks'};
 
 	$_[5] = 0;
-	my $output = `snmpget -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevq -c $snmp_community $snmp_target $snmp_oid`;
+	my $output = `snmpget -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid`;
 	if ($output eq ""){
 		$_[5] = 1;
 	}

@@ -29,7 +29,6 @@ use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 use threads::shared;
 
@@ -41,18 +40,14 @@ use PandoraFMS::DB;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 0;
+$| =0 ; 
 
 my %pa_config;
 my @pending_task : shared;
 my %pending_task_hash : shared;
 my %current_task_hash : shared;
-my $snmp_lock : shared;
 my $icmp_lock : shared;
 my $queue_lock : shared;
-
-$ENV{'MIBS'}="ALL";  #Load all available MIBs only once
-&SNMP::initMib();
 
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
@@ -141,8 +136,8 @@ sub pandora_network_consumer ($$) {
 	
 	LOOP: while (1) {
 		if ($counter > 10) {
-            threads->yield;
-			sleep (1);
+            		threads->yield;
+			sleep(1);
 			$counter = 0;
 		}
 		
@@ -164,6 +159,7 @@ sub pandora_network_consumer ($$) {
 		eval {
 			# Call network execution process
 			exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+
 		};
 		if ($@){
 			logger ($pa_config, "[ERROR] Network Task for module $data_id_agent_module causes a system exception", 0);
@@ -224,7 +220,7 @@ sub pandora_network_producer ($) {
 			      ((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()) 
                             ) 
                         ORDER BY
-                                tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC"; 
+                                tagente_modulo.flag DESC, time_left DESC, last_execution_try ASC ";
                 } else {
                         # Query for MASTER SERVER !
                         # Apparently the MASTER SERVER takes over a SLAVE SERVER tasks' when it's down. Made a subquery of it so it doesn't do 3-4 joins
@@ -303,7 +299,7 @@ sub pandora_ping_icmp {
 		my $p;
 	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes min
 		{
-			lock $icmp_lock;
+			#lock $icmp_lock;
 	 		$p = Net::Ping->new("icmp", $l_timeout, 32);
 		 	$result = $p->ping($dest);
 		}
@@ -459,7 +455,7 @@ next_pair:
 }
 
 ##########################################################################
-# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
+# SUB pandora_query_snmp (pa_config, oid, community, target, version, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
 sub pandora_query_snmp (%$$$$$) {
@@ -475,42 +471,14 @@ sub pandora_query_snmp (%$$$$$) {
 		$snmp_version = '1';
 	}
 
-    my $output ="";
-    my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
-    my $snmp_retries = $pa_config->{'snmp_checks'};
-	my $SESSION;
-	# Locking for SNMP call. SNMP is not thread safe !!
-	{
-		lock $snmp_lock;
-		$SESSION = new SNMP::Session (DestHost =>  $snmp_target,
-					Timeout   => $snmp_timeout,
-					Retries   => $snmp_retries,
-                    Community => $snmp_community,
-                    Version   => $snmp_version);
-	}
+	my $snmp_timeout = $pa_config->{"snmp_timeout"};
+	my $snmp_retries = $pa_config->{'snmp_checks'};
 
-	if ((!defined($SESSION)) || ($SESSION->{ErrorStr})) {
-        logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
-		$_[5] = "1";
-        if (defined($SESSION)){
-		    undef ($SESSION);
-        }
-		return 0;
-   	} 
-	my $oid = SNMP::translateObj($snmp_oid);
-	# Locking for SNMP call. SNMP is not thread safe !!
-	{
-		lock $snmp_lock;
-		$output = $SESSION->get($oid);
+	$_[5] = 0;
+	my $output = `snmpget -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevq -c $snmp_community $snmp_target $snmp_oid`;
+	if ($output eq ""){
+		$_[5] = 1;
 	}
-	if ((!defined($output)) || ($output eq "")) {
-               	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
-               	$_[5] = "1";
-		        undef ($SESSION);
-               	return 0;
-	}
-	$_[5] = "0";
-	undef ($SESSION);
 	return $output;
 }
 

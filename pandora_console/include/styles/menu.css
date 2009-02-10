@@ -44,6 +44,7 @@
 	text-decoration:none;
 	padding: 6px;
 	margin-left: 23px;
+	white-space: nowrap; /* Breaking the text breaks the menu. */
 }
 
 .menu a:hover {
@@ -64,14 +65,16 @@
 	border-style: solid;
 	border-color: #dadbdc;
 }
-.menu li.has_submenu.selected > a, .menu li:hover.has_submenu > a {
-	background: transparent url(images/toggle.png) no-repeat 115px 5px;
+.menu li img.toggle {
+	visibility: hidden;
+	float:right;
+	margin: -20px 2px 0 0; /* Positions it back where it should be */
 }
-/*
-.menu li:hover.has_submenu ul.invisible {
-	display:block;
+.menu li.has_submenu.selected > img.toggle, .menu li:hover.has_submenu > img.toggle {
+	visibility: visible;
+	z-index: 1; /* Positions it on top of the rest */
 }
-*/
+
 .menu li.links {
 	background: #E9F3D2 url(../../images/link.png) no-repeat 4px 8px;
 	border-width: 1px 0 0 1px;

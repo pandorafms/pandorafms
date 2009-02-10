@@ -1,3 +1,11 @@
+2009-02-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/main_menu.php: Modified it to go with Esteban's idea
+	
+	* include/styles/menu.css: Modified it to go with Esteban's idea
+
+	* include/javascript/jquery.pandora.js: Removed previous jquery stuff
+
 2009-02-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/logon_ok.php: No tr in thead causes safari to spit an error

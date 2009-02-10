@@ -104,7 +104,7 @@ function temp_print_menu ($menu, $classtype) {
 		
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
-		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'"'.(($selected || in_array ("selected", $classes)) ? ' style="font-weight:bold;"' : '').'>'.$main["text"].'</a>';
+		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'"'.(($selected || in_array ("selected", $classes)) ? ' style="font-weight:bold;"' : '').'>'.$main["text"].'</a><img class="toggle" src="include/styles/images/toggle.png" alt="toggle" />';
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
 			if ($visible || in_array ("selected", $classes)) {
@@ -134,15 +134,15 @@ temp_print_menu ($menu, "godmode");
 unset ($menu);
 
 require ("links_menu.php");
+
+$config['jquery'][] = 'cookie';
+print_r ($_COOKIE);
 ?>
 <script type="text/javascript" language="javascript">
 $(document).ready( function() {
-	$("li.has_submenu").bind("mouseenter", function() {
-		$(this).children("ul").slideDown ("slow");
-	});
-	
-	$("li.has_submenu.not_selected").click (function() {
-		$(this).children("ul").slideToggle ("slow");
+	$("img.toggle").click (function() {
+		$(this).siblings("ul").slideToggle ("slow");
+		return false; //In case the A gets activated, we don't want to follow link
 	});
 });
 </script>

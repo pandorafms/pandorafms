@@ -1,3 +1,7 @@
+2009-02-11  Sancho Lerena <slerena@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Added 3-month period
+
 2009-02-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/main_menu.php: Modified it to go with Esteban's idea

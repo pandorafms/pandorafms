@@ -44,7 +44,7 @@ function create_alert_command ($name, $command, $values = false) {
 	$sql = sprintf ('INSERT talert_commands (name, command, description)
 		VALUES ("%s", "%s", "%s")',
 		$name, $command, $values['description']);
-	return process_sql ($sql, 'insert_id');
+	return @process_sql ($sql, 'insert_id');
 }
 
 function update_alert_command ($id_alert_command, $name, $command, $description = '', $values = false) {
@@ -61,7 +61,7 @@ function update_alert_command ($id_alert_command, $name, $command, $description 
 	$sql = sprintf ('UPDATE talert_commands SET name = "%s", command = "%s",
 		description = "%s" WHERE id = %d',
 		$name, $command, $values['description'], $id_alert_command);
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function delete_alert_command ($id_alert_command) {
@@ -150,7 +150,7 @@ function create_alert_action ($name, $id_alert_command, $values = false) {
 		$name, $id_alert_command, $values['field1'], $values['field2'],
 		$values['field3']);
 	
-	return process_sql ($sql, 'insert_id');
+	return @process_sql ($sql, 'insert_id');
 }
 
 function update_alert_action ($id_alert_action, $id_alert_command, $name, $values = false) {
@@ -171,7 +171,7 @@ function update_alert_action ($id_alert_action, $id_alert_command, $name, $value
 		$name, $id_alert_command, $values['field1'], $values['field2'],
 		$values['field3'], $id_alert_action);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function delete_alert_action ($id_alert_action) {
@@ -375,7 +375,7 @@ function create_alert_template ($name, $type, $values = false) {
 		$values['time_threshold'], $values['max_alerts'],
 		$values['min_alerts'], $values['matches_value']);
 	
-	return process_sql ($sql, 'insert_id');
+	return @process_sql ($sql, 'insert_id');
 }
 
 function update_alert_template ($id_alert_template, $values = false) {
@@ -390,7 +390,7 @@ function update_alert_template ($id_alert_template, $values = false) {
 		WHERE id = %d',
 		format_array_to_update_sql ($values), $id_alert_template);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function delete_alert_template ($id_alert_template) {
@@ -571,7 +571,7 @@ function create_alert_agent_module ($id_agent_module, $id_alert_template, $value
 		$values['times_fired'], $values['disabled'], $values['priority'],
 		$values['force_execution']);
 	
-	return process_sql ($sql, 'insert_id');
+	return @process_sql ($sql, 'insert_id');
 }
 
 function update_alert_agent_module ($id_alert_agent_module, $values = false) {
@@ -587,7 +587,7 @@ function update_alert_agent_module ($id_alert_agent_module, $values = false) {
 		WHERE id = %d',
 		format_array_to_update_sql ($values), $id_alert_agent_module);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function delete_alert_agent_module ($id_alert_agent_module) {
@@ -598,7 +598,7 @@ function delete_alert_agent_module ($id_alert_agent_module) {
 		WHERE id = %d',
 		$id_alert_agent_module);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function get_alert_agent_module ($id_alert_agent_module) {
@@ -636,7 +636,7 @@ function set_alerts_agent_module_force_execution ($id_alert_agent_module) {
 		WHERE id = %d',
 		$id_alert_agent_module);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
@@ -646,7 +646,7 @@ function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
 		WHERE id = %d',
 		$disabled ? 1 : 0, $id_alert_agent_module);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
@@ -679,7 +679,7 @@ function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action
 		VALUES (%d, %d, %d, %d)',
 		$id_alert_agent_module, $id_alert_action, $fires_min, $fires_max);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function delete_alert_agent_module_action ($id_alert_agent_module, $id_alert_action) {
@@ -693,7 +693,7 @@ function delete_alert_agent_module_action ($id_alert_agent_module, $id_alert_act
 		AND id_alert_action = %d',
 		$id_alert_agent_module, $id_alert_action);
 	
-	return process_sql ($sql) !== false;
+	return @process_sql ($sql) !== false;
 }
 
 function get_alert_agent_module_actions ($id_alert_agent_module) {
@@ -740,16 +740,8 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 	
 	foreach ($alerts as $id) {
 		$alert = get_alert_agent_module ($id);
-		
-		if (! empty ($alert["id_agent_module"])) {
-			//Simple alert
-			$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
-			$group_id = get_agentmodule_group ($agent_id);
-		} else {
-			//Combined alert
-			$agent_id = $alert["id_agent"];
-			$group_id = get_agent_group ($agent_id);
-		}
+		$agent_id = get_agentmodule_agent ($alert["id_agent_module"]);
+		$group_id = get_agentmodule_group ($agent_id);
 		
 		if (! give_acl ($config['id_user'], $group_id, "AW")) {
 			continue;
@@ -764,6 +756,255 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 				get_alert_template_description ($alert["id_alert_template"]),
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id_agent_module"],
+				$id);
+		} elseif ($result === false) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/* Compound alerts */
+
+function get_alert_compound_threshold_values () {
+	/* At this moment we don't need different threshold values */
+	return get_alert_template_threshold_values ();
+}
+
+function get_alert_compound_operations () {
+	$operations = array ();
+
+	$operations['OR'] = 'OR';
+	$operations['AND'] = 'AND';
+	$operations['NOR'] = 'NOR';
+	$operations['NAND'] = 'NAND';
+	$operations['NXOR'] = 'NXOR';
+	
+	return $operations;
+}
+
+function clean_alert_compound_values ($values, $set_empty = true) {
+	$retvalues = array ();
+	
+	if ($set_empty) {
+		$retvalues['description'] = '';
+		$retvalues['time_threshold'] = 0;
+		$retvalues['max_alerts'] = 0;
+		$retvalues['min_alerts'] = 0;
+		$retvalues['monday'] = 0;
+		$retvalues['tuesday'] = 0;
+		$retvalues['wednesday'] = 0;
+		$retvalues['thursday'] = 0;
+		$retvalues['friday'] = 0;
+		$retvalues['saturday'] = 0;
+		$retvalues['sunday'] = 0;
+		$retvalues['time_from'] = '00:00';
+		$retvalues['time_to'] = '00:00';
+		$retvalues['time_threshold'] = '300';
+		$retvalues['recovery_notify'] = '';
+		$retvalues['field2_recovery'] = '';
+		$retvalues['field2_recovery'] = '';
+	}
+	
+	if (empty ($values))
+		return $retvalues;
+	
+	if (isset ($values['name']))
+		$retvalues['name'] = (string) $values['name'];
+	if (isset ($values['description']))
+		$retvalues['description'] = (string) $values['description'];
+	if (isset ($values['id_agent']))
+		$retvalues['id_agent'] = (int) $values['id_agent'];
+	if (isset ($values['time_threshold']))
+		$retvalues['time_threshold'] = (int) $values['time_threshold'];
+	if (isset ($values['max_alerts']))
+		$retvalues['max_alerts'] = (int) $values['max_alerts'];
+	if (isset ($values['min_alerts']))
+		$retvalues['min_alerts'] = (int) $values['min_alerts'];
+	/* Ensure max an min orders */
+	if (isset ($values['min_alerts']) && isset ($values['max_alerts'])) {
+		$max = max ($retvalues['max_alerts'], $retvalues['min_alerts']);
+		$min = min ($retvalues['max_alerts'], $retvalues['min_alerts']);
+		$retvalues['max_alerts'] = $max;
+		$retvalues['min_alerts'] = $min;
+	}
+	if (isset ($values['monday']))
+		$retvalues['monday'] = (bool) $values['monday'];
+	if (isset ($values['tuesday']))
+		$retvalues['tuesday'] = (bool) $values['tuesday'];
+	if (isset ($values['wednesday']))
+		$retvalues['wednesday'] = (bool) $values['wednesday'];
+	if (isset ($values['thursday']))
+		$retvalues['thursday'] = (bool) $values['thursday'];
+	if (isset ($values['friday']))
+		$retvalues['friday'] = (bool) $values['friday'];
+	if (isset ($values['saturday']))
+		$retvalues['saturday'] = (bool) $values['saturday'];
+	if (isset ($values['sunday']))
+		$retvalues['sunday'] = (bool) $values['sunday'];
+	if (isset ($values['time_from']))
+		$retvalues['time_from'] = (string) $values['time_from'];
+	if (isset ($values['time_to']))
+		$retvalues['time_to'] = (string) $values['time_to'];
+	if (isset ($values['time_threshold']))
+		$retvalues['time_threshold'] = (int) $values['time_threshold'];
+	if (isset ($values['recovery_notify']))
+		$retvalues['recovery_notify'] = (bool) $values['recovery_notify'];
+	if (isset ($values['field2_recovery']))
+		$retvalues['field2_recovery'] = (string) $values['field2_recovery'];
+	if (isset ($values['field3_recovery']))
+		$retvalues['field3_recovery'] = (string) $values['field3_recovery'];
+	
+	return $retvalues;
+}
+
+function create_alert_compound ($name, $id_agent, $values = false) {
+	if (empty ($name))
+		return false;
+	
+	$values = clean_alert_compound_values ($values);
+	$values['name'] = $name;
+	$values['id_agent'] = $id_agent;
+	
+	return @process_sql_insert ('talert_compound', $values);
+}
+
+function update_alert_compound ($id_alert_compound, $values = false) {
+	if (empty ($id_alert_compound))
+		return false;
+	$values = clean_alert_compound_values ($values, false);
+	
+	return @process_sql_update ('talert_compound', $values,
+		array ('id' => $id_alert_compound)) !== false;
+}
+
+function add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
+	if (empty ($id_alert_compound))
+		return false;
+	if (empty ($id_alert_template_module))
+		return false;
+	if (empty ($operation))
+		return false;
+	
+	$values = array ();
+	$values['id_alert_compound'] = $id_alert_compound;
+	$values['id_alert_template_module'] = $id_alert_template_module;
+	$values['operation'] = $operation;
+	
+	return @process_sql_insert ('talert_compound_elements', $values);
+}
+
+function get_alert_compound ($id_alert_compound) {
+	return get_db_row ('talert_compound', 'id', $id_alert_compound);
+}
+
+function get_alert_compound_actions ($id_alert_compound) {
+	if (empty ($id_alert_compound))
+		return false;
+	
+	$sql = sprintf ('SELECT id_alert_action id, fires_min, fires_max
+		FROM talert_compound_actions
+		WHERE id_alert_compound = %d',
+		$id_alert_compound);
+	$actions = get_db_all_rows_sql ($sql);
+	if ($actions === false)
+		return array ();
+	
+	$retval = array ();
+	foreach ($actions as $element) {
+		$action = get_alert_action ($element['id']);
+		$action['fires_min'] = $element['fires_min'];
+		$action['fires_max'] = $element['fires_max'];
+		array_push ($retval, $action);
+	}
+	
+	return $retval;
+}
+
+function get_alert_compound_name ($id_alert_compound) {
+	return (string) get_db_value ('name', 'talert_compund', 'id', $id_alert_compound);
+}
+
+function get_alert_compound_elements ($id_alert_compound) {
+	return get_db_all_rows_field_filter ('talert_compound_elements',
+		'id_alert_compound', $id_alert_compound);
+}
+
+function add_alert_compound_action ($id_alert_compound, $id_alert_action, $options = false) {
+	if (empty ($id_alert_compound))
+		return false;
+	if (empty ($id_alert_action))
+		return false;
+	
+	$fires_max = 0;
+	$fires_min = 0;
+	if ($options) {
+		$max = 0;
+		$min = 0;
+		if (isset ($options['fires_max']))
+			$max = (int) $options['fires_max'];
+		if (isset ($options['fires_min']))
+			$min = (int) $options['fires_min'];
+		
+		$fires_max = max ($max, $min);
+		$fires_min = min ($max, $min);
+	}
+	
+	$sql = sprintf ('INSERT INTO talert_compound_actions
+		VALUES (%d, %d, %d, %d)',
+		$id_alert_compound, $id_alert_action, $fires_min, $fires_max);
+	
+	return @process_sql ($sql) !== false;
+}
+
+function set_alerts_compound_disable ($id_alert_compound, $disabled) {
+	$id_alert_agent_module = safe_int ($id_alert_compound, 0);
+	$sql = sprintf ('UPDATE talert_compound
+		SET disabled = %d
+		WHERE id = %d',
+		$disabled ? 1 : 0, $id_alert_compound);
+	
+	return @process_sql ($sql) !== false;
+}
+
+/**
+ *  Validates a compound alert id or an array of alert id's
+ *
+ * @param mixed Array of compound alert ids or single id
+ *
+ * @return bool True if it was successful, false otherwise.
+ */
+function validate_alert_compound ($id_alert_compound) {
+	global $config;
+	require_once ("include/functions_events.php");
+	
+	$alerts = safe_int ($id_alert_compound, 1);
+	
+	if (empty ($alerts)) {
+		return false;
+	}
+	
+	$alerts = (array) $alerts;
+	
+	foreach ($alerts as $id) {
+		$alert = get_alert_compound ($id);
+		
+		$agent_id = $alert["id_agent"];
+		$group_id = get_agent_group ($agent_id);
+		
+		if (! give_acl ($config['id_user'], $group_id, "AW")) {
+			continue;
+		}
+		$result = process_sql_update ('talert_compound',
+			array ('times_fired' => 0,
+				'internal_counter' => 0),
+			array ('id' => $id));
+		
+		if ($result > 0) {
+			create_event ("Manual validation of compound alert for ".
+				$alert["name"],
+				$group_id, $agent_id, 1, $config["id_user"],
+				"alert_manual_validation", 1, $alert["id"],
 				$id);
 		} elseif ($result === false) {
 			return false;

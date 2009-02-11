@@ -53,13 +53,13 @@ if ($develop_bypass != 1) {
 	}
 }
 
-if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
+if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.php"))) {
 	include ("general/error_noconfig.php");
 	exit;
 }
 
 // Real start
-session_start();
+session_start ();
 require_once ("include/config.php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
@@ -99,17 +99,19 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>';
-ob_start ('process_page_head'); //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
+ //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
+ob_start ('process_page_head');
 // Pure mode (without menu, header and footer).
-$config["pure"] = (bool) get_parameter ("pure", 0);
+$config["pure"] = (bool) get_parameter ("pure");
 
 // Auto Refresh page (can now be disabled anywhere in the script)
-$config["refr"] = (int) get_parameter ("refr", 0);
+$config["refr"] = (int) get_parameter ("refr");
 
 enterprise_include ('index.php');
 enterprise_hook ('load_html_header');
 
-echo '</head>'; //This tag is included in the buffer passed to process_page_head so technically it can be stripped
+//This tag is included in the buffer passed to process_page_head so technically it can be stripped
+echo '</head>';
 
 ob_start ('process_page_body');
 
@@ -137,10 +139,9 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 		audit_db ("system", $REMOTE_ADDR, "Logon Failed (loginhash", "");
 		exit;
 	}
-}
-
-// Login process 
-elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
+} elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
+	// Login process 
+	
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
 	$nick = get_parameter_post ("nick"); //This is the variable with the login
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
@@ -187,7 +188,7 @@ if (isset ($_GET["bye"])) {
 
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
-session_write_close(); 
+session_write_close (); 
 
 // Header
 if ($config["pure"] == 0) {
@@ -219,7 +220,7 @@ if ($page != "") {
 			}
 		}
 	} else {
-		echo '<br><b class="error">'.__('Sorry! I can\'t find the page!').'</b>';
+		echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
 	}
 } else {
 	if (enterprise_hook ('load_logon_ok') === ENTERPRISE_NOT_HOOK) {
@@ -241,6 +242,6 @@ if ($config["pure"] == 0) {
 	echo '</div>';
 }
 echo '</div>'; //container div
-while (@ob_end_flush());
+while (@ob_end_flush ());
 echo '</html>';
 ?>

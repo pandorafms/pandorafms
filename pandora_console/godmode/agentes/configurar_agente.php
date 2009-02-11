@@ -277,38 +277,6 @@ if (isset($_GET["fix_module"])){
 	}
 }
 
-// Delete Alert component (from a combined)
-// ==========================================
-if (isset($_GET["delete_alert_comp"])) { // if modified some parameter
-	$id_borrar_modulo = get_parameter_get ("delete_alert_comp",0);
-	// get info about agent
-	$sql = sprintf ("DELETE FROM tcompound_alert WHERE id_aam = %d", $id_borrar_modulo);
-	$result = process_sql ($sql);
-	
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem deleting alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
-	}
-}
-
-// Combined ALERT - Add component
-// ================================
-if (isset($_POST["add_alert_combined"])) { // Update an existing alert
-	$alerta_id_aam = get_parameter ('update_alert', -1);
-	$component_item = get_parameter ('component_item', -1);
-	$component_operation = get_parameter ('component_operation', 'AND');
-	$sql = sprintf ("INSERT INTO tcompound_alert (id, id_aam, operation) VALUES (%d, %d, '%s')",
-		$alerta_id_aam, $component_item, $component_operation);
-	$result = process_sql ($sql);
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem creating the combined alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Combined alert successfully created').'</h3>';
-	}
-
-}
-
 // ================
 // Update AGENT
 // ================

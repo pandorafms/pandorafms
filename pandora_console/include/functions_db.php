@@ -352,9 +352,8 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
 function get_agent_modules ($id_agent, $details = false, $filter = false) {
 	$id_agent = safe_int ($id_agent, 1);
 	
-	if (empty ($id_agent)) {
-		$where = '';
-	} else {
+	$where = '';
+	if (! empty ($id_agent)) {
 		$where = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
 	

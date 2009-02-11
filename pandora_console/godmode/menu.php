@@ -61,7 +61,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 if (give_acl ($config['id_user'], 0, "LM")) {
 	$menu["galertas"]["text"] = __('Manage alerts');
-	$menu["galertas"]["sec2"] = "godmode/alerts/alert_templates";
+	$menu["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu["galertas"]["id"] = "god-alerts";
 	
 	$sub = array ();
@@ -70,6 +70,8 @@ if (give_acl ($config['id_user'], 0, "LM")) {
 	$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 	
 	$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
+	
+	$sub["godmode/alerts/alert_compounds"]["text"] = __('Compounds');
 	
 	$menu["galertas"]["sub"] = $sub;
 }

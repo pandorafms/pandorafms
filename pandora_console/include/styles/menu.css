@@ -36,7 +36,9 @@
 	border-bottom: 1px solid #d4d4d4;
 	margin: 0;
 }
-
+.menu li.selected {
+	background-color: #D3F389 !important;
+}
 .menu li a {
 	background-color: inherit;
 	color: #000000;
@@ -57,11 +59,11 @@
 	width:155px;
 }
 .submenu li a {
-	background-color: #E9F3D2;
+	background-color: #fff;
 	margin-left: 0px;
 	padding-left: 29px;
 	display:block;
-	border-width: 1px 0 0 1px;
+	border-width: 1px 1px 0 1px;
 	border-style: solid;
 	border-color: #dadbdc;
 }
@@ -69,18 +71,23 @@
 	visibility: hidden;
 	float:right;
 	margin: -20px 2px 0 0; /* Positions it back where it should be */
+	border-left: 1px;
 }
-.menu li.has_submenu.selected > img.toggle, .menu li:hover.has_submenu > img.toggle {
+.menu li.has_submenu.selected > img.toggle,
+.menu li:hover.has_submenu > img.toggle {
 	visibility: visible;
 	z-index: 1; /* Positions it on top of the rest */
 }
-
+.menu li.submenu_selected a {
+	font-weight: bold;
+}
 .menu li.links {
 	background: #E9F3D2 url(../../images/link.png) no-repeat 4px 8px;
 	border-width: 1px 0 0 1px;
 	border-style: solid;
 	border-color: #dadbdc;
 }
+
 /* Icons specified here */
 #icon_oper-agents {
 	background: #E9F3D2 url(../../images/bricks.png) no-repeat 4px 4px;

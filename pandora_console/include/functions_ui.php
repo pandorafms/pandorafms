@@ -231,21 +231,26 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
  * 
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
-function format_alert_row ($alert, $combined = false, $agent = true, $url = '') {
+function format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
 	require_once ("include/functions_alerts.php");
 	
 	if (empty ($alert))
 		return array ("", "", "", "", "", "", "");
 	
 	// Get agent id
-	$id_agente = get_agentmodule_agent ($alert["id_agent_module"]);
-	$template = get_alert_template ($alert['id_alert_template']);
-	
+	if ($compound) {
+		$id_agent = $alert['id_agent'];
+		$description = $alert['description'];
+	} else {
+		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
+		$template = get_alert_template ($alert['id_alert_template']);
+		$description = $template['description'];
+	}
 	$data = array ();
 	
 	// Force alert execution
 	$data[0] = '';
-	if (! $combined) {
+	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
 			$data[0] = '<a href="'.$url.'&id_alert='.$alert["id"].'&force_execution=1&refr=60"><img src="images/target.png" ></a>';
 		} else {
@@ -253,8 +258,8 @@ function format_alert_row ($alert, $combined = false, $agent = true, $url = '') 
 		}
 	}
 	
-	if ($combined == 1) {
-		$data[1] =  print_agent_name ($id_agente, true, 20);
+	if ($compound) {
+		$data[1] =  print_agent_name ($id_agent, true, 20);
 	} elseif ($agent == 0) {
 		$data[1] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	} else {
@@ -262,17 +267,20 @@ function format_alert_row ($alert, $combined = false, $agent = true, $url = '') 
 	}
 	
 	$data[2] = '<span class="left">';
-	$data[2] .= mb_substr (safe_input ($template["description"]), 0, 35);
-	$data[2] .= '</span> <span class="right">';
-	$data[2] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-	$data[2] .= '<img src="images/zoom.png" />';
-	$data[2] .= '</a></span>';
+	$data[2] .= mb_substr (safe_input ($description), 0, 35);
+	$data[2] .= '</span>';
+	if (! $compound) {
+		$data[2] .= ' <span class="right">';
+		$data[2] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
+		$data[2] .= '<img src="images/zoom.png" />';
+		$data[2] .= '</a></span>';
+	}
 	
 	$data[3] = print_timestamp ($alert["last_fired"], true);
 	
 	$options = array ();
-	$options["height"] = 9;
-	$options["width"] = 20;
+	$options["height"] = 18;
+	$options["width"] = 40;
 	
 	if ($alert["times_fired"] > 0) {
 		$options["src"] = "images/pixel_red.png";
@@ -287,7 +295,11 @@ function format_alert_row ($alert, $combined = false, $agent = true, $url = '') 
 	
 	$data[4] = print_image ($options["src"], true, $options);
 	
-	$data[5] = print_checkbox ("validate[]", $alert["id"], false, true);	
+	if ($compound) {
+		$data[5] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
+	} else {
+		$data[5] = print_checkbox ("validate[]", $alert["id"], false, true);
+	}
 	
 	return $data;
 }

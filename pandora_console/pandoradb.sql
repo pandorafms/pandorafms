@@ -284,11 +284,58 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE  IF NOT EXISTS `tcompound_alert` (
+CREATE TABLE IF NOT EXISTS `talert_compound` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `id_aam` int(10) unsigned NOT NULL default '0',
+  `name` varchar(255) default '',
+  `description` mediumtext,
+  `id_agent` int(10) unsigned NOT NULL,
+  `time_threshold` int(10) NOT NULL default '0',
+  `max_alerts` int(4) unsigned NOT NULL default '1',
+  `min_alerts` int(4) unsigned NOT NULL default '0',
+  `time_from` time default '00:00:00',
+  `time_to` time default '00:00:00',
+  `monday` tinyint(1) default 1,
+  `tuesday` tinyint(1) default 1,
+  `wednesday` tinyint(1) default 1,
+  `thursday` tinyint(1) default 1,
+  `friday` tinyint(1) default 1,
+  `saturday` tinyint(1) default 1,
+  `sunday` tinyint(1) default 1,
+  `recovery_notify` tinyint(1) default '0',
+  `field2_recovery` varchar(255) NOT NULL default '',
+  `field3_recovery` mediumtext NOT NULL,
+  `internal_counter` int(4) default '0',
+  `last_fired` bigint(20) NOT NULL default '0',
+  `last_reference` bigint(20) NOT NULL default '0',
+  `times_fired` int(3) NOT NULL default '0',
+  `disabled` tinyint(1) default '0',
+  `priority` tinyint(4) default '0',
+  PRIMARY KEY  (`id`),
+  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
+  `id_alert_compound` int(10) unsigned NOT NULL,
+  `id_alert_template_module` int(10) unsigned NOT NULL,
   `operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
-  PRIMARY KEY  (`id`, `id_aam`)
+  `order` tinyint(2) unsigned default 0,
+  UNIQUE  (`id_alert_compound`, `id_alert_template_module`, `operation`),
+  FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
+  `id_alert_compound` int(10) unsigned NOT NULL,
+  `id_alert_action` int(10) unsigned NOT NULL,
+  `fires_min` int(3) unsigned default 0,
+  `fires_max` int(3) unsigned default 0,
+  FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Priority : 0 - Maintance (grey)

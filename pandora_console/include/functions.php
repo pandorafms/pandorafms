@@ -1077,7 +1077,7 @@ function process_page_head ($string, $bitfield) {
 				continue;
 			}
 			array_push ($loaded, $style);
-			$output .= '<link rel="stylesheet" href="include/styles/'.$style.'.css" type="text/css" />';
+			$output .= '<link rel="stylesheet" href="include/styles/'.$style.'.css" type="text/css" />'."\n";
 		}
 	}
 	
@@ -1089,7 +1089,7 @@ function process_page_head ($string, $bitfield) {
 				continue;
 			}
 			array_push ($loaded, $javascript);
-			$output .= '<script type="text/javascript" src="include/javascript/'.$javascript.'.js"></script>';
+			$output .= '<script type="text/javascript" src="include/javascript/'.$javascript.'.js"></script>'."\n";
 		}
 	}
 	

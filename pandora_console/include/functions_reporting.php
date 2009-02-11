@@ -538,7 +538,8 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->head[5] = __('Times Fired');
 	
 	$alerts = get_agent_alerts ($id_agent);
-	foreach ($alerts as $alert) {
+	/* FIXME: Add compound alerts to the report. Some extra code is needed here */
+	foreach ($alerts['simple'] as $alert) {
 		$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
 		if (! $fires) {
 			continue;

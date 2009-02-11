@@ -1,3 +1,64 @@
+2009-02-11  Esteban Sanchez  <estebans@artica.es>
+
+	* general/main_menu.php, include/styles/menu.css: Selected menu style
+	is done with a CSS classs. Slide effect removed. Submenus have now
+	white background.
+
+	* godmode/agentes/alert_manager.php: Allow creation of alerts without
+	actions which have sense in compound alerts.
+
+	* include/javascript/jquery.pandora.js: Added showMessage() function.
+
+	* godmode/agentes/module_manager_editor.php: Use new showMessage()
+	jQuery function.
+
+	* godmode/alerts/configure_alert_compound.php: Added to repository.
+	New compound alert editor interface.
+
+	* godmode/alerts/alert_compounds.php: Added to repository. Compound
+	alert list.
+
+	* godmode/alerts/configure_alert_template.php: Better style for steps
+	of the editor.
+
+	* godmode/menu.php: Added compound alerts option. Changed default page
+	on Manage alerts.
+
+	* include/styles/pandora.css: Added style for editor steps. Added new
+	generic classes.
+
+	* include/functions.php: Added a new line when creating script list.
+
+	* include/functions_agents.php: Fixed alert tables fields. Renamed
+	get_agent_alerts_compound() and improved the returning value of
+	get_agent_alerts().
+
+	* include/functions_alerts.php: Added new functions to manage compound
+	alerts. Avoid SQL errors when using process_sql functions.
+
+	* include/functions_reporting.php: Temporary disabled compound alert
+	reports.
+
+	* include/functions_ui.php: Fixed format_alert_row() to fit compound
+	alerts.
+
+	* operation/agentes/alerts_status.php: Allow compound alert
+	validation. Removed effect of cluetip.
+
+	* pandoradb.sql, pandoradb_migrate_20_to_21.sql: New compound alert
+	tables (talert_compound, talert_compound_elements and
+	talert_compound_actions).
+	
+	* godmode/alerts/alert_list.php: Added to repository. Shows a list of
+	all the alerts defined. Would be improved in the future to allow
+	sorting and filtering.
+
+	* index.php, godmode/snmpconsole/snmp_alert.php,
+	include/functions_db.php: Code style correction.
+
+	* godmode/agentes/configurar_agente.php: Removed old compound alerts
+	code
+
 2009-02-11  Sancho Lerena <slerena@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Added 3-month period

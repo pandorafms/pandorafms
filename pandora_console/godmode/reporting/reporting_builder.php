@@ -399,6 +399,7 @@ if ($edit_sla_report_content) {
 		$periods[168] = __('1 week');
 		$periods[360] = __('2 weeks');
 		$periods[720] = __('1 month');
+		$periods[2160] = __('3 months');
 		$periods[4320] = __('6 months');
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true, false, false);
 

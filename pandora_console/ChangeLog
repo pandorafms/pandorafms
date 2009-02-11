@@ -1,3 +1,7 @@
+2009-02-11  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb_migrate_20_to_21.sql: Fixed typo.
+
 2009-02-11  Esteban Sanchez  <estebans@artica.es>
 
 	* general/main_menu.php, include/styles/menu.css: Selected menu style

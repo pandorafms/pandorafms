@@ -139,17 +139,17 @@ sub pandora_generate_alerts (%$$$$$$$) {
 
 	foreach my $alert_data (@alerts) {
 		my $rc = pandora_evaluate_alert($pa_config, $timestamp, $alert_data,
-										$module_data, $dbh);
+										$module_data, 0, $dbh);
 		pandora_process_alert ($pa_config, $timestamp, $rc, $agent_name,
-							   $id_agent, $id_group, $alert_data, $module_data,
+							   $id_agent, $id_group, $alert_data, $module_data, 0,
 							   $dbh);
 
 		# Evaluate compound alerts even if the alert status did not change in
 		# case the compound alert does not recover
-		#pandora_generate_compound_alerts ($pa_config, $timestamp,
-		#								  $agent_name, $id_agent,
-		#								  $alert_data->{'id_aam'},
-		#								  $id_group, 0, $dbh);
+		pandora_generate_compound_alerts ($pa_config, $timestamp,
+										  $agent_name, $id_agent,
+										  $alert_data->{'id_template_module'},
+										  $id_group, 0, $dbh);
 	}
 }
 
@@ -165,12 +165,13 @@ sub pandora_generate_alerts (%$$$$$$$) {
 ##  5 Reset internal counter (alert not fired, interval elapsed).
 ##########################################################################
 
-sub pandora_evaluate_alert (%$%$$$) {
+sub pandora_evaluate_alert ($$$$$$) {
 	my $pa_config = $_[0];
 	my $timestamp = $_[1];
 	my $alert_data = $_[2];
 	my $module_data = $_[3];
-	my $dbh = $_[4];
+	my $compound = $_[4];
+	my $dbh = $_[5];
 
 	my $status = 1; # Value returned on valid data
 	my $err;
@@ -217,46 +218,44 @@ sub pandora_evaluate_alert (%$%$$$) {
 	}
 
 	# Check for valid data
-	if ($alert_data->{'type'} eq "min" && $module_data >= $alert_data->{'min_value'}) {
-		return $status;
-	}
-	elsif ($alert_data->{'type'} eq "max" && $module_data <= $alert_data->{'max_value'}) {
-		return $status;
-	}
-	elsif ($alert_data->{'type'} eq "max_min") {
-	    if ($alert_data->{'matches_value'} == 1 &&
-	    	$module_data <= $alert_data->{'min_value'} &&
-	        $module_data >= $alert_data->{'max_value'}) {
+	if ($compound == 0) {
+		if ($alert_data->{'type'} eq "min" && $module_data >= $alert_data->{'min_value'}) {
 			return $status;
 		}
+		elsif ($alert_data->{'type'} eq "max" && $module_data <= $alert_data->{'max_value'}) {
+			return $status;
+		}
+		elsif ($alert_data->{'type'} eq "max_min") {
+			if ($alert_data->{'matches_value'} == 1 &&
+				$module_data <= $alert_data->{'min_value'} &&
+				$module_data >= $alert_data->{'max_value'}) {
+				return $status;
+			}
 
-	    if ($module_data >= $alert_data->{'min_value'} &&
-	        $module_data <= $alert_data->{'max_value'}) {
+			if ($module_data >= $alert_data->{'min_value'} &&
+				$module_data <= $alert_data->{'max_value'}) {
+				return $status;
+			}
+		}
+		elsif ($alert_data->{'type'} eq "equal" && $module_data != $alert_data->{'value'}) {
 			return $status;
 		}
-	}
-	elsif ($alert_data->{'type'} eq "equal" && $module_data != $alert_data->{'value'}) {
-		return $status;
-	}
-	elsif ($alert_data->{'type'} eq "not_equal" && $module_data == $alert_data->{'value'}) {
-		return $status;
-	}
-	elsif ($alert_data->{'type'} eq "regex") {
-		if ($alert_data->{'value'} == 1 && $module_data =~ m/$alert_data->{'value'}/i) {
+		elsif ($alert_data->{'type'} eq "not_equal" && $module_data == $alert_data->{'value'}) {
 			return $status;
 		}
-		
-		if ($module_data !~ m/$alert_data->{'value'}/i) {
-			return $status;
+		elsif ($alert_data->{'type'} eq "regex") {
+			if ($alert_data->{'value'} == 1 && $module_data =~ m/$alert_data->{'value'}/i) {
+				return $status;
+			}
+			
+			if ($module_data !~ m/$alert_data->{'value'}/i) {
+				return $status;
+			}
 		}
 	}
-
-	#if ($id_module_type == -1) {
-	#if (pandora_evaluate_compound_alert($pa_config,
-	#									 $alert_data->{'id_aam'},
-	#									 $dbh) == 0) {
-	#	return $status
-	#}
+	elsif (pandora_evaluate_compound_alert($pa_config, $alert_data->{'id'}, $dbh) == 0) {
+		return $status
+	}
 
 	# Check min and max alert limits
 	if (($alert_data->{'internal_counter'} < $alert_data->{'min_alerts'}) ||
@@ -283,20 +282,34 @@ sub pandora_process_alert (%$$$$$%$$) {
 	my $id_group = $_[5];
 	my $alert_data = $_[6];
 	my $module_data = $_[7];
-	my $dbh = $_[8];
+	my $compound = $_[8];
+	my $dbh = $_[9];
 
 	# Do not execute
 	if ($rc == 1) {
 		return;
 	}
 
+	# Compound or simple alert?
+	my $table;
+	my $id;
+
+	if ($compound == 0) {
+		$table = 'talert_template_modules';
+		$id = 'id_template_module';
+	}
+	else {
+		$table = 'talert_compound';
+		$id = 'id';
+	}
+
 	# Cease
 	if ($rc == 3) {
 
 		# Update alert status
-		db_do("UPDATE talert_template_modules SET times_fired = 0,
+		db_do("UPDATE $table SET times_fired = 0,
 				 internal_counter = 0 WHERE id = " .
-				 $alert_data->{'id_template_module'}, $dbh);
+				 $alert_data->{$id}, $dbh);
 
 		# Generate an event
 		pandora_event ($pa_config, "Alert ceased (" .
@@ -311,19 +324,19 @@ sub pandora_process_alert (%$$$$$%$$) {
 	if ($rc == 4) {
 
 		# Update alert status
-		db_do("UPDATE talert_template_modules SET times_fired = 0,
+		db_do("UPDATE $table SET times_fired = 0,
 				 internal_counter = 0 WHERE id = " .
-				 $alert_data->{'id_template_module'}, $dbh);
+				 $alert_data->{$id}, $dbh);
 
 		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name,
-					   $module_data, 0, $dbh);
+					   $module_data, 0, $compound, $dbh);
 		return;
 	}
 
 	# Reset internal counter
 	if ($rc == 5) {
-		db_do("UPDATE talert_template_modules SET internal_counter = 0 WHERE id = " .
-				 $alert_data->{'id_template_module'}, $dbh);
+		db_do("UPDATE $table SET internal_counter = 0 WHERE id = " .
+				 $alert_data->{$id}, $dbh);
 		return;
 	}
 
@@ -343,10 +356,10 @@ sub pandora_process_alert (%$$$$$%$$) {
 		$alert_data->{'internal_counter'} += 1;
 
 		# Do not increment times_fired, but set it in case the alert was reset
-		db_do("UPDATE talert_template_modules SET times_fired = " .
+		db_do("UPDATE $table SET times_fired = " .
 				 $alert_data->{'times_fired'} . ", internal_counter = " .
 				 $alert_data->{'internal_counter'} . $new_interval .
-				 " WHERE id = " . $alert_data->{'id_template_module'}, $dbh);
+				 " WHERE id = " . $alert_data->{$id}, $dbh);
 		return;
 	}
 
@@ -363,12 +376,12 @@ sub pandora_process_alert (%$$$$$%$$) {
 		$alert_data->{'times_fired'} += 1;
 		$alert_data->{'internal_counter'} += 1;
 
-		db_do("UPDATE  talert_template_modules  SET times_fired = " .
+		db_do("UPDATE $table SET times_fired = " .
 				 $alert_data->{'times_fired'} . ", last_fired = $date_db, internal_counter = " .
-				 $alert_data->{'internal_counter'} . $new_interval . " WHERE id = " . $alert_data->{'id_template_module'}, $dbh);
+				 $alert_data->{'internal_counter'} . $new_interval . " WHERE id = " . $alert_data->{$id}, $dbh);
 
 		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name, 
-						$module_data, 1, $dbh);
+						$module_data, 1, $compound, $dbh);
 
 		return;
 	}
@@ -391,8 +404,8 @@ sub pandora_evaluate_compound_alert (%$$) {
 	my $status = 0;
 
 	# Get all the alerts associated with this compound alert
-	my $query_compound = "SELECT id_aam, operation FROM tcompound_alert
-						  WHERE id = '$id' ORDER BY operation";
+	my $query_compound = "SELECT id_alert_template_module, operation FROM talert_compound_elements
+						  WHERE id_alert_compound = '$id' ORDER BY `order`";
 	my $handle_compound = $dbh->prepare($query_compound);
 	$handle_compound ->execute;
 
@@ -400,14 +413,14 @@ sub pandora_evaluate_compound_alert (%$$) {
 		return 0;
 	}
 
-	my $query_alert = "SELECT disable, times_fired FROM
-					  talerta_agente_modulo WHERE id_aam = ? AND disable = 0";
+	my $query_alert = "SELECT times_fired FROM
+					  talert_template_modules WHERE id = ? AND disabled = 0";
 	my $handle_alert = $dbh->prepare($query_alert);
 
 	while (my $data_compound = $handle_compound->fetchrow_hashref()) {
 
 		# Get alert data if enabled
-		$handle_alert->execute($data_compound->{'id_aam'});
+		$handle_alert->execute($data_compound->{'id_alert_template_module'});
 		if ($handle_alert->rows == 0) {
 			next;
 		}
@@ -460,14 +473,14 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 	my $timestamp = $_[1];
 	my $agent_name = $_[2];
 	my $id_agent = $_[3];
-	my $id_alert_agent_module = $_[4];
+	my $id_alert_template_module = $_[4];
 	my $id_group = $_[5];
 	my $depth = $_[6];
 	my $dbh = $_[7];
 
 	# Get all compound alerts that depend on this alert
-	my $query_compound = "SELECT id FROM tcompound_alert WHERE id_aam = '" .
-						 $id_alert_agent_module . "'";
+	my $query_compound = "SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module = '" .
+						 $id_alert_template_module . "'";
 
 	my $handle_compound = $dbh->prepare($query_compound);
 
@@ -478,13 +491,13 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 		return;
 	}
 
-	my $query_alert = "SELECT * FROM talerta_agente_modulo WHERE id_aam = ?";
+	my $query_alert = "SELECT * FROM talert_compound WHERE id = ?";
 	my $handle_alert = $dbh->prepare($query_alert);
 
 	while (my $data_compound = $handle_compound->fetchrow_hashref()) {
 
 		# Get compound alert parameters
-		$handle_alert->execute($data_compound->{'id'});
+		$handle_alert->execute($data_compound->{'id_alert_compound'});
 		if ($handle_alert->rows == 0) {
 			next;
 		}
@@ -493,22 +506,22 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 
 		# Evaluate the alert
 		my $rc = pandora_evaluate_alert($pa_config, $timestamp, $data_alert,
-										'', $dbh);
+										'', 1, $dbh);
 
 		pandora_process_alert ($pa_config, $timestamp, $rc, $agent_name, $id_agent,
-							   $id_group, $data_alert, '', $dbh);
+							   $id_group, $data_alert, '', 1, $dbh);
 
 		# Evaluate nested compound alerts
-		if ($depth >= $pa_config->{'compound_max_depth'}) {
-			logger($pa_config, "ERROR: Error in SUB pandora_generate_compound_
-								alerts(): Maximum nested compound alert depth
-								reached.", 2);
-			next;
-		}
+		#if ($depth >= $pa_config->{'compound_max_depth'}) {
+		#	logger($pa_config, "ERROR: Error in SUB pandora_generate_compound_
+		#						alerts(): Maximum nested compound alert depth
+		#						reached.", 2);
+		#	next;
+		#}
 
-		&pandora_generate_compound_alerts ($pa_config, $timestamp, $agent_name,
-										   $id_agent, $data_compound->{'id'},
-										   $id_group, $depth + 1, $dbh);
+		#&pandora_generate_compound_alerts ($pa_config, $timestamp, $agent_name,
+		#								   $id_agent, $data_compound->{'id'},
+		#								   $id_group, $depth + 1, $dbh);
 	}
 
 	$handle_alert->finish();
@@ -520,7 +533,7 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 ## Do a execution of given alert with this parameters
 ##########################################################################
 
-sub execute_alert (%$$$$$$$$$$$$$$$) {
+sub execute_alert ($$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $alert = $_[1];
 	my $id_agent = $_[2];
@@ -528,19 +541,39 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 	my $agent = $_[4];
 	my $data = $_[5];
 	my $alert_mode = $_[6]; # 0 recovery, 1 normal
-	my $dbh = $_[7];
+	my $compound = $_[7];
+	my $dbh = $_[8];
 	
 	# Get active actions/commands
-	my @actions = get_db_all_rows ("SELECT * FROM talert_template_module_actions, talert_actions, talert_commands
-	                                WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-	                                AND talert_actions.id_alert_command = talert_commands.id
-	                                AND talert_template_module_actions.id_alert_template_module = " .
-	                                $alert->{'id_template_module'} .
-	                               " AND ((fires_min = 0 AND fires_max = 0)
-	                                      OR (" . $alert->{'times_fired'} . " >= fires_min AND " . $alert->{'times_fired'} . " <= fires_max))", $dbh);
+	my @actions;
 
+	if ($compound == 0) {
+		@actions = get_db_all_rows ("SELECT * FROM talert_template_module_actions, talert_actions, talert_commands
+	    	                            WHERE talert_template_module_actions.id_alert_action = talert_actions.id
+	        	                        AND talert_actions.id_alert_command = talert_commands.id
+	            	                    AND talert_template_module_actions.id_alert_template_module = " .
+	                	                $alert->{'id_template_module'} .
+	                    	           " AND ((fires_min = 0 AND fires_max = 0)
+	                                      OR (" . $alert->{'times_fired'} . " >= fires_min AND " . $alert->{'times_fired'} . " <= fires_max))", $dbh);	
+	}
+	else {
+		@actions = get_db_all_rows ("SELECT * FROM talert_compound_actions, talert_actions, talert_commands
+	    	                            WHERE talert_compound_actions.id_alert_action = talert_actions.id
+	        	                        AND talert_actions.id_alert_command = talert_commands.id
+	            	                    AND talert_compound_actions.id_alert_compound = " .
+	                	                $alert->{'id'} .
+	                    	           " AND ((fires_min = 0 AND fires_max = 0)
+	                                      OR (" . $alert->{'times_fired'} . " >= fires_min AND " . $alert->{'times_fired'} . " <= fires_max))", $dbh);
+	}
+
+	# Get default action
 	if ($#actions < 0) {
-		# Get default action
+
+		# Compound alert don't have a default action
+		if ($compound == 1) {
+			return;
+		}
+
 		@actions = get_db_all_rows ("SELECT * FROM talert_actions, talert_commands
 	                                 WHERE talert_actions.id = " . $alert->{'id_alert_action'} .
 	                                 " AND talert_actions.id_alert_command = talert_commands.id", $dbh);
@@ -592,7 +625,7 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 			};
 
 			if ($@){
-				logger($pa_config, "Error $@ executing command $command", 0);
+				logger($pa_config, "Error $@ executing command $command", 1);
 			}
 		# Internal Audit
 		} elsif ($action->{'name'} eq "Internal Audit") {
@@ -611,15 +644,16 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 		} elsif ($action->{'name'} eq "Pandora FMS Event") {
 		# Unknown
 		} else {
+			logger($pa_config, "Unknown action " . $action->{'name'}, 1);
 			return;
 		}
 
 		# Create an event
 		if ($alert_mode == 0){ 
-			pandora_event ($pa_config, "Alert recovered (" . $alert->{'description'} . ")", $id_group, $id_agent, $alert->{'priority'}, $alert->{'id_template_module'}, 
+			pandora_event ($pa_config, "Alert recovered (" . $alert->{'description'} . ")", $id_group, $id_agent, $alert->{'priority'}, $compound == 0 ? $alert->{'id_template_module'} : 0, 
 			$alert->{'id_agent_module'}, 'alert_recovered',  $dbh);
 		} else {
-			pandora_event ($pa_config, "Alert fired (" . $alert->{'description'} . ")", $id_group, $id_agent, $alert->{'priority'}, $alert->{'id_template_module'}, 
+			pandora_event ($pa_config, "Alert fired (" . $alert->{'description'} . ")", $id_group, $id_agent, $alert->{'priority'}, $compound == 0 ? $alert->{'id_template_module'} : 0, 
 			$alert->{'id_agent_module'}, 'alert_fired',  $dbh);
 		}
 	}
@@ -2412,6 +2446,145 @@ sub update_on_error {
 ;
 
 }
+
+##########################################################################
+## SUB calcula_alerta_snmp($source,$oid,$custom_value,$timestamp);
+## Given an SNMP Trap received with this data, execute Alert or not
+##########################################################################
+
+sub calcula_alerta_snmp {
+	# Parameters passed as arguments
+	my $pa_config = $_[0];
+	my $trap_agente = $_[1];
+	my $trap_oid = $_[2];
+	my $trap_oid_text = $_[3];
+	my $trap_custom_value = $_[4];
+	my $timestamp = $_[5];
+	my $dbh = $_[6];
+	my $alert_fired = 0;
+	
+	my $s_idag = $dbh->prepare("SELECT * FROM talert_snmp");
+	$s_idag ->execute;
+	my @data;
+	# Read all alerts and apply to this incoming trap 
+	if ($s_idag->rows != 0) {
+		while (@data = $s_idag->fetchrow_array()) {
+			$alert_fired = 0;		
+			my $id_as 			= $data[0];
+			my $id_alert 		= $data[1];
+			my $field1 			= $data[2];
+			my $field2 			= $data[3];
+			my $field3 			= $data[4];
+			my $description 	= $data[5];
+			my $alert_type 		= $data[6];
+			my $agent 			= $data[7];
+			my $custom_oid 		= $data[8];
+			my $oid 			= $data[9];
+			my $time_threshold 	= $data[10];
+			my $times_fired 	= $data[11];
+			my $last_fired 		= $data[12]; # The real fired alarms
+			my $max_alerts 		= $data[13];
+			my $min_alerts 		= $data[14]; # The real triggered alarms (not really fired, only triggered)
+			my $internal_counter = $data[15];
+			my $alert_priority = $data[16];
+
+			my $alert_data = "";
+				
+			if ($alert_type == 0){ # type 0 is OID only
+				if ( $trap_oid =~ m/$oid/i || $trap_oid_text =~ m/$oid/i){
+					$alert_fired = 1;
+					$alert_data = "SNMP/OID:".$oid;
+					logger ($pa_config,"SNMP Alert debug (OID) MATCHED",10);
+				}
+			} elsif ($alert_type == 1){ # type 1 is custom value 
+				logger ($pa_config,"SNMP Alert debug (Custom) $custom_oid / $trap_custom_value",10);
+				if ( $trap_custom_value =~ m/$custom_oid/i ){
+					$alert_fired = 1;
+					$alert_data = "SNMP/VALUE:".$custom_oid;
+					logger ($pa_config,"SNMP Alert debug (Custom) MATCHED",10);
+				}
+			} else { # type 2 is agent IP
+				if ($trap_agente =~ m/$agent/i ){
+					$alert_fired = 1;
+					$alert_data = "SNMP/SOURCE:".$agent;
+					logger ($pa_config,"SNMP Alert debug (SOURCE) MATCHED",10);
+				} 
+			}
+
+			if ($alert_fired == 1){ # Exists condition to fire alarm.
+				# Verify if under time_threshold
+				my $fecha_ultima_alerta = ParseDate($last_fired);
+				my $fecha_actual = ParseDate( $timestamp );
+				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S"); # If we need to update MYSQL last_fired will use $ahora_mysql
+				my $err; my $flag;
+				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
+				# verify if upper min alerts
+				# Verify if under min alerts
+				$flag = Date_Cmp($fecha_actual,$fecha_limite);
+				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
+						    # database until a real alarm was fired
+					$times_fired = 0;
+					$internal_counter=0;
+					logger ($pa_config,"SNMP Alarm out of timethreshold limits",10);
+				}
+				# We are between limits marked by time_threshold or running a new time-alarm-interval 
+				# Caution: MIN Limit is related to triggered (in time-threshold limit) alerts
+				# but MAX limit is related to executed alerts, not only triggered. Because an alarm to be
+				# executed could be triggered X (min value) times to be executed.
+				if (($internal_counter+1 >= $min_alerts) && ($times_fired+1 <= $max_alerts)){
+					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
+					$times_fired++;
+					$internal_counter++;
+					logger($pa_config,"Executing SNMP Trap alert for $agent - $alert_data",2);
+
+                    # Create a hash for passing to execute_alert
+                    my %data_alert = (
+                    	'name' => '',
+                    	'id_agent_module' => 0,
+                    	'id_template_module' => 0,
+                    	'field1' => $field1,
+                    	'field2' => $field2,
+                    	'field3' => $field3,
+                    	'description' => $description,
+						'times_fired' => $times_fired,
+						'time_threshold' => 0,
+                    	'id_alert_action' => $id_alert,
+                    	'priority' => $alert_priority,
+					);
+
+                    # Execute alert
+					execute_alert ($pa_config, \%data_alert, 0, 0, $agent, $trap_agente, 1, 0, $dbh);
+
+					# Now update the new value for times_fired, alert_fired, internal_counter and last_fired for this alert.
+					my $query_idag2 = "update talert_snmp set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_as = $id_as ";
+					$dbh->do($query_idag2);
+
+					# Now find record for trap and update "fired" status... 
+					# Due DBI doesnt return ID of a new inserted item, we now need to find ourselves 
+					# this is a crap :(
+
+					my $query_idag3 = "update ttrap set alerted = 1, priority = $alert_priority where timestamp = '$timestamp' and source = '$trap_agente'";
+					$dbh->do($query_idag3);
+
+				} else { # Alert is in valid timegap but has too many alerts or too many little
+					$internal_counter++;
+					if ($internal_counter < $min_alerts){
+						# Now update the new value for times_fired & last_fired if we are below min limit for triggering this alert
+						my $query_idag = "update talert_snmp set internal_counter = $internal_counter, times_fired = $times_fired, last_fired = '$ahora_mysql' where id_as = $id_as ";
+						$dbh->do($query_idag);
+						logger ($pa_config, "SNMP Alarm not fired because is below min limit",8);
+					} else { # Too many alerts fired (upper limit)
+						my $query_idag = "update talert_snmp set times_fired=$times_fired, internal_counter = $internal_counter where id_as = $id_as ";
+						$dbh->do($query_idag);
+						logger ($pa_config, "SNMP Alarm not fired because is above max limit",8);
+					}
+				}
+			}
+		} # While
+	} # if
+	$s_idag->finish();
+}
+
 # End of function declaration
 # End of defined Code
 

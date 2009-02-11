@@ -1,3 +1,10 @@
+2009-02-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Combined alerts are working again.
+
+	* bin/pandora_snmpconsole: Moved calcula_alerta_snmp to DB.pm so it
+	  can be called from other modules.
+
 2009-02-10  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_network: An important BUG discovered in SNMP call locking

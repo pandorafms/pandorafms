@@ -30,13 +30,13 @@
 function get_agent_alerts_simple ($id_agent, $filter = false) {
 	switch ($filter) {
 	case "notfired":
-		$filter = ' AND times_fired = 0 AND disable = 0';
+		$filter = ' AND times_fired = 0 AND disabled = 0';
 		break;
 	case "fired":
-		$filter = ' AND times_fired > 0 AND disable = 0';
+		$filter = ' AND times_fired > 0 AND disabled = 0';
 		break;
 	case "disabled":
-		$filter = ' AND disable = 1';
+		$filter = ' AND disabled = 1';
 		break;
 	default:
 		$filter = '';
@@ -65,30 +65,25 @@ function get_agent_alerts_simple ($id_agent, $filter = false) {
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_combined ($id_agent, $filter = false) {
-	/* TODO: Combined alerts */
-	return array ();
+function get_agent_alerts_compound ($id_agent, $filter = false) {
 	switch ($filter) {
-		case "notfired":
-			$filter = ' AND times_fired = 0 AND disable = 0';
-			break;
-		case "fired":
-			$filter = ' AND times_fired > 0 AND disable = 0';
-			break;
-		case "disabled":
-			$filter = ' AND disable = 1';
-			break;
-		default:
-			$filter = '';
+	case "notfired":
+		$filter = ' AND times_fired = 0 AND disabled = 0';
+		break;
+	case "fired":
+		$filter = ' AND times_fired > 0 AND disabled = 0';
+		break;
+	case "disabled":
+		$filter = ' AND disabled = 1';
+		break;
+	default:
+		$filter = '';
 	}
 	
-	$id_modules = array_keys (get_agent_modules ($id_agent));
-	if (empty ($id_modules))
-		return array ();
+	$sql = sprintf ("SELECT * FROM talert_compound
+		WHERE id_agent = %d%s",
+		$id_agent, $filter);
 	
-	$sql = sprintf ("SELECT * FROM talert_template_modules
-		WHERE id_agent_module IN (%s)%s",
-		implode (',', $id_modules), $filter);
 	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -105,9 +100,9 @@ function get_agent_alerts_combined ($id_agent, $filter = false) {
  */
 function get_agent_alerts ($id_agent, $filter = false) {
 	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter);
-	$combined_alerts = get_agent_alerts_combined ($id_agent, $filter);
+	$combined_alerts = get_agent_alerts_compound ($id_agent, $filter);
 	
-	return array_merge ($simple_alerts, $combined_alerts);
+	return array ('simple' => $simple_alerts, 'compounds' => $combined_alerts);
 }
 
 ?>

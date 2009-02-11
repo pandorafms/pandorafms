@@ -30,52 +30,66 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 }
 
 function print_alert_template_steps ($step, $id) {
-	echo '<div style="margin-bottom: 15px">';
+	echo '<ol class="steps">';
 	
 	/* Step 1 */
 	if ($step == 1)
-		echo '<strong>';
+		echo '<li class="first current">';
+	elseif ($step > 1)
+		echo '<li class="visited">';
+	else
+		echo '<li class="first">';
+	
 	if ($id) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'">';
-		echo __('Step').' 1 : '.__('Conditions');
+		echo __('Step').' 1 &raquo; ';
+		echo '<span>'.__('Conditions').'</span>';
 		echo '</a>';
 	} else {
-		echo __('Step').' 1 : '.__('Conditions');
+		echo __('Step').' 1 &raquo; ';
+		echo '<span>'.__('Conditions').'</span>';
 	}
-	if ($step == 1)
-		echo '</strong>';
+	echo '</li>';
 	
 	/* Step 2 */
-	echo ' &raquo; ';
-	
 	if ($step == 2)
-		echo '<strong>';
+		echo '<li class="current">';
+	elseif ($step > 2)
+		echo '<li class="visited">';
+	else
+		echo '<li>';
+	
 	if ($id) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=2">';
-		echo __('Step').' 2 : '.__('Firing');
+		echo __('Step').' 2 &raquo; ';
+		echo '<span>'.__('Firing').'</span>';
 		echo '</a>';
 	} else {
-		echo __('Step').' 2 : '.__('Firing');
+		echo __('Step').' 2 &raquo; ';
+		echo '<span>'.__('Firing').'</span>';
 	}
-	if ($step == 2)
-		echo '</strong>';
+	echo '</li>';
 	
 	/* Step 3 */
-	echo ' &raquo; ';
-	
 	if ($step == 3)
-		echo '<strong>';
+		echo '<li class="last current">';
+	elseif ($step > 3)
+		echo '<li class="last visited">';
+	else
+		echo '<li class="last">';
+	
 	if ($id) {
 		echo '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$id.'&step=3">';
-		echo __('Step').' 3 : '.__('Recovery');
+		echo __('Step').' 3 &raquo; ';
+		echo '<span>'.__('Recovery').'</span>';
 		echo '</a>';
 	} else {
-		echo __('Step').' 3 : '.__('Recovery');
+		echo __('Step').' 3 &raquo; ';
+		echo '<span>'.__('Recovery').'</span>';
 	}
-	if ($step == 3)
-		echo '</strong>';
 	
-	echo '</div>';
+	echo '</ol>';
+	echo '<div style="clear: both;"> </div>';
 }
 
 function update_template ($step) {
@@ -85,7 +99,6 @@ function update_template ($step) {
 		return false;
 	
 	if ($step == 1) {
-		$type = (string) get_parameter ('type');
 		$name = (string) get_parameter ('name');
 		$description = (string) get_parameter ('description');
 		$type = (string) get_parameter ('type');
@@ -95,7 +108,8 @@ function update_template ($step) {
 		$matches = (bool) get_parameter ('matches_value');
 		
 		$result = update_alert_template ($id,
-			array ('type' => $type,
+			array ('name' => $name,
+				'type' => $type,
 				'description' => $description,
 				'value' => $value,
 				'max_value' => $max,
@@ -550,13 +564,8 @@ function render_example () {
 }
 
 $(document).ready (function () {
+<?php if ($step == 1): ?>
 	render_example ();
-	$("#text-time_from, #text-time_to").timeEntry ({
-		spinnerImage: 'images/time-entry.png',
-		spinnerSize: [20, 20, 0]
-		}
-	);
-	
 	$("input#text-value").keyup (render_example);
 	$("input#text-max").keyup (render_example);
 	$("input#text-min").keyup (render_example);
@@ -641,6 +650,13 @@ $(document).ready (function () {
 	});
 	
 	$("#text-value").keyup (check_regex);
+<?php elseif ($step == 2): ?>
+	$("#text-time_from, #text-time_to").timeEntry ({
+		spinnerImage: 'images/time-entry.png',
+		spinnerSize: [20, 20, 0]
+		}
+	);
+	
 	$("#threshold").change (function () {
 		if (this.value == -1) {
 			$("#text-other_threshold").attr ("value", "");
@@ -649,14 +665,6 @@ $(document).ready (function () {
 		} else {
 			$("#template-threshold-other_label").hide ();
 			$("#template-threshold-other_input").hide ();
-		}
-	});
-	
-	$("#recovery_notify").change (function () {
-		if (this.value == 1) {
-			$("#template-field2, #template-field3").show ();
-		} else {
-			$("#template-field2, #template-field3").hide ();
 		}
 	});
 	
@@ -691,5 +699,14 @@ $(document).ready (function () {
 	$("#text-field1").keyup (render_command_preview);
 	$("#text-field2").keyup (render_command_preview);
 	$("#text-field3").keyup (render_command_preview);
+<?php elseif ($step == 3): ?>
+	$("#recovery_notify").change (function () {
+		if (this.value == 1) {
+			$("#template-field2, #template-field3").show ();
+		} else {
+			$("#template-field2, #template-field3").hide ();
+		}
+	});
+<?php endif; ?>
 })
 </script>

@@ -719,19 +719,6 @@ a.big_data {
 	border-bottom: 1px solid #CCCCCC;
 	border-top: 1px solid #CCCCCC;
 }
-.left {
-	float: left;
-	text-align: left;
-}
-.right {
-	float: right;
-	text-align: right;
-}
-.top {
-	vertical-align: top;
-	margin-top: 0;
-	padding-top: 0;
-}
 ul {
 	list-style-type: none;
 	padding-left: 0;
@@ -755,7 +742,9 @@ select#template, select#action {
 input[type=image] {
 	border:0px;
 }
-table#simple select#id_module_type {
+table#simple select#id_module_type,
+table#alert_search select#id_agent,
+table#alert_search select#id_group {
 	width: 200px;
 }
 table#simple select#select_snmp_oid,
@@ -770,6 +759,100 @@ table#simple select#prediction_module {
 .clickable {
 	cursor: pointer;
 }
-table#agent_list tr {
+table#agent_list tr, table.alert_list tr {
 	vertical-align: top;
+}
+ul.actions_list {
+	list-style-image: url(../../images/arrow.png);
+	list-style-position: inside;
+	margin-top: 0;
+}
+div.loading {
+	background-color: #FFF1A8;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 5px;
+	text-align: center;
+	font-style: italic;
+	width: 95%;
+}
+div.loading img {
+	float: right;
+}
+/* Tablesorter jQuery pager */
+div.pager {
+	margin-left: 10px;
+	margin-top: 5px;
+}
+div.pager img{
+	position: relative;
+	top: 4px;
+	padding-left: 5px;
+}
+div.pager input {
+	padding-left: 5px;
+}
+.pagedisplay {
+	border: 0;
+	width: 35px;
+}
+/* Steps style */
+ol.steps {
+	margin-bottom: 15px;
+	padding: 0;
+	list-style-type: none;
+	list-style-position: outline;
+}
+ol.steps li {
+	float: left;
+	background-color: #efefef;
+	padding: 5px;
+	margin-left: 5px;
+	width: 150px;
+}
+ol.steps li a {
+	color: #000;
+}
+ol.steps li.visited a {
+	color: #999;
+}
+ol.steps li span {
+	font-weight: normal;
+	display: block;
+}
+ol.steps li span {
+	color: #777;
+}
+ol.steps li.visited span {
+	color: #999;
+}
+ol.steps li.current {
+	border-left: 5px solid #778866;
+	margin-left: 0;
+	font-weight: bold;
+	background-color: #E9F3D2;
+}
+ol.steps li.visited {
+	color: #999 !important;
+}
+
+/* Common useful styles */
+.left { clear: left; }
+.right { clear: right; }
+.clear { clear:both; }
+.top {
+	vertical-align: top;
+	margin-top: 0;
+	padding-top: 0;
+}
+img.left {
+	margin-right:1em;
+	margin-bottom:1.8em;
+}
+img.right {
+	margin-left:1em;
+	margin-bottom:1.8em;
+}
+.text-right {
+	text-align:right;
 }

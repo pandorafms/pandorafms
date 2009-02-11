@@ -327,9 +327,7 @@ $(document).ready (function () {
 	$("form#module_form").submit (function () {
 		if ($("#text-name").attr ("value") == "") {
 			$("#text-name").pulsate ().focus ();
-			$("#message").hide ().empty ()
-				.text ("<?php echo __('No module name provided') ?>")
-				.slideDown ();
+			$("#message").showMessage ("<?php echo __('No module name provided') ?>");
 			return false;
 		}
 		
@@ -339,9 +337,7 @@ $(document).ready (function () {
 			/* Network module */
 			if ($("#text-ip_target").attr ("value") == "") {
 				$("#text-ip_target").pulsate ().focus ();
-				$("#message").hide ().empty ()
-					.text ("<?php echo __('No target IP provided') ?>")
-					.slideDown ();
+				$("#message").showMessage ("<?php echo __('No target IP provided') ?>");
 				return false;
 			}
 		}
@@ -349,9 +345,7 @@ $(document).ready (function () {
 		if (snmp.in_array (module)) {
 			if ($("#text-snmp_oid").attr ("value") == "") {
 				if ($("#select_snmp_oid").attr ("value") == "") {
-					$("#message").hide ().empty ()
-						.text ("<?php echo __('No SNMP OID provided') ?>")
-						.slideDown ();
+					$("#message").showMessage ("<?php echo __('No SNMP OID provided') ?>");
 					return false;
 				}
 			}

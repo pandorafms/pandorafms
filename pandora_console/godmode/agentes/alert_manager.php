@@ -323,9 +323,6 @@ $(document).ready (function () {
 			return false;
 		}
 		
-		if ($("#action", this).attr ("value") == 0) {
-			return false;
-		}
 		return true;
 	});
 	

@@ -54,13 +54,13 @@ if (isset ($_GET["id_agente"])) {
 	}
 	
 	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter);
-	$alerts_combined = get_agent_alerts_combined ($id_agent, $filter);
+	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
 	$print_agent = false;
 } else {
-	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
+	if (! give_acl ($config["id_user"], $id_group, "AR")) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
-		exit;
+		return;
 	}
 	
 	$alerts_simple = array ();
@@ -70,7 +70,7 @@ if (isset ($_GET["id_agente"])) {
 	
 	foreach ($agents as $id_agent) {
 		$simple = get_agent_alerts_simple ($id_agent, $filter);
-		$combined = get_agent_alerts_combined ($id_agent, $filter);
+		$combined = get_agent_alerts_compound ($id_agent, $filter);
 		
 		$alerts_simple = array_merge ($alerts_simple, $simple);
 		$alerts_combined = array_merge ($alerts_combined, $combined);
@@ -88,9 +88,13 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Alerts').'</h2>';
 
 if (get_parameter ('alert_validate')) {
 	$ids = (array) get_parameter_post ("validate", array ());
-	if (! empty ($ids)) {
+	$compound_ids = (array) get_parameter_post ("validate_compound", array ());
+	
+	if (! empty ($ids) || ! empty ($compound_ids)) {
 		require_once ("include/functions_alerts.php");
-		$result = validate_alert_agent_module ($ids);
+		$result1 = validate_alert_agent_module ($ids);
+		$result2 = validate_alert_compound ($compound_ids);
+		$result == $result1 || $result2;
 		
 		print_error_message ($result, __('Alert(s) validated'),
 			__('Error processing alert(s)'));
@@ -159,7 +163,7 @@ foreach ($alerts_simple as $alert) {
 		continue;
 	}
 	$printed++;
-	array_push ($table->data, format_alert_row ($alert, 0, $print_agent, $url));
+	array_push ($table->data, format_alert_row ($alert, false, $print_agent, $url));
 }
 
 if (!empty ($table->data)) {
@@ -169,8 +173,9 @@ if (!empty ($table->data)) {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
 }
 
-$table->title = __('Combined alerts');
+$table->title = __('Compound alerts');
 $table->head[1] = __('Agent');
+$table->head[2] = __('Name');
 $table->data = array ();
 
 $combined_total = 0;
@@ -181,7 +186,7 @@ foreach ($alerts_combined as $alert) {
 		continue;
 	}
 	$combined_printed++;
-	array_push ($table->data, format_alert_row ($alert, 1, $print_agent));
+	array_push ($table->data, format_alert_row ($alert, true, $print_agent));
 }	
 
 if (!empty ($table->data)) {
@@ -205,8 +210,7 @@ $(document).ready (function () {
 	$("a.template_details").cluetip ({
 		arrows: true,
 		attribute: 'href',
-		cluetipClass: 'default',
-		fx: { open: 'fadeIn', openSpeed: 'slow' },
+		cluetipClass: 'default'
 	}).click (function () {
 		return false;
 	});

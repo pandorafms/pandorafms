@@ -28,5 +28,10 @@ $(document).ready (function () {
 			});
 		});
 	};
-
+	
+	$.fn.showMessage = function (msg) {
+		return $(this).hide ().empty ()
+				.text (msg)
+				.slideDown ();
+		};
 });

@@ -392,10 +392,8 @@ $(document).ready (function () {
 	$('#alert_trigger').change (function () {
 		trigger_changed (this.value)
 	});
-<?php
-	if ($id_as) {
-		echo 'trigger_changed ('.$alert_trigger.');';
-	}
-?>
+<?php if (isset ($id_as) && $id_as) : ?>
+	trigger_changed ("<?php echo $alert_trigger ?>");
+<?php endif; ?>
 }); 
 </script>

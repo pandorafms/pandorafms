@@ -97,22 +97,22 @@ function temp_print_menu ($menu, $classtype) {
 					$link_add = "";
 				}
 				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'"'.($class == 'submenu_selected' ? ' style="font-weight:bold;"' : '').'>'.$sub["text"].'</a>';
+				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
 				$submenu_output .= '</li>';
 			}
 		}
 		
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
-		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'"'.(($selected || in_array ("selected", $classes)) ? ' style="font-weight:bold;"' : '').'>'.$main["text"].'</a><img class="toggle" src="include/styles/images/toggle.png" alt="toggle" />';
+		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a><img class="toggle" src="include/styles/images/toggle.png" alt="toggle" />';
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
 			if ($visible || in_array ("selected", $classes)) {
-					$visible = true;
+				$visible = true;
 			}
 			$output .= '<ul class="submenu'.($visible ? '' : ' invisible').'">';
 			$output .= $submenu_output;
-			$output .= '</ul>';			
+			$output .= '</ul>';
 		}
 		$output .= '</li>';
 		echo $output;
@@ -136,13 +136,13 @@ unset ($menu);
 require ("links_menu.php");
 
 $config['jquery'][] = 'cookie';
-print_r ($_COOKIE);
 ?>
 <script type="text/javascript" language="javascript">
 $(document).ready( function() {
-	$("img.toggle").click (function() {
-		$(this).siblings("ul").slideToggle ("slow");
-		return false; //In case the A gets activated, we don't want to follow link
+	$("img.toggle").click (function () {
+		$(this).siblings ("ul").toggle ();
+		//In case the links gets activated, we don't want to follow link
+		return false;
 	});
 });
 </script>

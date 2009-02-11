@@ -182,6 +182,7 @@ ALTER TABLE  `tusuario` CHANGE  `direccion`  `email` VARCHAR( 100 ) CHARACTER SE
 ALTER TABLE  `tusuario` CHANGE  `telefono`  `phone` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
 ALTER TABLE  `tusuario` CHANGE  `nivel`  `is_admin` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  '0';
 
+DROP TABLE IF EXISTS talert_compound;
 
 CREATE TABLE IF NOT EXISTS `talert_compound` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -214,9 +215,11 @@ CREATE TABLE IF NOT EXISTS `talert_compound` (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS talert_compound_elements;
+
 CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
   `id_alert_compound` int(10) unsigned NOT NULL,
-  `id_alert_template_module` int(10) unsigned NOT NULL,:w
+  `id_alert_template_module` int(10) unsigned NOT NULL,
   `operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
   `order` tinyint(2) unsigned default 0,
   UNIQUE  (`id_alert_compound`, `id_alert_template_module`, `operation`),
@@ -225,6 +228,9 @@ CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS talert_compound_actions;
 
 CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
   `id_alert_compound` int(10) unsigned NOT NULL,

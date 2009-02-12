@@ -187,12 +187,13 @@ function popup_help ($help_id, $return = false) {
 }
 
 /** 
- * Prints a no permission generic error message.
+ * DEPRECATED: This function is not used anywhere. Remove it?
+ * (use general/noaccess.php followed by exit instead)
  */
 function no_permission () {
 	require("config.php");
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
-	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
+	echo "<img src='images/noaccess.png' alt='No access' width='120'><br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('You don\'t have enough permission to access this resource');
@@ -203,16 +204,15 @@ function no_permission () {
 }
 
 /** 
- * Prints a generic error message for some unhandled error and exits
- * 
- * TODO: Clean this up so it doesn't use table and insert erroneous td
- * 
+ * DEPRECATED: This function is not used anywhere. Remove it?
+ * (use print_error function instead followed by return or exit)
+ *
  * @param string $error Aditional error string to be shown. Blank by default
  */
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
-	echo "<img src='images/error.png' alt='error'><br><br>";
+	echo "<img src='images/error.png' alt='error'><br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('Unmanaged error');
@@ -1051,6 +1051,7 @@ function process_page_head ($string, $bitfield) {
 	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
 	<meta http-equiv="expires" content="0" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<meta name="resource-type" content="document" />
 	<meta name="distribution" content="global" />
 	<meta name="author" content="Sancho Lerena" />
@@ -1062,7 +1063,6 @@ function process_page_head ($string, $bitfield) {
 	<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 	<![endif]-->
-	<script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 	<script type="text/javascript" src="include/javascript/pandora.js"></script>
 	<script type="text/javascript" src="include/javascript/jquery.js"></script>
 	<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>
@@ -1083,13 +1083,14 @@ function process_page_head ($string, $bitfield) {
 	
 	if (!empty ($config['js'])) {
 		//Load other javascript
-		$loaded = array ('', 'wz_jsgraphics', 'pandora', 'date_'.$config['language'], 'time_'.$config['language'], 'countdown_'.$config['language']); //We can't load empty and we loaded wz_jsgraphics and pandora
+		$loaded = array ('', 'pandora', 'date_'.$config['language'], 'time_'.$config['language'], 'countdown_'.$config['language']); //We can't load empty and we loaded wz_jsgraphics and pandora
 		foreach ($config['js'] as $javascript) {
 			if (in_array ($javascript, $loaded)) {
 				continue;
 			}
 			array_push ($loaded, $javascript);
 			$output .= '<script type="text/javascript" src="include/javascript/'.$javascript.'.js"></script>'."\n";
+
 		}
 	}
 	

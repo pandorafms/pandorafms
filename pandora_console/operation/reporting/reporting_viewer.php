@@ -84,7 +84,6 @@ echo '</div>';
 /* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 $config['css'][] = 'datepicker';
-$config['css'][] = 'timeentry';
 $config['jquery'][] = 'ui.core';
 $config['jquery'][] = 'ui.datepicker';
 $config['jquery'][] = 'ui.timeentry';
@@ -104,11 +103,6 @@ $datetime = strtotime ($date.' '.$time);
 
 if ($datetime === false || $datetime == -1) {
 	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
-	return;
-}
-/* Date must not be older than now */
-if ($datetime > get_system_time ()) {
-	echo '<h3 class="error">'.__('Selected date is older than current date').'</h3>';
 	return;
 }
 

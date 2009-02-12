@@ -856,3 +856,10 @@ img.right {
 .text-right {
 	text-align:right;
 }
+
+/* timeEntry styles */
+.timeEntry_control {
+	vertical-align: middle;
+	margin-left: 2px;
+}
+

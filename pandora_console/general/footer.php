@@ -23,7 +23,7 @@ if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = get_system_time ();
 }
 
-echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'</a><br />';
+echo '<a class="white_bold" target="_blank" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'</a><br />';
 echo '<a class="white">'. __('Page generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 
 if ((isset($develop_bypass)) AND ($develop_bypass == 1)) {

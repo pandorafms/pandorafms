@@ -30,3 +30,7 @@
 	zoom: 100%;
 	padding: 1;
 }
+
+* html .timeEntry_control { /* IE only */
+	margin-top: -4px;
+}

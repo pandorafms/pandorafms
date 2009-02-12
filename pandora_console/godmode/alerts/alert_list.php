@@ -58,6 +58,7 @@ $agents = get_group_agents (array_keys ($groups), false, "none");
 
 $simple_alerts = array ();
 $compound_alerts = array ();
+
 foreach ($agents as $agent_id => $agent_name) {
 	$agent_alerts = get_agent_alerts_simple ($agent_id);
 	if (! empty ($agent_alerts))
@@ -116,12 +117,12 @@ foreach ($simple_alerts as $agent_id => $alerts) {
 	
 	print_table ($table);
 }
+
+$config['css'][] = "cluetip"; //link tags can't go in body
+$config['jquery'][] = "cluetip"; //make sure it doesn't get overwritten
+$config['jquery'][] = "form";
+
 ?>
-
-<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.form.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {

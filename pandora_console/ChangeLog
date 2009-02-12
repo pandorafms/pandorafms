@@ -1,3 +1,10 @@
+2009-02-12  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_compound.php: Added support to
+	update alert elements. Also default operator for first element is NOP.
+
+	* include/functions_alerts.php: Added delete_alert_compound_elements().
+
 2009-02-11  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb_migrate_20_to_21.sql: Fixed typo.

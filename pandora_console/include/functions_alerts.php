@@ -878,6 +878,15 @@ function update_alert_compound ($id_alert_compound, $values = false) {
 		array ('id' => $id_alert_compound)) !== false;
 }
 
+function delete_alert_compound_elements ($id_alert_compound) {
+	if (empty ($id_alert_compound))
+		return false;
+	
+	$sql = sprintf ('DELETE FROM talert_compound_elements
+		WHERE id_alert_compound = %d', $id_alert_compound);
+	return @process_sql ($sql);
+}
+
 function add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
 	if (empty ($id_alert_compound))
 		return false;

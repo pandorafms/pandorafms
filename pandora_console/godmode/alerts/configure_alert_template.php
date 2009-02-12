@@ -505,12 +505,11 @@ echo '</form>';
 $config['jquery'][] = 'ui.core';
 $config['jquery'][] = 'timeentry';
 $config['jquery'][] = 'ui.core';
-$config['css'][] = 'timeentry';
 $config['js'][] = 'pandora_alerts';
 
 ?>
 <script type="text/javascript">
-
+/* <![CDATA[ */
 var matches = "<?php echo __('The alert would fire when the value matches <span id=\"value\"></span>');?>";
 var matches_not = "<?php echo __('The alert would fire when the value doesn\'t match <span id=\"value\"></span>');?>";
 var is = "<?php echo __('The alert would fire when the value is <span id=\"value\"></span>');?>";
@@ -709,4 +708,5 @@ $(document).ready (function () {
 	});
 <?php endif; ?>
 })
+/* ]]> */
 </script>

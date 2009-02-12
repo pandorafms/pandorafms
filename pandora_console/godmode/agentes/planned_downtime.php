@@ -152,7 +152,7 @@ if ($create_downtime || $update_downtime) {
 		$table->data[4][1] = print_input_text ('date_to', $date_to, '', 10, 10, true);
 		$table->data[4][1] .= print_input_text ('time_to', $time_to, '', 7, 7, true);
 		
-		echo '<form method="POST" action="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime">';
+		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
 			echo "<table width=100% border=0 cellpadding=4 >";
@@ -160,7 +160,7 @@ if ($create_downtime || $update_downtime) {
 		}
 	
 		//Editor form
-		echo '<h3>'.__('Planned Downtime Form').' <img class="img_help" src="images/help.png" onClick="pandora_help(\'planned_downtime\')" /></h3>';
+		echo '<h3>'.__('Planned Downtime Form').' <img class="img_help" src="images/help.png" onClick="pandora_help(\'planned_downtime\')" alt="help" /></h3>';
 		print_table ($table);
 	
 	
@@ -201,14 +201,14 @@ if ($create_downtime || $update_downtime) {
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 	
 		print_select_from_sql ("SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1", "filter_group", $filter_group, '', __("Any"), -1, false, false);
-		echo "<br><br>";
+		echo "<br /><br />";
 		echo print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 		echo print_select ($data, "id_agent[]", '', '', '', 0, false, true);
-		echo "<br><br><br>";
+		echo "<br /><br /><br />";
 		echo print_submit_button (__('Add'), '', false, 'class="sub next"',false);
 		echo "</form>";
 		echo "</table>";
@@ -246,9 +246,9 @@ if ($create_downtime || $update_downtime) {
 			
 			$data[3] = $downtime["ultimo_contacto"];
 	
-			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
-				$id_agent.'&delete_downtime_agent=1&first_update=1&id_downtime_agent='.$downtime["id"].'&id_downtime='.$id_downtime.'">
-				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>';
+			$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">
+				<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
 	
 			
 			array_push ($table->data, $data);
@@ -276,8 +276,7 @@ if ($create_downtime || $update_downtime) {
 		$downtimes = get_db_all_rows_sql ($sql);
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
-		}
-		else {
+		} else {
 			foreach ($downtimes as $downtime) {
 				$data = array();
 				$total  = get_db_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
@@ -287,16 +286,16 @@ if ($create_downtime || $update_downtime) {
 				$data[2] = date ("Y-m-d H:i", $downtime['date_from']);
 				$data[3] = date ("Y-m-d H:i", $downtime['date_to']);
 				if ($downtime["executed"] == 0){
-					$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
-					$id_agent.'&delete_downtime=1&id_downtime='.$downtime['id'].'">
-					<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>';
-					$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&edit_downtime=1&first_update=1&id_downtime='.$downtime['id'].'">
-					<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
+					$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">
+					<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
+					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">
+					<img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
 				}
 				if ($downtime["executed"] == 0)
-					$data[6] = "<img src='images/pixel_green.png' width=20 height=20>";
+					$data[6] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
-					$data[6] = "<img src='images/pixel_red.png' width=20 height=20>";
+					$data[6] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 
 				array_push ($table->data, $data);
 			}
@@ -304,14 +303,14 @@ if ($create_downtime || $update_downtime) {
 		}
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime'>";
-		echo "<input type=hidden name='first_create' value='1'>";
-		echo "<input type=submit class='sub wand' value='".__('Create')."'>";
-		echo "</form>";
+	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
+	print_input_hidden ("first_create", 1);
+	print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
+	echo '</form>';
+	echo '</div>';
 }
 
 $config['css'][] = 'datepicker';
-$config['css'][] 'timeentry';
 $config['jquery'][] = 'ui.core';
 $config['jquery'][] = 'ui.datepicker';
 $config['jquery'][] = 'timeentry';
@@ -325,6 +324,6 @@ $(document).ready (function () {
 		spinnerSize: [20, 20, 0]
 		});
 	$("#text-date_from, #text-date_to").datepicker ();
-	$.datepicker.regional["<?= $config['language'] ?>"];
+	$.datepicker.regional["<?php echo $config['language']; ?>"];
 });
 </script>

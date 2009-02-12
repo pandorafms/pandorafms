@@ -1,3 +1,29 @@
+2009-02-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/footer.php, general/links_menu.php: _new is invalid. Use _blank 
+
+	* include/config_process.php: Updated error texts for better English
+	
+	* include/calendar.php: Removed since nobody uses it anymore
+	
+	* include/functions.php: Modified process_page_header to not load
+	wz_jsgraphics by default (it's too heavy and hardly used). Deprecated
+	no_permission and unmanaged_error (since they're not used)
+	
+	* include/styles/timeentry.css, include/styles/pandora.css, 
+	include/styles/ie.css: Merged these styles together so there is no extra
+	query for 2 css classes
+	
+	* operation/reporting/reporting_viewer.php: Removed comparison since
+	time comes from the client and if the clock is a bit off it gives error.
+	Also removed reference to timeentry.css
+	
+	* godmode/alerts/alert_list.php: Uses new method to load css and jquery
+	which prevents error of <link> tags being in body
+	
+	* godmode/agentes/planned_downtime.php: Removed timeentry reference and 
+	fixed HTML in between.
+
 2009-02-12  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/jquery.tablesorter.js,

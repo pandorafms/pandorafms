@@ -35,21 +35,22 @@ $config['style'] = 'pandora';
 // Read remaining config tokens from DB
 if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
 	//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
-	exit ('<html><head><title>Pandora FMS Error</title>
+	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-		</head><body><div align="center">
+		</head><body><div style="align:center">
 		<div id="db_f">
 		<div>
-		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
+		<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
 		</div>
 		<div id="db_ftxt">
 		<h1 id="log_f" class="error">Pandora FMS Console Error DB-001</h1>
-		Cannot connect with Database, please check your database setup in the 
-		<b>./include/config.php</b> file and read documentation.<i><br><br>
-		Probably any of your user/database/hostname values are incorrect or 
-		database is not running.</i><br><br><font class="error">
-		<b>MySQL ERROR:</b> '. mysql_error().'</font>
-		<br>&nbsp;
+		Cannot connect to the database, please check your database setup in the 
+		<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
+		Probably one or more of your user, database or hostname values are incorrect or 
+		the database server is not running.</i><br /><br /><span class="error">
+		<b>MySQL ERROR:</b> '. mysql_error().'</span>
+		<br />&nbsp;
 		</div>
 		</div></body></html>');
 }
@@ -59,19 +60,20 @@ require_once ('functions_db.php');
 $configs = get_db_all_rows_in_table ('tconfig');
 
 if (empty ($configs)) {
-	exit ('<html><head><title>Pandora FMS Error</title>
+	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
 		</head><body><div align="center">
 		<div id="db_f">
 		<div>
-		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
+		<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
 		</div>
 		<div id="db_ftxt">
 		<h1 id="log_f" class="error">Pandora FMS Console Error DB-002</h1>
-		Cannot load configuration variables. Please check your database setup in the
-		<b>./include/config.php</b> file and read documentation.<i><br><br>
-		Probably database schema is created but there are no data inside it or you have a problem with DB access credentials.
-		</i><br>
+		Cannot load configuration variables from database. Please check your database setup in the
+		<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
+		Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
+		</i><br />
 		</div>
 		</div></body></html>');
 }
@@ -83,20 +85,21 @@ foreach ($configs as $c) {
 		$config['language'] = $c['value'];
 		break;
 	case "auth":
-		exit ('<html><head><title>Pandora FMS Error</title>
-				<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-				</head><body><div align="center">
-				<div id="db_f">
-				<div>
-				<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
-				</div>
-				<div id="db_ftxt">
-				<h1 id="log_f" class="error">Pandora FMS Console Error DB-003</h1>
-				Cannot override auth variables from database. Remove them from your database by executing:
-				DELETE FROM tconfig WHERE token = "auth";
-				<br />
-				</div>
-				</div></body></html>');
+		exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+			<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
+			<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
+			</head><body><div align="center">
+			<div id="db_f">
+			<div>
+			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
+			</div>
+			<div id="db_ftxt">
+			<h1 id="log_f" class="error">Pandora FMS Console Error DB-003</h1>
+			Cannot override authorization variables from the config database. Remove them from your database by executing:
+			DELETE FROM tconfig WHERE token = "auth";
+			<br />
+			</div>
+			</div></body></html>');
 	default:
 		$config[$c['token']] = $c['value'];
 	}

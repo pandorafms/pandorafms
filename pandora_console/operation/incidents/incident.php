@@ -140,7 +140,8 @@ if ($grupo != 1) {
 	$filter .= sprintf (" AND id_grupo = %d", $grupo);
 	if (give_acl ($config['id_user'], $grupo, "IM") == 0) {
 		audit_db ($config["id_user"],$config["remote_addr"],"ACL Forbidden","User tried to read incidents from group without access");
-		no_permission ();
+		include ("general/noaccess.php");
+		exit;
 	}
 }
 

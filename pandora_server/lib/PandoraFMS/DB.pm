@@ -778,6 +778,10 @@ sub pandora_accessupdate (%$$) {
 	my $dbh = $_[2];
 	my $err;
 
+	if (!defined($id_agent)) {
+		return -1;
+	}
+
 	if ($id_agent != -1){
 		my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
 		my $utimestamp = &UnixDate("today","%s");
@@ -1950,27 +1954,33 @@ sub give_network_component_profile_name (%$$) {
 ## Return interval for id_agente
 ##########################################################################
 sub dame_intervalo (%$$) {
-    my $pa_config = $_[0];
-    my $id_agente = $_[1];
-    my $dbh = $_[2];
+	my $pa_config = $_[0];
+	my $id_agente = $_[1];
+	my $dbh = $_[2];
 
-    my $tipo = 0; 
-    my @data;
-    # Calculate agent ID using select by its name
-    my $query_idag = "select * from tagente where id_agente = ".$id_agente;
-    my $s_idag = $dbh->prepare($query_idag);
-    $s_idag ->execute;
-    if ($s_idag->rows == 0) {
-        logger($pa_config, "ERROR dame_intervalo(): Cannot find agente $id_agente",1);
-        logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
-	    $tipo = 0;
-    } else  {    
-        @data = $s_idag->fetchrow_array(); 
-    }
-    $tipo= $data[7];
-    $s_idag->finish();
-    return $tipo;
+	my $tipo = 0; 
+	my @data;
+	
+	if (!defined($id_agente)){
+		return 0;
+	}
+	
+	# Calculate agent ID using select by its name
+	my $query_idag = "select * from tagente where id_agente = ".$id_agente;
+	my $s_idag = $dbh->prepare($query_idag);
+	$s_idag ->execute;
+	if ($s_idag->rows == 0) {
+		logger($pa_config, "ERROR dame_intervalo(): Cannot find agente $id_agente",1);
+		logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+		$tipo = 0;
+	} else  {	
+		@data = $s_idag->fetchrow_array(); 
+		$tipo= $data[7];
+	}
+	$s_idag->finish();
+	return $tipo;
 }
+
 
 ##########################################################################
 ## SUB dame_desactivado (id_agente)

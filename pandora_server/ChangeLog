@@ -1,5 +1,11 @@
 2009-02-11  Sancho Lerena <slerena@artica.es>
 
+	* lib/DB.pm: Added more checks to avoid warnings in log.
+	
+	* lib/Tool.pm: Improved is_numeric() function.
+
+2009-02-11  Sancho Lerena <slerena@artica.es>
+
 	* bin/pandora_network: Restored lock for icmp / ping calls.
 
 2009-02-10  Sancho Lerena <slerena@artica.es>

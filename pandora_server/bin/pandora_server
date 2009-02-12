@@ -472,8 +472,7 @@ sub pandora_exec_forced_alerts {
 	                               AND force_execution = 1", $dbh);
 
 	foreach my $alert (@alerts) {
-		execute_alert ($pa_config, $alert, $alert->{'id_agente'}, $alert->{'id_grupo'}, $alert->{'nombre'}, 
-						'', 1, $dbh);
+		execute_alert ($pa_config, $alert, $alert->{'id_agente'}, $alert->{'id_grupo'}, $alert->{'nombre'},'', 1, 0, $dbh);
 
 		# Reset the force_execution flag, even if the alert could not be executed
 		db_do ("UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'}, $dbh);

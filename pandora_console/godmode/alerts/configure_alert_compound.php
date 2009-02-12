@@ -154,6 +154,18 @@ function update_compound ($step) {
 			array ('name' => $name,
 				'description' => $description,
 				'id_agent' => $id_agent));
+		/* Temporary disable the alert for update all elements */
+		set_alerts_compound_disable ($id, true);
+		/* Delete all elements of the alert and create them again */
+		delete_alert_compound_elements ($id);
+		$alerts = (array) get_parameter ('conditions');
+		$operations = (array) get_parameter ('operations');
+		
+		foreach ($alerts as $id_alert) {
+			add_alert_compound_element ($id, (int) $id_alert, $operations[$id_alert]);
+		}
+		
+		set_alerts_compound_disable ($id, false);
 	} elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
@@ -279,9 +291,9 @@ if ($create_compound) {
 	print_error_message ($result, __('Successfully created'),
 		__('Could not be created'));
 	/* Go to previous step in case of error */
-	if ($result === false)
+	if ($result === false) {
 		$step = $step - 1;
-	else {
+	} else {
 		$id = $result;
 		$alerts = (array) get_parameter ('conditions');
 		$operations = (array) get_parameter ('operations');
@@ -502,9 +514,13 @@ if ($step == 2) {
 			$data[0] .= '</a>';
 			$data[1] = get_alert_template_name ($alert['id_alert_template']);
 			$data[2] = get_agentmodule_name ($alert['id_agent_module']);
-			$data[3] = print_select (get_alert_compound_operations (),
-				'operations['.$id.']', $condition['operation'], '', '', '', true);
-			$data[3] .= print_input_hidden ("conditions[]", $alert['id']);
+			if ($condition['operation'] == 'NOP') {
+				$data[3] = print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
+			} else {
+				$data[3] = print_select (get_alert_compound_operations (),
+					'operations['.$alert['id'].']', $condition['operation'], '', '', '', true);
+			}
+			$data[3] .= print_input_hidden ("conditions[]", $alert['id'], true);
 			
 			array_push ($table_alerts->data, $data);
 		}
@@ -582,6 +598,12 @@ if ($step == 1) {
 	} else {
 		$alerts = get_agent_alerts_simple ($id_agent);
 		
+		if (empty ($alerts)) {
+			$table_alerts->data[0][0] = __('No alerts found');
+			$table_alerts->colspan[0][0] = 3;
+			$id_agent = 0;
+		}
+		
 		foreach ($alerts as $alert) {
 			$data = array ();
 			
@@ -641,7 +663,13 @@ function remove_alert () {
 	$(this).parents ("tr:first").remove ();
 	len = $("#conditions_list tbody tr").length;
 	if (len == 1) {
-		$("select option[value=NOR]", tr).select (1);
+		id = this.id.split ("-").pop ();
+		tr = $("#conditions_list tbody tr:first");
+		$("select", tr).remove ();
+		input = $("<input type=\"hidden\"></input>")
+			.attr ("name", "operations["+id+"]")
+			.attr ("value", "NOP");
+		$("td:last", tr).append (input);
 	} else if (len == 0) {
 		$("#conditions_list").hide ();
 	}
@@ -656,22 +684,27 @@ function add_alert () {
 	input = $("<input type=\"hidden\"></input>")
 		.attr ("name", "conditions[]")
 		.attr ("value", id);
-	td = $("<td></td>")
-		.append (input)
-		.append ($("select#operations:last").clone ()
-			.show ()
+	td = $("<td></td>").append (input);
+	
+	/* Select NOP operation if there's only one alert */
+	if ($("#conditions_list tbody tr").length == 0) {
+		input = $("<input type=\"hidden\"></input>")
 			.attr ("name", "operations["+id+"]")
+			.attr ("value", "NOP");
+		$(td).append (input);
+	} else {
+		$(td).append ($("select#operations:last").clone ()
+				.show ()
+				.attr ("name", "operations["+id+"]")
 			);
+	}
 	tr = $(this).parents ("tr")
 		.clone ()
 		.append (td);
+	
 	$("img", tr).attr ("src", "images/delete.png");
 	$("a", tr).attr("id", "remove-"+id)
 		.click (remove_alert);
-	
-	/* Select NOR operation if there's only one alert */
-	if ($("#conditions_list tbody tr").length == 0)
-		$("select option[value=NOR]", tr).select (1);
 	
 	$("#conditions_list tbody").append (tr);
 	$("#conditions_list").show ();

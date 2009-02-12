@@ -1,3 +1,7 @@
+2009-02-12  Esteban Sanchez  <estebans@artica.es>
+
+	* main.cc: Added new parameter to help text.
+
 2009-02-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc,

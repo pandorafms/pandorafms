@@ -100,13 +100,15 @@ main (int argc, char *argv[]) {
 			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
 			cout << "Available options are:" << endl;
 			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM;
-			cout <<	":   Install the Pandora Agent service." << endl;
+			cout <<	":  Install the Pandora Agent service." << endl;
 			cout << "\t" << SERVICE_UNINSTALL_CMDLINE_PARAM;
 			cout << ": Uninstall the Pandora Agent service." << endl;
 			cout << "\t" << SSH_TEST_CMDLINE_PARAM;
-			cout << ":  Test the SSH Pandora Agent configuration." << endl;
+			cout << ": Test the SSH Pandora Agent configuration." << endl;
 			cout << "\t" << FTP_TEST_CMDLINE_PARAM;
-			cout << ":  Test the FTP Pandora Agent configuration." << endl;
+			cout << ": Test the FTP Pandora Agent configuration." << endl;
+			cout << "\t" << PROCESS_CMDLINE_PARAM;
+			cout << ": Run the Pandora Agent as a user process instead of a service." << endl;
 		
 			return 0;
 		} else if (_stricmp(argv[i], PROCESS_CMDLINE_PARAM) == 0) {
@@ -118,7 +120,8 @@ main (int argc, char *argv[]) {
 			cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM;
 			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM;
 			cout << "] [" << SSH_TEST_CMDLINE_PARAM;
-			cout << "] [" << FTP_TEST_CMDLINE_PARAM << "]";
+			cout << "] [" << FTP_TEST_CMDLINE_PARAM;
+			cout << "] [" << PROCESS_CMDLINE_PARAM << "]";
 			cout << endl << endl;
 			cout << "Run " << argv[0] << " with " << HELP_CMDLINE_PARAM;
 			cout << " parameter for more info." << endl;

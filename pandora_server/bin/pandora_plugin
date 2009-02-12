@@ -301,6 +301,9 @@ sub exec_plugin_module {
 	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am";
 	my $exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
+	
+	# TODO: Do a check for void result ! (Gives a DBD::mysql::st execute failed: MySQL server has gone away at /usr/local/bin/pandora_plugin line 304)
+	
 	$agent_module = $exec_sql->fetchrow_hashref;
 
 	# Get a full hash for plugin record reference ($plugin)

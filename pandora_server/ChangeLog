@@ -1,3 +1,7 @@
+2009-02-11  Sancho Lerena <slerena@artica.es>
+
+        * bin/pandora_network: Restored lock for icmp / ping calls.
+
 2009-02-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Combined alerts are working again.

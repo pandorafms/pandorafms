@@ -301,7 +301,7 @@ sub pandora_ping_icmp {
 		my $p;
 	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes min
 		{
-			#lock $icmp_lock;
+			lock $icmp_lock;
 	 		$p = Net::Ping->new("icmp", $l_timeout, 32);
 		 	$result = $p->ping($dest);
 		}

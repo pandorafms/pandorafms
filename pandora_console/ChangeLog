@@ -1,5 +1,11 @@
 2009-02-12  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/jquery.tablesorter.js,
+	include/javascript/jquery.tablesorter.pager.js: Added to repository.
+	Missing files for compound alerts editor.
+
+2009-02-12  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/alerts/configure_alert_compound.php: Added support to
 	update alert elements. Also default operator for first element is NOP.
 

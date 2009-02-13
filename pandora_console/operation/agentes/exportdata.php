@@ -33,13 +33,18 @@ function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $
 // Return average value from an agentmodule, for a specific hour of specific day of week,
 // Only valid for non-string kind of data.
 	require ("include/config.php");
+	
+	// Convert to unix date	
+	$start_date = date("U", $start_date);
+	$end_date = date("U", $end_date);
+	
 	$query1 = "SELECT AVG(datos)
 			FROM tagente_datos
 			WHERE id_agente_modulo = ". $id_agente_modulo."
-					AND HOUR(timestamp) = ".$hour."
-					AND WEEKDAY(timestamp) = ".$day."
-					AND timestamp >= '$start_date' 
-					AND timestamp <= '$end_date'";
+					AND HOUR(utimestamp) = ".$hour."
+					AND WEEKDAY(utimestamp) = ".$day."
+					AND utimestamp >= $start_date 
+					AND utimestamp <= $end_date";
 
 	if (($resq1 = mysql_query($query1)) AND ($row=mysql_fetch_array($resq1))) 
 		return $row[0];
@@ -138,6 +143,9 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			echo __('Data from agent '). "<b>" . get_agent_name ($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
 			echo "<br>";
 
+			$from_date = date("U", strtotime($from_date));
+			$to_date = date("U", strtotime($to_date));
+
 			// For each module
 			for ($a=0;$a <count($origen_modulo); $a++){
 				$id_modulo = $origen_modulo[$a];
@@ -175,14 +183,18 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			<th class='datos'>".__('Data')."</th>
 			<th class='datos'>Timestamp</th>";
 	
+			// Convert to unix date	
+			$from_date = date("U", strtotime($from_date));
+			$to_date = date("U", strtotime($to_date));
+	
 			// Begin the render !	
 			for ($a=0; $a <count($origen_modulo); $a++){ // For each module (not used multiple modules yet!)
 				$id_modulo = $origen_modulo[$a];
 				$tipo = get_moduletype_name (get_agentmodule_type ($id_modulo));
 				if ($tipo == "generic_data_string")
-					$sql1 = 'SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
+					$sql1 = 'SELECT * FROM tagente_datos_string WHERE utimestamp > '.$from_date.' AND utimestamp < '.$to_date.' AND id_agente_modulo ='.$id_modulo.' ORDER BY utimestamp DESC';
 				else
-					$sql1 = 'SELECT * FROM tagente_datos WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
+					$sql1 = 'SELECT * FROM tagente_datos WHERE utimestamp > '.$from_date.' AND utimestamp < '.$to_date.' AND id_agente_modulo ='.$id_modulo.' ORDER BY utimestamp DESC';
 				$result1 = get_db_all_rows_sql ($sql1);
 				$color=1;
 				foreach ($result1 as $row){
@@ -198,7 +210,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 					echo "</td><td class='$tdcolor'>";
 					echo $row["datos"];
 					echo "</td><td class='$tdcolor'>";
-					echo $row["timestamp"];
+					echo $row["utimestamp"];
 					echo "</td></tr>";
 				}
 			}

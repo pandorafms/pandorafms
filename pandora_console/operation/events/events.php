@@ -62,6 +62,7 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $groups = get_user_groups ($config["id_user"], "IR");
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = (int) get_parameter ("id_user_ack", 0);
+$group_rep = (int) get_parameter ("group_rep", 0);
 
 //Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
@@ -205,9 +206,14 @@ foreach ($users as $id_user => $user) {
 print_select ($values, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
+echo "<td>";
+echo __("Repeated");
+echo "</td><td>";
+print_checkbox ("group_rep", 1, $group_rep, false);
+echo "</td></tr>";
 
+echo "<tr><td colspan=4 align=right>";
 //The buttons
-echo '<td colspan=3>';
 print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 // CSV
@@ -224,9 +230,16 @@ echo "</td></tr></table></form>"; //This is the internal table
 echo '<div style="width:220px; float:left;"><img src="reporting/fgraph.php?tipo=group_events&width=220&height=180&url='.rawurlencode ($sql_post).'" border="0"></div>';
 echo '</div><div style="clear:both">&nbsp;</div>';
 
-$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+if ($group_rep == 0)
+	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+else 
+	$sql = "SELECT *, COUNT(*) AS event_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+	
 $result = get_db_all_rows_sql ($sql);
-$sql = "SELECT COUNT(id_evento) FROM tevento WHERE id_evento > 0 ".$sql_post;
+if ($group_rep == 0)
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE id_evento > 0 ".$sql_post;
+else
+	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE id_evento > 0 ".$sql_post." GROUP BY evento, id_agentmodule";
 $total_events = get_db_sql ($sql);
 
 if (empty ($result)) {
@@ -335,6 +348,7 @@ foreach ($result as $row) {
 			$data[1] = '<img src="images/err.png" title="'.__('Unknown type').': '.$row["event_type"].'" />';
 			break;
 	}
+
 	
 	// Event description
 	$data[2] = '<span title="'.$row["evento"].'" class="f9">';
@@ -344,6 +358,9 @@ foreach ($result as $row) {
 		$data[2] .= $row["evento"];
 	}
 	$data[2] .= '</span>';
+
+	if ($group_rep == 1)
+		$data[2] .= " ( ".$row["event_rep"] . " ) ";
 
 	if ($row["event_type"] == "system") {
 		$data[3] = __('System');
@@ -380,9 +397,17 @@ foreach ($result as $row) {
 	} else {
 		$data[6] = '';
 	}
+
+	//Time	
 	
-	//Time
-	$data[7] = print_timestamp ($row["timestamp"], true);
+	if ($group_rep == 1){
+		if ($row["event_rep"] == 1)
+			$data[7] = print_timestamp ($row["timestamp"], true);
+		else
+			$data[7] = print_timestamp (get_db_sql ("SELECT timestamp FROM tevento WHERE id_agentmodule = ".$row["id_agentmodule"]." AND evento = '".$row["evento"]."' ORDER BY utimestamp DESC LIMIT 1"), true);
+	} else {
+		$data[7] = print_timestamp ($row["timestamp"], true);
+	}
 	
 	//Actions
 	$data[8] = '';

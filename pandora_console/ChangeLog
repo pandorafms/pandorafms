@@ -1,3 +1,33 @@
+2009-02-13  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/logon_ok.php: Simplified and added correct ampersand tags
+	
+	* general/footer.php: Now use print_image function to print image
+	
+	* general/main_menu.php: Wrapped JS into CDATA
+	
+	* include/functions_events.php: Use print_image to print images. Use
+	multibyte so Farsi/Arabian names don't mess up when cut. Also added
+	&shy; tags every 8 characters to the Event Description so that long module
+	names (like GigabitEthernet) don't break the table layout.
+	
+	* include/functions.php: Moved pandora_help to functions_ui.php, return
+	valid refresh links and don't double encode safe_input (otherwise &amp;
+	gets encoded as &amp;amp;)
+	
+	* include/functions_ui.php: Added print_help_icon and deprecated 
+	pandora_help (new style function naming)
+	
+	* include/functions_html.php: Partially rewrote print_image for fully
+	compatible functionality. Much simplified as well.
+	
+	* extensions/update_manager.php: Print out correct link and image tag
+	
+	* operation/agentes/networkmap.php: Is now correct HTML. Should work in
+	all compliant browsers. If IE6 still doesn't work, upgrade
+	
+	* operation/agentes/tactical.php: Use print_image for images.
+
 2009-02-13  Sancho Lerena  <slerena@artica.es>
 
 	* operation/events/events.php: Added new feature: Group similar event by

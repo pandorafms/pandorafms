@@ -22,22 +22,6 @@ require_once ('functions_ui.php');
 
 define ('ENTERPRISE_NOT_HOOK', -1);
 
-/**
- * Prints a help tip icon.
- * 
- * @param string $help_id Id of the help article
- * @param bool $return Whether to return or output the result
- * 
- * @return string The help tip
- */
-function pandora_help ($help_id, $return = false) {
-	global $config;
-	$output = '&nbsp;<img class="img_help" src="images/help.png" onClick="pandora_help(\''.$help_id.'\')">';
-	if ($return)
-		return $output;
-	echo $output;
-}
-
 /** 
  * Cleans a string by encoding to UTF-8 and replacing the HTML
  * entities. UTF-8 is necessary for foreign chars like asian 
@@ -54,7 +38,7 @@ function safe_input ($value) {
 		array_walk ($value, 'safe_input');
 		return $value;
 	}
-	return htmlentities (utf8_encode ($value), ENT_QUOTES, "UTF-8"); 
+	return htmlentities (utf8_encode ($value), ENT_QUOTES, "UTF-8", false); 
 }
 
 /**
@@ -1039,10 +1023,10 @@ function process_page_head ($string, $bitfield) {
 			/* Avoid the 1=1 */
 			if ($key == 1)
 				continue;
-			$query .= '&'.$key.'='.$value;
+			$query .= '&amp;'.$key.'='.$value;
 		}
 		foreach ($_POST as $key => $value) {
-			$query .= '&'.$key.'='.$value;
+			$query .= '&amp;'.$key.'='.$value;
 		}
 		
 		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'" />';

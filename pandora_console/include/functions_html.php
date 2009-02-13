@@ -50,7 +50,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$attributes .= ' class="'.$class.'"';
 	}
 	if (!empty ($disabled)) {
-		$attributes .= ' disabled';
+		$attributes .= ' disabled="disabled"';
 	}
 
 	$output .= '<select id="'.$name.'" name="'.$name.'"'.$attributes.'>';
@@ -58,7 +58,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	if ($nothing != '') {
 		$output .= '<option value="'.$nothing_value.'"';
 		if ($nothing_value == $selected) {
-			$output .= " selected";
+			$output .= ' selected="selected"';
 		}
 		//You should pass a translated string already
 		$output .= '>'.$nothing."</option>";
@@ -71,9 +71,9 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		foreach ($fields as $value => $label) {
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
-				$output .= ' selected';
+				$output .= ' selected="selected"';
 			} elseif (!is_array ($selected) && $value == $selected) {
-				$output .= ' selected';
+				$output .= ' selected="selected"';
 			}
 			if ($label === '') {
 				$output .= '>'.$value."</option>";
@@ -169,7 +169,7 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 		$output .= ' id="'.$htmlid.'"';
 	}
 	if ($disabled) //We want readonly, not disabled - disabled disables copying from the field as well
-		$output .= ' readonly';
+		$output .= ' readonly="readonly"';
 	
 	if ($attributes != '')
 		$output .= ' '.$attributes;
@@ -282,7 +282,7 @@ function print_submit_button ($label = 'OK', $name = '', $disabled = false, $att
 
 	$output .= '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
 	if ($disabled)
-		$output .= ' disabled';
+		$output .= ' disabled="disabled"';
 	$output .= ' />';
 	if ($return)
 		return $output;
@@ -333,7 +333,7 @@ function print_button ($label = 'OK', $name = '', $disabled = false, $script = '
  */
 function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
 	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
-	$output .= $value;
+	$output .= safe_input ($value);
 	$output .= '</textarea>';
 	
 	if ($return)
@@ -433,7 +433,7 @@ function print_table (&$table, $return = false) {
 	}
 	
 	if (empty ($table->border)) {
-		$table->border = '0px';
+		$table->border = '0';
 	}
 	
 	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
@@ -571,7 +571,7 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
 		 $output .= ' checked="checked"';
 	}
 	if ($disabled) {
-		 $output .= ' disabled';
+		 $output .= ' disabled="disabled"';
 	}
 	if ($script != '') {
 		 $output .= ' onClick="'. $script . '"';
@@ -624,7 +624,7 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
  * @return string HTML code if return parameter is true.
  */
 function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
-	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked': '');
+	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
 	$output .= ' id="checkbox-'.$name.'"';
 	
 	if ($script != '') {
@@ -632,7 +632,7 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 	}
 	
 	if ($disabled) {
-		 $output .= ' disabled';
+		 $output .= ' disabled="disabled"';
 	}
 	
 	$output .= ' />';
@@ -688,46 +688,66 @@ function print_help_tip ($text, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function print_image ($src, $return = false, $options = false) {
-	$output = '<img src="'.$src.'" ';
+	$output = '<img src="'.safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';
 	
-	if ($options) {
-		if (!isset ($options['alt']))
-			$options['alt'] = ''; //Alt is one of those tags that has to be set for w3 compliance
-			
-		$output .= 'alt="'.$options['alt'].'" ';
+	if (!empty ($options)) {
+		//Deprecated or value-less attributes
+		if (isset ($options["align"])) {
+			$style .= 'align:'.$options["align"].';'; //Align is deprecated, use styles.
+		}
 		
-		if (isset ($options['border']))
-			$style .= 'border:'.$options['border'].';'; //Border is deprecated. Use styles
+		if (isset ($options["border"])) {
+			$style .= 'border:'.$options["border"].'px;'; //Border is deprecated, use styles
+		}
+				
+		if (isset ($options["hspace"])) {
+			$style .= 'margin-left:'.$options["hspace"].'px;'; //hspace is deprecated, use styles
+			$style .= 'margin-right:'.$options["hspace"].'px;';
+		}
 		
-		if (isset ($options['style']))
-			$style .= $options['style'];
+		if (isset ($options["ismap"])) {
+			$output .= 'ismap="ismap" '; //Defines the image as a server-side image map
+		}
 		
-		if (isset ($options['title']))
-			$output .= 'title="'.$options['title'].'" ';
+		if (isset ($options["vspace"])) {
+			$style .= 'margin-top:'.$options["vspace"].'px;'; //hspace is deprecated, use styles
+			$style .= 'margin-bottom:'.$options["vspace"].'px;';
+		}
+				
+		if (isset ($options["style"])) {
+			$style .= $options["style"]; 
+		}
 		
-		if (isset ($options['width']))
-			$output .= 'width="'.$options['width'].'" ';
+		//Valid attributes (invalid attributes get skipped)
+		$attrs = array ("height", "longdesc", "usemap","width","id","class","title","lang","xml:lang", 
+						"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", 
+						"onmouseout", "onkeypress", "onkeydown", "onkeyup");
 		
-		if (isset ($options['height']))
-			$output .= 'height="'.$options['height'].'" ';
-		
-		if (isset ($options['class']))
-			$output .= 'class="'.$options['class'].'" ';
-		
-		if (isset ($options['id']))
-			$output .= 'id="'.$options['id'].'" ';
-		
-		if (isset ($options['onclick'])) {
-			$output .= 'onclick="'.$options['onclick'].'" ';
+		foreach ($attrs as $attribute) {
+			if (isset ($options[$attribute])) {
+				$output .= $attribute.'="'.safe_input ($options[$attribute]).'" ';
+			}
 		}
 	}
 	
-	$output .= 'style="'.$style.'" />';
+	if (!isset ($options["alt"]) && isset ($options["title"])) {
+		$options["alt"] = $options["title"]; //Set alt to title if it's not set
+	} elseif (!isset ($options["alt"])) {
+		$options["alt"] = ''; //Alt is mandatory, empty string will do
+	}
+
+	if (!empty ($style)) {
+		$output .= 'style="'.$style.'" ';
+	}
 	
-	if ($return)
-		return $output;
-	echo $output;
+	$output .= 'alt="'.safe_input ($options['alt']).'" />';
+	
+	if (!$return) {
+		echo $output;
+	}
+	
+	return $output;
 }
 
 /**

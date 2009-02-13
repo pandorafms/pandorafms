@@ -49,6 +49,9 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	
 	this->watchdog = false;
 	this->start_command = "";
+	this->retries = INT_MAX;
+	this->start_delay = MIN_DELAY;
+	this->retry_delay = MIN_DELAY;
 }
 
 string
@@ -66,6 +69,21 @@ Pandora_Module_Proc::getStartCommand () const {
 	return this->start_command;
 }
 
+int
+Pandora_Module_Proc::getRetries () const {
+	return this->retries;
+}
+
+int
+Pandora_Module_Proc::getStartDelay () const {
+	return this->start_delay;
+}
+
+int
+Pandora_Module_Proc::getStopDelay () const {
+	return this->stop_delay;
+}
+
 void
 Pandora_Module_Proc::setWatchdog (bool watchdog) {
 	this->watchdog = watchdog;
@@ -77,6 +95,30 @@ Pandora_Module_Proc::setStartCommand (string command) {
 }
 
 void
+Pandora_Module_Proc::setRetries (int retries) {
+	if (retries < 1) {
+		return;
+	}
+	this->retries = retries;
+}
+
+void
+Pandora_Module_Proc::setStartDelay (int mseconds) {
+	if (mseconds < MIN_DELAY) {
+		return;
+	}
+	this->start_delay = start_delay;
+}
+
+void
+Pandora_Module_Proc::setRetryDelay (int mseconds) {
+	if (mseconds < MIN_DELAY) {
+		return;
+	}
+	this->retry_delay = retry_delay;
+}
+
+void
 async_run (Pandora_Module_Proc *module) {
 	HANDLE              *processes = NULL;
 	int                  nprocess;
@@ -84,24 +126,31 @@ async_run (Pandora_Module_Proc *module) {
 	Pandora_Module_List *modules;
 	string               str_res;
 	string               prev_res;
-	int                  res;
-	int                  i;
+	int                  i, res, counter = 0;
 	
 	prev_res = module->getLatestOutput ();
 	modules = new Pandora_Module_List ();
 	modules->addModule (module);
-	Sleep (2000);
+	Sleep (this->getStartDelay ());
 	
 	while (1) {
 		processes = getProcessHandles (module->getProcessName ());
 		if (processes == NULL) {
 			if (module->isWatchdog ()) {
-				Pandora_Wmi::runProgram (module->getStartCommand ());
+				if (counter >= this->getRetries ()) {
+					this->setWatchdog (false);
+				} else {
+					Pandora_Wmi::runProgram (module->getStartCommand ());
+					counter++;
+				}
 			}
-			Sleep (2000);
+			Sleep (this->getStartDelay ());
 			continue;
 		}
 		
+		/* Reset retries counter */
+		counter = 0;
+
 		/* There are opened processes */
 		res = Pandora_Wmi::isProcessRunning (module->getProcessName ());
 		str_res = inttostr (res);
@@ -136,6 +185,8 @@ async_run (Pandora_Module_Proc *module) {
 		for (i = 0; i < nprocess; i++)
 			CloseHandle (processes[i]);
 		pandoraFree (processes);
+
+		Sleep (this->getRetryDelay ());
 	}
 	
 	delete modules;

@@ -103,7 +103,7 @@ function pandora_update_manager_login () {
 	
 	if (is_object ($package)) {
 		echo '<div class="notify">';
-		echo '<img src="images/information.png" /> ';
+		echo '<img src="images/information.png" alt="info" /> ';
 		echo __('There\'s a new update for Pandora');
 		echo '. <a href="index.php?sec=extensions&amp;sec2=extensions/update_manager">';
 		echo __('More info');

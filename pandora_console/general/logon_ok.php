@@ -76,14 +76,16 @@ $table->head = array ();
 $table->data = array ();
 $table->width = "100%";
 
+$img = "reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent=";
+
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
-$table->data[1][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["monitor_health"].'" title="'.$data["monitor_health"].'% '.__('of monitors up').'" />';
+$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
-$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
+$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("title" => $data["module_sanity"].'% '.__('of total modules inited')));
 
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
-$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
+$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
 
 print_table ($table);
 unset ($table);
@@ -95,42 +97,42 @@ $cells = array ();
 $cells[0][0] = __('Total agents');
 $cells[0][1] = $data["total_agents"];
 $cells[0]["color"] = "#000";
-$cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60";
+$cells[0]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60";
 
 $cells[1][0] = __('Total checks');
 $cells[1][1] = $data["total_checks"];
 $cells[1]["color"] = "#000";
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1";
+$cells[1]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=-1";
 
 $cells[2][0] = __('Modules critical');
 $cells[2][1] = $data["monitor_critical"];
 $cells[2]["color"] = "#f00";
-$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2";
+$cells[2]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
 
 $cells[3][0] = __('Modules warning');
 $cells[3][1] = $data["monitor_warning"];
 $cells[3]["color"] = "#FFB900";
-$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1";
+$cells[3]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
 
 $cells[4][0] = __('Modules normal');
 $cells[4][1] = $data["monitor_ok"];
 $cells[4]["color"] = "#00ff00";
-$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0";
+$cells[4]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
 
 $cells[5][0] = __('Modules unknown');
 $cells[5][1] = $data["monitor_unknown"];
 $cells[5]["color"] = "#aaaaaa";
-$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=3";
+$cells[5]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
 
 $cells[6][0] = __('Alerts defined');
 $cells[6][1] = $data["total_alerts"];
 $cells[6]["color"] = "#000";
-$cells[6]["href"] = "index.php?sec=estado&sec2=operation/agentes/alerts_status&refr=60";
+$cells[6]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60";
 
 $cells[7][0] = __('Users defined');
 $cells[7][1] = count (get_users ());
 $cells[7]["color"] = "#000";
-$cells[7]["href"] = "index.php?sec=usuarios&sec2=operation/users/user";
+$cells[7]["href"] = "index.php?sec=usuarios&amp;sec2=operation/users/user";
 
 foreach ($cells as $key => $row) {
 	//Switch class around
@@ -148,7 +150,7 @@ echo '<div id="activity" style="width:700px;">';
 // Show last activity from this user
 echo "<h2>" . __('This is your last activity in Pandora FMS console') . "</h2>";
 
-$table->width = '700px';
+$table->width = 700; //Don't specify px
 $table->data = array ();
 $table->size = array ();
 $table->size[2] = '130px';

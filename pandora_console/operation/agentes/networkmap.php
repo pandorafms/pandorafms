@@ -16,7 +16,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
@@ -253,11 +253,15 @@ $simple = (boolean) get_parameter ('simple', 0);
 $regen = (boolean) get_parameter ('regen',1); // Always regen by default
 $font_size = (int) get_parameter ('font_size', 12);
 
-echo '<h2>'.__('Pandora Agents').' &gt; '.__('Network Map').'&nbsp';
+echo '<h2>'.__('Pandora Agents').' &gt; '.__('Network Map').'&nbsp;';
 if ($pure == 1) {
-	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . __('Normal screen') . '"></a>';
+	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
+	print_image ("images/monitor.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
+	echo '</a>';
 } else {
-	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . __('Full screen') . '"></a>';
+	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1">';
+	print_image ("images/monitor.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
+	echo '</a>';
 }
 echo '</h2>';
 
@@ -269,7 +273,7 @@ $layout_array = array (
 			'spring2' => 'spring 2',
 			'flat' => 'flat');
 
-echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure='.$pure.'" method="post">';
+echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure='.$pure.'" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
 echo '<tr>';
 echo '<td valign="top">' . __('Layout') . ' &nbsp;';
@@ -319,7 +323,7 @@ echo "</td>";
 
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
-echo '<input name="updbutton" type="submit" class="sub upd" value="'. __('Update'). '">';
+print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"');
 echo '</td></tr>';
 echo '</table></form>';
 
@@ -351,36 +355,35 @@ $filename_dot .= ".dot";
 if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
 	$result = true;
 } else {
-	$fh = fopen ($filename_dot, 'w');
+	$fh = @fopen ($filename_dot, 'w');
 	if ($fh === false) {
 		$result = false;
-		break;
+	} else {
+		fwrite ($fh, $graph);
+		$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
+		$result = system ($cmd);
+		fclose ($fh);
+		unlink ($filename_dot);
 	}
-	
-	fwrite ($fh, $graph);
-	$cmd = "$filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img." ".$filename_dot;
-	$result = system ($cmd);
-	fclose ($fh);
-	unlink ($filename_dot);
 }
 
 if ($result !== false) {
 	if (! file_exists ($filename_map)) {
 		echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
 		echo $result;
-		echo "<br /> Apparently something went wrong reading the output.<br /> Is ".$filter." (usually part of GraphViz) installed and able to be executed by the webserver?";
-		echo "<br /> Is ".$config["attachment_store"]." writeable by the webserver?";
+		echo "<br /> Apparently something went wrong reading the output.<br />";
+		echo "<br /> Is ".$config["attachment_store"]." readable by the webserver process?";
 		return;
 	}
-	echo '<img src="'.$filename_img.'" usemap="#networkmap" />';
-	include ($filename_map);
+	print_image ($filename_img, false, array ("alt" => __('Network Map'), "usemap" => "#networkmap"));
+	require ($filename_map);
 } else {
 	echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
 	echo $result;
-	echo "<br /> Apparently something went wrong executing the command.";
-	echo "<br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver?";
-	echo "<br /> Is your webserver restricted from executing command line tools through the <code>system()</code> call (PHP Safe Mode or SELinux)";
-	
+	echo "<br /> Apparently something went wrong executing the command or writing the output.";
+	echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
+	echo "<br /><br /> Is your webserver restricted from executing command line tools through the <code>system()</code> call (PHP Safe Mode or SELinux)";
+	echo "<br /><br /> Is ".$config["attachment_store"]." writeable by the webserver process? To change this do the following (POSIX-based systems): chown &lt;apache user&gt; ".$config["attachment_store"];
 	return;
 }
 
@@ -388,6 +391,7 @@ $config['css'][] = 'cluetip';
 $config['jquery'][] = 'cluetip';
 ?>
 <script language="javascript" type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
 	$("area[title!='<?php echo $pandora_name; ?>']").cluetip ({
 		arrows: true,
@@ -395,4 +399,5 @@ $(document).ready (function () {
 		cluetipClass: 'default'
 	});
 });
+/* ]]> */
 </script>

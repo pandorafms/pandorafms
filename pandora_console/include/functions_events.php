@@ -219,43 +219,44 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			
 			/* Colored box */
 			if ($event["estado"] == 0) {
-				$data[0] = '<img src="images/pixel_red.png" width="20" height="20" title="'.get_priority_name ($event["criticity"]).'" />';
+				$data[0] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
 			} else {
-				$data[0] = '<img src="images/pixel_green.png" width="20" height="20" title="'.get_priority_name ($event["criticity"]).'" />';
+				$data[0] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
 			}
 			
 			/* Event type */
 			switch ($event["event_type"]) {
 				case "alert_recovered":
-					$data[1] = '<img src="images/error.png" title="'.__('Alert recovered').'" />';
+					$data[1] = print_image ("images/error.png", true, array ("title" => __('Alert recovered')));
 					break;
 				case "alert_manual_validation": 
-					$data[1] = '<img src="images/eye.png" title="'.__('Alert manually validated').'" />';
+					$data[1] = print_image ("images/eye.png", true, array ("title" => __('Alert manually validated')));
 					break;
 				case "monitor_up":
-					$data[1] = '<img src="images/lightbulb.png" title="'.__('Monitor up').'" />';
+					$data[1] = print_image ("images/lightbulb.png", true, array ("title" => __('Monitor up')));
 					break;
 				case "monitor_down":
-					$data[1] = '<img src="images/lightbulb_off.png" title="'.__('Monitor down').'" />';
+					$data[1] = print_image ("images/lightbulb_off.png", true, array ("title" => __('Monitor down')));
 					break;
 				case "alert_fired":
-					$data[1] = '<img src="images/bell.png" title="'.__('Alert fired').'" />';
+					$data[1] = print_image ("images/bell.png", true, array ("title" => __('Alert fired')));
 					break;
 				case "system";
-					$data[1] = '<img src="images/cog.png" title="'.__('System').'" />';
+					$data[1] = print_image ("images/cog.png", true, array ("title" => __('System')));
 					break;
 				case "recon_host_detected";
-					$data[1] = '<img src="images/network.png" title="'.__('Host detected by recon server').'" />';
+					$data[1] = print_image ("images/network.png", true, array ("title" => __('Host detected by recon server')));
 					break;
 				default: 
-					$data[1] = '<img src="images/err.png" title="'.$event["event_type"].'" />';
+					$data[1] = print_image ("images/err.png", true, array ("title" => $event["event_type"]));
 					break;
 			}
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
-			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input (substr ($event["evento"],0, floor ($width / 10)));
+			$wrap = floor ($width / 10);
+			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input (chunk_split (mb_substr ($event["evento"],0, $wrap),8, "&shy;"));
 			
-			if (strlen ($event["evento"]) > floor ($width / 10)) {
+			if (mb_strlen ($event["evento"]) > floor ($width / 10)) {
 				$data[2] .= "...";
 			}
 			$data[2] .= '</span>';

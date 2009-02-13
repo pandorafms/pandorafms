@@ -138,6 +138,7 @@ require ("links_menu.php");
 $config['jquery'][] = 'cookie';
 ?>
 <script type="text/javascript" language="javascript">
+/* <![CDATA[ */
 $(document).ready( function() {
 	$("img.toggle").click (function () {
 		$(this).siblings ("ul").toggle ();
@@ -145,4 +146,5 @@ $(document).ready( function() {
 		return false;
 	});
 });
+/* ]]> */
 </script>

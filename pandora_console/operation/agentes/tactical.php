@@ -42,7 +42,7 @@ function print_cells_temp ($cells) {
 		if ($row[1] === 0) {
 			$row[1] = "-";
 		}
-		echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.$row["href"].'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+		echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.safe_input ($row["href"]).'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 	}	
 }
 
@@ -63,28 +63,30 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
+$img = "reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=";
+
 $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["monitor_health"].'" title="'.$data["monitor_health"].'% '.__('of monitors up').'" />';
+$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
+$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("title" => $data["module_sanity"].'% '.__('of total modules inited')));
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
+$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
 	
 print_table ($table);
 unset ($table);
 
-echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
+echo '<table class="databox" cellpadding="4" cellspacing="4" width="100%">';
 echo '<tr><th colspan="2">'.__('Monitor checks').'</th></tr>';
 	
 $cells = array ();
@@ -180,18 +182,17 @@ if ($serverinfo) {
 	$data[0] = $server_info["name"];
 
 	if ($server_info["status"] == 0){
-		$data[1] = '<img src="images/pixel_red.png" width="20" height="20" />';
+		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
 	} else {
-		$data[1] = '<img src="images/pixel_green.png" width="20" height="20" />';
+		$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
 	}
-
 
 	if ($server_info["modules"] > 0 && $total_modules > 0) {
 		$percent = $server_info["modules"] / ($total_modules / 100);
 	} else {
 		$percent = 0;
 	}
-	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$percent.'&height=18&width=80" title="'.$server_info["modules"]." ".__('of')." ".$total_modules.'" />';
+	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$percent."&height=18&width=80", true, array ("title" => $server_info["modules"]." ".__('of')." ".$total_modules));
 
 	$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
 
@@ -210,7 +211,7 @@ if ($serverinfo) {
 	}
 	echo '</tbody></table>';
 } else {
-	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+	echo '<div class="nf">'.__('There are no servers configured into the database').'</div>';
 }
 print_events_table ("", 10, 450);
 

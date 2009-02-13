@@ -1,3 +1,13 @@
+2009-02-13  Sancho Lerena  <slerena@artica.es>
+
+	* operation/events/events.php: Added new feature: Group similar event by
+	showing the event and the total repeated times.
+	
+	* operation/agentes/export_csv.php, 
+	operation/agentes/exportdata.php: Fixed problems with old timestamp.
+	
+	* operation/agentes/estado_monitores.php: Fixed link to module edition.
+
 2009-02-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/footer.php, general/links_menu.php: _new is invalid. Use _blank 

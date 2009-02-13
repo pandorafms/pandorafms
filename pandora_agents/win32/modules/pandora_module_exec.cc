@@ -106,7 +106,7 @@ Pandora_Module_Exec::run () {
 
 	/* Create the child process. */
 	if (! CreateProcess (NULL, (CHAR *) this->module_exec.c_str (), NULL,
-			     NULL, TRUE, CREATE_SUSPENDED, NULL,
+			     NULL, TRUE, CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL,
 			     working_dir.c_str (), &si, &pi)) {
 		pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
 			    this->module_name.c_str (), GetLastError ());

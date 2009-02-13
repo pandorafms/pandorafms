@@ -23,6 +23,8 @@
 
 #include "pandora_module.h"
 
+#define	MIN_DELAY 2000 /* Minimum process start/retry delay */
+
 namespace Pandora_Modules {
 	/**
 	 * Module to check that a process is running on the system.
@@ -33,15 +35,24 @@ namespace Pandora_Modules {
 		HANDLE thread;
 		bool   watchdog;
 		string start_command;
+		int retries;
+		int start_delay;
+		int stop_delay;
 	public:
 		Pandora_Module_Proc    (string name, string process_name);
 		
 		string getProcessName  () const;
 		string getStartCommand () const;
 		bool   isWatchdog      () const;
+		int    getRetries      () const;
+		int    getStartDelay   () const;
+		void   getRetryDelay   () const;
 		
 		void   setWatchdog     (bool watchdog);
 		void   setStartCommand (string command);
+		void   setRetries      (int retries);
+		void   setStartDelay   (int mseconds);
+		void   setRetryDelay   (int mseconds);
 		
 		void   run             ();
 	};

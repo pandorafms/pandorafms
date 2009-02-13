@@ -1,3 +1,16 @@
+2009-02-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc
+	  windows/pandora_wmi.h
+	  modules/pandora_module_exec.cc: Hide console window when executing
+	  exec modules.
+	
+	* modules/pandora_module_proc.cc,
+	  modules/pandora_module_proc.h,
+	  modules/pandora_module_factory.cc: Added module_retries,
+	  module_startdelay and module_retrydelay options to proc
+	  modules.
+
 2009-02-12  Esteban Sanchez  <estebans@artica.es>
 
 	* main.cc: Added new parameter to help text.

@@ -60,6 +60,9 @@ using namespace Pandora_Strutils;
 #define TOKEN_START_COMMAND ("module_start_command ")
 #define TOKEN_WMIQUERY      ("module_wmiquery ")
 #define TOKEN_WMICOLUMN     ("module_wmicolumn ")
+#define TOKEN_RETRIES       ("module_retries ")
+#define TOKEN_STARTDELAY    ("module_startdelay ")
+#define TOKEN_RETRYDELAY    ("module_retrydelay ")
 
 string
 parseLine (string line, string token) {
@@ -124,6 +127,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_start_command = "";
 	module_wmiquery      = "";
 	module_wmicolumn     = "";
+	module_retries       = "";
+	module_startdelay    = "";
+	module_retrydelay    = "";
 
 	stringtok (tokens, definition, "\n");
 	
@@ -206,6 +212,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_wmicolumn == "") {
 			module_wmicolumn = parseLine (line, TOKEN_WMICOLUMN);
 		}
+		if (module_retries == "") {
+			module_retries = parseLine (line, TOKEN_RETRIES);
+		}
+		if (module_startdelay == "") {
+			module_startdelay = parseLine (line, TOKEN_STARTDELAY);
+		}
+		if (module_retrydelay == "") {
+			module_retrydelay = parseLine (line, TOKEN_RETRYDELAY);
+		}
 
 		iter++;
 	}
@@ -235,6 +250,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				module_proc = (Pandora_Module_Proc *) module;
 				module_proc->setWatchdog (true);
 				module_proc->setStartCommand (module_start_command);
+				module_proc->setRetries (atoi(module_retries));
+				module_proc->setStartDelay (atoi(module_startdelay));
+				module_proc->setRetryDelay (atoi(module_retrydelay));
 			}
 		}
 	} else if (module_service != "") {

@@ -121,10 +121,10 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
-$table->size[0] = '10%';
-$table->size[1] = '40%';
-$table->size[2] = '10%';
-$table->size[3] = '40%';
+$table->size[0] = '15%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 /* Source selection */
 $table->id = 'source_table';
@@ -132,11 +132,11 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = print_select ($groups, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Agent');
+$table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
+$table->data[0][2] .= '<img src="images/spinner.gif" />';
+$table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
-$table->data[0][3] .= '<span id="source_agent_loading" class="invisible">';
-$table->data[0][3] .= '<img src="images/spinner.gif" />';
-$table->data[0][3] .= '</span>';
 
 echo '<form id="manage_config_form" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config">';
 
@@ -210,11 +210,11 @@ $table->data = array ();
 $table->data[0][0] = __('Group');
 $table->data[0][1] = print_select ($groups, 'destiny_id_group', $destiny_id_group,
 	false, '', '', true);
-$table->data[0][1] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[0][1] .= '<img src="images/spinner.gif" />';
-$table->data[0][1] .= '</span>';
 
 $table->data[1][0] = __('Agent');
+$table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
+$table->data[1][0] .= '<img src="images/spinner.gif" />';
+$table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);
 
@@ -232,29 +232,25 @@ echo '</form>';
 echo '<h3 class="error invisible" id="message"> </h3>';
 
 $config['jquery'][] = 'form';
+$config['jquery'][] = 'pandora.controls';
 ?>
 
 <script type="text/javascript">
 $(document).ready (function () {
-	$("#source_id_group").change (function () {
-		$("#source_agent_loading").show ();
-		var select = $("#source_id_agent").disable ();
-		/* Remove all but "Select" */
-		$("option[value!=0]", select).remove ();
-		jQuery.post ("ajax.php",
-			{"page" : "godmode/groups/group_list",
-			"get_group_agents" : 1,
-			"id_group" : this.value
-			},
-			function (data, status) {
-				jQuery.each (data, function (id, value) {
-					$(select).append ($("<option></option>").attr ("value", id).html (value));
-				});
-				$("#source_agent_loading").hide ();
-				$("#source_id_agent").enable ();
-			},
-			"json"
-		);
+	$("#source_id_group").pandoraSelectGroup ({
+		agentSelectId: "source_id_agent",
+		loadingId: "source_agent_loading"
+	});
+	
+	$("#destiny_id_group").pandoraSelectGroup ({
+		agentSelectId: "destiny_id_agent\\[\\]",
+		loadingId: "destiny_agent_loading",
+		callbackPost: function (id, value, option) {
+			if ($("#source_id_agent").fieldValue ().in_array (id)) {
+				/* Hide source agent */
+				$(option).hide ();
+			}
+		}
 	});
 	
 	$("#source_id_agent").change (function () {
@@ -347,31 +343,6 @@ $(document).ready (function () {
 					},
 					"json"
 				);
-			},
-			"json"
-		);
-	});
-	
-	$("#destiny_id_group").change (function () {
-		$("#destiny_agent_loading").show ();
-		var select = $("#destiny_id_agent\\[\\]").disable ();
-		$("#destiny_id_agent\\[\\] option").remove ();
-		jQuery.post ("ajax.php",
-			{"page" : "godmode/groups/group_list",
-			"get_group_agents" : 1,
-			"id_group" : this.value
-			},
-			function (data, status) {
-				jQuery.each (data, function (id, value) {
-					option = $("<option></option>").attr ("value", id).html (value)
-					if ($("#source_id_agent").fieldValue ().in_array (id)) {
-						/* Hide source agent */
-						$(option).hide ();
-					}
-					$(select).append (option);
-				});
-				$("#destiny_agent_loading").hide ();
-				$("#destiny_id_agent\\[\\]").enable ();
 			},
 			"json"
 		);

@@ -759,7 +759,9 @@ table#simple input#text-snmp_oid,
 table#simple select#prediction_module,
 table#source_table select,
 table#destiny_table select,
-table#target_table select {
+table#target_table select,
+table#filter_compound_table select,
+table#filter_compound_table #text-search {
 	width: 100%;
 }
 .clickable {
@@ -872,7 +874,9 @@ fieldset legend span {
 	font-style:italic;
 
 }
-
+form#filter_form {
+	margin-bottom: 15px;
+}
 /* timeEntry styles */
 .timeEntry_control {
 	vertical-align: middle;

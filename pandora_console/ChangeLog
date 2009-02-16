@@ -1,3 +1,25 @@
+2009-02-16  Esteban Sanchez  <estebans@artica.es>
+
+	* include/javascript/jquery.pandora.controls.js: Added to repository.
+	New file to hold all common jQuery Pandora operations. Currently it
+	holds a generic process to loads a list of agents from a group
+	dropdown menu.
+
+	* godmode/agentes/manage_config.php: Loading spinners moved next to
+	the label because it was causing some ugly flickers due to 100%
+	width elements. Use code from jquery.pandora.controls.js.
+
+	* godmode/alerts/alert_compounds.php: Rewritten to be more user
+	friendly. Filtering is now possible. New operations like
+	enable/disable or delete are now available.
+
+	* include/styles/pandora.css: Added style for alert_compounds.php.
+
+	* include/functions.php: Make offset parameter optional in
+	pagination(). Style correction.
+
+	* include/functions_alerts.php: Added delete_alert_compound().
+
 2009-02-16  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Changed string

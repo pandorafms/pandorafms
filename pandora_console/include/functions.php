@@ -254,18 +254,25 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
  * Prints a pagination menu to browse into a collection of data.
  * 
  * @param int $count Number of elements in the collection.
- * @param string $url URL of the pagination links. It must include all form values as GET form.
- * @param int $offset Current offset for the pagination
- * @param int $pagination Current pagination size. If a user requests a larger pagination than config["block_size"]
+ * @param string $url URL of the pagination links. It must include all form
+ * values as GET form.
+ * @param int $offset Current offset for the pagination. Default value would be
+ * taken from $_REQUEST['offset']
+ * @param int $pagination Current pagination size. If a user requests a larger
+ * pagination than config["block_size"]
  * @param bool $return Whether to return or print this 
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function pagination ($count, $url, $offset, $pagination = 0, $return = false) {
+function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false) {
 	global $config;
 	
 	if (empty ($pagination)) {
 		$pagination = $config["block_size"];
+	}
+	
+	if (empty ($offset)) {
+		$offset = (int) get_parameter ('offset');
 	}
 	
 	/* 	URL passed render links with some parameter
@@ -351,15 +358,14 @@ function pagination ($count, $url, $offset, $pagination = 0, $return = false) {
 	// get offset for index calculation
 	// Draw "last" block link, ajust for last block will be the same
 	// as painted in last block (last integer block).	
-	if (($count - $pagination) > 0){
-		$myoffset = floor(($count-1) / $pagination) * $pagination;
+	if (($count - $pagination) > 0) {
+		$myoffset = floor (($count - 1) / $pagination) * $pagination;
 		$output .= '<a href="'.$url.'&offset='.$myoffset.'"><img class="bot" src="images/control_end_blue.png" /></a>';
 	}
 	// End div and layout
 	$output .= "</div>";
-	if ($return === false) {
+	if ($return === false)
 		echo $output;
-	}
 	return $output;
 }
 

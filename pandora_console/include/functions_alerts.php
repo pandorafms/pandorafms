@@ -1071,4 +1071,14 @@ function validate_alert_compound ($id_alert_compound) {
 	}
 	return true;
 }
+
+function delete_alert_compound ($id_alert_compound) {
+	$id_alert_compound = safe_int ($id_alert_compound, 1);
+	if (empty ($id_alert_compound))
+		return false;
+	
+	$sql = sprintf ('DELETE FROM talert_compound WHERE id = %d',
+		$id_alert_compound);
+	return @process_sql ($sql);
+}
 ?>

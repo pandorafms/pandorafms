@@ -331,7 +331,8 @@ function get_agent_module ($id_agent_module) {
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's.
  * @param mixed Array, comma delimited list or singular value of rows to
- * select. If nothing is specified, nombre will be selected.
+ * select. If nothing is specified, nombre will be selected. A special
+ * character "*" will select all the values.
  * @param mixed Aditional filters to the modules. It can be an indexed array
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator) or a string, including any SQL clause (without
@@ -367,7 +368,7 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 		if (is_array ($filter)) {
 			$fields = array ();
 			foreach ($filter as $field => $value) {
-				array_push ($fields, $field.'='.$value);
+				array_push ($fields, $field.'="'.$value.'"');
 			}
 			$where .= implode (' AND ', $fields);
 		} else {
@@ -381,10 +382,11 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 		$details = safe_input ($details);
 	}
 	
-	$sql = sprintf ('SELECT id_agente_modulo,%s
+	$sql = sprintf ('SELECT %s%s
 		FROM tagente_modulo
 		%s
 		ORDER BY nombre',
+		$details != '*' ? 'id_agente_modulo,' : '',
 		implode (",", (array) $details),
 		$where);
 	$result = get_db_all_rows_sql ($sql);
@@ -395,7 +397,7 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 	
 	$modules = array ();
 	foreach ($result as $row) {
-		if (is_array ($details)) {
+		if (is_array ($details) || $details == '*') {
 			 //Just stack the information in array by ID
 			$modules[$row['id_agente_modulo']] = $row;
 		} else {
@@ -1675,6 +1677,64 @@ function format_array_to_update_sql ($values) {
 	return implode (", ", $fields);
 }
 
+/**
+ * Formats an array of values into a SQL where clause string.
+ *
+ * This function is useful to generate a WHERE clause for a SQL sentence from
+ * a list of values. Example code:
+ *
+ * <code>
+  $values = array ();
+  $values['name'] = "Name";
+  $values['description'] = "Long description";
+  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_sql ($values).' LIMIT 20';
+  echo $sql;
+  </code>
+ * Will return:
+ * <code>
+ * SELECT * FROM table WHERE `name` = "Name" AND `description` = "Long description" LIMIT 20
+ * </code>
+ *
+ * @param array Values to be formatted in an array indexed by the field name.
+ * @param string Join operator. AND by default.
+ *
+ * @return string Values joined into an SQL string that can fits into the WHERE
+ * clause of an SQL sentence.
+ */
+function format_array_to_where_clause_sql ($values, $join = 'AND') {
+	$fields = array ();
+	
+	if (! is_array ($values)) {
+		return '';
+	}
+	
+	$query = '';
+	$i = 1;
+	$max = count ($values);
+	foreach ($values as $field => $value) {
+		if ($field[0] != "`") {
+			$field = "`".$field."`";
+		}
+		
+		if (is_null ($value)) {
+			$query .= sprintf ("%s IS NULL", $field);
+		} elseif (is_int ($value) || is_bool ($value)) {
+			$query .= sprintf ("%s = %d", $field, $value);
+		} else if (is_float ($value) || is_double ($value)) {
+			$query .= sprintf ("%s = %f", $field, $value);
+		} else {
+			$query .= sprintf ("%s = '%s'", $field, $value);
+		}
+		
+		if ($i < $max) {
+			$query .= $join;
+		}
+		$i++;
+	}
+	
+	return $query;
+}
+
 /** 
  * Get the status of an alert assigned to an agent module.
  * 
@@ -2523,28 +2583,7 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
 			/* FIXME: Should we clean the string for sanity? */
 			$query .= $where;
 		} else if (is_array ($where)) {
-			$i = 1;
-			$max = count ($where);
-			foreach ($where as $field => $value) {
-				if ($field[0] != "`") {
-					$field = "`".$field."`";
-				}
-				
-				if (is_null ($value)) {
-					$query .= sprintf ("%s IS NULL", $field);
-				} elseif (is_int ($value) || is_bool ($value)) {
-					$query .= sprintf ("%s = %d", $field, $value);
-				} else if (is_float ($value) || is_double ($value)) {
-					$query .= sprintf ("%s = %f", $field, $value);
-				} else {
-					$query .= sprintf ("%s = '%s'", $field, $value);
-				}
-		
-				if ($i < $max) {
-					$query .= $where_join;
-				}
-				$i++;
-			}
+			$query .= format_array_to_where_clause_sql ($where);
 		}
 	}
 	

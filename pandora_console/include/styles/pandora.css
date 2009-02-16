@@ -736,8 +736,11 @@ select#template, select#action {
 .invisible {
 	display: none;
 }
-#label-checkbox-matches_value {
+#label-checkbox-matches_value,
+#label-checkbox-copy_modules,
+#label-checkbox-copy_alerts {
 	display: inline;
+	font-weight: normal;
 }
 input[type=image] {
 	border:0px;
@@ -753,7 +756,10 @@ table#simple select#id_plugin {
 }
 table#simple input#text-plugin_parameter,
 table#simple input#text-snmp_oid,
-table#simple select#prediction_module {
+table#simple select#prediction_module,
+table#source_table select,
+table#destiny_table select,
+table#target_table select {
 	width: 100%;
 }
 .clickable {
@@ -856,10 +862,19 @@ img.right {
 .text-right {
 	text-align:right;
 }
+fieldset {
+	border: 2px solid #E9F3D2;
+	padding: 0 0 0 10px;
+	width: 90%;
+	margin-bottom: 15px;
+}
+fieldset legend span {
+	font-style:italic;
+
+}
 
 /* timeEntry styles */
 .timeEntry_control {
 	vertical-align: middle;
 	margin-left: 2px;
 }
-

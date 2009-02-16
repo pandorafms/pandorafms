@@ -31,17 +31,39 @@ if (! give_acl($config['id_user'], 0, "PM")) {
 
 if (defined ('AJAX')) {
 	$get_group_json = (bool) get_parameter ('get_group_json');
-
+	$get_group_agents = (bool) get_parameter ('get_group_agents');
+	
 	if ($get_group_json) {
 		$id_group = (int) get_parameter ('id_group');
-
+		
+		if (! give_acl ($config['id_user'], $id_group, "AR")) {
+			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+				"Trying to access Alert Management");
+			echo json_encode (false);
+			return;
+		}
+		
 		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
-
+		
 		echo json_encode ($group);
-		exit ();
+		return;
+	}
+	
+	if ($get_group_agents) {
+		$id_group = (int) get_parameter ('id_group');
+		
+		if (! give_acl ($config['id_user'], $id_group, "AR")) {
+			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+				"Trying to access Alert Management");
+			echo json_encode (false);
+			return;
+		}
+		
+		echo json_encode (get_group_agents ($id_group, false, "none"));
+		return;
 	}
 
-	exit ();
+	return;
 }
 
 $create_group = (bool) get_parameter ('create_group');

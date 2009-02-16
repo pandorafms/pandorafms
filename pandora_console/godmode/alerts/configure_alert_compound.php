@@ -24,53 +24,6 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 	return;
 }
 
-if (defined ('AJAX')) {
-	$get_group_agents = (bool) get_parameter ('get_group_agents');
-	$get_agent_alerts = (bool) get_parameter ('get_agent_alerts');
-	
-	if ($get_group_agents) {
-		$id_group = (int) get_parameter ('id_group');
-		echo json_encode (get_group_agents ($id_group));
-		return;
-	}
-	
-	if ($get_agent_alerts) {
-		$id_agent = (int) get_parameter ('id_agent');
-		if ($id_agent <= 0) {
-			echo json_encode (false);
-			return;
-		}
-		$id_group = get_agent_group ($id_agent);
-		
-		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-				"Trying to access Alert Management");
-			echo json_encode (false);
-			return;
-		}
-		
-		require_once ('include/functions_agents.php');
-		require_once ('include/functions_alerts.php');
-		
-		$alerts = get_agent_alerts_simple ($id_agent);
-		if (empty ($alerts)) {
-			echo json_encode (false);
-			return;
-		}
-		
-		$retval = array ();
-		foreach ($alerts as $alert) {
-			$alert['template'] = get_alert_template ($alert['id_alert_template']);
-			$alert['module_name'] = get_agentmodule_name ($alert['id_agent_module']);
-			$alert['agent_name'] = get_agentmodule_agent_name ($alert['id_agent_module']);
-			$retval[$alert['id']] = $alert;
-		}
-		
-		echo json_encode ($retval);
-	}
-	return;
-}
-
 $id = (int) get_parameter ('id');
 $id_agent = (int) get_parameter ('id_agent');
 
@@ -637,15 +590,16 @@ if ($step == 1) {
 	print_select (get_alert_compound_operations (), 'operations');
 	echo '</div>';
 }
+$config['jquery'][] = 'form';
+$config['jquery'][] = 'tablesorter';
+$config['jquery'][] = 'tablesorter.pager';
+$config['jquery'][] = 'ui.core';
+$config['jquery'][] = 'timeentry';
+
+$config['css'][] = 'timeentry';
 ?>
 
-<script type="text/javascript" src="include/javascript/jquery.form.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.tablesorter.js"></script>
-<script type="text/javascript" src="include/javascript/jquery.tablesorter.pager.js"></script>
 <script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>
-<link rel="stylesheet" href="include/styles/timeentry.css" type="text/css" media="screen">
-<script src="include/javascript/jquery.ui.core.js"></script>
-<script src="include/javascript/jquery.timeentry.js"></script>
 <script src="include/languages/time_<?php echo $config['language']; ?>.js"></script>
 
 <script type="text/javascript">
@@ -730,7 +684,7 @@ $(document).ready (function () {
 		/* Remove all but "Select" */
 		$("option[value!=0]", select).remove ();
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/alerts/configure_alert_compound",
+			{"page" : "godmode/groups/group_list",
 			"get_group_agents" : 1,
 			"id_group" : this.value
 			},
@@ -756,8 +710,8 @@ $(document).ready (function () {
 		$("#alerts_loading").show ();
 		$("#alert_list tbody").empty ();
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/alerts/configure_alert_compound",
-			"get_agent_alerts" : 1,
+			{"page" : "godmode/agentes/alert_manager",
+			"get_agent_alerts_simple" : 1,
 			"id_agent" : this.value
 			},
 			function (data, status) {

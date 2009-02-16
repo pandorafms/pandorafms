@@ -1,3 +1,20 @@
+2009-02-16  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Changed string
+	  so it is the same as other used before.
+
+	* godmode/agentes/configurar_agente.php: Fixed typo.
+
+	* include/languages/pt_BR.po, include/languages/nl.mo,
+	include/languages/es.po, include/languages/it.mo,
+	include/languages/pt_BR.mo, include/languages/es.mo,
+	include/languages/da.po, include/languages/de.po, include/languages/he.po,
+	include/languages/eu.po, include/languages/da.mo, include/languages/de.mo,
+	include/languages/he.mo, include/languages/eu.mo, include/languages/nl.po,
+	include/languages/it.po: Updated translations from Rosetta.
+
+	* include/languages/index.pot: Updated po template.
+
 2009-02-16  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Moved AJAX interface for

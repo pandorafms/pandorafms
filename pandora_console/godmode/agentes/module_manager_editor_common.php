@@ -170,9 +170,9 @@ $table_advanced->data[2][2] = __('Post process').' '.pandora_help ('postprocess'
 $table_advanced->data[2][3] = print_input_text ('post_process',
 	$post_process, '', 5, 5, true);
 
-$table_advanced->data[3][0] = __('Min. value');
+$table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->data[3][1] = print_input_text ('min', $min, '', 5, 15, true);
-$table_advanced->data[3][2] = __('Max. value');
+$table_advanced->data[3][2] = __('Max. Value');
 $table_advanced->data[3][3] = print_input_text ('max', $max, '', 5, 15, true);
 
 $table_advanced->data[4][0] = __('Export target');

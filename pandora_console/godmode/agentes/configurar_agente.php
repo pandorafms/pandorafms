@@ -156,7 +156,7 @@ if ($create_agent) {
 				array ('nombre' => 'agent_keepalive',
 					'id_agente' => $id_agente,
 					'id_tipo_modulo' => 100,
-					'descripcion' => __('Ageng keepalive monitor'),
+					'descripcion' => __('Agent keepalive monitor'),
 					'id_modulo' => 1,
 					'min_warning' => 0,
 					'max_warning' => 1));

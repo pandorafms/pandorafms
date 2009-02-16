@@ -1,3 +1,36 @@
+2009-02-16  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Moved AJAX interface for
+	get_agent_alerts_simple operation here.
+
+	* godmode/agentes/manage_config.php: Complete rewritten to give
+	support to new alert system and a new improved UI.
+
+	* godmode/alerts/configure_alert_compound.php: Removed AJAX code
+	relative to groups and agents. Include jQuery and style files with the
+	new way.
+	
+	* godmode/groups/group_list.php: Moved AJAX interface for
+	get_group_agents operation here.
+
+	* include/styles/pandora.css: Added styling for new manage config
+	interface. Added style for fieldset elements.
+
+	* include/functions_alerts.php: Added filter parameter to
+	get_alerts_agent_module(). Added
+	copy_alert_agent_module_to_agent_module().
+
+	* include/functions_db.php: Added special character * to
+	get_agent_modules() to get all the row. Added
+	format_array_to_where_clause_sql() to transform an array of values to
+	a WHERE clause. Use this function in process_sql_update().
+
+	* include/functions_modules.php: Added to repository. New file to add
+	modules operation functions. Added copy_agent_module_to_agent()
+
+	* operation/agentes/ver_agente.php: AJAX interface for
+	get_agent_modules_json can now receive an additional filter.
+
 2009-02-13  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/logon_ok.php: Simplified and added correct ampersand tags

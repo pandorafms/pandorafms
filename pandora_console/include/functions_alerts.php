@@ -609,16 +609,20 @@ function get_alert_agent_module ($id_alert_agent_module) {
 	return get_db_row ('talert_template_modules', 'id', $id_alert_agent_module);
 }
 
-function get_alerts_agent_module ($id_agent_module, $disabled = false) {
+function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter = false) {
 	$id_alert_agent_module = safe_int ($id_agent_module, 0);
 	
-	$filter = '';
+	$where = '';
 	if (! $disabled)
-		$filter .= 'AND disabled = 0';
+		$where .= ' AND disabled = 0 ';
+	
+	if ($filter) {
+		$where .= ' AND '.format_array_to_where_clause_sql ($filter);
+	}
 	
 	$sql = sprintf ('SELECT * FROM talert_template_modules
 		WHERE id_agent_module = %d %s',
-		$id_agent_module, $filter);
+		$id_agent_module, $where);
 	
 	return get_db_all_rows_sql ($sql);
 }
@@ -762,6 +766,52 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 		}
 	}
 	return true;
+}
+
+/**
+ * Copy an alert defined in a module agent to other module agent.
+ * 
+ * This function avoid duplicated insertion.
+ * 
+ * @param int Source agent module id.
+ * @param int Detiny agent module id.
+ *
+ * @return New alert id on success. Existing alert id if it already exists.
+ * False on error.
+ */
+function copy_alert_agent_module_to_agent_module ($id_agent_alert, $id_destiny_module) {
+	$alert = get_alert_agent_module ($id_agent_alert);
+	if ($alert === false)
+		return false;
+	
+	$alerts = get_alerts_agent_module ($id_destiny_module, false,
+		array ('id_alert_template' => $alert['id_alert_template']));
+	if (! empty ($alerts)) {
+		return $alerts[0]['id'];
+	}
+	
+	/* PHP copy arrays on assignment */
+	$new_alert = array ();
+	$new_alert['id_agent_module'] = $id_destiny_module;
+	$new_alert['id_alert_template'] = $alert['id_alert_template'];
+	
+	$id_new_alert = @process_sql_insert ('talert_template_modules', $new_alert);
+	if ($id_new_alert === false) {
+		return false;
+	}
+	$actions = get_alert_agent_module_actions ($id_agent_alert);
+	if (empty ($actions))
+		return $id_new_alert;
+	
+	foreach ($actions as $action) {
+		$result = add_alert_agent_module_action ($id_new_alert, $action['id'],
+			array ('fires_min' => $action['fires_min'],
+				'fires_max' => $action['fires_max']));
+		if ($result === false)
+			return false;
+	}
+	
+	return $id_new_alert;
 }
 
 /* Compound alerts */

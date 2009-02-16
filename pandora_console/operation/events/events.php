@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -430,7 +430,9 @@ foreach ($result as $row) {
 	array_push ($table->data, $data);
 }
 
-if (!empty ($table->data)) {
+if (empty ($table->data)) {
+	echo '<div class="nf">'.__('No events').'</div>';
+} else {
 	echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'">';
 	print_table ($table);
 	echo '<div style="width:750px; text-align:right">';
@@ -440,39 +442,37 @@ if (!empty ($table->data)) {
 	if (give_acl ($config["id_user"], 0,"IM") == 1) {
 		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
-	echo '</div></form>';
-} else {
-	echo '<div class="nf">'.__('No events').'</div>';
+	echo '</div></form>
+	<script language="JavaScript" type="text/javascript">
+		$(document).ready( function() {
+			$("INPUT[name=\'allbox\']").click( function() {
+				$("INPUT[name=\'eventid[]\']").each( function() {
+					$(this).attr(\'checked\', !$(this).attr(\'checked\'));
+				});
+				return !(this).attr(\'checked\');
+			});
+			$("#tgl_event_control").click( function () {
+				$("#event_control").slideToggle ("slow");						  
+			});
+		});
+	</script>';
+	if ($config["pure"]== 0) {
+		echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+		echo '<h3>'.__('Status').'</h3>';
+		echo '<img src="images/dot_green.png" /> - '.__('Validated event');
+		echo '<br />';
+		echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
+
+		echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+		echo '<h3>'.__('Action').'</h3>';
+		echo '<img src="images/ok.png" /> - '.__('Validate event');
+		echo '<br />';
+		echo '<img src="images/cross.png" /> - '.__('Delete event');
+		echo '<br />';
+		echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
+		echo '</div><div style="clear:both;">&nbsp;</div>';
+	}
 }
 unset ($table);
 
-if ($config["pure"]== 0) {
-	echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-	echo '<h3>'.__('Status').'</h3>';
-	echo '<img src="images/dot_green.png" /> - '.__('Validated event');
-	echo '<br />';
-	echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
-
-	echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-	echo '<h3>'.__('Action').'</h3>';
-	echo '<img src="images/ok.png" /> - '.__('Validate event');
-	echo '<br />';
-	echo '<img src="images/cross.png" /> - '.__('Delete event');
-	echo '<br />';
-	echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
-	echo '</div><div style="clear:both;">&nbsp;</div>';
-}
 ?>
-<script language="JavaScript" type="text/javascript">
-$(document).ready( function() {
-	$("INPUT[name='allbox']").click( function() {
-		$("INPUT[name='eventid[]']").each( function() {
-			$(this).attr('checked', !$(this).attr('checked'));
-		});
-		return !(this).attr('checked');
-	});
-	$("#tgl_event_control").click( function () {
-		$("#event_control").slideToggle ("slow");						  
-	});
-});
-</script>

@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-$build_version = 'PC090120';
+$build_version = 'PC090216';
 $pandora_version = 'v2.1-dev';
 
 // Next is the directory where "/attachment" directory is placed, to upload files stores. 
@@ -86,9 +86,13 @@ foreach ($configs as $c) {
 		break;
 	case "auth":
 		exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-			<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
+			<html xmlns="http://www.w3.org/1999/xhtml">
+			<head>
+			<title>Pandora FMS Error</title>
 			<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-			</head><body><div align="center">
+			</head>
+			<body>
+			<div align="center">
 			<div id="db_f">
 			<div>
 			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>

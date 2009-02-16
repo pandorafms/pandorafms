@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-29 10:30+0100\n"
-"PO-Revision-Date: 2008-11-10 00:56+0000\n"
-"Last-Translator: Cleber Paiva de Souza <cleberps@gmail.com>\n"
+"POT-Creation-Date: 2009-01-28 12:09+0100\n"
+"PO-Revision-Date: 2009-02-13 00:27+0000\n"
+"Last-Translator: antonio caarlos fernandes <45fernandescarpete@gmail.com>\n"
 "Language-Team: pt_br <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-01-19 10:56+0000\n"
+"X-Launchpad-Export-Date: 2009-02-16 15:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -171,40 +171,40 @@ msgstr "Mostrar eventos"
 msgid "Show alert"
 msgstr "Mostrar alertas"
 
-#: ../../reporting/fgraph.php:948
+#: ../../reporting/fgraph.php:949
 msgid "Data occurrence for module "
 msgstr "Ocorrência de dados para o módulo "
 
-#: ../../reporting/fgraph.php:1040 ../../operation/incidents/incident.php:191
+#: ../../reporting/fgraph.php:1041 ../../operation/incidents/incident.php:191
 #: ../../operation/incidents/incident.php:198
 #: ../../operation/incidents/incident_detail.php:292
 msgid "Informative"
 msgstr "Informativo"
 
-#: ../../reporting/fgraph.php:1041 ../../operation/incidents/incident.php:190
+#: ../../reporting/fgraph.php:1042 ../../operation/incidents/incident.php:190
 #: ../../operation/incidents/incident.php:199
 #: ../../operation/incidents/incident_detail.php:293
 msgid "Low"
 msgstr "Baixa"
 
-#: ../../reporting/fgraph.php:1042 ../../operation/incidents/incident.php:189
+#: ../../reporting/fgraph.php:1043 ../../operation/incidents/incident.php:189
 #: ../../operation/incidents/incident.php:200
 #: ../../operation/incidents/incident_detail.php:294
 msgid "Medium"
 msgstr "Média"
 
-#: ../../reporting/fgraph.php:1043 ../../operation/incidents/incident.php:188
+#: ../../reporting/fgraph.php:1044 ../../operation/incidents/incident.php:188
 #: ../../operation/incidents/incident.php:201
 #: ../../operation/incidents/incident_detail.php:295
 msgid "Serious"
 msgstr "Grave"
 
-#: ../../reporting/fgraph.php:1044
+#: ../../reporting/fgraph.php:1045
 #: ../../operation/incidents/incident_detail.php:296
 msgid "Very serious"
 msgstr "Muito sério"
 
-#: ../../reporting/fgraph.php:1045 ../../reporting/fgraph.php:1265
+#: ../../reporting/fgraph.php:1046 ../../reporting/fgraph.php:1266
 #: ../../include/functions.php:676 ../../include/functions.php:1160
 #: ../../include/functions.php:1179 ../../operation/incidents/incident.php:192
 #: ../../operation/incidents/incident.php:203
@@ -212,69 +212,69 @@ msgstr "Muito sério"
 msgid "Maintenance"
 msgstr "Manutenção"
 
-#: ../../reporting/fgraph.php:1273 ../../include/functions.php:679
+#: ../../reporting/fgraph.php:1274 ../../include/functions.php:679
 #: ../../include/functions.php:1161 ../../include/functions.php:1181
 msgid "Informational"
 msgstr "Informação"
 
-#: ../../reporting/fgraph.php:1280 ../../include/functions.php:682
+#: ../../reporting/fgraph.php:1281 ../../include/functions.php:682
 #: ../../include/functions.php:1162 ../../include/functions.php:1183
 msgid "Normal"
 msgstr "Normal"
 
-#: ../../reporting/fgraph.php:1287 ../../include/functions.php:685
+#: ../../reporting/fgraph.php:1288 ../../include/functions.php:685
 #: ../../include/functions.php:1163 ../../include/functions.php:1185
 msgid "Warning"
 msgstr "Atenção"
 
-#: ../../reporting/fgraph.php:1294 ../../include/functions.php:688
+#: ../../reporting/fgraph.php:1295 ../../include/functions.php:688
 #: ../../include/functions.php:1164 ../../include/functions.php:1187
 msgid "Critical"
 msgstr "Crítico"
 
-#: ../../reporting/fgraph.php:1469
+#: ../../reporting/fgraph.php:1470
 msgid "Today"
 msgstr "Hoje"
 
-#: ../../reporting/fgraph.php:1470
+#: ../../reporting/fgraph.php:1471
 msgid "Week"
 msgstr "Semana"
 
-#: ../../reporting/fgraph.php:1471
+#: ../../reporting/fgraph.php:1472
 msgid "Month"
 msgstr "Mês"
 
-#: ../../reporting/fgraph.php:1472
+#: ../../reporting/fgraph.php:1473
 msgid "Months"
 msgstr "Meses"
 
-#: ../../reporting/fgraph.php:1473
+#: ../../reporting/fgraph.php:1474
 msgid "Older"
 msgstr "Anterior"
 
-#: ../../reporting/fgraph.php:1505
+#: ../../reporting/fgraph.php:1506
 msgid "no data"
 msgstr "sem dados"
 
-#: ../../reporting/fgraph.php:1572
+#: ../../reporting/fgraph.php:1573
 msgid "Out of limits"
 msgstr "Fora dos limites"
 
-#: ../../reporting/fgraph.php:2130 ../../include/functions_reporting.php:363
+#: ../../reporting/fgraph.php:2131 ../../include/functions_reporting.php:363
 #: ../../operation/agentes/estado_grupo.php:168
 #: ../../operation/agentes/ver_agente.php:106
 msgid "Alerts fired"
 msgstr "Alertas disparados"
 
-#: ../../reporting/fgraph.php:2131
+#: ../../reporting/fgraph.php:2132
 msgid "Alerts not fired"
 msgstr "Alertas não disparados"
 
-#: ../../reporting/fgraph.php:2140
+#: ../../reporting/fgraph.php:2141
 msgid "Monitors BAD"
 msgstr "Monitores RUINS"
 
-#: ../../reporting/fgraph.php:2141
+#: ../../reporting/fgraph.php:2142
 msgid "Monitors OK"
 msgstr "Monitores OK"
 
@@ -402,7 +402,7 @@ msgstr "Monitorar saúde"
 
 #: ../../general/logon_ok.php:120 ../../operation/agentes/tactical.php:95
 msgid "of monitors UP"
-msgstr "dos monitores UP"
+msgstr "dos monitores ativos"
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
@@ -1088,7 +1088,7 @@ msgstr "visualizar"
 
 #: ../../godmode/reporting/map_builder.php:350
 msgid "Map element trash"
-msgstr ""
+msgstr "Lixo de elementos do mapa"
 
 #: ../../godmode/reporting/map_builder.php:351
 msgid "Drag an element here to delete from the map"
@@ -1538,27 +1538,27 @@ msgstr "Extensões definidas"
 
 #: ../../godmode/servers/manage_export.php:56
 msgid "Error updating export target"
-msgstr ""
+msgstr "Erro ao atualizar destino a exportar"
 
 #: ../../godmode/servers/manage_export.php:58
 msgid "Successfully updated export target"
-msgstr ""
+msgstr "Erro atualizando exportação do destino"
 
 #: ../../godmode/servers/manage_export.php:66
 msgid "Error deleting export target"
-msgstr ""
+msgstr "Erro removendo exportação do destino"
 
 #: ../../godmode/servers/manage_export.php:68
 msgid "Succesfully deleted export target"
-msgstr ""
+msgstr "Remoção do destino executada com sucesso"
 
 #: ../../godmode/servers/manage_export.php:82
 msgid "Error creating export target"
-msgstr ""
+msgstr "Erro criando exportação do destino"
 
 #: ../../godmode/servers/manage_export.php:84
 msgid "Successfully created export target"
-msgstr ""
+msgstr "Exportação do destino criada com sucesso"
 
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/modificar_server.php:56
@@ -1573,16 +1573,16 @@ msgstr "Servidores Pandora"
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/manage_export_form.php:61
 msgid "export targets"
-msgstr ""
+msgstr "exportar destinos"
 
 #: ../../godmode/servers/manage_export.php:93
 msgid "There are no export targets configured"
-msgstr ""
+msgstr "Não existem destinos a exportar configurados"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:82
 msgid "Preffix"
-msgstr ""
+msgstr "Prefixo"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -1706,27 +1706,27 @@ msgstr "Não há nenhum servidor configurado na base de dados"
 
 #: ../../godmode/servers/manage_recontask.php:40
 msgid "Succesfully deleted recon task"
-msgstr ""
+msgstr "Tarefa de reconhecimento removida com sucesso"
 
 #: ../../godmode/servers/manage_recontask.php:42
 msgid "Error deleting recon task"
-msgstr ""
+msgstr "Erro removendo tarefa de reconhecimento"
 
 #: ../../godmode/servers/manage_recontask.php:71
 msgid "Successfully updated recon task"
-msgstr ""
+msgstr "Tarefa de reconhecimento atualizada com sucesso"
 
 #: ../../godmode/servers/manage_recontask.php:73
 msgid "Error updating recon task"
-msgstr ""
+msgstr "Erro atualizando tarefa de reconhecimento"
 
 #: ../../godmode/servers/manage_recontask.php:86
 msgid "Successfully created recon task"
-msgstr ""
+msgstr "Tarefa de reconhecimento criada com sucesso"
 
 #: ../../godmode/servers/manage_recontask.php:88
 msgid "Error creating recon task"
-msgstr ""
+msgstr "Erro criando tarefa de reconhecimento"
 
 #: ../../godmode/servers/manage_recontask.php:95
 #: ../../godmode/servers/manage_recontask_form.php:56
@@ -1768,7 +1768,7 @@ msgstr "SO"
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr ""
+msgstr "Qualquer"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1789,10 +1789,12 @@ msgid ""
 "You must select a Recon Server for the Task, otherwise the Recon Task will "
 "never run"
 msgstr ""
+"Você deve selecionar um servidor de reconhecimento, do contrário a tarefa "
+"nunca será executada"
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "hora"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
@@ -1814,7 +1816,7 @@ msgstr "mês"
 #: ../../godmode/servers/manage_export_form.php:77
 #: ../../operation/servers/view_server.php:106
 msgid "Export server"
-msgstr ""
+msgstr "Exportar servidor"
 
 #: ../../godmode/servers/manage_export_form.php:79
 #: ../../godmode/agentes/module_manager_editor_wmi.php:232
@@ -1831,88 +1833,88 @@ msgstr "Nenhum"
 
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
-msgstr ""
+msgstr "Modo de transferência"
 
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
-msgstr ""
+msgstr "Diretório destino"
 
 #: ../../godmode/servers/manage_export_form.php:119
 msgid "Extra options"
-msgstr ""
+msgstr "Opções extra"
 
 #: ../../godmode/servers/plugin.php:56
 msgid "Problem updating plugin"
-msgstr ""
+msgstr "Erro atualizando o plugin"
 
 #: ../../godmode/servers/plugin.php:58
 msgid "Plugin updated successfully"
-msgstr ""
+msgstr "Plugin atualizado com sucesso"
 
 #: ../../godmode/servers/plugin.php:75
 msgid "Problem creating plugin"
-msgstr ""
+msgstr "Erro criando o plugin"
 
 #: ../../godmode/servers/plugin.php:78
 msgid "Plugin created successfully"
-msgstr ""
+msgstr "Plugin criado com sucesso"
 
 #: ../../godmode/servers/plugin.php:87
 msgid "Problem deleting plugin"
-msgstr ""
+msgstr "Erro removendo o plugin"
 
 #: ../../godmode/servers/plugin.php:89
 msgid "Plugin deleted successfully"
-msgstr ""
+msgstr "Plugin removido com sucesso"
 
 #: ../../godmode/servers/plugin.php:130
 msgid "Plugin creation"
-msgstr ""
+msgstr "Criação de plugin"
 
 #: ../../godmode/servers/plugin.php:132
 msgid "Plugin update"
-msgstr ""
+msgstr "Atualização de Plugin"
 
 #: ../../godmode/servers/plugin.php:149
 msgid "Plugin command"
-msgstr ""
+msgstr "Comando do plugin"
 
 #: ../../godmode/servers/plugin.php:153
 msgid "Max.Timeout"
-msgstr ""
+msgstr "Tempo máximo de expiração"
 
 #: ../../godmode/servers/plugin.php:157
 msgid "IP address option"
-msgstr ""
+msgstr "Opção de endereçamento IP"
 
 #: ../../godmode/servers/plugin.php:161
 msgid "Port option"
-msgstr ""
+msgstr "Opção de porta"
 
 #: ../../godmode/servers/plugin.php:166
 msgid "User option"
-msgstr ""
+msgstr "Opção de usuário"
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Password option"
-msgstr ""
+msgstr "Opção de senha"
 
 #: ../../godmode/servers/plugin.php:192
 msgid "Plugins registered in Pandora FMS"
-msgstr ""
+msgstr "Plugins registrados no Pandora FMS"
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr ""
+msgstr "executar"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
-msgstr ""
+msgstr "Não existem plugins no sistema"
 
 #: ../../godmode/groups/group_list.php:63
 msgid "Group successfully created"
@@ -2021,7 +2023,7 @@ msgstr "Gerenciar conf."
 
 #: ../../godmode/menu.php:53
 msgid "Duplicate config"
-msgstr ""
+msgstr "Duplicar configuração"
 
 #: ../../godmode/menu.php:62
 msgid "Manage groups"
@@ -2029,7 +2031,7 @@ msgstr "Gestão de grupos"
 
 #: ../../godmode/menu.php:72
 msgid "Scheduled downtime"
-msgstr ""
+msgstr "Indisponibilidade agendada"
 
 #: ../../godmode/menu.php:82
 msgid "Manage modules"
@@ -2069,11 +2071,11 @@ msgstr "Gestão de perfis"
 
 #: ../../godmode/menu.php:194
 msgid "Manage plugins"
-msgstr ""
+msgstr "Gerenciar Plugins"
 
 #: ../../godmode/menu.php:201
 msgid "Export targets"
-msgstr ""
+msgstr "Exportar destinos"
 
 #: ../../godmode/menu.php:209
 msgid "System Audit Log"
@@ -2115,7 +2117,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:297 ../../operation/menu.php:309
 msgid "Extensions"
-msgstr ""
+msgstr "Extensões"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Pandora audit"
@@ -2123,7 +2125,7 @@ msgstr "Revisar logs de auditoria do Pandora"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Review Logs"
-msgstr ""
+msgstr "Verificar logs"
 
 #: ../../godmode/admin_access_logs.php:40
 #: ../../godmode/agentes/manage_config_remote.php:95
@@ -2170,27 +2172,27 @@ msgstr "Código de linguagem para o Pandora"
 
 #: ../../godmode/setup/setup.php:87
 msgid "Date format string"
-msgstr ""
+msgstr "Formato da data"
 
 #: ../../godmode/setup/setup.php:90
 msgid "Remote config directory"
-msgstr ""
+msgstr "Diretório de configuração remota"
 
 #: ../../godmode/setup/setup.php:93
 msgid "Graph color (min)"
-msgstr ""
+msgstr "Cor do gráfico (min)"
 
 #: ../../godmode/setup/setup.php:96
 msgid "Graph color (avg)"
-msgstr ""
+msgstr "Cor do gráfico (med)"
 
 #: ../../godmode/setup/setup.php:99
 msgid "Graph color (max)"
-msgstr ""
+msgstr "Cor do gráfico (max)"
 
 #: ../../godmode/setup/setup.php:102
 msgid "SLA period (seconds)"
-msgstr ""
+msgstr "Período do SLA (segundos)"
 
 #: ../../godmode/setup/setup.php:105
 msgid "Max. days before compact data"
@@ -2226,7 +2228,7 @@ msgstr "Tamanho do bloco para a paginação"
 
 #: ../../godmode/setup/setup.php:131
 msgid "Automatic update check"
-msgstr ""
+msgstr "Verificação automática de atualização"
 
 #: ../../godmode/setup/links.php:39
 msgid "There was a problem creating link"
@@ -2250,11 +2252,11 @@ msgstr "Houve um problema ao apagar o link"
 
 #: ../../godmode/setup/links.php:65
 msgid "Link successfully deleted"
-msgstr ""
+msgstr "Link removido com sucesso"
 
 #: ../../godmode/setup/links.php:80 ../../godmode/setup/news.php:85
 msgid "Name error"
-msgstr ""
+msgstr "Erro no nome"
 
 #: ../../godmode/setup/links.php:89 ../../godmode/setup/links.php:117
 msgid "Link management"
@@ -2299,7 +2301,7 @@ msgstr "Perfis definidos no Pandora"
 
 #: ../../godmode/profiles/profile_list.php:47
 msgid "There was a problem deleting the profile"
-msgstr ""
+msgstr "Houve um problema ao remover o perfil"
 
 #: ../../godmode/profiles/profile_list.php:49
 msgid "Profile successfully deleted"
@@ -2311,7 +2313,7 @@ msgstr "Perfil atualizado corretamente"
 
 #: ../../godmode/profiles/profile_list.php:86
 msgid "There was a problem updating this profile"
-msgstr ""
+msgstr "Houve um problema ao atualizar este perfil"
 
 #: ../../godmode/profiles/profile_list.php:116
 msgid "Profile successfully created"
@@ -2319,7 +2321,7 @@ msgstr "Perfil criado corretamente"
 
 #: ../../godmode/profiles/profile_list.php:118
 msgid "There was a problem creating this profile"
-msgstr ""
+msgstr "Houve um problema ao criar este perfil"
 
 #: ../../godmode/profiles/profile_list.php:123
 msgid "Profile management"
@@ -2383,65 +2385,65 @@ msgstr "Perfis"
 
 #: ../../godmode/profiles/profile_list.php:231
 msgid "Read Incidents"
-msgstr ""
+msgstr "Ver incidentes"
 
 #: ../../godmode/profiles/profile_list.php:232
 msgid "Create Incidents"
-msgstr ""
+msgstr "Criar incidentes"
 
 #: ../../godmode/profiles/profile_list.php:233
 msgid "Manage Incidents"
-msgstr ""
+msgstr "Gerenciar incidentes"
 
 #: ../../godmode/profiles/profile_list.php:234
 msgid "Read Agent Information"
-msgstr ""
+msgstr "Ver informações do agente"
 
 #: ../../godmode/profiles/profile_list.php:235
 msgid "Manage Agents"
-msgstr ""
+msgstr "Gerenciar agentes"
 
 #: ../../godmode/profiles/profile_list.php:236
 msgid "Edit Alerts"
-msgstr ""
+msgstr "Editar alertas"
 
 #: ../../godmode/profiles/profile_list.php:237
 msgid "Manage User Rights"
-msgstr ""
+msgstr "Gerenciar permissões de usuários"
 
 #: ../../godmode/profiles/profile_list.php:238
 msgid "Database Management"
-msgstr ""
+msgstr "Gerenciamento do banco de dados"
 
 #: ../../godmode/profiles/profile_list.php:239
 msgid "Alerts Management"
-msgstr ""
+msgstr "Gerenciamento de alertas"
 
 #: ../../godmode/profiles/profile_list.php:240
 msgid "Pandora System Management"
-msgstr ""
+msgstr "Gerenciamento do sistema Pandora"
 
 #: ../../godmode/agentes/configurar_agente.php:131
 #: ../../godmode/agentes/configurar_agente.php:502
 msgid "No agent name specified"
-msgstr ""
+msgstr "Nenhum nome de agente especificado"
 
 #: ../../godmode/agentes/configurar_agente.php:134
 #: ../../godmode/agentes/configurar_agente.php:505
 msgid "There is already an agent in the database with this name"
-msgstr ""
+msgstr "Já existe um agente com este nome no banco de dados"
 
 #: ../../godmode/agentes/configurar_agente.php:163
 msgid "There was a problem creating record in tagente_estado table"
-msgstr ""
+msgstr "Houve um problema ao criar a entrada na tabela tagente_estado"
 
 #: ../../godmode/agentes/configurar_agente.php:167
 msgid "There was a problem creating agent_keepalive module"
-msgstr ""
+msgstr "Houve um problema ao criar o módulo agent_keepalive"
 
 #: ../../godmode/agentes/configurar_agente.php:175
 msgid "There was a problem creating the agent"
-msgstr ""
+msgstr "Houve um problema ao criar o agente"
 
 #: ../../godmode/agentes/configurar_agente.php:186
 msgid "Setup mode"
@@ -2470,7 +2472,7 @@ msgstr "Agente criado corretamente"
 
 #: ../../godmode/agentes/configurar_agente.php:259
 msgid "No data to normalize"
-msgstr ""
+msgstr "Sem dados para normalizar"
 
 #: ../../godmode/agentes/configurar_agente.php:263
 msgid "Deleted data above"
@@ -2478,12 +2480,12 @@ msgstr "Dado apagado"
 
 #: ../../godmode/agentes/configurar_agente.php:265
 msgid "Error normalizing module"
-msgstr ""
+msgstr "Erro normalizando o módulo"
 
 #: ../../godmode/agentes/configurar_agente.php:278
 #: ../../operation/snmpconsole/snmp_alert.php:37
 msgid "There was a problem deleting the alert"
-msgstr ""
+msgstr "Houve um problema ao deletar o alerta"
 
 #: ../../godmode/agentes/configurar_agente.php:280
 #: ../../godmode/agentes/configurar_agente.php:296
@@ -2510,11 +2512,11 @@ msgstr "Alerta criado corretamente"
 
 #: ../../godmode/agentes/configurar_agente.php:391
 msgid "There was a problem creating the combined alert"
-msgstr ""
+msgstr "Houve um problema ao criar o alerta combinado"
 
 #: ../../godmode/agentes/configurar_agente.php:393
 msgid "Combined alert successfully created"
-msgstr ""
+msgstr "Alerta combinado criado com sucesso"
 
 #: ../../godmode/agentes/configurar_agente.php:475
 #: ../../godmode/alerts/modify_alert.php:44
@@ -2542,11 +2544,11 @@ msgstr "Houve um erro ao carregar a configuração do agente"
 
 #: ../../godmode/agentes/configurar_agente.php:592
 msgid "There was a problem loading the module"
-msgstr ""
+msgstr "Houve um problema ao carregar o módulo"
 
 #: ../../godmode/agentes/configurar_agente.php:628
 msgid "There was a problem loading the alert"
-msgstr ""
+msgstr "Houve um problema ao executar o alerta"
 
 #: ../../godmode/agentes/configurar_agente.php:744
 msgid "There was a problem updating module"
@@ -2571,19 +2573,19 @@ msgstr "Houve um problema ao adicionar o módulo"
 #: ../../godmode/agentes/configurar_agente.php:813
 #: ../../godmode/agentes/configurar_agente.php:815
 msgid "Module added successfully"
-msgstr ""
+msgstr "Módulo adicionado com sucesso"
 
 #: ../../godmode/agentes/configurar_agente.php:815
 msgid "Status init unsuccessful"
-msgstr ""
+msgstr "Inicialização do status falhou"
 
-#: ../../godmode/agentes/configurar_agente.php:864
+#: ../../godmode/agentes/configurar_agente.php:863
 msgid "There was a problem deleting the module"
-msgstr ""
+msgstr "Houve um problema ao remover o módulo"
 
-#: ../../godmode/agentes/configurar_agente.php:867
+#: ../../godmode/agentes/configurar_agente.php:866
 msgid "Module deleted successfully"
-msgstr ""
+msgstr "Módulo removido com sucesso"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:80
 #: ../../godmode/agentes/module_manager_editor_data.php:72
@@ -2591,11 +2593,11 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_prediction.php:80
 #: ../../godmode/agentes/module_manager_editor_network.php:81
 msgid "Module assignment"
-msgstr ""
+msgstr "Designação de módulo"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:80
 msgid "WMI server module"
-msgstr ""
+msgstr "Módulo de servidor WMI"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:98
 #: ../../godmode/agentes/module_manager_editor_network.php:100
@@ -2641,7 +2643,7 @@ msgstr "IP destino"
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr ""
+msgstr "Namespace"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
@@ -2656,13 +2658,13 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:156
 #: ../../godmode/modules/manage_network_components_form_wmi.php:160
 msgid "Field number"
-msgstr ""
+msgstr "Número do campo"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:164
 #: ../../godmode/agentes/module_manager_editor_plugin.php:134
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 msgid "Username"
-msgstr ""
+msgstr "Nome do Usuário"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:173
 #: ../../godmode/agentes/module_manager_editor_data.php:95
@@ -2679,7 +2681,7 @@ msgstr "Tipo de módulo"
 #: ../../godmode/agentes/module_manager_editor_network.php:167
 #: ../../godmode/modules/manage_network_components_form_wmi.php:138
 msgid "Max. timeout"
-msgstr ""
+msgstr "Tempo máximo de expiração"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:200
 #: ../../godmode/agentes/module_manager_editor_data.php:152
@@ -2704,7 +2706,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_prediction.php:154
 #: ../../godmode/agentes/module_manager_editor_network.php:249
 msgid "Export target"
-msgstr ""
+msgstr "Exportar destino"
 
 #: ../../godmode/agentes/agent_template.php:114
 msgid "Modules successfully added "
@@ -2739,11 +2741,11 @@ msgstr "Módulos atribuídos"
 
 #: ../../godmode/agentes/module_manager_editor_data.php:72
 msgid "Data server module"
-msgstr ""
+msgstr "Módulo do servidor de dados"
 
 #: ../../godmode/agentes/module_manager_editor_data.php:162
 msgid "Not assigned"
-msgstr ""
+msgstr "Não designado"
 
 #: ../../godmode/agentes/manage_config_remote.php:44
 #: ../../godmode/agentes/manage_config.php:47
@@ -2768,7 +2770,7 @@ msgstr "Gerenciamento de Configurações"
 #: ../../godmode/agentes/manage_config_remote.php:87
 #: ../../godmode/agentes/manage_config.php:376
 msgid "Source group"
-msgstr ""
+msgstr "Grupo de origem"
 
 #: ../../godmode/agentes/manage_config_remote.php:129
 #: ../../godmode/agentes/manage_config.php:415
@@ -2784,35 +2786,35 @@ msgstr "Agente(s) destino"
 
 #: ../../godmode/agentes/manage_config_remote.php:146
 msgid "Replicate configuration"
-msgstr ""
+msgstr "Duplicar configuração"
 
 #: ../../godmode/agentes/planned_downtime.php:151
 msgid "Timestamp from"
-msgstr ""
+msgstr "Timbre de data de"
 
 #: ../../godmode/agentes/planned_downtime.php:155
 msgid "Timestamp to"
-msgstr ""
+msgstr "Timbre de data para"
 
 #: ../../godmode/agentes/planned_downtime.php:167
 msgid "Planned Downtime Form"
-msgstr ""
+msgstr "Formulário de agendamento de indisponibilidade"
 
 #: ../../godmode/agentes/planned_downtime.php:188
 msgid "Available Agents"
-msgstr ""
+msgstr "Agentes disponíveis"
 
 #: ../../godmode/agentes/planned_downtime.php:209
 msgid "Filter by group"
-msgstr ""
+msgstr "Filtrar por grupo"
 
 #: ../../godmode/agentes/planned_downtime.php:221
 msgid "Agents planned for this downtime"
-msgstr ""
+msgstr "Agentes planejados para esta indisponibilidade"
 
 #: ../../godmode/agentes/planned_downtime.php:229
 #: ../../godmode/users/user_list.php:49
-#: ../../operation/agentes/estado_generalagente.php:128
+#: ../../operation/agentes/estado_generalagente.php:117
 #: ../../operation/agentes/estado_monitores.php:41
 #: ../../operation/agentes/ver_agente.php:54
 #: ../../operation/agentes/sla_view.php:49
@@ -2823,20 +2825,20 @@ msgstr "Último contato"
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:281
 msgid "No planned downtime"
-msgstr ""
+msgstr "Nenhuma indisponibilidade agendada"
 
 #: ../../godmode/agentes/planned_downtime.php:266
 msgid "Planned Downtime present on system"
-msgstr ""
+msgstr "Indisponibilidades agendadas presentes no sistema"
 
 #: ../../godmode/agentes/planned_downtime.php:270
 msgid "Name #Ag."
-msgstr ""
+msgstr "Nome #Ag."
 
 #: ../../godmode/agentes/planned_downtime.php:272
 #: ../../operation/messages/message.php:64
@@ -2853,39 +2855,39 @@ msgstr "Até"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 msgid "Del"
-msgstr ""
+msgstr "Apagar"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Upd"
-msgstr ""
+msgstr "Atualizar"
 
 #: ../../godmode/agentes/planned_downtime.php:276
 msgid "Running"
-msgstr ""
+msgstr "Executando"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
-msgstr ""
+msgstr "Módulo de servidor de plugin"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:107
 msgid "plugin"
-msgstr ""
+msgstr "plugin"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:124
 msgid "Plugin parameters"
-msgstr ""
+msgstr "Parâmetros do plugin"
 
 #: ../../godmode/agentes/alert_manager.php:43
 msgid "Create a simple alert"
-msgstr ""
+msgstr "Criar um alerta simples"
 
 #: ../../godmode/agentes/alert_manager.php:44
 msgid "Create a new combined alert"
-msgstr ""
+msgstr "Criar um alerta combinado"
 
 #: ../../godmode/agentes/alert_manager.php:59
 msgid "Simple alerts"
-msgstr ""
+msgstr "Alertas simples"
 
 #: ../../godmode/agentes/alert_manager.php:108
 #: ../../include/functions_db.php:2111
@@ -2926,7 +2928,7 @@ msgstr "Hora"
 #: ../../godmode/agentes/alert_manager.php:190
 #: ../../godmode/agentes/alert_manager_editor.php:370
 msgid "info"
-msgstr ""
+msgstr "info"
 
 #: ../../godmode/agentes/alert_manager.php:119
 #: ../../godmode/agentes/alert_manager.php:195
@@ -2943,26 +2945,26 @@ msgstr "Este agente não tem nenhum módulo definido"
 #: ../../godmode/agentes/alert_manager.php:129
 #: ../../operation/agentes/estado_alertas.php:87
 msgid "Combined alerts"
-msgstr ""
+msgstr "Alertas combinados"
 
 #: ../../godmode/agentes/alert_manager.php:141
 msgid "Combined"
-msgstr ""
+msgstr "Combinado"
 
 #: ../../godmode/agentes/alert_manager.php:184
 #: ../../godmode/agentes/alert_manager_editor.php:364
 #: ../../include/functions_db.php:1901
 msgid "Oper"
-msgstr ""
+msgstr "Operador"
 
 #: ../../godmode/agentes/manage_config.php:55
 #: ../../godmode/agentes/manage_config.php:242
 msgid "No modules have been selected"
-msgstr ""
+msgstr "Nenhum módulo foi selecionado"
 
 #: ../../godmode/agentes/manage_config.php:73
 msgid "You must check modules and/or alerts to be copied"
-msgstr ""
+msgstr "Você deve selecionar os módulo e/ou alertas a serem copiados"
 
 #: ../../godmode/agentes/manage_config.php:92
 msgid "Copying module"
@@ -2974,52 +2976,52 @@ msgstr "Copiando alerta"
 
 #: ../../godmode/agentes/manage_config.php:220
 msgid "There was an error copying the module, the copy has been cancelled"
-msgstr ""
+msgstr "Houve um erro ao copiar o módulo. A cópia foi cancelada."
 
 #: ../../godmode/agentes/manage_config.php:223
 msgid "Successfully copied module"
-msgstr ""
+msgstr "Módulo copiado com sucesso"
 
 #: ../../godmode/agentes/manage_config.php:234
 msgid "Agent Module Data Deletion"
-msgstr ""
+msgstr "Remoção de módulo agente"
 
 #: ../../godmode/agentes/manage_config.php:263
 msgid "You must check modules and/or alerts to be deleted"
-msgstr ""
+msgstr "Você deve selecionar os módulos e/ou alertas a serem removidos"
 
 #: ../../godmode/agentes/manage_config.php:328
 msgid ""
 "There was an error removing the module data, the removal has been cancelled"
-msgstr ""
+msgstr "Houve um erro ao remover o módulo de dados. A remoção foi cancelada."
 
 #: ../../godmode/agentes/manage_config.php:331
 msgid "Successfully removed module data"
-msgstr ""
+msgstr "Módulo de dados removido com sucesso"
 
 #: ../../godmode/agentes/manage_config.php:343
 msgid "Deleting Agent"
-msgstr ""
+msgstr "Removendo agente"
 
 #: ../../godmode/agentes/manage_config.php:350
 msgid "You must select at least one agent to be removed"
-msgstr ""
+msgstr "Você deve selecionar ao menos um agente a ser removido"
 
 #: ../../godmode/agentes/manage_config.php:357
 msgid "There was an error removing the agents. Removal has been cancelled"
-msgstr ""
+msgstr "Houve um erro ao remover os agentes. A remoção foi cancelada."
 
 #: ../../godmode/agentes/manage_config.php:359
 msgid "Successfully removed agents"
-msgstr ""
+msgstr "Agentes removidos com sucesso"
 
 #: ../../godmode/agentes/manage_config.php:398
 msgid "No Agents in this Group"
-msgstr ""
+msgstr "Nenhum agente neste grupo"
 
 #: ../../godmode/agentes/manage_config.php:426
 msgid "No modules for this agent"
-msgstr ""
+msgstr "Sem módulos para este agente"
 
 #: ../../godmode/agentes/manage_config.php:428
 msgid "No agent selected"
@@ -3027,39 +3029,39 @@ msgstr "Nenhum agente selecionado"
 
 #: ../../godmode/agentes/manage_config.php:440
 msgid "Targets"
-msgstr ""
+msgstr "Destinos"
 
 #: ../../godmode/agentes/manage_config.php:472
 msgid "Copy Modules/Alerts"
-msgstr ""
+msgstr "Copiar Módulos/Alertas"
 
 #: ../../godmode/agentes/manage_config.php:475
 msgid "Delete Modules/Alerts"
-msgstr ""
+msgstr "Remover Módulos/Alertas"
 
 #: ../../godmode/agentes/manage_config.php:475
 msgid "Are you sure you want to delete these modules and alerts?"
-msgstr ""
+msgstr "Você tem certeza que deseja remover estes módulos e alertas?"
 
 #: ../../godmode/agentes/manage_config.php:478
 msgid "Delete Agents"
-msgstr ""
+msgstr "Remover agentes"
 
 #: ../../godmode/agentes/manage_config.php:478
 msgid "Are you sure you want to delete these agents?"
-msgstr ""
+msgstr "Você tem certeza que deseja remover estes agentes?"
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:80
 msgid "Prediction server module"
-msgstr ""
+msgstr "Módulo do servidor de previsões"
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:106
 msgid "Source module"
-msgstr ""
+msgstr "Módulo de origem"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:81
 msgid "Network server module"
-msgstr ""
+msgstr "Módulo do servidor de rede"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:140
 #: ../../godmode/modules/manage_network_components_form_network.php:240
@@ -3068,7 +3070,7 @@ msgstr "Porta TCP"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:189
 msgid "SNMP walk"
-msgstr ""
+msgstr "SNMP Walk"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:210
 #: ../../godmode/modules/manage_network_components_form_network.php:244
@@ -3082,7 +3084,7 @@ msgstr "Comunidade SNMP"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:220
 msgid "SNMP version"
-msgstr ""
+msgstr "Versão do SNMP"
 
 #: ../../godmode/agentes/module_manager_editor_network.php:265
 #: ../../godmode/modules/manage_network_components_form_network.php:252
@@ -3100,7 +3102,7 @@ msgstr "Houve um problema ao apagar o agente"
 
 #: ../../godmode/agentes/modificar_agente.php:110
 msgid "Agent deleted successfully"
-msgstr ""
+msgstr "Agente removido com sucesso"
 
 #: ../../godmode/agentes/modificar_agente.php:132
 msgid "Agents defined in Pandora"
@@ -3127,7 +3129,7 @@ msgstr "Nome do agente"
 
 #: ../../godmode/agentes/modificar_agente.php:220
 msgid "Remote agent configuration"
-msgstr ""
+msgstr "Configuração de agente remoto"
 
 #: ../../godmode/agentes/modificar_agente.php:220
 msgid "R"
@@ -3135,7 +3137,7 @@ msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:256
 msgid "Edit remote config"
-msgstr ""
+msgstr "Editar configuração remota"
 
 #: ../../godmode/agentes/modificar_agente.php:281
 msgid "There are no defined agents"
@@ -3153,7 +3155,7 @@ msgstr "Atualizar agente"
 
 #: ../../godmode/agentes/agent_manager.php:66
 msgid "The Agent's name must be the same as the one defined at the Console"
-msgstr ""
+msgstr "O nome do agente deve ser o mesmo que o definido no console"
 
 #: ../../godmode/agentes/agent_manager.php:73 ../../operation/menu.php:67
 msgid "Agent detail"
@@ -3161,11 +3163,11 @@ msgstr "Detalhe do agente"
 
 #: ../../godmode/agentes/agent_manager.php:79
 msgid "This agent can be remotely configured"
-msgstr ""
+msgstr "Este agente pode ser configurado remotamente"
 
 #: ../../godmode/agentes/agent_manager.php:80
 msgid "You can remotely edit this agent configuration"
-msgstr ""
+msgstr "Você pode editar remotamente a configuração deste agente"
 
 #: ../../godmode/agentes/agent_manager.php:101
 msgid "Delete selected"
@@ -3176,39 +3178,47 @@ msgid ""
 "You must select a Network Server for the Agent, so it can work properly with "
 "this kind of modules"
 msgstr ""
+"Você debe selecionar um servidor de rede para este agente, assim ele poderá "
+"trabalhar corretamente com este tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:139
 #: ../../operation/servers/view_server.php:115
 msgid "Plugin Server"
-msgstr ""
+msgstr "Servidor de plugin"
 
 #: ../../godmode/agentes/agent_manager.php:140
 msgid ""
 "You must select a Plugin Server for the Agent, so it can work properly with "
 "this kind of modules"
 msgstr ""
+"Você deve escolher um servidor de plugin para o agente, assim ele poderá "
+"trabalhar corretamente com esse tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:153
 #: ../../operation/servers/view_server.php:109
 msgid "WMI Server"
-msgstr ""
+msgstr "Servidor WMI"
 
 #: ../../godmode/agentes/agent_manager.php:154
 msgid ""
 "You must select a WMI Server for the Agent, so it can work properly with "
 "this kind of modules"
 msgstr ""
+"Você deve escolher um servidor WMI para o agente, assim ele poderá trabalhar "
+"corretamente com esse tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:166
 #: ../../operation/servers/view_server.php:112
 msgid "Prediction Server"
-msgstr ""
+msgstr "Servidor de previsão"
 
 #: ../../godmode/agentes/agent_manager.php:167
 msgid ""
 "You must select a Prediction Server for the Agent, so it can work properly "
 "with this kind of modules"
 msgstr ""
+"Você deve escolher um servidor de previsão para o agente, assim ele poderá "
+"trabalhar corretamente com esse tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:186
 msgid "Module definition"
@@ -3228,31 +3238,31 @@ msgstr "Ativo"
 
 #: ../../godmode/agentes/agent_manager.php:203
 msgid "Remote configuration"
-msgstr ""
+msgstr "Configuração remota"
 
 #: ../../godmode/agentes/agent_manager.php:211
 msgid "Not available"
-msgstr ""
+msgstr "Indisponível"
 
 #: ../../godmode/agentes/module_manager.php:57
 msgid "Create a new data server module"
-msgstr ""
+msgstr "Criar um novo módulo de servidor de dados"
 
 #: ../../godmode/agentes/module_manager.php:59
 msgid "Create a new network server module"
-msgstr ""
+msgstr "Criar um novo módulo de servidor de rede"
 
 #: ../../godmode/agentes/module_manager.php:61
 msgid "Create a new plugin Server module"
-msgstr ""
+msgstr "Criar um novo módulo de servidor de plugin"
 
 #: ../../godmode/agentes/module_manager.php:63
 msgid "Create a new WMI Server module"
-msgstr ""
+msgstr "Criar um novo módulo de servidor WMI"
 
 #: ../../godmode/agentes/module_manager.php:65
 msgid "Create a new prediction Server module"
-msgstr ""
+msgstr "Criar um novo módulo de servidor de previsões"
 
 #: ../../godmode/agentes/module_manager.php:84
 msgid "S"
@@ -3265,7 +3275,7 @@ msgstr "Máx/Mín"
 
 #: ../../godmode/agentes/module_manager.php:170
 msgid "No available data to show"
-msgstr ""
+msgstr "Nenhum dado disponível para exibição"
 
 #: ../../godmode/agentes/alert_manager_editor.php:22
 msgid "Alert association form"
@@ -3383,62 +3393,62 @@ msgstr "Data até"
 
 #: ../../godmode/agentes/alert_manager_editor.php:235
 msgid "Days of week"
-msgstr ""
+msgstr "Dias da semana"
 
 #: ../../godmode/agentes/alert_manager_editor.php:237
 #: ../../include/functions.php:714
 msgid "Mon"
-msgstr ""
+msgstr "Seg"
 
 #: ../../godmode/agentes/alert_manager_editor.php:240
 #: ../../include/functions.php:716
 msgid "Tue"
-msgstr ""
+msgstr "Ter"
 
 #: ../../godmode/agentes/alert_manager_editor.php:243
 #: ../../include/functions.php:718
 msgid "Wed"
-msgstr ""
+msgstr "Qua"
 
 #: ../../godmode/agentes/alert_manager_editor.php:246
 #: ../../include/functions.php:720
 msgid "Thu"
-msgstr ""
+msgstr "Qui"
 
 #: ../../godmode/agentes/alert_manager_editor.php:249
 #: ../../include/functions.php:722
 msgid "Fri"
-msgstr ""
+msgstr "Sex"
 
 #: ../../godmode/agentes/alert_manager_editor.php:252
 #: ../../include/functions.php:724
 msgid "Sat"
-msgstr ""
+msgstr "Sáb"
 
 #: ../../godmode/agentes/alert_manager_editor.php:255
 #: ../../include/functions.php:726
 msgid "Sun"
-msgstr ""
+msgstr "Dom"
 
 #: ../../godmode/agentes/alert_manager_editor.php:259
 msgid "Field #2 (Rec)"
-msgstr ""
+msgstr "Campo 2 (Rec)"
 
 #: ../../godmode/agentes/alert_manager_editor.php:264
 msgid "Alert recovery"
-msgstr ""
+msgstr "Recuperação de alerta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:280
 msgid "Field #3 (Rec)"
-msgstr ""
+msgstr "Campo 3 (Rec)"
 
 #: ../../godmode/agentes/alert_manager_editor.php:299
 msgid "Combined alert components"
-msgstr ""
+msgstr "Componentes de alerta combinado"
 
 #: ../../godmode/agentes/alert_manager_editor.php:312
 msgid "Source Agent/Alert"
-msgstr ""
+msgstr "Agente/Alerta de origem"
 
 #: ../../godmode/agentes/alert_manager_editor.php:341
 #: ../../operation/menu.php:24
@@ -3460,11 +3470,11 @@ msgstr "Gestão dos componentes de rede"
 
 #: ../../godmode/modules/manage_network_components.php:166
 msgid "Create a new network component"
-msgstr ""
+msgstr "Criar um novo componente de rede"
 
 #: ../../godmode/modules/manage_network_components.php:167
 msgid "Create a new WMI component"
-msgstr ""
+msgstr "Criar um novo componente WMI"
 
 #: ../../godmode/modules/manage_network_components.php:186
 msgid "NC.Group"
@@ -3477,7 +3487,7 @@ msgstr "Gestão dos grupos de componentes de rede"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:80
 msgid "WMI component management"
-msgstr ""
+msgstr "Gerenciamento de componente WMI"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:133
 #: ../../godmode/modules/manage_network_components_form_network.php:235
@@ -3505,43 +3515,43 @@ msgstr "Não há nenhum perfil de rede definido"
 
 #: ../../godmode/modules/manage_network_templates_form.php:47
 msgid "Successfully deleted module from profile"
-msgstr ""
+msgstr "Módulo removido com perfil com sucesso"
 
 #: ../../godmode/modules/manage_network_templates_form.php:47
 msgid "Error deleting module from profile"
-msgstr ""
+msgstr "Erro ao remover o módulo do perfil"
 
 #: ../../godmode/modules/manage_network_templates_form.php:59
 msgid "Successfully added module to profile"
-msgstr ""
+msgstr "Módulo adicionado com sucesso ao perfil"
 
 #: ../../godmode/modules/manage_network_templates_form.php:59
 msgid "Error adding module to profile"
-msgstr ""
+msgstr "Erro adicionando o módulo ao perfil"
 
 #: ../../godmode/modules/manage_network_templates_form.php:71
 msgid "Successfully updated network profile"
-msgstr ""
+msgstr "Perfil de rede atualizado com sucesso"
 
 #: ../../godmode/modules/manage_network_templates_form.php:71
 msgid "Error updating network profile"
-msgstr ""
+msgstr "Erro ao atualizar o perfil de rede"
 
 #: ../../godmode/modules/manage_network_templates_form.php:76
 msgid "Successfully added network profile"
-msgstr ""
+msgstr "Perfil de rede adicionado com sucesso"
 
 #: ../../godmode/modules/manage_network_templates_form.php:76
 msgid "Error adding network profile"
-msgstr ""
+msgstr "Erro ao adicionar o perfil de rede"
 
 #: ../../godmode/modules/manage_network_templates_form.php:128
 msgid "No modules for this profile"
-msgstr ""
+msgstr "Sem módulos para este perfil"
 
 #: ../../godmode/modules/manage_network_templates_form.php:168
 msgid "Add Modules"
-msgstr ""
+msgstr "Adicionar Módulos"
 
 #: ../../godmode/modules/module_list.php:46
 msgid "Problem modifying module"
@@ -3615,11 +3625,11 @@ msgstr "Houve um problema ao atualizar o usuário"
 
 #: ../../godmode/users/configure_user.php:147
 msgid "User creation failed"
-msgstr ""
+msgstr "A criação de usuário falhou"
 
 #: ../../godmode/users/configure_user.php:149
 msgid "User created successfully"
-msgstr ""
+msgstr "Usuário criado com sucesso"
 
 #: ../../godmode/users/configure_user.php:163
 msgid "Update user"
@@ -3641,7 +3651,7 @@ msgstr "Nome Real"
 
 #: ../../godmode/users/configure_user.php:187
 msgid "Password confirmation"
-msgstr ""
+msgstr "Confirmação da senha"
 
 #: ../../godmode/users/configure_user.php:193
 #: ../../operation/users/user_edit.php:127
@@ -3661,6 +3671,8 @@ msgid ""
 "This user has permissions to manage all. This is admin user and overwrites "
 "all permissions given in profiles/groups"
 msgstr ""
+"Esse usuário tem permissão total de gerencimaneto. Esse é um usuário "
+"administrativo e sobrepõe todas as permissões dadas em perfis/grupos"
 
 #: ../../godmode/users/configure_user.php:203
 msgid "Standard user"
@@ -3706,6 +3718,7 @@ msgstr "Pacotes por agentes"
 #: ../../godmode/db/db_info.php:54
 msgid "Press here to get database information as text"
 msgstr ""
+"Clique aqui para visualizar as informações do banco de dados como texto"
 
 #: ../../godmode/db/db_info.php:63
 msgid "Total data"
@@ -3714,6 +3727,7 @@ msgstr "Dados totais"
 #: ../../godmode/db/db_info.php:89
 msgid "Press here to get database information as a graph"
 msgstr ""
+"Clique aqui para visualizar as informações do bando de dados como gráfico"
 
 #: ../../godmode/db/db_sanity.php:32
 msgid "Database sanity tool"
@@ -3721,15 +3735,15 @@ msgstr ""
 
 #: ../../godmode/db/db_sanity.php:38
 msgid "Checking tagente_estado table"
-msgstr ""
+msgstr "Verificando tabela tagente_estado"
 
 #: ../../godmode/db/db_sanity.php:55
 msgid "Checking database consistency"
-msgstr ""
+msgstr "Verificando consistência do banco de dados"
 
 #: ../../godmode/db/db_sanity.php:71
 msgid "Deleting non-init data"
-msgstr ""
+msgstr "Removendo dados não inicializados"
 
 #: ../../godmode/db/db_sanity.php:89
 msgid ""
@@ -3741,14 +3755,22 @@ msgid ""
 "that you should be running each day or week. This console sanity DONT "
 "compact your database, only delete bad structured data."
 msgstr ""
+"A ferramenta de sanidade do Pandora FMS é utilizada para remover dados "
+"inadequados da estrutura de dados, módulos criados sem status ou módulos que "
+"não podem ser inicializados (e não fornecem dados válidos) mas tentam "
+"novamente pegar dados em intervalos regulares. Este tipo de módulos ruins "
+"podem degradar a perfomance do Pandora FMS. Essa ferramenta de sanidade de "
+"dados também é implementada no <b>pandora_db.pl</b> que você deve executar "
+"semanalmente. Esse console de sanidade NÃO compacta sua base de dados, mas "
+"apenas remove dados inadequados."
 
 #: ../../godmode/db/db_sanity.php:94
 msgid "Sanitize my database now"
-msgstr ""
+msgstr "Higienize minha base de dados agora"
 
 #: ../../godmode/db/db_sanity.php:101
 msgid "Delete non-initialized modules now"
-msgstr ""
+msgstr "Remova módulos não-inicializados agora"
 
 #: ../../godmode/db/db_purge.php:44
 msgid "Get data from agent"
@@ -3756,25 +3778,27 @@ msgstr "Obter dados de um agente"
 
 #: ../../godmode/db/db_purge.php:83
 msgid "Purge task launched for agent"
-msgstr ""
+msgstr "Tarefa de remoção disparada para o agente"
 
 #: ../../godmode/db/db_purge.php:83
 msgid "Data older than"
-msgstr ""
+msgstr "Dados mais antigos que"
 
 #: ../../godmode/db/db_purge.php:84
 msgid ""
 "Please be patient. This operation can take a long time depending on the "
 "amount of modules."
 msgstr ""
+"Por favor, seja paciente. Esta operação pode demorar bastante tempo "
+"dependendo do número de módulos."
 
 #: ../../godmode/db/db_purge.php:97
 msgid "Deleting records for module"
-msgstr ""
+msgstr "Removendo entradas para o módulo"
 
 #: ../../godmode/db/db_purge.php:121
 msgid "Deleting records for all agents"
-msgstr ""
+msgstr "Removendo as entradas para todos os agentes"
 
 #: ../../godmode/db/db_purge.php:139
 msgid "Choose agent"
@@ -3786,51 +3810,52 @@ msgstr "Todos os agentes"
 
 #: ../../godmode/db/db_purge.php:151
 msgid "Select the agent you want information about"
-msgstr ""
+msgstr "Selecione o agente do qual deseja informações"
 
 #: ../../godmode/db/db_purge.php:154
 msgid "Click here to get the data from the agent specified in the select box"
 msgstr ""
+"Clique aqui para ver informações do agente especificado na caixa de seleção"
 
 #: ../../godmode/db/db_purge.php:158
 msgid "Information on agent"
-msgstr ""
+msgstr "Informações sobre o agente"
 
 #: ../../godmode/db/db_purge.php:158 ../../godmode/db/db_purge.php:160
 msgid "in the database"
-msgstr ""
+msgstr "no banco de dados"
 
 #: ../../godmode/db/db_purge.php:160
 msgid "Information on all agents"
-msgstr ""
+msgstr "Informações sobre todos os agentes"
 
 #: ../../godmode/db/db_purge.php:206
 msgid "Packets less than three months old"
-msgstr ""
+msgstr "Pacotes com menos de três meses"
 
 #: ../../godmode/db/db_purge.php:207
 msgid "Packets less than one month old"
-msgstr ""
+msgstr "Pacotes com menos de um mês"
 
 #: ../../godmode/db/db_purge.php:208
 msgid "Packets less than two weeks old"
-msgstr ""
+msgstr "Pacotes com menos de duas semanas"
 
 #: ../../godmode/db/db_purge.php:209
 msgid "Packets less than one week old"
-msgstr ""
+msgstr "Pacotes com menos de uma semana"
 
 #: ../../godmode/db/db_purge.php:210
 msgid "Packets less than three days old"
-msgstr ""
+msgstr "Pacotes com menos de três dias"
 
 #: ../../godmode/db/db_purge.php:211
 msgid "Packets less than one day old"
-msgstr ""
+msgstr "Pacotes com menos de um dia"
 
 #: ../../godmode/db/db_purge.php:212
 msgid "Total number of packets"
-msgstr ""
+msgstr "Número total de pacotes"
 
 #: ../../godmode/db/db_purge.php:217 ../../godmode/db/db_audit.php:91
 #: ../../godmode/db/db_event.php:67
@@ -3839,19 +3864,19 @@ msgstr "Apagar dados"
 
 #: ../../godmode/db/db_purge.php:221
 msgid "Purge data over 3 months"
-msgstr ""
+msgstr "Remover dados com mais de 3 meses"
 
 #: ../../godmode/db/db_purge.php:222
 msgid "Purge data over 1 month"
-msgstr ""
+msgstr "Remover dados com mais de 1 mês"
 
 #: ../../godmode/db/db_purge.php:223
 msgid "Purge data over 2 weeks"
-msgstr ""
+msgstr "Remover dados com mais de 2 semanas"
 
 #: ../../godmode/db/db_purge.php:224
 msgid "Purge data over 1 week"
-msgstr ""
+msgstr "Remover dados com mais de 1 semana"
 
 #: ../../godmode/db/db_purge.php:225
 msgid "Purge data over 3 days"
@@ -3863,7 +3888,7 @@ msgstr "Apagar os dados com mais de um dia"
 
 #: ../../godmode/db/db_purge.php:227
 msgid "All data until now"
-msgstr ""
+msgstr "Todos os dados até o momento"
 
 #: ../../godmode/db/db_purge.php:230 ../../godmode/db/db_audit.php:106
 #: ../../godmode/db/db_event.php:86
@@ -3876,11 +3901,11 @@ msgstr "Configuração atual da Base de Dados"
 
 #: ../../godmode/db/db_main.php:43
 msgid "Max. time before compact data"
-msgstr ""
+msgstr "Tempo máximo antes de compactar dados"
 
 #: ../../godmode/db/db_main.php:44
 msgid "Max. time before purge"
-msgstr ""
+msgstr "Tempo máximo antes de remover"
 
 #: ../../godmode/db/db_main.php:48
 msgid ""
@@ -3973,11 +3998,11 @@ msgstr "Máximo"
 
 #: ../../godmode/db/db_event.php:38
 msgid "Successfully deleted old events"
-msgstr ""
+msgstr "Eventos antigos removidos com sucesso"
 
 #: ../../godmode/db/db_event.php:40
 msgid "Error deleting old events"
-msgstr ""
+msgstr "Erro removendo eventos antigos"
 
 #: ../../godmode/db/db_event.php:45
 msgid "Event Database cleanup"
@@ -3985,7 +4010,7 @@ msgstr "Limpeza da Base de Dados de eventos"
 
 #: ../../godmode/db/db_event.php:61
 msgid "Latest data"
-msgstr ""
+msgstr "Dados mais recentes"
 
 #: ../../godmode/db/db_event.php:75
 msgid "Purge event data over 90 days"
@@ -4049,11 +4074,11 @@ msgstr "Comando"
 
 #: ../../include/functions_html.php:588
 msgid "Request successfully processed"
-msgstr ""
+msgstr "Requisição processada com sucesso"
 
 #: ../../include/functions_html.php:591
 msgid "Error processing request"
-msgstr ""
+msgstr "Erro processando a requisição"
 
 #: ../../include/functions_visual_map.php:139
 msgid "Static graph"
@@ -4073,15 +4098,15 @@ msgstr "Não tem permissão necessária para acessar este recurso"
 
 #: ../../include/functions.php:222 ../../include/functions.php:226
 msgid "Unmanaged error"
-msgstr ""
+msgstr "Erro não gerenciado"
 
 #: ../../include/functions.php:420
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../../include/functions.php:422
 msgid ","
-msgstr ""
+msgstr ","
 
 #: ../../include/functions.php:476 ../../include/functions.php:488
 #: ../../include/functions.php:490 ../../include/functions.php:514
@@ -4096,7 +4121,7 @@ msgstr "minutos"
 #: ../../include/functions.php:482
 #: ../../operation/snmpconsole/snmp_alert.php:233
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: ../../include/functions.php:499 ../../include/functions.php:500
 msgid "months"
@@ -4105,20 +4130,20 @@ msgstr "meses"
 #: ../../include/functions.php:856 ../../include/functions.php:938
 #: ../../include/functions_db.php:1908
 msgid "Recovery"
-msgstr ""
+msgstr "Recuperação"
 
 #: ../../include/functions.php:860 ../../include/functions.php:942
 msgid "Alert Ctrl."
-msgstr ""
+msgstr "Controle de Alerta"
 
 #: ../../include/functions.php:862 ../../include/functions.php:944
 msgid "Firing days"
-msgstr ""
+msgstr "Dias para disparo"
 
 #: ../../include/functions.php:975
 #: ../../operation/snmpconsole/snmp_alert.php:324
-#: ../../operation/agentes/estado_generalagente.php:131
-#: ../../operation/agentes/estado_generalagente.php:139
+#: ../../operation/agentes/estado_generalagente.php:120
+#: ../../operation/agentes/estado_generalagente.php:128
 #: ../../operation/agentes/estado_ultimopaquete.php:192
 #: ../../operation/agentes/estado_monitores.php:113
 #: ../../operation/agentes/sla_view.php:125
@@ -4161,8 +4186,8 @@ msgstr "Gráfico customizado"
 #: ../../operation/agentes/ver_agente.php:227
 #: ../../operation/agentes/sla_view.php:46
 #: ../../operation/agentes/sla_view.php:147
-msgid "S.L.A"
-msgstr "S.L.A."
+msgid "S.L.A."
+msgstr ""
 
 #: ../../include/functions.php:1006
 #: ../../operation/reporting/reporting_viewer.php:257
@@ -4186,17 +4211,17 @@ msgstr "Relatório de monitores"
 #: ../../operation/reporting/reporting_viewer.php:350
 #: ../../operation/reporting/reporting_xml.php:262
 msgid "Sumatory"
-msgstr ""
+msgstr "Soma"
 
 #: ../../include/functions.php:1013
 msgid "General group report"
-msgstr ""
+msgstr "Relatório geral do grupo"
 
 #: ../../include/functions.php:1015
 #: ../../operation/reporting/reporting_viewer.php:392
 #: ../../operation/reporting/reporting_xml.php:281
 msgid "Agents detailed view"
-msgstr ""
+msgstr "Visualização detalhada de agentes"
 
 #: ../../include/functions.php:1030 ../../include/functions.php:1139
 #: ../../include/functions_db.php:1215
@@ -4209,38 +4234,38 @@ msgstr "Desconhecido"
 #: ../../operation/agentes/status_monitor.php:229
 #: ../../operation/agentes/status_monitor.php:248
 msgid "Monitor up"
-msgstr ""
+msgstr "Monitor ativo"
 
 #: ../../include/functions.php:1141
 #: ../../operation/agentes/status_monitor.php:231
 #: ../../operation/agentes/status_monitor.php:250
 msgid "Monitor down"
-msgstr ""
+msgstr "Monitor inativo"
 
 #: ../../include/functions.php:1143
 msgid "Alert recovered"
-msgstr ""
+msgstr "Recuperação de alerta"
 
 #: ../../include/functions.php:1144
 msgid "Alert ceased"
-msgstr ""
+msgstr "Alerta terminado"
 
 #: ../../include/functions.php:1145
 msgid "Alert manual validation"
-msgstr ""
+msgstr "Validação manual de alerta"
 
 #: ../../include/functions.php:1146
 msgid "Recon host detected"
-msgstr ""
+msgstr "Host de reconhecimento detectado"
 
 #: ../../include/functions.php:1147 ../../include/functions_db.php:2109
 #: ../../operation/events/events.php:279 ../../operation/events/events.php:456
 msgid "System"
-msgstr ""
+msgstr "Sistema"
 
 #: ../../include/functions.php:1148
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #: ../../include/functions_db.php:1203
 msgid "Software agent data"
@@ -4260,7 +4285,7 @@ msgstr "Monitores do agente de rede"
 
 #: ../../include/functions_db.php:1775
 msgid "Wrong module type"
-msgstr ""
+msgstr "Tipo inválido de módulo"
 
 #: ../../include/functions_db.php:1903
 msgid "Tt"
@@ -4268,11 +4293,11 @@ msgstr ""
 
 #: ../../include/functions_db.php:1904
 msgid "Firing"
-msgstr ""
+msgstr "Disparando"
 
 #: ../../include/functions_db.php:1907
 msgid "Desc"
-msgstr ""
+msgstr "Desc"
 
 #: ../../include/functions_db.php:1909
 msgid "MinMax.Al"
@@ -4280,15 +4305,15 @@ msgstr ""
 
 #: ../../include/functions_db.php:1910
 msgid "Days"
-msgstr ""
+msgstr "Dias"
 
 #: ../../include/functions_db.php:1911
 msgid "Fired"
-msgstr ""
+msgstr "Disparado"
 
 #: ../../include/functions_db.php:2016
 msgid "Latest events"
-msgstr ""
+msgstr "Eventos mais recentes"
 
 #: ../../include/functions_db.php:2018 ../../operation/events/events.php:345
 msgid "St"
@@ -4302,7 +4327,7 @@ msgstr "Nome do evento"
 
 #: ../../include/functions_reporting.php:319
 msgid "Alert description"
-msgstr ""
+msgstr "Descrição do alerta"
 
 #: ../../include/functions_reporting.php:320
 #: ../../include/functions_reporting.php:516
@@ -4313,24 +4338,24 @@ msgstr "Número de vezes lançada"
 
 #: ../../include/functions_reporting.php:364
 msgid "Total alerts monitored"
-msgstr ""
+msgstr "Total de alertas monitorados"
 
 #: ../../include/functions_reporting.php:411
 msgid "Total monitors"
-msgstr ""
+msgstr "Total de monitores"
 
 #: ../../include/functions_reporting.php:412
 msgid "Monitors down on period"
-msgstr ""
+msgstr "Monitores indisponíveis no período"
 
 #: ../../include/functions_reporting.php:447
 #: ../../include/functions_reporting.php:551
 msgid "Monitor"
-msgstr ""
+msgstr "Monitor"
 
 #: ../../include/functions_reporting.php:491
 msgid "Agents in group"
-msgstr ""
+msgstr "Agentes no grupo"
 
 #: ../../include/functions_reporting.php:515
 #: ../../operation/snmpconsole/snmp_alert.php:288
@@ -4341,7 +4366,7 @@ msgstr "Lançada pela última vez"
 
 #: ../../include/functions_reporting.php:552
 msgid "Last failure"
-msgstr ""
+msgstr "Última falha"
 
 #: ../../include/functions_reporting.php:645
 #: ../../operation/agentes/estado_grupo.php:213
@@ -4350,25 +4375,25 @@ msgstr "Monitores"
 
 #: ../../operation/reporting/reporting_viewer.php:112
 msgid "Invalid date selected"
-msgstr ""
+msgstr "Data inválida selecionada"
 
 #: ../../operation/reporting/reporting_viewer.php:117
 msgid "Selected date is older than current date"
-msgstr ""
+msgstr "Data selecionada é mais antiga que a data atual"
 
 #: ../../operation/reporting/reporting_viewer.php:202
 #: ../../operation/reporting/reporting_xml.php:196
 msgid "There are no SLAs defined"
-msgstr ""
+msgstr "Não existem SLAs definidos"
 
 #: ../../operation/reporting/reporting_viewer.php:220
 msgid "SLA Limit"
-msgstr ""
+msgstr "Limite do SLA"
 
 #: ../../operation/reporting/reporting_viewer.php:243
 #: ../../operation/agentes/estado_grupo.php:214
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ../../operation/reporting/reporting_viewer.php:245
 #: ../../operation/agentes/estado_grupo.php:216
@@ -4378,19 +4403,19 @@ msgstr "Falhou"
 #: ../../operation/reporting/graph_viewer.php:138
 #: ../../operation/reporting/graph_viewer.php:146
 msgid "Graph defined"
-msgstr ""
+msgstr "Gráfico definido"
 
 #: ../../operation/reporting/graph_viewer.php:147
 msgid "Zoom x1"
-msgstr ""
+msgstr "Ampliar 1x"
 
 #: ../../operation/reporting/graph_viewer.php:148
 msgid "Zoom x2"
-msgstr ""
+msgstr "Ampliar 2x"
 
 #: ../../operation/reporting/graph_viewer.php:149
 msgid "Zoom x3"
-msgstr ""
+msgstr "Ampliar 2x"
 
 #: ../../operation/reporting/graph_viewer.php:159
 msgid "Custom graph viewer"
@@ -4402,11 +4427,11 @@ msgstr "Nome do gráfico"
 
 #: ../../operation/reporting/custom_reporting.php:45
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ../../operation/reporting/custom_reporting.php:46
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
@@ -4422,11 +4447,11 @@ msgstr "Incidente atualizado corretamente"
 
 #: ../../operation/incidents/incident.php:82
 msgid "There was a problem updating the incident"
-msgstr ""
+msgstr "Houve um erro ao tentar atualizar o incidente"
 
 #: ../../operation/incidents/incident.php:105
 msgid "Error creating incident"
-msgstr ""
+msgstr "Erro ao criar incidente"
 
 #: ../../operation/incidents/incident.php:161
 #: ../../operation/incidents/incident_statistics.php:30
@@ -4471,15 +4496,15 @@ msgstr "Muito grave"
 
 #: ../../operation/incidents/incident.php:197
 msgid "All priorities"
-msgstr ""
+msgstr "Todas as prioridades"
 
 #: ../../operation/incidents/incident.php:224
 msgid "No incidents match your search filter"
-msgstr ""
+msgstr "Nenhum incidente casa com seu filtro de busca"
 
 #: ../../operation/incidents/incident.php:257
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: ../../operation/incidents/incident.php:263
 #: ../../operation/incidents/incident_detail.php:263
@@ -4530,7 +4555,7 @@ msgstr "Nota adicionada corretamente"
 
 #: ../../operation/incidents/incident_detail.php:68
 msgid "Error adding note"
-msgstr ""
+msgstr "Erro ao adicionar nota"
 
 #: ../../operation/incidents/incident_detail.php:90
 msgid "Note successfully deleted"
@@ -4538,41 +4563,43 @@ msgstr "Nota eliminada corretamente"
 
 #: ../../operation/incidents/incident_detail.php:92
 msgid "Error deleting note"
-msgstr ""
+msgstr "Erro ao remover nota"
 
 #: ../../operation/incidents/incident_detail.php:106
 msgid "Could not find file in database"
-msgstr ""
+msgstr "Não foi possível localizar o arquivo no banco de dados"
 
 #: ../../operation/incidents/incident_detail.php:113
 msgid "File successfully deleted from database"
-msgstr ""
+msgstr "Arquivo removido do banco de dados com sucesso"
 
 #: ../../operation/incidents/incident_detail.php:115
 msgid "Unable to delete file"
-msgstr ""
+msgstr "Não foi possível remover o arquivo"
 
 #: ../../operation/incidents/incident_detail.php:124
 msgid "No description available"
-msgstr ""
+msgstr "Nenhuma descrição disponível"
 
 #: ../../operation/incidents/incident_detail.php:152
 msgid "File could not be saved due to database error"
-msgstr ""
+msgstr "O arquivo não pode ser salvo devido a um erro no banco de dados"
 
 #: ../../operation/incidents/incident_detail.php:159
 msgid "File uploaded"
-msgstr ""
+msgstr "Arquivo carregado"
 
 #: ../../operation/incidents/incident_detail.php:161
 msgid ""
 "File could not be saved. Contact the Pandora Administrator for more "
 "information"
 msgstr ""
+"O arquivo não pode ser salvo. Entre em contato com um administrador do "
+"Pandora para mais informações"
 
 #: ../../operation/incidents/incident_detail.php:221
 msgid "Incident details"
-msgstr ""
+msgstr "Detalhes do incidente"
 
 #: ../../operation/incidents/incident_detail.php:238
 msgid "Opened at"
@@ -4601,7 +4628,7 @@ msgstr "Fechada"
 
 #: ../../operation/incidents/incident_detail.php:305
 msgid "Creator"
-msgstr ""
+msgstr "Criador"
 
 #: ../../operation/incidents/incident_detail.php:324
 msgid "Update incident"
@@ -4609,7 +4636,7 @@ msgstr "Atualizar incidente"
 
 #: ../../operation/incidents/incident_detail.php:328
 msgid "Submit"
-msgstr ""
+msgstr "Enviar"
 
 #: ../../operation/incidents/incident_detail.php:334
 msgid "Add note"
@@ -4634,7 +4661,7 @@ msgstr "Tamanho"
 
 #: ../../operation/incidents/incident_detail.php:429
 msgid "Add attachment"
-msgstr ""
+msgstr "Adicionar anexo"
 
 #: ../../operation/incidents/incident_detail.php:435
 msgid "Upload"
@@ -4646,17 +4673,19 @@ msgstr "Selecione um critério de busca"
 
 #: ../../operation/incidents/incident_search.php:35
 msgid "Created by:"
-msgstr ""
+msgstr "Criado por:"
 
 #: ../../operation/incidents/incident_search.php:39
 msgid "Search text"
-msgstr ""
+msgstr "Procurar texto"
 
 #: ../../operation/incidents/incident_search.php:45
 msgid ""
 "(*) The text search will look for all words entered as a substring in the "
 "title and description of each incident"
 msgstr ""
+"(*) A busca por texto irá procurar por todas as palavras fornecidas como sub-"
+"strings do título e descrição de cada incidente"
 
 #: ../../operation/servers/view_server_detail.php:55
 #: ../../operation/servers/view_server.php:37
@@ -4665,7 +4694,7 @@ msgstr "Detalhe da configuração"
 
 #: ../../operation/servers/view_server_detail.php:68
 msgid "Force"
-msgstr ""
+msgstr "Forçar"
 
 #: ../../operation/servers/view_server_detail.php:76
 msgid "Progress"
@@ -4685,7 +4714,7 @@ msgstr "Pendente"
 
 #: ../../operation/servers/view_server_detail.php:163
 msgid "This server has no recon tasks assigned"
-msgstr ""
+msgstr "Este servidor não tem nenhuma tarefa de reconhecimento designada"
 
 #: ../../operation/servers/view_server.php:55
 #: ../../operation/agentes/tactical.php:231
@@ -4704,27 +4733,27 @@ msgstr "Versão"
 #: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:288
 msgid "of"
-msgstr ""
+msgstr "de"
 
 #: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
-msgstr ""
+msgstr "Servidor SNMP"
 
 #: ../../operation/servers/view_server.php:118
 msgid "Master server"
-msgstr ""
+msgstr "Servidor Principal"
 
 #: ../../operation/servers/view_server.php:121
 msgid "MD5 check"
-msgstr ""
+msgstr "Checagem MD5"
 
 #: ../../operation/visual_console/render_view.php:67
 msgid "Full screen mode"
-msgstr ""
+msgstr "Modo tela cheia"
 
 #: ../../operation/visual_console/render_view.php:71
 msgid "Back to normal mode"
-msgstr ""
+msgstr "Voltar ao modo normal"
 
 #: ../../operation/visual_console/render_view.php:80
 #: ../../operation/visual_console/render_view.php:81
@@ -4741,7 +4770,7 @@ msgstr "atualizar"
 
 #: ../../operation/visual_console/render_view.php:123
 msgid "Until refresh"
-msgstr ""
+msgstr "Até atualizar"
 
 #: ../../operation/visual_console/index.php:24 ../../operation/menu.php:100
 msgid "Visual console"
@@ -4759,7 +4788,7 @@ msgstr "Elementos"
 
 #: ../../operation/visual_console/index.php:59
 msgid "There are no visual consoles defined"
-msgstr ""
+msgstr "Não existem visualizações de console definidas"
 
 #: ../../operation/menu.php:46 ../../operation/agentes/tactical.php:34
 msgid "Tactical view"
@@ -4771,7 +4800,7 @@ msgstr "Visão do grupo"
 
 #: ../../operation/menu.php:60 ../../operation/agentes/networkmap.php:252
 msgid "Network Map"
-msgstr ""
+msgstr "Mapa de rede"
 
 #: ../../operation/menu.php:74
 msgid "Alert detail"
@@ -4791,15 +4820,15 @@ msgstr "Buscar incidente"
 
 #: ../../operation/menu.php:182
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #: ../../operation/menu.php:188
 msgid "CSV File"
-msgstr ""
+msgstr "Arquivo CSV"
 
 #: ../../operation/menu.php:193
 msgid "Marquee"
-msgstr ""
+msgstr "Texto rolante"
 
 #: ../../operation/menu.php:203
 msgid "View users"
@@ -4831,20 +4860,20 @@ msgstr "Gráficos customizados"
 
 #: ../../operation/snmpconsole/snmp_alert.php:76
 msgid "There was a problem creating the alert"
-msgstr ""
+msgstr "Houve um problema ao criar o alerta"
 
 #: ../../operation/snmpconsole/snmp_alert.php:91
 msgid "There was a problem updating the alert"
-msgstr ""
+msgstr "Houve um problema ao atualizar o alerta"
 
 #: ../../operation/snmpconsole/snmp_alert.php:138
 msgid "Update alert"
-msgstr ""
+msgstr "Atualizar alerta"
 
 #: ../../operation/snmpconsole/snmp_alert.php:162
 #: ../../operation/snmpconsole/snmp_alert.php:270
 msgid "Alert trigger"
-msgstr ""
+msgstr "Disparar alerta"
 
 #: ../../operation/snmpconsole/snmp_alert.php:178
 #: ../../operation/snmpconsole/snmp_alert.php:183
@@ -4856,7 +4885,7 @@ msgstr "OID"
 
 #: ../../operation/snmpconsole/snmp_alert.php:183
 msgid "Custom Value"
-msgstr ""
+msgstr "Valor customizado"
 
 #: ../../operation/snmpconsole/snmp_alert.php:188
 #: ../../operation/snmpconsole/snmp_alert.php:273
@@ -4867,11 +4896,11 @@ msgstr "Agente SNMP"
 
 #: ../../operation/snmpconsole/snmp_alert.php:228
 msgid "Other value"
-msgstr ""
+msgstr "Outro valor"
 
 #: ../../operation/snmpconsole/snmp_alert.php:251
 msgid "Alert Overview"
-msgstr ""
+msgstr "Resumo de alertas"
 
 #: ../../operation/snmpconsole/snmp_alert.php:256
 msgid "There are no SNMP alerts"
@@ -4880,11 +4909,11 @@ msgstr "Não foi definido nenhum alerta SNMP"
 #: ../../operation/snmpconsole/snmp_alert.php:280
 #: ../../operation/snmpconsole/snmp_alert.php:309
 msgid "Custom Value/OID"
-msgstr ""
+msgstr "Valor/OID customizado"
 
 #: ../../operation/snmpconsole/snmp_alert.php:285
 msgid "Times fired"
-msgstr ""
+msgstr "Número de vezes disparado"
 
 #: ../../operation/snmpconsole/snmp_view.php:72
 #: ../../operation/events/events.php:84
@@ -4922,11 +4951,11 @@ msgstr "Eliminar evento"
 
 #: ../../operation/snmpconsole/snmp_view.php:172
 msgid "Value"
-msgstr ""
+msgstr "Valor"
 
 #: ../../operation/snmpconsole/snmp_view.php:173
 msgid "Custom"
-msgstr ""
+msgstr "Customizado"
 
 #: ../../operation/snmpconsole/snmp_view.php:276
 #: ../../operation/agentes/estado_alertas.php:67
@@ -4951,16 +4980,16 @@ msgstr "Agentes do Pandora"
 #: ../../operation/agentes/networkmap.php:254
 #: ../../operation/events/events.php:214
 msgid "Normal screen"
-msgstr ""
+msgstr "Tela normal"
 
 #: ../../operation/agentes/networkmap.php:256
 #: ../../operation/events/events.php:217
 msgid "Full screen"
-msgstr ""
+msgstr "Tela cheia"
 
 #: ../../operation/agentes/networkmap.php:271
 msgid "Layout"
-msgstr ""
+msgstr "Layout"
 
 #: ../../operation/agentes/networkmap.php:275
 msgid "No Overlap"
@@ -4968,28 +4997,28 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:279
 msgid "Simple"
-msgstr ""
+msgstr "Simples"
 
 #: ../../operation/agentes/networkmap.php:283
 msgid "Regenerate"
-msgstr ""
+msgstr "Recriar"
 
 #: ../../operation/agentes/networkmap.php:298
 msgid "Zoom"
-msgstr ""
+msgstr "Ampliar"
 
 #: ../../operation/agentes/networkmap.php:306
 msgid "Distance between nodes"
-msgstr ""
+msgstr "Distância entre os nós"
 
 #: ../../operation/agentes/networkmap.php:312
 msgid "Font"
-msgstr ""
+msgstr "Fonte"
 
 #: ../../operation/agentes/networkmap.php:352
 #: ../../operation/agentes/networkmap.php:361
 msgid "Map could not be generated"
-msgstr ""
+msgstr "O mapa não pode ser gerado"
 
 #: ../../operation/agentes/status_monitor.php:34
 #: ../../operation/agentes/estado_monitores.php:33
@@ -4998,7 +5027,7 @@ msgstr "Lista completa de monitores"
 
 #: ../../operation/agentes/status_monitor.php:78
 msgid "Monitor status"
-msgstr ""
+msgstr "Status do monitor"
 
 #: ../../operation/agentes/status_monitor.php:83
 #: ../../operation/agentes/status_monitor.php:87
@@ -5006,25 +5035,25 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:98
 #: ../../operation/agentes/ver_agente.php:79
 msgid "Monitors down"
-msgstr ""
+msgstr "Monitores inativos"
 
 #: ../../operation/agentes/status_monitor.php:84
 #: ../../operation/agentes/status_monitor.php:89
 #: ../../operation/agentes/status_monitor.php:95
 #: ../../operation/agentes/status_monitor.php:97
 msgid "Monitors up"
-msgstr ""
+msgstr "Monitores ativos"
 
 #: ../../operation/agentes/status_monitor.php:85
 #: ../../operation/agentes/status_monitor.php:90
 #: ../../operation/agentes/status_monitor.php:92
 #: ../../operation/agentes/status_monitor.php:99
 msgid "Monitors unknown"
-msgstr ""
+msgstr "Monitores indefinidos"
 
 #: ../../operation/agentes/status_monitor.php:122
 msgid "Free text"
-msgstr ""
+msgstr "Texto livre"
 
 #: ../../operation/agentes/status_monitor.php:253
 msgid "This group doesn't have any monitor"
@@ -5043,48 +5072,44 @@ msgid "Agent Version"
 msgstr "Versão do agente"
 
 #: ../../operation/agentes/estado_generalagente.php:117
-msgid "Total packets"
-msgstr "Número total de pacotes"
-
-#: ../../operation/agentes/estado_generalagente.php:128
 msgid "Remote"
 msgstr "Remota"
 
-#: ../../operation/agentes/estado_generalagente.php:161
+#: ../../operation/agentes/estado_generalagente.php:150
 msgid "Next agent contact"
 msgstr "Contato seguinte com o agente"
 
-#: ../../operation/agentes/estado_generalagente.php:167
+#: ../../operation/agentes/estado_generalagente.php:156
 msgid "Agent access rate (24h)"
 msgstr "Acessibilidade para o agente (24h)"
 
-#: ../../operation/agentes/estado_generalagente.php:171
+#: ../../operation/agentes/estado_generalagente.php:160
 msgid "Events generated -by module-"
-msgstr ""
+msgstr "Eventos gerados - pelo módulo -"
 
 #: ../../operation/agentes/status_events.php:30
 msgid "Latest events for this agent"
-msgstr ""
+msgstr "Últimos eventos para este agente"
 
 #: ../../operation/agentes/estado_grupo.php:117
 msgid "There are no defined groups"
-msgstr ""
+msgstr "Não existem grupos definidos"
 
 #: ../../operation/agentes/estado_grupo.php:159
 msgid "Modules bad"
-msgstr ""
+msgstr "Módulos problemáticos"
 
 #: ../../operation/agentes/estado_grupo.php:163
 msgid "Modules OK"
-msgstr ""
+msgstr "Módulos OK"
 
 #: ../../operation/agentes/estado_grupo.php:173
 msgid "Agents down"
-msgstr ""
+msgstr "Agentes indisponíveis"
 
 #: ../../operation/agentes/estado_grupo.php:178
 msgid "Disabled alerts"
-msgstr ""
+msgstr "Alertas desabilitados"
 
 #: ../../operation/agentes/estado_grupo.php:209
 msgid "Agents"
@@ -5138,7 +5163,7 @@ msgstr "Todos os monitores OK"
 
 #: ../../operation/agentes/estado_monitores.php:123
 msgid "This agent doesn 't have any monitor with data"
-msgstr ""
+msgstr "Este agente não tem nenhum monitor com dados"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
@@ -5189,12 +5214,12 @@ msgstr "Dados do agente "
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "from"
-msgstr ""
+msgstr "de"
 
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "to"
-msgstr ""
+msgstr "até"
 
 #: ../../operation/agentes/exportdata.php:120
 msgid "Download file"
@@ -5276,11 +5301,11 @@ msgstr "Dados recebidos de"
 
 #: ../../operation/agentes/ver_agente.php:49
 msgid "Main IP"
-msgstr ""
+msgstr "IP Principal"
 
 #: ../../operation/agentes/ver_agente.php:55
 msgid "Last remote contact"
-msgstr ""
+msgstr "Último contato remoto"
 
 #: ../../operation/agentes/ver_agente.php:182
 msgid "View mode"
@@ -5296,15 +5321,15 @@ msgstr "Principal"
 
 #: ../../operation/agentes/sla_view.php:34
 msgid "SLA view"
-msgstr ""
+msgstr "Visualizar SLA"
 
 #: ../../operation/agentes/sla_view.php:41
 msgid "Automatic SLA for monitors"
-msgstr ""
+msgstr "SLA automático para monitores"
 
 #: ../../operation/agentes/sla_view.php:141
 msgid "User-defined SLA items"
-msgstr ""
+msgstr "Items de SLA definidos por usuário"
 
 #: ../../operation/agentes/estado_agente.php:343
 msgid "There are no agents included in this group"
@@ -5318,11 +5343,11 @@ msgstr "Lista completa de alertas"
 
 #: ../../operation/agentes/estado_alertas.php:60
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: ../../operation/agentes/estado_alertas.php:143
 msgid "Combined alert"
-msgstr ""
+msgstr "Alerta cominado"
 
 #: ../../operation/agentes/estado_alertas.php:210
 msgid "No agent included in this group has any assigned alert"
@@ -5335,54 +5360,54 @@ msgstr "Checagens do monitor"
 
 #: ../../operation/agentes/tactical.php:115
 msgid "Monitor OK"
-msgstr ""
+msgstr "Monitor OK"
 
 #: ../../operation/agentes/tactical.php:138
 msgid "Monitor Unknown"
-msgstr ""
+msgstr "Monitor Indefinido"
 
 #: ../../operation/agentes/tactical.php:147
 msgid "Monitor Not Init"
-msgstr ""
+msgstr "Monitor não inicializado"
 
 #: ../../operation/agentes/tactical.php:154
 #: ../../operation/agentes/tactical.php:184
 msgid "Alerts Fired"
-msgstr ""
+msgstr "Alertas disparados"
 
 #: ../../operation/agentes/tactical.php:162
 #: ../../operation/agentes/tactical.php:195
 msgid "Alerts Total"
-msgstr ""
+msgstr "Total de alertas"
 
 #: ../../operation/agentes/tactical.php:169
 #: ../../operation/agentes/tactical.php:170
 msgid "Data Checks"
-msgstr ""
+msgstr "Checagem de dados"
 
 #: ../../operation/agentes/tactical.php:172
 msgid "Data Unknown"
-msgstr ""
+msgstr "Dados indefinidos"
 
 #: ../../operation/agentes/tactical.php:178
 msgid "Data Not Init"
-msgstr ""
+msgstr "Dados não inicializados"
 
 #: ../../operation/agentes/tactical.php:203
 msgid "Total Agents"
-msgstr ""
+msgstr "Total de agentes"
 
 #: ../../operation/agentes/tactical.php:205
 msgid "Total Checks"
-msgstr ""
+msgstr "Total de verificações"
 
 #: ../../operation/agentes/tactical.php:208
 msgid "Server Sanity"
-msgstr ""
+msgstr "Sanidade do servidor"
 
 #: ../../operation/agentes/tactical.php:211
 msgid "Uninitialized modules"
-msgstr ""
+msgstr "Módulos não inicializados"
 
 #: ../../operation/agentes/tactical.php:228
 msgid "Tactical server information"
@@ -5406,59 +5431,59 @@ msgstr "Gráfico de eventos por grupo"
 
 #: ../../operation/events/events.php:88
 msgid "Error deleting event"
-msgstr ""
+msgstr "Erro ao remover evento"
 
 #: ../../operation/events/events.php:108
 msgid "Error validating event"
-msgstr ""
+msgstr "Erro ao validar evento"
 
 #: ../../operation/events/events.php:186
 msgid "System Events"
-msgstr ""
+msgstr "Eventos do sistema"
 
 #: ../../operation/events/events.php:211
 msgid "Main event view"
-msgstr ""
+msgstr "Visualização principal de eventos"
 
 #: ../../operation/events/events.php:221
 msgid "Event control filter"
-msgstr ""
+msgstr "Filtrar controle de eventos"
 
 #: ../../operation/events/events.php:244
 msgid "Event type"
-msgstr ""
+msgstr "Tipo de evento"
 
 #: ../../operation/events/events.php:250
 msgid "Severity"
-msgstr ""
+msgstr "Severidade"
 
 #: ../../operation/events/events.php:255
 msgid "Event status"
-msgstr ""
+msgstr "Status de evento"
 
 #: ../../operation/events/events.php:258
 msgid "All event"
-msgstr ""
+msgstr "Todos os eventos"
 
 #: ../../operation/events/events.php:259
 msgid "Only validated"
-msgstr ""
+msgstr "Apenas validados"
 
 #: ../../operation/events/events.php:260
 msgid "Only pending"
-msgstr ""
+msgstr "Apenas pendentes"
 
 #: ../../operation/events/events.php:266
 msgid "Free search"
-msgstr ""
+msgstr "Busca livre"
 
 #: ../../operation/events/events.php:270
 msgid "Agent search"
-msgstr ""
+msgstr "Buscar agente"
 
 #: ../../operation/events/events.php:304
 msgid "Default"
-msgstr ""
+msgstr "Padrão"
 
 #: ../../operation/events/events.php:316
 msgid "Marquee display"
@@ -5466,7 +5491,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:318
 msgid "RSS Events"
-msgstr ""
+msgstr "RSS de eventos"
 
 #: ../../operation/users/user_statistics.php:26
 msgid "User activity statistics"
@@ -5486,7 +5511,7 @@ msgstr "confirmação"
 
 #: ../../operation/users/user.php:102
 msgid "System incidents reading"
-msgstr ""
+msgstr "Leitura de incidente do sistema"
 
 #: ../../operation/users/user.php:105
 msgid "System incidents writing"
@@ -5494,7 +5519,7 @@ msgstr ""
 
 #: ../../operation/users/user.php:108
 msgid "System incidents management"
-msgstr ""
+msgstr "Gerenciamento de incidente do sistema"
 
 #: ../../operation/users/user.php:111
 msgid "Agents reading"
@@ -5502,27 +5527,27 @@ msgstr ""
 
 #: ../../operation/users/user.php:114
 msgid "Agents management"
-msgstr ""
+msgstr "Gerenciamento de agentes"
 
 #: ../../operation/users/user.php:117
 msgid "Alerts edition"
-msgstr ""
+msgstr "Edição de alertas"
 
 #: ../../operation/users/user.php:120
 msgid "Users management"
-msgstr ""
+msgstr "Gerencimento de usuários"
 
 #: ../../operation/users/user.php:123
 msgid "Database management"
-msgstr ""
+msgstr "Gerenciamento de Banco de Dados"
 
 #: ../../operation/users/user.php:126
 msgid "Alerts management"
-msgstr ""
+msgstr "Gerenciamento de alertas"
 
 #: ../../operation/users/user.php:129
 msgid "Pandora system management"
-msgstr ""
+msgstr "Gerenciamento do sistema Pandora"
 
 #: ../../operation/messages/message.php:26
 msgid "Message successfully sent"
@@ -5586,8 +5611,14 @@ msgstr "Remetente"
 msgid "No subject"
 msgstr "Sem Assunto"
 
+#~ msgid "S.L.A"
+#~ msgstr "S.L.A."
+
 #~ msgid "There are no defined layouts"
 #~ msgstr "Não há mais layouts definidos"
+
+#~ msgid "Total packets"
+#~ msgstr "Número total de pacotes"
 
 #~ msgid "user"
 #~ msgstr "Usuário"
@@ -6155,3 +6186,621 @@ msgstr "Sem Assunto"
 
 #~ msgid "db_agente_módulo"
 #~ msgstr "Módulos por agente"
+
+#~ msgid "No layouts found"
+#~ msgstr "Nenhum layout encontrado"
+
+#~ msgid "Error removing event"
+#~ msgstr "Erro ao remover o evento"
+
+#~ msgid "Event successfully updated"
+#~ msgstr "Evento atualizado com sucesso"
+
+#~ msgid "Error updating event"
+#~ msgstr "Erro ao atualizar o evento"
+
+#~ msgid "Not validated"
+#~ msgstr "Não validado"
+
+#~ msgid "Validated"
+#~ msgstr "Validado"
+
+#~ msgid "View agent details"
+#~ msgstr "Ver detalhes do agente"
+
+#~ msgid "Are you sure"
+#~ msgstr "Você tem certeza"
+
+#~ msgid "Module Name"
+#~ msgstr "Nome do módulo"
+
+#~ msgid "Manage SNMP console"
+#~ msgstr "Gerenciar console SNMP"
+
+#~ msgid "Toggle filters"
+#~ msgstr "Alternar filtros"
+
+#~ msgid "Not fired"
+#~ msgstr "Não disparados"
+
+#~ msgid "fired"
+#~ msgstr "disparados"
+
+#~ msgid "Search value"
+#~ msgstr "Localizar valor"
+
+#~ msgid "No matching traps found"
+#~ msgstr "Nenhuma trap encontrada"
+
+#~ msgid "Flag"
+#~ msgstr "Sinalizar"
+
+#~ msgid "at"
+#~ msgstr "em"
+
+#~ msgid "No news articles at this moment"
+#~ msgstr "Sem novos artigos neste momento"
+
+#~ msgid "of total modules inited"
+#~ msgstr "sobre o total de módulos iniciados"
+
+#~ msgid "Modules Down"
+#~ msgstr "Módulos não sendo executados"
+
+#~ msgid "Users defined"
+#~ msgstr "Usuários definidos"
+
+#~ msgid "Monitors good"
+#~ msgstr "Monitores OK"
+
+#~ msgid "Monitors not init"
+#~ msgstr "Monitores não inicializados"
+
+#~ msgid "Data good"
+#~ msgstr "Dados OK"
+
+#~ msgid "Data down"
+#~ msgstr "Dados indisponíveis"
+
+#~ msgid "Data unknown"
+#~ msgstr "Dados indefinidos"
+
+#~ msgid "Data not init"
+#~ msgstr "Dados não inicializados"
+
+#~ msgid "Lag"
+#~ msgstr "Atraso"
+
+#~ msgid "Events successfully deleted"
+#~ msgstr "Eventos removidos com sucesso"
+
+#~ msgid "There was an error deleting events"
+#~ msgstr "Houve um erro removendo os eventos"
+
+#~ msgid "Events successfully validated"
+#~ msgstr "Eventos validados com sucesso"
+
+#~ msgid "There was an error validating events"
+#~ msgstr "Houve um erro validando os eventos"
+
+#~ msgid "No events"
+#~ msgstr "Nenhum evento"
+
+#~ msgid "Legend"
+#~ msgstr "Legenda"
+
+#~ msgid "Timestamp or time comparation"
+#~ msgstr "Timbre de hora para comparação de tempo"
+
+#~ msgid "The agent's name must be the same as the one defined at the console"
+#~ msgstr "O nome do agente deve ser o mesmo que o definido no console"
+
+#~ msgid "Send custom report by email"
+#~ msgstr "Enviar relatório customizado por email"
+
+#~ msgid "Cron jobs"
+#~ msgstr "Tarefas agendadas"
+
+#~ msgid "Not scheduled"
+#~ msgstr "Não agendado"
+
+#~ msgid "Hourly"
+#~ msgstr "De hora em hora"
+
+#~ msgid "Daily"
+#~ msgstr "Diariamente"
+
+#~ msgid "Weekly"
+#~ msgstr "Semanalmente"
+
+#~ msgid "Monthly"
+#~ msgstr "Mensalmente"
+
+#~ msgid "Yearly"
+#~ msgstr "Anualmente"
+
+#~ msgid "Report"
+#~ msgstr "Relatório"
+
+#~ msgid "This is the automatic generated report"
+#~ msgstr "Esse é o relatório gerado automaticamente"
+
+#~ msgid "Open the attached file to view it"
+#~ msgstr "Abra o arquivo anexado para visualizá-lo"
+
+#~ msgid "Generated at"
+#~ msgstr "Gerado em"
+
+#~ msgid "Please do not answer or reply to this email"
+#~ msgstr "Favor não responder este email"
+
+#~ msgid "Cron extension is not running"
+#~ msgstr "A extensão do cron não está em execução"
+
+#~ msgid "Cron extension has never run or it's not configured well"
+#~ msgstr ""
+#~ "A extensão do cron nunca foi executada ou não está configurada adequadamente"
+
+#~ msgid ""
+#~ "This extension relies on a proper setup of cron, the time-based scheduling "
+#~ "service"
+#~ msgstr ""
+#~ "Essa extensão depende de uma configuração adequada no cron, o agendador de "
+#~ "tarefas"
+
+#~ msgid "Please, add the following line to your crontab file"
+#~ msgstr "Por favor, adicione a seguinte linha no seu arquivo crontab"
+
+#~ msgid "Last execution"
+#~ msgstr "Última execução"
+
+#~ msgid "Cron extension is running"
+#~ msgstr "A extensão do cron está rodando"
+
+#~ msgid "Scheduled jobs"
+#~ msgstr "Tarefas agendadas"
+
+#~ msgid "Task"
+#~ msgstr "Tarefa"
+
+#~ msgid "Scheduled"
+#~ msgstr "Agendado"
+
+#~ msgid "Last run"
+#~ msgstr "Última execução"
+
+#~ msgid "Force run"
+#~ msgstr "Forçar execução"
+
+#~ msgid "Add new job"
+#~ msgstr "Adicionar nova tarefa"
+
+#~ msgid "Parameters"
+#~ msgstr "Parâmetros"
+
+#~ msgid "Inventory modules"
+#~ msgstr "Módulos de inventário"
+
+#~ msgid "SNMP trap editor"
+#~ msgstr "Editor de trap SNMP"
+
+#~ msgid "SNMP Trap Editor"
+#~ msgstr "Editor de trap SNMP"
+
+#~ msgid "update"
+#~ msgstr "atualizar"
+
+#~ msgid "create"
+#~ msgstr "criar"
+
+#~ msgid "Error parsing MIB"
+#~ msgstr "Erro decodificando a MIB"
+
+#~ msgid "Successfully added trap custom values"
+#~ msgstr "Valores customizados adicionados com sucesso à trap"
+
+#~ msgid "Error adding trap custom values"
+#~ msgstr "Erro ao adicionar valores customizados à trap"
+
+#~ msgid "Successfully updated trap custom values"
+#~ msgstr "Valores customizados da trap atualizados com sucesso"
+
+#~ msgid "Error updating trap custom values"
+#~ msgstr "Erro ao atualizar valores customizados da trap"
+
+#~ msgid "Successfully deleted trap custom values"
+#~ msgstr "Valores customizados da trap removidos com sucesso"
+
+#~ msgid "Error deleting trap custom values"
+#~ msgstr "Erro ao remover valores customizados da trap"
+
+#~ msgid "Unsupported file type"
+#~ msgstr "Tipo de arquivo não suportado"
+
+#~ msgid "Load MIB"
+#~ msgstr "Carregar MIB"
+
+#~ msgid "Upload MIB"
+#~ msgstr "Subir MIB"
+
+#~ msgid "Actions"
+#~ msgstr "Ações"
+
+#~ msgid "There are no trap custom values defined"
+#~ msgstr "Não existem valores customizados definidos para trap"
+
+#~ msgid "Forward SNMP traps to agent (if exist)"
+#~ msgstr "Encaminhas traps SNMP para o agente (caso exista)"
+
+#~ msgid "Inventory"
+#~ msgstr "Inventário"
+
+#~ msgid "Successfully added inventory module"
+#~ msgstr "Módulo de inventário adicionado com sucesso"
+
+#~ msgid "Error adding inventory module"
+#~ msgstr "Erro adicionando módulo de inventário"
+
+#~ msgid "Successfully deleted inventory module"
+#~ msgstr "Módulo de inventário adicionado com sucesso"
+
+#~ msgid "Error deleting inventory module"
+#~ msgstr "Erro ao remover módulo de inventário"
+
+#~ msgid "Successfully updated inventory module"
+#~ msgstr "Módulo de inventário atualizado com sucesso"
+
+#~ msgid "Error updating inventory module"
+#~ msgstr "Erro atualizado módulo de inventário"
+
+#~ msgid "Inventory module error"
+#~ msgstr "Erro no módulo de inventário"
+
+#~ msgid "Target"
+#~ msgstr "Destino"
+
+#~ msgid "Update all"
+#~ msgstr "Atualizar todos"
+
+#~ msgid "Inventory Modules"
+#~ msgstr "Módulos de inventário"
+
+#~ msgid "No inventory modules found"
+#~ msgstr "Nenhum módulo de inventário encontrado"
+
+#~ msgid "Inventory Server"
+#~ msgstr "Servidor de inventário"
+
+#~ msgid ""
+#~ "You must select an Inventory Server for the Agent, so it can work properly "
+#~ "with this kind of modules"
+#~ msgstr ""
+#~ "Você deve selecionar um servidor de inventário para o agente, de forma que "
+#~ "ele possa trabalhar adequadamente com este tipo de módulos"
+
+#~ msgid "Successfully created inventory module"
+#~ msgstr "Módulo de inventário criado com sucesso"
+
+#~ msgid "Error creating inventory module"
+#~ msgstr "Erro criando módulo de inventário"
+
+#~ msgid "Module management > Inventory modules"
+#~ msgstr "Gerenciamento de módulos > Módulos de inventário"
+
+#~ msgid "Interpreter"
+#~ msgstr "Interpretador"
+
+#~ msgid "There are no defined inventory modules"
+#~ msgstr "Não existem módulos de inventário definidos"
+
+#~ msgid "Code"
+#~ msgstr "Código"
+
+#~ msgid "SLA result"
+#~ msgstr "Resultado do SLA"
+
+#~ msgid "SLA final result: "
+#~ msgstr "Resultador final do SLA: "
+
+#~ msgid "Add tab"
+#~ msgstr "Adicionar aba"
+
+#~ msgid "Welcome message to Pandora FMS"
+#~ msgstr "Mensagem de boas-vinda do Pandora FMS"
+
+#~ msgid "Welcome"
+#~ msgstr "Bem-vindo"
+
+#~ msgid "Welcome to Pandora FMS"
+#~ msgstr "Bem-vindo ao Pandora FMS"
+
+#~ msgid ""
+#~ "To delete this message, click on the delete button on top right corner of "
+#~ "this element."
+#~ msgstr ""
+#~ "Para remover esta mensagem, clique no botão remover no canto superior "
+#~ "direito deste elemento"
+
+#~ msgid ""
+#~ "To do so, just click on the title and drag and drop it to the desired place."
+#~ msgstr ""
+#~ "Para fazê-lo apenas clieque no título e arraste e solte no local desejado"
+
+#~ msgid "Thanks for using Pandora FMS"
+#~ msgstr "Obrigado por utilizar o Pandora FMS"
+
+#~ msgid "Show a list of global monitor health"
+#~ msgstr "Mostra uma lista global do monitor de saúde"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "Pandora Agents "
+#~ msgstr "Agentes Pandora "
+
+#~ msgid "No relevant data"
+#~ msgstr "Nenhum dado relevante"
+
+#~ msgid "This agent doesn't have any active monitors"
+#~ msgstr "Este agente não tem nenhum monitor ativado"
+
+#~ msgid "Alert manually validated"
+#~ msgstr "Alerta validado manualmente"
+
+#~ msgid "Host detected by recon server"
+#~ msgstr "Servidor detectado pelo sevidor de reconhecimento"
+
+#~ msgid "Incident successfully owned"
+#~ msgstr "Incidente adquirido com sucesso"
+
+#~ msgid "There was a problem becoming owner of incident"
+#~ msgstr "Houve um problema ao tentar adquirir o incidente"
+
+#~ msgid "Delete incidents"
+#~ msgstr "Remover incidentes"
+
+#~ msgid "Become owner"
+#~ msgstr "Adquirir"
+
+#~ msgid "Login failed"
+#~ msgstr "Falha na autenticação"
+
+#~ msgid "Your IP"
+#~ msgstr "Seu IP"
+
+#~ msgid "Updating"
+#~ msgstr "Atualizando"
+
+#~ msgid "Manage config"
+#~ msgstr "Gerenciar configuração"
+
+#~ msgid "Templates"
+#~ msgstr "Modelos"
+
+#~ msgid "Commands"
+#~ msgstr "Comandos"
+
+#~ msgid "System audit log"
+#~ msgstr "Log de auditoria do sistema"
+
+#~ msgid "Setup"
+#~ msgstr "Configuração"
+
+#~ msgid "Language code for Pandora"
+#~ msgstr "Código de linguagem para o Pandora"
+
+#~ msgid "Example"
+#~ msgstr "Exemplo"
+
+#~ msgid "Default hours for event view"
+#~ msgstr "Número de horas para visualização de evento"
+
+#~ msgid "Time source"
+#~ msgstr "Origem da hora"
+
+#~ msgid "Error adding module"
+#~ msgstr "Erro adicionando o módulo"
+
+#~ msgid "Successfully created"
+#~ msgstr "Criado com sucesso"
+
+#~ msgid "Could not be created"
+#~ msgstr "Não pode ser criado"
+
+#~ msgid "Successfully added"
+#~ msgstr "Adicionado com sucesso"
+
+#~ msgid "Could not be added"
+#~ msgstr "Não pode ser adicionado"
+
+#~ msgid "Modules defined"
+#~ msgstr "Módulos definidos"
+
+#~ msgid "Latest value"
+#~ msgstr "Valor mais recente"
+
+#~ msgid "Add alert"
+#~ msgstr "Alerta adicionado"
+
+#~ msgid "Always"
+#~ msgstr "Sempre"
+
+#~ msgid "On"
+#~ msgstr "Ativado"
+
+#~ msgid "Until"
+#~ msgstr "Até"
+
+#~ msgid "Add action"
+#~ msgstr "Adicionar ação"
+
+#~ msgid "Advanced options"
+#~ msgstr "Opções avançadas"
+
+#~ msgid "matches of the alert"
+#~ msgstr "Combinações do alerta"
+
+#~ msgid "Warning status"
+#~ msgstr "Status do alerta"
+
+#~ msgid "Critical status"
+#~ msgstr "Status crítico"
+
+#~ msgid "Historical data"
+#~ msgstr "Dados históricos"
+
+#~ msgid "Maximum is equal to minimum"
+#~ msgstr "O máximo é igual ao mínimo"
+
+#~ msgid "Filtering completed"
+#~ msgstr "Filtragem completa"
+
+#~ msgid "Purge data out of these limits"
+#~ msgstr "Remover dados fora destes limites"
+
+#~ msgid "Field 1"
+#~ msgstr "Campo 1"
+
+#~ msgid "Field 2"
+#~ msgstr "Campo 2"
+
+#~ msgid "Field 3"
+#~ msgstr "Campo 3"
+
+#~ msgid "Command preview"
+#~ msgstr "Pré-visualização do comando"
+
+#~ msgid "Empty"
+#~ msgstr "Vazio"
+
+#~ msgid "Thursday"
+#~ msgstr "Quinta-feira"
+
+#~ msgid "Every"
+#~ msgstr "Todos"
+
+#~ msgid "and"
+#~ msgstr "e"
+
+#~ msgid "Alert templates"
+#~ msgstr "Modelos de alerta"
+
+#~ msgid "Successfully updated"
+#~ msgstr "Atualizado com sucesso"
+
+#~ msgid "Could not be updated"
+#~ msgstr "Não pode ser atualizado"
+
+#~ msgid "Successfully deleted"
+#~ msgstr "Removido com sucesso"
+
+#~ msgid "Could not be deleted"
+#~ msgstr "Não pode ser removido"
+
+#~ msgid "Step"
+#~ msgstr "Passo"
+
+#~ msgid "Conditions"
+#~ msgstr "Condições"
+
+#~ msgid "Configure alert template"
+#~ msgstr "Configurar outro model"
+
+#~ msgid "Default action"
+#~ msgstr "Ação Padrão"
+
+#~ msgid "Condition type"
+#~ msgstr "Tipo da condição"
+
+#~ msgid "Select"
+#~ msgstr "Selecionar"
+
+#~ msgid "The regular expression is valid"
+#~ msgstr "A expressão regular é válida"
+
+#~ msgid "The regular expression is not valid"
+#~ msgstr "A expressão regular é inválida"
+
+#~ msgid "Finish"
+#~ msgstr "Finalizar"
+
+#~ msgid "Next"
+#~ msgstr "Próximo"
+
+#~ msgid "Alert actions"
+#~ msgstr "Ações dos alertas"
+
+#~ msgid "Alert commands"
+#~ msgstr "Comandos dos alertas"
+
+#~ msgid "Regular expression"
+#~ msgstr "Expressão regular"
+
+#~ msgid "Max and min"
+#~ msgstr "Máx e min"
+
+#~ msgid "Equal to"
+#~ msgstr "Igual a"
+
+#~ msgid "Not equal to"
+#~ msgstr "Não igual a"
+
+#~ msgid "Fires every"
+#~ msgstr "Disparar toda"
+
+#~ msgid "Firing times"
+#~ msgstr "Horas para disparo"
+
+#~ msgid "Alert disabled"
+#~ msgstr "Alerta desativado"
+
+#~ msgid "Search incidents"
+#~ msgstr "Procurar incidentes"
+
+#~ msgid "Modules critical"
+#~ msgstr "Módulos críticos"
+
+#~ msgid "Modules normal"
+#~ msgstr "Módulos normais"
+
+#~ msgid "Modules warning"
+#~ msgstr "Módulos de alerta"
+
+#~ msgid "WARNING"
+#~ msgstr "AVISO"
+
+#~ msgid "CRITICAL"
+#~ msgstr "CRÍTICO"
+
+#~ msgid "NORMAL"
+#~ msgstr "NORMAL"
+
+#~ msgid "Alert(s) validated"
+#~ msgstr "Alerta(s) validadado(s)"
+
+#~ msgid "Error processing alert(s)"
+#~ msgstr "Erro processando alerta(s)"
+
+#~ msgid "At least one module in CRITICAL status"
+#~ msgstr "Ao menos um módulo com status CRÍTICO"
+
+#~ msgid "At least one module in WARNING status"
+#~ msgstr "Ao menos um módulo com status de AVISO"
+
+#~ msgid "Full list of alerts"
+#~ msgstr "Lista completa de alertas"
+
+#~ msgid "Click to filter"
+#~ msgstr "Clique para filtrar"
+
+#~ msgid "Single alerts"
+#~ msgstr "Alertas individuais"
+
+#~ msgid "No simple alerts found"
+#~ msgstr "Nenhum alerta simples encontrado"
+
+#~ msgid "No combined alerts found"
+#~ msgstr "Nenhum alerta combinado encontrado"
+
+#~ msgid "Max. hours old"
+#~ msgstr "Max. horas"

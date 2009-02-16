@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-28 12:09+0100\n"
+"POT-Creation-Date: 2009-02-16 16:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -926,7 +926,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:280
 #: ../../operation/servers/view_server_detail.php:74
 #: ../../operation/visual_console/index.php:36
-#: ../../operation/agentes/status_monitor.php:65
+#: ../../operation/agentes/status_monitor.php:63
 #: ../../operation/agentes/estado_generalagente.php:107
 #: ../../operation/agentes/ver_agente.php:50
 #: ../../operation/agentes/estado_agente.php:56
@@ -1240,7 +1240,7 @@ msgid "Source agent"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:285
-#: ../../godmode/agentes/configurar_agente.php:209
+#: ../../godmode/agentes/configurar_agente.php:208
 #: ../../godmode/agentes/manage_config.php:435
 #: ../../godmode/agentes/manage_config.php:444
 #: ../../godmode/agentes/module_manager.php:31
@@ -1924,7 +1924,7 @@ msgstr ""
 
 #: ../../godmode/groups/group_list.php:109
 #: ../../godmode/groups/configure_group.php:88
-#: ../../godmode/agentes/configurar_agente.php:217
+#: ../../godmode/agentes/configurar_agente.php:216
 #: ../../godmode/agentes/alert_manager.php:33
 #: ../../godmode/agentes/manage_config.php:447
 #: ../../include/functions_reporting.php:628
@@ -2108,11 +2108,11 @@ msgstr ""
 #: ../../include/functions.php:708 ../../include/functions.php:1189
 #: ../../operation/incidents/incident_search.php:37
 #: ../../operation/snmpconsole/snmp_view.php:179
-#: ../../operation/agentes/status_monitor.php:82
-#: ../../operation/agentes/status_monitor.php:88
-#: ../../operation/agentes/status_monitor.php:94
-#: ../../operation/agentes/status_monitor.php:100
-#: ../../operation/agentes/status_monitor.php:112
+#: ../../operation/agentes/status_monitor.php:80
+#: ../../operation/agentes/status_monitor.php:86
+#: ../../operation/agentes/status_monitor.php:92
+#: ../../operation/agentes/status_monitor.php:98
+#: ../../operation/agentes/status_monitor.php:110
 #: ../../operation/events/events.php:246 ../../operation/events/events.php:252
 #: ../../operation/events/events.php:276 ../../operation/events/events.php:355
 msgid "All"
@@ -2123,7 +2123,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:178
 #: ../../operation/incidents/incident.php:208
 #: ../../operation/incidents/incident.php:214
-#: ../../operation/agentes/status_monitor.php:126
+#: ../../operation/agentes/status_monitor.php:124
 #: ../../operation/agentes/estado_agente.php:65
 #: ../../operation/agentes/estado_alertas.php:139
 msgid "Show"
@@ -2390,167 +2390,167 @@ msgstr ""
 msgid "Pandora System Management"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:131
-#: ../../godmode/agentes/configurar_agente.php:502
+#: ../../godmode/agentes/configurar_agente.php:130
+#: ../../godmode/agentes/configurar_agente.php:501
 msgid "No agent name specified"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:134
-#: ../../godmode/agentes/configurar_agente.php:505
+#: ../../godmode/agentes/configurar_agente.php:133
+#: ../../godmode/agentes/configurar_agente.php:504
 msgid "There is already an agent in the database with this name"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:163
+#: ../../godmode/agentes/configurar_agente.php:162
 msgid "There was a problem creating record in tagente_estado table"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:167
+#: ../../godmode/agentes/configurar_agente.php:166
 msgid "There was a problem creating agent_keepalive module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:175
+#: ../../godmode/agentes/configurar_agente.php:174
 msgid "There was a problem creating the agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:186
+#: ../../godmode/agentes/configurar_agente.php:185
 msgid "Setup mode"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:193
+#: ../../godmode/agentes/configurar_agente.php:192
 #: ../../operation/reporting/graph_viewer.php:169
 msgid "View"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:201
+#: ../../godmode/agentes/configurar_agente.php:200
 msgid "Setup Agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:225
+#: ../../godmode/agentes/configurar_agente.php:224
 msgid "Net. Templates"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:238
+#: ../../godmode/agentes/configurar_agente.php:237
 msgid "There was a problem creating agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:241
+#: ../../godmode/agentes/configurar_agente.php:240
 msgid "Agent successfully created"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:259
+#: ../../godmode/agentes/configurar_agente.php:258
 msgid "No data to normalize"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:263
+#: ../../godmode/agentes/configurar_agente.php:262
 msgid "Deleted data above"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:265
+#: ../../godmode/agentes/configurar_agente.php:264
 msgid "Error normalizing module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:278
+#: ../../godmode/agentes/configurar_agente.php:277
 #: ../../operation/snmpconsole/snmp_alert.php:37
 msgid "There was a problem deleting the alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:280
-#: ../../godmode/agentes/configurar_agente.php:296
+#: ../../godmode/agentes/configurar_agente.php:279
+#: ../../godmode/agentes/configurar_agente.php:295
 #: ../../godmode/alerts/modify_alert.php:73
 #: ../../operation/snmpconsole/snmp_alert.php:39
 msgid "Alert successfully deleted"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:294
+#: ../../godmode/agentes/configurar_agente.php:293
 #: ../../godmode/alerts/modify_alert.php:71
 msgid "There was a problem deleting alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:375
+#: ../../godmode/agentes/configurar_agente.php:374
 #: ../../godmode/alerts/modify_alert.php:57
 msgid "There was a problem creating alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:377
+#: ../../godmode/agentes/configurar_agente.php:376
 #: ../../godmode/alerts/modify_alert.php:59
 #: ../../operation/snmpconsole/snmp_alert.php:78
 msgid "Alert successfully created"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:391
+#: ../../godmode/agentes/configurar_agente.php:390
 msgid "There was a problem creating the combined alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:393
+#: ../../godmode/agentes/configurar_agente.php:392
 msgid "Combined alert successfully created"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:475
+#: ../../godmode/agentes/configurar_agente.php:474
 #: ../../godmode/alerts/modify_alert.php:44
 msgid "There was a problem updating alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:477
+#: ../../godmode/agentes/configurar_agente.php:476
 #: ../../godmode/alerts/modify_alert.php:46
 #: ../../operation/snmpconsole/snmp_alert.php:93
 msgid "Alert successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:535
+#: ../../godmode/agentes/configurar_agente.php:534
 msgid "There was a problem updating agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:537
+#: ../../godmode/agentes/configurar_agente.php:536
 msgid "Agent successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:560
+#: ../../godmode/agentes/configurar_agente.php:559
 #: ../../operation/agentes/estado_generalagente.php:45
 msgid "There was a problem loading agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:592
+#: ../../godmode/agentes/configurar_agente.php:591
 msgid "There was a problem loading the module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:628
+#: ../../godmode/agentes/configurar_agente.php:627
 msgid "There was a problem loading the alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:744
+#: ../../godmode/agentes/configurar_agente.php:743
 msgid "There was a problem updating module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:746
+#: ../../godmode/agentes/configurar_agente.php:745
 msgid "Module successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:759
+#: ../../godmode/agentes/configurar_agente.php:758
 msgid "Cannot read from SNMP source"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:761
+#: ../../godmode/agentes/configurar_agente.php:760
 msgid "SNMP source has been scanned"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:793
+#: ../../godmode/agentes/configurar_agente.php:792
 msgid "There was a problem adding module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:813
-#: ../../godmode/agentes/configurar_agente.php:815
+#: ../../godmode/agentes/configurar_agente.php:812
+#: ../../godmode/agentes/configurar_agente.php:814
 msgid "Module added successfully"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:815
+#: ../../godmode/agentes/configurar_agente.php:814
 msgid "Status init unsuccessful"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:863
+#: ../../godmode/agentes/configurar_agente.php:862
 msgid "There was a problem deleting the module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:866
+#: ../../godmode/agentes/configurar_agente.php:865
 msgid "Module deleted successfully"
 msgstr ""
 
@@ -2593,7 +2593,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components_form_wmi.php:92
 #: ../../godmode/modules/manage_network_templates_form.php:140
 #: ../../godmode/modules/manage_network_components_form_network.php:195
-#: ../../operation/agentes/status_monitor.php:106
+#: ../../operation/agentes/status_monitor.php:104
 #: ../../operation/agentes/estado_ultimopaquete.php:52
 #: ../../operation/agentes/estado_monitores.php:37
 #: ../../operation/agentes/sla_view.php:45
@@ -4162,14 +4162,14 @@ msgid "Unknown"
 msgstr ""
 
 #: ../../include/functions.php:1140
-#: ../../operation/agentes/status_monitor.php:229
-#: ../../operation/agentes/status_monitor.php:248
+#: ../../operation/agentes/status_monitor.php:230
+#: ../../operation/agentes/status_monitor.php:249
 msgid "Monitor up"
 msgstr ""
 
 #: ../../include/functions.php:1141
-#: ../../operation/agentes/status_monitor.php:231
-#: ../../operation/agentes/status_monitor.php:250
+#: ../../operation/agentes/status_monitor.php:232
+#: ../../operation/agentes/status_monitor.php:251
 msgid "Monitor down"
 msgstr ""
 
@@ -4891,7 +4891,7 @@ msgid "Validate"
 msgstr ""
 
 #: ../../operation/agentes/networkmap.php:252
-#: ../../operation/agentes/status_monitor.php:33
+#: ../../operation/agentes/status_monitor.php:31
 #: ../../operation/agentes/estado_generalagente.php:54
 #: ../../operation/agentes/estado_grupo.php:32
 #: ../../operation/agentes/estado_ultimopaquete.php:42
@@ -4947,42 +4947,42 @@ msgstr ""
 msgid "Map could not be generated"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:34
+#: ../../operation/agentes/status_monitor.php:32
 #: ../../operation/agentes/estado_monitores.php:33
 msgid "Full list of Monitors"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:78
+#: ../../operation/agentes/status_monitor.php:76
 msgid "Monitor status"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:83
-#: ../../operation/agentes/status_monitor.php:87
-#: ../../operation/agentes/status_monitor.php:93
-#: ../../operation/agentes/status_monitor.php:98
+#: ../../operation/agentes/status_monitor.php:81
+#: ../../operation/agentes/status_monitor.php:85
+#: ../../operation/agentes/status_monitor.php:91
+#: ../../operation/agentes/status_monitor.php:96
 #: ../../operation/agentes/ver_agente.php:79
 msgid "Monitors down"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:84
-#: ../../operation/agentes/status_monitor.php:89
+#: ../../operation/agentes/status_monitor.php:82
+#: ../../operation/agentes/status_monitor.php:87
+#: ../../operation/agentes/status_monitor.php:93
 #: ../../operation/agentes/status_monitor.php:95
-#: ../../operation/agentes/status_monitor.php:97
 msgid "Monitors up"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:85
+#: ../../operation/agentes/status_monitor.php:83
+#: ../../operation/agentes/status_monitor.php:88
 #: ../../operation/agentes/status_monitor.php:90
-#: ../../operation/agentes/status_monitor.php:92
-#: ../../operation/agentes/status_monitor.php:99
+#: ../../operation/agentes/status_monitor.php:97
 msgid "Monitors unknown"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:122
+#: ../../operation/agentes/status_monitor.php:120
 msgid "Free text"
 msgstr ""
 
-#: ../../operation/agentes/status_monitor.php:253
+#: ../../operation/agentes/status_monitor.php:254
 msgid "This group doesn't have any monitor"
 msgstr ""
 

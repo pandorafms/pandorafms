@@ -1,3 +1,11 @@
+2009-02-16  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/pt_BR.po, include/languages/pt_BR.mo,
+	  include/languages/de.po, include/languages/de.mo: Updated
+	  translations from Rosetta.
+
 2009-02-03  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/agentes/status_monitor.php: Use get_user_groups() to

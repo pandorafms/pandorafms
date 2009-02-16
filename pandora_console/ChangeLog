@@ -1,3 +1,10 @@
+2009-02-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Update build after last changes.
+	
+	* operation/events/events.php: Now the legend is shown only if there are
+	events, just a cosmetic change.
+
 2009-02-16  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/jquery.pandora.controls.js: Added to repository.

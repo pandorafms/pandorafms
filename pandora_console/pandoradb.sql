@@ -698,9 +698,11 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `id_report` INTEGER UNSIGNED NOT NULL default 0,
   `id_gs` INTEGER UNSIGNED NULL default NULL,
   `id_agent_module` bigint(14) unsigned NULL default NULL,
-  `type` enum ('simple_graph', 'custom_graph', 'SLA', 'event_report', 'alert_report', 'monitor_report', 'avg_value', 'max_value', 'min_value', 'sumatory', 'general_group_report', 'monitor_health', 'agents_detailed') default 'simple_graph',
+  `type` varchar(30) default 'simple_graph',
   `period` int(11) NOT NULL default 0,
   `order` int (11) NOT NULL default 0,
+  `description` mediumtext, 
+  `id_agent` int(10) unsigned NOT NULL default 0,
   PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -759,6 +761,7 @@ CREATE TABLE IF NOT EXISTS tplugin (
     `net_port_opt` varchar(50) default '',
     `user_opt` varchar(50) default '',
     `pass_opt` varchar(50) default '',
+    `plugin_type` int(2) UNSIGNED NOT NULL default 0,
     PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 
@@ -816,7 +819,6 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
   `id_downtime` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 -- tlocal_component is a repository of local modules for
 -- physical agents on Windows / Unix physical agents

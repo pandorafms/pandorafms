@@ -73,7 +73,6 @@ function add_component_selection ($id_network_component_type) {
 	
 	$component_groups = get_network_component_groups ($id_network_component_type);
 	$data[1] = '<span id="component_group" class="left">';
-	$data[1] .= __('Group').'<br />';
 	$data[1] .= print_select ($component_groups,
 		'network_component_group', '', '', '--'.__('Manual setup').'--', 0,
 		true, false, false);
@@ -83,7 +82,6 @@ function add_component_selection ($id_network_component_type) {
 	$data[1] .= __('No component was found');
 	$data[1] .= '</span>';
 	$data[1] .= '<span id="component" class="invisible right">';
-	$data[1] .= __('Component').'<br />';
 	$data[1] .= print_select (array (), 'network_component', '', '',
 		'---'.__('Manual setup').'---', 0, true);
 	$data[1] .= '</span>';

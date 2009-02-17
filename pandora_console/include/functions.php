@@ -715,6 +715,7 @@ function get_report_types () {
 	$types['general_group_report'] = __('General group report');
 	$types['monitor_health'] = __('Monitor health');
 	$types['agents_detailed'] = __('Agents detailed view');
+	$types['agent_detailed_event'] = __('Agent detailed event');
 
 	return $types;
 }
@@ -756,6 +757,7 @@ function get_report_type_data_source ($type) {
 	case 'min_value':
 	case 10:
 	case 'sumatory':
+	case 'agent_detailed_event':
 		return 'module';
 	case 2:
 	case 'custom_graph':

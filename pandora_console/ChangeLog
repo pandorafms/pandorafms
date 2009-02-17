@@ -1,3 +1,36 @@
+2009-02-17  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: treport_content, changed report type to string to allow
+	new report types without altering DB schema. Added id_agent for supporting
+	reports based on agent ids.  Tplugin new field for plugin type in order to
+	support generic Nagios plugins.
+	
+	* pandoradb_migrate_20_to_21.sql: Updated with last changes.
+	
+	* module_manager_editor_common.php: Removed some ugly labels :-)
+	
+	* reporting_builder.php: New report (Agent detailed and grouped 
+	event/alerts). Added support to add descriptions in each block.
+	
+	* plugin.php: Support for new plugin type option.
+	
+	* config_process.php: Build update.
+	
+	* functions.php: Updated new report type.
+	
+	* functions_db.php: Added support for new report type.
+	
+	* functions_reporting.php: Fixed problem with enterprise. Added new function
+	to support new reports.
+	
+	* events.php: Support for grouping events. Fixed graph problem. Added quick
+	search link to event fulltext.
+	
+	* reporting_viewer.php: Added support for adding descriptions in each block.
+	Also show new report type.
+	
+	* fgraph.php: Fixed problem in event graph.
+
 2009-02-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/login_page.php: Fixed HTML and use print_image function

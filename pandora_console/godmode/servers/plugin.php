@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -41,6 +41,8 @@ if (isset($_GET["update_plugin"])){ // if modified any parameter
 	$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
 	$plugin_user_opt = get_parameter ("form_user_opt", "");
 	$plugin_pass_opt = get_parameter ("form_pass_opt", "");
+	$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
+	
 	$sql_update ="UPDATE tplugin SET 
 	name = '$plugin_name',  
 	description = '$plugin_description', 
@@ -49,6 +51,7 @@ if (isset($_GET["update_plugin"])){ // if modified any parameter
 	net_dst_opt = '$plugin_net_dst_opt', 
 	net_port_opt = '$plugin_net_port_opt', 
 	user_opt = '$plugin_user_opt', 
+	plugin_type = '$plugin_plugin_type',
 	pass_opt = '$plugin_pass_opt' 
 	WHERE id = $plugin_id";
 	$result=mysql_query($sql_update);	
@@ -69,7 +72,9 @@ if (isset($_GET["create_plugin"])){
 	$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
 	$plugin_user_opt = get_parameter ("form_user_opt", "");
 	$plugin_pass_opt = get_parameter ("form_pass_opt", "");
-	$sql_insert ="INSERT tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt) VALUES ('$plugin_name', '$plugin_description', '$plugin_max_timeout', '$plugin_execute', '$plugin_net_dst_opt', '$plugin_net_port_opt', '$plugin_user_opt', '$plugin_pass_opt')";
+	$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
+	
+	$sql_insert ="INSERT tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES ('$plugin_name', '$plugin_description', '$plugin_max_timeout', '$plugin_execute', '$plugin_net_dst_opt', '$plugin_net_port_opt', '$plugin_user_opt', '$plugin_pass_opt', $plugin_plugin_type)";
 	$result=mysql_query($sql_insert);
 	if (! $result){
 		echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
@@ -108,6 +113,7 @@ if ($view != ""){
 	$form_net_port_opt = $plugin ["net_port_opt"];
 	$form_user_opt = $plugin ["user_opt"];
 	$form_pass_opt = $plugin ["pass_opt"];
+	$form_plugin_type = $plugin ["plugin_type"];
 } 
 if ($create != ""){
 	$form_name = "";
@@ -118,6 +124,7 @@ if ($create != ""){
 	$form_net_port_opt = "";
 	$form_user_opt = "";
 	$form_pass_opt = "";
+	$form_plugin_type = 0;
 }
 
 // SHOW THE FORM
@@ -150,6 +157,12 @@ if (($create != "") OR ($view != "")){
 	echo '<td class="datos2">';
 	echo '<input type="text" name="form_execute" size=45 value="'.$form_execute.'"></td>';
 
+	echo '<tr><td class="datos2">'.__('Plugin type');
+	echo '<td class="datos2">';
+	$fields[0]= __("Standard");
+	$fields[1]= __("Nagios");
+	print_select ($fields, "form_plugin_type", $form_plugin_type);
+	
 	echo '<tr><td class="datos">'.__('Max.Timeout');
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'"></td>';
@@ -194,9 +207,10 @@ else {
 	$sql1='SELECT * FROM tplugin ORDER BY name';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result) > 0){
-		echo '<table width="530" cellspacing="4" cellpadding="4" class="databox">';
+		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name');
-		echo "<th>".__('execute');
+		echo "<th>".__('Type');
+		echo "<th>".__('Command');
 		echo "<th>".__('Delete');
 		$color = 0;
 		while ($row=mysql_fetch_array($result)){
@@ -214,6 +228,11 @@ else {
 			echo $row["name"];
 			echo "</a></b>";
 			echo "<td class=$tdcolor>";
+			if ($row["plugin_type"] == 0)
+				echo __('Standard');
+			else
+				echo __('Nagios');
+			echo "<td class=$tdcolor>";
 			echo $row["execute"];
 			echo "<td class=$tdcolor>";
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'><img src='images/cross.png' border=0></a>";
@@ -223,7 +242,7 @@ else {
 		echo '<div class="nf">'. __('There are no plugins in the system');
 		echo "<br>";
 	}
-	echo "<table width=530>";
+	echo "<table width=730>";
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
 	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";

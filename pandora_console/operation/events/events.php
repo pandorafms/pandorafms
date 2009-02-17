@@ -3,7 +3,7 @@
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
-// Please see http://pandora.sourceforge.net for full contribution list
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $groups = get_user_groups ($config["id_user"], "IR");
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = (int) get_parameter ("id_user_ack", 0);
-$group_rep = (int) get_parameter ("group_rep", 0);
+$group_rep = (int) get_parameter ("group_rep", 1);
 
 //Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
@@ -99,7 +99,7 @@ if ($id_user_ack  != 0)
 $unixtime = date("U") - ($event_view_hr*60*60);
 $sql_post .= " AND utimestamp > $unixtime ";
 
-$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event&pagination=$pagination";
+$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event&pagination=$pagination&group_rep=$group_rep";
 
 echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp";
 
@@ -209,7 +209,10 @@ echo "</td>";
 echo "<td>";
 echo __("Repeated");
 echo "</td><td>";
-print_checkbox ("group_rep", 1, $group_rep, false);
+
+$repeated_sel[0] = __("All events");
+$repeated_sel[1] = __("Group events");
+print_select ($repeated_sel, "group_rep", $group_rep);
 echo "</td></tr>";
 
 echo "<tr><td colspan=4 align=right>";
@@ -233,7 +236,7 @@ echo '</div><div style="clear:both">&nbsp;</div>';
 if ($group_rep == 0)
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 else 
-	$sql = "SELECT *, COUNT(*) AS event_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
+	$sql = "SELECT *, COUNT(*) AS event_rep, max(timestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
 	
 $result = get_db_all_rows_sql ($sql);
 if ($group_rep == 0)
@@ -285,7 +288,10 @@ $table->align[4] = 'center';
 $table->head[5] = __('Group');
 $table->align[5] = 'center';
 
-$table->head[6] = __('User ID');
+if ($group_rep == 0)
+	$table->head[6] = __('User ID');
+else
+	$table->head[6] = __('Rep');
 $table->align[6] = 'center';
 
 $table->head[7] = __('Timestamp');
@@ -352,15 +358,13 @@ foreach ($result as $row) {
 	
 	// Event description
 	$data[2] = '<span title="'.$row["evento"].'" class="f9">';
-	if (strlen ($row["evento"]) > 39) {
-		$data[2] .= substr ($row["evento"], 0, 37)."...";
+	$data[2] .= "<a href='$url&group_rep=0&id_agent=".$row["id_agente"]."&pure=".$config["pure"]."&search=".$row["evento"]."'>";
+	if (strlen ($row["evento"]) > 50) {
+		$data[2] .= substr ($row["evento"], 0, 50)."...";
 	} else {
 		$data[2] .= $row["evento"];
 	}
-	$data[2] .= '</span>';
-
-	if ($group_rep == 1)
-		$data[2] .= " ( ".$row["event_rep"] . " ) ";
+	$data[2] .= '</a></span>';
 
 	if ($row["event_type"] == "system") {
 		$data[3] = __('System');
@@ -388,23 +392,24 @@ foreach ($result as $row) {
 	
 	$data[5] = print_group_icon ($row["id_grupo"], true);
 
-	if (!empty ($row["estado"])) {
-		if ($row["id_usuario"] != '0' && $row["id_usuario"] != ''){
-		  $data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
+	if ($group_rep == 1)
+		$data[6] = $row["event_rep"];
+	else {
+		if (!empty ($row["estado"])) {
+			if ($row["id_usuario"] != '0' && $row["id_usuario"] != ''){
+			  $data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
+			} else {
+			  $data[6]=__('System');
+			}
 		} else {
-		  $data[6]=__('System');
+			$data[6] = '';
 		}
-	} else {
-		$data[6] = '';
 	}
-
+	
 	//Time	
 	
 	if ($group_rep == 1){
-		if ($row["event_rep"] == 1)
-			$data[7] = print_timestamp ($row["timestamp"], true);
-		else
-			$data[7] = print_timestamp (get_db_sql ("SELECT timestamp FROM tevento WHERE id_agentmodule = ".$row["id_agentmodule"]." AND evento = '".$row["evento"]."' ORDER BY utimestamp DESC LIMIT 1"), true);
+		$data[7] = print_timestamp ($row['timestamp_rep'], true);
 	} else {
 		$data[7] = print_timestamp ($row["timestamp"], true);
 	}
@@ -430,20 +435,23 @@ foreach ($result as $row) {
 	array_push ($table->data, $data);
 }
 
-if (empty ($table->data)) {
-	echo '<div class="nf">'.__('No events').'</div>';
-} else {
+
 	echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'">';
-	print_table ($table);
-	echo '<div style="width:750px; text-align:right">';
+	if (!empty ($table->data)) 
+		print_table ($table);
+	if (empty ($table->data)) 
+		echo '<div style="visibility:hidden; width:750px; text-align:right">';
+	else
+		echo '<div style="width:750px; text-align:right">';
+		
 	if (give_acl ($config["id_user"], 0, "IW") == 1) {
 		print_submit_button (__('Validate'), 'validate', false, 'class="sub ok"');
 	}
 	if (give_acl ($config["id_user"], 0,"IM") == 1) {
 		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
-	echo '</div></form>
-	<script language="JavaScript" type="text/javascript">
+	echo '</div></form>';
+	echo '<script language="JavaScript" type="text/javascript">
 		$(document).ready( function() {
 			$("INPUT[name=\'allbox\']").click( function() {
 				$("INPUT[name=\'eventid[]\']").each( function() {
@@ -456,23 +464,28 @@ if (empty ($table->data)) {
 			});
 		});
 	</script>';
-	if ($config["pure"]== 0) {
-		echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-		echo '<h3>'.__('Status').'</h3>';
-		echo '<img src="images/dot_green.png" /> - '.__('Validated event');
-		echo '<br />';
-		echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
+	if (!empty ($table->data)){
+		if ($config["pure"]== 0) {
+			echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+			echo '<h3>'.__('Status').'</h3>';
+			echo '<img src="images/pixel_green.png" width="10" height="10" /> - '.__('Validated event');
+			echo '<br />';
+			echo '<img src="images/pixel_red.png" width="10" height="10" /> - '.__('Not validated event');
 
-		echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-		echo '<h3>'.__('Action').'</h3>';
-		echo '<img src="images/ok.png" /> - '.__('Validate event');
-		echo '<br />';
-		echo '<img src="images/cross.png" /> - '.__('Delete event');
-		echo '<br />';
-		echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
-		echo '</div><div style="clear:both;">&nbsp;</div>';
-	}
-}
+			echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+			echo '<h3>'.__('Action').'</h3>';
+			echo '<img src="images/ok.png" /> - '.__('Validate event');
+			echo '<br />';
+			echo '<img src="images/cross.png" /> - '.__('Delete event');
+			echo '<br />';
+			echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
+			echo '</div><div style="clear:both;">&nbsp;</div>';
+		}
+	} 
+	
+	else 
+		echo '<div class="nf">'.__('No events').'</div>';
+
 unset ($table);
 
 ?>

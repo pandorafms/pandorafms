@@ -137,7 +137,8 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 	} else {
 		require_once ('general/login_page.php');
 		audit_db ("system", $REMOTE_ADDR, "Logon Failed (loginhash", "");
-		exit;
+		while (@ob_end_flush ());
+		exit ("</html>");
 	}
 } elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	// Login process 
@@ -165,13 +166,14 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 		$login_failed = true;
 		require_once ('general/login_page.php');
 		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
-		exit;
+		while (@ob_end_flush ());
+		exit ("</html>");
 	}
 } elseif (! isset ($_SESSION['id_usuario'])) {
 	// There is no user connected
 	require_once ('general/login_page.php');
-	echo '</body></html>';
-	exit;
+	while (@ob_end_flush ());
+	exit ("</html>");
 } else {
 	// There is session for id_usuario
 	$config["id_user"] = $_SESSION["id_usuario"];
@@ -183,7 +185,8 @@ if (isset ($_GET["bye"])) {
 	$iduser = $_SESSION["id_usuario"];
 	logoff_db ($iduser, $REMOTE_ADDR);
 	session_unregister ("id_usuario");
-	exit;
+	while (@ob_end_flush ());
+	exit ("</html>");
 }
 
 // http://es2.php.net/manual/en/ref.session.php#64525

@@ -22,7 +22,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-echo '<h2>'.__('Pandora users').' &gt '.__('Users defined in Pandora').'</h2>';
+echo '<h2>'.__('Pandora users').' &gt; '.__('Users defined in Pandora').'</h2>';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -49,7 +49,7 @@ if (give_acl ($config["id_user"], 0, "UM") == 1) {
 }
 
 foreach ($info as $user_id => $user_info) {
-	$data[0] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$user_id.'">'.$user_id.'</a>';
+	$data[0] = '<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;id='.$user_id.'">'.$user_id.'</a>';
 	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
 	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
 	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';
@@ -59,14 +59,14 @@ foreach ($info as $user_id => $user_info) {
 	$data[2] = print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
-		$data[3] = '<img src="images/user_suit.png" />&nbsp;';
+		$data[3] = print_image ("images/user_suit.png", true, array ("alt" => __('Admin'), "title" => __('Administrator'))).'&nbsp;';
 	} else {
-		$data[3] = '<img src="images/user_green.png" />&nbsp;';
+		$data[3] = print_image ("images/user_green.png", true, array ("alt" => __('User'), "title" => __('Standard User'))).'&nbsp;';
 	}
 	
 	$data[3] .= '<a href="#" class="tip"><span>';
 	$result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
-	if ($result !== false) {
+	if (!empty ($result)) {
 		foreach ($result as $row) {
 			$data[3] .= get_profile_name ($row["id_perfil"]);
 			$data[3] .= " / ";
@@ -79,6 +79,7 @@ foreach ($info as $user_id => $user_info) {
 	$data[3] .= "</span></a>";
 	
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
+	
 	array_push ($table->data, $data);
 }
 

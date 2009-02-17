@@ -1,3 +1,22 @@
+2009-02-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/login_page.php: Fixed HTML and use print_image function
+	
+	* include/functions.php: Added version compare for alternative to
+	double encoding HTML for PHP < 5.2.3
+	
+	* include/functions_ui.php: Check for empty string on print_string_substr
+	so we don't print empty spans
+	
+	* include/functions_html.php: Better validation and correct output on
+	print_input_text_extended. Now accepts an array for attributes
+	
+	* operations/user/user.php, operations/user/user_edit.php, 
+	godmode/user/user_list.php: Small cosmetic fixes
+	
+	* index.php: flush and print closing html tag on exits. This prevents
+	automatic flushing to print tags after </html>.
+
 2009-02-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager_editor.php: Added

@@ -65,7 +65,7 @@ $info = array ();
 $info = get_users ();
 
 foreach ($info as $user_id => $user_info) {
-	$data[0] = '<a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id='.$user_id.'">'.$user_id.'</a>';
+	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$user_id.'">'.$user_id.'</a>';
 	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
 	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
 	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';
@@ -75,9 +75,9 @@ foreach ($info as $user_id => $user_info) {
 	$data[2] = print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
-		$data[3] = '<img src="images/user_suit.png" />&nbsp;';
+		$data[3] = print_image ("images/user_suit.png", true, array ("alt" => __('Admin'), "title" => __('Administrator'))).'&nbsp;';
 	} else {
-		$data[3] = '<img src="images/user_green.png" />&nbsp;';
+		$data[3] = print_image ("images/user_green.png", true, array ("alt" => __('User'), "title" => __('Standard User'))).'&nbsp;';
 	}
 	
 	$data[3] .= '<a href="#" class="tip"><span>';
@@ -103,7 +103,7 @@ foreach ($info as $user_id => $user_info) {
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1">';
+echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;user_del=1">';
 print_table ($table);
 echo '</form>';
 unset ($table);
@@ -111,7 +111,7 @@ unset ($table);
 	
 echo '<div style="width:680px; text-align:right">';
 if ($config["admin_can_add_user"] !== false) {
-	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&create=1">';
+	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;create=1">';
 	print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
 	echo '</form>';
 } else {
@@ -170,7 +170,7 @@ foreach ($profiles as $profile) {
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/user_list&profile_del=1">';
+echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;profile_del=1">';
 print_table ($table);
 echo '</form>';
 unset ($table);

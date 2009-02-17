@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 // 
 // This program is free software; you can redistribute it and/or
@@ -136,16 +136,18 @@ if ($add_content) {
 	$id_agent_module = (int) get_parameter ('id_module');
 	$period = (int) get_parameter ('period');
 	$type = (string) get_parameter ('type');
+	$id_agent = (int) get_parameter ('id_agent',0);
 	$id_custom_graph = (int) get_parameter ('id_custom_graph');
+	$module_description = (string) get_parameter ('module_description', '');
 	
 	$order = (int) get_db_value ('COUNT(*)', 'treport_content', 'id_report', $id_report);
 
 	$sql = sprintf ('INSERT INTO treport_content (id_report, id_gs, id_agent_module,
-			`order`, type, period) 
-			VALUES (%d, %s, %s, %d, "%s", %d)',
+			`order`, type, period, description, id_agent) 
+			VALUES (%d, %s, %s, %d, "%s", %d, "%s", %d)',
 			$id_report, $id_custom_graph ? $id_custom_graph : "NULL",
 			$id_agent_module ? $id_agent_module : "NULL",
-			$order, $type, $period * 3600);
+			$order, $type, $period * 3600, $module_description, $id_agent);
 	$result = process_sql ($sql);
 
 	if ($result !== false) {
@@ -159,6 +161,7 @@ if ($add_content) {
 		$sla_max = 0;
 		$sla_min = 0;
 		$sla_limit = 0;
+		$module_description = "";
 	} else {
 		echo '<h3 class="error">'.__('There was a problem creating reporting')."</h3>";
 		/* Do not unset so the values are kept in the form */
@@ -334,6 +337,9 @@ if ($edit_sla_report_content) {
 	$table->style[0] = 'font-weight: bold';
 	$table->data[0][0] = __('Report name');
 	$table->data[0][1] = print_input_text ('report_name', $report_name, '', 35, 150, true);
+	
+	$table->data[0][1] .= "&nbsp;&nbsp;<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report' title='".__('View report')."'><img src='images/reporting.png'></a>";
+	
 	$table->data[1][0] = __('Group');
 	if ($report_id_group) {
 		/* Changing the group is not allowed. */
@@ -418,6 +424,10 @@ if ($edit_sla_report_content) {
 		$table->data[4][1] = print_select_from_sql ('SELECT id_graph, name FROM tgraph',
 							'id_custom_graph', 0, '', '--', 0, true);
 
+		$module_description = "";
+		$table->data[5][0] = __('Description');
+		$table->data[5][1] = print_textarea ("module_description", 3, 35, $module_description, 'height: 50px;', true) ;
+
 		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
 		print_table ($table);
 		echo '<div class="action-buttons" style="width: 500px;">';
@@ -470,10 +480,11 @@ if ($edit_sla_report_content) {
 							'"><img src="images/down.png" title="'.__('Down').'"></a>';
 				}
 				$data[1] = get_report_name ($report_content['type']);
-				$data[2] = '--';
+				$data[2] = get_agent_name ($report_content['id_agent']);
 				$data[3] = '--';
 				if (get_report_type_data_source ($report_content['type']) == 'module') {
-					$data[2] = strtolower (get_agentmodule_agent_name ($report_content['id_agent_module']));
+					if ($report_content['id_agent_module'] > 0)
+						$data[2] = strtolower (get_agentmodule_agent_name ($report_content['id_agent_module']));
 					$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
 				}
 				$data[4] = human_time_description ($report_content['period']);
@@ -597,7 +608,7 @@ function report_type_changed () {
 						$(custom_graph_inputs).fadeIn ('normal');
 					});
 					
-					break;
+					break;	
 				case 'sla':
 				case 'agent-group':
 					$(module_inputs).fadeOut ('normal');

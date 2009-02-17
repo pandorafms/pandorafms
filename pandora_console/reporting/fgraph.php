@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -1263,7 +1263,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	$legend = array();
 	$loop = 0;
 
-	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ");	
+	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
 	$url = str_ireplace ($badstrings,"",$url); //remove bad strings from the query so queries like ; DELETE FROM  don't pass
 		
 	//This will give the distinct id_agente, give the id_grupo that goes
@@ -1284,9 +1284,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 			$legend[5] = __('Other')." (".$data[5].")";
 		} else {
 			if ($row["id_agente"] == 0) {
-				$legend = __('SYSTEM')." (".$row["count"].")";
+				$legend[0] = __('SYSTEM')." (".$row["count"].")";
 			} else {
-				$legend[] = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+				$legend[] = mb_substr (get_agent_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";				
 			}
 			$data[] = $row["count"];
 		}

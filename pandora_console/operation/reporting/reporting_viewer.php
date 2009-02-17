@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -138,6 +138,14 @@ foreach ($contents as $content) {
 		$data[2] = '<h4>'.human_time_description ($content['period']).'</h4>';
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[2][0] = 4;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
 		$data[0] = '<img src="reporting/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
 		array_push ($table->data, $data);
@@ -151,6 +159,14 @@ foreach ($contents as $content) {
 		$data[1] = "<h4>".$graph["name"]."</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 4;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
 		
 		$result = get_db_all_rows_field_filter ("tgraph_source", "id_graph", $content['id_gs']);
 		$modules = array ();
@@ -182,11 +198,19 @@ foreach ($contents as $content) {
 		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
 		$n = array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
 							'id_report_content', $content['id_rc']);
 		if ($slas === false) {
 			$data = array ();
-			$table->colspan[1][0] = 3;
+			$table->colspan[2][0] = 3;
 			$data[0] = __('There are no SLAs defined');
 			array_push ($table->data, $data);
 			$slas = array ();
@@ -196,7 +220,7 @@ foreach ($contents as $content) {
 		foreach ($slas as $sla) {
 			$data = array ();
 			
-			$table->colspan[$n][0] = 2;
+			$table->colspan[$n][0] = 3;
 			$data[0] = '<strong>'.__('Agent')."</strong> : ";
 			$data[0] .= get_agentmodule_agent_name ($sla['id_agent_module'])."<br />";
 			$data[0] .= '<strong>'.__('Module')."</strong> : ";
@@ -239,14 +263,21 @@ foreach ($contents as $content) {
 		break;
 	case 4:
 	case 'event_report':
-		$table->colspan[0][0] = 2;
 		$id_agent = dame_agente_id ($agent_name);
 		$data = array ();
 		$data[0] = "<h4>".__('Event report')."</h4>";
 		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
-		$table->colspan[1][0] = 3;
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$table->colspan[2][0] = 3;
 		$data = array ();
 		$table_report = event_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$table_report->class = 'databox';
@@ -263,8 +294,16 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
-		$table->colspan[1][0] = 3;
+		$table->colspan[2][0] = 3;
 		$data[0] = alert_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
 		
@@ -276,6 +315,14 @@ foreach ($contents as $content) {
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
 		
 		$data = array ();
 		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
@@ -295,8 +342,16 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
-		$table->colspan[1][0] = 2;
+		$table->colspan[2][0] = 3;
 		$value = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
@@ -310,8 +365,16 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
-		$table->colspan[1][0] = 2;
+		$table->colspan[2][0] = 3;
 		$value = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
@@ -324,6 +387,14 @@ foreach ($contents as $content) {
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
@@ -340,6 +411,14 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
 		$table->colspan[1][0] = 2;
 		$value = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime));
@@ -353,6 +432,14 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".__('Group')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
@@ -368,6 +455,14 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 4;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
 		$data = array ();
 		$table->colspan[1][0] = 4;
 		$data[0] = monitor_health_reporting ($report['id_group'], $content['period'], $datetime, true);
@@ -380,15 +475,44 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".__('Agents detailed view')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
-		$table->colspan[0][0] = 2;
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$table->colspan[0][0] = 2;
 		$data = array ();
 		$table->colspan[1][0] = 3;
 		$data[0] = get_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
+		break;
+
+	case 'agent_detailed_event':
+		$data = array ();
+		$data[0] = "<h4>".__('Agent detailed event')."</h4>";
+		$data[1] = "<h4>".get_agent_name($content['id_agent'])."</h4>";
+		array_push ($table->data, $data);
 		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[2][0] = 3;
+		$data[0] = get_agents_detailed_event_reporting ($content['id_agent'], $content['period'], $datetime);
+		array_push ($table->data, $data);
 		break;
 	}
+	
+	
 	print_table ($table);
 	flush ();
 }

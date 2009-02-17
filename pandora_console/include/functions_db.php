@@ -715,6 +715,30 @@ function get_group_events ($id_group, $period, $date) {
 }
 
 /** 
+ * Get all the events happened in an Agent during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ * 
+ * @param int $id_agent Agent id to get events.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ * 
+ * @return array An array with all the events happened.
+ */
+function get_agent_events ($id_agent, $period, $date) {
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ('SELECT evento,event_type,criticity, count(*) as count_rep, max(timestamp) AS time2
+		FROM tevento WHERE id_agente = %d AND utimestamp > %d AND utimestamp <=%d 
+		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent, 
+		$datelimit, $date);
+
+	return get_db_all_rows_sql ($sql);
+}
+
+
+
+/** 
  * Get all the monitors defined in an agent.
  * 
  * @param int $id_agent Agent id to get all the monitors.

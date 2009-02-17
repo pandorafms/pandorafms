@@ -40,7 +40,7 @@ echo '</div>';
 $sql = sprintf ("SELECT COUNT(id_mensaje) FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';", $config["id_user"]);
 $resultado = get_db_sql ($sql);
 if ($resultado > 0) {
-	echo '<h2>'.__('You have ').'<a href="index.php?sec=messages&sec2=operation/messages/message">'.$resultado.
+	echo '<h2>'.__('You have ').'<a href="index.php?sec=messages&amp;sec2=operation/messages/message">'.$resultado.
 	'<img src="images/email.png" border="0" />'.__(' unread message(s).').'</a></h2>';
 }
 

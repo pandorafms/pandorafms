@@ -1,3 +1,13 @@
+2009-02-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/login_ok.php, operation/visual_console/index.php,
+	operation/visual_console/render_view.php: Small cosmetic fixes
+	
+	* include/functions_visual_map.php: Cosmetic fixes and put the if/elseif
+	statements in a simpler switch statement
+	
+	* include/functions_db.php: dame_grupo_icono is now get_group_icon
+
 2009-02-17  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: treport_content, changed report type to string to allow

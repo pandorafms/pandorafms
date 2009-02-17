@@ -466,9 +466,19 @@ function get_reports ($id_user) {
  * 
  * @return string Icon path of the given group
  */
-function dame_grupo_icono ($id_group) {
+function get_group_icon ($id_group) {
 	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 }
+
+
+/** 
+ * DEPRECATED in favor of get_group_icon
+ */
+function dame_grupo_icono ($id_group) {
+	return get_group_icon ($id_group);
+}
+
+
 
 /** 
  * Get agent id from an agent name.

@@ -29,7 +29,7 @@ $layouts = get_db_all_rows_in_table ('tlayout','name');
 if ($layouts === false)
 	$layouts = array ();
 
-$table->width = '500px';
+$table->width = 500;
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -44,11 +44,10 @@ foreach ($layouts as $layout) {
 	}
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.
-		$layout['id'].'">'.$layout['name'].'</a>';
-	$data[1] = '<img src="images/'.dame_grupo_icono($layout["id_group"]).'.png" 
-		title="'.get_group_name ($layout["id_group"]).'"> ';
-	$data[1] .= get_group_name ($layout["id_group"]);
+	$data[0] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.
+		$layout['id'].'">'.$layout['name'].'</a> ';
+	$data[1] = print_image ("images/".get_group_icon ($layout["id_group"]).".png", true, array ("title" => get_group_name ($layout["id_group"])));
+	$data[1] .= " ".get_group_name ($layout["id_group"]);
 	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
 		
 	array_push ($table->data, $data);

@@ -58,12 +58,12 @@ if (! give_acl ($config["id_user"], $id_group, "AR")) {
 echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0) {
-	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&refr=$refr&pure=1'>";
-	echo "<img src='images/monitor.png' title='".__('Full screen mode')."'>";
+	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$refr.'&amp;pure=1">';
+	print_image ("images/monitor.png", false, array ("title" => __('Full screen mode')));
 	echo "</a>";
 } else {
-	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&pure=0&refr=$refr'>";
-	echo "<img src='images/monitor.png' title='".__('Back to normal mode')."'>";
+	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$refr.'">';
+	print_image ("images/monitor.png", false, array ("title" => __('Back to normal mode')));
 	echo "</a>";
 }
 
@@ -71,38 +71,34 @@ echo '</h1>';
 
 print_pandora_visual_map ($id_layout);
 
-
 $values = array ();
-$values[5] = "5 ". __('Seconds');
-$values[30] = "30 ". __('Seconds');
+$values[5] = "5 ". __('seconds');
+$values[30] = "30 ". __('seconds');
 $values[60] = "1 ". __('minutes');
 $values[120] = "2 ". __('minutes');
 $values[300] = "5 ". __('minutes');
 $values[600] = "10 ". __('minutes');
 $values[1800] = "30 ". __('minutes');
 
-$table->width = '500px';
+$table->width = 500;
 $table->data = array ();
 $table->data[0][0] = __('Autorefresh time');
-$table->data[0][1] = print_select ($values, 'refr', $refr, '', 'N/A', 0, true);
+$table->data[0][1] = print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
 $table->data[0][2] = print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 
-echo "<div style='height:30px'>";
-echo "</div>";
+echo '<div style="height:30px">&nbsp;</div>';
 
 if ($config['pure'] && $refr != 0) {
-	echo '<div id="countdown"><br />';
-	echo '</div>';
+	echo '<div id="countdown"><br /></div>';
 }
 
-echo "<div style='height:30px'>";
-echo "</div>";
+echo '<div style="height:30px">&nbsp;</div>';
 
-echo '<form method="post" action="index.php?sec=visualc&sec2=operation/visual_console/render_view">';
+echo '<form method="post" action="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view">';
 print_input_hidden ('pure', $config["pure"]);
 print_input_hidden ('id', $id_layout);
 print_table ($table);
-echo "</form>";
+echo '</form>';
 
 if ($config["pure"] && $refr != 0) {
 	$config['jquery'][] = 'countdown';
@@ -111,6 +107,7 @@ if ($config["pure"] && $refr != 0) {
 $config['js'][] = 'pandora_visual_console';
 ?>
 <script language="javascript" type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
 <?php if ($config["pure"] && $refr != 0): ?>
 	t = new Date();
@@ -119,4 +116,5 @@ $(document).ready (function () {
 <?php endif; ?>
 	draw_lines (lines, 'layout_map');
 });
+/* ]]> */
 </script>

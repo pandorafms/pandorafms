@@ -53,7 +53,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$attributes .= ' disabled="disabled"';
 	}
 
-	$output .= '<select id="'.$name.'" name="'.$name.'"'.$attributes.'>';
+	$output .= '<select id="select-'.$name.'" name="'.$name.'"'.$attributes.'>';
 
 	if ($nothing != '') {
 		$output .= '<option value="'.$nothing_value.'"';
@@ -61,7 +61,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			$output .= ' selected="selected"';
 		}
 		//You should pass a translated string already
-		$output .= '>'.$nothing."</option>";
+		$output .= '>'.$nothing.'</option>';
 	}
 
 	if (!empty ($fields)) {

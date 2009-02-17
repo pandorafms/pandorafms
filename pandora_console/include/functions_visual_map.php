@@ -29,7 +29,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
-	echo "<div id='layout_map' style='z-index: 0; position:relative; background: url(images/console/background/".$layout["background"]."); width:".$layout["width"]."px; height:".$layout["height"]."px;'>";
+	echo '<div id="layout_map" style="z-index: 0; position:relative; background: url(images/console/background/'.$layout["background"].'); width:'.$layout["width"].'px; height:'.$layout["height"].'px;">';
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
@@ -98,56 +98,53 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				
 					// Link to an agent
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
-						echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent'>";
+						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 						
 					// Link to a map
 					} elseif ($layout_data['id_layout_linked']>0){
-						echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&pure='.$config["pure"].'&id='.$layout_data['id_layout_linked'].'">';
+						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
 						
 					// A void object
 					} else { 
-						echo "<a href='#'>";
+						echo '<a href="#">';
 					}
 				}
 				
-				// Critical (BAD) or ALERT
-				if (($status == 1) OR ($status == 4)){
-					if ($layout_data['width'] != "" && $layout_data['width'] != 0)
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_bad.png" width="'.$layout_data['width'].'" height="'.$layout_data['height'].'" title="'.$layout_data['label'].'">';
-					else
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_bad.png" 
-							title="'.$layout_data['label'].'">';
-							
-				// Normal (OK)
-				} elseif ($status == 0){
-					if ($layout_data['width'] != "" && $layout_data['width'] != 0)
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_ok.png" width="'.$layout_data['width'].'" 
-							height="'.$layout_data['height'].'" title="'.$layout_data['label'].'">';
-					else
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_ok.png" 
-							title="'.$layout_data['label'].'">';
-						
-				// Warning
-				} elseif ($status == 2){
-					if ($layout_data['width'] != "" && $layout_data['width'] != 0)
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_warning.png" width="'.$layout_data['width'].'" 
-							height="'.$layout_data['height'].'" title="'.$layout_data['label'].'">';
-					else
-						echo '<img src="images/console/icons/'.$layout_data['image'].'_warning.png" 
-							title="'.$layout_data['label'].'">';
-							
-				// Other (GREY)
-				} else {
-					if ($layout_data['width'] != "" && $layout_data['width'] != 0)
-						echo '<img src="images/console/icons/'.$layout_data['image'].'.png" width="'.$layout_data['width'].'" 
-							height="'.$layout_data['height'].'" title="'.$layout_data['label'].'">';
-					else
-						echo '<img src="images/console/icons/'.$layout_data['image'].'.png" 
-							title="'.$layout_data['label'].'">';
+				$img_style = array ();
+				$img_style["title"] = $layout_data["label"];
+				
+				if (!empty ($layout_data["width"])) {
+					$img_style["width"] = $layout_data["width"];
+				} 
+				if (!empty ($layout_data["height"])) {
+					$img_style["height"] = $layout_data["height"];
 				}
+				
+				$img = "images/console/icons/".$layout_data["image"];
+				switch ($status) {
+				case 1:
+				case 4:
+					//Critical (BAD or ALERT)
+					$img .= "_bad.png";
+					break;
+				case 0:
+					//Normal (OK)
+					$img .= "_ok.png";
+					break;
+				case 2:
+					//Warning
+					$img .= "_warning.png";
+					break;
+				default:
+					$img .= ".png";
+					// Default is Grey (Other)
+				}
+				
+				print_image ($img, false, $img_style);
+		
 				echo "</a>";
 				
-				// Draw label
+				// Print label
 				echo "<br />";
 				echo $layout_data['label'];
 				echo "</div>";
@@ -160,12 +157,12 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				if ($show_links) {
 					if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
-						echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'&tab=data">';
+						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'&amp;tab=data">';
 					} else {
-						echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&pure='.$config["pure"].'&id='.$layout_data['id_layout_linked'].'">';
+						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 					}
 				}
-				echo '<img src="reporting/fgraph.php?tipo=sparse&id='.$layout_data['id_agente_modulo'].'&label='.$layout_data['label'].'&height='.$layout_data['height'].'&width='.$layout_data['width'].'&period='.$layout_data['period'].'" title="'.$layout_data['label'].'" border="0">';
+				print_image ("reporting/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".$layout_data['label']."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 				echo "</a>";
 				echo "</div>";
 				
@@ -194,13 +191,14 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		/* If you want lines in the map, call using Javascript:
 		 draw_lines (lines, id_div);
 		 on body load, where id_div is the id of the div which holds the map */
-		echo "\n".'<script type="text/javascript">'."\n";
+		echo '<script type="text/javascript">/* <![CDATA[ */'."\n";
+		
 		echo 'var lines = Array ();'."\n";
 		
 		foreach ($lines as $line) {
-			echo 'lines.push (eval ('.json_encode ($line)."));\n";
+			echo 'lines.push (eval ('.json_encode ($line).'));'."\n";
 		}
-		echo '</script>'."\n";
+		echo '/* ]]> */</script>';
 	}
 	// End main div
 	echo "</div>";

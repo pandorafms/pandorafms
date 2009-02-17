@@ -1712,6 +1712,10 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
+		if (is_numeric ($field))
+			/* Avoid numeric field names */
+			continue;
+		
 		if ($field[0] != "`") {
 			$field = "`".$field."`";
 		}

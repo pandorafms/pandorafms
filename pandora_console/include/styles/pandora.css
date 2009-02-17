@@ -764,6 +764,15 @@ table#filter_compound_table select,
 table#filter_compound_table #text-search {
 	width: 100%;
 }
+table#simple select#network_component_group,
+table#simple select#network_component {
+	width: 90%;
+}
+table#simple span#component_group,
+table#simple span#component {
+	width: 45%;
+	font-style: italic;
+}
 .clickable {
 	cursor: pointer;
 }
@@ -845,8 +854,8 @@ ol.steps li.visited {
 }
 
 /* Common useful styles */
-.left { clear: left; }
-.right { clear: right; }
+.left { clear: left; float: left;}
+.right { clear: right; float: right;}
 .clear { clear:both; }
 .top {
 	vertical-align: top;

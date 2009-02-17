@@ -1,3 +1,28 @@
+2009-02-17  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Added
+	get_module_components operation to AJAX interface. Avoid error
+	reporting on snmprealwalk so the JSON doesn't fail. Added support for
+	component group selection. Do nothing if the selected component is
+	zero.
+
+	* godmode/agentes/module_manager_editor_common.php: Added
+	add_component_selection() which makes the task of adding a module
+	component to the editor easier and common. It also now filters based
+	on component groups first.
+
+	* godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php: Use
+	add_component_selection() instead of duping the code.
+
+	* include/styles/pandora.css: Added style to component elements.
+
+	* include/functions_db.php: Avoid numeric field names on
+	format_array_to_where_clause_sql().
+
+	* include/functions_modules.php: Added get_network_components() and
+	get_network_component_groups().
+
 2009-02-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Update build after last changes.

@@ -23,24 +23,14 @@ if (!isset ($id_agente)) {
 
 $extra_title = __('WMI server module');
 
-$data = array ();
-$data[0] = __('Using module component').' ';
-$data[0] .= pandora_help ('network_component', true);
+define ('ID_NETWORK_COMPONENT_TYPE', 6);
 
 if (empty ($update_module_id)) {
-	$data[1] = print_select_from_sql ('SELECT id_nc, name FROM tnetwork_component WHERE id_modulo = 6',
-		'network_component', '', '', '---'.__('Manual setup').'---', 0, true);
-	$data[1] .= ' <span id="component_loading" class="invisible">';
-	$data[1] .= '<img src="images/spinner.gif" />';
-	$data[1] .= '</span>';
+	/* Function in module_manager_editor_common.php */
+	add_component_selection (ID_NETWORK_COMPONENT_TYPE);
 } else {
 	/* TODO: Print network component if available */
-	$data[1] = 'TODO';
 }
-$table_simple->colspan['module_component'][1] = 3;
-$table_simple->rowstyle['module_component'] = 'background-color: #D4DDC6';
-
-prepend_table_simple ($data, 'module_component');
 
 $data = array ();
 $data[0] = __('Target IP');

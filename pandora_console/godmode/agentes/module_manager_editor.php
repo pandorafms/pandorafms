@@ -20,6 +20,7 @@ if (defined ('AJAX')) {
 	$get_network_component = (bool) get_parameter ('get_network_component');
 	$snmp_walk = (bool) get_parameter ('snmp_walk');
 	$get_module_component = (bool) get_parameter ('get_module_component');
+	$get_module_components = (bool) get_parameter ('get_module_components');
 	
 	if ($get_module_component) {
 		$id_component = (int) get_parameter ('id_module_component');
@@ -30,12 +31,24 @@ if (defined ('AJAX')) {
 		return;
 	}
 	
+	if ($get_module_components) {
+		require_once ('include/functions_modules.php');
+		$id_module_group = (int) get_parameter ('id_module_component_group');
+		$id_module_component = (int) get_parameter ('id_module_component_type');
+		
+		$components = get_network_components ($id_module_component,
+			array ('id_module_group' => $id_module_group));
+		
+		echo json_encode ($components);
+		return;
+	}
+	
 	if ($snmp_walk) {
 		$ip_target = (string) get_parameter ('ip_target');
 		$snmp_community = (string) get_parameter ('snmp_community');
 		
 		snmp_set_quick_print (1);
-		$snmpwalk = snmprealwalk ($ip_target, $snmp_community, NULL);
+		$snmpwalk = @snmprealwalk ($ip_target, $snmp_community, NULL);
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);
 			return;
@@ -232,7 +245,44 @@ $(document).ready (function () {
 			$("#text-tcp_port").removeAttr ("disabled");
 		}
 	});
+	
+	$("#network_component_group").change (function () {
+		var $select = $("#network_component").hide ();
+		$("#component").hide ();
+		if (this.value == 0)
+			return;
+		$("#component_loading").show ();
+		$(".error, #no_component").hide ();
+		$("option[value!=0]", $select).remove ();
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/module_manager_editor",
+			"get_module_components" : 1,
+			"id_module_component_group" : this.value,
+			"id_module_component_type" : $("#hidden-id_module_component_type").attr ("value")
+			},
+			function (data, status) {
+				if (data == false) {
+					$("#component_loading").hide ();
+					$("span#no_component").show ();
+					return;
+				}
+				jQuery.each (data, function (i, val) {
+					option = $("<option></option>")
+						.attr ("value", val['id_nc'])
+						.append (val['name']);
+					$select.append (option);
+				});
+				$("#component_loading").hide ();
+				$select.show ();
+				$("#component").show ();
+			},
+			"json"
+		);
+	});
+	
 	$("#network_component").change (function () {
+		if (this.value == 0)
+			return;
 		$("#component_loading").show ();
 		$(".error").hide ();
 		jQuery.post ("ajax.php",
@@ -298,7 +348,7 @@ $(document).ready (function () {
 			},
 			function (data, status) {
 				if (data == false) {
-					$("span.error").show ();
+					$("span#no_snmp").show ();
 					$("#oid_loading").hide ();
 					$("#edit_oid").hide ();
 					return false;

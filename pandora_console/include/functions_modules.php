@@ -72,4 +72,94 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
 	return $id_new_module;
 }
 
+/**
+ * Get a list of network components.
+ * 
+ * @param int Module type id of the requested components.
+ * @param mixed Aditional filters to the components. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator). Examples:
+<code>
+$components = get_network_components ($id_module, array ('id_module_group', 10));
+$components = get_network_components ($id_module, array ('id_module_group', 10));
+</code>
+ * 
+ * @return array A list of network components matching. Empty array is returned
+ * if none matches.
+ */
+function get_network_components ($id_module, $filter = false) {
+	if (empty ($id_module))
+		return array ();
+	
+	$where = '';
+	if (is_array ($filter)) {
+		$where = ' AND ';
+		$where .= format_array_to_where_clause_sql ($filter);
+	}
+	
+	$sql = sprintf ('SELECT * FROM tnetwork_component
+		WHERE `id_modulo` = %d %s',
+		$id_module, $where);
+	
+	$components = get_db_all_rows_sql ($sql);
+	if ($components === false)
+		return array ();
+	return $components;
+}
+
+/**
+ * Get a list of network component groups.
+ * 
+ * The values returned can be passed directly to print_select(). Child groups
+ * are indented, so ordering on print_select() is NOT recommendable.
+ * 
+ * @param int If provided, groups must have at least one compoent of the module
+ * provided. Parents will be included in that case even if they don't have
+ * components directly.
+ *
+ * @return array An ordered list of component groups with childs indented.
+ */
+function get_network_component_groups ($id_module_components = 0) {
+	/* Special vars to keep track of indentation level */
+	static $level = 0;
+	static $id_parent = 0;
+	
+	$groups = get_db_all_rows_field_filter ('tnetwork_component_group',
+		'parent', $id_parent);
+	if ($groups === false)
+		return array ();
+	
+	$retval = array ();
+	/* Magic indentation is here */
+	$prefix = str_repeat ('&nbsp;', $level * 3);
+	foreach ($groups as $group) {
+		$level++;
+		$tmp = $id_parent;
+		$id_parent = $group['id_sg'];
+		$childs = get_network_component_groups ($id_module_components);
+		$id_parent = $tmp;
+		$level--;
+		
+		if (! empty ($childs) || $id_module_components == 0) {
+			$retval[$group['id_sg']] = $prefix.$group['name'];
+			$retval = $retval + $childs;
+		} else {
+			/* If components id module is provided, only groups with components
+			that belongs to this id module are returned */
+			if ($id_module_components) {
+				$sql = sprintf ('SELECT COUNT(*)
+					FROM tnetwork_component
+					WHERE id_module_group = %d
+					AND id_modulo = %d',
+					$group['id_sg'], $id_module_components);
+				$count = get_db_sql ($sql);
+				if ($count > 0)
+					$retval[$group['id_sg']] = $prefix.$group['name'];
+			}
+		}
+	}
+	
+	return $retval;
+}
+
 ?>

@@ -130,12 +130,12 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
  * @param string $name Input name.
  * @param string $value Input value.
  * @param string $id Input HTML id.
- * @param string $alt Alternative HTML string.
+ * @param string $alt Do not use, invalid for text and password. Use print_input_image
  * @param int $size Size of the input.
  * @param int $maxlength Maximum length allowed.
  * @param bool $disabled Disable the button (optional, button enabled by default).
  * @param string $script JavaScript to attach to this 
- * @param string $attributes Attributes to add to this tag
+ * @param mixed $attributes Attributes to add to this tag. Should be an array for correction.
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
  * @param bool $password Whether it is a password input or not. Not password by default.
  *
@@ -146,38 +146,50 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	
 	++$idcounter;
 	
-	$type = $password ? 'password' : 'text';
+	$valid_attrs = array ("accept", "disabled", "maxlength", "name", "readonly", "size", "value",
+					"accesskey", "class", "dir", "id", "lang", "style", "tabindex", "title", "xml:lang",
+					"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
+					"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
 
-	if (empty ($name)) {
-		$name = 'unnamed';
-	}
-	
-	if (empty ($alt)) {
-		$alt = 'textfield';
-	}
-	
-	if (! empty ($maxlength)) {
-		$maxlength = ' maxlength="'.$maxlength.'" ';
-	}
-	
-	$output = '<input name="'.$name.'" type="'.$type.'" value="'.$value.'" size="'.$size.'" '.$maxlength.' alt="'.$alt.'" ';
+	$output = '<input '.($password ? 'type="password" ' : 'type="text" ');
 
-	if ($id != '') {
-		$output .= ' id="'.$id.'"';
+	if ($disabled && (!is_array ($attributes) || !array_key_exists ("disabled", $attributes))) {
+		$output .= 'readonly="readonly" ';
+	}
+				
+	if (is_array ($attributes)) {
+		foreach ($attributes as $attribute => $value) {
+			if (!in_array ($valid_attrs)) {
+				continue;
+			}
+			$output .= $attribute.'="'.$value.'" ';
+		}
 	} else {
-		$htmlid = 'text-'.sprintf ('%04d', $idcounter);
-		$output .= ' id="'.$htmlid.'"';
+		$output .= trim ($attributes)." ";
+		$attributes = array ();
 	}
-	if ($disabled) //We want readonly, not disabled - disabled disables copying from the field as well
-		$output .= ' readonly="readonly"';
 	
-	if ($attributes != '')
-		$output .= ' '.$attributes;
-	$output .= ' />';
+	//Attributes specified by function call
+	$attrs = array ("name" => "unnamed", "value" => "", "id" => "text-".sprintf ('%04d', $idcounter), "size" => "", "maxlength" => "");
+
+	foreach ($attrs as $attribute => $default) {
+		if (array_key_exists ($attribute, $attributes)) {
+			continue;
+		} //If the attribute was already processed, skip
+		
+		if ($$attribute) {
+			$output .= $attribute.'="'.$$attribute.'" ';
+		} elseif ($default != '') {
+			$output .= $attribute.'="'.$default.'" ';
+		}
+	}
+
+	$output .= '/>';
 	
-	if ($return)
-		return $output;
-	echo $output;
+	if (!$return)
+		echo $output;
+	
+	return $output;
 }
 
 /**
@@ -238,7 +250,10 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0,
  * @return string HTML code if return parameter is true.
  */
 function print_input_image ($name, $src, $value, $style = '', $return = false) {
-	$output = '<input id="image-'.$name.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image" value="'.$value.'" />';
+	static $idcounter = 0;
+	
+	++$idcounter;
+	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image" value="'.$value.'" />';
 	
 	if ($return)
 		return $output;
@@ -278,16 +293,18 @@ function print_input_hidden ($name, $value, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
-	$output = '';
-
-	$output .= '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
+	if (!$name) {
+		$name="unnamed";
+	} 
+	
+	$output = '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
 	if ($disabled)
 		$output .= ' disabled="disabled"';
 	$output .= ' />';
-	if ($return)
-		return $output;
-
-	echo $output;
+	if (!$return)
+		echo $output;
+	
+	return $output;
 }
 
 /**

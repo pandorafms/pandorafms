@@ -314,6 +314,9 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
  * @return An HTML string
  */
 function print_string_substr ($string, $cutoff = 16, $return = false) {
+	if (empty ($string)) {
+		return "";
+	}
 	$string = '<span title="'.safe_input ($string).'">'.mb_substr ($string, 0, $cutoff, "UTF-8").(mb_strlen ($string. "UTF-8") > $cutoff ? '...' : '').'</span>';
 	if ($return === false) {
 		echo $string;

@@ -58,9 +58,9 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 
 echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";
 
-echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=operation/users/user_edit&modified=1&id='.$id.'">';
+echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 
-echo '<table cellpadding="4" cellspacing="4" class="databox_color" width="600px">';
+echo '<table cellpadding="4" cellspacing="4" class="databox_color" width="600">';
 
 echo '<tr><td class="datos">'.__('User ID').'</td>';
 echo '<td class="datos">';
@@ -95,7 +95,7 @@ echo '</td></tr><tr><td class="datos">'.__('Phone number').'</td><td class="dato
 print_input_text_extended ("phone", $user_info["phone"], '', '', '', '', $view_mode, '', 'class="input"');
 
 echo '</td></tr><tr><td class="datos2">'.__('Comments').'</td><td class="datos2">';
-print_textarea ("comments", 4, 55, $user_info["comments"], ($view_mode ? 'readonly' : ''));
+print_textarea ("comments", 4, 55, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''));
  
 echo '</td></tr></table>';
 

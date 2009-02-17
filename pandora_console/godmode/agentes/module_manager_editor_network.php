@@ -25,24 +25,14 @@ if (!isset ($id_agente)) {
 
 $extra_title = __('Network server module');
 
-$data = array ();
-$data[0] = __('Using module component').' ';
-$data[0] .= pandora_help ('network_component', true);
+define ('ID_NETWORK_COMPONENT_TYPE', 2);
 
 if (empty ($update_module_id)) {
-	$data[1] = print_select_from_sql ('SELECT id_nc, name FROM tnetwork_component WHERE id_modulo = 2',
-		'network_component', '', '', '---'.__('Manual setup').'---', 0, true);
-	$data[1] .= ' <span id="component_loading" class="invisible">';
-	$data[1] .= '<img src="images/spinner.gif" />';
-	$data[1] .= '</span>';
+	/* Function in module_manager_editor_common.php */
+	add_component_selection (ID_NETWORK_COMPONENT_TYPE);
 } else {
 	/* TODO: Print network component if available */
-	$data[1] = 'TODO';
 }
-$table_simple->colspan['module_component'][1] = 3;
-$table_simple->rowstyle['module_component'] = 'background-color: #D4DDC6';
-
-prepend_table_simple ($data, 'module_component');
 
 $data = array ();
 $data[0] = __('Target IP');
@@ -79,7 +69,7 @@ $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true);
 $data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid" />';
 $data[1] .= '</span>';
-$data[1] .= '<span class="error invisible">'.__('Unable to do SNMP walk').'</span>';
+$data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
 $data[1] .= '</span> <span class="right"><span id="oid_loading" class="invisible">';
 $data[1] .= '<img src="images/spinner.gif" />';
 $data[1] .= '</span>';

@@ -64,6 +64,41 @@ function push_table_advanced ($row, $id = false) {
 	$table_advanced->data = array_merge ($table_advanced->data, $data);
 }
 
+function add_component_selection ($id_network_component_type) {
+	global $table_simple;
+	
+	$data = array ();
+	$data[0] = __('Using module component').' ';
+	$data[0] .= pandora_help ('network_component', true);
+	
+	$component_groups = get_network_component_groups ($id_network_component_type);
+	$data[1] = '<span id="component_group" class="left">';
+	$data[1] .= __('Group').'<br />';
+	$data[1] .= print_select ($component_groups,
+		'network_component_group', '', '', '--'.__('Manual setup').'--', 0,
+		true, false, false);
+	$data[1] .= '</span>';
+	$data[1] .= print_input_hidden ('id_module_component_type', $id_network_component_type, true);
+	$data[1] .= '<span id="no_component" class="invisible error">';
+	$data[1] .= __('No component was found');
+	$data[1] .= '</span>';
+	$data[1] .= '<span id="component" class="invisible right">';
+	$data[1] .= __('Component').'<br />';
+	$data[1] .= print_select (array (), 'network_component', '', '',
+		'---'.__('Manual setup').'---', 0, true);
+	$data[1] .= '</span>';
+	$data[1] .= ' <span id="component_loading" class="invisible">';
+	$data[1] .= '<img src="images/spinner.gif" />';
+	$data[1] .= '</span>';
+	
+	$table_simple->colspan['module_component'][1] = 3;
+	$table_simple->rowstyle['module_component'] = 'background-color: #D4DDC6';
+	
+	prepend_table_simple ($data, 'module_component');
+}
+
+require_once ('include/functions_modules.php');
+
 $update_module_id = (int) get_parameter_get ('update_module');
 
 $table_simple->id = 'simple';

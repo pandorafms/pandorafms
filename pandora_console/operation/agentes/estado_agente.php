@@ -27,6 +27,24 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
+if (defined ('AJAX')) {
+	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
+	
+	if ($get_agent_module_last_value) {
+		$id_module = (int) get_parameter ('id_agent_module');
+		
+		if (! give_acl ($config['id_user'], get_agentmodule_group ($id_module), "AR")) {
+			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+				"Trying to access agent main list view");
+			echo json_encode (false);
+			return;
+		}
+		echo json_encode (get_agent_module_last_value ($id_module));
+		return;
+	}
+	return;
+}
+
 // Take some parameters (GET)
 $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);

@@ -23,11 +23,13 @@
  * @param int Agent id
  * @param string Filter on "fired", "notfired" or "disabled". Any other value
  * will not do any filter.
+ * @param array Extra filter options in an indexed array. See
+ * format_array_to_where_clause_sql()
  *
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent, $filter = false) {
+function get_agent_alerts_simple ($id_agent, $filter = '', $options = false) {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -42,9 +44,14 @@ function get_agent_alerts_simple ($id_agent, $filter = false) {
 		$filter = '';
 	}
 	
+	$id_agent = (array) $id_agent;
 	$id_modules = array_keys (get_agent_modules ($id_agent));
 	if (empty ($id_modules))
 		return array ();
+	
+	if (is_array ($options)) {
+		$filter .= format_array_to_where_clause_sql ($options);
+	}
 	
 	$sql = sprintf ("SELECT talert_template_modules.*
 		FROM talert_template_modules
@@ -62,10 +69,13 @@ function get_agent_alerts_simple ($id_agent, $filter = false) {
  * Get all the combined alerts of an agent.
  *
  * @param int $id_agent Agent id
+ * @param string Special filter. Can be: "notfired", "fired" or "disabled".
+ * @param array Extra filter options in an indexed array. See
+ * format_array_to_where_clause_sql()
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_compound ($id_agent, $filter = false) {
+function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -80,9 +90,15 @@ function get_agent_alerts_compound ($id_agent, $filter = false) {
 		$filter = '';
 	}
 	
+	if (is_array ($options)) {
+		$filter .= format_array_to_where_clause_sql ($options);
+	}
+	
+	$id_agent = array ($id_agent);
+	
 	$sql = sprintf ("SELECT * FROM talert_compound
-		WHERE id_agent = %d%s",
-		$id_agent, $filter);
+		WHERE id_agent in (%s)%s",
+		implode (',', $id_agent), $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	
@@ -95,14 +111,16 @@ function get_agent_alerts_compound ($id_agent, $filter = false) {
  * Get all the alerts of an agent, simple and combined.
  *
  * @param int $id_agent Agent id
+ * @param string Special filter. Can be: "notfired", "fired" or "disabled".
+ * @param array Extra filter options in an indexed array. See
+ * format_array_to_where_clause_sql()
  *
  * @return array An array with all alerts defined for an agent.
  */
-function get_agent_alerts ($id_agent, $filter = false) {
-	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter);
-	$combined_alerts = get_agent_alerts_compound ($id_agent, $filter);
+function get_agent_alerts ($id_agent, $filter = false, $options = false) {
+	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter, $options);
+	$combined_alerts = get_agent_alerts_compound ($id_agent, $filter, $options);
 	
 	return array ('simple' => $simple_alerts, 'compounds' => $combined_alerts);
 }
-
 ?>

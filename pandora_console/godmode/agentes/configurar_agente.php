@@ -585,7 +585,8 @@ switch ($tab) {
 		}
 		break;
 	case "alert":
-		require ("alert_manager.php");
+		/* Because $id_agente is set, it will show only agent alerts */
+		require ("godmode/alerts/alert_list.php");
 		break;
 	case "template":
 		require ("agent_template.php");

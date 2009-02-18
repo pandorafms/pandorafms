@@ -288,7 +288,7 @@ $(document).ready (function () {
 				
 				/* Get alerts */
 				jQuery.post ("ajax.php",
-					{"page" : "godmode/agentes/alert_manager",
+					{"page" : "godmode/alerts/alert_list",
 					"get_agent_alerts_simple" : 1,
 					"id_agent" : id_agent
 					},

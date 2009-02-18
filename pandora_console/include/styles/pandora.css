@@ -879,12 +879,32 @@ fieldset {
 	width: 90%;
 	margin-bottom: 15px;
 }
-fieldset legend span {
+fieldset legend span,
+span#latest_value {
 	font-style:italic;
-
+}
+span#latest_value span#value {
+	font-style:normal;
 }
 form#filter_form {
 	margin-bottom: 15px;
+}
+ul.action_list {
+	margin: 0;
+	list-style: none inside url(../../images/arrow.png);
+}
+ul.action_list li div {
+	margin-left: 15px;
+}
+div.actions_container {
+	overflow:auto;
+	width: 100%;
+	max-height: 200px;
+}
+div.actions_container label {
+	display: inline;
+	font-weight: normal;
+	font-style: italic;
 }
 /* timeEntry styles */
 .timeEntry_control {

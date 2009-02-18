@@ -448,9 +448,9 @@ function agent_changed (event, id_agent, selected) {
 	$('#form_layout_data_editor #module').empty ();
 	$('#form_layout_data_editor #module').append ($('<option></option>').html ("<?php echo __('Loading'); ?>...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
-		{page: "operation/agentes/ver_agente",
-		get_agent_modules_json: 1,
-		id_agent: id_agent
+		{"page": "operation/agentes/ver_agente",
+		"get_agent_modules_json": 1,
+		"id_agent": id_agent
 		},
 		function (data) {
 			$('#form_layout_data_editor #module').empty ();
@@ -479,9 +479,9 @@ $(document).ready (function () {
 		  possible to kwown the image dimensions using javascript 
 		  in some cases where the image was not loaded */
 		jQuery.post ('ajax.php', 
-			{page: "godmode/reporting/map_builder",
-			get_background_info: 1,
-			background: background
+			{"page": "godmode/reporting/map_builder",
+			"get_background_info": 1,
+			"background": background
 			},
 			function (data) {
 				$("#layout_map").css ('backgroundImage', 'url(images/console/background/' + background + ')');
@@ -529,9 +529,9 @@ $(document).ready (function () {
 		drop: function (ev, ui) {
 			id = ui.draggable[0].id.split ("-").pop ();
 			jQuery.post ('ajax.php', 
-				{page: "godmode/reporting/map_builder",
-				get_layout_data: 1,
-				id_layout_data: id
+				{"page": "godmode/reporting/map_builder",
+				"get_layout_data": 1,
+				"id_layout_data": id
 				},
 				function (data) {
 					$("#form_layout_data_editor #text-label").attr ('value', data['label']);
@@ -568,7 +568,7 @@ $(document).ready (function () {
 				css ('margin-top', 0). attr ('id', 'delete-layout-data-' + id).
 				appendTo ("#"+this.id + " #elements");
 			$(ui.draggable[0]).remove ();
-			$('<input type="hidden" name="ids_layout_data[]" />').attr ('value', id).
+			$('<input type="hidden" name="ids_layout_data[]"></input>').attr ('value', id).
 				appendTo ($("#form_layout_data_trash"));
 			$("#form_layout_data_trash #submit-delete_buttons").removeAttr ('disabled');
 			setTimeout (function() { refresh_lines (lines, 'layout_map'); }, 1000);
@@ -577,10 +577,10 @@ $(document).ready (function () {
 	$("#form_layout_data_editor #image").change (function () {
 		$("#image_preview").empty ();
 		if (this.value != '') {
-			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '.png'));
-			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_ok.png'));
-			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_warning.png'));
-			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_bad.png'));
+			$("#image_preview").append ($('<img></img>').attr ('src', 'images/console/icons/' + this.value + '.png'));
+			$("#image_preview").append ($('<img></img>').attr ('src', 'images/console/icons/' + this.value + '_ok.png'));
+			$("#image_preview").append ($('<img></img>').attr ('src', 'images/console/icons/' + this.value + '_warning.png'));
+			$("#image_preview").append ($('<img></img>').attr ('src', 'images/console/icons/' + this.value + '_bad.png'));
 		}
 	});
 	$("#form_layout_data_editor #agent").change (agent_changed);

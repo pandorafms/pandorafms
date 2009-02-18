@@ -1721,7 +1721,8 @@ function format_array_to_update_sql ($values) {
   $values = array ();
   $values['name'] = "Name";
   $values['description'] = "Long description";
-  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_sql ($values).' LIMIT 20';
+  $values['limit'] = $config['block_size']; // Assume it's 20
+  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_sql ($values);
   echo $sql;
   </code>
  * Will return:
@@ -1730,6 +1731,8 @@ function format_array_to_update_sql ($values) {
  * </code>
  *
  * @param array Values to be formatted in an array indexed by the field name.
+ * There are special parameters such as 'limit' and 'offset' that will be used
+ * as LIMIT and OFFSET clauses respectively.
  * @param string Join operator. AND by default.
  *
  * @return string Values joined into an SQL string that can fits into the WHERE
@@ -1743,12 +1746,24 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 	}
 	
 	$query = '';
+	$limit = '';
+	$offset = '';
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
 		if (is_numeric ($field))
 			/* Avoid numeric field names */
 			continue;
+		
+		if ($field == 'limit') {
+			$limit = sprintf (' LIMIT %d', $value);
+			continue;
+		}
+		
+		if ($field == 'offset') {
+			$offset = sprintf (' OFFSET %d', $value);
+			continue;
+		}
 		
 		if ($field[0] != "`") {
 			$field = "`".$field."`";
@@ -1770,7 +1785,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 		$i++;
 	}
 	
-	return $query;
+	return $query.$limit.$offset;
 }
 
 /** 

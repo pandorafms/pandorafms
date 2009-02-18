@@ -1,3 +1,42 @@
+2009-02-18  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Removed from repository. Agent
+	alerts manager is now done in alerts/alert_list.php
+
+	* godmode/agentes/manage_config.php, godmode/alerts/configure_alert,
+	godmode/agentes/configurar_agente.php: Use alerts/alert_list.php
+	instead of deleted agentes/alert_manager.php.
+
+	* godmode/alerts/alert_list.php: It can handle now a list of agents or
+	be included by configurar_agente. Now it's a single page to manage all
+	the alerts defined in agents.
+
+	* godmode/reporting/map_builder.php: Javascript style correction.
+
+	* include/javascript/jquery.pandora.controls.js: Added
+	pandoraSelectAgent which allows the loading of a module list from an
+	agent list.
+
+	* include/styles/pandora.css: Styles for alert_list.
+
+	* include/functions_agents.php: Added options to
+	get_agent_alerts_compound() and get_agent_alerts_simple() to add extra
+	user filtering.
+
+	* pandoradb.sql, pandoradb_migrate_20_to_21.sql,
+	include/functions_alerts.php: Actions in an alert module has now id or
+	they cannot be removed.
+
+	* include/functions_db.php: format_array_to_where_clause_sql() can now
+	get limit and offset values.
+
+	* include/functions_html.php: Removed select- prefix to print_select
+	elements because it was breaking javascript code. Needs more works on
+	that.
+
+	* operation/agentes/estado_agente.php: Added
+	get_agent_module_last_value AJAX operation.
+
 2009-02-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/login_ok.php, operation/visual_console/index.php,

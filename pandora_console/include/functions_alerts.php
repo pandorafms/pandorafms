@@ -680,31 +680,29 @@ function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action
 	}
 	
 	$sql = sprintf ('INSERT INTO talert_template_module_actions
+		(id_alert_template_module, id_alert_action, fires_min, fires_max)
 		VALUES (%d, %d, %d, %d)',
 		$id_alert_agent_module, $id_alert_action, $fires_min, $fires_max);
 	
-	return @process_sql ($sql) !== false;
+	return process_sql ($sql, 'insert_id');
 }
 
-function delete_alert_agent_module_action ($id_alert_agent_module, $id_alert_action) {
-	if (empty ($id_alert_agent_module))
-		return false;
-	if (empty ($id_alert_action))
+function delete_alert_agent_module_action ($id_alert_agent_module_action) {
+	if (empty ($id_alert_agent_module_action))
 		return false;
 	
 	$sql = sprintf ('DELETE FROM talert_template_module_actions
-		WHERE id_alert_template_module = %d
-		AND id_alert_action = %d',
-		$id_alert_agent_module, $id_alert_action);
+		WHERE id = %d',
+		$id_alert_agent_module_action);
 	
-	return @process_sql ($sql) !== false;
+	return process_sql ($sql) !== false;
 }
 
 function get_alert_agent_module_actions ($id_alert_agent_module) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
-	$sql = sprintf ('SELECT id_alert_action id, fires_min, fires_max
+	$sql = sprintf ('SELECT id, id_alert_action, fires_min, fires_max
 		FROM talert_template_module_actions
 		WHERE id_alert_template_module = %d',
 		$id_alert_agent_module);
@@ -714,10 +712,10 @@ function get_alert_agent_module_actions ($id_alert_agent_module) {
 	
 	$retval = array ();
 	foreach ($actions as $element) {
-		$action = get_alert_action ($element['id']);
+		$action = get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
-		array_push ($retval, $action);
+		$retval[$element['id']] = $action;
 	}
 	
 	return $retval;

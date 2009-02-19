@@ -22,7 +22,6 @@ require ('include/functions_visual_map.php');
 check_login ();
 
 $id_layout = (int) get_parameter ('id');
-$refr = (int) get_parameter ('refr');
 
 // Get input parameter for layout id
 if (! $id_layout) {
@@ -58,11 +57,11 @@ if (! give_acl ($config["id_user"], $id_group, "AR")) {
 echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0) {
-	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$refr.'&amp;pure=1">';
+	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">';
 	print_image ("images/monitor.png", false, array ("title" => __('Full screen mode')));
 	echo "</a>";
 } else {
-	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$refr.'">';
+	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">';
 	print_image ("images/monitor.png", false, array ("title" => __('Back to normal mode')));
 	echo "</a>";
 }
@@ -83,12 +82,12 @@ $values[1800] = "30 ". __('minutes');
 $table->width = 500;
 $table->data = array ();
 $table->data[0][0] = __('Autorefresh time');
-$table->data[0][1] = print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
+$table->data[0][1] = print_select ($values, 'refr', $config["refr"], '', 'N/A', 0, true, false, false);
 $table->data[0][2] = print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 
 echo '<div style="height:30px">&nbsp;</div>';
 
-if ($config['pure'] && $refr != 0) {
+if ($config['pure'] && $config["refr"] != 0) {
 	echo '<div id="countdown"><br /></div>';
 }
 
@@ -100,7 +99,7 @@ print_input_hidden ('id', $id_layout);
 print_table ($table);
 echo '</form>';
 
-if ($config["pure"] && $refr != 0) {
+if ($config["pure"] && $config["refr"] != 0) {
 	require_jquery_file ('countdown');
 	require_css_file ('countdown');
 }
@@ -109,9 +108,9 @@ $config['js'][] = 'pandora_visual_console';
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-<?php if ($config["pure"] && $refr != 0): ?>
+<?php if ($config["pure"] && $config["refr"] > 0): ?>
 	t = new Date();
-	t.setTime (t.getTime() + 1);
+	t.setTime (t.getTime() + <?php echo $config["refr"] * 1000; ?>);
 	$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
 <?php endif; ?>
 	draw_lines (lines, 'layout_map');

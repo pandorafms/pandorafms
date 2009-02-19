@@ -39,12 +39,13 @@ check_login ();
 define ('AJAX', true);
 
 $page = (string) get_parameter ('page');
+$page = safe_url_extraclean ($page);
 $page .= '.php';
 $config["id_user"] = $_SESSION["id_usuario"];
 session_write_close ();
 if (file_exists ($page)) {
 	require_once ($page);
 } else {
-	echo "<br><b class='error'>Sorry! I can't find the page $page!</b>";
+	echo '<br /><b class="error">Sorry! I can\'t find the page $page!</b>';
 }
 ?>

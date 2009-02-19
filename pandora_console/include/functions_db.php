@@ -2765,4 +2765,68 @@ function process_sql_delete ($table, $where, $where_join = 'AND') {
 	
 	return process_sql ($query);
 }
+
+/** 
+ * Get all the users belonging to a group.
+ * 
+ * @param int $id_group The group id to look for
+ * 
+ * @return array An array with all the users or an empty array
+ */
+function get_group_users ($id_group) {
+	$result = get_db_array ("id_usuario", "tusuario_perfil", array ("id_grupo" => (int) $id_group), "AND");
+	
+	//This removes stale users from the list. This can happen if switched to another auth scheme
+	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
+	foreach ($result as $key => $user) {
+		if (!is_user ($user)) {
+			unset ($result[$key]);
+		}
+	}
+	
+	if (empty ($result)) {
+		return array ();
+	}
+	return $result;
+}
+
+/** 
+ * Get the row of a table in the database.
+ * 
+ * @param string Field name to get (warning: not cleaned)
+ * @param string Table to retrieve the data (warning: not cleaned)
+ * @param string Filter elements (array ("field" => "value", "field2" => "value2"))
+ * @param string Condition of the filter (AND, OR)
+ *
+ * @return mixed Array of the row or false in case of error.
+ */
+function get_db_array ($field, $table, $filter_arr = false, $filter_cond = "AND") {
+	$filter = '';
+	if (!empty ($filter_arr)) {
+		foreach ($filter_arr as $filter_field => $value) {
+			if (!empty ($filter)) {
+				$filter .= 'AND ';
+			}
+			if (is_numeric ($value)) {
+				$filter .= '`'.$filter_field.'` = '.$value.' ';
+			} else {
+				$filter .= '`'.$filter_field.'` = "'.$value.'" ';
+			}
+		}
+	}
+	
+	$sql = sprintf ("SELECT %s FROM %s WHERE %s", $field, $table, trim ($filter));
+	
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false)
+		return false;
+	
+	$return = array ();
+	foreach ($result as $row) {
+		$return[] = $row[$field];
+	}
+	
+	return $return;
+}
 ?>

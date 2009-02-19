@@ -448,7 +448,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
   `id_usuario_origen` varchar(60) NOT NULL default '',
   `id_usuario_destino` varchar(60) NOT NULL default '',
   `mensaje` tinytext NOT NULL,
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `timestamp` bigint (20) unsigned NOT NULL default '0',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(4) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_mensaje`)

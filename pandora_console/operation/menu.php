@@ -160,9 +160,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$menu["messages"]["id"] = "oper-messages";
 	
 	$sub = array ();
-	$sub["operation/messages/message"]["text"] = __('Messages to groups');
-	$sub["operation/messages/message"]["options"]["name"] = "nuevo_g";
-	$sub["operation/messages/message"]["options"]["value"] = 1;
+	$sub["operation/messages/message&amp;new_msg=1"]["text"] = __('New message');
 	
 	$menu["messages"]["sub"] = $sub;
 	

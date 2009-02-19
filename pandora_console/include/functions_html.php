@@ -221,7 +221,7 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  * 
  * @param string $name Input name.
  * @param string $value Input value.
- * @param string $alt Alternative HTML string (optional).
+ * @param string $alt Alternative HTML string (invalid - not used).
  * @param int $size Size of the input (optional).
  * @param int $maxlength Maximum length allowed (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
@@ -229,11 +229,7 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  * @return string HTML code if return parameter is true.
  */
 function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0, $return = false) {
-	$output = print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, false, '', '', true);
-
-	if ($return)
-		return $output;
-	echo $output;
+	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, false, '', '', $return);
 }
 
 /**
@@ -374,7 +370,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->data[] - An array of arrays containing the data.
  *     $table->width  - A percentage of the page
  *     $table->border  - Border of the table.
- *     $table->tablealign  - Align the whole table
+ *     $table->tablealign  - Align the whole table (float left or right)
  *     $table->cellpadding  - Padding on each cell
  *     $table->cellspacing  - Spacing between cells
  *     $table->class  - CSS table class
@@ -456,7 +452,7 @@ function print_table (&$table, $return = false) {
 	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
 		$table->tablealign = '';
 	} else {
-		$table->tablealign = 'float:'.$table->tablealign.';'; //Align is deprecated. Use float instead
+		$table->tablealign = 'style="float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
 	}
 
 	if (!isset ($table->cellpadding)) {
@@ -471,9 +467,13 @@ function print_table (&$table, $return = false) {
 		$table->class = 'databox';
 	}
 	
+	if (empty ($table->titlestyle)) {
+		$table->titlestyle = 'text-align:center;';
+	}
+	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 
-	$output .= '<table width="'.$table->width.'" style="'.$table->tablealign.'"';
+	$output .= '<table width="'.$table->width.'"'.$table->tablealign;
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;

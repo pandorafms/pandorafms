@@ -286,6 +286,7 @@ table, img {
 th {
 	color: #fff;
 	background-color: #786;
+	text-align:center;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
 tr.datosf9, tr.datos2, tr.datos2t, 
@@ -911,4 +912,37 @@ div.actions_container label {
 .timeEntry_control {
 	vertical-align: middle;
 	margin-left: 2px;
+}
+
+/* the overlay element */ 
+#overlay { 
+    background-image:url(../../images/transparent.png);
+
+    /* dimensions after the growing animation finishes  */ 
+    width:600px; 
+    height:470px;         
+     
+    /* initially overlay is hidden */ 
+    display:none; 
+     
+    /* some padding to layout nested elements nicely  */ 
+    padding:55px;
+	overflow:auto;
+} 
+ 
+/* default close button positioned on upper right corner */ 
+#overlay div.close { 
+    background-image:url(../../images/close.png); 
+    position:absolute; 
+    right:5px; 
+    top:5px; 
+    cursor:pointer; 
+    height:35px; 
+    width:35px; 
+}
+
+/* external content */
+#overlay div.wrap { 
+    height:441px; 
+    overflow:auto; 
 }

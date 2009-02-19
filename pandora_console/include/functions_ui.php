@@ -131,7 +131,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
  * @return string HTML code if return parameter is true.
  */
 function print_username ($username, $return = false) {
-	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&id='.$username.'">'.get_user_fullname ($username).'</a>';
+	$string = '<a href="index.php?sec=usuario&amp;sec2=operation/users/user_edit&amp;id='.$username.'">'.get_user_fullname ($username).'</a>';
 	
 	if ($return)
 		return $string;
@@ -155,7 +155,7 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small") {
 		return "-";
 	}
 	
-	$output = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$id_group.'">';
+	$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	$output .= '<img class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group).'" title="'.get_group_name ($id_group).'" />';
 	$output .= '</a>';
 	
@@ -572,10 +572,15 @@ function process_page_head ($string, $bitfield) {
 	<![endif]-->
 	<script type="text/javascript" src="include/javascript/pandora.js"></script>
 	<script type="text/javascript" src="include/javascript/jquery.js"></script>
-	<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>
-	<script type="text/javascript" src="include/languages/time_'.$config['language'].'.js"></script>
-	<script type="text/javascript" src="include/languages/date_'.$config['language'].'.js"></script>
-	<script type="text/javascript" src="include/languages/countdown_'.$config['language'].'.js"></script>'."\n\t";
+	<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>';
+	
+	if ($config["language"] != "en") {
+		//Load translated strings
+		echo '<script type="text/javascript" src="include/languages/time_'.$config['language'].'.js"></script>
+		<script type="text/javascript" src="include/languages/date_'.$config['language'].'.js"></script>
+		<script type="text/javascript" src="include/languages/countdown_'.$config['language'].'.js"></script>';		
+	}
+	$output .= "\n\t";
 	
 	if (!empty ($config['css'])) {
 		//We can't load empty and we loaded current style and ie

@@ -271,3 +271,6 @@ ALTER TABLE treport_content ADD `description` mediumtext;
 ALTER TABLE treport_content MODIFY `type` varchar(30) default 'simple_graph';
 ALTER TABLE treport_content ADD `id_agent` int(10) unsigned NOT NULL default 0;
 
+-- Changes added 19 February 2009
+
+ALTER TABLE  `tmensajes` CHANGE  `timestamp`  `timestamp` BIGINT( 20 ) UNSIGNED NOT NULL DEFAULT  '0'

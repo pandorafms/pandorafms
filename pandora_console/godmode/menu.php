@@ -34,6 +34,8 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	
 	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 	
+	$sub["godmode/agentes/manage_delete"]["text"] = __('Massive delete');
+	
 	if (give_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
 	}

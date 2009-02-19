@@ -187,7 +187,7 @@ print_input_hidden ('new_compound', 1);
 echo '</form>';
 echo '</div>';
 
-$config['jquery'][] = 'pandora.controls';
+require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

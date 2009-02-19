@@ -310,10 +310,10 @@ if ($create_downtime || $update_downtime) {
 	echo '</div>';
 }
 
-$config['css'][] = 'datepicker';
-$config['jquery'][] = 'ui.core';
-$config['jquery'][] = 'ui.datepicker';
-$config['jquery'][] = 'timeentry';
+require_css_file ('datepicker');
+require_jquery_file ('ui.core');
+require_jquery_file ('ui.datepicker');
+require_jquery_file ('timeentry');
 
 ?>
 <script language="javascript" type="text/javascript">

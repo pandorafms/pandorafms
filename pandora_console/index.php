@@ -98,7 +98,9 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 }
 
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>';
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
+echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
+echo '<head>';
  //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 ob_start ('process_page_head');
 // Pure mode (without menu, header and footer).
@@ -108,10 +110,9 @@ $config["pure"] = (bool) get_parameter ("pure");
 $config["refr"] = (int) get_parameter ("refr");
 
 enterprise_include ('index.php');
-enterprise_hook ('load_html_header');
 
 //This tag is included in the buffer passed to process_page_head so technically it can be stripped
-echo '</head>';
+echo '</head>'."\n";
 
 ob_start ('process_page_body');
 

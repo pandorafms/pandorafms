@@ -1455,6 +1455,50 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 }
 
 /** 
+ * Get the first value of the first row of a table in the database from an
+ * array with filter conditions.
+ *
+ * Example:
+<code>
+get_db_value_filter ('name', 'talert_templates',
+	array ('value' => 2, 'type' => 'equal'));
+// Equivalent to:
+// SELECT name FROM talert_templates WHERE value = 2 AND type = 'equal' LIMIT 1
+
+get_db_value_filter ('description', 'talert_templates',
+	array ('name' => 'My alert', 'type' => 'regex'), 'OR');
+// Equivalent to:
+// SELECT description FROM talert_templates WHERE name = 'My alert' OR type = 'equal' LIMIT 1
+</code>
+ * 
+ * @param string Field name to get
+ * @param string Table to retrieve the data
+ * @param array Conditions to filter the element. See format_array_to_where_clause_sql()
+ * for the format
+ * @param string Join operator for the elements in the filter.
+ *
+ * @return mixed Value of first column of the first row. False if there were no row.
+ */
+function get_db_value_filter ($field, $table, $filter, $join = 'AND') {
+	if (! is_array ($filter) || empty ($filter))
+		return false;
+	
+	/* Avoid limit and offset if given */
+	unset ($filter['limit']);
+	unset ($filter['offset']);
+	
+	$sql = sprintf ("SELECT %s FROM %s WHERE %s LIMIT 1",
+		$field, $table,
+		format_array_to_where_clause_sql ($filter, $join));
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false)
+		return false;
+	
+	return $result[0][$field];
+}
+
+/** 
  * Get the first row of an SQL database query.
  * 
  * @param string SQL select statement to execute.
@@ -1531,6 +1575,22 @@ function get_db_all_rows_sql ($sql) {
 		return $return;
 	//Return false, check with === or !==
 	return false;
+}
+
+function get_db_all_rows_filter ($table, $filter, $fields = false) {
+	if (empty ($fields)) {
+		$fields = '*';
+	} else {
+		if (is_array ($fields))
+			$fields = implode (',', $fields);
+		else if (! is_string ($fields))
+			return false;
+	}
+	
+	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
+		$fields, $table, format_array_to_where_clause_sql ($filter));
+	
+	return get_db_all_rows_sql ($sql);
 }
 
 /**
@@ -1722,7 +1782,7 @@ function format_array_to_update_sql ($values) {
   $values['name'] = "Name";
   $values['description'] = "Long description";
   $values['limit'] = $config['block_size']; // Assume it's 20
-  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_sql ($values);
+  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
   echo $sql;
   </code>
  * Will return:
@@ -1780,7 +1840,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 		}
 		
 		if ($i < $max) {
-			$query .= $join;
+			$query .= ' '.$join.' ';
 		}
 		$i++;
 	}
@@ -2267,52 +2327,62 @@ function server_status ($id_server) {
  * @return bool False if error, true if success.
 */
 function delete_agent ($id_agents) {
-	//Init vars
-	$errors = 0;
+	global $config;
+	
+	$error = false;
 	
 	//Subfunciton for less typing
 	/**
 	 * @ignore
 	 */
 	function temp_sql_delete ($table, $row, $value) {
-		global $errors; //Globalize the errors variable
-		$sql = sprintf ("DELETE FROM %s WHERE %s = %s", $table, $row, $value);
-		$result = process_sql ($sql);
-		if ($result === false)
-			$errors++;
+		global $error; //Globalize the errors variable
+		$result = process_sql_delete ($table, $row.' = '.$value);
+		if ($result === false) {
+			$error = true;
+			echo $table, $row.' = '.$value;
+		}
 	}
 
 	//Convert single values to an array
-	if (!is_array ($id_agents)) {
-		$id_agents[0] = (int) $id_agents;
-	}
+	if (! is_array ($id_agents))
+		$id_agents = (array) $id_agents;
 
 	//Start transaction
 	process_sql ("SET AUTOCOMMIT = 0;");
 	$trerr = process_sql ("START TRANSACTION;");
 	
-	if ($trerr === false) {
-		echo "Error starting transaction";
+	if ($trerr === false)
 		return false;
-	}
 
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
-		$agent_name = get_agent_name ($id_agent);
 		if ($id_agent < 1)
-			continue; //If an agent is not an integer or invalid, don't process it 
-	
+			continue;
+		
+		/* Check for deletion permissions */
+		$id_group = get_agent_group ($id_agent);
+		if (! give_acl ($config['id_user'], $id_group, "AW")) {
+			process_sql ("ROLLBACK;");
+			process_sql ("SET AUTOCOMMIT = 1;");
+			return false;
+		}
+		
 		//A variable where we store that long subquery thing for
 		//modules
-		$tmodbase = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";	
+		$where_modules = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";	
 		
 		//IP address
-		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress WHERE taddress_agent.id_a = taddress.id_a AND id_agent = %d", $id_agent);
-		$result = get_db_all_rows_sql ($sql);
+		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
+			WHERE taddress_agent.id_a = taddress.id_a
+			AND id_agent = %d",
+			$id_agent);
+		$addresses = get_db_all_rows_sql ($sql);
 		
-		if ($result)
-		foreach ($result as $row) {
-			temp_sql_delete ("taddress_agent", "id_ag", $row["id_ag"]);
+		if ($addresses === false)
+			$addresses = array ();
+		foreach ($addresses as $address) {
+			temp_sql_delete ("taddress_agent", "id_ag", $address["id_ag"]);
 		}
 		
 		// We cannot delete tagente_datos and tagente_datos_string here
@@ -2321,53 +2391,58 @@ function delete_agent ($id_agents) {
 		// daily maintance process, all data for that modules are deleted
 		
 		//Alert
-		/* TODO: Compound alert */
-		//temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");
-		temp_sql_delete ("talert_template_modules", "id_agent_module", $tmodbase);
+		temp_sql_delete ("talert_compound", "id_agent", $id_agent);
+		temp_sql_delete ("talert_template_modules", "id_agent_module", $where_modules);
 		
 		//Events (up/down monitors)
 		temp_sql_delete ("tevento", "id_agente", $id_agent);
 
 		//Graphs, layouts & reports
-		temp_sql_delete ("tgraph_source", "id_agent_module", $tmodbase);
-		temp_sql_delete ("tlayout_data", "id_agente_modulo", $tmodbase);
-		temp_sql_delete ("treport_content", "id_agent_module", $tmodbase);
+		temp_sql_delete ("tgraph_source", "id_agent_module", $where_modules);
+		temp_sql_delete ("tlayout_data", "id_agente_modulo", $where_modules);
+		temp_sql_delete ("treport_content", "id_agent_module", $where_modules);
 		
 		//Planned Downtime
 		temp_sql_delete ("tplanned_downtime_agents", "id_agent", $id_agent);
 		
 		//The status of the module
-		temp_sql_delete ("tagente_estado", "id_agente_modulo", $tmodbase);
+		temp_sql_delete ("tagente_estado", "id_agente_modulo", $where_modules);
 		
 		//The actual modules, don't put anything based on
 		//tagente_modulo after this
 		temp_sql_delete ("tagente_modulo", "id_agente", $id_agent);
 		
-		process_sql ('UPDATE tagente_modulo SET delete_pending = 1, disabled = 1 WHERE id_agente = '. $id_agent);
+		process_sql_update ('tagente_modulo',
+			array ('delete_pending' => 1, 'disabled' => 1),
+			'id_agente = '. $id_agent);
 		
 		//Access entries
 		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
 		//tagente_datos_inc
-		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
+		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $where_modules);
 
+		// Delete remote configuration
+		if (isset ($config["remote_config"])) {
+			$agent_md5 = md5 (get_agent_name ($id_agent), FALSE);
+			if (file_exists ($config["remote_config"]."/".$agent_md5.".md5")) {
+				// Agent remote configuration editor
+				$file_name = $config["remote_config"]."/".$agent_md5.".conf";
+				@unlink ($file_name);
+				$file_name = $config["remote_config"]."/".$agent_md5.".md5";
+				@unlink ($file_name);
+			}
+		}
+		
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
 		
-		// Delete remote configuration
-		$agent_md5 = md5($agent_name, FALSE);
-
-		if (isset($config["remote_config"]))
-			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
-				// Agent remote configuration editor
-				$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
-				unlink ($file_name);
-				$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
-				unlink ($file_name);
-			}
+		/* Break the loop on error */
+		if ($error)
+			break;
 	}
-
-	if ($errors > 0) {
+	
+	if ($error) {
 		process_sql ("ROLLBACK;");
 		process_sql ("SET AUTOCOMMIT = 1;");
 		return false;
@@ -2581,7 +2656,7 @@ function process_sql_insert ($table, $values) {
 }
 
 /**
- * Inserts strings into database
+ * Updates a database record.
  *
  * All values should be cleaned before passing. Quoting isn't necessary.
  * Examples:
@@ -2634,6 +2709,54 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
 		$query .= ' WHERE ';
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity? */
+			$query .= $where;
+		} else if (is_array ($where)) {
+			$query .= format_array_to_where_clause_sql ($where);
+		}
+	}
+	
+	return process_sql ($query);
+}
+
+/**
+ * Delete database records.
+ *
+ * All values should be cleaned before passing. Quoting isn't necessary.
+ * Examples:
+ *
+ * <code>
+process_sql_delete ('table', array ('id' => 1));
+// DELETE FROM table WHERE id = 1
+process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
+// DELETE FROM table WHERE id = 1 AND name = 'example'
+process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
+// DELETE FROM table WHERE id = 1 OR name = 'example'
+process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
+// DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
+ * <code>
+ *
+ * @param string Table to insert into
+ * @param array An associative array of values to update
+ * @param mixed An associative array of field and value matches. Will be joined
+ * with operator specified by $where_join. A custom string can also be provided.
+ * If nothing is provided, the update will affect all rows.
+ * @param string When a $where parameter is given, this will work as the glue
+ * between the fields. "AND" operator will be use by default. Other values might
+ * be "OR", "AND NOT", "XOR"
+ *
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
+function process_sql_delete ($table, $where, $where_join = 'AND') {
+	if (empty ($where))
+		/* Should avoid any mistake that lead to deleting all data */
+		return false;
+	
+	$query = sprintf ("DELETE FROM `%s` WHERE ", $table);
+	
+	if ($where) {
+		if (is_string ($where)) {
+			/* FIXME: Should we clean the string for sanity? 
+			 Who cares if this is deleting data... */
 			$query .= $where;
 		} else if (is_array ($where)) {
 			$query .= format_array_to_where_clause_sql ($where);

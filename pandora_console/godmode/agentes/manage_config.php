@@ -223,7 +223,7 @@ echo '<legend><span>'.__('To agent(s)').'</span></legend>';
 print_table ($table);
 echo '</fieldset>';
 
-echo '<div class="action-buttons" style="width: 90%">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_input_hidden ('do_operation', 1);
 print_submit_button (__('Go'), 'go', false, 'class="sub next"');
 echo '</div>';
@@ -231,8 +231,8 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
-$config['jquery'][] = 'form';
-$config['jquery'][] = 'pandora.controls';
+require_jquery_file ('form');
+require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">

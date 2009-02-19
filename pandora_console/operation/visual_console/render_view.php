@@ -101,8 +101,8 @@ print_table ($table);
 echo '</form>';
 
 if ($config["pure"] && $refr != 0) {
-	$config['jquery'][] = 'countdown';
-	$config['css'][] = 'countdown';
+	require_jquery_file ('countdown');
+	require_css_file ('countdown');
 }
 $config['js'][] = 'pandora_visual_console';
 ?>

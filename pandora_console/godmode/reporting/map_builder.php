@@ -433,12 +433,13 @@ if (! $edit_layout && ! $id_layout) {
 	}
 }
 
-$config['css'][] = 'color-picker';
-$config['jquery'][] = 'ui.core';
-$config['jquery'][] = 'ui.draggable';
-$config['jquery'][] = 'ui.droppable';
-$config['jquery'][] = 'colorpicker';
-$config['js'][] = 'pandora_visual_console';
+require_css_file ('color-picker');
+
+require_jquery_file ('ui.core');
+require_jquery_file ('ui.draggable');
+require_jquery_file ('ui.droppable');
+require_jquery_file ('colorpicker');
+require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
 function agent_changed (event, id_agent, selected) {

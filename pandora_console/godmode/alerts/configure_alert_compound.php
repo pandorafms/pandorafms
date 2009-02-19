@@ -590,13 +590,13 @@ if ($step == 1) {
 	print_select (get_alert_compound_operations (), 'operations');
 	echo '</div>';
 }
-$config['jquery'][] = 'form';
-$config['jquery'][] = 'tablesorter';
-$config['jquery'][] = 'tablesorter.pager';
-$config['jquery'][] = 'ui.core';
-$config['jquery'][] = 'timeentry';
 
-$config['css'][] = 'timeentry';
+require_css_file ('timeentry');
+require_jquery_file ('form');
+require_jquery_file ('tablesorter');
+require_jquery_file ('tablesorter.pager');
+require_jquery_file ('ui.core');
+require_jquery_file ('timeentry');
 ?>
 
 <script type="text/javascript" src="include/javascript/pandora_alerts.js"></script>

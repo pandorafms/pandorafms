@@ -45,7 +45,7 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false) {
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];
 		} else {
-			array_push ($graphs, $graph);
+			$graphs[$graph['id_graph']] = $graph;
 		}
 	}
 	

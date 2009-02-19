@@ -502,11 +502,9 @@ if ($step >= LAST_STEP) {
 echo '</div>';
 echo '</form>';
 
-$config['jquery'][] = 'ui.core';
-$config['jquery'][] = 'timeentry';
-$config['jquery'][] = 'ui.core';
-$config['js'][] = 'pandora_alerts';
-
+require_jquery_file ('ui.core');
+require_jquery_file ('timeentry');
+require_javascript_file ('pandora_alerts');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

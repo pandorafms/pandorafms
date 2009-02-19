@@ -135,7 +135,7 @@ unset ($menu);
 
 require ("links_menu.php");
 
-$config['jquery'][] = 'cookie';
+require_jquery_file ('cookie');
 ?>
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */

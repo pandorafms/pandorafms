@@ -37,6 +37,7 @@ function process_manage_delete ($id_agents) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
 		return false;
 	}
+	
 	$id_agents = (array) $id_agents;
 	
 	$copy_modules = (bool) get_parameter ('copy_modules');
@@ -65,7 +66,7 @@ function process_manage_delete ($id_agents) {
 }
 
 $id_group = (int) get_parameter ('id_group');
-$id_agents = (array) get_parameter ('id_agents');
+$id_agents = get_parameter ('id_agents');
 
 $delete = (bool) get_parameter_post ('delete');
 

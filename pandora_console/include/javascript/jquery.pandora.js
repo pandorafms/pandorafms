@@ -18,15 +18,11 @@ $(document).ready (function () {
 		};
 	
 	$.fn.pulsate = function () {
-		return $(this).fadeIn ("normal", function () {
-			$(this).fadeOut ("normal", function () {
-				$(this).fadeIn ("normal", function () {
-					$(this).fadeOut ("normal", function () {
-						$(this).fadeIn ().focus ();
-					});
-				});
-			});
-		});
+		var i=0;
+		for (i=0; i<=2; i++) {
+			$(this).fadeOut ("slow");
+			$(this).fadeIn ("slow");
+		}
 	};
 	
 	$.fn.showMessage = function (msg) {
@@ -34,4 +30,9 @@ $(document).ready (function () {
 				.text (msg)
 				.slideDown ();
 		};
+		
+	$("a[rel]").overlay (function() {
+		var wrap = this.getContent().find("div.wrap");
+		wrap.load(this.getTrigger().attr("href"));
+	});
 });

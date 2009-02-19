@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
@@ -15,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+require_once ("include/functions_messages.php");
 
 //First column (logo)
 echo '<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0"><tr><td>';
@@ -33,7 +34,13 @@ echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" sty
 echo '</td><td width="20">&nbsp;</td>';
 
 // First column (identifier)
-echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot" alt="user" />&nbsp;'.'<a class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a>';
+echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot" alt="user" />&nbsp;'.'<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a> ';
+$msg_cnt = get_message_count ($config["id_user"]);
+if ($msg_cnt > 0) {
+	echo '<a href="ajax.php?page=operation/messages/message&amp;refr=60" rel="#overlay">';
+	print_image ("images/email.png", false, array ("title" => __('You have').' '.$msg_cnt.' '.__('unread message(s)'), "id" => "yougotmail", "class" => "bot"));
+	echo '</a>';
+}
 
 //First column, second row (logout button)
 echo '<br /><br />';
@@ -66,10 +73,9 @@ echo "</a>";
 // Third column
 // Autorefresh
 echo '</td><td width="20%">';
-$refr = (int) get_parameter ("refr");
-if ($refr) {
+if ($config["refr"]) {
 	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : 'index.php?' ).'&amp;refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
-	echo ' (<span id="refr">'.date ("i:s", $refr).'</span>)';
+	echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 	echo '</a>';
 } else {
 	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : "index.php?" ).(count($_GET) ? "&amp;" : "?").'refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
@@ -101,10 +107,11 @@ require_jquery_file ('countdown');
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-<?php if ($refr): ?>
+	$("#yougotmail").pulsate ();
+<?php if ($config["refr"]): ?>
 	t = new Date();
-	t.setTime (t.getTime () + <?php echo $refr * 1000; ?>);
-	$("#refr").countdown ({until: t, 
+	t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);
+	$("#refrcounter").countdown ({until: t, 
 		layout: '%M%nn%M:%S%nn%S',
 		labels: ['', '', '', '', '', '', ''],
 		onExpiry: function () {

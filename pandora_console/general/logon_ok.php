@@ -36,14 +36,6 @@ echo __('This is the Web Management System for Pandora FMS. From here you can ma
 echo "</p>";
 echo '</div>';
 
-// Private messages pending to read !
-$sql = sprintf ("SELECT COUNT(id_mensaje) FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';", $config["id_user"]);
-$resultado = get_db_sql ($sql);
-if ($resultado > 0) {
-	echo '<h2>'.__('You have ').'<a href="index.php?sec=messages&amp;sec2=operation/messages/message">'.$resultado.
-	'<img src="images/email.png" border="0" />'.__(' unread message(s).').'</a></h2>';
-}
-
 // Site news !
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo '<div style="width:350px; float:left; padding-right: 30px;" id="leftcolumn">';

@@ -1,3 +1,45 @@
+2009-02-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* pandoradb_migrate_20_to_21.sql, pandora_db.sql: Altered tmensajes for
+	unixtime
+	
+	* general/header.php: New messages function added flashing 
+	acknowledgment in case of new messages
+	
+	* general/logon_ok.php: Since messages are now in header, they don't need
+	to be there per se
+	
+	* images/close.png, images/transparent.png: Background and close button
+	for overlays.
+	
+	* include/javascript/jquery.pandora.js: Used for loop for flashing thing
+	and added overlay function
+	
+	* include/javascript/jquery.overlay.js: You'll need this for overlay
+	
+	* include/functions_messages.php: Message functions are here. Messages are
+	fully abstracted so they can be drop-in replaced with something else
+	
+	* include/functions_ui.php: Small fixes. Not necessary to load en language
+	files for javascript since they're empty, it only adds to load/interpret
+	
+	* include/functions_db.php: Added get_group_users and get_db_array. Useful
+	
+	* include/functions_html.php: Small doc fixes and fixed table heads
+	
+	* include/styles/pandora.css: Added Overlay classes
+
+	* ajax.php: We need to call safe_url_extraclean for cross scripting
+	
+	* operation/messages/message.php: Rebuilt to use new functions
+	
+	* operation/menu.php: New message link instead of group link
+	
+	* operation/visual_console/render_view.php: Fixed conflict with timer
+	
+	* index.php: Added div for overlay (not in pure mode) and fixed erroneous
+	div in pure mode.
+	
 2009-02-19  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/manage_delete.php: Fixed an error when no agent is

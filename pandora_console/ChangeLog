@@ -1,5 +1,10 @@
 2009-02-19  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/manage_delete.php: Fixed an error when no agent is
+	selected.
+
+2009-02-19  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_ui.php: Added require_css_file(),
 	require_javascript_file() and require_jquery_file() to add CSS,
 	javascript and jQuery files to the header easily without changing

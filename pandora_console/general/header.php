@@ -95,7 +95,7 @@ echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/event
 // Styled text
 echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
 
-$config['jquery'][] = 'countdown';
+require_jquery_file ('countdown');
 ?>
 
 <script language="javascript" type="text/javascript">

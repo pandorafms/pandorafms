@@ -83,10 +83,10 @@ echo '</div>';
 
 /* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
-$config['css'][] = 'datepicker';
-$config['jquery'][] = 'ui.core';
-$config['jquery'][] = 'ui.datepicker';
-$config['jquery'][] = 'ui.timeentry';
+require_css_file ('datepicker');
+require_jquery_file ('ui.core');
+require_jquery_file ('ui.datepicker');
+require_jquery_file ('ui.timeentry');
 ?>
 <script language="javascript" type="text/javascript">
 

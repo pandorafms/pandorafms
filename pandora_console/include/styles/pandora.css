@@ -761,7 +761,8 @@ table#source_table select,
 table#destiny_table select,
 table#target_table select,
 table#filter_compound_table select,
-table#filter_compound_table #text-search {
+table#filter_compound_table #text-search,
+table#delete_table select {
 	width: 100%;
 }
 table#simple select#network_component_group,

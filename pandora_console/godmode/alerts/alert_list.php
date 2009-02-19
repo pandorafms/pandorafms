@@ -394,10 +394,9 @@ print_submit_button (__('Add'), 'add_action', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 
-$config['css'][] = 'cluetip';
-$config['jquery'][] = 'cluetip';
-$config['jquery'][] = 'pandora.controls';
-
+require_css_file ('cluetip');
+require_jquery_file ('cluetip');
+require_jquery_file ('pandora.controls');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */

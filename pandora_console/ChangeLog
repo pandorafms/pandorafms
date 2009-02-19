@@ -1,3 +1,46 @@
+2009-02-19  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_ui.php: Added require_css_file(),
+	require_javascript_file() and require_jquery_file() to add CSS,
+	javascript and jQuery files to the header easily without changing
+	config object. A path parameter is addded to allow the use on
+	enterprise code.
+
+	* include/functions_db.php: Added
+	get_db_value_filter(), get_db_all_rows_filter() and
+	process_sql_delete(). Fixed delete_agent() style and use these
+	functions. Added process_page_head() from functions_ui.php and changed
+	a bit the config javascript object part.
+
+	* include/functions_custom_graphs.php: Get results indexed by id on
+	get_user_custom_graphs().
+
+	* include/functions.php: Moved process_page_head to functions_ui.php.
+	
+	* godmode/agentes/manage_delete.php: New interface to perform massive
+	agents deletion.
+
+	* godmode/menu.php: Added new option to massive agents deletion.
+
+	* general/main_menu.php, godmode/agentes/manage_config.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/planned_downtime.php,
+	godmode/alerts/alert_compounds.php, godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/reporting/map_builder.php, operation/agentes/networkmap.php,
+	operation/reporting/reporting_viewer.php,
+	operation/visual_console/render_view.php: Use new functions in include
+	CSS and javascript files.
+
+	* index.php: Bit of style when printing the header so the HTML can be
+	readed easily in a editor.
+
+	* include/javascript/pandora.js: Added a variable to determine the
+	enterprise directory.
+
+	* include/styles/pandora.css: Added style for manage_delete.php
+
 2009-02-18  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/alert_manager.php: Removed from repository. Agent

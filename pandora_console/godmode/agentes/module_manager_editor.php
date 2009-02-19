@@ -220,8 +220,9 @@ if ($id_agent_module) {
 }
 echo '</div>';
 echo '</form>';
-$config['jquery'][] = 'ui';
-$config['jquery'][] = 'form';
+
+require_jquery_file ('ui');
+require_jquery_file ('form');
 ?>
 
 <script language="javascript">

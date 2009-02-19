@@ -387,8 +387,8 @@ if ($result !== false) {
 	return;
 }
 
-$config['css'][] = 'cluetip';
-$config['jquery'][] = 'cluetip';
+require_css_file ('cluetip');
+require_jquery_file ('cluetip');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

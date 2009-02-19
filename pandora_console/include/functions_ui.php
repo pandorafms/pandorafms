@@ -413,4 +413,238 @@ function print_help_icon ($help_id, $return = false) {
 	
 	return $output;
 }
+
+/**
+ * Add a CSS file to the HTML head tag.
+ *
+ * To make a CSS file available just put it in include/styles. The
+ * file name should be like "name.css". The "name" would be the value
+ * needed to pass to this function.
+ 
+ * @param string Script name to add without the "jquery." prefix and the ".js"
+ * suffix. Example:
+<code>
+require_css_file ('pandora');
+// Would include include/styles/pandora.js
+</code>
+ *
+ * @return bool True if the file was added. False if the file doesn't exist.
+ */
+function require_css_file ($name, $path = 'include/styles/') {
+	global $config;
+	
+	$filename = $path.$name.'.css';
+	
+	if (! isset ($config['css']))
+		$config['css'] = array ();
+	if (isset ($config['css'][$name]))
+		return true;
+	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+		return false;
+	$config['css'][$name] = $filename;
+	return true;
+}
+
+/**
+ * Add a javascript file to the HTML head tag.
+ *
+ * To make a javascript file available just put it in include/javascript. The
+ * file name should be like "name.js". The "name" would be the value
+ * needed to pass to this function.
+ 
+ * @param string Script name to add without the "jquery." prefix and the ".js"
+ * suffix. Example:
+<code>
+require_javascript_file ('pandora');
+// Would include include/javascript/pandora.js
+</code>
+ *
+ * @return bool True if the file was added. False if the file doesn't exist.
+ */
+function require_javascript_file ($name, $path = 'include/javascript/') {
+	global $config;
+	
+	$filename = $path.$name.'.js';
+	
+	if (! isset ($config['js']))
+		$config['js'] = array ();
+	if (isset ($config['js'][$name]))
+		return true;
+	/* We checks two paths because it may fails on enterprise */
+	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+		return false;
+	$config['js'][$name] = $filename;
+	return true;
+}
+
+/**
+ * Add a jQuery file to the HTML head tag.
+ *
+ * To make a jQuery script available just put it in include/javascript. The
+ * file name should be like "jquery.name.js". The "name" would be the value
+ * needed to pass to this function. Notice that this function does not manage
+ * jQuery denpendencies.
+ 
+ * @param string Script name to add without the "jquery." prefix and the ".js"
+ * suffix. Example:
+<code>
+require_jquery_file ('form');
+// Would include include/javascript/jquery.form.js
+</code>
+ *
+ * @return bool True if the file was added. False if the file doesn't exist.
+ */
+function require_jquery_file ($name, $path = 'include/javascript/') {
+	global $config;
+	
+	$filename = $path.'jquery.'.$name.'.js';
+	
+	if (! isset ($config['jquery']))
+		$config['jquery'] = array ();
+	if (isset ($config['jquery'][$name]))
+		return true;
+	/* We checks two paths because it may fails on enterprise */
+	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
+		return false;
+	
+	$config['jquery'][$name] = $filename;
+	return true;
+}
+
+/**
+ * Callback function to add stuff to the head. This allows us to add scripts
+ * to the header after the fact as well as extensive validation.
+ *
+ * DO NOT CALL print_f, echo, ob_start, ob_flush, ob_end functions here.
+ *
+ * To add css just put them in include/styles and then add them to the
+ * $config['css'] array
+ *
+ * @param string Callback will fill this with the current buffer.
+ * @param bitfield Callback will fill this with a bitfield (see ob_start)
+ * 
+ * @return string String to return to the browser 
+ */
+function process_page_head ($string, $bitfield) {
+	global $config;
+	$output = '';
+	
+	if ($config["refr"] > 0) {
+		// Agent selection filters and refresh
+		$query = 'http' . (isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+		if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443)) {
+			$query .= ":" . $_SERVER['SERVER_PORT'];
+		}
+		$query .= $_SERVER['SCRIPT_NAME'];
+		
+		if (sizeof ($_REQUEST))
+			//Some (old) browsers don't like the ?&key=var
+			$query .= '?1=1';
+		
+		//We don't clean these variables up as they're only being passed along
+		foreach ($_GET as $key => $value) {
+			/* Avoid the 1=1 */
+			if ($key == 1)
+				continue;
+			$query .= '&amp;'.$key.'='.$value;
+		}
+		foreach ($_POST as $key => $value) {
+			$query .= '&amp;'.$key.'='.$value;
+		}
+		
+		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'" />';
+	}
+	$output .= "\n\t";
+	$output .= '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
+	<meta http-equiv="expires" content="0" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta name="resource-type" content="document" />
+	<meta name="distribution" content="global" />
+	<meta name="author" content="Sancho Lerena" />
+	<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
+	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
+	<meta name="robots" content="index, follow" />
+	<link rel="icon" href="images/pandora.ico" type="image/ico" />
+	<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css" />
+	<!--[if gte IE 6]>
+	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
+	<![endif]-->
+	<script type="text/javascript" src="include/javascript/pandora.js"></script>
+	<script type="text/javascript" src="include/javascript/jquery.js"></script>
+	<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>
+	<script type="text/javascript" src="include/languages/time_'.$config['language'].'.js"></script>
+	<script type="text/javascript" src="include/languages/date_'.$config['language'].'.js"></script>
+	<script type="text/javascript" src="include/languages/countdown_'.$config['language'].'.js"></script>'."\n\t";
+	
+	if (!empty ($config['css'])) {
+		//We can't load empty and we loaded current style and ie
+		$loaded = array ('', $config["style"], 'ie');
+		foreach ($config['css'] as $name => $filename) {
+			if (in_array ($name, $loaded))
+				continue;
+			
+			array_push ($loaded, $name);
+			$output .= '<link rel="stylesheet" href="'.$filename.'" type="text/css" />'."\n\t";
+		}
+	}
+	
+	if (!empty ($config['js'])) {
+		//Load other javascript
+		//We can't load empty and we loaded wz_jsgraphics and pandora
+		$loaded = array ('', 'pandora', 'date_'.$config['language'],
+			'time_'.$config['language'], 'countdown_'.$config['language']);
+		foreach ($config['js'] as $name => $filename) {
+			if (in_array ($name, $loaded))
+				continue;
+			
+			array_push ($loaded, $name);
+			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+
+		}
+	}
+	
+	if (!empty ($config['jquery'])) {
+		//Load jQuery
+		$loaded = array ('', 'pandora');
+		
+		//Then add each script as necessary
+		foreach ($config['jquery'] as $name => $filename) {
+			if (in_array ($name, $loaded))
+				continue;
+			
+			array_push ($loaded, $name);
+			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+		}
+	}
+	
+	$output .= $string;
+	
+	return $output;
+}
+
+/**
+ * Callback function to add stuff to the body
+ *
+ * @param string Callback will fill this with the current buffer.
+ * @param bitfield Callback will fill this with a bitfield (see ob_start)
+ * 
+ * @return string String to return to the browser  
+ */
+function process_page_body ($string, $bitfield) {
+	global $config;
+	
+	// Show custom background
+	if ($config["pure"] == 0) {
+		$output = '<body style="background-color:#555555;">';
+	} else {
+		$output = '<body>'; //Don't enforce a white background color. Let user style sheet do that
+	}
+	
+	$output .= $string;
+	
+	$output .= '</body>';
+	
+	return $output;
+}
 ?>

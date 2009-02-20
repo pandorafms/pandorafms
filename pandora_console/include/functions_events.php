@@ -225,32 +225,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			}
 			
 			/* Event type */
-			switch ($event["event_type"]) {
-				case "alert_recovered":
-					$data[1] = print_image ("images/error.png", true, array ("title" => __('Alert recovered')));
-					break;
-				case "alert_manual_validation": 
-					$data[1] = print_image ("images/eye.png", true, array ("title" => __('Alert manually validated')));
-					break;
-				case "monitor_up":
-					$data[1] = print_image ("images/lightbulb.png", true, array ("title" => __('Monitor up')));
-					break;
-				case "monitor_down":
-					$data[1] = print_image ("images/lightbulb_off.png", true, array ("title" => __('Monitor down')));
-					break;
-				case "alert_fired":
-					$data[1] = print_image ("images/bell.png", true, array ("title" => __('Alert fired')));
-					break;
-				case "system";
-					$data[1] = print_image ("images/cog.png", true, array ("title" => __('System')));
-					break;
-				case "recon_host_detected";
-					$data[1] = print_image ("images/network.png", true, array ("title" => __('Host detected by recon server')));
-					break;
-				default: 
-					$data[1] = print_image ("images/err.png", true, array ("title" => $event["event_type"]));
-					break;
-			}
+			$data[1] = print_event_type_img ($event["event_type"], true);
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
 			$wrap = floor ($width / 10);
@@ -263,7 +238,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[3] = print_agent_name ($event["id_agente"], true, floor ($width / 20)); //At 440 this would be be 22
+				$data[3] = print_agent_name ($event["id_agente"], true, floor ($width / 20)); //At 440 this would be be 22.
 			// for System or SNMP generated alerts
 			} elseif ($event["event_type"] == "system") {
 				$data[3] = __('System');
@@ -289,5 +264,44 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 		unset ($table);
 		return $return;
 	}
+}
+
+
+/** 
+ * Prints the event type image
+ * 
+ * @param string $type Event type from SQL 
+ * @param bool $return Whether to return or print
+ * 
+ * @return string HTML with img 
+ */
+function print_event_type_img ($type, $return = false) {
+	switch ($type) {
+		case "alert_recovered": 
+			return print_image ("images/error.png", $return, array ("title" => __('Alert recovered')));
+		case "alert_manual_validation": 
+			return print_image ("images/eye.png", $return, array ("title" => __('Alert manually validated')));
+		case "going_up_warning":
+			return print_image ("images/b_yellow.png", $return, array ("title" => __('Going from critical to warning')));
+		case "going_down_critical":
+		case "going_up_critical": //This is to be backwards compatible
+			return print_image ("images/b_red.png", $return, array ("title" => __('Going down to critical state')));
+		case "going_up_normal":
+		case "going_down_normal": //This is to be backwards compatible
+			return print_image ("images/b_green.png", $return, array ("title" => __('Going up to normal state')));
+		case "going_down_warning":
+			return print_image ("images/b_yellow.png", $return, array ("title" => __('Going down from normal to warning')));
+		case "alert_fired":
+			return print_image ("images/bell.png", $return, array ("title" => __('Alert fired')));
+		case "system";
+			return print_image ("images/cog.png", $return, array ("title" => __('SYSTEM')));
+		case "recon_host_detected";
+			return print_image ("images/network.png", $return, array ("title" => __('Recon server detected a new host')));
+		case "new_agent";
+			return print_image ("images/wand.png", $return, array ("title" => __('New agent created')));
+		case "unknown": 
+		default:
+			return print_image ("images/err.png", $return, array ("title" => __('Unknown type:').': '.$type));
+	}	
 }
 ?>

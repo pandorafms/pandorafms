@@ -84,9 +84,14 @@ sub pandora_snmptrapd {
 	my $sql_insert;
 	my @index_data;
 
+	# open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
+	
 	while ( ! -e $snmp_logfile) { # Wait until a snmplogfile exists
-		sleep 5; 
+		sleep ($pa_config{'server_threshold'});
+		pandora_serverkeepaliver($pa_config,2,$dbh);
 	}
+	
 	open (SNMPLOGFILE, $snmp_logfile);
 	print " [*] SNMP Console enabled \n";
 	$index_data[0]=0;
@@ -115,9 +120,7 @@ sub pandora_snmptrapd {
 			$datos = readline SNMPLOGFILE;
 		}
 	}
-	# open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
-	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
-
+	
 	my $trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
 
 	# Main loop for reading file

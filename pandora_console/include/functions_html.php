@@ -39,6 +39,16 @@
 function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
 	$output = "\n";
 	
+	static $idcounter = array ();
+	
+	//If duplicate names exist, it will start numbering. Otherwise it won't (for backwards compatibility)
+	if (isset ($idcounter[$name])) {
+		$idcounter[$name]++;
+		$name = $name.$idcounter;
+	} else {
+		$idcounter[$name] = 0;
+	}
+	
 	$attributes = "";
 	if (!empty ($script)) {
 		$attributes .= ' onchange="'.$script.'"';
@@ -72,7 +82,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
-			} elseif (!is_array ($selected) && $value == $selected) {
+			} elseif (!is_array ($selected) && $value === $selected) { //Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
 			if ($label === '') {
@@ -292,7 +302,7 @@ function print_submit_button ($label = 'OK', $name = '', $disabled = false, $att
 	if (!$name) {
 		$name="unnamed";
 	} 
-	
+		
 	$output = '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
 	if ($disabled)
 		$output .= ' disabled="disabled"';
@@ -345,6 +355,16 @@ function print_button ($label = 'OK', $name = '', $disabled = false, $script = '
  * @return string HTML code if return parameter is true.
  */
 function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
+	static $idcounter = array ();
+	
+	//If duplicate names exist, it will start numbering. Otherwise it won't
+	if (isset ($idcounter[$name])) {
+		$idcounter[$name]++;
+		$name = $name.$idcounter;
+	} else {
+		$idcounter[$name] = 0;
+	}
+	
 	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
 	$output .= safe_input ($value);
 	$output .= '</textarea>';
@@ -641,8 +661,18 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
  * @return string HTML code if return parameter is true.
  */
 function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
+	static $idcounter = array ();
+	
+	//If duplicate names exist, it will start numbering. Otherwise it won't
+	if (isset ($idcounter[$name])) {
+		$idcounter[$name]++;
+		$name = $name.$idcounter[$name];
+	} else {
+		$idcounter[$name] = 0;
+	}
+		
 	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
-	$output .= ' id="checkbox-'.$name.'"';
+	$output .= ' id="checkbox-'.str_replace (array ("[", "]"), '', $name).'"'; //[ and ] are some of those things that can't be in an id string. Add more where necessary
 	
 	if ($script != '') {
 		 $output .= ' onClick="'. $script . '"';
@@ -676,23 +706,6 @@ function print_checkbox ($name, $value, $checked = false, $return = false) {
 		return $output;
 	echo $output;
 }
-
-/** 
- * Prints only a tip button which shows a text when the user puts the mouse over it.
- * 
- * @param string Complete text to show in the tip
- * @param bool whether to return an output string or echo now
- *
- * @return string HTML code if return parameter is true.
- */
-function print_help_tip ($text, $return = false) {
-	$output = '<a href="#" class="tip">&nbsp;<span>'.$text.'</span></a>';
-	
-	if ($return)
-		return $output;
-	echo $output;
-}
-
 
 /**
  * Prints an image HTML element.

@@ -1,3 +1,22 @@
+2009-02-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* pandoradb_migrate_20_to_21.sql, pandoradb.sql: Fixed going up/down
+	strings
+	
+	* godmode/setup/setup.php: Fixed event hours display
+	
+	* operation/events/events.php: Fixed several major bugs with pagination
+	and the new event types.
+	
+	* include/functions.php, include/functions_ui.php, 
+	include/functions_html.php: Moved pagination and print_help_tip to 
+	functions_ui.php. Repeat id's are now fixed backwards compatible. 
+	Also fixed a bug in print_select where type comparisons against would 
+	fail since PHP evaluates strings to (int) 0
+	
+	* include/functions_events.php: Added print_event_type_img () and altered
+	the other functions to work with it
+	
 2009-02-20  Esteban Sanchez  <estebans@artica.es>
 
 	* styles/pandora.css: Added input.add to a list which was missing.

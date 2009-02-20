@@ -652,4 +652,144 @@ function process_page_body ($string, $bitfield) {
 	
 	return $output;
 }
+
+/** 
+ * Prints a pagination menu to browse into a collection of data.
+ * 
+ * @param int $count Number of elements in the collection.
+ * @param string $url URL of the pagination links. It must include all form
+ * values as GET form.
+ * @param int $offset Current offset for the pagination. Default value would be
+ * taken from $_REQUEST['offset']
+ * @param int $pagination Current pagination size. If a user requests a larger
+ * pagination than config["block_size"]
+ * @param bool $return Whether to return or print this 
+ *
+ * @return string The pagination div or nothing if no pagination needs to be done
+ */
+function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false) {
+	global $config;
+	
+	if (empty ($pagination)) {
+		$pagination = $config["block_size"];
+	}
+	
+	if (empty ($offset)) {
+		$offset = (int) get_parameter ('offset');
+	}
+	
+	$url = safe_input ($url);
+	
+	/* 	URL passed render links with some parameter
+	 &offset - Offset records passed to next page
+	 &counter - Number of items to be blocked 
+	 Pagination needs $url to build the base URL to render links, its a base url, like 
+	 " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
+	 */
+	$block_limit = 15; // Visualize only $block_limit blocks
+	if ($count <= $pagination) {
+		return false;
+	}
+	// If exists more registers than I can put in a page, calculate index markers
+	$index_counter = ceil($count/$pagination); // Number of blocks of block_size with data
+	$index_page = ceil($offset/$pagination)-(ceil($block_limit/2)); // block to begin to show data;
+	if ($index_page < 0)
+		$index_page = 0;
+	
+	// This calculate index_limit, block limit for this search.
+	if (($index_page + $block_limit) > $index_counter)
+		$index_limit = $index_counter;
+	else
+		$index_limit = $index_page + $block_limit;
+	
+	// This calculate if there are more blocks than visible (more than $block_limit blocks)
+	if ($index_counter > $block_limit )
+		$paginacion_maxima = 1; // If maximum blocks ($block_limit), show only 10 and "...."
+	else
+		$paginacion_maxima = 0;
+	
+	// This setup first block of query
+	if ( $paginacion_maxima == 1)
+		if ($index_page == 0)
+			$inicio_pag = 0;
+		else
+			$inicio_pag = $index_page;
+		else
+			$inicio_pag = 0;
+	
+	$output = '<div>';
+	// Show GOTO FIRST button
+	$output .= '<a href="'.$url.'&amp;offset=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	// Show PREVIOUS button
+	if ($index_page > 0){
+		$index_page_prev= ($index_page-(floor($block_limit/2)))*$pagination;
+		if ($index_page_prev < 0)
+			$index_page_prev = 0;
+		$output .= '<a href="'.$url.'&amp;offset='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
+	}
+	$output .= "&nbsp;&nbsp;";
+	// Draw blocks markers
+	// $i stores number of page
+	for ($i = $inicio_pag; $i < $index_limit; $i++) {
+		$inicio_bloque = ($i * $pagination);
+		$final_bloque = $inicio_bloque + $pagination;
+		if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
+			$final_bloque = ($i-1) * $pagination + $count-(($i-1) * $pagination);
+		}
+		$output .= "<span>";
+		
+		$inicio_bloque_fake = $inicio_bloque + 1;
+		// To Calculate last block (doesnt end with round data,
+		// it must be shown if not round to block limit)
+		$output .= '<a href="'.$url.'&amp;offset='.$inicio_bloque.'">';
+		if ($inicio_bloque == $offset) {
+			$output .= "<b>[ $i ]</b>";
+		} else {
+			$output .= "[ $i ]";
+		}
+		$output .= '</a></span>';
+	}
+	$output .= "&nbsp;&nbsp;";
+	// Show NEXT PAGE (fast forward)
+	// Index_counter stores max of blocks
+	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
+		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
+		if ($prox_bloque > $count)
+			$prox_bloque = ($count -1) - $pagination;
+		$output .= '<a href="'.$url.'&amp;offset='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
+		$i = $index_counter;
+	}
+	// if exists more registers than i can put in a page (defined by $block_size config parameter)
+	// get offset for index calculation
+	// Draw "last" block link, ajust for last block will be the same
+	// as painted in last block (last integer block).	
+	if (($count - $pagination) > 0) {
+		$myoffset = floor (($count - 1) / $pagination) * $pagination;
+		$output .= '<a href="'.$url.'&amp;offset='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
+	}
+	// End div and layout
+	$output .= "</div>";
+	
+	if ($return === false)
+		echo $output;
+	
+	return $output;
+}
+
+/** 
+ * Prints only a tip button which shows a text when the user puts the mouse over it.
+ * 
+ * @param string Complete text to show in the tip
+ * @param bool whether to return an output string or echo now
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_help_tip ($text, $return = false) {
+	$output = '<a href="#" class="tip">&nbsp;<span>'.$text.'</span></a>';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+	
 ?>

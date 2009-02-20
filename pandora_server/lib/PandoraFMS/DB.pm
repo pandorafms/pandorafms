@@ -812,13 +812,13 @@ sub pandora_writestate (%$$$$$$) {
 					$severity = 3;
 					enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'WARN', $dbh]);
 				} elsif ($data_status->{'estado'} == 1){
-					$event_type = "going_up_critical";
-					$status_name = "going up to CRITICAL";
+					$event_type = "going_down_critical";
+					$status_name = "going down to CRITICAL";
 					$severity = 4;
 					enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'ERR', $dbh]);
 				} elsif ($data_status->{'estado'} == 0){
-					$event_type = "going_down_normal";
-					$status_name = "going down to NORMAL";
+					$event_type = "going_up_normal";
+					$status_name = "going up to NORMAL";
 					$severity = 2;
                     enterprise_hook('mcast_change_report', [$pa_config, $module_data->{'nombre'}, $module_data->{'custom_id'}, $timestamp, 'OK', $dbh]);
 				}
@@ -830,13 +830,13 @@ sub pandora_writestate (%$$$$$$) {
 							$module_data->{'id_agente'}, $severity, 0, $module_data->{'id_agente_modulo'}, 
 							$event_type, $dbh);
 							
-				if ($event_type eq "going_down_warning"){
+				if ($event_type eq "going_up_warning"){
 					# Clean up and system mark all active CRITICAL events for this module
-					db_do ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND event_type = 'going_up_critical'", $dbh);
+					db_do ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND event_type = 'going_down_critical'", $dbh);
 				}
-				elsif ($event_type eq "going_down_normal"){
+				elsif ($event_type eq "going_up_normal"){
 					# Clean up and system mark all active WARNING and CRITICAL events for this module 
-					db_do ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND (event_type = 'going_up_warning' OR event_type = 'going_down_warning' OR event_type = 'going_up_critical')", $dbh);
+					db_do ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND (event_type = 'going_up_warning' OR event_type = 'going_down_warning' OR event_type = 'going_down_critical')", $dbh);
 				}
 			}
 		}

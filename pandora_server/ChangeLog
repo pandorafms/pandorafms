@@ -1,3 +1,11 @@
+2009-02-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* bin/pandora_snmpconsole: Fixed SNMP console going down while 
+	waiting on snmpd
+
+	* lib/PandoraFMS/DB.pm: Fixed language from going_down_normal to
+	going_up_normal and going_up_critical to going_down_critical
+
 2009-02-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* bin/pandora_server: Fixed Data server. Wouldn't start because of 

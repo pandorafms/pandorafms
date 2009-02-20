@@ -220,6 +220,7 @@ label {
 	display: block;
 	padding-top: 4px;
 	font-weight: bold;
+	text-align: left;
 }
 th > label {
 	padding-top: 7px;
@@ -253,7 +254,8 @@ input.sub {
 	font-size: 8pt;
 	background-color: #e5e5e5;
 }
-input.next, input.upd, input.ok, input.wand, input.delete, input.search, input.copy {
+input.next, input.upd, input.ok, input.wand, input.delete, input.search,
+input.copy, input.add {
 	padding-right: 21px;
 }
 input.next {

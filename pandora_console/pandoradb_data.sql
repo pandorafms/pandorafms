@@ -151,7 +151,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
-(1,'ArticaST','www.artica.es'),
+(1,'ArticaST','http://www.artica.es'),
 (2,'Pandora FMS','http://pandora.sourceforge.net'),
 (3,'Babel Enterprise','http://babel.sourceforge.net'),
 (4,'Openideas','http://www.openideas.info'),

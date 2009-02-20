@@ -1,3 +1,10 @@
+2009-02-20  Esteban Sanchez  <estebans@artica.es>
+
+	* styles/pandora.css: Added input.add to a list which was missing.
+	Aligns labels to the left.
+
+	* pandoradb_data.sql: Fixed link to ArticaST.
+
 2009-02-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* pandoradb_migrate_20_to_21.sql, pandora_db.sql: Altered tmensajes for

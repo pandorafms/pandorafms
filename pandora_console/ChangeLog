@@ -1,3 +1,10 @@
+2009-02-23  Esteban Sanchez  <estebans@artica.es>
+
+	* images/pixel_black.png: Added to
+	repository.
+	
+	* include/functions_reporting.php: Fixed in_array() parameter order. 
+
 2009-02-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* pandoradb_migrate_20_to_21.sql, pandoradb.sql: Fixed going up/down

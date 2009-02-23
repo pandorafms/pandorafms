@@ -143,7 +143,7 @@ function get_group_stats ($id_group) {
 	$cur_time = get_system_time ();
 	
 	$groups = array_keys (get_user_groups ());
-	if ($id_group > 0 && in_array ($groups, $id_group)) {
+	if ($id_group > 0 && in_array ($id_group, $groups)) {
 		//If a group is selected, and we have permissions to it then we don't need to look for them
 		$groups = array ();
 		$groups[0] = $id_group;

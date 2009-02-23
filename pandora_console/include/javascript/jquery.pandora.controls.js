@@ -6,8 +6,8 @@ $(document).ready (function () {
 	$.extend ({
 		pandoraSelectGroup: new function() {
 			this.defaults = {
-				agentSelectId: "id_agent",
-				loadingId: "agent_loading",
+				agentSelect: "select#id_agent",
+				loading: "#agent_loading",
 				callbackBefore: dummyFunc,
 				callbackPre: dummyFunc,
 				callbackPost: dummyFunc,
@@ -20,11 +20,12 @@ $(document).ready (function () {
 				return this.each (function() {
 					this.config = {};
 					
-					var config = $.extend (this.config, $.pandoraSelectGroup.defaults, settings);
+					this.config = $.extend (this.config, $.pandoraSelectGroup.defaults, settings);
+					var config = this.config;
 					
 					$(this).change (function () {
-						var $select = $("select#"+config.agentSelectId).disable ();
-						$("#"+config.loadingId).show ();
+						var $select = $(config.agentSelect).disable ();
+						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
 						config.callbackBefore (this);
 						
@@ -40,9 +41,9 @@ $(document).ready (function () {
 										.attr ("value", id)
 										.html (value);
 									config.callbackPost (id, value, option);
-									$("#"+config.agentSelectId).append (option);
+									$(config.agentSelect).append (option);
 								});
-								$("#"+config.loadingId).hide ();
+								$(config.loading).hide ();
 								$select.enable ();
 								config.callbackAfter ();
 							},
@@ -57,8 +58,8 @@ $(document).ready (function () {
 	$.extend ({
 		pandoraSelectAgent: new function() {
 			this.defaults = {
-				moduleSelectId: "id_agent_module",
-				loadingId: "module_loading",
+				moduleSelect: "select#id_agent_module",
+				loading: "module_loading",
 				callbackBefore: dummyFunc,
 				callbackPre: dummyFunc,
 				callbackPost: dummyFunc,
@@ -71,11 +72,13 @@ $(document).ready (function () {
 				return this.each (function() {
 					this.config = {};
 					
-					var config = $.extend (this.config, $.pandoraSelectAgent.defaults, settings);
+					this.config = $.extend (this.config, $.pandoraSelectAgent.defaults, settings);
 					
+					var config = this.config;
+
 					$(this).change (function () {
-						var $select = $("select#"+config.moduleSelectId).disable ();
-						$("#"+config.loadingId).show ();
+						var $select = $(config.moduleSelect).disable ();
+						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
 						config.callbackBefore (this);
 						
@@ -91,9 +94,9 @@ $(document).ready (function () {
 										.attr ("value", value['id_agente_modulo'])
 										.html (html_entity_decode (value['nombre']));
 									config.callbackPost (i, value, option);
-									$("#"+config.moduleSelectId).append (option);
+									$(config.moduleSelect).append (option);
 								});
-								$("#"+config.loadingId).hide ();
+								$(config.loading).hide ();
 								$select.enable ();
 								config.callbackAfter ();
 							},

@@ -116,7 +116,7 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 $(document).ready (function () {
 	$("#id_group").pandoraSelectGroup ({
-		agentSelectId: "id_agents\\[\\]"
+		agentSelect: "select#id_agents\\[\\]"
 	});
 });
 </script>

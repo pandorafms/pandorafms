@@ -1,5 +1,19 @@
 2009-02-23  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/jquery.pandora.controls.js: Changed agent and
+	module selector to allow any kind of object instead of only an id.
+	Tiny changes to allow multiple elements in a page.
+
+	* include/functions_html.php: Added a separator for duplicated select
+	elements (it's useful sometimes to get this number with javascript and
+	using a separator helps)
+
+	* godmode/agentes/manage_delete.php,
+	godmode/agentes/manage_config.php: Fixed agent and group selector to
+	fits changes in pandora.controls.js.
+
+2009-02-23  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_html.php: Fixed id counter on print_select.
 
 	* include/functions_db.php: Documentation style correction.

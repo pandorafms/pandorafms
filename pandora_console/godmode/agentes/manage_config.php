@@ -238,13 +238,13 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 $(document).ready (function () {
 	$("#source_id_group").pandoraSelectGroup ({
-		agentSelectId: "source_id_agent",
-		loadingId: "source_agent_loading"
+		agentSelect: "select#source_id_agent",
+		loading: "#source_agent_loading"
 	});
 	
 	$("#destiny_id_group").pandoraSelectGroup ({
-		agentSelectId: "destiny_id_agent\\[\\]",
-		loadingId: "destiny_agent_loading",
+		agentSelect: "select#destiny_id_agent\\[\\]",
+		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {
 			if ($("#source_id_agent").fieldValue ().in_array (id)) {
 				/* Hide source agent */

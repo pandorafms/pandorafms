@@ -44,7 +44,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	//If duplicate names exist, it will start numbering. Otherwise it won't (for backwards compatibility)
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-		$name = $name.$idcounter[$name];
+		$name = $name.'-'.$idcounter[$name];
 	} else {
 		$idcounter[$name] = 0;
 	}

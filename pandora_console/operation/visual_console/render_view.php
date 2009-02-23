@@ -103,7 +103,8 @@ if ($config["pure"] && $config["refr"] != 0) {
 	require_jquery_file ('countdown');
 	require_css_file ('countdown');
 }
-$config['js'][] = 'pandora_visual_console';
+require_javascript_file ('wz_jsgraphics');
+require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */

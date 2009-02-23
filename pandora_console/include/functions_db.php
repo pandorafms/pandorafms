@@ -1587,8 +1587,11 @@ function get_db_all_rows_filter ($table, $filter, $fields = false) {
 			return false;
 	}
 	
+	if (is_array ($filter))
+		$filter = format_array_to_where_clause_sql ($filter);
+	
 	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
-		$fields, $table, format_array_to_where_clause_sql ($filter));
+		$fields, $table, $filter);
 	
 	return get_db_all_rows_sql ($sql);
 }
@@ -1883,50 +1886,6 @@ function return_status_agent ($id_agent = 0) {
 	// TODO: Check any alert for that agent who has recept alerts fired
 	
 	return $status;
-}
-
-/** 
- * Get the status of a layout.
- *
- * It gets all the data of the contained elements (including nested
- * layouts), and makes an AND operation to be sure that all the items
- * are OK. If any of them is down, then result is down (0)
- * 
- * @param int Id of the layout
- * 
- * @return bool The status of the given layout.
- */
-function return_status_layout ($id_layout = 0) {
-	$temp_status = 0;
-	$temp_total = 0;
-	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
-	$result = get_db_all_rows_sql ($sql);
-	if ($result === false)
-		return 0;
-	
-	foreach ($result as $rownum => $data) {
-	
-		// Other Layout (Recursive!)
-		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$temp_status = return_status_layout ($data["id_layout_linked"]);
-			if ($temp_status > $temp_total){
-				$temp_total = $temp_status;
-			}
-			
-		// Module
-		} elseif ($data["id_agente_modulo"] != 0) {
-			$temp_status = return_status_agent_module ($data["id_agente_modulo"]);
-			if ($temp_status > $temp_total)
-				$temp_total = $temp_status;
-				
-		// Agent
-		} else {
-			$temp_status = return_status_agent ($data["id_agent"]);
-			if ($temp_status > $temp_total)
-				$temp_total = $temp_status;
-		}
-	}
-	return $temp_total;
 }
 
 /** 

@@ -119,7 +119,7 @@ if ($delete_report) {
 	$sql2 = sprintf ('DELETE FROM treport WHERE id_report = %d', $id_report);
 	$res = process_sql ($sql);
 	$res2 = process_sql ($sql2);
-	if ($res AND $res2)
+	if ($res && $res2)
 		echo "<h3 class=suc>".__('Reporting successfully deleted')."</h3>";
 	else
 		echo "<h3 class=error>".__('There was a problem deleting reporting')."</h3>";

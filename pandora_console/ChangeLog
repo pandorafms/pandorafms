@@ -1,5 +1,27 @@
 2009-02-23  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/map_builder.php: Use process_sql_update and
+	process_sql_insert instead of generating SQL sentences. Added
+	wz_jsgraphics to draw the lines. Do not draw any lines if no map is
+	selected.
+
+	* include/functions_db.php: Moved return_status_layout() to
+	functions_visual_map.php (and renamed to get_layout_status()). Allow
+	passing a string to get_db_all_rows_filter()
+
+	* include/functions_visual_map.php: Moved get_layout_status() from
+	functions_db.php. Added get_user_layouts().
+
+	* operation/visual_console/index.php: Use get_user_layouts() to fetch
+	layouts.
+
+	* operation/visual_console/render_view.php: Added wz_jsgraphics and
+	changed direct config manipulation with require_javascript_file().
+
+	* godmode/reporting/reporting_builder.php: Style correction.
+
+2009-02-23  Esteban Sanchez  <estebans@artica.es>
+
 	* images/pixel_black.png: Added to
 	repository.
 	

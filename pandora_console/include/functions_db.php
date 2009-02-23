@@ -264,9 +264,7 @@ function give_disabled_group ($id_group) {
  * Get all the agents within a group(s). For non-godmode usage get_user_groups should be used.
  *
  * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
- * 
  * @param bool $disabled Add disabled agents to agents. Default: False.
- * 
  * @param string $case Which case to return the agentname as (lower, upper, none)
  *
  * @return array An array with all agents in the group or an empty array

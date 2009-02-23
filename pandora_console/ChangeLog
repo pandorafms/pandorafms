@@ -1,5 +1,11 @@
 2009-02-23  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_html.php: Fixed id counter on print_select.
+
+	* include/functions_db.php: Documentation style correction.
+
+2009-02-23  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/reporting/map_builder.php: Use process_sql_update and
 	process_sql_insert instead of generating SQL sentences. Added
 	wz_jsgraphics to draw the lines. Do not draw any lines if no map is

@@ -57,10 +57,14 @@ if ($create_layout) {
 		$width = $bg_info[0];
 		$height = $bg_info[1];
 	}
-	$sql = sprintf ('INSERT INTO tlayout (name, id_group, background, height, width)
-			VALUES ("%s", %d, "%s", %d, %d)',
-			$name, $id_group, $background, $height, $width);
-	$id_layout = process_sql ($sql, 'insert_id');
+	$values = array ();
+	$values['name'] = $name;
+	$values['id_group'] = $id_group;
+	$values['background'] = $background;
+	$values['height'] = $height;
+	$values['width'] = $width;
+	
+	$id_layout = process_sql_insert ('tlayout', $values);
 	if ($id_layout !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 	} else {
@@ -72,10 +76,8 @@ if ($create_layout) {
 }
 
 if ($delete_layout) {
-	$sql = sprintf ('DELETE FROM tlayout_data WHERE id_layout = %d', $id_layout);
-	process_sql ($sql);
-	$sql = sprintf ('DELETE FROM tlayout WHERE id = %d', $id_layout);
-	$result = process_sql ($sql);
+	process_sql_delete ('tlayout_data', array ('id_layout', $id_layout));
+	$result = process_sql_delete ('tlayout', array ('id', $id_layout));
 	if ($result) {
 		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
 	} else {
@@ -98,11 +100,11 @@ if ($update_layout) {
 		$width = $bg_info[0];
 	if (! $height)
 		$height = $bg_info[1];
-	$sql = sprintf ('UPDATE tlayout SET name = "%s", background = "%s", 
-			height = %d, width = %d
-			WHERE id = %d',
-			$name, $background, $height, $width, $id_layout);
-	$result = mysql_query ($sql);
+	
+	$result = process_sql_update ('tlayout',
+		array ('name' => $name, 'background' => $background,
+			'height' => $height, 'width' => $width),
+		array ('id' => $id));
 	if ($result) {
 		echo '<h3 class="suc">'.__('Update layout successful').'</h3>';
 	} else {
@@ -115,7 +117,7 @@ if ($update_layout) {
 
 if ($get_background_info) {
 	$file = (string) get_parameter ('background');
-	if (file_exist('images/console/background/'.$file)){
+	if (file_exist ('images/console/background/'.$file)){
 		$info = getimagesize ('images/console/background/'.$file);
 		$info['width'] = $info[0];
 		$info['height'] = $info[1];
@@ -185,7 +187,9 @@ if ($update_layout_data_coords) {
 			pos_x = %d, pos_y = %d
 			WHERE id = %d',
 			$layout_data_x, $layout_data_y, $id_layout_data);
-	process_sql ($sql);
+	process_sql_update ('tlayout_data',
+		array ('pos_x' => $layout_data_x, 'pos_y' => $layout_data_y),
+		array ('id' => $id_layout_data));
 	
 	if (defined ('AJAX')) {
 		exit;
@@ -196,12 +200,11 @@ if ($delete_layout_data) {
 	$ids_layout_data = (array) get_parameter ('ids_layout_data');
 	
 	foreach ($ids_layout_data as $id_layout_data) {
-		$sql = sprintf ('UPDATE tlayout_data SET parent_item = 0 WHERE parent_item = %d',
-				$id_layout_data);
-		process_sql ($sql);
+		process_sql_update ('tlayout_data', array ('parent_item' => 0),
+			array ('parent_item' => $id_layout_data));
 		$sql = sprintf ('DELETE FROM tlayout_data WHERE id = %d',
 				$id_layout_data);
-		process_sql ($sql);
+		process_sql_delete ('tlayout_data', array ('id' => $id_layout_data));
 	}
 	
 	if (defined ('AJAX')) {
@@ -223,25 +226,19 @@ if ($update_layout_data) {
 	$layout_data_width = (int) get_parameter ("width");
 	$layout_data_height = (int) get_parameter ("height");
 	
-	$sql = sprintf ('UPDATE tlayout_data SET
-			image = "%s", label = "%s",
-			label_color = "%s",
-			id_agent = %d,
-			id_agente_modulo = %d,
-			type = %d, parent_item = %d,
-			period = %d, id_layout_linked = %d,
-			width = %d, height = %d
-			WHERE id = %d',
-			$layout_data_image, $layout_data_label,
-			$layout_data_label_color,
-			$layout_data_id_agent,
-			$layout_data_id_agent_module,
-			$layout_data_type, $layout_data_parent_item,
-			$layout_data_period * 3600,
-			$layout_data_map_linked,
-			$layout_data_width, $layout_data_height,
-			$id_layout_data);
-	$result = process_sql ($sql);
+	$values = array ();
+	$values['image'] = $layout_data_image;
+	$values['label'] = $layout_data_label;
+	$values['label_color'] = $layout_data_label_color;
+	$values['id_agent'] = $layout_data_id_agent;
+	$values['id_agente_modulo'] = $layout_data_id_agent_module;
+	$values['type'] = $layout_data_type;
+	$values['parent_item'] = $layout_data_parent_item;
+	$values['period'] = $layout_data_period;
+	$values['id_layout_linked'] = $layout_data_map_linked;
+	$values['height'] = $height;
+	$values['width'] = $width;
+	$result = process_sql_update ('tlayout_data', $values, array ('id' => $id_layout_data));
 	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Updated successfully').'</h3>';
@@ -439,6 +436,7 @@ require_jquery_file ('ui.core');
 require_jquery_file ('ui.draggable');
 require_jquery_file ('ui.droppable');
 require_jquery_file ('colorpicker');
+require_javascript_file ('wz_jsgraphics');
 require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
@@ -470,8 +468,10 @@ function agent_changed (event, id_agent, selected) {
 }
 
 $(document).ready (function () {
+<?php if ($id_layout): ?>
 	if (lines)
 		draw_lines (lines, 'layout_map');
+<?php endif; ?>
 	$('#background').change (function () {
 		background = this.value;
 		if (background == '')

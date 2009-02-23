@@ -16,18 +16,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Login check
 check_login ();
 
 echo "<h2>".__('Visual console')." &gt; ".__('Summary')."</h2>";
 
-
-$layouts = get_db_all_rows_in_table ('tlayout','name');
-
-if ($layouts === false)
-	$layouts = array ();
+require_once ('include/functions_visual_map.php');
+$layouts = get_user_layouts ();
 
 $table->width = 500;
 $table->data = array ();

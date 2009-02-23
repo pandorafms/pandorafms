@@ -37,7 +37,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		foreach ($layout_datas as $layout_data) {
 			// Linked to other layout ?? - Only if not module defined
 			if ($layout_data['id_layout_linked'] != 0) { 
-				$status = return_status_layout ($layout_data['id_layout_linked']);
+				$status = get_layout_status ($layout_data['id_layout_linked']);
 				$status_parent = 3;
 			} else {
 
@@ -208,9 +208,94 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
  * @return array Layout data types
  */
 function get_layout_data_types () {
-	$types = array (0 => __('Static graph'),
-			1 => __('Module graph'));
+	$types = array ();
+	$types[0] = __('Static graph');
+	$types[1] = __('Module graph');
+	
 	return $types;
 }
 
+/**
+ * Get a list with the layouts for a user.
+ *
+ * @param int User id.
+ * @param bool Wheter to return all the fields or only the name (to use in
+ * print_select() directly)
+ * @param array Additional filters to filter the layouts.
+ *
+ * @return array A list of layouts the user can see.
+ */
+function get_user_layouts ($id_user = 0, $only_names = false, $filter = false) {
+	if (! is_array ($filter))
+		$filter = array ();
+	
+	$where = format_array_to_where_clause_sql ($filter);
+	if ($where != '') {
+		$where .= ' AND ';
+	}
+	$groups = get_user_groups ($id_user);
+	$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
+	
+	$layouts = get_db_all_rows_filter ('tlayout', $where);
+	
+	if ($layouts == false)
+		return array ();
+	
+	$retval = array ();
+	foreach ($layouts as $layout) {
+		if ($only_names)
+			$retval[$layout['id']] = $layout['name'];
+		else
+			$retval[$layout['id']] = $layout;
+	}
+	
+	return $retval;
+}
+
+
+/** 
+ * Get the status of a layout.
+ *
+ * It gets all the data of the contained elements (including nested
+ * layouts), and makes an AND operation to be sure that all the items
+ * are OK. If any of them is down, then result is down (0)
+ * 
+ * @param int Id of the layout
+ * 
+ * @return bool The status of the given layout. True if it's OK, false if not.
+ */
+function get_layout_status ($id_layout = 0) {
+	$temp_status = 0;
+	$temp_total = 0;
+	
+	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent
+		FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
+	$result = get_db_all_rows_filter ('tlayout_data', array ('id' => $id_layout),
+		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent'));
+	if ($result === false)
+		return 0;
+	
+	foreach ($result as $rownum => $data) {
+		// Other Layout (Recursive!)
+		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
+			$temp_status = get_layout_status ($data["id_layout_linked"]);
+			if ($temp_status > $temp_total) {
+				$temp_total = $temp_status;
+			}
+			
+		// Module
+		} elseif ($data["id_agente_modulo"] != 0) {
+			$temp_status = return_status_agent_module ($data["id_agente_modulo"]);
+			if ($temp_status > $temp_total)
+				$temp_total = $temp_status;
+				
+		// Agent
+		} else {
+			$temp_status = return_status_agent ($data["id_agent"]);
+			if ($temp_status > $temp_total)
+				$temp_total = $temp_status;
+		}
+	}
+	return $temp_total;
+}
 ?>

@@ -1,3 +1,11 @@
+2009-02-24  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Added get_db_row_filter(). Added
+	documentation for get_db_all_rows_sql_filter().
+	Removed get_db_array() since it was already implemented in
+	get_db_value_filter() and did not matches the code guidelines. Style
+	correction of variable names.
+
 2009-02-23  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/jquery.pandora.controls.js: Changed agent and

@@ -1477,7 +1477,7 @@ get_db_value_filter ('description', 'talert_templates',
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function get_db_value_filter ($field, $table, $filter, $join = 'AND') {
+function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
 	
@@ -1487,7 +1487,7 @@ function get_db_value_filter ($field, $table, $filter, $join = 'AND') {
 	
 	$sql = sprintf ("SELECT %s FROM %s WHERE %s LIMIT 1",
 		$field, $table,
-		format_array_to_where_clause_sql ($filter, $join));
+		format_array_to_where_clause_sql ($filter, $where_join));
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false)
@@ -1543,6 +1543,49 @@ function get_db_row ($table, $field_search, $condition) {
 }
 
 /** 
+ * Get the row of a table in the database using a complex filter.
+ * 
+ * @param string Table to retrieve the data (warning: not cleaned)
+  * @param mixed Filters elements. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+<code>
+Both are similars:
+get_db_row_filter ('table', array ('disabled', 0));
+get_db_row_filter ('table', 'disabled = 0');
+
+Both are similars:
+get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name, description', 'OR');
+get_db_row_filter ('table', 'disabled = 0 OR history_data = 0', 'name, description');
+get_db_row_filter ('table', array ('disabled' => 0, 'history_data' => 0), array ('name', 'description'), 'OR');
+</code>
+ * @param mixed Fields of the table to retrieve. Can be an array or a coma
+ * separated string. All fields are retrieved by default
+ * @param string Condition to join the filters (AND, OR).
+ *
+ * @return mixed Array of the row or false in case of error.
+ */
+function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+	if (empty ($fields)) {
+		$fields = '*';
+	} else {
+		if (is_array ($fields))
+			$fields = implode (',', $fields);
+		else if (! is_string ($fields))
+			return false;
+	}
+	
+	if (is_array ($filter))
+		$filter = format_array_to_where_clause_sql ($filter, $where_join);
+	
+	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
+		$fields, $table, $filter);
+	
+	return get_db_row_sql ($sql);
+}
+
+/** 
  * Get a single field in the databse from a SQL query.
  *
  * @param string SQL statement to execute
@@ -1575,7 +1618,30 @@ function get_db_all_rows_sql ($sql) {
 	return false;
 }
 
-function get_db_all_rows_filter ($table, $filter, $fields = false) {
+/** 
+ * Get all the rows of a table in the database that matches a filter.
+ * 
+ * @param string Table to retrieve the data (warning: not cleaned)
+ * @param mixed Filters elements. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+<code>
+Both are similars:
+get_db_all_rows_filter ('table', array ('disabled', 0));
+get_db_all_rows_filter ('table', 'disabled = 0');
+
+Both are similars:
+get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+</code>
+ * @param mixed Fields of the table to retrieve. Can be an array or a coma
+ * separated string. All fields are retrieved by default
+ * @param string Condition of the filter (AND, OR).
+ *
+ * @return mixed Array of the row or false in case of error.
+ */
+function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND') {
 	if (empty ($fields)) {
 		$fields = '*';
 	} else {
@@ -1586,7 +1652,7 @@ function get_db_all_rows_filter ($table, $filter, $fields = false) {
 	}
 	
 	if (is_array ($filter))
-		$filter = format_array_to_where_clause_sql ($filter);
+		$filter = format_array_to_where_clause_sql ($filter, $where_join);
 	
 	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
 		$fields, $table, $filter);
@@ -2668,7 +2734,7 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
 			/* FIXME: Should we clean the string for sanity? */
 			$query .= $where;
 		} else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where);
+			$query .= format_array_to_where_clause_sql ($where, $where_join);
 		}
 	}
 	
@@ -2716,7 +2782,7 @@ function process_sql_delete ($table, $where, $where_join = 'AND') {
 			 Who cares if this is deleting data... */
 			$query .= $where;
 		} else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where);
+			$query .= format_array_to_where_clause_sql ($where, $where_join);
 		}
 	}
 	
@@ -2731,7 +2797,8 @@ function process_sql_delete ($table, $where, $where_join = 'AND') {
  * @return array An array with all the users or an empty array
  */
 function get_group_users ($id_group) {
-	$result = get_db_array ("id_usuario", "tusuario_perfil", array ("id_grupo" => (int) $id_group), "AND");
+	$result = get_db_value_filter ("id_usuario", "tusuario_perfil",
+		array ("id_grupo" => (int) $id_group));
 	
 	//This removes stale users from the list. This can happen if switched to another auth scheme
 	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
@@ -2745,45 +2812,5 @@ function get_group_users ($id_group) {
 		return array ();
 	}
 	return $result;
-}
-
-/** 
- * Get the row of a table in the database.
- * 
- * @param string Field name to get (warning: not cleaned)
- * @param string Table to retrieve the data (warning: not cleaned)
- * @param string Filter elements (array ("field" => "value", "field2" => "value2"))
- * @param string Condition of the filter (AND, OR)
- *
- * @return mixed Array of the row or false in case of error.
- */
-function get_db_array ($field, $table, $filter_arr = false, $filter_cond = "AND") {
-	$filter = '';
-	if (!empty ($filter_arr)) {
-		foreach ($filter_arr as $filter_field => $value) {
-			if (!empty ($filter)) {
-				$filter .= 'AND ';
-			}
-			if (is_numeric ($value)) {
-				$filter .= '`'.$filter_field.'` = '.$value.' ';
-			} else {
-				$filter .= '`'.$filter_field.'` = "'.$value.'" ';
-			}
-		}
-	}
-	
-	$sql = sprintf ("SELECT %s FROM %s WHERE %s", $field, $table, trim ($filter));
-	
-	$result = get_db_all_rows_sql ($sql);
-	
-	if ($result === false)
-		return false;
-	
-	$return = array ();
-	foreach ($result as $row) {
-		$return[] = $row[$field];
-	}
-	
-	return $return;
 }
 ?>

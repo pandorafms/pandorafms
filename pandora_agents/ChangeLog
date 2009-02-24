@@ -1,3 +1,13 @@
+2009-02-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module_proc.cc,
+	  win32/modules/pandora_module_proc.h,
+	  win32/modules/pandora_module_factory.cc,
+	  win32/pandora_windows_service.cc: Fixed some 'work in progress'
+	  code from previous commit.
+
+	* win32/pandora.cc: Updated version string.
+
 2009-02-24  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* linux/pandora_agent.conf: fixed typo.

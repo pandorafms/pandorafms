@@ -209,8 +209,10 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 {
 	bool    rc = false;
 	string  var, filepath;
-	string	tentacle_cmd;
-	
+	string	tentacle_cmd, working_dir;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;
+
 	var = conf->getValue ("temporal");
 	if (var[var.length () - 1] != '\\') {
 		var += "\\";
@@ -244,11 +246,15 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 		      filepath.c_str (), host.c_str ());
 	pandoraDebug ("Command %s", tentacle_cmd.c_str());
 
-	rc = Pandora_Wmi::runProgram (tentacle_cmd.c_str(), CREATE_NO_WINDOW);
+	ZeroMemory (&si, sizeof (si));
+	ZeroMemory (&pi, sizeof (pi));
+	rc = CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE, CREATE_NO_WINDOW,
+				 NULL, NULL, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
 	if (rc == true) {
         return 0;
 	}
-	
+
     pandoraDebug ("Tentacle client was unable to copy %s",
 			      filename.c_str ());
 	return -1;

@@ -1,5 +1,12 @@
 2009-02-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* include/functions_db.php: Fixed where clause
+	
+	* images/groups_small/printer.png: Added printer icon to groups since
+	it might be useful to create a separate printer group
+
+2009-02-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* include/config_process.php: Added compact_header. If you want to
 	save on server hits and increase performance (slightly) enable it.
 	Page loads (on my system) ~500ms faster and feels faster since it 

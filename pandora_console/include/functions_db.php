@@ -2758,8 +2758,8 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
 	
 	if ($where) {
 		if (is_string ($where)) {
-			/* FIXME: Should we clean the string for sanity? */
-			$query .= $where;
+			// No clean, the caller should make sure all input is clean, this is a raw function
+			$query .= " WHERE ".$where;
 		} else if (is_array ($where)) {
 			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
 		}

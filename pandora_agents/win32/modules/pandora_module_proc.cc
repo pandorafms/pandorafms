@@ -80,8 +80,8 @@ Pandora_Module_Proc::getStartDelay () const {
 }
 
 int
-Pandora_Module_Proc::getStopDelay () const {
-	return this->stop_delay;
+Pandora_Module_Proc::getRetryDelay () const {
+	return this->retry_delay;
 }
 
 void
@@ -107,7 +107,8 @@ Pandora_Module_Proc::setStartDelay (int mseconds) {
 	if (mseconds < MIN_DELAY) {
 		return;
 	}
-	this->start_delay = start_delay;
+
+	this->start_delay = mseconds;
 }
 
 void
@@ -115,7 +116,8 @@ Pandora_Module_Proc::setRetryDelay (int mseconds) {
 	if (mseconds < MIN_DELAY) {
 		return;
 	}
-	this->retry_delay = retry_delay;
+
+	this->retry_delay = mseconds;
 }
 
 void
@@ -131,20 +133,27 @@ async_run (Pandora_Module_Proc *module) {
 	prev_res = module->getLatestOutput ();
 	modules = new Pandora_Module_List ();
 	modules->addModule (module);
-	Sleep (this->getStartDelay ());
-	
+	Sleep (module->getStartDelay ());
+
 	while (1) {
+		Sleep (module->getStartDelay ());
 		processes = getProcessHandles (module->getProcessName ());
 		if (processes == NULL) {
 			if (module->isWatchdog ()) {
-				if (counter >= this->getRetries ()) {
-					this->setWatchdog (false);
-				} else {
-					Pandora_Wmi::runProgram (module->getStartCommand ());
-					counter++;
+				if (counter >= module->getRetries ()) {
+					module->setWatchdog (false);
+					continue;
 				}
+
+				/* Retrying... */
+				if (counter > 0) {
+					Sleep (module->getRetryDelay ());
+				}
+
+				Pandora_Wmi::runProgram (module->getStartCommand ());
+				counter++;
 			}
-			Sleep (this->getStartDelay ());
+			Sleep (module->getRetryDelay ());
 			continue;
 		}
 		
@@ -185,8 +194,6 @@ async_run (Pandora_Module_Proc *module) {
 		for (i = 0; i < nprocess; i++)
 			CloseHandle (processes[i]);
 		pandoraFree (processes);
-
-		Sleep (this->getRetryDelay ());
 	}
 	
 	delete modules;

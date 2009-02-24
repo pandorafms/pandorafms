@@ -101,6 +101,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_pattern, module_async;
 	string                 module_watchdog, module_start_command;
 	string                 module_wmiquery, module_wmicolumn;
+	string                 module_retries, module_startdelay, module_retrydelay;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -250,9 +251,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				module_proc = (Pandora_Module_Proc *) module;
 				module_proc->setWatchdog (true);
 				module_proc->setStartCommand (module_start_command);
-				module_proc->setRetries (atoi(module_retries));
-				module_proc->setStartDelay (atoi(module_startdelay));
-				module_proc->setRetryDelay (atoi(module_retrydelay));
+				module_proc->setRetries (atoi(module_retries.c_str ()));
+				module_proc->setStartDelay (atoi(module_startdelay.c_str ()));
+				module_proc->setRetryDelay (atoi(module_retrydelay.c_str ()));
 			}
 		}
 	} else if (module_service != "") {

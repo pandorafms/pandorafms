@@ -37,7 +37,7 @@ namespace Pandora_Modules {
 		string start_command;
 		int retries;
 		int start_delay;
-		int stop_delay;
+		int retry_delay;
 	public:
 		Pandora_Module_Proc    (string name, string process_name);
 		
@@ -46,7 +46,7 @@ namespace Pandora_Modules {
 		bool   isWatchdog      () const;
 		int    getRetries      () const;
 		int    getStartDelay   () const;
-		void   getRetryDelay   () const;
+		int    getRetryDelay   () const;
 		
 		void   setWatchdog     (bool watchdog);
 		void   setStartCommand (string command);

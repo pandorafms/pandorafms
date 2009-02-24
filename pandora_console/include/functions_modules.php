@@ -93,8 +93,7 @@ function get_network_components ($id_module, $filter = false) {
 	
 	$where = '';
 	if (is_array ($filter)) {
-		$where = ' AND ';
-		$where .= format_array_to_where_clause_sql ($filter);
+		$where = format_array_to_where_clause_sql ($filter, 'AND', ' AND ');
 	}
 	
 	$sql = sprintf ('SELECT * FROM tnetwork_component

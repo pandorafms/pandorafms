@@ -617,7 +617,7 @@ function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter =
 		$where .= ' AND disabled = 0 ';
 	
 	if ($filter) {
-		$where .= ' AND '.format_array_to_where_clause_sql ($filter);
+		$where .= format_array_to_where_clause_sql ($filter, 'AND', ' AND ');
 	}
 	
 	$sql = sprintf ('SELECT * FROM talert_template_modules

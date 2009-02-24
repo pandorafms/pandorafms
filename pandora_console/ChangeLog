@@ -1,5 +1,19 @@
 2009-02-24  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_db.php: Fixed a bug in
+	format_array_to_where_clause_sql() when only offset and limit where
+	given. A new parameter was added to solve it, so the behaviour is a
+	bit different now (take a look to the doc examples). Changes were also
+	done in other functions to reflect this new situation.
+
+	* include/functions_alerts.php, include/functions_modules.php: Updated
+	to changes in format_array_to_where_clause_sql()
+
+	* include/functions_ui.php: Added a class to each link of the
+	paginator. Style correction.
+
+2009-02-24  Esteban Sanchez  <estebans@artica.es>
+
 	* include/auth/mysql.php: Added get_user_id(). Removed field check on
 	create_user(). Allow to pass an structure to the functions and use
 	get_user_id() when needed.

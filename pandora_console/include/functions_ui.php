@@ -691,8 +691,8 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		return false;
 	}
 	// If exists more registers than I can put in a page, calculate index markers
-	$index_counter = ceil($count/$pagination); // Number of blocks of block_size with data
-	$index_page = ceil($offset/$pagination)-(ceil($block_limit/2)); // block to begin to show data;
+	$index_counter = ceil ($count /$pagination); // Number of blocks of block_size with data
+	$index_page = ceil ($offset / $pagination) - (ceil ($block_limit / 2)); // block to begin to show data;
 	if ($index_page < 0)
 		$index_page = 0;
 	
@@ -719,13 +719,13 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 	
 	$output = '<div>';
 	// Show GOTO FIRST button
-	$output .= '<a href="'.$url.'&amp;offset=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	$output .= '<a class="pagination go_first" href="'.$url.'&amp;offset=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button
-	if ($index_page > 0){
-		$index_page_prev= ($index_page-(floor($block_limit/2)))*$pagination;
+	if ($index_page > 0) {
+		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		$output .= '<a href="'.$url.'&amp;offset='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;offset='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
 	}
 	$output .= "&nbsp;&nbsp;";
 	// Draw blocks markers
@@ -741,7 +741,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
 		// it must be shown if not round to block limit)
-		$output .= '<a href="'.$url.'&amp;offset='.$inicio_bloque.'">';
+		$output .= '<a class="pagination" href="'.$url.'&amp;offset='.$inicio_bloque.'">';
 		if ($inicio_bloque == $offset) {
 			$output .= "<b>[ $i ]</b>";
 		} else {
@@ -756,7 +756,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		$output .= '<a href="'.$url.'&amp;offset='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;offset='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -765,7 +765,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0) {
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
-		$output .= '<a href="'.$url.'&amp;offset='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_last" href="'.$url.'&amp;offset='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
 	}
 	// End div and layout
 	$output .= "</div>";

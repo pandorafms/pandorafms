@@ -1577,9 +1577,13 @@ function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND
 	}
 	
 	if (is_array ($filter))
-		$filter = format_array_to_where_clause_sql ($filter, $where_join);
+		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+	else if (is_string ($filter))
+		$filter = 'WHERE '.$filter;
+	else
+		$filter = '';
 	
-	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
+	$sql = sprintf ('SELECT %s FROM %s %s',
 		$fields, $table, $filter);
 	
 	return get_db_row_sql ($sql);
@@ -1652,9 +1656,13 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
 	}
 	
 	if (is_array ($filter))
-		$filter = format_array_to_where_clause_sql ($filter, $where_join);
+		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
+	else if (is_string ($filter))
+		$filter = 'WHERE '.$filter;
+	else
+		$filter = '';
 	
-	$sql = sprintf ('SELECT %s FROM %s WHERE %s',
+	$sql = sprintf ('SELECT %s FROM %s %s',
 		$fields, $table, $filter);
 	
 	return get_db_all_rows_sql ($sql);
@@ -1843,15 +1851,14 @@ function format_array_to_update_sql ($values) {
  *
  * This function is useful to generate a WHERE clause for a SQL sentence from
  * a list of values. Example code:
- *
- * <code>
-  $values = array ();
-  $values['name'] = "Name";
-  $values['description'] = "Long description";
-  $values['limit'] = $config['block_size']; // Assume it's 20
-  $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
-  echo $sql;
-  </code>
+<code>
+$values = array ();
+$values['name'] = "Name";
+$values['description'] = "Long description";
+$values['limit'] = $config['block_size']; // Assume it's 20
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+echo $sql;
+</code>
  * Will return:
  * <code>
  * SELECT * FROM table WHERE `name` = "Name" AND `description` = "Long description" LIMIT 20
@@ -1861,11 +1868,33 @@ function format_array_to_update_sql ($values) {
  * There are special parameters such as 'limit' and 'offset' that will be used
  * as LIMIT and OFFSET clauses respectively.
  * @param string Join operator. AND by default.
+ * @param string A prefix to be added to the string. It's useful when limit and
+ * offset could be given to avoid this cases:
+<code>
+$values = array ();
+$values['limit'] = 10;
+$values['offset'] = 20;
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+// Wrong SQL: SELECT * FROM table WHERE LIMIT 10 OFFSET 20
+
+$values = array ();
+$values['limit'] = 10;
+$values['offset'] = 20;
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+// Good SQL: SELECT * FROM table LIMIT 10 OFFSET 20
+
+$values = array ();
+$values['value'] = 5;
+$values['limit'] = 10;
+$values['offset'] = 20;
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, 'AND', 'WHERE');
+// Good SQL: SELECT * FROM table WHERE value = 5 LIMIT 10 OFFSET 20
+</code>
  *
  * @return string Values joined into an SQL string that can fits into the WHERE
  * clause of an SQL sentence.
  */
-function format_array_to_where_clause_sql ($values, $join = 'AND') {
+function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
 	$fields = array ();
 	
 	if (! is_array ($values)) {
@@ -1875,22 +1904,21 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 	$query = '';
 	$limit = '';
 	$offset = '';
+	if (isset ($values['limit'])) {
+		$limit = sprintf (' LIMIT %d', $values['limit']);
+		unset ($values['limit']);
+	}
+	
+	if (isset ($values['offset'])) {
+		$offset = sprintf (' OFFSET %d', $values['offset']);
+		unset ($values['offset']);
+	}
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
 		if (is_numeric ($field))
 			/* Avoid numeric field names */
 			continue;
-		
-		if ($field == 'limit') {
-			$limit = sprintf (' LIMIT %d', $value);
-			continue;
-		}
-		
-		if ($field == 'offset') {
-			$offset = sprintf (' OFFSET %d', $value);
-			continue;
-		}
 		
 		if ($field[0] != "`") {
 			$field = "`".$field."`";
@@ -1912,7 +1940,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND') {
 		$i++;
 	}
 	
-	return $query.$limit.$offset;
+	return (! empty ($query) ? $prefix: '').$query.$limit.$offset;
 }
 
 /** 
@@ -2729,12 +2757,11 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
 	}
 	
 	if ($where) {
-		$query .= ' WHERE ';
 		if (is_string ($where)) {
 			/* FIXME: Should we clean the string for sanity? */
 			$query .= $where;
 		} else if (is_array ($where)) {
-			$query .= format_array_to_where_clause_sql ($where, $where_join);
+			$query .= format_array_to_where_clause_sql ($where, $where_join, ' WHERE ');
 		}
 	}
 	

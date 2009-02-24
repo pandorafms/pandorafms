@@ -187,70 +187,50 @@ if ($create_agent) {
 }
 
 // Show tabs
-echo "<div id='menu_tab_frame'>";
-echo "<div id='menu_tab_left'><ul class='mn'>";
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top'>&nbsp; ".substr(get_agent_name ($id_agente),0,21)."</a>";
-echo "</li>";
-echo "</ul></div>";
+$img_arr = array ("class" => "top", "width" => 16);
 
-echo "<div id='menu_tab'><ul class='mn'>";
+echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
+echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
+print_image ("images/setup.png", false, $img_arr);
+echo '&nbsp; '.mb_substr (get_agent_name ($id_agente),0,21).'</a>';
+echo "</li></ul></div>";
 
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top'>&nbsp;".__('View')."</a>";
-echo "</li>";
+echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+print_image ("images/zoom.png", false, $img_arr);
+echo '&nbsp;'.__('View').'</a></li>';
 
-if ($tab == "main") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top'>&nbsp; ".__('Setup')."</a>";
-echo "</li>";
+echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
+print_image ("images/cog.png", false, $img_arr);
+echo '&nbsp; '.__('Setup').'</a></li>';
 
-if ($tab == "module") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top'>&nbsp;".__('Modules')."</a>";
-echo "</li>";
+echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+print_image ("images/lightbulb.png", false, $img_arr);
+echo '&nbsp; '.__('Modules').'</a></li>';
 
-if ($tab == "alert") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}	
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top'>&nbsp;". __('Alerts')."</a>";
-echo "</li>";
+echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+print_image ("images/bell.png", false, $img_arr);
+echo '&nbsp; '.__('Alerts').'</a></li>';
 
-if ($tab == "template") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".__('Net. Templates')."</a>";
-echo "</li>";
+echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+print_image ("images/network.png", false, $img_arr);
+echo '&nbsp; '.__('Net. Templates').'</a></li>';
 
 enterprise_hook ('inventory_tab');
 
-echo "</ul>";
-echo "</div>";
-echo "</div>"; // menu_tab_frame
+echo "</ul></div></div>";
 
 // Make some space between tabs and title
 // IE might not always show an empty div, added space
-echo "<div style='height: 25px'>&nbsp;</div>";
+echo '<div style="height: 25px;">&nbsp;</div>';
 
 // Show agent creation results
 if ($create_agent) {
-	if (! $agent_created_ok) {
-		echo "<h3 class='error'>".__('There was a problem creating agent')."</h3>";
-		echo __('There was a problem creating agent_keepalive module');
-	} else {
-		echo "<h3 class='suc'>".__('Agent successfully created')."</h3>";
-	}
+	print_error_message ($agent_created_ok, __('Agent successfully created'), __('There was a problem creating the agent'));
 }
 
 // Fix / Normalize module data
@@ -270,11 +250,7 @@ if (isset($_GET["fix_module"])){
 		$error = " - ".__('No data to normalize');
 	}
 	
-	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Deleted data above').' '.$media.'</h3>';
-	} else {
-		echo '<h3 class="error">'.__('Error normalizing module').$error.'</h3>';
-	}
+	print_error_message ($result, __('Deleted data above').' '.$media, __('Error normalizing module').' '.$error);
 }
 
 // ================
@@ -343,16 +319,11 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	}
 }
 
-if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
-	$_GET["id_agente"] = $id_agente;
-}
-
 // Read agent data
-// This should be at the end of all operation checks, to read the changess
-if (isset($_REQUEST["id_agente"])) {
+// This should be at the end of all operation checks, to read the changes - $id_agente doesn't have to be retrieved
+if ($id_agente > 0) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
-	$id_agente = (int) get_parameter ('id_agente');
-	$id_grupo = dame_id_grupo ($id_agente);
+	$id_grupo = get_agent_group ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
@@ -389,7 +360,7 @@ $edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
 if ($update_module || $create_module) {
-	$id_grupo = dame_id_grupo ($id_agente);
+	$id_grupo = get_agent_group ($id_agente);
 	
 	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
 		audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",

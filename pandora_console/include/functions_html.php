@@ -36,7 +36,7 @@
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
+function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
 	$output = "\n";
 	
 	static $idcounter = array ();
@@ -54,7 +54,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$attributes .= ' onchange="'.$script.'"';
 	}
 	if (!empty ($multiple)) {
-		$attributes .= ' multiple="yes" size="10"';
+		$attributes .= ' multiple="multiple" size="10"';
 	}
 	if (!empty ($class)) {
 		$attributes .= ' class="'.$class.'"';
@@ -63,9 +63,12 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$attributes .= ' disabled="disabled"';
 	}
 
-	$output .= '<select id="'.$name.'" name="'.$name.'"'.$attributes.'>';
+	$output .= '<select id="'.str_replace (array ("[", "]"), '', $name).'" name="'.$name.'"'.$attributes.'>';
 
-	if ($nothing != '') {
+	if ($nothing != '' || empty ($fields)) {
+		if ($nothing == '') {
+			$nothing = __('None');
+		}		
 		$output .= '<option value="'.$nothing_value.'"';
 		if ($nothing_value == $selected) {
 			$output .= ' selected="selected"';
@@ -82,7 +85,9 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
-			} elseif (!is_array ($selected) && $value === $selected) { //Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
+			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) { //This fixes string ($value) to int ($selected) comparisons 
+				$output .= ' selected="selected"';
+			} elseif ($value === $selected) { //Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
 			if ($label === '') {

@@ -32,75 +32,6 @@ require_once ('include/functions_modules.php');
 
 echo '<h2>'.__('Agent configuration'). ' &raquo; '. __('Configuration Management').'</h2>';
 
-function process_manage_config ($source_id_agent, $destiny_id_agents) {
-	if (empty ($source_id_agent)) {
-		echo '<h3 class="error">'.__('No source agent to copy').'</h3>';
-		return false;
-	}
-	
-	if (empty ($destiny_id_agents)) {
-		echo '<h3 class="error">'.__('No destiny agent(s) to copy').'</h3>';
-		return false;
-	}
-	
-	$copy_modules = (bool) get_parameter ('copy_modules');
-	$copy_alerts = (bool) get_parameter ('copy_alerts');
-	
-	if ($copy_modules) {
-		$target_modules = (array) get_parameter ('target_modules', array ());
-		if (empty ($target_modules)) {
-			echo '<h3 class="error">'.__('No modules have been selected').'</h3>';
-			return false;
-		}
-		
-		process_sql ('SET AUTOCOMMIT = 0');
-		process_sql ('START TRANSACTION');
-		$error = false;
-		$alerts = array ();
-		foreach ($destiny_id_agents as $id_destiny_agent) {
-			foreach ($target_modules as $id_agent_module) {
-				$result = copy_agent_module_to_agent ($id_agent_module,
-					$id_destiny_agent);
-				
-				if ($result === false) {
-					$error = true;
-					break;
-				}
-				
-				$id_destiny_module = $result;
-				if (! isset ($alerts[$id_agent_module]))
-					$alerts[$id_agent_module] = get_alerts_agent_module ($id_agent_module,
-						true);
-				
-				if ($alerts[$id_agent_module] === false)
-					continue;
-				
-				if ($copy_alerts) {
-					foreach ($alerts[$id_agent_module] as $alert) {
-						$result = copy_alert_agent_module_to_agent_module ($alert['id'],
-							$id_destiny_module);
-						if ($result === false) {
-							$error = true;
-							break;
-						}
-					}
-				}
-			}
-			if ($error)
-				break;
-		}
-		
-		if ($error) {
-			echo '<h3 class="error">'.__('There was an error copying the agent configuration, the copy has been cancelled').'</h3>';
-			process_sql ('ROLLBACK');
-		} else {
-			echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
-			process_sql ('COMMIT');
-		}
-		process_sql ('SET AUTOCOMMIT = 1');
-	}
-}
-
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
 $destiny_id_group = (int) get_parameter ('destiny_id_group');
@@ -133,12 +64,12 @@ $table->data[0][1] = print_select ($groups, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][2] .= '<img src="images/spinner.gif" />';
+$table->data[0][2] .= print_image ("images/spinner.gif", true);
 $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-echo '<form id="manage_config_form" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config">';
+echo '<form id="manage_config_form" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config">';
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
@@ -156,22 +87,22 @@ if ($source_id_agent)
 	$modules = get_agent_modules ($source_id_agent, 'nombre');
 
 $table->data['operations'][0] = __('Operations');
-$table->data['operations'][1] = '<span class="with_modules"'.(empty ($modules) ? ' class="invisible"': '').'>';
+$table->data['operations'][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
 $table->data['operations'][1] .= print_checkbox ('copy_modules', 1, true, true);
 $table->data['operations'][1] .= print_label (__('Copy modules'), 'checkbox-copy_modules', true);
 $table->data['operations'][1] .= '</span><br />';
 
-$table->data['operations'][1] .= '<span class="with_alerts"'.(empty ($alerts) ? ' class="invisible"': '').'>';
+$table->data['operations'][1] .= '<span class="with_alerts'.(empty ($alerts) ? ' invisible': '').'">';
 $table->data['operations'][1] .= print_checkbox ('copy_alerts', 1, true, true);
 $table->data['operations'][1] .= print_label (__('Copy alerts'), 'checkbox-copy_alerts', true);
 $table->data['operations'][1] .= '</span>';
 
 $table->data[1][0] = __('Modules');
-$table->data[1][1] = '<span class="with_modules"'.(empty ($modules) ? ' class="invisible"': '').'>';
+$table->data[1][1] = '<span class="with_modules'.(empty ($modules) ? ' invisible': '').'">';
 $table->data[1][1] .= print_select ($modules,
 	'target_modules[]', 0, false, '', '', true, true);
 $table->data[1][1] .= '</span>';
-$table->data[1][1] .= '<span class="without_modules"'.(! empty ($modules) ? ' class="invisible"': '').'>';
+$table->data[1][1] .= '<span class="without_modules'.(! empty ($modules) ? ' invisible': '').'">';
 $table->data[1][1] .= '<em>'.__('No modules for this agent').'</em>';
 $table->data[1][1] .= '</span>';
 
@@ -186,16 +117,16 @@ foreach ($agent_alerts as $alert) {
 	$name .= ' (<em>'.$modules[$alert['id_agent_module']].'</em>)';
 	$alerts[$alert['id']] = $name;
 }
-$table->data[2][1] = '<span class="with_alerts"'.(empty ($alerts) ? ' class="invisible"': '').'>';
+$table->data[2][1] = '<span class="with_alerts'.(empty ($alerts) ? ' invisible': '').'">';
 $table->data[2][1] .= print_select ($alerts,
 	'target_alerts[]', 0, false, '', '', true, true);
 $table->data[2][1] .= '</span>';
-$table->data[2][1] .= '<span class="without_alerts"'.(! empty ($modules) ? ' class="invisible"': '').'>';
+$table->data[2][1] .= '<span class="without_alerts'.(! empty ($modules) ? ' invisible': '').'">';
 $table->data[2][1] .= '<em>'.__('No alerts for this agent').'</em>';
 $table->data[2][1] .= '</span>';
 
 echo '<div id="modules_loading" class="loading invisible">';
-echo '<img src="images/spinner.gif" />';
+print_image ("images/spinner.gif");
 echo __('Loading').'&hellip;';
 echo '</div>';
 
@@ -213,7 +144,7 @@ $table->data[0][1] = print_select ($groups, 'destiny_id_group', $destiny_id_grou
 
 $table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.gif" />';
+$table->data[1][0] .= print_image ("images/spinner.gif", true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);
@@ -229,13 +160,13 @@ print_submit_button (__('Go'), 'go', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 
-echo '<h3 class="error invisible" id="message"> </h3>';
+echo '<h3 class="error invisible" id="message">&nbsp;</h3>';
 
 require_jquery_file ('form');
 require_jquery_file ('pandora.controls');
 ?>
-
 <script type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
 	$("#source_id_group").pandoraSelectGroup ({
 		agentSelect: "select#source_id_agent",
@@ -243,7 +174,7 @@ $(document).ready (function () {
 	});
 	
 	$("#destiny_id_group").pandoraSelectGroup ({
-		agentSelect: "select#destiny_id_agent\\[\\]",
+		agentSelect: "select#destiny_id_agent",
 		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {
 			if ($("#source_id_agent").fieldValue ().in_array (id)) {
@@ -259,10 +190,10 @@ $(document).ready (function () {
 			return;
 		}
 		$("#modules_loading").show ();
-		$("#target_modules\\[\\] option, #target_alerts\\[\\] option").remove ();
-		$("#target_modules\\[\\], #target_alerts\\[\\]").disable ();
-		$("#destiny_id_agent\\[\\] option").show ();
-		$("#destiny_id_agent\\[\\] option[value="+id_agent+"]").hide ();
+		$("#target_modules option, #target_alerts option").remove ();
+		$("#target_modules, #target_alerts").disable ();
+		$("#destiny_id_agent option").show ();
+		$("#destiny_id_agent option[value="+id_agent+"]").hide ();
 		var no_modules;
 		var no_alerts;
 		/* Get modules */
@@ -280,7 +211,7 @@ $(document).ready (function () {
 						option = $("<option></option>")
 							.attr ("value", val["id_agente_modulo"])
 							.append (val["nombre"]);
-						$("#target_modules\\[\\]").append (option);
+						$("#target_modules").append (option);
 					});
 					
 					no_modules = false;
@@ -304,7 +235,7 @@ $(document).ready (function () {
 									.append (" (")
 									.append (module_name)
 									.append (")");
-								$("#target_alerts\\[\\]").append (option);
+								$("#target_alerts").append (option);
 							});
 							no_alerts = false;
 						}
@@ -339,7 +270,7 @@ $(document).ready (function () {
 							$("#fieldset_destiny, #target_table-operations").show ();
 						}
 						$("#fieldset_targets").show ();
-						$("#target_modules\\[\\], #target_alerts\\[\\]").enable ();
+						$("#target_modules, #target_alerts").enable ();
 					},
 					"json"
 				);
@@ -368,7 +299,7 @@ $(document).ready (function () {
 			return false;
 		}
 		
-		if ($("#destiny_id_agent\\[\\]").fieldValue ().length == 0) {
+		if ($("#destiny_id_agent").fieldValue ().length == 0) {
 			$("#message").showMessage ("<?php echo __('No destiny agent(s) to copy') ?>");
 			return false;
 		}
@@ -377,4 +308,5 @@ $(document).ready (function () {
 		return true;
 	});
 });
+/* ]]> */
 </script>

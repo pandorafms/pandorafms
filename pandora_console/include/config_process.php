@@ -191,4 +191,12 @@ if (!isset ($config["https"])) {
 	process_sql_insert ('tconfig', array ('token' => 'https', 
 		'value' => $config["https"])); 
 }
+
+if (!isset ($config["compact_header"])) {
+	// Sets whether or not we want to enforce https. We don't want to go to a
+	// potentially unexisting config by default
+	$config["compact_header"] = false;
+	process_sql_insert ('tconfig', array ('token' => 'compact_header', 
+										  'value' => $config["compact_header"])); 
+}
 ?>

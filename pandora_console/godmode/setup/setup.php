@@ -56,6 +56,7 @@ if ($update_settings) {
 	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 	$config["https"] = (bool) get_parameter ('https', $config["https"]);
+	$config["compact_header"] = (bool) get_parameter ('compact_header', $config["compact_header"]);
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
@@ -77,6 +78,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["loginhash_pwd"]."' WHERE token = 'loginhash_pwd'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["https"]."' WHERE token = 'https'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["compact_header"]."' WHERE token = 'compact_header'");
 }
 
 echo "<h2>".__('Setup')." &gt; ";
@@ -149,6 +151,9 @@ $table->data[18][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], tr
 $table->data[19][0] = __('Enforce https');
 $table->data[19][1] = print_checkbox ('https', 1, $config["https"], true);
 
+$table->data[20][0] = __('Compact CSS and JS into header');
+$table->data[20][1] = print_checkbox ('compact_header', 1, $config["compact_header"], true);
+
 enterprise_hook ('load_snmpforward_enterprise');
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
@@ -158,10 +163,10 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
-?>
 
-<link rel="stylesheet" href="include/styles/color-picker.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.colorpicker.js"></script>
+require_css_file ("color-picker");
+require_jquery_file ("colorpicker");
+?>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
 	$("#form_setup #text-graph_color1").attachColorPicker();

@@ -34,12 +34,12 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
 		return false; //Users don't exist so don't send to them
 	}
 	
-	$values = array ("id_usuario_origen" => $usuario_origen, 
-					"id_usuario_destino" => $usuario_destino, 
-					"subject" => safe_input ($subject), 
-					"mensaje" => safe_input ($mensaje),
-					"timestamp" => get_system_time ()
-				);
+	$values = array ();
+	$values["id_usuario_origen"] = $usuario_origen;
+	$values["id_usuario_destino"] = $usuario_destino;
+	$values["subject"] = safe_input ($subject);
+	$values["mensaje"] = safe_input ($mensaje);
+	$values["timestamp"] = get_system_time ();
 	
 	$return = process_sql_insert ("tmensajes", $values);
 	
@@ -53,10 +53,10 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
 /** 
  * Creates private messages to be forwarded to groups
  * 
- * @param string $usuario_origen The sender of the message
- * @param string $dest_group The receivers (group) of the message
- * @param string $subject Subject of the message (much like E-Mail)
- * @param string $mensaje The actual message. This message will be cleaned by safe_input 
+ * @param string The sender of the message
+ * @param string The receivers (group) of the message
+ * @param string Subject of the message (much like E-Mail)
+ * @param string The actual message. This message will be cleaned by safe_input 
  * (html is allowed but loose html chars will be translated)
  *
  * @return bool true when delivered, false in case of error
@@ -65,10 +65,12 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 	$users = get_users_info ();
 	$group_users = get_group_users ($dest_group);
 	
-	if (!array_key_exists ($usuario_origen, $users)) {
-		return false; //Users don't exist so don't send to them
+	if (! array_key_exists ($usuario_origen, $users)) {
+		//Users don't exist in the system
+		return false;
 	} elseif (empty ($group_users)) {
-		return true; //There are no users in the group, so it hasn't failed although it hasn't done anything.
+		//There are no users in the group, so it hasn't failed although it hasn't done anything.
+		return true;
 	}
 	
 	//Start transaction so that if it fails somewhere along the way, we roll back
@@ -76,7 +78,7 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 	process_sql ("START TRANSACTION;");
 	
 	foreach ($group_users as $user) {
-		$return = create_message ($usuario_origen, $user, $subject, $mensaje);
+		$return = create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
 			//Error sending message, rollback and return false
 			process_sql ("ROLLBACK;");

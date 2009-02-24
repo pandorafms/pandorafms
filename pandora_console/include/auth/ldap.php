@@ -121,6 +121,21 @@ function get_user_email ($id_user) {
 }
 
 /** 
+ * Get the user id field on a mixed structure.
+ *
+ * This function is needed to make auth system more compatible and independant.
+ *
+ * @param mixed User structure to get id. It might be a row returned from
+ * tusuario or tusuario_perfil. If it's not a row, the int value is returned.
+ */
+function get_user_id ($user) {
+	if (is_array ($user))
+		/* FIXME: Is this right? */
+		return $user['id_user'];
+	return (int) $user;
+}
+
+/** 
  * Gets the users info
  * 
  * @param string User id.

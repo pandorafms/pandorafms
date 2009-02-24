@@ -2796,21 +2796,25 @@ function process_sql_delete ($table, $where, $where_join = 'AND') {
  * 
  * @return array An array with all the users or an empty array
  */
-function get_group_users ($id_group) {
-	$result = get_db_value_filter ("id_usuario", "tusuario_perfil",
-		array ("id_grupo" => (int) $id_group));
+function get_group_users ($id_group, $filter = false) {
+	if (! is_array ($filter))
+		$filter = array ();
+	$filter['id_grupo'] = (int) $id_group;
+	$result = get_db_all_rows_filter ("tusuario_perfil", $filter);
 	
+	if ($result === false)
+		return array ();
 	//This removes stale users from the list. This can happen if switched to another auth scheme
 	//(internal users still exist) or external auth has users removed/inactivated from the list (eg. LDAP)
+	$retval = array ();
 	foreach ($result as $key => $user) {
 		if (!is_user ($user)) {
 			unset ($result[$key]);
+		} else {
+			array_push ($retval, get_user_info ($user));
 		}
 	}
 	
-	if (empty ($result)) {
-		return array ();
-	}
-	return $result;
+	return $retval;
 }
 ?>

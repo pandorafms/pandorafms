@@ -68,15 +68,39 @@ function is_user_admin ($id_user) {
 	return (bool) get_db_value ('is_admin', 'tusuario', 'id_user', $id_user);
 }
 
+
+/**
+ * Get the user id field on a mixed structure.
+ *
+ * This function is needed to make auth system more compatible and independant.
+ *
+ * @param mixed User structure to get id. It might be a row returned from
+ * tusuario or tusuario_perfil. If it's not a row, the int value is returned.
+ *
+ * @return int User id of the mixed parameter.
+ */
+function get_user_id ($user) {
+	if (is_array ($user)){
+		if (isset ($user['id_user']))
+			return (int) $user['id_user'];
+		elseif (isset ($user['id_usuario']))
+			return (int) $user['id_usuario'];
+		else
+			return false;
+	} else {
+		return (int) $user;
+	}
+}
+
 /** 
  * Check is a user exists in the system
  * 
- * @param string User id.
+ * @param mixed User id.
  * 
  * @return bool True if the user exists.
  */
-function is_user ($id_user) {
-	$user = get_db_row ('tusuario', 'id_user', $id_user);
+function is_user ($user) {
+	$user = get_db_row ('tusuario', 'id_user', get_user_id ($user));
 	if (! $user)
 		return false;
 	return true;
@@ -85,34 +109,34 @@ function is_user ($id_user) {
 /** 
  * Gets the users real name
  * 
- * @param string User id.
+ * @param mixed User id.
  * 
  * @return string The users full name
  */
-function get_user_fullname ($id_user) {
-	return (string) get_db_value ('fullname', 'tusuario', 'id_user', $id_user);
+function get_user_fullname ($user) {
+	return (string) get_db_value ('fullname', 'tusuario', 'id_user', get_user_id ($user));
 }
 
 /** 
  * Gets the users email
  * 
- * @param string User id.
+ * @param mixed User id.
  * 
  * @return string The users email address
  */
-function get_user_email ($id_user) {
-	return (string) get_db_value ('email', 'tusuario', 'id_user', $id_user);
+function get_user_email ($user) {
+	return (string) get_db_value ('email', 'tusuario', 'id_user', get_user_id ($user));
 }
 
 /**
  * Gets a Users info
  * 
- * @param string User id
+ * @param mixed User id
  *
  * @return mixed An array of users
  */
-function get_user_info ($id_user) {
-	return get_db_row ("tusuario", "id_user", $id_user);
+function get_user_info ($user) {
+	return get_db_row ("tusuario", "id_user", get_user_id ($user));
 }
 
 /**
@@ -162,27 +186,11 @@ function process_user_contact ($id_user) {
  * @return bool false
  */
 function create_user ($id_user, $password, $user_info) {
-	$values = array ();
+	$values = $user_info;
 	$values["id_user"] = $id_user;
 	$values["password"] = md5 ($password);
 	$values["last_connect"] = 0;
 	$values["registered"] = get_system_time ();
-	
-	foreach ($user_info as $key => $value) {
-		switch ($key) {
-		case "fullname":
-		case "firstname":
-		case "lastname":
-		case "middlename":
-		case "comments":
-		case "email":
-		case "phone":
-			$values[$key] = $value;
-			break;
-		default:
-			continue; //ignore
-		}
-	}
 
 	return process_sql_insert ("tusuario", $values);
 }

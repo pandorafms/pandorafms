@@ -1,5 +1,21 @@
 2009-02-24  Esteban Sanchez  <estebans@artica.es>
 
+	* include/auth/mysql.php: Added get_user_id(). Removed field check on
+	create_user(). Allow to pass an structure to the functions and use
+	get_user_id() when needed.
+
+	* include/auth/ldap.php: Added get_user_id().
+
+	* include/functions_db.php: Improved get_group_users() to return real
+	users instead of tusuario_perfil values. Also a filter parameter was
+	added.
+	
+	* include/functions_messages.php: Use get_user_id() on
+	create_message_group() because get_group_users() now returns
+	user structures. Style correction.
+
+2009-02-24  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Added get_db_row_filter(). Added
 	documentation for get_db_all_rows_sql_filter().
 	Removed get_db_array() since it was already implemented in

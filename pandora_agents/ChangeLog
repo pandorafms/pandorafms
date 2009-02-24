@@ -1,3 +1,7 @@
+2009-02-24  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* linux/pandora_agent.conf: fixed typo.
+
 2009-01-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module.h,

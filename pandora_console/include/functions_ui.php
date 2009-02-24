@@ -566,63 +566,97 @@ function process_page_head ($string, $bitfield) {
 	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
 	<meta name="robots" content="index, follow" />
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
-	<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css" />
 	<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
-	<![endif]-->
-	<script type="text/javascript" src="include/javascript/pandora.js"></script>
-	<script type="text/javascript" src="include/javascript/jquery.js"></script>
-	<script type="text/javascript" src="include/javascript/jquery.pandora.js"></script>';
+	<![endif]-->';
 	
 	if ($config["language"] != "en") {
-		//Load translated strings
-		echo '<script type="text/javascript" src="include/languages/time_'.$config['language'].'.js"></script>
-		<script type="text/javascript" src="include/languages/date_'.$config['language'].'.js"></script>
-		<script type="text/javascript" src="include/languages/countdown_'.$config['language'].'.js"></script>';		
+		//Load translated strings - load them last so they overload all the objects
+		require_javascript_file ("time_".$config["language"]);
+		require_javascript_file ("date".$config["language"]);
+		require_javascript_file ("countdown_".$config["language"]);
 	}
 	$output .= "\n\t";
 	
-	if (!empty ($config['css'])) {
-		//We can't load empty and we loaded current style and ie
-		$loaded = array ('', $config["style"], 'ie');
-		foreach ($config['css'] as $name => $filename) {
-			if (in_array ($name, $loaded))
-				continue;
-			
-			array_push ($loaded, $name);
+	//Load CSS
+	if (empty ($config['css'])) {
+		$config['css'] = array (); //If it's empty, false or not init set array to empty just in case
+	}
+	
+	//Style should go first
+	$config['css'] = array_merge (array ($config['style'] => "include/styles/".$config['style'].".css", 
+										 "menu" => "include/styles/menu.css", 
+										 "tip", "include/styles/tip.css"), $config['css']);
+	
+	//We can't load empty and we loaded (conditionally) ie
+	$loaded = array ('', 'ie');
+	foreach ($config['css'] as $name => $filename) {
+		if (in_array ($name, $loaded))
+			continue;
+		
+		array_push ($loaded, $name);
+		if (!empty ($config["compact_header"])) {
+			$output .= '<style type="text/css">';
+			$style = file_get_contents ($config["homedir"]."/".$filename);
+			$output .= str_replace ("../../images", "images", $style);
+			$output .= '</style>';
+		} else {
 			$output .= '<link rel="stylesheet" href="'.$filename.'" type="text/css" />'."\n\t";
 		}
 	}
+	//End load CSS
 	
-	if (!empty ($config['js'])) {
-		//Load other javascript
-		//We can't load empty and we loaded wz_jsgraphics and pandora
-		$loaded = array ('', 'pandora', 'date_'.$config['language'],
-			'time_'.$config['language'], 'countdown_'.$config['language']);
-		foreach ($config['js'] as $name => $filename) {
-			if (in_array ($name, $loaded))
-				continue;
-			
-			array_push ($loaded, $name);
-			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
-
-		}
+	//Load JS
+	if (empty ($config['js'])) {
+		$config['js'] = array (); //If it's empty, false or not init set array to empty just in case
 	}
 	
-	if (!empty ($config['jquery'])) {
-		//Load jQuery
-		$loaded = array ('', 'pandora');
+	//Pandora specific JavaScript should go first
+	$config['js'] = array_merge (array ("pandora" => "include/javascript/pandora.js"), $config['js']);
 		
-		//Then add each script as necessary
-		foreach ($config['jquery'] as $name => $filename) {
-			if (in_array ($name, $loaded))
-				continue;
+	//Load other javascript
+	//We can't load empty
+	$loaded = array ('');
+	foreach ($config['js'] as $name => $filename) {
+		if (in_array ($name, $loaded))
+			continue;
 			
-			array_push ($loaded, $name);
+		array_push ($loaded, $name);
+		if (!empty ($config["compact_header"])) {
+			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
+			$output .= file_get_contents ($config["homedir"]."/".$filename);
+			$output .= "\n".'/* ]]> */</script>';
+		} else {
 			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
 		}
 	}
+	//End load JS
+			
+	//Load jQuery
+	if (empty ($config['jquery'])) {
+		$config['jquery'] = array (); //If it's empty, false or not init set array to empty just in case
+	}
 	
+	//Pandora specific jquery should go first
+	$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js", "pandora" => "include/javascript/jquery.pandora.js"), $config['jquery']);
+	
+		
+	//Then add each script as necessary
+	$loaded = array ('');
+	foreach ($config['jquery'] as $name => $filename) {
+		if (in_array ($name, $loaded))
+			continue;
+		
+		array_push ($loaded, $name);
+		if (!empty ($config["compact_header"])) {
+			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
+			$output .= file_get_contents ($config["homedir"]."/".$filename);
+			$output .= "\n".'/* ]]> */</script>';
+		} else {
+			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
+		}
+	}
+		
 	$output .= $string;
 	
 	return $output;

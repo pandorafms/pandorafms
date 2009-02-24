@@ -1,3 +1,28 @@
+2009-02-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/config_process.php: Added compact_header. If you want to
+	save on server hits and increase performance (slightly) enable it.
+	Page loads (on my system) ~500ms faster and feels faster since it 
+	doesn't block the page while waiting on css and javascript
+
+	* include/functions_agents.php: Moved process_manage_config from 
+	configurar_agente.
+	
+	* include/functions_ui.php: Added compact_header functionality
+	
+	* include/functions_html.php: Fixed some id issues which caused
+	manage_config to not work correctly. id's can't have [] in them.
+	Also fixed the comparison for numeric (string to int) comparisons
+	
+	* include/styles/pandora.css: Moved @import to functions_ui.php
+	
+	* godmode/agentes/manage_config.php: Fixed ids and some validation
+	
+	* godmode/agentes/configurar_agente.php, godmode/agentes/agent_manager:
+	Fixed HTML output and use functions for images
+	
+	* godmode/setup/setup.php: Added compact_header to setup
+
 2009-02-24  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Fixed a bug in

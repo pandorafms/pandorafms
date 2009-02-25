@@ -211,7 +211,7 @@ if ($config["pure"] == 0) {
 	//This is a generic overlay (hidden) which can be filled with jQuery
 	// To use you have to use <a href="ajax.php?page=operation/page" rel="#overlay">Load overlay</a>
 	echo '<div class="overlay" id="overlay"><div class="wrap"></div></div>';
-	require_jquery_file ('overlay');	
+	require_jquery_file ('overlay');
 }
 
 // Page loader / selector
@@ -250,6 +250,9 @@ if ($config["pure"] == 0) {
 	echo '</div>';
 	echo '</div>'; //container div
 }
+
+print_database_debug ();
+
 while (@ob_end_flush ());
 echo '</html>';
 ?>

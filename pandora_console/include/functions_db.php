@@ -1684,6 +1684,41 @@ function sql_error_handler ($errno, $errstr) {
 }
 
 /**
+ * Add a database query to the debug trace.
+ * 
+ * This functions does nothing if the config['debug'] flag is not set. If a
+ * sentence was repeated, then the 'saved' counter is incremented.
+ *
+ * @param string SQL sentence.
+ * @param mixed Query result. On error, error string should be given.
+ * @param int Affected rows after running the query.
+ * @param mixed Extra parameter for future values.
+ */
+function add_database_debug_trace ($sql, $result = false, $affected = false, $extra = false) {
+	global $config;
+	
+	if (! isset ($config['debug']))
+		return false;
+	
+	if (! isset ($config['db_debug']))
+		$config['db_debug'] = array ();
+	
+	if (isset ($config['db_debug'][$sql])) {
+		$config['db_debug'][$sql]['saved']++;
+		return;
+	}
+	
+	$var = array ();
+	$var['sql'] = $sql;
+	$var['result'] = $result;
+	$var['affected'] = $affected;
+	$var['saved'] = 0;
+	$var['extra'] = $extra;
+	
+	$config['db_debug'][$sql] = $var;
+}
+
+/**
  * This function comes back with an array in case of SELECT
  * in case of UPDATE, DELETE etc. with affected rows
  * an empty array in case of SELECT without results
@@ -1710,24 +1745,31 @@ function process_sql ($sql, $rettype = "affected_rows") {
 	if (! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
+		add_database_debug_trace ($sql);
 	} else {
 		$result = mysql_query ($sql);
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
+			add_database_debug_trace ($sql, mysql_error ());
 			set_error_handler ('sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
 			return false;
 		} elseif ($result === true) {
 			if ($rettype == "insert_id") {
-				return mysql_insert_id ();
+				$result = mysql_insert_id ();
 			} elseif ($rettype == "info") {
-				return mysql_info ();
+				$result = mysql_info ();
+			} else {
+				$result = mysql_affected_rows ();
 			}
-			return mysql_affected_rows (); //This happens in case the statement was executed but didn't need a resource
+			
+			add_database_debug_trace ($sql, $result, mysql_affected_rows ());
+			return $result;
 		} else {
+			add_database_debug_trace ($sql, 0, mysql_affected_rows ());
 			while ($row = mysql_fetch_array ($result)) {
 				array_push ($retval, $row);
 			}
@@ -2843,5 +2885,62 @@ function get_group_users ($id_group, $filter = false) {
 	}
 	
 	return $retval;
+}
+
+/**
+ * Prints a database debug table with all the queries done in the page loading.
+ * 
+ * This functions does nothing if the config['debug'] flag is not set.
+ *
+ * @param bool Wheter to return the table or print it.
+ *
+ * @return string If $return was set, the table is returned.
+ */
+function print_database_debug ($return = false) {
+	global $config;
+	
+	if (! isset ($config['debug']))
+		return '';
+	
+	$output = '';
+	$output = '<div class="database_debug_title">'.__('Database debug').'</div>';
+	
+	$table->id = 'database_debug';
+	$table->cellpadding = '0';
+	$table->width = '95%';
+	$table->align = array ();
+	$table->align[1] = 'left';
+	$table->size = array ();
+	$table->size[0] = '40px';
+	$table->size[2] = '30%';
+	$table->size[3] = '40px';
+	$table->size[4] = '40px';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = '#';
+	$table->head[1] = __('SQL sentence');
+	$table->head[2] = __('Result');
+	$table->head[3] = __('Rows');
+	$table->head[4] = __('Saved');
+	
+	if (! isset ($config['db_debug']))
+		$config['db_debug'] = array ();
+	$i = 1;
+	foreach ($config['db_debug'] as $debug) {
+		$data = array ();
+		
+		$data[0] = $i++;
+		$data[1] = $debug['sql'];
+		$data[2] = (($debug['result'] == 0) ? __('OK') : $debug['result']);
+		$data[3] = $debug['affected'];
+		$data[4] = $debug['saved'];
+		
+		array_push ($table->data, $data);
+	}
+	$output .= print_table ($table, true);
+	
+	if ($return)
+		return $output;
+	echo $output;
 }
 ?>

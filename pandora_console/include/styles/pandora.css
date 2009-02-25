@@ -908,41 +908,69 @@ div.actions_container label {
 	font-weight: normal;
 	font-style: italic;
 }
+pre.debug, div.backtrace {
+	font-family: monospace !important;
+	text-align: left;
+	padding: 10px;
+	margin: 5px;
+	border: 1px solid black;
+}
+div.backtrace ol {
+	margin: 0;
+	padding-left: 20px;
+}
+pre.debug {
+	background-color: #fff55f;
+}
+div.debug, div.database_debug_title, div.debug a, div.debug a:hover {
+	background-color: white;
+	color: black;
+	text-align: left;
+}
+div.debug a, div.debug a:hover, div.parameters {
+	text-decoration: underline;
+}
+div.database_debug_title {
+	font-size: 15pt;
+	margin-top: 15px;
+	padding: 5px;
+	width: 95%;
+}
+
 /* timeEntry styles */
 .timeEntry_control {
 	vertical-align: middle;
 	margin-left: 2px;
 }
-
 /* the overlay element */ 
 #overlay { 
-    background-image:url(../../images/transparent.png);
+	background-image:url(../../images/transparent.png);
 
-    /* dimensions after the growing animation finishes  */ 
-    width:600px; 
-    height:470px;         
-     
-    /* initially overlay is hidden */ 
-    display:none; 
-     
-    /* some padding to layout nested elements nicely  */ 
-    padding:55px;
+	/* dimensions after the growing animation finishes  */ 
+	width:600px;
+	height:470px;
+	 
+	/* initially overlay is hidden */ 
+	display:none; 
+	 
+	/* some padding to layout nested elements nicely  */ 
+	padding:55px;
 	overflow:auto;
 } 
  
 /* default close button positioned on upper right corner */ 
 #overlay div.close { 
-    background-image:url(../../images/close.png); 
-    position:absolute; 
-    right:5px; 
-    top:5px; 
-    cursor:pointer; 
-    height:35px; 
-    width:35px; 
+	background-image:url(../../images/close.png); 
+	position:absolute; 
+	right:5px; 
+	top:5px; 
+	cursor:pointer; 
+	height:35px; 
+	width:35px; 
 }
 
 /* external content */
 #overlay div.wrap { 
-    height:441px; 
-    overflow:auto; 
+	height:441px; 
+	overflow:auto; 
 }

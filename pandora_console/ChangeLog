@@ -1,3 +1,18 @@
+2009-02-25  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Added database debug support. If the debug
+	flag in config is set, a table with all the queries done in a page is
+	shown. To do so, add_database_debug_trace() and print_database_debug()
+	were added.
+
+	* include/functions_ui.php: Added debug() function which shows a
+	given variable content and a traceback which can be toggled to make
+	developers life easier.
+
+	* index.php: Print database debug table.
+
+	* include/styles/pandora.css: Styles for debug functionallity.
+
 2009-02-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Fixed where clause

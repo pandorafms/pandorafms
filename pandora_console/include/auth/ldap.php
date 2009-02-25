@@ -411,6 +411,7 @@ function get_users ($order = false) {
 	}
 	
 	$ldap_cache["cached_users"] = array ();
+	$time = get_system_time ();
 	
 	if (ldap_connect_bind ()) {
 		$sr = @ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], $config["auth"]["ldap_user_filter"], array_values ($config["auth"]["ldap_user_attr"]));
@@ -421,7 +422,7 @@ function get_users ($order = false) {
 			$info = @ldap_get_entries( $ldap_cache["ds"], $sr );
 			for ( $i = 0; $i < $info['count']; $i++ ) {
 				foreach ($config["auth"]["ldap_user_attr"] as $internal_key => $ldap_key) {
-					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["last_connect"] = get_system_time ();
+					$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]]["last_connect"] = $time;
 					if (isset ($info[$i][$ldap_key])) {
 						$ret[$info[$i][$config["auth"]["ldap_user_attr"]["id_user"]][0]][$internal_key] = $info[$i][$ldap_key][0];
 					} else {

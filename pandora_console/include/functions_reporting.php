@@ -171,9 +171,10 @@ function get_group_stats ($id_group) {
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false) {
+		//No data for any agents, means everything is 0 anyway.
 		return $data;
 	}
-
+	
 	foreach ($result as $row) {
 		$last_update = $cur_time - $row["utimestamp"];
 
@@ -194,16 +195,23 @@ function get_group_stats ($id_group) {
 		 else {
 			$data["monitor_ok"]++;
 		}
-	
-		$fired = get_db_value ('times_fired', 'talert_template_modules', 'id_agent_module', $row["id_agente_modulo"]);
-		if ($fired !== false) {
-			$data["monitor_alerts"]++;
-			if ($fired > 0) {
-				$data["monitor_alerts_fired"]++;
-				$data["monitor_alerts_fire_count"] += $fired;
-			}
-		}
 	} //End foreach module
+	
+	//Moved it out of the loop otherwise for each module there would be a SQL query
+	$sql = sprintf ("SELECT times_fired FROM talert_template_modules WHERE id_agent_module IN (%s)", implode (",", array_keys ($agents))); 
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false) {
+		$result = array (); //It's possible there are no alerts so we don't return
+	}
+	
+	foreach ($result as $row) {
+		$data["monitor_alerts"]++;
+		if ($row["times_fired"] > 0) {
+			$data["monitor_alerts_fired"]++;
+			$data["monitor_alerts_fire_count"] += $fired;
+		}
+	}	
 	
 	$data["total_agents"] = count ($agents);
 	$data["total_checks"] = $data["monitor_checks"];

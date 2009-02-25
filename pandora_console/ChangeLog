@@ -1,3 +1,8 @@
+2009-02-25  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_ui.php: Fixed typo that makes incorrect argument
+	list in debug().
+
 2009-02-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Thanks to Esteban's functions found out

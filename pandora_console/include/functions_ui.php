@@ -876,7 +876,7 @@ function debug ($var) {
 		foreach ($trace['args'] as $arg) {
 			echo '<li>';
 			print_r ($arg);
-			echo '<li>';
+			echo '</li>';
 		}
 		echo '</ol>';
 		echo '</pre>';

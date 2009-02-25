@@ -1677,6 +1677,12 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
  * @return bool True if error level is lower or equal than errno.
  */
 function sql_error_handler ($errno, $errstr) {
+	global $config;
+	
+	/* If debug is activated, the database debug table will show the error */
+	if (isset ($config['debug']))
+		return false;
+	
 	if (error_reporting () <= $errno)
 		return false;
 	echo "<strong>SQL error</strong>: ".$errstr."<br />\n";
@@ -2891,19 +2897,14 @@ function get_group_users ($id_group, $filter = false) {
  * Prints a database debug table with all the queries done in the page loading.
  * 
  * This functions does nothing if the config['debug'] flag is not set.
- *
- * @param bool Wheter to return the table or print it.
- *
- * @return string If $return was set, the table is returned.
  */
-function print_database_debug ($return = false) {
+function print_database_debug () {
 	global $config;
 	
 	if (! isset ($config['debug']))
 		return '';
 	
-	$output = '';
-	$output = '<div class="database_debug_title">'.__('Database debug').'</div>';
+	echo '<div class="database_debug_title">'.__('Database debug').'</div>';
 	
 	$table->id = 'database_debug';
 	$table->cellpadding = '0';
@@ -2931,16 +2932,18 @@ function print_database_debug ($return = false) {
 		
 		$data[0] = $i++;
 		$data[1] = $debug['sql'];
-		$data[2] = (($debug['result'] == 0) ? __('OK') : $debug['result']);
+		$data[2] = (empty ($debug['result']) ? __('OK') : $debug['result']);
 		$data[3] = $debug['affected'];
 		$data[4] = $debug['saved'];
 		
 		array_push ($table->data, $data);
+		
+		if (($i % 100) == 0) {
+			print_table ($table);
+			$table->data = array ();
+		}
 	}
-	$output .= print_table ($table, true);
 	
-	if ($return)
-		return $output;
-	echo $output;
+	print_table ($table);
 }
 ?>

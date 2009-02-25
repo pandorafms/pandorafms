@@ -250,9 +250,8 @@ if ($config["pure"] == 0) {
 	echo '</div>';
 	echo '</div>'; //container div
 }
+while (@ob_end_flush ());
 
 print_database_debug ();
-
-while (@ob_end_flush ());
 echo '</html>';
 ?>

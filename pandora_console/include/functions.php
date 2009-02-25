@@ -79,20 +79,6 @@ function safe_int ($value, $min = false, $max = false) {
 	return $value;
 }
 
-
-/** 
- * It prints a variable value and a message.
- * TODO: Expand this to handle mixed variables
- * 
- * @param mixed variable to be displayed
- * @param string Message to be displayed
- *
- * @return string Variable with message and Pandora DEBUG identifier
- */
-function pandora_debug ($var, $msg = '') { 
-	echo "[Pandora DEBUG (".$var."): (".$msg.")<br />";
-} 
-
 /** 
  * @deprecated Use get_parameter or safe_input functions
  * 

@@ -1,3 +1,13 @@
+2009-02-24  Sancho lerena   <slerena@artica.es>
+
+	* pandoradb_data.sql,
+	include/config_process.php,
+	include/functions_db.php
+	include/config.inc.php
+	index.php: Updated version and headers.
+
+	* pandora_console_upgrade: New script to upgrade pandora from 2.0 to 2.1
+	
 2009-02-26  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_reporting.php: Updated get_agent_module_sla() to

@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -20,8 +20,8 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-$build_version="PC081027";
-$pandora_version="v2.0";
+$build_version="PC090224";
+$pandora_version="v2.1";
 global $build_version;
 global $pandora_version;
 

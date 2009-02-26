@@ -1,0 +1,91 @@
+# Pandora FMS 2.1 Console Upgrade (c) 2009 Artica ST
+# Please see http://www.pandorafms.com
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+#!/bin/bash
+
+USER=`whoami`
+
+if [ $USER != "root" ]
+then
+	echo "Upgrade process need to be executed by root"
+	exit -1
+fi
+
+MODE=$1
+
+pandora_upgrade () {
+
+	if [ ! -e "$PANDORAPATH/index.php" ]
+	then
+		echo "ERROR: Provided path for current Pandora FMS console, do not exist ($PANDORAPATH)"
+		exit -1
+	fi	
+	echo "Installing new console code in $PANDORAPATH"
+	cp -R * $PANDORAPATH
+
+	WWWUSER=`ls -la $PANDORAPATH/index.php | awk '{ print $3 }'` 
+	echo "Setting permissions for $WWWUSER in $PANDORAPATH"
+	chown -R $WWWUSER $PANDORAPATH
+	
+	echo "Setting permissions for $WWWUSER in /var/spool/pandora/data_in"
+	chgrp -R $WWWUSER /var/spool/pandora/data_in
+	
+	echo " "
+	echo "DONE!"
+	echo " "
+}
+
+help () {
+	echo "This script upgrades code for Pandora FMS Console, moving from 2.0 to 2.1 version"
+	echo " "
+        echo "     -p <path>  Upgrade Pandora FMS Console in path (pe: /var/www/pandora_console)"
+        echo " "
+        exit 0
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS 2.1 Console Upgrade (c) 2009 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+UPGRADEDB=0
+UPGRADE=0
+
+if [ $# -eq 0 ]
+then
+	help
+fi
+
+# Main parsing code
+
+while getopts ":hdp:" optname
+  do
+    case "$optname" in
+      "h")
+        help
+		;;
+	  "d")
+	    UPGRADEDB=1
+	  	;; 
+      "p")
+		PANDORAPATH=$OPTARG
+		UPGRADE=1
+        ;;
+        ?)
+		help
+		;;
+      default) 
+		help
+	;; 
+    esac
+done
+
+if [ "$UPGRADE" == "1" ]
+then
+	pandora_upgrade
+fi
+
+exit

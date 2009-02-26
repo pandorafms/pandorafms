@@ -29,17 +29,17 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	exit;
 }
 
-$delete = get_parameter ("delete");
-$validate = get_parameter ("validate");
+$delete = (bool) get_parameter ("delete");
+$validate = (bool) get_parameter ("validate");
 //Process deletion (pass array or single value)
-if (!empty ($delete)) {
+if ($delete) {
 	$eventid = (array) get_parameter ("eventid", -1);
 	$return = delete_event ($eventid); //This function handles both single values as well arrays and cleans up before deleting
 	print_error_message ($return, __('Events successfully deleted'), __('There was an error deleting events'));
 }
 
 //Process validation (pass array or single value)
-if (!empty ($validate)) {
+if ($validate) {
 	$eventid = (array) get_parameter ("eventid", -1);
 	$return = process_event_validate ($eventid);
 	print_error_message ($return, __('Events successfully validated'), __('There was an error validating events'));
@@ -50,7 +50,7 @@ if (!empty ($validate)) {
 // Main code form / page
 // ***********************************************************************
 
-$offset = (int) get_parameter ( "offset", 0);
+$offset = (int) get_parameter ("offset", 0);
 $ev_group = (int) get_parameter ("ev_group", 1); //1 = all
 $search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search"))); //Replace all types of &# HTML with % so that it doesn't fail on quotes
 

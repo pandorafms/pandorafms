@@ -26,7 +26,7 @@ if (isset($_SERVER['REQUEST_TIME'])) {
 echo '<a class="white_bold" target="_blank" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'</a><br />';
 echo '<a class="white">'. __('Page generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 
-if ((isset($develop_bypass)) AND ($develop_bypass == 1)) {
+if (isset ($config['debug'])) {
 	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
 }
 echo '</a><br />';

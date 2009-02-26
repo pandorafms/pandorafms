@@ -27,7 +27,7 @@ if (! $id_report) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
 		"Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
-	exit;
+	return;
 }
 
 $report = get_db_row ('treport', 'id_report', $id_report);
@@ -325,7 +325,7 @@ foreach ($contents as $content) {
 		}
 		
 		$data = array ();
-		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
+		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
 		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
 		$monitor_value = format_numeric (100 - $monitor_value, 2) ;

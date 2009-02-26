@@ -1,3 +1,8 @@
+2009-02-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	
+	* godmode/setup/setup.php: Unchecked checkboxes don't transfer any value
+	so must default to 0 in order to work.
+
 2009-02-26  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_events.php: Added get_events() function. Replaced

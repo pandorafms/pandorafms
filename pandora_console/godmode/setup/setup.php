@@ -49,14 +49,14 @@ if ($update_settings) {
 	$config["sla_period"] = (int) get_parameter ('sla_period', $config["sla_period"]);
 	$config["date_format"] = (string) get_parameter ('date_format', $config["date_format"]);
 	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
-	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
+	$config["autoupdate"] = (bool) get_parameter ('autoupdate', 0); //If not passed, it's 0
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
 	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);
 	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
 	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
-	$config["https"] = (bool) get_parameter ('https', $config["https"]);
-	$config["compact_header"] = (bool) get_parameter ('compact_header', $config["compact_header"]);
+	$config["https"] = (bool) get_parameter ('https', 0); //If value not passed (unchecked), it's 0
+	$config["compact_header"] = (bool) get_parameter ('compact_header', 0); 
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");

@@ -1753,7 +1753,9 @@ function process_sql ($sql, $rettype = "affected_rows") {
 		$sql_cache['saved']++;
 		add_database_debug_trace ($sql);
 	} else {
+		$start = microtime (true);
 		$result = mysql_query ($sql);
+		$time = microtime (true) - $start;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
@@ -1772,10 +1774,12 @@ function process_sql ($sql, $rettype = "affected_rows") {
 				$result = mysql_affected_rows ();
 			}
 			
-			add_database_debug_trace ($sql, $result, mysql_affected_rows ());
+			add_database_debug_trace ($sql, $result, mysql_affected_rows (),
+				array ('time' => $time));
 			return $result;
 		} else {
-			add_database_debug_trace ($sql, 0, mysql_affected_rows ());
+			add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
+				array ('time' => $time));
 			while ($row = mysql_fetch_array ($result)) {
 				array_push ($retval, $row);
 			}
@@ -2916,6 +2920,7 @@ function print_database_debug () {
 	$table->size[2] = '30%';
 	$table->size[3] = '40px';
 	$table->size[4] = '40px';
+	$table->size[5] = '40px';
 	$table->data = array ();
 	$table->head = array ();
 	$table->head[0] = '#';
@@ -2923,6 +2928,7 @@ function print_database_debug () {
 	$table->head[2] = __('Result');
 	$table->head[3] = __('Rows');
 	$table->head[4] = __('Saved');
+	$table->head[5] = __('Time (ms)');
 	
 	if (! isset ($config['db_debug']))
 		$config['db_debug'] = array ();
@@ -2935,6 +2941,7 @@ function print_database_debug () {
 		$data[2] = (empty ($debug['result']) ? __('OK') : $debug['result']);
 		$data[3] = $debug['affected'];
 		$data[4] = $debug['saved'];
+		$data[5] = (isset ($debug['extra']['time']) ? format_numeric ($debug['extra']['time'] * 1000, 0) : '');
 		
 		array_push ($table->data, $data);
 		

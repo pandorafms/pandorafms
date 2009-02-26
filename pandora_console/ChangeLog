@@ -1,3 +1,14 @@
+2009-02-26  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Added support for queries elapsed time in
+	print_database_debug().
+
+	* operation/events/events.php: Style correction.
+
+	* reporting/fgraph.php: Allow boolean graphics to get a starting date.
+
+	* general/footer.php: Use config['debug'] instead of developer_bypass.
+
 2009-02-25  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_ui.php: Fixed typo that makes incorrect argument

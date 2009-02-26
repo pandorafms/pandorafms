@@ -1613,13 +1613,16 @@ function odo_tactic ($value1, $value2, $value3) {
 }
 
 function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
-				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
+				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0, $date = 0 ) {
 	
 	global $config;
 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
-	$fechatope = get_system_time () - $periodo; // limit date
+	if (! $date)
+		$date = get_system_time ();
+	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
+	$fechatope = $date - $periodo; // limit date
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
 	$id_agente = get_agentmodule_agent ($id_agente_modulo);
 	$nombre_agente = get_agent_name ($id_agente);
@@ -1697,6 +1700,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 	if ($result === false) {
 		$result = array ();
 	}
+	
 	foreach ($result as $row) {
 		$datos = $row["datos"];
 		$utimestamp = $row["utimestamp"];
@@ -1967,7 +1971,7 @@ if ($graphic_type) {
 					$label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
 	case "boolean":
-		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure);
+		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure, $date);
 		
 		break;
 	case "estado_incidente":

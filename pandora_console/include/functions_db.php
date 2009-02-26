@@ -1889,6 +1889,8 @@ function format_array_to_update_sql ($values) {
 			$sql = sprintf ("`%s` = %d", $field, $value);
 		} else if (is_float ($value) || is_double ($value)) {
 			$sql = sprintf ("`%s` = %f", $field, $value);
+		} else if (is_array ($value)) {
+			$sql = sprintf ('`%s` IN ("%s")', $field, implode ('", "', $value));
 		} else {
 			$sql = sprintf ("`%s` = '%s'", $field, $value);
 		}

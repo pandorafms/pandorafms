@@ -17,6 +17,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+function get_events ($filter = false, $fields = false) {
+	return get_db_all_rows_filter ('tevento', $filter, $fields);
+}
+
 /**
  * Delete events in a transaction
  *
@@ -231,8 +235,8 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			$wrap = floor ($width / 10);
 			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input (chunk_split (mb_substr ($event["evento"],0, $wrap),8, "&shy;"));
 			
-			if (mb_strlen ($event["evento"]) > floor ($width / 10)) {
-				$data[2] .= "...";
+			if (mb_strlen ($event["evento"]) > $wrap) {
+				$data[2] .= "&hellip;";
 			}
 			$data[2] .= '</span>';
 			

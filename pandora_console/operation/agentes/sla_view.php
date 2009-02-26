@@ -94,7 +94,7 @@ if (mysql_num_rows ($result_t)) {
 			echo "<td class='".$tdcolor."' title='".$est_description."'>".$est_modulo."</td>";
 			echo "<td class='$tdcolor'>";
 
-			$temp = get_agent_module_sla ($module_data["id_agente_modulo"], $config["sla_period"], 1, 2147483647);
+			$temp = get_agent_module_sla ($module_data["id_agente_modulo"], $config["sla_period"], 1);
 			if ($temp === false)
 				echo __('N/A');
 			else {

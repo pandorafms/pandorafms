@@ -234,7 +234,7 @@ foreach ($contents as $content) {
 	case 6:
 	case 'monitor_report':
 		$data["title"] = __('Monitor report');
-		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
+		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
 		$data["objdata"]["good"] = $monitor_value;
 		$data["objdata"]["bad"] = format_numeric (100 - $monitor_value, 2);
 		break;

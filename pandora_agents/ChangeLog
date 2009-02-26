@@ -1,3 +1,13 @@
+2009-02-24  Sancho lerena   <slerena@artica.es>
+
+	* linux/pandora_agent_installer
+	linux/pandora_agent
+	linux/pandora_agent_daemon
+	linux/pandora_agent.conf
+	linux/README
+	linux/tentacle_client: Updated installer, added tentacle_client and other
+	minor changes.
+
 2008-11-24  Sancho lerena   <slerena@artica.es>
 
 	* linux/pandora_agent: Fixed problem parsing async_string.

@@ -20,15 +20,16 @@
 /** 
  * Get SLA of a module.
  * 
- * @param id_agent_module Agent module to calculate SLA
- * @param period Period to check the SLA compliance.
- * @param min_value Minimum data value the module in the right interval
- * @param max_value Maximum data value the module in the right interval
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param int Agent module to calculate SLA
+ * @param int Period to check the SLA compliance.
+ * @param int Minimum data value the module in the right interval
+ * @param int Maximum data value the module in the right interval. False will
+ * ignore max value
+ * @param int Beginning date of the report in UNIX time (current date by default).
  * 
- * @return SLA percentage of the requested module.
+ * @return int SLA percentage of the requested module.
  */
-function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
+function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value = false, $date = 0) {
 	if (empty ($date))
 		$date = time ();
 	
@@ -86,7 +87,7 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 	}
 	
 	foreach ($datas as $data) {
-		if ($data["datos"] > $max_value || $data["datos"] < $min_value) {
+		if ($data["datos"] < $min_value || ($max_value !== false && $data["datos"] > $max_value)) {
 			if ($interval_begin == 0) {
 				$interval_begin = $data["utimestamp"];
 			}
@@ -185,7 +186,7 @@ function general_stats ($id_user, $id_group = 0) {
 							$monitor_not_init++;
 						elseif ($seconds >= ($module_interval*2))
 							$monitor_unknown++;
-						elseif ($datos != 0) {
+						elseif ($datos) {
 							$monitor_ok++;
 						} else {
 							$monitor_bad++;

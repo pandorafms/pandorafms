@@ -1,3 +1,13 @@
+2009-02-26  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_reporting.php: Updated get_agent_module_sla() to
+	fix monitor values which doesn't require a max value.
+
+	* operation/agentes/sla_view.php,
+	operation/reporting/reporting_viewer.php,
+	operation/reporting/reporting_xml.php: Updated to changes in
+	get_agent_module_sla().
+
 2009-02-16  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/index.pot: Updated po template.

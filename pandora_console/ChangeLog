@@ -1,5 +1,12 @@
 2009-02-26  Esteban Sanchez  <estebans@artica.es>
 
+	* include/config_process.php, index.php: Added generated timer count as
+	a HTML comment at the bottom.
+
+	* include/functions_ui.php: Style correction.
+
+2009-02-26  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Added support for queries elapsed time in
 	print_database_debug().
 

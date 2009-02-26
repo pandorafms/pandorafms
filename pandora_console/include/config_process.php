@@ -20,6 +20,8 @@
 $build_version = 'PC090217';
 $pandora_version = 'v2.1-dev';
 
+$config['start_time'] = microtime (true);
+
 // Next is the directory where "/attachment" directory is placed, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir

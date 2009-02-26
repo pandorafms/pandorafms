@@ -254,4 +254,7 @@ while (@ob_end_flush ());
 
 print_database_debug ();
 echo '</html>';
+
+$run_time = format_numeric (microtime (true) - $config['start_time'], 3);
+echo "\n<!-- Page generated in $run_time seconds -->\n";
 ?>

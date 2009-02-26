@@ -585,8 +585,9 @@ function process_page_head ($string, $bitfield) {
 	
 	//Style should go first
 	$config['css'] = array_merge (array ($config['style'] => "include/styles/".$config['style'].".css", 
-										 "menu" => "include/styles/menu.css", 
-										 "tip", "include/styles/tip.css"), $config['css']);
+		 "menu" => "include/styles/menu.css", 
+		 "tip", "include/styles/tip.css"),
+		 $config['css']);
 	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');

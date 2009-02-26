@@ -38,8 +38,8 @@ our @EXPORT = qw(
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "2.0";
-my $pandora_build="PS090116";
+my $pandora_version = "2.1";
+my $pandora_build="PS090224";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash

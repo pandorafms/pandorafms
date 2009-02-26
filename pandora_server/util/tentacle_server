@@ -1,0 +1,903 @@
+#!/usr/bin/perl
+################################################################################
+#
+# Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2007-2008  Artica Soluciones Tecnologicas S.L.
+#
+# tentacle_server.pl	Tentacle Server. See http://www.openideas.info/wiki for
+#                       protocol description.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+################################################################################
+package tentacle::server;
+
+use strict;
+use warnings;
+use Getopt::Std;
+use IO::Select;
+use IO::Socket::INET;
+use Thread::Semaphore;
+use POSIX ":sys_wait_h";
+
+# Program version
+our $VERSION = '0.2.0';
+
+# Address to listen on
+my $t_address = '0.0.0.0';
+
+# Block size for socket read/write operations in bytes
+my $t_block_size = 1024;
+
+# Client socket
+my $t_client_socket;
+
+# Run as daemon, 1 true, 0 false
+my $t_daemon = 0;
+
+# Storage directory
+my $t_directory = '';
+
+# String containing quoted invalid file name characters
+my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
+
+# Log messages, 1 enabled, 0 disabled
+my $t_log = 0;
+
+# Maximum number of simultaneous connections
+my $t_max_conn = 10;
+
+# Maximum file size allowed by the server in bytes
+my $t_max_size = 2000000;
+
+# File overwrite, 1 enabled, 0 disabled
+my $t_overwrite = 0;
+
+# Port to listen on
+my $t_port = 41121;
+
+# Server password
+my $t_pwd = '';
+
+# Do not output error messages, 1 enabled, 0 disabled
+my $t_quiet = 0;
+
+# Number of retries for socket read/write operations
+my $t_retries = 3;
+
+# Select handler
+my $t_select;
+
+# Semaphore
+my $t_sem;
+
+# Server socket
+my $t_server_socket;
+
+# Use SSL, 1 true, 0 false
+my $t_ssl = 0;
+
+# SSL ca certificate file
+my $t_ssl_ca = '';
+
+# SSL certificate file
+my $t_ssl_cert = '';
+
+# SSL private key file
+my $t_ssl_key = '';
+
+# SSL private key password
+my $t_ssl_pwd = '';
+
+# Timeout for socket read/write operations in seconds
+my $t_timeout = 1;
+
+################################################################################
+## SUB print_help
+## Print help screen.
+################################################################################
+sub print_help {
+
+	print ("Usage: $0 -s <storage directory> [options]\n\n");
+	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
+	print ("Options:\n");
+	print ("\t-a ip_address\tAddress to listen on (default $t_address).\n");
+	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");
+	print ("\t-d\t\tRun as daemon.\n");
+	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
+	print ("\t-f ca_cert\tVerify that the peer certificate is signed by a ca.\n");
+	print ("\t-h\t\tShow help.\n");
+	print ("\t-k key\t\tOpenSSL private key file.\n");
+	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
+	print ("\t-o\t\tEnable file overwrite.\n");
+	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
+	print ("\t-q\t\tQuiet. Do now print error messages.\n");
+	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
+	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
+	print ("\t-v\t\tBe verbose.\n");
+	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
+	print ("\t-x pwd\t\tServer password.\n\n");
+}
+
+################################################################################
+## SUB daemonize
+## Turn the current process into a daemon.
+################################################################################
+sub daemonize {
+	my $pid;
+
+	require POSIX;
+
+	chdir ('/') || error ("Cannot chdir to /: $!.");
+	umask 0;
+
+	open (STDIN, '/dev/null') || error ("Cannot read /dev/null: $!.");
+
+	# Do not be verbose when running as a daemon
+	open (STDOUT, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+	open (STDERR, '>/dev/null') || error ("Cannot write to /dev/null: $!.");
+
+	# Fork
+	$pid = fork ();
+	if (! defined ($pid)) {
+		error ("Cannot fork: $!.");
+	}
+
+	# Parent
+	if ($pid != 0) {
+		exit;
+	}
+
+	# Child
+	POSIX::setsid () || error ("Cannot start a new session: $!.");
+}
+
+################################################################################
+## SUB start_win_service
+## Turn the current process into a Windows service.
+################################################################################
+#sub start_win_service {
+#	require Win32::Daemon;
+#
+#	# Tell the OS to start the service
+#	Win32::Daemon::StartService ();
+#
+#	# Wait until the service manager is ready
+#	while (SERVICE_START_PENDING != Win32::Daemon::State()) {
+#		sleep (1);
+#	}
+#
+#	# Tell the service manager we are running
+#	Win32::Daemon::State (SERVICE_RUNNING);
+#
+#	# Call Win32::Daemon::StopService() when done
+#}
+
+################################################################################
+## SUB parse_options
+## Parse command line options and initialize global variables.
+################################################################################
+sub parse_options {
+	my %opts;
+	my $tmp;
+
+	# Get options
+	if (getopts ('a:c:de:f:hk:m:op:qr:s:t:vwx:', \%opts) == 0 || defined ($opts{'h'})) {
+		print_help ();
+		exit 1;
+	}
+
+	# Address
+	if (defined ($opts{'a'})) {
+		$t_address = $opts{'a'};
+		if ($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
+			error ("Address $t_address is not valid.");
+		}
+	}
+	
+	# Maximum simultaneous connections
+	if (defined ($opts{'c'})) {
+		$t_max_conn = $opts{'c'};
+		if ($t_max_conn !~ /^\d+$/ || $t_max_conn < 1) {
+			error ("Invalid number of maximum simultaneous connections.");
+		}
+	}
+
+	# Run as daemon
+	if (defined ($opts{'d'})) {
+		if ($^ eq 'MSWin32') {
+			error ("-d flag not available for this OS.");
+		}
+
+		$t_daemon = 1;
+	}
+
+	# Enable SSL
+	if (defined ($opts{'e'})) {
+
+		require IO::Socket::SSL;
+
+		$t_ssl_cert = $opts{'e'};
+		if (! -f $t_ssl_cert) {
+			error ("File $t_ssl_cert does not exist.");
+		}
+
+		$t_ssl = 1;
+	}
+
+	# Verify peer certificate
+	if (defined ($opts{'f'})) {
+		$t_ssl_ca = $opts{'f'};
+		if (! -f $t_ssl_ca) {
+			error ("File $t_ssl_ca does not exist.");
+		}
+	}
+
+	# SSL private key file
+	if (defined ($opts{'k'})) {
+		$t_ssl_key = $opts{'k'};
+		if (! -f $t_ssl_key) {
+			error ("File $t_ssl_key does not exist.");
+		}
+	}
+
+	# Maximum file size
+	if (defined ($opts{'m'})) {
+		$t_max_size = $opts{'m'};
+		if ($t_max_size !~ /^\d+$/ || $t_max_size < 1) {
+			error ("Invalid maximum file size.");
+		}
+	}
+
+	# File overwrite
+	if (defined ($opts{'o'})) {
+		$t_overwrite = 1;
+	}
+
+	# Port
+	if (defined ($opts{'p'})) {
+		$t_port = $opts{'p'};
+		if ($t_port !~ /^\d+$/ || $t_port < 1 || $t_port > 65535) {
+			error ("Port $t_port is not valid.");
+		}
+	}
+
+	# Quiet mode
+	if (defined ($opts{'q'})) {
+		$t_quiet = 1;
+	}
+
+	# Retries
+	if (defined ($opts{'r'})) {
+		$t_retries = $opts{'r'};
+		if ($t_retries !~ /^\d+$/ || $t_retries < 1) {
+			error ("Invalid number of retries for network operations.");
+		}
+	}
+
+	# Storage directory
+	if (defined ($opts{'s'})) {
+
+		$t_directory = $opts{'s'};
+		
+		# Check that directory exists
+		if (! -d $t_directory) {
+			error ("Directory $t_directory does not exist.");
+		}
+
+		# Check directory permissions
+		if (! -w $t_directory) {
+			error ("Cannot write to directory $t_directory.");
+		}
+
+		# Remove the trailing / if present
+		$tmp = chop ($t_directory);
+		if ($tmp ne '/') {
+			$t_directory .= $tmp;
+		}
+	}
+	else {
+		print_help ();
+		exit 1;
+	}
+
+	# Timeout
+	if (defined ($opts{'t'})) {
+		$t_timeout = $opts{'t'};
+		if ($t_timeout !~ /^\d+$/ || $t_timeout < 1) {
+			error ("Invalid timeout for network operations.");
+		}
+	}
+
+	# Be verbose
+	if (defined ($opts{'v'})) {
+		$t_log = 1;
+	}
+
+	# SSL private key password
+	if (defined ($opts{'w'})) {
+		$t_ssl_pwd = ask_passwd ("Enter private key file password: ", "Enter private key file password again for confirmation: ");
+	}
+
+	# Server password
+	if (defined ($opts{'x'})) {
+		$t_pwd = $opts{'x'};
+	}
+}
+
+################################################################################
+## SUB sigchld_handler
+## Handle child process termination.
+################################################################################
+sub sigchld_handler {
+
+	while (waitpid(-1, &WNOHANG) > 0) {
+		$t_sem->up ();
+	}
+
+	$SIG{CHLD} = \&sigchld_handler;
+}
+
+################################################################################
+## SUB start_server
+## Open the server socket.
+################################################################################
+sub start_server {
+
+	$t_server_socket = IO::Socket::INET->new (
+		Listen    => $t_max_conn,
+		LocalAddr => $t_address,
+		LocalPort => $t_port,
+		Proto     => 'tcp',
+		ReuseAddr     => 1,
+	);
+
+        if (! defined ($t_server_socket)) {
+		error ("Cannot open socket for address $t_address on port $t_port: $!.");
+	}
+
+	print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+}
+
+################################################################################
+## SUB stop_server
+## Close the server socket.
+################################################################################
+sub stop_server {
+	
+	$t_server_socket->close ();
+	print_log ("Server going down");
+	
+	exit 0;
+}
+
+################################################################################
+## SUB start_ssl
+## Convert the client socket to an IO::Socket::SSL socket.
+################################################################################
+sub start_ssl {
+	my $err;
+
+	if ($t_ssl_ca eq '') {
+		IO::Socket::SSL->start_SSL (
+			$t_client_socket,
+			SSL_cert_file => $t_ssl_cert,
+			SSL_key_file => $t_ssl_key,
+			SSL_passwd_cb => sub {return $t_ssl_pwd},
+			SSL_server => 1,
+			# Verify peer
+			SSL_verify_mode => 0x01,
+		);
+	}
+	else {
+		IO::Socket::SSL->start_SSL (
+			$t_client_socket,
+			SSL_ca_file => $t_ssl_ca,
+			SSL_cert_file => $t_ssl_cert,
+			SSL_key_file => $t_ssl_key,
+			SSL_passwd_cb => sub {return $t_ssl_pwd},
+			SSL_server => 1,
+			# Fail verification if no peer certificate exists
+			SSL_verify_mode => 0x03,
+		);
+	}
+
+	$err = IO::Socket::SSL::errstr ();
+	if ($err ne '') {
+		error ($err);
+	}
+
+	print_log ("SSL started for " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB accept_connection
+## Accept an incoming connection and fork.
+################################################################################
+sub accept_connection {
+	my $pid;
+
+	while (1) {
+
+		# Accept connection
+		$t_client_socket = $t_server_socket->accept ();
+
+		if (! defined ($t_client_socket)) {
+
+			# EINTR
+			if ($! ne '') {
+				next;
+			}
+
+			error ("accept: $!.");
+		}
+
+		last;
+	}
+
+	print_log ("Client connected from " . $t_client_socket->sockhost ());
+
+	# Fork and serve the client
+	$pid = fork ();
+	if (! defined ($pid)) {
+		error ("Cannot fork: $!.");
+	}
+	
+	# Child
+	if ($pid == 0) {
+
+		# We do not need the server socket
+		$t_server_socket->close ();
+		
+		# Add client socket to select queue
+		$t_select = IO::Select->new ();
+		$t_select->add ($t_client_socket);
+		
+		# Start SSL
+		if ($t_ssl == 1) {
+			start_ssl ();
+		}
+
+		# Authenticate client
+		if ($t_pwd ne '') {
+			auth_pwd ();
+		}
+
+		serve_connection ();
+
+		$t_client_socket->close ();
+
+		# Must exit now
+		exit;
+	}
+
+	# Parent
+	$t_client_socket->close ();
+}
+
+################################################################################
+## SUB serve_connection
+## Read and process commands from the client.
+################################################################################
+sub serve_connection {
+	my $command;
+
+	# Read commands
+	while ($command = recv_command ($t_block_size)) {
+		
+		# Client wants to send a file
+		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
+			print_log ("Request to send file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			recv_file ($1, $2);
+		}
+		# Client wants to receive a file
+		elsif ($command =~ /^RECV <(.*)>$/) {
+			print_log ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
+			send_file ($1);
+		}
+		# Quit
+		elsif ($command =~ /^QUIT$/) {
+			print_log ("Connection closed from " . $t_client_socket->sockhost ());
+			last;
+		}
+		# Unknown command
+		else {
+			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
+			last;
+		}
+	}
+}
+
+################################################################################
+## SUB auth_pwd
+## Authenticate client with server password.
+################################################################################
+sub auth_pwd {
+	my $client_digest;
+	my $command;
+	my $pwd_digest;
+
+	require Digest::MD5;
+	
+	# Wait for password
+	$command = recv_command ($t_block_size);
+	if ($command !~ /^PASS (.*)$/) {
+		error ("Client " . $t_client_socket->sockhost () . " did not authenticate.");
+	}
+	
+	$client_digest = $1;
+	$pwd_digest = Digest::MD5::md5 ($t_pwd);
+	$pwd_digest = Digest::MD5::md5_hex ($pwd_digest);
+
+	if ($client_digest ne $pwd_digest) {
+		error ("Invalid password from " . $t_client_socket->sockhost () . ".");
+	}
+
+	print_log ("Client " . $t_client_socket->sockhost () . " authenticated");
+	send_data ("PASS OK\n");
+}
+
+################################################################################
+## SUB recv_file
+## Receive a file of size $_[1] and save it in $t_directory as $_[0].
+################################################################################
+sub recv_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $size = $_[1];
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("SEND ERR\n");
+		return;
+	}
+
+	# Check file size, empty files are not allowed
+	if ($size < 1 || $size > $t_max_size) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
+		send_data ("SEND ERR\n");
+		return;
+	}
+	
+	$file = "$t_directory/$base_name";
+
+	# Check if file exists
+	if (-f $file && $t_overwrite == 0) {
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
+		send_data ("SEND ERR\n");
+		return;
+	}
+
+	send_data ("SEND OK\n");
+
+	# Receive file
+	$data = recv_data_block ($size);
+
+	# Write it to disk
+	open (FILE, "> $file") || error ("Cannot open file '$file' for writing.");
+	binmode (FILE);
+	print (FILE $data);
+	close (FILE);
+
+	send_data ("SEND OK\n");
+	print_log ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB send_file
+## Send a file to the client
+################################################################################
+sub send_file {
+	my $base_name = $_[0];
+	my $data = '';
+	my $file;
+	my $response;
+	my $size;
+
+	# Check file name
+	if ($base_name =~ /[$t_invalid_chars]/) {
+		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		send_data ("RECV ERR\n");
+		return;
+	}
+	
+	$file = "$t_directory/$base_name";
+
+	# Check if file exists
+	if (! -f $file) {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		send_data ("RECV ERR\n");
+		return;
+	}
+
+	$size = -s $file;
+	send_data ("RECV SIZE $size\n");
+	
+	# Wait for client response
+	$response = recv_command ($t_block_size);
+	if ($response ne "RECV OK") {
+		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		return;
+	}
+
+	# Send the file
+	open (FILE, $file) || error ("Cannot open file '$file' for reading.");
+	binmode (FILE);
+
+	while ($data = <FILE>) {
+		send_data ($data);
+	}
+
+	close (FILE);
+
+	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent");
+}
+
+################################################################################
+# Common functions
+################################################################################
+
+################################################################################
+## SUB print_log
+## Print log messages.
+################################################################################
+sub print_log {
+
+	if ($t_log == 1) {
+		print (STDOUT "[log] $_[0]\n");
+	}
+}
+
+################################################################################
+## SUB error
+## Print an error and exit the program.
+################################################################################
+sub error {
+
+	if ($t_quiet == 0) {
+		print (STDERR "[err] $_[0]\n");
+	}
+
+	exit 1;
+}
+
+################################################################################
+## SUB recv_data
+## Read data from the client socket. Returns the number of bytes read and the
+## string of bytes as a two element array.
+################################################################################
+sub recv_data {
+	my $data;
+	my $read;
+	my $retries = 0;
+	my $size = $_[0];
+
+	while (1) {
+
+		# Try to read data from the socket
+		if ($t_select->can_read ($t_timeout)) {
+			
+			# Read at most $size bytes
+			$read = sysread ($t_client_socket, $data, $size);
+
+			# Read error
+			if (! defined ($read)) {
+				error ("Read error from " . $t_client_socket->sockhost () . ": $!.");
+			}
+	
+			# EOF
+			if ($read == 0) {
+				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+			return ($read, $data);
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+		}
+	}
+}
+
+################################################################################
+## SUB send_data
+## Write data to the client socket.
+################################################################################
+sub send_data {
+	my $data = $_[0];
+	my $retries = 0;
+	my $size;
+	my $total = 0;
+	my $written;
+
+	$size = length ($data);
+
+	while (1) {
+
+		# Try to write data to the socket
+		if ($t_select->can_write ($t_timeout)) {
+
+			$written = syswrite ($t_client_socket, $data, $size - $total, $total);
+
+			# Write error
+			if (! defined ($written)) {
+				error ("Connection error from " . $t_client_socket->sockhost () . ": $!.");
+			}
+			
+			# EOF
+			if ($written == 0) {
+				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+			}
+	
+		}
+
+		$total += $written;
+
+		# Check if all data was written
+		if ($total == $size) {
+			return;
+		}
+
+		# Retry
+		$retries++;
+
+		# But check for error conditions first
+		if ($retries > $t_retries) {
+			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+		}
+	}
+}
+
+################################################################################
+## SUB recv_command
+## Read a command from the client, ended by a new line character.
+################################################################################
+sub recv_command {
+	my $buffer;
+	my $char;
+	my $command = '';
+	my $read;
+	my $total = 0;
+
+	while (1) {
+		
+		($read, $buffer) = recv_data ($t_block_size);
+		$command .= $buffer;
+		$total += $read;
+
+		# Check if the command is complete
+		$char = chop ($command);
+		if ($char eq "\n") {
+			return $command;
+		}
+	
+		$command .= $char;
+
+		# Avoid overflow
+		if ($total > $t_block_size) {
+			error ("Received too much data from " . $t_client_socket->sockhost () . ".");
+		}
+	}
+}
+
+################################################################################
+## SUB recv_data_block
+## Read $_[0] bytes of data from the client.
+################################################################################
+sub recv_data_block {
+	my $buffer = '';
+	my $data = '';
+	my $read;
+	my $size = $_[0];
+	my $total = 0;
+
+	while (1) {
+
+		($read, $buffer) = recv_data ($size - $total);
+		$data .= $buffer;
+		$total += $read;
+
+		# Check if all data has been read
+		if ($total == $size) {
+			return $data;
+		}
+	}
+}
+
+################################################################################
+## SUB ask_passwd
+## Asks the user for a password.
+################################################################################
+sub ask_passwd {
+	my $msg1 = $_[0];
+	my $msg2 = $_[1];
+	my $pwd1;
+	my $pwd2;
+
+	require Term::ReadKey;
+
+	# Disable keyboard echo
+	Term::ReadKey::ReadMode('noecho');
+	
+	# Promt for password
+	print ($msg1);
+	$pwd1 = Term::ReadKey::ReadLine(0);
+	print ("\n$msg2");
+	$pwd2 = Term::ReadKey::ReadLine(0);
+	print ("\n");
+
+	# Restore original settings
+	Term::ReadKey::ReadMode('restore');
+
+	if ($pwd1 ne $pwd2) {
+		print ("Error: passwords do not match.\n");
+		exit 1;
+	}
+
+	# Remove the trailing new line character
+	chop $pwd1;
+
+	return $pwd1;
+}
+
+################################################################################
+# Main
+################################################################################
+
+# Never run as root
+if ($> == 0 && $^O ne 'MSWin32') {
+	print ("Error: for safety reasons $0 cannot be run with root privileges.\n");
+	exit 1;
+}
+
+# Parse command line options
+parse_options ();
+
+# Check command line arguments
+if ($#ARGV != -1) {
+	print_help ();
+	exit 1;
+}
+
+# Run as daemon?
+if ($t_daemon == 1 && $^O ne 'MSWin32') {
+	daemonize ();
+}
+
+# Handle ctr-c
+if ($^O eq 'MSWin32') {
+	$SIG{INT2} = \&stop_server;
+}
+else {
+	$SIG{INT} = \&stop_server;
+}
+
+# Handle SIGCHLD
+$SIG{CHLD} = \&sigchld_handler;
+
+start_server ();
+
+# Initialize semaphore
+$t_sem = Thread::Semaphore->new ($t_max_conn);
+
+# Accept connections
+while (1) {
+	$t_sem->down ();
+	accept_connection ();
+}
+

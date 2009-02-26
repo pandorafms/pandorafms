@@ -57,12 +57,14 @@ else
 		mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.bak
 	fi
 	cp conf/pandora_server.conf /etc/pandora/
+
+	echo "Installing tentacle server daemon..."
+	cp util/tentacle_server /usr/bin
+	cp util/tentacle_serverd /etc/init.d
+
 	chmod 770 /etc/pandora/pandora_server.conf
 	if [ "`uname -s`" != "Linux" ]; then
 		echo "This is not a Linux-based distro. The installer will not create files for automatic startup."
-		echo "Copying the binaries into /usr/local/bin"
-		cp pandora_* /usr/local/bin
-		rm /usr/local/bin/pandora_server_installer
 	else 
 		cp pandora_* /etc/init.d/
 		rm /etc/init.d/pandora_server_installer
@@ -73,12 +75,13 @@ else
 		ln -s /etc/init.d/pandora_plugin /etc/rc2.d/S90pandora_plugin
 		ln -s /etc/init.d/pandora_prediction /etc/rc2.d/S90pandora_prediction
 		ln -s /etc/init.d/pandora_wmi /etc/rc2.d/S90pandora_wmi
+		ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S89tentacle_server
 	fi
 
 	if [ -e /usr/local/bin/pandora_server ]
 	then
 		ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server
-	    ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
+	    	ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
 		ln -s /usr/local/bin/pandora_recon /usr/bin/pandora_recon
 		ln -s /usr/local/bin/pandora_network /usr/bin/pandora_network
 		ln -s /usr/local/bin/pandora_prediction /usr/bin/pandora_prediction

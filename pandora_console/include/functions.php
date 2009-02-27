@@ -298,6 +298,30 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
 
+/**
+ * Rounds an integer to a multiple of 5.
+ *
+ * Example:
+<code>
+echo format_integer_round (18);
+// Will return 20
+
+echo format_integer_round (21);
+// Will return 25
+
+echo format_integer_round (25, 10);
+// Will return 30
+</code>
+ *
+ * @param int Number to be rounded.
+ * @param int Rounder number, default value is 5.
+ *
+ * @param Number rounded to a multiple of rounder
+ */
+function format_integer_round ($number, $rounder = 5) {
+	return (int) ($number / $rounder + 0.5) * $rounder;
+}
+
 /** 
  * INTERNAL: Use print_timestamp for output Get a human readable string of 
  * the difference between current time and given timestamp.

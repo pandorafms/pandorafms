@@ -29,6 +29,42 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
+if (defined ('AJAX')) {
+	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
+	
+	if ($get_event_tooltip) {
+		$id = (int) get_parameter ('id');
+		$event = get_event ($id);
+		if ($event === false)
+			return;
+		
+		echo '<h3>'.__('Event').'</h3>';
+		echo '<strong>'.__('Type').': </strong><br />';
+		
+		print_event_type_img ($event["event_type"]);
+		echo ' ';
+		if ($event["event_type"] == "system") {
+			echo __('System');
+		} elseif ($event["id_agente"] > 0) {
+			// Agent name
+			echo get_agent_name ($event["id_agente"]);
+		} else {
+			echo __('Alert').__('SNMP');
+		}
+		echo '<br />';
+		echo '<strong>'.__('Timestamp').': </strong><br />';
+		print_timestamp ($event['utimestamp']);
+		
+		echo '<br />';
+		echo '<strong>'.__('Description').': </strong><br />';
+		echo $event['evento'];
+		
+		return;
+	}
+	
+	return;
+}
+
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
 //Process deletion (pass array or single value)
@@ -318,60 +354,60 @@ $table->head[9] = print_checkbox ("allbox", "1", false, true);
 $table->align[9] = 'center';
 
 //Arrange data. We already did ACL's in the query
-foreach ($result as $row) {
+foreach ($result as $event) {
 	$data = array ();
 	
 	//First pass along the class of this row
-	$table->rowclass[] = get_priority_class ($row["criticity"]);
+	$table->rowclass[] = get_priority_class ($event["criticity"]);
 	
 	// Colored box
-	if ($row["estado"] == 0) {
-		$data[0] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($row["criticity"])));
+	if ($event["estado"] == 0) {
+		$data[0] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
 	} else {
-		$data[0] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($row["criticity"])));
+		$data[0] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
 	}
 	
-	$data[1] = print_event_type_img ($row["event_type"], true);
+	$data[1] = print_event_type_img ($event["event_type"], true);
 	
 	// Event description
-	$data[2] = '<span title="'.$row["evento"].'" class="f9">';
-	$data[2] .= '<a href="'.$url.'&amp;group_rep=0&amp;id_agent='.$row["id_agente"].'&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($row["evento"]).'">';
-	if (strlen ($row["evento"]) > 50) {
-		$data[2] .= mb_substr ($row["evento"], 0, 50)."...";
+	$data[2] = '<span title="'.$event["evento"].'" class="f9">';
+	$data[2] .= '<a href="'.$url.'&amp;group_rep=0&amp;id_agent='.$event["id_agente"].'&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
+	if (strlen ($event["evento"]) > 50) {
+		$data[2] .= mb_substr ($event["evento"], 0, 50)."...";
 	} else {
-		$data[2] .= $row["evento"];
+		$data[2] .= $event["evento"];
 	}
 	$data[2] .= '</a></span>';
 
-	if ($row["event_type"] == "system") {
+	if ($event["event_type"] == "system") {
 		$data[3] = __('System');
-	} elseif ($row["id_agente"] > 0) {
+	} elseif ($event["id_agente"] > 0) {
 		// Agent name
-		$data[3] = print_agent_name ($row["id_agente"], true);
+		$data[3] = print_agent_name ($event["id_agente"], true);
 	} else {
 		$data[3] = __('Alert').__('SNMP');
 	}
 	
 	$data[4] = '';
-	if ($row["id_agentmodule"] != 0) {
-		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agente"].'&amp;tab=data">';
+	if ($event["id_agentmodule"] != 0) {
+		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
 		$data[4] .= print_image ("images/bricks.png", true, array ("border" => 0, "title" => __('Go to data overview')));
 		$data[4] .= '</a>&nbsp;';
 	}
-	if ($row["id_alert_am"] != 0) {
-		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agente"].'&amp;tab=alert">';
+	if ($event["id_alert_am"] != 0) {
+		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$data[4] .= print_image ("images/bell.png", true, array ("border" => 0, "title" => __('Go to alert overview')));
 		$data[4] .= '</a>';
 	}
 	
-	$data[5] = print_group_icon ($row["id_grupo"], true);
+	$data[5] = print_group_icon ($event["id_grupo"], true);
 
 	if ($group_rep == 1) {
-		$data[6] = $row["event_rep"];	
+		$data[6] = $event["event_rep"];	
 	} else {
-		if (!empty ($row["estado"])) {
-			if ($row["id_usuario"] != '0' && $row["id_usuario"] != ''){
-			  $data[6] = '<a href="index.php?sec=usuario&amp;sec2=operation/user/user_edit&amp;ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.mb_substr ($row["id_usuario"],0,8).'</a>';
+		if (!empty ($event["estado"])) {
+			if ($event["id_usuario"] != '0' && $event["id_usuario"] != ''){
+			  $data[6] = '<a href="index.php?sec=usuario&amp;sec2=operation/user/user_edit&amp;ver='.$event["id_usuario"].'" title="'.dame_nombre_real ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
 			} else {
 			  $data[6] = __('System');
 			}
@@ -383,34 +419,34 @@ foreach ($result as $row) {
 	//Time	
 	
 	if ($group_rep == 1) {
-		$data[7] = print_timestamp ($row['timestamp_rep'], true);
+		$data[7] = print_timestamp ($event['timestamp_rep'], true);
 	} else {
-		$data[7] = print_timestamp ($row["timestamp"], true);
+		$data[7] = print_timestamp ($event["timestamp"], true);
 	}
 	
 	//Actions
 	$data[8] = '';
 	// Validate event
-	if (($row["estado"] == 0) and (give_acl ($config["id_user"], $row["id_grupo"], "IW") == 1)) {
-		$data[8] .= '<a href="'.$url.'&amp;validate=1&amp;eventid='.$row["id_evento"].'&amp;pure='.$config["pure"].'">';
+	if (($event["estado"] == 0) and (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
+		$data[8] .= '<a href="'.$url.'&amp;validate=1&amp;eventid='.$event["id_evento"].'&amp;pure='.$config["pure"].'">';
 		$data[8] .= print_image ("images/ok.png", true, array ("border" => 0, "title" => __('Validate event')));
 		$data[8] .= '</a>';
 	}
 	// Delete event
-	if (give_acl ($config["id_user"], $row["id_grupo"], "IM") == 1) {
-		$data[8] .= '<a href="'.$url.'&amp;delete=1&amp;eventid='.$row["id_evento"].'&amp;pure='.$config["pure"].'">';
+	if (give_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
+		$data[8] .= '<a href="'.$url.'&amp;delete=1&amp;eventid='.$event["id_evento"].'&amp;pure='.$config["pure"].'">';
 		$data[8] .= print_image ("images/cross.png", true, array ("border" => 0, "title" => __('Delete event')));
 		$data[8] .= '</a>';
 	}
 	// Create incident from this event			
-	if (give_acl ($config["id_user"], $row["id_grupo"], "IW") == 1) {
-		$data[8] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$row["id_evento"].'">';
+	if (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
+		$data[8] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$event["id_evento"].'">';
 		$data[8] .= print_image ("images/page_lightning.png", true, array ("border" => 0, "title" => __('Create incident from event')));
 		$data[8] .= '</a>';
 	}
 	
 	//Checkbox
-	$data[9] = print_checkbox_extended ("eventid[]", $row["id_evento"], false, false, false, 'class="chk"', true);
+	$data[9] = print_checkbox_extended ("eventid[]", $event["id_evento"], false, false, false, 'class="chk"', true);
 	
 	array_push ($table->data, $data);
 }

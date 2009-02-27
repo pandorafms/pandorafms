@@ -21,6 +21,17 @@ function get_events ($filter = false, $fields = false) {
 	return get_db_all_rows_filter ('tevento', $filter, $fields);
 }
 
+function get_event ($id, $fields = false) {
+	if (empty ($id))
+		return false;
+	global $config;
+	
+	$event = get_db_row ('tevento', 'id_evento', $id, $fields);
+	if (! give_acl ($config['id_user'], $event['id_grupo'], 'IR'))
+		return false;
+	return $event;
+}
+
 /**
  * Delete events in a transaction
  *
@@ -280,32 +291,60 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
  * @return string HTML with img 
  */
 function print_event_type_img ($type, $return = false) {
+	$output = '';
+	
 	switch ($type) {
-		case "alert_recovered": 
-			return print_image ("images/error.png", $return, array ("title" => __('Alert recovered')));
-		case "alert_manual_validation": 
-			return print_image ("images/eye.png", $return, array ("title" => __('Alert manually validated')));
-		case "going_up_warning":
-			return print_image ("images/b_yellow.png", $return, array ("title" => __('Going from critical to warning')));
-		case "going_down_critical":
-		case "going_up_critical": //This is to be backwards compatible
-			return print_image ("images/b_red.png", $return, array ("title" => __('Going down to critical state')));
-		case "going_up_normal":
-		case "going_down_normal": //This is to be backwards compatible
-			return print_image ("images/b_green.png", $return, array ("title" => __('Going up to normal state')));
-		case "going_down_warning":
-			return print_image ("images/b_yellow.png", $return, array ("title" => __('Going down from normal to warning')));
-		case "alert_fired":
-			return print_image ("images/bell.png", $return, array ("title" => __('Alert fired')));
-		case "system";
-			return print_image ("images/cog.png", $return, array ("title" => __('SYSTEM')));
-		case "recon_host_detected";
-			return print_image ("images/network.png", $return, array ("title" => __('Recon server detected a new host')));
-		case "new_agent";
-			return print_image ("images/wand.png", $return, array ("title" => __('New agent created')));
-		case "unknown": 
-		default:
-			return print_image ("images/err.png", $return, array ("title" => __('Unknown type:').': '.$type));
-	}	
+	case "alert_recovered": 
+		$output .= print_image ("images/error.png", true,
+			array ("title" => __('Alert recovered')));
+		break;
+	case "alert_manual_validation": 
+		$output .= print_image ("images/eye.png", true,
+			array ("title" => __('Alert manually validated')));
+		break;
+	case "going_up_warning":
+		$output .= print_image ("images/b_yellow.png", true,
+			array ("title" => __('Going from critical to warning')));
+		break;
+	case "going_down_critical":
+	case "going_up_critical": //This is to be backwards compatible
+		$output .= print_image ("images/b_red.png", true,
+			array ("title" => __('Going down to critical state')));
+		break;
+	case "going_up_normal":
+	case "going_down_normal": //This is to be backwards compatible
+		$output .= print_image ("images/b_green.png", true,
+			array ("title" => __('Going up to normal state')));
+		break;
+	case "going_down_warning":
+		$output .= print_image ("images/b_yellow.png", true,
+			array ("title" => __('Going down from normal to warning')));
+		break;
+	case "alert_fired":
+		$output .= print_image ("images/bell.png", true,
+			array ("title" => __('Alert fired')));
+		break;
+	case "system";
+		$output .= print_image ("images/cog.png", true,
+			array ("title" => __('SYSTEM')));
+		break;
+	case "recon_host_detected";
+		$output .= print_image ("images/network.png", true,
+			array ("title" => __('Recon server detected a new host')));
+		break;
+	case "new_agent";
+		$output .= print_image ("images/wand.png", true,
+			array ("title" => __('New agent created')));
+		break;
+	case "unknown": 
+	default:
+		$output .= print_image ("images/err.png", true,
+			array ("title" => __('Unknown type:').': '.$type));
+		break;
+	}
+	
+	if ($return)
+		return $output;
+	echo $output;
 }
 ?>

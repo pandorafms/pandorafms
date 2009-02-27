@@ -1,3 +1,21 @@
+2009-02-27  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/groups/configure_group.php: Removed javascript console.log
+
+	* godmode/reporting/map_builder.php: Fixed typo on file_exists()
+
+	* include/functions.php: Added format_integer_round().
+
+	* include/functions_db.php: Added fields to get_db_row(). Array values
+	to make "IN" SQL statements were in wrong function. Added support for
+	order in format_array_to_where_clause_sql().
+
+	* include/functions_events.php: Added get_event(). Fixed
+	print_event_type_img() which causes double printing in some cases.
+
+	* operation/events/events.php: Added get_event_tooltip AJAX operation.
+	Style correction by replacing $row with $event.
+
 2009-02-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 	
 	* godmode/setup/setup.php: Unchecked checkboxes don't transfer any value

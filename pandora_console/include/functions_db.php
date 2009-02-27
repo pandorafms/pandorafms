@@ -1525,14 +1525,25 @@ function get_db_row_sql ($sql) {
  * 
  * @return mixed The first row of a database query or false.
  */
-function get_db_row ($table, $field_search, $condition) {
-	
-	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %d LIMIT 1", $table, $field_search, $condition);
-	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %f LIMIT 1", $table, $field_search, $condition);
+function get_db_row ($table, $field_search, $condition, $fields = false) {
+	if (empty ($fields)) {
+		$fields = '*';
 	} else {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s' LIMIT 1", $table, $field_search, $condition);
+		if (is_array ($fields))
+			$fields = implode (',', $fields);
+		else if (! is_string ($fields))
+			return false;
+	}
+		
+	if (is_int ($condition)) {
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1",
+			$fields, $table, $field_search, $condition);
+	} else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1",
+			$fields, $table, $field_search, $condition);
+	} else {
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", 
+			$fields, $table, $field_search, $condition);
 	}
 	$result = get_db_all_rows_sql ($sql);
 		
@@ -1887,10 +1898,8 @@ function format_array_to_update_sql ($values) {
 			$sql = sprintf ("`%s` = NULL", $field);
 		} elseif (is_int ($value) || is_bool ($value)) {
 			$sql = sprintf ("`%s` = %d", $field, $value);
-		} else if (is_float ($value) || is_double ($value)) {
+		} elseif (is_float ($value) || is_double ($value)) {
 			$sql = sprintf ("`%s` = %f", $field, $value);
-		} else if (is_array ($value)) {
-			$sql = sprintf ('`%s` IN ("%s")', $field, implode ('", "', $value));
 		} else {
 			$sql = sprintf ("`%s` = '%s'", $field, $value);
 		}
@@ -1920,7 +1929,22 @@ echo $sql;
  *
  * @param array Values to be formatted in an array indexed by the field name.
  * There are special parameters such as 'limit' and 'offset' that will be used
- * as LIMIT and OFFSET clauses respectively.
+ * as ORDER, LIMIT and OFFSET clauses respectively. Since LIMIT and OFFSET are
+ * numerics, ORDER can receive a field name or a SQL function and a the ASC or
+ * DESC clause. Examples:
+<code>
+$values = array ();
+$values['value'] = 10;
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+// SELECT * FROM table WHERE VALUE = 10
+
+$values = array ();
+$values['value'] = 10;
+$values['order'] = 'name DESC';
+$sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values);
+// SELECT * FROM table WHERE VALUE = 10 ORDER BY name DESC
+
+</code>
  * @param string Join operator. AND by default.
  * @param string A prefix to be added to the string. It's useful when limit and
  * offset could be given to avoid this cases:
@@ -1958,6 +1982,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 	$query = '';
 	$limit = '';
 	$offset = '';
+	$order = '';
 	if (isset ($values['limit'])) {
 		$limit = sprintf (' LIMIT %d', $values['limit']);
 		unset ($values['limit']);
@@ -1967,6 +1992,12 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		$offset = sprintf (' OFFSET %d', $values['offset']);
 		unset ($values['offset']);
 	}
+	
+	if (isset ($values['order'])) {
+		$order = sprintf (' ORDER BY %s', $values['order']);
+		unset ($values['order']);
+	}
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
@@ -1984,6 +2015,8 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 			$query .= sprintf ("%s = %d", $field, $value);
 		} else if (is_float ($value) || is_double ($value)) {
 			$query .= sprintf ("%s = %f", $field, $value);
+		} elseif (is_array ($value)) {
+			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
 		} else {
 			$query .= sprintf ("%s = '%s'", $field, $value);
 		}
@@ -1994,7 +2027,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		$i++;
 	}
 	
-	return (! empty ($query) ? $prefix: '').$query.$limit.$offset;
+	return (! empty ($query) ? $prefix: '').$query.$order.$limit.$offset;
 }
 
 /** 

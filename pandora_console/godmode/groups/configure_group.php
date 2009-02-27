@@ -111,7 +111,6 @@ echo '</form>';
 function icon_changed () {
 	var inputs = [];
 	var data = this.value;
-	console.log (this.value);
 	$('#icon_preview').fadeOut ('normal', function () {
 		$('#icon_preview').empty ();
 		if (data != "") {

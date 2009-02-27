@@ -117,7 +117,7 @@ if ($update_layout) {
 
 if ($get_background_info) {
 	$file = (string) get_parameter ('background');
-	if (file_exist ('images/console/background/'.$file)){
+	if (file_exists ('images/console/background/'.$file)){
 		$info = getimagesize ('images/console/background/'.$file);
 		$info['width'] = $info[0];
 		$info['height'] = $info[1];

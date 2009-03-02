@@ -1,4 +1,9 @@
 /* 
+
+Author: The Pandora FMS team
+Name: Default theme
+Description: The default Pandora FMS theme layout
+
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.comnt
@@ -855,26 +860,6 @@ ol.steps li.visited {
 	color: #999 !important;
 }
 
-/* Common useful styles */
-.left { clear: left; float: left;}
-.right { clear: right; float: right;}
-.clear { clear:both; }
-.top {
-	vertical-align: top;
-	margin-top: 0;
-	padding-top: 0;
-}
-img.left {
-	margin-right:1em;
-	margin-bottom:1.8em;
-}
-img.right {
-	margin-left:1em;
-	margin-bottom:1.8em;
-}
-.text-right {
-	text-align:right;
-}
 fieldset {
 	border: 2px solid #E9F3D2;
 	padding: 0 0 0 10px;
@@ -907,34 +892,6 @@ div.actions_container label {
 	display: inline;
 	font-weight: normal;
 	font-style: italic;
-}
-pre.debug, div.backtrace {
-	font-family: monospace !important;
-	text-align: left;
-	padding: 10px;
-	margin: 5px;
-	border: 1px solid black;
-}
-div.backtrace ol {
-	margin: 0;
-	padding-left: 20px;
-}
-pre.debug {
-	background-color: #fff55f;
-}
-div.debug, div.database_debug_title, div.debug a, div.debug a:hover {
-	background-color: white;
-	color: black;
-	text-align: left;
-}
-div.debug a, div.debug a:hover, div.parameters {
-	text-decoration: underline;
-}
-div.database_debug_title {
-	font-size: 15pt;
-	margin-top: 15px;
-	padding: 5px;
-	width: 95%;
 }
 
 /* timeEntry styles */

@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 	exit;
 }
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_report_type_data_source = (bool) get_parameter ('get_report_type_data_source');
 	
 	if ($get_report_type_data_source) {

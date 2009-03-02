@@ -895,4 +895,15 @@ function safe_sql_string ($string) {
 		return $string;
 	return mysql_escape_string ($string);
 }
+
+/**
+ * Checks if current execution is under an AJAX request.
+ *
+ * This functions checks if an 'AJAX' constant is defined
+ *
+ * @return bool True if the request was done via AJAX. False otherwise
+ */
+function is_ajax () {
+	return defined ('AJAX');
+}
 ?>

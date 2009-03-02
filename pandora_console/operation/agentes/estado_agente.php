@@ -27,7 +27,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
 	
 	if ($get_agent_module_last_value) {

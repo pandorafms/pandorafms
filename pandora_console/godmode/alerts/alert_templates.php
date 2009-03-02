@@ -30,7 +30,7 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 }
 
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_template_tooltip = (bool) get_parameter ('get_template_tooltip');
 	
 	if ($get_template_tooltip) {

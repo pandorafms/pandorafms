@@ -50,7 +50,7 @@ if ($delete_alert) {
 	$result = delete_alert_compound ($id);
 	print_error_message ($result, __('Successfully deleted'),
 		__('Could not be deleted'));
-	if (defined ('AJAX'))
+	if (is_ajax ())
 		return;
 }
 
@@ -59,7 +59,7 @@ if ($enable_alert) {
 	$result = set_alerts_compound_disable ($id, false);
 	print_error_message ($result, __('Successfully enabled'),
 		__('Could not be enabled'));
-	if (defined ('AJAX'))
+	if (is_ajax ())
 		return;
 }
 
@@ -68,7 +68,7 @@ if ($disable_alert) {
 	$result = set_alerts_compound_disable ($id, true);
 	print_error_message ($result, __('Successfully disabled'),
 		__('Could not be disabled'));
-	if (defined ('AJAX'))
+	if (is_ajax ())
 		return;
 }
 

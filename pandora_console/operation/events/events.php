@@ -29,7 +29,7 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
 	
 	if ($get_event_tooltip) {

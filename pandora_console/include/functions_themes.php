@@ -6,8 +6,9 @@
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
+// modify it under the terms of the GNU Lesser General Public License (LGPL)
 // as published by the Free Software Foundation for version 2.
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,36 +17,28 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-if (! isset ($config["id_user"])) {
-	require ("general/login_page.php");
-	exit ();
+/**
+ * Get a list of CSS themes installed.
+ *
+ * @return array An indexed array with the file name in the index and the theme
+ * name (if available) as the value.
+ */
+function get_css_themes () {
+	$theme_dir = 'include/styles/';
+	
+	$files = list_files ($theme_dir, "pandora", 1, 0);
+	
+	$retval = array ();
+	foreach ($files as $file) {
+		$data = implode ('', file ($theme_dir.'/'.$file));
+		preg_match ('|Name:(.*)$|mi', $data, $name);
+		if (isset ($name[1]))
+			$retval[$file] = trim ($name[1]);
+		else
+			$retval[$file] = $file;
+	}
+	
+	return $retval;
 }
 
-require_once ('include/functions_menu.php');
-
-echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
-$menu = array ();
-require ("operation/menu.php");
-print_menu ($menu);
-
-echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
-$menu = array ();
-require ("godmode/menu.php");
-print_menu ($menu);
-unset ($menu);
-
-require ("links_menu.php");
-
-require_jquery_file ('cookie');
 ?>
-<script type="text/javascript" language="javascript">
-/* <![CDATA[ */
-$(document).ready( function() {
-	$("img.toggle").click (function () {
-		$(this).siblings ("ul").toggle ();
-		//In case the links gets activated, we don't want to follow link
-		return false;
-	});
-});
-/* ]]> */
-</script>

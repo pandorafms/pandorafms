@@ -1,3 +1,43 @@
+2009-03-02  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_menu.php: Added to repository. Functions for menu.
+
+	* operation/menu.php, godmode/menu.php: Added class to menu due to
+	changes in print_menu().
+
+	* general/main_menu.php: temp_print_menu() moved to functions_menu.php 
+
+	* include/functions_themes.php: Added to repository. Implement
+	functions relative to themes (only CSS themes list at this moment).
+
+	* include/styles/pandora.css, include/styles/pandora_black.css,
+	include/styles/pandora_minimal.css, include/styles/pandora_red.css:
+	Added author, name and description comments to adopt to new
+	get_themes() interface.
+
+	* include/styles/pandora_width.css: Improved and make lighter by
+	simply rewrite some classes.
+
+	* include/functions.php: Added is_ajax().
+
+	* godmode/agentes/module_manager_editor.php,
+	godmode/alerts/alert_actions.php, godmode/alerts/alert_commands.php,
+	godmode/alerts/alert_compounds.php, godmode/alerts/alert_list.php,
+	godmode/alerts/alert_templates.php, godmode/groups/group_list.php,
+	godmode/reporting/map_builder.php,
+	godmode/reporting/reporting_builder.php,
+	operation/agentes/estado_agente.php, operation/agentes/ver_agente.php,
+	operation/events/events.php, operation/messages/message.php: Use
+	is_ajax()
+
+	* godmode/setup/setup.php: Use enterprise_include() instead of manual
+	checking. Use get_css_themes() to show the theme list.
+
+	* include/styles/common.css: Added to repository. Minimal styles to
+	make pandora works and common with all the CSS themes.
+
+	* include/functions_ui.php: Added common.css file.
+
 2009-02-27  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/groups/configure_group.php: Removed javascript console.log

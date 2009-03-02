@@ -28,9 +28,7 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 }
 
 // Load enterprise extensions
-if (file_exists( $config["homedir"] . "/enterprise/godmode/setup/setup.php")) {
-	include $config["homedir"] . "/enterprise/godmode/setup/setup.php";
-}
+enterprise_include ('godmode/setup/setup.php');
 
 $update_settings = (bool) get_parameter ('update_settings');
 
@@ -81,10 +79,10 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["compact_header"]."' WHERE token = 'compact_header'");
 }
 
+require_once ('include/functions_themes.php');
+
 echo "<h2>".__('Setup')." &gt; ";
 echo __('General configuration')."</h2>";
-
-$file_styles = list_files('include/styles/', "pandora", 1, 0);
 
 $table->width = '90%';
 $table->data = array ();
@@ -126,7 +124,7 @@ $table->data[11][0] = __('Auto login (Hash) password');
 $table->data[11][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
 $table->data[13][0] = __('Style template');
-$table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
+$table->data[13][1] = print_select (get_css_themes (), 'style', $config["style"], '', '', '', true);
 
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);

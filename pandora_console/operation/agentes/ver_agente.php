@@ -23,7 +23,7 @@ enterprise_include ('operation/agentes/ver_agente.php');
 
 check_login ();
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");

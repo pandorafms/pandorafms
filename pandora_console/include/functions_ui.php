@@ -566,6 +566,7 @@ function process_page_head ($string, $bitfield) {
 	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
 	<meta name="robots" content="index, follow" />
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
+	<link rel="stylesheet" href="include/styles/common.css" type="text/css"/>
 	<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 	<![endif]-->';
@@ -580,7 +581,7 @@ function process_page_head ($string, $bitfield) {
 	
 	//Load CSS
 	if (empty ($config['css'])) {
-		$config['css'] = array (); //If it's empty, false or not init set array to empty just in case
+		$config['css'] = array ();
 	}
 	
 	//Style should go first

@@ -29,7 +29,7 @@ if (! give_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');
 	

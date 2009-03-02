@@ -22,6 +22,8 @@ if (! isset ($config['id_user'])) {
 
 enterprise_include ('operation/menu.php');
 
+$menu['class'] = 'operation';
+
 // Agent read, Server read
 if (give_acl ($config['id_user'], 0, "AR")) {
 	

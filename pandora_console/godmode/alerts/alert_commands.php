@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_alert_command = (bool) get_parameter ('get_alert_command');
 	if ($get_alert_command) {
 		$id = (int) get_parameter ('id');

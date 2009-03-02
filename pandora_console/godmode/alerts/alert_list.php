@@ -17,7 +17,7 @@
 
 check_login ();
 
-if (defined ('AJAX')) {
+if (is_ajax ()) {
 	$get_agent_alerts_simple = (bool) get_parameter ('get_agent_alerts_simple');
 	$disable_alert = (bool) get_parameter ('disable_alert');
 	$enable_alert = (bool) get_parameter ('enable_alert');

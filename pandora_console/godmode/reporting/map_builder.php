@@ -70,7 +70,7 @@ if ($create_layout) {
 	} else {
 		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
 	}
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		exit;
 	}
 }
@@ -110,7 +110,7 @@ if ($update_layout) {
 	} else {
 		echo '<h3 class="err">'.__('Update layout failed').'</h3>';
 	}
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		exit;
 	}
 }
@@ -122,7 +122,7 @@ if ($get_background_info) {
 		$info['width'] = $info[0];
 		$info['height'] = $info[1];
 	}
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		echo json_encode ($info);
 		exit;
 	}
@@ -134,7 +134,7 @@ if ($get_layout_data) {
 	if ($layout_data['id_agente_modulo'])
 		$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
 	
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		echo json_encode ($layout_data);
 		exit;
 	}
@@ -173,7 +173,7 @@ if ($create_layout_data) {
 	} else {
 		echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
 	}
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		exit;
 	}
 }
@@ -191,7 +191,7 @@ if ($update_layout_data_coords) {
 		array ('pos_x' => $layout_data_x, 'pos_y' => $layout_data_y),
 		array ('id' => $id_layout_data));
 	
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		exit;
 	}
 }
@@ -207,7 +207,7 @@ if ($delete_layout_data) {
 		process_sql_delete ('tlayout_data', array ('id' => $id_layout_data));
 	}
 	
-	if (defined ('AJAX')) {
+	if (is_ajax ()) {
 		exit;
 	}
 }

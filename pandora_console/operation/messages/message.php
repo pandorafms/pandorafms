@@ -133,7 +133,7 @@ if (isset ($_GET["new_msg"])) { //create message
 } 
 
 if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {	
-	if (empty ($config["pure"]) && !defined ('AJAX')) {
+	if (empty ($config["pure"]) && !is_ajax ()) {
 		echo "<h2>".__('Messages')." &gt; ".__('Message overview').'</h2>';
 	}
 
@@ -145,7 +145,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 	
 	$messages = get_message_overview ($order, $order_dir);
 	
-	if ($num_messages > 0 && empty ($config["pure"]) && !defined ('AJAX')) {
+	if ($num_messages > 0 && empty ($config["pure"]) && !is_ajax ()) {
 		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.print_image ("images/email.png", true).' '.__('unread message(s)').'.</p>';
 	}
 	

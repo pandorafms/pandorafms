@@ -24,6 +24,8 @@ if ((! give_acl ($config['id_user'], 0, "LM")) && (! give_acl ($config['id_user'
 	return;
 }
 
+$menu['class'] = 'godmode';
+
 if (give_acl ($config['id_user'], 0, "AW")) {
 	$menu["gagente"]["text"] = __('Manage agents');
 	$menu["gagente"]["sec2"] = "godmode/agentes/modificar_agente";

@@ -112,7 +112,7 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 /* Check if the user can see the graph */
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
 	return;
 }
 
@@ -203,7 +203,7 @@ foreach ($contents as $content) {
 			$sla_data["max"] = $sla['sla_max'];
 			$sla_data["min"] = $sla['sla_min'];
 			
-			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime);
+			$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$sla_data["error"] = __('Unknown');
 			} else {
@@ -234,7 +234,7 @@ foreach ($contents as $content) {
 	case 6:
 	case 'monitor_report':
 		$data["title"] = __('Monitor report');
-		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
+		$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
 		$data["objdata"]["good"] = $monitor_value;
 		$data["objdata"]["bad"] = format_numeric (100 - $monitor_value, 2);
 		break;

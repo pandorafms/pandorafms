@@ -83,7 +83,7 @@ if ($id_group)
 $table->data[2][1] = print_select_from_sql ($sql, 'id_parent', $id_parent, '', 'None', 0, true);
 $table->data[2][1] .= ' <span id="parent_preview">';
 if ($id_parent) {
-	echo '<img src="images/groups_small/'.dame_grupo_icono ($id_parent).'.png" />';
+	echo '<img src="images/groups_small/'.get_group_icon ($id_parent).'.png" />';
 }
 echo'</span>';
 

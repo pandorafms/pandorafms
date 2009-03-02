@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-global $config;
-
 require_once ($config["homedir"]."/include/functions_agents.php");
 
 /** 
@@ -33,84 +31,40 @@ require_once ($config["homedir"]."/include/functions_agents.php");
  * 
  * @return int SLA percentage of the requested module.
  */
-function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value = false, $date = 0) {
-	if (empty ($date))
-		$date = get_system_time ();
+function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
+	if (empty ($date)) {
+		$date = get_system_time ();	
+	}
 	
-	if (empty ($period))
-		return false; //We can't calculate a 0 period (division by zero)
-	
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];	
+	}
+			
 	$datelimit = $date - $period; // start date
 	
-	/* Get all the data in the interval */
-	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
-			WHERE id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d 
-			ORDER BY utimestamp ASC',
-			$id_agent_module, $datelimit, $date);
-	$datas = get_db_all_rows_sql ($sql);
-	if ($datas === false) {
-		
-		/* Try to get data from tagente_estado. It may found nothing because of
-		data compression */
-		$sql = sprintf ('SELECT datos, utimestamp FROM tagente_estado 
-			WHERE id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d 
-			ORDER BY utimestamp ASC',
-			$id_agent_module, $datelimit, $date);
-		$data = get_db_sql ($sql);
-		
-		if ($data === false) {
-			//No data to calculate on so we return 0.
-			return 0;
-		}
-		$datas = array ();
-		array_push ($datas, $data);
+	/* Get the total data entries in the interval */
+	$sql = sprintf ('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d AND utimestamp <= %d', $id_agentmodule, $datelimit, $date);
+	$total = get_db_sql ($sql);
+	
+	if (empty ($total)) {
+		//No data to calculate on so we return 100 (fail to good)
+		return 100;
+	}		
+	
+	$sql = sprintf ('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d AND utimestamp <= %d AND datos < %d', $id_agentmodule, $datelimit, $date, $min_value);
+	if ($max_value > $min_value) {
+		$sql .= sprintf (' AND datos > %d', $max_value);
+	}
+	$bad = get_db_sql ($sql);
+	if (empty ($bad)) {
+		$bad = 0;
 	}
 	
-	$last_data = "";
-	$total_badtime = 0;
-	$interval_begin = 0;
-	$interval_last = $date;
-	$previous_data_timestamp = 0;
+	//Calculate percentage
+	$result = 100 - ($bad / $total) * 100;
 	
-	/* Get also the previous data before the selected interval. */
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	
-	if ($previous_data) {
-		/* Add data to the beginning */
-		array_unshift ($datas, $previous_data);
-		$previous_data_timestamp = $previous_data['utimestamp'];
-	}
-	
-	foreach ($datas as $data) {
-		if ($data["datos"] < $min_value || ($max_value !== false && $data["datos"] > $max_value)) {
-			if ($interval_begin == 0) {
-				$interval_begin = $data["utimestamp"];
-			}
-		} elseif ($interval_begin != 0) {
-			// Here ends interval with data outside valid values,
-			// Need to add this time to counter
-			$interval_last = $data["utimestamp"];
-			$temp_time = $interval_last - $interval_begin;
-			$total_badtime += $temp_time;
-			$interval_begin = 0;
-			$interval_last = 0;
-		}
-	}
-	
-	/* Check the last interval, if any */
-	if ($interval_begin != 0) {
-		/* The last time was the time of the previous data in the 
-		interval. That means that in all the interval, the data was 
-		not between the expected values, so the SLA is zero. */
-		if ($interval_begin = $previous_data_timestamp)
-			return 0;
-		$total_badtime += $interval_last - $interval_begin;
-	}
-	
-	$result = 100 - ($total_badtime / $period) * 100;
-	return max ($result, 0);
+	return $result;
 }
 
 /** 

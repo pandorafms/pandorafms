@@ -105,7 +105,7 @@ $group_rep = (int) get_parameter ("group_rep", 1);
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
 	$sql_post = " AND id_grupo = $ev_group";
-} elseif (dame_admin ($config["id_user"])) {
+} elseif (is_user_admin ($config["id_user"])) {
 	//Do nothing if you're admin, you get full access
 	$sql_post = "";
 	$groups[0] = __('System Events');
@@ -207,7 +207,7 @@ if ($result === false)
 $agents = array ();
 $agents[-1] = __('All');
 
-if (dame_admin ($config["id_user"])) {
+if (is_user_admin ($config["id_user"])) {
 	$agents[0] = __('System');
 }
 

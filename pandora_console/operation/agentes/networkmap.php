@@ -164,7 +164,7 @@ function create_pandora_node ($name, $font_size = 10) {
 
 // Opens a group definition
 function open_group ($id) {
-	$img = 'images/'.dame_grupo_icono ($id).'.png';
+	$img = 'images/'.get_group_icon ($id).'.png';
 	$name = get_group_name ($id);
 	
 	$group = 'subgraph cluster_' . $id . 

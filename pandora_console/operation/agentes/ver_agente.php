@@ -54,7 +54,7 @@ if (is_ajax ()) {
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
-		echo '<img src="images/groups_small/'.dame_grupo_icono ($agent['id_grupo']).'.png" /> ';
+		echo '<img src="images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png" /> ';
 		echo get_group_name ($agent['id_grupo']).'<br />';
 
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';

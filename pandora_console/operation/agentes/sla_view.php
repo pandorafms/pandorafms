@@ -12,13 +12,14 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
+// You should have received a copy of the GNU General Public Liccense
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/functions_reporting.php");
 
 check_login();
 
@@ -29,166 +30,101 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-require ("include/functions_reporting.php");
-
 echo "<h2>".__('SLA view')."</h2>";
-$id_agent = get_parameter ("id_agente", "0");
-$intervalo = get_agent_interval ($id_agent);
+$id_agent = get_parameter ("id_agente", 0);
+$interval = get_agent_interval ($id_agent);
+$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
+$offset = get_parameter ("offset", 0);
 
 // Get all module from agent
-$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agent.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
-$result_t=mysql_query($sql_t);
-if (mysql_num_rows ($result_t)) {
-	echo "<h3>".__('Automatic SLA for monitors')."</h3>";
-	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
-	echo "<tr><th>X</th>";
-	echo "<th>".__('Type')."</th>
-	<th>".__('Module name')."</th>
-	<th>".__('S.L.A.')."</th>
-	<th>".__('Status')."</th>
-	<th>".__('Interval')."</th>
-	<th>".__('Last contact')."</th>";
-	$color=0;
-	while ($module_data=mysql_fetch_array($result_t)){
-		# For evey module in the status table
-		$est_modulo = substr($module_data["nombre"],0,25);
-		$est_tipo = get_moduletype_name ($module_data["id_tipo_modulo"]);
-		$est_description = $module_data["descripcion"];
-		$est_timestamp = $module_data["timestamp"];
-		$est_estado = $module_data["estado"];
-		$est_datos = $module_data["datos"];
-		$est_cambio = $module_data["cambio"];
-		$est_interval = $module_data["module_interval"];
-		if ($intervalo != $est_interval && $est_interval > 0) {
-			$temp_interval = $est_interval;
-		} else {
-			$temp_interval = $intervalo;
-		}
-		if ($est_estado <>100){ # si no es un modulo de tipo datos
-			# Determinamos si se ha caido el agente (tiempo de intervalo * 2 superado)
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$seconds = get_system_time () - $module_data["utimestamp"];
-			if ($seconds >= ($temp_interval*2)) // If every interval x 2 secs. we get nothing, there's and alert
-				$agent_down = 1;
-			else
-				$agent_down = 0;
-		
-			echo "<tr><td class='".$tdcolor."'>";
+echo "<h3>".__('Automatic SLA for monitors')."</h3>";
+pagination (count ($modules), "index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=".$id_agent, $offset);
 
-			if (($module_data["id_modulo"] != 1) AND ($module_data["id_tipo_modulo"] < 100)) {
-				if ($module_data["flag"] == 0){
-					echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente& id_agente=".$id_agente."&id_agente_modulo=".$module_data["id_agente_modulo"]."&flag=1& tab=main&refr=60'><img src='images/target.png' border='0'></a>";
-				} else {
-					echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$module_data["id_agente_modulo"]."&tab=main&refr=60'><img src='images/refresh.png' border='0'></a>";
-				}
-			}
-			echo "<td class='".$tdcolor."'>";
-			echo "<img src='images/".show_icon_type($module_data["id_tipo_modulo"])."' border=0>";	
-			echo "<td class='".$tdcolor."' title='".$est_description."'>".$est_modulo."</td>";
-			echo "<td class='$tdcolor'>";
+$table->width = '95%';
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
 
-			$temp = get_agent_module_sla ($module_data["id_agente_modulo"], $config["sla_period"], 1);
-			if ($temp === false)
-				echo __('N/A');
-			else {
-				echo format_numeric ($temp)." %</td>";;
-			}
+$table->head = array ();
+$table->head[0] = __('Type');
+$table->head[1] = __('Module name');
+$table->head[2] = __('S.L.A.');
+$table->head[3] = __('Status');
+$table->head[4] = __('Interval');
 
-			echo "<td class='".$tdcolor."' align='center'>";
-			if ($est_estado == 1){
-				if ($est_cambio == 1) 
-					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='" . __('Change between Green/Red state') . "'>";
-				else
-					echo "<img src='images/pixel_red.png' width=40 height=18 title='". __('At least one monitor fails') . "'>";
-			} else
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='". __('All Monitors OK') . "'>";
+$table->align = array ();
+$table->align[0] = "center";
+$table->align[1] = "center";
+$table->align[2] = "center";
+$table->align[3] = "center";
+$table->align[4] = "center";
 
-			echo "<td align='center' class='".$tdcolor."'>";
-			if ($temp_interval != $intervalo)
-				echo $temp_interval."</td>";
-			else
-				echo "--";
-			echo  "<td class='".$tdcolor."f9'>";
-			if ($agent_down == 1) { // If agent down, it's shown red and bold
-				echo  "<span class='redb'>";
-			}
-			else {
-				echo "<span>";
-			}
-			if ($module_data["timestamp"] == '0000-00-00 00:00:00') {
-				echo __('Never');
-			} else {
-				echo human_time_comparation($module_data["timestamp"]);
-			}
-			echo "</span></td>";
-		}
+$table->data = array ();
+$loc = 0;
+
+foreach ($modules as $module_id => $module) {
+	if ($loc < $offset) {
+		$loc++;
+		continue; //Skip offset
+	} elseif ($loc >= $offset + $config["block_size"]) {
+		continue;
 	}
-	echo '</table>';
-} 
+	$data = array ();
+	$data[0] = print_moduletype_icon ($module["id_tipo_modulo"], true);
+	$data[1] = print_string_substr ($module["nombre"], 25, true);
+	$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
 
-
-// Get all SLA report components
-$sql = "SELECT tagente_modulo.id_agente_modulo, sla_max, sla_min, sla_limit, tagente_modulo.id_tipo_modulo, tagente_modulo.nombre, tagente_modulo.descripcion FROM treport_content_sla_combined, tagente_modulo WHERE tagente_modulo.id_agente = $id_agent AND tagente_modulo.id_agente_modulo = treport_content_sla_combined.id_agent_module AND tagente_modulo.id_tipo_modulo IN (1,4,7,8,11,15,16,22,24)";
-$result_t = mysql_query ($sql);
-if (mysql_num_rows ($result_t)) {
-	$color=0;
-	echo "<h3>".__('User-defined SLA items')." - ";
-	echo human_time_description_raw($config["sla_period"]). " </h3>";
-	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
-	echo "<tr>";
-	echo "<th>" . __('Type') . "</th>";
-	echo "<th>" . __('Module name') . "</th>";
-	echo "<th>" . __('S.L.A.') . "</th>";
-	echo "<th>" . __('Status') . "</th>";
-	
-	while ($module_data = mysql_fetch_array($result_t)){
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-
-		# For evey module in the status table
-		$id_agent_module = $module_data[0];
-		$sla_max = $module_data[1];
-		$sla_min = $module_data[2];
-		$sla_limit = $module_data[3];
-		$id_tipo_modulo = $module_data[4];
-		$name = $module_data[5];
-		$description = $module_data[6];
-		$est_tipo = get_moduletype_name ($id_tipo_modulo);
-		
-		echo "<tr>";	
-		echo "<td class='" . $tdcolor . "'>";
-		echo "<img src='images/" . show_icon_type ($id_tipo_modulo) . "' border=0>";	
-		echo "<td class='" . $tdcolor . "' title='" . $description . "'>" . $name;
-		echo " ($sla_min / $sla_max / $sla_limit) </td>";
-		echo "<td class='$tdcolor'>";
-
-		$temp = get_agent_module_sla ($id_agent_module, $config["sla_period"], $sla_min, $sla_max);
-		if ($temp === false){
-			echo __('N/A');
-			echo "<td class='$tdcolor'>";
-		} else {
-			echo format_numeric($temp)." %</td>";
-			echo "<td class='$tdcolor'>";
-			if ($temp > $sla_limit)
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . __('All Monitors OK') . "'>";
-			else
-				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . __('At least one monitor fails') . "'>";
-		}
+	//TODO: Make this work for all new status
+	$status = get_agentmodule_status ($module_id);
+	if ($status == 1){
+		$data[3] = print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
+	} else {
+		$data[3] = print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
 	}
-	echo '</table>';
+			
+	if ($module["module_interval"] > 0) {
+		$data[4] = $module["module_interval"];
+	} else {
+		$data[4] = $interval;
+	}
+	array_push ($table->data, $data);
+	$loc++;
 }
 
+print_table ($table);
+unset ($table);
+
+// Get all SLA report components
+$sql = "SELECT id_agent_module, sla_max, sla_min, sla_limit FROM treport_content_sla_combined WHERE id_agent_module IN (".implode (",",array_keys ($modules)).")";
+$result = get_db_all_rows_sql ($sql);
+if ($result !== false) {
+	echo "<h3>".__('User-defined SLA items')." - ".human_time_description_raw ($config["sla_period"])."</h3>";
+	$table->width = '95%';
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	$table->head = array ();
+	$table->head[0] = __('Type');
+	$table->head[1] = __('Module name');
+	$table->head[2] = __('S.L.A.');
+	$table->head[3] = __('Status');
+	$table->data = array ();
+	
+	foreach ($result as $sla_data) {
+		$data = array ();
+		$data[0] = print_moduletype_icon ($modules[$sla_data["id_agent_module"]]["id_tipo_modulo"], true);
+		$data[1] = print_string_substr ($modules[$sla_data["id_agent_module"]]["nombre"], 25, true);
+		$data[1] .= "(".$sla_data["sla_min"]." / ".$sla_data["sla_max"]." / ".$sla_data["sla_limit"].")";
+		$data[2] = format_numeric (get_agentmodule_sla ($sla_data["id_agent_module"], $config["sla_period"], 1)).'%';
+		$status = get_agentmodule_status ($sla_data["id_agent_module"]);
+		if ($status == 1){
+			$data[3] = print_image ("images/pixel_red.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Down')));
+		} else {
+			$data[3] = print_image ("images/pixel_green.png", true, array ("width" => 40, "height" => 18, "title" => __('Module Up')));
+		}
+		array_push ($table->data, $data);
+	}
+	print_table ($table);
+	unset ($table);
+}
 ?>

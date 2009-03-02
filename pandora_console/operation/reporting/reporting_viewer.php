@@ -41,7 +41,7 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 require ("include/functions_reporting.php");
 
 /* Check if the user can see the graph */
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
 	include ("general/noaccess.php");
 	return;
 }
@@ -231,7 +231,7 @@ foreach ($contents as $content) {
 			$data[0] .= $sla['sla_min']."<br />";
 			$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
 			$data[0] .= $sla['sla_limit'];
-			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
+			$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
@@ -325,7 +325,7 @@ foreach ($contents as $content) {
 		}
 		
 		$data = array ();
-		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
+		$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
 		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
 		$monitor_value = format_numeric (100 - $monitor_value, 2) ;

@@ -211,12 +211,12 @@ print_image ("images/lightbulb.png", false, $img_arr);
 echo '&nbsp; '.__('Modules').'</a></li>';
 
 echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
 print_image ("images/bell.png", false, $img_arr);
 echo '&nbsp; '.__('Alerts').'</a></li>';
 
 echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
 print_image ("images/network.png", false, $img_arr);
 echo '&nbsp; '.__('Net. Templates').'</a></li>';
 

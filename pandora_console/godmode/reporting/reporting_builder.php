@@ -351,7 +351,7 @@ if ($edit_sla_report_content) {
 	}
 	$table->data[1][1] .= ' <span id="icon_preview">';
 	if ($report_id_group) {
-		$table->data[1][1] .= '<img src="images/groups_small/'.dame_grupo_icono ($report_id_group).'.png" />';
+		$table->data[1][1] .= '<img src="images/groups_small/'.get_group_icon ($report_id_group).'.png" />';
 	}
 	$table->data[1][1] .= '</span>';
 	$table->data[2][0] = __('Private');

@@ -892,4 +892,22 @@ function debug ($var) {
 	print_r ($var);
 	echo '</pre>';
 }
+
+/**
+ * Prints icon of a module type
+ * 
+ * @param int Module Type ID
+ * @param bool Whether to return or print
+ *
+ * @return string An HTML string with the icon. Printed if return is false
+ */
+function print_moduletype_icon ($id_moduletype, $return = false) {
+	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("nombre", "icon"));
+	if ($type === false) {
+		$type = array ();
+		$type["nombre"] = __('Unknown Type'); 
+		$type["icon"] = 'b_down.png';
+	}
+	return print_image ("images/".$type["icon"], $return, array ("border" => 0, "title" => $type["nombre"]));
+}
 ?>

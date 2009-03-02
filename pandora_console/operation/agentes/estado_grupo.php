@@ -70,7 +70,7 @@ foreach ($groups as $id_group => $group_name) {
 			'warning' => 0,
 			'alerts' => 0,
 			'down' => 0,
-			'icon' => dame_grupo_icono ($id_group),
+			'icon' => get_group_icon ($id_group),
 			'id_group' => $id_group,
 			'name' => $group_name);
 	

@@ -46,11 +46,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
 					$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
 					// Item value
-					$status = return_status_agent_module ($layout_data['id_agente_modulo']);
+					$status = get_agentmodule_status ($layout_data['id_agente_modulo']);
 					if ($layout_data['no_link_color'] == 1)
 						$status_parent = 3;
 					else
-						$status_parent = return_status_agent_module ($id_agent_module_parent);
+						$status_parent = get_agentmodule_status ($id_agent_module_parent);
 						
 				// Status for a whole agent
 				} elseif ($layout_data['id_agent'] != 0) {
@@ -285,13 +285,13 @@ function get_layout_status ($id_layout = 0) {
 			
 		// Module
 		} elseif ($data["id_agente_modulo"] != 0) {
-			$temp_status = return_status_agent_module ($data["id_agente_modulo"]);
+			$temp_status = get_agentmodule_status ($data["id_agente_modulo"]);
 			if ($temp_status > $temp_total)
 				$temp_total = $temp_status;
 				
 		// Agent
 		} else {
-			$temp_status = return_status_agent ($data["id_agent"]);
+			$temp_status = get_agentmodule_status ($data["id_agent"]);
 			if ($temp_status > $temp_total)
 				$temp_total = $temp_status;
 		}

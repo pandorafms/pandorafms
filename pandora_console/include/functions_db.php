@@ -1021,14 +1021,7 @@ function get_os_name ($id_os) {
 }
 
 /** 
- * DEPRECATED: Use get_user_email
- */
-function dame_email ($id_user) {
-	return get_user_email ($id_user);
-}
-
-/** 
- * DEPRECATED: Use is_user_admin
+ * @deprecated Use is_user_admin
  */
 function dame_admin ($id_user) {
 	return is_user_admin ($id_user);
@@ -1059,17 +1052,6 @@ function check_alert_fired ($id_agent) {
 	if ($value > 0)
 		return true;
 	return false;
-}
-
-/** 
- * Check is a user exists in the system
- * 
- * @param string User id.
- * 
- * @return bool True if the user exists.
- */
-function existe ($id_user) {
-	return is_user ($id_user);
 }
 
 /** 
@@ -1517,11 +1499,12 @@ function get_db_row_sql ($sql) {
  * Get the first row of a database query into a table.
  *
  * The SQL statement executed would be something like:
- * "SELECT * FROM $table WHERE $field_search = $condition"
+ * "SELECT (*||$fields) FROM $table WHERE $field_search = $condition"
  *
  * @param string Table to get the row
- * @param string Field to filter elementes
+ * @param string Field to filter elements
  * @param string Condition the field must have.
+ * @param mixed Fields to select (array or string or false/empty for *)
  * 
  * @return mixed The first row of a database query or false.
  */
@@ -2037,7 +2020,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
  * 
  * @return bool True if there were alerts fired.
  */
-function return_status_agent_module ($id_agentmodule = 0) {
+function get_agentmodule_status ($id_agentmodule = 0) {
 	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
 	
 	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);

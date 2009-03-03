@@ -1,3 +1,11 @@
+2009-03-02  Sancho Lerena  <slerena@artica.es>
+
+	* export_csv.php: Ported changes from trunk here. Solves problems
+	reported.
+
+	* functions_db.php: Solved problems when no group is passed in function
+	get_agents_in_group().
+	
 2009-02-24  Sancho lerena   <slerena@artica.es>
 
 	* pandoradb_data.sql,

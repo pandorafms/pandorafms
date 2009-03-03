@@ -213,7 +213,7 @@ function get_agents_in_group ($id_group, $disabled = false) {
 	} elseif ($disabled && $id_group != 1) {
 		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) ORDER BY nombre",$id_group);
 		return get_db_all_rows_sql ($sql);
-	} else {
+	} elseif ($id_group != "") {
 		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) AND disabled = 0 ORDER BY nombre",$id_group);
 		return get_db_all_rows_sql ($sql);
 	}

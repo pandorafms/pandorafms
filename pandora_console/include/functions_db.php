@@ -313,15 +313,14 @@ function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
 }
 
 /**
- * Get a singlemodule in an agent.
+ * Get a single module information.
  *
- * @param mixed Agent id to get modules. It can also be an array of agent id's.
+ * @param int agentmodule id to get.
  *
- * @return array An array with all modules in the agent.
- * If multiple rows are selected, they will be in an array
+ * @return array An array with module information
  */
-function get_agent_module ($id_agent_module) {
-	return get_db_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
+function get_agentmodule ($id_agentmodule) {
+	return get_db_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
 /**
@@ -337,7 +336,7 @@ function get_agent_module ($id_agent_module) {
  * the WHERE keyword). Example:
 <code>
 Both are similars:
-$modules = get_agent_modules ($id_agent, false, array ('disabled', 0));
+$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
 $modules = get_agent_modules ($id_agent, false, 'disabled = 0');
 
 Both are similars:
@@ -2599,6 +2598,7 @@ function get_server_info ($id_server = -1) {
 	
 	$sql = "SELECT * FROM tserver".$select_id;
 	$result = get_db_all_rows_sql ($sql);
+	$time = get_system_time ();
 	
 	if (empty ($result)) {
 		return false;
@@ -2624,36 +2624,44 @@ function get_server_info ($id_server = -1) {
 			$server["type"] = "unknown";
 		}
 		
-		$server["modules"] = get_db_sql ("SELECT COUNT(*) FROM tagente_estado, tagente_modulo 
+		$modules = array ();
+		$result = get_db_all_rows_sql ("SELECT tagente_estado.id_agente_modulo, tagente_modulo.nombre FROM tagente_estado, tagente_modulo 
 			 WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 			 AND tagente_modulo.disabled = 0
+			 AND tagente_modulo.delete_pending = 0
 			 AND tagente_estado.running_by = ".$server["id_server"]);
+		
+		if ($result === false) {
+			$result = array ();
+		}
+		foreach ($result as $module_info) {
+			$modules[$module_info["id_agente_modulo"]] = $module_info["nombre"];
+		}
+		
+		$server["modules"] = count ($modules);
+		$server["module_info"] = $modules; //We have it, so we might as well pass it just in case somebody might find out a use for it.
+		$server["module_lag"] = 0;
+		$server["lag"] = 0;
+		
+		if ($server["modules"] > 0) {
+			//If the server doesn't have modules, it doesn't have lag
 			
-		$server["module_lag"] = get_db_sql ("SELECT COUNT(*) FROM tagente_estado, tagente_modulo, tagente
-			WHERE tagente_estado.last_execution_try > 0
-			AND tagente_estado.running_by = ".$server["id_server"]."
-			AND tagente_modulo.id_agente = tagente.id_agente
-			AND tagente.disabled = 0
-			AND tagente_modulo.disabled = 0
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
+			$result = get_db_row_sql ("SELECT COUNT(*) AS module_lag, MAX(last_execution_try - current_interval) AS lag FROM tagente_estado
+												WHERE last_execution_try > 0
+												AND current_interval > 0
+												AND running_by = ".$server["id_server"]."
+												AND id_agente_modulo IN (".implode (",", array_keys ($modules)).")
+												AND (UNIX_TIMESTAMP() - last_execution_try - current_interval < current_interval * 2)");
 			
-		// Lag over 1200 seconds is not lag, is module without contacting data in several time.or with a 
-		// 1200 sec is 20 min
-		$server["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval)
-			 FROM tagente_estado, tagente_modulo, tagente
-			 WHERE tagente_estado.last_execution_try > 0
-			 AND tagente_estado.running_by = ".$server["id_server"]."
-			 AND tagente_modulo.id_agente = tagente.id_agente
-			 AND tagente.disabled = 0
-			 AND tagente_modulo.disabled = 0
-			 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			 AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
+			// Lag over current_interval * 2 is not lag, it's a timed out module
+			// And we can't check current_interval = 0 (data modules) because they come as they want
 			
-		if (empty ($server["lag"])) {
-			$server["lag"] = 0;
-		} else {
-			$server["lag"] = get_system_time () - $server["lag"];
+			if (!empty ($result["lag"])) {
+				$server["lag"] = $time - $result["lag"];
+			}
+			if (!empty ($result["module_lag"])) {
+				$server["module_lag"] = $result["module_lag"];
+			}
 		}
 		
 		//Push the raw data on the return stack

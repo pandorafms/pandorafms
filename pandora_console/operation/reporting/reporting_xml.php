@@ -261,7 +261,7 @@ foreach ($contents as $content) {
 	case 'general_group_report':
 		$data["title"] = __('Group');
 		$data["objdata"] = "<![CDATA[";
-		$data["objdata"] .= general_group_reporting ($report['id_group'], true);
+		$data["objdata"] .= print_group_reporting ($report['id_group'], true);
 		$data["objdata"] .= "]]>";
 		break;
 	case 12:

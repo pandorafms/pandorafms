@@ -49,7 +49,7 @@ function print_cells_temp ($cells) {
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Tactical view')."</h2>";
 
-$data = get_group_stats (0);
+$data = get_group_stats ();
 
 echo '<div style="width:265px; float:left;  padding-right: 40px;" id="leftcolumn">';
 // Monitor checks
@@ -103,7 +103,7 @@ $cells[1]["color"] = "#000";
 $cells[2][0] = __('Monitors warning');
 $cells[2][1] = $data["monitor_warning"];
 $cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Down
-$cells[2]["color"] = "#f00";
+$cells[2]["color"] = "#FFB900";
 	
 $cells[3][0] = __('Monitors critical');
 $cells[3][1] = $data["monitor_critical"];
@@ -140,15 +140,10 @@ $cells[0][1] = $data["total_agents"];
 $cells[0]["color"] = "#000";
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60";
 
-$cells[1][0] = __('Total Checks');
-$cells[1][1] = $data["total_checks"];
+$cells[1][0] = __('Uninitialized modules');
+$cells[1][1] = $data["server_sanity"] . "%";
 $cells[1]["color"] = "#000";
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1";
-
-$cells[2][0] = __('Uninitialized modules');
-$cells[2][1] = $data["server_sanity"] . "%";
-$cells[2]["color"] = "#000";
-$cells[2]["href"] = "index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60";
+$cells[1]["href"] = "index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60";
 
 print_cells_temp ($cells);
 

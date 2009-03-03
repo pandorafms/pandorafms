@@ -75,7 +75,7 @@ require_once ("include/functions_exportserver.php");
 
 // Using network component to fill some fields
 if ($id_agent_module) {
-	$module = get_agent_module ($id_agent_module);
+	$module = get_agentmodule ($id_agent_module);
 	$moduletype = $module['id_modulo'];
 	$name = $module['nombre'];
 	$description = $module['descripcion'];

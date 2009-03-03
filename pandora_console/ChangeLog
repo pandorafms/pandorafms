@@ -1,3 +1,20 @@
+2009-03-03  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/logon_ok.php: Minor edit in language and colors for warning
+	
+	* include/functions_reporting.php: Changed get_group_stats for better
+	queries based on query debugging.
+	
+	* include/functions_db.php: Change get_server_info for better queries
+	based on query debugging. Documentation updates and function updates
+	
+	* operation/agentes/tactical.php: Removed a row with duplicate info
+	
+	* operation/reporting/reporting_viewer.php, 
+	operation/reporting/reporting_xml.php, include/functions_modules.php,
+	godmode/agentes/module_manager_editor.php:
+	Function renaming.
+	
 2009-03-03  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/configure_alert_template.php: Add id to separator

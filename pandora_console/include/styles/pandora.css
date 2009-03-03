@@ -931,3 +931,6 @@ div.actions_container label {
 	height:441px; 
 	overflow:auto; 
 }
+div#steps_clean {
+	clear:both;
+}

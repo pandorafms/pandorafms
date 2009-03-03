@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-$build_version = 'PC090217';
+$build_version = 'PC090303';
 $pandora_version = 'v2.1-dev';
 
 $config['start_time'] = microtime (true);

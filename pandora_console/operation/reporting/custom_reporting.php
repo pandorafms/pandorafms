@@ -16,17 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Login check
-require ("include/config.php");
-
 check_login ();
 
 // Load enterprise extensions
-if (file_exists( $config["homedir"] . "/enterprise/operation/reporting/custom_reporting.php")) {
-	include $config["homedir"] . "/enterprise/operation/reporting/custom_reporting.php";
-}
-
+enterprise_include ('operation/reporting/custom_reporting.php');
 
 echo "<h2>".__('Reporting')." &gt; ";
 echo __('Custom reporting')."</h2>";

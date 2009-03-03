@@ -110,8 +110,8 @@ if ($update_template) {
 	$id = (int) get_parameter ('id');
 	
 	$recovery_notify = (bool) get_parameter ('recovery_notify');
-	$field2_recovery = (bool) get_parameter ('field2_recovery');
-	$field3_recovery = (bool) get_parameter ('field3_recovery');
+	$field2_recovery = (string) get_parameter ('field2_recovery');
+	$field3_recovery = (string) get_parameter ('field3_recovery');
 	
 	$result = update_alert_template ($id,
 		array ('recovery_notify' => $recovery_notify,

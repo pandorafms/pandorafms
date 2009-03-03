@@ -1,3 +1,48 @@
+2009-03-03  Esteban Sanchez  <estebans@artica.es>
+
+	* general/main_menu.php: Operation and godmode menus files includes
+	now the dependant files.
+
+	* godmode/agentes/modificar_agente.php: Removed unnecessary
+	require()
+	
+	* godmode/alerts/alert_list.php: Avoid notice for undefined index when
+	calling max(). Added option to delete the template.
+
+	* godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php: Fixed field2_recovery and
+	field3_recovery updating.
+
+	* operation/menu.php, godmode/menu.php: Require functions_menu.php.
+
+	* include/config_process.php: Updated build version.
+
+	* include/functions.php: Keep time in a static variable on
+	get_system_time().
+
+	* include/functions_db.php: Now a custom operation can be passed to
+	format_array_to_where_clause_sql() if the field key is numeric.
+
+	* include/functions_reporting.php: Return float value on
+	get_agentmodule_sla(). Added required files.
+
+	* include/functions_ui.php: Show template name on format_alert_row().
+	Style correction.
+
+	* operation/agentes/export_csv.php: Style correction.
+	
+	* operation/events/export_csv.php: Use pandora functions to fetch
+	results. Fixed auth part. Style correction.
+
+	* operation/reporting/custom_reporting.php: Fixed enterprise include.
+
+	* operation/reporting/reporting_xml.php: Fixed auth part.
+
+	* index.php: process_page_head() may looked for uninitialized
+	$config["refr"].
+
+	* include/styles/pandora_width.css: Fixed style for ol.steps
+
 2009-03-02  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Rewrote get_agentmodule_sla with

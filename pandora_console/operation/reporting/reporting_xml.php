@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-if (isset ($_GET["direct"]))  {
+if (isset ($_GET["direct"])) {
 	/* 
 	This is in case somebody wants to access the XML directly without
 	having the possibility to login and handle sessions
@@ -27,10 +27,9 @@ if (isset ($_GET["direct"]))  {
 	Although it's not recommended, you can put your login and password
 	in a GET request (append &nick=<yourlogin>&password=<password>). 
 	
-	
 	You SHOULD put it in a POST but some programs
-	might not be able to handle it without extensive re-programming
-	(M$ ShitPoint). Either way, you should have a read-only user for getting reports
+	might not be able to handle it without extensive re-programming.
+	Either way, you should have a read-only user for getting reports
 	
 	XMLHttpRequest can do it (example):
 	
@@ -56,9 +55,9 @@ if (isset ($_GET["direct"]))  {
 	require_once ("../../include/functions_reporting.php");
 	
 	if (!isset ($config["auth"])) {
-		require_once ("include/auth/mysql.php");
+		require_once ("../../include/auth/mysql.php");
 	} else {
-		require_once ("include/auth/".$config["auth"]["scheme"].".php");
+		require_once ("../../include/auth/".$config["auth"]["scheme"].".php");
 	}
 	
 	$nick = get_parameter ("nick");
@@ -77,12 +76,12 @@ if (isset ($_GET["direct"]))  {
 	} else {
 		// User not known
 		$login_failed = true;
-		require_once ('general/login_page.php');
+		require_once ($config['homedir'].'/general/login_page.php');
 		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
 		exit;
 	}
 } else {
-	require_once ("include/config.php");
+	@require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
 
 	if (!isset ($config["auth"])) {
@@ -92,7 +91,7 @@ if (isset ($_GET["direct"]))  {
 	}	
 }
 
-check_login();
+check_login ();
 
 $id_report = (int) get_parameter ('id');
 
@@ -100,7 +99,7 @@ if (! $id_report) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
 		"Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 $report = get_db_row ('treport', 'id_report', $id_report);
@@ -108,7 +107,7 @@ $report = get_db_row ('treport', 'id_report', $id_report);
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
-	exit;
+	return;
 }
 
 /* Check if the user can see the graph */
@@ -161,7 +160,7 @@ foreach ($contents as $content) {
 	
 	switch ($content["type"]) {
 	case 1:
-	case 'simple_graph':	
+	case 'simple_graph':
 		$data["title"] = __('Simple graph');
 		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
 		break;
@@ -188,7 +187,7 @@ foreach ($contents as $content) {
 	case 'SLA':
 		$data["title"] = __('S.L.A.');
 		
-		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
+		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $content['id_rc']);
 		if ($slas === false) {
 			$data["objdata"]["error"] = __('There are no SLAs defined');
 			$slas = array ();
@@ -217,7 +216,7 @@ foreach ($contents as $content) {
 		
 		break;
 	case 4:
-	case 'event_report':	
+	case 'event_report':
 		$data["title"] = __("Event report");
 		$table_report = event_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$data["objdata"] = "<![CDATA[";
@@ -282,7 +281,6 @@ foreach ($contents as $content) {
 	}
 	array_push ($xml["reports"], $data);
 }
-
 
 function xml_array ($array) {
 	foreach ($array as $name => $value) {

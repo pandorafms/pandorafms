@@ -122,9 +122,9 @@ if ($create_alert) {
 		foreach ($actions as $id_action) {
 			$values = array ();
 			if (isset ($fires_min[$id_action]))
-				$values['fires_min'] = max ($fires_min[$id_action], 0);
+				$values['fires_min'] = @max ($fires_min[$id_action], 0);
 			if ($fires_max != -1)
-				$values['fires_max'] = max ($fires_max[$id_action], 0);
+				$values['fires_max'] = @max ($fires_max[$id_action], 0);
 			add_alert_agent_module_action ($id, $id_action, $values);
 		}
 	}
@@ -228,6 +228,7 @@ if (! $id_agente) {
 $table->head[2] = __('Module');
 $table->head[3] = __('Template');
 $table->head[4] = __('Actions');
+$table->head[5] = '';
 $table->data = array ();
 
 foreach ($simple_alerts as $alert) {
@@ -295,6 +296,12 @@ foreach ($simple_alerts as $alert) {
 	$data[4] .= ' '.__('Add action');
 	$data[4] .= '</a>';
 	
+	$data[5] = '<form class="delete_alert_form" method="post" style="display: inline;">';
+	
+	$data[5] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+	$data[5] .= print_input_hidden ('delete_alert', 1, true);
+	$data[5] .= print_input_hidden ('id_alert', $alert['id'], true);
+	$data[5] .= '</form>';
 	array_push ($table->data, $data);
 }
 
@@ -442,6 +449,7 @@ $(document).ready (function () {
 		return true;
 	});
 	
+	
 	$("a.add_action").click (function () {
 		id = this.id.split ("-").pop ();
 		
@@ -452,7 +460,7 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$("form.delete_link").submit (function () {
+	$("form.delete_link, form.delete_alert_form").submit (function () {
 		if (! confirm ("<?php echo __('Are you sure?')?>"))
 			return false;
 		return true;

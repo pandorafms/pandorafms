@@ -17,6 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+require_once ($config["homedir"]."/include/functions.php");
+require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
 
 /** 
@@ -29,7 +31,7 @@ require_once ($config["homedir"]."/include/functions_agents.php");
  * ignore max value
  * @param int Beginning date of the report in UNIX time (current date by default).
  * 
- * @return int SLA percentage of the requested module.
+ * @return float SLA percentage of the requested module.
  */
 function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
 	if (empty ($date)) {
@@ -40,19 +42,28 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 		global $config;
 		$period = $config["sla_period"];	
 	}
-			
+	
 	$datelimit = $date - $period; // start date
 	
 	/* Get the total data entries in the interval */
-	$sql = sprintf ('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d AND utimestamp <= %d', $id_agentmodule, $datelimit, $date);
+	$sql = sprintf ('SELECT COUNT(*)
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d
+		AND utimestamp > %d
+		AND utimestamp <= %d', $id_agentmodule, $datelimit, $date);
 	$total = get_db_sql ($sql);
 	
 	if (empty ($total)) {
 		//No data to calculate on so we return 100 (fail to good)
-		return 100;
-	}		
+		return 100.0;
+	}
 	
-	$sql = sprintf ('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d AND utimestamp <= %d AND datos < %d', $id_agentmodule, $datelimit, $date, $min_value);
+	$sql = sprintf ('SELECT COUNT(*)
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d
+		AND utimestamp > %d
+		AND utimestamp <= %d
+		AND datos < %d', $id_agentmodule, $datelimit, $date, $min_value);
 	if ($max_value > $min_value) {
 		$sql .= sprintf (' AND datos > %d', $max_value);
 	}
@@ -64,7 +75,7 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 	//Calculate percentage
 	$result = 100 - ($bad / $total) * 100;
 	
-	return $result;
+	return (float) $result;
 }
 
 /** 

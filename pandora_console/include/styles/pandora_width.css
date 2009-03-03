@@ -51,3 +51,6 @@ div#head {
 div#foot {
 	width: auto;
 }
+ol.steps {
+	margin-bottom: 70px;
+}

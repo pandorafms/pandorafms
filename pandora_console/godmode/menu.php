@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-enterprise_include ('godmode/menu.php');
+require_once ('include/config.php');
 
 check_login ();
 
@@ -24,6 +24,10 @@ if ((! give_acl ($config['id_user'], 0, "LM")) && (! give_acl ($config['id_user'
 	return;
 }
 
+enterprise_include ('godmode/menu.php');
+require_once ('include/functions_menu.php');
+
+$menu = array ();
 $menu['class'] = 'godmode';
 
 if (give_acl ($config['id_user'], 0, "AW")) {
@@ -197,4 +201,6 @@ if (is_array ($config['extensions'])) {
 	
 	$menu["gextensions"]["sub"] = $sub;
 }
+
+print_menu ($menu);
 ?>

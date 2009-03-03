@@ -512,7 +512,6 @@ foreach ($contents as $content) {
 		break;
 	}
 	
-	
 	print_table ($table);
 	flush ();
 }

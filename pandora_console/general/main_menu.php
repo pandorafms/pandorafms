@@ -21,18 +21,11 @@ if (! isset ($config["id_user"])) {
 	exit ();
 }
 
-require_once ('include/functions_menu.php');
-
 echo '<div class="tit bg">:: '.__('Operation').' ::</div>';
-$menu = array ();
 require ("operation/menu.php");
-print_menu ($menu);
 
 echo '<div class="tit bg3">:: '.__('Administration').' ::</div>';
-$menu = array ();
 require ("godmode/menu.php");
-print_menu ($menu);
-unset ($menu);
 
 require ("links_menu.php");
 

@@ -29,7 +29,7 @@
  * False on error.
  */
 function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
-	$module = get_agent_module ($id_agent_module);
+	$module = get_agentmodule ($id_agent_module);
 	if ($module === false)
 		return false;
 	

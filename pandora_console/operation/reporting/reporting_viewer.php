@@ -443,7 +443,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
-		$data[0] = general_group_reporting ($report['id_group'], true);
+		$data[0] = print_group_reporting ($report['id_group'], true);
 		array_push ($table->data, $data);
 		
 		break;

@@ -79,13 +79,13 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 }
 
 /** 
- * Get general stats info on a group
+ * Get general statistical info on a group
  * 
- * @param int Group Id to get info.
+ * @param int Group Id to get info from
  * 
- * @return array
+ * @return array Group statistics
  */
-function get_group_stats ($id_group) {
+function get_group_stats ($id_group = 0) {
 	$data = array ();
 	$data["monitor_checks"] = 0;
 	$data["monitor_not_init"] = 0;
@@ -110,64 +110,31 @@ function get_group_stats ($id_group) {
 	
 	$groups = array_keys (get_user_groups ());
 	if ($id_group > 0 && in_array ($id_group, $groups)) {
-		//If a group is selected, and we have permissions to it then we don't need to look for them
-		$groups = array ();
-		$groups[0] = $id_group;
+		//If a singular group is selected, and we have permissions to it then we don't need to get all
+		$groups = array ((int) $id_group);
+	} elseif ($id_group > 0) {
+		return $data; //We don't have selected any valid groups (select 0 for all groups your user can get to)
 	}
-
-	//Select all modules in group
-	$agents = get_group_agents ($groups);
-	$modules = array ();
-	$module_ids = array ();
 	
+	$agents = array_keys (get_group_agents ($groups));	
 	if (empty ($agents)) {
 		//No agents in this group, means no data
 		return $data;
 	}
-	
-	$sql = sprintf ("SELECT tagente_estado.id_agente_modulo, 
-							tagente_modulo.id_tipo_modulo, 
-							estado, datos, 
-							current_interval, 
-							utimestamp 
-					FROM tagente_estado, tagente_modulo 
-					WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-					    AND tagente_modulo.delete_pending = 0 
-						AND	tagente_modulo.id_agente IN (%s)", implode (",", array_keys ($agents)));
-	$result = get_db_all_rows_sql ($sql);
-	
-	if ($result === false) {
-		//No data for any agents, means everything is 0 anyway.
-		return $data;
-	}
-	
-	foreach ($result as $row) {
-		$last_update = $cur_time - $row["utimestamp"];
 
-		$data["monitor_checks"]++; 
-			
-		//Check whether it's down, not init, unknown or OK
-		if ($last_update == $cur_time) {
-			//The utimestamp is 0 and has never been updated
-			$data["monitor_not_init"]++;
-		} elseif ($last_update >= ($row["current_interval"] * 2)) {
-			//The utimestamp is greater than 2x the interval (it has timed out)
-			$data["monitor_unknown"]++;
-		} elseif ($row["estado"] == 1){
-			$data["monitor_critical"]++;
-		} elseif ($row["estado"] == 2){
-			$data["monitor_warning"]++;
-		}
-		 else {
-			$data["monitor_ok"]++;
-		}
-	} //End foreach module
+	$filter = 'id_agente IN ('.implode (",", $agents).') ';
 	
-	//Moved it out of the loop otherwise for each module there would be a SQL query
+	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter);
+	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp = 0");
+	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
+	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 1");
+	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 2");
+	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
+	
 	$sql = sprintf ("SELECT times_fired FROM talert_template_modules WHERE id_agent_module IN (%s)", implode (",", array_keys ($agents))); 
 	$result = get_db_all_rows_sql ($sql);
 	
-	if ($result === false) {
+	if (empty ($result)) {
 		$result = array (); //It's possible there are no alerts so we don't return
 	}
 	
@@ -182,7 +149,7 @@ function get_group_stats ($id_group) {
 	$data["total_agents"] = count ($agents);
 	$data["total_checks"] = $data["monitor_checks"];
 	$data["total_ok"] = $data["monitor_ok"];
-	// Todo, count SNMP Alerts and Inventory alerts here
+	//TODO: count SNMP Alerts and Inventory alerts here
 	$data["total_alerts"] = $data["monitor_alerts"] + $data["monitor_alerts_fired"];
 	$data["total_alerts_fired"] =  $data["monitor_alerts_fired"];
 	$data["total_alerts_fire_count"] =  $data["monitor_alerts_fire_count"];
@@ -225,7 +192,7 @@ function get_group_stats ($id_group) {
 		$data["alert_level"] = 100;
 	}
 	
-	$data["server_sanity"] = 100 - $data["module_sanity"];
+	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
 	
 	return $data;
 }
@@ -483,9 +450,9 @@ function get_monitors_down_reporting_table ($monitors_down) {
  * @param int Group to get the report
  * @param bool Flag to return or echo the report (by default).
  * 
- * @return string
+ * @return HTML string with group report
  */
-function general_group_reporting ($id_group, $return = false) {
+function print_group_reporting ($id_group, $return = false) {
 	$agents = get_group_agents ($id_group, false, "none");
 	$output = '<strong>'.__('Agents in group').': '.count ($agents).'</strong><br />';
 	

@@ -89,7 +89,7 @@ function print_alert_template_steps ($step, $id) {
 	}
 	
 	echo '</ol>';
-	echo '<div style="clear: right"> </div>';
+	echo '<div id="steps_clean"> </div>';
 }
 
 function update_template ($step) {

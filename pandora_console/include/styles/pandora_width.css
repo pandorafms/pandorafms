@@ -54,3 +54,6 @@ div#foot {
 ol.steps {
 	margin-bottom: 70px;
 }
+div#steps_clean {
+	display:none;
+}

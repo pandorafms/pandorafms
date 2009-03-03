@@ -1,5 +1,13 @@
 2009-03-03  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/alerts/configure_alert_template.php: Add id to separator
+	div.
+
+	* include/styles/pandora.css, include/styles/pandora_width.css: Added
+	style to separator div. Fixes a UI breakage.
+
+2009-03-03  Esteban Sanchez  <estebans@artica.es>
+
 	* general/main_menu.php: Operation and godmode menus files includes
 	now the dependant files.
 

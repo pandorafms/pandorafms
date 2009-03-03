@@ -89,7 +89,7 @@ function print_alert_template_steps ($step, $id) {
 	}
 	
 	echo '</ol>';
-	echo '<div style="clear: both;"> </div>';
+	echo '<div style="clear: right"> </div>';
 }
 
 function update_template ($step) {
@@ -171,9 +171,9 @@ function update_template ($step) {
 		$result = update_alert_template ($id, $values);
 	} elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
-		$field2_recovery = (bool) get_parameter ('field2_recovery');
-		$field3_recovery = (bool) get_parameter ('field3_recovery');
-	
+		$field2_recovery = (string) get_parameter ('field2_recovery');
+		$field3_recovery = (string) get_parameter ('field3_recovery');
+		print_r ($_POST);
 		$result = update_alert_template ($id,
 			array ('recovery_notify' => $recovery_notify,
 				'field2_recovery' => $field2_recovery,

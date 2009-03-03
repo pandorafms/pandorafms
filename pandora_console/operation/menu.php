@@ -20,8 +20,11 @@ if (! isset ($config['id_user'])) {
 	return;
 }
 
+require_once ('include/functions_menu.php');
+
 enterprise_include ('operation/menu.php');
 
+$menu = array ();
 $menu['class'] = 'operation';
 
 // Agent read, Server read
@@ -197,4 +200,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		$menu["extensions"]["sub"] = $sub;
 	}
 }
+
+print_menu ($menu);
 ?>

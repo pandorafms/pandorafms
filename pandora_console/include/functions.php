@@ -169,7 +169,7 @@ function popup_help ($help_id, $return = false) {
  * (use general/noaccess.php followed by exit instead)
  */
 function no_permission () {
-	require("config.php");
+	require ("config.php");
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
 	echo "<img src='images/noaccess.png' alt='No access' width='120'><br /><br />";
 	echo "<table width=550>";
@@ -352,6 +352,10 @@ function human_time_comparation ($timestamp) {
  */
 function get_system_time () {
 	global $config;
+	static $time = 0;
+	
+	if ($time != 0)
+		return $time;
 	
 	if ($config["timesource"] = "sql") {
 		$time = get_db_sql ("SELECT UNIX_TIMESTAMP()");

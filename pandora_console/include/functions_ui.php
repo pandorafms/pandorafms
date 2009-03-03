@@ -244,7 +244,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	} else {
 		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
 		$template = get_alert_template ($alert['id_alert_template']);
-		$description = $template['description'];
+		$description = $template['name'];
 	}
 	$data = array ();
 	
@@ -640,7 +640,9 @@ function process_page_head ($string, $bitfield) {
 	}
 	
 	//Pandora specific jquery should go first
-	$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js", "pandora" => "include/javascript/jquery.pandora.js"), $config['jquery']);
+	$config['jquery'] = array_merge (array ("jquery" => "include/javascript/jquery.js",
+		"pandora" => "include/javascript/jquery.pandora.js"),
+		$config['jquery']);
 	
 		
 	//Then add each script as necessary

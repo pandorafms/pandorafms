@@ -594,7 +594,7 @@ sub execute_alert ($$$$$$$$$) {
 		# Recovery fields, thanks to Kato Atsushi
 		if ($alert_mode == 0){
 			$field2 = $alert->{'field2_recovery'} ne "" ? $alert->{'field2_recovery'} : "[RECOVER]" . $field2;
-			$field2 = $alert->{'field3_recovery'} ne "" ? $alert->{'field2_recovery'} : "[RECOVER]" . $field3;
+			$field3 = $alert->{'field3_recovery'} ne "" ? $alert->{'field3_recovery'} : "[RECOVER]" . $field3;
 		}
 
 		# Alert macros

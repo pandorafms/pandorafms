@@ -37,7 +37,9 @@ if (is_ajax ()) {
 		$id_module_component = (int) get_parameter ('id_module_component_type');
 		
 		$components = get_network_components ($id_module_component,
-			array ('id_module_group' => $id_module_group));
+			array ('id_group' => $id_module_group,
+				'order' => 'name ASC'),
+			array ('id_nc', 'name'));
 		
 		echo json_encode ($components);
 		return;

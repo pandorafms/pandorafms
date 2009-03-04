@@ -843,6 +843,19 @@ function enterprise_include ($filename) {
 	return ENTERPRISE_NOT_HOOK;
 }
 
+function enterprise_include_once ($filename) {
+	global $config;
+	// Load enterprise extensions
+	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	if ($filepath === false)
+		return ENTERPRISE_NOT_HOOK;
+	if (file_exists ($filepath)) {
+		include_once ($filepath);
+		return true;
+	}
+	return ENTERPRISE_NOT_HOOK;
+}
+
 
 //These are wrapper functions for PHP. Don't document them
 if (!function_exists ("mb_strtoupper")) {

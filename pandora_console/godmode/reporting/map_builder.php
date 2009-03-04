@@ -104,7 +104,7 @@ if ($update_layout) {
 	$result = process_sql_update ('tlayout',
 		array ('name' => $name, 'background' => $background,
 			'height' => $height, 'width' => $width),
-		array ('id' => $id));
+		array ('id' => $id_layout));
 	if ($result) {
 		echo '<h3 class="suc">'.__('Update layout successful').'</h3>';
 	} else {

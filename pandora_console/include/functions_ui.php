@@ -912,4 +912,22 @@ function print_moduletype_icon ($id_moduletype, $return = false) {
 	}
 	return print_image ("images/".$type["icon"], $return, array ("border" => 0, "title" => $type["nombre"]));
 }
+
+/**
+* Format a file size from bytes to a human readable meassure.
+*
+* @param int File size in bytes
+* @return string Bytes converted to a human readable meassure.
+*/
+function format_filesize ($bytes) {
+	$bytes = (int) $bytes;
+	$strs = array ('B', 'kB', 'MB', 'GB', 'TB');
+	if ($bytes < 0) {
+		return "0 ".$strs[0];
+	}
+	$con = 1024;
+	$log = (int) (log ($bytes, $con));
+	
+	return format_numeric ($bytes / pow ($con, $log), 1).' '.$strs[$log];
+}
 ?>

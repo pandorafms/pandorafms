@@ -294,7 +294,7 @@ $(document).ready (function () {
 			return false;
 		}
 		
-		if ($(copy_modules).attr ("checked") && $("#target_modules\\[\\]").fieldValue ().length == 0) {
+		if ($(copy_modules).attr ("checked") && $("#target_modules").fieldValue ().length == 0) {
 			$("#message").showMessage ("<?php echo __('No modules have been selected') ?>");
 			return false;
 		}

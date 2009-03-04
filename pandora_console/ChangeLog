@@ -1,5 +1,14 @@
 2009-03-04  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/configurar_agente.php: Fixed module interval update.
+	Fixed a bug that shows an error message when updating a module.
+
+	* include/functions_html.php: Fixed a little bug in print_input_text()
+	that avoided showing a "0" as a value. Renamed a variable to avoid
+	parameter collisions.
+
+2009-03-04  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/module_manager_editor.php: Fixed filter field on
 	get_module_components ajax operation and order the results.
 

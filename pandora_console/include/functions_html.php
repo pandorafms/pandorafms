@@ -173,11 +173,11 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	}
 				
 	if (is_array ($attributes)) {
-		foreach ($attributes as $attribute => $value) {
-			if (!in_array ($valid_attrs)) {
+		foreach ($attributes as $attribute => $attr_value) {
+			if (! in_array ($valid_attrs)) {
 				continue;
 			}
-			$output .= $attribute.'="'.$value.'" ';
+			$output .= $attribute.'="'.$attr_value.'" ';
 		}
 	} else {
 		$output .= trim ($attributes)." ";
@@ -192,7 +192,8 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 			continue;
 		} //If the attribute was already processed, skip
 		
-		if ($$attribute) {
+		/* Exact operator because we want to show "0" on the value */
+		if ($$attribute !== '') {
 			$output .= $attribute.'="'.$$attribute.'" ';
 		} elseif ($default != '') {
 			$output .= $attribute.'="'.$default.'" ';

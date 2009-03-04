@@ -650,14 +650,14 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 /**
  * Get a detailed report of agents in a group.
  *
- * @param int Group to get the report
+ * @param mixed Group(s) to get the report
  * @param int Period
  * @param int Timestamp to start from
  * @param bool Flag to return or echo the report (by default).
  *
  * @return string
  */
-function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
+function get_group_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$agents = get_group_agents ($id_group, false, "none");
 	
 	$output = '';
@@ -678,18 +678,25 @@ function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $retu
  * It construct a table object with all the grouped events happened in an agent
  * during a period of time.
  * 
- * @param int Agent id to get the report.
- * @param int Period of time to get the report.
- * @param int Beginning date of the report
- * @param int Flag to return or echo the report table (echo by default).
+ * @param mixed Agent id(s) to get the report from.
+ * @param int Period of time (in seconds) to get the report.
+ * @param int Beginning date (unixtime) of the report
+ * @param bool Flag to return or echo the report table (echo by default).
  * 
- * @return object A table object
+ * @return A table object (XHTML)
  */
-function get_agents_detailed_event_reporting ($id_agent, $period, $date = 0) {
+function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0, $return = false) {
+	$id_agents = safe_int ($id_agents, 1);
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
 	if (empty ($date)) {
 		$date = get_system_time ();
-	} elseif (!is_numeric ($date)) {
-		$date = strtotime ($date);
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
 	}
 
 	$table->width = '99%';
@@ -701,24 +708,25 @@ function get_agents_detailed_event_reporting ($id_agent, $period, $date = 0) {
 	$table->head[3] = __('Count');
 	$table->head[4] = __('Timestamp');
 	
-	$events = get_agent_events ($id_agent, $period, $date);
-	if (empty ($events)) {
-		$events = array ();
+	$events = array ();
+	foreach ($id_agents as $id_agent) {
+		$event = get_agent_events ($id_agent, (int) $period, (int) $date);
+		if (!empty ($event)) {
+			array_push ($events, $event);
+		}
 	}
+	
 	foreach ($events as $event) {
 		$data = array ();
 		$data[0] = $event['evento'];
 		$data[1] = $event['event_type'];
-		$data[2] = get_priority_name($event['criticity']);
+		$data[2] = get_priority_name ($event['criticity']);
 		$data[3] = $event['count_rep'];
 		$data[4] = $event['time2'];
 		array_push ($table->data, $data);
 	}
-		
-	$output = print_table ($table, true);
-	return $output;
+	
+	return print_table ($table, $return);
 }
-
-
 
 ?>

@@ -732,13 +732,19 @@ function get_group_events ($id_group, $period, $date) {
  * 
  * @return array An array with all the events happened.
  */
-function get_agent_events ($id_agent, $period, $date) {
+function get_agent_events ($id_agent, $period, $date = 0) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
 	$datelimit = $date - $period;
 	
-	$sql = sprintf ('SELECT evento,event_type,criticity, count(*) as count_rep, max(timestamp) AS time2
-		FROM tevento WHERE id_agente = %d AND utimestamp > %d AND utimestamp <=%d 
-		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent, 
-		$datelimit, $date);
+	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
+		FROM tevento WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d 
+		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent, $datelimit, $date);
 
 	return get_db_all_rows_sql ($sql);
 }

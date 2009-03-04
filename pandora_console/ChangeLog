@@ -1,3 +1,14 @@
+2009-03-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php, 
+	operation/reporting/reporting_viewer.php: Function renaming, small fixes
+	in some code and documentation.
+	
+	* include/functions_db.php: Better checks on get_agent_events
+	
+	* operation/reporting/reporting_xml.php: Sancho sent me this solution
+	since people apparently use this and run out of memory.
+
 2009-03-04  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed module interval update.

@@ -1,10 +1,8 @@
-INSERT INTO `tconfig` VALUES (21, 'trap2agent', '0');
-INSERT INTO `tconfig` VALUES (22, 'date_format', 'F j, Y, g:i a');
-INSERT INTO `tconfig` VALUES (23, 'event_view_hr', 8);
 INSERT INTO `tconfig` VALUES (24, 'loginhash_pwd', '');
 INSERT INTO `tconfig` VALUES (25, 'trap2agent', 0);
 INSERT INTO `tconfig` VALUES (26, 'prominent_time', 0);
 INSERT INTO `tconfig` VALUES (27, 'timesource', 'system');
+INSERT INTO `tconfig` VALUES (28, 'event_view_hr', 8);
 
 ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
 ALTER TABLE tagente_modulo ADD `custom_id` varchar(255) default '';

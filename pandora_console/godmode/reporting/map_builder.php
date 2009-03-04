@@ -312,9 +312,9 @@ if (! $edit_layout && ! $id_layout) {
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
 	
 	if ($id_layout){
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="http://localhost/pandora_console/index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$id_layout.'"><img src="images/pill.png"></a>';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$id_layout.'"><img src="images/pill.png"></a>';
 		
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="http://localhost/pandora_console/index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr=60"><img src="images/eye.png"></a>';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr=60"><img src="images/eye.png"></a>';
 	}
 	
 	$table->data[1][0] = __('Group');

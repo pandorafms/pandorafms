@@ -159,6 +159,11 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
 	static $idcounter = 0;
 	
+    if ($maxlength == 0)
+        $maxlength = 255;
+    if ($size == 0)
+        $size = 10;
+
 	++$idcounter;
 	
 	$valid_attrs = array ("accept", "disabled", "maxlength", "name", "readonly", "size", "value",
@@ -245,6 +250,11 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  * @return string HTML code if return parameter is true.
  */
 function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
+	if ($maxlength == 0)
+		$maxlength = 255;
+	if ($size == 0)		
+		$size = 10;
+		
 	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, false, '', '', $return);
 }
 

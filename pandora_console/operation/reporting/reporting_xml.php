@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2008-2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -16,23 +16,42 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+function xml_array ($array) {
+	foreach ($array as $name => $value) {
+		if (is_int ($name)) {
+			echo "<object id=\"".$name."\">";
+			$name = "object";
+		} else {
+			echo "<".$name.">";
+		}
+		
+		if (is_array ($value)) {
+			xml_array ($value);
+		} else {
+			echo $value;
+		}
+		
+		echo "</".$name.">";
+	}
+}
+
 // Login check
 if (isset ($_GET["direct"])) {
 	/* 
 	This is in case somebody wants to access the XML directly without
 	having the possibility to login and handle sessions
-	
+	 
 	Use this URL: https://yourserver/pandora_console/operation/reporting/reporting_xml.php?id=<reportid>&direct=1
 	
 	Although it's not recommended, you can put your login and password
 	in a GET request (append &nick=<yourlogin>&password=<password>). 
-	
+	 	 
 	You SHOULD put it in a POST but some programs
-	might not be able to handle it without extensive re-programming.
+	might not be able to handle it without extensive re-programming
 	Either way, you should have a read-only user for getting reports
-	
+	 
 	XMLHttpRequest can do it (example):
-	
+	 
 	var reportid = 3;
 	var login = "yourlogin";
 	var password = "yourpassword";
@@ -55,9 +74,9 @@ if (isset ($_GET["direct"])) {
 	require_once ("../../include/functions_reporting.php");
 	
 	if (!isset ($config["auth"])) {
-		require_once ("../../include/auth/mysql.php");
+		require_once ("include/auth/mysql.php");
 	} else {
-		require_once ("../../include/auth/".$config["auth"]["scheme"].".php");
+		require_once ("include/auth/".$config["auth"]["scheme"].".php");
 	}
 	
 	$nick = get_parameter ("nick");
@@ -76,14 +95,14 @@ if (isset ($_GET["direct"])) {
 	} else {
 		// User not known
 		$login_failed = true;
-		require_once ($config['homedir'].'/general/login_page.php');
+		require_once ('general/login_page.php');
 		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
 		exit;
 	}
 } else {
-	@require_once ("include/config.php");
+	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-
+	
 	if (!isset ($config["auth"])) {
 		require_once ("include/auth/mysql.php");
 	} else {
@@ -97,9 +116,9 @@ $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
-		"Trying to access graph viewer without valid ID");
+			  "Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
 
 $report = get_db_row ('treport', 'id_report', $id_report);
@@ -107,17 +126,17 @@ $report = get_db_row ('treport', 'id_report', $id_report);
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
-	return;
+	exit;
 }
 
 /* Check if the user can see the graph */
-if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user_admin ($config['id_user']))) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
 	return;
 }
 
 header ('Content-type: application/xml; charset="utf-8"', true);
 
-echo '<?xml version="1.0" encoding="UTF-8" ?>';
+echo '<?xml version="1.0" encoding="UTF-8" ?>'; //' - this is to mislead highlighters giving crap about the PHP closing tag
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
@@ -128,15 +147,14 @@ if ($datetime === false || $datetime == -1) {
 	echo "<error>Invalid date selected</error>"; //Not translatable because this is an error message and might have to be used on the other end
 	exit;
 }
-/* Date must not be older than now */
-if ($datetime > get_system_time ()) {
-	echo "<error>Date is larger than current time</error>"; //Not translatable because this is an error message
-	exit;
-}
 
 $group_name = get_group_name ($report['id_group']);
 $contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
 
+$time = get_system_time ();
+echo '<report>';
+echo '<generated><unix>'.$time.'</unix>';
+echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';
 
 $xml["id"] = $id_report;
 $xml["name"] = $report['name'];
@@ -148,51 +166,57 @@ if ($contents === false) {
 	$contents = array ();
 };
 
-$xml["reports"] = array ();
+xml_array ($xml);
+
+echo '<reports>';
+$counter = 0;
 
 foreach ($contents as $content) {
+	echo '<object id="'.$counter.'">';
 	$data = array ();
 	$data["module"] = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$data["agent"] = get_agentmodule_agent_name ($content['id_agent_module']);
 	$data["period"] = human_time_description ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
-	
+
 	switch ($content["type"]) {
 	case 1:
-	case 'simple_graph':
+	case 'simple_graph':	
 		$data["title"] = __('Simple graph');
 		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
-		break;
+	break;
 	case 2:
 	case 'custom_graph':
 		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 		$data["title"] = __('Custom graph');
 		$data["objdata"]["img_name"] = $graph["name"];
-		
+
 		$result = get_db_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 		$modules = array ();
 		$weights = array ();
-		if ($result === false)
+	
+		if ($result === false) {
 			$result = array();
-		
+		}
+
 		foreach ($result as $content2) {
 			array_push ($modules, $content2['id_agent_module']);
 			array_push ($weights, $content2["weight"]);
 		}
-		
+
 		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
-		break;
+	break;
 	case 3:
 	case 'SLA':
 		$data["title"] = __('S.L.A.');
-		
-		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $content['id_rc']);
+
+		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
 		if ($slas === false) {
 			$data["objdata"]["error"] = __('There are no SLAs defined');
 			$slas = array ();
 		}
-		
+
 		$data["objdata"]["sla"] = array ();
 		$sla_failed = false;
 		foreach ($slas as $sla) {
@@ -201,7 +225,6 @@ foreach ($contents as $content) {
 			$sla_data["module"] = get_agentmodule_name ($sla['id_agent_module']);
 			$sla_data["max"] = $sla['sla_max'];
 			$sla_data["min"] = $sla['sla_min'];
-			
 			$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$sla_data["error"] = __('Unknown');
@@ -213,99 +236,75 @@ foreach ($contents as $content) {
 			}
 			array_push ($data["objdata"]["sla"], $sla_data);
 		}
-		
-		break;
+	break;
 	case 4:
-	case 'event_report':
+	case 'event_report':	
 		$data["title"] = __("Event report");
 		$table_report = event_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$data["objdata"] = "<![CDATA[";
 		$data["objdata"] .= print_table ($table_report, true);
 		$data["objdata"] .= "]]>";
-		break;
+	break;
 	case 5:
 	case 'alert_report':
 		$data["title"] = __('Alert report');
 		$data["objdata"] = "<![CDATA[";
 		$data["objdata"] .= alert_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$data["objdata"] .= "]]>";
-		break;
+	break;
 	case 6:
 	case 'monitor_report':
 		$data["title"] = __('Monitor report');
 		$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
 		$data["objdata"]["good"] = $monitor_value;
 		$data["objdata"]["bad"] = format_numeric (100 - $monitor_value, 2);
-		break;
+	break;
 	case 7:
 	case 'avg_value':
 		$data["title"] = __('Avg. Value');
 		$data["objdata"] = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime));
-		break;
+	break;
 	case 8:
 	case 'max_value':
 		$data["title"] = __('Max. Value');
 		$data["objdata"] = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime));
-		break;
+	break;
 	case 9:
 	case 'min_value':
 		$data["title"] = __('Min. Value');
 		$data["objdata"] = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime));
-		break;
+	break;
 	case 10:
 	case 'sumatory':
 		$data["title"] = __('Sumatory');
 		$data["objdata"] = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime));
-		break;
+	break;
 	case 11:
 	case 'general_group_report':
 		$data["title"] = __('Group');
 		$data["objdata"] = "<![CDATA[";
 		$data["objdata"] .= print_group_reporting ($report['id_group'], true);
 		$data["objdata"] .= "]]>";
-		break;
+	break;
 	case 12:
 	case 'monitor_health':
 		$data["title"] = __('Monitor health');
 		$data["objdata"] = "<![CDATA[";
 		$data["objdata"] .= monitor_health_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$data["objdata"] .= "]]>";
-		break;
+	break;
 	case 13:
 	case 'agents_detailed':
 		$data["title"] = __('Agents detailed view');
 		$data["objdata"] = "<![CDATA[";
-		$data["objdata"] .= get_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
+		$data["objdata"] .= get_group_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
 		$data["objdata"] .= "]]>";
-		break;
+	break;
 	}
-	array_push ($xml["reports"], $data);
+	xml_array ($data);
+	echo '</object>';
+	$counter++;
 }
 
-function xml_array ($array) {
-	foreach ($array as $name => $value) {
-		if (is_int ($name)) {
-			echo "<object id=\"".$name."\">";
-			$name = "object";
-		} else {
-			echo "<".$name.">";
-		}
-		
-		if (is_array ($value)) {
-			xml_array ($value);
-		} else {
-			echo $value;
-		}
-		
-		echo "</".$name.">";
-	}
-}
-
-$time = get_system_time ();
-echo '<report>';
-echo '<generated><unix>'.$time.'</unix>';
-echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';
-xml_array ($xml);
-echo '</report>';
-
+echo '</reports></report>';
 ?>

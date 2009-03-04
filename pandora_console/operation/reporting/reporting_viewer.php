@@ -487,7 +487,7 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$data = array ();
 		$table->colspan[1][0] = 3;
-		$data[0] = get_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
+		$data[0] = get_group_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
 		break;
 

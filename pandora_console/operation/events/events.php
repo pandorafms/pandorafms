@@ -276,10 +276,10 @@ echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$e
 print_image ("images/transmit.png", false, array ("title" => __('RSS Events')));
 echo '</a>';
 
-echo "</td></tr></table></form></div>"; //This is the filter div
+echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
 print_image ("reporting/fgraph.php?tipo=group_events&width=220&height=180&url=".rawurlencode ($sql_post), false, array ("border" => 0));
-echo '</div><div style="clear:both">&nbsp;</div>';
+echo '</div><div style="clear:both">&nbsp;</div></div>';
 
 if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
@@ -340,7 +340,7 @@ $table->align[5] = 'center';
 if ($group_rep == 0) {
 	$table->head[6] = __('User ID');
 } else {
-	$table->head[6] = __('Rep');
+	$table->head[6] = __('Count');
 }
 $table->align[6] = 'center';
 

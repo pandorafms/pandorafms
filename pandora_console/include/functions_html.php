@@ -222,7 +222,7 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 0, $return = false) {
+function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
 	$output = print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, false, '', '', true, true);
 
 	if ($return)
@@ -244,7 +244,7 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0, $return = false) {
+function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
 	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, false, '', '', $return);
 }
 

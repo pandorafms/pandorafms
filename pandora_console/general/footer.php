@@ -2,8 +2,8 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
-// Please see http://pandora.sourceforge.net for full contribution list
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ if (isset ($config['debug'])) {
 }
 echo '</a><br />';
 echo '<a href="http://www.mozilla-europe.org/en/firefox/">';
-print_image ("images/firefox.png", false, array ("align" => "middle", "title" => __('Pandora FMS console is best viewed with Firefox web browser'), "alt" => __('Get Firefox')));
+if (file_exists("images/firefox.png"))
+	print_image ("images/firefox.png", false, array ("align" => "middle", "title" => __('Pandora FMS console is best viewed with Firefox web browser'), "alt" => __('Get Firefox')));
 echo '</a>';
 ?>

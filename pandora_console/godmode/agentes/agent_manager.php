@@ -20,7 +20,9 @@
 enterprise_include ('godmode/agentes/agent_manager.php');
 
 if (!isset ($id_agente)) {
-	die ("Not Authorized");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access agent manager witout an agent");
+	require ("general/noaccess.php");
+	exit;
 }
 
 // ========================

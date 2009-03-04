@@ -142,7 +142,7 @@ function get_group_stats ($id_group = 0) {
 		$data["monitor_alerts"]++;
 		if ($row["times_fired"] > 0) {
 			$data["monitor_alerts_fired"]++;
-			$data["monitor_alerts_fire_count"] += $fired;
+			$data["monitor_alerts_fire_count"] += $row["times_fired"];
 		}
 	}	
 	

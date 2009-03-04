@@ -71,7 +71,7 @@ if (is_int ($package) && $package == 1) {
 } else {
 	echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS')."</h5>";
 	
-	$table->width = '50%';
+	$table->width = '80%';
 	$table->data = array ();
 	
 	$table->data[0][0] = '<strong>'.__('Id').'</strong>';

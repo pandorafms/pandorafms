@@ -123,7 +123,7 @@ if ($create_alert) {
 			$values = array ();
 			if (isset ($fires_min[$id_action]))
 				$values['fires_min'] = @max ($fires_min[$id_action], 0);
-			if ($fires_max != -1)
+			if (($fires_max != -1) && (isset ($fires_min[$id_action]))) 
 				$values['fires_max'] = @max ($fires_max[$id_action], 0);
 			add_alert_agent_module_action ($id, $id_action, $values);
 		}

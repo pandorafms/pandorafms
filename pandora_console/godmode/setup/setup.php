@@ -46,7 +46,7 @@ if ($update_settings) {
 	$config["graph_color3"] = (string) get_parameter ('graph_color3', $config["graph_color3"]);	
 	$config["sla_period"] = (int) get_parameter ('sla_period', $config["sla_period"]);
 	$config["date_format"] = (string) get_parameter ('date_format', $config["date_format"]);
-	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
+	$config["trap2agent"] = (string) get_parameter ('trap2agent', 0);
 	$config["autoupdate"] = (bool) get_parameter ('autoupdate', 0); //If not passed, it's 0
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
 	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);

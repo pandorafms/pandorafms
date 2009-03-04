@@ -3,7 +3,7 @@
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
-// Please see http://pandora.sourceforge.net for full contribution list
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 
 //Pandora Version
 $build_version = 'PC090303';
-$pandora_version = 'v2.1-dev';
+$pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);
 
@@ -195,8 +195,6 @@ if (!isset ($config["https"])) {
 }
 
 if (!isset ($config["compact_header"])) {
-	// Sets whether or not we want to enforce https. We don't want to go to a
-	// potentially unexisting config by default
 	$config["compact_header"] = false;
 	process_sql_insert ('tconfig', array ('token' => 'compact_header', 
 										  'value' => $config["compact_header"])); 

@@ -66,6 +66,9 @@ if ($config["pure"] == 0) {
 	echo "</a>";
 }
 
+if (give_acl ($config["id_user"], $id_group, "AW")) 
+	echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout=$id_layout'><img src='images/setup.png' title='".__("Setup")."'></a>";
+
 echo '</h1>';
 
 print_pandora_visual_map ($id_layout);

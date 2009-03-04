@@ -1,5 +1,7 @@
 2009-03-04  Sancho Lerena <slerena@artica.es>
 
+	* operation/agents/tactical.php: Layout adapted to bigger event table.
+
 	* extras/: New directory with extra contents (scripts, tools, samples)
 	
 	* index.php: Add new permission check for /attachment directory. Probably

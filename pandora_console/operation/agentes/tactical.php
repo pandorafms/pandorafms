@@ -51,7 +51,7 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Tactical view')."</h2>";
 
 $data = get_group_stats ();
 
-echo '<div style="width:265px; float:left;  padding-right: 40px;" id="leftcolumn">';
+echo '<div style="width:160px; float:left;  padding-right: 20px;" id="leftcolumn">';
 // Monitor checks
 
 $table->width = "100%";
@@ -63,7 +63,7 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$img = "reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=";
+$img = "reporting/fgraph.php?tipo=progress&height=20&width=140&mode=0&percent=";
 
 $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
@@ -150,7 +150,7 @@ print_cells_temp ($cells);
 echo "</table>";
 echo '</div>'; //Left column
 
-echo '<div style="width: 450px; float:left;" id="rightcolumn">';
+echo '<div style="width: 570px; float:left;" id="rightcolumn">';
 
 // Server information
 
@@ -208,7 +208,7 @@ if ($serverinfo) {
 } else {
 	echo '<div class="nf">'.__('There are no servers configured into the database').'</div>';
 }
-print_events_table ("", 10, 450);
+print_events_table ("", 10, 570);
 
 echo '</div>';
 ?>

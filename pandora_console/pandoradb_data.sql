@@ -61,7 +61,13 @@ INSERT INTO `tconfig` VALUES
 (19, 'graph_color3', '#89FF09'),
 (20, 'sla_period', '604800'),
 (21, 'trap2agent', '0'),
-(22, 'date_format', 'F j, Y, g:i a');
+(22, 'date_format', 'F j, Y, g:i a'),
+(23, 'event_view_hr', 8),
+(24, 'loginhash_pwd', ''),
+(25, 'trap2agent', 0),
+(26, 'prominent_time', 0),
+(27, 'timesource', 'system');
+
 UNLOCK TABLES;
 
 --

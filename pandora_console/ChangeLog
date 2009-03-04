@@ -1,3 +1,57 @@
+2009-03-04  Sancho Lerena <slerena@artica.es>
+
+	* extras/: New directory with extra contents (scripts, tools, samples)
+	
+	* index.php: Add new permission check for /attachment directory. Probably
+	could be extended and wrapped into a function. This should be only called 
+	once, this is the reason why is placed here and not in config_process.
+	
+	* pandora_console_upgrade: Force MYSQL run, even if SQL return error (useful
+	for applying over a older 3.0 version for example).
+	
+	* pandoradb_data.sql: Was missing some tconfig variables.
+	
+	* extras/*.sql: Missing somre tconfig variables and other minor issues fixed
+	
+	* extensions/update_manager/main.php: Description of update manager patch
+	wider. Probably needs more formatting in the future.
+	
+	* extras/sample_login.php: Sample on how to implement autologin feature.
+	
+	* footer.php: I hope solve the frakkin image problem.
+	
+	* godmode/agents/agent_manager.php: proper ACL check notice.
+	
+	* godmode/alerts/alert_list.php: Fixed notice.
+	
+	* godmode/reporting/map_builder.php: Added link to wizard and item count.
+	
+	* godmode/reporting/map_builder_wizard.php: Added new feature, a wizard
+	to populate the visual map, using agents from a combo, depending on the
+	map selected. Could have a lot of improvements, it's a basic start. Allow
+	to choose agents and image maps and space between images. Puts in a reticle
+	automatically adjusting at 600px width.
+	
+	* godmode/setup.php: Checkbox for trap_forward was bad, fixed.
+	
+	* config_process.php: Fixed version to 3.0-dev
+	
+	* functions_html.php: Default of 0 in text boxes makes them unusable on
+	default values, funny :-)
+	
+	* include/functions_reporting.php: Fixed a notice on unknown variable
+	on function get_group_stat().
+	
+	* operation/agentes/alerts_status.php: Filter on module status is made now
+	with combos, like the rest of the filters in the GUI.
+	
+	* operation/events/events.php: a missing div makes graph float outside the
+	filter box. TODO: Hidder filter makes free-width style buggy here.
+	
+	* operation/reporting/reporting_viewer.php: Fixed layout issue.
+		
+	* operation/visual_console/render_view.php: Added ACL check.
+	
 2009-03-04  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/manage_config.php: Fixed a javascript error that

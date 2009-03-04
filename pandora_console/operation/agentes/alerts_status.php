@@ -20,7 +20,7 @@ check_login ();
 
 require_once ("include/functions_agents.php");
 
-$filter = get_parameter_get ("filter", "all");
+$filter = get_parameter ("filter", "all");
 $offset = (int) get_parameter_get ("offset", 0);
 $id_group = (int) get_parameter ("ag_group", 1); //1 is the All group (selects all groups)
 
@@ -111,28 +111,18 @@ if ($print_agent) {
 	$table->data[0][0] = __('Group');
 	$table->data[0][1] = print_select (get_user_groups (), "ag_group", $id_group,
 		'javascript:this.form.submit();', '', '', true);
-	
-	$table->data[0][2] = '<a href="'.$url.'&filter=fired"><img src="images/pixel_red.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert fired').'</a>';
-	$table->data[0][3] = '<a href="'.$url.'&filter=notfired"><img src="images/pixel_green.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert not fired').'</a>';
-	$table->data[0][4] = '<a href="'.$url.'&filter=disabled"><img src="images/pixel_gray.png" width="18" height="18" title="'.__('Click to filter').'">'.__('Alert disabled').'</a>';
-	
-	switch ($filter) {
-	case 'fired':
-		$table->style[2] = 'font-weight: bold';
 		
-		break;
-	case 'notfired':
-		$table->style[3] = 'font-weight: bold';
+	$alert_status_filter = array();
+	$alert_status_filter['all'] = __('All');
+	$alert_status_filter['fired'] = __('Fired');
+	$alert_status_filter['notfired'] = __('Not fired');
+	$alert_status_filter['disabled'] = __('Disabled');		
 		
-		break;
-	case 'disabled':
-		$table->style[4] = 'font-weight: bold';
-		
-		break;
-	}
-	
+	$table->data[0][2] = __('Status');
+	$table->data[0][3] = print_select ($alert_status_filter, "filter", $filter, 'javascript:this.form.submit();', '', '', true);
 	print_table ($table);
 }
+echo '</form>';
 
 $table->width = '90%';
 $table->class = "databox";

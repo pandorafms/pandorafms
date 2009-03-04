@@ -77,6 +77,7 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 
 load_extensions ($config['extensions']);
 
+
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
 	if (sizeof ($_REQUEST))
@@ -85,7 +86,6 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	
 	//We don't clean these variables up as they're only being passed along
 	foreach ($_GET as $key => $value) {
-		/* Avoid the 1=1 */
 		if ($key == 1)
 			continue;
 		$query .= '&'.$key.'='.$value;
@@ -212,6 +212,14 @@ if ($config["pure"] == 0) {
 	// To use you have to use <a href="ajax.php?page=operation/page" rel="#overlay">Load overlay</a>
 	echo '<div class="overlay" id="overlay"><div class="wrap"></div></div>';
 	require_jquery_file ('overlay');
+}
+
+// Check permissions
+if (!is_writable("attachment")){
+	echo "<h3 class='error'>".__('Attachment directory is not writtable by HTTP Server')."</h3>";
+	echo '<p>';
+	echo __('Please check that {HOMEDIR}/attachment directory has write rights for HTTP server');
+	echo "</p>";
 }
 
 // Page loader / selector

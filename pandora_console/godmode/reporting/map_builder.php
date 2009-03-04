@@ -266,9 +266,12 @@ if (! $edit_layout && ! $id_layout) {
 	$table->head = array ();
 	$table->head[0] = __('Map name');
 	$table->head[1] = __('Group');
-	$table->head[2] = __('Delete');
+	$table->head[2] = __('Items');
+	$table->head[3] = __('Wizard');
+	$table->head[4] = __('Delete');
 	$table->align = array ();
-	$table->align[2] = 'center';
+	$table->align[3] = 'center';
+	$table->align[4] = 'center';
 	
 	$maps = get_db_all_rows_in_table ('tlayout','name');
 	if (!$maps) {
@@ -278,9 +281,14 @@ if (! $edit_layout && ! $id_layout) {
 			$data = array ();
 			
 			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
+			
 			$data[1] = '<img src="images/'.get_group_icon ($map['id_group']).'.png" /> ';
 			$data[1] .= get_group_name ($map['id_group']);
-			$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
+			$data[2] = get_db_sql ("SELECT COUNT(id) FROM tlayout_data WHERE id_layout = ".$map['id']);
+			$data[3] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$map['id'].'">
+				<img src="images/pill.png"></a>';
+			
+			$data[4] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
 				<img src="images/cross.png"></a>';
 			array_push ($table->data, $data);
 		}
@@ -302,6 +310,13 @@ if (! $edit_layout && ! $id_layout) {
 	$table->data = array ();
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
+	
+	if ($id_layout){
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="http://localhost/pandora_console/index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$id_layout.'"><img src="images/pill.png"></a>';
+		
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="http://localhost/pandora_console/index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr=60"><img src="images/eye.png"></a>';
+	}
+	
 	$table->data[1][0] = __('Group');
 	$table->data[1][1] = print_select ($groups, 'id_group', $id_group, '', '', '', true);
 	$table->data[2][0] = __('Background');
@@ -394,7 +409,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[1][0] = __('Label color');
 		$table->data[1][1] = print_input_text ('label_color', '#000000', '', 7, 7, true);
 		$table->data[2][0] = __('Type');
-		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', '', true);
+		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', 0, true, false, false); // Dont want to be sorted !
 		$table->data[3][0] = __('Height');
 		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
 		$table->data[4][0] = __('Width');

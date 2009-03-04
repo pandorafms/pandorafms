@@ -103,7 +103,7 @@ print_select ($fields, "ag_modulename", $ag_modulename, 'this.form.submit();', _
 echo '</td><td valign="middle">'.__('Free text').'</td>';
 
 echo '<td valign="middle">';
-print_input_text ("ag_freestring", $ag_freestring, '', 15);
+print_input_text ("ag_freestring", $ag_freestring, '', 15,30, false);
 
 echo '</td><td valign="middle">';
 print_submit_button (__('Show'), "uptbutton", false, 'class="sub"');

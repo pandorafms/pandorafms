@@ -191,7 +191,7 @@ foreach ($contents as $content) {
 		break;
 	case 3:
 	case 'SLA':
-		$table->colspan[0][0] = 2;
+
 		$table->style[1] = 'text-align: right';
 		$data = array ();
 		$data[0] = '<h4>'.__('S.L.A.').'</h4>';
@@ -220,7 +220,6 @@ foreach ($contents as $content) {
 		foreach ($slas as $sla) {
 			$data = array ();
 			
-			$table->colspan[$n][0] = 3;
 			$data[0] = '<strong>'.__('Agent')."</strong> : ";
 			$data[0] .= get_agentmodule_agent_name ($sla['id_agent_module'])."<br />";
 			$data[0] .= '<strong>'.__('Module')."</strong> : ";

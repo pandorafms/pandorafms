@@ -52,15 +52,11 @@ my %pa_config;
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
+# Alarm signal management
+$SIG{'ALRM'} = sub { }; # Do nothing just trap
+
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS Plugin Server");
-
-# Check for pandora_exec
-my $pandora_exec = "pandora_exec";
-if (system("$pandora_exec > /dev/null 2>&1") != 256) {
-	print " [E] $pandora_exec not found.\n\n";
-	exit;
-}
 
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config, 4);
@@ -176,6 +172,8 @@ sub pandora_plugin_consumer ($$) {
 		if ($@){
 			logger ($pa_config, "[ERROR] Plugin Task for module $data_id_agent_module causes a system exception", 0);
 			logger ($pa_config, "ERROR Code: $@", 1);
+			# Mark module status as executed
+			update_on_error ($pa_config, $data_id_agent_module, $dbh);
 		}
 
 		# Remove from queue. If catch an error, probably data is
@@ -297,14 +295,8 @@ sub exec_plugin_module {
 	my $agent_module; # hash container for tagente_modulo record
 	my $plugin; # hash container for tplugin
 
-	# Get a full hash for agent_plugin record reference ($agent_module)
-	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am";
-	my $exec_sql = $dbh->prepare($query_sql);
-	$exec_sql ->execute;
-	
-	# TODO: Do a check for void result ! (Gives a DBD::mysql::st execute failed: MySQL server has gone away at /usr/local/bin/pandora_plugin line 304)
-	
-	$agent_module = $exec_sql->fetchrow_hashref;
+	# 
+	$agent_module = get_db_free_row ("SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am", $dbh);
 
 	# Get a full hash for plugin record reference ($plugin)
 	$query_sql = "SELECT * FROM tplugin WHERE id = ".$agent_module->{'id_plugin'};
@@ -343,19 +335,63 @@ sub exec_plugin_module {
 		$plugin_command = $plugin_command . " ". $agent_module->{'plugin_parameter'};
 	}
 
+	# Final command line execution is stored at "plugin_command"
 	$plugin_command = decode_entities($plugin_command);
 
-	logger ($pa_config, "Executing AM # $id_am plugin command '$plugin_command'", 9);
-	# Final command line execution is stored at "plugin_command"
-
-	$module_data = `$pandora_exec $timeout $plugin_command`;
-	if ($module_data eq "") {
+	alarm ($timeout);
+	eval {
+		$module_data = `$plugin_command`;
+	};
+	if ($@){
+		logger ($pa_config, "Error $@ executing plugin $plugin_command", 2);
+		# Trapped error or timeout
 		update_on_error ($pa_config, $id_am, $dbh);
 		undef $plugin;
 		undef $agent_module;
 		return;
-	} 
+	}
+	
+	# Nagios compatible plugin ?
+	if ($plugin->{'plugin_type'} == 1){
+		# OK  —exit code 0—indicates a service is working properly.
+   		# WARNING —exit code 1—indicates a service is in warning state.
+    	# CRITICAL —exit code 2—indicates a service is in critical state.
+		# UNKNOWN —exit code 3—indicates a service is in unknown state.
+		
+		# In Pandora, this will be translated as:
+		# CRITICAL = 0, WARNING = -1, OK = 1
+		
+		my $errorlevel = ($? >> 8);
+		
+		if ($errorlevel == 0){
+			$module_data = 1; #OK
+		}
+		
+		elsif ($errorlevel == 1){
+			$module_data = -1; # WARNING
+		}
 
+		elsif ($errorlevel == 2){
+			$module_data = 0; # CRITICAL
+		}
+		
+		elsif ($errorlevel == 3){ # UNKNOWN
+			update_on_error ($pa_config, $id_am, $dbh);
+			undef $plugin;
+			undef $agent_module;
+			return;
+		}
+
+	} else {
+		# No output
+		if ($module_data eq "") {
+			update_on_error ($pa_config, $id_am, $dbh);
+			undef $plugin;
+			undef $agent_module;
+			return;
+		} 
+	}
+	
 	# Get current timestamp
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp = &UnixDate("today","%s");
@@ -364,13 +400,12 @@ sub exec_plugin_module {
 	$part{'name'}[0] = $agent_module->{'nombre'};
 	$part{'description'}[0] = "";
 	$part{'data'}[0] = $module_data;
-        my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_module->{'id_tipo_modulo'}, $dbh);
+    my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_module->{'id_tipo_modulo'}, $dbh);
 
         # 1 - generic_data
         # 2 - generic_proc
         # 3 - generic_data_string
         # 4 - generic_data_inc
-        # 19, 20 - image
 
 	if (1 == $agent_module->{'id_tipo_modulo'}) {
 		module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
@@ -381,13 +416,10 @@ sub exec_plugin_module {
 	elsif (3 == $agent_module->{'id_tipo_modulo'}) {
 		module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
-        # Generic_proc
 	elsif (2 == $agent_module->{'id_tipo_modulo'}) {
 		module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
-        elsif ( (19 == $agent_module->{'id_tipo_modulo'}) || (20 == $agent_module->{'id_tipo_modulo'}) ) {
-            module_generic_image ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
-        }
+      
 	else { # Unknown module!, this IS a problem
 		logger ($pa_config, "Plugin Server Problem with unknown module type '$tipo_modulo'", 0);
 	}

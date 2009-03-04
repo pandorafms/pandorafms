@@ -38,8 +38,8 @@ our @EXPORT = qw(
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "2.1-dev";
-my $pandora_build="PS090126";
+my $pandora_version = "3.0-dev";
+my $pandora_build="PS090305";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -194,20 +194,24 @@ sub pandora_loadconfig {
 
 	# Xprobe2 for recon OS fingerprinting (optional feature to detect OS)
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
+	
+	# Snmpget for snmpget system command (optional)
+	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
+	
 	$pa_config->{'autocreate_group'} = 2;
 	$pa_config->{'autocreate'} = 1;
 
 	# max log size (bytes)
-	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
+	$pa_config->{'max_log_size'} = 32000;
 
 	# Multicast status report
-	$pa_config->{'mcast_status_group'} = '226.1.1.2';
-	$pa_config->{'mcast_status_port'} = '2000';
+	$pa_config->{'mcast_status_group'} = '';
+	$pa_config->{'mcast_status_port'} = '';
 
 
 	# Multicast change report
-	$pa_config->{'mcast_change_group'} = '226.1.1.2';
-	$pa_config->{'mcast_change_port'} = '2000';
+	$pa_config->{'mcast_change_group'} = '';
+	$pa_config->{'mcast_change_port'} = '';
 	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -407,6 +411,9 @@ sub pandora_loadconfig {
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmpget\s(.*)/i) {
+			$pa_config->{'snmpget'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^autocreate\s([0-9*]*)/i) {
 			$pa_config->{'autocreate'}= clean_blank($1); 

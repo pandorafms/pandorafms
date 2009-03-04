@@ -378,7 +378,7 @@ if ($update_module || $create_module) {
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$minvalue = (int) get_parameter_post ("minvalue");
 	$maxvalue = (int) get_parameter ('maxvalue');
-	$interval = (int) get_parameter ("interval", 300);
+	$interval = (int) get_parameter ('module_interval', $intervalo);
 	$id_prediction_module = (int) get_parameter ('id_prediction_module');
 	$id_plugin = (int) get_parameter ('id_plugin');
 	$id_export = (int) get_parameter ('id_export');
@@ -409,7 +409,7 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	process_sql_update ('tagente_modulo',
+	$result = process_sql_update ('tagente_modulo',
 		array ('descripcion' => $description,
 			'id_module_group' => $id_module_group, 'nombre' => $name,
 			'max' => $maxvalue, 'min' => $minvalue, 'module_interval' => $interval,
@@ -428,7 +428,6 @@ if ($update_module) {
 			'min_ff_event' => $ff_event
 		),
 		'id_agente_modulo = '.$id_agent_module);
-	$result = process_sql ($sql);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';

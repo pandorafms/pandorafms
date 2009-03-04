@@ -81,26 +81,19 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
  * joined with an AND operator). Examples:
 <code>
 $components = get_network_components ($id_module, array ('id_module_group', 10));
-$components = get_network_components ($id_module, array ('id_module_group', 10));
+$components = get_network_components ($id_module, 'id_module_group = 10'));
 </code>
+ * @param mixed Fields to retrieve on each component.
  * 
  * @return array A list of network components matching. Empty array is returned
  * if none matches.
  */
-function get_network_components ($id_module, $filter = false) {
+function get_network_components ($id_module, $filter = false, $fields = false) {
 	if (empty ($id_module))
 		return array ();
 	
-	$where = '';
-	if (is_array ($filter)) {
-		$where = format_array_to_where_clause_sql ($filter, 'AND', ' AND ');
-	}
-	
-	$sql = sprintf ('SELECT * FROM tnetwork_component
-		WHERE `id_modulo` = %d %s',
-		$id_module, $where);
-	
-	$components = get_db_all_rows_sql ($sql);
+	$components = get_db_all_rows_filter ('tnetwork_component',
+		$filter, $fields);
 	if ($components === false)
 		return array ();
 	return $components;

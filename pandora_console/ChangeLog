@@ -1,3 +1,13 @@
+2009-03-04  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/module_manager_editor.php: Fixed filter field on
+	get_module_components ajax operation and order the results.
+
+	* include/functions.php: Added enterprise_include_once().
+
+	* include/functions_modules.php: Use get_db_all_rows_filter() on
+	get_network_component(). Also added fields to this function.
+
 2009-03-03  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/logon_ok.php: Minor edit in language and colors for warning

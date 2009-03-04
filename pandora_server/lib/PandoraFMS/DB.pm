@@ -887,12 +887,16 @@ sub pandora_accessupdate (%$$) {
 	my $dbh = $_[2];
 	my $err;
 
-		if ($id_agent != -1){
-			my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
-			my $utimestamp = &UnixDate("today","%s");
-			my $query2 = "INSERT INTO tagent_access (id_agent, utimestamp) VALUES ($id_agent,'$utimestamp')";
-			$dbh->do($query2);
-		}
+	if (!defined($id_agent)){
+		return -1;
+	}
+	
+	if ($id_agent != -1){
+		my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
+		my $utimestamp = &UnixDate("today","%s");
+		my $query2 = "INSERT INTO tagent_access (id_agent, utimestamp) VALUES ($id_agent,'$utimestamp')";
+		$dbh->do($query2);
+	}
 }
 
 ##########################################################################
@@ -2072,6 +2076,11 @@ sub dame_intervalo (%$$) {
 
 	my $tipo = 0; 
 	my @data;
+	
+	if (!defined($id_agente)){
+		return 0;
+	}
+	
 	# Calculate agent ID using select by its name
 	my $query_idag = "select * from tagente where id_agente = ".$id_agente;
 	my $s_idag = $dbh->prepare($query_idag);
@@ -2082,8 +2091,8 @@ sub dame_intervalo (%$$) {
 		$tipo = 0;
 	} else  {	
 		@data = $s_idag->fetchrow_array(); 
+		$tipo= $data[7];
 	}
-	$tipo= $data[7];
 	$s_idag->finish();
 	return $tipo;
 }

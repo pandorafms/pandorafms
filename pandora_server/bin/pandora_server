@@ -35,6 +35,7 @@ use threads::shared;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+enterprise_load ();
 
 # Queue management
 my @pending_task : shared;

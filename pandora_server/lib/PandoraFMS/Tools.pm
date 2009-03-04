@@ -173,23 +173,20 @@ sub pandora_sendmail {                  # added in 2.0 version
 ##########################################################################
 
 sub is_numeric {
-	$x = $_[0];
-	if (!defined ($x)){
+	my $val = $_[0];
+	
+	if (!defined($val)){
 		return 0;
 	}
-	if ($x eq ""){
-		return 0;
-	}
-	# Integer ?
-	if ($x =~ /^-?\d/) {
-		return 1;
-	}
-	# Float ?
-	if ($x =~ /^-?\d*\./){
-		return 1;
-	}
-	# If not, this thing is not a number
-	return 0;
+	
+    my $DIGITS = qr{ \d+ (?: [.] \d*)? | [.] \d+ }xms;
+    my $SIGN   = qr{ [+-] }xms;
+    my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
+    if ( $val !~ /^${NUMBER}$/ ) {
+    	return 0;   #Non-numeric
+    } else {
+        return 1;   #Numeric
+    }
 }
 
 ##########################################################################
@@ -241,6 +238,10 @@ sub logger {
 	my $datos = $_[1];
 	my $param2= $_[2];
 	my $verbose_level = 2; # if parameter not passed, verbosity is 2 
+
+	if (!defined $pa_config->{"verbosity"}){
+		$pa_config->{"verbosity"} = 0;
+	}
 
 	if (defined $param2){
 		if (is_numeric($param2)){
@@ -322,8 +323,11 @@ sub float_equal {
 # enterprise_hook ().
 ##########################################################################
 sub enterprise_load () {
-	eval { require PandoraFMS::Enterprise; };
+        eval { 
+                require PandoraFMS::Enterprise; 
+        };
 }
+
 
 ##########################################################################
 # sub enterprise_hook ($function_name, \@arguments)

@@ -1,3 +1,18 @@
+2009-03-05  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_network: Better management of snmpget binary call, using
+	a config setup variable and checking it in startup.
+	
+	* pandora_server.conf: new options added (snmpget, UDP multicast)
+	
+	* Config.pm: New options managed (snmpget), new version updated (3.0-dev)
+	
+	* DB.pm: Fixed two issues that makes me some problems on undefined values.
+	
+	* Tools.pm: New function to manage numerical data.
+	
+	* util/plugin/multicast.pl: Fixed plugin for multicast check.
+	
 2009-03-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Fixed alert recovery custom fields.

@@ -261,11 +261,26 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0,
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_image ($name, $src, $value, $style = '', $return = false) {
+function print_input_image ($name, $src, $value, $style = '', $return = false, $options = false) {
 	static $idcounter = 0;
 	
 	++$idcounter;
-	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image" value="'.$value.'" />';
+	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
+	
+	//Valid attributes (invalid attributes get skipped)
+	$attrs = array ("alt", "accesskey", "lang", "tabindex", "title", "xml:lang",
+		"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", 
+		"onmouseout", "onkeypress", "onkeydown", "onkeyup");
+	
+	foreach ($attrs as $attribute) {
+		if (isset ($options[$attribute])) {
+			$output .= $attribute.'="'.safe_input ($options[$attribute]).'" ';
+		}
+	}
+	
+	$output .= 'value="'.$value;
+	
+	$output .= '" />';
 	
 	if ($return)
 		return $output;

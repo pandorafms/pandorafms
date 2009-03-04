@@ -86,7 +86,8 @@ if ($id) {
 }
 echo '</div>';
 echo '</form>';
-$config['js'][] = 'pandora_alerts';
+
+require_javascript_file ('pandora_alerts');
 ?>
 
 <script type="text/javascript">

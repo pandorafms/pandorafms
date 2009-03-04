@@ -1,3 +1,23 @@
+2009-03-04  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/manage_config.php: Fixed a javascript error that
+	doesn't allow to perform any operation.
+
+	* godmode/alerts/configure_alert_action.php: Fixed javascript file
+	inclusion.
+
+	* godmode/reporting/map_builder.php: Fixed typo when updating a
+	layout.
+
+	* images/download.png: Added to repository.
+
+	* include/functions_agents.php: Style correction.
+
+	* include/functions_html.php: Added additional options to
+	print_input_image().
+
+	* include/functions_ui.php: Added format_filesize().
+
 2009-03-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php, 

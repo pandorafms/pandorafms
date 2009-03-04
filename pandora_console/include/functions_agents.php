@@ -152,11 +152,12 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 	if ($copy_alerts == false) {
 		$copy_alerts = (bool) get_parameter ('copy_alerts', $copy_alerts);
 	}
-		
+	
 	if ($copy_modules) {
 		if (empty ($target_modules)) {
 			$target_modules = (array) get_parameter ('target_modules', $target_modules);
 		}
+		
 		if (empty ($target_modules)) {
 			echo '<h3 class="error">'.__('No modules have been selected').'</h3>';
 			return false;
@@ -169,7 +170,7 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 		foreach ($destiny_id_agents as $id_destiny_agent) {
 			foreach ($target_modules as $id_agent_module) {
 				$result = copy_agent_module_to_agent ($id_agent_module,
-													  $id_destiny_agent);
+					$id_destiny_agent);
 				
 				if ($result === false) {
 					$error = true;
@@ -179,19 +180,20 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 				$id_destiny_module = $result;
 				if (! isset ($alerts[$id_agent_module]))
 					$alerts[$id_agent_module] = get_alerts_agent_module ($id_agent_module,
-																		 true);
+						true);
 				
 				if ($alerts[$id_agent_module] === false)
 					continue;
 				
-				if ($copy_alerts) {
-					foreach ($alerts[$id_agent_module] as $alert) {
-						$result = copy_alert_agent_module_to_agent_module ($alert['id'],
-																		   $id_destiny_module);
-						if ($result === false) {
-							$error = true;
-							break;
-						}
+				if (! $copy_alerts)
+					continue;
+				
+				foreach ($alerts[$id_agent_module] as $alert) {
+					$result = copy_alert_agent_module_to_agent_module ($alert['id'],
+						$id_destiny_module);
+					if ($result === false) {
+						$error = true;
+						break;
 					}
 				}
 			}

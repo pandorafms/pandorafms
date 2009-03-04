@@ -1,3 +1,8 @@
+2009-03-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Fixed alert recovery custom fields.
+	  field3_recovery was not being properly set.
+
 2009-02-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* bin/pandora_snmpconsole: Fixed SNMP console going down while 

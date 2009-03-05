@@ -28,7 +28,7 @@ $MARQUEE_FONT_SIZE="32px";
 $MARQUEE_SPEED=12;
 
 $output = "";
-require "../../include/config.php";
+require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 

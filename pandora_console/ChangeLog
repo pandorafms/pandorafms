@@ -1,3 +1,20 @@
+2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/auth/ldap.php: Fixed a small issue to check on a variable
+	
+	* include/functions_extensions.php: Fixed an issue since errors 
+	produced with @function will filter into custom error handlers
+	
+	* include/functions_ui.php: Added RSS link in the header to display
+	RSS feed availability in RSS-enabled browsers
+	
+	* operation/events/events_marquee.php, 
+	operation/events/events_statistics.php: require_once so it won't load
+	the same function files twice
+	
+	* operation/events/events_rss.php: Better error handling. Require_once
+	required because it was giving a problem with certain function files.	
+
 2009-03-05  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_config.php: Fixed auth files inclusion that may

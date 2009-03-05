@@ -26,8 +26,8 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 	exit;
 }
 
-$layout_id = get_parameter ("id_layout", 0);
-$layout = get_db_row_sql ("SELECT *  FROM tlayout WHERE id = $layout_id");
+$layout_id = (int) get_parameter ('id_layout');
+$layout = get_db_row ('tlayout', 'id', $layout_id);
 
 $layout_group = $layout["id_group"];
 
@@ -37,7 +37,6 @@ if (! give_acl ($config['id_user'], $layout_group, "AW")) {
 	exit;
 }
 
-echo '<h2>'.__('Visual map wizard').' - '.$layout["name"].'</h2>';
 function process_wizard_add ($id_agents, $image, $id_layout, $range) {
 	if (empty ($id_agents)) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
@@ -50,15 +49,19 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range) {
 	$pos_y = 10;
 	$pos_x = 10;
 	foreach ($id_agents as $id_agent) {
-	
-		if ($pos_x > 600){
+		if ($pos_x > 600) {
 			$pos_x = 10;
 			$pos_y = $pos_y + $range;
 		}
-			
-		$label = get_db_sql ("SELECT nombre FROM tagente WHERE id_agente = $id_agent");	
-		$sql = "INSERT INTO tlayout_data (id_layout, pos_x, pos_y, label, image, id_agent, label_color) VALUES ($id_layout, $pos_x, $pos_y, '$label', '$image', $id_agent, '#000000')";
-		process_sql ($sql);
+		
+		process_sql_insert ('tlayout_data',
+			array ('id_layout' => $id_layout,
+				'pos_x' => $pos_x,
+				'pos_y' => $pos_y,
+				'label' => get_agent_name ($id_agent),
+				'image' => $image,
+				'id_agent' => $id_agent,
+				'label_color' => '#000000'));
 		
 		$pos_x = $pos_x + $range;
 	}
@@ -66,6 +69,9 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range) {
 	echo '<h3 class="suc">'.__('Successfully added').'</h3>';
 	echo '<h3><a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$id_layout.'">'.__('Map builder').'</a></h3>';
 }
+
+
+echo '<h2>'.__('Visual map wizard').' - '.$layout["name"].'</h2>';
 
 $id_agents = get_parameter ('id_agents');
 $image = get_parameter ('image');
@@ -83,10 +89,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
-
 $table->data = array ();
-
-// CRAP HERE
 
 $images_list = array ();
 $all_images = list_files ('images/console/icons/', "png", 1, 0);
@@ -96,17 +99,16 @@ foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_ok"))
 		continue;
 	if (strpos ($image_file, "_warning"))
-		continue;	
+		continue;
 	$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
 	$images_list[$image_file] = $image_file;
 }
 
 $table->data[0][0] = __('Image');
-$table->data[0][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
+$table->data[0][1] = print_select ($images_list, 'image', '', '', '', '', true);
 
 $table->data[1][0] = __('Image range (px)');
 $table->data[1][1] = print_input_text ('range', $range, '', 5, 5, true);
-
 
 $table->data[2][0] = __('Agents');
 $table->data[2][1] = print_select (get_group_agents ($layout_group, false, "none"),
@@ -123,6 +125,5 @@ echo '</div>';
 echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
-
 ?>
 

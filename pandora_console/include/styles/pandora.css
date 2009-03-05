@@ -349,7 +349,7 @@ td.datos_id {
 	color: #fff;
 	text-align: center;
 }
-.suc, .error {
+.suc, .error, .help {
 	padding: 4px 1px 6px 30px;
 }
 .suc {
@@ -358,6 +358,9 @@ td.datos_id {
 }
 .error {
 	background: url(../../images/err.png) no-repeat;
+}
+.help {
+	background: url(../../images/help.png) no-repeat;
 }
 .red, .redb, .redi, .error {
 	color: #f00;
@@ -733,7 +736,7 @@ ul {
 span.actions {
 	margin-left: 30px;
 }
-code {
+code, pre {
 	font-family: courier, serif;
 }
 select#template, select#action {

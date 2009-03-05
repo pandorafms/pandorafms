@@ -1,3 +1,25 @@
+2009-03-05  Esteban Sanchez  <estebans@artica.es>
+	
+	* godmode/reporting/map_builder_wizard.php: Style correction. Use
+	Pandora functions instead of SQL. Force elements to have an image by
+	removing "None".
+
+	* include/functions_config.php: Added to repository. New file to
+	manage config operations such as creation and updating values or
+	updating the whole config array. It even sets id_user so no more usage
+	of $_SESSION is required from outside.
+
+	* include/config_process.php: Cleanup and usage of functions in
+	functions_config.php. Updated build.
+
+	* index.php: Updated to changes in config_process.php,
+
+	* godmode/setup/setup.php: All config process has been moved to
+	config_process.php which uses functions in functions_config.php.
+
+	* include/styles/pandora.css: Styling for pre elements. New help
+	class.
+
 2009-03-04  Sancho Lerena <slerena@artica.es>
 
 	* operation/agents/tactical.php: Layout adapted to bigger event table.

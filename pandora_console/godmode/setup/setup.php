@@ -30,54 +30,14 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! is_user_admin ($config['id_use
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup.php');
 
-$update_settings = (bool) get_parameter ('update_settings');
-
-if ($update_settings) {
-	$config["block_size"] = (int) get_parameter ('block_size', $config["block_size"]);
-	$config["language"] = (string) get_parameter ('language_code', $config["language"]);
-	$config["days_compact"] = (int) get_parameter ('days_compact', $config["days_compact"]);
-	$config["days_purge"] = (int) get_parameter ('days_purge', $config["days_purge"]);
-	$config["graph_res"] = (int) get_parameter ('graph_res', $config["graph_res"]);
-	$config["step_compact"] = (int) get_parameter ('step_compact', $config["step_compact"]);
-	$config["style"] = (string) get_parameter ('style', $config["style"]);
-	$config["remote_config"] = (string) get_parameter ('remote_config', $config["remote_config"]);
-	$config["graph_color1"] = (string) get_parameter ('graph_color1', $config["graph_color1"]);
-	$config["graph_color2"] = (string) get_parameter ('graph_color2', $config["graph_color2"]);
-	$config["graph_color3"] = (string) get_parameter ('graph_color3', $config["graph_color3"]);	
-	$config["sla_period"] = (int) get_parameter ('sla_period', $config["sla_period"]);
-	$config["date_format"] = (string) get_parameter ('date_format', $config["date_format"]);
-	$config["trap2agent"] = (string) get_parameter ('trap2agent', 0);
-	$config["autoupdate"] = (bool) get_parameter ('autoupdate', 0); //If not passed, it's 0
-	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
-	$config["loginhash_pwd"] = (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]);
-	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
-	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
-	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
-	$config["https"] = (bool) get_parameter ('https', 0); //If value not passed (unchecked), it's 0
-	$config["compact_header"] = (bool) get_parameter ('compact_header', 0); 
-
-	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["language"]."' WHERE token = 'language_code'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["days_purge"]."' WHERE token = 'days_purge'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["days_compact"]." ' WHERE token = 'days_compact'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_res"]."' WHERE token = 'graph_res'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["step_compact"]."' WHERE token = 'step_compact'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["style"]."' WHERE token = 'style'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color1"]."' WHERE token = 'graph_color1'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color2"]."' WHERE token = 'graph_color2'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color3"]."' WHERE token = 'graph_color3'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["sla_period"]."' WHERE token = 'sla_period'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["date_format"]."' WHERE token = 'date_format'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["trap2agent"]."' WHERE token = 'trap2agent'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["autoupdate"]."' WHERE token = 'autoupdate'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["prominent_time"]."' WHERE token = 'prominent_time'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["timesource"]."' WHERE token = 'timesource'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["loginhash_pwd"]."' WHERE token = 'loginhash_pwd'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["https"]."' WHERE token = 'https'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["compact_header"]."' WHERE token = 'compact_header'");
-}
+/*
+ NOTICE FOR DEVELOPERS:
+ 
+ Update operation is done in config_process.php
+ This is done in that way so the user can see the changes inmediatly.
+ If you added a new token, please check update_config() in functions_config.php
+ to add it there.
+*/
 
 require_once ('include/functions_themes.php');
 
@@ -87,7 +47,8 @@ echo __('General configuration')."</h2>";
 $table->width = '90%';
 $table->data = array ();
 $table->data[0][0] = __('Language code for Pandora');
-$table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage', 'language_code', $config["language"], '', '', '', true);
+$table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+	'language', $config["language"], '', '', '', true);
 
 $table->data[1][0] = __('Date format string') . pandora_help("date_format", true);
 $table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
@@ -124,7 +85,7 @@ $table->data[11][0] = __('Auto login (Hash) password');
 $table->data[11][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
 $table->data[13][0] = __('Style template');
-$table->data[13][1] = print_select (get_css_themes (), 'style', $config["style"], '', '', '', true);
+$table->data[13][1] = print_select (get_css_themes (), 'style', $config["style"].'.css', '', '', '', true);
 
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
@@ -155,7 +116,7 @@ $table->data[20][1] = print_checkbox ('compact_header', 1, $config["compact_head
 enterprise_hook ('load_snmpforward_enterprise');
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
-print_input_hidden ('update_settings', 1);
+print_input_hidden ('update_config', 1);
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');

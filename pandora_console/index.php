@@ -61,14 +61,6 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 // Real start
 session_start ();
 require_once ("include/config.php");
-require_once ("include/functions.php");
-require_once ("include/functions_db.php");
-
-if (!isset ($config["auth"])) {
-	require_once ("include/auth/mysql.php");
-} else {
-	require_once ("include/auth/".$config["auth"]["scheme"].".php");
-}
 
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
@@ -76,7 +68,6 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 }
 
 load_extensions ($config['extensions']);
-
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	$query = 'https://' . $_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'];
@@ -127,7 +118,7 @@ $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
 
 // Hash login process
-if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
+if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_data = get_parameter("loginhash_data", "");
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
@@ -141,7 +132,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-} elseif (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
+} elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// Login process 
 	
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
@@ -170,14 +161,11 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["loginhash"])) {
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-} elseif (! isset ($_SESSION['id_usuario'])) {
+} elseif (! isset ($config['id_user'])) {
 	// There is no user connected
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());
 	exit ("</html>");
-} else {
-	// There is session for id_usuario
-	$config["id_user"] = $_SESSION["id_usuario"];
 }
 
 // Log off

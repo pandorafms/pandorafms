@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-$build_version = 'PC090303';
+$build_version = 'PC090305';
 $pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);
@@ -58,64 +58,11 @@ if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
 }
 
 mysql_select_db ($config["dbname"]);
+require_once ('functions.php');
 require_once ('functions_db.php');
-$configs = get_db_all_rows_in_table ('tconfig');
+require_once ('functions_config.php');
 
-if (empty ($configs)) {
-	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
-		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-		</head><body><div align="center">
-		<div id="db_f">
-		<div>
-		<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
-		</div>
-		<div id="db_ftxt">
-		<h1 id="log_f" class="error">Pandora FMS Console Error DB-002</h1>
-		Cannot load configuration variables from database. Please check your database setup in the
-		<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
-		Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
-		</i><br />
-		</div>
-		</div></body></html>');
-}
-
-/* Compatibility fix */
-foreach ($configs as $c) {
-	switch ($c["token"]) {
-	case "language_code":
-		$config['language'] = $c['value'];
-		break;
-	case "auth":
-		exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-			<html xmlns="http://www.w3.org/1999/xhtml">
-			<head>
-			<title>Pandora FMS Error</title>
-			<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-			</head>
-			<body>
-			<div align="center">
-			<div id="db_f">
-			<div>
-			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
-			</div>
-			<div id="db_ftxt">
-			<h1 id="log_f" class="error">Pandora FMS Console Error DB-003</h1>
-			Cannot override authorization variables from the config database. Remove them from your database by executing:
-			DELETE FROM tconfig WHERE token = "auth";
-			<br />
-			</div>
-			</div></body></html>');
-	default:
-		$config[$c['token']] = $c['value'];
-	}
-}
-
-if ($config['language'] == 'ast_es') {
-	$help_code = 'ast';
-} else {
-	$help_code = substr ($config["language"], 0, 2);
-}
+process_config ();
 
 if (! defined ('EXTENSIONS_DIR'))
 	define ('EXTENSIONS_DIR', 'extensions');
@@ -136,67 +83,4 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n->load_tables();
 }
 
-if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
-	$config['homeurl'] = '/'.$config['homeurl'];
-}
-
-if (!isset ($config['date_format'])) {
-	$config['date_format'] = 'F j, Y, g:i a';
-	process_sql_insert ('tconfig', array ('token' => 'date_format',
-		'value' => $config['date_format']));
-}
-
-if (! isset ($config['event_view_hr'])) {
-	$config['event_view_hr'] = 8;
-	process_sql_insert ('tconfig', array ('token' => 'event_view_hr',
-		'value' => $config['event_view_hr']));
-}
-
-if (! isset ($config['loginhash_pwd'])) {
-	$config['loginhash_pwd'] = rand (0, 1000) * rand (0, 1000)."pandorahash";
-	process_sql_insert ('tconfig', array ('token' => 'loginhash_pwd',
-		'value' => $config["loginhash_pwd"]));
-}
-
-if (!isset($config["trap2agent"])){
-	$config["trap2agent"] = 0;
-	process_sql_insert ('tconfig', array ('token' => 'trap2agent',
-		'value' => $config['trap2agent']));
-}
-
-if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
-	// Default period (in secs) for auto SLA calculation (for monitors)
-	$config["sla_period"] = 604800;
-	process_sql_insert ('tconfig', array ('token' => 'sla_period',
-		'value' => $config['sla_period']));
-}
-
-if (!isset ($config["prominent_time"])) {
-	// Prominent time tells us what to show prominently when a timestamp is
-	// displayed. The comparation (... days ago) or the timestamp (full date)
-	$config["prominent_time"] = "comparation";
-	process_sql_insert ('tconfig', array ('token' => 'prominent_time',
-		'value' => $config['prominent_time']));
-}
-
-if (!isset ($config["timesource"])) {
-	// Timesource says where time comes from (system or mysql)
-	$config["timesource"] = "system";
-	process_sql_insert ('tconfig', array ('token' => 'timesource',
-		'value' => $config['timesource']));
-}
-
-if (!isset ($config["https"])) {
-	// Sets whether or not we want to enforce https. We don't want to go to a
-	// potentially unexisting config by default
-	$config["https"] = false;
-	process_sql_insert ('tconfig', array ('token' => 'https', 
-		'value' => $config["https"])); 
-}
-
-if (!isset ($config["compact_header"])) {
-	$config["compact_header"] = false;
-	process_sql_insert ('tconfig', array ('token' => 'compact_header', 
-										  'value' => $config["compact_header"])); 
-}
 ?>

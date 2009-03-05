@@ -1,4 +1,9 @@
 2009-03-05  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_config.php: Fixed auth files inclusion that may
+	fail in some cases.
+
+2009-03-05  Esteban Sanchez  <estebans@artica.es>
 	
 	* godmode/reporting/map_builder_wizard.php: Style correction. Use
 	Pandora functions instead of SQL. Force elements to have an image by

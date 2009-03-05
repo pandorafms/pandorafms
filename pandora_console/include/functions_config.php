@@ -214,9 +214,9 @@ function process_config () {
 		$config["id_user"] = $_SESSION["id_usuario"];
 	
 	if (!isset ($config["auth"])) {
-		require_once ("include/auth/mysql.php");
+		require_once ($config["homedir"]."/include/auth/mysql.php");
 	} else {
-		require_once ("include/auth/".$config["auth"]["scheme"].".php");
+		require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

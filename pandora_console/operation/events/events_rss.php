@@ -3,7 +3,7 @@
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2008 Evi Vanoost, vanooste@rcbi.rochester.edu
+// Copyright (c) 2008-2009 Evi Vanoost, vanooste@rcbi.rochester.edu
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,10 +16,35 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-require "../../include/config.php";
-require "../../include/functions.php";
+ini_set ('display_errors', 0); //Don't display other errors, messes up XML
+header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
+
+require_once "../../include/config.php";
+require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 
+function rss_error_handler ($errno, $errstr, $errfile, $errline) {
+	global $config;
+
+	$base = 'http'.(isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '').'://'.$_SERVER['HTTP_HOST'];
+	$url = $base.$config["homeurl"];
+	$selfurl = $base.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
+
+	$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; //' Fixes certain highlighters freaking out on the PHP closing tag
+	$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
+	$rss_feed .= '<channel><title>Pandora RSS Feed</title><description>Latest events on Pandora</description>';
+	$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, 0).'</lastBuildDate>';
+	$rss_feed .= '<link>'.$url.'</link>'; //Link back to the main Pandora page
+	$rss_feed .= '<atom:link href="'.htmlentities ($selfurl).'" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
+
+	$rss_feed .= '<item><guid>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</guid><title>Error creating feed</title>';
+	$rss_feed .= '<description>There was an error creating the feed: '.$errno.' - '.$errstr.' in '.$errfile.' on line '.$errline.'</description>';
+	$rss_feed .= '<link>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</link></item>';
+	
+	exit ($rss_feed); //Exit by displaying the feed
+}
+
+set_error_handler ('rss_error_handler', E_ALL); //Errors output as RSS
 $ev_group = get_parameter ("ev_group", 0); // group
 $search = get_parameter ("search", ""); // free search
 $event_type = get_parameter ("event_type", ''); // 0 all
@@ -36,11 +61,11 @@ if ($status == 1)
 if ($status == 0)
 	$sql_post .= " AND `tevento`.`estado` = 0";
 if ($search != "")
-        $sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
+	$sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
 if ($event_type != "")
-        $sql_post .= " AND `tevento`.`event_type` = '$event_type'";
+	$sql_post .= " AND `tevento`.`event_type` = '$event_type'";
 if ($severity != -1)
-        $sql_post .= " AND `tevento`.`criticity` >= ".$severity;
+	$sql_post .= " AND `tevento`.`criticity` >= ".$severity;
 if ($id_agent != -1)
 	$sql_post .= " AND `tevento`.`id_agente` = ".$id_agent;
 if ($id_event != -1)
@@ -58,17 +83,24 @@ $sql="SELECT `tevento`.`id_evento` AS event_id,
 
 $result= get_db_all_rows_sql ($sql);
 
-//$url = "https://".$_SERVER['HTTP_HOST']."/pandora_console";
+$base = 'http'.(isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '').'://'.$_SERVER['HTTP_HOST'];
+$url = $base.$config["homeurl"];
+$selfurl = $base.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 
-$url = 'http://'.$_SERVER['HTTP_HOST'].$config["homeurl"];
-$selfurl = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
-$rss_feed = '<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
+if (empty ($result)) {
+	$lastbuild = 0; //Last build in 1970
+} else {
+	$lastbuild = (int) $result[0]['unix_timestamp'];
+}
+
+$rss_feed = '<?xml version="1.0" encoding="utf-8" ?>'; //' Fixes certain highlighters freaking out on the PHP closing tag
+$rss_feed .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'; 
 $rss_feed .= '<channel><title>Pandora RSS Feed</title><description>Latest events on Pandora</description>';
-$rss_feed .= '<lastBuildDate>'.date(DATE_RFC822, $result[0]['unix_timestamp']).'</lastBuildDate>';
-$rss_feed .= '<link>'.$url.'</link>';
-$rss_feed .= '<atom:link href="'.htmlentities ($selfurl).'" rel="self" type="application/rss+xml" />';
+$rss_feed .= '<lastBuildDate>'.date (DATE_RFC822, $lastbuild).'</lastBuildDate>'; //Last build date is the last event - that way readers won't mark it as having new posts
+$rss_feed .= '<link>'.$url.'</link>'; //Link back to the main Pandora page
+$rss_feed .= '<atom:link href="'.htmlentities ($selfurl).'" rel="self" type="application/rss+xml" />'; //Alternative for Atom feeds. It's the same.
 
-if ($result === false) {
+if (empty ($result)) {
 	$result = array();
 	$rss_feed .= '<item><guid>'.$url.'/index.php?sec=eventos&sec2=operation/events/events</guid><title>No results</title>';
 	$rss_feed .= '<description>There are no results. Click on the link to see all Pending events</description>';
@@ -99,6 +131,5 @@ foreach ($result as $row) {
 
 $rss_feed .= "</channel></rss>";
 
-header("Content-Type: application/xml; charset=UTF-8"); 
 echo $rss_feed;
 ?>

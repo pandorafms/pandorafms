@@ -569,7 +569,8 @@ function process_page_head ($string, $bitfield) {
 	<link rel="stylesheet" href="include/styles/common.css" type="text/css"/>
 	<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
-	<![endif]-->';
+	<![endif]-->
+	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
 	if ($config["language"] != "en") {
 		//Load translated strings - load them last so they overload all the objects

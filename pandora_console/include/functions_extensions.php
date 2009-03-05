@@ -83,12 +83,16 @@ function is_extension ($page) {
  */
 function get_extensions ($enterprise = false) {
 	$dir = EXTENSIONS_DIR;
+	$handle = false;
 	if ($enterprise)
 		$dir = ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-	$handle = @opendir ($dir);
-	if (! $handle) {
+
+	if (file_exists ($dir))
+		$handle = @opendir ($dir);	
+	
+	if (empty ($handle))
 		return;
-	}
+		
 	$file = readdir ($handle);
 	$extensions = array ();
 	$ignores = array ('.', '..');

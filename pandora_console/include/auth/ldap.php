@@ -466,9 +466,9 @@ function ldap_connect_bind () {
 	
 	$ret = false;
 	
-	if (!empty ($config["auth"]["ldap_port"]) && !is_resource ($ldap_cache["ds"])) {
+	if (!empty ($config["auth"]["ldap_port"]) && (empty ($ldap_cache["ds"]) || !is_resource ($ldap_cache["ds"]))) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"], $config["auth"]["ldap_port"]);
-	} elseif (!is_resource ($ldap_cache["ds"])) {
+	} elseif (empty ($ldap_cache["ds"]) || !is_resource ($ldap_cache["ds"])) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"]);
 	} else {
 		return true;

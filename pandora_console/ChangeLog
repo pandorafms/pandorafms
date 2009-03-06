@@ -1,5 +1,14 @@
 2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* godmode/reporting/map_builder_wizard.php: Fixed small error when no
+	valid id was passed.
+	
+	* godmode/reporting/map_builder.php: Modified code so that width and
+	height can be specified for all types of graphics. Fixed code where
+	width and height wouldn't be passed in the database
+
+2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* include/auth/dev.php: Updated examples
 	
 	* include/auth/ldap.php: Moved stuff in a more logical order

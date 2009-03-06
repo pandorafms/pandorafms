@@ -1,3 +1,7 @@
+2009-03-05  Sancho Lerena  <slerena@artica.es>
+
+	*  include/functions_reporting.php: Fixed notice.
+
 2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/auth/ldap.php: Fixed a small issue to check on a variable

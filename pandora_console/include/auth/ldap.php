@@ -31,6 +31,48 @@ $config["admin_can_make_admin"] = false;
 $req_keys = array ("ldap_server", "ldap_base_dn", "ldap_login_attr", "ldap_admin_group_name", "ldap_admin_group_attr", "ldap_admin_group_type", "ldap_user_filter", "ldap_user_attr");
 $opt_keys = array ("ldap_port", "ldap_start_tls", "ldap_version", "ldap_admin_dn", "ldap_admin_pwd");
 
+global $ldap_cache; //Needs to be globalized because process_config () function calls this file first and the variable would be local and subsequently lost
+$ldap_cache = array ();
+$ldap_cache["error"] = "";
+$ldap_cache["ds"] = "";
+
+//Put each required key in a variable.
+foreach ($req_keys as $key) {
+	if (!isset ($config["auth"][$key])) {
+		user_error ("Required key ".$key." not set", E_USER_ERROR);
+	}
+}
+
+// Convert group name to lower case to prevent problems
+$config["auth"]["ldap_admin_group_attr"] = strtolower ($config["auth"]["ldap_admin_group_attr"]);
+$config["auth"]["ldap_admin_group_type"] = strtolower ($config["auth"]["ldap_admin_group_type"]);
+
+foreach ($opt_keys as $key) {
+	if (!isset ($config["auth"][$key])) {
+		switch ($key) {
+			case "ldap_start_tls":
+				$config["auth"][$key] = false;
+				continue;
+			case "ldap_version":
+				$config["auth"][$key] = 0;
+				continue;
+			case "ldap_admin_dn":
+			case "ldap_admin_pwd":	
+				$config["auth"][$key] = "";
+				continue;
+			default:
+				//Key not implemented
+				continue;
+		}
+	}
+}
+
+//Reference the global use authorization error to last ldap error.
+$config["auth_error"] = &$ldap_cache["error"];
+
+unset ($req_keys, $opt_keys);
+	
+
 /**
  * process_user_login accepts $login and $pass and handles it according to current authentication scheme
  *
@@ -312,6 +354,7 @@ function ldap_load_user ($login) {
 	global $ldap_cache, $config;
 		
 	$ret =  false;
+	$time = get_system_time ();
 	if (ldap_connect_bind ()) {
 		
 		$sr = ldap_search ($ldap_cache["ds"], $config["auth"]["ldap_base_dn"], "(&(".$config["auth"]["ldap_login_attr"]."=".$login.")".$config["auth"]["ldap_user_filter"].")", array_values ($config["auth"]["ldap_user_attr"]));
@@ -326,8 +369,8 @@ function ldap_load_user ($login) {
 			} else {
 				$ret = array ();
 				foreach ($config["auth"]["ldap_user_attr"] as $internal_key => $ldap_key) {
-					$ret["last_connect"] = get_system_time ();
-					$ret["registered"] = get_system_time ();
+					$ret["last_connect"] = $time;
+					$ret["registered"] = $time;
 					$ret["is_admin"] = is_user_admin ($info[0][$config["auth"]["ldap_user_attr"]["id_user"]][0]);
 					if (isset ($info[0][$ldap_key])) {
 						$ret[$internal_key] = $info[0][$ldap_key][0];
@@ -354,7 +397,7 @@ function ldap_load_user ($login) {
 function create_user () {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] = 'Not yet supported.';
+	$ldap_cache["error"] .= 'Creating users not supported.';
 	return false;
 }
 
@@ -366,7 +409,7 @@ function create_user () {
 function process_user () {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] = 'Not yet supported.';
+	$ldap_cache["error"] .= 'Updating users not supported.';
 	return false;
 }
 
@@ -378,7 +421,7 @@ function process_user () {
 function process_user_password ( $user, $password_old, $password_new ) {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] = 'Not yet supported';
+	$ldap_cache["error"] = 'Changing passwords not supported';
 	return false;
 }
 
@@ -392,7 +435,7 @@ function process_user_password ( $user, $password_old, $password_new ) {
 function delete_user ($user) {
 	global $ldap_cache;
 	
-	$ldap_cache["error"] = 'Not yet supported';
+	$ldap_cache["error"] = 'Deleting users not supported';
 	return false;
 }
 
@@ -466,9 +509,9 @@ function ldap_connect_bind () {
 	
 	$ret = false;
 	
-	if (!empty ($config["auth"]["ldap_port"]) && (empty ($ldap_cache["ds"]) || !is_resource ($ldap_cache["ds"]))) {
+	if (!empty ($config["auth"]["ldap_port"]) && !is_resource ($ldap_cache["ds"])) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"], $config["auth"]["ldap_port"]);
-	} elseif (empty ($ldap_cache["ds"]) || !is_resource ($ldap_cache["ds"])) {
+	} elseif (!is_resource ($ldap_cache["ds"])) {
 		$ldap_cache["ds"] = @ldap_connect ($config["auth"]["ldap_server"]);
 	} else {
 		return true;
@@ -503,43 +546,4 @@ function ldap_connect_bind () {
 	}
 }
 
-$ldap_cache = array ();
-$ldap_cache["error"] = "";
-$ldap_cache["ds"] = "";
-
-//Put each required key in a variable.
-foreach ($req_keys as $key) {
-	if (!isset ($config["auth"][$key])) {
-		user_error ("Required key ".$key." not set", E_USER_ERROR);
-	}
-}
-
-// Convert group name to lower case to prevent problems
-$config["auth"]["ldap_admin_group_attr"] = strtolower ($config["auth"]["ldap_admin_group_attr"]);
-$config["auth"]["ldap_admin_group_type"] = strtolower ($config["auth"]["ldap_admin_group_type"]);
-
-foreach ($opt_keys as $key) {
-	if (!isset ($config["auth"][$key])) {
-		switch ($key) {
-		case "ldap_start_tls":
-			$config["auth"][$key] = false;
-		continue;
-		case "ldap_version":
-			$config["auth"][$key] = 0;
-		continue;
-		case "ldap_admin_dn":
-		case "ldap_admin_pwd":	
-			$config["auth"][$key] = "";
-		continue;
-		default:
-			//Key not implemented
-		continue;
-		}
-	}
-}
-
-//Reference the global use authorization error to last ldap error.
-$config["auth_error"] = &$ldap_cache["error"];
-
-unset ($req_keys, $opt_keys);
 ?>

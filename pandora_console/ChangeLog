@@ -1,3 +1,11 @@
+2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/auth/dev.php: Updated examples
+	
+	* include/auth/ldap.php: Moved stuff in a more logical order
+	and globalized $ldap_cache since now it is called from a function
+	so it needs not be local
+
 2009-03-05  Sancho Lerena  <slerena@artica.es>
 
 	*  include/functions_reporting.php: Fixed notice.

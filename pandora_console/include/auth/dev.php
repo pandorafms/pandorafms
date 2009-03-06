@@ -25,6 +25,8 @@ $config["admin_can_add_user"] = false;
 $config["admin_can_delete_user"] = false;
 $config["admin_can_disable_user"] = false;
 
+global $dev_cache; //This variable needs to be globalized because this file is called from within a function and thus local
+
 //DON'T USE THIS IF YOU DON'T KNOW WHAT YOU'RE DOING
 die ("This is a very dangerous authentication scheme. Only use for programming in case you should uncomment this line");
 

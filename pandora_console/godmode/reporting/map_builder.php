@@ -236,8 +236,8 @@ if ($update_layout_data) {
 	$values['parent_item'] = $layout_data_parent_item;
 	$values['period'] = $layout_data_period;
 	$values['id_layout_linked'] = $layout_data_map_linked;
-	$values['height'] = $height;
-	$values['width'] = $width;
+	$values['height'] = $layout_data_height;
+	$values['width'] = $layout_data_width;
 	$result = process_sql_update ('tlayout_data', $values, array ('id' => $id_layout_data));
 	
 	if ($result !== false) {
@@ -280,23 +280,21 @@ if (! $edit_layout && ! $id_layout) {
 		foreach ($maps as $map) {
 			$data = array ();
 			
-			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
+			$data[0] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'">'.$map['name'].'</a>';
 			
-			$data[1] = '<img src="images/'.get_group_icon ($map['id_group']).'.png" /> ';
+			$data[1] = print_image ("images/".get_group_icon ($map['id_group']).'.png', true).'&nbsp;';
 			$data[1] .= get_group_name ($map['id_group']);
 			$data[2] = get_db_sql ("SELECT COUNT(id) FROM tlayout_data WHERE id_layout = ".$map['id']);
-			$data[3] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$map['id'].'">
-				<img src="images/pill.png"></a>';
+			$data[3] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$map['id'].'">'.print_image ("images/pill.png", true).'</a>';
 			
-			$data[4] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
-				<img src="images/cross.png"></a>';
+			$data[4] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
 			array_push ($table->data, $data);
 		}
 		print_table ($table);
 	}
 	
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
+	echo '<form action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder" method="post">';
 	print_input_hidden ('edit_layout', 1);
 	print_submit_button (__('Create'), '', false, 'class="sub wand"');
 	echo '</form>';
@@ -312,9 +310,9 @@ if (! $edit_layout && ! $id_layout) {
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
 	
 	if ($id_layout){
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder_wizard&id_layout='.$id_layout.'"><img src="images/pill.png"></a>';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$id_layout.'">'.print_image ("images/pill.png", true).'</a>';
 		
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr=60"><img src="images/eye.png"></a>';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr=60">'.print_image ("images/eye.png", true).'</a>';
 	}
 	
 	$table->data[1][0] = __('Group');
@@ -328,7 +326,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[4][0] = __('Height');
 		$table->data[4][1] = print_input_text ('height', $height, '', 3, 5, true);
 	}
-	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
+	echo '<form action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder" method="post">';
 	print_table ($table);
 	
 	echo '<div style="width: '.$table->width.'" class="action-buttons">';
@@ -401,8 +399,6 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data = array ();
 		$table->id = 'table_layout_data';
 		$table->rowstyle = array ();
-		$table->rowstyle[3] = 'display: none';
-		$table->rowstyle[4] = 'display: none';
 		
 		$table->data[0][0] = __('Label');
 		$table->data[0][1] = print_input_text ('label', '', '', 20, 200, true);
@@ -430,7 +426,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
-		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&sec2=godmode/reporting/map_builder">';
+		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder">';
 		print_table ($table);
 		print_input_hidden ('create_layout_data', 1);
 		print_input_hidden ('update_layout_data', 0);
@@ -554,8 +550,8 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #type").attr ('value', data['type']);
 					$("#form_layout_data_editor #type").change ();
 					$("#form_layout_data_editor #image").attr ('value', data['image']);
-					$("#form_layout_data_editor #width").attr ('value', data['width']);
-					$("#form_layout_data_editor #height").attr ('value', data['height']);
+					$("#form_layout_data_editor #text-width").attr ('value', data['width']);
+					$("#form_layout_data_editor #text-height").attr ('value', data['height']);
 					$("#form_layout_data_editor #image").change ();
 					$("#form_layout_data_editor #id_layout_data").attr ('value', data['id']);
 					$("#form_layout_data_editor #period").attr ('value', data['period'] / 3600);
@@ -602,10 +598,8 @@ $(document).ready (function () {
 	$("#form_layout_data_editor #agent").change (agent_changed);
 	$("#form_layout_data_editor #type").change (function () {
 		if (this.value == 0) {
-			$("#table_layout_data #table_layout_data-3, #table_layout_data #table_layout_data-4").fadeOut ();
 			$("#table_layout_data #table_layout_data-8").fadeIn ();
 		} else {
-			$("#table_layout_data #table_layout_data-3, #table_layout_data #table_layout_data-4").fadeIn ();
 			$("#table_layout_data #table_layout_data-8").fadeOut ();
 		}
 		

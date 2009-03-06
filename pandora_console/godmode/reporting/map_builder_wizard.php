@@ -29,6 +29,11 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 $layout_id = (int) get_parameter ('id_layout');
 $layout = get_db_row ('tlayout', 'id', $layout_id);
 
+if (empty ($layout)) {
+	print_error_message (false, '', __('No layout with this id found'));
+	return;
+}
+
 $layout_group = $layout["id_group"];
 
 if (! give_acl ($config['id_user'], $layout_group, "AW")) {

@@ -709,13 +709,15 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 	$table->head[4] = __('Timestamp');
 	
 	$events = array ();
+	if ($events)
 	foreach ($id_agents as $id_agent) {
 		$event = get_agent_events ($id_agent, (int) $period, (int) $date);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
 	}
-	
+
+	if ($events)
 	foreach ($events as $event) {
 		$data = array ();
 		$data[0] = $event['evento'];
@@ -725,8 +727,9 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 		$data[4] = $event['time2'];
 		array_push ($table->data, $data);
 	}
-	
-	return print_table ($table, $return);
+
+	if ($events)	
+		return print_table ($table, $return);
 }
 
 ?>

@@ -42,9 +42,9 @@ if (! give_acl ($config['id_user'], $layout_group, "AW")) {
 	exit;
 }
 
-function process_wizard_add ($id_agents, $image, $id_layout, $range) {
+function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_agents)) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		print_error_message (false, '', __('No agents selected'));
 		return false;
 	}
 	
@@ -60,31 +60,78 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range) {
 		}
 		
 		process_sql_insert ('tlayout_data',
-			array ('id_layout' => $id_layout,
-				'pos_x' => $pos_x,
-				'pos_y' => $pos_y,
-				'label' => get_agent_name ($id_agent),
-				'image' => $image,
-				'id_agent' => $id_agent,
-				'label_color' => '#000000'));
+							array ('id_layout' => $id_layout,
+								   'pos_x' => $pos_x,
+								   'pos_y' => $pos_y,
+								   'label' => get_agent_name ($id_agent),
+								   'image' => $image,
+								   'id_agent' => $id_agent,
+								   'width' => $width,
+								   'height' => $height,
+								   'label_color' => '#000000')
+							);
 		
 		$pos_x = $pos_x + $range;
 	}
 	
-	echo '<h3 class="suc">'.__('Successfully added').'</h3>';
+	print_error_message (true, __('Agent successfully added to layout'), '');
 	echo '<h3><a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$id_layout.'">'.__('Map builder').'</a></h3>';
 }
 
+function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
+	if (empty ($id_modules)) {
+		print_error_message (false, '', __('No modules selected'));
+		return false;
+	}
+	
+	$id_modules = (array) $id_modules;
+	
+	$error = false;
+	$pos_y = 10;
+	$pos_x = 10;
+	
+	foreach ($id_modules as $id_module) {
+		if ($pos_x > 600) {
+			$pos_x = 10;
+			$pos_y = $pos_y + $range;
+		}
+		
+		$id_agent = get_agentmodule_agent ($id_module);
+		
+		process_sql_insert ('tlayout_data',
+							array ('id_layout' => $id_layout,
+								   'pos_x' => $pos_x,
+								   'pos_y' => $pos_y,
+								   'label' => get_agentmodule_name ($id_module),
+								   'image' => $image,
+								   'id_agent' => $id_agent,
+								   'id_agente_modulo' => $id_module,
+								   'width' => $width,
+								   'height' => $height,
+								   'label_color' => '#000000')
+							);
+		
+		$pos_x = $pos_x + $range;
+	}
+	
+	print_error_message (true, __('Modules successfully added to layout'), '');
+}
 
 echo '<h2>'.__('Visual map wizard').' - '.$layout["name"].'</h2>';
 
-$id_agents = get_parameter ('id_agents');
+$id_agents = get_parameter ('id_agents', array ());
+$id_modules = get_parameter ('module', array ());
 $image = get_parameter ('image');
 $add = (bool) get_parameter ('add', false);
-$range = get_parameter ("range", 50);
+$range = (int) get_parameter ("range", 50);
+$width = (int) get_parameter ("width", 0);
+$height = (int) get_parameter ("height", 0);
 
 if ($add) {
-	process_wizard_add ($id_agents, $image, $layout["id"], $range);
+	process_wizard_add ($id_agents, $image, $layout["id"], $range, $width, $height);
+	if (!empty ($id_modules)) {
+		process_wizard_add_modules ($id_modules, $image, $layout["id"], $range, $width, $height);
+	}
 }
 
 $table->id = 'wizard_table';
@@ -115,9 +162,16 @@ $table->data[0][1] = print_select ($images_list, 'image', '', '', '', '', true);
 $table->data[1][0] = __('Image range (px)');
 $table->data[1][1] = print_input_text ('range', $range, '', 5, 5, true);
 
-$table->data[2][0] = __('Agents');
-$table->data[2][1] = print_select (get_group_agents ($layout_group, false, "none"),
+$table->data[2][0] = __('Image size (px)');
+$table->data[2][1] = __('Width').': '.print_input_text ('width', 0, '', 5, 5, true);
+$table->data[2][1] .= '<br />'.__('Height').': '.print_input_text ('height', 0, '', 5, 5, true);
+
+$table->data[3][0] = __('Agents');
+$table->data[3][1] = print_select (get_group_agents ($layout_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
+	
+$table->data[4][0] = __('Modules');
+$table->data[4][1] = print_select (array (), 'module[]', 0, false, '', '', true, true);
 
 echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
 print_table ($table);
@@ -128,7 +182,9 @@ print_input_hidden ('id_layout', $layout["id"]);
 print_submit_button (__('Add'), 'go', false, 'class="sub wizard"');
 echo '</div>';
 echo '</form>';
-
-echo '<h3 class="error invisible" id="message"> </h3>';
 ?>
-
+<script language="javascript" type="text/javascript">
+$(document).ready (function () {
+	$("#id_agents").change (agent_changed);
+});
+</script>

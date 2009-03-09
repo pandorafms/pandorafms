@@ -88,9 +88,9 @@ if ($delete_layout) {
 
 if ($update_layout) {
 	$name = (string) get_parameter ('name');
-	$id_group = (int) get_parameter ('id_group');
-	$width = (int) get_parameter ('width');
-	$height = (int) get_parameter ('height');
+	$id_group = (int) get_parameter ('id_group', 1);
+	$width = (int) get_parameter ('width', 0);
+	$height = (int) get_parameter ('height', 0);
 	$background = (string) get_parameter ('background');
 	$bg_info = array (0, 0);
 	if (file_exists ('images/console/background/'.$background))
@@ -101,15 +101,10 @@ if ($update_layout) {
 	if (! $height)
 		$height = $bg_info[1];
 	
-	$result = process_sql_update ('tlayout',
-		array ('name' => $name, 'background' => $background,
-			'height' => $height, 'width' => $width),
-		array ('id' => $id_layout));
-	if ($result) {
-		echo '<h3 class="suc">'.__('Update layout successful').'</h3>';
-	} else {
-		echo '<h3 class="err">'.__('Update layout failed').'</h3>';
-	}
+	$result = process_sql_update ('tlayout', array ('name' => $name, 'background' => $background, 'height' => $height, 'width' => $width, 'id_group' => $id_group), array ('id' => $id_layout));
+
+	print_error_message ($result, __('Update layout successful'), __('Update layout failed'));
+
 	if (is_ajax ()) {
 		exit;
 	}
@@ -377,18 +372,18 @@ if (! $edit_layout && ! $id_layout) {
 		
 		/* Layout_data editor form */
 		$intervals = array ();
-		$intervals[1] = __('Hour');
-		$intervals[2] = "2 ".__('Hours');
-		$intervals[3] = "3 ".__('Hours');
-		$intervals[6] = "6 ".__('Hours');
-		$intervals[12] = "12 ".__('Hours');
-		$intervals[24] = __('Last day');
-		$intervals[48] = "2 ". __('days');
-		$intervals[168] = __('Last week');
-		$intervals[360] = __('15 days');
-		$intervals[720] = __('Last Month');
-		$intervals[1440] = __('Two Months');
-		$intervals[4320] = __('Six Months');
+		$intervals[3600] = __('Hour');
+		$intervals[7200] = "2 ".__('Hours');
+		$intervals[10800] = "3 ".__('Hours');
+		$intervals[21600] = "6 ".__('Hours');
+		$intervals[43200] = "12 ".__('Hours');
+		$intervals[86400] = __('Last day');
+		$intervals[172800] = "2 ". __('days');
+		$intervals[1209600] = __('Last week');
+		$intervals[2419200] = __('15 days');
+		$intervals[4838400] = __('Last Month');
+		$intervals[9676800] = __('Two Months');
+		$intervals[29030400] = __('Six Months');
 		
 		$agents = get_group_agents ($id_group);
 					
@@ -451,33 +446,6 @@ require_javascript_file ('wz_jsgraphics');
 require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
-function agent_changed (event, id_agent, selected) {
-	if (id_agent == undefined)
-		id_agent = this.value;
-	$('#form_layout_data_editor #module').attr ('disabled', 1);
-	$('#form_layout_data_editor #module').empty ();
-	$('#form_layout_data_editor #module').append ($('<option></option>').html ("<?php echo __('Loading'); ?>...").attr ("value", 0));
-	jQuery.post ('ajax.php', 
-		{"page": "operation/agentes/ver_agente",
-		"get_agent_modules_json": 1,
-		"id_agent": id_agent
-		},
-		function (data) {
-			$('#form_layout_data_editor #module').empty ();
-			$('#form_layout_data_editor #module').append ($('<option></option>').html ("<?php echo __('Any')?>").attr ("value", 0));
-			jQuery.each (data, function (i, val) {
-				s = html_entity_decode (val['nombre']);
-				$('#form_layout_data_editor #module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
-				$('#form_layout_data_editor #module').fadeIn ('normal');
-			});
-			if (selected != undefined)
-				$('#form_layout_data_editor #module').attr ('value', selected);
-			$('#form_layout_data_editor #module').attr ('disabled', 0);
-		},
-		"json"
-	);
-}
-
 $(document).ready (function () {
 <?php if ($id_layout): ?>
 	if (lines)
@@ -554,7 +522,7 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #text-height").attr ('value', data['height']);
 					$("#form_layout_data_editor #image").change ();
 					$("#form_layout_data_editor #id_layout_data").attr ('value', data['id']);
-					$("#form_layout_data_editor #period").attr ('value', data['period'] / 3600);
+					$("#form_layout_data_editor #period").attr ('value', data['period']);
 					$("#form_layout_data_editor #agent").attr ('value', data['id_agent']);
 					$("#form_layout_data_editor #parent_item").attr ('value', data['parent_item']);
 					$("#form_layout_data_editor #map_linked").attr ('value', data['id_layout_linked']);

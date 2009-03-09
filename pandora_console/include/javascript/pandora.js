@@ -50,3 +50,37 @@ Array.prototype.in_array = function () {
 	}
 	return false;
 }
+
+/**
+ * Fill up select box with id "module" with modules after agent has been selected
+ *
+ * @param event that has been triggered
+ * @param id_agent Agent ID that has been selected
+ * @param selected Which module(s) have to be selected
+ */
+function agent_changed (event, id_agent, selected) {
+	if (id_agent == undefined)
+		id_agent = this.value;
+	$('#module').attr ('disabled', 1);
+	$('#module').empty ();
+	$('#module').append ($('<option></option>').html ("<?php echo __('Loading'); ?>...").attr ("value", 0));
+	jQuery.post ('ajax.php', 
+				 {"page": "operation/agentes/ver_agente",
+				 "get_agent_modules_json": 1,
+				 "id_agent": id_agent
+				 },
+				 function (data) {
+				 $('#module').empty ();
+				 $('#module').append ($('<option></option>').html ("<?php echo __('Any')?>").attr ("value", 0));
+				 jQuery.each (data, function (i, val) {
+							  s = html_entity_decode (val['nombre']);
+							  $('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
+							  $('#module').fadeIn ('normal');
+							  });
+				 if (selected != undefined)
+				 $('#module').attr ('value', selected);
+				 $('#module').attr ('disabled', 0);
+				 },
+				 "json"
+				 );
+}

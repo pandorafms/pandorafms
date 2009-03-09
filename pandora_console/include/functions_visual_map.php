@@ -89,7 +89,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					$z_index =  1; // Print BAD over good
 				
 				// Draw image 
-				echo '<div style="z-index: '.$z_index.'; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
+				echo '<div style="z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
 				
 				if (!isset($id_agent))
 					$id_agent = 0;
@@ -144,9 +144,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		
 				echo "</a>";
 				
-				// Print label
-				echo "<br />";
-				echo $layout_data['label'];
+				// Print label if valid label_color (only testing for starting with #) otherwise print nothing
+				if ($layout_data['label_color'][0] == '#') {
+					echo "<br />";
+					echo $layout_data['label'];	
+				}
 				echo "</div>";
 			}
 

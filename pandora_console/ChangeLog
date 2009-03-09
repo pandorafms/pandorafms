@@ -1,3 +1,17 @@
+2009-03-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/javascript/pandora.js: Moved agent_changed here from map_builder
+	because it's quite a useful function.
+	
+	* include/functions_visual_map.php: In case you want no labels (a lot of
+	icons on a graph) just set the color to anything not starting with #
+	
+	* godmode/reporting/map_builder_wizard.php: Added the possibility to add
+	modules as well using the wizard. Very useful if you have a switch.
+	
+	* godmode/reporting/map_builder.php: Fixed some issues with the ajax thing
+	and fixed issue #2527894.
+
 2009-03-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/reporting/map_builder_wizard.php: Fixed small error when no

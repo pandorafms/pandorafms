@@ -41,8 +41,8 @@ foreach ($layouts as $layout) {
 	
 	$data[0] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.
 		$layout['id'].'">'.$layout['name'].'</a> ';
-	$data[1] = print_image ("images/".get_group_icon ($layout["id_group"]).".png", true, array ("title" => get_group_name ($layout["id_group"])));
-	$data[1] .= " ".get_group_name ($layout["id_group"]);
+	$data[1] = print_group_icon ($layout["id_group"], true);
+	$data[1] .= "&nbsp;".get_group_name ($layout["id_group"]);
 	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
 		
 	array_push ($table->data, $data);

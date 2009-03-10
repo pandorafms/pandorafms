@@ -29,7 +29,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
-	echo '<div id="layout_map" style="z-index: 0; position:relative; background: url(images/console/background/'.$layout["background"].'); width:'.$layout["width"].'px; height:'.$layout["height"].'px;">';
+	echo '<div id="layout_map" style="z-index: 0; position:relative; background: url(\'images/console/background/'.safe_input ($layout["background"]).'\'); width:'.$layout["width"].'px; height:'.$layout["height"].'px;">';
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
@@ -164,12 +164,12 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 					}
 				}
-				print_image ("reporting/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".$layout_data['label']."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+				print_image ("reporting/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 				echo "</a>";
 				echo "</div>";
 				
 			// Line, not implemented in editor
-			} else if ($layout_data['type'] == 2) {
+			} elseif ($layout_data['type'] == 2) {
 				$line['id'] = $layout_data['id'];
 				$line['x'] = $layout_data['pos_x'];
 				$line['y'] = $layout_data['pos_y'];

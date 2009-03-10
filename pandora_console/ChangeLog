@@ -1,3 +1,11 @@
+2009-03-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_visual_map: Small fixes to render backgrounds with 
+	spaces in filename correctly
+	
+	* operation/visual_console/index.php, godmode/reporting/map_builder.php: 
+	Fixes to render icons correctly.
+	
 2009-03-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/javascript/pandora.js: Moved agent_changed here from map_builder

@@ -1,3 +1,9 @@
+2009-03-11  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_reporting.php: Fixed an error on get_group_stats()
+	that gives wrong monitor status count because it was counting some
+	modules twice.
+
 2009-03-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_visual_map: Small fixes to render backgrounds with 

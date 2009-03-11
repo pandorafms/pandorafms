@@ -40,7 +40,7 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 	
 	if (empty ($period)) {
 		global $config;
-		$period = $config["sla_period"];	
+		$period = $config["sla_period"];
 	}
 	
 	$datelimit = $date - $period; // start date
@@ -127,8 +127,8 @@ function get_group_stats ($id_group = 0) {
 	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter);
 	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp = 0");
 	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
-	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 1");
-	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 2");
+	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
 	
 	$sql = sprintf ("SELECT times_fired FROM talert_template_modules WHERE id_agent_module IN (%s)", implode (",", array_keys ($agents))); 
@@ -153,7 +153,7 @@ function get_group_stats ($id_group = 0) {
 	$data["total_alerts"] = $data["monitor_alerts"] + $data["monitor_alerts_fired"];
 	$data["total_alerts_fired"] =  $data["monitor_alerts_fired"];
 	$data["total_alerts_fire_count"] =  $data["monitor_alerts_fire_count"];
-	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_unknown"] +$data["monitor_warning"];
+	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_unknown"] + $data["monitor_warning"];
 	$data["total_bad"] =  $data["monitor_bad"];
 	$data["total_not_init"] = $data["monitor_not_init"];
 	$data["total_down"] = $data["monitor_critical"];
@@ -169,6 +169,7 @@ function get_group_stats ($id_group = 0) {
 	 
 	 */
 	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
+		echo $data["monitor_bad"].' / '.$data["monitor_checks"];
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
 	} else {
 		$data["monitor_health"] = 100;

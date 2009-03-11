@@ -169,7 +169,6 @@ function get_group_stats ($id_group = 0) {
 	 
 	 */
 	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
-		echo $data["monitor_bad"].' / '.$data["monitor_checks"];
 		$data["monitor_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
 	} else {
 		$data["monitor_health"] = 100;

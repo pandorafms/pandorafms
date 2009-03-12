@@ -1971,6 +1971,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 	$limit = '';
 	$offset = '';
 	$order = '';
+	$group = '';
 	if (isset ($values['limit'])) {
 		$limit = sprintf (' LIMIT %d', $values['limit']);
 		unset ($values['limit']);

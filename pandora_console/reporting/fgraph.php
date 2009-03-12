@@ -96,7 +96,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$date = get_system_time ();
 	
 	$datelimit = $date - $period; // limit date
-	$interval = $period / $resolution; // Each interval is $interval seconds length
+	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
 	$module_number = count ($module_list);
 
 	// interval - This is the number of "rows" we are divided the time to fill data.
@@ -151,19 +151,19 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				}
 			}
 		}
-		$alert_high = 0;
-		$alert_low = 10000000;
+		
 		if ($show_alert == 1) {
+			$alert_high = false;
+			$alert_low = false;
 			// If we want to show alerts limits
-			$sql = "SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
-			$result = get_db_all_rows_sql ($sql);
-			if ($result === false)
-				$result = array ();
-			foreach ($result as $row) {
-				if ($row["dis_max"] > $alert_high)
-					$alert_high = $row["dis_max"];
-				if ($row["dis_min"] < $alert_low)
-					$alert_low = $row["dis_min"];
+		
+			$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+			$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		
+			// if no valid alert defined to render limits, disable it
+			if (($alert_low === false || $alert_low === NULL) &&
+				($alert_high === false || $alert_high === NULL)) {
+				$show_alert = 0;
 			}
 		}
 		
@@ -337,22 +337,17 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 				$max_value = max ($max_value, $data[$i]['max']);
 				$min_value = min ($min_value, $data[$i]['min']);
 				
-				if ($show_alert) {
+				if ($show_alert == 1) {
 					$alert_high = false;
 					$alert_low = false;
 					// If we want to show alerts limits
 		
-					$alert_high = (int) get_db_value ('MAX(max_value)',
-						'talert_template_modules',
-						'id_agent_module',
-						(int) $id_agente_modulo);
-					$alert_low = (int) get_db_value ('MIN(max_value)',
-						'talert_template_modules',
-						'id_agent_module',
-						(int) $id_agente_modulo);
-				
+					$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+					$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		
 					// if no valid alert defined to render limits, disable it
-					if (($alert_low == 0) && ($alert_high == 0)) {
+					if (($alert_low === false || $alert_low === NULL) &&
+						($alert_high === false || $alert_high === NULL)) {
 						$show_alert = 0;
 					}
 				}
@@ -904,7 +899,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$date = get_system_time ();
 	
 	$datelimit = $date - $period; // limit date
-	$interval = $period / $resolution; // Each interval is $interval seconds length
+	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
 	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
 	$id_agente = dame_agente_id ($nombre_agente);
 	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
@@ -917,8 +912,8 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$alert_low = false;
 		// If we want to show alerts limits
 		
-		$alert_high = get_db_value ('MAX(dis_max)', 'talerta_agente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
-		$alert_low = get_db_value ('MIN(dis_min)', 'talerta_agente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
 		
 		// if no valid alert defined to render limits, disable it
 		if (($alert_low === false || $alert_low === NULL) &&
@@ -950,7 +945,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		foreach ($result as $row) {
 			$utimestamp = $row['utimestamp'];
 			for ($i = 0; $i <= $resolution; $i++) {
-				if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']){
+				if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
 					$data['events']++;
 				}
 			}
@@ -958,15 +953,15 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	}
 	// Init other general variables
 	$max_value = 0;
-
-	$sql = sprintf ('SELECT datos,utimestamp
-			FROM tagente_datos
-			WHERE id_agente = %d
-			AND id_agente_modulo = %d
-			AND utimestamp > %d
-			ORDER BY utimestamp DESC',
-			$id_agente, $id_agente_modulo, $datelimit);
-	$all_data = get_db_all_rows_sql ($sql);
+	
+	$all_data = get_db_all_rows_filter ('tagente_datos',
+		array ('id_agente' => $id_agente,
+			'id_agente_modulo' => $id_agente_modulo,
+			"utimestamp > $datelimit",
+			"utimestamp < $date",
+			'order' => 'utimestamp ASC'),
+		array ('datos', 'utimestamp'));
+	
 	if ($all_data === false) {
 		$all_data = array ();
 	}
@@ -976,7 +971,6 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$utimestamp = $module_data["utimestamp"];
 		for ($i = 0; $i <= $resolution; $i++) {
 			if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
-				/* If the data was down, it has prevalence, so ignore any other loop */
 				$data[$i]['sum'] += $real_data;
 				$data[$i]['count']++;
 				
@@ -1032,6 +1026,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->data = &$grafica;
+	$engine->max_value = $max_value;
 	$engine->legend = array ($nombre_modulo);
 	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
 	$engine->subtitle = '     '.__('Period').': '.$title_period;

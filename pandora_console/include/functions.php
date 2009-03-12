@@ -58,12 +58,12 @@ function safe_input ($value) {
  * @return mixed The cleaned string or array.
  */	
 function safe_output_xml ($string) {
-	if (is_numeric ($value))
-		return $value;
+	if (is_numeric ($string))
+		return $string;
 	
-	if (is_array ($value)) {
-		array_walk ($value, 'safe_output_xml');
-		return $value;
+	if (is_array ($string)) {
+		array_walk ($string, 'safe_output_xml');
+		return $string;
 	}
 	
 	static $table;
@@ -82,7 +82,7 @@ function safe_output_xml ($string) {
 	
 	//now perform a replacement using preg_replace
 	//each matched value in $table will be replaced with the corresponding value in $replace
-	return preg_replace ($table, $replace, $value);
+	return preg_replace ($table, $replace, $string);
 }
 
 /**

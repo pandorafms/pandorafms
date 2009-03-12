@@ -1,3 +1,8 @@
+2009-03-12  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* extensions/update_manager/lib/libupdate_manager_client.php:
+	Modified the XMLTPC_TIMEOUT to 50.
+
 2009-03-02  Sancho Lerena  <slerena@artica.es>
 
 	* export_csv.php: Ported changes from trunk here. Solves problems

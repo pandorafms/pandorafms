@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-$build_version = 'PC090305';
+$build_version = 'PC090312';
 $pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);
@@ -64,6 +64,15 @@ require_once ('functions_config.php');
 
 process_config ();
 
+require_once ('streams.php');
+require_once ('gettext.php');
+
+$l10n = NULL;
+if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
+	$l10n->load_tables();
+}
+
 if (! defined ('EXTENSIONS_DIR'))
 	define ('EXTENSIONS_DIR', 'extensions');
 
@@ -73,14 +82,5 @@ if (! defined ('ENTERPRISE_DIR'))
 require_once ('functions_extensions.php');
 
 $config['extensions'] = get_extensions ();
-
-require_once ('streams.php');
-require_once ('gettext.php');
-
-$l10n = NULL;
-if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
-	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
-	$l10n->load_tables();
-}
 
 ?>

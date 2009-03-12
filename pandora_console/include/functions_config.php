@@ -48,7 +48,7 @@ function update_config_value ($token, $value) {
 		return (bool) create_config_value ($token, $value);
 	
 	/* If it has not changed */
-	if ($config[$token] != $value)
+	if ($config[$token] == $value)
 		return true;
 	
 	$config[$token] = $value;
@@ -78,7 +78,7 @@ function update_config () {
 		return;
 	
 	$style = (string) get_parameter ('style', $config["style"]);
-	$config["style"] = substr ($style, 0, strlen ($style) - 4);
+	$style = substr ($style, 0, strlen ($style) - 4);
 	
 	/* Workaround for ugly language and language_code missmatch */
 	$config['language_code'] = (string) get_parameter ('language', $config["language"]);

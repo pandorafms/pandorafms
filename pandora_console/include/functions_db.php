@@ -1986,6 +1986,11 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		unset ($values['order']);
 	}
 	
+	if (isset ($values['group'])) {
+		$group = sprintf (' GROUP BY %s', $values['order']);
+		unset ($values['group']);
+	}
+	
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
@@ -2022,7 +2027,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		$i++;
 	}
 	
-	return (! empty ($query) ? $prefix: '').$query.$order.$limit.$offset;
+	return (! empty ($query) ? $prefix: '').$query.$group.$order.$limit.$offset;
 }
 
 /** 

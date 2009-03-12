@@ -120,8 +120,8 @@ if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_ad
 	return;
 }
 
-header ('Content-type: application/xml; charset="utf-8"', true);
-echo '<?xml version="1.0" encoding="UTF-8" ?>';
+header ('Content-type: application/xml; charset="'.$config["charset"].'"', true);
+echo '<?xml version="1.0" encoding="'.$config["charset"].'" ?>';
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
@@ -143,10 +143,10 @@ $contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_re
 
 
 $xml["id"] = $id_report;
-$xml["name"] = $report['name'];
-$xml["description"] = $report['description'];
+$xml["name"] = clean_html ($report['name']);
+$xml["description"] = clean_html ($report['description']);
 $xml["group"]["id"] = $report['id_group'];
-$xml["group"]["name"] = $group_name;
+$xml["group"]["name"] = clean_html ($group_name);
 
 if ($contents === false) {
 	$contents = array ();
@@ -156,8 +156,8 @@ $xml["reports"] = array ();
 
 foreach ($contents as $content) {
 	$data = array ();
-	$data["module"] = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-	$data["agent"] = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
+	$data["module"] = clean_html (get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+	$data["agent"] = clean_html (dame_nombre_agente_agentemodulo ($content['id_agent_module']));
 	$data["period"] = human_time_description ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
@@ -187,24 +187,24 @@ foreach ($contents as $content) {
 		
 		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1"';
 		break;
-	case 3:
+	case 3:	
 	case 'SLA':
 		$data["title"] = __('S.L.A.');
 		
-		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined','id_report_content', $content['id_rc']);
+		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $content['id_rc']);
 		if ($slas === false) {
 			$data["objdata"]["error"] = __('There are no SLAs defined');
 			$slas = array ();
 		}
-		
 		$data["objdata"]["sla"] = array ();
 		$sla_failed = false;
+				
 		foreach ($slas as $sla) {
-			$sla = array ();
-			$sla["agent"] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
-			$sla["module"] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
-			$sla["max"] .= $sla['sla_max'];
-			$sla["min"] .= $sla['sla_min'];
+			$sla_data = array ();
+			$sla_data["agent"] = clean_html (dame_nombre_agente_agentemodulo ($sla['id_agent_module']));
+			$sla_data["module"] = clean_html (dame_nombre_modulo_agentemodulo ($sla['id_agent_module']));
+			$sla_data["max"] = $sla['sla_max'];
+			$sla_data["min"] = $sla['sla_min'];
 			
 			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
@@ -216,7 +216,7 @@ foreach ($contents as $content) {
 				}
 				$sla["value"] = format_numeric ($sla_value);
 			}
-			array_push ($data["objdata"]["sla"], $sla);
+			array_push ($data["objdata"]["sla"], $sla_data);
 		}
 		
 		break;

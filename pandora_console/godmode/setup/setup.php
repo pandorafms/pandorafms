@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Copyright (c) 2008-2009 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -52,10 +52,13 @@ if ($update_settings) {
 	$config["date_format"] = (string) get_parameter ("date_format");
 	$config["trap2agent"] = (string) get_parameter ("trap2agent");
 	$config["autoupdate"] = (string) get_parameter ("autoupdate");
-
+	$config["charset"] = (string) get_parameter ("charset");
+	
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["charset"]."' WHERE token = 'charset'");
+	
 	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["language"]."' WHERE token = 'language_code'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["days_purge"]."' WHERE token = 'days_purge'");
@@ -130,6 +133,10 @@ enterprise_hook ('load_snmpforward_enterprise');
 
 $table->data[16][0] = __('Automatic update check');
 $table->data[16][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
+
+$table->data[17][0] = __('Charset');
+$table->data[17][1] = print_input_text ('charset', $config["charset"], '', 15, 15, true);
+
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

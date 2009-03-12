@@ -18,7 +18,7 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version="PC090224";
+	$build_version="PC090310";
 if (!isset ($pandora_version))
 	$pandora_version="v2.1";
 
@@ -116,6 +116,12 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 
 if (! isset ($config['date_format'])) {
 	$config['date_format'] = 'F j, Y, g:i a';
+}
+
+
+if (! isset ($config['charset'])){
+	$config['charset'] = 'iso-8859-15';
+	process_sql ("INSERT INTO tconfig (value, token) VALUES ('iso-8859-15', 'charset')");
 }
 
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {

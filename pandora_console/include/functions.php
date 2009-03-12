@@ -56,6 +56,19 @@ function safe_input ($value) {
 }
 
 /** 
+ * Cleans a string by decoding HTML entities
+ * 
+ * @param value String or array of strings to be cleaned.
+ * 
+ * @return The cleaned string.
+ */
+
+function clean_html ($text) {
+	global $config;
+	return html_entity_decode ($text, ENT_COMPAT, $config["charset"]);
+}
+
+/** 
  * Pandora debug functions.
  *
  * It prints a variable value and a message.

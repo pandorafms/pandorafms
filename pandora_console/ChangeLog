@@ -1,3 +1,11 @@
+2009-03-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions.php: Added safe_output_xml which makes variables
+	clean for output converting html entities into numeric entities understood
+	by all XML validators
+	
+	* operation/events/events_rss.php: Used safe_output_xml where needed.
+
 2009-03-12  Esteban Sanchez  <estebans@artica.es>
 
 	* reporting/fgraph.php: Fixed interval in combined graphs. Fixed

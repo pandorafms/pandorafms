@@ -49,6 +49,42 @@ function safe_input ($value) {
 	}
 }
 
+/** 
+ * Cleans a string by encoding to UTF-8 and replacing the HTML
+ * entities to their numeric counterparts (possibly double encoding)
+ * 
+ * @param mixed String or array of strings to be cleaned.
+ * 
+ * @return mixed The cleaned string or array.
+ */	
+function safe_output_xml ($string) {
+	if (is_numeric ($value))
+		return $value;
+	
+	if (is_array ($value)) {
+		array_walk ($value, 'safe_output_xml');
+		return $value;
+	}
+	
+	static $table;
+	static $replace;
+	
+	if (empty ($table)) {
+		$table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);	
+		$replace = array ();
+		
+		foreach ($table as $key => $value){
+			$table[$key] = "/".$value."/";
+			$char = htmlentities ($key, ENT_QUOTES, "UTF-8");
+			$replace[$char] = "&#".ord ($key).";";
+		}
+	}
+	
+	//now perform a replacement using preg_replace
+	//each matched value in $table will be replaced with the corresponding value in $replace
+	return preg_replace ($table, $replace, $value);
+}
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

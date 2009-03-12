@@ -1,5 +1,15 @@
 2009-03-12  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/fgraph.php: Fixed interval in combined graphs. Fixed
+	alert min and max values. Fixed data retrieval on boolean charts and a
+	bug that was not drawing this charts.
+	
+	* pandoradb_data.sql: First new now has the current date.
+
+	* operation/servers/view_server.php: Fixed progress bar height.
+
+2009-03-12  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Fixed an undefined variable error.
 	
 2009-03-12  Esteban Sanchez  <estebans@artica.es>

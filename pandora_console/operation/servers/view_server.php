@@ -86,7 +86,7 @@ foreach ($servers as $server) {
 		$load_percent = 0;
 	if ($load_percent > 100)
 		$load_percent = 100;
-	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$load_percent.'&height=18&width=80">';
+	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$load_percent.'&height=20&width=80">';
 	$data[3] = $serverinfo["modules"] . " ".__('of')." ". $total_modules;
 	$data[4] = human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
 	$data[5] = '';

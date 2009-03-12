@@ -245,7 +245,7 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
 
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 2.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.','2007-06-22 13:03:20');
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 2.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent module');
 INSERT INTO tmodule VALUES (2,'Network module');

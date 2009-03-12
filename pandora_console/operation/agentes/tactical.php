@@ -173,25 +173,26 @@ if ($serverinfo) {
 	</tr></thead><tbody>';
 
 	foreach ($serverinfo as $server_id => $server_info) {
-	$data = array ();
-	$data[0] = $server_info["name"];
+		$data = array ();
+		$data[0] = $server_info["name"];
 
-	if ($server_info["status"] == 0){
-		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
-	} else {
-		$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
-	}
+		if ($server_info["status"] == 0){
+			$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
+		} else {
+			$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
+		}
 
-	if ($server_info["modules"] > 0 && $total_modules > 0) {
-		$percent = $server_info["modules"] / ($total_modules / 100);
-	} else {
-		$percent = 0;
-	}
-	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$percent."&height=18&width=80", true, array ("title" => $server_info["modules"]." ".__('of')." ".$total_modules));
+		if ($server_info["modules"] > 0 && $total_modules > 0) {
+			$percent = $server_info["modules"] / ($total_modules / 100);
+		} else {
+			$percent = 0;
+		}
+		$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$percent."&height=20&width=80",
+			true, array ("title" => $server_info["modules"]." ".__('of')." ".$total_modules));
 
-	$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
+		$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
 
-	array_push ($cells, $data);
+		array_push ($cells, $data);
 	}
 
 	foreach ($cells as $key => $row) {

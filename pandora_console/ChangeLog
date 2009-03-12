@@ -1,5 +1,20 @@
 2009-03-12  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/pandora_graph.php: Added to repository. New interface to
+	abstract pandora from the chart engines. This would make easier a
+	engine changing in the future.
+
+	* reporting/pchart_graph.php: Added to repository. Specific class to
+	use pChart engine for Pandora. First working version.
+
+	* reporting/pChart/pCache.class, reporting/pChart/pDaita.class: Added
+	to repository. pChart engine
+	
+	* reporting/pChart/pChart.class: Added to repository. pChart engine
+	slightly modified and adopted to Pandora needs.
+
+2009-03-12  Esteban Sanchez  <estebans@artica.es>
+
 	* include/auth/mysql.php: Added a cache to is_user_admin().
 
 	* include/config_process.php: Changed build version. Load l10n tables

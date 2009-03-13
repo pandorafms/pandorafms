@@ -567,9 +567,6 @@ function process_page_head ($string, $bitfield) {
 	<meta name="robots" content="index, follow" />
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
 	<link rel="stylesheet" href="include/styles/common.css" type="text/css"/>
-	<!--[if gte IE 6]>
-	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
-	<![endif]-->
 	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
 	if ($config["language"] != "en") {
@@ -661,7 +658,12 @@ function process_page_head ($string, $bitfield) {
 			$output .= '<script type="text/javascript" src="'.$filename.'"></script>'."\n\t";
 		}
 	}
-		
+	
+	
+	$output .= '<!--[if gte IE 6]>
+	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
+	<![endif]-->';
+	
 	$output .= $string;
 	
 	return $output;

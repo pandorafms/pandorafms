@@ -1,3 +1,23 @@
+2009-03-13  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/db/db_purge.php: Style correction.
+
+	* godmode/modules/manage_nc_groups.php: Complete rewritten.
+
+	* godmode/modules/manage_nc_groups_form.php: Use pandora functions.
+	Needs more love.
+
+	* godmode/reporting/map_builder.php: Some fixes to make it work in
+	IE7. 
+
+	* include/javascript/jquery.pandora.controls.js: Execute automatically
+	instead of on ready. Typo fixed that was not allowing to work on IE.
+
+	* include/styles/ie.css: Bit of style corrections.
+
+	* include/functions_ui.php: Added the ie.css code at the bottom, so it
+	has preferences over other styles.
+
 2009-03-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions.php: Added safe_output_xml which makes variables

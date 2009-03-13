@@ -1,3 +1,12 @@
+2009-03-13  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent.conf: Commented SNMPGET example module
+	it is not useful in a default installation since it will always
+	fail.
+
+	* win32/bin/pandora_agent.conf: Added example for the new features
+	such as watchdog and asynchronous mode.
+
 2009-02-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_proc.cc,

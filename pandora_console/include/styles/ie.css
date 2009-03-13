@@ -34,3 +34,11 @@
 * html .timeEntry_control { /* IE only */
 	margin-top: -4px;
 }
+
+table#simple input#text-snmp_oid {
+	width: 70%;
+}
+
+div.configuration {
+	margin-top: -20px;
+}

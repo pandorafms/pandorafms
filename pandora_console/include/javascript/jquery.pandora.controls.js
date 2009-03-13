@@ -1,4 +1,4 @@
-$(document).ready (function () {
+(function($) {
 	var dummyFunc = function () {
 		return;
 	};
@@ -109,6 +109,6 @@ $(document).ready (function () {
 	});
 	$.fn.extend({
 		pandoraSelectGroup: $.pandoraSelectGroup.construct,
-		pandoraSelectAgent: $.pandoraSelectAgent.construct,
+		pandoraSelectAgent: $.pandoraSelectAgent.construct
 	});
-});
+}) (jQuery);

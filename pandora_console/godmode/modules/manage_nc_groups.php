@@ -27,86 +27,84 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	exit;
 }
-   
-if (isset($_GET["create"])){ // Create module
-	$name = entrada_limpia ($_POST["name"]);
-	$parent = entrada_limpia ($_POST["parent"]);
-	$sql_insert="INSERT INTO tnetwork_component_group (name,parent)
-	VALUES ('$name', '$parent')";
-	$result=mysql_query($sql_insert);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-		$id_sg = mysql_insert_id();
-	}
-}
 
-if (isset($_GET["update"])){ // if modified any parameter
-	$id_sg = entrada_limpia ($_GET["id_sg"]);
-	$name = entrada_limpia ($_POST["name"]);
-	$parent = entrada_limpia ($_POST["parent"]);
-	$sql_update ="UPDATE tnetwork_component_group
-	SET name = '$name', parent = '$parent'
-	WHERE id_sg = '$id_sg'";
-	$result=mysql_query($sql_update);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
-}
+$create = (bool) get_parameter ('create');
+$update = (bool) get_parameter ('update');
+$delete = (bool) get_parameter ('delete');
 
-if (isset($_GET["delete"])){ // if delete
-	$id_sg = entrada_limpia ($_GET["id_sg"]);
-	$sql_delete= "DELETE FROM tnetwork_component_group WHERE id_sg = ".$id_sg;
-	$result=mysql_query($sql_delete);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
+echo '<h2>'.__('Module management').' &gt; '. __('Component group management').'</h2>';
+
+if ($create) {
+	$name = (string) get_parameter ('name');
+	$parent = (int) get_parameter ('parent');
 	
-	$result=mysql_query($sql_delete);
+	$result = process_sql_insert ('tnetwork_component_group',
+		array ('name' => $name,
+			'parent' => $parent));
+	print_error_message ($result,
+		__('Created successfully'),
+		__('Not created. Error inserting data'));
 }
-echo "<h2>".__('Module management')." &gt; ";
-echo __('Component group management')."</h2>";
 
-echo "<table cellpadding='4' cellspacing='4' width='550' class='databox'>";
-echo "<th>".__('Name')."</th>";
-echo "<th>".__('Parent')."</th>";
-echo "<th>".__('Delete')."</th>";
-$sql1='SELECT * FROM tnetwork_component_group ORDER BY parent';
-$result=mysql_query($sql1);
-$color=0;
-while ($row=mysql_fetch_array($result)){
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-		}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	echo "<tr>
-			<td class='$tdcolor'>
-			<b><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&edit=1&id_sg=".$row["id_sg"]."'>".$row["name"]."</a></b>
-			</td>
-			<td class='$tdcolor'>
-			".give_network_component_group_name ($row["parent"])."
-			</td>
-			<td class='$tdcolor' align='center'>
-			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg=".$row["id_sg"]."'
-				onClick='if (!confirm(\' ".__('Are you sure?')."\'))
-			return false;'>
-			<img border='0' src='images/cross.png'></a>
-			</td>
-		</tr>";
-
+if ($update) {
+	$id = (int) get_parameter ('id_sg');
+	$name = (string) get_parameter ('name');
+	$parent = (int) get_parameter ('parent');
+	
+	$result = process_sql_update ('tnetwork_component_group',
+		array ('name' => $name,
+			'parent' => $parent),
+		array ('id_sg' => $id));
+	print_error_message ($result,
+		__('Updated successfully'),
+		__('Not updated. Error updating data'));
 }
-echo "</table>";
-echo '<table width="550">';
-echo '<tr><td align="right">';
-echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&create=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
-echo "</form></td></tr></table>";
 
+if ($delete) { // if delete
+	$id = (int) get_parameter ('id_sg');
+	
+	$result = process_sql_delete ('tnetwork_component_group',
+		array ('id_sg' => $id));
+	print_error_message ($result,
+		__('Deleted successfully'),
+		__('Not deleted. Error deleting data'));
+}
+
+$table->width = '90%';
+$table->head = array ();
+$table->head[0] = __('Name');
+$table->head[1] = __('Parent');
+$table->head[2] = __('Delete');
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->align = array ();
+$table->align[2] = 'center';
+$table->data = array ();
+
+$groups = get_db_all_rows_filter ('tnetwork_component_group',
+	array ('order' => 'parent'));
+if ($groups === false)
+	$groups = array ();
+
+foreach ($groups as $group) {
+	$data = array ();
+	
+	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&edit=1&id_sg='.$group["id_sg"].'">'.$group["name"].'</a>';
+	
+	$data[1] = give_network_component_group_name ($group["parent"]);
+	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg='.$group["id_sg"].'"
+		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">
+		<img src="images/cross.png"></a>';
+	
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
+
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+print_input_hidden ('create', 1);
+print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+echo '</div>';
+echo '</form>';
 ?>

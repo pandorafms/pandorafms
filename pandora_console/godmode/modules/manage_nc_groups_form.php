@@ -27,22 +27,25 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	exit;
 }
-  
-if (isset($_GET["edit"])){ // Edit mode
+
+$create = (bool) get_parameter ('create');
+$edit = (bool) get_parameter ('edit');
+
+if ($edit) { // Edit mode
 	$id_sg = entrada_limpia ($_GET["id_sg"]);
 	$sql1 = "SELECT * FROM tnetwork_component_group where id_sg = $id_sg";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$name = $row["name"];
 	$parent = $row["parent"];
-} elseif (isset($_GET["create"])){
+} elseif ($create) {
 	$id_sg = -1;
 	$name = "";
 	$parent = "";
 }
 
 echo "<h2>".__('Component group management')."</h2>";
-echo '<table width="500" cellspacing="4" cellpadding="4" class="databox_color">';
+echo '<table width="50%" cellspacing="4" cellpadding="4" class="databox">';
 
 // Different Form url if it's a create or if it's a update form
 if ($id_sg != -1)

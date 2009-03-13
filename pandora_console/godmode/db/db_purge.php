@@ -36,8 +36,6 @@ if (isset ($_POST["agent"])){
 	$id_agent = -1;
 }
 
-
-
 echo '<h2>'.__('Database Maintenance').' &gt; '.__('Database purge').'</h2>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
 	<br /><br />
@@ -84,7 +82,7 @@ if (isset($_POST["purgedb"])) {
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
 		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d", $id_agent);
-		$result=get_db_all_rows_sql ($sql);
+		$result = get_db_all_rows_sql ($sql);
 		if (empty ($result)) {
 			$result = array ();
 		}
@@ -103,10 +101,10 @@ if (isset($_POST["purgedb"])) {
 				$errors++;
 			$sql = sprintf ("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
 			if (process_sql ($sql) === false) 
-				$errors++;				
+				$errors++;
 			$sql = sprintf ("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
 			if (process_sql ($sql) === false) 
-				$errors++;				
+				$errors++;
 		}
 		
 		if ($errors > 0) {

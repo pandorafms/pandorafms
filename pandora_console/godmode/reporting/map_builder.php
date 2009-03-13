@@ -528,7 +528,13 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #map_linked").attr ('value', data['id_layout_linked']);
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
-					$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
+					if (jQuery.browser.msie) {
+						$("#form_layout_data_editor #hidden-id_layout_data").remove ();
+						input = $('<input type="hidden" name="id_layout_data"></input>').attr ('value', id);
+						$("#form_layout_data_editor").append (input);
+					} else {
+						$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
+					}
 					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?php echo __('Update'); ?>").removeClass ('wand').addClass ('upd');
 					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
 					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
@@ -542,9 +548,10 @@ $(document).ready (function () {
 		accept: ".layout-data",
 		drop: function (ev, ui) {
 			image = $('#'+ ui.draggable[0].id + " img").eq (0);
-			elements = $("#" + this.id + " img").length;
+			total = $("img", this).length;
+			
 			id = ui.draggable[0].id.split ("-").pop ();
-			$(ui.draggable[0]).clone ().css ('margin-left', 60 * elements).
+			$(ui.draggable[0]).clone ().css ('margin-left', 60 * total).
 				css ('margin-top', 0). attr ('id', 'delete-layout-data-' + id).
 				appendTo ("#"+this.id + " #elements");
 			$(ui.draggable[0]).remove ();

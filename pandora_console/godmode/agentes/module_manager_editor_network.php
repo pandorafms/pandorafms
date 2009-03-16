@@ -63,14 +63,14 @@ push_table_simple ($data, 'snmp_1');
 
 $data = array ();
 $data[0] = __('SNMP OID');
-$data[1] = '<span class="left">';
+$data[1] = '<span class="left"; style="width: 50%">';
 $data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true);
 $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true);
 $data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid" />';
 $data[1] .= '</span>';
 $data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
-$data[1] .= '</span> <span class="right"><span id="oid_loading" class="invisible">';
+$data[1] .= '</span> <span class="right" style="width: 50%; text-align: right"><span id="oid_loading" class="invisible">';
 $data[1] .= '<img src="images/spinner.gif" />';
 $data[1] .= '</span>';
 $data[1] .= print_button (__('SNMP walk'), 'snmp_walk', $ip_target == '', '',

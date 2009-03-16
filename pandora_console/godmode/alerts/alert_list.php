@@ -261,7 +261,7 @@ foreach ($simple_alerts as $alert) {
 	$data[4] = '<ul class="action_list">';
 	foreach ($actions as $action_id => $action) {
 		$data[4] .= '<li><div>';
-		$data[4] .= '<span class="left">';
+		$data[4] .= '<span class="action_name">';
 		$data[4] .= $action['name'];
 		$data[4] .= ' <em>(';
 		if ($action['fires_min'] == $action['fires_max']) {
@@ -279,7 +279,7 @@ foreach ($simple_alerts as $alert) {
 		
 		$data[4] .= ')</em>';
 		$data[4] .= '</span>';
-		$data[4] .= ' <span class="delete">';
+		$data[4] .= ' <span class="delete" style="clear:right">';
 		$data[4] .= '<form method="post" class="delete_link">';
 		$data[4] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
 		$data[4] .= print_input_hidden ('delete_action', 1, true);
@@ -454,9 +454,9 @@ $(document).ready (function () {
 		id = this.id.split ("-").pop ();
 		
 		/* Replace link with a combo with the actions and a form */
-		form = $('form#add_action_form:last').clone (true).show ();
-		$("input#hidden-id_alert_module", form).attr ("value", id);
-		$(this).replaceWith (form);
+		$form = $('form#add_action_form:last').clone (true).show ();
+		$("input#hidden-id_alert_module", $form).attr ("value", id);
+		$(this).replaceWith ($form);
 		return false;
 	});
 	

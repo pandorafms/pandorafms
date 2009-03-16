@@ -1,3 +1,9 @@
+2009-03-16  Jorge Gonzalez  <jorgegonz@artica.es>
+
+        * include/help/en/help_planned_downtime.php,
+          include/help/es/help_planned_downtime.php: Added more information
+          about the scheduled downtime.
+
 2009-03-16  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/alerts/alert_list.php,

@@ -41,14 +41,15 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	
 	static $idcounter = array ();
 	
-	//If duplicate names exist, it will start numbering. Otherwise it won't (for backwards compatibility)
+	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-		$name = $name.'-'.$idcounter[$name];
 	} else {
 		$idcounter[$name] = 0;
 	}
 	
+	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.$idcounter[$name]);
+		
 	$attributes = "";
 	if (!empty ($script)) {
 		$attributes .= ' onchange="'.$script.'"';
@@ -63,7 +64,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$attributes .= ' disabled="disabled"';
 	}
 
-	$output .= '<select id="'.str_replace (array ("[", "]"), '', $name).'" name="'.$name.'"'.$attributes.'>';
+	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.'>';
 
 	if ($nothing != '' || empty ($fields)) {
 		if ($nothing == '') {
@@ -284,13 +285,11 @@ function print_input_image ($name, $src, $value, $style = '', $return = false, $
 	
 	foreach ($attrs as $attribute) {
 		if (isset ($options[$attribute])) {
-			$output .= $attribute.'="'.safe_input ($options[$attribute]).'" ';
+			$output .= ' '.$attribute.'="'.safe_input ($options[$attribute]).'"';
 		}
 	}
 	
-	$output .= 'value="'.$value;
-	
-	$output .= '" />';
+	$output .= ' value="'.$value.'" />';
 	
 	if ($return)
 		return $output;
@@ -697,16 +696,17 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 	//If duplicate names exist, it will start numbering. Otherwise it won't
 	if (isset ($idcounter[$name])) {
 		$idcounter[$name]++;
-		$name = $name.$idcounter[$name];
 	} else {
 		$idcounter[$name] = 0;
 	}
-		
+	
+	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.$idcounter[$name]);
+			
 	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
-	$output .= ' id="checkbox-'.str_replace (array ("[", "]"), '', $name).'"'; //[ and ] are some of those things that can't be in an id string. Add more where necessary
+	$output .= ' id="checkbox-'.$id.'"';
 	
 	if ($script != '') {
-		 $output .= ' onClick="'. $script . '"';
+		 $output .= ' onclick="'. $script . '"';
 	}
 	
 	if ($disabled) {
@@ -715,9 +715,11 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 	
 	$output .= ' />';
 	$output .= "\n";
-	if ($return)
-		return $output;
-	echo $output;
+	
+	if ($return === false)
+		echo $output;
+	
+	return $output;
 }
 
 /**
@@ -733,9 +735,10 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 function print_checkbox ($name, $value, $checked = false, $return = false) {
 	$output = print_checkbox_extended ($name, $value, (bool) $checked, false, '', '', true);
 
-	if ($return)
-		return $output;
-	echo $output;
+	if ($return === false)
+		echo $output;
+	
+	return $output;
 }
 
 /**

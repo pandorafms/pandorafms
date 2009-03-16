@@ -203,11 +203,9 @@ if ($config["pure"] == 0) {
 }
 
 // Check permissions
-if (!is_writable("attachment")){
-	echo "<h3 class='error'>".__('Attachment directory is not writtable by HTTP Server')."</h3>";
-	echo '<p>';
-	echo __('Please check that {HOMEDIR}/attachment directory has write rights for HTTP server');
-	echo "</p>";
+if (!is_writable ("attachment")){
+	echo '<h3 class="error">'.__('Attachment directory is not writable by HTTP Server').'</h3>';
+	echo '<p>'.__('Please check that the web server has write rights on the {HOMEDIR}/attachment directory').'</p>';
 }
 
 // Page loader / selector

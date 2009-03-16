@@ -20,7 +20,7 @@ $url = '?login=1';
 //These variables come from index.php
 if (!empty ($page) && !empty ($sec)) {
 	foreach ($_GET as $key => $value) {
-		$url .= '&'.$key.'='.$value;
+		$url .= '&amp;'.$key.'='.$value;
 	}
 }
 
@@ -71,8 +71,11 @@ echo '</td><td class="f9b">
 	</table>
 	</form>
 	</div>
-	<div id="ip">'.__('Your IP').': <b class="f10">'.$config["remote_addr"].'</b>
-</div>
-
-	</div><script type="text/javascript">document.getElementById(\'nick\').focus();</script>';
+	<div id="ip">'.__('Your IP').': <b class="f10">'.$config["remote_addr"].'</b></div>
+</div>';
 ?>
+<script type="text/javascript" language="javascript">
+/* <![CDATA[ */
+document.getElementById('nick').focus();
+/* ]]> */
+</script>

@@ -16,27 +16,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
-
-<center>
-<div class='databox' id='login'>
-	<h1 id='log'><?php echo __('Logged Out'); ?></h1>
-	<div class='databox' style='width: 400px;'>
-		<form method="post" action="index.php?login=1">
-		<table cellpadding='4' cellspacing='1' width='400'>
-		<tr><td align='left'>
-			<a href="index.php">
-			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
-			<?php echo $pandora_version; ?>
-		</td><td valign='bottom'>
-			<?php echo __('Your session is over. Please close your browser window to close session on Pandora.<br><br>'); ?>
+<div class="databox" id="login">
+	<h1 id="log"><?php echo __('Logged Out'); ?></h1>
+	<div class="databox" style="width: 400px;">
+		<table cellpadding="4" cellspacing="1" width="400">
+		<tr><td align="left">
+			<?php
+				echo '<a href="index.php">';
+				print_image ("images/pandora_logo.png", false, array ("alt" => "logo", "border" => 0));
+				echo '</a> '.$pandora_version;
+			?>
+		</td><td valign="bottom">
+			<?php echo __('Your session is over. Please close your browser window to close this Pandora session.').'<br /><br />'; ?>
 		</td></tr>
 		</table>
-		</form>
 	</div>
 	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 </div>
-</center>
-
-
-
-

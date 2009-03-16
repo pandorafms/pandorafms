@@ -1,8 +1,22 @@
+2009-03-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/logoff.php: Cleaned up invalid html
+
+	* general/login_page.php: Clean up ampersands
+	
+	* include/functions_html.php: Fixes bug #2661439
+	
+	* index.php: Style cleanup
+	
+	* godmode/modules/manage_network_templates.php: Export function
+	gives a CSV file of the templates. Import pending although you
+	can use it already to import back into pure SQL.
+
 2009-03-16  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/help/en/help_planned_downtime.php,
-          include/help/es/help_planned_downtime.php: Added more information
-          about the scheduled downtime.
+	* include/help/en/help_planned_downtime.php,
+	include/help/es/help_planned_downtime.php: Added more information
+    about the scheduled downtime.
 
 2009-03-16  Esteban Sanchez  <estebans@artica.es>
 

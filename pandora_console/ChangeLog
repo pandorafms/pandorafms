@@ -1,3 +1,17 @@
+2009-03-16  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/alert_list.php,
+	godmode/agentes/module_manager_editor_network.php: Fixes to work in
+	IE7.
+
+	* godmode/alerts/configure_alert_template.php: Fixed an error when the
+	template was not created and causing the example or field values to
+	not shown. Fixed javascript for IE7.
+
+	* include/styles/ie.css: Fixes for IE7.
+
+	* include/styles/pandora.css: Added style for classes added.	
+
 2009-03-13  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/db/db_purge.php: Style correction.

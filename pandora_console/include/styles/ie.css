@@ -42,3 +42,17 @@ table#simple input#text-snmp_oid {
 div.configuration {
 	margin-top: -20px;
 }
+
+form.delete_link {
+	display:inline;
+}
+ul.action_list {
+	list-style-position: outside;
+}
+ul.action_list li {
+	display: block;
+}
+span.action_name {
+	vertical-align: top;
+	float: none;
+}

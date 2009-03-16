@@ -412,28 +412,24 @@ if ($step == 2) {
 	$table->rowstyle['value'] = 'display: none';
 	$table->rowstyle['max'] = 'display: none';
 	$table->rowstyle['min'] = 'display: none';
-	$table->rowstyle['example'] = 'display: none';
 	
 	$show_matches = false;
-	if ($id) {
-		$table->rowstyle['example'] = '';
-		switch ($type) {
-		case "equal":
-		case "not_equal":
-		case "regex":
-			$show_matches = true;
-			$table->rowstyle['value'] = '';
+	switch ($type) {
+	case "equal":
+	case "not_equal":
+	case "regex":
+		$show_matches = true;
+		$table->rowstyle['value'] = '';
+		break;
+	case "max_min":
+		$show_matches = true;
+	case "max":
+		$table->rowstyle['max'] = '';
+		if ($type == 'max')
 			break;
-		case "max_min":
-			$show_matches = true;
-		case "max":
-			$table->rowstyle['max'] = '';
-			if ($type == 'max')
-				break;
-		case "min":
-			$table->rowstyle['min'] = '';
-			break;
-		}
+	case "min":
+		$table->rowstyle['min'] = '';
+		break;
 	}
 
 	$table->data[0][0] = __('Name');
@@ -536,33 +532,32 @@ function check_regex () {
 
 function render_example () {
 	/* Set max */
-	max = parseInt ($("input#text-max").attr ("value"));
-	if (isNaN (max) || max == '') {
+	vmax = parseInt ($("input#text-max").attr ("value"));
+	if (isNaN (vmax) || vmax == "") {
 		$("span#max").empty ().append ("0");
 	} else {
-		$("span#max").empty ().append (max);
+		$("span#max").empty ().append (vmax);
 	}
 	
 	/* Set min */
-	min = parseInt ($("input#text-min").attr ("value"));
-	if (isNaN (min) || min == '') {
+	vmin = parseInt ($("input#text-min").attr ("value"));
+	if (isNaN (vmin) || vmin == "") {
 		$("span#min").empty ().append ("0");
 	} else {
-		$("span#min").empty ().append (min);
+		$("span#min").empty ().append (vmin);
 	}
 	
 	/* Set value */
-	value = $("input#text-value").attr ("value");
-	if (value == '') {
+	vvalue = $("input#text-value").attr ("value");
+	if (vvalue == "") {
 		$("span#value").empty ().append ("<em><?php echo __('Empty');?></em>");
 	} else {
-		$("span#value").empty ().append (value);
+		$("span#value").empty ().append (vvalue);
 	}
 }
 
 $(document).ready (function () {
 <?php if ($step == 1): ?>
-	render_example ();
 	$("input#text-value").keyup (render_example);
 	$("input#text-max").keyup (render_example);
 	$("input#text-min").keyup (render_example);
@@ -625,7 +620,7 @@ $(document).ready (function () {
 		}
 		
 		render_example ();
-	});
+	}).change ();
 	
 	$("#checkbox-matches_value").click (function () {
 		enabled = this.checked;

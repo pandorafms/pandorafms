@@ -886,6 +886,9 @@ ul.action_list {
 ul.action_list li div {
 	margin-left: 15px;
 }
+span.action_name {
+	float: left;
+}
 div.actions_container {
 	overflow:auto;
 	width: 100%;
@@ -895,6 +898,10 @@ div.actions_container label {
 	display: inline;
 	font-weight: normal;
 	font-style: italic;
+}
+a.add_action {
+	clear: both;
+	display: block;
 }
 
 /* timeEntry styles */

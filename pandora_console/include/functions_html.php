@@ -48,8 +48,8 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		$idcounter[$name] = 0;
 	}
 	
-	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.$idcounter[$name]);
-		
+	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+	
 	$attributes = "";
 	if (!empty ($script)) {
 		$attributes .= ' onchange="'.$script.'"';
@@ -74,7 +74,6 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		if ($nothing_value == $selected) {
 			$output .= ' selected="selected"';
 		}
-		//You should pass a translated string already
 		$output .= '>'.$nothing.'</option>';
 	}
 
@@ -86,9 +85,11 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
-			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) { //This fixes string ($value) to int ($selected) comparisons 
+			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
+				//This fixes string ($value) to int ($selected) comparisons 
 				$output .= ' selected="selected"';
-			} elseif ($value === $selected) { //Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
+			} elseif ($value === $selected) {
+				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
 			}
 			if ($label === '') {
@@ -160,24 +161,24 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
 	static $idcounter = 0;
 	
-    if ($maxlength == 0)
-        $maxlength = 255;
-    if ($size == 0)
-        $size = 10;
+	if ($maxlength == 0)
+		$maxlength = 255;
+	if ($size == 0)
+		$size = 10;
 
 	++$idcounter;
 	
 	$valid_attrs = array ("accept", "disabled", "maxlength", "name", "readonly", "size", "value",
-					"accesskey", "class", "dir", "id", "lang", "style", "tabindex", "title", "xml:lang",
-					"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
-					"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
+		"accesskey", "class", "dir", "id", "lang", "style", "tabindex", "title", "xml:lang",
+		"onfocus", "onblur", "onselect", "onchange", "onclick", "ondblclick", "onmousedown", 
+		"onmouseup", "onmouseover", "onmousemove", "onmouseout", "onkeypress", "onkeydown", "onkeyup");
 
 	$output = '<input '.($password ? 'type="password" ' : 'type="text" ');
 
 	if ($disabled && (!is_array ($attributes) || !array_key_exists ("disabled", $attributes))) {
 		$output .= 'readonly="readonly" ';
 	}
-				
+	
 	if (is_array ($attributes)) {
 		foreach ($attributes as $attribute => $attr_value) {
 			if (! in_array ($valid_attrs)) {
@@ -191,7 +192,9 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	}
 	
 	//Attributes specified by function call
-	$attrs = array ("name" => "unnamed", "value" => "", "id" => "text-".sprintf ('%04d', $idcounter), "size" => "", "maxlength" => "");
+	$attrs = array ("name" => "unnamed", "value" => "",
+		"id" => "text-".sprintf ('%04d', $idcounter),
+		"size" => "", "maxlength" => "");
 
 	foreach ($attrs as $attribute => $default) {
 		if (array_key_exists ($attribute, $attributes)) {
@@ -253,7 +256,7 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
 function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
 	if ($maxlength == 0)
 		$maxlength = 255;
-	if ($size == 0)		
+	if ($size == 0)
 		$size = 10;
 		
 	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, false, '', '', $return);

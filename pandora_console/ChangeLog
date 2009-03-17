@@ -1,3 +1,11 @@
+2009-03-17  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/manage_config.php: Select dependant modules when an
+	alert is selected.
+
+	* include/functions_agents.php: Copy selected alerts on
+	process_manage_config().
+
 2009-03-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/logoff.php: Cleaned up invalid html
@@ -16,7 +24,7 @@
 
 	* include/help/en/help_planned_downtime.php,
 	include/help/es/help_planned_downtime.php: Added more information
-    about the scheduled downtime.
+	about the scheduled downtime.
 
 2009-03-16  Esteban Sanchez  <estebans@artica.es>
 

@@ -30,7 +30,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h2>'.__('Agent configuration'). ' &raquo; '. __('Configuration Management').'</h2>';
+echo '<h3>'.__('Configuration Management').'</h3>';
 
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
@@ -69,7 +69,7 @@ $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
-echo '<form id="manage_config_form" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config">';
+echo '<form id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
@@ -167,6 +167,7 @@ require_jquery_file ('pandora.controls');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
+var module_alerts;
 $(document).ready (function () {
 	$("#source_id_group").pandoraSelectGroup ({
 		agentSelect: "select#source_id_agent",
@@ -224,6 +225,7 @@ $(document).ready (function () {
 					"id_agent" : id_agent
 					},
 					function (data, status) {
+						module_alerts = Array ();
 						if (! data) {
 							no_alerts = true;
 						} else {
@@ -236,6 +238,7 @@ $(document).ready (function () {
 									.append (module_name)
 									.append (")");
 								$("#target_alerts").append (option);
+								module_alerts[val["id"]] = val["id_agent_module"];
 							});
 							no_alerts = false;
 						}
@@ -277,6 +280,14 @@ $(document).ready (function () {
 			},
 			"json"
 		);
+	});
+	
+	$("#target_alerts").change (function () {
+		jQuery.each ($(this).fieldValue (), function () {
+			if (module_alerts[this] != undefined)
+				$("#target_modules option[value="+module_alerts[this]+"]")
+					.attr ("selected", "selected");
+		});
 	});
 	
 	$("#manage_config_form").submit (function () {

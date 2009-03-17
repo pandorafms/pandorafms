@@ -35,6 +35,7 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
 	
 	$modules = get_agent_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre']));
+	
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
 	
@@ -154,4 +155,27 @@ function get_network_component_groups ($id_module_components = 0) {
 	return $retval;
 }
 
+/**
+ * Deletes a module from an agent.
+ *
+ * @param mixed Agent module id to be deleted. Accepts an array with ids.
+ *
+ * @return True if the module was deleted. False if not.
+ */
+function delete_agent_module ($id_agent_module) {
+	$where = array ('id_agent_module' => $id_agent_module);
+	
+	process_sql_delete ('talert_template_modules', $where);
+	process_sql_delete ('tgraph_source', $where);
+	process_sql_delete ('treport_content', $where);
+	process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));
+	$where = array ('id_agente_modulo' => $id_agent_module);
+	process_sql_delete ('tlayout_data', $where);
+	process_sql_delete ('tagente_estado', $where);
+	process_sql_update ('tagente_modulo',
+		array ('delete_pending' => 1, 'disabled' => 1),
+		$where);
+	
+	return true;
+}
 ?>

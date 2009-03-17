@@ -253,9 +253,10 @@ input.sub {
 	 Percentage values are invalid here but .4em seems big enough */
 	-moz-border-radius: .4em;
 	-webkit-border-radius: .4em;
-	border-radius: .4em; 
+	border-radius: .4em;
 	font-size: 8pt;
 	background-color: #e5e5e5;
+	color: #000;
 }
 input.next, input.upd, input.ok, input.wand, input.delete, input.search,
 input.copy, input.add {

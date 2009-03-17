@@ -522,17 +522,6 @@ function get_alert_type ($id_type) {
 }
 
 /** 
- * Get name of a module group.
- * 
- * @param int $id_module_group Module group id.
- * 
- * @return string Name of the given module group.
- */
-function dame_nombre_grupomodulo ($id_module_group) {
-	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $id_module_group);
-}
-
-/** 
  * Get the name of an exporting server
  * 
  * @param int $id_server Server id
@@ -2299,17 +2288,32 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 /** 
  * Get a translated string
  * 
- * @param string String to translate
+ * @param string String to translate. It can have special format characters like
+ * a printf 
+ * @param mixed Optional parameters to be replaced in string. Example:
+<code>
+echo __('Hello!');
+echo __('Hello, %s!', $user);
+</code>
  * 
  * @return string The translated string. If not defined, the same string will be returned
  */
 function __ ($string) {
 	global $l10n;
-
+	
+	if (func_num_args () == 1) {
+		if (is_null ($l10n))
+			return $string;
+		return $l10n->translate ($string);
+	}
+	
+	$args = func_get_args ();
+	$string = array_shift ($args);
+	
 	if (is_null ($l10n))
-		return $string;
-
-	return $l10n->translate ($string);
+		return vsprintf ($string, $args);
+	
+	return vsprintf ($l10n->translate ($string), $args);
 }
 
 /** 

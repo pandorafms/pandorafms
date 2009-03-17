@@ -1,3 +1,66 @@
+2009-03-17  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/massive_operations.php: Added to repository. New
+	page to group massive operations in a single page.
+
+	* godmode/agentes/massive_config.php: Renamed from manage_config.php.
+
+	* godmode/agentes/massive_delete_agents.php: Renamed from
+	manage_delete.php.
+	
+	* godmode/agentes/massive_delete_modules.php: Added to repository.
+	Interface to delete modules.
+
+	* godmode/agentes/massive_delete_alerts.php: Added to repository.
+	Interface to delete alerts.
+
+	* godmode/agentes/agent_manager.php: Fixed table width to make it
+	variable.
+
+	* godmode/agentes/module_manager.php: Rewritten to use Pandora
+	functions.
+
+	* include/javascript/jquery.pandora.controls.js: Added
+	pandoraSelectAgentAlert. Renamed pandoraSelectAgent to
+	pandoraSelectAgentModule. Get only needed fields to make it quicker
+	and avoid showing disabled modules.
+
+	* godmode/alerts/alert_list.php: Adapted to changes in
+	jquery.pandora.controls.js.
+
+	* godmode/menu.php: Group some pages into new "Massive operation"
+	submenu.
+
+	* images/copy.png: Replaced with a better icon.
+
+	* images/delete_agents.png, images/delete_alerts.php,
+	images/delete_modules.php: Added to repository.
+
+	* include/styles/pandora.css: Set color on input.sub
+
+	* include/styles/pandora_width.css: Make menu_tab_frame wider.
+
+	* include/functions_db.php: Removed deprecated
+	dame_nombre_grupomodulo(). Added support to __() to receive multiple
+	parameters so translatable strings can handle now printf format
+	characters.
+
+	* include/functions_modules.php: Added delete_agent_module().
+
+	* operation/agentes/ver_agente.php: Allow fields to be passed to
+	get_agent_modules_json AJAX operation.
+
+	* reporting/fgraph.php: Replaced sprintf() with __(). Some casts
+	added. Show a sparse chart even if it has no max/min value.
+
+	* godmode/modules/manage_network_components_form_network.php,
+	operation/agentes/estado_ultimopaquete.php,
+	godmode/modules/manage_network_components_form_wmi.php: Use
+	get_modulegroup_name().
+
+	* godmode/agentes/configurar_agente.php,
+	godmode/modules/manage_network_components.php: Style correction.
+
 2009-03-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/snmpconsole/snmp_view.php: Fixes bug #2661421

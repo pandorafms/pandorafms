@@ -70,98 +70,114 @@ echo "</table>";
 // ==========================
 
 echo "<h3>".__('Assigned modules')."</h3>";
-$sql1='SELECT * FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = "'.$id_agente.'"
-	ORDER BY id_module_group, nombre ';
-$result=mysql_query($sql1);
-if ($row=mysql_num_rows($result)){
-	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
-	echo '<tr>';
-	echo "<th>".__('Module name')."</th>";
-	echo '<th>'.__('S').'</th>';
-	echo '<th>'.__('Type').'</th>';
-	echo "<th>".__('Interval')."</th>";
-	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('Max/Min')."</th>";
-	echo "<th width=65>".__('Action')."</th>";
-	$color=1; $last_modulegroup = "0";
-	while ($row = mysql_fetch_array($result)){
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		} else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		$id_tipo = $row["id_tipo_modulo"];
-		$id_module  = $row["id_modulo"];
-		$nombre_modulo = $row["nombre"];
-		$descripcion = $row["descripcion"];
-		$module_max = $row["max"];
-		$module_min = $row["min"];
-		$module_interval2 = $row["module_interval"];
-		$module_group2 = $row["id_module_group"];
-		if ($module_group2 != $last_modulegroup ){
-			// Render module group names  (fixed code)
-			$nombre_grupomodulo = dame_nombre_grupomodulo ($module_group2);
-			$last_modulegroup = $module_group2;
-			echo "<tr><td class='datos3' align='center' colspan='9'><b>".$nombre_grupomodulo."</b></td></tr>";
-		}
-	
-		if ($row["disabled"] == 0)
-			echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo."</td>";
-		else
-			echo "<tr><td class='$tdcolor'><i>$nombre_modulo</i></td>";
-		
-		// Module type (by server type )
-		echo "<td class='".$tdcolor."f9'>";
-		if ($id_module > 0) {
-			echo show_server_type ($id_module);
-			echo '&nbsp;';
-		}
 
-		// Module type (by data type)
-		echo "<td class='".$tdcolor."f9'>";
-		if ($id_tipo > 0) {
-			echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
-		}
-		echo "</td>";
+$modules = get_db_all_rows_filter ('tagente_modulo',
+	array ('delete_pending' => 0,
+		'id_agente' => $id_agente,
+		'order' => 'id_module_group, nombre'),
+	array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
+		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
+		'disabled',));
 
-		// Module interval
-		if ($module_interval2!=0){
-			echo "<td class='$tdcolor'>".$module_interval2."</td>";
-		} else {
-			echo "<td class='$tdcolor'> N/A </td>";
-		}
-		echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
-		
-		// MAX / MIN values
-		echo "<td class='$tdcolor'>";
-			if ($module_max == $module_min) {
-				$module_max = "N/A";
-				$module_min = "N/A";
-			}
-			echo $module_max." / ".$module_min;
-		echo "</td>";
-
-		// Delete module
-		echo "<td class='$tdcolor'>";
-		echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-		echo "<img src='images/cross.png' border=0 title='".__('Delete')."'>";
-		echo "</b></a>&nbsp;";
-		// Update module
-		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&edit_module=1&id_agent_module=".$row["id_agente_modulo"]."'>";
-		echo "<img src='images/config.png' border=0 title='".__('Update')."'></b></a>";
-		
-		// Make a data normalization
-		if (($id_tipo == 22) OR ($id_tipo == 1) OR ($id_tipo == 4) OR ($id_tipo == 7) OR
-		($id_tipo == 8) OR ($id_tipo == 11) OR ($id_tipo == 16) OR ($id_tipo == 22)) {
-			echo "&nbsp;";
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			echo "<img src='images/chart_curve.png' border=0 title='Normalize'></b></a>";
-		}
-	}
-	echo "</table>";
-} else {
+if ($modules === false) {
 	echo "<div class='nf'>".__('No available data to show')."</div>";
+	return;
 }
+
+$table->width = '95%';
+$table->head = array ();
+$table->head[0] = __('Name');
+/* S stands for "Server" */;
+$table->head[1] = __('S');
+$table->head[2] = __('Type');
+$table->head[3] = __('Interval');
+$table->head[4] = __('Description');
+$table->head[5] = __('Max/Min');
+$table->head[6] = __('Action');
+
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->size = array ();
+$table->size[6] = '65px';
+$table->align = array ();
+$table->align[1] = 'center';
+$table->align[6] = 'center';
+$table->data = array ();
+
+$agent_interval = get_agent_interval ($id_agente);
+$last_modulegroup = "0";
+foreach ($modules as $module) {
+	$type = $module["id_tipo_modulo"];
+	$id_module  = $module["id_modulo"];
+	$nombre_modulo = $module["nombre"];
+	$descripcion = $module["descripcion"];
+	$module_max = $module["max"];
+	$module_min = $module["min"];
+	$module_interval2 = $module["module_interval"];
+	$module_group2 = $module["id_module_group"];
+	
+	$data = array ();
+	if ($module['id_module_group'] != $last_modulegroup) {
+		$last_modulegroup = $module['id_module_group'];
+		
+		$data[0] = '<strong>'.get_modulegroup_name ($last_modulegroup).'</strong>';
+		$i = array_push ($table->data, $data);
+		$table->rowclass[$i] = 'datos3';
+		$table->colspan[$i][0] = 6;
+		
+		$data = array ();
+	}
+	
+	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
+	if ($module["disabled"])
+		$data[0] .= '<em>'.$module['nombre'].'</em>';
+	else
+		$data[0] .= $module['nombre'];
+	$data[0] .= '</a>';
+	
+	// Module type (by server type )
+	$data[1] = '';
+	if ($module['id_modulo'] > 0) {
+		$data[1] = show_server_type ($module['id_modulo']);
+	}
+	
+	// Module type (by data type)
+	$data[2] = '';
+	if ($type) {
+		$data[2] = print_image ('images/'.show_icon_type ($type), true);
+	}
+
+	// Module interval
+	if ($module['module_interval']) {
+		$data[3] = $module['module_interval'];
+	} else {
+		$data[3] = $agent_interval;
+	}
+	
+	$data[4] = substr ($module['descripcion'], 0, 30);
+	
+	// MAX / MIN values
+	$data[5] = $module["max"] ? $module["max"] : __('N/A');
+	$data[5] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
+
+	// Delete module
+	$data[6] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+	$data[6] .= print_image ('images/cross.png', true,
+		array ('title' => __('Delete')));
+	$data[6] .= '</a> ';
+	
+	// Make a data normalization
+	if (($type == 22) OR ($type == 1) OR ($type == 4) OR ($type == 7) OR
+		($type == 8) OR ($type == 11) OR ($type == 16) OR ($type == 22)) {
+		$data[6] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[6] .= print_image ('images/chart_curve.png', true,
+			array ('title' => __('Normalize')));
+		$data[6] .= '</a>';
+	}
+	
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
 ?>

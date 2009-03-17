@@ -187,37 +187,37 @@ if ($create_agent) {
 }
 
 // Show tabs
-$img_arr = array ("class" => "top", "width" => 16);
+$img_style = array ("class" => "top", "width" => 16);
 
 echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
 echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
-print_image ("images/setup.png", false, $img_arr);
+print_image ("images/setup.png", false, $img_style);
 echo '&nbsp; '.mb_substr (get_agent_name ($id_agente),0,21).'</a>';
 echo "</li></ul></div>";
 
 echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
 echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-print_image ("images/zoom.png", false, $img_arr);
+print_image ("images/zoom.png", false, $img_style);
 echo '&nbsp;'.__('View').'</a></li>';
 
 echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
-print_image ("images/cog.png", false, $img_arr);
+print_image ("images/cog.png", false, $img_style);
 echo '&nbsp; '.__('Setup').'</a></li>';
 
 echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
-print_image ("images/lightbulb.png", false, $img_arr);
+print_image ("images/lightbulb.png", false, $img_style);
 echo '&nbsp; '.__('Modules').'</a></li>';
 
 echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
-print_image ("images/bell.png", false, $img_arr);
+print_image ("images/bell.png", false, $img_style);
 echo '&nbsp; '.__('Alerts').'</a></li>';
 
 echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
-print_image ("images/network.png", false, $img_arr);
+print_image ("images/network.png", false, $img_style);
 echo '&nbsp; '.__('Net. Templates').'</a></li>';
 
 enterprise_hook ('inventory_tab');

@@ -72,7 +72,7 @@ if (mysql_num_rows ($result3)) {
 	
 		if ($row3["id_module_group"] != $last_modulegroup ){
 			// Render module group names  (fixed code)
-			$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
+			$nombre_grupomodulo = get_modulegroup_name ($row3["id_module_group"]);
 			$last_modulegroup = $row3["id_module_group"];
 			echo "<tr><td class='datos3' align='center' colspan='9'>
 			<b>".$nombre_grupomodulo."</b></td></tr>";
@@ -92,10 +92,10 @@ if (mysql_num_rows ($result3)) {
 				} else {
 					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&tab=data&refr=60'><img src='images/refresh.png' border='0'></a>";
 				}
-			} 				
+			}
 		}
 		echo "</td>";
-		$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
+		$nombre_grupomodulo = get_modulegroup_name ($row3["id_module_group"]);
 		if ($nombre_grupomodulo != ""){
 			if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
 				$label_group = -1;

@@ -57,3 +57,6 @@ ol.steps {
 div#steps_clean {
 	display:none;
 }
+div#menu_tab_frame {
+	width: 100%;
+}

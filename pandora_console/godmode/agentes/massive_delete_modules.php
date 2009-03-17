@@ -27,35 +27,28 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 }
 
 require_once ('include/functions_agents.php');
-require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h2>'.__('Massive agent deletion').'</h2>';
+echo '<h3>'.__('Massive modules deletion').'</h3>';
 
-function process_manage_delete ($id_agents) {
-	if (empty ($id_agents)) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+function process_manage_delete ($id_modules) {
+	if (empty ($id_modules)) {
+		echo '<h3 class="error">'.__('No modules selected').'</h3>';
 		return false;
 	}
-	
-	$id_agents = (array) $id_agents;
-	
-	$copy_modules = (bool) get_parameter ('copy_modules');
-	$copy_alerts = (bool) get_parameter ('copy_alerts');
 	
 	process_sql ('SET AUTOCOMMIT = 0');
 	process_sql ('START TRANSACTION');
 	
-	$error = false;
-	foreach ($id_agents as $id_agent) {
-		$success = delete_agent ($id_agent);
+	foreach ($id_modules as $id_module) {
+		$success = delete_agent_module ($id_module);
 		if (! $success)
 			break;
 	}
 	
 	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete agent').' '.get_agent_name ($id_agent).'</h4>';
+		echo '<h3 class="error">'.__('There was an error deleting the module, the operation has been cancelled').'</h3>';
+		echo '<h4>'.__('Could not delete module').' '.get_agentmodule_name ($id_module).'</h4>';
 		process_sql ('ROLLBACK');
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
@@ -66,12 +59,13 @@ function process_manage_delete ($id_agents) {
 }
 
 $id_group = (int) get_parameter ('id_group');
-$id_agents = get_parameter ('id_agents');
+$id_agent = (int) get_parameter ('id_agent');
+$id_modules = get_parameter ('id_modules');
 
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($id_agents);
+	process_manage_delete ($id_modules);
 }
 
 $groups = get_user_groups ();
@@ -91,12 +85,22 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = print_select ($groups, 'id_group', $id_group,
 	false, '', '', true);
 
-$table->data[1][0] = __('Agents');
+$table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= '<img src="images/spinner.gif" />';
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
-	'id_agents[]', 0, false, '', '', true, true);
+	'id_agent', $id_agent, false, __('None'), 0, true);
+
+$table->data[2][0] = __('Modules');
+$table->data[2][0] .= '<span id="module_loading" class="invisible">';
+$table->data[2][0] .= '<img src="images/spinner.gif" />';
+$table->data[2][0] .= '</span>';
+$modules = array ();
+if ($id_agent)
+	$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
+$table->data[2][1] = print_select ($modules,
+	'id_modules[]', 0, false, '', '', true, true);
 
 echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
 print_table ($table);
@@ -114,9 +118,12 @@ require_jquery_file ('pandora.controls');
 ?>
 
 <script type="text/javascript">
+/* <![CDATA[ */
 $(document).ready (function () {
-	$("#id_group").pandoraSelectGroup ({
-		agentSelect: "select#id_agents\\[\\]"
+	$("#id_group").pandoraSelectGroup ();
+	$("#id_agent").pandoraSelectAgentModule ({
+		moduleSelect: "select#id_modules"
 	});
 });
+/* ]]> */
 </script>

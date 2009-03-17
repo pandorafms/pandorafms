@@ -1,3 +1,10 @@
+2009-03-17  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated PO template.
+
 2009-03-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/manage_config.php: Select dependant modules when an

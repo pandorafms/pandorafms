@@ -219,8 +219,6 @@ if ( $row = mysql_num_rows ($result)){
 		echo "</td>";
 		echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
 		echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
-		//echo "<td class='$tdcolor'>".
-		//substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
 		echo "<td class='$tdcolor'>";
 		if ($module_max == $module_min) {
 			$module_max = "N/A";

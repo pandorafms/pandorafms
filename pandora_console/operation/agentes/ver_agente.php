@@ -40,8 +40,10 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$filter = (string) get_parameter ('filter');
+		$fields = (string) get_parameter ('fields');
 		
-		$agent_modules =  get_agent_modules ($id_agent, "*",
+		$agent_modules =  get_agent_modules ($id_agent,
+			($fields != '' ? explode (',', $fields) : "*"),
 			($filter != '' ? $filter : false));
 		
 		echo json_encode ($agent_modules);

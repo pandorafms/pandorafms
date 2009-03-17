@@ -244,7 +244,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
-		$title_period = sprintf (__('Last %s days'), format_numeric (($period / (3600 * 24)), 2));
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 	
 	if ($max_value <= 0) {
 		graphic_error ();
@@ -299,8 +299,8 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	}
 	
 	$all_data = get_db_all_rows_filter ('tagente_datos',
-		array ('id_agente' => $id_agente,
-			'id_agente_modulo' => $id_agente_modulo,
+		array ('id_agente' => (int) $id_agente,
+			'id_agente_modulo' => (int) $id_agente_modulo,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
@@ -366,11 +366,6 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 		}
 	}
 	
-	if ($max_value <= $min_value) {
-		graphic_error ();
-		return;
-	}
-	
 	// Get the first data outsite (to the left---more old) of the interval given
 	$previous = (float) get_previous_data ($id_agente_modulo, $datelimit);
 	for ($i = 0; $i <= $resolution; $i++) {
@@ -394,7 +389,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
-		$title_period = sprintf (__('Last %s days'), format_numeric (($period / (3600 * 24)), 2));
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 	
 	$engine = get_graph_engine ($period);
 	$engine->width = $width;
@@ -1019,7 +1014,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
-		$title_period = sprintf (__('Last %s days'), format_numeric (($period / (3600 * 24)), 2));
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 	
 	$engine = get_graph_engine ($period);
 	

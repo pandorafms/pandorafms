@@ -59,7 +59,7 @@ if (isset($_GET["disk_conf_delete"])) {
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
-$table->width = 650;
+$table->width = '95%';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = "databox_color";
@@ -161,9 +161,8 @@ if (file_exists ($filename['md5'])) {
 }
 
 print_table ($table);
-unset ($table);
 
-echo '<div style="width: 650px; text-align: right;">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($new_agent) {
 	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	print_input_hidden ('create_agent', 1);

@@ -202,7 +202,8 @@ $(document).ready (function () {
 			{"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
 			"id_agent" : this.value,
-			"filter" : "disabled = 0"
+			"filter" : "disabled = 0",
+			"fields" : "id_agente_modulo,nombre"
 			},
 			function (data, status) {
 				if (data.length == 0) {

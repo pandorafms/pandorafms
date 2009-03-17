@@ -419,7 +419,7 @@ $(document).ready (function () {
 		}
 	});
 	
-	$("#id_agent").pandoraSelectAgent ();
+	$("#id_agent").pandoraSelectAgentModule ();
 <?php endif; ?>
 	$("a.template_details").cluetip ({
 		arrows: true,

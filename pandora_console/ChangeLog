@@ -1,5 +1,13 @@
 2009-03-17  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/fgraph.php: Fixed a bug on graphic_error() which always
+	showed image_problem.png. Fixed period labels shorter than days. Fixed
+	an error when fetching data on grafico_modulo_sparse() which was
+	causing to show nothing. Do not show a legend on graph_event_module().
+	Fixed x axis interval on boolean charts.
+
+2009-03-17  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/massive_operations.php: Added to repository. New
 	page to group massive operations in a single page.
 

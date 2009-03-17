@@ -39,7 +39,7 @@ function graphic_error ($image = 'image_problem.png') {
 	global $config;
 	
 	Header ('Content-type: image/png');
-	$img = imagecreatefromPng ($config['homedir'].'/images/'.'image_problem.png');
+	$img = imagecreatefromPng ($config['homedir'].'/images/'.$image);
 	imagealphablending ($img, true);
 	imagesavealpha ($img, true);
 	imagepng ($img);
@@ -195,7 +195,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 						// Check min value
 						if ($datos < $data[$j]['min'])
 						$data[$j]['min'] = $datos;
-					}			
+					}
 					// Check max value
 					if ($datos > $data[$j]['max'])
 						$data[$j]['max'] = $datos;
@@ -235,12 +235,12 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$module_list_name[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
 	}
 	
-	if ($period <= 86400)
+	if ($period <= 3600)
+		$title_period = __('Last hour');
+	elseif ($period <= 86400)
 		$title_period = __('Last day');
 	elseif ($period <= 604800)
 		$title_period = __('Last week');
-	elseif ($period <= 3600)
-		$title_period = __('Last hour');
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
@@ -299,8 +299,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	}
 	
 	$all_data = get_db_all_rows_filter ('tagente_datos',
-		array ('id_agente' => (int) $id_agente,
-			'id_agente_modulo' => (int) $id_agente_modulo,
+		array ('id_agente_modulo' => (int) $id_agente_modulo,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
@@ -380,12 +379,12 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 		}
 	}
 	
-	if ($period <= 86400)
+	if ($period <= 3600)
+		$title_period = __('Last hour');
+	elseif ($period <= 86400)
 		$title_period = __('Last day');
 	elseif ($period <= 604800)
 		$title_period = __('Last week');
-	elseif ($period <= 3600)
-		$title_period = __('Last hour');
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
@@ -655,7 +654,9 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$data = array_slice ($data, 0, $max_items);
 	}
 	
-	generic_pie_graph ($width, $height, $data, array ('zoom' => 75));
+	generic_pie_graph ($width, $height, $data,
+		array ('zoom' => 75,
+			'show_legend' => false));
 }
 
 
@@ -1005,12 +1006,12 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$grafica[$d['timestamp_bottom']] = $d['sum'];
 	}
 	
-	if ($period <= 86400)
+	if ($period <= 3600)
+		$title_period = __('Last hour');
+	elseif ($period <= 86400)
 		$title_period = __('Last day');
 	elseif ($period <= 604800)
 		$title_period = __('Last week');
-	elseif ($period <= 3600)
-		$title_period = __('Last hour');
 	elseif ($period <= 2419200)
 		$title_period = __('Last month');
 	else
@@ -1032,9 +1033,9 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	$engine->alert_bottom = $show_alert ? $alert_low : false;;
 	
 	if ($period < 10000)
-		$engine->xaxis_interval = 8;
+		$engine->xaxis_interval = 20;
 	else
-		$engine->xaxis_interval = $resolution / 7;
+		$engine->xaxis_interval = $resolution * 4;
 	$engine->yaxis_interval = 1;
 	$engine->xaxis_format = 'date';
 	

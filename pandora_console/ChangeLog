@@ -1,3 +1,10 @@
+2009-03-17  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_html.php: Do not add id counter if it's 0 on
+	print_select. It's a backwards compatibility workaround until we
+	take a decision on correct HTML elements. Fixed comment styles, please
+	do not add comments in the same line.
+
 2009-03-17  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

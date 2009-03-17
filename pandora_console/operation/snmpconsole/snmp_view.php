@@ -314,7 +314,7 @@ foreach ($traps as $trap) {
 	if (empty ($data[4])) {
 		$data[4] = __('N/A');
 	} elseif (strlen ($trap["value_custom"]) > 15) {
-		$data[4] = '<span title="'.$trap["custom_value"].'">'.$data[4].'...</span>';
+		$data[4] = '<span title="'.$trap["value_custom"].'">'.$data[4].'...</span>';
 	}	
 
 	//User

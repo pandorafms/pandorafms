@@ -1,3 +1,7 @@
+2009-03-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/snmpconsole/snmp_view.php: Fixes bug #2661421
+
 2009-03-17  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_html.php: Do not add id counter if it's 0 on

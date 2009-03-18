@@ -339,9 +339,10 @@ if ($agents !== false) {
 		|| give_acl ($config['id_user'], 0, "DM")
 		|| give_acl ($config['id_user'], 0, "UM")) {
 		
-		echo "&nbsp;<form method='post' action='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
-			value='".__('Create agent')."'></form>";
+		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+		print_input_hidden ('new_agent', 1);
+		print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+		echo '</form>';
 	}
 }
 

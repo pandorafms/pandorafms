@@ -252,10 +252,10 @@ foreach ($simple_alerts as $alert) {
 		$data[1] .= '</a>';
 	}
 	$data[2] = get_agentmodule_name ($alert['id_agent_module']);
-	$data[3] = get_alert_template_name ($alert['id_alert_template']);
-	$data[3] .= ' <a class="template_details"
+	$data[3] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">
-		<img id="template-details-'.$alert['id_alert_template'].'" class="img_help" src="images/zoom.png"/></a>';
+		<img id="template-details-'.$alert['id_alert_template'].'" class="img_help" src="images/zoom.png"/></a> ';
+	$data[3] .= get_alert_template_name ($alert['id_alert_template']);
 	
 	$actions = get_alert_agent_module_actions ($alert['id']);
 	$data[4] = '<ul class="action_list">';

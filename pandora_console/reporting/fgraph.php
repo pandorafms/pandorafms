@@ -428,38 +428,59 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 	generic_pie_graph ($width, $height, $data);
 }
 
-function graphic_agentaccess ($id_agent, $period, $width, $height) {
+function graphic_agentaccess ($id_agent, $width, $height) {
 	global $config;
 	
 	$interval = 24;
-	$datelimit = get_system_time () - $period;
-	$hours = $period / $interval;
+	$date = get_system_time ();
+	$period = 1440;
+	$datelimit = $date - $period;
 	
+	$time = array ();
+	$data = array ();
 	for ($i = 0; $i < $interval; $i++) {
 		$time[$i]['timestamp_bottom'] = $datelimit + ($interval * $i);
 		$time[$i]['timestamp_top'] = $datelimit + ($interval * ($i + 1));
+		$data[$time[$i]['timestamp_bottom']] = 0;
 	}
 	
-	$sql = sprintf ('SELECT UNIX_TIMESTAMP(timestamp) utimestamp
-		FROM tagent_access 
-		WHERE id_agent = %d AND UNIX_TIMESTAMP(timestamp) > %d',
-		$id_agent, $datelimit);
-	$result = get_db_all_rows_sql ($sql);
+	$result = get_db_all_rows_filter ('tagent_access',
+		array ('id_agent' => $id_agent,
+			"utimestamp > $datelimit",
+			"utimestamp < $date"),
+		array ('utimestamp'));
+	
 	if ($result === false)
 		$result = array ();
+
 	$start = 0;
-	$data = array_pad (array (), $interval, 0);
+	$max_value = 0;
+	
 	foreach ($result as $access) {
+		$utimestamp = $access['utimestamp'];
 		for ($i = $start; $i < $interval; $i++) {
-			if ($access['utimestamp'] < $time[$i]['timestamp_bottom'] && $access['utimestamp'] >= $time[$i]['timestamp_top']) {
-				$data[$access['utimestamp']] = 1;
+			if ($utimestamp <= $time[$i]['timestamp_top'] && $utimestamp >= $time[$i]['timestamp_bottom']) {
+				$data[$time[$i]['timestamp_bottom']] = 1;
 				$start = $i;
+				$max_value = 1;
 				break;
 			}
 		} 
 	}
 	
-	generic_single_graph ($width, $height, $data, (int) $interval / 7);
+	$engine = get_graph_engine ($period);
+	
+	$engine->width = $width;
+	$engine->height = $height;
+	$engine->data = &$data;
+	$engine->max_value = $max_value;
+	$engine->show_title = false;
+	$engine->fontpath = $config['fontpath'];
+	$engine->xaxis_interval = 4;
+	$engine->yaxis_interval = 1;
+	$engine->xaxis_format = 'date';
+	
+	$engine->single_graph ();
 }
 
 function graph_incidents_status () {
@@ -1144,11 +1165,11 @@ if ($graphic_type) {
 		
 		break;
 	case "agentaccess":
-		graphic_agentaccess ($_GET["id"], $_GET["periodo"], $width, $height);
+		graphic_agentaccess ($id, $width, $height);
 		
 		break;
 	case "agentmodules":
-		graphic_agentmodules ($_GET["id"], $width, $height);
+		graphic_agentmodules ($id, $width, $height);
 		
 		break;
 	case "progress": 

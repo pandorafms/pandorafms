@@ -94,8 +94,8 @@
 								jQuery.each (data, function (i, value) {
 									config.callbackPre ();
 									option = $("<option></option>")
-										.attr ("value", value['id'])
-										.html (html_entity_decode (value['template']['name']));
+										.attr ("value", value['id_agente_modulo'])
+										.html (html_entity_decode (value['nombre']));
 									config.callbackPost (i, value, option);
 									$(config.moduleSelect).append (option);
 								});

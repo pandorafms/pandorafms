@@ -163,6 +163,8 @@ class PchartGraph extends PandoraGraphAbstract {
 			foreach ($this->data as $data) {
 				$this->dataset->AddPoint ($data['sum'], "AVG", $data['timestamp_bottom']);
 			}
+			$color = $this->get_rgb_values ($this->graph_color[2]);
+			$this->graph->setColorPalette (0, $color['r'], $color['g'], $color['b']);
 		} else {
 			foreach ($this->data as $data) {
 				$this->dataset->AddPoint ($data['sum'], "AVG", $data['timestamp_bottom']);
@@ -170,11 +172,13 @@ class PchartGraph extends PandoraGraphAbstract {
 				$this->dataset->AddPoint ($data['max'], "MAX");
 			}
 			$this->legend[1] = __("Min. Value");
+			$this->legend[0] = __("Avg. Value");
 			$this->legend[2] = __("Max. Value");
 			$this->dataset->SetSerieName (__("Min. Value"), "MIN");
+			$this->dataset->SetSerieName (__("Avg. Value"), "AVG");
 			$this->dataset->SetSerieName (__("Max. Value"), "MAX");
+			$this->set_colors ();
 		}
-		$this->set_colors ();
 		$this->dataset->SetXAxisFormat ('date');
 		$this->graph->setDateFormat ("Y");
 		$this->dataset->SetYAxisFormat ('metric');
@@ -314,6 +318,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		$ratio = (int) $value / 100 * $this->width;
 		
 		/* Color stuff */
+		$bgcolor = $this->get_rgb_values ($this->background_color);
 		$r = hexdec (substr ($this->background_color, 1, 2));
 		$g = hexdec (substr ($this->background_color, 3, 2));
 		$b = hexdec (substr ($this->background_color, 5, 2));
@@ -322,13 +327,11 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->drawFilledRectangle (0, 0, $this->width,
 			$this->height, 255, 255, 255, false, 0);
 		$this->graph->drawFilledRoundedRectangle (0, 0, $this->width,
-			$this->height, $radius, $r, $g, $b);
+			$this->height, $radius, $bgcolor['r'], $bgcolor['g'], $bgcolor['b']);
 		
-		$r = hexdec (substr ($color, 1, 2));
-		$g = hexdec (substr ($color, 3, 2));
-		$b = hexdec (substr ($color, 5, 2));
+		$color = $this->get_rgb_values ($color);
 		$this->graph->drawFilledRoundedRectangle (0, 0, $ratio, 
-			$this->height, $radius, $r, $g, $b);
+			$this->height, $radius, $color['r'], $color['g'], $color['b']);
 		/* Under this value, the rounded rectangle is painted great */
 		if ($ratio <= 16) {
 			/* Clean a bit of pixels */
@@ -481,9 +484,9 @@ class PchartGraph extends PandoraGraphAbstract {
 		if ($this->graph == NULL)
 			return;
 		
-		$color = $this->get_rgb_values ($this->graph_color[2]);
-		$this->graph->setColorPalette (0, $color['r'], $color['g'], $color['b']);
 		$color = $this->get_rgb_values ($this->graph_color[1]);
+		$this->graph->setColorPalette (0, $color['r'], $color['g'], $color['b']);
+		$color = $this->get_rgb_values ($this->graph_color[2]);
 		$this->graph->setColorPalette (1, $color['r'], $color['g'], $color['b']);
 		$color = $this->get_rgb_values ($this->graph_color[3]);
 		$this->graph->setColorPalette (2, $color['r'], $color['g'], $color['b']);

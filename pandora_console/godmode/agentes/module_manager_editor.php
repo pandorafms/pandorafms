@@ -294,23 +294,19 @@ $(document).ready (function () {
 			"id_module_component" : this.value
 			},
 			function (data, status) {
-				$("#text-name").attr ("value", data["name"]);
-				$("#textarea_description").attr ("value", data["description"]);
+				$("#text-name").attr ("value", html_entity_decode (data["name"]));
+				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
 				$("#id_module_type option[value="+data["type"]+"]").select (1);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				$("#text-module_interval").attr ("value", data["module_interval"]);
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
-				$("#textarea_tcp_send").attr ("value", data["tcp_send"]);
-				$("#textarea_tcp_rcv").attr ("value", data["tcp_rcv"]);
-				$("#text-snmp_community").attr ("value", data["snmp_community"]);
-				$("#text-snmp_oid").attr ("value", data["snmp_oid"]).show ();
+				$("#textarea_tcp_send").attr ("value", html_entity_decode (data["tcp_send"]));
+				$("#textarea_tcp_rcv").attr ("value", html_entity_decode (data["tcp_rcv"]));
+				$("#text-snmp_community").attr ("value", html_entity_decode (data["snmp_community"]));
+				$("#text-snmp_oid").attr ("value", html_entity_decode (data["snmp_oid"])).show ();
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group option["+data["id_group"]+"]").select (1);
-				//$("#id_module_group").attr ("value", data["id_module_group"]);
-				//$("#text_plugin_user").attr ("value", data["plugin_user"]);
-				//$("#text_plugin_pass").attr ("value", data["plugin_pass"]);
-				//$("#text_plugin_parameter").attr ("value", data["plugin_parameter"]);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();

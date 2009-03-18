@@ -122,8 +122,8 @@ foreach ($modules as $module) {
 		
 		$data[0] = '<strong>'.get_modulegroup_name ($last_modulegroup).'</strong>';
 		$i = array_push ($table->data, $data);
-		$table->rowclass[$i] = 'datos3';
-		$table->colspan[$i][0] = 6;
+		$table->rowclass[$i - 1] = 'datos3';
+		$table->colspan[$i - 1][0] = 7;
 		
 		$data = array ();
 	}

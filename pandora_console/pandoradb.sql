@@ -400,7 +400,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 CREATE TABLE IF NOT EXISTS `tgrupo` (
   `id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
-  `icon` varchar(50) default NULL,
+  `icon` varchar(50) default NULL default 'world',
   `parent` mediumint(4) unsigned NOT NULL default '0',
   `disabled` tinyint(3) unsigned NOT NULL default '0',
   `custom_id` varchar(255) default '',

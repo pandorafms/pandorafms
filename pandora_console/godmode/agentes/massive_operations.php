@@ -39,9 +39,15 @@ echo '<div id="menu_tab">';
 echo '<ul class="mn">';
 
 echo '<li class="'.($tab == 'copy_modules' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=estado&sec2=godmode/agentes/massive_operations&tab=copy_modules">';
+echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=copy_modules">';
 print_image ("images/copy.png", false, $img_style);
-echo '&nbsp;'.__('Copy modules').'</a>';
+echo '&nbsp;'.__('Copy').'</a>';
+echo '</li>';
+
+echo '<li class="'.($tab == 'edit_modules' || $tab == '' ? 'nomn_high' : 'nomn').'">';
+echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">';
+print_image ("images/book_edit.png", false, $img_style);
+echo '&nbsp; '.__('Edit modules').'</a>';
 echo '</li>';
 
 echo '<li class="'.($tab == 'delete_agents' || $tab == '' ? 'nomn_high' : 'nomn').'">';
@@ -76,6 +82,9 @@ case 'delete_agents':
 	break;
 case 'delete_modules':
 	require_once ('godmode/agentes/massive_delete_modules.php');
+	break;
+case 'edit_modules':
+	require_once ('godmode/agentes/massive_edit_modules.php');
 	break;
 case 'copy_modules':
 default:

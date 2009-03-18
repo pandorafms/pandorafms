@@ -1977,7 +1977,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 	}
 	
 	if (isset ($values['group'])) {
-		$group = sprintf (' GROUP BY %s', $values['order']);
+		$group = sprintf (' GROUP BY %s', $values['group']);
 		unset ($values['group']);
 	}
 	

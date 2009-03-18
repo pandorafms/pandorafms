@@ -92,7 +92,10 @@ $components = get_network_components ($id_module, 'id_module_group = 10'));
 function get_network_components ($id_module, $filter = false, $fields = false) {
 	if (empty ($id_module))
 		return array ();
+	if (!is_array ($filter))
+		$filter = array ();
 	
+	$filter['id_modulo'] = $id_module;
 	$components = get_db_all_rows_filter ('tnetwork_component',
 		$filter, $fields);
 	if ($components === false)
@@ -117,8 +120,9 @@ function get_network_component_groups ($id_module_components = 0) {
 	static $level = 0;
 	static $id_parent = 0;
 	
-	$groups = get_db_all_rows_field_filter ('tnetwork_component_group',
-		'parent', $id_parent);
+	$groups = get_db_all_rows_filter ('tnetwork_component_group',
+		array ('parent' => $id_parent),
+		array ('id_sg', 'name'));
 	if ($groups === false)
 		return array ();
 	
@@ -128,7 +132,7 @@ function get_network_component_groups ($id_module_components = 0) {
 	foreach ($groups as $group) {
 		$level++;
 		$tmp = $id_parent;
-		$id_parent = $group['id_sg'];
+		$id_parent = (int) $group['id_sg'];
 		$childs = get_network_component_groups ($id_module_components);
 		$id_parent = $tmp;
 		$level--;
@@ -140,12 +144,9 @@ function get_network_component_groups ($id_module_components = 0) {
 			/* If components id module is provided, only groups with components
 			that belongs to this id module are returned */
 			if ($id_module_components) {
-				$sql = sprintf ('SELECT COUNT(*)
-					FROM tnetwork_component
-					WHERE id_module_group = %d
-					AND id_modulo = %d',
-					$group['id_sg'], $id_module_components);
-				$count = get_db_sql ($sql);
+				$count = get_db_value_filter ('COUNT(*)', 'tnetwork_component',
+					array ('id_group' => (int) $group['id_sg'],
+						'id_modulo' => $id_module_components));
 				if ($count > 0)
 					$retval[$group['id_sg']] = $prefix.$group['name'];
 			}
@@ -162,14 +163,14 @@ function get_network_component_groups ($id_module_components = 0) {
  *
  * @return True if the module was deleted. False if not.
  */
-function delete_agent_module ($id_agent_module) {
-	$where = array ('id_agent_module' => $id_agent_module);
+function delete_agent_module ($id) {
+	$where = array ('id_agent_module' => $id);
 	
 	process_sql_delete ('talert_template_modules', $where);
 	process_sql_delete ('tgraph_source', $where);
 	process_sql_delete ('treport_content', $where);
-	process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));
-	$where = array ('id_agente_modulo' => $id_agent_module);
+	process_sql_delete ('tevento', array ('id_agentmodule' => $id));
+	$where = array ('id_agente_modulo' => $id);
 	process_sql_delete ('tlayout_data', $where);
 	process_sql_delete ('tagente_estado', $where);
 	process_sql_update ('tagente_modulo',
@@ -177,5 +178,21 @@ function delete_agent_module ($id_agent_module) {
 		$where);
 	
 	return true;
+}
+
+/**
+ * Updates a module from an agent.
+ *
+ * @param mixed Agent module id to be deleted. Accepts an array with ids.
+ * @param array Values to update.
+ *
+ * @return True if the module was updated. False if not.
+ */
+function update_agent_module ($id, $values) {
+	if (! is_array ($values))
+		return false;
+	
+	return (bool) process_sql_update ('tagente_modulo', $values,
+		array ('id_agente_modulo' => $id));
 }
 ?>

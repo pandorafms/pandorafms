@@ -52,7 +52,7 @@ push_table_simple ($data, 'user_pass');
 $data = array ();
 $data[0] = __('WMI Query');
 $data[0] .= pandora_help ('wmiquery', true);
-$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 35, 60, true);
+$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 35, 255, true);
 $table_simple->colspan['wmi_query'][1] = 3;
 
 push_table_simple ($data, 'wmi_query');

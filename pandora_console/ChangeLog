@@ -1,5 +1,32 @@
 2009-03-18  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/massive_edit_modules.php: Added to repository. New
+	interface to update modules massively. Should be improved lately.
+
+	* reporting/pchart_graph.php: Fixed mess with color pallete.
+
+	* godmode/agentes/massive_operations.php: Fixed sec parameter on
+	links. Changed label. Added link to the new modules editor.
+
+	* godmode/agentes/module_manager.php: Fixed an error when showing
+	module group titles.
+
+	* godmode/agentes/module_manager_editor.php: Decode values from
+	components.
+	
+	* godmode/agentes/module_manager_editor_wmi.php: Bigger WMI query
+	input text.
+
+	* include/functions_db.php: Fixed a bug when using group on
+	format_array_to_where_clause_sql().
+
+	* include/functions_modules.php: Fixed an error on
+	get_network_components() which was not filtering fine. Many fixes in
+	get_network_component_groups() so it works better now. Added
+	update_agent_module().
+
+2009-03-18  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/alerts/alert_list.php: Put tooltip before the template name
 	so it's always in the same place.
 

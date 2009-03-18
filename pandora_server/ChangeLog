@@ -1,3 +1,14 @@
+2009-03-18  Sancho Lerena   <slerena@artica.es>
+
+	* lib/Config.pm: Making sure that snmpget exists, new token
+	to define snmpget binary (ported from trunk).
+
+	* bin/pandora_network: Using snmpget token, ported from trunk.
+
+	* Makefile.PL: Removed SNMP from Makefile deps.
+
+	* conf/pandora_server.conf: Added to default setup commented.
+
 2009-02-24  Sancho lerena   <slerena@artica.es>
 
 	* util/tentacle_server: Added to package.

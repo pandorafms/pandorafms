@@ -196,10 +196,14 @@ sub pandora_loadconfig {
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 	$pa_config->{'autocreate_group'} = 2;
 	$pa_config->{'autocreate'} = 1;
-    $pa_config->{'recon_threads'} = 3;
+    $pa_config->{'recon_threads'} = 2;
 
+
+	# Snmpget for snmpget system command (optional)
+	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
+	
 	# max log size (bytes)
-	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
+	$pa_config->{'max_log_size'} = 32000; 
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -403,6 +407,9 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
             $pa_config->{'max_log_size'}= clean_blank($1); 
         }
+        elsif ($parametro =~ m/^snmpget\s(.*)/i) {
+			$pa_config->{'snmpget'}= clean_blank($1); 
+		}
     } # end of loop for parameter #
 
 

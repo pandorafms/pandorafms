@@ -1,3 +1,14 @@
+2009-03-18  Sancho Lerena  <slerena@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php: Removed SNMP Walk
+	because don't work :-(. Needs fix
+
+	* godmode/modules/manage_network_components.php: Support pagination and
+	fixed layout.
+
+	* godmode/modules/manage_nc_groups.php: Show items per group and add a 
+	direct link to them.
+
 2009-03-16  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/help/en/help_planned_downtime.php,

@@ -137,14 +137,8 @@ if (isset($_GET["delete"])){ // if delete
 echo "<h2>".__('Module management')." &gt; ";
 echo __('Module component management')."</h2>";
 
-// Show group selector
-if (isset($_POST["ncgroup"])) {
-	$ncgroup = $_POST["ncgroup"];
-} else {
-	$ncgroup = 0;
-}
-
-
+$ncgroup = get_parameter ("ncgroup", 0);
+$offset = get_parameter ("offset", 0);
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td>";
@@ -170,11 +164,25 @@ echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>
 echo "</td></tr></table>";
 
 if ($ncgroup != 0) {
-	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup ORDER BY name";
+	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup ORDER BY name LIMIT $offset, ".$config["block_size"];
+	$sql2 = "SELECT COUNT(*) FROM tnetwork_component WHERE id_group = $ncgroup";
 } else {
-	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group,name";
+	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group,name LIMIT $offset, ".$config["block_size"];
+	$sql2 = "SELECT COUNT(*) FROM tnetwork_component";
 }
+
+$result2=mysql_query($sql2);
+$row2=mysql_fetch_array($result2);
+$total_events = $row2[0];
+
+// Prepare pagination
+if ($ncgroup != 0)
+	pagination ($total_events, "index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&ncgroup=$ncgroup", $offset);
+else
+	pagination ($total_events, "index.php?sec=gmodules&sec2=godmode/modules/manage_network_components", $offset);
 	
+echo "<div style='height: 20px'> </div>";
+
 $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){
 	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
@@ -184,8 +192,6 @@ if ( $row = mysql_num_rows ($result)){
 	echo "<th>".__('Interval')."</th>";
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('NC.Group')."</th>";
-	//echo "<th>".__('Module group');
-	echo "<th>".__('Max/Min')."</th>";
 	echo "<th width=50>".__('Action')."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
@@ -219,14 +225,6 @@ if ( $row = mysql_num_rows ($result)){
 		echo "</td>";
 		echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
 		echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
-		//echo "<td class='$tdcolor'>".
-		//substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
-		echo "<td class='$tdcolor'>";
-		if ($module_max == $module_min) {
-			$module_max = "N/A";
-			$module_min = "N/A";
-		}
-		echo $module_max." / ".$module_min;
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&delete=1&id_nc=".$row["id_nc"]."'>";
 		echo "<img src='images/cross.png' border=0 alt='".__('Delete')."'></a></td>";

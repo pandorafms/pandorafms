@@ -73,6 +73,7 @@ echo __('Component group management')."</h2>";
 echo "<table cellpadding='4' cellspacing='4' width='550' class='databox'>";
 echo "<th>".__('Name')."</th>";
 echo "<th>".__('Parent')."</th>";
+echo "<th>".__('Items')."</th>";
 echo "<th>".__('Delete')."</th>";
 $sql1='SELECT * FROM tnetwork_component_group ORDER BY parent';
 $result=mysql_query($sql1);
@@ -93,6 +94,10 @@ while ($row=mysql_fetch_array($result)){
 			<td class='$tdcolor'>
 			".give_network_component_group_name ($row["parent"])."
 			</td>
+			<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&ncgroup=".$row["id_sg"]."'><b>
+			".get_db_sql("SELECT COUNT(*) FROM tnetwork_component WHERE id_group = ".$row["id_sg"])."</b></a></td>
+			
+			
 			<td class='$tdcolor' align='center'>
 			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg=".$row["id_sg"]."'
 				onClick='if (!confirm(\' ".__('Are you sure?')."\'))

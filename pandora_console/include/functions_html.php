@@ -703,7 +703,7 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 		$idcounter[$name] = 0;
 	}
 	
-	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.$idcounter[$name]);
+	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
 			
 	$output = '<input name="'.$name.'" type="checkbox" value="'.$value.'" '. ($checked ? 'checked="checked"': '');
 	$output .= ' id="checkbox-'.$id.'"';

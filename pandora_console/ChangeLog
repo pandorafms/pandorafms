@@ -1,3 +1,22 @@
+2009-03-18  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/alert_list.php: Put tooltip before the template name
+	so it's always in the same place.
+
+	* include/javascript/jquery.pandora.controls.js: Fixed a bug on
+	pandoraSelectAgentModule which was getting wrong fields.
+
+	* include/functions_html.php: Do not add id counter on checkboxes if
+	it's 0.
+
+	* operation/agentes/estado_agente.php: Create agent button was going
+	to a wrong place.
+
+	* reporting/fgraph.php: Fixed graphic_agentaccess() which was not
+	showing anything.
+
+	* pandoradb_data.sql: Removed Compound only from talert_commands.
+
 2009-03-17  Esteban Sanchez  <estebans@artica.es>
 
 	* reporting/fgraph.php: Fixed a bug on graphic_error() which always

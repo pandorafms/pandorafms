@@ -1,5 +1,7 @@
 2009-03-18  Sancho Lerena  <slerena@artica.es>
 
+	* general/footer.php: Fixing the damm problem with Firefox button img.
+
 	* godmode/agentes/module_manager_editor_network.php: Removed SNMP Walk
 	because don't work :-(. Needs fix
 

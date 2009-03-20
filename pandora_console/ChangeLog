@@ -1,3 +1,20 @@
+2009-03-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_incidents.php: Style change
+	
+	* include/functions.php: Never is not correct in some cases. Unknown is 
+	a better expression.
+	
+	* include/functions_ui.php: Added style attribute (default to nowrap)
+	
+	* include/functions_db.php: get_server_info now processes modules outside
+	the loop. Less queries and now returns load as well
+	
+	* include/functions_html.php: print_submit_button now accepts arrays
+	
+	* operation/servers/view_server.php, operation/incidents/incident.php: 
+	Better use of functions and style
+
 2009-03-18  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/massive_edit_modules.php: Added to repository. New

@@ -414,7 +414,7 @@ function get_system_time () {
  */
 function human_time_description_raw ($seconds) {
 	if (empty ($seconds)) {
-		return __('Never');
+		return __('Unknown');
 	}
 	
 	if ($seconds < 60)

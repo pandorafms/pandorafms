@@ -167,10 +167,9 @@ if (empty ($result)) {
 }
 
 echo '<h2>'.__('Incident management').' &gt; '.__('Manage incidents').'</h2>
-<form name="visualizacion" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
-<table class="databox" cellpadding="4" cellspacing="4" width="700px"><tr>
-<td valign="middle">
-<h3>'.__('Filter').'</h3>';
+<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">
+<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
+<td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = get_incidents_status ();
 $fields[-1] = __('All incidents');
@@ -179,7 +178,7 @@ print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', '', 
 
 //Legend
 echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-estado', false, 'class="sub" border="0"');
+print_submit_button (__('Show'), 'submit-estado', false, array ("class" => "sub"));
 
 echo '</noscript></td><td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
 foreach (get_incidents_status () as $id => $str) {
@@ -201,13 +200,13 @@ $fields[-1] = __('All priorities');
 print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', '','',false,false,false,'w155');
 
 echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-prioridad', false, 'class="sub" border="0"');
+print_submit_button (__('Show'), 'submit-prioridad', false, array ("class" => "sub"));
 echo '</noscript></td></tr><tr><td>';
 
 print_select ($groups, "grupo", $grupo, 'javascript:this.form.submit();','','',false,false,false,'w155');
 
 echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-grupo', false, 'class="sub" border="0"');
+print_submit_button (__('Show'), 'submit-grupo', false, array ("class" => "sub"));
 echo '</noscript>';
 
 // Pass search parameters for possible future filter searching by user
@@ -220,21 +219,21 @@ if ($count < 1) {
 	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
 } else {
 	// TOTAL incidents
-	$url = "index.php?sec=incidencias&sec2=operation/incidents/incident";
+	$url = "index.php?sec=incidencias&amp;sec2=operation/incidents/incident";
 
 	$estado = -1;
 
 	// add form filter values for group, priority, state, and search fields: user and text
 	if ($grupo != -1)
-		$url .= "&grupo=".$grupo;
+		$url .= "&amp;grupo=".$grupo;
 	if ($prioridad != -1)
-		$url .= "&prioridad=".$prioridad;
+		$url .= "&amp;prioridad=".$prioridad;
 	if ($estado != -1)
-		$url .= "&estado=".$estado;
+		$url .= "&amp;estado=".$estado;
 	if ($usuario != '')
-		$url .= "&usuario=".$usuario;
+		$url .= "&amp;usuario=".$usuario;
 	if ($texto != '')
-		$url .= "&texto=".$texto;
+		$url .= "&amp;texto=".$texto;
 
 	// Show pagination
 	pagination ($count, $url, $offset);
@@ -271,15 +270,15 @@ if ($count < 1) {
 	foreach ($result as $row) {
 		$data = array();
 
-		$data[0] = '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
+		$data[0] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';
 		$attach = get_incidents_attach ($row["id_incidencia"]);
 		
 		if (!empty ($attach))
-			$data[0] .= '&nbsp;&nbsp;<img src="images/file.png" align="middle" />';
+			$data[0] .= '&nbsp;&nbsp;'.print_image ("images/file.png", true, array ("style" => "align:middle;"));
 				
 		$data[1] = print_incidents_status_img ($row["estado"], true);
 		
-		$data[2] = '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$row["id_incidencia"].'">'.safe_input (substr ($row["titulo"],0,45)).'</a>';
+		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.safe_input (substr ($row["titulo"],0,45)).'</a>';
 		
 		$data[3] = print_incidents_priority_img ($row["prioridad"], true);																																																													
 		
@@ -300,7 +299,7 @@ if ($count < 1) {
 		array_push ($table->data, $data);
 	}
 	
-	echo '<form method="post" action="'.$url.'&action=mass" style="margin-bottom: 0px;">';
+	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
 	print_table ($table);
 	if (give_acl ($config["id_user"], 0, "IM")) {
 		echo '<div style="text-align:right; float:right; padding-right: 30px;">';
@@ -314,7 +313,7 @@ if ($count < 1) {
 
 if (give_acl ($config["id_user"], 0, "IW")) {
 	echo '<div style="text-align:right; float:right; padding-right: 30px;">';
-	echo '<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form=1">';
+	echo '<form method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 	print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';

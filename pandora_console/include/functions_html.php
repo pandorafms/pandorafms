@@ -326,7 +326,7 @@ function print_input_hidden ($name, $value, $return = false) {
  * @param string $label Input label.
  * @param string $name Input name.
  * @param bool $disabled Whether to disable by default or not. Enabled by default.
- * @param string $attributes Additional HTML attributes.
+ * @param array $attributes Additional HTML attributes.
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
@@ -334,7 +334,15 @@ function print_input_hidden ($name, $value, $return = false) {
 function print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
 	if (!$name) {
 		$name="unnamed";
-	} 
+	}
+	
+	if (is_array ($attributes)) {
+		$attr_array = $attributes;
+		$attributes = '';
+		foreach ($attr_array as $attribute => $value) {
+			$attributes .= $attribute.'="'.$value.'" ';
+		}
+	}
 		
 	$output = '<input type="submit" id="submit-'.$name.'" name="'.$name.'" value="'. $label .'" '. $attributes;
 	if ($disabled)

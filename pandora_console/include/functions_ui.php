@@ -82,6 +82,12 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 		$tag = "span";
 	}
 	
+	if (empty ($option["style"])) {
+		$style = 'style="white-space:nowrap;"';
+	} else {
+		$style = 'style="'.$option["style"].'"';
+	}
+	
 	if (!empty ($option["prominent"])) {
 		$prominent = $option["prominent"];
 	} else {
@@ -94,8 +100,8 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 
 	//prominent_time is either timestamp or comparation
 	if ($unixtime == 0) {
-		$title = __('Never');
-		$data = __('Never');
+		$title = __('Unknown').'/'.__('Never');
+		$data = __('Unknown');
 	} elseif ($prominent == "timestamp") {
 		$title = human_time_comparation ($unixtime);
 		$data = date ($config["date_format"], $unixtime);
@@ -113,7 +119,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	case "h2":
 	case "h3":
 		//Above tags don't have title attributes
-		$output .= ' '.$attributes.'>'.$data.'</'.$tag.'>';
+		$output .= ' '.$attributes.' '.$style.'>'.$data.'</'.$tag.'>';
 	}
 
 	if ($return)

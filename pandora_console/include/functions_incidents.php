@@ -43,22 +43,22 @@ function get_incidents_priorities () {
 function print_incidents_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
 	case 0:
-		$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_yellow.png" />';
+		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true).print_image ("images/dot_yellow.png", true);
 		break;
 	case 1:
-		$img = '<img src="images/dot_green.png" /><img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" />';
+		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_yellow.png", true).print_image ("images/dot_yellow.png", true);
 		break;
 	case 2:
-		$img = '<img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" /><img src="images/dot_red.png" />';
+		$img = print_image ("images/dot_yellow.png", true).print_image ("images/dot_yellow.png", true).print_image ("images/dot_red.png", true);
 		break;
 	case 3:
-		$img = '<img src="images/dot_yellow.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
+		$img = print_image ("images/dot_yellow.png", true).print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true);
 		break;
 	case 4:
-		$img = '<img src="images/dot_red.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
+		$img = print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true).print_image ("images/dot_red.png", true);
 		break;
 	case 10:
-		$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_green.png" />';
+		$img = print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true).print_image ("images/dot_green.png", true);
 		break;
 	}
 	
@@ -95,19 +95,19 @@ function get_incidents_status () {
 function print_incidents_status_img ($id_status, $return = false) {
 	switch ($id_status) {
 		case 0:
-			$img = '<img src="images/dot_red.png" />';
+			$img = print_image ("images/dot_red.png", true);
 		break;
 		case 1:
-			$img = '<img src="images/dot_yellow.png" />';
+			$img = print_image ("images/dot_yellow.png", true);
 		break;
 		case 2:
-			$img = '<img src="images/dot_blue.png" />';
+			$img = print_image ("images/dot_blue.png", true);
 		break;
 		case 3:
-			$img = '<img src="images/dot_green.png" />';
+			$img = print_image ("images/dot_green.png", true);
 		break;
 		case 13:
-			$img = '<img src="images/dot_white.png" />';
+			$img = print_image ("images/dot_white.png", true);
 		break;
 	}
 	

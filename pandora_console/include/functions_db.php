@@ -2612,6 +2612,23 @@ function get_server_info ($id_server = -1) {
 		$select_id = "";
 	}
 	
+	$modules_info = array ();
+	$modules_total = 0;
+	$result = get_db_all_rows_sql ("SELECT DISTINCT(tagente_estado.running_by) , COUNT(*) AS modules
+								   FROM tagente_estado, tagente_modulo 
+								   WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+								   AND tagente_modulo.disabled = 0
+								   AND tagente_modulo.delete_pending = 0 GROUP BY running_by");
+	if (empty ($result)) {
+		$result = array ();
+	}
+	
+	foreach ($result as $row) {
+		$modules_info[$row["running_by"]] = $row["modules"];
+		$modules_total += $row["modules"];
+	}
+	
+	
 	$sql = "SELECT * FROM tserver".$select_id;
 	$result = get_db_all_rows_sql ($sql);
 	$time = get_system_time ();
@@ -2640,33 +2657,22 @@ function get_server_info ($id_server = -1) {
 			$server["type"] = "unknown";
 		}
 		
-		$modules = array ();
-		$result = get_db_all_rows_sql ("SELECT tagente_estado.id_agente_modulo, tagente_modulo.nombre FROM tagente_estado, tagente_modulo 
-			 WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			 AND tagente_modulo.disabled = 0
-			 AND tagente_modulo.delete_pending = 0
-			 AND tagente_estado.running_by = ".$server["id_server"]);
-		
-		if ($result === false) {
-			$result = array ();
+		if (empty ($modules_info[$server["id_server"]])) {
+			$server["modules"] = 0;
+		} else {
+			$server["modules"] = $modules_info[$server["id_server"]];
 		}
-		foreach ($result as $module_info) {
-			$modules[$module_info["id_agente_modulo"]] = $module_info["nombre"];
-		}
-		
-		$server["modules"] = count ($modules);
-		$server["module_info"] = $modules; //We have it, so we might as well pass it just in case somebody might find out a use for it.
 		$server["module_lag"] = 0;
 		$server["lag"] = 0;
+		$server["load"] = 0;
+		$server["modules_total"] = $modules_total;
 		
 		if ($server["modules"] > 0) {
 			//If the server doesn't have modules, it doesn't have lag
-			
 			$result = get_db_row_sql ("SELECT COUNT(*) AS module_lag, MAX(last_execution_try - current_interval) AS lag FROM tagente_estado
 												WHERE last_execution_try > 0
 												AND current_interval > 0
 												AND running_by = ".$server["id_server"]."
-												AND id_agente_modulo IN (".implode (",", array_keys ($modules)).")
 												AND (UNIX_TIMESTAMP() - last_execution_try - current_interval < current_interval * 2)");
 			
 			// Lag over current_interval * 2 is not lag, it's a timed out module
@@ -2678,6 +2684,8 @@ function get_server_info ($id_server = -1) {
 			if (!empty ($result["module_lag"])) {
 				$server["module_lag"] = $result["module_lag"];
 			}
+			
+			$server["load"] = (int) $server["modules"] / $modules_total * 100;
 		}
 		
 		//Push the raw data on the return stack

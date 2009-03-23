@@ -1,3 +1,34 @@
+2009-03-23  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/massive_edit_modules.php: The module selection is
+	now done using cascade selects instead of having a confusing tree on
+	the select.
+
+	* godmode/alerts/alert_list.php: Fixed a bug when getting the latest
+	module value.
+
+	* godmode/alerts/alert_templates.php: Fixed an error that didn't allow
+	deletion on some cases. Added an option to duplicate a template
+	easily.
+
+	* godmode/alerts/configure_alert_template.php: Added template
+	duplication support. Fixed a mismatch on field1, field2 and field3
+	which required to have a default action to be updated. This values are
+	not loaded anymore from default action.
+
+	* godmode/db/db_purge.php: Many styles correction. Use pandora
+	functions for the bottom table.
+
+	* include/functions_alerts.php: Added duplicate_alert_template().
+
+	* include/functions_db.php: Added a parameter to get_agent_modules()
+	to enable or disable the return of indexed values.
+
+	* operation/agentes/sla_view.php: Style correction.
+
+	* operation/agentes/ver_agente.php: Added support for indexed flag on
+	get_agent_modules_json AJAX operation.
+
 2009-03-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_incidents.php: Style change

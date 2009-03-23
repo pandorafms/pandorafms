@@ -523,6 +523,24 @@ function get_alert_template_threshold_values () {
 	return $times;
 }
 
+function duplicate_alert_template ($id_alert_template) {
+	$template = get_alert_template ($id_alert_template);
+	if ($template === false)
+		return false;
+	$name = __('Copy of').' '.$template['name'];
+	$type = $template['type'];
+	
+	$size = count ($template) / 2;
+	for ($i = 0; $i < $size; $i++) {
+		unset ($template[$i]);
+	}
+	unset ($template['name']);
+	unset ($template['id']);
+	unset ($template['type']);
+	
+	return create_alert_template ($name, $type, $template);
+}
+
 function clean_alert_agent_module_values ($values, $set_empty = true) {
 	$retvalues = array ();
 	

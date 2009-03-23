@@ -29,6 +29,19 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
+$duplicate_template = (bool) get_parameter ('duplicate_template');
+$id = (int) get_parameter ('id');
+
+if ($duplicate_template) {
+	$source_id = (int) get_parameter ('source_id');
+	
+	$id = duplicate_alert_template ($source_id);
+	print_error_message ($id,
+		__('Successfully created from %s', get_alert_template_name ($source_id)),
+		__('Could not be created'));
+}
+
+
 function print_alert_template_steps ($step, $id) {
 	echo '<ol class="steps">';
 	
@@ -138,9 +151,6 @@ function update_template ($step) {
 		$default_action = (int) get_parameter ('default_action');
 		if (empty ($default_action)) {
 			$default_action = NULL;
-			$field1 = '';
-			$field2 = '';
-			$field3 = '';
 		}
 		
 		$values = array ('monday' => $monday,
@@ -163,9 +173,6 @@ function update_template ($step) {
 		
 		if ($default_action) {
 			$values['id_alert_action'] = $default_action;
-			$values['field1'] = $field1;
-			$values['field2'] = $field2;
-			$values['field3'] = $field3;
 		}
 		
 		$result = update_alert_template ($id, $values);
@@ -173,7 +180,7 @@ function update_template ($step) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (string) get_parameter ('field2_recovery');
 		$field3_recovery = (string) get_parameter ('field3_recovery');
-		print_r ($_POST);
+		
 		$result = update_alert_template ($id,
 			array ('recovery_notify' => $recovery_notify,
 				'field2_recovery' => $field2_recovery,
@@ -184,8 +191,6 @@ function update_template ($step) {
 	
 	return $result;
 }
-
-$id = (int) get_parameter ('id');
 
 /* We set here the number of steps */
 define ('LAST_STEP', 3);
@@ -313,20 +318,12 @@ if ($step == 2) {
 		$threshold_selected = -1;
 	}
 	
-	if ($default_action == 0) {
-		$table->rowstyle = array ();
-		$table->rowstyle['field1'] = 'display: none';
-		$table->rowstyle['field2'] = 'display: none';
-		$table->rowstyle['field3'] = 'display: none';
-		$table->rowstyle['preview'] = 'display: none';
-	}
 	$table->colspan = array ();
 	$table->colspan[0][1] = 3;
 	$table->colspan[4][1] = 3;
 	$table->colspan['field1'][1] = 3;
 	$table->colspan['field2'][1] = 3;
 	$table->colspan['field3'][1] = 3;
-	$table->colspan['preview'][1] = 3;
 	
 	$table->data[0][0] = __('Days of week');
 	$table->data[0][1] = __('Mon');
@@ -366,11 +363,6 @@ if ($step == 2) {
 	$table->data[3][3] = print_input_text ('max_alerts', $max_alerts, '',
 		5, 7, true);
 	
-	$table->data[4][0] = __('Default action');
-	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
-		'default_action', $default_action, '', __('None'), 0,
-		true, false, false);
-	
 	$table->data['field1'][0] = __('Field 1');
 	$table->data['field1'][1] = print_input_text ('field1', $field1, '', 35, 255, true);
 	
@@ -380,9 +372,10 @@ if ($step == 2) {
 	$table->data['field3'][0] = __('Field 3');
 	$table->data['field3'][1] = print_textarea ('field3', 30, 30, $field3, '', true);
 	
-	$table->data['preview'][0] = __('Command preview');
-	$table->data['preview'][1] = print_textarea ('command_preview', 30, 30,
-		'', 'disabled="disabled"', true);
+	$table->data[4][0] = __('Default action');
+	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+		'default_action', $default_action, '', __('None'), 0,
+		true, false, false);
 } else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {
@@ -659,38 +652,6 @@ $(document).ready (function () {
 			$("#template-threshold-other_input").hide ();
 		}
 	});
-	
-	$("#default_action").change (function () {
-		if (this.value != 0) {
-			values = Array ();
-			values.push ({name: "page",
-				value: "godmode/alerts/alert_actions"});
-			values.push ({name: "get_alert_action",
-				value: "1"});
-			values.push ({name: "id",
-				value: this.value});
-			jQuery.get ("ajax.php",
-				values,
-				function (data) {
-					$("#text-field1").attr ("value", data["field1"]);
-					$("#text-field2").attr ("value", data["field2"]);
-					$("#text-field3").attr ("value", data["field3"]);
-					original_command = html_entity_decode (data["command"]["command"]);
-					render_command_preview ();
-					
-					$("#template-field1, #template-field2, #template-field3, #template-example")
-						.show ();
-				},
-				"json"
-			);
-		} else {
-			$("#template-field1, #template-field2, #template-field3").hide ();
-		}
-	});
-	
-	$("#text-field1").keyup (render_command_preview);
-	$("#text-field2").keyup (render_command_preview);
-	$("#text-field3").keyup (render_command_preview);
 <?php elseif ($step == 3): ?>
 	$("#recovery_notify").change (function () {
 		if (this.value == 1) {

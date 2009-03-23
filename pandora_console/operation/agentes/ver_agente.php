@@ -41,10 +41,15 @@ if (is_ajax ()) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$filter = (string) get_parameter ('filter');
 		$fields = (string) get_parameter ('fields');
+		$indexed = (bool) get_parameter ('indexed', true);
 		
-		$agent_modules =  get_agent_modules ($id_agent,
+		/* Get all agents if no agent was given */
+		if ($id_agent == 0)
+			$id_agent = array_keys (get_group_agents (array_keys (get_user_groups ()), false, "none"));
+		
+		$agent_modules = get_agent_modules ($id_agent,
 			($fields != '' ? explode (',', $fields) : "*"),
-			($filter != '' ? $filter : false));
+			($filter != '' ? $filter : false), $indexed);
 		
 		echo json_encode ($agent_modules);
 		exit ();

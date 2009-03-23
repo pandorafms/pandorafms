@@ -504,7 +504,7 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "operation/agentes/estado_agente",
 			"get_agent_module_last_value" : 1,
-			"id_agent_module" : 1
+			"id_agent_module" : this.value
 			},
 			function (data, status) {
 				if (data === false) {

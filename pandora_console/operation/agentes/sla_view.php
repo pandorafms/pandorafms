@@ -33,7 +33,8 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 echo "<h2>".__('SLA view')."</h2>";
 $id_agent = get_parameter ("id_agente", 0);
 $interval = get_agent_interval ($id_agent);
-$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
+$modules = get_agent_modules ($id_agent, '*',
+	array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
 $offset = get_parameter ("offset", 0);
 
 // Get all module from agent

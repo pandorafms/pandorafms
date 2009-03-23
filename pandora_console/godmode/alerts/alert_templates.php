@@ -124,13 +124,6 @@ if ($update_template) {
 
 if ($delete_template) {
 	$id = get_parameter ('id');
-	// Templates below 4 are special and cannot be deleted
-	if ($id < 4) {
-		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-			"Trying to access Alert Management");
-		require ("general/noaccess.php");
-		exit;
-	}
 	
 	$result = delete_alert_template ($id);
 	
@@ -144,12 +137,12 @@ $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
 $table->head[2] = __('Type');
-$table->head[3] = __('Delete');
+$table->head[3] = __('Op.');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '10%';
-$table->size[3] = '40px';
+$table->size[3] = '50px';
 $table->align = array ();
 $table->align[3] = 'center';
 
@@ -165,9 +158,17 @@ foreach ($templates as $template) {
 	
 	$data[1] = $template['description'];
 	$data[2] = get_alert_templates_type_name ($template['type']);
-	$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/alerts/alert_templates&delete_template=1&id='.$template['id'].'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		'<img src="images/cross.png"></a>';
+	$data[3] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
+	$data[3] .= print_input_hidden ('duplicate_template', 1, true);
+	$data[3] .= print_input_hidden ('source_id', $template['id'], true);
+	$data[3] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+	$data[3] .= '</form> ';
+	
+	$data[3] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+	$data[3] .= print_input_hidden ('delete_template', 1, true);
+	$data[3] .= print_input_hidden ('id', $template['id'], true);
+	$data[3] .= print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
+	$data[3] .= '</form> ';
 	
 	array_push ($table->data, $data);
 }

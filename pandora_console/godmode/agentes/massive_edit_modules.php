@@ -47,7 +47,6 @@ function process_manage_edit ($module_name) {
 			$values[$field] = $value;
 	}
 	
-	
 	$modules = get_db_all_rows_filter ('tagente_modulo',
 		array ('id_agente' => $agents,
 			'nombre' => $module_name),
@@ -66,6 +65,7 @@ function process_manage_edit ($module_name) {
 	process_sql ('SET AUTOCOMMIT = 1');
 }
 
+$module_type = (int) get_parameter ('module_type');
 $module_name = (string) get_parameter ('module_name');
 
 $update = (bool) get_parameter_post ('update');
@@ -74,7 +74,6 @@ if ($update) {
 	process_manage_edit ($module_name);
 }
 
-
 $table->id = 'delete_table';
 $table->width = '95%';
 $table->data = array ();
@@ -82,45 +81,52 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
 $table->style[2] = 'font-weight: bold';
 $table->rowstyle = array ();
-$table->rowstyle['edit1'] = 'display: none';
-$table->rowstyle['edit2'] = 'display: none';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '85%'; /* Fixed using javascript */
+$table->size[1] = '35%'; /* Fixed using javascript */
 $table->size[2] = '15%';
 $table->size[3] = '35%';
-$table->colspan = array ();
-$table->colspan[0][1] = '3';
-
+if (! $module_type) {
+	$table->rowstyle['edit1'] = 'display: none';
+	$table->rowstyle['edit2'] = 'display: none';
+}
 $agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
-$all_modules = get_db_all_rows_filter ('tagente_modulo',
-	array ('id_agente' => array_keys ($agents),
-		'group' => 'nombre',
-		'order' => 'id_tipo_modulo,nombre'),
-	array ('DISTINCT(nombre)', 'id_tipo_modulo'));
+$module_types = get_db_all_rows_filter ('tagente_modulo,ttipo_modulo',
+	array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
+		'id_agente' => array_keys ($agents),
+		'disabled' => 0,
+		'order' => 'ttipo_modulo.nombre'),
+	array ('DISTINCT(id_tipo)',
+		'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'));
 
-if ($all_modules === false)
-	$all_modules = array ();
+if ($module_types === false)
+	$module_types = array ();
 
-$modules = array ();
-$latest_type = -1;
-$i = -1;
-$prefix = str_repeat ('&nbsp;', 3);
-foreach ($all_modules as $module) {
-	if ($latest_type != $module['id_tipo_modulo']) {
-		$modules[$i--] = get_moduletype_description ($module['id_tipo_modulo']);
-		$latest_type = $module['id_tipo_modulo'];
-	}
-	$modules[$module['nombre']] = $prefix.$module['nombre'];
+$types = '';
+foreach ($module_types as $type) {
+	$types[$type['id_tipo']] = $type['description'];
 }
 
 $table->data = array ();
-$table->data[0][0] = __('Module');
-$table->data[0][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[0][0] = __('Module type');
+$table->data[0][0] .= '<span id="module_loading" class="invisible">';
 $table->data[0][0] .= '<img src="images/spinner.gif" />';
 $table->data[0][0] .= '</span>';
-$table->data[0][1] = print_select ($modules,
-	'module_name', 0, false, __('Select'), 0, true, false, false);
+$table->data[0][1] = print_select ($types,
+	'module_type', $module_type, false, __('Select'), 0, true, false, false);
+
+$modules = array ();
+if ($module_type != '') {
+	$names = get_agent_modules (array_keys ($agents),
+		'DISTINCT(nombre)',
+		array ('id_tipo_modulo' => $module_type), false);
+	foreach ($names as $name) {
+		$modules[$name['nombre']] = $name['nombre'];
+	}
+}
+$table->data[0][2] = __('Module name');
+$table->data[0][3] = print_select ($modules, 'module_name',
+	$module_name, false, __('Select'), 0, true, false, false);
 
 $table->data['edit1'][0] = __('Warning status');
 $table->data['edit1'][1] = '<em>'.__('Min.').'</em>';
@@ -156,6 +162,30 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	$("#module_type").change (function () {
+		$("#module_loading").show ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
+		$("#module_name").attr ("disabled", "disabled")
+		$("#module_name option[value!=0]").remove ();
+		jQuery.post ("ajax.php",
+			{"page" : "operation/agentes/ver_agente",
+			"get_agent_modules_json" : 1,
+			"filter" : "id_tipo_modulo="+this.value,
+			"fields" : "DISTINCT(nombre)",
+			"indexed" : 0
+			},
+			function (data, status) {
+				jQuery.each (data, function (id, value) {
+					option = $("<option></option>").attr ("value", value["nombre"]).html (value["nombre"]);
+					$("#module_name").append (option);
+				});
+				$("#module_loading").hide ();
+				$("#module_name").removeAttr ("disabled");
+			},
+			"json"
+		);
+	});
+	
 	$("#module_name").change (function () {
 		if (this.value <= 0) {
 			$("td#delete_table-0-1").css ("width", "85%");

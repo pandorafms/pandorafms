@@ -333,7 +333,10 @@ function get_agentmodule ($id_agentmodule) {
  * @param mixed Aditional filters to the modules. It can be an indexed array
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator) or a string, including any SQL clause (without
- * the WHERE keyword). Example:
+ * the WHERE keyword).
+ * @param bool Wheter to return the modules indexed by the id_agente_modulo or
+ * not. Default is indexed.
+ * Example:
 <code>
 Both are similars:
 $modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
@@ -347,7 +350,7 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agent_modules ($id_agent, $details = false, $filter = false) {
+function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true) {
 	$id_agent = safe_int ($id_agent, 1);
 	
 	$where = '';
@@ -383,7 +386,7 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 		FROM tagente_modulo
 		%s
 		ORDER BY nombre',
-		$details != '*' ? 'id_agente_modulo,' : '',
+		($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 		implode (",", (array) $details),
 		$where);
 	$result = get_db_all_rows_sql ($sql);
@@ -392,13 +395,16 @@ function get_agent_modules ($id_agent, $details = false, $filter = false) {
 		return array ();
 	}
 	
+	if (! $indexed)
+		return $result;
+	
 	$modules = array ();
-	foreach ($result as $row) {
+	foreach ($result as $module) {
 		if (is_array ($details) || $details == '*') {
 			 //Just stack the information in array by ID
-			$modules[$row['id_agente_modulo']] = $row;
+			$modules[$module['id_agente_modulo']] = $module;
 		} else {
-			$modules[$row['id_agente_modulo']] = $row[$details];
+			$modules[$module['id_agente_modulo']] = $module[$details];
 		}
 	}
 	return $modules;
@@ -550,7 +556,7 @@ function dame_nombre_pluginid ($id_plugin) {
  * 
  * @return string The name of the given type.
  */
-function giveme_module_type ($id_type) {
+function get_module_type_name ($id_type) {
 	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 

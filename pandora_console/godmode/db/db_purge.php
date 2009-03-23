@@ -30,11 +30,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 }
 
 //id_agent = -1: None selected; id_agent = 0: All
-if (isset ($_POST["agent"])){
-	$id_agent = (int) get_parameter_post ("agent", -1); //Default to none selected
-} else {
-	$id_agent = -1;
-}
+$id_agent = (int) get_parameter_post ("agent", -1);
 
 echo '<h2>'.__('Database Maintenance').' &gt; '.__('Database purge').'</h2>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
@@ -48,19 +44,19 @@ $time["all"] = get_system_time ();
 $time["1day"] = $time["all"]-86400;
 
 // 3 days ago
-$time["3day"] = $time["all"]-(86400*3);
+$time["3day"] = $time["all"] - 259200;
 
 // 1 week ago
-$time["1week"] = $time["all"]-(86400*7);
+$time["1week"] = $time["all"] - 604800;
 
 // 2 weeks ago
-$time["2week"] = $time["all"]-(86400*14);
+$time["2week"] = $time["all"] - 1209600;
 
 // 1 month ago
-$time["1month"] = $time["all"]-(86400*30);
+$time["1month"] = $time["all"] - 2592000;
 
 // Three months ago
-$time["3month"] = $time["all"]-(86400*90);
+$time["3month"] = $time["all"] - 7776000;
 	
 //Init data
 $data["1day"] = 0;
@@ -71,12 +67,10 @@ $data["1month"] = 0;
 $data["3month"] = 0; 
 $data["total"] = 0;
 
-# ADQUIRE DATA PASSED AS FORM PARAMETERS
-# ======================================
 
-# Purge data using dates
+// Purge data using dates
 if (isset($_POST["purgedb"])) {
-	$from_date = get_parameter_post ("date_purge", 0); //0: No time selected
+	$from_date = get_parameter_post ("date_purge", 0);
 	if ($id_agent > 0) {
 		echo __('Purge task launched for agent')." ".get_agent_name ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
@@ -143,13 +137,15 @@ print_help_tip (__("Click here to get the data from the agent specified in the s
 echo '</noscript><br />';
 
 if ($id_agent > 0) {
-	$title = __('Information on agent').' '.get_agent_name ($id_agent).' '.__('in the database');
+	$title = __('Information on agent %s in the database', get_agent_name ($id_agent));
 } else {
-	$title = __('Information on all agents').' '.__('in the database');
+	$title = __('Information on all agents in the database');
 }
 
-echo "<h3>".$title."</h3>";	
-flush (); //Flush before we do some SQL stuff
+echo '<h3>'.$title.'</h3>';
+//Flush before we do some SQL stuff
+flush ();
+
 if ($id_agent > 0) { //If the agent is not All or Not selected
 	$modules = get_agent_modules ($id_agent);
 	$query = sprintf ("AND id_agente_modulo IN(%s)", implode (",", array_keys ($modules)));
@@ -181,43 +177,47 @@ $data["1month"] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_stri
 $data["3month"] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
 $data["total"] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query));
 
-
-if (isset ($table)) {
-	unset ($table); //since $table is an object, we make sure it's gone first
-}
-
-$table->width = 300;
+$table->width = '50%';
 $table->border = 0;
 $table->class = "databox";
-$table->cellspacing = 4;
-$table->cellpadding = 4;
 
-$table->data[0] = array (__('Packets less than three months old'), $data["3month"]);
-$table->data[1] = array (__('Packets less than one month old'), $data["1month"]);
-$table->data[2] = array (__('Packets less than two weeks old'), $data["2week"]);
-$table->data[3] = array (__('Packets less than one week old'), $data["1week"]);
-$table->data[4] = array (__('Packets less than three days old'), $data["3day"]);
-$table->data[5] = array (__('Packets less than one day old'), $data["1day"]);
-$table->data[6] = array ('<b>'.__('Total number of packets').'</b>', '<b>'.$data["total"].'</b>');
+$table->data[0][0] = __('Packets less than three months old');
+$table->data[0][1] =  $data["3month"];
+$table->data[1][0] = __('Packets less than one month old');
+$table->data[1][1] = $data["1month"];
+$table->data[2][0] = __('Packets less than two weeks old');
+$table->data[2][1] = $data["2week"];
+$table->data[3][0] = __('Packets less than one week old');
+$table->data[3][1] = $data["1week"];
+$table->data[4][0] = __('Packets less than three days old');
+$table->data[4][1] = $data["3day"];
+$table->data[5][0] = __('Packets less than one day old');
+$table->data[5][1] = $data["1day"];
+$table->data[6][0] = '<strong>'.__('Total number of packets').'</strong>';
+$table->data[6][1] = '<strong>'.$data["total"].'</strong>';
 
 print_table ($table);
 
 echo '<br />';
-echo '<h3>'.__('Purge data').'</h3>
-<table width="300" border="0" class="databox" cellspacing="4" cellpadding="4">
-<tr><td>
-<select name="date_purge" width="255px">
-<option value="'.$time["3month"].'">'.__('Purge data over 3 months').'</option>
-<option value="'.$time["1month"].'">'.__('Purge data over 1 month').'</option>
-<option value="'.$time["2week"].'">'.__('Purge data over 2 weeks').'</option>
-<option value="'.$time["1week"].'">'.__('Purge data over 1 week').'</option>
-<option value="'.$time["3day"].'">'.__('Purge data over 3 days').'</option>
-<option value="'.$time["1day"].'">'.__('Purge data over 1 day').'</option>
-<option value="'.$time["all"].'">'.__('All data until now').'</option>
-</select>
-</td><td>
-<input class="sub wand" type="submit" name="purgedb" value="'.__('Do it!').'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;" />
-</td></tr>
-</table>
-</form>';
+echo '<h3>'.__('Purge data').'</h3>';
+
+$table->data = array ();
+
+$times = array ();
+$times[$time["3month"]] = __('Purge data over 3 months');
+$times[$time["1month"]] = __('Purge data over 1 month');
+$times[$time["2week"]] = __('Purge data over 2 weeks');
+$times[$time["1week"]] = __('Purge data over 1 week');
+$times[$time["3day"]] = __('Purge data over 3 days');
+$times[$time["1day"]] = __('Purge data over 1 day');
+$times[$time["all"]] = __('All data until now');
+
+$table->data[0][0] = print_select ($times, 'date_purge', '', '', '', '',
+	true, false, false);
+$table->data[0][1] = print_submit_button (__('Purge'), "purgedb", false,
+	'class="sub wand"', true);
+
+print_table ($table);
+
+echo '</form>';
 ?>

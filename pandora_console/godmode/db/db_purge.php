@@ -165,7 +165,7 @@ echo "<h3>".$title."</h3>";
 flush ();
 $query = "";
 if ($id_agent > 0) { //If the agent is not All or Not selected
-	$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
+	$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d') ",$id_agent);
 }
 
 $data["1day"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));

@@ -1,3 +1,7 @@
+2009-02-23  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/db/db_purge.php: Fixed an SQL error.
+
 2009-03-18  Sancho Lerena  <slerena@artica.es>
 
 	* general/footer.php: Fixing the damm problem with Firefox button img.

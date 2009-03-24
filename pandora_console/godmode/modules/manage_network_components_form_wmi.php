@@ -142,7 +142,7 @@ echo '</td></tr>';
 
 // WMI Query
 echo '<tr><td class="datos">' . __('WMI Query') ;
-pandora_help("wmiquery");
+print_help_icon("wmiquery");
 echo '</td>';
 echo '<td class="datos">';
 echo 	'<input type="text" name="snmp_oid" size="25" value="' . $snmp_oid . '">';
@@ -150,7 +150,7 @@ echo '</td>';
 
 // Key string
 echo '<td class="datos">' . __('Key string');
-pandora_help("wmikey");
+print_help_icon("wmikey");
 echo '</td>';
 echo '<td class="datos">';
 echo 	'<input type="text" name="snmp_community" size="25" value="' . $snmp_community . '">';
@@ -158,7 +158,7 @@ echo '</td></tr>';
 
 // Field
 echo '<td class="datos2">' . __('Field number');
-pandora_help("wmifield");
+print_help_icon("wmifield");
 echo '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="tcp_port" size="5" value="' . $tcp_port . '">';
@@ -166,7 +166,7 @@ echo '</td>';
 
 // Namespace
 echo '<td class="datos2">' . __('Namespace');
-pandora_help("wminamespace");
+print_help_icon("wminamespace");
 echo '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="tcp_send" size="25" value="' . $tcp_send . '">';

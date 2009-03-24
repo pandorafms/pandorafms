@@ -75,7 +75,7 @@ $data[1] .= '<img src="images/spinner.gif" />';
 $data[1] .= '</span>';
 $data[1] .= print_button (__('SNMP walk'), 'snmp_walk', $ip_target == '', '',
 	'class="sub next"', true);
-$data[1] .= pandora_help ('snmpwalk', true);
+$data[1] .= print_help_icon ('snmpwalk', true);
 $data[1] .= '</span>';
 $table_simple->colspan['snmp_2'][1] = 3;
 
@@ -83,7 +83,7 @@ push_table_simple ($data, 'snmp_2');
 
 /* Advanced stuff */
 $data = array ();
-$data[0] = __('TCP send').' '.pandora_help ("tcp_send", true);
+$data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
 $data[1] = print_textarea ('tcp_send', 2, 65,
 	$tcp_send, '', true);
 $table_advanced->colspan['tcp_send'][1] = 3;

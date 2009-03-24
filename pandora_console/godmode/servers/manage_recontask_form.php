@@ -54,7 +54,7 @@ if (isset ($_GET["update"])) { // Edit mode
 }
 
 echo '<h2>'.__('Pandora servers').' &gt; '.__('Manage recontask');
-pandora_help ("recontask");
+print_help_icon ("recontask");
 echo '</h2>';
 
 $table->width=700;

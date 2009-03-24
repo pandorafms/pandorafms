@@ -1,5 +1,47 @@
 2009-03-24  Esteban Sanchez  <estebans@artica.es>
 
+	* general/pandora_help.php: Added support for enterprise help files.
+
+	* include/javascript/pandora.js: Renamed pandora_help() to
+	open_help().
+
+	* include/functions_ui.php: Renamed event function on
+	print_help_icon(). Removed deprecated pandora_help().
+
+	* godmode/agentes/module_manager.php: Added enterprise hooks.
+
+	* godmode/agentes/module_manager_editor.php: Added categories
+	construction here. Added enterprise hooks.
+
+	* godmode/agentes/module_manager_editor_common.php: Replaced
+	deprecated pandora_help() with print_help_icon(). Moved categories
+	construction to module_manager_editor.
+
+	* include/config_process.php: Updated build version.
+
+	* include/styles/pandora.css: Fixed textarea height.
+
+	* godmode/agentes/manage_config_remote.php,
+	godmode/agentes/massive_config.php,
+	godmode/agentes/massive_edit_modules.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/planned_downtime.php, godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/modules/manage_network_components_form_network.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	godmode/reporting/map_builder.php,
+	godmode/servers/manage_export_form.php,
+	godmode/servers/manage_recontask_form.php, godmode/servers/plugin.php,
+	godmode/setup/setup.php, operation/agentes/alerts_status.php,
+	operation/agentes/tactical.php,
+	godmode/agentes/agent_manager.php: Replaced deprecated pandora_help()
+	with print_help_icon().
+
+2009-03-24  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/alerts/configure_alert_compound.php: Fixed clean up div for
 	variable width styles. Min and max fire values commented because it's
 	not implemented yet.

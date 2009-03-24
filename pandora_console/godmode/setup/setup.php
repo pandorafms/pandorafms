@@ -50,7 +50,7 @@ $table->data[0][0] = __('Language code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $config["language"], '', '', '', true);
 
-$table->data[1][0] = __('Date format string') . pandora_help("date_format", true);
+$table->data[1][0] = __('Date format string') . print_help_icon("date_format", true);
 $table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
 $table->data[1][1] .= print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
 
@@ -93,13 +93,13 @@ $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '',
 $table->data[15][0] = __('Default hours for event view');
 $table->data[15][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[16][0] = __('Timestamp or time comparation') . pandora_help ("time_stamp-comparation", true);
+$table->data[16][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
 $table->data[16][1] = __('Comparation in rollover').' ';
 $table->data[16][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 $table->data[16][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[16][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
-$table->data[17][0] = __('Time source') . pandora_help ("timesource", true);
+$table->data[17][0] = __('Time source') . print_help_icon ("timesource", true);
 $sources["system"] = __('System');
 $sources["sql"] = __('Database');
 $table->data[17][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);

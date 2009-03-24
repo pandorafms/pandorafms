@@ -73,7 +73,7 @@ echo '<form id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
-pandora_help ('manageconfig');
+print_help_icon ('manageconfig');
 echo '</span></legend>';
 print_table ($table);
 echo '</fieldset>';

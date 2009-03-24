@@ -169,7 +169,7 @@ if ($serverinfo) {
 	<th style="font-weight:none;">'.__('Name').'</th>
 	<th style="font-weight:none;">'.__('Status').'</th>
 	<th style="font-weight:none;">'.__('Load').'</th>
-	<th style="font-weight:none;">'.__('Lag').pandora_help ("serverlag", true).'</th>
+	<th style="font-weight:none;">'.__('Lag').print_help_icon ("serverlag", true).'</th>
 	</tr></thead><tbody>';
 
 	foreach ($serverinfo as $server_id => $server_info) {

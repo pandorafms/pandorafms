@@ -69,7 +69,7 @@ function add_component_selection ($id_network_component_type) {
 	
 	$data = array ();
 	$data[0] = __('Using module component').' ';
-	$data[0] .= pandora_help ('network_component', true);
+	$data[0] .= print_help_icon ('network_component', true);
 	
 	$component_groups = get_network_component_groups ($id_network_component_type);
 	$data[1] = '<span id="component_group" class="left">';
@@ -105,41 +105,18 @@ $table_simple->class = 'databox_color';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold';
-$table_simple->style[2] = 'font-weight: bold';
+$table_simple->style[0] = 'font-weight: bold; vertical-align: top';
+$table_simple->style[2] = 'font-weight: bold; vertical-align: top';
 
 $table_simple->data[0][0] = __('Name');
 $table_simple->data[0][1] = print_input_text ('name', $name, '', 20, 100, true);
 $table_simple->data[0][2] = __('Disabled');
 $table_simple->data[0][3] = print_checkbox ("disabled", 1, $disabled, true);
 
-$table_simple->data[1][0] = __('Type').' '.pandora_help ('module_type', true);
+$table_simple->data[1][0] = __('Type').' '.print_help_icon ('module_type', true);
 if ($id_agent_module) {
 	$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
 } else {
-	switch ($moduletype) {
-	case 1:
-	case "dataserver":
-		$categories = array (0, 1, 2, 6, 7, 8, 9, -1);
-		break;
-	case 2:
-	case "networkserver":
-		$categories = array (3, 4, 5);
-		break;
-	case 4:
-	case "pluginserver":
-		$categories = array (0, 1, 2, 9);
-		break;
-	case 5:
-	case "predictionserver":
-		$categories = array (1, 2);
-		break;
-	case 6:
-	case "wmiserver":
-		$categories = array (0, 1, 2);
-		break;
-	}
-	
 	$sql = sprintf ('SELECT id_tipo, descripcion
 		FROM ttipo_modulo
 		WHERE categoria IN (%s)
@@ -170,7 +147,7 @@ $table_simple->data[2][3] .= print_input_text ('max_critical', $max_critical,
 	'', 5, 15, true);
 
 /* FF stands for Flip-flop */
-$table_simple->data[3][0] = __('FF threshold').' '.pandora_help ('ff_threshold', true);
+$table_simple->data[3][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
 $table_simple->data[3][1] = print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true);
 $table_simple->data[3][2] = __('Historical data');
@@ -182,8 +159,8 @@ $table_advanced->width = '90%';
 $table_advanced->class = 'databox_color';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
-$table_advanced->style[0] = 'font-weight: bold';
-$table_advanced->style[2] = 'font-weight: bold';
+$table_advanced->style[0] = 'font-weight: bold; vertical-align: top';
+$table_advanced->style[2] = 'font-weight: bold; vertical-align: top';
 $table_advanced->colspan = array ();
 
 $table_advanced->data[0][0] = __('Description');
@@ -199,7 +176,7 @@ $table_advanced->data[2][0] = __('Interval');
 $table_advanced->data[2][1] = print_input_text ('module_interval', $interval,
 	'', 5, 10, true);
 	
-$table_advanced->data[2][2] = __('Post process').' '.pandora_help ('postprocess', true);
+$table_advanced->data[2][2] = __('Post process').' '.print_help_icon ('postprocess', true);
 $table_advanced->data[2][3] = print_input_text ('post_process',
 	$post_process, '', 5, 5, true);
 

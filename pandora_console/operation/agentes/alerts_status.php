@@ -132,7 +132,7 @@ $table->head[1] = ''; //Placeholder for name
 $table->head[2] = __('Template');
 $table->head[3] = __('Last fired');
 $table->head[4] = __('Status');
-$table->head[5] = __('Validate').pandora_help ('alert_validation', true);
+$table->head[5] = __('Validate').print_help_icon ('alert_validation', true);
 $table->title = __('Single alerts');
 
 if ($print_agent == 0) {

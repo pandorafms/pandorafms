@@ -398,13 +398,6 @@ function print_alert_template_example ($id_alert_template, $return = false, $pri
 }
 
 /**
- * DEPRECATED: Use print_help_icon to avoid confusion with pandora_help javascript function
- */
-function pandora_help ($help_id, $return = false) {
-	return print_help_icon ($help_id, $return);
-}
-
-/**
  * Prints a help tip icon.
  * 
  * @param string $help_id Id of the help article
@@ -413,7 +406,10 @@ function pandora_help ($help_id, $return = false) {
  * @return string The help tip
  */
 function print_help_icon ($help_id, $return = false) {
-	$output = '&nbsp;'.print_image ("images/help.png", true, array ("class" => "img_help", "title" => __('Help'), "onclick" => "pandora_help ('".$help_id."')"));
+	$output = '&nbsp;'.print_image ("images/help.png", true, 
+		array ("class" => "img_help",
+			"title" => __('Help'),
+			"onclick" => "open_help ('".$help_id."')"));
 	if (!$return)
 		echo $output;
 	
@@ -927,13 +923,19 @@ function debug ($var, $backtrace = true) {
  * @return string An HTML string with the icon. Printed if return is false
  */
 function print_moduletype_icon ($id_moduletype, $return = false) {
+	global $config;
+	
 	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("nombre", "icon"));
 	if ($type === false) {
 		$type = array ();
 		$type["nombre"] = __('Unknown Type'); 
 		$type["icon"] = 'b_down.png';
 	}
-	return print_image ("images/".$type["icon"], $return, array ("border" => 0, "title" => $type["nombre"]));
+	$imagepath = 'images/'.$type["icon"];
+	if (! file_exists ($config['homedir'].'/'.$imagepath))
+		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
+	
+	return print_image ($imagepath, $return, array ("border" => 0, "title" => $type["nombre"]));
 }
 
 /**

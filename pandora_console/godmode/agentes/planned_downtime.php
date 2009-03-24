@@ -160,10 +160,9 @@ if ($create_downtime || $update_downtime) {
 		}
 	
 		//Editor form
-		echo '<h3>'.__('Planned Downtime Form').' <img class="img_help" src="images/help.png" onClick="pandora_help(\'planned_downtime\')" alt="help" /></h3>';
+		echo '<h3>'.__('Planned Downtime Form').' '.print_help_icon ('planned_downtime', true).'</h3>';
 		print_table ($table);
-	
-	
+		
 		print_input_hidden ('id_agent', $id_agent);
 		echo '<div class="action-buttons" style="width: 90%">';
 		if ($id_downtime) {

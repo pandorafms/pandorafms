@@ -95,7 +95,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 
 		// Source agent
 		echo '<b>'. __('Source agent').'</b>';
-		pandora_help ('duplicateconfig');
+		print_help_icon ('duplicateconfig');
 		echo '<br><br>';
 
 		// Show combo with SOURCE agents

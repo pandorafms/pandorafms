@@ -59,7 +59,7 @@ else {
 }
 
 echo '<h2>'.__('Pandora servers').' &gt; '.__('export targets');
-//pandora_help ("exportserver");
+//print_help_icon ("exportserver");
 echo '</h2>';
 
 $table->width=700;

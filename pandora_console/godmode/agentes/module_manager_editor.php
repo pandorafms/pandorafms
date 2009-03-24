@@ -167,20 +167,20 @@ case 2:
 	require ('module_manager_editor_network.php');
 	break;
 case "pluginserver":
-	$moduletype = 3;
-case 3:
+	$moduletype = 4;
+case 4:
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_plugin.php');
 	break;
 case "predictionserver":
-	$moduletype = 4;
-case 4:
+	$moduletype = 5;
+case 5:
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_prediction.php');
 	break;
 case "wmiserver":
-	$moduletype = 5;
-case 5:
+	$moduletype = 6;
+case 6:
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_wmi.php');
 	break;

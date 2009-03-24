@@ -1,3 +1,9 @@
+2009-03-24  Sancho Lerena  <slerena@gmail.com>
+
+	* module_manager_editor.php,
+	module_manager_editor_common.php: Fixed problem with id_module
+	affecting plugin, wmi and prediction modules.
+
 2009-03-23  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/massive_edit_modules.php: The module selection is

@@ -101,9 +101,9 @@ if ($search != ""){
 // Show only selected groups	
 if ($ag_group > 1){
 	$sql="SELECT * FROM tagente WHERE id_grupo=$ag_group
-	AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
+		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
 	$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
-	AND disabled = 0 $search_sql ORDER BY nombre";
+		AND disabled = 0 $search_sql ORDER BY nombre";
 // Not selected any specific group
 } else {
 	// Is admin user ??
@@ -118,31 +118,31 @@ if ($ag_group > 1){
 
 		if ($all_group > 0) {
 			$sql = sprintf ("SELECT * FROM tagente
-					WHERE disabled = 0 %s
-					ORDER BY nombre, id_grupo LIMIT %d,%d",
-					$search_sql, $offset,
-					$config["block_size"]);
+				WHERE disabled = 0 %s
+				ORDER BY nombre, id_grupo LIMIT %d,%d",
+				$search_sql, $offset,
+				$config["block_size"]);
 			$sql2 = sprintf ("SELECT COUNT(id_agente)
-					FROM tagente WHERE disabled = 0 %s
-					ORDER BY nombre, id_grupo",
-					$search_sql);
+				FROM tagente WHERE disabled = 0 %s
+				ORDER BY nombre, id_grupo",
+				$search_sql);
 		} else {
 			$sql = sprintf ("SELECT * FROM tagente
-					WHERE disabled = 0 %s
-					AND id_grupo IN (SELECT id_grupo
-						FROM tusuario_perfil
-						WHERE id_usuario='%s')
-					ORDER BY nombre, id_grupo LIMIT %d,%d",
-					$search_sql, $config['id_user'], $offset,
-					$config["block_size"]);
+				WHERE disabled = 0 %s
+				AND id_grupo IN (SELECT id_grupo
+					FROM tusuario_perfil
+					WHERE id_usuario='%s')
+				ORDER BY nombre, id_grupo LIMIT %d,%d",
+				$search_sql, $config['id_user'], $offset,
+				$config["block_size"]);
 			$sql2 = sprintf ("SELECT COUNT(id_agente)
-					FROM tagente
-					WHERE disabled = 0 %s
-					AND id_grupo IN (SELECT id_grupo 
-						FROM tusuario_perfil
-						WHERE id_usuario='%s')
-						ORDER BY nombre, id_grupo",
-					$search_sql, $config['id_user']);
+				FROM tagente
+				WHERE disabled = 0 %s
+				AND id_grupo IN (SELECT id_grupo 
+					FROM tusuario_perfil
+					WHERE id_usuario='%s')
+					ORDER BY nombre, id_grupo",
+				$search_sql, $config['id_user']);
 		}
 
 	}
@@ -174,21 +174,22 @@ if ($agents !== false) {
 	$color = 1;
 	foreach ($agents as $agent) {
 		$intervalo = $agent["intervalo"]; // Interval in seconds
-		$id_agente = $agent['id_agente'];	
+		$id_agente = $agent['id_agente'];
 		$nombre_agente = substr (strtoupper ($agent["nombre"]), 0, 18);
 		$direccion_agente = $agent["direccion"];
 		$id_grupo = $agent["id_grupo"];
 		$id_os = $agent["id_os"];
 		$ultimo_contacto = $agent["ultimo_contacto"];
 		$biginterval = $intervalo;
-		$pertenece = 0;
-		foreach ($groups as $migrupo) { //Verifiy if the group this agent begins is one of the user groups
+		$belongs = false;
+		//Verifiy if the group this agent begins is one of the user groups
+		foreach ($groups as $migrupo) {
 			if ($migrupo || $id_grupo == $migrupo) {
-				$pertenece = 1;
+				$belongs = true;
 				break;
 			}
 		}
-		if (! $pertenece == 1)
+		if (! $belongs)
 			continue;
 	
 		// Obtenemos la lista de todos los modulos de cada agente
@@ -231,7 +232,7 @@ if ($agents !== false) {
 				$async = 1;
 			}
 			// Defines if Agent is down (interval x 2 > time last contact
-			if (($seconds >= ($intervalo_comp * 2)) AND ($module_type < 21)) { // If (intervalx2) secs. ago we don't get anything, show alert
+			if (($seconds >= ($intervalo_comp * 2)) && ($module_type < 21)) { // If (intervalx2) secs. ago we don't get anything, show alert
 				$agent_down = 1;
 				if ($async == 0)
 					$monitor_down++;
@@ -302,7 +303,7 @@ if ($agents !== false) {
 		if ($numero_modulos > 0){
 			if ($agent_down > 0) {
 				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
-			} elseif ($monitor_critical > 0){
+			} elseif ($monitor_critical > 0) {
 					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one module in CRITICAL status').'" />';
 			} elseif ($monitor_warning > 0) {
 					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('At least one module in WARNING status').'" />';
@@ -310,7 +311,7 @@ if ($agents !== false) {
 				echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
 			} 
 		} else {
-			  echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+			echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 		}
 		
 		// checks if an alert was fired recently

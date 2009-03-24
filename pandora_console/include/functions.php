@@ -946,7 +946,9 @@ function unsafe_string ($string) {
 function safe_sql_string ($string) {
 	if (get_magic_quotes_gpc () == 0) 
 		return $string;
-	return mysql_escape_string ($string);
+	global $config;
+	
+	return mysql_real_escape_string ($string, $config['dbconnection']);
 }
 
 /**

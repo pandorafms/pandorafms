@@ -33,6 +33,9 @@ ALTER TABLE  `tagente_modulo` DROP INDEX  `tam_plugin`;
 ALTER TABLE  `tagente_modulo` DROP PRIMARY KEY , ADD PRIMARY KEY  
 (  `id_agente_modulo` );
 
+ALTER TABLE  `treport_content` ADD FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
+     ON UPDATE CASCADE ON DELETE CASCADE;
+
 ALTER TABLE `tagent_access` DROP `timestamp`;
 
 ALTER TABLE `tlayout_data` ADD `id_agent` int(10) unsigned NOT NULL default 0;
@@ -241,10 +244,12 @@ CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
 DROP TABLE IF EXISTS talert_compound_actions;
 
 CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
   `id_alert_compound` int(10) unsigned NOT NULL,
   `id_alert_action` int(10) unsigned NOT NULL,
   `fires_min` int(3) unsigned default 0,
   `fires_max` int(3) unsigned default 0,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)

@@ -537,9 +537,20 @@ function process_page_head ($string, $bitfield) {
 	
 	if ($config["refr"] > 0) {
 		// Agent selection filters and refresh
-		$query = 'http' . (isset ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443)) {
-			$query .= ":" . $_SERVER['SERVER_PORT'];
+		$protocol = 'http';
+		$ssl = false;
+		if ($config['https']) {
+			/* Check with "on" because some web servers like Cherokee always
+			 set this value even if SSL is not enabled */
+			if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == true || $_SERVER['HTTPS'] == 'on')) {
+				$protocol = 'https';
+				$ssl = true;
+			}
+		}
+		
+		$query = $protocol.'://' . $_SERVER['SERVER_NAME'];
+		if ($_SERVER['SERVER_PORT'] != 80 && ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
+			$query .= ":".$_SERVER['SERVER_PORT'];
 		}
 		$query .= $_SERVER['SCRIPT_NAME'];
 		

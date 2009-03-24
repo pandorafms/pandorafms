@@ -817,7 +817,7 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	$count = get_agent_modules_data_count (array_keys ($agents));
 	unset ($count["total"]);
 	arsort ($count, SORT_NUMERIC);
-	$count = array_slice ($count, 10, 10, true);
+	$count = array_slice ($count, 0, 10, true);
 	
 	foreach ($count as $agent_id => $value) {
 		$data[$agents[$agent_id]] = $value;

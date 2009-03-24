@@ -126,15 +126,15 @@ if ($id_agent_module) {
 	case "networkserver":
 		$categories = array (3, 4, 5);
 		break;
-	case 3:
+	case 4:
 	case "pluginserver":
 		$categories = array (0, 1, 2, 9);
 		break;
-	case 4:
+	case 5:
 	case "predictionserver":
 		$categories = array (1, 2);
 		break;
-	case 5:
+	case 6:
 	case "wmiserver":
 		$categories = array (0, 1, 2);
 		break;

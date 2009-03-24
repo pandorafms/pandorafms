@@ -1,3 +1,12 @@
+2009-03-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Made get_server_info more accurate as far as
+	exact module types etc.
+	
+	* operation/servers/view_server.php: Return dash in case there is no lag
+	
+	* operation/servers/view_server_detail.php: Style fixes
+
 2009-03-24  Esteban Sanchez  <estebans@artica.es>
 
 	* general/pandora_help.php: Added support for enterprise help files.

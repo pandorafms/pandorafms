@@ -48,16 +48,17 @@ $id_server = (int) get_parameter ("server_id", -1);
 $server_name = get_server_name ($id_server);
 $recon_tasks = get_db_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
 
-echo "<h2>". __('Configuration detail') . " - ".$server_name;
-echo '&nbsp;<a href="index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id='.$id_server.'"><img src="images/refresh.png" /></a>';
-echo "</h2>";
+echo "<h2>". __('Configuration detail') . " - ".safe_input ($server_name);
+echo '&nbsp;<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'">';
+print_image ("images/refresh.png");
+echo "</a></h2>";
 
 
 // Show network tasks for Recon Server
 if ($recon_tasks === false) {
 	$recon_tasks = array ();
-
 }
+
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->width = 725;
@@ -102,15 +103,17 @@ $table->align[10] = "center";
 foreach ($recon_tasks as $task) {
 	$data = array ();
 	
-	$data[0] = '<a href="index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id='.$id_server.'&force='.$task["id_rt"].'"><img src="images/target.png" border="0" alt="'.__('Force').'" title="'.__('Force').'" /></a>';
+	$data[0] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'&amp;force='.$task["id_rt"].'">';
+	$data[0] .= print_image ("images/target.png", true, array ("title" => __('Force')));
+	$data[0] .= '</a>';
 	
-	$data[1] = '<b>'.$task["name"].'</b>';
+	$data[1] = '<b>'.safe_input ($task["name"]).'</b>';
 
 	$data[2] = human_time_description ($task["interval_sweep"]);
 
 	$data[3] = $task["subnet"];
 	
-	if ($task["status"] == -1) {
+	if ($task["status"] <= 0) {
 		$data[4] = __('Done');
 	} else {
 		$data[4] = __('Pending');
@@ -122,16 +125,16 @@ foreach ($recon_tasks as $task) {
 	
 	$data[7] = print_os_icon ($task["id_os"], false, true);
 	
-	if ($task["status"] < 0 || $task["status"] > 100) {
+	if ($task["status"] <= 0 || $task["status"] > 100) {
 		$data[8] = "-";
 	} else {
-		$data[8] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$task["status"].'&height=20&width=100" />';
+		$data[8] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
 	}
 	
 	$data[9] = print_timestamp ($task["utimestamp"], true);
 
 	if (give_acl ($config["id_user"], $task["id_group"], "PM")) {
-		$data[10] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$task["id_rt"].'"><img src="images/wrench_orange.png" /></a>';
+		$data[10] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
 	} else {
 		$data[10] = '';
 	}

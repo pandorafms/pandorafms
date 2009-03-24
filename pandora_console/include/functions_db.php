@@ -2619,8 +2619,8 @@ function get_server_info ($id_server = -1) {
 	}
 	
 	$modules_info = array ();
-	$modules_total = 0;
-	$result = get_db_all_rows_sql ("SELECT DISTINCT(tagente_estado.running_by) , COUNT(*) AS modules
+	$modules_total = array ();
+	$result = get_db_all_rows_sql ("SELECT DISTINCT(tagente_estado.running_by), COUNT(*) AS modules, id_modulo
 								   FROM tagente_estado, tagente_modulo 
 								   WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 								   AND tagente_modulo.disabled = 0
@@ -2631,9 +2631,14 @@ function get_server_info ($id_server = -1) {
 	
 	foreach ($result as $row) {
 		$modules_info[$row["running_by"]] = $row["modules"];
-		$modules_total += $row["modules"];
+		if (!isset ($modules_total[$row["id_modulo"]])) {
+			$modules_total[$row["id_modulo"]] = $row["modules"];
+		} else {
+			$modules_total[$row["id_modulo"]] += $row["modules"];
+		}
 	}
 	
+	$recon_total = get_db_sql ("SELECT COUNT(*) FROM trecon_task");
 	
 	$sql = "SELECT * FROM tserver".$select_id;
 	$result = get_db_all_rows_sql ($sql);
@@ -2647,20 +2652,28 @@ function get_server_info ($id_server = -1) {
 	foreach ($result as $server) {
 		if ($server["network_server"] == 1) {
 			$server["type"] = "network";
+			$id_modulo = 2;
 		} elseif ($server["data_server"] == 1) {
 			$server["type"] = "data";
+			$id_modulo = 1;
 		} elseif ($server["plugin_server"] == 1) {
 			$server["type"] = "plugin";
+			$id_modulo = 4;
 		} elseif ($server["wmi_server"] == 1) {
 			$server["type"] = "wmi";
+			$id_modulo = 6;
 		} elseif ($server["recon_server"] == 1) {
 			$server["type"] = "recon";
+			$id_modulo = 0;
 		} elseif ($server["snmp_server"] == 1) {
 			$server["type"] = "snmp";
+			$id_modulo = 0;
 		} elseif ($server["prediction_server"] == 1) {
 			$server["type"] = "prediction";
+			$id_modulo = 5;
 		} else {
 			$server["type"] = "unknown";
+			$id_modulo = 0;
 		}
 		
 		if (empty ($modules_info[$server["id_server"]])) {
@@ -2671,10 +2684,15 @@ function get_server_info ($id_server = -1) {
 		$server["module_lag"] = 0;
 		$server["lag"] = 0;
 		$server["load"] = 0;
-		$server["modules_total"] = $modules_total;
 		
-		if ($server["modules"] > 0) {
-			//If the server doesn't have modules, it doesn't have lag
+		if (!isset ($modules_total[$id_modulo])) {
+			$server["modules_total"] = 0;
+		} else {
+			$server["modules_total"] = $modules_total[$id_modulo];	
+		}
+		
+		if ($id_modulo > 0 && $server["modules"] > 0) {
+			//If the server doesn't have modules, it doesn't have lag so nothing to calculate. If it's not a module server, don't go here either
 			$result = get_db_row_sql ("SELECT COUNT(*) AS module_lag, MAX(last_execution_try - current_interval) AS lag FROM tagente_estado
 												WHERE last_execution_try > 0
 												AND current_interval > 0
@@ -2691,7 +2709,33 @@ function get_server_info ($id_server = -1) {
 				$server["module_lag"] = $result["module_lag"];
 			}
 			
-			$server["load"] = (int) $server["modules"] / $modules_total * 100;
+			$server["load"] = round ($server["modules"] / $server["modules_total"] * 100);
+		} else {
+			switch ($server["type"]) {
+				case "recon":
+					$tasks = get_db_all_rows_sql ("SELECT status, utimestamp FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+					if (empty ($tasks)) {
+						$tasks = array ();
+					}
+					//Jobs running on this recon server
+					$server["modules"] = count ($tasks);
+					//Total recon jobs (all servers)
+					$server["modules_total"] = $recon_total;
+					$server["load"] = round ($server["modules"] / $server["modules_total"] * 100); 
+					//Lag (take average active time of all active tasks)
+					$lags = array ();
+					foreach ($tasks as $task) {
+						if ($task["status"] > 0 && $task["status"] <= 100) {
+							$lags[] = $time - $task["utimestamp"];
+						}
+					}
+					if (count ($lags) > 0) {
+						$server["lag"] = (int) array_sum ($lags) / count ($lags);
+					}
+				break;
+				default:
+				break;
+			}	
 		}
 		
 		//Push the raw data on the return stack

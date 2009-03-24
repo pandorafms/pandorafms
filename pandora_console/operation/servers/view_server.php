@@ -77,7 +77,7 @@ foreach ($servers as $server) {
 	// Load
 	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true);
 	$data[3] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-	$data[4] = '<span style="white-space:nowrap;">'.human_time_description_raw ($server["lag"]) . " / ". $server["module_lag"].'</span>';
+	$data[4] = '<span style="white-space:nowrap;">'.($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"].'</span>';
 	$data[5] = '<span style="white-space:nowrap;">';
 	if ($server['network_server'] == 1) {
 		$data[5] .= print_image ("images/network.png", true, array ("title" => __('Network Server')));

@@ -289,6 +289,8 @@ function clean_alert_template_values ($values, $set_empty = true) {
 	if (empty ($values))
 		return $retvalues;
 	
+	if (isset ($values['name']))
+		$retvalues['name'] = (string) $values['name'];
 	if (isset ($values['type']))
 		$retvalues['type'] = (string) $values['type'];
 	if (isset ($values['description']))
@@ -359,23 +361,14 @@ function create_alert_template ($name, $type, $values = false) {
 		return false;
 	
 	$values = clean_alert_template_values ($values);
+	$values['name'] = $name;
+	$values['type'] = $type;
 	
 	switch ($type) {
 	/* TODO: Check values based on type, return false if failure */
 	}
 	
-	$sql = sprintf ('INSERT talert_templates (name, type, description,
-		field1, field2, field3, value, max_value, min_value,
-		time_threshold, max_alerts, min_alerts, matches_value)
-		VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", %.2f,
-		%.2f, %d, %d, %d, %d)',
-		$name, $type, $values['description'], $values['field1'],
-		$values['field2'], $values['field3'], $values['value'],
-		$values['max_value'], $values['min_value'],
-		$values['time_threshold'], $values['max_alerts'],
-		$values['min_alerts'], $values['matches_value']);
-	
-	return @process_sql ($sql, 'insert_id');
+	return @process_sql_insert ('talert_templates', $values);
 }
 
 function update_alert_template ($id_alert_template, $values = false) {
@@ -385,12 +378,9 @@ function update_alert_template ($id_alert_template, $values = false) {
 	
 	$values = clean_alert_template_values ($values, false);
 	
-	$sql = sprintf ('UPDATE talert_templates
-		SET %s
-		WHERE id = %d',
-		format_array_to_update_sql ($values), $id_alert_template);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_templates',
+		$values,
+		array ('id' => $id_alert_template))) !== false;
 }
 
 function delete_alert_template ($id_alert_template) {
@@ -398,9 +388,7 @@ function delete_alert_template ($id_alert_template) {
 	if (empty ($id_alert_template))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_templates WHERE id = %d',
-		$id_alert_template);
-	return @process_sql ($sql);
+	return @process_sql_delete ('talert_templates', array ('id' => $id_alert_template));
 }
 
 function get_alert_templates ($only_names = true) {
@@ -537,6 +525,7 @@ function duplicate_alert_template ($id_alert_template) {
 	unset ($template['name']);
 	unset ($template['id']);
 	unset ($template['type']);
+	$template['value'] = safe_sql_string ($template['value']);
 	
 	return create_alert_template ($name, $type, $template);
 }
@@ -579,17 +568,11 @@ function create_alert_agent_module ($id_agent_module, $id_alert_template, $value
 		return false;
 	
 	$values = clean_alert_agent_module_values ($values);
-	
-	$sql = sprintf ('INSERT talert_template_modules (id_agent_module,
-		id_alert_template, internal_counter, last_fired, times_fired,
-		disabled, priority, force_execution)
-		VALUES (%d, %d, %d, %d, %d, %d, %d, %d)',
-		$id_agent_module, $id_alert_template,
-		$values['internal_counter'], $values['last_fired'],
-		$values['times_fired'], $values['disabled'], $values['priority'],
-		$values['force_execution']);
-	
-	return @process_sql ($sql, 'insert_id');
+	$values['id_agent_module'] = $id_agent_module;
+	$values['id_alert_template'] = $id_alert_template;
+	return @process_sql_insert ('talert_template_modules',
+		$values,
+		array ('id' => $id_alert_template));
 }
 
 function update_alert_agent_module ($id_alert_agent_module, $values = false) {
@@ -600,23 +583,17 @@ function update_alert_agent_module ($id_alert_agent_module, $values = false) {
 	if ($empty ($values))
 		return true;
 	
-	$sql = sprintf ('UPDATE talert_template_modules
-		SET %s
-		WHERE id = %d',
-		format_array_to_update_sql ($values), $id_alert_agent_module);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_template_modules',
+		$values,
+		array ('id' => $id_alert_template))) !== false;
 }
 
 function delete_alert_agent_module ($id_alert_agent_module) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_template_modules
-		WHERE id = %d',
-		$id_alert_agent_module);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_delete ('talert_template_modules',
+		array ('id' => $id_alert_agent_module))) !== false;
 }
 
 function get_alert_agent_module ($id_alert_agent_module) {
@@ -627,22 +604,17 @@ function get_alert_agent_module ($id_alert_agent_module) {
 	return get_db_row ('talert_template_modules', 'id', $id_alert_agent_module);
 }
 
-function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter = false) {
+function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter = false, $fields = false) {
 	$id_alert_agent_module = safe_int ($id_agent_module, 0);
 	
-	$where = '';
+	if (! is_array ($filter))
+		$filter = array ();
 	if (! $disabled)
-		$where .= ' AND disabled = 0 ';
+		$filter['disabled'] = 0;
+	$filter['id_agent_module'] = $id_agent_module;
 	
-	if ($filter) {
-		$where .= format_array_to_where_clause_sql ($filter, 'AND', ' AND ');
-	}
-	
-	$sql = sprintf ('SELECT * FROM talert_template_modules
-		WHERE id_agent_module = %d %s',
-		$id_agent_module, $where);
-	
-	return get_db_all_rows_sql ($sql);
+	return get_db_all_rows_filter ('talert_template_modules',
+		$filter, $fields);
 }
 
 function get_alert_agent_module_disabled ($id_alert_agent_module) {
@@ -653,22 +625,16 @@ function get_alert_agent_module_disabled ($id_alert_agent_module) {
 
 function set_alerts_agent_module_force_execution ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
-	$sql = sprintf ('UPDATE talert_template_modules
-		SET force_execution = 1
-		WHERE id = %d',
-		$id_alert_agent_module);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_template_modules',
+		array ('force_execution' => 1),
+		array ('id' => $id_alert_agent_module))) !== false;
 }
 
 function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
-	$sql = sprintf ('UPDATE talert_template_modules
-		SET disabled = %d
-		WHERE id = %d',
-		$disabled ? 1 : 0, $id_alert_agent_module);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_template_modules',
+		array ('disabled' => (bool) $disabled),
+		array ('id' => $id_alert_agent_module))) !== false;
 }
 
 function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
@@ -677,14 +643,17 @@ function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
 		$id_alert_agent_module);
 }
 
-function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action, $options = false) {
-	if (empty ($id_alert_agent_module))
+function add_alert_agent_module_action ($id_alert_template_module, $id_alert_action, $options = false) {
+	if (empty ($id_alert_template_module))
 		return false;
 	if (empty ($id_alert_action))
 		return false;
 	
-	$fires_max = 0;
-	$fires_min = 0;
+	$values = array ();
+	$values['id_alert_template_module'] = $id_alert_template_module;
+	$values['id_alert_action'] = $id_alert_action;
+	$values['fires_max'] = 0;
+	$values['fires_min'] = 0;
 	if ($options) {
 		$max = 0;
 		$min = 0;
@@ -693,40 +662,32 @@ function add_alert_agent_module_action ($id_alert_agent_module, $id_alert_action
 		if (isset ($options['fires_min']))
 			$min = (int) $options['fires_min'];
 		
-		$fires_max = max ($max, $min);
-		$fires_min = min ($max, $min);
+		$values['fires_max'] = max ($max, $min);
+		$values['fires_min'] = min ($max, $min);
 	}
 	
-	$sql = sprintf ('INSERT INTO talert_template_module_actions
-		(id_alert_template_module, id_alert_action, fires_min, fires_max)
-		VALUES (%d, %d, %d, %d)',
-		$id_alert_agent_module, $id_alert_action, $fires_min, $fires_max);
-	
-	return process_sql ($sql, 'insert_id');
+	return (@process_sql_insert ('talert_template_module_actions', $values)) !== false;
 }
 
 function delete_alert_agent_module_action ($id_alert_agent_module_action) {
 	if (empty ($id_alert_agent_module_action))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_template_module_actions
-		WHERE id = %d',
-		$id_alert_agent_module_action);
-	
-	return process_sql ($sql) !== false;
+	return (@process_sql_delete ('talert_template_module_actions',
+		array ('id' => $id_alert_agent_module_action))) !== false;
 }
 
-function get_alert_agent_module_actions ($id_alert_agent_module) {
+function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
-	$sql = sprintf ('SELECT id, id_alert_action, fires_min, fires_max
-		FROM talert_template_module_actions
-		WHERE id_alert_template_module = %d',
-		$id_alert_agent_module);
-	$actions = get_db_all_rows_sql ($sql);
+	$actions = get_db_all_rows_filter ('talert_template_module_actions',
+		array ('id_alert_template_module' => $id_alert_agent_module),
+		$fields);
 	if ($actions === false)
 		return array ();
+	if ($fields !== false)
+		return $actions;
 	
 	$retval = array ();
 	foreach ($actions as $element) {
@@ -936,24 +897,26 @@ function create_alert_compound ($name, $id_agent, $values = false) {
 }
 
 function update_alert_compound ($id_alert_compound, $values = false) {
+	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
 	$values = clean_alert_compound_values ($values, false);
 	
-	return @process_sql_update ('talert_compound', $values,
-		array ('id' => $id_alert_compound)) !== false;
+	return (@process_sql_update ('talert_compound', $values,
+		array ('id' => $id_alert_compound))) !== false;
 }
 
 function delete_alert_compound_elements ($id_alert_compound) {
+	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_compound_elements
-		WHERE id_alert_compound = %d', $id_alert_compound);
-	return @process_sql ($sql);
+	return (@process_sql_delete ('talert_compound_elements',
+		array ('id_alert_compound' => $id_alert_compound))) !== false;
 }
 
 function add_alert_compound_element ($id_alert_compound, $id_alert_template_module, $operation) {
+	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
 	if (empty ($id_alert_template_module))
@@ -973,31 +936,32 @@ function get_alert_compound ($id_alert_compound) {
 	return get_db_row ('talert_compound', 'id', $id_alert_compound);
 }
 
-function get_alert_compound_actions ($id_alert_compound) {
+function get_alert_compound_actions ($id_alert_compound, $fields = false) {
+	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
 	
-	$sql = sprintf ('SELECT id_alert_action id, fires_min, fires_max
-		FROM talert_compound_actions
-		WHERE id_alert_compound = %d',
-		$id_alert_compound);
-	$actions = get_db_all_rows_sql ($sql);
+	$actions = get_db_all_rows_filter ('talert_compound_actions',
+		array ('id_alert_compound' => $id_alert_compound),
+		$fields);
 	if ($actions === false)
 		return array ();
+	if ($fields !== false)
+		return $actions;
 	
 	$retval = array ();
 	foreach ($actions as $element) {
-		$action = get_alert_action ($element['id']);
+		$action = get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
-		array_push ($retval, $action);
+		$retval[$element['id']] = $action;
 	}
 	
 	return $retval;
 }
 
 function get_alert_compound_name ($id_alert_compound) {
-	return (string) get_db_value ('name', 'talert_compund', 'id', $id_alert_compound);
+	return (string) get_db_value ('name', 'talert_compound', 'id', $id_alert_compound);
 }
 
 function get_alert_compound_elements ($id_alert_compound) {
@@ -1011,8 +975,11 @@ function add_alert_compound_action ($id_alert_compound, $id_alert_action, $optio
 	if (empty ($id_alert_action))
 		return false;
 	
-	$fires_max = 0;
-	$fires_min = 0;
+	$values = array ();
+	$values['id_alert_compound'] = $id_alert_compound;
+	$values['id_alert_action'] = $id_alert_action;
+	$values['fires_max'] = 0;
+	$values['fires_min'] = 0;
 	if ($options) {
 		$max = 0;
 		$min = 0;
@@ -1021,25 +988,18 @@ function add_alert_compound_action ($id_alert_compound, $id_alert_action, $optio
 		if (isset ($options['fires_min']))
 			$min = (int) $options['fires_min'];
 		
-		$fires_max = max ($max, $min);
-		$fires_min = min ($max, $min);
+		$values['fires_max'] = max ($max, $min);
+		$values['fires_min'] = min ($max, $min);
 	}
 	
-	$sql = sprintf ('INSERT INTO talert_compound_actions
-		VALUES (%d, %d, %d, %d)',
-		$id_alert_compound, $id_alert_action, $fires_min, $fires_max);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_insert ('talert_compound_actions', $values)) !== false;
 }
 
 function set_alerts_compound_disable ($id_alert_compound, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_compound, 0);
-	$sql = sprintf ('UPDATE talert_compound
-		SET disabled = %d
-		WHERE id = %d',
-		$disabled ? 1 : 0, $id_alert_compound);
-	
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_compound',
+		array ('disabled' => (bool) $disabled),
+		array ('id' => $id_alert_compound))) !== false;
 }
 
 /**
@@ -1092,9 +1052,7 @@ function delete_alert_compound ($id_alert_compound) {
 	$id_alert_compound = safe_int ($id_alert_compound, 1);
 	if (empty ($id_alert_compound))
 		return false;
-	
-	$sql = sprintf ('DELETE FROM talert_compound WHERE id = %d',
-		$id_alert_compound);
-	return @process_sql ($sql);
+	return (@process_sql_delete ('talert_compound',
+		array ('id' => $id_alert_compound))) !== false;
 }
 ?>

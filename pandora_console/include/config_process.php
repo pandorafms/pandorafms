@@ -34,9 +34,9 @@ $config['fontpath'] = $config['homedir'].'/reporting/FreeSans.ttf';
 // Style (pandora by default)
 $config['style'] = 'pandora';
 
-// Read remaining config tokens from DB
-if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
-	//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
+//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
+$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
+if (! $config['dbconnection']) {
 	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">

@@ -330,10 +330,12 @@ CREATE TABLE  IF NOT EXISTS `talert_compound_elements` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
   `id_alert_compound` int(10) unsigned NOT NULL,
   `id_alert_action` int(10) unsigned NOT NULL,
   `fires_min` int(3) unsigned default 0,
   `fires_max` int(3) unsigned default 0,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_compound`) REFERENCES talert_compound(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
@@ -705,7 +707,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `order` int (11) NOT NULL default 0,
   `description` mediumtext, 
   `id_agent` int(10) unsigned NOT NULL default 0,
-  PRIMARY KEY(`id_rc`)
+  PRIMARY KEY(`id_rc`),
+  FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
+     ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (

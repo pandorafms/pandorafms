@@ -89,7 +89,7 @@ function print_alert_compound_steps ($step, $id) {
 	}
 	
 	echo '</ol>';
-	echo '<div style="clear: both;"> </div>';
+	echo '<div class="steps_clean"> </div>';
 }
 
 function update_compound ($step) {
@@ -155,6 +155,7 @@ function update_compound ($step) {
 		
 		/* Update actions */
 		$actions = (array) get_parameter ('actions');
+		
 		foreach ($actions as $id_action) {
 			/* TODO: fires_min and fires_max missing */
 			add_alert_compound_action ($id, (int) $id_action);
@@ -352,7 +353,8 @@ if ($step == 2) {
 	$table->data[4][1] .= print_button (__('Add'), 'add_action', false, '',
 		'class="sub next"', true);
 	$table->data[4][1] .=  '<br />';
-	$table->data[4][1] .=  '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
+	/* TODO: Finish fires_max and fires_min support */
+/*	$table->data[4][1] .=  '<span><a href="" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
 	$table->data[4][1] .=  '<span class="advanced_actions invisible">';
 	$table->data[4][1] .=  __('From').' ';
 	$table->data[4][1] .= print_input_text ('fires_min', 0, '', 4, 10, true);
@@ -361,7 +363,7 @@ if ($step == 2) {
 	$table->data[4][1] .=  ' '.__('matches of the alert');
 	$table->data[4][1] .=  pandora_help("alert-matches", true);
 	$table->data[4][1] .=  '</span>';
-	
+*/	
 	$table->data['actions'][0] = __('Assigned actions');
 	$table->data['actions'][1] = '<ul id="alert_actions">';
 	if ($id) {

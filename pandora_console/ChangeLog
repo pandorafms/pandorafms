@@ -1,3 +1,30 @@
+2009-03-24  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/alerts/configure_alert_compound.php: Fixed clean up div for
+	variable width styles. Min and max fire values commented because it's
+	not implemented yet.
+
+	* include/config_process.php: Keep database connection resource in
+	config.
+
+	* include/functions.php: Use mysql_real_escape_string(), replacing
+	deprecated function.
+
+	* include/functions_alerts.php: Updated to use process_sql_*
+	functions. Many fixes done such as updating a template name or
+	escaping the value when duplicating a template.
+
+	* include/functions_ui.php: Fixed an error on refresh header when
+	using other web servers like Cherokee.
+
+	* operation/agentes/estado_agente.php: Style corrections.
+
+	* reporting/fgraph.php: Fixed a typo on grafico_db_agentes_paquetes().
+
+	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added
+	foreign key on treport_content and id field on
+	talert_compound_actions.
+
 2009-03-24  Sancho Lerena  <slerena@gmail.com>
 
 	* module_manager_editor.php,

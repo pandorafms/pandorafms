@@ -140,7 +140,7 @@ $table->data['edit1'][3] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit1'][3] .= print_input_text ('max_critical', '', '', 5, 15, true);
 
 /* FF stands for Flip-flop */
-$table->data['edit2'][0] = __('FF threshold').' '.pandora_help ('ff_threshold', true);
+$table->data['edit2'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
 $table->data['edit2'][1] = print_input_text ('ff_event', '', '', 5, 15, true);
 $table->data['edit2'][2] = __('Historical data');
 $table->data['edit2'][3] = print_checkbox ("history_data", 1, '', true);

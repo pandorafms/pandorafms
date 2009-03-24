@@ -252,7 +252,7 @@ if ($id_layout) {
 }
 
 echo "<h2>".__('Reporting')." &gt; ".__('Map builder');
-pandora_help ("map_builder");
+print_help_icon ("map_builder");
 echo "</h2>";
 
 if (! $edit_layout && ! $id_layout) {

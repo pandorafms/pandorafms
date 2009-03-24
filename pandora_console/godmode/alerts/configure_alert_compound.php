@@ -361,7 +361,7 @@ if ($step == 2) {
 	$table->data[4][1] .=  ' '.__('to').' ';
 	$table->data[4][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
 	$table->data[4][1] .=  ' '.__('matches of the alert');
-	$table->data[4][1] .=  pandora_help("alert-matches", true);
+	$table->data[4][1] .=  print_help_icon("alert-matches", true);
 	$table->data[4][1] .=  '</span>';
 */	
 	$table->data['actions'][0] = __('Assigned actions');

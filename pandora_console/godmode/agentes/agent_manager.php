@@ -138,7 +138,7 @@ $table->data[12][0] = '<b>'.__('Description').'</b>';
 $table->data[12][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
 
 // Learn mode / Normal mode
-$table->data[13][0] = '<b>'.__('Module definition').'</b>'.pandora_help("module_definition", true);
+$table->data[13][0] = '<b>'.__('Module definition').'</b>'.print_help_icon("module_definition", true);
 $table->data[13][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 $table->data[13][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 

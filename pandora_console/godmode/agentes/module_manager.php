@@ -22,12 +22,11 @@ if (!isset ($id_agente)) {
 	die ("Not Authorized");
 }
 
+enterprise_include ('godmode/agentes/module_manager.php');
+
 echo "<h2>".__('Agent configuration')." &gt; ".__('Modules')."</h2>"; 
 
-// ==========================
 // Create module/type combo
-// ==========================
-
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo "<tr><td class='datos'>";
@@ -47,17 +46,18 @@ if ($develop_bypass) {
 	$prediction_available = 1;
 }
 
-$servers = array ();
-$servers['dataserver'] = __('Create a new data server module');
+$modules = array ();
+$modules['dataserver'] = __('Create a new data server module');
 if ($network_available)
-	$servers['networkserver'] = __('Create a new network server module');
+	$modules['networkserver'] = __('Create a new network server module');
 if ($plugin_available)
-	$servers['pluginserver'] = __('Create a new plugin Server module');
+	$modules['pluginserver'] = __('Create a new plugin Server module');
 if ($wmi_available)
-	$servers['wmiserver'] = __('Create a new WMI Server module');
+	$modules['wmiserver'] = __('Create a new WMI Server module');
 if ($prediction_available)
-	$servers['predictionserver'] = __('Create a new prediction Server module');
-print_select ($servers, 'moduletype', '', '', '', '', false, false, false);
+	$modules['predictionserver'] = __('Create a new prediction Server module');
+enterprise_hook ('set_enterprise_module_types', array (&$modules));
+print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
 print_input_hidden ('edit_module', 1);
 echo '</td>';
 echo '<td class="datos">';

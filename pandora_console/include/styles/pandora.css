@@ -33,7 +33,7 @@ input, textarea {
 }
 textarea {
 	padding: 5px;
-	height: 100px;
+	min-height: 100px;
 	width: 100%;
 }
 textarea.conf_editor {

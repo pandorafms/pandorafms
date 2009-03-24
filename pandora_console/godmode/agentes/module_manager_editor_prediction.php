@@ -25,7 +25,7 @@ $extra_title = __('Prediction server module');
 
 $data = array ();
 $data[0] = __('Source module');
-$data[0] .= pandora_help ('prediction_source_module', true);
+$data[0] .= print_help_icon ('prediction_source_module', true);
 $agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
 $fields = array ();
 foreach ($agents as $agent_id => $agent_name) {

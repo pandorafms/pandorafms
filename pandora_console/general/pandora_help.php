@@ -24,11 +24,18 @@ echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" t
 echo '<body>';
 
 $id = get_parameter ('id');
-$help_file = $config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php";
 
-// Default to english
-if (! file_exists ($help_file)) {
-	$help_file = $config["homedir"]."/include/help/en/help_".$id.".php";
+/* Possible file locations */
+$files = array ($config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php",
+	$config["homedir"].ENTERPRISE_DIR."/include/help/".$config["language"]."/help_".$id.".php",
+	$config["homedir"].ENTERPRISE_DIR."/include/help/en/help_".$id.".php",
+	$config["homedir"]."/include/help/en/help_".$id.".php");
+$help_file = '';
+foreach ($files as $file) {
+	if (file_exists ($file)) {
+		$help_file = $file;
+		break;
+	}
 }
 
 if (! $id || ! file_exists ($help_file)) {

@@ -157,40 +157,51 @@ switch ($moduletype) {
 case "dataserver":
 	$moduletype = 1;
 case 1:
+	/* Categories is an array containing the allowed module types
+	 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
+	$categories = array (0, 1, 2, 6, 7, 8, 9, -1);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_data.php');
 	break;
 case "networkserver":
 	$moduletype = 2;
 case 2:
+	$categories = array (3, 4, 5);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_network.php');
 	break;
 case "pluginserver":
 	$moduletype = 4;
 case 4:
+	$categories = array (0, 1, 2, 9);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_plugin.php');
 	break;
 case "predictionserver":
 	$moduletype = 5;
 case 5:
+	$categories = array (1, 2);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_prediction.php');
 	break;
 case "wmiserver":
 	$moduletype = 6;
 case 6:
+	$categories = array (0, 1, 2);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_wmi.php');
 	break;
+/* WARNING: type 7 is reserved on enterprise */
 default:
-	echo '<h3 class="error">DEBUG: Invalid module type specified in '.__FILE__.':'.__LINE__.'</h3>';
-	echo 'Most likely you have recently upgraded from an earlier version of Pandora and either <br />
-		1) forgot to use the database converter<br />
-		2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
-		3) found a new bug - please report a way to duplicate this error';
-	return; //We return control to the invoking script so the page finishes rendering
+	if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
+		echo '<h3 class="error">DEBUG: Invalid module type specified in '.__FILE__.':'.__LINE__.'</h3>';
+		echo 'Most likely you have recently upgraded from an earlier version of Pandora and either <br />
+			1) forgot to use the database converter<br />
+			2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
+			3) found a new bug - please report a way to duplicate this error';
+		
+		return;
+	}
 }
 
 echo '<h3>'.__('Module assignment');

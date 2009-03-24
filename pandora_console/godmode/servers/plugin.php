@@ -139,7 +139,7 @@ if (($create != "") OR ($view != "")){
 		echo __('Plugin update');
 		$plugin_id = get_parameter ("view","");
 	}
-	pandora_help("plugin_definition");
+	print_help_icon("plugin_definition");
 	echo "</h2>";
 	
 	if ($create == "") 

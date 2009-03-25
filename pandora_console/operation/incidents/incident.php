@@ -127,7 +127,7 @@ $texto = (string) get_parameter ("texto", "");
 if ($texto != "") 
 	$filter .= sprintf (" AND (titulo LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')", $texto, $texto);
 
-$usuario = (string) get_parameter ("usuario", "All");
+$usuario = (string) get_parameter ("usuario", "");
 if ($usuario != "") 
 	$filter .= sprintf (" AND id_usuario = '%s'", $usuario);
 

@@ -67,10 +67,10 @@ $table->data[3][0] = __('Field 2');
 $table->data[3][1] = print_input_text ('field2', $field2, '', 35, 255, true);
 
 $table->data[4][0] = __('Field 3');
-$table->data[4][1] = print_textarea ('field3', 30, 30, $field3, '', true);
+$table->data[4][1] = print_textarea ('field3', 10, 30, $field3, '', true);
 
 $table->data[6][0] = __('Command preview');
-$table->data[6][1] = print_textarea ('command_preview', 30, 30, '', 'disabled="disabled"', true);
+$table->data[6][1] = print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true);
 
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_actions">';
 print_table ($table);

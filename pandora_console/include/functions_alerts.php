@@ -25,7 +25,7 @@ function create_alert_command ($name, $command, $values = false) {
 	if (! is_array ($values))
 		$values = array ();
 	$values['name'] = $name;
-	$values['description'] = $description;
+	$values['command'] = $command;
 	
 	return @process_sql_insert ('talert_commands', $values);
 }
@@ -47,7 +47,7 @@ function delete_alert_command ($id_alert_command) {
 	if (empty ($id_alert_command))
 		return false;
 	
-	return (@proces_sql_delete ('talert_commands',
+	return (@process_sql_delete ('talert_commands',
 		array ('id' => $id_alert_command))) !== false;
 }
 
@@ -103,7 +103,7 @@ function create_alert_action ($name, $id_alert_command, $values = false) {
 	$values['name'] = $name;
 	$values['id_alert_command'] = $id_alert_command;
 	
-	return @proces_sql_insert ('talert_actions', $values);
+	return @process_sql_insert ('talert_actions', $values);
 }
 
 function update_alert_action ($id_alert_action, $values) {
@@ -113,7 +113,7 @@ function update_alert_action ($id_alert_action, $values) {
 	if (! is_array ($values))
 		return false;
 	
-	return (@proces_sql_update ('talert_actions',
+	return (@process_sql_update ('talert_actions',
 		$values,
 		array ('id' => $id_alert_action))) !== false;
 }
@@ -123,7 +123,7 @@ function delete_alert_action ($id_alert_action) {
 	if (empty ($id_alert_action))
 		return false;
 	
-	return (@proces_sql_delete ('talert_actions',
+	return (@process_sql_delete ('talert_actions',
 		array ('id' => $id_alert_action))) !== false;
 }
 

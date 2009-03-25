@@ -44,12 +44,12 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Agent general information')."</h2>
 echo '<div style="height: 10px">&nbsp;</div>';
 
 //Floating div
-echo '<div style="float:right; width:300px; padding-top:16px;">';
-echo '<b>'.__('Agent access rate (24h)').'</b><br /><br />';
-echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&periodo=1440&height=70&width=280" />';
+echo '<div style="float:right; width:320px; padding-top:11px;">';
+echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&periodo=1440&height=90&width=290" />';
 echo '<div style="height:25px">&nbsp;</div>';
-echo '<b>'.__('Events generated -by module-').'</b><br /><br />';
-echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=250&height=180&id_agent='.$id_agente.'" />';
+echo '<b>'.__('Events generated -by module-').'</b><br />';
+echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';
 echo '</div>';
 	
 echo '<div width="450px">';

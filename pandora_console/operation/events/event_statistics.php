@@ -27,10 +27,6 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }
-
-echo "<h2>".__('Events')." &gt; ";
-echo __('Events statistics')."</h2>";
-echo "<br><br>";
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";

@@ -47,7 +47,7 @@ echo '<h2>'.__('Database Maintenance').' &gt; '.__('Current database maintenance
 <div align="justify">
 '.__('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora').'
 </div><br />
-<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1">
+<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1&height=250&width=490">
 </td></tr>
 </table>';
 ?>

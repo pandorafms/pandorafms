@@ -377,7 +377,7 @@ function human_time_comparation ($timestamp) {
 	}
 	
 	$seconds = get_system_time () - $timestamp;
-	
+
 	return human_time_description_raw ($seconds);
 }
 
@@ -413,8 +413,12 @@ function get_system_time () {
  * @return string A human readable translation of minutes.
  */
 function human_time_description_raw ($seconds) {
+
 	if (empty ($seconds)) {
-		return __('Unknown');
+		return __('Now'); 
+		// slerena 25/03/09
+		// Most times $seconds is empty is because last contact is current date
+		// Put here "uknown" or N/A or something similar is not a good idea
 	}
 	
 	if ($seconds < 60)

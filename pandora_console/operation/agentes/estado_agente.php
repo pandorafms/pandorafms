@@ -50,8 +50,7 @@ $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
 $ag_group = get_parameter ("ag_group", $group_id);
 $ag_group = get_parameter_get ("ag_group_refresh", $ag_group); //if it isn't set, defaults to prev. value
-
-$search = get_parameter ("search");
+$search = get_parameter ("search", "");
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
 
@@ -84,7 +83,7 @@ value='".__('Show')."'>
 echo __('Free text for search (*)');
 echo "</td><td valign='top'>";
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
-echo "<input type=text name='search' size='15'>";
+echo "<input type=text name='search' value='$search' size='15'>";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' 
 value='".__('Search')."'>";
@@ -93,7 +92,7 @@ echo "</td></table>";
 
 
 if ($search != ""){
-	$search_sql = " AND nombre LIKE '%$search%' OR direccion LIKE '%$search%' ";
+	$search_sql = " AND ( nombre LIKE '%$search%' OR comentarios LIKE '%$search%' OR direccion LIKE '%$search%' ) ";
 } else {
 	$search_sql = "";
 }
@@ -155,7 +154,7 @@ $total_events = $row2[0];
 // Prepare pagination
 
 pagination ($total_events, 
-	"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60",
+	"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60&search=$search",
 	$offset);
 // Show data.
 $agents = get_db_all_rows_sql ($sql);
@@ -181,6 +180,14 @@ if ($agents !== false) {
 		$id_os = $agent["id_os"];
 		$ultimo_contacto = $agent["ultimo_contacto"];
 		$biginterval = $intervalo;
+		
+		// New check for agent down only based on last contact		
+		$diff_agent_down = get_system_time () - strtotime ($agent["ultimo_contacto"]);
+		if ($diff_agent_down > $intervalo * 2)
+			$agent_down = 1;
+		else
+			$agent_down = 0;
+		
 		$belongs = false;
 		//Verifiy if the group this agent begins is one of the user groups
 		foreach ($groups as $migrupo) {
@@ -206,7 +213,6 @@ if ($agents !== false) {
 		$monitor_warning = 0;
 		$monitor_critical = 0; 
 		$monitor_down = 0; 
-		$agent_down = 0;
 		$now = get_system_time ();
 		
 		// Calculate module/monitor totals  for this agent
@@ -233,7 +239,7 @@ if ($agents !== false) {
 			}
 			// Defines if Agent is down (interval x 2 > time last contact
 			if (($seconds >= ($intervalo_comp * 2)) && ($module_type < 21)) { // If (intervalx2) secs. ago we don't get anything, show alert
-				$agent_down = 1;
+
 				if ($async == 0)
 					$monitor_down++;
 			} else {
@@ -288,15 +294,15 @@ if ($agents !== false) {
 		echo "</a>";
 
 
-		echo "<td class='$tdcolor'><b>".$numero_modulos." : ";
+		echo "<td class='$tdcolor'><b>".$numero_modulos." ";
 		if ($monitor_normal >  0)
-			echo " <span class='green'>".$monitor_normal."</span>";
+			echo " <span class='green'> : ".$monitor_normal." </span>";
 		if ($monitor_warning >  0)
-			echo " <span class='yellow'>".$monitor_warning."</span>";
+			echo " <span class='yellow'> : ".$monitor_warning." </span>";
 		if ($monitor_critical >  0)
-			echo " <span class='red'>".$monitor_critical."</span>";
+			echo " <span class='red'> : ".$monitor_critical." </span>";
 		if ($monitor_down >  0)
-			echo " <span class='grey'>".$monitor_down."</span>";
+			echo " <span class='grey'> : ".$monitor_down."</span>";
 		echo "</td>";
 		
 		echo "<td class='$tdcolor' align='center'>";

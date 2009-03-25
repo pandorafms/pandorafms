@@ -1,3 +1,17 @@
+2009-03-25  Sancho Lerena <slerena@artica.es>
+
+	* estado_agente.php: Correct agent down status bug. Added search
+	on description also, and search text parameter is moved on pagination links
+	
+	* estado_generalagente.php: Agent access graph has more height now.
+	
+	* event_statistics.php: removed unnecesary header. Better layout.
+
+	* include/functions.php: human_time_description_raw() return "now" when
+	data is 0 or empty.
+	
+	* db/db_main.php: Bigger graph.
+	
 2009-03-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Made get_server_info more informational

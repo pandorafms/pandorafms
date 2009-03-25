@@ -1,3 +1,5 @@
+ALTER TABLE ttrap add `priority` tinyint(4) unsigned NOT NULL default '2';
+
 INSERT INTO `tconfig` VALUES (24, 'loginhash_pwd', '');
 INSERT INTO `tconfig` VALUES (25, 'trap2agent', 0);
 INSERT INTO `tconfig` VALUES (26, 'prominent_time', 0);

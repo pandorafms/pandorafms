@@ -409,7 +409,7 @@ if ($step == 2) {
 		$field2_recovery, '', 35, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3');
-	$table->data['field3'][1] = print_textarea ('field3_recovery', 30, 30,
+	$table->data['field3'][1] = print_textarea ('field3_recovery', 10, 30,
 		$field3_recovery, '', true);
 } else {
 	/* Step 1 by default */
@@ -435,7 +435,7 @@ if ($step == 2) {
 	$table->data[1][1] = print_select (get_group_agents (),
 		'id_agent', $id_agent, '', __('Select'), 0, true);
 	$table->data[2][0] = __('Description');
-	$table->data[2][1] =  print_textarea ('description', 30, 30,
+	$table->data[2][1] =  print_textarea ('description', 10, 30,
 		$description, '', true);
 
 	$table->data[3][0] = __('Condition');

@@ -79,7 +79,7 @@ if ($update_command) {
 }
 
 if ($delete_command) {
-	$id = get_parameter ('id');
+	$id = (int) get_parameter ('id');
 	
 	// Internal commands cannot be deleted
 	if (get_alert_command_internal ($id)) {
@@ -124,7 +124,7 @@ foreach ($commands as $command) {
 	$data[1] = $command['description'];
 	$data[2] = '';
 	if (! $command['internal'])
-		$data[2] = '<a href="index.php?sec=gagente&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
+		$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 			'<img src="images/cross.png"></a>';
 	

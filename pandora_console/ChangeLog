@@ -1,5 +1,18 @@
 2009-03-25  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_alerts.php: Typo errors on "proces". Fixed an
+	error on create_alert_command() parameters.
+
+	* godmode/alerts/alert_commands.php: Fixed sec parameter on delete
+	link.
+	
+	* godmode/alerts/configure_alert_command.php,
+	godmode/alerts/configure_alert_compound.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/configure_alert_action.php: Fixed textarea sizes.
+
+2009-03-25  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_alerts.php: Finished the alerts API by removing
 	useless and focus of problems clean_*(). All the functions now uses
 	process_sql_*().

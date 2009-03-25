@@ -102,9 +102,7 @@ if (give_acl ($config['id_user'], 0, "IR") == 1) {
 	$menu["incidencias"]["refr"] = 60;
 	$menu["incidencias"]["id"] = "oper-incidents";
 	
-	$sub = array ();
-	$sub["operation/incidents/incident_search"]["text"] = __('Search incidents');
-	
+	$sub = array ();	
 	$sub["operation/incidents/incident_statistics"]["text"] = __('Statistics');
 	
 	$menu["incidencias"]["sub"] = $sub;

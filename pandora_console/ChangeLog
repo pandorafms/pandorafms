@@ -1,3 +1,21 @@
+2009-03-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Made get_server_info more informational
+	
+	* operation/servers/view_server.php: Uses new get_server_info layout
+	
+	* operation/agentes/tactical.php: Use print_table and get_server_info
+	
+	* operation/menu.php: Removed incident search
+	
+	* operation/incidents/incident_search.php: Removed - now sits in incident
+	
+	* operation/incidents/incident.php: Added more search capabilities
+	
+	* operation/visual_console/index.php: Relative width and alignment
+	
+	* operation/visual_console/render_view.php: Small fixes
+
 2009-03-25  Sancho Lerena <slerena@artica.es>
 
 	*  extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added field missing in 

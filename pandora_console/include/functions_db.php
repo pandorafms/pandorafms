@@ -2628,30 +2628,49 @@ function get_server_info ($id_server = -1) {
 	
 	$return = array ();
 	foreach ($result as $server) {
-		if ($server["network_server"] == 1) {
+		if ($server['network_server'] == 1) {
+			$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network Server')));
 			$server["type"] = "network";
 			$id_modulo = 2;
-		} elseif ($server["data_server"] == 1) {
+		} elseif ($server['data_server'] == 1) {
+			$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data Server')));
 			$server["type"] = "data";
 			$id_modulo = 1;
-		} elseif ($server["plugin_server"] == 1) {
-			$server["type"] = "plugin";
-			$id_modulo = 4;
-		} elseif ($server["wmi_server"] == 1) {
-			$server["type"] = "wmi";
-			$id_modulo = 6;
-		} elseif ($server["recon_server"] == 1) {
-			$server["type"] = "recon";
-			$id_modulo = 0;
-		} elseif ($server["snmp_server"] == 1) {
+		} elseif ($server['snmp_server'] == 1) {
+			$server["img"] = print_image ("images/snmp.png", true, array ("title" => __('SNMP Server')));
 			$server["type"] = "snmp";
 			$id_modulo = 0;
-		} elseif ($server["prediction_server"] == 1) {
+		} elseif ($server['recon_server'] == 1) {
+			$server["img"] = print_image ("images/recon.png", true, array ("title" => __('Recon Server')));
+			$server["type"] = "recon";
+			$id_modulo = 0;
+		} elseif ($server['export_server'] == 1) {
+			$server["img"] = print_image ("images/database_refresh.png", true, array ("title" => __('Export Server')));
+			$server["type"] = "export";
+			$id_modulo = 0;
+		} elseif ($server['wmi_server'] == 1) {
+			$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI Server')));
+			$server["type"] = "wmi";
+			$id_modulo = 6;
+		} elseif ($server['prediction_server'] == 1) {
+			$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction Server')));
 			$server["type"] = "prediction";
 			$id_modulo = 5;
+		} elseif ($server['plugin_server'] == 1) {
+			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
+			$server["type"] = "plugin";
+			$id_modulo = 4;
 		} else {
+			$server["img"] = '';
 			$server["type"] = "unknown";
 			$id_modulo = 0;
+		}
+		
+		if ($server['master'] == 1) {
+			$server["img"] .= print_image ("images/master.png", true, array ("title" => __('Master Server')));
+		}
+		if ($server['checksum'] == 1){
+			$server["img"] .= print_image ("images/binary.png", true, array ("title" => __('MD5 Check')));
 		}
 		
 		if (empty ($modules_info[$server["id_server"]])) {
@@ -2686,25 +2705,30 @@ function get_server_info ($id_server = -1) {
 			if (!empty ($result["module_lag"])) {
 				$server["module_lag"] = $result["module_lag"];
 			}
-			
-			$server["load"] = round ($server["modules"] / $server["modules_total"] * 100);
 		} else {
 			switch ($server["type"]) {
 				case "recon":
+					$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+					
+					//Get recon taks info
 					$tasks = get_db_all_rows_sql ("SELECT status, utimestamp FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
 					if (empty ($tasks)) {
 						$tasks = array ();
 					}
-					//Jobs running on this recon server
+					//Total jobs running on this recon server
 					$server["modules"] = count ($tasks);
+					
 					//Total recon jobs (all servers)
 					$server["modules_total"] = $recon_total;
-					$server["load"] = round ($server["modules"] / $server["modules_total"] * 100); 
+					
 					//Lag (take average active time of all active tasks)
+					$server["module_lag"] = 0;
 					$lags = array ();
 					foreach ($tasks as $task) {
 						if ($task["status"] > 0 && $task["status"] <= 100) {
 							$lags[] = $time - $task["utimestamp"];
+							//Module lag is actually the number of jobs that is currently running
+							$server["module_lag"]++;
 						}
 					}
 					if (count ($lags) > 0) {
@@ -2714,6 +2738,10 @@ function get_server_info ($id_server = -1) {
 				default:
 				break;
 			}	
+		}
+		$server["lag_txt"] = ($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"];
+		if ($server["modules_total"] > 0) {
+			$server["load"] = round ($server["modules"] / $server["modules_total"] * 100); 
 		}
 		
 		//Push the raw data on the return stack

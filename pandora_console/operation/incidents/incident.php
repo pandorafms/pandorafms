@@ -128,15 +128,15 @@ if ($texto != "")
 	$filter .= sprintf (" AND (titulo LIKE '%%%s%%' OR descripcion LIKE '%%%s%%')", $texto, $texto);
 
 $usuario = (string) get_parameter ("usuario", "All");
-if ($usuario != "All") 
+if ($usuario != "") 
 	$filter .= sprintf (" AND id_usuario = '%s'", $usuario);
 
 $estado = (int) get_parameter ("estado", -1);
-if ($estado != -1) //-1 = All
+if ($estado > 0) //-1 = All
 	$filter .= sprintf (" AND estado = %d", $estado);
 
 $grupo = (int) get_parameter ("grupo", 1);
-if ($grupo != 1) {
+if ($grupo > 1) {
 	$filter .= sprintf (" AND id_grupo = %d", $grupo);
 	if (give_acl ($config['id_user'], $grupo, "IM") == 0) {
 		audit_db ($config["id_user"],$config["remote_addr"],"ACL Forbidden","User tried to read incidents from group without access");
@@ -172,21 +172,19 @@ echo '<h2>'.__('Incident management').' &gt; '.__('Manage incidents').'</h2>
 <td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = get_incidents_status ();
-$fields[-1] = __('All incidents');
-
-print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', '', '', false, false, false, 'w155');
+print_select ($fields, "estado", $estado, 'javascript:this.form.submit();',  __('All incidents'), -1, false, false, false, 'w155');
 
 //Legend
 echo '</td><td valign="middle"><noscript>';
 print_submit_button (__('Show'), 'submit-estado', false, array ("class" => "sub"));
 
-echo '</noscript></td><td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
+echo '</noscript></td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
 foreach (get_incidents_status () as $id => $str) {
 	print_incidents_status_img ($id);
 	echo ' - ' . $str . '<br />';
 }
 
-echo '</td><td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
+echo '</td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
 foreach (get_incidents_priorities () as $id => $str) {
 	print_incidents_priority_img ($id);
 	echo ' - ' . $str . '<br />';
@@ -195,25 +193,25 @@ foreach (get_incidents_priorities () as $id => $str) {
 echo '</td></tr><tr><td>';
 
 $fields = get_incidents_priorities ();
-$fields[-1] = __('All priorities');
 
-print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', '','',false,false,false,'w155');
+print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
 
-echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-prioridad', false, array ("class" => "sub"));
-echo '</noscript></td></tr><tr><td>';
+echo '</td></tr><tr><td>';
 
-print_select ($groups, "grupo", $grupo, 'javascript:this.form.submit();','','',false,false,false,'w155');
+print_select (get_users_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
 
-echo '</td><td valign="middle"><noscript>';
-print_submit_button (__('Show'), 'submit-grupo', false, array ("class" => "sub"));
-echo '</noscript>';
+echo '</td></tr><tr><td>';
+	
+print_select ($groups, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
-// Pass search parameters for possible future filter searching by user
-print_input_hidden ("usuario", $usuario);
-print_input_hidden ("texto", $texto);
+echo '</td></tr><tr><td>';
 
-echo "</td></tr></table></form>";
+print_input_text ('texto', $texto, '', 45);	
+echo '&nbsp;';
+print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
+
+echo "</td></tr></table>";
+echo '</form>';
 
 if ($count < 1) {
 	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
@@ -240,7 +238,7 @@ if ($count < 1) {
 	echo '<br />';
 	
 	// Show headers
-	$table->width = 750;
+	$table->width = "100%";
 	$table->class = "databox";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;

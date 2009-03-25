@@ -62,12 +62,8 @@ $table->data = array ();
 
 foreach ($servers as $server) {
 	$data = array ();
-	if ($server["recon_server"] == 1) {
-		$data[0] = '<b><a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a></b>';
-	} else {
-		$data[0] = "<b>".$server['name']."</b>";
-	}
-
+	$data[0] = "<b>".$server['name']."</b>";
+	
 	if ($server['status'] == 0) {
 		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
 	} else {
@@ -75,41 +71,10 @@ foreach ($servers as $server) {
 	}
 	
 	// Load
-	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true);
+	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, array ("title" => $server["lag_txt"]));
 	$data[3] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-	$data[4] = '<span style="white-space:nowrap;">'.($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"].'</span>';
-	$data[5] = '<span style="white-space:nowrap;">';
-	if ($server['network_server'] == 1) {
-		$data[5] .= print_image ("images/network.png", true, array ("title" => __('Network Server')));
-	}
-	if ($server['data_server'] == 1) {
-		$data[5] .= print_image ("images/data.png", true, array ("title" => __('Data Server')));
-	}
-	if ($server['snmp_server'] == 1) {
-		$data[5] .= print_image ("images/snmp.png", true, array ("title" => __('SNMP Server')));
-	}
-	if ($server['recon_server'] == 1) {
-		$data[5] .= print_image ("images/recon.png", true, array ("title" => __('Recon Server')));
-	}
-	if ($server['export_server'] == 1) {
-		$data[5] .= print_image ("images/database_refresh.png", true, array ("title" => __('Export Server')));
-	}
-	if ($server['wmi_server'] == 1) {
-		$data[5] .= print_image ("images/wmi.png", true, array ("title" => __('WMI Server')));
-	}
-	if ($server['prediction_server'] == 1) {
-		$data[5] .= print_image ("images/chart_bar.png", true, array ("title" => __('Prediction Server')));
-	}
-	if ($server['plugin_server'] == 1) {
-		$data[5] .= print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
-	}
-	if ($server['master'] == 1) {
-		$data[5] .= print_image ("images/master.png", true, array ("title" => __('Master Server')));
-	}
-	if ($server['checksum'] == 1){
-		$data[5] .= print_image ("images/binary.png", true, array ("title" => __('MD5 Check')));
-	}
-	$data[5] .= '</span>';
+	$data[4] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+	$data[5] = '<span style="white-space:nowrap;">'.$server["img"].'</span>';
 	$data[6] = $server['version'];
 	$data[7] = print_timestamp ($server['keepalive'], true);
 	

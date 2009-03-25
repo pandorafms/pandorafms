@@ -100,10 +100,10 @@ if ($update_layout) {
 		$width = $bg_info[0];
 	if (! $height)
 		$height = $bg_info[1];
-	$sql = sprintf ('UPDATE tlayout SET name = "%s", background = "%s", 
-			height = %d, width = %d
-			WHERE id = %d',
-			$name, $background, $height, $width, $id_layout);
+	$sql = sprintf ('UPDATE tlayout SET name = "%s", background = "%s",
+                        height = %d, width = %d, id_group = %d
+                        WHERE id = %d',
+                        $name, $background, $height, $width, $id_group, $id_layout);
 	$result = mysql_query ($sql);
 	if ($result) {
 		echo '<h3 class="suc">'.__('Update layout successful').'</h3>';

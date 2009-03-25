@@ -185,7 +185,6 @@ while ($row=mysql_fetch_array($result)){
 echo '</select>';
 
 // Snmp walk
-/*
 echo '<tr>';
 echo '<td class="datos2">'.__('SNMP walk');
 pandora_help ("snmpwalk");
@@ -205,7 +204,7 @@ if (isset($_POST["oid"])){
 echo "</select>";
 echo '<td class="datos2">';
 echo '<input type="submit" class="sub next" name="oid" value="SNMP Walk">';
-*/
+
 
 // Snmp Oid / community
 echo '<tr>';

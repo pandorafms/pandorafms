@@ -1,4 +1,21 @@
-2009-02-23  Esteban Sanchez  <estebans@artica.es>
+2009-09-25  Sancho Lerena  <slerena@artica.es>
+
+	* index.php, 
+	  include/config_process.php: Updated build.
+
+	* general/footer.php: GPL info page is always in english.
+
+	* godmode/agentes/module_manager_editor_network.php: Fixed 
+	SNMP Walk issues.
+
+	* godmode/reporting/reporting_builder.php: Notice fix.
+
+	* godmode/reporting/map_builder.php: Fixed problem in group
+	editing. This allows to change group after you've a map 
+	created and can change it's group so only groups in that 
+	group are able to see it.
+
+2009-03-23  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/db/db_purge.php: Fixed an SQL error.
 

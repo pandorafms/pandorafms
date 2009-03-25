@@ -1,3 +1,7 @@
+2009-03-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/incidents/incident.php: Fixed small issue
+
 2009-03-25  Sancho Lerena <slerena@artica.es>
 
 	* estado_agente.php: Correct agent down status bug. Added search

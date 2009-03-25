@@ -88,13 +88,13 @@ function is_user_admin ($id_user) {
 function get_user_id ($user) {
 	if (is_array ($user)){
 		if (isset ($user['id_user']))
-			return (int) $user['id_user'];
+			return $user['id_user'];
 		elseif (isset ($user['id_usuario']))
-			return (int) $user['id_usuario'];
+			return $user['id_usuario'];
 		else
 			return false;
 	} else {
-		return (int) $user;
+		return $user;
 	}
 }
 

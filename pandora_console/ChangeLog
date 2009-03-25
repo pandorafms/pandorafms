@@ -1,3 +1,9 @@
+2009-03-25  Sancho Lerena <slerena@artica.es>
+
+	*  extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added field missing in 
+	ttrap (This gives the problems with SNMP Alerts in trunk version (Manu!)).
+
+
 2009-03-25  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_alerts.php: Typo errors on "proces". Fixed an

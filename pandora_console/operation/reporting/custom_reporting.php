@@ -19,13 +19,15 @@
 // Login check
 check_login ();
 
+require_once ('include/functions_reports.php');
+
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');
 
 echo "<h2>".__('Reporting')." &gt; ";
 echo __('Custom reporting')."</h2>";
 
-$reports = get_reports ($config['id_user']);
+$reports = get_reports ();
 
 if (sizeof ($reports) == 0) {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";

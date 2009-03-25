@@ -1,5 +1,28 @@
 2009-03-25  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_alerts.php: Finished the alerts API by removing
+	useless and focus of problems clean_*(). All the functions now uses
+	process_sql_*().
+
+	* godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_commands.php: Adapted to changes in
+	functions_alerts.php.
+
+	* godmode/alerts/configure_alert_template.php: Fixed default action
+	updating when it's set to None. Fixed textarea height.
+
+	* include/functions_reports.php: Added to repository. API to manage
+	user reports.
+
+	* include/functions_db.php: Moved get_reports() to
+	functions_reports.php. Escape ` on get_db_value(). Use
+	format_array_to_update_sql() on process_sql_update().
+
+	* godmode/reporting/reporting_builder.php: Use functions from reports
+	API.
+
+2009-03-25  Esteban Sanchez  <estebans@artica.es>
+
 	* include/auth/mysql.php: Fixed an error on get_user_id() which was
 	returning integer values.
 

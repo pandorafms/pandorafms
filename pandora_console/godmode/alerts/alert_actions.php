@@ -71,10 +71,13 @@ if ($update_action) {
 	$field2 = (string) get_parameter ('field2');
 	$field3 = (string) get_parameter ('field3');
 	
-	$result = update_alert_action ($id, $id_alert_command, $name,
-		array ('field1' => $field1,
-			'field2' => $field2,
-			'field3' => $field3));
+	$values = array ();
+	$values['name'] = $name;
+	$values['id_alert_command'] = $id_alert_command;
+	$values['field1'] = $field1;
+	$values['field2'] = $field2;
+	$values['field3'] = $field3;
+	$result = update_alert_action ($id, $values);
 	
 	print_error_message ($result, __('Successfully updated'),
 		__('Could not be updated'));

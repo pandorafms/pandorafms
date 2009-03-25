@@ -17,51 +17,29 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-function clean_alert_command_values ($values, $set_empty = true) {
-	$retvalues = array ();
-	
-	if ($set_empty) {
-		$retvalues['description'] = '';
-	}
-	
-	if (empty ($values))
-		return $retvalues;
-	
-	if (isset ($values['description']))
-		$retvalues['description'] = (string) $values['description'];
-	
-	return $retvalues;
-}
-
 function create_alert_command ($name, $command, $values = false) {
 	if (empty ($name))
 		return false;
 	if (empty ($command))
 		return false;
+	if (! is_array ($values))
+		$values = array ();
+	$values['name'] = $name;
+	$values['description'] = $description;
 	
-	$values = clean_alert_command_values ($values);
-	
-	$sql = sprintf ('INSERT talert_commands (name, command, description)
-		VALUES ("%s", "%s", "%s")',
-		$name, $command, $values['description']);
-	return @process_sql ($sql, 'insert_id');
+	return @process_sql_insert ('talert_commands', $values);
 }
 
-function update_alert_command ($id_alert_command, $name, $command, $description = '', $values = false) {
+function update_alert_command ($id_alert_command, $values) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
-	if (empty ($name))
-		return false;
-	if (empty ($command))
+	if (! is_array ($values))
 		return false;
 	
-	$values = clean_alert_command_values ($values);
-	
-	$sql = sprintf ('UPDATE talert_commands SET name = "%s", command = "%s",
-		description = "%s" WHERE id = %d',
-		$name, $command, $values['description'], $id_alert_command);
-	return @process_sql ($sql) !== false;
+	return (@process_sql_update ('talert_commands',
+		$values,
+		array ('id' => $id_alert_command))) !== false;
 }
 
 function delete_alert_command ($id_alert_command) {
@@ -69,9 +47,8 @@ function delete_alert_command ($id_alert_command) {
 	if (empty ($id_alert_command))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_commands WHERE id = %d',
-		$id_alert_command);
-	return @process_sql ($sql);
+	return (@proces_sql_delete ('talert_commands',
+		array ('id' => $id_alert_command))) !== false;
 }
 
 function get_alert_command ($id_alert_command) {
@@ -114,28 +91,6 @@ function get_alert_command_description ($id_alert_command) {
 	return get_db_value ('description', 'talert_commands', 'id', $id_alert_command);
 }
 
-function clean_alert_action_values ($values, $set_empty = true) {
-	$retvalues = array ();
-	
-	if ($set_empty) {
-		$retvalues['field1'] = '';
-		$retvalues['field2'] = '';
-		$retvalues['field3'] = '';
-	}
-	
-	if (empty ($values))
-		return $retvalues;
-	
-	if (isset ($values['field1']))
-		$retvalues['field1'] = (string) $values['field1'];
-	if (isset ($values['field2']))
-		$retvalues['field2'] = (string) $values['field2'];
-	if (isset ($values['field3']))
-		$retvalues['field3'] = (string) $values['field3'];
-	
-	return $retvalues;
-}
-
 function create_alert_action ($name, $id_alert_command, $values = false) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
@@ -143,35 +98,24 @@ function create_alert_action ($name, $id_alert_command, $values = false) {
 	if (empty ($name))
 		return false;
 	
-	$values = clean_alert_action_values ($values);
+	if (! is_array ($values))
+		$values = array ();
+	$values['name'] = $name;
+	$values['id_alert_command'] = $id_alert_command;
 	
-	$sql = sprintf ('INSERT talert_actions (name, id_alert_command, field1, field2, field3)
-		VALUES ("%s", %d, "%s", "%s", "%s")',
-		$name, $id_alert_command, $values['field1'], $values['field2'],
-		$values['field3']);
-	
-	return @process_sql ($sql, 'insert_id');
+	return @proces_sql_insert ('talert_actions', $values);
 }
 
-function update_alert_action ($id_alert_action, $id_alert_command, $name, $values = false) {
+function update_alert_action ($id_alert_action, $values) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))
 		return false;
-	$id_alert_command = safe_int ($id_alert_command, 1);
-	if (empty ($id_alert_command))
-		return false;
-	if (empty ($name))
+	if (! is_array ($values))
 		return false;
 	
-	$values = clean_alert_action_values ($values);
-	
-	$sql = sprintf ('UPDATE talert_actions SET name = "%s",
-		id_alert_command = %d, field1 = "%s",
-		field2 = "%s", field3 = "%s" WHERE id = %d',
-		$name, $id_alert_command, $values['field1'], $values['field2'],
-		$values['field3'], $id_alert_action);
-	
-	return @process_sql ($sql) !== false;
+	return (@proces_sql_update ('talert_actions',
+		$values,
+		array ('id' => $id_alert_action))) !== false;
 }
 
 function delete_alert_action ($id_alert_action) {
@@ -179,9 +123,8 @@ function delete_alert_action ($id_alert_action) {
 	if (empty ($id_alert_action))
 		return false;
 	
-	$sql = sprintf ('DELETE FROM talert_actions WHERE id = %d',
-		$id_alert_action);
-	return @process_sql ($sql);
+	return (@proces_sql_delete ('talert_actions',
+		array ('id' => $id_alert_action))) !== false;
 }
 
 function get_alert_actions ($only_names = true) {
@@ -254,113 +197,14 @@ function get_alert_templates_type_name ($type) {
 	return $types[$type];
 }
 
-function clean_alert_template_values ($values, $set_empty = true) {
-	$retvalues = array ();
-	
-	if ($set_empty) {
-		$retvalues['type'] = 'equal';
-		$retvalues['description'] = '';
-		$retvalues['id_alert_action'] = NULL;
-		$retvalues['field1'] = '';
-		$retvalues['field2'] = '';
-		$retvalues['field3'] = '';
-		$retvalues['value'] = '';
-		$retvalues['max_value'] = 0;
-		$retvalues['min_value'] = 0;
-		$retvalues['time_threshold'] = 0;
-		$retvalues['max_alerts'] = 0;
-		$retvalues['min_alerts'] = 0;
-		$retvalues['monday'] = 0;
-		$retvalues['tuesday'] = 0;
-		$retvalues['wednesday'] = 0;
-		$retvalues['thursday'] = 0;
-		$retvalues['friday'] = 0;
-		$retvalues['saturday'] = 0;
-		$retvalues['sunday'] = 0;
-		$retvalues['time_from'] = '00:00';
-		$retvalues['time_to'] = '00:00';
-		$retvalues['time_threshold'] = '300';
-		$retvalues['recovery_notify'] = '';
-		$retvalues['field2_recovery'] = '';
-		$retvalues['field2_recovery'] = '';
-		$retvalues['matches_value'] = true;
-	}
-	
-	if (empty ($values))
-		return $retvalues;
-	
-	if (isset ($values['name']))
-		$retvalues['name'] = (string) $values['name'];
-	if (isset ($values['type']))
-		$retvalues['type'] = (string) $values['type'];
-	if (isset ($values['description']))
-		$retvalues['description'] = (string) $values['description'];
-	if (isset ($values['id_alert_action']))
-		$retvalues['id_alert_action'] = (int) $values['id_alert_action'];
-	if (isset ($values['field1']))
-		$retvalues['field1'] = (string) $values['field1'];
-	if (isset ($values['field2']))
-		$retvalues['field2'] = (string) $values['field2'];
-	if (isset ($values['field3']))
-		$retvalues['field3'] = (string) $values['field3'];
-	if (isset ($values['value']))
-		$retvalues['value'] = (string) $values['value'];
-	if (isset ($values['matches_value']))
-		$retvalues['matches_value'] = (bool) $values['matches_value'];
-	if (isset ($values['max_value']))
-		$retvalues['max_value'] = (float) $values['max_value'];
-	if (isset ($values['min_value']))
-		$retvalues['min_value'] = (float) $values['min_value'];
-	if (isset ($values['time_threshold']))
-		$retvalues['time_threshold'] = (int) $values['time_threshold'];
-	if (isset ($values['max_alerts']))
-		$retvalues['max_alerts'] = (int) $values['max_alerts'];
-	if (isset ($values['min_alerts']))
-		$retvalues['min_alerts'] = (int) $values['min_alerts'];
-	/* Ensure max an min orders */
-	if (isset ($values['min_alerts']) && isset ($values['max_alerts'])) {
-		$max = max ($retvalues['max_alerts'], $retvalues['min_alerts']);
-		$min = min ($retvalues['max_alerts'], $retvalues['min_alerts']);
-		$retvalues['max_alerts'] = $max;
-		$retvalues['min_alerts'] = $min;
-	}
-	if (isset ($values['monday']))
-		$retvalues['monday'] = (bool) $values['monday'];
-	if (isset ($values['tuesday']))
-		$retvalues['tuesday'] = (bool) $values['tuesday'];
-	if (isset ($values['wednesday']))
-		$retvalues['wednesday'] = (bool) $values['wednesday'];
-	if (isset ($values['thursday']))
-		$retvalues['thursday'] = (bool) $values['thursday'];
-	if (isset ($values['friday']))
-		$retvalues['friday'] = (bool) $values['friday'];
-	if (isset ($values['saturday']))
-		$retvalues['saturday'] = (bool) $values['saturday'];
-	if (isset ($values['sunday']))
-		$retvalues['sunday'] = (bool) $values['sunday'];
-	if (isset ($values['time_from']))
-		$retvalues['time_from'] = (string) $values['time_from'];
-	if (isset ($values['time_to']))
-		$retvalues['time_to'] = (string) $values['time_to'];
-	if (isset ($values['time_threshold']))
-		$retvalues['time_threshold'] = (int) $values['time_threshold'];
-	if (isset ($values['recovery_notify']))
-		$retvalues['recovery_notify'] = (bool) $values['recovery_notify'];
-	if (isset ($values['field2_recovery']))
-		$retvalues['field2_recovery'] = (string) $values['field2_recovery'];
-	if (isset ($values['field3_recovery']))
-		$retvalues['field3_recovery'] = (string) $values['field3_recovery'];
-	
-	return $retvalues;
-}
-
 function create_alert_template ($name, $type, $values = false) {
 	if (empty ($name))
 		return false;
 	if (empty ($type))
 		return false;
 	
-	$values = clean_alert_template_values ($values);
+	if (! is_array ($values))
+		$values = array ();
 	$values['name'] = $name;
 	$values['type'] = $type;
 	
@@ -371,12 +215,12 @@ function create_alert_template ($name, $type, $values = false) {
 	return @process_sql_insert ('talert_templates', $values);
 }
 
-function update_alert_template ($id_alert_template, $values = false) {
+function update_alert_template ($id_alert_template, $values) {
 	$id_alert_template = safe_int ($id_alert_template, 1);
 	if (empty ($id_alert_template))
 		return false;
-	
-	$values = clean_alert_template_values ($values, false);
+	if (! is_array ($values))
+		return false;
 	
 	return (@process_sql_update ('talert_templates',
 		$values,
@@ -530,58 +374,25 @@ function duplicate_alert_template ($id_alert_template) {
 	return create_alert_template ($name, $type, $template);
 }
 
-function clean_alert_agent_module_values ($values, $set_empty = true) {
-	$retvalues = array ();
-	
-	if ($set_empty) {
-		$retvalues['internal_counter'] = 0;
-		$retvalues['last_fired'] = 0;
-		$retvalues['times_fired'] = 0;
-		$retvalues['disabled'] = 0;
-		$retvalues['priority'] = 0;
-		$retvalues['force_execution'] = 0;
-	}
-	
-	if (empty ($values))
-		return $retvalues;
-	
-	if (isset ($values['internal_counter']))
-		$retvalues['internal_counter'] = (int) $values['internal_counter'];
-	if (isset ($values['last_fired']))
-		$retvalues['last_fired'] = (int) $values['last_fired'];
-	if (isset ($values['times_fired']))
-		$retvalues['times_fired'] = (int) $values['times_fired'];
-	if (isset ($values['disabled']))
-		$retvalues['disabled'] = (int) $values['disabled'];
-	if (isset ($values['priority']))
-		$retvalues['priority'] = (int) $values['priority'];
-	if (isset ($values['force_execution']))
-		$retvalues['force_execution'] = (int) $values['force_execution'];
-	
-	return $retvalues;
-}
-
 function create_alert_agent_module ($id_agent_module, $id_alert_template, $values = false) {
 	if (empty ($id_agent_module))
 		return false;
 	if (empty ($id_alert_template))
 		return false;
 	
-	$values = clean_alert_agent_module_values ($values);
+	if (! is_array ($values))
+		$values = array ();
 	$values['id_agent_module'] = $id_agent_module;
 	$values['id_alert_template'] = $id_alert_template;
-	return @process_sql_insert ('talert_template_modules',
-		$values,
-		array ('id' => $id_alert_template));
+	
+	return @process_sql_insert ('talert_template_modules', $values);
 }
 
-function update_alert_agent_module ($id_alert_agent_module, $values = false) {
+function update_alert_agent_module ($id_alert_agent_module, $values) {
 	if (empty ($id_agent_module))
 		return false;
-	
-	$values = clean_alert_agent_module_values ($values, false);
-	if ($empty ($values))
-		return true;
+	if (! is_array ($values))
+		return false;
 	
 	return (@process_sql_update ('talert_template_modules',
 		$values,
@@ -810,97 +621,23 @@ function get_alert_compound_operations () {
 	return $operations;
 }
 
-function clean_alert_compound_values ($values, $set_empty = true) {
-	$retvalues = array ();
-	
-	if ($set_empty) {
-		$retvalues['description'] = '';
-		$retvalues['time_threshold'] = 0;
-		$retvalues['max_alerts'] = 0;
-		$retvalues['min_alerts'] = 0;
-		$retvalues['monday'] = 0;
-		$retvalues['tuesday'] = 0;
-		$retvalues['wednesday'] = 0;
-		$retvalues['thursday'] = 0;
-		$retvalues['friday'] = 0;
-		$retvalues['saturday'] = 0;
-		$retvalues['sunday'] = 0;
-		$retvalues['time_from'] = '00:00';
-		$retvalues['time_to'] = '00:00';
-		$retvalues['time_threshold'] = '300';
-		$retvalues['recovery_notify'] = '';
-		$retvalues['field2_recovery'] = '';
-		$retvalues['field2_recovery'] = '';
-	}
-	
-	if (empty ($values))
-		return $retvalues;
-	
-	if (isset ($values['name']))
-		$retvalues['name'] = (string) $values['name'];
-	if (isset ($values['description']))
-		$retvalues['description'] = (string) $values['description'];
-	if (isset ($values['id_agent']))
-		$retvalues['id_agent'] = (int) $values['id_agent'];
-	if (isset ($values['time_threshold']))
-		$retvalues['time_threshold'] = (int) $values['time_threshold'];
-	if (isset ($values['max_alerts']))
-		$retvalues['max_alerts'] = (int) $values['max_alerts'];
-	if (isset ($values['min_alerts']))
-		$retvalues['min_alerts'] = (int) $values['min_alerts'];
-	/* Ensure max an min orders */
-	if (isset ($values['min_alerts']) && isset ($values['max_alerts'])) {
-		$max = max ($retvalues['max_alerts'], $retvalues['min_alerts']);
-		$min = min ($retvalues['max_alerts'], $retvalues['min_alerts']);
-		$retvalues['max_alerts'] = $max;
-		$retvalues['min_alerts'] = $min;
-	}
-	if (isset ($values['monday']))
-		$retvalues['monday'] = (bool) $values['monday'];
-	if (isset ($values['tuesday']))
-		$retvalues['tuesday'] = (bool) $values['tuesday'];
-	if (isset ($values['wednesday']))
-		$retvalues['wednesday'] = (bool) $values['wednesday'];
-	if (isset ($values['thursday']))
-		$retvalues['thursday'] = (bool) $values['thursday'];
-	if (isset ($values['friday']))
-		$retvalues['friday'] = (bool) $values['friday'];
-	if (isset ($values['saturday']))
-		$retvalues['saturday'] = (bool) $values['saturday'];
-	if (isset ($values['sunday']))
-		$retvalues['sunday'] = (bool) $values['sunday'];
-	if (isset ($values['time_from']))
-		$retvalues['time_from'] = (string) $values['time_from'];
-	if (isset ($values['time_to']))
-		$retvalues['time_to'] = (string) $values['time_to'];
-	if (isset ($values['time_threshold']))
-		$retvalues['time_threshold'] = (int) $values['time_threshold'];
-	if (isset ($values['recovery_notify']))
-		$retvalues['recovery_notify'] = (bool) $values['recovery_notify'];
-	if (isset ($values['field2_recovery']))
-		$retvalues['field2_recovery'] = (string) $values['field2_recovery'];
-	if (isset ($values['field3_recovery']))
-		$retvalues['field3_recovery'] = (string) $values['field3_recovery'];
-	
-	return $retvalues;
-}
-
 function create_alert_compound ($name, $id_agent, $values = false) {
 	if (empty ($name))
 		return false;
-	
-	$values = clean_alert_compound_values ($values);
+	if (! is_array ($values))
+		$values = array ();
 	$values['name'] = $name;
 	$values['id_agent'] = $id_agent;
 	
 	return @process_sql_insert ('talert_compound', $values);
 }
 
-function update_alert_compound ($id_alert_compound, $values = false) {
+function update_alert_compound ($id_alert_compound, $values) {
 	$id_alert_compound = safe_int ($id_alert_compound);
 	if (empty ($id_alert_compound))
 		return false;
-	$values = clean_alert_compound_values ($values, false);
+	if (! is_array ($values))
+		return false;
 	
 	return (@process_sql_update ('talert_compound', $values,
 		array ('id' => $id_alert_compound))) !== false;

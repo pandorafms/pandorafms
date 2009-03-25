@@ -24,13 +24,14 @@ echo "<h2>".__('Visual console')." &gt; ".__('Summary')."</h2>";
 require_once ('include/functions_visual_map.php');
 $layouts = get_user_layouts ();
 
-$table->width = 500;
+$table->width = "70%";
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Elements');
 $table->align = array ();
+$table->align[1] = 'center';
 $table->align[2] = 'center';
 
 foreach ($layouts as $layout) {

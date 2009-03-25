@@ -155,60 +155,56 @@ echo '<div style="width: 570px; float:left;" id="rightcolumn">';
 // Server information
 
 $serverinfo = get_server_info ();
-$total_modules = get_agent_modules_count ();
 $cells = array ();
 
-if ($serverinfo) {
-
-	echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
-	echo '<thead>
-	<tr>
-	<th colspan="4" style="background-color:#799E48">'.__('Tactical server information').'</th>
-	</tr>';
-	echo '<tr>
-	<th style="font-weight:none;">'.__('Name').'</th>
-	<th style="font-weight:none;">'.__('Status').'</th>
-	<th style="font-weight:none;">'.__('Load').'</th>
-	<th style="font-weight:none;">'.__('Lag').print_help_icon ("serverlag", true).'</th>
-	</tr></thead><tbody>';
-
-	foreach ($serverinfo as $server_id => $server_info) {
-		$data = array ();
-		$data[0] = $server_info["name"];
-
-		if ($server_info["status"] == 0){
-			$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
-		} else {
-			$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
-		}
-
-		if ($server_info["modules"] > 0 && $total_modules > 0) {
-			$percent = $server_info["modules"] / ($total_modules / 100);
-		} else {
-			$percent = 0;
-		}
-		$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$percent."&height=20&width=80",
-			true, array ("title" => $server_info["modules"]." ".__('of')." ".$total_modules));
-
-		$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
-
-		array_push ($cells, $data);
-	}
-
-	foreach ($cells as $key => $row) {
-	//Switch class around
-	$class = (($key % 2) ? "datos2" : "datos");
-	echo '<tr>
-		<td class="'.$class.'">'.$row[0].'</td>
-		<td class="'.$class.'" style="text-align:center;">'.$row[1].'</td>
-		<td class="'.$class.'" style="text-align:center;">'.$row[2].'</td>
-		<td class="'.$class.'" style="text-align:right;">'.$row[3].'</td>
-	</tr>';
-	}
-	echo '</tbody></table>';
-} else {
-	echo '<div class="nf">'.__('There are no servers configured into the database').'</div>';
+if ($serverinfo === false) {
+	$serverinfo = array ();
 }
+
+$table->class = "databox";
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = "100%";
+
+$table->title = __('Tactical server information');
+$table->titlestyle = "background-color:#799E48;";
+
+$table->head = array ();
+$table->head[0] = __('Name');
+$table->head[1] = __('Status');
+$table->head[2] = __('Load');
+$table->head[3] = __('Lag').' '.print_help_icon ("serverlag", true);
+$table->align[1] = 'center';
+$table->align[2] = 'center';
+$table->align[3] = 'right';
+
+$table->data = array ();
+
+foreach ($serverinfo as $server) {
+	$data = array ();
+	$data[0] = $server["name"];
+
+	if ($server["status"] == 0){
+		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
+	} else {
+		$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
+	}
+	
+	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
+		true, array ("title" => $server["lag_txt"]));
+	
+	$data[3] = $server["lag_txt"];
+
+	array_push ($table->data, $data);
+}
+
+if (!empty ($table->data)) {
+	print_table ($table);
+} else {
+	echo '<div class="nf">'.__('There are no servers configured in the database').'</div>';
+}
+unset ($table);
+
 print_events_table ("", 10, 570);
 
 echo '</div>';

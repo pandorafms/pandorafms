@@ -67,20 +67,20 @@ if ($config["pure"] == 0) {
 }
 
 if (give_acl ($config["id_user"], $id_group, "AW")) 
-	echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout=$id_layout'><img src='images/setup.png' title='".__("Setup")."'></a>";
+	echo '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 
 echo '</h1>';
 
 print_pandora_visual_map ($id_layout);
 
 $values = array ();
-$values[5] = "5 ". __('seconds');
-$values[30] = "30 ". __('seconds');
-$values[60] = "1 ". __('minutes');
-$values[120] = "2 ". __('minutes');
-$values[300] = "5 ". __('minutes');
-$values[600] = "10 ". __('minutes');
-$values[1800] = "30 ". __('minutes');
+$values[5] = human_time_description_raw (5);
+$values[30] = human_time_description_raw (30);
+$values[60] = human_time_description_raw (60);
+$values[120] = human_time_description_raw (120);
+$values[300] = human_time_description_raw (300);
+$values[600] = human_time_description_raw (600);
+$values[1800] = human_time_description_raw (1800);
 
 $table->width = 500;
 $table->data = array ();

@@ -432,36 +432,6 @@ function get_agent_modules_count ($id_agent = 0) {
 	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
 }
 
-/**
- * Get a list of the reports the user can view.
- *
- * A user can view a report by two ways:
- *  - The user created the report (id_user field in treport)
- *  - The report is not private and the user has reading privileges on 
- *	the group associated to the report
- *
- * @param string $id_user User id
- *
- * @return array An array with all the reports the user can view.
- */
-function get_reports ($id_user) {
-	$user_reports = array ();
-	$all_reports = get_db_all_rows_in_table ('treport', 'name');
-	if ($all_reports === false) {
-		return $user_reports;
-	}
-	foreach ($all_reports as $report) {
-		/* The report is private and it does not belong to the user */
-		if ($report['private'] && $report['id_user'] != $id_user)
-			continue;
-		/* Check ACL privileges on report group */
-		if (! give_acl ($id_user, $report['id_group'], 'AR'))
-			continue;
-		array_push ($user_reports, $report);
-	}
-	return $user_reports;
-}
-
 /** 
  * Get group icon from group.
  * 
@@ -1430,7 +1400,8 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 	
 	if ($result === false)
 		return false;
-	
+	if ($field[0] == '`')
+		$field = str_replace ('`', '', $field);
 	return $result[0][$field];
 }
 
@@ -1861,9 +1832,9 @@ function get_db_all_fields_in_table ($table, $field = '', $condition = '', $orde
   echo $sql;
   </code>
  * Will return:
- * <code>
- * UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
- * </code>
+   <code>
+  UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
+   </code>
  *
  * @param array Values to be formatted in an array indexed by the field name.
  *
@@ -1874,8 +1845,10 @@ function format_array_to_update_sql ($values) {
 	$fields = array ();
 	
 	foreach ($values as $field => $value) {
-		if (! is_string ($field))
+		if (is_numeric ($field)) {
+			array_push ($fields, $value);
 			continue;
+		}
 		
 		if ($value === NULL) {
 			$sql = sprintf ("`%s` = NULL", $field);
@@ -1884,7 +1857,12 @@ function format_array_to_update_sql ($values) {
 		} elseif (is_float ($value) || is_double ($value)) {
 			$sql = sprintf ("`%s` = %f", $field, $value);
 		} else {
-			$sql = sprintf ("`%s` = '%s'", $field, $value);
+			/* String */
+			if (isset ($value[0]) && $value[0] == '`')
+				/* Don't round with quotes if it references a field */
+				$sql = sprintf ("`%s` = %s", $field, $value);
+			else
+				$sql = sprintf ("`%s` = '%s'", $field, $value);
 		}
 		array_push ($fields, $sql);
 	}
@@ -1990,7 +1968,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 	$i = 1;
 	$max = count ($values);
 	foreach ($values as $field => $value) {
-		if (is_numeric ($field)) {	
+		if (is_numeric ($field)) {
 			/* User provide the exact operation to do */
 			$query .= $value;
 			
@@ -2890,30 +2868,9 @@ process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10')
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function process_sql_update ($table, $values, $where = false, $where_join = 'AND') {
-	$query = sprintf ("UPDATE `%s` SET ", $table);
-	
-	$i = 1;
-	$max = count ($values);
-	foreach ($values as $field => $value) {
-		if ($field[0] != "`") {
-			$field = "`".$field."`";
-		}
-		
-		if (is_null ($value)) {
-			$query .= sprintf ("%s = NULL", $field);
-		} elseif (is_int ($value) || is_bool ($value)) {
-			$query .= sprintf ("%s = %d", $field, $value);
-		} else if (is_float ($value) || is_double ($value)) {
-			$query .= sprintf ("%s = %f", $field, $value);
-		} else {
-			$query .= sprintf ("%s = '%s'", $field, $value);
-		}
-		
-		if ($i < $max) {
-			$query .= ",";
-		}
-		$i++;
-	}
+	$query = sprintf ("UPDATE `%s` SET %s",
+		$table,
+		format_array_to_update_sql ($values));
 	
 	if ($where) {
 		if (is_string ($where)) {

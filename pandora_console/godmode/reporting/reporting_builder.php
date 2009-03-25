@@ -23,10 +23,12 @@ check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access graph builder");
+		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
 }
+
+require_once ("include/functions_reports.php");
 
 if (is_ajax ()) {
 	$get_report_type_data_source = (bool) get_parameter ('get_report_type_data_source');
@@ -57,72 +59,34 @@ $edit_sla_report_content = (bool) get_parameter ('edit_sla_report_content');
 $content_up = (bool) get_parameter ('content_up');
 $content_down = (bool) get_parameter ('content_down');
 
-if (isset($_GET["get_agent"])) {
- 	$id_agent = $_POST["id_agent"];
-}
-
 // Delete module SQL code
 if ($delete_report_content) {
 	$id_report_content = (int) get_parameter ('id_report_content');
-	$sql = sprintf ('SELECT `order`
-		FROM treport_content
-		WHERE id_rc = %d',
-		$id_report_content);
-	$order = get_db_sql ($sql);
-	$sql = sprintf ('UPDATE treport_content
-		SET `order` = `order` -1
-		WHERE id_report = %d AND `order` > %d',
-		$id_report, $order);
-	process_sql ($sql);
-	$sql = sprintf ('DELETE FROM treport_content WHERE id_rc = %d', $id_report_content);
-	$result = process_sql ($sql);
-	if ($result !== false) {
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
-	} else {
-		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
-	}
+	
+	$result = delete_report_content ($id_report_content);
+	print_error_message ($result,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
 }
 
 // Move content up
 if ($content_up) {
 	$id_report_content = (int) get_parameter ('id_report_content');
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	/* Set the previous element order to the current of the content we want to change */
-	$sql = sprintf ('UPDATE treport_content
-		SET `order` = `order` + 1
-		WHERE id_report = %d
-		AND `order` = %d',
-		$id_report, $order - 1);
-	$result = process_sql ($sql);
-	$sql = sprintf ('UPDATE treport_content
-		SET `order` = `order` - 1
-		WHERE id_rc = %d',
-		$id_report_content);
-	$result = process_sql ($sql);
+	move_report_content_up ($id_report_content, $id_report);
 }
 
 // Move content down
 if ($content_down) {
 	$id_report_content = (int) get_parameter ('id_report_content');
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	/* Set the previous element order to the current of the content we want to change */
-	$sql = sprintf ('UPDATE treport_content SET `order` = `order` - 1 WHERE id_report = %d AND `order` = %d',
-			$id_report, $order + 1);
-	$result = process_sql ($sql);
-	$sql = sprintf ('UPDATE treport_content SET `order` = `order` + 1 WHERE id_rc = %d', $id_report_content);
-	$result = process_sql ($sql);
+	move_report_content_down ($id_report_content, $id_report);
 }
 
 // Delete report SQL code
 if ($delete_report) {
-	$sql = sprintf ('DELETE FROM treport_content WHERE id_report = %d', $id_report);
-	$sql2 = sprintf ('DELETE FROM treport WHERE id_report = %d', $id_report);
-	$res = process_sql ($sql);
-	$res2 = process_sql ($sql2);
-	if ($res && $res2)
-		echo "<h3 class=suc>".__('Reporting successfully deleted')."</h3>";
-	else
-		echo "<h3 class=error>".__('There was a problem deleting reporting')."</h3>";
+	$result = delete_report ($id_report);
+	print_error_message ($result,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
 	$id_report = 0;
 }
 
@@ -136,20 +100,19 @@ if ($add_content) {
 	$id_agent_module = (int) get_parameter ('id_module');
 	$period = (int) get_parameter ('period');
 	$type = (string) get_parameter ('type');
-	$id_agent = (int) get_parameter ('id_agent',0);
+	$id_agent = (int) get_parameter ('id_agent');
 	$id_custom_graph = (int) get_parameter ('id_custom_graph');
-	$module_description = (string) get_parameter ('module_description', '');
+	$module_description = (string) get_parameter ('module_description');
 	
-	$order = (int) get_db_value ('COUNT(*)', 'treport_content', 'id_report', $id_report);
-
-	$sql = sprintf ('INSERT INTO treport_content (id_report, id_gs, id_agent_module,
-			`order`, type, period, description, id_agent) 
-			VALUES (%d, %s, %s, %d, "%s", %d, "%s", %d)',
-			$id_report, $id_custom_graph ? $id_custom_graph : "NULL",
-			$id_agent_module ? $id_agent_module : "NULL",
-			$order, $type, $period * 3600, $module_description, $id_agent);
-	$result = process_sql ($sql);
-
+	$values = array ();
+	$values['id_custom_graph'] = $id_custom_graph ? $id_custom_graph : NULL;
+	$values['id_agent_module'] = $id_agent_module ? $id_agent_module : NULL;
+	$values['type'] = $type;
+	$values['period'] = $period * 3600;
+	$values['description'] = $module_description;
+	$values['id_agent'] = $id_agent;
+	
+	$result = create_report_content ($id_report, $values);
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Reporting successfully created').'</h3>';
 		$id_agent = 0;
@@ -170,34 +133,31 @@ if ($add_content) {
 
 // Create report
 if ($create_report) {
-	$sql = sprintf ('INSERT INTO treport (name, description, id_user, private, id_group) 
-			VALUES ("%s", "%s", "%s", %d, %d)',
-			$report_name, $report_description, $config['id_user'], $report_private, $report_id_group);
-	$id_report = process_sql ($sql, "insert_id");
-	if ($id_report !== false) {
-		echo "<h3 class=suc>".__('Reporting successfully created')."</h3>";
-	} else {
-		echo "<h3 class=error>".__('There was a problem creating reporting')."</h3>";
-	}
+	$values = array ();
+	$values['description'] = $report_description;
+	$values['private'] = $report_private;
+	$id_report = create_report ($name, $id_group, $values);
+	print_error_message ($id_report,
+		__('Successfully created'),
+		__('Could not be created'));
 }
 
 // Update report
 if ($update_report) {
-	$sql = sprintf ('UPDATE treport SET name = "%s", 
-			description = "%s", private = %d
-			WHERE id_report = %d',
-			$report_name, $report_description,
-			$report_private, $id_report);
-	$result = process_sql ($sql);
-	if ($result) {
-		echo "<h3 class=suc>".__('Updated successfully')."</h3>";
-	} else {
-		echo "<h3 class=error>".__('Not updated. Error updating data')."</h3>";
-	}
+	$values = array ();
+	$values['name'] = $report_name;
+	$values['description'] = $report_description;
+	$values['private'] = $report_private;
+	$result = update_report ($id_report, $values);
+	print_error_message ($result,
+		__('Successfully updated'),
+		__('Could not be updated'));
 }
 
 if ($id_report) {
-	$report = get_db_row ('treport', 'id_report', (int) $id_report);
+	$report = get_report ($id_report);
+	if ($report === false)
+		require ("general/noaccess.php");
 	$report_name = $report["name"];
 	$report_description = $report["description"];
 	$report_private = $report["private"];
@@ -367,7 +327,7 @@ if ($edit_sla_report_content) {
 	if ($id_report) {
 		print_input_hidden ('id_report', $id_report);
 		print_input_hidden ('update_report', 1);
-		print_submit_button (__('Update'), 'submit', false, 'class="sub next"');
+		print_submit_button (__('Update'), 'submit', false, 'class="sub upd"');
 	} else {
 		print_input_hidden ('create_report', 1);
 		print_submit_button (__('Create'), 'submit', false, 'class="sub wand"');
@@ -415,14 +375,15 @@ if ($edit_sla_report_content) {
 		$table->data[3][0] = __('Module');
 		$modules = array ();
 		if ($id_agent) {
-			$sql = sprintf ('SELECT id_agente_modulo, LOWER(nombre) FROM tagente_modulo WHERE id_agente = %d ORDER BY nombre', $id_agent);
-			$modules = get_db_all_rows_sql ($sql);
+			$modules = get_db_all_rows_filter ('tagente_modulo',
+				array ('id_agente' => $id_agent, 'order' => 'nombre');
+				array ('id_agente_modulo', 'nombre'));
 		}
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);
 		
 		$table->data[4][0] = __('Custom graph name');
 		$table->data[4][1] = print_select_from_sql ('SELECT id_graph, name FROM tgraph',
-							'id_custom_graph', 0, '', '--', 0, true);
+			'id_custom_graph', 0, '', '--', 0, true);
 
 		$module_description = "";
 		$table->data[5][0] = __('Description');
@@ -459,8 +420,8 @@ if ($edit_sla_report_content) {
 			$table->head[6] = __('Delete');
 		}
 		
-		$sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
-		$report_contents = get_db_all_rows_sql ($sql);
+		$report_contents = get_report_contents ($id_report);
+		
 		if (sizeof ($report_contents)) {
 			$first_id = $report_contents[0]['id_rc'];
 			$last_id = $report_contents[sizeof ($report_contents) - 1]['id_rc'];
@@ -470,14 +431,24 @@ if ($edit_sla_report_content) {
 				$data = array ();
 				$data[0] = '';
 				if ($first_id != $report_content['id_rc']) {
-					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
-							$id_report.'&content_up=1&id_report_content='.$report_content['id_rc'].
-							'"><img src="images/up.png" title="'.__('Up').'"></a>';
+					$data[0] .= '<form method="post" style="display:inline">';
+					$data[0] .= print_input_hidden ('edit_report', 1, true);
+					$data[0] .= print_input_hidden ('id_report', $id_report, true);
+					$data[0] .= print_input_hidden ('content_up', 1, true);
+					$data[0] .= print_input_hidden ('id_report_content', $report_content['id_rc'], true);
+					$data[0] .= print_input_image ('up', 'images/up.png', 1, '',
+						true, array ('title' => __('Up')));
+					$data[0] .= '</form>';
 				}
 				if ($last_id != $report_content['id_rc']) {
-					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
-							$id_report.'&content_down=1&id_report_content='.$report_content['id_rc'].
-							'"><img src="images/down.png" title="'.__('Down').'"></a>';
+					$data[0] .= '<form method="post" style="display:inline">';
+					$data[0] .= print_input_hidden ('edit_report', 1, true);
+					$data[0] .= print_input_hidden ('id_report', $id_report, true);
+					$data[0] .= print_input_hidden ('content_down', 1, true);
+					$data[0] .= print_input_hidden ('id_report_content', $report_content['id_rc'], true);
+					$data[0] .= print_input_image ('down', 'images/down.png', 1, '',
+						true, array ('title' => __('Down')));
+					$data[0] .= '</form>';
 				}
 				$data[1] = get_report_name ($report_content['type']);
 				$data[2] = get_agent_name ($report_content['id_agent']);
@@ -492,8 +463,15 @@ if ($edit_sla_report_content) {
 				if ($report_content['type'] == 'SLA') {
 					$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
 				}
-				if ($report_id_user == $config['id_user']) {
-					$data[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
+				if ($report_id_user == $config['id_user'] || is_user_admin ($config['id_user'])) {
+					$data[6] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+					$data[6] .= print_input_hidden ('edit_report', 1, true);
+					$data[6] .= print_input_hidden ('id_report', $id_report, true);
+					$data[6] .= print_input_hidden ('delete_report_content', 1, true);
+					$data[6] .= print_input_hidden ('id_report_content', $report_content['id_rc'], true);
+					$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '',
+						true, array ('title' => __('Delete')));
+					$data[6] .= '</form>';
 				}
 			
 				array_push ($table->data, $data);
@@ -506,9 +484,10 @@ if ($edit_sla_report_content) {
 	echo "<h2>".__('Reporting')." &gt; ";
 	echo __('Custom reporting')."</h2>";
 
-	$reports = get_db_all_rows_in_table ('treport', 'name');
+	$reports = get_reports (array ('order' => 'name'),
+		array ('name', 'id_report', 'description'));
 	$table->width = '0px';
-	if ($reports !== false) {
+	if (sizeof ($reports)) {
 		$table->id = 'report_list';
 		$table->width = '600px';
 		$table->head = array ();
@@ -520,15 +499,17 @@ if ($edit_sla_report_content) {
 		$table->head[2] = __('Delete');
 		
 		foreach ($reports as $report) {
-			if ($report["private"] || $report["id_user"] != $config['id_user'])
-				continue;
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 					$report['id_report'].'">'.$report['name'].'</a>';
 			$data[1] = $report['description'];
-			$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&delete_report=1&id_report='.
-					$report['id_report'].'"><img src="images/cross.png"></a>';
-
+			$data[2] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+			$data[2] .= print_input_hidden ('id_report', $report['id_report'], true);
+			$data[2] .= print_input_hidden ('delete_report', 1, true);
+			$data[2] .= print_input_image ('delete', 'images/cross.png', 1, '',
+				true, array ('title' => __('Delete')));
+			$data[2] .= '</form>';
+			
 			array_push ($table->data, $data);
 			
 		}

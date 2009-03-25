@@ -163,17 +163,13 @@ function update_template ($step) {
 			'time_from' => $time_from,
 			'time_to' => $time_to,
 			'time_threshold' => $threshold,
-			'default_action' => $default_action,
+			'id_alert_action' => $default_action,
 			'field1' => $field1,
 			'field2' => $field2,
 			'field3' => $field3,
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts
 			);
-		
-		if ($default_action) {
-			$values['id_alert_action'] = $default_action;
-		}
 		
 		$result = update_alert_template ($id, $values);
 	} elseif ($step == 3) {
@@ -300,8 +296,8 @@ print_alert_template_steps ($step, $id);
 $table->id = 'template';
 $table->width = '90%';
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
+$table->style[0] = 'font-weight: bold; vertical-align: top';
+$table->style[2] = 'font-weight: bold; vertical-align: top';
 $table->size = array ();
 $table->size[0] = '20%';
 $table->size[2] = '20%';
@@ -370,7 +366,7 @@ if ($step == 2) {
 	$table->data['field2'][1] = print_input_text ('field2', $field2, '', 35, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3');
-	$table->data['field3'][1] = print_textarea ('field3', 30, 30, $field3, '', true);
+	$table->data['field3'][1] = print_textarea ('field3', 10, 30, $field3, '', true);
 	
 	$table->data[4][0] = __('Default action');
 	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',

@@ -68,8 +68,11 @@ if ($update_command) {
 	$command = (string) get_parameter ('command');
 	$description = (string) get_parameter ('description');
 	
-	$result = update_alert_command ($id, $name, $command,
-		array ('description' => $description));
+	$values = array ();
+	$values['name'] = $name;
+	$values['command'] = $command;
+	$values['description'] = $description;
+	$result = update_alert_command ($id, $values);
 	
 	print_error_message ($result, __('Successfully updated'),
 		__('Could not be updated'));

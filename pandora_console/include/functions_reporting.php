@@ -81,11 +81,13 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 /** 
  * Get general statistical info on a group
  * 
- * @param int Group Id to get info from
+ * @param int Group Id to get info from. 0 = all
  * 
  * @return array Group statistics
  */
 function get_group_stats ($id_group = 0) {
+	global $config;
+	
 	$data = array ();
 	$data["monitor_checks"] = 0;
 	$data["monitor_not_init"] = 0;
@@ -108,15 +110,16 @@ function get_group_stats ($id_group = 0) {
 	$data["server_sanity"] = 100;
 	$cur_time = get_system_time ();
 	
-	$groups = array_keys (get_user_groups ());
-	if ($id_group > 0 && in_array ($id_group, $groups)) {
-		//If a singular group is selected, and we have permissions to it then we don't need to get all
-		$groups = array ((int) $id_group);
-	} elseif ($id_group > 0) {
-		return $data; //We don't have selected any valid groups (select 0 for all groups your user can get to)
+	//Check for access credentials using give_acl. More overhead, much safer
+	if (!give_acl ($config["id_user"], $id_group, "AR")) {
+		return $data;
 	}
 	
-	$agents = array_keys (get_group_agents ($groups));	
+	if ($id_group == 0) {
+		$id_group = array_keys (get_user_groups ());
+	}
+	$agents = array_keys (get_group_agents ($id_group));	
+	
 	if (empty ($agents)) {
 		//No agents in this group, means no data
 		return $data;

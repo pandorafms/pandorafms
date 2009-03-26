@@ -1,3 +1,7 @@
+2009-03-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php: Fixed security vulnerability
+	in get_group_stats. Thanks to Eric Ross for pointing it out.
 
 2009-03-26  Sancho Lerena <slerena@artica.es>
 

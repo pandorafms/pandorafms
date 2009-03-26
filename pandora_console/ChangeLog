@@ -1,5 +1,33 @@
 2009-03-26  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/jquery.ui.dialog.js: Added to repository.
+
+	* index.php, general/header.php: Replaced overlay with jquery UI
+	dialog.
+
+	* godmode/agentes/module_manager.php: Use print_moduletype_image().
+
+	* images/close.png, images/transparent.png,
+	include/javascript/jquery.overlay.js: Removed from repository.
+
+	* include/javascript/jquery.pandora.js: Use dialog instead of overlay.
+
+	* include/styles/images/dialog-*: Added to repository. Dialog images.
+
+	* include/styles/pandora.css: Removed overlay styles.
+
+	* include/styles/dialog.css: Added to repository. Dialog styles.
+
+	* include/functions_ui.php: Show description on
+	print_moduletype_icon() title.
+
+	* operation/agentes/estado_agente.php: Return control instead of exit.
+
+	* operation/agentes/estado_ultimopaquete.php: Style corrections and
+	usage of pandora database functions.
+
+2009-03-26  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Some small fixes which
 	didn't allow creating reports or adding contents.
 

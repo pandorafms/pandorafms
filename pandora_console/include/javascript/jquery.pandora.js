@@ -18,10 +18,9 @@ $(document).ready (function () {
 		};
 	
 	$.fn.pulsate = function () {
-		var i=0;
-		for (i=0; i<=2; i++) {
-			$(this).fadeOut ("slow");
-			$(this).fadeIn ("slow");
+		var i = 0;
+		for (i = 0; i <= 2; i++) {
+			$(this).fadeOut ("slow").fadeIn ("slow");
 		}
 	};
 	
@@ -30,9 +29,31 @@ $(document).ready (function () {
 				.text (msg)
 				.slideDown ();
 		};
+	
+	$("a#show_messages_dialog").click (function () {
+		jQuery.get ("ajax.php",
+			{"page": "operation/messages/message"},
+			function (data, status) {
+				$("#dialog_messages").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						title: $("a#show_messages_dialog").attr ("title"),
+						resizable: false,
+						modal: true,
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						bgiframe: jQuery.browser.msie,
+						width: 700,
+						height: 300
+					})
+					.show ();
+			},
+			"html"
+		);
 		
-	$("a[rel]").overlay (function() {
-		var wrap = this.getContent().find("div.wrap");
-		wrap.load(this.getTrigger().attr("href"));
+		return false;
 	});
 });

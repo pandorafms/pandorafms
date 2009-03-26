@@ -112,7 +112,8 @@ if ($create_alert) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
 	$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
-	print_error_message ($id, __('Successfully created'),
+	print_result_message ($id,
+		__('Successfully created'),
 		__('Could not be created'));
 	if ($id !== false) {
 		$actions = (array) get_parameter ('actions');
@@ -134,7 +135,8 @@ if ($delete_alert) {
 	$id_alert_agent_module = (int) get_parameter ('id_alert');
 	
 	$result = delete_alert_agent_module ($id_alert_agent_module);
-	print_error_message ($id, __('Successfully deleted'),
+	print_result_message ($id,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 
@@ -150,7 +152,8 @@ if ($add_action) {
 		$values['fires_max'] = $fires_max;
 	
 	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
-	print_error_message ($id, __('Successfully added'),
+	print_result_message ($id,
+		__('Successfully added'),
 		__('Could not be added'));
 }
 
@@ -159,7 +162,8 @@ if ($delete_action) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = delete_alert_agent_module_action ($id_action);
-	print_error_message ($id, __('Successfully deleted'),
+	print_result_message ($id,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 
@@ -167,7 +171,8 @@ if ($enable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_disable ($id_alert, false);
-	print_error_message ($result, __('Successfully enabled'),
+	print_result_message ($result,
+		__('Successfully enabled'),
 		__('Could not be enabled'));
 }
 
@@ -175,7 +180,8 @@ if ($disable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_disable ($id_alert, true);
-	print_error_message ($result, __('Successfully disabled'),
+	print_result_message ($result,
+		__('Successfully disabled'),
 		__('Could not be disabled'));
 }
 

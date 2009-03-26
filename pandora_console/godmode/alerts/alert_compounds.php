@@ -48,7 +48,8 @@ $disable_alert = (int) get_parameter ('disable_alert');
 if ($delete_alert) {
 	$id = (int) get_parameter ('id');
 	$result = delete_alert_compound ($id);
-	print_error_message ($result, __('Successfully deleted'),
+	print_result_message ($result,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 	if (is_ajax ())
 		return;
@@ -57,7 +58,8 @@ if ($delete_alert) {
 if ($enable_alert) {
 	$id = (int) get_parameter ('id');
 	$result = set_alerts_compound_disable ($id, false);
-	print_error_message ($result, __('Successfully enabled'),
+	print_result_message ($result,
+		__('Successfully enabled'),
 		__('Could not be enabled'));
 	if (is_ajax ())
 		return;
@@ -66,7 +68,8 @@ if ($enable_alert) {
 if ($disable_alert) {
 	$id = (int) get_parameter ('id');
 	$result = set_alerts_compound_disable ($id, true);
-	print_error_message ($result, __('Successfully disabled'),
+	print_result_message ($result, 
+		__('Successfully disabled'),
 		__('Could not be disabled'));
 	if (is_ajax ())
 		return;

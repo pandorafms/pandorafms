@@ -48,7 +48,9 @@ if (isset ($_GET["delete"])){
 	if ($id_trap > 0 && give_acl ($config['id_user'], 0, "IM")) {
 		$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
 		$result = process_sql ($sql);
-		print_error_message ($result, __('Event successfully deleted'), __('Error removing event'));
+		print_result_message ($result,
+			__('Successfully deleted'),
+			__('Could not be deleted'));
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to delete SNMP event ID #".$id_trap);
@@ -61,7 +63,9 @@ if (isset ($_GET["check"])) {
 	if ($id_trap > 1 && give_acl ($config['id_user'], 0, "IW")) {
 		$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 		$result = process_sql ($sql);
-		print_error_message ($result, __('Event successfully updated'), __('Error updating event'));
+		print_result_message ($result,
+			__('Successfully updated'),
+			__('Could not be updated'));
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to checkout SNMP Trap ID".$id_trap);

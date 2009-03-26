@@ -64,7 +64,7 @@ if ($delete_report_content) {
 	$id_report_content = (int) get_parameter ('id_report_content');
 	
 	$result = delete_report_content ($id_report_content);
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
@@ -84,7 +84,7 @@ if ($content_down) {
 // Delete report SQL code
 if ($delete_report) {
 	$result = delete_report ($id_report);
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 	$id_report = 0;
@@ -137,7 +137,7 @@ if ($create_report) {
 	$values['description'] = $report_description;
 	$values['private'] = $report_private;
 	$id_report = create_report ($name, $id_group, $values);
-	print_error_message ($id_report,
+	print_result_message ($id_report,
 		__('Successfully created'),
 		__('Could not be created'));
 }
@@ -149,7 +149,7 @@ if ($update_report) {
 	$values['description'] = $report_description;
 	$values['private'] = $report_private;
 	$result = update_report ($id_report, $values);
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
 }
@@ -376,7 +376,7 @@ if ($edit_sla_report_content) {
 		$modules = array ();
 		if ($id_agent) {
 			$modules = get_db_all_rows_filter ('tagente_modulo',
-				array ('id_agente' => $id_agent, 'order' => 'nombre');
+				array ('id_agente' => $id_agent, 'order' => 'nombre'),
 				array ('id_agente_modulo', 'nombre'));
 		}
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);

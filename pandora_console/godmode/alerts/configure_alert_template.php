@@ -36,7 +36,7 @@ if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
 	
 	$id = duplicate_alert_template ($source_id);
-	print_error_message ($id,
+	print_result_message ($id,
 		__('Successfully created from %s', get_alert_template_name ($source_id)),
 		__('Could not be created'));
 }
@@ -239,7 +239,8 @@ if ($create_template) {
 			'min_value' => $min,
 			'matches_value' => $matches));
 	
-	print_error_message ($result, __('Successfully created'),
+	print_result_message ($result,
+		__('Successfully created'),
 		__('Could not be created'));
 	/* Go to previous step in case of error */
 	if ($result === false)
@@ -251,7 +252,8 @@ if ($create_template) {
 if ($update_template) {
 	$result = update_template ($step - 1);
 	
-	print_error_message ($result, __('Successfully updated'),
+	print_result_message ($result,
+		__('Successfully updated'),
 		__('Could not be updated'));
 	/* Go to previous step in case of error */
 	if ($result === false) {

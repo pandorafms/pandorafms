@@ -96,7 +96,8 @@ if (get_parameter ('alert_validate')) {
 		$result2 = validate_alert_compound ($compound_ids);
 		$result == $result1 || $result2;
 		
-		print_error_message ($result, __('Alert(s) validated'),
+		print_result_message ($result,
+			__('Alert(s) validated'),
 			__('Error processing alert(s)'));
 	}
 }

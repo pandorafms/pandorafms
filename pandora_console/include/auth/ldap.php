@@ -246,15 +246,6 @@ function process_user_contact ($id_user) {
 }
 
 /**
- * Sets the user admin status (LDAP doesn't do this)
- *
- * @param string User id
- */
-function process_user_isadmin ($id_user, $is_admin) {
-	return false;
-}
-	
-/**
  * LDAP user functions based on webcalendar's implementation
  *
  * File from webcalendar (GPL) project:
@@ -418,7 +409,7 @@ function process_user () {
  *
  * @return bool false
  */
-function process_user_password ( $user, $password_old, $password_new ) {
+function update_user_password ($user, $password_old, $password_new) {
 	global $ldap_cache;
 	
 	$ldap_cache["error"] = 'Changing passwords not supported';

@@ -89,7 +89,7 @@ function print_alert_compound_steps ($step, $id) {
 	}
 	
 	echo '</ol>';
-	echo '<div class="steps_clean"> </div>';
+	echo '<div id="steps_clean"> </div>';
 }
 
 function update_compound ($step) {
@@ -242,7 +242,8 @@ if ($create_compound) {
 	$result = create_alert_compound ($name, $id_agent,
 		array ('description' => $description));
 	
-	print_error_message ($result, __('Successfully created'),
+	print_result_message ($result,
+		__('Successfully created'),
 		__('Could not be created'));
 	/* Go to previous step in case of error */
 	if ($result === false) {
@@ -261,7 +262,8 @@ if ($create_compound) {
 if ($update_compound) {
 	$result = update_compound ($step - 1);
 	
-	print_error_message ($result, __('Successfully updated'),
+	print_result_message ($result,
+		__('Successfully updated'),
 		__('Could not be updated'));
 	/* Go to previous step in case of error */
 	if ($result === false) {

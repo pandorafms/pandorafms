@@ -55,11 +55,15 @@ if ($action == "mass") {
 	
 	if ($delete_btn != -1) {
 		$result = delete_incidents ($id_inc);
-		print_error_message ($result, __('Incident successfully deleted'), __('There was a problem deleting incident'));	
+		print_result_message ($result,
+			__('Successfully deleted'),
+			__('Could not be deleted'));
 	}
 	if ($own_btn != -1) {
 		$result = process_incidents_chown ($id_inc, $config["id_user"]);
-		print_error_message ($result, __('Incident successfully owned'), __('There was a problem becoming owner of incident'));	
+		print_result_message ($result,
+			__('Ssuccessfully reclaimed ownership'),
+			__('Could not reclame owners'));
 	}
 
 } elseif ($action == "update") {
@@ -90,7 +94,9 @@ if ($action == "mass") {
 		audit_db ($config["id_user"], $config["remote_addr"], "Incident updated","User ".$config['id_user']." updated incident #".$id_inc);
 	}
 	
-	print_error_message ($result, __('Incident successfully updated'), __('There was a problem updating incident'));
+	print_result_message ($result,
+		__('Successfully updated'),
+		__('Could not be updated'));
 	
 } elseif ($action == "insert") {
 	//Create incident

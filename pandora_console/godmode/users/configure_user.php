@@ -17,13 +17,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require_once ("include/config.php");
+require_once ('include/config.php');
 
 check_login ();
-
-$id = get_parameter_get ("id", $config["id_user"]); // ID given as parameter
+$id = get_parameter ('id', $config['id_user']); // ID given as parameter
 $user_info = get_user_info ($id);
-$id = $user_info["id_user"];
+$id = $user_info['id_user'];
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -32,183 +31,226 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	exit;
 }
 
-if ($config["user_can_update_info"]) {
+if ($config['user_can_update_info']) {
 	$view_mode = false;
 } else {
 	$view_mode = true;
 }
 
-if (isset ($_GET["create"]) && $config["admin_can_add_user"]) {
+$new_user = (bool) get_parameter ('new_user');
+$create_user = (bool) get_parameter ('create_user');
+$add_profile = (bool) get_parameter ('add_profile');
+$delete_profile = (bool) get_parameter ('delete_profile');
+$update_user = (bool) get_parameter ('update_user');
+
+if ($create_user) {
+	if (! $config['admin_can_add_user']) {
+		print_result_message (false, '',
+			__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
+		return;
+	}
+	
+	$values = array ();
+	$values['fullname'] = (string) get_parameter ('fullname');
+	$values['firstname'] = (string) get_parameter ('firstname');
+	$values['lastname'] = (string) get_parameter ('lastname');
+	$password_new = (string) get_parameter ('password_new');
+	$password_confirm = (string) get_parameter ('password_confirm');
+	$values['email'] = (string) get_parameter ('email');
+	$values['phone'] = (string) get_parameter ('phone');
+	$values['comments'] = (string) get_parameter ('comments');
+	$is_admin = (bool) get_parameter ('is_admin', 0);
+	
+	if ($password_new == '') {
+		print_result_message (false, '', __('Passwords cannot be empty'));
+		$user_info = $values;
+		$password_new = '';
+		$password_confirm = '';
+	} elseif ($password_new != $password_confirm) {
+		print_result_message (false, '', __('Passwords didn\'t match'));
+		$user_info = $values;
+		$password_new = '';
+		$password_confirm = '';
+	} else {
+		$id = (string) get_parameter ('id_user');
+		$result = create_user ($id, $password_new, $values);
+		print_result_message ($result,
+			__('User successfully created'),
+			__('Error creating user'));
+		$user_info = get_user_info ($id);
+		$password_new = '';
+		$password_confirm = '';
+	}
+}
+
+if ($update_user) {
+	$values = array ();
+	$values['fullname'] = (string) get_parameter ('fullname');
+	$values['firstname'] = (string) get_parameter ('firstname');
+	$values['lastname'] = (string) get_parameter ('lastname');
+	$values['email'] = (string) get_parameter ('email');
+	$values['phone'] = (string) get_parameter ('phone');
+	$values['comments'] = (string) get_parameter ('comments');
+	$values['is_admin'] = (bool) get_parameter ('is_admin');
+	
+	$res1 = update_user ($id, $values);
+	
+	if ($config['user_can_update_password']) {
+		$password_new = (string) get_parameter ('password_new');
+		$password_confirm = (string) get_parameter ('password_confirm');
+		if ($password_new !== '') {
+			if ($password_confirm == $password_new) {
+				$res2 = update_user_password ($id, $password_new);
+				print_result_message ($res1 || $res2,
+					__('User info successfully updated'),
+					__('Error updating user info (no change?)'));
+			} else {
+				print_result_message (false, '',
+					__('Passwords does not match'));
+			}
+		} else {
+			print_result_message ($res1,
+				__('User info successfully updated'),
+				__('Error updating user info (no change?)'));
+		}
+	} else {
+		print_result_message ($res1,
+			__('User info successfully updated'),
+			__('Error updating user info (no change?)'));
+	}
+	
+	$user_info = $values;
+}
+
+if ($new_user && $config['admin_can_add_user']) {
 	$user_info = array ();
 	$id = '';
-	$user_info["fullname"] = '';
-	$user_info["firstname"] = '';
-	$user_info["lastname"] = '';
-	$user_info["email"] = '';
-	$user_info["phone"] = '';
-	$user_info["comments"] = '';
-	$user_info["is_admin"] = 0;
-} elseif (isset ($_GET["create"])) {
-	print_error_message (false, '', __('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
-} elseif (isset ($_GET["user_mod"])) {
-	$mod = get_parameter_get ("user_mod", 0); //0 is no user info modify (can modify passwords and admin status), 1 is modify, 2 is create
+	$user_info['fullname'] = '';
+	$user_info['firstname'] = '';
+	$user_info['lastname'] = '';
+	$user_info['email'] = '';
+	$user_info['phone'] = '';
+	$user_info['comments'] = '';
+	$user_info['is_admin'] = 0;
+}
+
+if ($add_profile) {
+	$group = (int) get_parameter ('assign_group');
+	$profile = (int) get_parameter ('assign_profile');
 	
-	$upd_info = array ();
-	$upd_info["fullname"] = get_parameter_post ("fullname");
-	$upd_info["firstname"] = get_parameter_post ("firstname");
-	$upd_info["lastname"] = get_parameter_post ("lastname");
-	$password_old = get_parameter_post ("password_old", "-");
-	$password_new = get_parameter_post ("password_new", "-");
-	$password_confirm = get_parameter_post ("password_confirm", "-");
-	$upd_info["email"] = get_parameter_post ("email");
-	$upd_info["phone"] = get_parameter_post ("phone");
-	$upd_info["comments"] = get_parameter_post ("comments");
-	$is_admin = get_parameter_post ("is_admin", 0);
-	$group = get_parameter_post ("assign_group", 0);
-	$profile = get_parameter_post ("assign_profile", 0);
+	$return = create_user_profile ($id, $profile, $group);
+	print_result_message ($return,
+		__('Succesfully created'),
+		__('Could not be created'));
+}
+
+if ($delete_profile) {
+	$id_up = (int) get_parameter ('id_user_profile');
 	
-	
-	if ($config["admin_can_add_user"] && $mod == 2) {
-		if ($password_new != $password_confirm) {
-			print_error_message (false, '', __('Passwords didn\t match'));
-			$id = '';
-			$user_info = $upd_info; //Fill in the blanks again
-			$user_info["is_admin"] = $is_admin;
-			$_GET["create"] = 1; //Set create mode back on
-			$password_old = "-";
-			$password_new = "-";
-			$password_confirm = "-";
-		} else {
-			$id = get_parameter_post ("id_user");
-			$return = create_user ($id, $password_new, $upd_info);
-			print_error_message ($return, __('User successfully created'), __('Error creating user'));
-			$user_info = get_user_info ($id);
-			$id = $user_info["id_user"];
-			$password_old = "-";
-			$password_new = "-";
-			$password_confirm = "-";
-		}
-	} elseif ($config["user_can_update_info"] && $mod == 1) {
-		$return = process_user_info ($id, $upd_info);
-		print_error_message ($return, __('User info successfully updated'), __('Error updating user info (no change?)'));
-		$user_info = $upd_info;
-		$user_info["is_admin"] = $is_admin;
-	}
-	
-	//If User can update password and the new password is not the same as the old one, it's not the default and it's not empty and the new password is the same as the confirmed one
-	if ($config["user_can_update_password"] && $password_old !== $password_new && $password_new !== "-" && !empty ($password_new) && $password_confirm == $password_new) {
-		$return = process_user_password ($id, $password_old, $password_new);
-		print_error_message ($return, __('Password successfully updated'), __('Error updating passwords').": ".$config["auth_error"]);
-	} elseif ($password_new !== "-") {
-		print_error_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
-	}
-	
-	if ($is_admin != $user_info["is_admin"]) {
-		$return = process_user_isadmin ($id, $is_admin);
-		print_error_message ($return, __('User admin status succesfully update'), __('Error updating admin status'));
-	}
-	
-	if ($group != 0 && $profile != 0) {
-		$return = create_user_profile ($id, $profile, $group);
-		print_error_message ($return, __('User profile succesfully created'), __('Error creating user profile'));
-	}
-} elseif (isset ($_GET["profile_mod"])) {
-	$id_up = (int) get_parameter_post ("delete_profile", 0);
 	$return = delete_user_profile ($id, $id_up);
-	print_error_message ($return, __('Profile successfully deleted'), __('Error deleting profile'));
+	print_result_message ($return,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
 }
 
 echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";
 
-if (!empty ($id)) {
-	echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id='.$id.'&user_mod=1">';
-} else {
-	echo '<form name="user_create" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&user_mod=2">';
+$table->width = '50%';
+$table->data = array ();
+$table->colspan = array ();
+$table->size = array ();
+$table->size[0] = '35%';
+$table->size[1] = '65%';
+$table->style = array ();
+$table->style[0] = 'font-weight: bold; vertical-align: top';
+
+$table->data[0][0] = __('User ID');
+$table->data[0][1] = print_input_text_extended ('id_user', $id, '', '', 20, 60,
+	$view_mode, '', '', true);
+
+$table->data[1][0] = __('Full (display) name');
+$table->data[1][1] = print_input_text_extended ('fullname', $user_info['fullname'],
+	'', '', 30, 255, $view_mode, '', '', true);
+
+$table->data[2][0] = __('First name');
+$table->data[2][1] = print_input_text_extended ('firstname', $user_info['firstname'],
+	'', '', 30, 255, $view_mode, '', '', true);
+
+$table->data[3][0] = __('Last name');
+$table->data[3][1] = print_input_text_extended ('lastname', $user_info['lastname'],
+	'', '', 30, 255, $view_mode, '', '', true);
+
+if ($config['user_can_update_password']) {
+	$table->data[4][0] = __('Password');
+	$table->data[4][1] = print_input_text_extended ('password_new', '', '', '',
+		15, 255, $view_mode, '', '', true, true);
+	$table->data[5][0] = __('Password confirmation');
+	$table->data[5][1] = print_input_text_extended ('password_confirm', '', '',
+		'', 15, 255, $view_mode, '', '', true, true);
 }
 
-echo '<table cellpadding="4" cellspacing="4" class="databox_color" width="600px">';
+if ($config['admin_can_make_admin']) {
+	$table->data[6][0] = __('Global Profile');
+	
+	$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
+	$table->data[6][1] .= __('Administrator');
+	$table->data[6][1] .= print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
+	$table->data[6][1] .= '<br />';
+	
+	$table->data[6][1] .= print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
+	$table->data[6][1] .= __('Standard user');
+	$table->data[6][1] .= print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
+}
 
-echo '<tr><td class="datos">'.__('User ID').'</td>';
-echo '<td class="datos">';
-print_input_text_extended ("id_user", $id, '', '', '', '', $view_mode, '', 'class="input"');
+$table->data[7][0] = __('E-mail');
+$table->data[7][1] = print_input_text_extended ("email", $user_info['email'],
+	'', '', 20, 100, $view_mode, '', '', true);
 
-echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';
-print_input_text_extended ("fullname", $user_info["fullname"], '', '', '', '', $view_mode, '', 'class="input"');
+$table->data[8][0] = __('Phone number');
+$table->data[8][1] = print_input_text_extended ("phone", $user_info['phone'],
+	'', '', 10, 30, $view_mode, '', '', true);
 
-echo '</td></tr><tr><td class="datos">'.__('First name').'</td><td class="datos">';
-print_input_text_extended ("firstname", $user_info["firstname"], '', '', '', '', $view_mode, '', 'class="input"');
+$table->data[9][0] = __('Comments');
+$table->data[9][1] = print_textarea ("comments", 5, 55, $user_info['comments'],
+	($view_mode ? 'readonly="readonly"' : ''), true);
 
-echo '</td></tr><tr><td class="datos2">'.__('Last name').'</td><td class="datos2">';
-print_input_text_extended ("lastname", $user_info["lastname"], '', '', '', '', $view_mode, '', 'class="input"');
+echo '<form method="post">';
 
-echo '</td></tr><tr><td class="datos">'.__('Password').'</td><td class="datos">';
-if ($config["user_can_update_password"]) {
-	if (!isset ($_GET["create"])) {
-		print_input_text_extended ("password_old", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
+print_table ($table);
+
+echo '<div style="width: '.$table->width.'" class="action-buttons">';
+if ($new_user) {
+	if ($config['admin_can_add_user']){
+		print_input_hidden ('create_user', 1);
+		print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	}
-	echo '</td></tr><tr><td class="datos">'.__('New Password').'</td><td class="datos">';
-	print_input_text_extended ("password_new", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
-	echo '</td></tr><tr><td class="datos">'.__('Password confirmation').'</td><td class="datos">';
-	print_input_text_extended ("password_confirm", "-", '', '', '', '', $view_mode, '', 'class="input"', false, true);
 } else {
-	echo '<i>'.__('You can not change passwords from Pandora FMS under the current authentication scheme').'</i>';
+	if ($config['user_can_update_info']) {
+		print_input_hidden ('update_user', 1);
+		print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
+	}
 }
+echo '</div>';
+echo '</form>';
+echo '<br />';
 
-echo '</td></tr><tr><td class="datos2">'.__('Global Profile').'</td><td class="datos2">';
-if ($config["admin_can_make_admin"]) {
-	echo __('Administrator');
-	print_radio_button ('is_admin', '1', '', $user_info["is_admin"]);
-	print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"));
-	print __('Standard user');
-	print_radio_button ('is_admin', '0', '', $user_info["is_admin"]);
-	print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"));
-} else {
-	echo '<i>'.__('You can not change admin status from Pandora FMS under the current authentication scheme').'</i>';
-}
-
-echo '</td></tr><tr><td class="datos">'.__('E-mail').'</td><td class="datos">';
-print_input_text_extended ("email", $user_info["email"], '', '', '', '', $view_mode, '', 'class="input"');
-
-echo '</td></tr><tr><td class="datos2">'.__('Phone number').'</td><td class="datos2">';
-print_input_text_extended ("phone", $user_info["phone"], '', '', '', '', $view_mode, '', 'class="input"');
-
-echo '</td></tr><tr><td class="datos">'.__('Comments').'</td><td class="datos">';
-print_textarea ("comments", 4, 55, $user_info["comments"], ($view_mode ? 'readonly' : ''));
-
-echo '<tr><td class="datos2">'.__('Group(s) available').'</td><td class="datos2">';
-
-$groups = get_user_groups ($config["id_user"], "UM");
-print_select ($groups, "assign_group", 0, '', __('None'), 0, false, false, false, 'w155');
-
-echo '</td></tr><tr><td class="datos">'.__('Profiles').'</td><td class="datos">';
-$profiles = get_profiles ();
-print_select ($profiles, "assign_profile", 0, '', __('None'), 0, false, false, false, 'w155');
-echo '</td></tr></table>';
-
-echo '<div style="width:600px; text-align:right;">';
-print_submit_button (__('Update'), 'uptbutton', false, 'class="sub upd"');
-echo '</div></form><br />';
-
+/* Don't show anything else if we're creating an user */
+if (empty ($id) || $new_user)
+	return;
 
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 
-$table->width = 600;
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->class = "databox";
-
+$table->width = '50%';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();
-
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group name');
 $table->head[2] = '';
-
-$table->align[0] = 'center';
-$table->align[1] = 'center';
 $table->align[2] = 'center';
-
 
 $result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
 if ($result === false) {
@@ -216,18 +258,33 @@ if ($result === false) {
 }
 
 foreach ($result as $profile) {
-	$data[0] = '<b><a href="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&id='.$profile["id_perfil"].'">'.get_profile_name ($profile["id_perfil"]).'</a></b>';
-	$data[1] = '<b><a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$profile["id_grupo"].'">'.get_group_name ($profile["id_grupo"]).'</a></b>';
-	$data[2] = print_input_image ("delete_profile", "images/delete.png", $profile["id_up"], 'border:0px;', true);
+	$data = array ();
+	
+	$data[0] = '<a href="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
+	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo']).'</a>';
+	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+	$data[2] .= print_input_hidden ('delete_profile', 1, true);
+	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);
+	$data[2] .= print_input_image ('del', 'images/cross.png', 1, '', true);
+	$data[2] .= '</form>';
+	
 	array_push ($table->data, $data);
 }
 
-if (!empty ($table->data)) {
-	echo '<form name="profile_mod" method="post" action="index.php?sec=usuarios&sec2=godmode/users/configure_user&id='.$id.'&profile_mod=1">';
-	print_table ($table);
-	echo '</form>';
-} else {
-	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
-}
+$data = array ();
+$data[0] = '<form method="post">';
+$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
+	0, true, false, false);
+$data[1] = print_select (get_user_groups ($config['id_user'], 'UM'),
+	'assign_group', 0, '', __('None'), 0, true, false, false);
+$data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
+$data[2] .= print_input_hidden ('add_profile', 1, true);
+$data[2] .= '</form>';
+
+array_push ($table->data, $data);
+
+print_table ($table);
+echo '</form>';
+
 unset ($table);
 ?>

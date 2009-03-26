@@ -230,7 +230,9 @@ echo '<div style="height: 25px;">&nbsp;</div>';
 
 // Show agent creation results
 if ($create_agent) {
-	print_error_message ($agent_created_ok, __('Agent successfully created'), __('There was a problem creating the agent'));
+	print_result_message ($agent_created_ok,
+		__('Agent successfully created'),
+		__('There was a problem creating the agent'));
 }
 
 // Fix / Normalize module data
@@ -250,7 +252,9 @@ if (isset($_GET["fix_module"])){
 		$error = " - ".__('No data to normalize');
 	}
 	
-	print_error_message ($result, __('Deleted data above').' '.$media, __('Error normalizing module').' '.$error);
+	print_result_message ($result,
+		__('Deleted data above %d', $media),
+		__('Error normalizing module %s', $error));
 }
 
 // ================

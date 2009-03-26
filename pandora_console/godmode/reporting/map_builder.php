@@ -101,9 +101,17 @@ if ($update_layout) {
 	if (! $height)
 		$height = $bg_info[1];
 	
-	$result = process_sql_update ('tlayout', array ('name' => $name, 'background' => $background, 'height' => $height, 'width' => $width, 'id_group' => $id_group), array ('id' => $id_layout));
+	$values = array ('name' => $name,
+		'background' => $background,
+		'height' => $height,
+		'width' => $width,
+		'id_group' => $id_group);
+	
+	$result = process_sql_update ('tlayout', $values, array ('id' => $id_layout));
 
-	print_error_message ($result, __('Update layout successful'), __('Update layout failed'));
+	print_result_message ($result,
+		__('Update layout successful'),
+		__('Update layout failed'));
 
 	if (is_ajax ()) {
 		exit;

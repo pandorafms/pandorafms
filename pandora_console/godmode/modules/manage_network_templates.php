@@ -33,7 +33,9 @@ if (isset ($_POST["delete_profile"])) { // if delete
 	$id_np = (int) get_parameter_post ("delete_profile", 0);
 	$sql = sprintf ("DELETE FROM tnetwork_profile WHERE id_np = %d", $id_np);
 	$result = process_sql ($sql);
-	print_error_message ($result, __('Template successfully deleted'), __('Error deleting template'));
+	print_result_message ($result,
+		__('Template successfully deleted'),
+		__('Error deleting template'));
 }
 
 if (isset ($_POST["export_profile"])) {
@@ -41,7 +43,7 @@ if (isset ($_POST["export_profile"])) {
 	$profile_info = get_db_row ("tnetwork_profile", "id_np", $id_np);
 	
 	if (empty ($profile_info)) {
-		print_error_message (false,'', __('This template does not exist'));
+		print_result_message (false, '', __('This template does not exist'));
 		return;
 	}	
 	

@@ -1,3 +1,10 @@
+2009-03-26  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* lib/PandoraFMS/Tools.pm: Added Apple to the detected OS'es
+	
+	* bin/pandora_recon: Added TCP scanning if ICMP fails to more accurately
+	detect systems that are firewalled from pings.
+	
 2009-03-05  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_network: Better management of snmpget binary call, using

@@ -44,7 +44,9 @@ if (isset ($_GET["delete_module"])) {
 		}
 	}
 
-	print_error_message (($errors < 1), __('Successfully deleted module from profile'), __('Error deleting module from profile'));
+	print_result_message (($errors < 1),
+		__('Successfully deleted module from profile'),
+		__('Error deleting module from profile'));
 } elseif (isset ($_GET["add_module"])) {
 	// Add module to profile
 	$errors = 0;
@@ -56,7 +58,9 @@ if (isset ($_GET["delete_module"])) {
 		}
 	}
 	
-	print_error_message (($errors < 1), __('Successfully added module to profile'), __('Error adding module to profile'));
+	print_result_message (($errors < 1),
+		__('Successfully added module to profile'),
+		__('Error adding module to profile'));
 } 
 
 if (isset ($_GET["create"]) || isset ($_GET["update"])) {
@@ -68,12 +72,16 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 		//Profile exists
 		$sql = sprintf ("UPDATE tnetwork_profile SET name = '%s', description = '%s' WHERE id_np = %d", $name, $description, $id_np); 		
 		$result = process_sql ($sql);
-		print_error_message ($result, __('Successfully updated network profile'), __('Error updating network profile'));
+		print_result_message ($result,
+			__('Successfully updated network profile'),
+			__('Error updating network profile'));
 	} else {
 		//Profile doesn't exist
 		$sql = sprintf ("INSERT INTO tnetwork_profile (name, description) VALUES ('%s', '%s')", $name, $description);
 		$result = process_sql ($sql, "insert_id");
-		print_error_message ($result, __('Successfully added network profile'), __('Error adding network profile'));
+		print_result_message ($result,
+			__('Successfully added network profile'),
+			__('Error adding network profile'));
 		$id_np = (int) $result; //Will return either 0 (in case of error) or an int
 	}
 

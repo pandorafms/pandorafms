@@ -31,11 +31,15 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
-	print_error_message ($result, __('User successfully deleted'), __('There was a problem deleting the user'));
+	print_result_message ($result,
+		__('User successfully deleted'),
+		__('There was a problem deleting the user'));
 } elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
 	$result = delete_profile ($id_profile);
-	print_error_message ($result, __('Profile successfully deleted'), __('There was a problem deleting the profile'));
+	print_result_message ($result, 
+		__('Profile successfully deleted'),
+		__('There was a problem deleting the profile'));
 }
 
 echo '<h2>'.__('User management').' &gt; '.__('Users defined in Pandora').'</h2>';
@@ -75,9 +79,13 @@ foreach ($info as $user_id => $user_info) {
 	$data[2] = print_timestamp ($user_info["last_connect"], true);
 	
 	if ($user_info["is_admin"]) {
-		$data[3] = print_image ("images/user_suit.png", true, array ("alt" => __('Admin'), "title" => __('Administrator'))).'&nbsp;';
+		$data[3] = print_image ("images/user_suit.png", true,
+			array ("alt" => __('Admin'),
+				"title" => __('Administrator'))).'&nbsp;';
 	} else {
-		$data[3] = print_image ("images/user_green.png", true, array ("alt" => __('User'), "title" => __('Standard User'))).'&nbsp;';
+		$data[3] = print_image ("images/user_green.png", true,
+			array ("alt" => __('User'),
+				"title" => __('Standard User'))).'&nbsp;';
 	}
 	
 	$data[3] .= '<a href="#" class="tip"><span>';
@@ -96,7 +104,7 @@ foreach ($info as $user_id => $user_info) {
 	
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
 	if ($config["admin_can_delete_user"]) {
-		$data[5] = print_input_image ("delete_user", "images/delete.png", $user_id, 'border:0px;', true); //Delete user button
+		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_id, 'border:0px;', true); //Delete user button
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}
@@ -109,9 +117,10 @@ echo '</form>';
 unset ($table);
 
 	
-echo '<div style="width:680px; text-align:right">';
+echo '<div style="width:680px" class="action-buttons">';
 if ($config["admin_can_add_user"] !== false) {
-	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;create=1">';
+	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user">';
+	print_input_hidden ('new_user', 1);
 	print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
 	echo '</form>';
 } else {
@@ -165,7 +174,7 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = print_input_image ("delete_profile", "images/delete.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
+	$data[11] = print_input_image ("delete_profile", "images/cross.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
 	
 	array_push ($table->data, $data);
 }

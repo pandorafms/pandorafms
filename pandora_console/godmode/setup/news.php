@@ -35,7 +35,9 @@ if (isset ($_POST["create"])) { // If create
 	$sql = sprintf ("INSERT INTO tnews (subject, text, author, timestamp) VALUES ('%s', '%s', '%s', NOW()) ", $subject, $text, $config["id_user"]);
 	$id_link = process_sql ($sql, "insert_id");
 	
-	print_error_message ($id_link, __('Created successfully'), __('Not created. Error inserting data'));
+	print_result_message ($id_link,
+		__('Created successfully'),
+		__('Not created. Error inserting data'));
 }
 
 if (isset ($_POST["update"])) { // if update
@@ -47,17 +49,19 @@ if (isset ($_POST["update"])) { // if update
 		
 	$result = process_sql ($sql);
 
-	print_error_message ($result, __('Updated successfully'), __('Not updated. Error updating data'));
+	print_result_message ($result,
+		__('Updated successfully'),
+		__('Not updated. Error updating data'));
 }
 
 if (isset ($_GET["borrar"])) { // if delete
 	$id_news = (int) get_parameter ("borrar", 0);
 	
-	$sql = sprintf ("DELETE FROM tnews WHERE id_news = %d", $id_news);
+	$result = process_sql_delete ('tnews', array ('id_news' => $id_news));
 	
-	$result = mysql_query ($sql);
-	
-	print_error_message ($result, __('Deleted successfully'), __('Not deleted. Error deleting data'));
+	print_result_message ($result,
+		__('Deleted successfully'),
+		__('Could not be deleted'));
 }
 
 // Main form view for Links edit

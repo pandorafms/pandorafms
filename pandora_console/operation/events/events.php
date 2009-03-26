@@ -71,14 +71,18 @@ $validate = (bool) get_parameter ("validate");
 if ($delete) {
 	$eventid = (array) get_parameter ("eventid", -1);
 	$return = delete_event ($eventid); //This function handles both single values as well arrays and cleans up before deleting
-	print_error_message ($return, __('Events successfully deleted'), __('There was an error deleting events'));
+	print_result_message ($return,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
 }
 
 //Process validation (pass array or single value)
 if ($validate) {
 	$eventid = (array) get_parameter ("eventid", -1);
 	$return = process_event_validate ($eventid);
-	print_error_message ($return, __('Events successfully validated'), __('There was an error validating events'));
+	print_result_message ($return,
+		__('Successfully validated'),
+		__('Could not be validated'));
 }
 
 

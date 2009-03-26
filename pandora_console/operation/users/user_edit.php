@@ -46,13 +46,17 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	//If User can update password and the new password is not the same as the old one, it's not the default and it's not empty and the new password is the same as the confirmed one
 	if ($config["user_can_update_password"] && $password_old !== $password_new && $password_new !== "-" && !empty ($password_new) && $password_confirm == $password_new) {
 		$return = process_user_password ($id, $pass);
-		print_error_message ($return, __('Password successfully updated'), __('Error updating passwords').": ".$config["auth_error"]);
+		print_result_message ($return,
+			__('Password successfully updated'),
+			__('Error updating passwords: %s', $config['auth_error']));
 	} elseif ($password_new !== "-") {
-		print_error_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
+		print_result_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
 	}
 	
 	$return = process_user_info ($id, $upd_info);
-	print_error_message ($return, __('User info successfully updated'), __('Error updating user info'));
+	print_result_message ($return,
+		__('User info successfully updated'),
+		__('Error updating user info'));
 	$user_info = $upd_info;
 }
 

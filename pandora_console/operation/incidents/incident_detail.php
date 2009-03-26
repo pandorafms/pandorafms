@@ -65,7 +65,9 @@ if (isset ($_GET["id"])) {
 		if ($id_nota !== false) {
 			process_incidents_touch ($id_inc);
 		}
-		print_error_message ($id_nota, __('Note successfully added'), __('Error adding note'));
+		print_result_message ($id_nota,
+			__('Successfully added'),
+			__('Could not be added'));
 	}
 
 	// Delete note
@@ -81,7 +83,9 @@ if (isset ($_GET["id"])) {
 			if (!empty ($result)) {
 				process_incidents_touch ($id_inc);
 			}
-			print_error_message ($id_nota, __('Note successfully deleted'), __('Error deleting note'));
+			print_result_message ($id_nota,
+				__('Successfully deleted'),
+				__('Could not be deleted'));
 		}
 	}
 
@@ -97,7 +101,9 @@ if (isset ($_GET["id"])) {
 			process_incidents_touch ($id_inc);
 		}
 		
-		print_error_message ($result, __('File successfully deleted from database'), __('Unable to delete file'));
+		print_result_message ($result,
+			__('Successfully deleted'),
+			__('Could not be deleted'));
 	}
 
 	// Upload file
@@ -141,7 +147,9 @@ if (isset ($_GET["id"])) {
 			process_sql ("DELETE FROM tattachment WHERE id_attachment = ".$id_attachment);
 		}
 		
-		print_error_message ($result, __('File uploaded'), __('File could not be saved. Contact the Pandora Administrator for more information'));
+		print_result_message ($result,
+			__('File uploaded'),
+			__('File could not be uploaded'));
 	}
 } // else Not given id
 // Create incident from event... read event data

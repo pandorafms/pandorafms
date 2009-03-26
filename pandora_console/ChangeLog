@@ -1,3 +1,50 @@
+2009-03-26  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/users/configure_user.php: Complete rewritten to fix minor
+	errors and fit the Pandora style.
+
+	* include/auth/ldap.php: Removed process_user_isadmin(). Renamed
+	process_user_password() to update_user_password(). Renamed
+	process_user_info to update_user(). update_user_password() does not
+	require old password anymore.
+
+	* include/functions_db.php: Added empty checks on
+	create_user_profile().
+
+	* include/functions_ui.php: print_error_message() renamed to
+	print_result_message().
+
+	* godmode/agentes/configurar_agente.php,
+	godmode/alerts/alert_actions.php, godmode/alerts/alert_commands.php,
+	godmode/alerts/alert_compounds.php, godmode/alerts/alert_list.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/modules/manage_network_templates_form.php,
+	godmode/reporting/map_builder_wizard.php,
+	godmode/reporting/reporting_builder.php,
+	operation/agentes/alerts_status.php, operation/events/events.php,
+	operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/messages/message.php, operation/snmpconsole/snmp_view.php,
+	operation/users/user_edit.php: Renamed print_result_message(). Some
+	translatable strings reused to simplify i18n work.
+	
+	* godmode/users/user_list.php: Renamed print_result_message(). Use
+	cross.png for deletion links. Style corrections.
+
+	* godmode/setup/news.php: Renamed print_result_message(). Use
+	process_sql_delete() instead of direct mysql_query.
+
+	* godmode/reporting/map_builder.php: Renamed print_result_message().
+	Style correction on process_sql_update().
+
+	* godmode/alerts/configure_alert_compound.php: Renamed
+	print_result_message(). Fixed steps_clean div.
+	
+	* godmode/setup/setup.php: Return control to index instead of exit.
+
 2009-03-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/incidents/incident.php: Fixed small issue

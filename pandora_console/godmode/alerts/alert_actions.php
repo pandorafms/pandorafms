@@ -59,7 +59,8 @@ if ($create_action) {
 			'field2' => $field2,
 			'field3' => $field3));
 	
-	print_error_message ($result, __('Successfully created'),
+	print_result_message ($result,
+		__('Successfully created'),
 		__('Could not be created'));
 }
 
@@ -79,7 +80,8 @@ if ($update_action) {
 	$values['field3'] = $field3;
 	$result = update_alert_action ($id, $values);
 	
-	print_error_message ($result, __('Successfully updated'),
+	print_result_message ($result,
+		__('Successfully updated'),
 		__('Could not be updated'));
 }
 
@@ -88,7 +90,8 @@ if ($delete_action) {
 	
 	$result = delete_alert_action ($id);
 	
-	print_error_message ($result, __('Successfully deleted'),
+	print_result_message ($result,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 

@@ -118,7 +118,8 @@ if ($update_template) {
 			'field2_recovery' => $field2_recovery,
 			'field3_recovery' => $field3_recovery));
 	
-	print_error_message ($result, __('Successfully updated'),
+	print_result_message ($result,
+		__('Successfully updated'),
 		__('Could not be updated'));
 }
 
@@ -127,7 +128,8 @@ if ($delete_template) {
 	
 	$result = delete_alert_template ($id);
 	
-	print_error_message ($result, __('Successfully deleted'),
+	print_result_message ($result,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 

@@ -29,19 +29,25 @@ if (isset ($_POST["delete_message"])) {
 	$id = (int) get_parameter_post ("delete_message");
 	$result = delete_message ($id); //Delete message function will actually check the credentials
 	
-	print_error_message ($result, __('Message successfully deleted'), __('There was a problem deleting the message'));
+	print_result_message ($result,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
 }
 
 if (!empty ($dest_user) && isset ($_GET["send_message"])) {
 	// Create message
 	$return = create_message ($config["id_user"], $dest_user, $subject, $message);
-	print_error_message ($return, __('Message successfully sent to user: ').get_user_fullname ($dest_user), __('Error sending message to user: ').get_user_fullname ($dest_user));
+	print_result_message ($return,
+		__('Message successfully sent to user %s', get_user_fullname ($dest_user)),
+		__('Error sending message to user %s', get_user_fullname ($dest_user)));
 }
 
 if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	// Create message to groups
 	$return = create_message_group ($config["id_user"], $dest_group, $subject, $message);
-	print_error_message ($return, __('Message successfully sent'), __('Error sending message to group: ').get_group_name ($dest_group));
+	print_result_message ($return,
+		__('Message successfully sent'),
+		__('Error sending message to group %s ', get_group_name ($dest_group)));
 }
 
 if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {

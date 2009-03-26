@@ -24,7 +24,7 @@ check_login ();
 if (! give_acl ($config['id_user'], 0, "PM") || ! is_user_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 // Load enterprise extensions

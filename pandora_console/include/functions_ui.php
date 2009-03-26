@@ -18,8 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /** 
- * Evaluates a result using empty() and then prints an error message or a
- * success message
+ * Evaluates a result using empty() and then prints an error or success message
  * 
  * @param mixed $result the results to evaluate. 0, NULL, false, '' or 
  * array() is bad, the rest is good
@@ -32,7 +31,7 @@
  *
  * @return string XHTML code if return parameter is true.
  */
-function print_error_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
+function print_result_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
 	if ($good == '' || $good === false)
 		$good = __('Request successfully processed');
 	

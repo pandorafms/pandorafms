@@ -41,7 +41,7 @@ if ($create) {
 	$result = process_sql_insert ('tnetwork_component_group',
 		array ('name' => $name,
 			'parent' => $parent));
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Created successfully'),
 		__('Not created. Error inserting data'));
 }
@@ -55,7 +55,7 @@ if ($update) {
 		array ('name' => $name,
 			'parent' => $parent),
 		array ('id_sg' => $id));
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Updated successfully'),
 		__('Not updated. Error updating data'));
 }
@@ -65,7 +65,7 @@ if ($delete) { // if delete
 	
 	$result = process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
-	print_error_message ($result,
+	print_result_message ($result,
 		__('Deleted successfully'),
 		__('Not deleted. Error deleting data'));
 }

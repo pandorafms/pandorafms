@@ -52,7 +52,8 @@ if ($create_command) {
 	$result = create_alert_command ($name, $command,
 		array ('description' => $description));
 	
-	print_error_message ($result, __('Successfully created'),
+	print_result_message ($result, 
+		__('Successfully created'),
 		__('Could not be created'));
 }
 
@@ -74,7 +75,8 @@ if ($update_command) {
 	$values['description'] = $description;
 	$result = update_alert_command ($id, $values);
 	
-	print_error_message ($result, __('Successfully updated'),
+	print_result_message ($result,
+		__('Successfully updated'),
 		__('Could not be updated'));
 }
 
@@ -91,7 +93,8 @@ if ($delete_command) {
 	
 	$result = delete_alert_command ($id);
 	
-	print_error_message ($result, __('Successfully deleted'),
+	print_result_message ($result,
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 

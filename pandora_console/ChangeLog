@@ -1,3 +1,18 @@
+
+2009-03-26  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: SLA parameters now accept float values.
+	
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: SLA parameters now accept 
+	float values after a table update.
+	
+	* godmode/setup/filemgr.php: New feature: a file manager, accesible only by
+	pandora Administrators. Have some security checks but is not intended to be
+	used by anyone not admin.
+	
+	* godmode/menu.php: Added filemanager and fixed minor problem under SNMP
+	Godmode (fake submenu).
+
 2009-03-26  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/jquery.ui.dialog.js: Added to repository.

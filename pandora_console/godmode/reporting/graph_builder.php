@@ -275,9 +275,10 @@ echo "</b>";
 // Show combo with agents
 echo "<td class='datos' colspan=2>";
 
-print_select_from_sql ('SELECT id_agente, nombre FROM tagente WHERE disabled = 0 ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
+$sql = "SELECT distinct(id_agente), tagente.nombre FROM tusuario_perfil, tagente WHERE tusuario_perfil.id_usuario = '".$config["id_user"]."' AND ( tusuario_perfil.id_grupo = tagente.id_grupo OR tusuario_perfil.id_grupo = 1) ORDER by tagente.nombre";
+print_select_from_sql ($sql, 'id_agent', $id_agent, '', '--', 0);
 
-// SOURCE MODULE FORM
+// Source module form
 if (isset ($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 

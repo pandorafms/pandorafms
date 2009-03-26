@@ -1,4 +1,19 @@
-2009-09-25  Sancho Lerena  <slerena@artica.es>
+2009-03-26  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: SLA now admits float numerical data.
+	
+	* godmode/menu.php: Adjusted some ACL controls: Reporting (LW), 
+	
+	* graph_builder.php: Now only shows agents with access, not all.
+	TODO:, make a pre-filter with groups.
+	
+	* reporting_builder.php: Now it's possible to change group after creation,
+	SLA supports float numerical data, added a link to quick view of report,
+	groups shown only accesable by users. List to choose report only shows 
+	reports with access to user ( including private report ), shown also
+	in the report list the group, user and private status of a report.
+
+2009-03-25  Sancho Lerena  <slerena@artica.es>
 
 	* index.php, 
 	  include/config_process.php: Updated build.

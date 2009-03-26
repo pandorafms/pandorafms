@@ -53,7 +53,7 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 		echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config_remote' class='mn'>".__('Duplicate config')."</a></li></ul></div>";
 		
 		// Manage groups
-		if (give_acl($config['id_user'], 0, "PM")) {
+		if (give_acl($config['id_user'], 0, "UM")) {
 			if ($sec2 == "godmode/groups/group_list" || $sec2 == "godmode/groups/configure_group") {
 				echo "<div class='arrowgs'>";
 			} else {
@@ -96,6 +96,8 @@ if ((give_acl($config['id_user'], 0, "PM")==1)){
 			echo "<div class='arrowg'>";
 		echo "<ul class='mn'><li><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components' class='mn'>".__('Module components')."</a></li></ul></div>";
 	}
+}
+if ((give_acl($config['id_user'], 0, "PM")==1)){
 	// Network Profiles
 	if ($sec == "gmodules") {
 		if ($sec2 == "godmode/modules/manage_network_templates" || $sec2 == "godmode/modules/manage_network_templates_form")
@@ -124,7 +126,7 @@ if (give_acl ($config['id_user'], 0, "UM")) {
 }
 
 // Reporting
-if (give_acl ($config['id_user'], 0, "PM")) {
+if (give_acl ($config['id_user'], 0, "LM")) {
 	echo '<div id="god51">';
 
 	echo '<ul class="mn"><li><a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder" class="mn">'. __('Manage reports').'</a></li></ul></div>';
@@ -168,7 +170,9 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	}
 	else echo '<div id="god4">';
 	echo '<ul class="mn"><li><a href="index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list" class="mn">'.__('Manage profiles').'</a></li></ul></div>';
+}
 
+if (give_acl ($config['id_user'], 0, "PM")) {
 	// SERVERS
 	if ($sec2 == "godmode/servers/modificar_server"){
 		echo '<div id="god5s">';

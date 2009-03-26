@@ -1,3 +1,10 @@
+ALTER TABLE treport_content_sla_combined CHANGE sla_max `sla_max` double(18,2) NOT NULL default 0;
+
+ALTER TABLE treport_content_sla_combined CHANGE sla_min `sla_min` double(18,2) NOT NULL default 0;
+
+ALTER TABLE treport_content_sla_combined CHANGE sla_limit `sla_limit` double(18,2) NOT NULL default 0;
+
+
 ALTER TABLE ttrap add `priority` tinyint(4) unsigned NOT NULL default '2';
 
 INSERT INTO `tconfig` VALUES (24, 'loginhash_pwd', '');

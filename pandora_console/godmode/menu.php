@@ -94,9 +94,8 @@ if (give_acl($config['id_user'], 0, "AW")) {
 	$menu["gsnmpconsole"]["sec2"] = "godmode/snmpconsole/snmp_alert";
 	$menu["gsnmpconsole"]["id"] = "god-snmpc";
 	
-	//SNMP Console alert
 	$sub = array ();
-	$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
+	//$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
 	
 	enterprise_hook ('snmpconsole_submenu');
 
@@ -153,6 +152,9 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["gsetup"]["id"] = "god-setup";
 	
 	$sub = array ();
+	
+	$sub["godmode/setup/filemgr"]["text"] = __('File Manager');
+	
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	
 	$sub["godmode/setup/news"]["text"] = __('Site news');

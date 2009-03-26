@@ -196,10 +196,6 @@ if ($config["pure"] == 0) {
 // Main block of content
 if ($config["pure"] == 0) {
 	echo '<div id="main">';
-	//This is a generic overlay (hidden) which can be filled with jQuery
-	// To use you have to use <a href="ajax.php?page=operation/page" rel="#overlay">Load overlay</a>
-	echo '<div class="overlay" id="overlay"><div class="wrap"></div></div>';
-	require_jquery_file ('overlay');
 }
 
 // Check permissions

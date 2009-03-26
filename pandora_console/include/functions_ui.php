@@ -924,17 +924,19 @@ function debug ($var, $backtrace = true) {
 function print_moduletype_icon ($id_moduletype, $return = false) {
 	global $config;
 	
-	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("nombre", "icon"));
+	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
 	if ($type === false) {
 		$type = array ();
-		$type["nombre"] = __('Unknown Type'); 
+		$type["descripcion"] = __('Unknown Type'); 
 		$type["icon"] = 'b_down.png';
 	}
 	$imagepath = 'images/'.$type["icon"];
 	if (! file_exists ($config['homedir'].'/'.$imagepath))
 		$imagepath = ENTERPRISE_DIR.'/'.$imagepath;
 	
-	return print_image ($imagepath, $return, array ("border" => 0, "title" => $type["nombre"]));
+	return print_image ($imagepath, $return,
+		array ("border" => 0,
+			"title" => $type["descripcion"]));
 }
 
 /**

@@ -144,7 +144,7 @@ foreach ($modules as $module) {
 	// Module type (by data type)
 	$data[2] = '';
 	if ($type) {
-		$data[2] = print_image ('images/'.show_icon_type ($type), true);
+		$data[2] = print_moduletype_icon ($type, true);
 	}
 
 	// Module interval

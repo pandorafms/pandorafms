@@ -37,8 +37,16 @@ echo '</td><td width="20">&nbsp;</td>';
 echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot" alt="user" />&nbsp;'.'<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a> ';
 $msg_cnt = get_message_count ($config["id_user"]);
 if ($msg_cnt > 0) {
-	echo '<a href="ajax.php?page=operation/messages/message&amp;refr=60" rel="#overlay">';
-	print_image ("images/email.png", false, array ("title" => __('You have').' '.$msg_cnt.' '.__('unread message(s)'), "id" => "yougotmail", "class" => "bot"));
+	echo '<div id="dialog_messages" style="display: none"></div>';
+	
+	require_css_file ('dialog');
+	require_jquery_file ('ui.core');
+	require_jquery_file ('ui.dialog');
+	echo '<a href="ajax.php?page=operation/messages/message" id="show_messages_dialog">';
+	print_image ("images/email.png", false,
+		array ("title" => __('You have %d unread message(s)', $msg_cnt),
+			"id" => "yougotmail",
+			"class" => "bot"));
 	echo '</a>';
 }
 
@@ -107,7 +115,9 @@ require_jquery_file ('countdown');
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+<?php if ($msg_cnt > 0): ?>
 	$("#yougotmail").pulsate ();
+<?php endif; ?>
 <?php if ($config["refr"]): ?>
 	t = new Date();
 	t.setTime (t.getTime () + <?php echo $config["refr"] * 1000; ?>);

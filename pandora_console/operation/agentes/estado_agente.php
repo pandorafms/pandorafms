@@ -24,7 +24,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access agent main list view");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 if (is_ajax ()) {

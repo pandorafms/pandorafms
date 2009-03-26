@@ -105,7 +105,7 @@ if ($add_content) {
 	$module_description = (string) get_parameter ('module_description');
 	
 	$values = array ();
-	$values['id_custom_graph'] = $id_custom_graph ? $id_custom_graph : NULL;
+	$values['id_gs'] = $id_custom_graph ? $id_custom_graph : NULL;
 	$values['id_agent_module'] = $id_agent_module ? $id_agent_module : NULL;
 	$values['type'] = $type;
 	$values['period'] = $period * 3600;
@@ -136,7 +136,7 @@ if ($create_report) {
 	$values = array ();
 	$values['description'] = $report_description;
 	$values['private'] = $report_private;
-	$id_report = create_report ($name, $id_group, $values);
+	$id_report = create_report ($report_name, $report_id_group, $values);
 	print_result_message ($id_report,
 		__('Successfully created'),
 		__('Could not be created'));

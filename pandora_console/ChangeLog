@@ -1,5 +1,10 @@
 2009-03-26  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Some small fixes which
+	didn't allow creating reports or adding contents.
+
+2009-03-26  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/users/configure_user.php: Complete rewritten to fix minor
 	errors and fit the Pandora style.
 

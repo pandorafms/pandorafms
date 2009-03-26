@@ -94,6 +94,9 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/HP-UX/i){
 			return 5;
 		}
+		elsif ($command =~ m/Apple/i){
+			return 8;
+		}
 		else {
 			return 10; # Unknown / Other
 		}
@@ -301,7 +304,7 @@ sub sqlWrap {
 	my $toBeWrapped = shift(@_);
 	if (defined $toBeWrapped){
 			$toBeWrapped =~ s/\'/\\\'/g;
-			$toBeWrapped =~ s/\"/\\\'/g;
+			$toBeWrapped =~ s/\"/\\\'/g; # " This is for highlighters that don't understand escaped quotes
 			return "'".$toBeWrapped."'";
 	}
 }

@@ -310,6 +310,8 @@ sub pandora_recon_exec_task {
 	my $id_parent = 0;
 	my $id_os = 0;
 	
+	my $detected = 0;
+	
 	# Asign target dir to netaddr object "space"
 	$space = new NetAddr::IP $target_network;
 	if (!defined($space)){
@@ -329,8 +331,25 @@ sub pandora_recon_exec_task {
 		$add_host = 0;
 		# Is this IP listed for any agent ?
         if (pandora_check_ip ($pa_config, $dbh, $target_ip) == 0){
-			# Check ICMP for this IP
+			$detected = 0;
+			# Check first for ICMP for this IP. Sometimes ICMP is blocked so check for other ports as well
 			if ( scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1) {
+				$detected = 1;
+			} elsif ( scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 3389) == 1 || scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 5900) == 1) {
+				#Check for Remote Desktop & VNC (Desktop & Server machines)
+				$detected = 1;
+			} elsif ( scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 10000) == 1 || scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 161) == 1) {
+				#Check for management ports 10000 = Webmin, 161 = SNMP (Most embedded devices)
+				$detected = 1;
+			} elsif ( scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 22) == 1 || scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 25) == 1) {
+				#Check for SSH & Mail (Servers and Unix machines)
+				$detected = 1;
+			} elsif ( scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 80) == 1 || scan_tcp ($target_ip, $pa_config->{'networktimeout'}, 3306) == 1) {
+				#Check for WWW & MySQL (Webservers and systems in a DMZ)
+				$detected = 1;
+			}
+
+			if ($detected == 1){
 				$id_os = pandora_detect_os ($pa_config, $target_ip);
 				if ($task_id_os == -1){
 					$add_host = 1;

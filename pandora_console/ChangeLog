@@ -1,3 +1,21 @@
+2009-03-27  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: Fixed
+	constraint restrictions on alert actions.
+
+	* godmode/users/configure_user.php: Many bugfixes when creating and
+	editing.
+	
+	* include/auth/mysql.php: Fixed return value on create_user() because
+	it does not return an insert id.
+
+	* include/functions_db.php: Call debug() on SQL errors to get a
+	backtrace.
+
+	* include/functions_ui.php: Added a return value to debug().
+
+	* operation/users/user_edit.php: Renamed user_update().
+
 2009-03-26  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Fixed security vulnerability

@@ -1649,8 +1649,8 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
 function sql_error_handler ($errno, $errstr) {
 	global $config;
 	
-	/* If debug is activated, the database debug table will show the error */
-	if (isset ($config['debug']))
+	/* If debug is activated, this will also show the backtrace */
+	if (debug ($errstr))
 		return false;
 	
 	if (error_reporting () <= $errno)

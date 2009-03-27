@@ -43,6 +43,18 @@ $add_profile = (bool) get_parameter ('add_profile');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_user = (bool) get_parameter ('update_user');
 
+if ($new_user && $config['admin_can_add_user']) {
+	$user_info = array ();
+	$id = '';
+	$user_info['fullname'] = '';
+	$user_info['firstname'] = '';
+	$user_info['lastname'] = '';
+	$user_info['email'] = '';
+	$user_info['phone'] = '';
+	$user_info['comments'] = '';
+	$user_info['is_admin'] = 0;
+}
+
 if ($create_user) {
 	if (! $config['admin_can_add_user']) {
 		print_result_message (false, '',
@@ -51,6 +63,7 @@ if ($create_user) {
 	}
 	
 	$values = array ();
+	$id = (string) get_parameter ('id_user');
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');
@@ -66,21 +79,24 @@ if ($create_user) {
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
+		$new_user = true;
 	} elseif ($password_new != $password_confirm) {
 		print_result_message (false, '', __('Passwords didn\'t match'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
+		$new_user = true;
 	} else {
-		$id = (string) get_parameter ('id_user');
 		$result = create_user ($id, $password_new, $values);
 		print_result_message ($result,
-			__('User successfully created'),
-			__('Error creating user'));
+			__('Successfully created'),
+			__('Could not be created'));
 		$user_info = get_user_info ($id);
 		$password_new = '';
 		$password_confirm = '';
 	}
+	
+	$user_info['is_admin'] = $is_admin;
 }
 
 if ($update_user) {
@@ -122,19 +138,8 @@ if ($update_user) {
 	$user_info = $values;
 }
 
-if ($new_user && $config['admin_can_add_user']) {
-	$user_info = array ();
-	$id = '';
-	$user_info['fullname'] = '';
-	$user_info['firstname'] = '';
-	$user_info['lastname'] = '';
-	$user_info['email'] = '';
-	$user_info['phone'] = '';
-	$user_info['comments'] = '';
-	$user_info['is_admin'] = 0;
-}
-
 if ($add_profile) {
+	$id = (string) get_parameter ('id_user');
 	$group = (int) get_parameter ('assign_group');
 	$profile = (int) get_parameter ('assign_profile');
 	
@@ -145,6 +150,7 @@ if ($add_profile) {
 }
 
 if ($delete_profile) {
+	$id = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
 	
 	$return = delete_user_profile ($id, $id_up);
@@ -265,6 +271,7 @@ foreach ($result as $profile) {
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);
+	$data[2] .= print_input_hidden ('id_user', $id, true);
 	$data[2] .= print_input_image ('del', 'images/cross.png', 1, '', true);
 	$data[2] .= '</form>';
 	
@@ -278,6 +285,7 @@ $data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 $data[1] = print_select (get_user_groups ($config['id_user'], 'UM'),
 	'assign_group', 0, '', __('None'), 0, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
+$data[2] .= print_input_hidden ('id_user', $id, true);
 $data[2] .= print_input_hidden ('add_profile', 1, true);
 $data[2] .= '</form>';
 

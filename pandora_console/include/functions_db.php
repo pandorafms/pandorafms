@@ -59,75 +59,124 @@ function check_login () {
  * PM - Pandora Management
  *
  * @param int $id_user User id
- * @param int $id_group Agents group id
+ * @param int $id_group Agents group id to check from
  * @param string $access Access privilege
  *
  * @return bool 1 if the user has privileges, 0 if not.
  */
-function give_acl ($id_user, $id_group, $access) {
-	// IF user is level = 1 then always return 1
-
-	global $config;
-	$nivel = is_user_admin ($id_user);
-	if ($nivel) {
+function check_acl ($id_user, $id_group, $access) {
+	if (empty ($id_user)) {
+		//User ID needs to be specified
+		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
+		return 0;
+	} elseif (is_user_admin ($id_user)) {
 		return 1;
-		//Apparently nivel is 1 if user has full admin access
-	} 
-
+	} else {
+		$id_group = (int) $id_group;
+	}
+			
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
-		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'", $id_user);
-		//GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
+		$query = sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'", $id_user);
+		//GroupID = 0, group id doesnt matter (use with caution!)
 	} else {
-		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)", $id_user, $id_group);
+		$query = sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
+						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo = 1)", $id_user, $id_group);
 	}
-
-	$rowdup = get_db_all_rows_sql ($query1);
+	
+	$rowdup = get_db_all_rows_sql ($query);
+	
+	if (empty ($rowdup))
+		return 0;
+	
 	$result = 0;
-
-	if (!$rowdup)
-		return $result;
-
-	foreach($rowdup as $row) {
+	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
 		switch ($access) {
-		case "IR":
-			$result += $row["incident_view"];
-			break;
-		case "IW":
-			$result += $row["incident_edit"];
-			break;
-		case "IM":
-			$result += $row["incident_management"];
-			break;
-		case "AR":
-			$result += $row["agent_view"];
-			break;
-		case "AW":
-			$result += $row["agent_edit"];
-			break;
-		case "LW":
-			$result += $row["alert_edit"];
-			break;
-		case "LM":
-			$result += $row["alert_management"];
-			break;
-		case "PM":
-			$result += $row["pandora_management"];
-			break;
-		case "DM":
-			$result += $row["db_management"];
-			break;
-		case "UM":
-			$result += $row["user_management"];
-			break;
+			case "IR":
+				$result += $row["incident_view"];
+				break;
+			case "IW":
+				$result += $row["incident_edit"];
+				break;
+			case "IM":
+				$result += $row["incident_management"];
+				break;
+			case "AR":
+				$result += $row["agent_view"];
+				break;
+			case "AW":
+				$result += $row["agent_edit"];
+				break;
+			case "LW":
+				$result += $row["alert_edit"];
+				break;
+			case "LM":
+				$result += $row["alert_management"];
+				break;
+			case "PM":
+				$result += $row["pandora_management"];
+				break;
+			case "DM":
+				$result += $row["db_management"];
+				break;
+			case "UM":
+				$result += $row["user_management"];
+				break;
 		}
 	}
-	if ($result > 1)
-		$result = 1;
-	return $result; 
-} 
+	
+	if ($result >= 1)
+		return 1;
+		
+	return 0;
+}
+
+/*
+ * @deprecated Use check_acl instead
+ */
+function give_acl ($id_user, $id_group, $access) {
+	return check_acl ($id_user, $id_group, $access);
+}
+
+/**
+ * Filter out groups the user doesn't have access to
+ *
+ * Access can be:
+ * IR - Incident Read
+ * IW - Incident Write
+ * IM - Incident Management
+ * AR - Agent Read
+ * AW - Agent Write
+ * LW - Alert Write
+ * UM - User Management
+ * DM - DB Management
+ * LM - Alert Management
+ * PM - Pandora Management
+ *
+ * @param int $id_user User id
+ * @param mixed $id_group Group ID(s) to check
+ * @param string $access Access privilege
+ *
+ * @return array Groups the user DOES have acces to (or an empty array)
+ */
+function safe_acl_group ($id_user, $id_groups, $access) {
+	if (!is_array ($id_groups) && check_acl ($id_user, $id_groups, $access)) {
+		return array ($id_groups);
+	} elseif (!is_array ($id_groups)) {
+		return array ();
+	}
+	
+	foreach ($id_groups as $group) {
+		//Check ACL. If it doesn't match, remove the group
+		if (!check_acl ($id_user, $group, $access)) {
+			unset ($id_groups[$group]);
+		}
+	}
+	
+	return $id_groups;
+}
+
 	
 /** 
  * Adds an audit log entry.
@@ -266,7 +315,7 @@ function give_disabled_group ($id_group) {
 }
 
 /**
- * Get all the agents within a group(s). For non-godmode usage get_user_groups should be used.
+ * Get all the agents within a group(s).
  *
  * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
  * @param bool $disabled Add disabled agents to agents. Default: False.
@@ -275,27 +324,22 @@ function give_disabled_group ($id_group) {
  * @return array An array with all agents in the group or an empty array
  */
 function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
-	$id_group = safe_int ($id_group, 1);
+	global $config;
 	
-	//If id_group is an array, then 
-	if (empty ($id_group) || in_array (1, (array) $id_group)) {
-		//If All is included in the group list, just select All
-		$id_group = 1;
-	} else {
-		//If All is not included, select what we need
-		$id_group = implode (",", (array) $id_group);
+	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+	
+	if (empty ($id_group)) {
+		//An empty array means the user doesn't have access
+		return array ();
 	}
 	
-	/* 'All' group must return all agents */
-	$search = '';
-	if (!empty ($id_group) && $id_group > 1) {
-		$search .= sprintf (' WHERE id_grupo IN (%s)', $id_group);
-	}
-	if ($disabled !== false) {
-		$search .= (($search == '') ? ' WHERE' : ' AND' ).' disabled = 0';
+	$search = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
+	
+	if (!empty ($disabled)) {
+		$search .= ' AND disabled = 0';
 	}
 	
-	$sql = sprintf ("SELECT id_agente, nombre FROM tagente%s ORDER BY nombre", $search);
+	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search);
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false)
@@ -666,27 +710,29 @@ function get_monitors_in_group ($id_group) {
  *
  * The returned events will be in the time interval ($date - $period, $date]
  * 
- * @param int $id_group Group id to get events.
+ * @param mixed $id_group Group id to get events for.
  * @param int $period Period of time in seconds to get events.
  * @param int $date Beginning date to get events.
  * 
  * @return array An array with all the events happened.
  */
 function get_group_events ($id_group, $period, $date) {
+	global $config;
+	
+	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+	
+	if (empty ($id_group)) {
+		//An empty array means the user doesn't have access
+		return false;
+	}
+	
 	$datelimit = $date - $period;
 	
-	if ($id_group == 1) {
-		$sql = sprintf ('SELECT * FROM tevento 
+	$sql = sprintf ('SELECT * FROM tevento 
 			WHERE utimestamp > %d AND utimestamp <= %d
+			AND id_grupo IN (%s)
 			ORDER BY utimestamp ASC',
-			$datelimit, $date);
-	} else {
-		$sql = sprintf ('SELECT * FROM tevento 
-			WHERE utimestamp > %d AND utimestamp <= %d
-			AND id_grupo = %d
-			ORDER BY utimestamp ASC',
-			$datelimit, $date, $id_group);
-	}
+			$datelimit, $date, implode (",", $id_group));
 	
 	return get_db_all_rows_sql ($sql);
 }
@@ -794,9 +840,11 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  * @return array An array with alerts dictionaries defined in a group.
  */
 function get_group_alerts ($id_group) {
+	require_once ('include/functions_agents.php');
+	
 	$alerts = array ();
 	$agents = get_group_agents ($id_group, false, "none");
-	require_once ('include/functions_agents.php');
+		
 	foreach ($agents as $agent_id => $agent_name) {
 		$agent_alerts = get_agent_alerts ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);

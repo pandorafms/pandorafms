@@ -1,5 +1,14 @@
 2009-03-27  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_ui.php: Put template details icon on the left of
+	the cell.
+
+	* operation/agentes/alerts_status.php: Fixed validation errors. Moved
+	validation to the top before reading the alerts. Added some size info
+	to the tables.
+
+2009-03-27  Esteban Sanchez  <estebans@artica.es>
+
 	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: Fixed
 	constraint restrictions on alert actions.
 

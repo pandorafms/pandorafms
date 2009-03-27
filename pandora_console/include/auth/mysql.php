@@ -183,7 +183,9 @@ function get_users ($order = "fullname") {
  * @param string User id
  */
 function process_user_contact ($id_user) {
-	return process_sql_update ("tusuario", array ("last_connect" => get_system_time ()), array ("id_user" => $id_user));
+	return process_sql_update ("tusuario",
+		array ("last_connect" => get_system_time ()),
+			array ("id_user" => $id_user));
 }
 
 /**
@@ -198,7 +200,7 @@ function create_user ($id_user, $password, $user_info) {
 	$values["last_connect"] = 0;
 	$values["registered"] = get_system_time ();
 
-	return process_sql_insert ("tusuario", $values);
+	return (@process_sql_insert ("tusuario", $values)) !== false;
 }
 
 /**

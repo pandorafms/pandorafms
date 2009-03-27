@@ -218,7 +218,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `field3` varchar(255) default '',
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_templates` (
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field3_recovery` mediumtext NOT NULL,
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE
+    ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_template_modules` (
@@ -269,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE,
+    ON DELETE CASCADE ON UPDATE CASCADE,
   UNIQUE (`id_agent_module`, `id_alert_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_compound` (

@@ -53,7 +53,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 		print_result_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
 	}
 	
-	$return = process_user_info ($id, $upd_info);
+	$return = update_user ($id, $upd_info);
 	print_result_message ($return,
 		__('User info successfully updated'),
 		__('Error updating user info'));

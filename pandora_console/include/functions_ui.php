@@ -852,11 +852,13 @@ function print_help_tip ($text, $return = false) {
  *
  * @param mixed Variable name to debug
  * @param bool Wheter to print the backtrace or not.
+ * 
+ * @return bool Tru if the debug was actived. False if not.
  */
 function debug ($var, $backtrace = true) {
 	global $config;
 	if (! isset ($config['debug']))
-		return;
+		return false;
 	
 	static $id = 0;
 	static $trace_id = 0;
@@ -911,6 +913,7 @@ function debug ($var, $backtrace = true) {
 	echo '<pre class="debug">';
 	print_r ($var);
 	echo '</pre>';
+	return true;
 }
 
 /**

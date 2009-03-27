@@ -59,15 +59,15 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
-   `id` int(10) unsigned NOT NULL auto_increment,
-   `name` varchar(255) default '',
-   `id_alert_command` int(10) unsigned NOT NULL,
-   `field1` varchar(255) NOT NULL default '',
-   `field2` varchar(255) default '',
-   `field3` varchar(255) default '',
-   PRIMARY KEY  (`id`),
-   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
-     ON DELETE RESTRICT ON UPDATE CASCADE
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(255) default '',
+  `id_alert_command` int(10) unsigned NOT NULL,
+  `field1` varchar(255) NOT NULL default '',
+  `field2` varchar(255) default '',
+  `field3` varchar(255) default '',
+  PRIMARY KEY  (`id`),
+  FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_templates` (
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field3_recovery` mediumtext NOT NULL,
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-    ON DELETE RESTRICT ON UPDATE CASCADE
+    ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_template_modules` (
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
 talert_template_modules(`id`)
      ON DELETE CASCADE ON UPDATE CASCADE,
    FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
-     ON DELETE RESTRICT ON UPDATE CASCADE
+     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- If you have custom stuff here, please make sure you manually  

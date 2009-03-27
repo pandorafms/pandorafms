@@ -34,10 +34,28 @@ $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.
 
 // Force alert execution
 $flag_alert = (bool) get_parameter ('force_execution');
-if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+$alert_validate = (bool) get_parameter ('alert_validate');
+
+if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_group, "AW")) {
 	require_once ("include/functions_alerts.php");
 	$id_alert = (int) get_parameter ('id_alert');
 	set_alerts_agent_module_force_execution ($id_alert);
+}
+
+if ($alert_validate) {
+	$ids = (array) get_parameter_post ("validate", array ());
+	$compound_ids = (array) get_parameter_post ("validate_compound", array ());
+	
+	if (! empty ($ids) || ! empty ($compound_ids)) {
+		require_once ("include/functions_alerts.php");
+		$result1 = validate_alert_agent_module ($ids);
+		$result2 = validate_alert_compound ($compound_ids);
+		$result == $result1 || $result2;
+		
+		print_result_message ($result,
+			__('Alert(s) validated'),
+			__('Error processing alert(s)'));
+	}
 }
 
 // Show alerts for specific agent
@@ -86,22 +104,6 @@ if ($tab != '') {
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Alerts').'</h2>';
 
-if (get_parameter ('alert_validate')) {
-	$ids = (array) get_parameter_post ("validate", array ());
-	$compound_ids = (array) get_parameter_post ("validate_compound", array ());
-	
-	if (! empty ($ids) || ! empty ($compound_ids)) {
-		require_once ("include/functions_alerts.php");
-		$result1 = validate_alert_agent_module ($ids);
-		$result2 = validate_alert_compound ($compound_ids);
-		$result == $result1 || $result2;
-		
-		print_result_message ($result,
-			__('Alert(s) validated'),
-			__('Error processing alert(s)'));
-	}
-}
-
 echo '<form method="post" action="'.$url.'">';
 
 if ($print_agent) {
@@ -127,6 +129,13 @@ echo '</form>';
 
 $table->width = '90%';
 $table->class = "databox";
+$table->size = array ();
+$table->size[0] = '20px';
+$table->size[1] = '25%';
+$table->size[2] = '50%';
+$table->size[3] = '25%';
+$table->size[4] = '20px';
+$table->size[5] = '20px';
 $table->head = array ();
 $table->head[0] = '';
 $table->head[1] = ''; //Placeholder for name
@@ -156,6 +165,8 @@ foreach ($alerts_simple as $alert) {
 	$printed++;
 	array_push ($table->data, format_alert_row ($alert, false, $print_agent, $url));
 }
+
+echo '<form method="post" action="'.$url.'">';
 
 if (!empty ($table->data)) {
 	pagination ($total, $url, $offset);

@@ -271,15 +271,13 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 		$data[1] = print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20);
 	}
 	
-	$data[2] = '<span class="left">';
-	$data[2] .= mb_substr (safe_input ($description), 0, 35);
-	$data[2] .= '</span>';
+	$data[2] = '';
 	if (! $compound) {
-		$data[2] .= ' <span class="right">';
 		$data[2] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-		$data[2] .= '<img src="images/zoom.png" />';
-		$data[2] .= '</a></span>';
+		$data[2] .= print_image ('images/zoom.png', true);
+		$data[2] .= '</a> ';
 	}
+	$data[2] .= mb_substr (safe_input ($description), 0, 35);
 	
 	$data[3] = print_timestamp ($alert["last_fired"], true);
 	

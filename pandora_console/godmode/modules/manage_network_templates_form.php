@@ -101,9 +101,9 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 echo "<h2>".__('Module management')." &gt; ".__('Module template management')."</h2>";
 
 if ($id_np < 1) {
-	        echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';
+	echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';
 } else {
-	        echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
+	echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
 }
 
 echo '<table width="550" cellpadding="4" cellspacing="4" class="databox_color">';
@@ -226,8 +226,8 @@ if ($id_np > 0) {
 }
 
 ?>
-<script language="JavaScript" type="text/javascript">
-<!--
+<script type="text/javascript">
+/* <![CDATA[ */
 function CheckAll() {
 	for (var i = 0; i < document.component_delete.elements.length; i++) {
 	
@@ -236,5 +236,5 @@ function CheckAll() {
 			e.checked = !e.checked;
 	}
 }
--->
+/* ]]> */
 </script>

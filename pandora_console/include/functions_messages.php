@@ -2,12 +2,14 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
+// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
 // Copyright (c) 2009 Evi Vanoost, vanooste@rcbi.rochester.edu
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
+// modify it under the terms of the GNU Lesser General Public License (LGPL)
 // as published by the Free Software Foundation for version 2.
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the

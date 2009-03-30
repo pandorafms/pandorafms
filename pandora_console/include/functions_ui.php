@@ -18,18 +18,68 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /** 
- * Evaluates a result using empty() and then prints an error or success message
+ * Prints a generic message between tags.
  * 
- * @param mixed $result the results to evaluate. 0, NULL, false, '' or 
- * array() is bad, the rest is good
- * @param string $good the string to be displayed if the result was good
- * @param string $bad the string to be displayed if the result was bad
- * @param string $attributes any other attributes to be set for the h3
- * @param bool $return whether to output the string or return it
- * @param string $tag what tag to use (you could specify something else than
+ * @param string The message string to be displayed
+ * @param string the class to user
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
  * h3 like div or h2)
  *
- * @return string XHTML code if return parameter is true.
+ * @return string HTML code if return parameter is true.
+ */
+function print_message ($message, $class = '', $attributes = '', $return = false, $tag = 'h3') {
+	$output = '<'.$tag.(empty ($class) ? '' : ' class="'.$class.'" ').$attributes.'>'.$message.'</'.$tag.'>';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+/** 
+ * Prints an error message.
+ * 
+ * @param string The error message to be displayed
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_error_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return print_message ($message, 'error', $attributes, $return, $tag);
+}
+
+/** 
+ * Prints an operation success message.
+ * 
+ * @param string The message to be displayed
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_success_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return print_message ($message, 'suc', $attributes, $return, $tag);
+}
+
+/** 
+ * Evaluates a result using empty() and then prints an error or success message
+ * 
+ * @param mixed The results to evaluate. 0, NULL, false, '' or 
+ * array() is bad, the rest is good
+ * @param string The string to be displayed if the result was good
+ * @param string The string to be displayed if the result was bad
+ * @param string Any other attributes to be set for the h3
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_result_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
 	if ($good == '' || $good === false)
@@ -39,15 +89,9 @@ function print_result_message ($result, $good = '', $bad = '', $attributes = '',
 		$bad = __('Error processing request');
 	
 	if (empty ($result)) {
-		$output = '<'.$tag.' class="error" '.$attributes.'>'.$bad.'</'.$tag.'>';
-	} else {
-		$output = '<'.$tag.' class="suc" '.$attributes.'>'.$good.'</'.$tag.'>';
+		return print_error_message ($bad, $attributes, $return, $tag);
 	}
-
-	if ($return)
-		return $output;
-	
-	echo $output;
+	return print_success_message ($good, $attributes, $return, $tag);
 }
 
 /**
@@ -55,9 +99,9 @@ function print_result_message ($result, $good = '', $bad = '', $attributes = '',
  * with as title the correctly formatted full timestamp and a time comparation
  * in the tag
  *
- * @param int $unixtime: Any type of timestamp really, but we prefer unixtime
- * @param bool $return whether to output the string or return it
- * @param array $option: An array with different options for this function
+ * @param int Any type of timestamp really, but we prefer unixtime
+ * @param bool Whether to output the string or return it
+ * @param array An array with different options for this function
  *	Key html_attr: which html attributes to add (defaults to none)
  *	Key tag: Which html tag to use (defaults to span)
  *	Key prominent: Overrides user preference and display "comparation" or "timestamp"
@@ -130,8 +174,8 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 /**
  * Prints a username with real name, link to the user_edit page etc.
  *
- * @param string $username The username to render
- * @param bool $return Whether to return or print
+ * @param string The username to render
+ * @param bool Whether to return or print
  *
  * @return string HTML code if return parameter is true.
  */
@@ -147,9 +191,9 @@ function print_username ($username, $return = false) {
 /** 
  * Print group icon within a link
  * 
- * @param string $id_group Group id
- * @param bool $return Whether to return or print
- * @param string $path What path to use (relative to images/). Defaults to groups_small
+ * @param int Group id
+ * @param bool Whether to return or print
+ * @param string What path to use (relative to images/). Defaults to groups_small
  *
  * @return string HTML code if return parameter is true.
  */
@@ -201,9 +245,9 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 /**
  * Prints an agent name with the correct link
  * 
- * @param int $id_agent Agent id
- * @param bool $return Whether to return the string or echo it too
- * @param int $cutoff After how much characters to cut off the inside of the 
+ * @param int Agent id
+ * @param bool Whether to return the string or echo it too
+ * @param int After how much characters to cut off the inside of the 
  * link. The full agent name will remain in the roll-over
  * 
  * @return string HTML with agent name and link
@@ -397,8 +441,8 @@ function print_alert_template_example ($id_alert_template, $return = false, $pri
 /**
  * Prints a help tip icon.
  * 
- * @param string $help_id Id of the help article
- * @param bool $return Whether to return or output the result
+ * @param string Id of the help article
+ * @param bool Whether to return or output the result
  * 
  * @return string The help tip
  */

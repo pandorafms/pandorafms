@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 if ($config['user_can_update_info']) {
@@ -57,8 +57,7 @@ if ($new_user && $config['admin_can_add_user']) {
 
 if ($create_user) {
 	if (! $config['admin_can_add_user']) {
-		print_result_message (false, '',
-			__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
+		print_error_message (__('The current authentication scheme doesn\'t support creating users from Pandora FMS'));
 		return;
 	}
 	
@@ -75,13 +74,13 @@ if ($create_user) {
 	$is_admin = (bool) get_parameter ('is_admin', 0);
 	
 	if ($password_new == '') {
-		print_result_message (false, '', __('Passwords cannot be empty'));
+		print_error_message (__('Passwords cannot be empty'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
 		$new_user = true;
 	} elseif ($password_new != $password_confirm) {
-		print_result_message (false, '', __('Passwords didn\'t match'));
+		print_error_message (__('Passwords didn\'t match'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
@@ -121,8 +120,7 @@ if ($update_user) {
 					__('User info successfully updated'),
 					__('Error updating user info (no change?)'));
 			} else {
-				print_result_message (false, '',
-					__('Passwords does not match'));
+				print_error_message (__('Passwords does not match'));
 			}
 		} else {
 			print_result_message ($res1,

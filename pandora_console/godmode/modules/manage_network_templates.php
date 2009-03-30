@@ -26,35 +26,42 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Network Profile Management");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
-  
-if (isset ($_POST["delete_profile"])) { // if delete
-	$id_np = (int) get_parameter_post ("delete_profile", 0);
-	$sql = sprintf ("DELETE FROM tnetwork_profile WHERE id_np = %d", $id_np);
-	$result = process_sql ($sql);
+
+require_once ('include/functions_network_profiles.php');
+
+$delete_profile = (bool) get_parameter ('delete_profile');
+$export_profile = (bool) get_parameter ('export_profile');
+
+if ($delete_profile) { // if delete
+	$id = (int) get_parameter_post ('delete_profile');
+	
+	$result = delete_network_profile ($id);
 	print_result_message ($result,
 		__('Template successfully deleted'),
 		__('Error deleting template'));
 }
 
-if (isset ($_POST["export_profile"])) {
-	$id_np = (int) get_parameter_post ("export_profile", 0);
-	$profile_info = get_db_row ("tnetwork_profile", "id_np", $id_np);
+if ($export_profile) {
+	$id = (int) get_parameter_post ("export_profile");
+	$profile_info = get_network_profile ($id);
 	
 	if (empty ($profile_info)) {
-		print_result_message (false, '', __('This template does not exist'));
+		print_error_message (__('This template does not exist'));
 		return;
-	}	
+	}
 	
 	//It's important to keep the structure and order in the same way for backwards compatibility.
 	$sql = sprintf ("SELECT components.name, components.description, components.type, components.max, components.min, components.module_interval, 
-					components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
-					components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
-					components.max_timeout, components.history_data, components.min_warning, components.max_warning, components.min_critical, 
-					components.max_critical, components.min_ff_event, comp_group.name AS group_name
-					FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
-					WHERE tpc.id_nc = components.id_nc AND components.id_group = comp_group.id_sg AND tpc.id_np = %d", $id_np);
+		components.tcp_port, components.tcp_send, components.tcp_rcv, components.snmp_community, components.snmp_oid, 
+		components.id_module_group, components.id_modulo, components.plugin_user, components.plugin_pass, components.plugin_parameter,
+		components.max_timeout, components.history_data, components.min_warning, components.max_warning, components.min_critical, 
+		components.max_critical, components.min_ff_event, comp_group.name AS group_name
+		FROM `tnetwork_component` AS components, tnetwork_profile_component AS tpc, tnetwork_component_group AS comp_group
+		WHERE tpc.id_nc = components.id_nc
+		AND components.id_group = comp_group.id_sg
+		AND tpc.id_np = %d", $id);
 	
 	$components = get_db_all_rows_sql ($sql);
 	
@@ -68,19 +75,22 @@ if (isset ($_POST["export_profile"])) {
 			$row_names[] = $row_name;
 		}
 	}
-	while (@ob_end_clean()); //Clean up output buffering
 	
 	//Send headers to tell the browser we're sending a file	
-	header("Content-type: application/octet-stream");
-	header("Content-Disposition: attachment; filename=".preg_replace ('/\s/', '_', $profile_info["name"]).".csv");
-	header("Pragma: no-cache");
-	header("Expires: 0");
+	header ("Content-type: application/octet-stream");
+	header ("Content-Disposition: attachment; filename=".preg_replace ('/\s/', '_', $profile_info["name"]).".csv");
+	header ("Pragma: no-cache");
+	header ("Expires: 0");
+	
+	//Clean up output buffering
+	while (@ob_end_clean ());
 	
 	//Then print the first line (row names)
 	echo '"'.implode ('","', $row_names).'"';
 	echo "\n";
 	
 	//Then print the rest of the data. Encapsulate in quotes in case we have comma's in any of the descriptions
+	
 	foreach ($components as $row) {
 		foreach ($inv_names as $bad_key) {
 			unset ($row[$bad_key]);
@@ -88,7 +98,9 @@ if (isset ($_POST["export_profile"])) {
 		echo '"'.implode ('","', $row).'"';
 		echo "\n";
 	}
-	exit; //We're done here. The original page will still be there.
+	
+	//We're done here. The original page will still be there
+	exit;
 }
 
 echo "<h2>".__('Module management')." &gt; ".__('Module template management')."</h2>";
@@ -114,8 +126,11 @@ foreach ($result as $row) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np='.$row["id_np"].'">'.safe_input ($row["name"]).'</a>';
 	$data[1] = safe_input ($row["description"]);
-	$data[2] = print_input_image ("delete_profile", "images/cross.png", $row["id_np"],'', true, array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;', 'border' => 0));
-	$data[2] .= print_input_image ("export_profile", "images/lightning_go.png", $row["id_np"], '', true, array ('border' => 0));
+	$data[2] = print_input_image ("delete_profile", "images/cross.png",
+		$row["id_np"],'', true,
+		array ('onclick' => 'if (!confirm(\''.__('Are you sure?').'\')) return false;'));
+	$data[2] .= print_input_image ("export_profile", "images/lightning_go.png",
+		$row["id_np"], '', true);
 	
 	array_push ($table->data, $data);
 }
@@ -125,12 +140,11 @@ if (!empty ($table->data)) {
 	print_table ($table);
 	echo '</form>';
 } else {
-	echo '<div class="nf" style="width:90%">'.__('There are no defined network profiles').'</div>';	
+	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';	
 }
-unset ($table);
 
-echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form&amp;id_np=-1">';
-echo '<div style="width:90%; text-align:right;">';
+echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';
+echo '<div style="width: '.$table->width.'" class="action-buttons">';
 print_submit_button (__('Create'), "crt", '', 'class="sub next"'); 
 echo '</div></form>';
 

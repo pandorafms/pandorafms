@@ -30,7 +30,7 @@ $layout_id = (int) get_parameter ('id_layout');
 $layout = get_db_row ('tlayout', 'id', $layout_id);
 
 if (empty ($layout)) {
-	print_result_message (false, '', __('No layout with this id found'));
+	print_error_message (__('No layout with this id found'));
 	return;
 }
 
@@ -44,7 +44,7 @@ if (! give_acl ($config['id_user'], $layout_group, "AW")) {
 
 function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_agents)) {
-		print_result_message (false, '', __('No agents selected'));
+		print_error_message (__('No agents selected'));
 		return false;
 	}
 	
@@ -74,13 +74,13 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
 		$pos_x = $pos_x + $range;
 	}
 	
-	print_result_message (true, __('Agent successfully added to layout'), '');
+	print_success_message (__('Agent successfully added to layout'));
 	echo '<h3><a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$id_layout.'">'.__('Map builder').'</a></h3>';
 }
 
 function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_modules)) {
-		print_result_message (false, '', __('No modules selected'));
+		print_error_message (__('No modules selected'));
 		return false;
 	}
 	
@@ -114,7 +114,7 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 		$pos_x = $pos_x + $range;
 	}
 	
-	print_result_message (true, __('Modules successfully added to layout'), '');
+	print_success_message (__('Modules successfully added to layout'));
 }
 
 echo '<h2>'.__('Visual map wizard').' - '.$layout["name"].'</h2>';

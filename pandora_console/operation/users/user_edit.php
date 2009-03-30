@@ -50,7 +50,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 			__('Password successfully updated'),
 			__('Error updating passwords: %s', $config['auth_error']));
 	} elseif ($password_new !== "-") {
-		print_result_message (false, '', __('Passwords didn\'t match or other problem encountered while updating passwords'));
+		print_error_message (__('Passwords didn\'t match or other problem encountered while updating passwords'));
 	}
 	
 	$return = update_user ($id, $upd_info);

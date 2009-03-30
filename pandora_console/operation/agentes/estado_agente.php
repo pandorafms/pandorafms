@@ -167,6 +167,14 @@ if ($agents !== false) {
 		$id_os = $agent["id_os"];
 		$ultimo_contacto = $agent["ultimo_contacto"];
 		$biginterval = $intervalo;
+		
+		// New check for agent down only based on last contact		
+		$diff_agent_down = time () - strtotime ($agent["ultimo_contacto"]);
+		if ($diff_agent_down > $intervalo * 2)
+			$agent_down = 1;
+		else
+			$agent_down = 0;
+		
 		$pertenece = 0;
 		foreach ($groups as $migrupo) { //Verifiy if the group this agent begins is one of the user groups
 			if ($migrupo || $id_grupo == $migrupo) {
@@ -194,7 +202,6 @@ if ($agents !== false) {
 		$monitor_down = 0; 
 		$numero_datamodules = 0;
 		$estado_cambio = 0;
-		$agent_down = 0;
 		$now = time ();
 		
 		// Calculate module/monitor totals  for this agent
@@ -221,7 +228,6 @@ if ($agents !== false) {
 			}
 			// Defines if Agent is down (interval x 2 > time last contact	
 			if ($seconds >= ($intervalo_comp * 2)) { // If (intervalx2) secs. ago we don't get anything, show alert
-				$agent_down = 1;
 				if ($est_modulo != 100)
 					$numero_monitor++;
 				if ($async == 0)

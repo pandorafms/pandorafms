@@ -1,3 +1,10 @@
+2009-03-30  Sancho Lerena  <slerena@artica.es>
+
+	* operation/agentes/estado_agente.php: Agent status down is now
+	only shown when agent is fully down (no module report into the
+	interval time x2 ).
+
+
 2009-03-26  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: SLA now admits float numerical data.

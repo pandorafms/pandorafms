@@ -1,3 +1,8 @@
+2009-03-31  Sancho Lerena <slerena@artica.es>
+
+	* operation/events/events.php: Fixed and allow to everybody to see
+	events coming from group 0 (Old server code put events here).
+
 2009-03-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Fixed group functions that would return

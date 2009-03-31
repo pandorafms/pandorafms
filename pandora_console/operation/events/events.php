@@ -100,7 +100,13 @@ $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
-$groups = get_user_groups ($config["id_user"], "IR");
+
+// Access rights are about agent data, not incidents !
+$groups = get_user_groups ($config["id_user"], "AR");
+
+// Add group "0".
+$groups[0]="System";
+
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
 $group_rep = (int) get_parameter ("group_rep", 1);
@@ -141,6 +147,7 @@ if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
 	$sql_post .= " AND utimestamp > ".$unixtime;
 }
+
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=".rawurlencode($search)."&amp;event_type=".$event_type."&amp;severity=".$severity."&amp;status=".$status."&amp;ev_group=".$ev_group."&amp;refr=".$config["refr"]."&amp;id_agent=".$id_agent."&amp;id_event=".$id_event."&amp;pagination=".$pagination."&amp;group_rep=".$group_rep."&amp;event_view_hr=".$event_view_hr."&amp;id_user_ack=".$id_user_ack;
 

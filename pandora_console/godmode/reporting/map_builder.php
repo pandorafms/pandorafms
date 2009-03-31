@@ -144,7 +144,7 @@ if ($get_layout_data) {
 }
 
 if ($create_layout_data) {
-	$layout_data_type = (string) get_parameter ("type");
+	$layout_data_type = (int) get_parameter ("type");
 	$layout_data_label = (string) get_parameter ("label");
 	$layout_data_image = (string) get_parameter ("image");
 	$layout_data_id_agent = (int) get_parameter ("agent");

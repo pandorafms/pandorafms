@@ -314,9 +314,10 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->setFontProperties ($this->fontpath, 8);
 
 		// Round corners defined in global setup
+
 		global $config;
 		if ($config["round_corner"] != 0)	
-			$radius = ($this->height > 18) ? 7 : 0;
+			$radius = ($this->height > 18) ? 8 : 0;
 		else
 			$radius = 0;
 
@@ -337,22 +338,26 @@ class PchartGraph extends PandoraGraphAbstract {
 		$color = $this->get_rgb_values ($color);
 		$this->graph->drawFilledRoundedRectangle (0, 0, $ratio, 
 			$this->height, $radius, $color['r'], $color['g'], $color['b']);
-		/* Under this value, the rounded rectangle is painted great */
-		if ($ratio <= 16) {
-			/* Clean a bit of pixels */
-			for ($i = 0; $i < 7; $i++) {
-				$this->graph->drawLine (0, $i, 6 - $i, $i, 255, 255, 255);
-			}
+
+		if ($config["round_corner"] != 0){
+			/* Under this value, the rounded rectangle is painted great */
+			if ($ratio <= 16) {
+				/* Clean a bit of pixels */
+				for ($i = 0; $i < 7; $i++) {
+					$this->graph->drawLine (0, $i, 6 - $i, $i, 255, 255, 255);
+				}
 			
-			$end = $this->height - 1;
-			for ($i = 0; $i < 7; $i++) {
-				$this->graph->drawLine (0, $end - $i, 5 - $i, $end - $i, 255, 255, 255);
+				$end = $this->height - 1;
+				for ($i = 0; $i < 7; $i++) {
+					$this->graph->drawLine (0, $end - $i, 5 - $i, $end - $i, 255, 255, 255);
+				}
 			}
 		}
 		
 		if ($this->show_title) {
 			$this->graph->drawTextBox (0, 0, $this->width, $this->height,
-				$this->title, 0, 255, 255, 255, ALIGN_CENTER, true);
+				$this->title, 0, 0, 0, 0, ALIGN_CENTER, false);
+			// Removed shadow in bars, was difficult to read, do not enable again please
 		}
 		if ($this->border) {
 			$this->graph->drawRoundedRectangle (0, 0, $this->width - 1 , $this->height - 1,

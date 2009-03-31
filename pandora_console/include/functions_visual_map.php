@@ -152,6 +152,33 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo "</div>";
 			}
 
+			// SIMPLE DATA VALIE (type = 2)
+			if ($layout_data['type'] == 2){
+
+				 echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				echo '<b>'.$layout_data['label']. ' ';
+				echo get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+				echo '</b></div>';
+			}
+
+			 // Percentile bar (type = 3)
+                        if ($layout_data['type'] == 3){
+
+                                 echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+				$width = $layout_data['width'];
+				if ( $layout_data['height'] > 0)
+					$percentile = $valor / $layout_data['height'] * 100;
+				else
+					$percentile = 100;
+				echo $layout_data['label'];
+				echo "<br>";
+
+				echo "<img src='".$config["homeurl"]."/reporting/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
+
+				echo '</div>';
+
+			}
 			// SINGLE GRAPH (type = 1)
 			if ($layout_data['type'] == 1) { // single graph
 		
@@ -213,6 +240,8 @@ function get_layout_data_types () {
 	$types = array ();
 	$types[0] = __('Static graph');
 	$types[1] = __('Module graph');
+	$types[2] = __('Simple value');
+	$types[3] = __('Percentile bar');
 	
 	return $types;
 }

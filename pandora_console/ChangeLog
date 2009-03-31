@@ -1,5 +1,15 @@
 2009-03-31  Sancho Lerena  <slerena@artica.es>
 
+	* include/functions_visual_map.php,
+	 godmode/reporting/map_builder.php: Two new types of items for map graphs:
+	Simple value and progress bar. Progress bar uses height to set the higher 
+	possible limit of the value to calculage the percentile. 
+
+	* reporting/pchart_graph.php: Progress bars now have percentile text without
+	shadow (more readable). Fixed round cut of prev. commit.
+
+2009-03-31  Sancho Lerena  <slerena@artica.es>
+
 	* include/styles/menu.css: Added icons for dashboard option (enterprise).
 	
 	* include/functions_config.php: Added support for round_corner option.

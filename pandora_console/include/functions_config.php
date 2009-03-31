@@ -70,7 +70,7 @@ function update_config () {
 	if (! isset ($config['id_user']))
 		return false;
 	
-	if (! give_acl ($config['id_user'], 0, "PM") || ! is_user_admin ($config['id_user']))
+	if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user']))
 		return false;
 	
 	$update_config = (bool) get_parameter ('update_config');
@@ -105,6 +105,7 @@ function update_config () {
 	update_config_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
 	update_config_value ('https', (bool) get_parameter ('https'));
 	update_config_value ('compact_header', (bool) get_parameter ('compact_header'));
+	update_config_value ('round_corner', (bool) get_parameter ('round_corner'));
 }
 
 /**
@@ -212,7 +213,11 @@ function process_config () {
 	
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
-	
+
+	if (!isset ($config["round_corner"])) {
+		update_config_value ('round_corner', false);
+	}
+
 	if (!isset ($config["auth"])) {
 		require_once ($config["homedir"]."/include/auth/mysql.php");
 	} else {

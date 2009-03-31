@@ -312,9 +312,14 @@ class PchartGraph extends PandoraGraphAbstract {
 		// Dataset definition
 		$this->graph = new pChart ($this->width, $this->height);
 		$this->graph->setFontProperties ($this->fontpath, 8);
-		
-		$radius = ($this->height > 18) ? 10 : 0;
-		
+
+		// Round corners defined in global setup
+		global $config;
+		if ($config["round_corner"] != 0)	
+			$radius = ($this->height > 18) ? 7 : 0;
+		else
+			$radius = 0;
+
 		$ratio = (int) $value / 100 * $this->width;
 		
 		/* Color stuff */
@@ -351,7 +356,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 		if ($this->border) {
 			$this->graph->drawRoundedRectangle (0, 0, $this->width - 1 , $this->height - 1,
-				$radius, 0, 0, 0);
+				$radius, 157, 157, 157);
 		}
 		
 		$this->graph->Stroke ();

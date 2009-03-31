@@ -221,9 +221,7 @@ if ($page != "") {
 		echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
 	}
 } else {
-	if (enterprise_hook ('load_logon_ok') === ENTERPRISE_NOT_HOOK) {
-		require ("general/logon_ok.php");
-	}
+	require ("general/logon_ok.php");
 }
 
 if ($config["pure"] == 0) {

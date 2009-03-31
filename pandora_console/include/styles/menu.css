@@ -89,6 +89,10 @@
 }
 
 /* Icons specified here */
+#icon_oper-dashboard {
+ 	background: #E9F3D2 url(../../images/house.png) no-repeat 4px 4px;
+}
+
 #icon_oper-agents {
 	background: #E9F3D2 url(../../images/bricks.png) no-repeat 4px 4px;
 }

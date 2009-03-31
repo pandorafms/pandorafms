@@ -29,7 +29,9 @@ $menu['class'] = 'operation';
 
 // Agent read, Server read
 if (give_acl ($config['id_user'], 0, "AR")) {
-	
+
+	enterprise_hook ('dashboard_menu');
+
 	//View agents
 	$menu["estado"]["text"] = __('View agents');
 	$menu["estado"]["sec2"] = "operation/agentes/tactical";

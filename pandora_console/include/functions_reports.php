@@ -70,6 +70,7 @@ function get_reports ($filter = false, $fields = false) {
 	
 	$reports = array ();
 	$all_reports = get_db_all_rows_filter ('treport', $filter, $fields);
+	if ($all_reports !== FALSE)
 	foreach ($all_reports as $report){
 		if ($config['id_user'] != $report['id_user'] && ! give_acl ($config['id_user'], $report['id_group'], 'AR'))
 			continue;

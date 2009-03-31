@@ -21,7 +21,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM") || ! is_user_admin ($config['id_user'])) {
+if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
@@ -57,15 +57,6 @@ $table->data[1][1] .= print_input_text ('date_format', $config["date_format"], '
 $table->data[2][0] = __('Remote config directory');
 $table->data[2][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 
-$table->data[3][0] = __('Graph color (min)');
-$table->data[3][1] = print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
-
-$table->data[4][0] = __('Graph color (avg)');
-$table->data[4][1] = print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
-
-$table->data[5][0] = __('Graph color (max)');
-$table->data[5][1] = print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
-
 $table->data[6][0] = __('SLA period (seconds)');
 $table->data[6][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
 
@@ -75,20 +66,11 @@ $table->data[7][1] = print_input_text ('days_compact', $config["days_compact"], 
 $table->data[8][0] = __('Max. days before purge');
 $table->data[8][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
 
-$table->data[9][0] = __('Graphic resolution (1-low, 5-high)');
-$table->data[9][1] = print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
-
 $table->data[10][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[10][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
 $table->data[11][0] = __('Auto login (Hash) password');
 $table->data[11][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
-
-$table->data[13][0] = __('Style template');
-$table->data[13][1] = print_select (get_css_themes (), 'style', $config["style"].'.css', '', '', '', true);
-
-$table->data[14][0] = __('Block size for pagination');
-$table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
 
 $table->data[15][0] = __('Default hours for event view');
 $table->data[15][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);

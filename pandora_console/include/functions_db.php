@@ -2713,6 +2713,14 @@ function get_server_info ($id_server = -1) {
 			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
 			$server["type"] = "plugin";
 			$id_modulo = 4;
+		} elseif ($server['web_server'] == 1) {
+                        $server["img"] = print_image ("images/serverweb.png", true, array ("title" => __('WEB Server')));
+                        $server["type"] = "web";
+                        $id_modulo = 7;
+		} elseif ($server['inventory_server'] == 1) {
+                        $server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory Server')));
+                        $server["type"] = "inventory";
+                        $id_modulo = 0;
 		} else {
 			$server["img"] = '';
 			$server["type"] = "unknown";
@@ -2721,9 +2729,6 @@ function get_server_info ($id_server = -1) {
 		
 		if ($server['master'] == 1) {
 			$server["img"] .= print_image ("images/master.png", true, array ("title" => __('Master Server')));
-		}
-		if ($server['checksum'] == 1){
-			$server["img"] .= print_image ("images/binary.png", true, array ("title" => __('MD5 Check')));
 		}
 		
 		if (empty ($modules_info[$server["id_server"]])) {

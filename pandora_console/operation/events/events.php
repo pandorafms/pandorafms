@@ -107,6 +107,8 @@ $groups = get_user_groups ($config["id_user"], "AR");
 // Add group "0".
 $groups[0]="System";
 
+$groups[0]="System";
+
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
 $group_rep = (int) get_parameter ("group_rep", 1);

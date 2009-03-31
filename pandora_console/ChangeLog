@@ -1,3 +1,43 @@
+2009-03-31  Sancho Lerena  <slerena@artica.es>
+
+	* include/styles/menu.css: Added icons for dashboard option (enterprise).
+	
+	* include/functions_config.php: Added support for round_corner option.
+	
+	* include/functions_db.php: Temporal support (not really work) for enterprise
+	servers webcheck/goliat and inventory. This code should be corrected when
+	make final dbstruct changes for new server_type numeric field.
+	
+	* include/functions_reports.php: Fixed an annoying notice.
+	
+	* index.php: Dashboard is not entered automatically on login in enterprise.
+	
+	* operation/events/events.php: Events from group 0 always displayed.
+	
+	* operation/servers/view_server.php: Icon for server status is now smaller.
+	
+	* operation/menu.php: New enterprise hook for Dashboard menu entry.
+	
+	* reporting/pchart_graph.php: Round corners on progressbar acording to
+	setup option. Color of border is smoother.
+	
+	* godmode/setup/links.php: Fixed ACL condition (AND -> OR).
+	
+	* godmode/setup/setup.php: Fixed ACL. Moved visual options to other setup.
+	
+	* godmode/setup/filemgr.php: Fixed ACL condition (AND -> OR).
+	
+	* godmode/agentes/modificar_agente.php: Support for IP address search.
+	
+	* godmode/menu.php: Added new setup section for visual options.
+	
+	* godmode/setup/setup_visuals.php: New setup section for visual options.
+	
+	* images/mod_web_proc.png,
+	  images/screenshot_not_found.jpg
+          images/mod_web_data.png
+          images/server_web.png: New icons added for enterprise options.
+      
 2009-03-31  Sancho Lerena <slerena@artica.es>
 
 	* operation/events/events.php: Fixed and allow to everybody to see

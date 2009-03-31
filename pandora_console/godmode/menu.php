@@ -152,13 +152,11 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["gsetup"]["id"] = "god-setup";
 	
 	$sub = array ();
-	
+
+	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/filemgr"]["text"] = __('File Manager');
-	
 	$sub["godmode/setup/links"]["text"] = __('Links');
-	
 	$sub["godmode/setup/news"]["text"] = __('Site news');
-	
 	$menu["gsetup"]["sub"] = $sub;
 }
 

@@ -21,7 +21,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM") || ! is_user_admin ($config['id_user'])) {
+if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Link Management");
 	require ("general/noaccess.php");
 	exit;

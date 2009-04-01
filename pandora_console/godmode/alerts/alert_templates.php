@@ -54,6 +54,10 @@ if (is_ajax ()) {
 			echo '<br />';
 		}
 		
+		echo '<strong>'.__('Priority').':</strong> ';
+		echo get_priority_name ($template['priority']);
+		echo '<br />';
+		
 		if ($template['monday'] && $template['tuesday']
 			&& $template['wednesday'] && $template['thursday']
 			&& $template['friday'] && $template['saturday']

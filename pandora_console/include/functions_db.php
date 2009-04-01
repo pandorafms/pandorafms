@@ -93,36 +93,36 @@ function check_acl ($id_user, $id_group, $access) {
 	foreach ($rowdup as $row) {
 		// For each profile for this pair of group and user do...
 		switch ($access) {
-			case "IR":
-				$result += $row["incident_view"];
-				break;
-			case "IW":
-				$result += $row["incident_edit"];
-				break;
-			case "IM":
-				$result += $row["incident_management"];
-				break;
-			case "AR":
-				$result += $row["agent_view"];
-				break;
-			case "AW":
-				$result += $row["agent_edit"];
-				break;
-			case "LW":
-				$result += $row["alert_edit"];
-				break;
-			case "LM":
-				$result += $row["alert_management"];
-				break;
-			case "PM":
-				$result += $row["pandora_management"];
-				break;
-			case "DM":
-				$result += $row["db_management"];
-				break;
-			case "UM":
-				$result += $row["user_management"];
-				break;
+		case "IR":
+			$result += $row["incident_view"];
+			break;
+		case "IW":
+			$result += $row["incident_edit"];
+			break;
+		case "IM":
+			$result += $row["incident_management"];
+			break;
+		case "AR":
+			$result += $row["agent_view"];
+			break;
+		case "AW":
+			$result += $row["agent_edit"];
+			break;
+		case "LW":
+			$result += $row["alert_edit"];
+			break;
+		case "LM":
+			$result += $row["alert_management"];
+			break;
+		case "PM":
+			$result += $row["pandora_management"];
+			break;
+		case "DM":
+			$result += $row["db_management"];
+			break;
+		case "UM":
+			$result += $row["user_management"];
+			break;
 		}
 	}
 	

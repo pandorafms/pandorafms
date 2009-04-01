@@ -31,6 +31,8 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 
 if (is_ajax ()) {
 	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
+	$validate_event = (bool) get_parameter ('validate_event');
+	$delete_event = (bool) get_parameter ('delete_event');
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
@@ -62,15 +64,57 @@ if (is_ajax ()) {
 		return;
 	}
 	
+	if ($validate_event) {
+		$id = (int) get_parameter ("id");
+		$similars = (bool) get_parameter ('similars');
+		
+		$return = validate_event ($id, $similars);
+		if ($return)
+			echo 'ok';
+		else
+			echo 'error';
+		return;
+	}
+	
+	if ($delete_event) {
+		$id = (array) get_parameter ("id");
+		$similars = (bool) get_parameter ('similars');
+		
+		$return = delete_event ($id, $similars);
+		if ($return)
+			echo 'ok';
+		else
+			echo 'error';
+		return;
+	}
+	
 	return;
 }
 
+$offset = (int) get_parameter ("offset", 0);
+$ev_group = (int) get_parameter ("ev_group", 1); //1 = all
+$search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search")));
+$event_type = get_parameter ("event_type", ''); // 0 all
+$severity = (int) get_parameter ("severity", -1); // -1 all
+$status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
+$id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
+$id_event = (int) get_parameter ("id_event", -1);
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
+$groups = get_user_groups ($config["id_user"], "AR");
+$event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
+$id_user_ack = get_parameter ("id_user_ack", 0);
+$group_rep = (int) get_parameter ("group_rep", 1);
+/* Show always the system events */
+$groups[0] = __('System');
+
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
+
 //Process deletion (pass array or single value)
 if ($delete) {
-	$eventid = (array) get_parameter ("eventid", -1);
-	$return = delete_event ($eventid); //This function handles both single values as well arrays and cleans up before deleting
+	$ids = (array) get_parameter ("eventid", -1);
+	
+	$return = delete_event ($ids, ($group_rep == 1));
 	print_result_message ($return,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
@@ -78,40 +122,13 @@ if ($delete) {
 
 //Process validation (pass array or single value)
 if ($validate) {
-	$eventid = (array) get_parameter ("eventid", -1);
-	$return = process_event_validate ($eventid);
+	$ids = (array) get_parameter ("eventid", -1);
+	
+	$return = validate_event ($ids, ($group_rep == 1));
 	print_result_message ($return,
 		__('Successfully validated'),
 		__('Could not be validated'));
 }
-
-
-// ***********************************************************************
-// Main code form / page
-// ***********************************************************************
-
-$offset = (int) get_parameter ("offset", 0);
-$ev_group = (int) get_parameter ("ev_group", 1); //1 = all
-$search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search"))); //Replace all types of &# HTML with % so that it doesn't fail on quotes
-
-$event_type = get_parameter ("event_type", ''); // 0 all
-$severity = (int) get_parameter ("severity", -1); // -1 all
-$status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
-$id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
-$id_event = (int) get_parameter ("id_event", -1);
-$pagination = (int) get_parameter ("pagination", $config["block_size"]);
-
-// Access rights are about agent data, not incidents !
-$groups = get_user_groups ($config["id_user"], "AR");
-
-// Add group "0".
-$groups[0]="System";
-
-$groups[0]="System";
-
-$event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
-$id_user_ack = get_parameter ("id_user_ack", 0);
-$group_rep = (int) get_parameter ("group_rep", 1);
 
 //Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
@@ -150,8 +167,9 @@ if ($event_view_hr > 0) {
 	$sql_post .= " AND utimestamp > ".$unixtime;
 }
 
-
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=".rawurlencode($search)."&amp;event_type=".$event_type."&amp;severity=".$severity."&amp;status=".$status."&amp;ev_group=".$ev_group."&amp;refr=".$config["refr"]."&amp;id_agent=".$id_agent."&amp;id_event=".$id_event."&amp;pagination=".$pagination."&amp;group_rep=".$group_rep."&amp;event_view_hr=".$event_view_hr."&amp;id_user_ack=".$id_user_ack;
+
+echo '<h3 id="result" style="display:none">&nbsp;</h3>';
 
 echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp;";
 
@@ -292,7 +310,9 @@ echo '</a>';
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
 print_image ("reporting/fgraph.php?tipo=group_events&width=220&height=180&url=".rawurlencode ($sql_post), false, array ("border" => 0));
-echo '</div><div style="clear:both">&nbsp;</div></div>';
+echo '</div>';
+echo '<div id="steps_clean">&nbsp;</div>';
+echo '</div>';
 
 if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
@@ -314,17 +334,7 @@ if (empty ($result)) {
 	$result = array ();
 }
 
-// Show pagination header
-$offset = get_parameter ("offset", 0);
-pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);		
-
-// If pure, table width takes more space
-if ($config["pure"] != 0) {
-	$table->width = 765;
-} else {
-	$table->width = 750;
-}
-
+$table->width = '99%';
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -374,11 +384,17 @@ foreach ($result as $event) {
 	$table->rowclass[] = get_priority_class ($event["criticity"]);
 	
 	// Colored box
+	
 	if ($event["estado"] == 0) {
-		$data[0] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
+		$img = "images/pixel_red.png";
 	} else {
-		$data[0] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
+		$img = "images/pixel_green.png";
 	}
+	$data[0] = print_image ($img, true, 
+		array ("class" => "image_status",
+			"width" => 20,
+			"height" => 20,
+			"title" => get_priority_name ($event["criticity"])));
 	
 	$data[1] = print_event_type_img ($event["event_type"], true);
 	
@@ -404,12 +420,14 @@ foreach ($result as $event) {
 	$data[4] = '';
 	if ($event["id_agentmodule"] != 0) {
 		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
-		$data[4] .= print_image ("images/bricks.png", true, array ("border" => 0, "title" => __('Go to data overview')));
+		$data[4] .= print_image ("images/bricks.png", true,
+			array ("title" => __('Go to data overview')));
 		$data[4] .= '</a>&nbsp;';
 	}
 	if ($event["id_alert_am"] != 0) {
 		$data[4] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
-		$data[4] .= print_image ("images/bell.png", true, array ("border" => 0, "title" => __('Go to alert overview')));
+		$data[4] .= print_image ("images/bell.png", true,
+			array ("title" => __('Go to alert overview')));
 		$data[4] .= '</a>';
 	}
 	
@@ -429,8 +447,7 @@ foreach ($result as $event) {
 		}
 	}
 	
-	//Time	
-	
+	//Time
 	if ($group_rep == 1) {
 		$data[7] = print_timestamp ($event['timestamp_rep'], true);
 	} else {
@@ -441,20 +458,23 @@ foreach ($result as $event) {
 	$data[8] = '';
 	// Validate event
 	if (($event["estado"] == 0) and (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1)) {
-		$data[8] .= '<a href="'.$url.'&amp;validate=1&amp;eventid='.$event["id_evento"].'&amp;pure='.$config["pure"].'">';
-		$data[8] .= print_image ("images/ok.png", true, array ("border" => 0, "title" => __('Validate event')));
+		$data[8] .= '<a class="validate_event" href="#" onclick="return false" id="delete-'.$event["id_evento"].'">';
+		$data[8] .= print_image ("images/ok.png", true,
+			array ("title" => __('Validate event')));
 		$data[8] .= '</a>';
 	}
 	// Delete event
 	if (give_acl ($config["id_user"], $event["id_grupo"], "IM") == 1) {
-		$data[8] .= '<a href="'.$url.'&amp;delete=1&amp;eventid='.$event["id_evento"].'&amp;pure='.$config["pure"].'">';
-		$data[8] .= print_image ("images/cross.png", true, array ("border" => 0, "title" => __('Delete event')));
+		$data[8] .= '<a class="delete_event" href="#" onclick="return false" id="validate-'.$event['id_evento'].'">';
+		$data[8] .= print_image ("images/cross.png", true,
+			array ("title" => __('Delete event')));
 		$data[8] .= '</a>';
 	}
-	// Create incident from this event			
+	// Create incident from this event
 	if (give_acl ($config["id_user"], $event["id_grupo"], "IW") == 1) {
 		$data[8] .= '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event='.$event["id_evento"].'">';
-		$data[8] .= print_image ("images/page_lightning.png", true, array ("border" => 0, "title" => __('Create incident from event')));
+		$data[8] .= print_image ("images/page_lightning.png", true,
+			array ("title" => __('Create incident from event')));
 		$data[8] .= '</a>';
 	}
 	
@@ -464,12 +484,14 @@ foreach ($result as $event) {
 	array_push ($table->data, $data);
 }
 
+echo '<div id="events_list">';
 if (!empty ($table->data)) {
+	pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);
 	echo '<form method="post" action="'.$url.'&amp;pure='.$config["pure"].'">';
 
 	print_table ($table);
 	
-	echo '<div style="width:750px; text-align:right">';
+	echo '<div style="width:'.$table->width.';" class="action-buttons">';
 	if (give_acl ($config["id_user"], 0, "IW") == 1) {
 		print_submit_button (__('Validate'), 'validate', false, 'class="sub ok"');
 	}
@@ -477,47 +499,104 @@ if (!empty ($table->data)) {
 		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
 	echo '</div></form>';
+	
 	if ($config["pure"]== 0) {
 		//Print legend
 		echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
 		echo '<h3>'.__('Status').'</h3>';
-		print_image ("images/pixel_green.png", false, array ("width" => 10, "height" => 10, "title" => __('Validated event')));
+		print_image ("images/pixel_green.png", false, 
+			array ("width" => 10,
+				"height" => 10,
+				"title" => __('Validated event')));
 		echo ' - '.__('Validated event');
 		echo '<br />';
-		print_image ("images/pixel_red.png", false, array ("width" => 10, "height" => 10, "title" => __('Event not validated')));
+		print_image ("images/pixel_red.png", false,
+			array ("width" => 10,
+				"height" => 10,
+				"title" => __('Event not validated')));
 		echo ' - '.__('Event not validated');
 		echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
 		echo '<h3>'.__('Actions').'</h3>';
-		print_image ("images/ok.png", false, array ("title" => __('Validate event')));
+		print_image ("images/ok.png", false, 
+			array ("title" => __('Validate event')));
 		echo ' - '.__('Validate event');
 		echo '<br />';
-		print_image ("images/cross.png", false, array ("title" => __('Delete event')));
+		print_image ("images/cross.png", false,
+			array ("title" => __('Delete event')));
 		echo ' - '.__('Delete event');
 		echo '<br />';
-		print_image ("images/page_lightning.png", false, array ("title" => __('Create incident from event')));
+		print_image ("images/page_lightning.png", false,
+			array ("title" => __('Create incident from event')));
 		echo ' - '.__('Create incident from event');
 		echo '</div><div style="clear:both;">&nbsp;</div>';
 	}
 } else {
-	echo '<div class="nf">'.__('No events').'</div>';	
+	echo '<div class="nf">'.__('No events').'</div>';
 }
+echo '</div>';
 
 unset ($table);
 ?>
 <script language="javascript" type="text/javascript">
-	/* <![CDATA[ */
-	$(document).ready( function() {
-		$("INPUT[name='allbox']").click( function() {
-			$("INPUT[name='eventid[]']").each( function() {
-				$(this).attr('checked', !$(this).attr('checked'));
-			});
-			return !(this).attr('checked');
-		});
-		
-		$("#tgl_event_control").click( function () {
-			$("#event_control").toggle ();	
-			return false;				  
-		});
+/* <![CDATA[ */
+$(document).ready( function() {
+	$("input[name=allbox]").change (function() {
+		$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
 	});
-	/* ]]> */
+	
+	$("#tgl_event_control").click (function () {
+		$("#event_control").toggle ();
+		return false;
+	});
+	
+	$("a.validate_event").click (function () {
+		$tr = $(this).parents ("tr");
+		id = this.id.split ("-").pop ();
+		jQuery.post ("ajax.php",
+			{"page" : "operation/events/events",
+			"validate_event" : 1,
+			"id" : id,
+			"similar" : <?php echo ($group_rep ? 1 : 0) ?>
+			},
+			function (data, status) {
+				if (data == "ok") {
+					<?php if ($status == 0) : ?>
+					$tr.remove ();
+					<?php else: ?>
+					$("img.image_status", $tr).attr ("src", "images/pixel_green.png");
+					<?php endif; ?>
+				} else {
+					$("#result")
+						.showMessage ("<?php echo __('Could not be validated')?>")
+						.addClass ("error");
+				}
+			},
+			"html"
+		);
+		return false;
+	});
+	
+	$("a.delete_event").click (function () {
+		$tr = $(this).parents ("tr");
+		id = this.id.split ("-").pop ();
+		jQuery.post ("ajax.php",
+			{"page" : "operation/events/events",
+			"delete_event" : 1,
+			"id" : id,
+			"similar" : <?php echo ($group_rep ? 1 : 0) ?>
+			},
+			function (data, status) {
+				if (data == "ok")
+					$tr.remove ();
+				else
+					$("#result")
+						.showMessage ("<?php echo __('Could not be deleted')?>")
+						.addClass ("error");
+			},
+			"html"
+		);
+		return false;
+	});
+});
+/* ]]> */
 </script>

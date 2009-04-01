@@ -20,7 +20,7 @@
 // For code belongs to average_per_hourday matrix report code
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login();
 
@@ -30,9 +30,9 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 }
 
 function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $start_date, $end_date){
-// Return average value from an agentmodule, for a specific hour of specific day of week,
-// Only valid for non-string kind of data.
-	require ("include/config.php");
+	// Return average value from an agentmodule, for a specific hour of specific day of week,
+	// Only valid for non-string kind of data.
+	global $config;
 	
 	// Convert to unix date	
 	$start_date = date("U", $start_date);
@@ -54,20 +54,20 @@ function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $
 
 function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_inicio, $fecha_fin){
 // Genera una tabla con los promedios de los datos de un módulo no-string
-	require ("include/config.php");
+	global $config;
 	
 	$dias_de_la_semana = array (__('Sunday'),__('Monday'), __('Tuesday'), __('Wednesday'), __('Thurdsday'), __('Friday'), __('Saturday'));
 	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 	
 	// Table header
-	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
+	echo "<table border=0 cellpadding=4 cellspacing=4 width='90%' class='databox'>";
 	echo "<tr>
-	<th rowspan='2'>".__('One hour')."</th>";
+	<th style='width: 5%' rowspan='2'></th>";
 	echo "<th colspan='7'>".__('day')."</th>
 	</tr>";
 	echo "<tr>";
 	for ($dia=0;$dia<7;++$dia)
-		echo "<th>".$dias_de_la_semana[$dia]."</th>";
+		echo "<th style='width: 14%'>".$dias_de_la_semana[$dia]."</th>";
 	echo "</tr>";
 	$color = 0;	
 	for ($hora=0;$hora<24;++$hora){
@@ -196,6 +196,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 				else
 					$sql1 = 'SELECT * FROM tagente_datos WHERE utimestamp > '.$from_date.' AND utimestamp < '.$to_date.' AND id_agente_modulo ='.$id_modulo.' ORDER BY utimestamp DESC';
 				$result1 = get_db_all_rows_sql ($sql1);
+				if ($result1 === false)
+					$result1 = array ();
 				$color=1;
 				foreach ($result1 as $row){
 					if ($color == 1){

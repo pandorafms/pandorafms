@@ -25,6 +25,15 @@ if (!isset ($id_agente)) {
 
 $extra_title = __('Plugin server module');
 
+define ('ID_NETWORK_COMPONENT_TYPE', 4);
+
+if (empty ($update_module_id)) {
+	/* Function in module_manager_editor_common.php */
+	add_component_selection (ID_NETWORK_COMPONENT_TYPE);
+} else {
+	/* TODO: Print network component if available */
+}
+
 $data = array ();
 $data[0] = __('Plugin');
 $data[1] = print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',

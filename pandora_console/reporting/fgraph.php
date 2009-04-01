@@ -428,19 +428,20 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 	generic_pie_graph ($width, $height, $data);
 }
 
-function graphic_agentaccess ($id_agent, $width, $height) {
+function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	
-	$interval = 24;
-	$date = get_system_time ();
-	$period = 1440;
-	$datelimit = $date - $period;
+	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
+	$interval = (int) ($period / $resolution);
+	$date = get_system_time ();
+	$datelimit = $date - $period;
+	$periodtime = floor ($period / $interval);
 	$time = array ();
 	$data = array ();
 	for ($i = 0; $i < $interval; $i++) {
-		$time[$i]['timestamp_bottom'] = $datelimit + ($interval * $i);
-		$time[$i]['timestamp_top'] = $datelimit + ($interval * ($i + 1));
+		$time[$i]['timestamp_bottom'] = $datelimit + ($periodtime * $i);
+		$time[$i]['timestamp_top'] = $datelimit + ($periodtime * ($i + 1));
 		$data[$time[$i]['timestamp_bottom']] = 0;
 	}
 	
@@ -453,19 +454,15 @@ function graphic_agentaccess ($id_agent, $width, $height) {
 	if ($result === false)
 		$result = array ();
 
-	$start = 0;
 	$max_value = 0;
-	
 	foreach ($result as $access) {
 		$utimestamp = $access['utimestamp'];
-		for ($i = $start; $i < $interval; $i++) {
+		for ($i = 0; $i < $interval; $i++) {
 			if ($utimestamp <= $time[$i]['timestamp_top'] && $utimestamp >= $time[$i]['timestamp_bottom']) {
-				$data[$time[$i]['timestamp_bottom']] = 1;
-				$start = $i;
-				$max_value = 1;
-				break;
+				$data[$time[$i]['timestamp_bottom']]++;
+				$max_value = max ($max_value, $data[$time[$i]['timestamp_bottom']]);
 			}
-		} 
+		}
 	}
 	
 	$engine = get_graph_engine ($period);
@@ -476,9 +473,11 @@ function graphic_agentaccess ($id_agent, $width, $height) {
 	$engine->max_value = $max_value;
 	$engine->show_title = false;
 	$engine->fontpath = $config['fontpath'];
-	$engine->xaxis_interval = 4;
-	$engine->yaxis_interval = 1;
+	$engine->xaxis_interval = floor ($width / 72);
+	$engine->yaxis_interval = $max_value;
 	$engine->xaxis_format = 'date';
+	$engine->watermark = false;
+	$engine->show_grid = false;
 	
 	$engine->single_graph ();
 }
@@ -487,10 +486,10 @@ function graph_incidents_status () {
 	$data = array (0, 0, 0, 0);
 	
 	$data = array ();
-	$data[__("Open Incident")] = 0;
-	$data[__("Closed Incident")] = 0;
-	$data[__("Outdated")] = 0;
-	$data[__("Invalid")] = 0;
+	$data[__('Open Incident')] = 0;
+	$data[__('Closed Incident')] = 0;
+	$data[__('Outdated')] = 0;
+	$data[__('Invalid')] = 0;
 	
 	$incidents = get_db_all_rows_filter ('tincidencia',
 		array ('estado' => array (0, 2, 3, 13)),
@@ -812,12 +811,11 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	$data = array ();
 	$legend = array ();
 	
-	$agents = get_group_agents (1, false, "none");
-	
+	$agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
 	$count = get_agent_modules_data_count (array_keys ($agents));
 	unset ($count["total"]);
 	arsort ($count, SORT_NUMERIC);
-	$count = array_slice ($count, 0, 10, true);
+	$count = array_slice ($count, 0, 8, true);
 	
 	foreach ($count as $agent_id => $value) {
 		$data[$agents[$agent_id]] = $value;
@@ -1165,7 +1163,7 @@ if ($graphic_type) {
 		
 		break;
 	case "agentaccess":
-		graphic_agentaccess ($id, $width, $height);
+		graphic_agentaccess ($id, $width, $height, $period);
 		
 		break;
 	case "agentmodules":

@@ -26,6 +26,11 @@ function get_event ($id, $fields = false) {
 		return false;
 	global $config;
 	
+	if (is_array ($fields)) {
+		if (! in_array ('id_grupo', $fields))
+			$fields[] = 'id_grupo';
+	}
+	
 	$event = get_db_row ('tevento', 'id_evento', $id, $fields);
 	if (! give_acl ($config['id_user'], $event['id_grupo'], 'IR'))
 		return false;
@@ -33,17 +38,54 @@ function get_event ($id, $fields = false) {
 }
 
 /**
+ * Get all the events ids similar to a given event id.
+ *
+ * An event is similar then the event text (evento) and the id_agentmodule are
+ * the same.
+ *
+ * @param int Event id to get similar events.
+ *
+ * @return array A list of events ids.
+ */
+function get_similar_events_ids ($id) {
+	$ids = array ();
+	$event = get_event ($id, array ('evento', 'id_agentmodule'));
+	if ($event === false)
+		return $ids;
+	
+	$events = get_db_all_rows_filter ('tevento',
+		array ('evento' => $event['evento'],
+			'id_agentmodule' => $event['id_agentmodule']),
+		array ('id_evento'));
+	if ($events === false)
+		return $ids;
+	
+	foreach ($events as $event)
+		$ids[] = $event['id_evento'];
+	
+	return $ids;
+}
+
+/**
  * Delete events in a transaction
  *
- * @param mixed $id_event Event ID or array of events
+ * @param mixed Event ID or array of events
+ * @param bool Whether to delete similar events too.
  *
  * @return bool Whether or not it was successful
  */
-function delete_event ($id_event) {
+function delete_event ($id_event, $similar = true) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
+	
+	/* We must delete all events like the selected */
+	if ($similar) {
+		foreach ($id_event as $id) {
+			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
+		}
+	}
 	
 	process_sql ("SET AUTOCOMMIT = 0;");
 	process_sql ("START TRANSACTION;");
@@ -81,15 +123,23 @@ function delete_event ($id_event) {
 /**
  * Validate events in a transaction
  *
- * @param mixed $id_event Event ID or array of events
+ * @param mixed Event ID or array of events
+ * @param bool Whether to validate similar events or not.
  *
  * @return bool Whether or not it was successful
  */	
-function process_event_validate ($id_event) {
+function validate_event ($id_event, $similars = true) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
 	$id_event = (array) safe_int ($id_event, 1);
+	
+	/* We must validate all events like the selected */
+	if ($similars) {
+		foreach ($id_event as $id) {
+			$id_event = array_merge ($id_event, get_similar_events_ids ($id));
+		}
+	}
 	
 	process_sql ("SET AUTOCOMMIT = 0;");
 	process_sql ("START TRANSACTION;");

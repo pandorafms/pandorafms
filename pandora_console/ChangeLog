@@ -1,3 +1,52 @@
+2009-03-31  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php: Added plugin
+	components select. Fixes #2707900.
+
+	* godmode/alerts/alert_list.php: Fixed an error when showing agents
+	list.
+
+	* include/functions_events.php: Added get_similar_events_ids() to get
+	events which are similars (same description and agent module). Renamed
+	process_event_delete() and process_event_validate(). Added
+	similars flag to both delete_event() an validate_event().
+
+	* include/functions_reporting.php: Added timestamp parameter to select
+	statements to fix #2707841.
+
+	* include/functions_ui.php: Added a class to pagination divs.
+
+	* operation/agentes/estado_generalagente.php: Style correction.
+	Removed period on agent access graph.
+
+	* operation/agentes/exportdata.php: Fixed many notices by including
+	config.php instead of using global. Style corrections.
+
+	* operation/events/events.php: When the events were grouped and
+	deleted or validated, only one was being updated. Added AJAX support
+	to validate and delete single operations. Style corrections. Fixed
+	#2707872
+
+	* reporting/fgraph.php: Many fixes on agent access graph. Fixes
+	#2707856
+
+	* reporting/pandora_graph.php: Added a couple of properties to the
+	class.
+
+	* reporting/pchart_graph.php: Do not add the grid or axis labels on
+	charts if asked. Show no progress bar if value is 0 and a title is
+	shown. Style corrections.
+
+	* include/styles/pandora_width.css: Renamed to panoramic theme. Added
+	style for event_control element.
+
+	* include/styles/pandora.css: Added style for event_control element.
+
+	* godmode/modules/manage_network_components.php: Fixed table width for
+	panoramic theme.
+
+	* ajax.php: Added remote_addr to config array.
+
 2009-03-31  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions_visual_map.php,
@@ -44,14 +93,33 @@
 	* godmode/setup/setup_visuals.php: New setup section for visual options.
 	
 	* images/mod_web_proc.png,
-	  images/screenshot_not_found.jpg
-          images/mod_web_data.png
-          images/server_web.png: New icons added for enterprise options.
-      
+	  images/screenshot_not_found.jpg,
+	  images/mod_web_data.png,
+	  images/server_web.png: New icons added for enterprise options.
+
 2009-03-31  Sancho Lerena <slerena@artica.es>
 
 	* operation/events/events.php: Fixed and allow to everybody to see
 	events coming from group 0 (Old server code put events here).
+
+2009-03-30  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_ui.php: Added print_message(),
+	print_error_message() and print_success_message().
+
+	* godmode/users/configure_user.php,
+	operation/users/user_edit.php,
+	godmode/reporting/map_builder_wizard.php: Use print_error_message() or
+	print_success_message() when there was no other option.
+
+	* godmode/modules/manage_network_templates.php: Fixed CSV export
+	notice errors. Style corrections.
+
+	* godmode/modules/manage_network_templates_form.php: Style
+	corrections.
+
+	* include/functions_network_profiles.php: Added to repository. Network
+	profiles function API.
 
 2009-03-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 

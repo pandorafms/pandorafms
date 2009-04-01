@@ -89,7 +89,8 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->setFontProperties ($this->fontpath, 8);
 		$this->add_background ();
 		$this->graph->drawGraphArea (255, 255, 255, true);
-		$this->graph->drawGrid (4, true, 230, 230, 230, 50);
+		if ($this->show_grid)
+			$this->graph->drawGrid (4, true, 230, 230, 230, 50);
 		
 		// Draw the bar graph
 		$this->graph->setFontProperties ($this->fontpath, 8);
@@ -114,13 +115,12 @@ class PchartGraph extends PandoraGraphAbstract {
 		$color = $this->get_rgb_values ($this->graph_color[2]);
 		$this->graph->setColorPalette (0, $color['r'], $color['g'], $color['b']);
 		$this->dataset->AddAllSeries ();
-		if ($this->legend !== false) {
+		if ($this->legend !== false)
 			$this->dataset->SetSerieName ($this->legend[0], "Serie1");
-		}
 		
-		if ($this->palette_path) {
+		if ($this->palette_path)
 			$this->graph->loadColorPalette ($this->palette_path);
-		}
+		
 		$this->graph->setFontProperties ($this->fontpath, 8);
 		$this->add_background ();
 		$this->dataset->SetXAxisFormat ($this->xaxis_format);
@@ -132,11 +132,12 @@ class PchartGraph extends PandoraGraphAbstract {
 		
 		$this->graph->drawScale ($this->dataset->GetData (),
 			$this->dataset->GetDataDescription (),
-			SCALE_START0, 80, 80, 80, true,
+			SCALE_START0, 80, 80, 80, $this->show_axis,
 			0, 0, false,
 			$this->xaxis_interval);
 		
-		$this->graph->drawGrid (4, false, 0, 0, 0);
+		if ($this->show_grid)
+			$this->graph->drawGrid (4, false, 0, 0, 0);
 		if ($this->max_value > 0) {
 			// Draw the graph
 			$this->graph->drawFilledLineGraph ($this->dataset->GetData (),
@@ -196,10 +197,11 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->xaxis_interval = ($this->xaxis_interval / 7 >= 1) ? ($this->xaxis_interval / 7) : 10;
 		$this->graph->drawScale ($this->dataset->GetData (),
 				$this->dataset->GetDataDescription (), SCALE_START0,
-				80, 80, 80, true, 0, 0, false,
+				80, 80, 80, $this->show_axis, 0, 0, false,
 				$this->xaxis_interval);
 		/* NOTICE: The final "false" is a Pandora modificaton of pChart to avoid showing vertical lines. */
-		$this->graph->drawGrid (1, true, 225, 225, 225, 100, false);
+		if ($this->show_grid)
+			$this->graph->drawGrid (1, true, 225, 225, 225, 100, false);
 		// Draw the graph
 		$this->graph->drawFilledLineGraph ($this->dataset->GetData(), $this->dataset->GetDataDescription(), 50, true);
 		
@@ -229,14 +231,15 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->setFontProperties ($this->fontpath, 8);
 		$this->add_background ();
 		$this->graph->drawGraphArea (255, 255, 255, true);
-		$this->graph->drawGrid (4, true, 230, 230, 230, 50);
+		if ($this->show_grid)
+			$this->graph->drawGrid (4, true, 230, 230, 230, 50);
 
 		// Draw the bar graph
 		$this->graph->setFontProperties ($this->fontpath, 8);
 		$this->graph->drawScale ($this->dataset->GetData (),
 					$this->dataset->GetDataDescription (),
 					SCALE_START0, 80, 80, 80,
-					true, 0, 0, false,
+					$this->show_axis, 0, 0, false,
 					$this->xaxis_interval);
 		$this->graph->drawOverlayBarGraph ($this->dataset->GetData (),
 						$this->dataset->GetDataDescription (),
@@ -276,7 +279,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		if ($stacked == 1) {
 			$this->graph->drawScale ($this->dataset->GetData (),
 				$this->dataset->GetDataDescription (),
-				SCALE_ADDALL, 80, 80, 80, true,
+				SCALE_ADDALL, 80, 80, 80, $this->show_axis,
 				0, 0, false,
 				$this->xaxis_interval);
 			/* Stacked mode are only supported in bar charts */
@@ -287,14 +290,14 @@ class PchartGraph extends PandoraGraphAbstract {
 		} else if ($stacked == 2) {
 			$this->graph->drawScale ($this->dataset->GetData (),
 				$this->dataset->GetDataDescription (),
-				SCALE_START0, 80, 80, 80, true, 0, 0, false,
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
 				$this->xaxis_interval);
 			$this->graph->drawLineGraph ($this->dataset->GetData (),
 				$this->dataset->GetDataDescription ());
 		} else {
 			$this->graph->drawScale ($this->dataset->GetData (),
 				$this->dataset->GetDataDescription (),
-				SCALE_START0, 80, 80, 80, true, 0, 0, false,
+				SCALE_START0, 80, 80, 80, $this->show_axis, 0, 0, false,
 				$this->xaxis_interval);
 			$this->graph->drawFilledCubicCurve ($this->dataset->GetData(),
 				$this->dataset->GetDataDescription(), 0.1, 50, true);
@@ -316,7 +319,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		// Round corners defined in global setup
 
 		global $config;
-		if ($config["round_corner"] != 0)	
+		if ($config["round_corner"] != 0)
 			$radius = ($this->height > 18) ? 8 : 0;
 		else
 			$radius = 0;
@@ -330,16 +333,13 @@ class PchartGraph extends PandoraGraphAbstract {
 		$b = hexdec (substr ($this->background_color, 5, 2));
 		
 		/* Actual percentage */
-		$this->graph->drawFilledRectangle (0, 0, $this->width,
-			$this->height, 255, 255, 255, false, 0);
-		$this->graph->drawFilledRoundedRectangle (0, 0, $this->width,
-			$this->height, $radius, $bgcolor['r'], $bgcolor['g'], $bgcolor['b']);
+		if (! $this->show_title || $value > 0) {
+			$color = $this->get_rgb_values ($color);
+			$this->graph->drawFilledRoundedRectangle (0, 0, $ratio, 
+				$this->height, $radius, $color['r'], $color['g'], $color['b']);
+		}
 		
-		$color = $this->get_rgb_values ($color);
-		$this->graph->drawFilledRoundedRectangle (0, 0, $ratio, 
-			$this->height, $radius, $color['r'], $color['g'], $color['b']);
-
-		if ($config["round_corner"] != 0){
+		if ($config["round_corner"]) {
 			/* Under this value, the rounded rectangle is painted great */
 			if ($ratio <= 16) {
 				/* Clean a bit of pixels */
@@ -357,10 +357,11 @@ class PchartGraph extends PandoraGraphAbstract {
 		if ($this->show_title) {
 			$this->graph->drawTextBox (0, 0, $this->width, $this->height,
 				$this->title, 0, 0, 0, 0, ALIGN_CENTER, false);
-			// Removed shadow in bars, was difficult to read, do not enable again please
 		}
+		
 		if ($this->border) {
-			$this->graph->drawRoundedRectangle (0, 0, $this->width - 1 , $this->height - 1,
+			$this->graph->drawRoundedRectangle (0, 0, $this->width - 1,
+				$this->height - 1,
 				$radius, 157, 157, 157);
 		}
 		
@@ -382,13 +383,13 @@ class PchartGraph extends PandoraGraphAbstract {
 	private function add_alert_levels () {
 		if ($this->alert_top !== false) {
 			$this->graph->drawTreshold ($this->alert_top, 57,
-						96, 255, true, true, 4,
-						"Alert top");
+				96, 255, true, true, 4,
+				"Alert top");
 		}
 		if ($this->alert_bottom !== false) {
 			$this->graph->drawTreshold ($this->alert_bottom, 7,
-						96, 255, true, true, 4,
-						"Alert bottom");
+				96, 255, true, true, 4,
+				"Alert bottom");
 		}
 	}
 	
@@ -434,7 +435,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->x2 = ($this->width > 300) ? $this->width - 30 : $this->width - 15;
 		$this->y2 = ($this->height > 200) ? $this->height - 25 : $this->height - 25;
 		
-		if ($this->max_value > 10000)
+		if ($this->max_value > 10000 && $this->show_axis)
 			$this->x1 += 20;
 		
 		if ($this->background_gradient)
@@ -451,10 +452,8 @@ class PchartGraph extends PandoraGraphAbstract {
 		if (is_array ($size)) {
 			while ($size[1] > $this->y1)
 				$this->y1 += (int) $size[1] / 2;
-			if ($this->y1 > $this->y2) {
-				
+			if ($this->y1 > $this->y2)
 				$this->y1 = $this->y2;
-			}
 		}
 		
 		$this->graph->setGraphArea ($this->x1, $this->y1, $this->x2, $this->y2);
@@ -471,14 +470,16 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 		
 		/* This is a tiny watermark. Remove safely */
-		$this->graph->setFontProperties ($this->fontpath, 7);
-		$this->graph->drawTextBox ($this->width - 5, $this->height - 0,
-			$this->width - 240, $this->height - 0, 'Pandora FMS', 90,
-			154, 154, 154, ALIGN_BOTTOM_LEFT, false);
+		if ($this->watermark) {
+			$this->graph->setFontProperties ($this->fontpath, 7);
+			$this->graph->drawTextBox ($this->width - 5, $this->height - 0,
+				$this->width - 240, $this->height - 0, 'Pandora FMS', 90,
+				154, 154, 154, ALIGN_BOTTOM_LEFT, false);
+		}
 	}
 	
 	private function add_legend () {
-		if (! $this->show_title  || $this->legend === false) {
+		if (! $this->show_title || $this->legend === false) {
 			return;
 		}
 		

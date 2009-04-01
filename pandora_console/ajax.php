@@ -38,6 +38,8 @@ check_login ();
 
 define ('AJAX', true);
 
+$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
+
 $page = (string) get_parameter ('page');
 $page = safe_url_extraclean ($page);
 $page .= '.php';

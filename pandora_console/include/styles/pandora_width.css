@@ -1,7 +1,7 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Variable width
+Name: Panoramic theme
 Description: A theme with a variable width layout
 
 // Pandora FMS - the Free monitoring system
@@ -58,5 +58,9 @@ div#steps_clean {
 	display:none;
 }
 div#menu_tab_frame {
+	width: 100%;
+}
+div#events_list {
+	float: left;
 	width: 100%;
 }

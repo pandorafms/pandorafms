@@ -913,3 +913,6 @@ a.add_action {
 div#steps_clean {
 	clear:both;
 }
+div#event_control {
+	clear:right;
+}

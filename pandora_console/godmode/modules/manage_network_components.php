@@ -177,7 +177,7 @@ if ($ncgroup != 0) {
 	
 $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){
-	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
+	echo '<table width="90%" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
 	echo "<th>".__('Module name')."</th>";
 	echo "<th>".__('Type')."</th>";

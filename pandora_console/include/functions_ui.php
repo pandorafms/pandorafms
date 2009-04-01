@@ -812,7 +812,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		else
 			$inicio_pag = 0;
 	
-	$output = '<div>';
+	$output = '<div class="pagination">';
 	// Show GOTO FIRST button
 	$output .= '<a class="pagination go_first" href="'.$url.'&amp;offset=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button

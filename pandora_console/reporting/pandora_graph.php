@@ -44,6 +44,9 @@ abstract class PandoraGraphAbstract {
 	public $min_value = 0;
 	public $background_color = '#FFFFFF';
 	public $border = true;
+	public $watermark = true;
+	public $show_axis = true;
+	public $show_grid = true;
 	
 	abstract protected function pie_graph ();
 	abstract protected function horizontal_bar_graph ();

@@ -129,16 +129,16 @@ function get_group_stats ($id_group = 0) {
 	
 	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter);
 	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp = 0");
-	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
-	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
-	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
+	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
 	
-	$sql = sprintf ("SELECT times_fired FROM talert_template_modules WHERE id_agent_module IN (%s)", implode (",", array_keys ($agents))); 
-	$result = get_db_all_rows_sql ($sql);
-	
+	$result = get_db_all_rows_filter ('talert_template_modules',
+		array ('id_agent_module' => array_keys ($agents)),
+		array ('times_fired'));
 	if (empty ($result)) {
-		$result = array (); //It's possible there are no alerts so we don't return
+		$result = array ();
 	}
 	
 	foreach ($result as $row) {

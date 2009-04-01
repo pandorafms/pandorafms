@@ -39,7 +39,10 @@ if ($search != '');
 	$url .= '&search='.$search;
 
 $groups = get_user_groups (0, 'LM');
-$agents = get_group_agents ($id_group, false, "none");
+if ($id_group != 1 && isset ($groups[$id_group]))
+	$agents = get_group_agents ($id_group, false, "none");
+else
+	$agents = get_group_agents (array_keys ($groups), false, "none");
 
 $delete_alert = (int) get_parameter ('delete_alert');
 $enable_alert = (int) get_parameter ('enable_alert');
@@ -75,7 +78,7 @@ if ($disable_alert) {
 		return;
 }
 
-echo '<h1>'.__('Compound alerts').'</h1>';
+echo '<h1>'.__('Correlated alerts').'</h1>';
 
 $table->id = 'filter_compound_table';
 $table->width = '90%';

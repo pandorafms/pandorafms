@@ -743,9 +743,6 @@ code, pre {
 select#template, select#action {
 	width: 250px;
 }
-.invisible {
-	display: none;
-}
 #label-checkbox-matches_value,
 #label-checkbox-copy_modules,
 #label-checkbox-copy_alerts {

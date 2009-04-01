@@ -162,6 +162,9 @@ function give_acl ($id_user, $id_group, $access) {
  */
 function safe_acl_group ($id_user, $id_groups, $access) {
 	if (!is_array ($id_groups) && check_acl ($id_user, $id_groups, $access)) {
+		/* Return all the user groups if it's the group All */
+		if ($id_groups == 1 || $id_groups == 0)
+			return array_keys (get_user_groups ($id_user, $access));
 		return array ($id_groups);
 	} elseif (!is_array ($id_groups)) {
 		return array ();

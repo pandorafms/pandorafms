@@ -399,7 +399,7 @@ msgstr "el"
 
 #: ../../general/logon_ok.php:56
 msgid "No news articles at this moment"
-msgstr "En estos momentos no hay artículos de noticias "
+msgstr "En estos momentos no hay artículos de noticias"
 
 #: ../../general/logon_ok.php:73 ../../include/functions.php:647
 #: ../../enterprise/include/functions_reporting_pdf.php:301
@@ -2688,7 +2688,7 @@ msgstr "Comprobación automática de actualizaciones"
 
 #: ../../godmode/setup/setup.php:110
 msgid "Enforce https"
-msgstr ""
+msgstr "Forzar https"
 
 #: ../../godmode/setup/setup.php:113
 msgid "Compact CSS and JS into header"
@@ -3322,7 +3322,7 @@ msgstr "No existen módulos para este agente"
 
 #: ../../godmode/agentes/manage_config.php:125
 msgid "No alerts for this agent"
-msgstr ""
+msgstr "Ninguna alerta para este agente"
 
 #: ../../godmode/agentes/manage_config.php:130
 #: ../../godmode/alerts/configure_alert_compound.php:540
@@ -3607,7 +3607,7 @@ msgstr "No se proporcionó ninguna IP de desino"
 
 #: ../../godmode/agentes/module_manager_editor.php:401
 msgid "No SNMP OID provided"
-msgstr ""
+msgstr "No se proporcionó ningún OID de SMTP"
 
 #: ../../godmode/modules/manage_network_components.php:137
 #: ../../godmode/modules/manage_nc_groups.php:35
@@ -3986,6 +3986,10 @@ msgid ""
 "incidents belong to his groups, add notes in another incidents, create "
 "personal assignments or reviews and other tasks, on different profiles"
 msgstr ""
+"Este usuario tiene permisos diferentes para ver los datos en el grupo de "
+"agentes, crear incidentes en el grupo, añadir notas en otros incidentes, "
+"crear asignaciones personales o revisarlas y otras tareas en perfiles "
+"diferentes."
 
 #: ../../godmode/users/configure_user.php:166
 msgid ""
@@ -4961,7 +4965,7 @@ msgstr "Igual a"
 
 #: ../../include/functions_alerts.php:245
 msgid "Not equal to"
-msgstr "Diferente a "
+msgstr "Diferente a"
 
 #: ../../include/functions.php:209
 msgid "You don't have access"
@@ -5289,10 +5293,11 @@ msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
 msgstr ""
+"Hubo un error al copiar la configuración del agente, se canceló la copia"
 
 #: ../../include/functions_agents.php:247
 msgid "Successfully copied"
-msgstr ""
+msgstr "Copia realizada correctamente"
 
 #: ../../enterprise/extensions/cron.php:43
 msgid "Send custom report by email"
@@ -5731,7 +5736,7 @@ msgstr "PDF"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:28
 msgid "Pandora Agents "
-msgstr "Agentes de pandora"
+msgstr "Agentes de pandora "
 
 #: ../../enterprise/operation/inventory/inventory.php:154
 msgid "No relevant data"
@@ -6061,7 +6066,7 @@ msgstr "Refrescar"
 
 #: ../../operation/visual_console/render_view.php:118
 msgid "Until refresh"
-msgstr ""
+msgstr "Hasta refrescar"
 
 #: ../../operation/visual_console/index.php:22 ../../operation/menu.php:64
 msgid "Visual console"
@@ -6684,7 +6689,7 @@ msgstr "Validación del usuario"
 
 #: ../../operation/events/events.php:254
 msgid "Repeated"
-msgstr ""
+msgstr "Repetido"
 
 #: ../../operation/events/events.php:257
 msgid "All events"

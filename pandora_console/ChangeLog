@@ -1,5 +1,18 @@
 2009-04-01  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/alerts/alert_compounds.php: Fixed group All.
+
+	* godmode/alerts/configure_alert_compound.php: Fixed group All.
+	"Compound" labels renamed to "Correlated".
+
+	* include/styles/pandora.css: Removed invisible class, which was
+	duplicated from common.css.
+
+	* include/functions_db.php: safe_acl_group() now handles group All.
+	Fixes #2725019 and #2723089
+
+2009-04-01  Esteban Sanchez  <estebans@artica.es>
+
 	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added
 	priority field to talert_templates and removed from
 	talert_template_module.

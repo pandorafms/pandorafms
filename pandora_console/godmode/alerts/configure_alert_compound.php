@@ -271,9 +271,11 @@ if ($update_compound) {
 	}
 }
 
-echo '<h1>'.__('Configure compound alert').'</h1>';
+echo '<h1>'.__('Configure correlated alert').'</h1>';
 
 print_alert_compound_steps ($step, $id);
+
+$groups = get_user_groups ();
 
 $table->id = 'compound';
 $table->width = '90%';
@@ -433,8 +435,7 @@ if ($step == 2) {
 	$table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 	
 	$table->data[1][0] = __('Assigned to');
-	$groups = get_user_groups ();
-	$table->data[1][1] = print_select (get_group_agents (),
+	$table->data[1][1] = print_select (get_group_agents (array_keys ($groups)),
 		'id_agent', $id_agent, '', __('Select'), 0, true);
 	$table->data[2][0] = __('Description');
 	$table->data[2][1] =  print_textarea ('description', 10, 30,

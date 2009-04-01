@@ -119,6 +119,7 @@ function update_template ($step) {
 		$max = (float) get_parameter ('max');
 		$min = (float) get_parameter ('min');
 		$matches = (bool) get_parameter ('matches_value');
+		$priority = (int) get_parameter ('priority');
 		
 		$result = update_alert_template ($id,
 			array ('name' => $name,
@@ -127,7 +128,8 @@ function update_template ($step) {
 				'value' => $value,
 				'max_value' => $max,
 				'min_value' => $min,
-				'matches_value' => $matches));
+				'matches_value' => $matches,
+				'priority' => $priority));
 	} elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
@@ -215,6 +217,7 @@ $default_action = 0;
 $field1 = '';
 $field2 = '';
 $field3 = '';
+$priority = 1;
 $min_alerts = 0;
 $max_alerts = 1;
 $threshold = 300;
@@ -231,13 +234,15 @@ if ($create_template) {
 	$max = (float) get_parameter ('max');
 	$min = (float) get_parameter ('min');
 	$matches = (bool) get_parameter ('matches_value');
+	$priority = (int) get_parameter ('priority');
 	
 	$result = create_alert_template ($name, $type,
 		array ('description' => $description,
 			'value' => $value,
 			'max_value' => $max,
 			'min_value' => $min,
-			'matches_value' => $matches));
+			'matches_value' => $matches,
+			'priority' => $priority));
 	
 	print_result_message ($result,
 		__('Successfully created'),
@@ -289,6 +294,7 @@ if ($id && ! $create_template) {
 	$field1 = $template['field1'];
 	$field2 = $template['field2'];
 	$field3 = $template['field3'];
+	$priority = $template['priority'];
 }
 
 echo '<h1>'.__('Configure alert template').'</h1>';
@@ -429,15 +435,24 @@ if ($step == 2) {
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  print_textarea ('description', 10, 30,
 		$description, '', true);
-
-	$table->data[2][0] = __('Condition type');
-	$table->data[2][1] = print_select (get_alert_templates_types (), 'type',
-		$type, '', __('Select'), 0, true, false, false);
+	
+	$table->data[2][0] = __('Priority');
+	$table->data[2][1] = print_select (get_priorities (), 'priority',
+		$priority, '', 0, 0, true, false, false);
 	$table->data[2][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
 	$table->data[2][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);
 	$table->data[2][1] .= print_label (__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
 	$table->data[2][1] .= '</span>';
+	
+	$table->data[3][0] = __('Condition type');
+	$table->data[3][1] = print_select (get_alert_templates_types (), 'type',
+		$type, '', __('Select'), 0, true, false, false);
+	$table->data[3][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
+	$table->data[3][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[3][1] .= print_label (__('Trigger when matches the value'),
+		'checkbox-matches_value', true);
+	$table->data[3][1] .= '</span>';
 
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = print_input_text ('value', $value, '',

@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `recovery_notify` tinyint(1) default '0',
   `field2_recovery` varchar(255) NOT NULL default '',
   `field3_recovery` mediumtext NOT NULL,
+  `priority` tinyint(4) default '0',
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
     ON DELETE SET NULL ON UPDATE CASCADE
@@ -112,7 +113,6 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `last_reference` bigint(20) NOT NULL default '0',
   `times_fired` int(3) NOT NULL default '0',
   `disabled` tinyint(1) default '0',
-  `priority` tinyint(4) default '0',
   `force_execution` tinyint(1) default '0',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)

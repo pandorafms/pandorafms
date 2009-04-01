@@ -1,3 +1,20 @@
+2009-04-01  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added
+	priority field to talert_templates and removed from
+	talert_template_module.
+
+	* godmode/alerts/alert_list.php: Fixed SQL notice when fetching
+	groups.
+
+	* godmode/alerts/alert_templates.php: Added priority to the template
+	tooltip.
+
+	* godmode/alerts/configure_alert_template.php: Added priority field to
+	alert templates.
+
+	* include/functions_db.php: Style correction.
+
 2009-04-01  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/pt_BR.po, include/languages/es.po,
@@ -13,7 +30,7 @@
 	  Simplified Chineese, Italian, and Russian translations thanks to
 	  rosetta contributors.
 
-	include/languages/index.pot: Updated po template.
+	* include/languages/index.pot: Updated po template.
 
 2009-03-31  Esteban Sanchez  <estebans@artica.es>
 

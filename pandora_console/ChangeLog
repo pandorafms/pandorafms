@@ -1,3 +1,10 @@
+2009-04-01  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/pt_BR.po, include/languages/pt_BR.mo: Updated
+	  Brazilian Portuguese translation
+
+	* include/languages/index.pot: Updated po template.
+
 2009-03-30  Sancho Lerena  <slerena@artica.es>
 
 	* operation/agentes/estado_agente.php: Agent status down is now

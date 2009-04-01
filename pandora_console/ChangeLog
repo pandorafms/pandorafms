@@ -1,3 +1,20 @@
+2009-04-01  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/pt_BR.po, include/languages/es.po,
+	  include/languages/it.mo, include/languages/ro.po,
+	  include/languages/pt_BR.mo, include/languages/es.mo,
+	  include/languages/fr.po, include/languages/ro.mo,
+	  include/languages/de.po, include/languages/he.po,
+	  include/languages/zh_CN.po, include/languages/fr.mo,
+	  include/languages/de.mo, include/languages/ru.po,
+	  include/languages/he.mo, include/languages/zh_CN.mo,
+	  include/languages/it.po, include/languages/ru.mo: Updated
+	  Brazilian Portuguese, Spanish, Romanian, French, Hebrew, German,
+	  Simplified Chineese, Italian, and Russian translations thanks to
+	  rosetta contributors.
+
+	include/languages/index.pot: Updated po template.
+
 2009-03-31  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager_editor_plugin.php: Added plugin

@@ -111,11 +111,15 @@ install () {
         echo "Linking start-up daemon script to /etc/rc2.d";
         ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
 
+	echo "Copying tentacle_client to /usr/bin";
+	cp tentacle_client /usr/bin/
+
         chown -R root $PANDORA_BIN
         echo "Done."
         echo " "
         echo "You have your startup script ready at $PANDORA_STARTUP"
-        echo "First you need to copy your public SSH keys ($HOME/.ssh/id_dsa)"
+	echo "Tentacle is the default transfer mode"
+        echo "If you want to use SSH, firstly you need to copy your public SSH keys ($HOME/.ssh/id_dsa)"
         echo "under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host"
         echo "You also need to setup your $PANDORA_CFG/pandora_agent.conf config file"
         echo " "

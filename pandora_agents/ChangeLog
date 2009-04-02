@@ -1,3 +1,10 @@
+2009-04-02  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent_installer: Added tentacle_client installation
+
+	* linux/tentacle_client: Added to repository. Tentacle_client is now
+	installed along with the Agent.
+
 2009-03-16  Manuel Arostegui <marostegui@artica.es>
 
 	* win32/bin/pandora_agent.conf: Added example of a UDP server

@@ -1,5 +1,10 @@
 2009-04-02  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_reporting.php: Added alert API on
+	get_agent_alerts_reporting_table() to solve a notice error.
+
+2009-04-02  Esteban Sanchez  <estebans@artica.es>
+
 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed id on tconfig
 	inserts.
 

@@ -26,3 +26,10 @@
 		<div class="msg"><?php echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');?></div>
 	</div>
 </div>
+
+</div>
+<?PHP
+	include "general/footer.php";
+?>
+
+<!-- Container div. ENDS HERE -->

@@ -30,7 +30,7 @@ if ($ag_group == -1 )
 if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
 
-if (! give_acl ($config["id_user"], $ag_group, "AW")) {
+if (! give_acl ($config["id_user"], 0, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");

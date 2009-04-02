@@ -240,7 +240,7 @@ if ($count < 1) {
 		$url .= "&amp;texto=".$texto;
 
 	// Show pagination
-	pagination ($count, $url, $offset);
+	pagination ($count, $url, $offset, 1, false);
 	echo '<br />';
 	
 	// Show headers

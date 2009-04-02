@@ -26,15 +26,15 @@ $id_group = get_parameter ("id_group", -1);
 $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! give_acl ($config['id_user'], 0, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access Agent Config Management Admin section");
+		"Trying to access remote config copy tool");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
 
 // Operations
-if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == -1) ) {
+if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 	// DATA COPY
 	// ---------
@@ -52,19 +52,36 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		}
 
 		// Source
-		$id_origen = $_POST["origen"];
-	
+		$id_origen = get_parameter ("origen");
+
+		// Security check here
+		if (!user_access_to_agent ($config["id_user"], $id_origen,"AR")) {
+			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
+			require ("general/noaccess.php");
+			exit;
+		}		
+
 		// Copy files
 		for ($a=0;$a <count($destino); $a++){ 
 			// For every agent in destination
 
+			//Security check here
 			$id_agente = $destino[$a];
-			$agent_name_src = get_agent_name($id_origen);
-			$agent_name_dst = get_agent_name($id_agente);
-			echo "<br><br>".__('copyage')."<b> [".$agent_name_src."] -> [".$agent_name_dst."]</b>";
+			
+			// Security check here
+			if (!user_access_to_agent ($config["id_user"], $id_agente, "AR")){
+				audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
+				require ("general/noaccess.php");
+				exit;
+			}			
+
+			$agent_name_src = get_agent_name($id_origen, "");
+			$agent_name_dst = get_agent_name($id_agente, "");
+			echo "<br><br>".__('Making copy of configuration file for')." [<b>".$agent_name_src."</b>] ".__('to')." [<b>".$agent_name_dst."</b>]";
 			
 			$source = $config["remote_config"]."/".md5($agent_name_src);
 			$destination = $config["remote_config"]."/".md5($agent_name_dst);
+
 			copy  ( $source.".md5", $destination.".md5" );
 			copy  ( $source.".conf", $destination.".conf" );			
 		} // for each destination agent
@@ -77,18 +94,17 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	} else { 
 		
 		// title
-		echo '<h2>'.__('Agent configuration'). ' &gt; '. __('Configuration Management').'</h2>';
+		echo '<h2>'.__('Agent configuration'). ' &gt; '. __('Remote configuration Management').'</h2>';
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
 		// Source group
 		echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br><br>';
 
-		echo '<select name="id_group" style="width:200px">';
-		if ($id_group != 0)
-			echo "<option value=$id_group>".get_group_name ($id_group)."</option>";
-		list_group ($config["id_user"]);
-		echo '</select>';
+		$group_select = get_user_groups ($config['id_user']);
+		$grouplist = implode (',', array_keys ($group_select));
+		
+		echo print_select ($group_select, 'id_group', $id_group, '', '', '', true);
 		echo '&nbsp;&nbsp;';
 		echo '<input type=submit name="update_group" class="sub upd"  value="'.__('Filter').'">';
 		echo '<br><br>';
@@ -97,41 +113,33 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo '<b>'. __('Source agent').'</b>';
 		print_help_icon ('duplicateconfig');
 		echo '<br><br>';
-
+	
 		// Show combo with SOURCE agents
 		if ($id_group > 1)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
-			$sql1 = 'SELECT * FROM tagente ORDER BY nombre';
-
+			$sql1 = "SELECT * FROM tagente WHERE id_group IN ($grouplist) ORDER BY nombre";
 		echo '<select name="origen" style="width:200px">';			
-		if (($update_agent != 1) AND ($origen != -1)){
-			$agent_name_src = get_agent_name ($origen);
-			$source = $config["remote_config"]."/". md5($agent_name_src).".conf";
-			if (file_exists($source))
-				echo "<option value=".$_POST["origen"].">" . $agent_name_src . "</option>";
-		}
-		$result=mysql_query($sql1);
+				$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
-				if ( $origen != $row["id_agente"]){
-					$source = $config["remote_config"]."/". md5($row["nombre"]).".conf";
-					if (file_exists($source))
-						echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
+				$source = $config["remote_config"]."/". md5($row["nombre"]).".conf";
+				if (file_exists($source)){
+					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 				}
 			}
 		}
 		echo '</select>';
 
-		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_agent" class="sub upd" value="'.__('Get Info').'">';
-		echo '<br><br>';
-
 		// Destination agent
 		echo '<tr><td class="datost">';
 		echo '<b>'.__('To Agent(s):').'</b><br><br>';
 		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
-		$sql1='SELECT * FROM tagente ORDER BY nombre';
+		if ($id_group > 1)
+			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
+		else
+			$sql1 = "SELECT * FROM tagente WHERE id_group IN ($grouplist) ORDER BY nombre";
+
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if (give_acl ($config["id_user"], $row["id_grupo"], "AW"))
@@ -145,7 +153,6 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo '<tr><td colspan=2>';
 		echo '</div></td></tr>';
 		echo '</table>';
-
 	}
 
 ?>

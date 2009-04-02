@@ -346,7 +346,6 @@ class PchartGraph extends PandoraGraphAbstract {
 				for ($i = 0; $i < 7; $i++) {
 					$this->graph->drawLine (0, $i, 6 - $i, $i, 255, 255, 255);
 				}
-			
 				$end = $this->height - 1;
 				for ($i = 0; $i < 7; $i++) {
 					$this->graph->drawLine (0, $end - $i, 5 - $i, $end - $i, 255, 255, 255);
@@ -354,11 +353,18 @@ class PchartGraph extends PandoraGraphAbstract {
 			}
 		}
 		
-		if ($this->show_title) {
-			$this->graph->drawTextBox (0, 0, $this->width, $this->height,
-				$this->title, 0, 0, 0, 0, ALIGN_CENTER, false);
+		if ($ratio <= 60) {
+			if ($this->show_title) {
+				$this->graph->drawTextBox (0, 0, $this->width, $this->height,
+					$this->title, 0, 0, 0, 0, ALIGN_CENTER, false);
+			}
+		} else {
+			if ($this->show_title) {
+				$this->graph->drawTextBox (0, 0, $this->width, $this->height,
+					$this->title, 0, 255, 255, 255, ALIGN_CENTER, false);
+			}
 		}
-		
+				
 		if ($this->border) {
 			$this->graph->drawRoundedRectangle (0, 0, $this->width - 1,
 				$this->height - 1,

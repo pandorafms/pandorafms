@@ -35,7 +35,8 @@ function get_report ($id_report, $filter = false, $fields = false) {
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter['id_report'] = $id_report;
-	$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
+	if (!is_user_admin ($config["id_user"]))
+		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
 	if (is_array ($fields))
 		$fields[] = 'id_group';
 	
@@ -64,7 +65,8 @@ function get_reports ($filter = false, $fields = false) {
 	
 	if (! is_array ($filter))
 		$filter = array ();
-	$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
+	if (!is_user_admin ($config["id_user"]))
+		$filter[] = sprintf ('private = 0 OR (private = 1 AND id_user = "%s")', $config['id_user']);
 	if (is_array ($fields)) {
 		$fields[] = 'id_group';
 		$fields[] = 'id_user';

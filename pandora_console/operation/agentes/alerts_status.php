@@ -75,7 +75,7 @@ if (isset ($_GET["id_agente"])) {
 	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
 	$print_agent = false;
 } else {
-	if (! give_acl ($config["id_user"], $id_group, "AR")) {
+	if (!give_acl ($config["id_user"], 0, "AR")) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;

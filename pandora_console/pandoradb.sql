@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `id_wmi_server` smallint(4) unsigned default '0',
   `id_parent` int(10) unsigned default '0',
   `custom_id` varchar(255) default '',
+  `server_name` varchar(255) default '',
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`),
   KEY `direccion` (`direccion`),
@@ -125,7 +126,7 @@ CREATE TABLE `tagente_estado` (
 -- 4 - Plugin server
 -- 5 - Predictive server
 -- 6 - WMI server
-
+-- 7 - WEB Server (enteprise)
 
 CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `id_agente_modulo` int(10) unsigned NOT NULL auto_increment,
@@ -229,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field1` varchar(255) default '',
   `field2` varchar(255) default '',
   `field3` mediumtext NOT NULL,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal'),
+  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical'),
   `value` varchar(255) default '',
   `matches_value` tinyint(1) default 0,
   `max_value` double(18,2) default NULL,
@@ -389,6 +390,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `id_agentmodule` int(10) NOT NULL default '0',
   `id_alert_am` int(10) NOT NULL default '0',
   `criticity` int(4) unsigned NOT NULL default '0',
+  `user_comment` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`utimestamp`,`id_evento`)
@@ -584,6 +586,9 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `prediction_server` tinyint(3) unsigned NOT NULL default '0',
   `wmi_server` tinyint(3) unsigned NOT NULL default '0',
   `export_server` tinyint(3) unsigned NOT NULL default '0',
+  `server_type` tinyint(3) unsigned NOT NULL default '0',
+  `queued_modules` int(5) unsigned NOT NULL default '0',
+  `threads` int(5) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
@@ -642,6 +647,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `email` varchar(100) default NULL,
   `phone` varchar(100) default NULL,
   `is_admin` tinyint(1) unsigned NOT NULL default '0',
+  `language` varchar(10) default NULL,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -827,23 +833,5 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- tlocal_component is a repository of local modules for
--- physical agents on Windows / Unix physical agents
-CREATE TABLE IF NOT EXISTS `tlocal_component` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(80) NOT NULL,
-  `data` mediumtext NOT NULL,
-  `description` varchar(250) default NULL,
-  `id_os` int(10) unsigned default '0',
-  `os_version` varchar(100) default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-CREATE TABLE IF NOT EXISTS `tlocal_component_group` (
-  `id`  int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(200) NOT NULL default '',
-  `parent` mediumint(8) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

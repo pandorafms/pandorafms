@@ -79,7 +79,7 @@ if (isset ($id_agente) && $id_agente != "") {
 // Remote configuration available
 if (file_exists ($filename['md5'])) {
 	$table->data[0][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'&amp;disk_conf='.$agent_md5.'">';
-	$table->data[0][1] .= print_image ("images/application_edit.png", false, array ("border" => 0, "title" => __('This agent can be remotely configured')));
+	$table->data[0][1] .= print_image ("images/application_edit.png", true, array ("border" => 0, "title" => __('This agent can be remotely configured')));
 	$table->data[0][1] .= '</a>'.print_help_tip (__('You can remotely edit this agent configuration'), true);
 }
 

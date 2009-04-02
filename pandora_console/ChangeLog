@@ -1,6 +1,71 @@
+2009-04-02  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Final DB changes proposed for closing this month the DB
+	scheme. tagente-> new server_name field to assign server (old fields will
+	be removed).  talert_templates has two new types (warning, critical).
+	tevento has "user_comment" new field. Tserver has three new fields, 
+	server_type (so some old fields will be deleted), threads and queued_modules
+	this last two are for statistical options. Tusuario add language type to
+	override global language.
+	
+	* update_manager/main.php: Minor changes for correct ACL usage. Non PM
+	users could see in what revision it the system, but only that.
+	
+	* pandoradb_migrate_v2.x_to_v3.0.sql: Updated script for new DB changes.
+	
+	* general/noaccess.php: Added footer and ending div. Page was very ugly
+	when showing noaccess errors, nobody see it ???.
+	
+	* godmode/menu.php: A LOT of ACL fixes on several options.
+	
+	* godmode/agentes/agent_manager.php: Fixed a crazy floating icon.
+	
+	* godmode/agentes/manage_config_remote.php: A LOT of changes, rewriting
+	stuff, because was not working. This also adds a lot of ACL checks. 
+	
+	* godmode/agentes/massive_config.php, massive*: ACL changes.
+	
+	* godmode/agentes/modificar_agente.php: Fixed ACL problems.
+	
+	* godmode/agentes/module_manager_editor.php: Fixed bad module categories for
+	some types (data, plugin and prediction).
+	
+	* godmode/alerts/alert_list.php: Fixed ACL problem.
+	
+	* godmode/reporting/graph_builder.php: Added ACl restriction for 
+	non-viewable agents for current user. Seems to be a problem with data
+	with more than 2 sources.
+	
+	* godmode/reporting/map_builder.php: ACL checks improved.
+	
+	* godmode/reporting/reporting_builder.php: ACL checks added (was missing), 
+	some code ported from 2.1, other is new. New fields shown in list.
+	
+	* include/functions.php: Fixed the annoying bug of "bad counters" in
+	function human_time_description_raw(). Function used,format_numeric() should
+	not be used never to calculate nothing, only to print formatted strings.
+	
+	* include/functions_db.php: Added function user_access_to_agent() to know
+	if a given user has access to a given agent.
+	
+	* include/functioins_report.php: get_report() should let admin to watch any
+	report. Fixed.
+	
+	* agentes/alerts_status.php: Fixed ACL problem for view alert.
+	
+	* operation/incidents/incident.php: Bad call for pagination() was giving
+	problems to pagination call. Somebody changes pagination() interface and 
+	make this broken. Please if you change any interface, be sure that is compatible
+	with old code or make a post in the list about this !
+		
+	* godmode/users/user_edit.php: Additional ACL check to do not let anybody
+	to watch non accesible users. Even for see the username or description.
+	
+	* reporting/pchart_graph.php:Progress bar shown text in white when > 60%.
+	
 2009-04-02  Esteban Sanchez  <estebans@artica.es>
 
-	* include/functions_config.php: Fixed a bug when the theme was not
+	* includandora_console/godmode/agentes/massive_config.phpe/functions_config.php: Fixed a bug when the theme was not
 	given on update_config().
 
 	* godmode/setup/setup.php: Removed unneccesary include of

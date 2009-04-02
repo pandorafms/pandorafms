@@ -90,7 +90,7 @@ if (isset ($id_agente)) {
 	$id_agente = 0;
 }
 
-if (! give_acl ($config['id_user'], $id_group, "LM")) {
+if (! give_acl ($config['id_user'], 0, "LW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");

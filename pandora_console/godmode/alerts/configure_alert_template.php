@@ -439,11 +439,6 @@ if ($step == 2) {
 	$table->data[2][0] = __('Priority');
 	$table->data[2][1] = print_select (get_priorities (), 'priority',
 		$priority, '', 0, 0, true, false, false);
-	$table->data[2][1] .= '<span id="matches_value" '.($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[2][1] .= '&nbsp;'.print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[2][1] .= print_label (__('Trigger when matches the value'),
-		'checkbox-matches_value', true);
-	$table->data[2][1] .= '</span>';
 	
 	$table->data[3][0] = __('Condition type');
 	$table->data[3][1] = print_select (get_alert_templates_types (), 'type',
@@ -518,6 +513,8 @@ var between = "<?php echo __('The alert would fire when the value is between <sp
 var between_not = "<?php echo __('The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
 var under = "<?php echo __('The alert would fire when the value is under <span id=\"min\"></span>');?>";
 var over = "<?php echo __('The alert would fire when the value is over <span id=\"max\"></span>');?>";
+var warning = "<?php echo __('The alert would fire when the module is in warning status');?>";
+var critical = "<?php echo __('The alert would fire when the module is in critical status');?>";
 
 function check_regex () {
 	if ($("#type").attr ('value') != 'regex') {
@@ -619,6 +616,20 @@ $(document).ready (function () {
 			
 			/* Show example */
 			$("span#example").empty ().append (under);
+			break;
+		case "warning":
+			$("#template-value, #template-max, span#matches_value, #template-min").hide ();
+			$("#template-example").show ();
+			
+			/* Show example */
+			$("span#example").empty ().append (warning);
+			break;
+		case "critical":
+			$("#template-value, #template-max, span#matches_value, #template-min").hide ();
+			$("#template-example").show ();
+			
+			/* Show example */
+			$("span#example").empty ().append (critical);
 			break;
 		default:
 			$("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();

@@ -186,6 +186,8 @@ function get_alert_templates_types () {
 	$types['min'] = __('Min.');
 	$types['equal'] = __('Equal to');
 	$types['not_equal'] = __('Not equal to');
+	$types['warning'] = __('Warning status');
+	$types['critical'] = __('Critical status');
 	
 	return $types;
 }

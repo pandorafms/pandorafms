@@ -171,8 +171,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$previous = (float) get_previous_data ($id_agente_modulo, $datelimit);
 		
 		$result = get_db_all_rows_filter ('tagente_datos',
-			array ('id_agente' => $id_agente,
-				'id_agente_modulo' => $id_agente_modulo,
+			array ('id_agente_modulo' => $id_agente_modulo,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),

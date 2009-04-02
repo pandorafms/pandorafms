@@ -1,3 +1,14 @@
+2009-04-02  Sancho Lerena <slerena@artica.es>
+
+	* DB.pm: Function to process SNMP Alerts was not properly exported, so
+	SNMP alerts in some environments don't run. Fixed (this is ok in 2.1).
+	
+	* util/udp_client.pl: Client to connect with pandora windows agent mini
+	server and using with alerts to manage remote process / services in Windows
+	
+	* util/mcast_client.pl: Tool to check the UDP multicast notification 
+	service of Pandora.
+
 2009-03-26  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* lib/PandoraFMS/Tools.pm: Added Apple to the detected OS'es

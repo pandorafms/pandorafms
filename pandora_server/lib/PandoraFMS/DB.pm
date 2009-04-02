@@ -37,7 +37,8 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	
+our @EXPORT = qw( 
+		calcula_alerta_snmp
         crea_agente_modulo			
 		update_on_error
 		dame_server_id				

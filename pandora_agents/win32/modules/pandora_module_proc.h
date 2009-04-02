@@ -23,8 +23,6 @@
 
 #include "pandora_module.h"
 
-#define	MIN_DELAY 2000 /* Minimum process start/retry delay */
-
 namespace Pandora_Modules {
 	/**
 	 * Module to check that a process is running on the system.

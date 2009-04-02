@@ -49,9 +49,9 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	
 	this->watchdog = false;
 	this->start_command = "";
-	this->retries = INT_MAX;
-	this->start_delay = MIN_DELAY;
-	this->retry_delay = MIN_DELAY;
+	this->retries = 3;
+	this->start_delay = 5000;
+	this->retry_delay = 2000;
 }
 
 string
@@ -104,7 +104,7 @@ Pandora_Module_Proc::setRetries (int retries) {
 
 void
 Pandora_Module_Proc::setStartDelay (int mseconds) {
-	if (mseconds < MIN_DELAY) {
+	if (mseconds < 0) {
 		return;
 	}
 
@@ -113,7 +113,7 @@ Pandora_Module_Proc::setStartDelay (int mseconds) {
 
 void
 Pandora_Module_Proc::setRetryDelay (int mseconds) {
-	if (mseconds < MIN_DELAY) {
+	if (mseconds < 0) {
 		return;
 	}
 
@@ -136,7 +136,6 @@ async_run (Pandora_Module_Proc *module) {
 	Sleep (module->getStartDelay ());
 
 	while (1) {
-		Sleep (module->getStartDelay ());
 		processes = getProcessHandles (module->getProcessName ());
 		if (processes == NULL) {
 			if (module->isWatchdog ()) {
@@ -145,15 +144,14 @@ async_run (Pandora_Module_Proc *module) {
 					continue;
 				}
 
-				/* Retrying... */
-				if (counter > 0) {
-					Sleep (module->getRetryDelay ());
-				}
-
+                Sleep (module->getRetryDelay ());
 				Pandora_Wmi::runProgram (module->getStartCommand ());
+                Sleep (module->getStartDelay ());
 				counter++;
+				continue;
 			}
-			Sleep (module->getRetryDelay ());
+
+			Sleep (2000);
 			continue;
 		}
 		

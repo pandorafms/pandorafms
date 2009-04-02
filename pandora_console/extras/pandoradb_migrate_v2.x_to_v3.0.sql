@@ -7,11 +7,11 @@ ALTER TABLE treport_content_sla_combined CHANGE sla_limit `sla_limit` double(18,
 
 ALTER TABLE ttrap add `priority` tinyint(4) unsigned NOT NULL default '2';
 
-INSERT INTO `tconfig` VALUES (24, 'loginhash_pwd', '');
-INSERT INTO `tconfig` VALUES (25, 'trap2agent', 0);
-INSERT INTO `tconfig` VALUES (26, 'prominent_time', 0);
-INSERT INTO `tconfig` VALUES (27, 'timesource', 'system');
-INSERT INTO `tconfig` VALUES (28, 'event_view_hr', 8);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('loginhash_pwd', '');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('trap2agent', 0);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('prominent_time', 0);
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('timesource', 'system');
+INSERT INTO `tconfig` (`token`, `value`) VALUES ('event_view_hr', 8);
 
 ALTER TABLE tagente ADD `custom_id` varchar(255) default '';
 ALTER TABLE tagente_modulo ADD `custom_id` varchar(255) default '';

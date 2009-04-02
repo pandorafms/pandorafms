@@ -380,8 +380,8 @@ if ($update_module || $create_module) {
 	$post_process = (float) get_parameter ('post_process');
 	$prediction_module = (int) get_parameter ('prediction_module');
 	$max_timeout = (int) get_parameter ('max_timeout');
-	$minvalue = (int) get_parameter_post ("minvalue");
-	$maxvalue = (int) get_parameter ('maxvalue');
+	$minvalue = (int) get_parameter_post ("min");
+	$maxvalue = (int) get_parameter ('max');
 	$interval = (int) get_parameter ('module_interval', $intervalo);
 	$id_prediction_module = (int) get_parameter ('id_prediction_module');
 	$id_plugin = (int) get_parameter ('id_plugin');

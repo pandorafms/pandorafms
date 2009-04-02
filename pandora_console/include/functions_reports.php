@@ -53,7 +53,9 @@ function get_report ($id_report, $filter = false, $fields = false) {
  *  - The report is not private and the user has reading privileges on 
  *	the group associated to the report
  *
- * @param string $id_user User id
+ * @param array Extra filter to retrieve reports. All reports are returned by
+ * default
+ * @param array Fields to be fetched on every report.
  *
  * @return array An array with all the reports the user can view.
  */
@@ -69,7 +71,7 @@ function get_reports ($filter = false, $fields = false) {
 	}
 	
 	$reports = array ();
-	$all_reports = get_db_all_rows_filter ('treport', $filter, $fields);
+	$all_reports = @get_db_all_rows_filter ('treport', $filter, $fields);
 	if ($all_reports !== FALSE)
 	foreach ($all_reports as $report){
 		if ($config['id_user'] != $report['id_user'] && ! give_acl ($config['id_user'], $report['id_group'], 'AR'))

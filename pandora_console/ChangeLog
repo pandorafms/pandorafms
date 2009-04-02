@@ -1,5 +1,27 @@
 2009-04-02  Esteban Sanchez  <estebans@artica.es>
 
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed id on tconfig
+	inserts.
+
+	* godmode/agentes/configurar_agente.php: Min and max module values
+	were not being updated.
+
+	* godmode/alerts/configure_alert_template.php: Removed duplicated
+	example. Added support for next warning and critical template types.
+
+	* include/functions_ui.php, include/functions_alerts.php: Added new
+	alert template types.
+
+	* include/functions_db.php: temp_sql_delete() moved out of
+	delete_agent() because there were errors if it was calling more than
+	once.
+
+	* include/functions_reports.php: Fixed doc for get_reports().
+
+	* include/config_process.php: Updated build number.
+
+2009-04-02  Esteban Sanchez  <estebans@artica.es>
+
 	* reporting/fgraph.php: Removed id_agente reference on combined
 	graphs. Fixes #2724895
 

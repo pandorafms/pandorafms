@@ -422,6 +422,16 @@ function print_alert_template_example ($id_alert_template, $return = false, $pri
 	case 'min':
 		/* Do not translate the HTML attributes */
 		$output .= __('The alert would fire when the value is under <span id="min"></span>');
+		
+		break;
+	case 'warning':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the module is in warning status');
+		
+		break;
+	case 'critical':
+		/* Do not translate the HTML attributes */
+		$output .= __('The alert would fire when the module is in critical status');
 		break;
 	}
 	

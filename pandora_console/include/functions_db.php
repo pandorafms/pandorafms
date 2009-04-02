@@ -2503,6 +2503,20 @@ function server_status ($id_server) {
 }
 
 /**
+ * Subfunciton for less typing
+ * @ignore
+ */
+function temp_sql_delete ($table, $row, $value) {
+	global $error; //Globalize the errors variable
+	
+	$result = process_sql_delete ($table, $row.' = '.$value);
+	if ($result === false) {
+		$error = true;
+	}
+}
+
+
+/**
  * Delete an agent from the database.
  *
  * @param mixed An array of agents ids or a single integer id to be erased
@@ -2514,19 +2528,6 @@ function delete_agent ($id_agents) {
 	
 	$error = false;
 	
-	//Subfunciton for less typing
-	/**
-	 * @ignore
-	 */
-	function temp_sql_delete ($table, $row, $value) {
-		global $error; //Globalize the errors variable
-		$result = process_sql_delete ($table, $row.' = '.$value);
-		if ($result === false) {
-			$error = true;
-			echo $table, $row.' = '.$value;
-		}
-	}
-
 	//Convert single values to an array
 	if (! is_array ($id_agents))
 		$id_agents = (array) $id_agents;

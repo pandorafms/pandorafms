@@ -78,7 +78,8 @@ function update_config () {
 		return;
 	
 	$style = (string) get_parameter ('style', $config["style"]);
-	$style = substr ($style, 0, strlen ($style) - 4);
+	if ($style != $config['style'])
+		$style = substr ($style, 0, strlen ($style) - 4);
 	
 	/* Workaround for ugly language and language_code missmatch */
 	$config['language_code'] = (string) get_parameter ('language', $config["language"]);

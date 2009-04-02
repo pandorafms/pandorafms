@@ -21,13 +21,6 @@ require_once ("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, 'PM')) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to use Open Update Manager extension");
-	include ("general/noaccess.php");
-	exit;
-}
-
 $db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 
@@ -62,38 +55,41 @@ if ($update_package) {
 
 $package = um_client_check_latest_update ($settings, $user_key);
 
-if (is_int ($package) && $package == 1) {
-	echo '<h5 class="suc">'.__('Your system is up-to-date').'.</h5>';
-} elseif ($package === false) {
-	echo '<h5 class="error">'.__('Server connection failed')."</h5>";
-} elseif (is_int ($package) && $package == 0) {
-	echo '<h5 class="error">'.__('Server authorization rejected')."</h5>";
-} else {
-	echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS')."</h5>";
+if (give_acl ($config['id_user'], 0, 'PM')) {
 	
-	$table->width = '80%';
-	$table->data = array ();
+	if (is_int ($package) && $package == 1) {
+		echo '<h5 class="suc">'.__('Your system is up-to-date').'.</h5>';
+	} elseif ($package === false) {
+		echo '<h5 class="error">'.__('Server connection failed')."</h5>";
+	} elseif (is_int ($package) && $package == 0) {
+		echo '<h5 class="error">'.__('Server authorization rejected')."</h5>";
+	} else {
+		echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS')."</h5>";
 	
-	$table->data[0][0] = '<strong>'.__('Id').'</strong>';
-	$table->data[0][1] = $package->id;
+		$table->width = '80%';
+		$table->data = array ();
 	
-	$table->data[1][0] = '<strong>'.__('Timestamp').'</strong>';
-	$table->data[1][1] = $package->timestamp;
+		$table->data[0][0] = '<strong>'.__('Id').'</strong>';
+		$table->data[0][1] = $package->id;
 	
-	$table->data[2][0] = '<strong>'.__('Description').'</strong>';
-	$table->data[2][1] = html_entity_decode ($package->description);
+		$table->data[1][0] = '<strong>'.__('Timestamp').'</strong>';
+		$table->data[1][1] = $package->timestamp;
 	
-	print_table ($table);
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	echo '<form method="post">';
-	echo __('Overwrite local changes');
-	print_checkbox ('force_update', '1', false);
-	echo '<p />';
-	print_input_hidden ('update_package', 1);
-	print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
-	echo '</form>';
-	echo '</div>';
-}
+		$table->data[2][0] = '<strong>'.__('Description').'</strong>';
+		$table->data[2][1] = html_entity_decode ($package->description);
+	
+		print_table ($table);
+		echo '<div class="action-buttons" style="width: '.$table->width.'">';
+		echo '<form method="post">';
+		echo __('Overwrite local changes');
+		print_checkbox ('force_update', '1', false);
+		echo '<p />';
+		print_input_hidden ('update_package', 1);
+		print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
+		echo '</form>';
+		echo '</div>';
+	}
+} 
 
 echo '<h4>'.__('Your system version number is').': '.$settings->current_update.'</h4>';
 

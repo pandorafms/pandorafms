@@ -275,7 +275,9 @@ echo "</b>";
 // Show combo with agents
 echo "<td class='datos' colspan=2>";
 
-print_select_from_sql ('SELECT id_agente, nombre FROM tagente WHERE disabled = 0 ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
+$user_groups = implode (',', array_keys (get_user_groups ($config["id_user"])));
+
+print_select_from_sql ("SELECT id_agente, nombre FROM tagente WHERE disabled = 0 AND id_grupo IN ($user_groups) ORDER BY nombre", 'id_agent', $id_agent, '', '--', 0);
 
 // SOURCE MODULE FORM
 if (isset ($chunkdata))

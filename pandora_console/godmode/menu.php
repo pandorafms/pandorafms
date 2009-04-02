@@ -20,7 +20,12 @@ require_once ('include/config.php');
 
 check_login ();
 
-if ((! give_acl ($config['id_user'], 0, "LM")) && (! give_acl ($config['id_user'], 0, "AW")) && (! give_acl ($config['id_user'], 0, "PM")) && (! give_acl ($config['id_user'], 0, "DM")) && (! give_acl ($config['id_user'], 0, "UM"))) {
+if ((! give_acl ($config['id_user'], 0, "LM")) 
+&& (! give_acl ($config['id_user'], 0, "AW")) 
+&& (! give_acl ($config['id_user'], 0, "LW"))
+&& (! give_acl ($config['id_user'], 0, "PM")) 
+&& (! give_acl ($config['id_user'], 0, "DM")) 
+&& (! give_acl ($config['id_user'], 0, "UM"))) {
 	return;
 }
 
@@ -42,10 +47,9 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	
 	if (give_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
+		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
 	}
 	
-	$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
-
 	$menu["gagente"]["sub"] = $sub;
 }
 if (give_acl ($config['id_user'], 0, "PM")) {
@@ -77,7 +81,7 @@ if (give_acl ($config['id_user'], 0, "LM")) {
 	
 	$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
 	
-	$sub["godmode/alerts/alert_compounds"]["text"] = __('Compounds');
+	$sub["godmode/alerts/alert_compounds"]["text"] = __('Correlation');
 	
 	$menu["galertas"]["sub"] = $sub;
 }
@@ -89,7 +93,7 @@ if (give_acl ($config['id_user'], 0, "UM")) {
 }
 
 // SNMP console
-if (give_acl($config['id_user'], 0, "AW")) {
+if (give_acl($config['id_user'], 0, "LW")) {
 	$menu["gsnmpconsole"]["text"] = __('Manage SNMP console');
 	$menu["gsnmpconsole"]["sec2"] = "godmode/snmpconsole/snmp_alert";
 	$menu["gsnmpconsole"]["id"] = "god-snmpc";
@@ -103,7 +107,7 @@ if (give_acl($config['id_user'], 0, "AW")) {
 }
 
 // Reporting
-if (give_acl ($config['id_user'], 0, "PM")) {
+if (give_acl ($config['id_user'], 0, "AW")) {
 	$menu["greporting"]["text"] = __('Manage reports');
 	$menu["greporting"]["sec2"] = "godmode/reporting/reporting_builder";
 	$menu["greporting"]["id"] = "god-reporting";
@@ -119,12 +123,14 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/reporting/map_builder"]["text"] = __('Map builder');
 	
 	$menu["greporting"]["sub"] = $sub;
-	
+}
+
+if (give_acl ($config['id_user'], 0, "PM")) {
 	// Manage profiles
 	$menu["gperfiles"]["text"] = __('Manage profiles');
 	$menu["gperfiles"]["sec2"] = "godmode/profiles/profile_list";
 	$menu["gperfiles"]["id"] = "god-profiles";
-	
+
 	// Servers
 	$menu["gservers"]["text"] = __('Manage servers');
 	$menu["gservers"]["sec2"] = "godmode/servers/modificar_server";
@@ -138,9 +144,13 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/servers/manage_export_form"]["text"] = __('Export targets');
 	
 	$menu["gservers"]["sub"] = $sub;
-	
-	enterprise_hook ('snmpconsole_menu');
+}
 
+if (give_acl ($config['id_user'], 0, "LW")) {	
+	enterprise_hook ('snmpconsole_menu');
+}
+
+if (give_acl ($config['id_user'], 0, "PM")) {
 	// Audit
 	$menu["glog"]["text"] = __('System audit log');
 	$menu["glog"]["sec2"] = "godmode/admin_access_logs";
@@ -150,7 +160,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";
 	$menu["gsetup"]["id"] = "god-setup";
-	
+
 	$sub = array ();
 
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
@@ -181,23 +191,25 @@ if (give_acl ($config['id_user'], 0, "DM")) {
 	$menu["gdbman"]["sub"] = $sub;
 }
 
-if (is_array ($config['extensions'])) {
-	$menu["gextensions"]["text"] = __('Extensions');
-	$menu["gextensions"]["sec2"] = "godmode/extensions";
-	$menu["gextensions"]["id"] = "god-extensions";
+if (give_acl ($config['id_user'], 0, "PM")) {
+	if (is_array ($config['extensions'])) {
+		$menu["gextensions"]["text"] = __('Extensions');
+		$menu["gextensions"]["sec2"] = "godmode/extensions";
+		$menu["gextensions"]["id"] = "god-extensions";
 	
-	$sub = array ();
-	foreach ($config['extensions'] as $extension) {
-		$extmenu = $extension['godmode_menu'];
-		if ($extension['godmode_menu'] == '' || ! give_acl ($config['id_user'], 0, $extmenu['acl'])) {
-			continue;
-		}
+		$sub = array ();
+		foreach ($config['extensions'] as $extension) {
+			$extmenu = $extension['godmode_menu'];
+			if ($extension['godmode_menu'] == '' || ! give_acl ($config['id_user'], 0, $extmenu['acl'])) {
+				continue;
+			}
 
-		$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
-		$sub[$extmenu["sec2"]]["refr"] = 0;
-	}
+			$sub[$extmenu["sec2"]]["text"] = $extmenu["name"];
+			$sub[$extmenu["sec2"]]["refr"] = 0;
+		}
 	
-	$menu["gextensions"]["sub"] = $sub;
+		$menu["gextensions"]["sub"] = $sub;
+	}
 }
 
 print_menu ($menu);

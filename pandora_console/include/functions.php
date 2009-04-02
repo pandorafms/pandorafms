@@ -425,8 +425,8 @@ function human_time_description_raw ($seconds) {
 		return format_numeric ($seconds, 0)." ".__('seconds');
 	
 	if ($seconds < 3600) {
-		$minutes = format_numeric ($seconds / 60, 0);
-		$seconds = format_numeric ($seconds % 60, 0);
+		$minutes = floor($seconds / 60);
+		$seconds = $seconds % 60;
 		if ($seconds == 0)
 			return $minutes.' '.__('minutes');
 		$seconds = sprintf ("%02d", $seconds);

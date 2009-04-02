@@ -538,6 +538,7 @@ function get_agent_name ($id_agent, $case = "upper") {
 	}
 }
 
+
 /** 
  * Get type name for alerts (e-mail, text, internal, ...) based on type number
  * 
@@ -2717,10 +2718,6 @@ function get_server_info ($id_server = -1) {
 			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
 			$server["type"] = "plugin";
 			$id_modulo = 4;
-		} elseif ($server['web_server'] == 1) {
-                        $server["img"] = print_image ("images/serverweb.png", true, array ("title" => __('WEB Server')));
-                        $server["type"] = "web";
-                        $id_modulo = 7;
 		} elseif ($server['inventory_server'] == 1) {
                         $server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory Server')));
                         $server["type"] = "inventory";
@@ -3106,5 +3103,20 @@ function print_database_debug () {
 	}
 	
 	print_table ($table);
+}
+
+
+/** 
+ * Return access to a specific agent by a specific user
+ * 
+ * @param string $id_user User id.
+ * @param int $id_agent Agent id.
+ *
+ * @return int Access to that agent (0 not, 1 yes)
+ */
+ 
+function user_access_to_agent ($id_user, $id_agent, $mode = "AR"){
+	$id_group = (int) get_db_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
+	return give_acl ($id_user, $id_group, $mode);
 }
 ?>

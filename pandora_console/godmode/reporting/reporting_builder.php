@@ -148,6 +148,8 @@ if ($update_report) {
 	$values['name'] = $report_name;
 	$values['description'] = $report_description;
 	$values['private'] = $report_private;
+	$values['id_group'] = $report_id_group;
+	
 	$result = update_report ($id_report, $values);
 	print_result_message ($result,
 		__('Successfully updated'),
@@ -178,12 +180,12 @@ if ($edit_sla_report_content) {
 	$sla_min = '';
 	$sla_limit = '';
 	if ($add_sla) {
-		$sla_max = (int) get_parameter ('sla_max');
-		$sla_min = (int) get_parameter ('sla_min');
-		$sla_limit = (int) get_parameter ('sla_limit');
+		$sla_max = (float) get_parameter ('sla_max');
+		$sla_min = (float) get_parameter ('sla_min');
+		$sla_limit = (float) get_parameter ('sla_limit');
 		
 		$sql = sprintf ('INSERT INTO treport_content_sla_combined (id_report_content, 
-				id_agent_module, sla_max, sla_min, sla_limit) VALUES (%d, %d, %d, %d, %d)',
+				id_agent_module, sla_max, sla_min, sla_limit) VALUES (%d, %d, %f, %f, %f)',
 				$id_report_content, $id_module, $sla_max, $sla_min, $sla_limit);
 		
 		if ($id_module) {
@@ -284,11 +286,15 @@ if ($edit_sla_report_content) {
 	echo '</div>';
 
 	echo '</form>';
+	
 } elseif ($edit_report || $id_report) {
 	 /* Edit and creation report form */
 	$id_agent = get_parameter_post ("id_agent",0);
 	echo "<h2>".__('Reporting')." &gt; ";
-	echo __('Custom reporting builder')."</h2>";
+	echo __('Custom reporting builder');
+	
+	echo " <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=".$id_report."'><img src='images/reporting.png'></A>";
+	echo "</h2>";
 	
 	$table->id = 'table-edit-report';
 	$table->width = '500px';
@@ -301,14 +307,11 @@ if ($edit_sla_report_content) {
 	$table->data[0][1] .= "&nbsp;&nbsp;<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report' title='".__('View report')."'><img src='images/reporting.png'></a>";
 	
 	$table->data[1][0] = __('Group');
-	if ($report_id_group) {
-		/* Changing the group is not allowed. */
-		$table->data[1][1] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.
-				$report_id_group.'">'.get_group_name ($report_id_group).'</a>';
-	} else {
-		$table->data[1][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
-								'report_id_group', $report_id_group, '', '--', 0, true);
-	}
+	
+	
+	$group_select = get_user_groups ($config['id_user']);
+	$table->data[1][1] = print_select ($group_select, 'report_id_group', $report_id_group, '', '', '', true);
+	
 	$table->data[1][1] .= ' <span id="icon_preview">';
 	if ($report_id_group) {
 		$table->data[1][1] .= '<img src="images/groups_small/'.get_group_icon ($report_id_group).'.png" />';
@@ -382,8 +385,8 @@ if ($edit_sla_report_content) {
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);
 		
 		$table->data[4][0] = __('Custom graph name');
-		$table->data[4][1] = print_select_from_sql ('SELECT id_graph, name FROM tgraph',
-			'id_custom_graph', 0, '', '--', 0, true);
+		$table->data[4][1] = print_select_from_sql ('SELECT id_graph, name FROM tgraph WHERE private = 0 OR (private = 1 AND id_user = "'.$config["id_user"].'")',
+							'id_custom_graph', 0, '', '--', 0, true);
 
 		$module_description = "";
 		$table->data[5][0] = __('Description');
@@ -485,33 +488,50 @@ if ($edit_sla_report_content) {
 	echo __('Custom reporting')."</h2>";
 
 	$reports = get_reports (array ('order' => 'name'),
-		array ('name', 'id_report', 'description'));
+		array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'));
 	$table->width = '0px';
 	if (sizeof ($reports)) {
 		$table->id = 'report_list';
-		$table->width = '600px';
+		$table->width = '720px';
 		$table->head = array ();
 		$table->align = array ();
 		$table->align[2] = 'center';
 		$table->data = array ();
 		$table->head[0] = __('Report name');
 		$table->head[1] = __('Description');
-		$table->head[2] = __('Delete');
+		$table->head[2] = __('Private');
+		$table->head[3] = __('Group');
+		$table->head[4] = __('Delete');
 		
 		foreach ($reports as $report) {
+		
+			if (!is_user_admin ($config["id_user"])){
+				if ($report["private"] && $report["id_user"] != $config['id_user'])
+					if (!give_acl ($config["id_user"], $report["id_group"], "AW"))
+						continue;
+				if (!give_acl ($config["id_user"], $report["id_group"], "AW"))
+					continue;
+			}
+
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 					$report['id_report'].'">'.$report['name'].'</a>';
 			$data[1] = $report['description'];
-			$data[2] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-			$data[2] .= print_input_hidden ('id_report', $report['id_report'], true);
-			$data[2] .= print_input_hidden ('delete_report', 1, true);
-			$data[2] .= print_input_image ('delete', 'images/cross.png', 1, '',
+			if ($report["private"] == 1)
+				$data[2] = __('Yes');
+			else
+				$data[2] = __('No');
+				
+			$data[3] = get_group_name($report['id_group']);
+			$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+			$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
+			$data[4] .= print_input_hidden ('delete_report', 1, true);
+			$data[4] .= print_input_image ('delete', 'images/cross.png', 1, '',
 				true, array ('title' => __('Delete')));
-			$data[2] .= '</form>';
+				$data[4] .= '</form>';
 			
 			array_push ($table->data, $data);
-			
+						
 		}
 		print_table ($table);
 	} else {
@@ -519,7 +539,7 @@ if ($edit_sla_report_content) {
 	}
 	
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">';
-	echo '<div class="action-buttons" style="width: 600px;">';
+	echo '<div class="action-buttons" style="width: 720px;">';
 	print_input_hidden ('edit_report', 1);
 	print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 	echo "</div>";

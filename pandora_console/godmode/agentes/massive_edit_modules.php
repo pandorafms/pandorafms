@@ -19,9 +19,9 @@
 // Load global vars
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access Agent Config Management Admin section");
+		"Trying to access massive module update");
 	require ("general/noaccess.php");
 	return;
 }

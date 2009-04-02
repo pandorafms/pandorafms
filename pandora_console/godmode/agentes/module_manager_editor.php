@@ -159,7 +159,7 @@ case "dataserver":
 case 1:
 	/* Categories is an array containing the allowed module types
 	 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
-	$categories = array (0, 1, 2, 6, 7, 8, 9, -1);
+	$categories = array (0, 1, 2, 6, 7, 8, -1);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_data.php');
 	break;
@@ -173,14 +173,14 @@ case 2:
 case "pluginserver":
 	$moduletype = 4;
 case 4:
-	$categories = array (0, 1, 2, 9);
+	$categories = array (0, 1, 2);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_plugin.php');
 	break;
 case "predictionserver":
 	$moduletype = 5;
 case 5:
-	$categories = array (1, 2);
+	$categories = array (0,1);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_prediction.php');
 	break;

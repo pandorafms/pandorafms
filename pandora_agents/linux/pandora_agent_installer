@@ -7,13 +7,15 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=1.0
+PI_VERSION=2.1
 PANDORA_BIN=/usr/bin/pandora_agent
 PANDORA_HOME=/usr/share/pandora_agent
 PANDORA_TEMP=/var/spool/pandora
 PANDORA_CFG=/etc/pandora
 PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
+TENTACLE=/usr/bin/tentacle_client
+
 FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 
@@ -35,6 +37,7 @@ uninstall () {
         rm -Rf $PANDORA_STARTUP
         rm -Rf $PANDORA_HOME
         rm -Rf $PANDORA_LOG
+		rm -Rf $TENTACLE
         echo "Done"
 }
 
@@ -80,7 +83,7 @@ install () {
         cp pandora_agent $PANDORA_BIN
         chmod 700 $PANDORA_BIN
 	
-	echo "Copying Pandora FMS Agent contrib dir to $PANDORA_HOME/..."
+		echo "Copying Pandora FMS Agent contrib dir to $PANDORA_HOME/..."
         cp pandora_agent_daemon $PANDORA_HOME
 
         echo "Copying Pandora FMS Agent configuration file to $PANDORA_HOME/pandora_agent.conf..."
@@ -90,6 +93,10 @@ install () {
         echo "Copying Pandora FMS Agent plugins to $PANDORA_HOME/plugins..."
         cp -r plugins $PANDORA_HOME
         chmod -R 700 $PANDORA_HOME/plugins
+
+		echo "Copying tentacle client to $TENTACLE"
+		cp tentacle_client $TENTACLE
+
         echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
         ln -s $PANDORA_HOME/plugins $PANDORA_CFG
 
@@ -111,14 +118,12 @@ install () {
         echo "Linking start-up daemon script to /etc/rc2.d";
         ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
 
-	echo "Copying tentacle_client to /usr/bin";
-	cp tentacle_client /usr/bin/
-
         chown -R root $PANDORA_BIN
         echo "Done."
         echo " "
         echo "You have your startup script ready at $PANDORA_STARTUP"
-	echo "Tentacle is the default transfer mode"
+		echo " "
+		echo "Tentacle is the default transfer mode"
         echo "If you want to use SSH, firstly you need to copy your public SSH keys ($HOME/.ssh/id_dsa)"
         echo "under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host"
         echo "You also need to setup your $PANDORA_CFG/pandora_agent.conf config file"
@@ -135,8 +140,8 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS Agent Installer $PI_VERSION (c) 2007 Sancho Lerena"
-echo "This program is licensed under GPL2 Terms. http://pandora.sourceforge.net"
+echo "Pandora FMS Agent Installer $PI_VERSION (c) 2009 ArticaST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 
 case "$MODE" in

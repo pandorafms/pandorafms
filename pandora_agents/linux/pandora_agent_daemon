@@ -2,7 +2,7 @@
 # Init script for Pandora FMS agent
 # Generic GNU/Linux version
 # Sancho Lerena, <slerena@gmail.com>
-# v1.3.1   
+# v3.0
 
 ### BEGIN INIT INFO
 # Provides: pandora_agent
@@ -52,6 +52,7 @@ case "$1" in
         ;;
   force-reload|restart)
         $0 stop
+		sleep 3
         $0 start
         ;;
   *)

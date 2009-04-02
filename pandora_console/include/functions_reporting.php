@@ -484,6 +484,8 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->head[4] = __('Last fired');
 	$table->head[5] = __('Times Fired');
 	
+	require_once ('include/functions_alerts.php');
+	
 	$alerts = get_agent_alerts ($id_agent);
 	/* FIXME: Add compound alerts to the report. Some extra code is needed here */
 	foreach ($alerts['simple'] as $alert) {

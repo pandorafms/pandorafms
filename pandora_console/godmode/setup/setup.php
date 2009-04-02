@@ -39,9 +39,7 @@ enterprise_include ('godmode/setup/setup.php');
  to add it there.
 */
 
-require_once ('include/functions_themes.php');
-
-echo "<h2>".__('Setup')." &gt; ";
+echo "<h2>".__('Setup')." &raquo; ";
 echo __('General configuration')."</h2>";
 
 $table->width = '90%';

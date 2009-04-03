@@ -332,8 +332,7 @@ if (! $id_agente) {
 		false, '', '', true);
 	
 	$table->data['agent'][0] = __('Agent');
-	$table->data['agent'][1] = print_select (array_keys (get_group_agents (array_keys ($groups), false, "none")),
-		'id_agent', 0, false, __('Select'), 0, true);
+	$table->data['agent'][1] = print_select (get_group_agents (array_keys ($groups), false, "none"), 'id_agent', 0, false, __('Select'), 0, true);
 	$table->data['agent'][1] .= ' <span id="agent_loading" class="invisible">';
 	$table->data['agent'][1] .= '<img src="images/spinner.gif" />';
 	$table->data['agent'][1] .= '</span>';

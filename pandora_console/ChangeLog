@@ -1,3 +1,13 @@
+2009-04-03  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php,
+	* include/functions_db.php: Fixed a notice who breaks the PDF report.
+	Added homeurl preffix to some includes that breaks PDF reporting.
+
+	* pandora_console_upgrade: Fixedd issue with old-style config.php.
+
+	* godmode/alerts/alert_list.php: Fixed bad combo values (ID insted names).
+
 2009-04-02  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: Final DB changes proposed for closing this month the DB

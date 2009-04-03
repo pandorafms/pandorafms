@@ -24,6 +24,17 @@ pandora_upgrade () {
 	fi	
 	echo "Installing new console code in $PANDORAPATH"
 	cp -R * $PANDORAPATH
+
+	# This makes the old-style config.php file usable with 3.0
+		
+	line=$(grep "?>" -n $PANDORAPATH/include/config.php | head -1 | cut -f1 -d:)
+	line=$(($line - 1))
+	head -$line $PANDORAPATH/include/config.php > /tmp/asdf
+	echo "require_once ('config_process.php');" >> /tmp/asdf
+	echo "?>" >> /tmp/asdf
+	mv /tmp/asdf $PANDORAPATH/include/config.php
+	
+	# Upgrade Database ?
 	
 	if [ "$UPGRADEDB" == "1" ]
 	then

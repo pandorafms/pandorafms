@@ -844,7 +844,9 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  * @return array An array with alerts dictionaries defined in a group.
  */
 function get_group_alerts ($id_group) {
-	require_once ('include/functions_agents.php');
+	global $config;
+	
+	require_once ($config["homedir"].'/include/functions_agents.php');
 	
 	$alerts = array ();
 	$agents = get_group_agents ($id_group, false, "none");
@@ -874,12 +876,15 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 
 	$alerts_fired = array ();
 	$agents = array ();
+	
 	foreach ($alerts as $alert) {
-		$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
-		if (! $fires) {
-			continue;
+		if (isset($alert['id'])){
+			$fires = get_alert_fires_in_period ($alert['id'], $period, $date);
+			if (! $fires) {
+				continue;
+			}
+			$alerts_fired[$alert['id']] = $fires;
 		}
-		$alerts_fired[$alert['id']] = $fires;
 	}
 	return $alerts_fired;
 }

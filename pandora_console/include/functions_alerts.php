@@ -507,6 +507,7 @@ function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false
 		$action = get_alert_action ($element['id_alert_action']);
 		$action['fires_min'] = $element['fires_min'];
 		$action['fires_max'] = $element['fires_max'];
+		if (isset($element['id']))
 		$retval[$element['id']] = $action;
 	}
 	

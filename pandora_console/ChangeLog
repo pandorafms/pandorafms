@@ -1,5 +1,7 @@
 2009-04-03  Sancho Lerena <slerena@artica.es>
 
+	*  include/functions_alerts.php: Fixed another notice.
+
 	* include/functions_reporting.php,
 	* include/functions_db.php: Fixed a notice who breaks the PDF report.
 	Added homeurl preffix to some includes that breaks PDF reporting.

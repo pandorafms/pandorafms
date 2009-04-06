@@ -22,18 +22,6 @@ $pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);
 
-// Next is the directory where "/attachment" directory is placed, to upload files stores. 
-// This MUST be writtable by http server user, and should be in pandora root. 
-// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
-
-$config['attachment_store'] = $config['homedir'].'/attachment';
-
-// Default font used for graphics (a Free TrueType font included with Pandora FMS)
-$config['fontpath'] = $config['homedir'].'/reporting/FreeSans.ttf';
-
-// Style (pandora by default)
-$config['style'] = 'pandora';
-
 //Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
 $config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
 if (! $config['dbconnection']) {

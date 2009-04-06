@@ -72,6 +72,14 @@ $table->data[7][1] = print_input_text ('block_size', $config["block_size"], '', 
 $table->data[8][0] = __('Use round corners');
 $table->data[8][1] = print_checkbox ('round_corner', 1, $config["round_corner"], true);
 
+$table->data[9][0] = __('Status Icon set');
+$iconsets["default"] = __('Colors (Default)');
+$iconsets["faces"] = __('Faces');
+$iconsets["color_text"] = __('Color and text');
+
+$table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
+
+
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup_visuals">';
 print_input_hidden ('update_config', 1);
 print_table ($table);

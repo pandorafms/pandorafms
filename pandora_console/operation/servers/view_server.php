@@ -65,9 +65,9 @@ foreach ($servers as $server) {
 	$data[0] = "<b>".$server['name']."</b>";
 	
 	if ($server['status'] == 0) {
-		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 10, "height" => 10));
+		$data[1] = print_status_image(STATUS_SERVER_DOWN, '', true);
 	} else {
-		$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 10, "height" => 10));
+		$data[1] = print_status_image(STATUS_SERVER_OK, '', true);
 	}
 	
 	// Load

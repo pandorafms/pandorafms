@@ -54,6 +54,8 @@ $table->head[4] = __('Status');
 $table->head[5] = __('Interval');
 $table->head[6] = __('Last contact');
 
+$table->align = array("left","left","left","left","center");
+
 foreach ($modules as $module) {
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
@@ -72,20 +74,31 @@ foreach ($modules as $module) {
 	  
 	$data[2] = substr ($module["nombre"], 0, 25);
 	$data[3] = substr ($module["descripcion"], 0, 35);
-	
+
+
+	$status = STATUS_MODULE_WARNING;
+	$title = "";
+
 	if ($module["estado"] == 2) {
-		$data[4] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('WARNING'). ' : ';
+		$status = STATUS_MODULE_WARNING;
+		$title = __('WARNING');
 	} elseif ($module["estado"] == 1) {
-		$data[4] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('CRITICAL'). ' : ';
+		$status = STATUS_MODULE_CRITICAL;
+		$title = __('CRITICAL');
 	} else {
-		$data[4] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('NORMAL'). ' : ';
+		$status = STATUS_MODULE_OK;
+		$title = __('NORMAL');
 	}
 	
 	if (is_numeric($module["datos"])) {
-		$data[4] .= format_for_graph($module["datos"]). '">';
+		$title .= " : " . format_for_graph($module["datos"]);
 	} else {
-		$data[4] .= substr(salida_limpia($module["datos"]),0,42) . '">';
+		$title .= " : " . substr(salida_limpia($module["datos"]),0,42);
 	}
+
+	$data[4] = print_status_image($status, $title, true);
+
+
 	
 	if ($module["module_interval"] > 0) {
 		$data[5] = $module["module_interval"];

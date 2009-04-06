@@ -93,6 +93,14 @@ $table->data[19][1] = print_checkbox ('https', 1, $config["https"], true);
 $table->data[20][0] = __('Compact CSS and JS into header');
 $table->data[20][1] = print_checkbox ('compact_header', 1, $config["compact_header"], true);
 
+
+$table->data[25][0] = __('Font path');
+$table->data[25][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
+
+$table->data[26][0] = __('Attachment store');
+$table->data[26][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
+
+
 enterprise_hook ('load_snmpforward_enterprise');
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';

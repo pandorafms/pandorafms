@@ -107,6 +107,7 @@ function update_config () {
 	update_config_value ('https', (bool) get_parameter ('https'));
 	update_config_value ('compact_header', (bool) get_parameter ('compact_header'));
 	update_config_value ('round_corner', (bool) get_parameter ('round_corner'));
+	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
 }
 
 /**
@@ -212,6 +213,10 @@ function process_config () {
 		update_config_value ('compact_header', false);
 	}
 	
+	if (!isset ($config['status_images_set'])) {
+		update_config_value ('status_images_set', 'default');
+	}
+	
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
 
@@ -225,6 +230,22 @@ function process_config () {
 		require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
 	}
 	
+	
+	// Next is the directory where "/attachment" directory is placed, to upload files stores. 
+	// This MUST be writtable by http server user, and should be in pandora root. 
+	// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
+	if (!isset ($config['attachment_store'])) {
+		update_config_value ( 'attachment_store', $config['homedir'].'/attachment');
+	}
+	
+	if (!isset ($config['fontpath'])) {
+		update_config_value ( 'fontpath', $config['homedir'].'/reporting/FreeSans.ttf');
+	}
+
+	if (!isset ($config['style'])) {
+		update_config_value ( 'style', 'pandora');
+	}
+			
 	/* Finally, check if any value was overwritten in a form */
 	update_config ();
 }

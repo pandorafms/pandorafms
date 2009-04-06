@@ -1,3 +1,27 @@
+2009-04-06  Sancho Lerena <slerena@artica.es>
+
+	* godmode/setup/setup.php
+	* godmode/setup/setup_visuals.php
+	* include/config_process.php,
+	* include/functions_config.php: Added new parameter for status icons. 
+	Old config (fontpath and attachment dir are now manageable in setup).
+
+	* include/functions_ui.php,
+	godmode/servers/modificar_server.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_agente.php
+	operation/agentes/bulbs.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/tactical.php
+	operation/servers/view_server.php: Added support for custom status
+	images.
+
+	* images/status_sets: Added three new status images pack: Default color
+	icons, faces and color with text.
+	
+	* reporting/fgraph.php: Temporal FIX for problem in access graphs that
+	takes 100% Apache CPU !!!. Need final fix for this.
+	
 2009-04-03  Sancho Lerena <slerena@artica.es>
 
 	*  include/functions_alerts.php: Fixed another notice.

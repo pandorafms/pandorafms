@@ -233,11 +233,11 @@ foreach ($result as $row) {
 	$data[4] = $row["agent_interval"];
 	
 	if ($row["estado"] == 0) {
-		$data[5] = '<img src="images/pixel_green.png" width="40" height="18" title="'.$row["datos"].'">';
+		$data[5] = print_status_image(STATUS_MODULE_OK, $row["datos"], true);
 	} elseif ($row["estado"] == 1) {
-		$data[5] = '<img src="images/pixel_red.png" width="40" height="18" title="'.$row["datos"].'">';
+		$data[5] = print_status_image(STATUS_MODULE_CRITICAL, $row["datos"], true);
 	} else {
-		$data[5] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.$row["datos"].'">';
+		$data[5] = print_status_image(STATUS_MODULE_WARNING, $row["datos"], true);
 	}
 
 	$seconds = get_system_time () - $row["utimestamp"];

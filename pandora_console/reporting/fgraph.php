@@ -429,6 +429,11 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
+
+	/* BROKEN: Need to fix, it gets 100% CPU of Apache !!!*/
+	
+	$data = array();
+/*
 	
 	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
@@ -450,8 +455,14 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 			"utimestamp < $date"),
 		array ('utimestamp'));
 	
+
 	if ($result === false)
 		$result = array ();
+
+
+// SEEMS that problem is below
+// it get's 100% cpu on apache and problem is localed here, I don't exactly
+// why or what is happening here, but i'm sure that the problem is here.
 
 	$max_value = 0;
 	foreach ($result as $access) {
@@ -463,7 +474,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 			}
 		}
 	}
-	
+	*/
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;

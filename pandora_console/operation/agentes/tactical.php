@@ -185,9 +185,9 @@ foreach ($serverinfo as $server) {
 	$data[0] = $server["name"];
 
 	if ($server["status"] == 0){
-		$data[1] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20));
+		$data[1] = print_status_image(STATUS_SERVER_DOWN, '', true);
 	} else {
-		$data[1] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20));
+		$data[1] = print_status_image(STATUS_SERVER_OK, '', true);
 	}
 	
 	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",

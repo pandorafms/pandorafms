@@ -325,22 +325,23 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	$data[3] = print_timestamp ($alert["last_fired"], true);
 	
-	$options = array ();
-	$options["height"] = 18;
-	$options["width"] = 40;
+
+	$status = STATUS_ALERT_NOT_FIRED;
+	$title = "";
 	
 	if ($alert["times_fired"] > 0) {
-		$options["src"] = "images/pixel_red.png";
-		$options["title"] = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+		$status = STATUS_ALERT_FIRED;
+		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
 	} elseif ($alert["disabled"] > 0) {
-		$options["src"] = "images/pixel_gray.png";
-		$options["title"] = __('Alert disabled');
+		$status = STATUS_ALERT_DISABLED;
+		$title = __('Alert disabled');
 	} else {
-		$options["src"] = "images/pixel_green.png";
-		$options["title"] = __('Alert not fired');
+		$status = STATUS_ALERT_NOT_FIRED;
+		$title = __('Alert not fired');
 	}
 	
-	$data[4] = print_image ($options["src"], true, $options);
+	$data[4] = print_status_image($status, $title, true);
+
 	
 	if ($compound) {
 		$data[5] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
@@ -1011,4 +1012,56 @@ function format_filesize ($bytes) {
 	
 	return format_numeric ($bytes / pow ($con, $log), 1).' '.$strs[$log];
 }
+
+
+/**
+ * Returns the current path to the selected image set to show the
+ * status of agents and alerts.
+ *
+ * @return array An array with the image path, image width and image height.
+ */
+function get_status_images_path()
+{
+	global $config;
+
+	$imageset = $config["status_images_set"];
+
+	if (strpos($imageset, ",") === false) $imageset .= ",40x18";
+	list($imageset, $sizes) = split(",", $imageset, 2);
+
+	if (strpos($sizes, "x") === false) $sizes .= "x18";
+	list($imagewidth, $imageheight) = split("x", $sizes, 2); // 40x18
+
+	$imagespath = "images/status_sets/$imageset";
+
+	return array($imagespath);
+}
+
+define('STATUS_MODULE_OK', 			'module_ok.png');
+define('STATUS_MODULE_CRITICAL', 	'module_critical.png');
+define('STATUS_MODULE_WARNING', 	'module_warning.png');
+
+define('STATUS_AGENT_CRITICAL', 	'agent_critical.png');
+define('STATUS_AGENT_WARNING', 		'agent_warning.png');
+define('STATUS_AGENT_DOWN', 		'agent_down.png');
+define('STATUS_AGENT_OK', 			'agent_ok.png');
+define('STATUS_AGENT_NO_DATA', 		'agent_no_data.png');
+define('STATUS_AGENT_NO_MONITORS', 	'agent_no_monitors.png');
+
+define('STATUS_ALERT_FIRED', 		'alert_fired.png');
+define('STATUS_ALERT_NOT_FIRED',	'alert_not_fired.png');
+define('STATUS_ALERT_DISABLED',		'alert_disabled.png');
+
+define('STATUS_SERVER_OK', 			'server_ok.png');
+define('STATUS_SERVER_DOWN', 		'server_down.png');
+
+function print_status_image($type, $title = "", $return = false)
+{
+	list($imagepath) = get_status_images_path();
+
+	$imagepath .= "/" . $type;
+
+        return print_image ($imagepath, $return, array ("border" => 0, "title" => $title));
+}
+
 ?>

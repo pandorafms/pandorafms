@@ -84,7 +84,7 @@ if (isset($_GET["server"])) {
 		$table->width = "90%";
 		$table->class = "databox";
 		$table->align = array ('',"center","center","center","center","center","center","center");
-		$table->head = array (__('Name'),__('Status'),__('IP Address'),__('Description'),__('Type'),__('Started'),__('Updated'),__('Delete'));
+		$table->head = array (__('Name'),__('Status'),__('Description'),__('Type'),__('Started'),__('Updated'),__('Delete'));
 		
 		foreach ($result as $row) {
 			$server = "";
@@ -104,10 +104,16 @@ if (isset($_GET["server"])) {
 				$server .= '<img src="images/binary.png" />&nbsp;';
 			}
 				
+				
+			if ($row['status'] == 0) {
+				$server_status = print_status_image(STATUS_SERVER_DOWN, '', true);
+			} else {
+				$server_status = print_status_image(STATUS_SERVER_OK, '', true);
+			}
+				
 			$table->data[] = array (
 						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$row["id_server"].'"><b>'.$row["name"].'</b></a>',
-						'<img src="images/dot_'.(($row["status"] == 0) ? 'red' : 'green').'.png">',
-						$row["ip_address"],
+						$server_status,
 						substr($row["description"],0,25),
 						$server,
 					 	human_time_comparation ($row["laststart"]), 

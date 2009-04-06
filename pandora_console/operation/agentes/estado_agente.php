@@ -304,31 +304,32 @@ if ($agents !== false) {
 		if ($monitor_down >  0)
 			echo " <span class='grey'> : ".$monitor_down."</span>";
 		echo "</td>";
-		
+	
+
 		echo "<td class='$tdcolor' align='center'>";
 		if ($numero_modulos > 0){
 			if ($agent_down > 0) {
-				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
+				print_status_image(STATUS_AGENT_DOWN, __('Agent down'));
 			} elseif ($monitor_critical > 0) {
-					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one module in CRITICAL status').'" />';
+				print_status_image(STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'));
 			} elseif ($monitor_warning > 0) {
-					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('At least one module in WARNING status').'" />';
+				print_status_image(STATUS_AGENT_WARNING, __('At least one module in WARNING status'));
 			} else {
-				echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
+				print_status_image(STATUS_AGENT_OK, __('All Monitors OK'));
 			} 
 		} else {
-			echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+			print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'));
 		}
 		
 		// checks if an alert was fired recently
 		echo "<td class='$tdcolor' align='center'>";
 		if (give_disabled_group ($id_grupo)) {
-			echo "<img src='images/pixel_gray.png' width=20 height=9>";
+			print_status_image(STATUS_ALERT_DISABLED, __('Alert disabled'));
 		} else {
 			if (check_alert_fired ($id_agente) == 1) 
-				echo '<img src="images/pixel_red.png" width="20" height="9" title="'.__('Alert fired').'" />';
+				print_status_image(STATUS_ALERT_FIRED, __('Alert fired'));
 			else
-				echo '<img src="images/pixel_green.png" width="20" height="9" title="'.__('Alert not fired').'" />';
+				print_status_image(STATUS_ALERT_NOT_FIRED, __('Alert not fired'));
 		}				
 		echo "</td>";
 		echo "<td class='$tdcolor'>";

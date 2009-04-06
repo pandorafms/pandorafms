@@ -430,11 +430,8 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
 
-	/* BROKEN: Need to fix, it gets 100% CPU of Apache !!!*/
-	
 	$data = array();
-/*
-	
+
 	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
 	$interval = (int) ($period / $resolution);
@@ -443,52 +440,30 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$periodtime = floor ($period / $interval);
 	$time = array ();
 	$data = array ();
+	
 	for ($i = 0; $i < $interval; $i++) {
-		$time[$i]['timestamp_bottom'] = $datelimit + ($periodtime * $i);
-		$time[$i]['timestamp_top'] = $datelimit + ($periodtime * ($i + 1));
-		$data[$time[$i]['timestamp_bottom']] = 0;
+		$bottom = $datelimit + ($periodtime * $i);
+		$top = $datelimit + ($periodtime * ($i + 1));
+		$data[$bottom] = (int) get_db_sql ("SELECT COUNT(*) FROM tagent_access WHERE 
+																 id_agent = ".$id_agent." AND 
+																 utimestamp > ".$bottom." AND 
+																 utimestamp < ".$top);
 	}
-	
-	$result = get_db_all_rows_filter ('tagent_access',
-		array ('id_agent' => $id_agent,
-			"utimestamp > $datelimit",
-			"utimestamp < $date"),
-		array ('utimestamp'));
-	
 
-	if ($result === false)
-		$result = array ();
-
-
-// SEEMS that problem is below
-// it get's 100% cpu on apache and problem is localed here, I don't exactly
-// why or what is happening here, but i'm sure that the problem is here.
-
-	$max_value = 0;
-	foreach ($result as $access) {
-		$utimestamp = $access['utimestamp'];
-		for ($i = 0; $i < $interval; $i++) {
-			if ($utimestamp <= $time[$i]['timestamp_top'] && $utimestamp >= $time[$i]['timestamp_bottom']) {
-				$data[$time[$i]['timestamp_bottom']]++;
-				$max_value = max ($max_value, $data[$time[$i]['timestamp_bottom']]);
-			}
-		}
-	}
-	*/
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
 	$engine->height = $height;
-	$engine->data = &$data;
-	$engine->max_value = $max_value;
+	$engine->data = $data;
+	$engine->max_value = max ($data);
 	$engine->show_title = false;
 	$engine->fontpath = $config['fontpath'];
 	$engine->xaxis_interval = floor ($width / 72);
-	$engine->yaxis_interval = $max_value;
+	$engine->yaxis_interval = max ($data);
 	$engine->xaxis_format = 'date';
 	$engine->watermark = false;
 	$engine->show_grid = false;
-	
+
 	$engine->single_graph ();
 }
 

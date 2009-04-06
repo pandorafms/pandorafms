@@ -1,3 +1,10 @@
+2009-04-06  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: Simplified agent access to reduce looping
+	
+	* reporting/pChart/pChart.class: Found problem where the graph was
+	looping with certain data when the Scale1 was exactly 1
+
 2009-04-06  Sancho Lerena <slerena@artica.es>
 
 	* godmode/setup/setup.php

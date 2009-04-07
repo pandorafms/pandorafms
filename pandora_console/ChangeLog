@@ -1,3 +1,8 @@
+2009-04-07  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: Fixed full screen links. Fixes
+	#2728007
+
 2009-04-06  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* reporting/fgraph.php: Simplified agent access to reduce looping

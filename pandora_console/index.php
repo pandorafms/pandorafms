@@ -73,10 +73,16 @@ $config["pure"] = get_parameter ("pure", 0);
 
 // Auto Refresh page
 $intervalo = get_parameter ("refr", 0);
-if ($intervalo > 0){
+if ($intervalo > 0) {
 	// Agent selection filters and refresh
-	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
+	$protocol = 'http';
+	$ssl = false;
+	if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true)) {
+		$protocol = 'https';
+		$ssl = true;
+	}
+	$query = $protocol.'://'.$_SERVER['SERVER_NAME'];
+	if ((! $ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443))
 		$query .= ":" . $_SERVER['SERVER_PORT'];
 	
 	$query .= $_SERVER['SCRIPT_NAME'];
@@ -90,15 +96,7 @@ if ($intervalo > 0){
 			$query .= '&'.$key.'='.$value;
 		}
 	}
-	if (isset ($_POST["ag_group"])) {
-		$ag_group = $_POST["ag_group"];
-		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
-			$query .= ":" . $_SERVER['SERVER_PORT'];
-		$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
-	} else {
-		echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
-	}
+	echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
 }
 
 echo '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
@@ -123,6 +121,10 @@ if ($config["pure"] == 0) {
 	echo '<body bgcolor="#FFFFFF">';
 }
 
+echo '<pre>';
+if ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')
+	echo "AAAAAAaaaaa";
+echo '</pre>';
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 
 // Login process 

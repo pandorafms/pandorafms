@@ -1,9 +1,14 @@
+2009-04-08  Esteban Sanchez  <estebans@artica.es>
+
+	* index.php: Updated refresh meta label that was causing some errors
+	when the port was not 80.
+
 2009-04-07  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/languages/es.po, include/languages/es.mo: Updated
-          Spanish translation
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	translation.
 
-        * include/languages/index.pot: Updated po template.
+	* include/languages/index.pot: Updated po template.
 
 2009-04-01  Jorge Gonzalez  <jorgegonz@artica.es>
 

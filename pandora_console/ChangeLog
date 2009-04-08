@@ -1,3 +1,19 @@
+2009-04-08  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* images/console/icons/dotmin_ok.png,
+	  images/console/icons/appliance_ok.png, 
+	  images/console/icons/ap_ok.png,
+	  images/console/icons/dotmin.png, 
+	  images/console/icons/appliance.png,
+	  images/console/icons/dotmin_bad.png, 
+	  images/console/icons/ap.png,
+	  images/console/icons/switch.png,
+	  images/console/icons/appliance_bad.png,
+	  images/console/icons/ap_bad.png,
+	  images/console/icons/switch_bad.png,
+	  images/console/icons/switch_ok.png: Added icons for the visual
+	  console.
+
 2009-04-07  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Fixed full screen links. Fixes

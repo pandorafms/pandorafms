@@ -1,3 +1,22 @@
+2009-04-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php: Added get_agent_module_info which gives
+	valuable information that can be re-used and expanded
+	
+	* include/functions_events.php, include/functions_ui.php: The chunk_split 
+	only works with set width removed for wide css. General cleanup
+	
+	* include/functions_db.php: get_group_agents allows search now
+	
+	* include/styles/pandora_width.css, include/styles/pandora.css, 
+	include/styles/menu.css: The menu for the agent editor is now even with the
+	operation menu and also takes up the whole width
+	
+	* operation/agentes/tactical.php: Changed for width. Now takes up the wide
+	
+	* operation/agentes/estado_agente.php: Rewritten. Now outputs variable
+	width table and is cleaner
+
 2009-04-08  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* images/console/icons/dotmin_ok.png,

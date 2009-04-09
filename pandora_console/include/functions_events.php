@@ -294,16 +294,11 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
 			$wrap = floor ($width / 10);
-			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input (chunk_split (mb_substr ($event["evento"],0, $wrap),8, "&shy;"));
-			
-			if (mb_strlen ($event["evento"]) > $wrap) {
-				$data[2] .= "&hellip;";
-			}
-			$data[2] .= '</span>';
+			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input ($event["evento"]).'</span>';
 			
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[3] = print_agent_name ($event["id_agente"], true, floor ($width / 20)); //At 440 this would be be 22.
+				$data[3] = print_agent_name ($event["id_agente"], true);
 			// for System or SNMP generated alerts
 			} elseif ($event["event_type"] == "system") {
 				$data[3] = __('System');

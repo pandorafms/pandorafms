@@ -31,6 +31,7 @@ body {
 input, textarea {
 	border: 1px solid #ddd;
 }
+
 textarea {
 	padding: 5px;
 	min-height: 100px;
@@ -178,7 +179,7 @@ div#page {
 	border-top: solid 5px #786;
 }
 div#main {
-	width: 780px;
+	width: 785px;
 	min-height: 500px;
 	float: right;
 	padding-left: 0px;
@@ -192,7 +193,7 @@ div#main {
 	margin-right: 0px;
 }
 div#menu {
-	width: 155px;
+	width: 165px;
 	float: left;
 }
 div#head {
@@ -445,23 +446,17 @@ div.title_line {
 	height: 5px;
 	width: 762px;
 }
-#menu_tab_frame {
-	background: #D84437; 
-	width: 805px; 
-	min-height: 22px; 
-	padding-left: 0px;
-	margin-left: -25px;
-	float:left; 
-	border-bottom: 1px solid #778866;
+#menu_tab_frame, #menu_tab_frame_view {
+	background:#D84437 none repeat scroll 0 0;
+	border-bottom:1px solid #778866;
+	float:left;
+	margin-left:-8px;
+	min-height:25px;
+	padding-right:8px;
+	width:100%;
 }
 #menu_tab_frame_view {
-	background: #66AA44; 
-	width: 805px; 
-	min-height: 22px; 
-	padding-left: 0px;
-	margin-left: -25px;
-	float:left; 
-	border-bottom: 1px solid #778866;
+	background: #66AA44;
 }
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
@@ -472,21 +467,17 @@ div.title_line {
 	float: right;
 	position: relative;
 }
-#menu_tab li a, #menu_tab li.nomn a {
+#menu_tab li a, #menu_tab a {
 	background: #d4ddc6;
-	padding: 2px 5px 2px 5px;
+	padding: 3px 5px;
 	color: #333;
 	border-left: 2px solid #778866;
 	font-weight: bold;
-	line-height: 18px;
+	line-height: 19px;
 }
 #menu_tab li.nomn_high a {
 	background: #799E48;
 	color: #fff;
-	padding: 2px 10px 2px 10px;
-	border-left: 2px solid #778866;
-	font-weight: bold;
-	line-height: 18px;
 }
 #menu_tab .mn li a {
 	display: block;

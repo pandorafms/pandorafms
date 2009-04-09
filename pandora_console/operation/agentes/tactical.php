@@ -51,7 +51,7 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Tactical view')."</h2>";
 
 $data = get_group_stats ();
 
-echo '<div style="width:160px; float:left;  padding-right: 20px;" id="leftcolumn">';
+echo '<div style="width:20%; float:left;  padding-right: 5%;" id="leftcolumn">';
 // Monitor checks
 
 $table->width = "100%";
@@ -69,19 +69,19 @@ $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("title" => $data["monitor_health"].'% '.__('of monitors up')));
+$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("title" => $data["module_sanity"].'% '.__('of total modules inited')));
+$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
+$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
 	
 print_table ($table);
 unset ($table);
@@ -150,7 +150,7 @@ print_cells_temp ($cells);
 echo "</table>";
 echo '</div>'; //Left column
 
-echo '<div style="width: 570px; float:left;" id="rightcolumn">';
+echo '<div style="width: 75%; float:left;" id="rightcolumn">';
 
 // Server information
 
@@ -205,7 +205,7 @@ if (!empty ($table->data)) {
 }
 unset ($table);
 
-print_events_table ("", 10, 570);
+print_events_table ("", 10, "100%");
 
 echo '</div>';
 ?>

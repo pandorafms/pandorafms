@@ -321,12 +321,12 @@ function give_disabled_group ($id_group) {
  * Get all the agents within a group(s).
  *
  * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
- * @param bool $disabled Add disabled agents to agents. Default: False.
+ * @param mixed $search to add Default: False. If True will return disabled agents as well. If searching array (disabled => (bool), string => (string))
  * @param string $case Which case to return the agentname as (lower, upper, none)
  *
  * @return array An array with all agents in the group or an empty array
  */
-function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
+function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 	global $config;
 	
 	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
@@ -337,8 +337,20 @@ function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
 	}
 	
 	$search = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
-	
-	if (!empty ($disabled)) {
+
+	if ($search === true) {
+		//No added search. Show both disabled and non-disabled
+	} elseif (is_array ($search)) {
+		if (isset ($search["disabled"])) {
+			$search .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
+		} else {
+			$search .= ' AND disabled = 0';
+		}
+		if (isset ($search["string"])) {
+			$string = safe_input ($search["string"]);
+			$search .= ' (nombre LIKE "'.$string.'" OR comentarios LIKE "'.$string.'" OR direccion LIKE "'.$string.'"';
+		}
+	} else {
 		$search .= ' AND disabled = 0';
 	}
 	

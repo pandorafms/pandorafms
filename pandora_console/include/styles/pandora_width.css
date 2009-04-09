@@ -42,7 +42,7 @@ div#main {
 	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
-	margin-left: 180px;
+	margin-left: 175px;
 	margin-right: 20px;
 }
 div#head {
@@ -57,8 +57,10 @@ ol.steps {
 div#steps_clean {
 	display:none;
 }
-div#menu_tab_frame {
+#menu_tab_frame, #menu_tab_frame_view {
 	width: 100%;
+	padding-right: 28px;
+	margin-left: -8px;
 }
 div#events_list {
 	float: left;

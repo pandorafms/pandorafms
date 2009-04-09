@@ -208,10 +208,10 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small") {
 	$output .= '<img class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group).'" title="'.get_group_name ($id_group).'" />';
 	$output .= '</a>';
 	
-	if ($return)
-		return $output;
+	if (!$return)
+		echo $output;
 	
-	echo $output;
+	return $output;
 }
 
 /** 
@@ -236,10 +236,10 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 		$output .= ' - '.$os_name;
 	}
 	
-	if ($return)
-		return $output;
+	if (!$return)
+		echo $output;
 	
-	echo $output;
+	return $output;
 }
 
 /**
@@ -247,20 +247,13 @@ function print_os_icon ($id_os, $name = true, $return = false) {
  * 
  * @param int Agent id
  * @param bool Whether to return the string or echo it too
- * @param int After how much characters to cut off the inside of the 
- * link. The full agent name will remain in the roll-over
+ * @param int Now uses styles to accomplish this
  * 
  * @return string HTML with agent name and link
  */
 function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
 	$agent_name = (string) get_agent_name ($id_agent);
-	$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name.'"><b>';
-	if ($cutoff > 0 && (mb_strlen ($agent_name, "UTF-8") > $cutoff)) {
-		$output .= mb_substr (utf8_decode ($agent_name), 0, $cutoff, "UTF-8").'...';
-	} else {
-		$output .= $agent_name;
-	}
-	$output .= '</b></a>';
+	$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name.'"><b>'.$agent_name.'</b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	
@@ -1055,13 +1048,12 @@ define('STATUS_ALERT_DISABLED',		'alert_disabled.png');
 define('STATUS_SERVER_OK', 			'server_ok.png');
 define('STATUS_SERVER_DOWN', 		'server_down.png');
 
-function print_status_image($type, $title = "", $return = false)
-{
+function print_status_image($type, $title = "", $return = false) {
 	list($imagepath) = get_status_images_path();
 
 	$imagepath .= "/" . $type;
 
-        return print_image ($imagepath, $return, array ("border" => 0, "title" => $title));
+	return print_image ($imagepath, $return, array ("border" => 0, "title" => $title));
 }
 
 ?>

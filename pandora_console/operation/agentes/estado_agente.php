@@ -18,6 +18,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/functions_reporting.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AR")) {
@@ -56,302 +57,141 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
 
 // Show group selector (POST)
 if (isset($_POST["ag_group"])){
-	$ag_group = $_POST["ag_group"];
-	echo "<form method='post' 
-	action='index.php?sec=estado&sec2=operation/agentes/estado_agente
-	&refr=60&ag_group_refresh=".$ag_group."'>";
+	$ag_group = get_parameter_post ("ag_group");
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;ag_group_refresh='.$ag_group.'">';
 } else {
-	echo "<form method='post'
-	action='index.php?sec=estado&sec2=operation/agentes/estado_agente
-	&refr=60'>";
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60">';
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
-echo "<td valign='top'>".__('Group')."</td>";
-echo "<td valign='top'>";
+echo '<table cellpadding="4" cellspacing="4" class="databox">';
+echo '<tr><td valign="top">'.__('Group').'</td>';
+
+echo '<td valign="top">';
 
 $groups = get_user_groups ();
 print_select ($groups, 'ag_group', $ag_group, 'this.form.submit()', '', '');
 
-echo "<td valign='top'>
-<noscript>
-<input name='uptbutton' type='submit' class='sub' 
-value='".__('Show')."'>
-</noscript>
-</td></form><td valign='top'>";
+echo '</td><td valign="top">';
 
-echo __('Free text for search (*)');
-echo "</td><td valign='top'>";
-echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
-echo "<input type=text name='search' value='$search' size='15'>";
-echo "</td><td valign='top'>";
-echo "<input name='srcbutton' type='submit' class='sub' 
-value='".__('Search')."'>";
-echo "</form>";
-echo "</td></table>";
+echo __('Free text for search').' (*)';
+echo '</td><td valign="top">';
 
+print_input_text ("search", $search, '', 15);
+
+echo '</td><td valign="top">';
+
+print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub")); 
+
+echo "</td></tr></table></form>";
 
 if ($search != ""){
-	$search_sql = " AND ( nombre LIKE '%$search%' OR comentarios LIKE '%$search%' OR direccion LIKE '%$search%' ) ";
+	$search_sql = array ("string" => '%'.$search.'%');
 } else {
-	$search_sql = "";
+	$search_sql = array ();
 }
 
 // Show only selected groups	
-if ($ag_group > 1){
-	$sql="SELECT * FROM tagente WHERE id_grupo=$ag_group
-		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
-	$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
-		AND disabled = 0 $search_sql ORDER BY nombre";
+if ($ag_group > 1) {
+	$agent_names = get_group_agents ($ag_group, $search_sql, "upper");
 // Not selected any specific group
 } else {
-	// Is admin user ??
-	if (is_user_admin ($config["id_user"])) {
-		$sql = "SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-		$sql2 = "SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
-	// standard user
-	} else {
-		// User has explicit permission on group 1 ?
-		$sql = sprintf ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='%s' AND id_grupo = 1", $config['id_user']);
-		$all_group = get_db_sql ($sql);
-
-		if ($all_group > 0) {
-			$sql = sprintf ("SELECT * FROM tagente
-				WHERE disabled = 0 %s
-				ORDER BY nombre, id_grupo LIMIT %d,%d",
-				$search_sql, $offset,
-				$config["block_size"]);
-			$sql2 = sprintf ("SELECT COUNT(id_agente)
-				FROM tagente WHERE disabled = 0 %s
-				ORDER BY nombre, id_grupo",
-				$search_sql);
-		} else {
-			$sql = sprintf ("SELECT * FROM tagente
-				WHERE disabled = 0 %s
-				AND id_grupo IN (SELECT id_grupo
-					FROM tusuario_perfil
-					WHERE id_usuario='%s')
-				ORDER BY nombre, id_grupo LIMIT %d,%d",
-				$search_sql, $config['id_user'], $offset,
-				$config["block_size"]);
-			$sql2 = sprintf ("SELECT COUNT(id_agente)
-				FROM tagente
-				WHERE disabled = 0 %s
-				AND id_grupo IN (SELECT id_grupo 
-					FROM tusuario_perfil
-					WHERE id_usuario='%s')
-					ORDER BY nombre, id_grupo",
-				$search_sql, $config['id_user']);
-		}
-
-	}
+	$user_group = get_user_groups ($config["id_user"], "AR");
+	$agent_names = get_group_agents (array_keys ($user_group), $search_sql, "upper");
 }
 
+if (!empty ($agent_names)) {
+	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
+}
 
-$result2 = mysql_query ($sql2);
-$row2 = mysql_fetch_array ($result2);
-$total_events = $row2[0];
+if (empty ($agents)) {
+	$agents = array ();
+}
+
 // Prepare pagination
+pagination (count ($agents), "index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60&search=$search", $offset);
 
-pagination ($total_events, 
-	"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60&search=$search",
-	$offset);
 // Show data.
-$agents = get_db_all_rows_sql ($sql);
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = "90%";
+$table->class = "databox";
 
-if ($agents !== false) {
-	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox' style='margin-top: 10px'>";
-	echo "<th>".__('Agent')."</th>";
-	echo "<th>".__('OS')."</th>";
-	echo "<th>".__('Interval')."</th>";
-	echo "<th>".__('Group')."</th>";
-	echo "<th>".__('Modules')."</th>";
-	echo "<th>".__('Status')."</th>";
-	echo "<th>".__('Alerts')."</th>";
-	echo "<th>".__('Last contact')."</th>";
-	// For every agent defined in the agent table
-	$color = 1;
-	foreach ($agents as $agent) {
-		$intervalo = $agent["intervalo"]; // Interval in seconds
-		$id_agente = $agent['id_agente'];
-		$nombre_agente = substr (strtoupper ($agent["nombre"]), 0, 18);
-		$direccion_agente = $agent["direccion"];
-		$id_grupo = $agent["id_grupo"];
-		$id_os = $agent["id_os"];
-		$ultimo_contacto = $agent["ultimo_contacto"];
-		$biginterval = $intervalo;
-		
-		// New check for agent down only based on last contact		
-		$diff_agent_down = get_system_time () - strtotime ($agent["ultimo_contacto"]);
-		if ($diff_agent_down > $intervalo * 2)
-			$agent_down = 1;
-		else
-			$agent_down = 0;
-		
-		$belongs = false;
-		//Verifiy if the group this agent begins is one of the user groups
-		foreach ($groups as $migrupo) {
-			if ($migrupo || $id_grupo == $migrupo) {
-				$belongs = true;
-				break;
-			}
-		}
-		if (! $belongs)
-			continue;
+$table->head = array ();
+$table->head[0] = __('Agent');
+$table->head[1] = __('OS');
+$table->head[2] = __('Interval');
+$table->head[3] = __('Group');
+$table->head[4] = __('Modules');
+$table->head[5] = __('Status');
+$table->head[6] = __('Alerts');
+$table->head[7] = __('Last contact');
+
+$table->align = array ();
+$table->align[1] = "center";
+$table->align[2] = "center";
+$table->align[3] = "center";
+$table->align[4] = "center";
+$table->align[5] = "center";
+$table->align[6] = "center";
+$table->align[7] = "right";
+
+$table->data = array ();
+
+foreach ($agents as $agent) {
+	$agent_info = get_agent_module_info ($agent["id_agente"]);
 	
-		// Obtenemos la lista de todos los modulos de cada agente
-		$sql = "SELECT * FROM tagente_estado, tagente_modulo 
-			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
-			tagente_modulo.disabled = 0 
-			AND tagente_modulo.id_agente=".$id_agente;
-		$modules = get_db_all_rows_sql ($sql);
-		if ($modules === false)
-			$modules = array ();
-		$numero_modulos = 0; 
-		$est_timestamp = ""; 
-		$monitor_normal = 0; 
-		$monitor_warning = 0;
-		$monitor_critical = 0; 
-		$monitor_down = 0; 
-		$now = get_system_time ();
-		
-		// Calculate module/monitor totals  for this agent
-		foreach ($modules as $module) {
-			$numero_modulos ++;
-			$ultimo_contacto_modulo = $module["timestamp"];
-			$module_interval = $module["module_interval"];
-			$module_type = $module["id_tipo_modulo"];
-			
-			if ($module_interval > $biginterval)
-				$biginterval = $module_interval;
-			if ($module_interval != 0)
-				$intervalo_comp = $module_interval;
-			else
-				$intervalo_comp = $intervalo;
-			if ($ultimo_contacto != "")
-				$seconds = $now - strtotime ($ultimo_contacto_modulo);
-			else 
-				$seconds = -1;
-			if ($module_type < 21 || $module_type != 100) {
-				$async = 0;
-			} else {
-				$async = 1;
-			}
-			// Defines if Agent is down (interval x 2 > time last contact
-			if (($seconds >= ($intervalo_comp * 2)) && ($module_type < 21)) { // If (intervalx2) secs. ago we don't get anything, show alert
-
-				if ($async == 0)
-					$monitor_down++;
-			} else {
-				if ($module["estado"] == 2) 
-					$monitor_warning++;
-				elseif ($module["estado"]== 1) 
-					$monitor_critical++;
-				else 
-					$monitor_normal++;
-			}
-		}
-		// Color change for each line (1.2 beta2)
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr>";
-		echo "<td class='$tdcolor'>";
-		if (give_acl ($config['id_user'], $id_grupo, "AW")) {
-			echo "<a href='index.php?sec=gagente&amp;
-			sec2=godmode/agentes/configurar_agente&amp;
-			id_agente=".$id_agente."'>
-			<img src='images/setup.png' border=0 width=16></a>&nbsp;";
-		}
-		echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'"><strong>';
-		echo $nombre_agente;
-		echo "</strong></a></td>";
-
-		// Show SO icon
-		echo "<td class='$tdcolor' align='center'>";
-		print_os_icon ($id_os, false);
-		echo "</td>";
-		// If there are a module interval bigger than agent interval
-		if ($biginterval > $intervalo) {
-			echo "<td class='$tdcolor'>
-			<span class='green'>".$biginterval."</span></td>";
-		} else {
-			echo "<td class='$tdcolor'>".$intervalo."</td>";
-		}
-
-		// Show GROUP icon
-		echo '<td class="'.$tdcolor.'" align="center">';
-		echo "<a  href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
-		echo print_group_icon ($id_grupo);
-		//echo '&nbsp;(<b>';
-		//echo get_group_name ($id_grupo);
-		//echo "</b>)";
-		echo "</a>";
-
-
-		echo "<td class='$tdcolor'><b>".$numero_modulos." ";
-		if ($monitor_normal >  0)
-			echo " <span class='green'> : ".$monitor_normal." </span>";
-		if ($monitor_warning >  0)
-			echo " <span class='yellow'> : ".$monitor_warning." </span>";
-		if ($monitor_critical >  0)
-			echo " <span class='red'> : ".$monitor_critical." </span>";
-		if ($monitor_down >  0)
-			echo " <span class='grey'> : ".$monitor_down."</span>";
-		echo "</td>";
+	$data = array ();
 	
-
-		echo "<td class='$tdcolor' align='center'>";
-		if ($numero_modulos > 0){
-			if ($agent_down > 0) {
-				print_status_image(STATUS_AGENT_DOWN, __('Agent down'));
-			} elseif ($monitor_critical > 0) {
-				print_status_image(STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'));
-			} elseif ($monitor_warning > 0) {
-				print_status_image(STATUS_AGENT_WARNING, __('At least one module in WARNING status'));
-			} else {
-				print_status_image(STATUS_AGENT_OK, __('All Monitors OK'));
-			} 
-		} else {
-			print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'));
-		}
-		
-		// checks if an alert was fired recently
-		echo "<td class='$tdcolor' align='center'>";
-		if (give_disabled_group ($id_grupo)) {
-			print_status_image(STATUS_ALERT_DISABLED, __('Alert disabled'));
-		} else {
-			if (check_alert_fired ($id_agente) == 1) 
-				print_status_image(STATUS_ALERT_FIRED, __('Alert fired'));
-			else
-				print_status_image(STATUS_ALERT_NOT_FIRED, __('Alert not fired'));
-		}				
-		echo "</td>";
-		echo "<td class='$tdcolor'>";
-		print_timestamp ($ultimo_contacto);
-		echo "</td>";
+	$data[0] = '';
+	if (give_acl ($config['id_user'], $agent["id_grupo"], "AW")) {
+		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">';
+		$data[0] .= print_image ("images/setup.png", true, array ("border" => 0, "width" => 16));
+		$data[0] .= '</a>&nbsp;';
 	}
-	echo "<tr>";
-	echo "</table><br>";
+		
+	$data[0] .= print_agent_name ($agent["id_agente"], true, "upper");
+	
+	$data[1] = print_os_icon ($agent["id_os"], false, true);
+
+	if ($agent_info["interval"] > $agent["intervalo"]) {
+		$data[2] = '<span class="green">'.$agent_info["interval"].'</span>';
+	} else {
+		$data[2] = $agent["intervalo"];
+	}
+	
+	$data[3] = print_group_icon ($agent["id_grupo"], true);
+	
+	$data[4] = '<b>';
+	$data[4] .= $agent_info["modules"];
+	$data[4] .= '</b> : <span class="green">'.$agent_info["monitor_normal"].'</span>';
+	$data[4] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
+	$data[4] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
+	$data[4] .= ' : <span class="grey">'.$agent_info["monitor_down"].'</span>';
+	
+	$data[5] = $agent_info["status_img"];
+	
+	$data[6] = $agent_info["alert_img"];
+	
+	$data[7] = print_timestamp ($agent_info["last_contact"], true);
+	
+	array_push ($table->data, $data);
+}
+
+if (!empty ($table->data)) {
+	print_table ($table);
+	unset ($table);
 	require ("bulbs.php");
 } else {
-	echo '</table><br><div class="nf">'.__('There are no agents included in this group').'</div>';
-	if (give_acl ($config['id_user'], 0, "LM")
-		|| give_acl ($config['id_user'], 0, "AW")
-		|| give_acl ($config['id_user'], 0, "PM")
-		|| give_acl ($config['id_user'], 0, "DM")
-		|| give_acl ($config['id_user'], 0, "UM")) {
-		
-		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-		print_input_hidden ('new_agent', 1);
-		print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-		echo '</form>';
-	}
+	echo '<div class="nf">'.__('There are no agents included in this group').'</div>';
 }
 
+if (give_acl ($config['id_user'], 0, "LM") || give_acl ($config['id_user'], 0, "AW")
+		|| give_acl ($config['id_user'], 0, "PM") || give_acl ($config['id_user'], 0, "DM")
+		|| give_acl ($config['id_user'], 0, "UM")) {
+	
+	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+		print_input_hidden ('new_agent', 1);
+		print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo '</form>';
+}
 ?>

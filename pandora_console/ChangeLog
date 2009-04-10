@@ -1,3 +1,9 @@
+2009-04-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: get_group_agents fixed search
+	
+	* operation/agentes/estado_agente.php: Small style changes and bugfixes
+
 2009-04-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Added get_agent_module_info which gives

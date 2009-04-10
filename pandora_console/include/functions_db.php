@@ -336,25 +336,25 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 		return array ();
 	}
 	
-	$search = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
+	$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
 
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
 	} elseif (is_array ($search)) {
 		if (isset ($search["disabled"])) {
-			$search .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
+			$search_sql .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
 		} else {
-			$search .= ' AND disabled = 0';
+			$search_sql .= ' AND disabled = 0';
 		}
 		if (isset ($search["string"])) {
 			$string = safe_input ($search["string"]);
-			$search .= ' (nombre LIKE "'.$string.'" OR comentarios LIKE "'.$string.'" OR direccion LIKE "'.$string.'"';
+			$search_sql .= ' AND (nombre LIKE "'.$string.'" OR comentarios LIKE "'.$string.'" OR direccion LIKE "'.$string.'")';
 		}
 	} else {
-		$search .= ' AND disabled = 0';
+		$search_sql .= ' AND disabled = 0';
 	}
 	
-	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search);
+	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false)

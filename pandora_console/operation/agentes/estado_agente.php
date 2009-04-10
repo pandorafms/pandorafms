@@ -63,26 +63,23 @@ if (isset($_POST["ag_group"])){
 	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60">';
 }
 
-echo '<table cellpadding="4" cellspacing="4" class="databox">';
-echo '<tr><td valign="top">'.__('Group').'</td>';
-
-echo '<td valign="top">';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
+echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
 $groups = get_user_groups ();
 print_select ($groups, 'ag_group', $ag_group, 'this.form.submit()', '', '');
 
-echo '</td><td valign="top">';
+echo '</td><td style="white-space:nowrap;">';
 
-echo __('Free text for search').' (*)';
-echo '</td><td valign="top">';
+echo __('Free text for search').' (*): ';
 
 print_input_text ("search", $search, '', 15);
 
-echo '</td><td valign="top">';
+echo '</td><td style="white-space:nowrap;">';
 
 print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub")); 
 
-echo "</td></tr></table></form>";
+echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
 
 if ($search != ""){
 	$search_sql = array ("string" => '%'.$search.'%');

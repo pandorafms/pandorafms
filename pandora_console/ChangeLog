@@ -1,5 +1,10 @@
 2009-04-13  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/setup/file_manager.php: Fixed javascript code on directory
+	select.
+
+2009-04-13  Esteban Sanchez  <estebans@artica.es>
+
 	* general/footer.php: Removed Firefox icon. Style correction.
 
 	* godmode/agentes/agent_manager.php: Replaced &gt; with &raquo;. Style

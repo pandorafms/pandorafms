@@ -113,7 +113,7 @@ $table->data = array ();
 
 $table->data[0][0] = __('Directory');
 $table->data[0][1] = print_select (get_file_manager_available_directories (),
-	'directory', $directory, '', 'this.form.submit()', '', true, false);
+	'directory', $directory, 'this.form.submit()', '', '', true, false);
 
 if (! is_file_manager_writable_dir ($real_directory)) {
 	echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";

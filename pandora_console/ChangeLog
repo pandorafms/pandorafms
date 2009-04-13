@@ -1,3 +1,8 @@
+2009-04-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: Added support for group filtering
+	  and node navigation (clicking on the edges).
+
 2009-04-13  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/agent_manager.php: Fixed an error when an agent was

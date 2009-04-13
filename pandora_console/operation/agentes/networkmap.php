@@ -30,12 +30,35 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 
 $pandora_name = 'Pandora FMS';
 
-// Generate a dot graph definition for graphviz
-function generate_dot ($simple = 0, $font_size) {
-	global $config;
-	global $pandora_name;
+// Load variables
+$layout = (string) get_parameter ('layout', 'radial');
+$nooverlap = (boolean) get_parameter ('nooverlap', 0);
+$pure = (int) get_parameter ('pure');
+$zoom = (float) get_parameter ('zoom');
+$ranksep = (float) get_parameter ('ranksep', 2.5);
+$simple = (boolean) get_parameter ('simple', 0);
+$regen = (boolean) get_parameter ('regen',1); // Always regen by default
+$font_size = (int) get_parameter ('font_size', 12);
+$group = (int) get_parameter ('group', 0);
+$center = (int) get_parameter ('center', 0);
+
+// Check if a node descends from a given node
+function is_descendant ($node, $ascendant, $parents) {
+	if (! isset ($parents[$node])) {
+		return false;
+	}
+
+	if ($node == $ascendant) {
+		return true;
+	}
 	
-	$group_id = -1;
+	return is_descendant ($parents[$node], $ascendant, $parents);
+}
+
+// Generate a dot graph definition for graphviz
+function generate_dot ($group, $simple, $font_size) {
+	global $config, $pandora_name, $center;
+
 	$parents = array();
 	$orphans = array();
 	
@@ -46,7 +69,10 @@ function generate_dot ($simple = 0, $font_size) {
 	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente
 		FROM tagente
 		WHERE disabled = 0
+		' . ($group < 1 ? '' : "AND id_grupo = $group") . '
 		ORDER BY id_grupo');
+
+	// Parse agents
 	if ($agents){
 		foreach ($agents as $agent) {
 			if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
@@ -59,18 +85,35 @@ function generate_dot ($simple = 0, $font_size) {
 			}
 		
 			// Add node
-			$graph .= create_node ($agent , $simple, $font_size)."\n\t\t";
+			$nodes[$agent['id_agente']] = $agent;
 		}
 	}
-	
+
+	// Create nodes
+	foreach ($nodes as $node_id => $node) {
+		if ($center > 0 && ! is_descendant ($node_id, $center, $parents)) {
+			unset ($parents[$node_id]);
+			unset ($orphans[$node_id]);
+			unset ($nodes[$node_id]);
+			continue;
+		}
+
+		$graph .= create_node ($node , $simple, $font_size)."\n\t\t";
+	}
+
+	// Define edges
+	foreach ($parents as $node => $parent_id) {
+		// Verify that the parent is in the graph
+		if (isset ($nodes[$parent_id])) {
+			$graph .= create_edge ($node, $parent_id);
+		} else {
+			$orphans[$node] = 1;
+		}
+	}
+
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
 		$graph .= create_pandora_node ($pandora_name, $font_size);
-	}
-	
-	// Define edges
-	foreach ($parents as $node => $parent_id) {
-		$graph .= create_edge ($node, $parent_id);
 	}
 
 	// Define edges for orphan nodes
@@ -86,7 +129,16 @@ function generate_dot ($simple = 0, $font_size) {
 
 // Returns an edge definition
 function create_edge ($head, $tail) {
-	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false];';
+	global $layout, $nooverlap, $pure, $zoom,
+	       $ranksep, $simple, $regen, $font_size, $group;
+
+	// edgeURL allows node navigation
+	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
+	edgeURL="index.php?sec=estado&sec2=operation/agentes/networkmap&center='.$head.
+	'&layout='.$layout.'&nooverlap=' .$nooverlap.'&pure='.$pure.
+	'&zoom='.$zoom.'&ranksep='.$ranksep.'&simple='.$simple.'&regen=1'.
+	'&font_size='.$font_size.'&group='.$group.'"];';
+
 	return $edge;
 }
 
@@ -243,15 +295,6 @@ function set_filter () {
 }
 
 /* Main code */
-// Load variables
-$layout = (string) get_parameter ('layout', 'radial');
-$nooverlap = (boolean) get_parameter ('nooverlap', 0);
-$pure = (int) get_parameter ('pure');
-$zoom = (float) get_parameter ('zoom');
-$ranksep = (float) get_parameter ('ranksep', 2.5);
-$simple = (boolean) get_parameter ('simple', 0);
-$regen = (boolean) get_parameter ('regen',1); // Always regen by default
-$font_size = (int) get_parameter ('font_size', 12);
 
 echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Network Map').'&nbsp;';
 if ($pure == 1) {
@@ -273,9 +316,12 @@ $layout_array = array (
 			'spring2' => 'spring 2',
 			'flat' => 'flat');
 
-echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure='.$pure.'" method="post">';
+echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
 echo '<tr>';
+echo '<td valign="top">' . __('Group') . ' &nbsp;';
+print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'group', $group, '', 'All', 0, false);
+echo '</td>';
 echo '<td valign="top">' . __('Layout') . ' &nbsp;';
 print_select ($layout_array, 'layout', $layout, '', '', '');
 echo '</td>';
@@ -331,7 +377,7 @@ echo '</table></form>';
 $filter = set_filter ();
 
 // Generate dot file
-$graph = generate_dot ($simple, $font_size);
+$graph = generate_dot ($group, $simple, $font_size);
 
 // Generate image and map
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set

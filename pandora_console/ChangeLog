@@ -1,3 +1,15 @@
+2009-04-13  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/htmlawed.php: HTML cleaner-upper. If compact_header is set will
+	actually strip the HTML for less bandwidth usage.
+	
+	* include/functions_ui.php: If compact_header is set, it will strip 
+	whitespace out of the included files
+	
+	* include/functions_config.php, godmode/setup/setup_visuals.php,
+	godmode/setup/setup.php: Made checkboxes into radioboxes. Split
+	files were resetting the values every time.
+
 2009-04-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/networkmap.php: Added support for group filtering

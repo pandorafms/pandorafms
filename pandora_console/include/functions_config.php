@@ -59,9 +59,7 @@ function update_config_value ($token, $value) {
 }
 
 /**
- * Updates all config values if .
- * 
- * 
+ * Updates all config values in case setup page was invoked 
  */
 function update_config () {
 	global $config;
@@ -75,7 +73,7 @@ function update_config () {
 	
 	$update_config = (bool) get_parameter ('update_config');
 	if (! $update_config)
-		return;
+		return false;
 	
 	$style = (string) get_parameter ('style', $config["style"]);
 	if ($style != $config['style'])
@@ -98,20 +96,20 @@ function update_config () {
 	update_config_value ('graph_color3', (string) get_parameter ('graph_color3', $config["graph_color3"]));
 	update_config_value ('sla_period', (int) get_parameter ('sla_period', $config["sla_period"]));
 	update_config_value ('date_format', (string) get_parameter ('date_format', $config["date_format"]));
-	update_config_value ('trap2agent', (string) get_parameter ('trap2agent', 0));
-	update_config_value ('autoupdate', (bool) get_parameter ('autoupdate'));
+	update_config_value ('trap2agent', (string) get_parameter ('trap2agent', $config["trap2agent"]));
+	update_config_value ('autoupdate', (bool) get_parameter ('autoupdate', $config["autoupdate"]));
 	update_config_value ('prominent_time', (string) get_parameter ('prominent_time', $config["prominent_time"]));
 	update_config_value ('timesource', (string) get_parameter ('timesource', $config["timesource"]));
 	update_config_value ('event_view_hr', (int) get_parameter ('event_view_hr', $config["event_view_hr"]));
 	update_config_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
-	update_config_value ('https', (bool) get_parameter ('https'));
-	update_config_value ('compact_header', (bool) get_parameter ('compact_header'));
-	update_config_value ('round_corner', (bool) get_parameter ('round_corner'));
+	update_config_value ('https', (bool) get_parameter ('https', $config["https"]));
+	update_config_value ('compact_header', (bool) get_parameter ('compact_header', $config["compact_header"]));
+	update_config_value ('round_corner', (bool) get_parameter ('round_corner', $config["round_corner"]));
 	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
 }
 
 /**
- * 
+ * Process config variables
  */
 function process_config () {
 	global $config;
@@ -172,19 +170,19 @@ function process_config () {
 		$config['homeurl'] = '/'.$config['homeurl'];
 	}
 	
-	if (! isset ($config['date_format'])) {
+	if (!isset ($config['date_format'])) {
 		update_config_value ('date_format', 'F j, Y, g:i a');
 	}
 	
-	if (! isset ($config['event_view_hr'])) {
+	if (!isset ($config['event_view_hr'])) {
 		update_config_value ('event_view_hr', 8);
 	}
 	
-	if (! isset ($config['loginhash_pwd'])) {
+	if (!isset ($config['loginhash_pwd'])) {
 		update_config_value ('loginhash_pwd', rand (0, 1000) * rand (0, 1000)."pandorahash");
 	}
 	
-	if (!isset($config["trap2agent"])) {
+	if (!isset ($config["trap2agent"])) {
 		update_config_value ('trap2agent', 0);
 	}
 	

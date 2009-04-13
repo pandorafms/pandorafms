@@ -70,7 +70,8 @@ $table->data[7][0] = __('Block size for pagination');
 $table->data[7][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
 
 $table->data[8][0] = __('Use round corners');
-$table->data[8][1] = print_checkbox ('round_corner', 1, $config["round_corner"], true);
+$table->data[8][1] = __('Yes').'&nbsp;'.print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';
+$table->data[8][1] .= __('No').'&nbsp;'.print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
 
 $table->data[9][0] = __('Status Icon set');
 $iconsets["default"] = __('Colors (Default)');

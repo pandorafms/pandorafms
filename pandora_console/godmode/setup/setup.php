@@ -97,13 +97,16 @@ $sources["sql"] = __('Database');
 $table->data[17][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
 
 $table->data[18][0] = __('Automatic update check');
-$table->data[18][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
+$table->data[18][1] = __('Yes').'&nbsp;'.print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
+$table->data[18][1] .= __('No').'&nbsp;'.print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 
 $table->data[19][0] = __('Enforce https');
-$table->data[19][1] = print_checkbox ('https', 1, $config["https"], true);
+$table->data[19][1] = __('Yes').'&nbsp;'.print_radio_button ('https', 1, '', $config["https"], true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
 
 $table->data[20][0] = __('Compact CSS and JS into header');
-$table->data[20][1] = print_checkbox ('compact_header', 1, $config["compact_header"], true);
+$table->data[20][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
+$table->data[20][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
 
 $table->data[25][0] = __('Font path');

@@ -1,8 +1,40 @@
-2009-04-13  Sancho Lerena
+2009-04-13  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/agent_manager.php: Fixed an error when an agent was
+	created without name. Added support for new server assignment via server
+	name instead of lot of comboboxes. Added os preview.
+	
+	* godmode/agentes/configurar_agente.php: Added support for new server
+	assignment via server name. Do not show tabs on creation mode. Some 
+	translatable strings replaced with common ones.
+	
+	* godmode/agentes/modificar_agente.php: Use Pandora agents.
+	
+	* godmode/modules/manage_nc_groups.php,
+	godmode/setup/news.php,
+	godmode/modules/manage_network_components.php,
+	godmode/reporting/map_builder.php,
+	godmode/agentes/planned_downtime.php: Some translatable strings replaced
+	with common ones.
+	
+	* godmode/servers/modificar_server.php: Updated to changes in tserver. Use
+	get_server_info() for that.
+	
+	* include/functions_db.php: Updated to changes in tserver about
+	server_type field on get_server_info(). Style correction.
+	
+	* include/functions_servers.php: Added to repository. Servers API.
+	
+	* operation/servers/view_server.php: Style correction.
+	
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql, pandoradb.sql: Less space on
+	server_name field on tagente.
+
+2009-04-13  Sancho Lerena  <slerena@artica.es>
 
 	* images/console/icons/server_warning.png: Added missing icon.
 	
-2009-04-13  <jorgegonz@artica.es>
+2009-04-13  Jorge Gonzalez <jorgegonz@artica.es>
 
 	* images/console/icons/smalldot.png: Modified icon for the maps.
 

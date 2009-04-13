@@ -1214,8 +1214,8 @@ function get_users_info ($order = "fullname", $info = "fullname") {
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = 0, $privilege = "AR") {
-	if ($id_user == 0) {
+function get_user_groups ($id_user = false, $privilege = "AR") {
+	if (empty ($id_user)) {
 		global $config;
 		$id_user = $config['id_user'];
 	}
@@ -2674,10 +2674,10 @@ function get_server_info ($id_server = -1) {
 	$modules_info = array ();
 	$modules_total = array ();
 	$result = get_db_all_rows_sql ("SELECT DISTINCT(tagente_estado.running_by), COUNT(*) AS modules, id_modulo
-								   FROM tagente_estado, tagente_modulo 
-								   WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-								   AND tagente_modulo.disabled = 0
-								   AND tagente_modulo.delete_pending = 0 GROUP BY running_by");
+		FROM tagente_estado, tagente_modulo 
+		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+		AND tagente_modulo.disabled = 0
+		AND tagente_modulo.delete_pending = 0 GROUP BY running_by");
 	if (empty ($result)) {
 		$result = array ();
 	}
@@ -2703,46 +2703,62 @@ function get_server_info ($id_server = -1) {
 	
 	$return = array ();
 	foreach ($result as $server) {
-		if ($server['network_server'] == 1) {
-			$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network Server')));
-			$server["type"] = "network";
-			$id_modulo = 2;
-		} elseif ($server['data_server'] == 1) {
+		switch ($server['server_type']) {
+		case 0:
 			$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data Server')));
 			$server["type"] = "data";
 			$id_modulo = 1;
-		} elseif ($server['snmp_server'] == 1) {
+			break;
+		case 1:
+			$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network Server')));
+			$server["type"] = "network";
+			$id_modulo = 2;
+			break;
+		case 2:
 			$server["img"] = print_image ("images/snmp.png", true, array ("title" => __('SNMP Server')));
 			$server["type"] = "snmp";
 			$id_modulo = 0;
-		} elseif ($server['recon_server'] == 1) {
+			break;
+		case 3:
 			$server["img"] = print_image ("images/recon.png", true, array ("title" => __('Recon Server')));
 			$server["type"] = "recon";
 			$id_modulo = 0;
-		} elseif ($server['export_server'] == 1) {
-			$server["img"] = print_image ("images/database_refresh.png", true, array ("title" => __('Export Server')));
-			$server["type"] = "export";
-			$id_modulo = 0;
-		} elseif ($server['wmi_server'] == 1) {
-			$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI Server')));
-			$server["type"] = "wmi";
-			$id_modulo = 6;
-		} elseif ($server['prediction_server'] == 1) {
-			$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction Server')));
-			$server["type"] = "prediction";
-			$id_modulo = 5;
-		} elseif ($server['plugin_server'] == 1) {
+			break;
+		case 4:
 			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
 			$server["type"] = "plugin";
 			$id_modulo = 4;
-		} elseif ($server['inventory_server'] == 1) {
-                        $server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory Server')));
-                        $server["type"] = "inventory";
-                        $id_modulo = 0;
-		} else {
+			break;
+		case 5:
+			$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction Server')));
+			$server["type"] = "prediction";
+			$id_modulo = 5;
+			break;
+		case 6:
+			$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI Server')));
+			$server["type"] = "wmi";
+			$id_modulo = 6;
+			break;
+		case 7:
+			$server["img"] = print_image ("images/bullet_go.png", true, array ("title" => __('Export Server')));
+			$server["type"] = "export";
+			$id_modulo = 0;
+			break;
+		case 8:
+			$server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory Server')));
+			$server["type"] = "inventory";
+			$id_modulo = 0;
+			break;
+		case 9:
+			$server["img"] = print_image ("images/world.png", true, array ("title" => __('Web Server')));
+			$server["type"] = "web";
+			$id_modulo = 0;
+			break;
+		default:
 			$server["img"] = '';
 			$server["type"] = "unknown";
 			$id_modulo = 0;
+			break;
 		}
 		
 		if ($server['master'] == 1) {
@@ -2767,10 +2783,10 @@ function get_server_info ($id_server = -1) {
 		if ($id_modulo > 0 && $server["modules"] > 0) {
 			//If the server doesn't have modules, it doesn't have lag so nothing to calculate. If it's not a module server, don't go here either
 			$result = get_db_row_sql ("SELECT COUNT(*) AS module_lag, MAX(last_execution_try - current_interval) AS lag FROM tagente_estado
-												WHERE last_execution_try > 0
-												AND current_interval > 0
-												AND running_by = ".$server["id_server"]."
-												AND (UNIX_TIMESTAMP() - last_execution_try - current_interval < current_interval * 2)");
+				WHERE last_execution_try > 0
+				AND current_interval > 0
+				AND running_by = ".$server["id_server"]."
+				AND (UNIX_TIMESTAMP() - last_execution_try - current_interval < current_interval * 2)");
 			
 			// Lag over current_interval * 2 is not lag, it's a timed out module
 			// And we can't check current_interval = 0 (data modules) because they come as they want
@@ -2783,35 +2799,35 @@ function get_server_info ($id_server = -1) {
 			}
 		} else {
 			switch ($server["type"]) {
-				case "recon":
-					$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
-					
-					//Get recon taks info
-					$tasks = get_db_all_rows_sql ("SELECT status, utimestamp FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
-					if (empty ($tasks)) {
-						$tasks = array ();
+			case "recon":
+				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+				
+				//Get recon taks info
+				$tasks = get_db_all_rows_sql ("SELECT status, utimestamp FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+				if (empty ($tasks)) {
+					$tasks = array ();
+				}
+				//Total jobs running on this recon server
+				$server["modules"] = count ($tasks);
+				
+				//Total recon jobs (all servers)
+				$server["modules_total"] = $recon_total;
+				
+				//Lag (take average active time of all active tasks)
+				$server["module_lag"] = 0;
+				$lags = array ();
+				foreach ($tasks as $task) {
+					if ($task["status"] > 0 && $task["status"] <= 100) {
+						$lags[] = $time - $task["utimestamp"];
+						//Module lag is actually the number of jobs that is currently running
+						$server["module_lag"]++;
 					}
-					//Total jobs running on this recon server
-					$server["modules"] = count ($tasks);
-					
-					//Total recon jobs (all servers)
-					$server["modules_total"] = $recon_total;
-					
-					//Lag (take average active time of all active tasks)
-					$server["module_lag"] = 0;
-					$lags = array ();
-					foreach ($tasks as $task) {
-						if ($task["status"] > 0 && $task["status"] <= 100) {
-							$lags[] = $time - $task["utimestamp"];
-							//Module lag is actually the number of jobs that is currently running
-							$server["module_lag"]++;
-						}
-					}
-					if (count ($lags) > 0) {
-						$server["lag"] = (int) array_sum ($lags) / count ($lags);
-					}
+				}
+				if (count ($lags) > 0) {
+					$server["lag"] = (int) array_sum ($lags) / count ($lags);
+				}
 				break;
-				default:
+			default:
 				break;
 			}	
 		}

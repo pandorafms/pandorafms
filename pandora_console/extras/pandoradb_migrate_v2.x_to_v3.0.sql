@@ -289,7 +289,7 @@ ALTER TABLE  `tmensajes` CHANGE  `timestamp`  `timestamp` BIGINT( 20 ) UNSIGNED 
 
 ALTER TABLE  `tevento` CHANGE  `event_type`  `event_type` ENUM(  'unknown',  'alert_fired',  'alert_recovered',  'alert_ceased',  'alert_manual_validation',  'recon_host_detected',  'system',  'error',  'new_agent',  'going_up_warning', 'going_up_critical',  'going_down_warning',  'going_down_normal',  'going_down_critical',  'going_up_normal' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT  'unknown';
 
-ALTER TABLE tagente ADD `server_name` varchar(255) default '';
+ALTER TABLE tagente ADD `server_name` varchar(100) default '';
 ALTER TABLE tevento ADD `user_comment` varchar(255) NOT NULL default '';
 ALTER TABLE tusuario ADD `language` varchar(10) default NULL;
 ALTER TABLE tserver ADD `server_type` tinyint(3) unsigned NOT NULL default '0';

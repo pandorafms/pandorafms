@@ -113,9 +113,9 @@ if ($create_downtime || $update_downtime) {
 		
 		$result = process_sql ($sql);
 		if ($result === false) {
-			echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
+			echo '<h3 class="error">'.__('Could not be created').'</h3>';
 		} else {
-			echo '<h3 class="suc">'.__('Created successfully').'</h3>';
+			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		}
 	}
 }

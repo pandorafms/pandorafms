@@ -39,7 +39,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
  */
 
-echo "<h2>".__('Database Maintenance')." &gt; ";
+echo "<h2>".__('Database Maintenance')." &raquo; ";
 echo __('Database Information')."</h2>";
 echo '<div id="db_info_graph">';
 echo '<table border=0>';

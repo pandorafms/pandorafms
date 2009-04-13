@@ -88,7 +88,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	}
 
 	// Create news
-	echo "<h2>".__('Pandora Setup')." &gt; ";
+	echo "<h2>".__('Pandora Setup')." &raquo; ";
 	echo __('Site news management')."</h2>";
 	echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';   
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
@@ -117,7 +117,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 	echo '</form></td></tr></table>';
 } else {  // Main list view for Links editor
-	echo "<h2>".__('Pandora Setup')." &gt; ";
+	echo "<h2>".__('Pandora Setup')." &raquo; ";
 	echo  __('Site news management')."</h3>";
 	echo "<table cellpadding='4' cellspacing='4' class='databox' width=600>";
 	echo "<th>".__('Subject')."</th>";

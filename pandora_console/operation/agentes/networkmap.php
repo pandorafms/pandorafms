@@ -253,7 +253,7 @@ $simple = (boolean) get_parameter ('simple', 0);
 $regen = (boolean) get_parameter ('regen',1); // Always regen by default
 $font_size = (int) get_parameter ('font_size', 12);
 
-echo '<h2>'.__('Pandora Agents').' &gt; '.__('Network Map').'&nbsp;';
+echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Network Map').'&nbsp;';
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
 	print_image ("images/monitor.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));

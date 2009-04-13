@@ -98,7 +98,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		$export_type = 3; // Standard table;
 
 	// Header
-	echo "<h2>".__('Pandora Agents')." &gt; ";
+	echo "<h2>".__('Pandora Agents')." &raquo; ";
 	echo __('Database export results')."</h2>";
 
 	if ($export_type == 1) { // CSV
@@ -246,7 +246,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	
 	$config['js'][] = 'calendar';
 
-	echo "<h2>".__('Pandora Agents')." &gt; ";
+	echo "<h2>".__('Pandora Agents')." &raquo; ";
 	echo __('Export data')."</h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';

@@ -42,7 +42,7 @@ if (isset ($_GET["user_del"])) { //delete user
 		__('There was a problem deleting the profile'));
 }
 
-echo '<h2>'.__('User management').' &gt; '.__('Users defined in Pandora').'</h2>';
+echo '<h2>'.__('User management').' &raquo; '.__('Users defined in Pandora').'</h2>';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

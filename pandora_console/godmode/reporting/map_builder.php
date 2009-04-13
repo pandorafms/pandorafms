@@ -259,7 +259,7 @@ if ($id_layout) {
 	$height = $layout['height'];
 }
 
-echo "<h2>".__('Reporting')." &gt; ".__('Map builder');
+echo "<h2>".__('Reporting')." &raquo; ".__('Map builder');
 print_help_icon ("map_builder");
 echo "</h2>";
 

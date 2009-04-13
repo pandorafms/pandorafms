@@ -157,7 +157,7 @@ if ($delete_profile) {
 		__('Could not be deleted'));
 }
 
-echo "<h2>".__('Pandora users')." &gt; ".__('User detail editor')."</h2>";
+echo "<h2>".__('Pandora users')." &raquo; ".__('User detail editor')."</h2>";
 
 $table->width = '50%';
 $table->data = array ();

@@ -120,7 +120,7 @@ if ($create_profile) {
 	$id_profile = 0;
 }
 
-echo '<h2>'.__('Profile management').' &gt; '.$page_title.'</h2>';
+echo '<h2>'.__('Profile management').' &raquo; '.$page_title.'</h2>';
 
 // Edit profile
 if ($id_profile || $new_profile) {

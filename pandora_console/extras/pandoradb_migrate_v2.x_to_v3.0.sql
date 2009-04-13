@@ -1,5 +1,3 @@
-
--- Changes on 1x March 09
 ALTER TABLE treport_content_sla_combined CHANGE sla_max `sla_max` double(18,2) NOT NULL default 0;
 ALTER TABLE treport_content_sla_combined CHANGE sla_min `sla_min` double(18,2) NOT NULL default 0;
 ALTER TABLE treport_content_sla_combined CHANGE sla_limit `sla_limit` double(18,2) NOT NULL default 0;
@@ -281,30 +279,19 @@ CREATE TABLE IF NOT EXISTS `tlocal_component_group` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---Changes added 16 February 2009
-
 ALTER TABLE tplugin ADD `plugin_type` int(2) UNSIGNED NOT NULL default 0;
 ALTER TABLE treport_content ADD `description` mediumtext;
 
 ALTER TABLE treport_content MODIFY `type` varchar(30) default 'simple_graph';
 ALTER TABLE treport_content ADD `id_agent` int(10) unsigned NOT NULL default 0;
 
--- Changes added 19 February 2009
-
 ALTER TABLE  `tmensajes` CHANGE  `timestamp`  `timestamp` BIGINT( 20 ) UNSIGNED NOT NULL DEFAULT  '0';
-
--- Changes added 20 February 2009
 
 ALTER TABLE  `tevento` CHANGE  `event_type`  `event_type` ENUM(  'unknown',  'alert_fired',  'alert_recovered',  'alert_ceased',  'alert_manual_validation',  'recon_host_detected',  'system',  'error',  'new_agent',  'going_up_warning', 'going_up_critical',  'going_down_warning',  'going_down_normal',  'going_down_critical',  'going_up_normal' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT  'unknown';
 
-
--- Changes on 1th April 09
 ALTER TABLE tagente ADD `server_name` varchar(255) default '';
 ALTER TABLE tevento ADD `user_comment` varchar(255) NOT NULL default '';
 ALTER TABLE tusuario ADD `language` varchar(10) default NULL;
 ALTER TABLE tserver ADD `server_type` tinyint(3) unsigned NOT NULL default '0';
 ALTER TABLE tserver ADD `queued_modules` int(5) unsigned NOT NULL default '0';
 ALTER TABLE tserver ADD `threads` int(5) unsigned NOT NULL default '0';
-
-
-

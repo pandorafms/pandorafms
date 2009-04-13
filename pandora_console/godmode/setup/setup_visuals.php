@@ -41,7 +41,7 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 
 require_once ('include/functions_themes.php');
 
-echo "<h2>".__('Setup')." &gt; ";
+echo "<h2>".__('Setup')." &raquo; ";
 echo __('Visual configuration')."</h2>";
 
 $table->width = '90%';

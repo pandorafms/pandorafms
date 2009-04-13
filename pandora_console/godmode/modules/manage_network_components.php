@@ -134,7 +134,7 @@ if (isset($_GET["delete"])){ // if delete
 // ------------------
 // SHOW MODULES
 // ------------------
-echo "<h2>".__('Module management')." &gt; ";
+echo "<h2>".__('Module management')." &raquo; ";
 echo __('Module component management')."</h2>";
 
 // Show group selector

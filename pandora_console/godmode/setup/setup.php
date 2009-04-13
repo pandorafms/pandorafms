@@ -21,12 +21,24 @@ require_once ("include/config.php");
 
 check_login ();
 
+if (is_ajax ()) {
+	$get_os_icon = (bool) get_parameter ('get_os_icon');
+	
+	if ($get_os_icon) {
+		$id_os = (int) get_parameter ('id_os');
+		print_os_icon ($id_os, false);
+		return;
+	}
+	
+	return;
+}
+
+
 if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
 }
-
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup.php');
 

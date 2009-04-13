@@ -673,7 +673,7 @@ function get_group_agents_detailed_reporting ($id_group, $period = 0, $date = 0,
 	
 	if ($return === false)
 		echo $output;
-		
+	
 	return $output;
 }
 

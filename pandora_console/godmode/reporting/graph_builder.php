@@ -199,7 +199,7 @@ if (! isset($_GET["delete_module"])) {
 	}
 }
 
-echo "<h2>".__('Reporting')." &gt; ";
+echo "<h2>".__('Reporting')." &raquo; ";
 if (isset ($chunk1)) {
 	echo __('Graph builder module list')."</h2>";
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";

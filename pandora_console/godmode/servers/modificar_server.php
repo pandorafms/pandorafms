@@ -53,7 +53,7 @@ if (isset ($_GET["delete"])) {
 
 if (isset($_GET["server"])) {
 	$id_server= get_parameter_get ("server");
-	echo "<h2>".__('Pandora servers')." &gt; ".__('Update Server')."</h2>";
+	echo "<h2>".__('Pandora servers')." &raquo; ".__('Update Server')."</h2>";
 	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
 	$row = get_db_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
@@ -76,7 +76,7 @@ if (isset($_GET["server"])) {
 
 } else {
 	$result = get_db_all_rows_in_table ("tserver");
-	echo "<h2>".__('Pandora servers')." &gt; ".__('Manage servers')."</h2>";
+	echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage servers')."</h2>";
 
 	if ($result !== false) {
 		$table->cellpadding = 4;

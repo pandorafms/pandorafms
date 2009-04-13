@@ -47,7 +47,7 @@ function print_cells_temp ($cells) {
 }
 
 
-echo "<h2>".__('Pandora Agents')." &gt; ".__('Tactical view')."</h2>";
+echo "<h2>".__('Pandora Agents')." &raquo; ".__('Tactical view')."</h2>";
 
 $data = get_group_stats ();
 

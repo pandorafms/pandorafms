@@ -35,7 +35,7 @@ input, textarea {
 textarea {
 	padding: 5px;
 	min-height: 100px;
-	width: 100%;
+	width: 99%;
 }
 textarea.conf_editor {
 	padding: 5px;

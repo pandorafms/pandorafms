@@ -53,7 +53,7 @@ if (isset ($_GET["update"])) { // Edit mode
 	$id_os = -1; // Any
 }
 
-echo '<h2>'.__('Pandora servers').' &gt; '.__('Manage recontask');
+echo '<h2>'.__('Pandora servers').' &raquo; '.__('Manage recontask');
 print_help_icon ("recontask");
 echo '</h2>';
 

@@ -24,7 +24,7 @@ require_once ('include/functions_reports.php');
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');
 
-echo "<h2>".__('Reporting')." &gt; ";
+echo "<h2>".__('Reporting')." &raquo; ";
 echo __('Custom reporting')."</h2>";
 
 $reports = get_reports ();

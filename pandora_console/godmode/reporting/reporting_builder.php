@@ -212,8 +212,8 @@ if ($edit_sla_report_content) {
 	$report_content = get_db_row ('treport_content', 'id_rc', $id_report_content);
 
 	/* Show all SLAs defined in the report content */	
-	echo '<h2>'.__('Reporting')." &gt; ";
-	echo __('Custom reporting builder')." &gt; ";
+	echo '<h2>'.__('Reporting')." &raquo; ";
+	echo __('Custom reporting builder')." &raquo; ";
 	echo '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 		$id_report.'">'.$report['name'].'</a></h2>';
 	echo '<h2>'.__('SLAs defined')."</h2>";
@@ -290,7 +290,7 @@ if ($edit_sla_report_content) {
 } elseif ($edit_report || $id_report) {
 	 /* Edit and creation report form */
 	$id_agent = get_parameter_post ("id_agent",0);
-	echo "<h2>".__('Reporting')." &gt; ";
+	echo "<h2>".__('Reporting')." &raquo; ";
 	echo __('Custom reporting builder');
 	
 	echo " <a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=".$id_report."'><img src='images/reporting.png'></A>";
@@ -484,7 +484,7 @@ if ($edit_sla_report_content) {
 	}
 } else {
 	// Report LIST
-	echo "<h2>".__('Reporting')." &gt; ";
+	echo "<h2>".__('Reporting')." &raquo; ";
 	echo __('Custom reporting')."</h2>";
 
 	$reports = get_reports (array ('order' => 'name'),

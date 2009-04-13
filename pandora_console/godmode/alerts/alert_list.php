@@ -186,7 +186,7 @@ if ($disable_alert) {
 }
 
 if ($id_agente) {
-	echo '<h1>'.__('Agent configuration').' &gt; '.__('Alerts').'</h1>';
+	echo '<h1>'.__('Agent configuration').' &raquo; '.__('Alerts').'</h1>';
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 } else {
 	echo '<h1>'.__('Alerts').'</h1>';

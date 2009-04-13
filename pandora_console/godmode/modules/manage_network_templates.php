@@ -103,7 +103,7 @@ if ($export_profile) {
 	exit;
 }
 
-echo "<h2>".__('Module management')." &gt; ".__('Module template management')."</h2>";
+echo "<h2>".__('Module management')." &raquo; ".__('Module template management')."</h2>";
 
 $result = get_db_all_rows_in_table ("tnetwork_profile", "name");
 

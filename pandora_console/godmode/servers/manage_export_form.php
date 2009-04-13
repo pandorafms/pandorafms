@@ -58,7 +58,7 @@ else {
 	$options = '';
 }
 
-echo '<h2>'.__('Pandora servers').' &gt; '.__('export targets');
+echo '<h2>'.__('Pandora servers').' &raquo; '.__('export targets');
 //print_help_icon ("exportserver");
 echo '</h2>';
 

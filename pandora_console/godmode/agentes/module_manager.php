@@ -24,7 +24,7 @@ if (!isset ($id_agente)) {
 
 enterprise_include ('godmode/agentes/module_manager.php');
 
-echo "<h2>".__('Agent configuration')." &gt; ".__('Modules')."</h2>"; 
+echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>"; 
 
 // Create module/type combo
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';

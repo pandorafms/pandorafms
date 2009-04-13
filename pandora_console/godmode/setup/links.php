@@ -83,7 +83,7 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 		}
 
 		// Create link
-        echo "<h2>".__('Pandora Setup')." &gt; ";
+        echo "<h2>".__('Pandora Setup')." &raquo; ";
 		echo __('Link management')."</h2>";
 		echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';
 		echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
@@ -111,7 +111,7 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 	}
 
 	else {  // Main list view for Links editor
-		echo "<h2>".__('Pandora Setup')." &gt; ";
+		echo "<h2>".__('Pandora Setup')." &raquo; ";
 		echo  __('Link management')."</h3>";
 		echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 		echo "<th width='180px'>".__('Link name')."</th>";

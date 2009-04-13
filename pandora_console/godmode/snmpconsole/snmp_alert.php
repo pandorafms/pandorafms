@@ -137,9 +137,9 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
 	if ($id_as) {
-		echo "<h2>Pandora SNMP &gt; ".__('Update alert')."</h2>";
+		echo "<h2>".__('Update alert')."</h2>";
 	} else {
-		echo "<h2>Pandora SNMP &gt; ".__('Create alert')."</h2>";
+		echo "<h2>".__('Create alert')."</h2>";
 	}
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
@@ -250,7 +250,7 @@ if (isset ($_GET["update_alert"])) {
 	// End table
 	echo "</td></tr></table>";
 } else {
-	echo "<h2>Pandora SNMP &gt; ".__('Alert Overview')."</h2>";
+	echo "<h2>".__('Alert Overview')."</h2>";
 	//Overview
 	$result = get_db_all_rows_in_table ("talert_snmp");
 	if ($result === false) {

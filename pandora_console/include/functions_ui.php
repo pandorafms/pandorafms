@@ -230,7 +230,7 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 		return "-";
 	}
 	
-	$output = '<img src="images/'.$icon.'" border="0" alt="'.$os_name.'" title="'.$os_name.'" />';
+	$output = '<img src="images/'.$icon.'" alt="'.$os_name.'" title="'.$os_name.'" />';
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;
@@ -583,14 +583,15 @@ function process_page_head ($string, $bitfield) {
 		if ($config['https']) {
 			/* Check with "on" because some web servers like Cherokee always
 			 set this value even if SSL is not enabled */
-			if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == true || $_SERVER['HTTPS'] == 'on')) {
+			if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
 				$protocol = 'https';
 				$ssl = true;
 			}
 		}
 		
 		$query = $protocol.'://' . $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80 && ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
+		
+		if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
 			$query .= ":".$_SERVER['SERVER_PORT'];
 		}
 		$query .= $_SERVER['SCRIPT_NAME'];
@@ -997,7 +998,7 @@ function print_moduletype_icon ($id_moduletype, $return = false) {
 function format_filesize ($bytes) {
 	$bytes = (int) $bytes;
 	$strs = array ('B', 'kB', 'MB', 'GB', 'TB');
-	if ($bytes < 0) {
+	if ($bytes <= 0) {
 		return "0 ".$strs[0];
 	}
 	$con = 1024;
@@ -1013,47 +1014,48 @@ function format_filesize ($bytes) {
  *
  * @return array An array with the image path, image width and image height.
  */
-function get_status_images_path()
-{
+function get_status_images_path () {
 	global $config;
 
 	$imageset = $config["status_images_set"];
 
-	if (strpos($imageset, ",") === false) $imageset .= ",40x18";
-	list($imageset, $sizes) = split(",", $imageset, 2);
+	if (strpos ($imageset, ",") === false) 
+		$imageset .= ",40x18";
+	list ($imageset, $sizes) = split (",", $imageset, 2);
 
-	if (strpos($sizes, "x") === false) $sizes .= "x18";
-	list($imagewidth, $imageheight) = split("x", $sizes, 2); // 40x18
+	if (strpos ($sizes, "x") === false)
+		$sizes .= "x18";
+	list ($imagewidth, $imageheight) = split ("x", $sizes, 2);
 
-	$imagespath = "images/status_sets/$imageset";
+	$imagespath = 'images/status_sets/'.$imageset;
 
-	return array($imagespath);
+	return array ($imagespath);
 }
 
-define('STATUS_MODULE_OK', 			'module_ok.png');
-define('STATUS_MODULE_CRITICAL', 	'module_critical.png');
-define('STATUS_MODULE_WARNING', 	'module_warning.png');
+define ('STATUS_MODULE_OK', 'module_ok.png');
+define ('STATUS_MODULE_CRITICAL', 'module_critical.png');
+define ('STATUS_MODULE_WARNING', 'module_warning.png');
 
-define('STATUS_AGENT_CRITICAL', 	'agent_critical.png');
-define('STATUS_AGENT_WARNING', 		'agent_warning.png');
-define('STATUS_AGENT_DOWN', 		'agent_down.png');
-define('STATUS_AGENT_OK', 			'agent_ok.png');
-define('STATUS_AGENT_NO_DATA', 		'agent_no_data.png');
-define('STATUS_AGENT_NO_MONITORS', 	'agent_no_monitors.png');
+define ('STATUS_AGENT_CRITICAL', 'agent_critical.png');
+define ('STATUS_AGENT_WARNING', 'agent_warning.png');
+define ('STATUS_AGENT_DOWN', 'agent_down.png');
+define ('STATUS_AGENT_OK', 'agent_ok.png');
+define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
+define ('STATUS_AGENT_NO_MONITORS', 'agent_no_monitors.png');
 
-define('STATUS_ALERT_FIRED', 		'alert_fired.png');
-define('STATUS_ALERT_NOT_FIRED',	'alert_not_fired.png');
-define('STATUS_ALERT_DISABLED',		'alert_disabled.png');
+define ('STATUS_ALERT_FIRED', 'alert_fired.png');
+define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');
+define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 
-define('STATUS_SERVER_OK', 			'server_ok.png');
-define('STATUS_SERVER_DOWN', 		'server_down.png');
+define ('STATUS_SERVER_OK', 'server_ok.png');
+define ('STATUS_SERVER_DOWN', 'server_down.png');
 
-function print_status_image($type, $title = "", $return = false) {
-	list($imagepath) = get_status_images_path();
-
+function print_status_image ($type, $title = "", $return = false) {
+	list ($imagepath) = get_status_images_path ();
+	
 	$imagepath .= "/" . $type;
-
-	return print_image ($imagepath, $return, array ("border" => 0, "title" => $title));
+	
+	return print_image ($imagepath, $return, array ("title" => $title));
 }
 
 ?>

@@ -19,7 +19,7 @@
 // Login check
 check_login ();
 
-echo "<h2>".__('Visual console')." &gt; ".__('Summary')."</h2>";
+echo "<h2>".__('Visual console')." &raquo; ".__('Summary')."</h2>";
 
 require_once ('include/functions_visual_map.php');
 $layouts = get_user_layouts ();

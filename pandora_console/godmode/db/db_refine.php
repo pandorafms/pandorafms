@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	exit;
 }
 
-echo '<h2>'.__('Database Maintenance').' &gt; '.__('Database debug').'</h2>';
+echo '<h2>'.__('Database Maintenance').' &raquo; '.__('Database debug').'</h2>';
 
 
 if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {

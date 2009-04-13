@@ -32,7 +32,7 @@ $create = (bool) get_parameter ('create');
 $update = (bool) get_parameter ('update');
 $delete = (bool) get_parameter ('delete');
 
-echo '<h2>'.__('Module management').' &gt; '. __('Component group management').'</h2>';
+echo '<h2>'.__('Module management').' &raquo; '. __('Component group management').'</h2>';
 
 if ($create) {
 	$name = (string) get_parameter ('name');

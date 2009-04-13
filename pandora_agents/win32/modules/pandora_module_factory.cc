@@ -117,7 +117,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_service       = "";
 	module_odbc          = "";
 	module_odbc_query    = "";
-	module_odbc          = "";
 	module_logevent      = "";
 	module_source        = "";
 	module_eventtype     = "";

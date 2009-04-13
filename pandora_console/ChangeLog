@@ -1,3 +1,27 @@
+2009-04-13  Jorge Gonzalez  <jorgegonz@artica.es>
+
+        * images/console/icons/gateway.png,
+	images/console/icons/routerap.png,
+	images/console/icons/pbx_warning.png,
+	images/console/icons/pbx_ok.png, images/console/icons/hub_bad.png,
+	images/console/icons/bridge_ok.png,
+	images/console/icons/gateway_warning.png,
+	images/console/icons/routerap_warning.png,
+	images/console/icons/nat_bad.png,
+	images/console/icons/gateway_ok.png,
+	images/console/icons/routerap_ok.png,
+	images/console/icons/bridge_bad.png,
+	images/console/icons/pbx_bad.png,
+	images/console/icons/gateway_bad.png,
+	images/console/icons/hub_ok.png,
+	images/console/icons/routerap_bad.png,
+	images/console/icons/nat_ok.png, images/console/icons/hub.png,
+	images/console/icons/nat.png, images/console/icons/bridge.png,
+	images/console/icons/hub_warning.png,
+	images/console/icons/nat_warning.png,
+	images/console/icons/bridge_warning.png,
+	images/console/icons/pbx.png: Added several images for the maps.
+
 2009-04-13  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/setup/file_manager.php: Fixed javascript code on directory

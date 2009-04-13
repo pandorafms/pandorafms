@@ -36,8 +36,8 @@ if (isset ($_POST["create"])) { // If create
 	$id_link = process_sql ($sql, "insert_id");
 	
 	print_result_message ($id_link,
-		__('Created successfully'),
-		__('Not created. Error inserting data'));
+		__('Successfully created'),
+		__('Could not be created'));
 }
 
 if (isset ($_POST["update"])) { // if update

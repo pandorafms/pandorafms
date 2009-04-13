@@ -42,8 +42,8 @@ if ($create) {
 		array ('name' => $name,
 			'parent' => $parent));
 	print_result_message ($result,
-		__('Created successfully'),
-		__('Not created. Error inserting data'));
+		__('Successfully created'),
+		__('Could not be created'));
 }
 
 if ($update) {

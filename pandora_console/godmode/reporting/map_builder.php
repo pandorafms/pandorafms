@@ -66,9 +66,9 @@ if ($create_layout) {
 	
 	$id_layout = process_sql_insert ('tlayout', $values);
 	if ($id_layout !== false) {
-		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully ').'</h3>';
 	} else {
-		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
+		echo '<h3 class="err">'.__('Could not be created').'</h3>';
 	}
 	if (is_ajax ()) {
 		exit;
@@ -172,9 +172,9 @@ if ($create_layout_data) {
 	$result = process_sql_insert ('tlayout_data', $values);
 	
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 	} else {
-		echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
+		echo '<h3 class="error">'.__('Could not be created').'</h3>';
 	}
 	if (is_ajax ()) {
 		exit;

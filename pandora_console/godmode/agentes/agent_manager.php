@@ -19,42 +19,45 @@
 // Load global vars
 enterprise_include ('godmode/agentes/agent_manager.php');
 
-if (!isset ($id_agente)) {
+require_once ('include/functions_servers.php');
+
+$new_agent = (bool) get_parameter ('new_agent');
+
+if (! isset ($id_agente) && ! $new_agent) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access agent manager witout an agent");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
-// ========================
-// AGENT GENERAL DATA FORM 
-// ========================
+echo "<h2>".__('Agent configuration')." &raquo; ";
 
-echo "<h2>".__('Agent configuration');
-$new_agent = (bool) get_parameter ('new_agent');
-if ($new_agent) {
-	echo " &raquo; ".__('Create agent');
+if ($id_agente) {
+	echo __('Update agent');
 } else {
-	echo " &raquo; ".__('Update agent');
+	echo __('Create agent');
 }
 echo "</h2>";
 echo '<div style="height: 5px">&nbsp;</div>';
 
 // Agent remote configuration editor
 $agent_md5 = md5 ($nombre_agente, false);
-$filename['md5'] = $config["remote_config"] . "/" . $agent_md5 . ".md5";
-$filename['conf'] = $config["remote_config"] . "/" . $agent_md5 . ".conf"; 
+$filename['md5'] = $config["remote_config"]."/".$agent_md5.".md5";
+$filename['conf'] = $config["remote_config"]."/".$agent_md5.".conf"; 
 
-if (isset ($_GET["disk_conf"])) {
+$disk_conf = (bool) get_parameter ('disk_conf');
+
+if ($disk_conf) {
 	require ("agent_disk_conf_editor.php");
-	exit;
+	return;
 }
 
+$disk_conf_delete = (bool) get_parameter ('disk_conf_delete');
 // Agent remote configuration DELETE
-if (isset($_GET["disk_conf_delete"])) {
+if ($disk_conf_delete) {
 	//TODO: Get this working on computers where the Pandora server(s) are not on the webserver
 	//TODO: Get a remote_config editor working in the open version
-	unlink ($filename['md5']);
-	unlink ($filename['conf']);
+	@unlink ($filename['md5']);
+	@unlink ($filename['conf']);
 }
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
@@ -70,7 +73,7 @@ $table->data = array ();
 $table->data[0][0] = __('Agent name').print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
 $table->data[0][1] = print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
 
-if (isset ($id_agente) && $id_agente != "") {
+if ($id_agente) {
 	$table->data[0][1] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
 	$table->data[0][1] .= print_image ("images/lupa.png", true, array ("border" => 0, "title" => __('Agent detail')));
 	$table->data[0][1] .= '</a>';
@@ -86,7 +89,7 @@ if (file_exists ($filename['md5'])) {
 $table->data[1][0] = __('IP Address');
 $table->data[1][1] = print_input_text ('direccion', $direccion_agente, '', 16, 100, true);
 
-if (! $new_agent) {
+if ($id_agente) {
 	$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;&nbsp;';
 	
 	$ip_all = get_agent_addresses ($id_agente);
@@ -108,67 +111,67 @@ $table->data[4][0] = __('Interval');
 $table->data[4][1] = print_input_text ('intervalo', $intervalo, '', 16, 100, true);
 
 $table->data[5][0] = __('OS');
-$table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name', 'id_os', $id_os, '', '', '0', true);
+$table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
+	'id_os', $id_os, '', '', '0', true);
+$table->data[5][1] .= ' <span id="os_preview">';
+$table->data[5][1] .= print_os_icon ($id_os, false, true);
+$table->data[5][1] .= '</span>';
 
 // Network server
-$table->data[6][0] = __('Network Server').print_help_tip (__('You must select a Network Server for the Agent, so it can work properly with this kind of modules'), true);
-$table->data[6][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE network_server = 1 ORDER BY name', 'network_server', $id_network_server, '', '', 0, true);
 
-// Plugin server
-$table->data[7][0] = __('Plugin Server').print_help_tip (__('You must select a Plugin Server for the Agent, so it can work properly with this kind of modules'), true);
-$table->data[7][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE plugin_server = 1 ORDER BY name', 'plugin_server', $id_plugin_server, '', '', 0, true);
-
-// WMI Server
-$table->data[8][0] = __('WMI Server').print_help_tip (__('You must select a WMI Server for the Agent, so it can work properly with this kind of modules'), true);
-$table->data[8][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE wmi_server = 1 ORDER BY name', 'wmi_server', $id_wmi_server, '', '', 0, true);
-
-// Prediction Server
-$table->data[9][0] = __('Prediction Server').print_help_tip (__('You must select a Prediction Server for the Agent, so it can work properly with this kind of modules'), true);
-$table->data[9][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_server = 1 ORDER BY name', 'prediction_server', $id_prediction_server, '', '', 0, true);
-
-// 10
-enterprise_hook ('inventory_server');
+$table->data[6][0] = __('Server');
+$table->data[6][1] = print_select (get_server_names (),
+	'server_name', $server_name, '', '', 0, true);
 
 // Custom ID
-$table->data[11][0] = __('Custom ID');
-$table->data[11][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[7][0] = __('Custom ID');
+$table->data[7][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Description
-$table->data[12][0] = __('Description');
-$table->data[12][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+$table->data[8][0] = __('Description');
+$table->data[8][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
 
 // Learn mode / Normal mode
-$table->data[13][0] = __('Module definition').print_help_icon("module_definition", true);
-$table->data[13][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[13][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[9][0] = __('Module definition').print_help_icon("module_definition", true);
+$table->data[9][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[9][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
-$table->data[14][0] = __('Status');
-$table->data[14][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[14][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[10][0] = __('Status');
+$table->data[10][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[10][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
-$table->data[15][0] = __('Remote configuration');
+$table->data[11][0] = __('Remote configuration');
 
 if (file_exists ($filename['md5'])) {
-	$table->data[15][1] = date ("F d Y H:i:s.", fileatime ($filename['md5']));
+	$table->data[11][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 	// Delete remote configuration
-	$table->data[15][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
-	$table->data[15][1] .= print_image ("images/cross.png", true).'</a>';
+	$table->data[11][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
+	$table->data[11][1] .= print_image ("images/cross.png", true).'</a>';
 } else {
-	$table->data[15][1] = '<em>'.__('Not available').'</em>';
+	$table->data[11][1] = '<em>'.__('Not available').'</em>';
 }
 
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if ($new_agent) {
-	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
-	print_input_hidden ('create_agent', 1);
-} else {
+if ($id_agente) {
 	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	print_input_hidden ('update_agent', 1);
 	print_input_hidden ('id_agente', $id_agente);
+} else {
+	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
+	print_input_hidden ('create_agent', 1);
 }
 echo '</div></form>';
+
+require_jquery_file ('pandora.controls');
 ?>
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	$("select#id_os").pandoraSelectOS ();
+});
+/* ]]> */
+</script>

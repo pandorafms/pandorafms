@@ -32,7 +32,6 @@ $modules_server = 0;
 $total_modules_network = 0;
 $total_modules_data = 0;
 
-
 echo "<h2>".__('Pandora servers')." &raquo; ".__('Configuration detail')."</h2>";
 
 $total_modules = (int) get_db_value ('COUNT(*)', 'tagente_modulo', 'disabled', 0);
@@ -41,6 +40,9 @@ $servers = get_server_info ();
 $table->width = '98%';
 $table->size = array ();
 $table->size[6] = '60';
+
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
 
 $table->align = array ();
 $table->align[1] = 'center';
@@ -60,12 +62,12 @@ $table->data = array ();
 
 foreach ($servers as $server) {
 	$data = array ();
-	$data[0] = "<b>".$server['name']."</b>";
+	$data[0] = $server['name'];
 	
 	if ($server['status'] == 0) {
-		$data[1] = print_status_image(STATUS_SERVER_DOWN, '', true);
+		$data[1] = print_status_image (STATUS_SERVER_DOWN, '', true);
 	} else {
-		$data[1] = print_status_image(STATUS_SERVER_OK, '', true);
+		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
 	// Load
@@ -79,7 +81,7 @@ foreach ($servers as $server) {
 	array_push ($table->data, $data);
 }
 
-if (!empty ($table->data)) {
+if (! empty ($table->data)) {
 	print_table ($table);	
 } else {
 	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";

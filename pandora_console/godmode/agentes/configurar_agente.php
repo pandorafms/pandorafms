@@ -24,9 +24,10 @@ enterprise_include ('godmode/agentes/configurar_agente.php');
 check_login ();
 
 //See if id_agente is set (either POST or GET, otherwise -1
-$id_agente = (int) get_parameter ("id_agente", -1);
-
-$group = get_agent_group ($id_agente);
+$id_agente = (int) get_parameter ("id_agente");
+$group = 0;
+if ($id_agente)
+	$group = get_agent_group ($id_agente);
 
 if (! give_acl ($config["id_user"], $group, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -98,12 +99,9 @@ $alert_d6 = 1;
 $alert_d7 = 1;
 $alert_recovery = 0;
 $alert_priority = 0;
-$id_network_server = 0;
-$id_plugin_server = 0;
-$id_prediction_server = 0;
-$id_wmi_server = 0;
+$server_name = '';
 $grupo = 0;
-$id_os = 0;
+$id_os = 9; // Windows
 $custom_id = "";
 
 $create_agent = (bool) get_parameter ('create_agent');
@@ -117,10 +115,7 @@ if ($create_agent) {
 	$comentarios = (string)get_parameter_post ("comentarios");
 	$modo = (int) get_parameter_post ("modo");
 	$id_parent = (int) get_parameter_post ("id_parent");
-	$id_network_server = (int) get_parameter_post ("network_server");
-	$id_plugin_server = (int) get_parameter_post ("plugin_server");
-	$id_prediction_server = (int) get_parameter_post ("prediction_server");
-	$id_wmi_server = (int) get_parameter_post ("wmi_server");
+	$server_name = (string) get_parameter_post ("server_name");
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id");
@@ -139,10 +134,7 @@ if ($create_agent) {
 				'id_grupo' => $grupo, 'intervalo' => $intervalo,
 				'comentarios' => $comentarios, 'modo' => $modo,
 				'id_os' => $id_os, 'disabled' => $disabled,
-				'id_network_server' => $id_network_server,
-				'id_plugin_server' => $id_plugin_server,
-				'id_wmi_server' => $id_wmi_server,
-				'id_prediction_server' => $id_prediction_server,
+				'server_name' => $server_name,
 				'id_parent' => $id_parent, 'custom_id' => $custom_id));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
@@ -180,8 +172,8 @@ if ($create_agent) {
 				$agent_created_ok = false;
 			}
 		} else {
-			$id_agente = -1;
-			$agent_creation_error = __("There was a problem creating the agent");
+			$id_agente = 0;
+			$agent_creation_error = __('Could not be created');
 		}
 	}
 }
@@ -189,50 +181,52 @@ if ($create_agent) {
 // Show tabs
 $img_style = array ("class" => "top", "width" => 16);
 
-echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
-echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
-print_image ("images/setup.png", false, $img_style);
-echo '&nbsp; '.mb_substr (get_agent_name ($id_agente),0,21).'</a>';
-echo "</li></ul></div>";
+if ($id_agente) {
+	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
+	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
+	print_image ("images/setup.png", false, $img_style);
+	echo '&nbsp; '.mb_substr (get_agent_name ($id_agente), 0, 21).'</a>';
+	echo "</li></ul></div>";
 
-echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
-echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-print_image ("images/zoom.png", false, $img_style);
-echo '&nbsp;'.__('View').'</a></li>';
+	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+	print_image ("images/zoom.png", false, $img_style);
+	echo '&nbsp;'.__('View').'</a></li>';
 
-echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
-print_image ("images/cog.png", false, $img_style);
-echo '&nbsp; '.__('Setup').'</a></li>';
+	echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
+	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
+	print_image ("images/cog.png", false, $img_style);
+	echo '&nbsp; '.__('Setup').'</a></li>';
 
-echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
-print_image ("images/lightbulb.png", false, $img_style);
-echo '&nbsp; '.__('Modules').'</a></li>';
+	echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
+	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
+	print_image ("images/lightbulb.png", false, $img_style);
+	echo '&nbsp; '.__('Modules').'</a></li>';
 
-echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
-print_image ("images/bell.png", false, $img_style);
-echo '&nbsp; '.__('Alerts').'</a></li>';
+	echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
+	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
+	print_image ("images/bell.png", false, $img_style);
+	echo '&nbsp; '.__('Alerts').'</a></li>';
 
-echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
-print_image ("images/network.png", false, $img_style);
-echo '&nbsp; '.__('Net. Templates').'</a></li>';
+	echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
+	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
+	print_image ("images/network.png", false, $img_style);
+	echo '&nbsp; '.__('Net. Templates').'</a></li>';
 
-enterprise_hook ('inventory_tab');
+	enterprise_hook ('inventory_tab');
 
-echo "</ul></div></div>";
-
-// Make some space between tabs and title
-// IE might not always show an empty div, added space
-echo '<div style="height: 25px;">&nbsp;</div>';
+	echo "</ul></div></div>";
+	
+	// Make some space between tabs and title
+	// IE might not always show an empty div, added space
+	echo '<div style="height: 25px;">&nbsp;</div>';
+}
 
 // Show agent creation results
 if ($create_agent) {
 	print_result_message ($agent_created_ok,
-		__('Agent successfully created'),
-		__('There was a problem creating the agent'));
+		__('Successfully created'),
+		__('Could not be created'));
 }
 
 // Fix / Normalize module data
@@ -261,7 +255,7 @@ if (isset($_GET["fix_module"])){
 // Update AGENT
 // ================
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
-	$id_agente = (int) get_parameter_post ("id_agente", 0);
+	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = (string) get_parameter_post ("agente");
 	$direccion_agente = (string) get_parameter_post ("direccion");
 	$address_list = (string) get_parameter_post ("address_list");
@@ -278,10 +272,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
-	$id_network_server = (int) get_parameter_post ("network_server", 0);
-	$id_plugin_server = (int) get_parameter_post ("plugin_server", 0);
-	$id_wmi_server = (int) get_parameter_post ("wmi_server", 0);
-	$id_prediction_server = (int) get_parameter_post ("prediction_server", 0);
+	$server_name = (string) get_parameter_post ("server_name");
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 
@@ -302,18 +293,19 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 			agent_delete_address ($id_agente, $delete_ip);
 		}
 	
-		//Now update the thing
-		$sql = sprintf ("UPDATE tagente
-			SET disabled = %d, id_parent = %d, id_os = %d, modo = %d, 
-			nombre = '%s', direccion = '%s', id_grupo = %d,
-			intervalo = %d, comentarios = '%s', id_network_server = %d,
-			id_plugin_server = %d, id_wmi_server = %d, id_prediction_server = %d,
-			custom_id = '%s' WHERE id_agente = %d",
-			$disabled, $id_parent, $id_os, $modo, $nombre_agente,
-			$direccion_agente, $grupo, $intervalo, $comentarios,
-			$id_network_server, $id_plugin_server, $id_wmi_server,
-			$id_prediction_server, $custom_id, $id_agente);
-		$result = process_sql ($sql);
+		$result = process_sql_update ('tagente', 
+			array ('disabled' => $disabled,
+				'id_parent' => $id_parent,
+				'id_os' => $id_os,
+				'modo' => $modo,
+				'nombre' => $nombre_agente,
+				'direccion' => $direccion_agente,
+				'id_grupo' => $grupo,
+				'intervalo' => $intervalo,
+				'comentarios' => $comentarios,
+				'server_name' => $server_name,
+				'custom_id' => $custom_id),
+			array ('id_agente' => $id_agente));
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
 		} else {
@@ -325,7 +317,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 
 // Read agent data
 // This should be at the end of all operation checks, to read the changes - $id_agente doesn't have to be retrieved
-if ($id_agente > 0) {
+if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = get_agent_group ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
@@ -347,10 +339,7 @@ if ($id_agente > 0) {
 	$grupo = $agent["id_grupo"];
 	$ultima_act = $agent["ultimo_contacto"];
 	$comentarios = $agent["comentarios"];
-	$id_plugin_server = $agent["id_plugin_server"];
-	$id_network_server = $agent["id_network_server"];
-	$id_prediction_server = $agent["id_prediction_server"];
-	$id_wmi_server = $agent["id_wmi_server"];
+	$server_name = $agent["server_name"];
 	$modo = $agent["modo"];
 	$id_os = $agent["id_os"];
 	$disabled = $agent["disabled"];
@@ -415,20 +404,33 @@ if ($update_module) {
 	
 	$result = process_sql_update ('tagente_modulo',
 		array ('descripcion' => $description,
-			'id_module_group' => $id_module_group, 'nombre' => $name,
-			'max' => $maxvalue, 'min' => $minvalue, 'module_interval' => $interval,
-			'tcp_port' => $tcp_port, 'tcp_send' => $tcp_send,
-			'tcp_rcv' => $tcp_rcv, 'snmp_community' => $snmp_community,
-			'snmp_oid' => $snmp_oid, 'ip_target' => $ip_target,
-			'flag' => $flag, 'disabled' => $disabled,
-			'id_export' => $id_export, 'plugin_user' => $plugin_user,
-			'plugin_pass' => $plugin_pass, 'plugin_parameter' => $plugin_parameter,
-			'id_plugin' => $id_plugin, 'post_process' => $post_process,
+			'id_module_group' => $id_module_group,
+			'nombre' => $name,
+			'max' => $maxvalue,
+			'min' => $minvalue,
+			'module_interval' => $interval,
+			'tcp_port' => $tcp_port,
+			'tcp_send' => $tcp_send,
+			'tcp_rcv' => $tcp_rcv,
+			'snmp_community' => $snmp_community,
+			'snmp_oid' => $snmp_oid,
+			'ip_target' => $ip_target,
+			'flag' => $flag,
+			'disabled' => $disabled,
+			'id_export' => $id_export,
+			'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass,
+			'plugin_parameter' => $plugin_parameter,
+			'id_plugin' => $id_plugin,
+			'post_process' => $post_process,
 			'prediction_module' => $prediction_module,
-			'max_timeout' => $max_timeout, 'custom_id' => $custom_id,
+			'max_timeout' => $max_timeout,
+			'custom_id' => $custom_id,
 			'history_data' => $history_data,
-			'min_warning' => $min_warning, 'max_warning' => $max_warning,
-			'min_critical' => $min_critical, 'max_critical' => $max_critical,
+			'min_warning' => $min_warning,
+			'max_warning' => $max_warning,
+			'min_critical' => $min_critical,
+			'max_critical' => $max_critical,
 			'min_ff_event' => $ff_event
 		),
 		'id_agente_modulo = '.$id_agent_module);
@@ -456,21 +458,35 @@ if ($create_module) {
 	$id_agent_module = process_sql_insert ('tagente_modulo', 
 		array ('id_agente' => $id_agente,
 			'id_tipo_modulo' => $id_module_type,
-			'nombre' => $name, 'descripcion' => $description, 'max' => $maxvalue,
-			'min' => $minvalue, 'snmp_oid' => $snmp_oid,
+			'nombre' => $name, 
+			'descripcion' => $description, 
+			'max' => $maxvalue,
+			'min' => $minvalue, 
+			'snmp_oid' => $snmp_oid,
 			'snmp_community' => $snmp_community,
-			'id_module_group' => $id_module_group, 'module_interval' => $interval,
-			'ip_target' => $ip_target, 'tcp_port' => $tcp_port,
-			'tcp_rcv' => $tcp_rcv, 'tcp_send' => $tcp_send,
-			'id_export' => $id_export, 'plugin_user' => $plugin_user,
-			'plugin_pass' => $plugin_pass, 'plugin_parameter' => $plugin_parameter,
-			'id_plugin' => $id_plugin, 'post_process' => $post_process,
+			'id_module_group' => $id_module_group, 
+			'module_interval' => $interval,
+			'ip_target' => $ip_target,
+			'tcp_port' => $tcp_port,
+			'tcp_rcv' => $tcp_rcv, 
+			'tcp_send' => $tcp_send,
+			'id_export' => $id_export, 
+			'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass, 
+			'plugin_parameter' => $plugin_parameter,
+			'id_plugin' => $id_plugin, 
+			'post_process' => $post_process,
 			'prediction_module' => $id_prediction_module,
-			'max_timeout' => $max_timeout, 'disabled' => $disabled,
-			'id_modulo' => $id_module, 'custom_id' => $custom_id,
-			'history_data' => $history_data, 'min_warning' => $min_warning,
-			'max_warning' => $max_warning, 'min_critical' => $min_critical,
-			'max_critical' => $max_critical, 'min_ff_event' => $ff_event
+			'max_timeout' => $max_timeout, 
+			'disabled' => $disabled,
+			'id_modulo' => $id_module,
+			'custom_id' => $custom_id,
+			'history_data' => $history_data,
+			'min_warning' => $min_warning,
+			'max_warning' => $max_warning,
+			'min_critical' => $min_critical,
+			'max_critical' => $max_critical,
+			'min_ff_event' => $ff_event
 		));
 	
 	if ($id_agent_module === false) {

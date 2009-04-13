@@ -73,9 +73,9 @@ if (isset($_GET["create"])){ // Create module
 
 	$id_module = process_sql ($sql, 'insert_id');
 	if ($id_module === false)
-		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
+		echo "<h3 class='error'>".__('Could not be created')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
+		echo "<h3 class='suc'>".__('Successfully created')."</h3>";
 	}
 }
 

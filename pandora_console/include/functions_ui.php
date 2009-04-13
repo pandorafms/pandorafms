@@ -625,9 +625,8 @@ function process_page_head ($string, $bitfield) {
 	<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
 	<meta name="robots" content="index, follow" />
 	<link rel="icon" href="images/pandora.ico" type="image/ico" />
-	<link rel="stylesheet" href="include/styles/common.css" type="text/css"/>
 	<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
-	
+
 	if ($config["language"] != "en") {
 		//Load translated strings - load them last so they overload all the objects
 		require_javascript_file ("time_".$config["language"]);
@@ -642,10 +641,12 @@ function process_page_head ($string, $bitfield) {
 	}
 	
 	//Style should go first
-	$config['css'] = array_merge (array ($config['style'] => "include/styles/".$config['style'].".css", 
-		 "menu" => "include/styles/menu.css", 
-		 "tip", "include/styles/tip.css"),
-		 $config['css']);
+	$config['css'] = array_merge (array (
+		"common" => "include/styles/common.css", 
+		$config['style'] => "include/styles/".$config['style'].".css", 
+		"menu" => "include/styles/menu.css", 
+		"tip", "include/styles/tip.css"
+		), $config['css']);
 	
 	//We can't load empty and we loaded (conditionally) ie
 	$loaded = array ('', 'ie');
@@ -657,7 +658,10 @@ function process_page_head ($string, $bitfield) {
 		if (!empty ($config["compact_header"])) {
 			$output .= '<style type="text/css">';
 			$style = file_get_contents ($config["homedir"]."/".$filename);
-			$output .= str_replace ("../../images", "images", $style);
+			//Replace paths
+			$style = str_replace (array ("@import url(", "../../images"), array ("@import url(include/styles/", "images"), $style);
+			//Remove comments
+			$output .= preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $style);
 			$output .= '</style>';
 		} else {
 			$output .= '<link rel="stylesheet" href="'.$filename.'" type="text/css" />'."\n\t";
@@ -722,8 +726,12 @@ function process_page_head ($string, $bitfield) {
 	$output .= '<!--[if gte IE 6]>
 	<link rel="stylesheet" href="include/styles/ie.css" type="text/css"/>
 	<![endif]-->';
-	
+
 	$output .= $string;
+
+	if (!empty ($config["compact_header"])) {
+		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $output);
+	}
 	
 	return $output;
 }
@@ -746,10 +754,16 @@ function process_page_body ($string, $bitfield) {
 		$output = '<body>'; //Don't enforce a white background color. Let user style sheet do that
 	}
 	
-	$output .= $string;
-	
+	if (!empty ($config["compact_header"])) {
+		require_once ($config["homedir"]."/include/htmlawed.php");
+		$htmLawedconfig = array ("valid_xhtml" => 1, "tidy" => -1);
+		$output .= htmLawed ($string, $htmLawedconfig);
+	} else {
+		$output .= $string;
+	}
+
 	$output .= '</body>';
-	
+
 	return $output;
 }
 

@@ -1,3 +1,10 @@
+2009-04-13  Esteban Sanchez  <estebans@artica.es>
+
+	* modules/pandora_module_odbc.cc: Fixed log message when no username
+	was found.
+
+	* modules/pandora_module_factory.cc: Removed duplicated assignment.
+
 2009-04-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_proc.cc,

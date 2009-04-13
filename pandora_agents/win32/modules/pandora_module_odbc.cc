@@ -190,7 +190,7 @@ Pandora_Module_Odbc::run () {
 
 	if (this->username == "") {
 		pandoraLog ("Error on module ODBC '%s': No username to connect to DSN %s. "
-			    "Add %s_username parameter to configuration file",
+			    "Add odbc_%s_username parameter to configuration file",
 			    this->module_name.c_str (), this->dsn.c_str (), this->dsn.c_str ());
 		return;
 	}

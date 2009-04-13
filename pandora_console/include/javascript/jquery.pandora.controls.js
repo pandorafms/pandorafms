@@ -164,9 +164,52 @@
 			};
 		}
 	});
+	
+	$.extend ({
+		pandoraSelectOS: new function() {
+			this.defaults = {
+				alertSelect: "select#id_od",
+				spanPreview: "#os_preview",
+				debug: false
+			};
+			
+			/* public methods */
+			this.construct = function (settings) {
+				return this.each (function() {
+					this.config = {};
+					this.config = $.extend (this.config, $.pandoraSelectOS.defaults, settings);
+					
+					var config = this.config;
+
+					$(this).change (function () {
+						var id_os = this.value;
+						
+						$(config.spanPreview).fadeOut ('fast', function () {
+							$("img", config.spanPreview).remove ();
+							jQuery.post ('ajax.php', 
+								{"page": "godmode/setup/setup",
+								"get_os_icon": 1,
+								"id_os": id_os
+								},
+								function (data) {
+									$(config.spanPreview)
+										.append (data)
+										.fadeIn ('fast');
+								},
+								"html"
+							);
+						});
+						
+					});
+				});
+			};
+		}
+	});
+	
 	$.fn.extend({
 		pandoraSelectGroup: $.pandoraSelectGroup.construct,
 		pandoraSelectAgentModule: $.pandoraSelectAgentModule.construct,
-		pandoraSelectAgentAlert: $.pandoraSelectAgentAlert.construct
+		pandoraSelectAgentAlert: $.pandoraSelectAgentAlert.construct,
+		pandoraSelectOS: $.pandoraSelectOS.construct
 	});
 }) (jQuery);

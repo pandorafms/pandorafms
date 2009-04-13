@@ -22,7 +22,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-echo '<h2>'.__('Pandora users').' &gt; '.__('Users defined in Pandora').'</h2>';
+echo '<h2>'.__('Pandora users').' &raquo; '.__('Users defined in Pandora').'</h2>';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

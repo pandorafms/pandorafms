@@ -27,7 +27,7 @@ if (! give_acl ($config['id_user'], 0, "IR") == 1) {
 	require ("general/noaccess.php");
 	exit;
 }
-echo "<h2>".__('Incident management')." &gt; ".__('Statistics')."</h2>";
+echo "<h2>".__('Incident management')." &raquo; ".__('Statistics')."</h2>";
 
 echo '<table width="90%">
 	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>

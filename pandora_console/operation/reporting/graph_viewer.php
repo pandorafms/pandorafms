@@ -91,7 +91,7 @@ if ($view_graph) {
 			exit;
 		}
 		
-		echo "<h2>".__('Reporting')." &gt; ";
+		echo "<h2>".__('Reporting')." &raquo; ";
 		echo __('Combined image render')."</h2>";
 		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
@@ -129,7 +129,7 @@ if ($view_graph) {
 		echo "</form>";		
 	}
 }
-echo "<h2>" . __('Reporting') . " &gt; ";
+echo "<h2>" . __('Reporting') . " &raquo; ";
 echo __('Custom graph viewer') . "</h2>";
 
 $graphs = get_user_custom_graphs ();

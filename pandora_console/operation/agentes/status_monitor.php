@@ -30,7 +30,7 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-echo "<h2>".__('Pandora Agents')." &gt; ".__('Full list of Monitors')."</h2>";
+echo "<h2>".__('Pandora Agents')." &raquo; ".__('Full list of Monitors')."</h2>";
 
 $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");

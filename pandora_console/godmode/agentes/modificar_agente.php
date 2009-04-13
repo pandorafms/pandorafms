@@ -54,7 +54,7 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 		exit;
 	}
 }
-echo "<h2>".__('Agent configuration')." &gt; ".__('Agents defined in Pandora')."</h2>";
+echo "<h2>".__('Agent configuration')." &raquo; ".__('Agents defined in Pandora')."</h2>";
 
 // Show group selector
 if (isset($_POST["ag_group"])){

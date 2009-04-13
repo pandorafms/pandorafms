@@ -98,7 +98,7 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	$name = "";
 }
 
-echo "<h2>".__('Module management')." &gt; ".__('Module template management')."</h2>";
+echo "<h2>".__('Module management')." &raquo; ".__('Module template management')."</h2>";
 
 if ($id_np < 1) {
 	echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';

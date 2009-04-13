@@ -53,7 +53,7 @@ $ag_group = get_parameter ("ag_group", $group_id);
 $ag_group = get_parameter_get ("ag_group_refresh", $ag_group); //if it isn't set, defaults to prev. value
 $search = get_parameter ("search", "");
 
-echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
+echo "<h2>".__('Pandora Agents')." &raquo; ".__('Summary')."</h2>";
 
 // Show group selector (POST)
 if (isset($_POST["ag_group"])){

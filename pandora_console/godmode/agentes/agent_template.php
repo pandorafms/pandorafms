@@ -85,7 +85,7 @@ if (isset ($_POST["template_id"])) {
 
 // Main header
 
-echo "<h2>".__('Agent configuration')." &gt; ".__('Module templates')."</h2>";
+echo "<h2>".__('Agent configuration')." &raquo; ".__('Module templates')."</h2>";
 
 // ==========================
 // TEMPLATE ASSIGMENT FORM

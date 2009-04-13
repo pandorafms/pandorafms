@@ -138,10 +138,8 @@ function delete_report ($id_report) {
 	$report = get_report ($id_report);
 	if ($report === false)
 		return false;
-	$res1 = @process_sql_delete ('treport_content', array ('id_report' => $id_report));
-	$res2 = @process_sql_delete ('treport', array ('id_report' => $id_report));
-	
-	return $res1 && $res2;
+	@process_sql_delete ('treport_content', array ('id_report' => $id_report));
+	return @process_sql_delete ('treport', array ('id_report' => $id_report));
 }
 
 /**

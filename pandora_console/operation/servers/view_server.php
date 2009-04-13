@@ -33,11 +33,9 @@ $total_modules_network = 0;
 $total_modules_data = 0;
 
 
-echo "<h2>".__('Pandora servers')." &gt; ".__('Configuration detail')."</h2>";
+echo "<h2>".__('Pandora servers')." &raquo; ".__('Configuration detail')."</h2>";
 
-$total_modules = (int) get_db_sql ("SELECT COUNT(*)
-				FROM tagente_modulo
-				WHERE tagente_modulo.disabled = 0");
+$total_modules = (int) get_db_value ('COUNT(*)', 'tagente_modulo', 'disabled', 0);
 $servers = get_server_info ();
 	
 $table->width = '98%';

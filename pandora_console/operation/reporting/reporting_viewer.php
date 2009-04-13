@@ -49,7 +49,7 @@ if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
 
-echo "<h2>".__('Reporting')." &gt; ";
+echo "<h2>".__('Reporting')." &raquo; ";
 echo __('Custom reporting')." - ";
 echo $report['name']."</h2>";
 

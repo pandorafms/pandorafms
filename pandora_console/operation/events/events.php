@@ -171,7 +171,7 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=".rawu
 
 echo '<h3 id="result" style="display:none">&nbsp;</h3>';
 
-echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp;";
+echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
 
 if ($config["pure"] == 1) {
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';

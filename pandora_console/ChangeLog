@@ -1,3 +1,74 @@
+2009-04-13  Esteban Sanchez  <estebans@artica.es>
+
+	* general/footer.php: Removed Firefox icon. Style correction.
+
+	* godmode/agentes/agent_manager.php: Replaced &gt; with &raquo;. Style
+	correction when setting bold attributes.
+
+	* godmode/agentes/manage_config_remote.php,
+	godmode/agentes/modificar_agente.php, godmode/agentes/module_manager.php,
+	godmode/alerts/alert_list.php, godmode/db/db_audit.php,
+	godmode/db/db_event.php, godmode/db/db_info.php, godmode/db/db_main.php,
+	godmode/db/db_purge.php, godmode/db/db_refine.php,
+	godmode/groups/configure_group.php, godmode/groups/group_list.php,
+	godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_network_components.php,
+	godmode/modules/manage_network_templates.php, 
+	godmode/modules/manage_network_templates_form.php,
+	godmode/modules/module_list.php, godmode/profiles/profile_list.php,
+	godmode/reporting/graph_builder.php, godmode/reporting/map_builder.php,
+	godmode/reporting/reporting_builder.php, godmode/servers/manage_export.php,
+	godmode/servers/manage_export_form.php,
+	godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php,
+	godmode/servers/modificar_server.php, godmode/setup/setup_visuals.php,
+	godmode/setup/links.php, godmode/setup/news.php,
+	godmode/snmpconsole/snmp_alert.php, godmode/users/configure_user.php,
+	godmode/users/user_list.php, operation/agentes/alerts_status.php,
+	operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_agente.php, operation/agentes/estado_grupo.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/exportdata.php, operation/agentes/networkmap.php,
+	operation/agentes/status_monitor.php, operation/agentes/tactical.php,
+	operation/events/events.php, operation/incidents/incident.php,
+	operation/incidents/incident_detail.php,
+	operation/incidents/incident_statistics.php,
+	operation/messages/message.php, operation/reporting/custom_reporting.php,
+	operation/reporting/graph_viewer.php,
+	operation/reporting/reporting_viewer.php, operation/servers/view_server.php,
+	operation/users/user.php, operation/users/user_edit.php, 
+	operation/users/user_statistics.php, operation/visual_console/index.php,
+	godmode/agentes/agent_template.php: Replaced &gt; with &raquo;
+
+	* operation/agentes/datos_agente.php: Return instead of exit
+
+	* include/javascript/jquery.pandora.controls.js: Added pandoraSelectOS
+	control to preview the OS icon on a select.
+
+	* include/functions_reports.php: Fixed a bug on delete_report() that
+	returns error when the report has no content.
+
+	* include/functions_ui.php: Removed border attribute on print_os_icon().
+	Some fixes to meta refresh element on process_page_head(). Fixed 
+	format_filesize() when length is zero.
+	
+	* godmode/menu.php: Replaced link to file manager. Added enterprise hook.
+
+	* godmode/setup/file_manager.php: Renamed from obfuscated name filemgr.php
+
+	* include/styles/pandora.css: Textarea width reduced to 99%
+
+	* godmode/setup/setup.php: Added get_os_icon AJAX operation.
+	
+	* images/mimetypes/, images/mimetypes/zip.png, images/mimetypes/image.png,
+	images/mimetypes/unknown.png, images/mimetypes/directory.png: Added to
+	repository. Mime type icons.
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed date comments.
+	
+	* include/functions_filemanager.php: Added to repository. Minimal API for
+	file manager system.
+
 2009-04-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: get_group_agents fixed search

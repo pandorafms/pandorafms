@@ -172,7 +172,7 @@ if (empty ($result)) {
 	$count = count ($result);
 }
 
-echo '<h2>'.__('Incident management').' &gt; '.__('Manage incidents').'</h2>
+echo '<h2>'.__('Incident management').' &raquo; '.__('Manage incidents').'</h2>
 <form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">
 <table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
 <td valign="middle"><h3>'.__('Filter').'</h3>';

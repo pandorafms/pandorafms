@@ -54,7 +54,7 @@ if ($id_group) {
 	}
 }
 
-echo "<h2>".__('Group management')." &gt; ";
+echo "<h2>".__('Group management')." &raquo; ";
 if ($id_group) {
 	echo __('Update group');
 } else {

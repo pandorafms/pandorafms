@@ -48,7 +48,7 @@ if ($update_module) {
 		echo "<h3 class='suc'>".__('Module updated successfully')."</h3>";
 }
 
-echo "<h2>".__('Module management')." &gt; ";
+echo "<h2>".__('Module management')." &raquo; ";
 echo __('Defined modules')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";

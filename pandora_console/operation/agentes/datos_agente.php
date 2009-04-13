@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Agent Data view");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 if (isset ($_GET["delete"])) {

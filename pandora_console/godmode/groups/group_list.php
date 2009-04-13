@@ -123,7 +123,7 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-echo "<h2>".__('Group management')." &gt; ";	
+echo "<h2>".__('Group management')." &raquo; ";	
 echo __('Groups defined in Pandora')."</h2>";
 
 $table->width = '65%';

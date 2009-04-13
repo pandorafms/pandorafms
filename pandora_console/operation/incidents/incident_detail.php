@@ -207,10 +207,10 @@ echo "<script type=\"text/javascript\">
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
-	echo '<h2>'.__('Incident management').' &gt; '.__('Incident details').' #'.$id_inc.'</h2>';
+	echo '<h2>'.__('Incident management').' &raquo; '.__('Incident details').' #'.$id_inc.'</h2>';
 } else {
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert">';
-	echo '<h2>'.__('Incident management').' &gt; '.__('Create incident').'</h2>';
+	echo '<h2>'.__('Incident management').' &raquo; '.__('Create incident').'</h2>';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="650px">';

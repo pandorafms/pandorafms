@@ -36,7 +36,7 @@ if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	return;
 }
 
-echo "<h2>".__('Pandora Agents')." &gt; ".__('Agent general information')."</h2>";
+echo "<h2>".__('Pandora Agents')." &raquo; ".__('Agent general information')."</h2>";
 
 // Blank space below title
 echo '<div style="height: 10px">&nbsp;</div>';

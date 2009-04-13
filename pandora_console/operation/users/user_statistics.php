@@ -21,7 +21,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-echo "<h2>".__('Users defined in Pandora')." &gt; ".__('User activity statistics')."</h2>";
+echo "<h2>".__('Users defined in Pandora')." &raquo; ".__('User activity statistics')."</h2>";
 
 print_image ("reporting/fgraph.php?tipo=user_activity", false, array ("border" => 0));
 ?>

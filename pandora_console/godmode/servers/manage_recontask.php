@@ -92,7 +92,7 @@ if (isset($_GET["create"])) {
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".__('Pandora servers')." &gt; ".__('Manage recontask')."</h2>";
+echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage recontask')."</h2>";
 
 $result = get_db_all_rows_in_table ("trecon_task");
 $color=1;

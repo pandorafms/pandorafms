@@ -86,7 +86,7 @@ if ($create) {
 }
 
 // List export servers
-echo "<h2>".__('Pandora servers')." &gt; ".__('export targets')."</h2>";
+echo "<h2>".__('Pandora servers')." &raquo; ".__('export targets')."</h2>";
 
 $result = get_db_all_rows_in_table ("tserver_export");
 if (!$result) {

@@ -60,7 +60,9 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 	$sub["godmode/modules/manage_nc_groups"]["text"] = __('Component groups');
 	
-	$sub["godmode/modules/manage_network_components"]["text"] = __('Module components');
+	$sub["godmode/modules/manage_network_components"]["text"] = __('Network components');
+	
+	enterprise_hook ('components_submenu');
 	
 	$sub["godmode/modules/manage_network_templates"]["text"] = __('Module templates');
 	
@@ -164,7 +166,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
-	$sub["godmode/setup/filemgr"]["text"] = __('File Manager');
+	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	$menu["gsetup"]["sub"] = $sub;

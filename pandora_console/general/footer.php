@@ -23,15 +23,12 @@ if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = get_system_time ();
 }
 
-echo '<a class="white_bold" target="_blank" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'</a><br />';
+echo '<a class="white_bold" target="_blank" href="general/license/pandora_info_'.$config["language"].'.html">';
+echo 'Pandora FMS '.$pandora_version.' - Build '.$build_version;
+echo '</a><br />';
 echo '<a class="white">'. __('Page generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
-
+echo '</a>';
 if (isset ($config['debug'])) {
 	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
 }
-echo '</a><br />';
-echo '<a href="http://www.mozilla-europe.org/en/firefox/">';
-if (file_exists("images/firefox.png"))
-	print_image ("images/firefox.png", false, array ("align" => "middle", "title" => __('Pandora FMS console is best viewed with Firefox web browser'), "alt" => __('Get Firefox')));
-echo '</a>';
 ?>

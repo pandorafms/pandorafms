@@ -1,7 +1,23 @@
+2009-04-14  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/servers/view_server.php: Removed notice message when no
+	servers were found.
+	
+	* reporting/fgraph.php: Use get_db_value_filter().
+	
+	* include/styles/pandora.css: Updated copyright date.
+	
+	* include/styles/menu.css: Added policies enterprise style.
+	
+	* reporting/pChart/pChart.class: Fixed a infinite loop that happened
+	sometimes on drawScale().
+	
+	* include/config_process.php: Updated build version 
+	
 2009-04-13  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
-	* include/htmlawed.php: HTML cleaner-upper. If compact_header is set will
-	actually strip the HTML for less bandwidth usage.
+	* include/htmlawed.php: HTML cleaner-upper. If compact_header is set 
+	will actually strip the HTML for less bandwidth usage.
 	
 	* include/functions_ui.php: If compact_header is set, it will strip 
 	whitespace out of the included files

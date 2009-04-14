@@ -22,7 +22,7 @@ WriteMakefile(
 		HTML::Entities => 0,
 		SNMP => 0
     },
-    EXE_FILES 		=> [ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_wmi', 'bin/pandora_recon', 'bin/pandora_snmpconsole' , 'bin/pandora_plugin', 'bin/pandora_prediction', 'util/pandora_exec'],
+    EXE_FILES 		=> [ 'bin/pandora_server', 'util/pandora_exec'],
     PMLIBDIRS  		=> [ 'lib' ],
     'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
 => '.gz', 'COMPRESS' => 'gzip'}

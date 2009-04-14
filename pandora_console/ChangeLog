@@ -1,6 +1,10 @@
+2009-04-14  Esteban Sanchez  <estebans@artica.es>
+
+	* index.php: Removed debug traces.
+
 2009-04-08  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
-        * images/console/icons/dotmin_ok.png,
+	* images/console/icons/dotmin_ok.png,
 	  images/console/icons/appliance_ok.png, 
 	  images/console/icons/ap_ok.png,
 	  images/console/icons/dotmin.png, 

@@ -121,10 +121,6 @@ if ($config["pure"] == 0) {
 	echo '<body bgcolor="#FFFFFF">';
 }
 
-echo '<pre>';
-if ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')
-	echo "AAAAAAaaaaa";
-echo '</pre>';
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 
 // Login process 

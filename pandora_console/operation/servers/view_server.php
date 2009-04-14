@@ -36,7 +36,11 @@ echo "<h2>".__('Pandora servers')." &raquo; ".__('Configuration detail')."</h2>"
 
 $total_modules = (int) get_db_value ('COUNT(*)', 'tagente_modulo', 'disabled', 0);
 $servers = get_server_info ();
-	
+if ($servers === false) {
+	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+	return;
+}
+
 $table->width = '98%';
 $table->size = array ();
 $table->size[6] = '60';
@@ -81,9 +85,5 @@ foreach ($servers as $server) {
 	array_push ($table->data, $data);
 }
 
-if (! empty ($table->data)) {
-	print_table ($table);	
-} else {
-	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
-}
+print_table ($table);	
 ?>

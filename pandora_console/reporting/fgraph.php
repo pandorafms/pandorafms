@@ -430,7 +430,7 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
 
-	$data = array();
+	$data = array ();
 
 	$resolution = $config["graph_res"] * ($period * 2 / $width); // Number of "slices" we want in graph
 	
@@ -444,10 +444,11 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
 		$top = $datelimit + ($periodtime * ($i + 1));
-		$data[$bottom] = (int) get_db_sql ("SELECT COUNT(*) FROM tagent_access WHERE 
-																 id_agent = ".$id_agent." AND 
-																 utimestamp > ".$bottom." AND 
-																 utimestamp < ".$top);
+		$data[$bottom] = (int) get_db_value_filter ('COUNT(*)',
+			'tagent_access',
+			array ('id_agent' => $id_agent,
+				'utimestamp > '.$bottom,
+				'utimestamp < '.$top));
 	}
 
 	$engine = get_graph_engine ($period);
@@ -455,15 +456,14 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->data = $data;
-	$engine->max_value = max ($data);
+	$engine->max_value = $engine->max_value = max ($data);
 	$engine->show_title = false;
 	$engine->fontpath = $config['fontpath'];
 	$engine->xaxis_interval = floor ($width / 72);
-	$engine->yaxis_interval = max ($data);
 	$engine->xaxis_format = 'date';
 	$engine->watermark = false;
 	$engine->show_grid = false;
-
+	
 	$engine->single_graph ();
 }
 

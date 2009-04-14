@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################
-# Pandora Data Server
+# Pandora Server
 ##########################################################################
-# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2008 Ramon Novoa, rnovoa@artica.es
-# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2009 Ramon Novoa, rnovoa@artica.es
+# Copyright (c) 2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,464 +17,102 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
 
-# Includes list
 use strict;
 use warnings;
 
-use XML::Simple;                	# Useful XML functions
-use Digest::MD5;                	# MD5 generation
-use Time::Local;                	# DateTime basic manipulation
-use DBI;                            # DB interface with MySQL
-use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
-use File::Copy;                     # Needed to manipulate files
-use threads;
-use threads::shared;
-
 # Pandora Modules
+use PandoraFMS::DB;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
-use PandoraFMS::DB;
-enterprise_load ();
+use PandoraFMS::Core;
+use PandoraFMS::DataServer;
+use PandoraFMS::NetworkServer;
+use PandoraFMS::SNMPServer;
+use PandoraFMS::ReconServer;
+use PandoraFMS::WMIServer;
+use PandoraFMS::PluginServer;
+use PandoraFMS::PredictionServer;
 
-# Queue management
-my @pending_task : shared;
-my %pending_task_hash : shared;
-my %active_task_hash : shared;
-my %incomplete_task_hash : shared;
-my $queue_lock : shared;
+# Load enterprise module
+enterprise_load () && print " [*] Pandora FMS Enterprise module loaded.\n";
 
-# FLUSH in each IO, only for DEBUG, very slow !
-$| = 0;
+# Global vars
+my %Config;
+my @Servers;
+my $DBH;
 
-my %pa_config; 
+########################################################################################
+# Server shutdown
+########################################################################################
+sub pandora_shutdown () {
+	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 0);
+
+	# Stop servers
+	foreach my $server (@Servers) {
+		$server->stop ();
+	}
+
+	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 0);
+	db_disconnect ($DBH);
+	exit (0);
+}
 
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
-# Init main loop
-pandora_init(\%pa_config,"Pandora FMS Data Server");
-
-# Read config file for Global variables
-pandora_loadconfig (\%pa_config,0);
-
-# Audit server starting
-pandora_audit (\%pa_config, "Pandora FMS Data Server Daemon starting", "SYSTEM", "System");
+# Initialize
+pandora_init(\%Config, 'Pandora FMS Server');
+pandora_load_config (\%Config);
 
 # Daemonize and put in background
-if ( $pa_config{"daemon"} eq "1" ){
-    if ($pa_config{"verbosity"} > 0){
-        print " [*] Backgrounding Pandora FMS Data Server process.\n\n";
-    }
-    &pandora_daemonize ( \%pa_config);
+if ($Config{'daemon'} == 1) {
+	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n\n", 0);
+	pandora_daemonize (\%Config);
 }
 
-# Launch all data_consumer threads
-for (my $ax=0; $ax < $pa_config{"dataserver_threads"}; $ax++){
-	threads->new( \&pandora_data_consumer, \%pa_config, $ax);
-}
+# Connect to the DB
+$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
+                   $Config{'dbuser'}, $Config{'dbpass'});
 
-# Launch producer thread
-threads->new( \&pandora_data_producer, \%pa_config);
-
-if ($pa_config{"verbosity"} > 0){
-    print " [*] All threads loaded and running \n\n";
-}
+pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 
 # Start logging
-pandora_startlog (\%pa_config);
+pandora_start_log (\%Config);
 
-my $dbhost = $pa_config{'dbhost'};
-my $dbname = $pa_config{'dbname'};
-my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
-			$pa_config{'dbuser'},
-			$pa_config{'dbpass'},
-			{ RaiseError => 1, AutoCommit => 1 });
+# Load servers
+push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
+push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
 
+# Remove disabled servers
+@Servers = grep { defined ($_) } @Servers;
 
+# Run
+foreach my $server (@Servers) {
+	$server->run ();
+	$server->upEvent ();
+}
+
+# Main loop
 while (1) {
-	pandora_serverkeepaliver (\%pa_config, 0, $dbh);
-	# Disabled until we can finish code from editor and update server code
-	pandora_planned_downtime (\%pa_config, $dbh);
-	# Ececute forced alerts
-	pandora_exec_forced_alerts (\%pa_config, $dbh);
-	keep_alive_check (\%pa_config, $dbh);
+	
+	# Update server status
+	foreach my $server (@Servers) {
+		exit (1) unless ($server->checkThreads () == 1);
+		$server->update ();
+	}
+
+	eval {
+		pandora_planned_downtime (\%Config, $DBH);
+		pandora_exec_forced_alerts (\%Config, $DBH);
+		pandora_module_keep_alive_nd (\%Config, $DBH);
+	};
+
 	threads->yield;
-	sleep ($pa_config{"server_threshold"});
-}
-
-########################################################################################
-# pandora_shutdown ()
-# Close system
-########################################################################################
-sub pandora_shutdown {
-	logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
-	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 0, $dbh);
-	if ($pa_config{"verbosity"} > 0){
-    	print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
-	}
-	pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
-   	                               0, 4, 0, 0, "system", $dbh);
-	exit;
-}
-
-###############################################################################
-# pandora_data_producer ()
-# Queue data files available for processing
-###############################################################################
-sub pandora_data_producer {
-	my $pa_config = $_[0];
-	my $file_name;
-	my $file;
-
-	# Main loop
-	while(1) {
-
-		# Read all files in the incoming directory
-		opendir(DIR, $pa_config->{'incomingdir'} )
-		        || die "[FATAL] Cannot open Incoming data directory at " .
-		        $pa_config->{'incomingdir'} . ": $!";
-
- 		while (defined($file_name = readdir(DIR))){
-
-			# For backward compatibility
-			if ($file_name =~ /^.*\.checksum$/) {
-				unlink("$pa_config->{'incomingdir'}/$file_name");
-				next;
-			} 
-
-			# Data files have the extension .data
-			if ($file_name !~ /^.*\.data$/) {
-				next;
-			}
-
-			# Skip already queued/processed files
-			if (defined($pending_task_hash{$file_name}) ||
-			    defined($active_task_hash{$file_name})) {
-				next;
-			}
-
-			# Queue data file
-			{
-				lock $queue_lock;
-				push (@pending_task, $file_name);
-				$pending_task_hash {$file_name} = 1;
-				if (! defined($incomplete_task_hash{$file_name})) {
-					$incomplete_task_hash{$file_name} = 0;
-				}
-			}
-			threads->yield;
-		}
-
-        closedir(DIR);
-		threads->yield;
-        sleep $pa_config->{"server_threshold"};
-	}
-}
-
-###############################################################################
-# pandora_data_consumer ()
-# Process data files
-###############################################################################
-sub pandora_data_consumer ($$) {
-	my $pa_config = $_[0];
-	my $thread_id = $_[1];
-	my $file_name;
-	my $counter =0;
-    my $file;
-
-    if ($pa_config->{"verbosity"} > 0){
-	    print " [*] Starting up Data Consumer Thread # $thread_id \n";
-    }
-
-	# Create database handler
-	my $dbh = DBI->connect("DBI:mysql:" . $pa_config->{'dbname'} . ":" .
-	                       $pa_config->{'dbhost'} . ":3306",
-	                       $pa_config->{'dbuser'},$pa_config->{'dbpass'},
-	                       { RaiseError => 1, AutoCommit => 1 });
-
-	LOOP: while (1) {
-
-		if ($counter > 10) {
-			$counter = 0;
-            threads->yield;		
-			sleep (1);
-		}
-
-		# Check for pending data files
-		{
-			lock $queue_lock;
-			if (scalar(@pending_task) == 0) {
-				$counter++;
-				next LOOP;
-			}
-
-			$file_name = shift(@pending_task);
-			delete($pending_task_hash{$file_name});
-			$active_task_hash{$file_name} = 1;
-		}
-
-		$file = "$pa_config->{'incomingdir'}/$file_name";
-		
-		# Check file really exists to avoid race conditions
-		if (! -e "$file") {
-			$counter++;
-			delete($active_task_hash{$file_name});
-			next LOOP;
-		}
-		
-		my $data; # Hash to store the XML data file
-
-		# Parse the XML file
-		eval {
-			threads->yield;
-            $data = XMLin($file, forcearray=>'module');
-        };
-
-		# Invalid MXL
-        if ($@) {
-			# Retry 3 times this XML
-			if ($incomplete_task_hash{$file_name} < 3) {
-				{
-					lock $queue_lock;
-					delete($active_task_hash{$file_name});
-					$incomplete_task_hash{$file_name} += 1;
-				}
-			}
-			# Discard
-			else {
-				{
-					logger ($pa_config, "$file_name is a BAD XML. Removing", 3);			
-					lock $queue_lock;
-					delete($active_task_hash{$file_name});
-					delete($incomplete_task_hash{$file_name});
-					rename($file, $file . "_BADXML");
-                    # Create event
-                    pandora_event ($pa_config, "Unable to process XML data file ($file)", 0, 0, 0, 0, 0, 'error', $dbh);
-				}
-			}
-
-			$counter = 0;
-			threads->yield;
-			next LOOP;
-        }
-
-		process_datafile ($pa_config, $data, $dbh);
-		{
-			lock $queue_lock;
-			delete($active_task_hash{$file_name});
-			delete($incomplete_task_hash{$file_name});
-			unlink($file);
-		}
-		threads->yield;
-		$counter = 0;
-	}
-}
-
-##########################################################################
-## SUB keep_alive_check  ()
-## Calculate a global keep alive check for agents without data and an alert defined 
-##########################################################################
-
-sub keep_alive_check {
-	my $pa_config = $_[0];
-	my $dbh = $_[1];
-
-	my $query_idag = "SELECT tagente_modulo.id_agente_modulo, 
-	                    tagente_estado.id_agente, 
-                        tagente.nombre AS agentname, 
-                        tagente_modulo.nombre AS modulename 
-                    	FROM tagente_modulo, tagente_estado, tagente 
-                    	WHERE tagente.id_agente = tagente_estado.id_agente 
-                    	AND tagente.disabled = 0 
-                    	AND tagente_modulo.id_tipo_modulo = 100 
-                	    AND tagente_modulo.disabled = 0 
-                	    AND tagente_estado.datos = 1 
-                	    AND tagente_estado.estado = 0 
-                	    AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
-                	    AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP()) ";
-
-	my $s_idag = $dbh->prepare($query_idag);
-	$s_idag ->execute;
-
-	my $id_agent_module;
-	my $id_agent;
-	my $agent_name;
-	my $module_name;
-
-	# data needed in loop (we'll reuse it)
-	my $data;
-	if ($s_idag->rows != 0) {
-		while ($data = $s_idag->fetchrow_hashref()) {
-			threads->yield;
-			$id_agent_module = $data->{'id_agente_modulo'};
-			$id_agent = $data->{'id_agente'};
-			$agent_name = $data->{'agentname'};
-			$module_name = $data->{'modulename'};
-			pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, $dbh, 1);
-		}
-	}
-	undef $data;
-	$s_idag->finish();
-}
-
-##########################################################################
-## SUB process_datafile (param_1, param_2, param_3)
-## Process data packet (XML file)
-##########################################################################
-## param_1 : pandora_config hash
-## param_2 : XML Hash structure reference
-## param_3
-
-sub process_datafile {
-	my $pa_config = $_[0];
-	my $datos = $_[1]; 
-	my $dbh = $_[2];	
-	my $tipo_modulo;
-	my $agent_name; 
-	my $timestamp;
-	my $interval; 
-	my $os_version;
-	my $os; 
-	my $agent_version;
-	my $id_agente;
-	my $module_name;
-
-	$agent_name = $datos->{'agent_name'};
-	$timestamp = $datos->{'timestamp'};
-	$agent_version = $datos->{'version'};
-	$interval = $datos->{'interval'};
-	$os_version = $datos->{'os_version'};
-  
-  	# Set default interval if not defined in agent (This is very very odd whatever!).
-   	if (!defined($interval)){
-		$interval = 300;
-	}
-
-	# Check for parameteres, not all version agents gives the same parameters !
-	if (length($interval) == 0){
-       $interval = -1; # No update for interval !
-    }
-   
-   	if ((!defined ($os_version)) || (length($os_version) == 0)){
-		$os_version = "N/A";
-	}
-
-  
-	if ((defined $agent_name) && ($agent_name ne "")){
-		$id_agente = dame_agente_id($pa_config,$agent_name,$dbh);
-
-		if ($id_agente == -1){
-			if ($pa_config->{'autocreate'} == 1){
-				$os = pandora_get_os ($datos->{'os'});
-				$id_agente = pandora_create_agent ($pa_config, $dbh, "", 0, $pa_config->{'autocreate_group'}, 0, $datos->{'agent_name'}, 0, $os);
-				# Always create event about this detected IP
-                
-			} else {
-				logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 3);
-			}
-		}
-
-		if ($id_agente > 0) {
-			pandora_lastagentcontact ($pa_config, $timestamp, $agent_name, $os_version, $agent_version, $interval, $dbh);
-			update_keepalive_module ($pa_config, $id_agente, $agent_name, $dbh);
-			foreach my $part(@{$datos->{module}}) {
-				$tipo_modulo = $part->{type}->[0];
-				$module_name = $part->{name}->[0];
-                if (defined($module_name)){ # Skip modules without names 
-				    logger($pa_config, "Processing module Name ( $module_name ) type ( $tipo_modulo ) for agent ( $agent_name )", 5);
-				    
-				    # Data list
-				    if (defined $part->{datalist}) {
-				    	foreach my $datalist (@{$part->{datalist}}) {
-				    		if (! defined $datalist->{data}) {
-				    			next;
-				    		}
-				    		
-				    		foreach my $data (@{$datalist->{data}}) {
-								if (! defined $data->{value}) {
-									next;
-								}
-								
-								$part->{data} = $data->{value};
-							
-								# Data has its own timestamp
-								if (defined $data->{timestamp}) {
-									process_module_data($pa_config, $data->{timestamp}->[0], $agent_name, $tipo_modulo, $part, $dbh);
-								}
-								else {
-									process_module_data($pa_config, $timestamp, $agent_name, $tipo_modulo, $part, $dbh);
-								}
-							}
-						}
-				    }
-					# Single data
-				    else {
-						# Data has its own timestamp
-						if (defined $part->{timestamp}) {
-							$timestamp =  $part->{timestamp}->[0];
-						}
-						process_module_data($pa_config, $timestamp, $agent_name, $tipo_modulo, $part, $dbh);
-					}
-                }
-			}
-		} 
-	} else {
-		logger($pa_config, "ERROR: Received data from an unknown agent", 2);
-	}
-}
-
-##########################################################################
-## SUB process_module_data ()
-## ($pa_config, $timestamp, $agent_name, $tipo_modulo, $module, $dbh)
-## Process module data according to the module type.
-##########################################################################
-
-sub process_module_data {
-	my $pa_config = $_[0];
-	my $timestamp = $_[1];
-	my $agent_name = $_[2];
-	my $tipo_modulo = $_[3];
-	my $module = $_[4];
-	my $dbh = $_[5];
-
-	if (($tipo_modulo eq 'generic_data') || ($tipo_modulo eq 'async_data')) {
-		module_generic_data ($pa_config, $module, $timestamp, $agent_name, $tipo_modulo, $dbh);
-	}
-	elsif ($tipo_modulo eq 'generic_data_inc') {
-		module_generic_data_inc ($pa_config, $module, $timestamp, $agent_name,"generic_data_inc", $dbh);
-	}
-	elsif (($tipo_modulo eq 'generic_data_string') || ($tipo_modulo eq 'async_string')) {
-		module_generic_data_string ($pa_config, $module, $timestamp, $agent_name,$tipo_modulo, $dbh);
-	}
-	elsif (($tipo_modulo eq 'generic_proc') || ($tipo_modulo eq 'async_proc')) {
-		module_generic_proc ($pa_config, $module, $timestamp, $agent_name, $tipo_modulo, $dbh);
-	}
-	else {
-		logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);
-	}
-}
-
-##########################################################################
-## SUB pandora_exec_forced_alerts ($pa_config, $dbh)
-## Execute forced alerts.
-##########################################################################
-
-sub pandora_exec_forced_alerts {
-	my $pa_config = $_[0];
-	my $dbh = $_[1];
-
-	# Get alerts marked for forced execution (even disabled alerts)
-	my @alerts = get_db_all_rows ("SELECT talert_template_modules.id as id_template_module, talert_template_modules.*, talert_templates.*, tagente.*
-	                               FROM talert_template_modules, talert_templates, tagente, tagente_modulo
-	                               WHERE talert_template_modules.id_alert_template = talert_templates.id
-	                               AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
-	                               AND tagente_modulo.id_agente = tagente.id_agente
-	                               AND force_execution = 1", $dbh);
-
-	foreach my $alert (@alerts) {
-		execute_alert ($pa_config, $alert, $alert->{'id_agente'}, $alert->{'id_grupo'}, $alert->{'nombre'},'', 1, 0, $dbh);
-
-		# Reset the force_execution flag, even if the alert could not be executed
-		db_do ("UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'}, $dbh);
-	}
+	sleep ($Config{'server_threshold'});
 }

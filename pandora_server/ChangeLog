@@ -1,3 +1,23 @@
+2009-04-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_ctl, pandora_network, pandora_wmi, pandora_plugin,
+	  pandora_prediction, bin/pandora_wmi, bin/pandora_plugin,
+	  bin/pandora_prediction, bin/pandora_snmpconsole, bin/pandora_recon,
+	  bin/pandora_network, pandora_recon, pandora_snmpconsole: Deleted
+	  from repository. Old server code and startup scripts.
+	
+	* Makefile.PL, pandora_server_installer, lib/PandoraFMS/Config.pm
+	  lib/PandoraFMS/DB.pm, lib/PandoraFMS/Tools.pm, bin/pandora_server,
+	  pandora_package_installer, pandora_server: Updated to work with the
+	  new code, removed unneeded dependencies, fixed some bugs etc.
+
+	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/PluginServer.pm,
+	  lib/PandoraFMS/ProducerConsumerServer.pm, lib/PandoraFMS/Server.pm,
+	  lib/PandoraFMS/PredictionServer.pm, lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/ReconServer.pm, lib/PandoraFMS/DataServer.pm,
+	  lib/PandoraFMS/NetworkServer.pm, lib/PandoraFMS/WMIServer.pm: Added
+	  to repository. New server code.
+
 2009-04-02  Sancho Lerena <slerena@artica.es>
 
 	* DB.pm: Function to process SNMP Alerts was not properly exported, so

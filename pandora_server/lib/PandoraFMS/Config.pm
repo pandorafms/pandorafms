@@ -19,10 +19,11 @@ package PandoraFMS::Config;
 ##########################################################################
 
 use warnings;
+use POSIX qw(strftime);
 use Time::Local;
-use Date::Manip;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+use PandoraFMS::Core;
 require Exporter;
 
 our @ISA = ("Exporter");
@@ -31,15 +32,13 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
         pandora_help_screen
 		pandora_init
-		pandora_loadconfig
-        pandora_startlog
+		pandora_load_config
+        pandora_start_log
     );
-
-# There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "3.0-dev";
-my $pandora_build="PS090305";
+my $pandora_build = "PS090310";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -125,11 +124,8 @@ sub pandora_init {
 # Read external configuration file
 ##########################################################################
 
-sub pandora_loadconfig {
+sub pandora_load_config {
     my $pa_config = $_[0];
-    my $opmode = $_[1];	# 0 dataserver, 1 network server, 2 snmp console
-						# 3 recon srv, 4 plugin srv, 5 prediction srv
-						# 6 WMI server, 7 export server
     my $archivo_cfg = $pa_config->{'pandora_path'};
     my $buffer_line;
     my @command_line;
@@ -162,6 +158,7 @@ sub pandora_loadconfig {
     $pa_config->{"predictionserver"} = 1; # default
     $pa_config->{"exportserver"} = 1; # default
     $pa_config->{"inventoryserver"} = 1; # default
+    $pa_config->{"webserver"} = 1; # 3.0
     $pa_config->{"servermode"} = "";
     $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
     $pa_config->{"network_threads"} = 3; # Fixed default
@@ -171,18 +168,23 @@ sub pandora_loadconfig {
     $pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
     $pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
     $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+    $pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
     $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
     $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
     $pa_config->{"snmp_proc_deadresponse"} = 1; # Introduced on 1.3.1 10 Feb08
     $pa_config->{"plugin_threads"} = 2; # Introduced on 2.0
+    $pa_config->{"plugin_exec"} = 'pandora_exec'; # 3.0
     $pa_config->{"recon_threads"} = 2; # Introduced on 2.0
     $pa_config->{"prediction_threads"} = 1; # Introduced on 2.0
     $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"wmi_threads"} = 2; # Introduced on 2.0
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
+	$pa_config->{"wmi_client"} = 'wmic'; # 3.0
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
     $pa_config->{"dataserver_threads"} = 2; # Introduced on 2.0
     $pa_config->{"inventory_threads"} = 2; # 2.1
+    $pa_config->{"export_threads"} = 1; # 3.0
+    $pa_config->{"web_threads"} = 1; # 3.0
 
     # Internal MTA for alerts, each server need its own config.
     $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -345,6 +347,12 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^exportserver\s([0-9]*)/i) {
 			$pa_config->{'exportserver'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^inventoryserver\s([0-9]*)/i) {
+			$pa_config->{'inventoryserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^webserver\s([0-9]*)/i) {
+			$pa_config->{'webserver'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { 
 			$pa_config->{'servername'}= clean_blank($1);
 		}
@@ -439,6 +447,27 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^mcast_change_port\s([0-9]*)/i) {
 			$pa_config->{'mcast_change_port'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^wmi_threads\s([0-9]*)/i) {
+			$pa_config->{'wmi_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^wmi_client\s(.*)/i) {
+			$pa_config->{'wmi_client'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^web_threads\s([0-9]*)/i) {
+			$pa_config->{'web_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmp_trapd\s(.*)/i) {
+			$pa_config->{'snmp_trapd'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^plugin_exec\s(.*)/i) {
+			$pa_config->{'plugin_exec'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^inventory_threads\s([0-9]*)/i) {
+			$pa_config->{'inventory_threads'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^export_threads\s([0-9]*)/i) {
+			$pa_config->{'export_threads'}= clean_blank($1); 
+		}
 	} # end of loop for parameter #
 
 
@@ -458,103 +487,7 @@ sub pandora_loadconfig {
 		print " [ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
-	if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
-		print " [ERROR] You must enable 'dataserver' in setup file to run Pandora FMS Data Server. \n\n";
-		exit;
-	} 
-	if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
-		print " [ERROR] You must enable 'networkserver' in setup file to run Pandora FMS Network Server. \n\n";
-		exit;
-	}
-	if (($opmode ==2) && ($pa_config->{"snmpconsole"} ne 1)) {
-		print " [ERROR] You must enable 'snmpconsole' in setup file to run Pandora FMS SNMP Console. \n\n";
-		exit;
-	}
-	if (($opmode ==3) && ($pa_config->{"reconserver"} ne 1)) {
-		print " [ERROR] You must enable 'reconserver' in setup file to run Pandora FMS Recon server. \n\n";
-		exit;
-	}
-	if (($opmode ==4) && ($pa_config->{"pluginserver"} ne 1)) {
-		print " [ERROR] You must enable 'pluginserver' in setup file to run Pandora FMS Plugin server. \n\n";
-		exit;
-	}
-	if (($opmode ==5) && ($pa_config->{"predictionserver"} ne 1)) {
-		print " [ERROR] You must enable 'predictionserver' in setup file to run Pandora FMS Prediction server. \n\n";
-		exit;
-	}
-	if (($opmode ==6) && ($pa_config->{"wmiserver"} ne 1)) {
-		print " [ERROR] You must enable 'wmiserver' in setup file to run Pandora FMS WMI server. \n\n";
-		exit;
-	}
-	if (($opmode ==7) && ($pa_config->{"exportserver"} ne 1)) {
-		print " [ERROR] You must enable 'exportserver' in setup file to run Pandora FMS Export server. \n\n";
-		exit;
-	}
-    # Show some config options in startup
     
-	if ($opmode == 0){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Data Server. \n";
-		}
-		$parametro ="Pandora FMS Data Server";
-		$pa_config->{"servermode"}="_Data";
-	}
-	if ($opmode == 1){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Network Server. \n";
-		}
-		$parametro ="Pandora FMS Network Server";
-		$pa_config->{"servermode"}="_Net";
-	}
-	if ($opmode == 2){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS SNMP Console. \n";
-		}
-		$parametro ="Pandora FMS SNMP Console";
-		$pa_config->{"servermode"}="_SNMP";
-	}
-	if ($opmode == 3){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Recon Server. \n";
-		}
-		$parametro ="Pandora FMS Recon Server";
-		$pa_config->{"servermode"}="_Recon";
-	}
-	if ($opmode == 4){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Plugin Server. \n";
-		}
-		$parametro ="Pandora FMS Plugin Server";
-		$pa_config->{"servermode"}="_Plugin";
-	}
-	if ($opmode == 5){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Prediction Server. \n";
-		}
-		$parametro ="Pandora FMS Prediction Server";
-		$pa_config->{"servermode"}="_Prediction";
-	}
-	if ($opmode == 6){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS WMI Server. \n";
-		}
-		$parametro ="Pandora FMS WMI Server";
-		$pa_config->{"servermode"}="_WMI";
-	}
-	if ($opmode == 7){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Export Server. \n";
-		}
-		$parametro ="Pandora FMS Export Server";
-		$pa_config->{"servermode"}="_Export";
-	}
-	if ($opmode == 8){
-		if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-			print " [*] You are running Pandora FMS Inventory Server. \n";
-		}
-		$parametro ="Pandora FMS Inventory Server";
-		$pa_config->{"servermode"}="_Inventory";
-	}
 	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		if ($pa_config->{"pandora_check"} == 1) {
 			print " [*] MD5 Security enabled.\n";
@@ -567,34 +500,17 @@ sub pandora_loadconfig {
 	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options", 1);
-	my $dbh;
-	# Check valid Database variables and update server status
-	eval {
-		$dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-		pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh); # Alive status
-	};
-	if ($@) {
-		logger ($pa_config, "Error connecting database in init Phase. Aborting startup.",0);
-		print (" [ERROR] Error connecting database in init Phase. Aborting startup. \n\n");
-		print $@;
-		exit;
-	}
-    if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
-	    print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
-    }
-	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
-    pandora_event ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}." going UP", 0, 0, 3, 0, 0, "system", $dbh);
 }
 
 
-sub pandora_startlog ($){
-	my $pa_config = $_[0];
+sub pandora_start_log ($){
+	my $pa_config = shift;
 
 	# Dump all errors to errorlog
-	open STDERR, ">>$pa_config->{'errorlogfile'}" or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
-	my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
-	print STDERR "$time_now - ".$pa_config->{'servername'}.$pa_config->{"servermode"}." Starting Pandora FMS Server. Error logging activated \n";
+	open (STDERR, ">> " . $pa_config->{'errorlogfile'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . $pa_config->{'servermode'} . " Starting Pandora FMS Server. Error logging activated \n";
 }
+
 # End of function declaration
 # End of defined Code
 

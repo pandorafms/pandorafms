@@ -45,12 +45,6 @@ install () {
 		cp pandora_* /etc/init.d
 		rm /etc/init.d/pandora_*_installer
 		ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server 2> /dev/null
-		ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon 2> /dev/null
-		ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network 2> /dev/null
-		ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole 2> /dev/null
-		ln -s /etc/init.d/pandora_plugin /etc/rc2.d/S90pandora_plugin 2> /dev/null
-		ln -s /etc/init.d/pandora_prediction /etc/rc2.d/S90pandora_prediction 2> /dev/null
-		ln -s /etc/init.d/pandora_wmi /etc/rc2.d/S90pandora_wmi 2> /dev/null
 	fi
 
 	mkdir /usr/share/pandora 2> /dev/null
@@ -84,29 +78,10 @@ uninstall () {
 	rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
 	
 	rm -Rf /etc/init.d/pandora_server  2> /dev/null 
-	rm -Rf /etc/init.d/pandora_network  2> /dev/null 
-	rm -Rf /etc/init.d/pandora_recon  2> /dev/null 
-	rm -Rf /etc/init.d/pandora_snmpconsole  2> /dev/null 
-	rm -Rf /etc/init.d/pandora_prediction 2> /dev/null 
-	rm -Rf /etc/init.d/pandora_wmi 2> /dev/null 
-	rm -Rf /etc/init.d/pandora_plugin 2> /dev/null
 	
 	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_recon  2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_network 2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_snmpconsole 2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_wmi 2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_prediction 2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_plugin 2> /dev/null
 	
 	rm -Rf /usr/bin/pandora_exec 2> /dev/null
-	rm -Rf /usr/bin/pandora_wmi 2> /dev/null
-	rm -Rf /usr/bin/pandora_server 2> /dev/null
-	rm -Rf /usr/bin/pandora_snmpconsole 2> /dev/null
-	rm -Rf /usr/bin/pandora_recon 2> /dev/null
-	rm -Rf /usr/bin/pandora_network 2> /dev/null
-	rm -Rf /usr/bin/pandora_prediction 2> /dev/null
-	rm -Rf /usr/bin/pandora_plugin 2> /dev/null
 	
 	rm -Rf /usr/share/pandora
 	rm -Rf /etc/cron.daily/pandora_purge_db

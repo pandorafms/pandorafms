@@ -20,8 +20,7 @@ package PandoraFMS::Tools;
 
 use warnings;
 use Time::Local;
-use Date::Manip;	# Needed to manipulate DateTime formats of input, output and compare
-use POSIX qw(setsid);
+use POSIX qw(setsid strftime);
 use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 
 require Exporter;
@@ -43,6 +42,7 @@ our @EXPORT = qw(
 	pandora_trash_ascii
 	enterprise_hook
 	enterprise_load
+	print_message
 );
 
 ##########################################################################
@@ -257,7 +257,7 @@ sub logger {
 			$datos = "[V".$verbose_level."] ".$datos;
 		}
 	
-		my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
+		my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 		if (-e $fichero){
 			my $filesize = (stat($fichero))[7];
 			if ( $filesize > $pa_config->{'max_log_size'}) {
@@ -321,25 +321,21 @@ sub float_equal {
 }
 
 ##########################################################################
-# sub enterprise_load ()
 # Tries to load the PandoraEnterprise module. Must be called once before
 # enterprise_hook ().
 ##########################################################################
 sub enterprise_load () {
-        eval { 
-                require PandoraFMS::Enterprise; 
-        };
+	eval 'use PandoraFMS::Enterprise;';
+	return 0 if ($@);
+	return 1;
 }
 
-
 ##########################################################################
-# sub enterprise_hook ($function_name, \@arguments)
 # Tries to call a PandoraEnterprise function. Returns undef if unsuccessful.
 ##########################################################################
 sub enterprise_hook ($$) {
-	my $func = $_[0];
-	my @args = @{$_[1]};
-	my $output;
+	my $func = shift;
+	my @args = @{shift ()};
 
 	# Temporarily disable strict refs
 	no strict 'refs';
@@ -348,14 +344,22 @@ sub enterprise_hook ($$) {
 	$func = 'PandoraFMS::Enterprise::' . $func;
 
 	# Try to call the function
-	$output = eval { &$func (@args); };
+	my $output = eval { &$func (@args); };
 
 	# Check for errors
-	if ($@) {
-		return undef;
-	}
-	else {
-		return $output;
+	return undef if ($@);
+
+	return $output;
+}
+
+##########################################################################
+# Prints a message to STDOUT at the given log level.
+##########################################################################
+sub print_message ($$$) {
+	my ($pa_config, $message, $log_level) = @_;
+
+	if ($pa_config->{'verbosity'} > $log_level){
+    	print STDOUT $message . "\n";
 	}
 }
 

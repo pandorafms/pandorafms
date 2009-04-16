@@ -723,20 +723,14 @@ sub pandora_create_module ($$$$$$$) {
 ##########################################################################
 # Create a new entry in tagente.
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
-	    $address_id, $group_id, $server_id, $parent_id,
-	    $os_id, $dbh) = @_;
+	    $address_id, $group_id, $parent_id, $os_id, $dbh) = @_;
 
 	logger ($pa_config, "$server_name: Creating agent $agent_name ($address)", 1);
 
-	if ($server_id eq '') {
-		$server_id = get_db_value ($dbh, 'SELECT id_server FROM tserver WHERE network_server = 1 AND master = 1 LIMIT 1');
-		$server_id = 0 unless defined ($server_id);
-	}
-
-	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `id_network_server`, `intervalo`, `id_parent`, `modo`, `id_prediction_server`, `id_wmi_server`, `id_plugin_server`)
-	                              VALUES  (?, ?, ?, ?, ?, ?, 300, ?, 1, 0, 0, 0)', $agent_name, $address, "Created by $server_name", $group_id, $os_id, $server_id, $parent_id);
+	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
+	                              VALUES  (?, ?, ?, ?, ?, ?, 300, ?, 1)', $agent_name, $address, "Created by $server_name", $group_id, $os_id, $server_name, $parent_id);
 
 	pandora_event ($pa_config, "Agent '$agent_name' created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;
@@ -777,8 +771,8 @@ sub pandora_update_module_on_error ($$$) {
 	my ($pa_config, $id_agent_module, $dbh) = @_;
 
 	# Update last_execution_try
-	db_do ($dbh, 'UPDATE tagente_estado SET current_interval = ?, last_execution_try = ?
-				  WHERE id_agente_modulo = ?', 300, time (), $id_agent_module);
+	db_do ($dbh, 'UPDATE tagente_estado SET last_execution_try = ?
+				  WHERE id_agente_modulo = ?', time (), $id_agent_module);
 }
 
 ##########################################################################

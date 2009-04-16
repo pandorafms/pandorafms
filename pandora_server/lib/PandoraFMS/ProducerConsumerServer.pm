@@ -147,7 +147,7 @@ sub data_consumer ($$$$$) {
 		$task_sem->down;
 
 		$sem->down;
-		my $task = pop (@{$task_queue});
+		my $task = shift (@{$task_queue});
 		$sem->up;
 
 		# Execute task

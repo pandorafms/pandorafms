@@ -1,3 +1,11 @@
+2009-04-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed a typo that made the server go
+	  down.
+	
+	* bin/pandora_server: Prevent alarm from bombing the main thread when
+	  called within a thread.
+
 2009-04-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_ctl, pandora_network, pandora_wmi, pandora_plugin,

@@ -60,6 +60,9 @@ sub pandora_shutdown () {
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
+# Prevent alarm from bombing the main thread when called within a thread
+$SIG{'ALRM'} = 'IGNORE';
+
 # Initialize
 pandora_init(\%Config, 'Pandora FMS Server');
 pandora_load_config (\%Config);

@@ -167,7 +167,7 @@ sub process_xml_data {
 		
 		# Create the agent
 		my $os = pandora_get_os ($data->{'os'});
-		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $pa_config->{'autocreate_group'}, 0, 0, $os, $dbh);
+		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $pa_config->{'autocreate_group'}, 0, $os, $dbh);
 		return unless defined ($agent_id);
 	}
 

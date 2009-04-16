@@ -1,5 +1,15 @@
 2009-04-16  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/ProducerConsumerServer.pm: Important fix. Queued
+	  elements were processed in the wrong order.
+	
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/ReconServer.pm,
+	  lib/PandoraFMS/DataServer.pm: Updated pandora_create_agent to
+	  reflect the latest changes. Some fixes to Recon Server.
+
+
+2009-04-16  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/ReconServer.pm: Fixed a typo that made the server go
 	  down.
 	

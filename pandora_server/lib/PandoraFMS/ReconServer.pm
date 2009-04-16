@@ -90,7 +90,7 @@ sub data_producer ($) {
 	foreach my $row (@rows) {
 
 		# Update task status
-		update_recon_task ($pa_config, $dbh, $row->{'id_rt'}, 0);
+		update_recon_task ($dbh, $row->{'id_rt'}, 0);
 
 		push (@tasks, $row->{'id_rt'});
 	}
@@ -113,7 +113,7 @@ sub data_consumer ($$) {
 	my $net_addr = new NetAddr::IP ($task->{'subnet'});
 	if (! defined ($net_addr)) {
 		logger ($pa_config, 'Invalid network ' . $task->{'subnet'} . ' for task ' . $task->{'name'}, 2);
-		update_recon_task ($pa_config, $dbh, $task_id, -1);
+		update_recon_task ($dbh, $task_id, -1);
 		return -1;
 	}
 
@@ -122,10 +122,10 @@ sub data_consumer ($$) {
 	for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 
 		my $addr = (split(/\//, $net_addr))[0];
-		update_recon_task ($pa_config, $dbh, $task_id, $i / ($total_hosts / 100));
+		update_recon_task ($dbh, $task_id, $i / ($total_hosts / 100));
 
 		# Does the host already exist?
-        next if (addr_exists ($dbh, $addr) == 1);
+        next if (get_agent_from_addr ($dbh, $addr) > 0);
        
 		# Is the host alive? (thanks to Evi for the TCP scans)
 		my $alive = 0;
@@ -164,13 +164,18 @@ sub data_consumer ($$) {
 		# Get the parent host
 		my $parent_id = get_host_parent ($pa_config, $addr, $dbh);
 				
-		# Add the new address
-		my $addr_id = add_address ($dbh, $addr);
-		
+		# Add the new address if it does not exist
+		my $addr_id = get_addr_id ($dbh, $addr);
+		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
+		next unless ($addr_id > 0);
+
 		# Crate a new agent
-		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'} . '_Recon',
+		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $addr_id,
-					                                  $task->{'id_group'}, '', $parent_id, $task->{'id_os'}, $dbh);
+					                                  $task->{'id_group'}, $parent_id, $id_os, $dbh);
+		# Assign the new address to the agent
+		db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+		                  VALUES (?, ?)', $addr_id, $agent_id);
 
 		# Crate network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr);
@@ -191,7 +196,7 @@ sub data_consumer ($$) {
 	}
 
 	# Mark recon task as done
-	update_recon_task ($pa_config, $dbh, $task_id, -1);
+	update_recon_task ($dbh, $task_id, -1);
 }
 
 ##############################################################################
@@ -262,37 +267,32 @@ sub guess_os {
 }
 
 ##########################################################################
-# Return 1 if the given IP address already exists in the DB, 0 if not.
+# Return the ID of the given address, 0 if it does not exist.
 ##########################################################################
-sub addr_exists ($$) {
-	my ($dbh, $ip_address) = @_;
+sub get_addr_id ($$) {
+	my ($dbh, $addr) = @_;
 
-	my @addresses = get_db_rows ($dbh, 'SELECT * FROM taddress WHERE ip = ?', $ip_address);
-
-	# Address not found
-	return 0 if ($#addresses < 0);
-	
-	return 1;	
+	my $addr_id = get_db_value ($dbh, 'SELECT id_a FROM taddress WHERE ip = ?', $addr);
+	return (defined ($addr_id) ? $addr_id : -1);
 }
-
 
 ##########################################################################
 # Return the ID of the agent with the given IP.
 ##########################################################################
-sub get_agent_from_addr ($$$) {
-	my ($pa_config, $dbh, $ip_address) = @_;
+sub get_agent_from_addr ($$) {
+	my ($dbh, $ip_address) = @_;
 
 	return 0 if (! defined ($ip_address) || $ip_address eq '');
 
-	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent WHERE taddress_agent.id_a = taddress.id_a  AND ip = ?', $ip_address);
+	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent WHERE taddress_agent.id_a = taddress.id_a AND ip = ?', $ip_address);
 	return (defined ($agent_id)) ? $agent_id : -1;
 }
 
 ##########################################################################
 # Update recon task status.
 ##########################################################################
-sub update_recon_task {
-	my ($pa_config, $dbh, $id_task, $status) = @_;
+sub update_recon_task ($$$) {
+	my ($dbh, $id_task, $status) = @_;
 
 	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ?, status = ? WHERE id_rt = ?', time (), $status, $id_task);
 }
@@ -375,7 +375,7 @@ sub get_host_parent ($$){
 	return 0 if ($tr->hops < 2 || $success == 0);
 
 	my $parent_addr = $tr->hop_query_host($tr->hops - 1, 0);
-	return get_agent_from_addr ($pa_config, $dbh, $parent_addr);
+	return get_agent_from_addr ($dbh, $parent_addr);
 }
 
 1;

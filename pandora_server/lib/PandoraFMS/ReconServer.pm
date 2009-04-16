@@ -220,7 +220,7 @@ sub icmp_scan ($$) {
 # TCP scan the given host/port. Returns 1 if successful, 0 otherwise.
 ##############################################################################
 sub tcp_scan ($$$) {
-	my ($host, $timeout, $port) = $@;
+	my ($host, $timeout, $port) = @_;
 	my $rc = 0;
 
 	eval {

@@ -186,7 +186,7 @@ sub process_xml_data {
 	    # Single data
 	    if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = (defined ($module_data->{'timestamp'})) ? $module_data->{'timestamp'}->[0] : $timestamp;
-			process_module_data ($pa_config, $module_data, $agent_name, $module_name, $module_type, $data_timestamp, $dbh);
+			process_module_data ($pa_config, $module_data, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
 			next;
 		}
 
@@ -213,8 +213,9 @@ sub process_xml_data {
 ##########################################################################
 # Process module data, creating module if necessary.
 ##########################################################################
-sub process_module_data ($$$$$$$) {
-	my ($pa_config, $data, $agent_name, $module_name, $module_type, $timestamp, $dbh) = @_;
+sub process_module_data ($$$$$$$$) {
+	my ($pa_config, $data, $agent_name, $module_name,
+	    $module_type, $interval, $timestamp, $dbh) = @_;
 
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', $agent_name);
 	return unless defined ($agent);
@@ -229,7 +230,7 @@ sub process_module_data ($$$$$$$) {
 		$min = $data->{'min'}->[0] if (defined ($data->{'min'}));
 		$description = $data->{'description'}->[0] if (defined ($data->{'description'}));
 		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
-	                          $max, $min, $description, $dbh);
+	                          $max, $min, $description, $interval, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		return unless defined $module;
 	}

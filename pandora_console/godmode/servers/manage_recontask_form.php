@@ -71,6 +71,9 @@ $table->data[] = array (__('Task name'),print_input_text ('name',$name,'',25,0,t
 // Recon server
 $sql = "SELECT id_server, name FROM tserver WHERE recon_server = 1 ORDER BY name";
 $result = get_db_all_rows_sql ($sql);
+if ($result === false)
+	$result = array ();
+$selectbox = array ();
 foreach ($result as $row) {
 	$selectbox[$row["id_server"]] = $row["name"];
 }

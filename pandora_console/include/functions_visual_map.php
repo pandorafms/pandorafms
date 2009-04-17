@@ -114,7 +114,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				$line['id'] = $layout_data['id'];
 				$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
 				$line['node_end'] = 'layout-data-'.$layout_data["id"];
-				$line['color'] = $status_parent ? '#00dd00' : '#dd0000';
+				$line['color'] = (isset ($status_parent) && $status_parent) ? '#00dd00' : '#dd0000';
 				array_push ($lines, $line);
 			}
 		}

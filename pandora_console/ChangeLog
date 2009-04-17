@@ -1,3 +1,11 @@
+2009-04-17  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Removed a notice
+	when there's no recon server.
+
+	* include/functions_visual_map.php: Removed a warning when
+	there's no parent.
+
 2009-04-14  Esteban Sanchez  <estebans@artica.es>
 
 	* index.php: Removed debug traces.

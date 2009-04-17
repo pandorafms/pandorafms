@@ -94,7 +94,7 @@ sub data_producer ($) {
     } else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
                                 FROM tagente, tagente_modulo, tagente_estado
-								WHERE ((server_name = ?) OR (server_name = ANY(SELECT server_name FROM tserver WHERE status = 0)))
+								WHERE ((server_name = ?) OR (server_name = ANY(SELECT name FROM tserver WHERE status = 0)))
                                 AND tagente_modulo.id_agente = tagente.id_agente
                                 AND tagente.disabled = 0
                                 AND tagente_modulo.disabled = 0

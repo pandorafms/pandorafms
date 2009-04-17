@@ -1,3 +1,10 @@
+2009-04-017  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated PO template.
+
 2009-04-14  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/servers/view_server.php: Removed notice message when no

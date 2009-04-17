@@ -117,10 +117,10 @@ sub pandora_purgedb {
 	$dbh->do ("DELETE FROM tagente_modulo WHERE delete_pending = 1");
 	
 	print "[PURGE] Delete old session data \n";
-	db_do ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp", $dbh);
+	$dbh->do ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp");
 
 	print "[PURGE] Delete old data from SNMP Traps \n"; 
-	db_do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'", $dbh);
+	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
 
     $dbh->disconnect();
 }

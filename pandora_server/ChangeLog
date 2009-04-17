@@ -1,3 +1,10 @@
+2009-04-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/PredictionServer.pm,
+	  lib/PandoraFMS/ReconServer.pm, lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/WMIServer.pm: Fixed some references to database
+	  columns.
+
 2009-04-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ProducerConsumerServer.pm: Important fix. Queued

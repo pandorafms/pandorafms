@@ -127,7 +127,7 @@ foreach ($modules as $module) {
 		
 		$data = array ();
 	}
-	
+
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
 		$data[0] .= '<em>'.$module['nombre'].'</em>';
@@ -140,6 +140,11 @@ foreach ($modules as $module) {
 	if ($module['id_modulo'] > 0) {
 		$data[1] = show_server_type ($module['id_modulo']);
 	}
+
+	// This module is initialized ? (has real data)
+        $module_init = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+        if ($module_init == 0)
+                $data[1] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
 	$data[2] = '';
@@ -175,7 +180,7 @@ foreach ($modules as $module) {
 			array ('title' => __('Normalize')));
 		$data[6] .= '</a>';
 	}
-	
+
 	array_push ($table->data, $data);
 }
 

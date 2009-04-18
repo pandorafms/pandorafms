@@ -160,10 +160,14 @@ foreach ($agents as $agent) {
 	
 	$data[4] = '<b>';
 	$data[4] .= $agent_info["modules"];
-	$data[4] .= '</b> : <span class="green">'.$agent_info["monitor_normal"].'</span>';
-	$data[4] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
-	$data[4] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
-	$data[4] .= ' : <span class="grey">'.$agent_info["monitor_down"].'</span>';
+	if ($agent_info["monitor_normal"] > 0)
+		$data[4] .= '</b> : <span class="green">'.$agent_info["monitor_normal"].'</span>';
+	if ($agent_info["monitor_warning"] > 0)
+		$data[4] .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
+	if ($agent_info["monitor_critical"] > 0)
+		$data[4] .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
+	if ($agent_info["monitor_down"] > 0)
+		$data[4] .= ' : <span class="grey">'.$agent_info["monitor_down"].'</span>';
 	
 	$data[5] = $agent_info["status_img"];
 	

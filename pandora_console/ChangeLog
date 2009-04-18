@@ -1,4 +1,23 @@
-2009-04-017  Jorge Gonzalez  <jorgegonz@artica.es>
+2009-04-18  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: Altered order of agent icon
+	status (unknown shown after waerning and critical, not before)
+
+	* operation/agentes/estado_generalagente.php: Agent group is
+	not shown twice.
+
+	* operation/agentes/estado_agente.php: module status count shown
+	only when > 0.
+
+	* operation/agentes/estado_monitores.php: Dont show module type.
+
+	* godmode/agentes/module_manager.php: Show icon of non-init module
+	in godmode view, to easily identify non-init modules.
+
+	* godmode/servers/manage_recontask_form.php: Fixed server assigment
+	on recon task.
+
+2009-04-17  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish
 	  translation.

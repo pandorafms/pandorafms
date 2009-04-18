@@ -83,7 +83,7 @@ echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 // Group
 echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
-echo print_group_icon ($agent["id_grupo"]);
+echo print_group_icon ($agent["id_grupo"], true);
 echo '&nbsp;(<b>';
 echo get_group_name ($agent["id_grupo"]);
 echo '</b>)</td></tr>';

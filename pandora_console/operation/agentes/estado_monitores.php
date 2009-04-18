@@ -68,9 +68,9 @@ foreach ($modules as $module) {
 		$data[0] = '';
 	}
 	$data[1] = show_server_type ($module['id_modulo']);
-	$data[1] .= ' <img src="images/'.show_icon_type ($module["id_tipo_modulo"]).'" border="0">';
+	//$data[1] .= ' <img src="images/'.show_icon_type ($module["id_tipo_modulo"]).'" border="0">';
 	if (give_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&id_agent_module='.$module["id_agente_modulo"].'&edit_module='.$module["id_modulo"].'"><img src="images/config.png"></a>';
+	  $data[1] .= ' <a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&id_agent_module='.$module["id_agente_modulo"].'&edit_module='.$module["id_modulo"].'"><img src="images/config.png"></a>';
 	  
 	$data[2] = substr ($module["nombre"], 0, 25);
 	$data[3] = substr ($module["descripcion"], 0, 35);

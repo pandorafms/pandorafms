@@ -69,7 +69,7 @@ echo '<form name="modulo" method="POST" action="index.php?sec=gservers&sec2=godm
 $table->data[] = array (__('Task name'),print_input_text ('name',$name,'',25,0,true));
 
 // Recon server
-$sql = "SELECT id_server, name FROM tserver WHERE recon_server = 1 ORDER BY name";
+$sql = "SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name";
 $result = get_db_all_rows_sql ($sql);
 foreach ($result as $row) {
 	$selectbox[$row["id_server"]] = $row["name"];

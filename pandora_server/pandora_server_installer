@@ -75,6 +75,12 @@ else
 		ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server
 	fi
 
+	# Tentacle server install
+
+	cp bin/tentacle_server /usr/local/bin
+	cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+	ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+
 	mkdir /usr/share/pandora
 	cp -R util /usr/share/pandora
 	if [ -d /etc/cron.daily ]

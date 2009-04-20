@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-17 12:59+0200\n"
-"PO-Revision-Date: 2009-04-17 13:09+0200\n"
+"POT-Creation-Date: 2009-04-20 09:45+0200\n"
+"PO-Revision-Date: 2009-04-20 09:46+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -339,7 +339,9 @@ msgstr "Desconectado"
 msgid ""
 "Your session is over. Please close your browser window to close this Pandora "
 "session."
-msgstr "Su sesión ha caducado. Cierre la ventana de su navegador web para cerrar esta sesión de Pandora FMS."
+msgstr ""
+"Su sesión ha caducado. Cierre la ventana de su navegador web para cerrar "
+"esta sesión de Pandora FMS."
 
 #: ../../general/links_menu.php:21 ../../godmode/menu.php:170
 msgid "Links"
@@ -640,8 +642,8 @@ msgid ""
 "Please check that the web server has write rights on the {HOMEDIR}/"
 "attachment directory"
 msgstr ""
-"Compruebe que el servidor web tiene permisos de escritura en el directorio {HOMEDIR}/"
-"directorio_de_adjuntos"
+"Compruebe que el servidor web tiene permisos de escritura en el directorio "
+"{HOMEDIR}/directorio_de_adjuntos"
 
 #: ../../index.php:221
 msgid "Sorry! I can't find the page!"
@@ -5492,11 +5494,15 @@ msgstr "La alerta se disparará cuando el valor no sea <span id=\"value\"></span
 
 #: ../../include/functions_ui.php:397
 msgid "The alert would fire when the value matches <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor coincida con <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor coincida con <span id=\"value\"></"
+"span>"
 
 #: ../../include/functions_ui.php:400
 msgid "The alert would fire when the value doesn't match <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor no coincida con <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no coincida con <span id=\"value\"></"
+"span>"
 
 #: ../../include/functions_ui.php:406
 msgid ""
@@ -5511,8 +5517,8 @@ msgid ""
 "The alert would fire when the value is not between <span id=\"min\"></span> "
 "and <span id=\"max\"></span>"
 msgstr ""
-"La alerta se disparará cuando el valor no esté entre <span id=\"min\"></span> y "
-"<span id=\"max\"></span>"
+"La alerta se disparará cuando el valor no esté entre <span id=\"min\"></"
+"span> y <span id=\"max\"></span>"
 
 #: ../../include/functions_ui.php:413
 msgid "The alert would fire when the value is over <span id=\"max\"></span>"
@@ -6222,7 +6228,7 @@ msgstr "Sólo pendientes"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:18
 msgid "Maps status"
-msgstr ""
+msgstr "Estado de los mapas"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:20
 msgid "General and quick visual maps report"
@@ -6230,19 +6236,19 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:22
 msgid "Maps"
-msgstr ""
+msgstr "Mapas"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:67
 msgid "Bad"
-msgstr ""
+msgstr "Mal"
 
 #: ../../enterprise/dashboard/widgets/single_graph.php:16
 msgid "Single graph"
-msgstr ""
+msgstr "Gráfica simple"
 
 #: ../../enterprise/dashboard/widgets/single_graph.php:18
-msgid "Show graph of a agent module"
-msgstr ""
+msgid "Show graph of an agent module"
+msgstr "Mostrar gráfica del módulo de un agente"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:13
 msgid "PDF"
@@ -6250,7 +6256,7 @@ msgstr "PDF"
 
 #: ../../enterprise/operation/menu.php:24
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:28
 msgid "Pandora Agents "
@@ -6326,7 +6332,7 @@ msgstr "Todas las prioridades"
 
 #: ../../operation/incidents/incident.php:207
 msgid "All users"
-msgstr ""
+msgstr "Todos los usuarios"
 
 #: ../../operation/incidents/incident.php:223
 msgid "No incidents match your search filter"
@@ -6394,7 +6400,7 @@ msgstr "Fichero subido"
 
 #: ../../operation/incidents/incident_detail.php:152
 msgid "File could not be uploaded"
-msgstr ""
+msgstr "No se pudo subir el fichero"
 
 #: ../../operation/incidents/incident_detail.php:210
 msgid "Incident details"
@@ -6925,7 +6931,7 @@ msgstr "Cambia entre los estados verde y rojo"
 
 #: ../../operation/agentes/bulbs.php:27
 msgid "Alerts disabled"
-msgstr ""
+msgstr "Alertas desactivadas"
 
 #: ../../operation/agentes/bulbs.php:31
 msgid "Agent without monitors"
@@ -7007,7 +7013,7 @@ msgstr "Vista táctica del servidor"
 
 #: ../../operation/agentes/tactical.php:204
 msgid "There are no servers configured in the database"
-msgstr ""
+msgstr "No existen servidores configurados en la base de datos"
 
 #: ../../operation/events/event_statistics.php:32
 msgid "Event graph"
@@ -7024,7 +7030,7 @@ msgstr "Gráfica de eventos por grupo"
 
 #: ../../operation/events/events.php:43
 msgid "Event"
-msgstr ""
+msgstr "Evento"
 
 #: ../../operation/events/events.php:54 ../../operation/events/events.php:417
 msgid "SNMP"
@@ -7032,11 +7038,11 @@ msgstr "SNMP"
 
 #: ../../operation/events/events.php:129
 msgid "Successfully validated"
-msgstr ""
+msgstr "Validado correctamente"
 
 #: ../../operation/events/events.php:130 ../../operation/events/events.php:570
 msgid "Could not be validated"
-msgstr ""
+msgstr "No se pudo validar"
 
 #: ../../operation/events/events.php:140
 msgid "System Events"
@@ -7052,7 +7058,7 @@ msgstr "Filtro de control de eventos"
 
 #: ../../operation/events/events.php:189
 msgid "Toggle filter"
-msgstr ""
+msgstr "Conmutar filtro"
 
 #: ../../operation/events/events.php:231
 msgid "Agent search"
@@ -7072,15 +7078,15 @@ msgstr "Repetido"
 
 #: ../../operation/events/events.php:288
 msgid "All events"
-msgstr ""
+msgstr "Todos los eventos"
 
 #: ../../operation/events/events.php:289
 msgid "Group events"
-msgstr ""
+msgstr "Eventos de grupos"
 
 #: ../../operation/events/events.php:299
 msgid "Export to CSV file"
-msgstr ""
+msgstr "Exportar a un fichero CSV"
 
 #: ../../operation/events/events.php:303
 msgid "Marquee display"
@@ -7092,11 +7098,11 @@ msgstr "Eventos RSS"
 
 #: ../../operation/events/events.php:424
 msgid "Go to data overview"
-msgstr ""
+msgstr "Ir a la vista general de datos"
 
 #: ../../operation/events/events.php:430
 msgid "Go to alert overview"
-msgstr ""
+msgstr "Ir a la vista general de alertas"
 
 #: ../../operation/events/events.php:463 ../../operation/events/events.php:521
 #: ../../operation/events/events.php:522
@@ -7111,7 +7117,7 @@ msgstr "Eliminar evento"
 #: ../../operation/events/events.php:477 ../../operation/events/events.php:529
 #: ../../operation/events/events.php:530
 msgid "Create incident from event"
-msgstr ""
+msgstr "Crear incidente desde un evento"
 
 #: ../../operation/events/events.php:510 ../../operation/events/events.php:511
 msgid "Validated event"
@@ -7132,7 +7138,7 @@ msgstr "Contraseña actualizada correctamente"
 #: ../../operation/users/user_edit.php:58
 #, php-format
 msgid "Error updating passwords: %s"
-msgstr ""
+msgstr "Error al actualizar las contraseñas: %s"
 
 #: ../../operation/users/user_edit.php:60
 msgid "Passwords didn't match or other problem encountered while updating passwords"
@@ -7156,13 +7162,17 @@ msgstr "Contraseña nueva"
 msgid ""
 "You can not change your password from Pandora FMS under the current "
 "authentication scheme"
-msgstr "No puede cambiar su contraseña desde Pandora FMS bajo el actual esquema de autenticación"
+msgstr ""
+"No puede cambiar su contraseña desde Pandora FMS bajo el actual esquema de "
+"autenticación"
 
 #: ../../operation/users/user_edit.php:115
 msgid ""
 "You can not change your user info from Pandora FMS under the current "
 "authentication scheme"
-msgstr "No puede cambiar su información de usuario desde Pandora FMS bajo el actual esquema de autenticación"
+msgstr ""
+"No puede cambiar su información de usuario desde Pandora FMS bajo el actual "
+"esquema de autenticación"
 
 #: ../../operation/users/user_edit.php:145
 msgid "This user doesn't have any assigned profile/group"
@@ -7171,12 +7181,12 @@ msgstr "Este usuario no tiene ningún perfil/grupo asociado"
 #: ../../operation/messages/message.php:41
 #, php-format
 msgid "Message successfully sent to user %s"
-msgstr ""
+msgstr "Mensaje enviado correctamente al usuario %s"
 
 #: ../../operation/messages/message.php:42
 #, php-format
 msgid "Error sending message to user %s"
-msgstr ""
+msgstr "Error al enviar el mensaje al usuario %s"
 
 #: ../../operation/messages/message.php:49
 msgid "Message successfully sent"
@@ -7184,8 +7194,8 @@ msgstr "Mensaje enviado correctamente"
 
 #: ../../operation/messages/message.php:50
 #, php-format
-msgid "Error sending message to group %s "
-msgstr ""
+msgid "Error sending message to group %s"
+msgstr "Error al enviar el mensaje al grupo %s"
 
 #: ../../operation/messages/message.php:79
 msgid "-Select user-"
@@ -7249,5 +7259,5 @@ msgstr "Mensaje sin leer; pulse para leerlo"
 
 #: ../../operation/messages/message.php:204
 msgid "No Subject"
-msgstr ""
+msgstr "Sin asunto"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-17 13:10+0200\n"
+"POT-Creation-Date: 2009-04-20 09:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6158,7 +6158,7 @@ msgid "Single graph"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/single_graph.php:18
-msgid "Show graph of a agent module"
+msgid "Show graph of an agent module"
 msgstr ""
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:13
@@ -7100,7 +7100,7 @@ msgstr ""
 
 #: ../../operation/messages/message.php:50
 #, php-format
-msgid "Error sending message to group %s "
+msgid "Error sending message to group %s"
 msgstr ""
 
 #: ../../operation/messages/message.php:79

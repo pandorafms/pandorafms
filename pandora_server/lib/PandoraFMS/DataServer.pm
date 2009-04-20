@@ -204,7 +204,7 @@ sub process_xml_data {
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = (defined ($data->{'timestamp'})) ? $data->{'timestamp'} : $timestamp;
 				process_module_data ($pa_config, $module_data, $agent_name, $module_name,
-									 $module_type, $data_timestamp, $dbh);
+									 $module_type, $interval, $data_timestamp, $dbh);
 			}
 		}
 	}

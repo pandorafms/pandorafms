@@ -73,15 +73,13 @@ $table->data[8][0] = __('Use round corners');
 $table->data[8][1] = __('Yes').'&nbsp;'.print_radio_button ('round_corner', 1, '', $config["round_corner"], true).'&nbsp;&nbsp;';
 $table->data[8][1] .= __('No').'&nbsp;'.print_radio_button ('round_corner', 0, '', $config["round_corner"], true);
 
-$table->data[9][0] = __('Status Icon set');
-$iconsets["default"] = __('Colors (Default)');
+$table->data[9][0] = __('Status icon set');
+$iconsets["default"] = __('Colors');
 $iconsets["faces"] = __('Faces');
-$iconsets["color_text"] = __('Color and text');
-
+$iconsets["color_text"] = __('Colors and text');
 $table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
 
-
-echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup_visuals">';
+echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

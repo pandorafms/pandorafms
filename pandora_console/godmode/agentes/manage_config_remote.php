@@ -55,7 +55,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		$id_origen = get_parameter ("origen");
 
 		// Security check here
-		if (!user_access_to_agent ($config["id_user"], $id_origen,"AR")) {
+		if (!user_access_to_agent ($id_origen)) {
 			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
 			require ("general/noaccess.php");
 			exit;
@@ -69,7 +69,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$id_agente = $destino[$a];
 			
 			// Security check here
-			if (!user_access_to_agent ($config["id_user"], $id_agente, "AR")){
+			if (!user_access_to_agent ($id_agente)){
 				audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
 				require ("general/noaccess.php");
 				exit;

@@ -16,19 +16,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-// Load global vars
-if (!isset ($id_agente)) {
-	die ("Not Authorized");
+/* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
+if (isset ($id_agente)) {
+	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
+	echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>"; 
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
 
-echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>"; 
-
 // Create module/type combo
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
-echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+echo '<form id="create_module_type" method="post" action="'.$url.'">';
 echo "<tr><td class='datos'>";
 
 // Check if there is at least one server of each type available to assign that
@@ -65,6 +63,8 @@ echo '<input align="right" name="updbutton" type="submit" class="sub wand" value
 echo "</form>";
 echo "</table>";
 
+if (! isset ($id_agente))
+	return;
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================

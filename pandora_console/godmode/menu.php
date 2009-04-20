@@ -52,6 +52,7 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	
 	$menu["gagente"]["sub"] = $sub;
 }
+
 if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["gmodules"]["text"] = __('Manage modules');
 	$menu["gmodules"]["sec2"] = "godmode/modules/module_list";
@@ -87,6 +88,8 @@ if (give_acl ($config['id_user'], 0, "LM")) {
 	
 	$menu["galertas"]["sub"] = $sub;
 }
+
+enterprise_hook ('policies_menu');
 
 if (give_acl ($config['id_user'], 0, "UM")) {
 	$menu["gusuarios"]["text"] = __('Manage users');

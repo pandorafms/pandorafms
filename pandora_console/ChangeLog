@@ -1,3 +1,30 @@
+2009-04-20  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager.php: Some fixes to allow form
+	reutilization.
+	
+	* godmode/reporting/reporting_builder.php: Replaced exit with return. Use
+	pandoraSelectGroup() control.
+	
+	* godmode/agentes/modificar_agente.php: Style correction by using pandora
+	functions.
+
+	* godmode/agentes/massive_operations.php: Fixed tab styles that was showing
+	wrong the .
+
+	* godmode/agentes/manage_config_remote.php: Changes in
+	user_access_to_agent()
+
+	* general/ui/agents_list.php: Added to repository. Reusable render for an
+	agent list.
+
 2009-04-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

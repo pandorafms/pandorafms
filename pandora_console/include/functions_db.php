@@ -1236,6 +1236,20 @@ function get_user_groups ($id_user = false, $privilege = "AR") {
 }
 
 /** 
+ * Get the first group of an user.
+ *
+ * Useful function when you need a default group for a user.
+ * 
+ * @param string User id
+ * @param string The privilege to evaluate
+ *
+ * @return array The first group where the user has certain privileges.
+ */
+function get_user_first_group ($id_user = false, $privilege = "AR") {
+	return array_shift (array_keys (get_user_groups ($id_user, $privilege)));
+}
+
+/** 
  * Get module type icon.
  *
  * TODO: Create print_moduletype_icon and print the full tag including hover etc.
@@ -2356,7 +2370,7 @@ echo __('Hello, %s!', $user);
  * 
  * @return string The translated string. If not defined, the same string will be returned
  */
-function __ ($string) {
+function __ ($string /*, variable arguments */) {
 	global $l10n;
 	
 	if (func_num_args () == 1) {
@@ -3142,14 +3156,22 @@ function print_database_debug () {
 /** 
  * Return access to a specific agent by a specific user
  * 
- * @param string $id_user User id.
- * @param int $id_agent Agent id.
+ * @param int Agent id.
+ * @param string Access mode to be checked. Default AR (Agent reading)
+ * @param string User id. Current user by default
  *
- * @return int Access to that agent (0 not, 1 yes)
+ * @return bool Access to that agent (false not, true yes)
  */
- 
-function user_access_to_agent ($id_user, $id_agent, $mode = "AR"){
+function user_access_to_agent ($id_agent, $mode = "AR", $id_user = false) {
+	if (empty ($id_agent))
+		return false;
+	
+	if ($id_user == false) {
+		global $config;
+		$id_user = $config['id_user'];
+	}
+	
 	$id_group = (int) get_db_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
-	return give_acl ($id_user, $id_group, $mode);
+	return (bool) give_acl ($id_user, $id_group, $mode);
 }
 ?>

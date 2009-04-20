@@ -756,9 +756,9 @@ function get_agent_module_info ($id_agent) {
 	$return["monitor_down"] = 0; //Number of 'down' monitors
 	$return["last_contact"] = 0; //Last agent contact 
 	$return["interval"] = get_agent_interval ($id_agent); //How often the agent gets contacted
-	$return["status_img"] = print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'), true);
+	$return["status_img"] = print_status_image (STATUS_AGENT_NO_DATA, __('Agent without data'), true);
 	$return["alert_status"] = "notfired";
-	$return["alert_img"] = print_status_image(STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
+	$return["alert_img"] = print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
 	$return["agent_group"] = get_agent_group ($id_agent);
 	
 	if (!give_acl ($config["id_user"], $return["agent_group"], "AR")) {
@@ -766,8 +766,8 @@ function get_agent_module_info ($id_agent) {
 	} 
 	
 	$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo 
-					WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
-					tagente_modulo.disabled = 0	AND tagente_modulo.id_agente = %d", $id_agent);
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
+		tagente_modulo.disabled = 0	AND tagente_modulo.id_agente = %d", $id_agent);
 	
 	$modules = get_db_all_rows_sql ($sql);
 	

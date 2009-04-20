@@ -1,11 +1,12 @@
-# Pandora FMS 2.0 Server Installer (c) 2008 Manuel Arostegui <marostegui@artica.es>
-# Please see http://www.pandorafms.com
+# Pandora FMS 3.0 Server Installer (c) 2008-2009 Artica ST
+# Please see http://www.pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 #!/bin/bash
 
 MODE=$1
+SECOPT=$2
 
 install () {
 
@@ -61,11 +62,10 @@ else
 	if [ "`uname -s`" != "Linux" ]; then
 		echo "This is not a Linux-based distro. The installer will not create files for automatic startup."
 		echo "Copying the binaries into /usr/local/bin"
-		cp pandora_* /usr/local/bin
-		rm /usr/local/bin/pandora_server_installer
+		cp pandora_server /usr/local/bin
 	else 
-		cp pandora_* /etc/init.d/
-		rm /etc/init.d/pandora_server_installer
+		echo "Copying the startup scripts into /etc/init.d and linking it to /etc/rc2.d"
+		cp pandora_server /etc/init.d/
 		ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
 	fi
 
@@ -75,11 +75,15 @@ else
 		ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server
 	fi
 
-	# Tentacle server install
 
-	cp bin/tentacle_server /usr/local/bin
-	cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-	ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+	if [ "$SECOPT" != "--no-tentacle" ]
+	then
+		# Tentacle server install
+		echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
+		cp bin/tentacle_server /usr/local/bin
+		cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+		ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+	fi
 
 	mkdir /usr/share/pandora
 	cp -R util /usr/share/pandora
@@ -129,13 +133,17 @@ uninstall () {
 help () {
         echo "     --install           To install Pandora FMS Servers on this system (You have to be root)"
         echo "     --uninstall         To uninstall and remove Pandora FMS Servers on this System"
+	echo " "
+	echo " Additional parameters (after --install) "
         echo " "
+	echo "     --no-tentacle        Skip tentacle server installation (by default tentacle server installed)"
+	echo " "
 }
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 2.0 Server Installer (c) 2008 Manuel Arostegui"
-echo "This program is licensed under GPL2 Terms. http://pandora.sourceforge.net"
+echo "Pandora FMS 3.0 Server Installer (c) 2008-2009 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 
 case "$MODE" in

@@ -1,3 +1,11 @@
+2009-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Temporarily disabled TCP scans, the
+	  Recon Server was too slow. Fixed a bug that reset recon tasks
+	  when scanning large networks.
+
+	* lib/PandoraFMS/DataServer.pm: Small fix.
+
 2009-04-19  Sancho Lerena <slerena@artica.es>
 
 	* bin/tentacle_server: Added to repo.

@@ -27,7 +27,7 @@ use Thread::Semaphore;
 use IO::Socket::INET;
 use Net::Ping;
 use NetAddr::IP;
-use POSIX qw(strftime);
+use POSIX qw(strftime ceil);
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -86,11 +86,11 @@ sub data_producer ($) {
 
 	my @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
                                    WHERE id_recon_server = ? 
-                                   AND (status = 1 OR (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
+                                   AND (utimestamp = 0 OR (utimestamp + interval_sweep) < UNIX_TIMESTAMP())', $server_id);
 	foreach my $row (@rows) {
 
 		# Update task status
-		update_recon_task ($dbh, $row->{'id_rt'}, 0);
+		update_recon_task ($dbh, $row->{'id_rt'}, 1);
 
 		push (@tasks, $row->{'id_rt'});
 	}
@@ -122,7 +122,7 @@ sub data_consumer ($$) {
 	for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 
 		my $addr = (split(/\//, $net_addr))[0];
-		update_recon_task ($dbh, $task_id, $i / ($total_hosts / 100));
+		update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100)));
 
 		# Does the host already exist?
         next if (get_agent_from_addr ($dbh, $addr) > 0);
@@ -132,21 +132,21 @@ sub data_consumer ($$) {
 		if (icmp_scan ($addr, $pa_config->{'networktimeout'}) == 1) {
 			$alive = 1;
 		#Check for Remote Desktop & VNC (Desktop & Server machines)
-		} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 3389) == 1 ||
-		         tcp_scan ($addr, $pa_config->{'networktimeout'}, 5900) == 1) {
-			$alive = 1;
+		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 3389) == 1 ||
+		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 5900) == 1) {
+		#	$alive = 1;
 		#Check for management ports 10000 = Webmin, 161 = SNMP (Most embedded devices)
-		} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 10000) == 1 ||
-		         tcp_scan ($addr, $pa_config->{'networktimeout'}, 161) == 1) {
-			$alive = 1;
+		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 10000) == 1 ||
+		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 161) == 1) {
+		#	$alive = 1;
 		#Check for SSH & Mail (Servers and Unix machines)
-		} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 22) == 1 ||
-		         tcp_scan ($addr, $pa_config->{'networktimeout'}, 25) == 1) {
-			$alive = 1;
+		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 22) == 1 ||
+		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 25) == 1) {
+		#	$alive = 1;
 		#Check for WWW & MySQL (Webservers and systems in a DMZ)
-		} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 80) == 1 ||
-		         tcp_scan ($addr, $pa_config->{'networktimeout'}, 3306) == 1) {
-			$alive = 1;
+		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 80) == 1 ||
+		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 3306) == 1) {
+		#	$alive = 1;
 		}
 
 		next unless ($alive == 1);

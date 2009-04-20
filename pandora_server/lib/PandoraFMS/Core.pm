@@ -19,10 +19,11 @@ package PandoraFMS::Core;
 
 use strict;
 use warnings;
+
 use DBI;
 use XML::Simple;
 use HTML::Entities;
-
+use Time::Local;
 use POSIX qw(strftime);
 
 use PandoraFMS::DB;
@@ -545,8 +546,9 @@ sub pandora_process_module ($$$$$$$$) {
 	}
 
 	# Do we have to save module data?
-	#my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $data || $agent_status->{'last_try'} < (time() - 86400))) ? 1 : 0;
-	my $save = ($module->{'history_data'} == 1 && $agent_status->{'datos'} ne $data) ? 1 : 0;
+	return unless ($agent_status->{'last_try'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
+	my $last_try  = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $data || $last_try < (time() - 86400))) ? 1 : 0;
 		
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
 	              id_agente = ?, current_interval = ?, running_by = ?, last_execution_try = ?, last_try = ?
@@ -716,7 +718,7 @@ sub pandora_create_module ($$$$$$$$) {
 
 	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `descripcion`, `module_interval`, `id_modulo`)
 	                        VALUES (?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`) VALUES (?)', $module_id);
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `last_try`) VALUES (?, \'0000-00-00 00:00:00\')', $module_id);
 	return $module_id;
 }
 

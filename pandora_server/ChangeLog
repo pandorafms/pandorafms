@@ -1,3 +1,8 @@
+2009-04-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Re-enabled detection of duplicate data
+	  within a 48 hour interval.
+
 2009-04-20  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_installer: Added --no-tentacle switch, added more

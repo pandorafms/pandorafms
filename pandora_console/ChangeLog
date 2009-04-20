@@ -1,3 +1,12 @@
+2009-04-20  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated PO template.
+
+	* operation/messages/message.php: Fixed typo.
+
 2009-04-18  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: Altered order of agent icon

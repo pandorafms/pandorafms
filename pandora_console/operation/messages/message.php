@@ -47,7 +47,7 @@ if (!empty ($dest_group) && isset ($_GET["send_message"])) {
 	$return = create_message_group ($config["id_user"], $dest_group, $subject, $message);
 	print_result_message ($return,
 		__('Message successfully sent'),
-		__('Error sending message to group %s ', get_group_name ($dest_group)));
+		__('Error sending message to group %s', get_group_name ($dest_group)));
 }
 
 if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {

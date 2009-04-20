@@ -1,5 +1,9 @@
 2009-04-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed another typo.
+
+2009-04-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/ReconServer.pm: Temporarily disabled TCP scans, the
 	  Recon Server was too slow. Fixed a bug that reset recon tasks
 	  when scanning large networks.

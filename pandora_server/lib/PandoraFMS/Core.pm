@@ -984,7 +984,7 @@ sub process_data ($$$$$) {
 sub process_inc_data ($$$$) {
 	my ($data, $module, $utimestamp, $dbh) = @_;
 
-	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agent_module'});
+	my $data_inc = get_db_single_row ($dbh, 'SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 
 	# No previous data
 	if (! defined ($data_inc)) {

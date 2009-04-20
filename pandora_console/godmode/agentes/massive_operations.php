@@ -30,7 +30,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-$tab = (string) get_parameter ('tab');
+$tab = (string) get_parameter ('tab', 'copy_modules');
 
 $img_style = array ("class" => "top", "width" => 16);
 
@@ -44,25 +44,25 @@ print_image ("images/copy.png", false, $img_style);
 echo '&nbsp;'.__('Copy').'</a>';
 echo '</li>';
 
-echo '<li class="'.($tab == 'edit_modules' || $tab == '' ? 'nomn_high' : 'nomn').'">';
+echo '<li class="'.($tab == 'edit_modules' ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">';
 print_image ("images/book_edit.png", false, $img_style);
 echo '&nbsp; '.__('Edit modules').'</a>';
 echo '</li>';
 
-echo '<li class="'.($tab == 'delete_agents' || $tab == '' ? 'nomn_high' : 'nomn').'">';
+echo '<li class="'.($tab == 'delete_agents' ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_agents">';
 print_image ("images/delete_agents.png", false, $img_style);
 echo '&nbsp; '.__('Delete agents').'</a>';
 echo '</li>';
 
-echo '<li class="'.($tab == 'delete_modules' || $tab == '' ? 'nomn_high' : 'nomn').'">';
+echo '<li class="'.($tab == 'delete_modules' ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_modules">';
 print_image ("images/delete_modules.png", false, $img_style);
 echo '&nbsp; '.__('Delete modules').'</a>';
 echo '</li>';
 
-echo '<li class="'.($tab == 'delete_alerts' || $tab == '' ? 'nomn_high' : 'nomn').'">';
+echo '<li class="'.($tab == 'delete_alerts' ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_alerts">';
 print_image ("images/delete_alerts.png", false, $img_style);
 echo '&nbsp; '.__('Delete alerts').'</a>';

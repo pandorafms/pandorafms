@@ -110,7 +110,7 @@ pagination (count ($agents), "index.php?sec=estado&sec2=operation/agentes/estado
 // Show data.
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = "90%";
+$table->width = "98%";
 $table->class = "databox";
 
 $table->head = array ();

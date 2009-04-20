@@ -108,6 +108,40 @@ function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
 }
 
 /**
+ * Get a list of agents.
+ *
+ * By default, it will return all the agents where the user has reading access.
+ * 
+ * @param array ilter options in an indexed array. See
+ * format_array_to_where_clause_sql()
+ * @param array Fields to get.
+ * @param string Access needed in the agents groups.
+ * 
+ * @return array An array with all alerts defined for an agent.
+ */
+function get_agents ($filter = false, $fields = false, $access = 'AR') {
+	if (! is_array ($filter))
+		$filter = array ();
+	
+	if (! isset ($filter['id_grupo']))
+		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));
+	else
+		if (! is_array ($filter['id_grupo'])) {
+			if (! in_array ($filter['id_grupo'], array_keys (get_user_groups (false, $access))))
+				return false;
+		} else {
+			$user_groups = get_user_groups (false, $access);
+			foreach ($filter['id_grupo'] as $i => $id_group)
+				if (! isset ($user_groups[$id_group]))
+					unset ($filter['id_grupo'][$id]);
+			if (count ($filter['id_grupo']) == 0)
+				$filter['id_grupo'] = $user_groups;
+		}
+	
+	return @get_db_all_rows_filter ('tagente', $filter, $fields);
+}
+
+/**
  * Get all the alerts of an agent, simple and combined.
  *
  * @param int $id_agent Agent id

@@ -168,7 +168,7 @@
 	$.extend ({
 		pandoraSelectOS: new function() {
 			this.defaults = {
-				alertSelect: "select#id_od",
+				alertSelect: "select#id_os",
 				spanPreview: "#os_preview",
 				debug: false
 			};
@@ -206,10 +206,53 @@
 		}
 	});
 	
+	$.extend ({
+		pandoraSelectGroup: new function() {
+			this.defaults = {
+				alertSelect: "select#id_group",
+				spanPreview: "#group_preview",
+				debug: false
+			};
+			
+			/* public methods */
+			this.construct = function (settings) {
+				return this.each (function() {
+					this.config = {};
+					this.config = $.extend (this.config, $.pandoraSelectGroup.defaults, settings);
+					
+					var config = this.config;
+
+					$(this).change (function () {
+						var id_group = this.value;
+						
+						$(config.spanPreview).fadeOut ('fast', function () {
+							$("img", config.spanPreview).remove ();
+							jQuery.post ('ajax.php',
+								{"page": "godmode/groups/group_list",
+								"get_group_json": 1,
+								"id_group": id_group
+								},
+								function (data) {
+									img = $("<img />").attr ("src", "images/groups_small/"+data["icon"]+".png")
+									$(config.spanPreview)
+										.append (img)
+										.fadeIn ('fast');
+								},
+								"json"
+							);
+						});
+						
+					});
+				});
+			};
+		}
+	});
+	
 	$.fn.extend({
 		pandoraSelectGroup: $.pandoraSelectGroup.construct,
 		pandoraSelectAgentModule: $.pandoraSelectAgentModule.construct,
 		pandoraSelectAgentAlert: $.pandoraSelectAgentAlert.construct,
-		pandoraSelectOS: $.pandoraSelectOS.construct
+		pandoraSelectOS: $.pandoraSelectOS.construct,
+		pandoraSelectGroup: $.pandoraSelectGroup.construct
 	});
 }) (jQuery);

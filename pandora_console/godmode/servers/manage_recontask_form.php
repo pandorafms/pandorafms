@@ -62,88 +62,71 @@ $table->cellspacing=4;
 $table->cellpadding=4;
 $table->class="databox_color";
 
-// Different Form url if it's a create or if it's a update form
-echo '<form name="modulo" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
-
 // Name
-$table->data[] = array (__('Task name'),print_input_text ('name',$name,'',25,0,true));
+$table->data[0][0] = __('Task name');
+$table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 
 // Recon server
-$sql = "SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name";
-$result = get_db_all_rows_sql ($sql);
-foreach ($result as $row) {
-	$selectbox[$row["id_server"]] = $row["name"];
-}
-$table->data[] = array (__('Recon Server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>',
-			print_select ($selectbox, "id_recon_server", $id_recon_server,'','','',true));
-unset ($selectbox);
+$table->data[1][0] = __('Recon Server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
+$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name',
+	"id_recon_server", $id_recon_server, '', '', '', true);
 
 // Network 
-$table->data[] = array (__('Network'),print_input_text ('network',$network,'',25,0,true));
+$table->data[2][0] = __('Network');
+$table->data[2][1] = print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
-$selectbox = array (
-		3600 => '1 '.__('hour'),
-		7200 => '2 '.__('hours'),
-		21600 => '6 '.__('hours'),
-		43200 => '12 '.__('hours'),
-		86400 => '1 '.__('day'),
-		432000 => '5 '.__('days'),
-		604800 => '1 '.__('week'),
-		1209600 => '2 '.__('weeks'),
-		2592000 => '1 '.__('month')
-	);
+$values = array ();
+$values[3600] = __('%d hour', 1);
+$values[7200] = __('%d hours', 2);
+$values[21600] = __('%d hours', 12);
+$values[43200] = __('%d day', 1);
+$values[86400] = __('%d day', 1);
+$values[432000] = __('%d days', 5);
+$values[604800] = __('%d week', 1);
+$values[1209600] = __('%d weeks', 2);
+$values[2592000] = __('%d month', 1);
 
-$table->data[] = array (__('Interval'),print_select ($selectbox, "interval", $interval,'','','',true));
-unset ($selectbox);
+$table->data[3][0] = __('Interval');
+$table->data[3][1] = print_select ($values, "interval", $interval, '', '', '', true);
 
 // Network profile
-$sql = sprintf("SELECT id_np, name FROM tnetwork_profile");
-$result = get_db_all_rows_sql ($sql);
-foreach($result as $row) {
-	$selectbox[$row["id_np"]] = $row["name"];
-}
-
-$table->data[] = array (__('Network profile'),print_select ($selectbox, "id_network_profile", $id_network_profile,'','','',true));
-unset ($selectbox);
+$table->data[4][0] = __('Network profile');
+$table->data[4][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
+	"id_network_profile", $id_network_profile, '', '', '', true);
 
 // OS
-$sql = "SELECT id_os, name FROM tconfig_os ORDER BY name";
-$result = get_db_all_rows_sql ($sql);
-$selectbox[-1] = __('Any');
-foreach ($result as $row) {
-	$selectbox[$row["id_os"]] = $row["name"];
-}
-
-$table->data[] = array (__('OS'),print_select ($selectbox, "id_os", $id_os,'','','',true));
-unset ($selectbox);
+$table->data[5][0] = __('OS');
+$table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
+	"id_os", $id_os, '', '', '', true);
 
 // Group
-$sql = "SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1";
-$result = get_db_all_rows_sql ($sql);
-foreach ($result as $row) {
-	$selectbox[$row["id_grupo"]] = $row["nombre"];
-}
-$table->data[] = array (__('Group'),print_select ($selectbox, "id_group", $id_group,'','','',true));
-unset ($selectbox);
+$table->data[6][0] = __('Group');
+$table->data[6][1] = print_select (get_user_groups (), "id_group",
+	$id_group, '', '', '', true);
 
 // Incident
-$selectbox = array ( 0 => __('No'), 1 => __('Yes') );
-$table->data[] = array (__('Incident'),print_select ($selectbox, "create_incident", $create_incident,'','','',true));
+$values = array (0 => __('No'), 1 => __('Yes'));
+$table->data[7][0] = __('Incident');
+$table->data[7][1] = print_select ($values, "create_incident", $create_incident,
+	'','','',true);
 
 // Comments
-$table->data[] = array (__('Comments'),print_textarea ("description", 2, 70, $description,'',true));
-print_table ($table);
-unset ($table);
+$table->data[8][0] = __('Comments');
+$table->data[8][1] = print_textarea ("description", 2, 70, $description, '', true);
 
-echo '<div class="action-buttons" style="width: 700px">';
-if ($id_rt != "-1") 
-	echo print_submit_button (__('Update'),"crt",false,'class="sub upd"',true);
+print_table ($table);
+
+// Different Form url if it's a create or if it's a update form
+echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
+
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+if ($id_rt != -1) 
+	print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
 else
-	echo print_submit_button (__('Add'),"crt",false,'class="sub wand"',true);
+	print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
 echo '</form>';
 echo "</div>";
-
 
 echo "</form>";
 

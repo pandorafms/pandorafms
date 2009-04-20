@@ -182,6 +182,7 @@ if ($create_agent) {
 $img_style = array ("class" => "top", "width" => 16);
 
 if ($id_agente) {
+
 	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
 	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
 	print_image ("images/setup.png", false, $img_style);

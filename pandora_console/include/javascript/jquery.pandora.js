@@ -1,4 +1,4 @@
-$(document).ready (function () {
+(function($) {
 	$.fn.check = function () {
 		return this.each (function () {
 			this.checked = true;
@@ -29,7 +29,9 @@ $(document).ready (function () {
 				.text (msg)
 				.slideDown ();
 		};
-	
+}) (jQuery);
+
+$(document).ready (function () {
 	$("a#show_messages_dialog").click (function () {
 		jQuery.get ("ajax.php",
 			{"page": "operation/messages/message"},

@@ -60,79 +60,64 @@ $table->data[0][0] = __('Language code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
 	'language', $config["language"], '', '', '', true);
 
-$table->data[1][0] = __('Date format string') . print_help_icon("date_format", true);
-$table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
-$table->data[1][1] .= print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
+$table->data[1][0] = __('Remote config directory');
+$table->data[1][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 
-$table->data[2][0] = __('Remote config directory');
-$table->data[2][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
+$table->data[2][0] = __('SLA period (seconds)');
+$table->data[2][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
 
-$table->data[6][0] = __('SLA period (seconds)');
-$table->data[6][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
+$table->data[3][0] = __('Max. days before compact data');
+$table->data[3][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
 
-$table->data[7][0] = __('Max. days before compact data');
-$table->data[7][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
+$table->data[4][0] = __('Max. days before purge');
+$table->data[4][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
 
-$table->data[8][0] = __('Max. days before purge');
-$table->data[8][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
+$table->data[5][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table->data[5][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[10][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table->data[10][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+$table->data[6][0] = __('Auto login (Hash) password');
+$table->data[6][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
-$table->data[11][0] = __('Auto login (Hash) password');
-$table->data[11][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
+$table->data[7][0] = __('Default hours for event view');
+$table->data[7][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[15][0] = __('Default hours for event view');
-$table->data[15][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
+$table->data[8][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
+$table->data[8][1] = __('Comparation in rollover').' ';
+$table->data[8][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
+$table->data[8][1] .= '<br />'.__('Timestamp in rollover').' ';
+$table->data[8][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
-$table->data[16][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
-$table->data[16][1] = __('Comparation in rollover').' ';
-$table->data[16][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
-$table->data[16][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table->data[16][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
-
-$table->data[17][0] = __('Time source') . print_help_icon ("timesource", true);
+$table->data[9][0] = __('Time source') . print_help_icon ("timesource", true);
 $sources["system"] = __('System');
 $sources["sql"] = __('Database');
-$table->data[17][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
+$table->data[9][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
 
-$table->data[18][0] = __('Automatic update check');
-$table->data[18][1] = __('Yes').'&nbsp;'.print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
-$table->data[18][1] .= __('No').'&nbsp;'.print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
+$table->data[10][0] = __('Automatic update check');
+$table->data[10][1] = __('Yes').'&nbsp;'.print_radio_button ('autoupdate', 1, '', $config["autoupdate"], true).'&nbsp;&nbsp;';
+$table->data[10][1] .= __('No').'&nbsp;'.print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 
-$table->data[19][0] = __('Enforce https');
-$table->data[19][1] = __('Yes').'&nbsp;'.print_radio_button ('https', 1, '', $config["https"], true).'&nbsp;&nbsp;';
-$table->data[19][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
+$table->data[11][0] = __('Enforce https');
+$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('https', 1, '', $config["https"], true).'&nbsp;&nbsp;';
+$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
 
-$table->data[20][0] = __('Compact CSS and JS into header');
-$table->data[20][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
-$table->data[20][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
-
-
-$table->data[25][0] = __('Font path');
-$table->data[25][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
-
-$table->data[26][0] = __('Attachment store');
-$table->data[26][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
+$table->data[12][0] = __('Compact CSS and JS into header');
+$table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
 
-enterprise_hook ('load_snmpforward_enterprise');
+$table->data[13][0] = __('Font path');
+$table->data[13][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
 
-echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
+$table->data[14][0] = __('Attachment store');
+$table->data[14][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
+
+enterprise_hook ('setup');
+
+echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
-
-require_css_file ("color-picker");
-require_jquery_file ("colorpicker");
 ?>
-<script language="javascript" type="text/javascript">
-$(document).ready (function () {
-	$("#form_setup #text-graph_color1").attachColorPicker();
-	$("#form_setup #text-graph_color2").attachColorPicker();
-	$("#form_setup #text-graph_color3").attachColorPicker();
-});
-</script>

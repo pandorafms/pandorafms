@@ -78,7 +78,7 @@ if (isset($_GET["server"])) {
 	$servers = get_server_info ();
 	echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage servers')."</h2>";
 
-	if ($result !== false) {
+	if ($servers !== false) {
 		$table->width = "90%";
 		$table->class = "databox";
 		$table->data = array ();

@@ -1064,12 +1064,103 @@ define ('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 define ('STATUS_SERVER_OK', 'server_ok.png');
 define ('STATUS_SERVER_DOWN', 'server_down.png');
 
+/**
+ * Prints an image representing a status.
+ *
+ * @param string
+ * @param string 
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function print_status_image ($type, $title = "", $return = false) {
 	list ($imagepath) = get_status_images_path ();
 	
-	$imagepath .= "/" . $type;
+	$imagepath .= "/".$type;
 	
 	return print_image ($imagepath, $return, array ("title" => $title));
 }
 
+/**
+ * Prints a form to search agents.
+ *
+ * @param array Extra options for the function. To be documented.
+ * @param array Extra and hidden filter for the agent search.
+ */
+function print_ui_agents_list ($options = false, $filter = false, $return = false) {
+	global $config;
+	
+	$output = '';
+
+	$group_filter = true;
+	$text_filter = true;
+	$access = 'AR';
+	$table_heads = array (__('Name'), __('Group'), __('Status'));
+	$table_renders = array ('view_link', 'group', 'status');
+	$table_align = array ('', '', 'center');
+	$table_size = array ('50%', '45%', '5%');
+	$fields = false;
+	$show_filter_form = true;
+	if (is_array ($options)) {
+		if (isset ($options['group_filter']))
+			$group_filter = (bool) $options['group_filter'];
+		if (isset ($options['text_filter']))
+			$text_filter = (bool) $options['text_filter'];
+		if (isset ($options['access']))
+			$access = (string) $options['access'];
+		if (isset ($options['table_heads']))
+			$table_heads = (array) $options['table_heads'];
+		if (isset ($options['table_renders']))
+			$table_renders = (array) $options['table_renders'];
+		if (isset ($options['table_align']))
+			$table_align = (array) $options['table_align'];
+		if (isset ($options['table_size']))
+			$table_size = (array) $options['table_size'];
+		if (isset ($options['fields']))
+			$fields = (array) $options['fields'];
+		if (isset ($options['show_filter_form']))
+			$show_filter_form = (bool) $options['show_filter_form'];
+		
+		if (count ($table_renders) != count ($table_heads))
+			trigger_error ('Different count for table_renders and table_heads options');
+		
+		unset ($options);
+	}
+	
+	if ($return)
+		return get_include_contents ($config['homedir'].'/general/ui/agents_list.php',
+			get_defined_vars ());
+	
+	include ($config['homedir'].'/general/ui/agents_list.php');
+}
+
+/**
+ * Get the content of a PHP file instead of dumping to the output.
+ * 
+ * Picked from PHP official doc.
+ *
+ * @param string File name to include and get content.
+ * @param array Extra parameters in an indexed array to be passed to the file.
+ *
+ * @return string Content of the file after being processed. False if the file
+ * could not be included.
+ */
+function get_include_contents ($filename, $params = false) {
+	ob_start ();
+	
+	if (is_array ($params)) {
+		extract ($params);
+	}
+	
+	$result = include ($filename);
+	if ($result === false) {
+		ob_end_clean ();
+		return false;
+	}
+	
+	$contents = ob_get_contents ();
+	ob_end_clean ();
+
+	return $contents;
+}
 ?>

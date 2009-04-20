@@ -37,9 +37,9 @@ if (is_ajax ()) {
 		$id_report_type = (string) get_parameter ('id_report_type');
 		
 		echo get_report_type_data_source ($id_report_type);
-		exit ();
+		return;
 	}
-	exit ();
+	return;
 }
 
 $edit_report = (bool) get_parameter ('edit_report');
@@ -51,7 +51,7 @@ $report_name = (string) get_parameter ('report_name');
 $report_description = (string) get_parameter ('report_description');
 $report_private = (bool) get_parameter ('report_private', 0);
 $id_report = (int) get_parameter ('id_report');
-$report_id_group = (int) get_parameter ('report_id_group');
+$report_id_group = (int) get_parameter ('report_id_group', get_user_first_group ());
 $id_agent = (int) get_parameter ('id_agent');
 $id_group = (int) get_parameter ('id_group');
 $add_content = (bool) get_parameter ('add_content');
@@ -117,7 +117,7 @@ if ($add_content) {
 		echo '<h3 class="suc">'.__('Reporting successfully created').'</h3>';
 		$id_agent = 0;
 		$id_agent_module = 0;
-		$report_id_group = 0;
+		$report_id_group = 1;
 		$period = 0;
 		$type = 0;
 		$id_custom_graph = 0;
@@ -289,7 +289,7 @@ if ($edit_sla_report_content) {
 	
 } elseif ($edit_report || $id_report) {
 	 /* Edit and creation report form */
-	$id_agent = get_parameter_post ("id_agent",0);
+	$id_agent = (int) get_parameter ("id_agent");
 	echo "<h2>".__('Reporting')." &raquo; ";
 	echo __('Custom reporting builder');
 	
@@ -308,15 +308,12 @@ if ($edit_sla_report_content) {
 	
 	$table->data[1][0] = __('Group');
 	
-	
 	$group_select = get_user_groups ($config['id_user']);
 	$table->data[1][1] = print_select ($group_select, 'report_id_group', $report_id_group, '', '', '', true);
-	
-	$table->data[1][1] .= ' <span id="icon_preview">';
-	if ($report_id_group) {
-		$table->data[1][1] .= '<img src="images/groups_small/'.get_group_icon ($report_id_group).'.png" />';
-	}
+	$table->data[1][1] .= ' <span id="group_preview">';
+	$table->data[1][1] .= print_group_icon ($report_id_group, true);
 	$table->data[1][1] .= '</span>';
+	
 	$table->data[2][0] = __('Private');
 	$table->data[2][1] = print_checkbox ('report_private', 1, $report_private, true);
 	$table->data[3][0] = __('Description');
@@ -545,9 +542,11 @@ if ($edit_sla_report_content) {
 	echo "</div>";
 	echo "</form>";
 }
+
+require_jquery_file ('pandora.controls');
 ?>
 <script language="javascript" type="text/javascript">
-
+/* <![CDATA[ */
 function refresh_table () {
 	$('#table-add-item > tbody > tr:odd td').removeClass('datos2').addClass('datos');
 	$('#table-add-item > tbody > tr:even td').removeClass('datos').addClass('datos2');
@@ -625,34 +624,10 @@ function report_type_changed () {
 	});
 }
 
-function group_changed () {
-	var inputs = [];
-	inputs.push ("get_group_json=1");
-	inputs.push ("id_group=" + this.value);
-	inputs.push ("page=godmode/groups/group_list");
-	jQuery.ajax ({
-		data: inputs.join ("&"),
-		type: 'GET',
-		url: action="ajax.php",
-		timeout: 10000,
-		dataType: 'json',
-		success: function (data) {
-			var data_ = data;
-			$('#icon_preview').fadeOut ('normal', function () {
-				$('#icon_preview').empty ();
-				if (data_ != null) {
-					$('#icon_preview').append ($('<img />').attr ('src', 'images/groups_small/'+data['icon']+'.png'));
-				}
-				$('#icon_preview').fadeIn ();
-			});
-		}
-	});
-}
-
 $(document).ready (function () {
 	$('#id_agent').change (agent_changed);
 	$('#type').change (report_type_changed);
-	$('#report_id_group').change (group_changed);
-}); 
+	$('#report_id_group').pandoraSelectGroup ();
+});
+/* ]]> */
 </script>
-

@@ -1,3 +1,8 @@
+2009-04-20  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: Added --no-tentacle switch, added more
+	descriptive labels.
+
 2009-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed another typo.

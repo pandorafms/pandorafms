@@ -1,5 +1,18 @@
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
+	* include/languages/pt_BR.po, include/languages/it.mo,
+	  include/languages/sk.po, include/languages/pt.mo,
+	  include/languages/pt_BR.mo, include/languages/fr.po,
+	  include/languages/sk.mo, include/languages/fr.mo,
+	  include/languages/ru.po, include/languages/it.po,
+	  include/languages/pt.po, include/languages/ru.mo: Updated
+	  Brazilian Portuguese, Italian, Slovak, French, Russian and
+	  Portuguese translations thanks to Rosetta translators.
+
+	* include/languages/index.pot: Updated po template.
+
+2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
+
         * include/languages/es.po, include/languages/es.mo: Updated
           Spanish translation.
 

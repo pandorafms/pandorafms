@@ -1291,6 +1291,9 @@ function show_server_type ($id) {
 	case 6:
 		return '<img src="images/wmi.png" title="Pandora FMS WMI server">';
 		break;
+	case 7: 
+		return '<img src="images/server_web.png" title="Pandora FMS WEB server">';
+                break;
 	default: return "--";
 	}
 }
@@ -2773,10 +2776,6 @@ function get_server_info ($id_server = -1) {
 			$server["type"] = "unknown";
 			$id_modulo = 0;
 			break;
-		}
-		
-		if ($server['master'] == 1) {
-			$server["img"] .= print_image ("images/master.png", true, array ("title" => __('Master Server')));
 		}
 		
 		if (empty ($modules_info[$server["id_server"]])) {

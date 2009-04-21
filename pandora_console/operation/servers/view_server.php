@@ -43,30 +43,28 @@ if ($servers === false) {
 
 $table->width = '98%';
 $table->size = array ();
-$table->size[6] = '60';
 
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 
 $table->align = array ();
 $table->align[1] = 'center';
-$table->align[6] = 'center';
 
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Status');
-$table->head[2] = __('Load');
-$table->head[3] = __('Modules');
-$table->head[4] = __('Lag');
-$table->head[5] = __('Type');
-$table->head[6] = __('Version');
+$table->head[2] = __('Type');
+$table->head[3] = __('Load'). print_help_tip (__("Modules running on this server / Total modules of this type"), true);
+$table->head[4] = __('Modules');
+$table->head[5] = __('Lag'). print_help_tip (__("Modules delayed / Max. Delay (sec)"), true);
+$table->head[6] = __('T/Q'). print_help_tip (__("Threads / Queued modules currently"), true);
 // This will have a column of data such as "6 hours"
 $table->head[7] = __('Updated');
 $table->data = array ();
 
 foreach ($servers as $server) {
 	$data = array ();
-	$data[0] = $server['name'];
+	$data[0] = '<span title="'.$server['version'].'">'.$server['name'].'</span>';
 	
 	if ($server['status'] == 0) {
 		$data[1] = print_status_image (STATUS_SERVER_DOWN, '', true);
@@ -74,12 +72,16 @@ foreach ($servers as $server) {
 		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
+	// Type
+	$data[2] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+	if ($server["master"] == 1)
+		$data[2] .= print_help_tip (__("This is a master server"), true);
+
 	// Load
-	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, array ("title" => $server["lag_txt"]));
-	$data[3] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
-	$data[4] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
-	$data[5] = '<span style="white-space:nowrap;">'.$server["img"].'</span>';
-	$data[6] = $server['version'];
+	$data[3] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=60", true, array ("title" => $server["lag_txt"]));
+	$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
+	$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
+	$data[6] = $server['threads'].' : '.$server['queued_modules'];
 	$data[7] = print_timestamp ($server['keepalive'], true);
 	
 	array_push ($table->data, $data);

@@ -1,5 +1,12 @@
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
+        * include/languages/es.po, include/languages/es.mo: Updated
+          Spanish translation.
+
+        * include/languages/index.pot: Updated po template.
+
+2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* include/languages/es.po, include/languages/es.mo: Updated
 	  Spanish translation.
 

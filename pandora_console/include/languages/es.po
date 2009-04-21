@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-04-21 15:08+0200\n"
-"PO-Revision-Date: 2009-04-21 15:14+0200\n"
+"PO-Revision-Date: 2009-04-21 15:37+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -2824,7 +2824,7 @@ msgstr "Máx. días antes de eliminar datos"
 
 #: ../../godmode/setup/setup.php:75
 msgid "Compact interpolation in hours (1 Fine-20 bad)"
-msgstr "Interpolación de la compactación en horas (1 bueno-20 malo)"
+msgstr "Interpolación de la compactación en horas (1 bueno - 20 malo)"
 
 #: ../../godmode/setup/setup.php:78
 msgid "Auto login (Hash) password"
@@ -2848,7 +2848,7 @@ msgstr "Fecha literal"
 
 #: ../../godmode/setup/setup.php:90
 msgid "Time source"
-msgstr "Origen de tiempo"
+msgstr "Origen de hora"
 
 #: ../../godmode/setup/setup.php:95
 msgid "Automatic update check"
@@ -2868,11 +2868,11 @@ msgstr "Ruta de la tipografía"
 
 #: ../../godmode/setup/setup.php:111
 msgid "Attachment store"
-msgstr ""
+msgstr "Almacenamiento de adjuntos"
 
 #: ../../godmode/setup/file_manager.php:46
 msgid "attach_error"
-msgstr ""
+msgstr "error_de_adjunto"
 
 #: ../../godmode/setup/file_manager.php:56
 msgid "Deleting file"
@@ -2897,7 +2897,9 @@ msgstr "El servidor HTTP no puede escribir el directorio actual"
 
 #: ../../godmode/setup/file_manager.php:121
 msgid "Please check that current directory has write rights for HTTP server"
-msgstr "Compruebe que el servidor HTTP tiene permisos para escribir el directorio actual"
+msgstr ""
+"Compruebe que el servidor HTTP tiene permisos para escribir el directorio "
+"actual"
 
 #: ../../godmode/setup/file_manager.php:124
 msgid "Upload file"
@@ -3614,7 +3616,7 @@ msgstr "Borrado masivo de agentes"
 
 #: ../../godmode/agentes/massive_delete_agents.php:57
 msgid "There was an error deleting the agent, the operation has been cancelled"
-msgstr ""
+msgstr "Hubo un error al borrar el agente; se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_agents.php:58
 msgid "Could not delete agent"
@@ -3627,15 +3629,15 @@ msgstr "Borrado masivo de alertas"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:36
 msgid "No alerts selected"
-msgstr ""
+msgstr "No se seleccionó ninguna alerta"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:50
 msgid "There was an error deleting the alert, the operation has been cancelled"
-msgstr ""
+msgstr "Hubo un error al borrar la alerta; se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:51
 msgid "Could not delete alert"
-msgstr ""
+msgstr "No se pudo borrar la alerta"
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:19
 msgid "Prediction server module"
@@ -3732,15 +3734,16 @@ msgstr "Crear agente"
 
 #: ../../godmode/agentes/massive_delete_modules.php:32
 msgid "Massive modules deletion"
-msgstr ""
+msgstr "Borrado masivo de módulos"
 
 #: ../../godmode/agentes/massive_delete_modules.php:50
-msgid "There was an error deleting the module, the operation has been cancelled"
-msgstr ""
+msgid ""
+"There was an error deleting the module, the operation has been cancelled"
+msgstr "Hubo un error al borrar el módulo; se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_modules.php:51
 msgid "Could not delete module"
-msgstr ""
+msgstr "No se pudo borrar el módulo"
 
 #: ../../godmode/agentes/massive_config.php:33
 msgid "Configuration Management"
@@ -3826,7 +3829,7 @@ msgstr "Borrar seleccionados"
 
 #: ../../godmode/agentes/agent_manager.php:122
 msgid "Server"
-msgstr ""
+msgstr "Servidor"
 
 #: ../../godmode/agentes/agent_manager.php:135
 msgid "Module definition"
@@ -3887,11 +3890,11 @@ msgstr "Máx/Mín"
 
 #: ../../godmode/agentes/module_manager.php:147
 msgid "Non initialized module"
-msgstr ""
+msgstr "Módulo no inicializado"
 
 #: ../../godmode/agentes/module_manager.php:180
 msgid "Normalize"
-msgstr ""
+msgstr "Normalizar"
 
 #: ../../godmode/agentes/module_manager_editor.php:203
 msgid "Module assignment"
@@ -3977,15 +3980,15 @@ msgstr "Datos máx."
 
 #: ../../godmode/modules/manage_network_templates.php:42
 msgid "Template successfully deleted"
-msgstr ""
+msgstr "Plantilla borrada correctamente"
 
 #: ../../godmode/modules/manage_network_templates.php:43
 msgid "Error deleting template"
-msgstr ""
+msgstr "Error al borrar la plantilla"
 
 #: ../../godmode/modules/manage_network_templates.php:51
 msgid "This template does not exist"
-msgstr ""
+msgstr "Esta plantilla no existe"
 
 #: ../../godmode/modules/manage_network_templates.php:106
 #: ../../godmode/modules/manage_network_templates_form.php:101
@@ -4112,7 +4115,7 @@ msgstr "Correo-e"
 
 #: ../../godmode/users/user_list.php:83 ../../operation/users/user.php:62
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: ../../godmode/users/user_list.php:84
 #: ../../godmode/users/configure_user.php:200
@@ -4122,7 +4125,7 @@ msgstr "Administrador"
 
 #: ../../godmode/users/user_list.php:88 ../../operation/users/user.php:64
 msgid "Standard User"
-msgstr ""
+msgstr "Usuario estándar"
 
 #: ../../godmode/users/user_list.php:101 ../../operation/users/user.php:77
 msgid "The user doesn't have any assigned profile/group"
@@ -4183,11 +4186,11 @@ msgstr "Gestión de sistemas"
 
 #: ../../godmode/users/configure_user.php:77
 msgid "Passwords cannot be empty"
-msgstr ""
+msgstr "Las contraseñas no pueden estar vacías"
 
 #: ../../godmode/users/configure_user.php:83
 msgid "Passwords didn't match"
-msgstr ""
+msgstr "Las contraseñas no coinciden"
 
 #: ../../godmode/users/configure_user.php:120
 #: ../../godmode/users/configure_user.php:127
@@ -4204,11 +4207,11 @@ msgstr "Error al actualizar la información del usuario (¿no hubo cambios?)"
 
 #: ../../godmode/users/configure_user.php:123
 msgid "Passwords does not match"
-msgstr ""
+msgstr "Las contraseñas no coinciden"
 
 #: ../../godmode/users/configure_user.php:146
 msgid "Succesfully created"
-msgstr ""
+msgstr "Creado correctamente"
 
 #: ../../godmode/users/configure_user.php:160
 #: ../../operation/users/user_edit.php:70 ../../operation/users/user.php:25
@@ -4398,11 +4401,11 @@ msgstr ""
 #: ../../godmode/db/db_purge.php:140
 #, php-format
 msgid "Information on agent %s in the database"
-msgstr ""
+msgstr "Información acerca del agente %s en la base de datos"
 
 #: ../../godmode/db/db_purge.php:142
 msgid "Information on all agents in the database"
-msgstr ""
+msgstr "Información acerca de todos los agentes en la base de datos"
 
 #: ../../godmode/db/db_purge.php:184
 msgid "Packets less than three months old"
@@ -4467,7 +4470,7 @@ msgstr "Todos los datos hasta ahora"
 
 #: ../../godmode/db/db_purge.php:217
 msgid "Purge"
-msgstr ""
+msgstr "Purgar"
 
 #: ../../godmode/db/db_main.php:40
 msgid "Current database maintenance setup"
@@ -4721,12 +4724,12 @@ msgstr ""
 
 #: ../../godmode/alerts/alert_templates.php:170
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicar"
 
 #: ../../godmode/alerts/configure_alert_template.php:40
 #, php-format
 msgid "Successfully created from %s"
-msgstr ""
+msgstr "Creado correctamente desde %s"
 
 #: ../../godmode/alerts/configure_alert_template.php:58
 #: ../../godmode/alerts/configure_alert_template.php:62
@@ -4869,7 +4872,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: ../../godmode/alerts/configure_alert_template.php:508
-msgid "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value matches <span id=\\\"value\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor coincida con <span id=\\\"value\\\"></"
 "span>"
@@ -4884,11 +4888,14 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:510
 msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:511
-msgid "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value is not <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:512
 msgid ""
@@ -4907,13 +4914,15 @@ msgstr ""
 "span> y <span id=\\\"max\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:514
-msgid "The alert would fire when the value is under <span id=\\\"min\\\"></span>"
+msgid ""
+"The alert would fire when the value is under <span id=\\\"min\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor sea inferior a <span id=\\\"min\\\"></"
 "span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:515
-msgid "The alert would fire when the value is over <span id=\\\"max\\\"></span>"
+msgid ""
+"The alert would fire when the value is over <span id=\\\"max\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor sea superior a <span id=\\\"min\\\"></"
 "span>"
@@ -4967,7 +4976,7 @@ msgstr "No se pudo desactivar"
 
 #: ../../godmode/alerts/alert_compounds.php:81
 msgid "Correlated alerts"
-msgstr ""
+msgstr "Alertas correladas"
 
 #: ../../godmode/alerts/alert_compounds.php:106
 #: ../../operation/events/events.php:226
@@ -5040,7 +5049,7 @@ msgstr "Desconocido"
 
 #: ../../godmode/alerts/configure_alert_compound.php:274
 msgid "Configure correlated alert"
-msgstr ""
+msgstr "Configurar alerta correlada"
 
 #: ../../godmode/alerts/configure_alert_compound.php:371
 msgid "Assigned actions"
@@ -5164,11 +5173,11 @@ msgstr "Alerta lanzada"
 
 #: ../../include/functions_events.php:378
 msgid "Recon server detected a new host"
-msgstr ""
+msgstr "El servidor Recon detectó un equipo nuevo"
 
 #: ../../include/functions_events.php:382
 msgid "New agent created"
-msgstr ""
+msgstr "Agente nuevo creado"
 
 #: ../../include/functions_events.php:387
 msgid "Unknown type:"
@@ -5561,7 +5570,8 @@ msgstr "La alerta se disparará cuando el valor sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:392
 msgid "The alert would fire when the value is not <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:397
 msgid "The alert would fire when the value matches <span id=\"value\"></span>"
@@ -5570,7 +5580,8 @@ msgstr ""
 "span>"
 
 #: ../../include/functions_ui.php:400
-msgid "The alert would fire when the value doesn't match <span id=\"value\"></span>"
+msgid ""
+"The alert would fire when the value doesn't match <span id=\"value\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor no coincida con <span id=\"value\"></"
 "span>"
@@ -5619,7 +5630,8 @@ msgstr ""
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
-msgstr "Hubo un error al copiar la configuración del agente, se canceló la copia"
+msgstr ""
+"Hubo un error al copiar la configuración del agente, se canceló la copia"
 
 #: ../../include/functions_agents.php:281
 msgid "Successfully copied"
@@ -6244,7 +6256,8 @@ msgstr ""
 "derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:33
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
 "en el lugar deseado."
@@ -7255,7 +7268,8 @@ msgid "Error updating passwords: %s"
 msgstr "Error al actualizar las contraseñas: %s"
 
 #: ../../operation/users/user_edit.php:60
-msgid "Passwords didn't match or other problem encountered while updating passwords"
+msgid ""
+"Passwords didn't match or other problem encountered while updating passwords"
 msgstr ""
 "Las contraseñas no coincidían o se encontró otro problema al actualizar las "
 "contraseñas"
@@ -7374,4 +7388,3 @@ msgstr "Mensaje sin leer; pulse para leerlo"
 #: ../../operation/messages/message.php:204
 msgid "No Subject"
 msgstr "Sin asunto"
-

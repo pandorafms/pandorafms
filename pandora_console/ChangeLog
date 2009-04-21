@@ -1,3 +1,15 @@
+2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated
+	  Spanish translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* godmode/agentes/module_manager_editor_network.php,
+	  godmode/agentes/module_manager_editor_plugin.php: moved an
+	  assigned translatable string down to avoid error at language
+	  compilation.
+
 2009-04-20  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager_editor.php,

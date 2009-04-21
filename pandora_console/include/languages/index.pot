@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-20 09:48+0200\n"
+"POT-Creation-Date: 2009-04-21 15:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: ../../reporting/stat_win.php:138 ../../reporting/pchart_graph.php:177
 #: ../../reporting/pchart_graph.php:180
-#: ../../godmode/agentes/module_manager_editor_common.php:185
+#: ../../godmode/agentes/module_manager_editor_common.php:181
 #: ../../include/functions.php:647
 #: ../../enterprise/include/functions_reporting_pdf.php:317
 #: ../../operation/reporting/reporting_viewer.php:362
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../reporting/stat_win.php:140 ../../reporting/pchart_graph.php:175
 #: ../../reporting/pchart_graph.php:178
-#: ../../godmode/agentes/module_manager_editor_common.php:183
+#: ../../godmode/agentes/module_manager_editor_common.php:179
 #: ../../include/functions.php:648
 #: ../../enterprise/include/functions_reporting_pdf.php:328
 #: ../../operation/reporting/reporting_viewer.php:385
@@ -122,8 +122,8 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:216
 #: ../../godmode/reporting/reporting_builder.php:228
 #: ../../godmode/reporting/reporting_builder.php:267
-#: ../../godmode/reporting/reporting_builder.php:378
-#: ../../godmode/reporting/reporting_builder.php:415
+#: ../../godmode/reporting/reporting_builder.php:375
+#: ../../godmode/reporting/reporting_builder.php:412
 #: ../../godmode/alerts/alert_list.php:234
 #: ../../godmode/alerts/alert_list.php:341
 #: ../../godmode/alerts/configure_alert_compound.php:453
@@ -141,8 +141,8 @@ msgstr ""
 #: ../../reporting/fgraph.php:260 ../../reporting/fgraph.php:400
 #: ../../reporting/fgraph.php:1032 ../../godmode/reporting/map_builder.php:421
 #: ../../godmode/reporting/graph_builder.php:378
-#: ../../godmode/reporting/reporting_builder.php:359
-#: ../../godmode/reporting/reporting_builder.php:416
+#: ../../godmode/reporting/reporting_builder.php:356
+#: ../../godmode/reporting/reporting_builder.php:413
 #: ../../enterprise/dashboard/widgets/custom_graph.php:26
 #: ../../enterprise/dashboard/widgets/single_graph.php:31
 #: ../../operation/reporting/graph_viewer.php:104
@@ -217,7 +217,7 @@ msgstr ""
 msgid "Critical"
 msgstr ""
 
-#: ../../reporting/fgraph.php:653 ../../godmode/setup/setup.php:95
+#: ../../reporting/fgraph.php:653 ../../godmode/setup/setup.php:91
 #: ../../include/functions_events.php:304 ../../include/functions.php:788
 #: ../../operation/events/events.php:49 ../../operation/events/events.php:108
 #: ../../operation/events/events.php:242 ../../operation/events/events.php:412
@@ -312,8 +312,8 @@ msgstr ""
 
 #: ../../general/login_page.php:66
 #: ../../godmode/servers/manage_export_form.php:107
-#: ../../godmode/agentes/module_manager_editor_wmi.php:47
-#: ../../godmode/agentes/module_manager_editor_plugin.php:56
+#: ../../godmode/agentes/module_manager_editor_wmi.php:42
+#: ../../godmode/agentes/module_manager_editor_plugin.php:50
 #: ../../godmode/modules/manage_network_components_form_wmi.php:182
 #: ../../godmode/users/configure_user.php:188
 #: ../../enterprise/godmode/agentes/inventory_manager.php:126
@@ -328,6 +328,79 @@ msgstr ""
 msgid "Page generated at"
 msgstr ""
 
+#: ../../general/ui/agents_list.php:105
+#: ../../godmode/reporting/map_builder.php:271
+#: ../../godmode/reporting/map_builder.php:322
+#: ../../godmode/reporting/reporting_builder.php:309
+#: ../../godmode/reporting/reporting_builder.php:500
+#: ../../godmode/servers/manage_recontask.php:100
+#: ../../godmode/servers/manage_recontask_form.php:104
+#: ../../godmode/agentes/planned_downtime.php:222
+#: ../../godmode/agentes/massive_delete_agents.php:90
+#: ../../godmode/agentes/massive_delete_alerts.php:84
+#: ../../godmode/agentes/modificar_agente.php:70
+#: ../../godmode/agentes/modificar_agente.php:157
+#: ../../godmode/agentes/massive_delete_modules.php:84
+#: ../../godmode/agentes/massive_config.php:62
+#: ../../godmode/agentes/massive_config.php:141
+#: ../../godmode/agentes/agent_manager.php:107
+#: ../../godmode/modules/manage_network_components.php:152
+#: ../../godmode/modules/manage_network_components_form_wmi.php:109
+#: ../../godmode/modules/manage_network_templates_form.php:152
+#: ../../godmode/modules/manage_network_templates_form.php:200
+#: ../../godmode/modules/manage_network_components_form_network.php:212
+#: ../../godmode/alerts/alert_compounds.php:96
+#: ../../godmode/alerts/alert_list.php:330
+#: ../../godmode/alerts/configure_alert_compound.php:532
+#: ../../include/functions_ui.php:1098
+#: ../../enterprise/godmode/policies/policy_agents.php:120
+#: ../../enterprise/godmode/policies/policies.php:91
+#: ../../enterprise/godmode/policies/configure_policy.php:50
+#: ../../enterprise/include/functions_reporting_pdf.php:349
+#: ../../enterprise/include/functions_reporting_pdf.php:391
+#: ../../enterprise/dashboard/widgets/single_graph.php:23
+#: ../../enterprise/operation/inventory/inventory.php:38
+#: ../../operation/reporting/reporting_viewer.php:431
+#: ../../operation/reporting/reporting_xml.php:284
+#: ../../operation/incidents/incident.php:260
+#: ../../operation/incidents/incident_detail.php:263
+#: ../../operation/servers/view_server_detail.php:88
+#: ../../operation/visual_console/index.php:31
+#: ../../operation/agentes/networkmap.php:322
+#: ../../operation/agentes/status_monitor.php:62
+#: ../../operation/agentes/estado_generalagente.php:84
+#: ../../operation/agentes/alerts_status.php:114
+#: ../../operation/agentes/ver_agente.php:63
+#: ../../operation/agentes/ver_agente.php:235
+#: ../../operation/agentes/estado_agente.php:67
+#: ../../operation/agentes/estado_agente.php:120
+#: ../../operation/events/events.php:199 ../../operation/events/events.php:360
+msgid "Group"
+msgstr ""
+
+#: ../../general/ui/agents_list.php:116 ../../general/ui/agents_list.php:127
+#: ../../godmode/agentes/modificar_agente.php:103
+#: ../../godmode/alerts/alert_compounds.php:114
+#: ../../enterprise/operation/agentes/agent_inventory.php:47
+#: ../../enterprise/operation/agentes/agent_inventory.php:52
+#: ../../enterprise/operation/inventory/inventory.php:68
+#: ../../operation/incidents/incident.php:217
+#: ../../operation/agentes/estado_agente.php:80
+msgid "Search"
+msgstr ""
+
+#: ../../general/ui/agents_list.php:146
+#: ../../godmode/agentes/massive_config.php:130
+#: ../../godmode/alerts/configure_alert_compound.php:545
+#: ../../enterprise/godmode/policies/policy_modules.php:333
+#: ../../operation/reporting/reporting_viewer.php:81
+msgid "Loading"
+msgstr ""
+
+#: ../../general/ui/agents_list.php:151
+msgid "No agents found"
+msgstr ""
+
 #: ../../general/logoff.php:20
 msgid "Logged Out"
 msgstr ""
@@ -338,7 +411,7 @@ msgid ""
 "session."
 msgstr ""
 
-#: ../../general/links_menu.php:21 ../../godmode/menu.php:170
+#: ../../general/links_menu.php:21 ../../godmode/menu.php:173
 msgid "Links"
 msgstr ""
 
@@ -372,7 +445,7 @@ msgid ""
 "its agents, alerts and incidents. Session is open while activity exists."
 msgstr ""
 
-#: ../../general/logon_ok.php:42 ../../godmode/menu.php:171
+#: ../../general/logon_ok.php:42 ../../godmode/menu.php:174
 msgid "Site news"
 msgstr ""
 
@@ -485,6 +558,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager.php:96
 #: ../../godmode/modules/manage_network_components.php:189
 #: ../../godmode/modules/manage_network_templates.php:118
+#: ../../include/functions_ui_renders.php:94
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:82
 #: ../../operation/snmpconsole/snmp_view.php:229
 #: ../../operation/snmpconsole/snmp_view.php:395
@@ -503,7 +577,7 @@ msgid "Source IP"
 msgstr ""
 
 #: ../../general/logon_ok.php:155
-#: ../../godmode/servers/manage_recontask_form.php:135
+#: ../../godmode/servers/manage_recontask_form.php:115
 #: ../../godmode/admin_access_logs.php:92
 #: ../../godmode/modules/manage_network_components_form_wmi.php:200
 #: ../../godmode/modules/manage_network_components_form_network.php:270
@@ -534,7 +608,7 @@ msgid "All systems"
 msgstr ""
 
 #: ../../general/header.php:69
-#: ../../godmode/reporting/reporting_builder.php:453
+#: ../../godmode/reporting/reporting_builder.php:450
 #: ../../enterprise/include/functions_reporting_pdf.php:299
 #: ../../operation/agentes/estado_grupo.php:231
 msgid "Down"
@@ -575,9 +649,7 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
-#: ../../general/header.php:99
-#: ../../godmode/servers/manage_recontask_form.php:86
-#: ../../include/functions_alerts.php:349
+#: ../../general/header.php:99 ../../include/functions_alerts.php:349
 #: ../../enterprise/godmode/agentes/inventory_manager.php:114
 msgid "hour"
 msgstr ""
@@ -705,15 +777,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:78
 #: ../../godmode/reporting/graph_builder.php:489
-#: ../../godmode/reporting/reporting_builder.php:322
-#: ../../godmode/reporting/reporting_builder.php:392
-#: ../../godmode/reporting/reporting_builder.php:501
+#: ../../godmode/reporting/reporting_builder.php:319
+#: ../../godmode/reporting/reporting_builder.php:389
+#: ../../godmode/reporting/reporting_builder.php:498
 #: ../../godmode/servers/modificar_server.php:69
 #: ../../godmode/servers/modificar_server.php:99
 #: ../../godmode/servers/plugin.php:187
 #: ../../godmode/snmpconsole/snmp_alert.php:175
 #: ../../godmode/snmpconsole/snmp_alert.php:285
-#: ../../godmode/agentes/module_manager_editor_common.php:166
+#: ../../godmode/agentes/module_manager_editor_common.php:162
 #: ../../godmode/agentes/agent_template.php:133
 #: ../../godmode/agentes/planned_downtime.php:145
 #: ../../godmode/agentes/planned_downtime.php:267
@@ -735,6 +807,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:482
 #: ../../enterprise/extensions/backup/main.php:48
 #: ../../enterprise/extensions/backup/main.php:141
+#: ../../enterprise/godmode/policies/configure_policy.php:57
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:82
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:179
 #: ../../enterprise/godmode/agentes/inventory_manager.php:161
@@ -760,15 +833,15 @@ msgstr ""
 #: ../../extensions/update_manager/settings.php:82
 #: ../../godmode/reporting/map_builder.php:338
 #: ../../godmode/reporting/map_builder.php:547
-#: ../../godmode/reporting/reporting_builder.php:333
+#: ../../godmode/reporting/reporting_builder.php:330
 #: ../../godmode/servers/modificar_server.php:74
-#: ../../godmode/servers/manage_recontask_form.php:141
+#: ../../godmode/servers/manage_recontask_form.php:125
 #: ../../godmode/servers/manage_export_form.php:126
 #: ../../godmode/servers/plugin.php:199
 #: ../../godmode/groups/configure_group.php:102
 #: ../../godmode/snmpconsole/snmp_alert.php:245
 #: ../../godmode/snmpconsole/snmp_alert.php:332
-#: ../../godmode/setup/setup.php:125 ../../godmode/setup/setup_visuals.php:88
+#: ../../godmode/setup/setup.php:120 ../../godmode/setup/setup_visuals.php:86
 #: ../../godmode/setup/links.php:109 ../../godmode/setup/news.php:117
 #: ../../godmode/profiles/profile_list.php:206
 #: ../../godmode/agentes/agent_template.php:151
@@ -776,7 +849,7 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.php:292
 #: ../../godmode/agentes/massive_edit_modules.php:153
 #: ../../godmode/agentes/agent_manager.php:160
-#: ../../godmode/agentes/module_manager_editor.php:226
+#: ../../godmode/agentes/module_manager_editor.php:224
 #: ../../godmode/modules/manage_nc_groups_form.php:78
 #: ../../godmode/modules/manage_network_components_form_wmi.php:215
 #: ../../godmode/modules/manage_network_templates_form.php:121
@@ -784,6 +857,8 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:234
 #: ../../godmode/alerts/configure_alert_command.php:66
 #: ../../godmode/alerts/configure_alert_action.php:82
+#: ../../enterprise/godmode/policies/policy_modules.php:164
+#: ../../enterprise/godmode/policies/configure_policy.php:68
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:201
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:80
 #: ../../enterprise/godmode/agentes/inventory_manager.php:137
@@ -866,7 +941,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:559
 #: ../../godmode/groups/group_list.php:150
-#: ../../godmode/agentes/module_manager_editor_common.php:113
+#: ../../godmode/agentes/module_manager_editor_common.php:109
 #: ../../godmode/agentes/agent_manager.php:141
 #: ../../godmode/alerts/configure_alert_template.php:391
 #: ../../godmode/alerts/configure_alert_compound.php:406
@@ -875,7 +950,7 @@ msgid "Disabled"
 msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:567
-#: ../../godmode/setup/setup.php:96
+#: ../../godmode/setup/setup.php:92
 msgid "Database"
 msgstr ""
 
@@ -909,7 +984,7 @@ msgid "Agent successfully added to layout"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:78
-#: ../../godmode/reporting/map_builder.php:262 ../../godmode/menu.php:125
+#: ../../godmode/reporting/map_builder.php:262 ../../godmode/menu.php:128
 msgid "Map builder"
 msgstr ""
 
@@ -956,18 +1031,22 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:169
 #: ../../godmode/agentes/massive_delete_agents.php:94
+#: ../../enterprise/godmode/policies/policy.php:55
+#: ../../enterprise/godmode/policies/policies.php:115
 #: ../../operation/agentes/estado_grupo.php:219
 msgid "Agents"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:173
 #: ../../godmode/reporting/graph_builder.php:287
-#: ../../godmode/agentes/configurar_agente.php:204
+#: ../../godmode/agentes/configurar_agente.php:205
 #: ../../godmode/agentes/modificar_agente.php:193
 #: ../../godmode/agentes/massive_delete_modules.php:95
 #: ../../godmode/agentes/massive_config.php:100
-#: ../../godmode/agentes/module_manager.php:27
+#: ../../godmode/agentes/module_manager.php:22
 #: ../../godmode/db/db_refine.php:76 ../../include/functions_reporting.php:620
+#: ../../enterprise/godmode/policies/policy.php:49
+#: ../../enterprise/godmode/policies/policies.php:112
 #: ../../enterprise/include/functions_reporting_pdf.php:399
 #: ../../operation/servers/view_server.php:59
 #: ../../operation/agentes/exportdata.php:282
@@ -988,8 +1067,8 @@ msgid "Are you sure"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:179
-#: ../../godmode/reporting/reporting_builder.php:470
-#: ../../godmode/reporting/reporting_builder.php:526
+#: ../../godmode/reporting/reporting_builder.php:467
+#: ../../godmode/reporting/reporting_builder.php:523
 #: ../../godmode/groups/group_list.php:151 ../../godmode/setup/links.php:132
 #: ../../godmode/setup/news.php:144
 #: ../../godmode/profiles/profile_list.php:274
@@ -1000,8 +1079,8 @@ msgstr ""
 #: ../../godmode/agentes/massive_edit_modules.php:151
 #: ../../godmode/agentes/modificar_agente.php:229
 #: ../../godmode/agentes/massive_delete_modules.php:108
-#: ../../godmode/agentes/module_manager.php:165
-#: ../../godmode/agentes/module_manager.php:173
+#: ../../godmode/agentes/module_manager.php:170
+#: ../../godmode/agentes/module_manager.php:178
 #: ../../godmode/modules/manage_nc_groups.php:96
 #: ../../godmode/modules/manage_network_templates.php:131
 #: ../../godmode/users/configure_user.php:269
@@ -1011,6 +1090,10 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:120
 #: ../../godmode/alerts/alert_commands.php:131
 #: ../../godmode/alerts/alert_list.php:469
+#: ../../enterprise/godmode/policies/policy_modules.php:314
+#: ../../enterprise/godmode/policies/policy_agents.php:84
+#: ../../enterprise/godmode/policies/policy_agents.php:94
+#: ../../enterprise/godmode/policies/policies.php:122
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:196
 #: ../../enterprise/godmode/agentes/inventory_manager.php:173
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:103
@@ -1024,8 +1107,8 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:182
 #: ../../godmode/reporting/graph_builder.php:445
-#: ../../godmode/reporting/reporting_builder.php:400
-#: ../../godmode/servers/manage_recontask_form.php:143
+#: ../../godmode/reporting/reporting_builder.php:397
+#: ../../godmode/servers/manage_recontask_form.php:127
 #: ../../godmode/servers/manage_export_form.php:128
 #: ../../godmode/setup/links.php:138 ../../godmode/setup/news.php:150
 #: ../../godmode/agentes/planned_downtime.php:174
@@ -1036,6 +1119,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.php:386
 #: ../../godmode/alerts/alert_list.php:405
 #: ../../godmode/alerts/configure_alert_compound.php:357
+#: ../../enterprise/godmode/policies/policy_agents.php:120
 #: ../../enterprise/godmode/agentes/inventory_manager.php:139
 #: ../../enterprise/dashboard/main_dashboard.php:224
 #: ../../operation/incidents/incident_detail.php:318
@@ -1051,7 +1135,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:142
 #: ../../godmode/setup/news.php:40
 #: ../../godmode/agentes/configurar_agente.php:176
-#: ../../godmode/agentes/configurar_agente.php:229
+#: ../../godmode/agentes/configurar_agente.php:230
 #: ../../godmode/agentes/planned_downtime.php:116
 #: ../../godmode/modules/manage_network_components.php:76
 #: ../../godmode/modules/manage_nc_groups.php:46
@@ -1063,6 +1147,8 @@ msgstr ""
 #: ../../godmode/alerts/alert_commands.php:57
 #: ../../godmode/alerts/alert_list.php:117
 #: ../../godmode/alerts/configure_alert_compound.php:247
+#: ../../enterprise/godmode/policies/policy_modules.php:228
+#: ../../enterprise/godmode/policies/policies.php:46
 #: ../../enterprise/godmode/modules/local_components.php:46
 msgid "Could not be created"
 msgstr ""
@@ -1096,7 +1182,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:175
 #: ../../godmode/reporting/reporting_builder.php:141
 #: ../../godmode/setup/news.php:39
-#: ../../godmode/agentes/configurar_agente.php:228
+#: ../../godmode/agentes/configurar_agente.php:229
 #: ../../godmode/agentes/planned_downtime.php:118
 #: ../../godmode/modules/manage_network_components.php:78
 #: ../../godmode/modules/manage_nc_groups.php:45
@@ -1125,7 +1211,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:202
 #: ../../godmode/reporting/reporting_builder.php:215
 #: ../../godmode/reporting/reporting_builder.php:293
-#: ../../godmode/reporting/reporting_builder.php:487
+#: ../../godmode/reporting/reporting_builder.php:484
 #: ../../operation/reporting/reporting_viewer.php:52
 #: ../../operation/reporting/graph_viewer.php:94
 #: ../../operation/reporting/graph_viewer.php:132
@@ -1136,51 +1222,6 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:270
 msgid "Map name"
-msgstr ""
-
-#: ../../godmode/reporting/map_builder.php:271
-#: ../../godmode/reporting/map_builder.php:322
-#: ../../godmode/reporting/reporting_builder.php:309
-#: ../../godmode/reporting/reporting_builder.php:503
-#: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:127
-#: ../../godmode/agentes/planned_downtime.php:222
-#: ../../godmode/agentes/massive_delete_agents.php:90
-#: ../../godmode/agentes/massive_delete_alerts.php:84
-#: ../../godmode/agentes/modificar_agente.php:70
-#: ../../godmode/agentes/modificar_agente.php:157
-#: ../../godmode/agentes/massive_delete_modules.php:84
-#: ../../godmode/agentes/massive_config.php:62
-#: ../../godmode/agentes/massive_config.php:141
-#: ../../godmode/agentes/agent_manager.php:107
-#: ../../godmode/modules/manage_network_components.php:152
-#: ../../godmode/modules/manage_network_components_form_wmi.php:109
-#: ../../godmode/modules/manage_network_templates_form.php:152
-#: ../../godmode/modules/manage_network_templates_form.php:200
-#: ../../godmode/modules/manage_network_components_form_network.php:212
-#: ../../godmode/alerts/alert_compounds.php:96
-#: ../../godmode/alerts/alert_list.php:330
-#: ../../godmode/alerts/configure_alert_compound.php:532
-#: ../../enterprise/include/functions_reporting_pdf.php:349
-#: ../../enterprise/include/functions_reporting_pdf.php:391
-#: ../../enterprise/dashboard/widgets/single_graph.php:23
-#: ../../enterprise/operation/inventory/inventory.php:38
-#: ../../operation/reporting/reporting_viewer.php:431
-#: ../../operation/reporting/reporting_xml.php:284
-#: ../../operation/incidents/incident.php:260
-#: ../../operation/incidents/incident_detail.php:263
-#: ../../operation/servers/view_server_detail.php:88
-#: ../../operation/visual_console/index.php:31
-#: ../../operation/agentes/networkmap.php:322
-#: ../../operation/agentes/status_monitor.php:62
-#: ../../operation/agentes/estado_generalagente.php:84
-#: ../../operation/agentes/alerts_status.php:114
-#: ../../operation/agentes/ver_agente.php:63
-#: ../../operation/agentes/ver_agente.php:235
-#: ../../operation/agentes/estado_agente.php:67
-#: ../../operation/agentes/estado_agente.php:120
-#: ../../operation/events/events.php:199 ../../operation/events/events.php:360
-msgid "Group"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:272
@@ -1196,10 +1237,10 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:218
 #: ../../godmode/reporting/graph_builder.php:242
 #: ../../godmode/reporting/reporting_builder.php:232
-#: ../../godmode/reporting/reporting_builder.php:423
-#: ../../godmode/reporting/reporting_builder.php:476
-#: ../../godmode/reporting/reporting_builder.php:504
-#: ../../godmode/reporting/reporting_builder.php:530
+#: ../../godmode/reporting/reporting_builder.php:420
+#: ../../godmode/reporting/reporting_builder.php:473
+#: ../../godmode/reporting/reporting_builder.php:501
+#: ../../godmode/reporting/reporting_builder.php:527
 #: ../../godmode/servers/modificar_server.php:103
 #: ../../godmode/servers/modificar_server.php:121
 #: ../../godmode/servers/plugin.php:214
@@ -1214,7 +1255,7 @@ msgstr ""
 #: ../../godmode/agentes/massive_delete_alerts.php:118
 #: ../../godmode/agentes/modificar_agente.php:159
 #: ../../godmode/agentes/massive_delete_modules.php:110
-#: ../../godmode/agentes/module_manager.php:167
+#: ../../godmode/agentes/module_manager.php:172
 #: ../../godmode/modules/manage_network_components.php:230
 #: ../../godmode/modules/manage_nc_groups.php:77
 #: ../../godmode/modules/manage_network_templates_form.php:171
@@ -1226,6 +1267,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_compounds.php:181
 #: ../../enterprise/extensions/cron/main.php:100
 #: ../../enterprise/extensions/cron/main.php:116
+#: ../../enterprise/godmode/policies/policies.php:126
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:197
 #: ../../enterprise/godmode/agentes/inventory_manager.php:174
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:104
@@ -1245,7 +1287,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:342
 #: ../../godmode/reporting/map_builder.php:440
 #: ../../godmode/reporting/reporting_builder.php:285
-#: ../../godmode/reporting/reporting_builder.php:336
+#: ../../godmode/reporting/reporting_builder.php:333
 #: ../../godmode/servers/manage_export.php:96
 #: ../../godmode/servers/manage_export.php:128
 #: ../../godmode/servers/manage_recontask.php:136
@@ -1257,8 +1299,8 @@ msgstr ""
 #: ../../godmode/profiles/profile_list.php:201
 #: ../../godmode/agentes/planned_downtime.php:307
 #: ../../godmode/agentes/agent_manager.php:164
-#: ../../godmode/agentes/module_manager.php:64
-#: ../../godmode/agentes/module_manager_editor.php:230
+#: ../../godmode/agentes/module_manager.php:62
+#: ../../godmode/agentes/module_manager_editor.php:228
 #: ../../godmode/modules/manage_network_components.php:169
 #: ../../godmode/modules/manage_nc_groups.php:107
 #: ../../godmode/modules/manage_nc_groups_form.php:76
@@ -1273,6 +1315,9 @@ msgstr ""
 #: ../../godmode/alerts/alert_compounds.php:191
 #: ../../enterprise/extensions/backup/main.php:148
 #: ../../enterprise/extensions/cron/main.php:150
+#: ../../enterprise/godmode/policies/policy_modules.php:168
+#: ../../enterprise/godmode/policies/policies.php:138
+#: ../../enterprise/godmode/policies/configure_policy.php:71
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:216
 #: ../../enterprise/godmode/modules/configure_local_component.php:79
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:117
@@ -1292,7 +1337,7 @@ msgstr ""
 #: ../../godmode/groups/group_list.php:132
 #: ../../godmode/groups/configure_group.php:67
 #: ../../godmode/setup/file_manager.php:161
-#: ../../godmode/agentes/module_manager_editor_common.php:111
+#: ../../godmode/agentes/module_manager_editor_common.php:107
 #: ../../godmode/agentes/planned_downtime.php:143
 #: ../../godmode/agentes/planned_downtime.php:221
 #: ../../godmode/agentes/module_manager.php:89
@@ -1310,7 +1355,12 @@ msgstr ""
 #: ../../godmode/alerts/alert_commands.php:104
 #: ../../godmode/alerts/alert_compounds.php:144
 #: ../../godmode/alerts/configure_alert_compound.php:434
-#: ../../include/functions_db.php:2409
+#: ../../include/functions_db.php:2423 ../../include/functions_ui.php:1098
+#: ../../enterprise/godmode/policies/policy_modules.php:296
+#: ../../enterprise/godmode/policies/policy_agents.php:65
+#: ../../enterprise/godmode/policies/policy_agents.php:120
+#: ../../enterprise/godmode/policies/policies.php:90
+#: ../../enterprise/godmode/policies/configure_policy.php:47
 #: ../../enterprise/godmode/agentes/inventory_manager.php:160
 #: ../../enterprise/godmode/modules/configure_local_component.php:50
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:78
@@ -1354,10 +1404,8 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
-#: ../../godmode/reporting/map_builder.php:390
-#: ../../godmode/servers/manage_recontask_form.php:91
-#: ../../godmode/db/db_main.php:43 ../../godmode/db/db_main.php:44
-#: ../../include/functions.php:440
+#: ../../godmode/reporting/map_builder.php:390 ../../godmode/db/db_main.php:43
+#: ../../godmode/db/db_main.php:44 ../../include/functions.php:440
 #: ../../enterprise/godmode/agentes/inventory_manager.php:119
 #: ../../enterprise/godmode/agentes/inventory_manager.php:120
 #: ../../enterprise/godmode/agentes/inventory_manager.php:121
@@ -1399,10 +1447,10 @@ msgid "Label color"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:411
-#: ../../godmode/reporting/reporting_builder.php:413
+#: ../../godmode/reporting/reporting_builder.php:410
 #: ../../godmode/servers/modificar_server.php:100
 #: ../../godmode/servers/plugin.php:212
-#: ../../godmode/agentes/module_manager_editor_common.php:116
+#: ../../godmode/agentes/module_manager_editor_common.php:112
 #: ../../godmode/agentes/agent_template.php:132
 #: ../../godmode/agentes/module_manager.php:92
 #: ../../godmode/modules/manage_network_components.php:183
@@ -1411,6 +1459,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:145
 #: ../../include/functions_events.php:263
 #: ../../include/functions_reporting.php:481
+#: ../../enterprise/godmode/policies/policy_modules.php:297
 #: ../../operation/servers/view_server.php:61
 #: ../../operation/agentes/status_monitor.php:200
 #: ../../operation/agentes/estado_ultimopaquete.php:69
@@ -1425,7 +1474,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:215
 #: ../../godmode/reporting/reporting_builder.php:227
 #: ../../godmode/reporting/reporting_builder.php:265
-#: ../../godmode/reporting/reporting_builder.php:414
+#: ../../godmode/reporting/reporting_builder.php:411
 #: ../../godmode/agentes/massive_delete_alerts.php:88
 #: ../../godmode/agentes/massive_delete_modules.php:88
 #: ../../godmode/agentes/massive_config.php:65
@@ -1486,12 +1535,12 @@ msgstr ""
 msgid "Combined image render"
 msgstr ""
 
-#: ../../godmode/reporting/graph_builder.php:264 ../../godmode/menu.php:122
+#: ../../godmode/reporting/graph_builder.php:264 ../../godmode/menu.php:125
 msgid "Graph builder"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:272
-#: ../../godmode/reporting/reporting_builder.php:375
+#: ../../godmode/reporting/reporting_builder.php:372
 #: ../../godmode/agentes/manage_config_remote.php:113
 #: ../../godmode/db/db_refine.php:64
 #: ../../operation/agentes/exportdata.php:255
@@ -1511,12 +1560,12 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:406
 #: ../../godmode/reporting/graph_builder.php:410
 #: ../../godmode/reporting/graph_builder.php:485
-#: ../../godmode/reporting/reporting_builder.php:521
+#: ../../godmode/reporting/reporting_builder.php:518
 #: ../../godmode/servers/manage_recontask.php:117
-#: ../../godmode/servers/manage_recontask_form.php:131
-#: ../../godmode/setup/setup.php:100 ../../godmode/setup/setup.php:104
-#: ../../godmode/setup/setup.php:108 ../../godmode/setup/setup_visuals.php:73
-#: ../../include/functions_db.php:2482
+#: ../../godmode/servers/manage_recontask_form.php:109
+#: ../../godmode/setup/setup.php:96 ../../godmode/setup/setup.php:100
+#: ../../godmode/setup/setup.php:104 ../../godmode/setup/setup_visuals.php:73
+#: ../../include/functions_db.php:2496
 msgid "Yes"
 msgstr ""
 
@@ -1525,18 +1574,18 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:407
 #: ../../godmode/reporting/graph_builder.php:409
 #: ../../godmode/reporting/graph_builder.php:484
-#: ../../godmode/reporting/reporting_builder.php:523
+#: ../../godmode/reporting/reporting_builder.php:520
 #: ../../godmode/servers/manage_recontask.php:117
-#: ../../godmode/servers/manage_recontask_form.php:131
-#: ../../godmode/setup/setup.php:101 ../../godmode/setup/setup.php:105
-#: ../../godmode/setup/setup.php:109 ../../godmode/setup/setup_visuals.php:74
-#: ../../include/functions_db.php:2484
+#: ../../godmode/servers/manage_recontask_form.php:109
+#: ../../godmode/setup/setup.php:97 ../../godmode/setup/setup.php:101
+#: ../../godmode/setup/setup.php:105 ../../godmode/setup/setup_visuals.php:74
+#: ../../include/functions_db.php:2498
 msgid "No"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:331
 #: ../../godmode/reporting/graph_builder.php:387
-#: ../../godmode/reporting/reporting_builder.php:361
+#: ../../godmode/reporting/reporting_builder.php:358
 #: ../../include/functions_custom_graphs.php:101
 msgid "1 hour"
 msgstr ""
@@ -1563,14 +1612,14 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:346
 #: ../../godmode/reporting/graph_builder.php:373
-#: ../../godmode/reporting/reporting_builder.php:366
+#: ../../godmode/reporting/reporting_builder.php:363
 #: ../../include/functions_custom_graphs.php:106
 msgid "1 day"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:349
 #: ../../godmode/reporting/graph_builder.php:393
-#: ../../godmode/reporting/reporting_builder.php:367
+#: ../../godmode/reporting/reporting_builder.php:364
 #: ../../include/functions_custom_graphs.php:107
 msgid "2 days"
 msgstr ""
@@ -1586,7 +1635,7 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:367
 #: ../../godmode/reporting/graph_builder.php:398
-#: ../../godmode/reporting/reporting_builder.php:372
+#: ../../godmode/reporting/reporting_builder.php:369
 #: ../../include/functions_custom_graphs.php:110
 msgid "6 months"
 msgstr ""
@@ -1628,8 +1677,8 @@ msgid "Custom graph store"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:481
-#: ../../godmode/reporting/reporting_builder.php:320
-#: ../../godmode/reporting/reporting_builder.php:502
+#: ../../godmode/reporting/reporting_builder.php:317
+#: ../../godmode/reporting/reporting_builder.php:499
 msgid "Private"
 msgstr ""
 
@@ -1668,6 +1717,8 @@ msgstr ""
 #: ../../godmode/alerts/alert_compounds.php:56
 #: ../../godmode/alerts/alert_list.php:140
 #: ../../godmode/alerts/alert_list.php:167
+#: ../../enterprise/godmode/policies/policy_modules.php:277
+#: ../../enterprise/godmode/policies/policy_agents.php:53
 #: ../../enterprise/dashboard/main_dashboard.php:119
 #: ../../operation/incidents/incident.php:60
 #: ../../operation/incidents/incident_detail.php:88
@@ -1704,6 +1755,9 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:85
 #: ../../godmode/alerts/alert_commands.php:80
 #: ../../godmode/alerts/configure_alert_compound.php:267
+#: ../../enterprise/godmode/policies/policy_modules.php:268
+#: ../../enterprise/godmode/policies/policies.php:63
+#: ../../enterprise/godmode/policies/policies.php:75
 #: ../../enterprise/godmode/modules/local_components.php:65
 #: ../../enterprise/godmode/modules/local_components.php:77
 #: ../../operation/incidents/incident.php:99
@@ -1764,7 +1818,7 @@ msgid "SLA report construction"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:304
-#: ../../godmode/reporting/reporting_builder.php:500
+#: ../../godmode/reporting/reporting_builder.php:497
 #: ../../operation/reporting/custom_reporting.php:39
 msgid "Report name"
 msgstr ""
@@ -1773,21 +1827,18 @@ msgstr ""
 msgid "View report"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:343
+#: ../../godmode/reporting/reporting_builder.php:340
 msgid "Add item to report"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:355
+#: ../../godmode/reporting/reporting_builder.php:352
 msgid "Reporting type"
 msgstr ""
 
+#: ../../godmode/reporting/reporting_builder.php:359
+#: ../../godmode/reporting/reporting_builder.php:360
+#: ../../godmode/reporting/reporting_builder.php:361
 #: ../../godmode/reporting/reporting_builder.php:362
-#: ../../godmode/reporting/reporting_builder.php:363
-#: ../../godmode/reporting/reporting_builder.php:364
-#: ../../godmode/reporting/reporting_builder.php:365
-#: ../../godmode/servers/manage_recontask_form.php:87
-#: ../../godmode/servers/manage_recontask_form.php:88
-#: ../../godmode/servers/manage_recontask_form.php:89
 #: ../../include/functions_alerts.php:350
 #: ../../include/functions_alerts.php:351
 #: ../../include/functions_alerts.php:352 ../../include/functions.php:437
@@ -1801,59 +1852,59 @@ msgstr ""
 msgid "hours"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:368
+#: ../../godmode/reporting/reporting_builder.php:365
 #: ../../include/functions_custom_graphs.php:108
 msgid "1 week"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:369
+#: ../../godmode/reporting/reporting_builder.php:366
 msgid "2 weeks"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:370
+#: ../../godmode/reporting/reporting_builder.php:367
 #: ../../include/functions_custom_graphs.php:109
 msgid "1 month"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:371
+#: ../../godmode/reporting/reporting_builder.php:368
 msgid "3 months"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:387
+#: ../../godmode/reporting/reporting_builder.php:384
 msgid "Custom graph name"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:405
+#: ../../godmode/reporting/reporting_builder.php:402
 msgid "Report items"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:412
+#: ../../godmode/reporting/reporting_builder.php:409
 msgid "Order"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:417
+#: ../../godmode/reporting/reporting_builder.php:414
 msgid "Options"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:443
+#: ../../godmode/reporting/reporting_builder.php:440
 #: ../../enterprise/include/functions_reporting_pdf.php:297
 msgid "Up"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:488
+#: ../../godmode/reporting/reporting_builder.php:485
 #: ../../operation/reporting/reporting_viewer.php:53
 #: ../../operation/reporting/custom_reporting.php:28
 #: ../../operation/menu.php:178
 msgid "Custom reporting"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:538
+#: ../../godmode/reporting/reporting_builder.php:535
 #: ../../operation/reporting/graph_viewer.php:165
 #: ../../operation/reporting/custom_reporting.php:33
 msgid "There are no defined reportings"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.php:544
+#: ../../godmode/reporting/reporting_builder.php:541
 msgid "Create report"
 msgstr ""
 
@@ -1915,9 +1966,9 @@ msgstr ""
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:97
+#: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../godmode/servers/manage_export_form.php:86
-#: ../../godmode/agentes/module_manager_editor_common.php:175
+#: ../../godmode/agentes/module_manager_editor_common.php:171
 #: ../../godmode/agentes/agent_manager.php:110
 #: ../../godmode/agentes/module_manager.php:93
 #: ../../godmode/modules/manage_network_components.php:184
@@ -1968,13 +2019,14 @@ msgstr ""
 msgid "IP Address"
 msgstr ""
 
-#: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:137
+#: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:140
 msgid "Manage servers"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:98
 #: ../../godmode/agentes/agent_manager.php:140
 #: ../../include/functions_reporting.php:226
+#: ../../include/functions_ui.php:1098
 #: ../../enterprise/extensions/backup/main.php:51
 #: ../../operation/incidents/incident.php:187
 #: ../../operation/incidents/incident.php:257
@@ -2007,7 +2059,7 @@ msgid "Updated"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:131
-#: ../../include/functions_db.php:2713
+#: ../../include/functions_db.php:2727
 msgid "Network Server"
 msgstr ""
 
@@ -2016,7 +2068,7 @@ msgid "Master"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:133
-#: ../../include/functions_db.php:2708
+#: ../../include/functions_db.php:2722
 msgid "Data Server"
 msgstr ""
 
@@ -2059,31 +2111,31 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:95
 #: ../../godmode/servers/manage_recontask_form.php:56
-#: ../../godmode/menu.php:142
+#: ../../godmode/menu.php:145
 msgid "Manage recontask"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:82
+#: ../../godmode/servers/manage_recontask_form.php:75
 #: ../../operation/servers/view_server_detail.php:79
 msgid "Network"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:107
+#: ../../godmode/servers/manage_recontask_form.php:94
 #: ../../operation/servers/view_server_detail.php:85
 msgid "Network profile"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:132
+#: ../../godmode/servers/manage_recontask_form.php:110
 #: ../../operation/incidents/incident.php:258
 #: ../../operation/incidents/incident_detail.php:217
 msgid "Incident"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
-#: ../../godmode/servers/manage_recontask_form.php:118
+#: ../../godmode/servers/manage_recontask_form.php:99
 #: ../../godmode/agentes/planned_downtime.php:223
 #: ../../godmode/agentes/modificar_agente.php:156
 #: ../../godmode/agentes/agent_manager.php:113
@@ -2098,7 +2150,6 @@ msgid "OS"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:119
-#: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:202
 #: ../../enterprise/dashboard/widgets/events_list.php:25
 #: ../../operation/events/events.php:281
@@ -2109,41 +2160,57 @@ msgstr ""
 msgid "There are no recon task configured"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:69
+#: ../../godmode/servers/manage_recontask_form.php:66
 #: ../../operation/servers/view_server_detail.php:73
 msgid "Task name"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:77
-#: ../../include/functions_db.php:2723
+#: ../../godmode/servers/manage_recontask_form.php:70
+#: ../../include/functions_db.php:2737
 msgid "Recon Server"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:77
+#: ../../godmode/servers/manage_recontask_form.php:70
 msgid ""
 "You must select a Recon Server for the Task, otherwise the Recon Task will "
 "never run"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:90
-#: ../../include/functions_alerts.php:353
-#: ../../enterprise/godmode/agentes/inventory_manager.php:118
-#: ../../operation/agentes/exportdata.php:66
-msgid "day"
+#: ../../godmode/servers/manage_recontask_form.php:80
+#, php-format
+msgid "%d hour"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:92
-#: ../../include/functions_alerts.php:354
-msgid "week"
+#: ../../godmode/servers/manage_recontask_form.php:81
+#: ../../godmode/servers/manage_recontask_form.php:82
+#, php-format
+msgid "%d hours"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:93
-msgid "weeks"
+#: ../../godmode/servers/manage_recontask_form.php:83
+#: ../../godmode/servers/manage_recontask_form.php:84
+#, php-format
+msgid "%d day"
 msgstr ""
 
-#: ../../godmode/servers/manage_recontask_form.php:94
-#: ../../enterprise/godmode/agentes/inventory_manager.php:122
-msgid "month"
+#: ../../godmode/servers/manage_recontask_form.php:85
+#, php-format
+msgid "%d days"
+msgstr ""
+
+#: ../../godmode/servers/manage_recontask_form.php:86
+#, php-format
+msgid "%d week"
+msgstr ""
+
+#: ../../godmode/servers/manage_recontask_form.php:87
+#, php-format
+msgid "%d weeks"
+msgstr ""
+
+#: ../../godmode/servers/manage_recontask_form.php:88
+#, php-format
+msgid "%d month"
 msgstr ""
 
 #: ../../godmode/servers/manage_export_form.php:77
@@ -2151,8 +2218,8 @@ msgid "Export server"
 msgstr ""
 
 #: ../../godmode/servers/manage_export_form.php:79
-#: ../../godmode/agentes/module_manager_editor_common.php:190
-#: ../../godmode/agentes/module_manager_editor_plugin.php:40
+#: ../../godmode/agentes/module_manager_editor_common.php:186
+#: ../../godmode/agentes/module_manager_editor_plugin.php:34
 #: ../../godmode/agentes/massive_delete_alerts.php:93
 #: ../../godmode/agentes/massive_delete_modules.php:93
 #: ../../godmode/agentes/agent_manager.php:105
@@ -2170,8 +2237,8 @@ msgid "Transfer mode"
 msgstr ""
 
 #: ../../godmode/servers/manage_export_form.php:111
-#: ../../godmode/agentes/module_manager_editor_plugin.php:48
-#: ../../godmode/agentes/module_manager_editor_network.php:40
+#: ../../godmode/agentes/module_manager_editor_plugin.php:42
+#: ../../godmode/agentes/module_manager_editor_network.php:34
 msgid "Port"
 msgstr ""
 
@@ -2306,7 +2373,7 @@ msgstr ""
 
 #: ../../godmode/groups/group_list.php:134
 #: ../../godmode/groups/configure_group.php:90
-#: ../../godmode/agentes/configurar_agente.php:209
+#: ../../godmode/agentes/configurar_agente.php:210
 #: ../../godmode/agentes/massive_delete_alerts.php:95
 #: ../../godmode/agentes/modificar_agente.php:197
 #: ../../godmode/agentes/massive_config.php:109
@@ -2341,7 +2408,7 @@ msgid "Update group"
 msgstr ""
 
 #: ../../godmode/groups/configure_group.php:93
-#: ../../godmode/agentes/module_manager_editor_common.php:171
+#: ../../godmode/agentes/module_manager_editor_common.php:167
 #: ../../godmode/agentes/agent_manager.php:127
 msgid "Custom ID"
 msgstr ""
@@ -2366,31 +2433,31 @@ msgstr ""
 msgid "Scheduled downtime"
 msgstr ""
 
-#: ../../godmode/menu.php:56
+#: ../../godmode/menu.php:57
 msgid "Manage modules"
 msgstr ""
 
-#: ../../godmode/menu.php:61
+#: ../../godmode/menu.php:62
 msgid "Component groups"
 msgstr ""
 
-#: ../../godmode/menu.php:63
+#: ../../godmode/menu.php:64
 msgid "Network components"
 msgstr ""
 
-#: ../../godmode/menu.php:67 ../../godmode/agentes/agent_template.php:88
+#: ../../godmode/menu.php:68 ../../godmode/agentes/agent_template.php:88
 msgid "Module templates"
 msgstr ""
 
-#: ../../godmode/menu.php:75 ../../godmode/profiles/profile_list.php:186
+#: ../../godmode/menu.php:76 ../../godmode/profiles/profile_list.php:186
 msgid "Manage alerts"
 msgstr ""
 
-#: ../../godmode/menu.php:80
+#: ../../godmode/menu.php:81
 msgid "Templates"
 msgstr ""
 
-#: ../../godmode/menu.php:82 ../../godmode/alerts/alert_list.php:236
+#: ../../godmode/menu.php:83 ../../godmode/alerts/alert_list.php:236
 #: ../../godmode/alerts/alert_list.php:361
 #: ../../godmode/alerts/configure_alert_compound.php:354
 #: ../../enterprise/extensions/backup/main.php:52
@@ -2400,91 +2467,91 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: ../../godmode/menu.php:84
+#: ../../godmode/menu.php:85
 msgid "Commands"
 msgstr ""
 
-#: ../../godmode/menu.php:86
+#: ../../godmode/menu.php:87
 msgid "Correlation"
 msgstr ""
 
-#: ../../godmode/menu.php:92 ../../godmode/profiles/profile_list.php:188
+#: ../../godmode/menu.php:95 ../../godmode/profiles/profile_list.php:188
 msgid "Manage users"
 msgstr ""
 
-#: ../../godmode/menu.php:99
+#: ../../godmode/menu.php:102
 msgid "Manage SNMP console"
 msgstr ""
 
-#: ../../godmode/menu.php:113
+#: ../../godmode/menu.php:116
 msgid "Manage reports"
 msgstr ""
 
-#: ../../godmode/menu.php:119
+#: ../../godmode/menu.php:122
 msgid "Report builder"
 msgstr ""
 
-#: ../../godmode/menu.php:132
+#: ../../godmode/menu.php:135
 msgid "Manage profiles"
 msgstr ""
 
-#: ../../godmode/menu.php:144
+#: ../../godmode/menu.php:147
 msgid "Manage plugins"
 msgstr ""
 
-#: ../../godmode/menu.php:146
+#: ../../godmode/menu.php:149
 msgid "Export targets"
 msgstr ""
 
-#: ../../godmode/menu.php:157
+#: ../../godmode/menu.php:160
 msgid "System audit log"
 msgstr ""
 
-#: ../../godmode/menu.php:162 ../../godmode/setup/setup.php:54
+#: ../../godmode/menu.php:165 ../../godmode/setup/setup.php:54
 #: ../../godmode/setup/setup_visuals.php:44
-#: ../../godmode/agentes/configurar_agente.php:199
+#: ../../godmode/agentes/configurar_agente.php:200
 #: ../../operation/visual_console/render_view.php:70
 msgid "Setup"
 msgstr ""
 
-#: ../../godmode/menu.php:168
+#: ../../godmode/menu.php:171
 msgid "Visual styles"
 msgstr ""
 
-#: ../../godmode/menu.php:169 ../../godmode/setup/file_manager.php:67
+#: ../../godmode/menu.php:172 ../../godmode/setup/file_manager.php:67
 msgid "File manager"
 msgstr ""
 
-#: ../../godmode/menu.php:176
+#: ../../godmode/menu.php:179
 msgid "DB Maintenance"
 msgstr ""
 
-#: ../../godmode/menu.php:181
+#: ../../godmode/menu.php:184
 msgid "DB Information"
 msgstr ""
 
-#: ../../godmode/menu.php:183 ../../godmode/db/db_purge.php:35
+#: ../../godmode/menu.php:186 ../../godmode/db/db_purge.php:35
 msgid "Database purge"
 msgstr ""
 
-#: ../../godmode/menu.php:185 ../../godmode/db/db_refine.php:32
-#: ../../include/functions_db.php:3095
+#: ../../godmode/menu.php:188 ../../godmode/db/db_refine.php:32
+#: ../../include/functions_db.php:3109
 msgid "Database debug"
 msgstr ""
 
-#: ../../godmode/menu.php:187
+#: ../../godmode/menu.php:190
 msgid "Database audit"
 msgstr ""
 
-#: ../../godmode/menu.php:189
+#: ../../godmode/menu.php:192
 msgid "Database event"
 msgstr ""
 
-#: ../../godmode/menu.php:191
+#: ../../godmode/menu.php:194
 msgid "Database sanity"
 msgstr ""
 
-#: ../../godmode/menu.php:198 ../../operation/menu.php:186
+#: ../../godmode/menu.php:201 ../../operation/menu.php:186
 msgid "Extensions"
 msgstr ""
 
@@ -2626,10 +2693,10 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:301
 #: ../../godmode/snmpconsole/snmp_alert.php:302
 #: ../../godmode/snmpconsole/snmp_alert.php:303
-#: ../../godmode/agentes/module_manager.php:160
-#: ../../godmode/agentes/module_manager.php:161
+#: ../../godmode/agentes/module_manager.php:165
+#: ../../godmode/agentes/module_manager.php:166
 #: ../../include/functions.php:620 ../../include/functions.php:625
-#: ../../include/functions.php:628 ../../include/functions_db.php:2462
+#: ../../include/functions.php:628 ../../include/functions_db.php:2476
 #: ../../include/functions_reporting.php:548
 #: ../../include/functions_reporting.php:586
 #: ../../include/functions_reporting.php:615
@@ -2704,75 +2771,67 @@ msgstr ""
 msgid "Language code for Pandora"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:63 ../../godmode/setup/setup_visuals.php:50
-msgid "Date format string"
-msgstr ""
-
-#: ../../godmode/setup/setup.php:64 ../../godmode/setup/setup_visuals.php:51
-msgid "Example"
-msgstr ""
-
-#: ../../godmode/setup/setup.php:67
+#: ../../godmode/setup/setup.php:63
 msgid "Remote config directory"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:70
+#: ../../godmode/setup/setup.php:66
 msgid "SLA period (seconds)"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:73
+#: ../../godmode/setup/setup.php:69
 msgid "Max. days before compact data"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:76
+#: ../../godmode/setup/setup.php:72
 msgid "Max. days before purge"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:79
+#: ../../godmode/setup/setup.php:75
 msgid "Compact interpolation in hours (1 Fine-20 bad)"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:82
+#: ../../godmode/setup/setup.php:78
 msgid "Auto login (Hash) password"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:85
+#: ../../godmode/setup/setup.php:81
 msgid "Default hours for event view"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:88
+#: ../../godmode/setup/setup.php:84
 msgid "Timestamp or time comparation"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:89
+#: ../../godmode/setup/setup.php:85
 msgid "Comparation in rollover"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:91
+#: ../../godmode/setup/setup.php:87
 msgid "Timestamp in rollover"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:94
+#: ../../godmode/setup/setup.php:90
 msgid "Time source"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:99
+#: ../../godmode/setup/setup.php:95
 msgid "Automatic update check"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:103
+#: ../../godmode/setup/setup.php:99
 msgid "Enforce https"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:107
+#: ../../godmode/setup/setup.php:103
 msgid "Compact CSS and JS into header"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:112
+#: ../../godmode/setup/setup.php:108
 msgid "Font path"
 msgstr ""
 
-#: ../../godmode/setup/setup.php:115
+#: ../../godmode/setup/setup.php:111
 msgid "Attachment store"
 msgstr ""
 
@@ -2850,6 +2909,14 @@ msgstr ""
 msgid "Visual configuration"
 msgstr ""
 
+#: ../../godmode/setup/setup_visuals.php:50
+msgid "Date format string"
+msgstr ""
+
+#: ../../godmode/setup/setup_visuals.php:51
+msgid "Example"
+msgstr ""
+
 #: ../../godmode/setup/setup_visuals.php:54
 msgid "Graph color (min)"
 msgstr ""
@@ -2881,11 +2948,11 @@ msgid "Use round corners"
 msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:76
-msgid "Status Icon set"
+msgid "Status icon set"
 msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:77
-msgid "Colors (Default)"
+msgid "Colors"
 msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:78
@@ -2893,7 +2960,7 @@ msgid "Faces"
 msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:79
-msgid "Color and text"
+msgid "Colors and text"
 msgstr ""
 
 #: ../../godmode/setup/links.php:37
@@ -2952,8 +3019,8 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#: ../../godmode/setup/news.php:108 ../../include/functions_db.php:2468
-#: ../../include/functions_db.php:2490
+#: ../../godmode/setup/news.php:108 ../../include/functions_db.php:2482
+#: ../../include/functions_db.php:2504
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:80
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:178
 msgid "Text"
@@ -3096,12 +3163,12 @@ msgid "Pandora System Management"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:125
-#: ../../godmode/agentes/configurar_agente.php:281
+#: ../../godmode/agentes/configurar_agente.php:282
 msgid "No agent name specified"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:128
-#: ../../godmode/agentes/configurar_agente.php:284
+#: ../../godmode/agentes/configurar_agente.php:285
 msgid "There is already an agent in the database with this name"
 msgstr ""
 
@@ -3109,141 +3176,141 @@ msgstr ""
 msgid "Agent keepalive monitor"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:194
+#: ../../godmode/agentes/configurar_agente.php:195
 #: ../../godmode/agentes/modificar_agente.php:201
 msgid "View"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:214
+#: ../../godmode/agentes/configurar_agente.php:215
 msgid "Net. Templates"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:246
+#: ../../godmode/agentes/configurar_agente.php:247
 msgid "No data to normalize"
-msgstr ""
-
-#: ../../godmode/agentes/configurar_agente.php:250
-#, php-format
-msgid "Deleted data above %d"
 msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:251
 #, php-format
+msgid "Deleted data above %d"
+msgstr ""
+
+#: ../../godmode/agentes/configurar_agente.php:252
+#, php-format
 msgid "Error normalizing module %s"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:310
+#: ../../godmode/agentes/configurar_agente.php:311
 msgid "There was a problem updating agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:313
+#: ../../godmode/agentes/configurar_agente.php:314
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:45
 msgid "Agent successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:332
+#: ../../godmode/agentes/configurar_agente.php:333
 #: ../../operation/agentes/estado_generalagente.php:28
 msgid "There was a problem loading agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:439
+#: ../../godmode/agentes/configurar_agente.php:440
 msgid "There was a problem updating module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:441
+#: ../../godmode/agentes/configurar_agente.php:442
 msgid "Module successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:493
+#: ../../godmode/agentes/configurar_agente.php:494
 msgid "There was a problem adding module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:504
-#: ../../godmode/agentes/configurar_agente.php:506
+#: ../../godmode/agentes/configurar_agente.php:505
+#: ../../godmode/agentes/configurar_agente.php:507
 msgid "Module added successfully"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:506
+#: ../../godmode/agentes/configurar_agente.php:507
 msgid "Status init unsuccessful"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:552
+#: ../../godmode/agentes/configurar_agente.php:553
 msgid "There was a problem deleting the module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:555
+#: ../../godmode/agentes/configurar_agente.php:556
 msgid "Module deleted successfully"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:24
+#: ../../godmode/agentes/module_manager_editor_wmi.php:19
 msgid "WMI server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:36
-#: ../../godmode/agentes/module_manager_editor_plugin.php:46
-#: ../../godmode/agentes/module_manager_editor_network.php:38
+#: ../../godmode/agentes/module_manager_editor_wmi.php:31
+#: ../../godmode/agentes/module_manager_editor_plugin.php:40
+#: ../../godmode/agentes/module_manager_editor_network.php:32
 msgid "Target IP"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:38
+#: ../../godmode/agentes/module_manager_editor_wmi.php:33
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:45
-#: ../../godmode/agentes/module_manager_editor_plugin.php:54
+#: ../../godmode/agentes/module_manager_editor_wmi.php:40
+#: ../../godmode/agentes/module_manager_editor_plugin.php:48
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 #: ../../enterprise/godmode/agentes/inventory_manager.php:124
 msgid "Username"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:53
+#: ../../godmode/agentes/module_manager_editor_wmi.php:48
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
 msgid "WMI Query"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:61
+#: ../../godmode/agentes/module_manager_editor_wmi.php:56
 #: ../../godmode/modules/manage_network_components_form_wmi.php:152
 msgid "Key string"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_wmi.php:64
+#: ../../godmode/agentes/module_manager_editor_wmi.php:59
 #: ../../godmode/modules/manage_network_components_form_wmi.php:160
 msgid "Field number"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:71
+#: ../../godmode/agentes/module_manager_editor_common.php:67
 msgid "Using module component"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:77
-#: ../../godmode/agentes/module_manager_editor_common.php:86
+#: ../../godmode/agentes/module_manager_editor_common.php:73
+#: ../../godmode/agentes/module_manager_editor_common.php:82
 msgid "Manual setup"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:82
+#: ../../godmode/agentes/module_manager_editor_common.php:78
 msgid "No component was found"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:129
+#: ../../godmode/agentes/module_manager_editor_common.php:125
 #: ../../godmode/modules/manage_network_components_form_wmi.php:120
 #: ../../godmode/modules/manage_network_components_form_network.php:223
 #: ../../operation/agentes/status_monitor.php:82
 msgid "Module group"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:131
+#: ../../godmode/agentes/module_manager_editor_common.php:127
 msgid "Not assigned"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:134
+#: ../../godmode/agentes/module_manager_editor_common.php:130
 #: ../../godmode/agentes/massive_edit_modules.php:131
 #: ../../include/functions_alerts.php:189
 msgid "Warning status"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:135
-#: ../../godmode/agentes/module_manager_editor_common.php:142
+#: ../../godmode/agentes/module_manager_editor_common.php:131
+#: ../../godmode/agentes/module_manager_editor_common.php:138
 #: ../../godmode/agentes/massive_edit_modules.php:132
 #: ../../godmode/agentes/massive_edit_modules.php:137
 #: ../../godmode/alerts/configure_alert_template.php:467
@@ -3252,8 +3319,8 @@ msgstr ""
 msgid "Min."
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:138
-#: ../../godmode/agentes/module_manager_editor_common.php:145
+#: ../../godmode/agentes/module_manager_editor_common.php:134
+#: ../../godmode/agentes/module_manager_editor_common.php:141
 #: ../../godmode/agentes/massive_edit_modules.php:134
 #: ../../godmode/agentes/massive_edit_modules.php:139
 #: ../../godmode/alerts/configure_alert_template.php:470
@@ -3262,27 +3329,27 @@ msgstr ""
 msgid "Max."
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:141
+#: ../../godmode/agentes/module_manager_editor_common.php:137
 #: ../../godmode/agentes/massive_edit_modules.php:136
 #: ../../include/functions_alerts.php:190
 msgid "Critical status"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:150
+#: ../../godmode/agentes/module_manager_editor_common.php:146
 #: ../../godmode/agentes/massive_edit_modules.php:143
 msgid "FF threshold"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:153
+#: ../../godmode/agentes/module_manager_editor_common.php:149
 #: ../../godmode/agentes/massive_edit_modules.php:145
 msgid "Historical data"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:179
+#: ../../godmode/agentes/module_manager_editor_common.php:175
 msgid "Post process"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_common.php:188
+#: ../../godmode/agentes/module_manager_editor_common.php:184
 msgid "Export target"
 msgstr ""
 
@@ -3299,7 +3366,7 @@ msgstr ""
 #: ../../godmode/agentes/massive_operations.php:75
 #: ../../godmode/agentes/modificar_agente.php:57
 #: ../../godmode/agentes/agent_manager.php:32
-#: ../../godmode/agentes/module_manager.php:27
+#: ../../godmode/agentes/module_manager.php:22
 #: ../../godmode/alerts/alert_list.php:189
 #: ../../enterprise/godmode/agentes/inventory_manager.php:37
 msgid "Agent configuration"
@@ -3339,7 +3406,7 @@ msgstr ""
 msgid "Module name"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_data.php:24
+#: ../../godmode/agentes/module_manager_editor_data.php:19
 msgid "Data server module"
 msgstr ""
 
@@ -3474,15 +3541,15 @@ msgstr ""
 msgid "Not executed"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_plugin.php:26
+#: ../../godmode/agentes/module_manager_editor_plugin.php:29
 msgid "Plugin server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_plugin.php:38
+#: ../../godmode/agentes/module_manager_editor_plugin.php:32
 msgid "Plugin"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_plugin.php:62
+#: ../../godmode/agentes/module_manager_editor_plugin.php:56
 msgid "Plugin parameters"
 msgstr ""
 
@@ -3535,45 +3602,45 @@ msgstr ""
 msgid "Could not delete alert"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_prediction.php:24
+#: ../../godmode/agentes/module_manager_editor_prediction.php:19
 msgid "Prediction server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_prediction.php:27
+#: ../../godmode/agentes/module_manager_editor_prediction.php:22
 msgid "Source module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:26
+#: ../../godmode/agentes/module_manager_editor_network.php:29
 msgid "Network server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:49
+#: ../../godmode/agentes/module_manager_editor_network.php:43
 msgid "SNMP community"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:52
+#: ../../godmode/agentes/module_manager_editor_network.php:46
 msgid "SNMP version"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:65
+#: ../../godmode/agentes/module_manager_editor_network.php:59
 #: ../../godmode/modules/manage_network_components_form_network.php:244
 msgid "SNMP OID"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:72
+#: ../../godmode/agentes/module_manager_editor_network.php:66
 msgid "Unable to do SNMP walk"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:76
+#: ../../godmode/agentes/module_manager_editor_network.php:70
 msgid "SNMP walk"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:86
+#: ../../godmode/agentes/module_manager_editor_network.php:80
 #: ../../godmode/modules/manage_network_components_form_network.php:252
 msgid "TCP send"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor_network.php:93
+#: ../../godmode/agentes/module_manager_editor_network.php:87
 #: ../../godmode/modules/manage_network_components_form_network.php:256
 msgid "TCP receive"
 msgstr ""
@@ -3590,16 +3657,6 @@ msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:90
 msgid "Free text for search (*)"
-msgstr ""
-
-#: ../../godmode/agentes/modificar_agente.php:103
-#: ../../godmode/alerts/alert_compounds.php:114
-#: ../../enterprise/operation/agentes/agent_inventory.php:47
-#: ../../enterprise/operation/agentes/agent_inventory.php:52
-#: ../../enterprise/operation/inventory/inventory.php:68
-#: ../../operation/incidents/incident.php:217
-#: ../../operation/agentes/estado_agente.php:80
-msgid "Search"
 msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:154
@@ -3631,10 +3688,10 @@ msgstr ""
 msgid "There are no defined agents"
 msgstr ""
 
-#: ../../godmode/agentes/modificar_agente.php:244
+#: ../../godmode/agentes/modificar_agente.php:242
 #: ../../godmode/agentes/agent_manager.php:37
 #: ../../operation/snmpconsole/snmp_view.php:289
-#: ../../operation/agentes/estado_agente.php:191
+#: ../../operation/agentes/estado_agente.php:195
 msgid "Create agent"
 msgstr ""
 
@@ -3682,12 +3739,6 @@ msgstr ""
 msgid "No alerts for this agent"
 msgstr ""
 
-#: ../../godmode/agentes/massive_config.php:130
-#: ../../godmode/alerts/configure_alert_compound.php:545
-#: ../../operation/reporting/reporting_viewer.php:81
-msgid "Loading"
-msgstr ""
-
 #: ../../godmode/agentes/massive_config.php:134
 msgid "Targets"
 msgstr ""
@@ -3697,7 +3748,7 @@ msgid "To agent(s)"
 msgstr ""
 
 #: ../../godmode/agentes/massive_config.php:297
-#: ../../include/functions_agents.php:141
+#: ../../include/functions_agents.php:175
 msgid "No source agent to copy"
 msgstr ""
 
@@ -3706,12 +3757,12 @@ msgid "No operation selected"
 msgstr ""
 
 #: ../../godmode/agentes/massive_config.php:310
-#: ../../godmode/db/db_refine.php:46 ../../include/functions_agents.php:171
+#: ../../godmode/db/db_refine.php:46 ../../include/functions_agents.php:205
 msgid "No modules have been selected"
 msgstr ""
 
 #: ../../godmode/agentes/massive_config.php:315
-#: ../../include/functions_agents.php:146
+#: ../../include/functions_agents.php:180
 msgid "No destiny agent(s) to copy"
 msgstr ""
 
@@ -3767,23 +3818,23 @@ msgstr ""
 msgid "Not available"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:50
+#: ../../godmode/agentes/module_manager.php:48
 msgid "Create a new data server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:52
+#: ../../godmode/agentes/module_manager.php:50
 msgid "Create a new network server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:54
+#: ../../godmode/agentes/module_manager.php:52
 msgid "Create a new plugin Server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:56
+#: ../../godmode/agentes/module_manager.php:54
 msgid "Create a new WMI Server module"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:58
+#: ../../godmode/agentes/module_manager.php:56
 msgid "Create a new prediction Server module"
 msgstr ""
 
@@ -3800,28 +3851,36 @@ msgstr ""
 msgid "Max/Min"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager.php:175
+#: ../../godmode/agentes/module_manager.php:147
+msgid "Non initialized module"
+msgstr ""
+
+#: ../../godmode/agentes/module_manager.php:180
 msgid "Normalize"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor.php:207
+#: ../../godmode/agentes/module_manager_editor.php:203
 msgid "Module assignment"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor.php:217
+#: ../../godmode/agentes/module_manager_editor.php:214
 #: ../../godmode/alerts/alert_list.php:395
+#: ../../enterprise/godmode/policies/policy_modules.php:154
 msgid "Advanced options"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor.php:390
+#: ../../godmode/agentes/module_manager_editor.php:243
+#: ../../enterprise/godmode/policies/policy_modules.php:344
 msgid "No module name provided"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor.php:400
+#: ../../godmode/agentes/module_manager_editor.php:244
+#: ../../enterprise/godmode/policies/policy_modules.php:345
 msgid "No target IP provided"
 msgstr ""
 
-#: ../../godmode/agentes/module_manager_editor.php:408
+#: ../../godmode/agentes/module_manager_editor.php:245
+#: ../../enterprise/godmode/policies/policy_modules.php:346
 msgid "No SNMP OID provided"
 msgstr ""
 
@@ -3830,6 +3889,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates.php:106
 #: ../../godmode/modules/manage_network_templates_form.php:101
 #: ../../godmode/modules/module_list.php:51
+#: ../../enterprise/godmode/policies/policy_modules.php:143
 #: ../../enterprise/godmode/modules/configure_local_component.php:26
 #: ../../enterprise/godmode/modules/local_components.php:86
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:49
@@ -4580,7 +4640,7 @@ msgid "Sunday"
 msgstr ""
 
 #: ../../godmode/alerts/alert_templates.php:77
-#: ../../include/functions_db.php:2419
+#: ../../include/functions_db.php:2433
 msgid "Days"
 msgstr ""
 
@@ -4635,7 +4695,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:82
 #: ../../godmode/alerts/configure_alert_compound.php:66
 #: ../../godmode/alerts/configure_alert_compound.php:70
-#: ../../include/functions_db.php:2413
+#: ../../include/functions_db.php:2427
 msgid "Firing"
 msgstr ""
 
@@ -4643,7 +4703,7 @@ msgstr ""
 #: ../../godmode/alerts/configure_alert_template.php:101
 #: ../../godmode/alerts/configure_alert_compound.php:84
 #: ../../godmode/alerts/configure_alert_compound.php:88
-#: ../../include/functions_db.php:2417
+#: ../../include/functions_db.php:2431
 msgid "Recovery"
 msgstr ""
 
@@ -4853,6 +4913,7 @@ msgid "Successfully added"
 msgstr ""
 
 #: ../../godmode/alerts/alert_list.php:157
+#: ../../enterprise/godmode/policies/policy_agents.php:152
 #: ../../operation/incidents/incident_detail.php:70
 msgid "Could not be added"
 msgstr ""
@@ -4899,7 +4960,7 @@ msgstr ""
 
 #: ../../godmode/alerts/alert_list.php:516
 #: ../../include/functions_alerts.php:198 ../../include/functions.php:668
-#: ../../include/functions.php:780 ../../include/functions_db.php:1306
+#: ../../include/functions.php:780 ../../include/functions_db.php:1320
 #: ../../include/functions_ui.php:146 ../../include/functions_ui.php:147
 #: ../../enterprise/extensions/cron/functions.php:75
 #: ../../enterprise/include/functions_reporting_pdf.php:220
@@ -5026,7 +5087,7 @@ msgid "Going down from normal to warning"
 msgstr ""
 
 #: ../../include/functions_events.php:370 ../../include/functions.php:783
-#: ../../include/functions_db.php:2502
+#: ../../include/functions_db.php:2516
 #: ../../include/functions_reporting.php:830
 #: ../../include/functions_ui.php:327
 #: ../../operation/snmpconsole/snmp_view.php:340
@@ -5077,6 +5138,16 @@ msgstr ""
 
 #: ../../include/functions_alerts.php:188
 msgid "Not equal to"
+msgstr ""
+
+#: ../../include/functions_alerts.php:353
+#: ../../enterprise/godmode/agentes/inventory_manager.php:118
+#: ../../operation/agentes/exportdata.php:66
+msgid "day"
+msgstr ""
+
+#: ../../include/functions_alerts.php:354
+msgid "week"
 msgstr ""
 
 #: ../../include/functions_alerts.php:364
@@ -5199,53 +5270,53 @@ msgstr ""
 msgid "Recon host detected"
 msgstr ""
 
-#: ../../include/functions_db.php:1294
+#: ../../include/functions_db.php:1308
 msgid "Software agent data"
 msgstr ""
 
-#: ../../include/functions_db.php:1297
+#: ../../include/functions_db.php:1311
 msgid "Software agent monitor"
 msgstr ""
 
-#: ../../include/functions_db.php:1300
+#: ../../include/functions_db.php:1314
 msgid "Network agent data"
 msgstr ""
 
-#: ../../include/functions_db.php:1303
+#: ../../include/functions_db.php:1317
 msgid "Network agent monitor"
 msgstr ""
 
-#: ../../include/functions_db.php:2284
+#: ../../include/functions_db.php:2298
 msgid "Wrong module type"
 msgstr ""
 
-#: ../../include/functions_db.php:2410
+#: ../../include/functions_db.php:2424
 msgid "Oper"
 msgstr ""
 
-#: ../../include/functions_db.php:2412
+#: ../../include/functions_db.php:2426
 msgid "Tt"
 msgstr ""
 
-#: ../../include/functions_db.php:2414
+#: ../../include/functions_db.php:2428
 msgid "Time"
 msgstr ""
 
-#: ../../include/functions_db.php:2416
+#: ../../include/functions_db.php:2430
 msgid "Desc"
 msgstr ""
 
-#: ../../include/functions_db.php:2418
+#: ../../include/functions_db.php:2432
 msgid "MinMax.Al"
 msgstr ""
 
-#: ../../include/functions_db.php:2420
+#: ../../include/functions_db.php:2434
 #: ../../operation/snmpconsole/snmp_view.php:390
 #: ../../operation/agentes/alerts_status.php:120
 msgid "Fired"
 msgstr ""
 
-#: ../../include/functions_db.php:2504
+#: ../../include/functions_db.php:2518
 #: ../../include/functions_reporting.php:761
 #: ../../include/functions_ui.php:333
 #: ../../operation/snmpconsole/snmp_view.php:342
@@ -5253,59 +5324,59 @@ msgstr ""
 msgid "Alert not fired"
 msgstr ""
 
-#: ../../include/functions_db.php:2718
+#: ../../include/functions_db.php:2732
 msgid "SNMP Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2728
+#: ../../include/functions_db.php:2742
 msgid "Plugin Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2733
+#: ../../include/functions_db.php:2747
 msgid "Prediction Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2738
+#: ../../include/functions_db.php:2752
 msgid "WMI Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2743
+#: ../../include/functions_db.php:2757
 msgid "Export Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2748
+#: ../../include/functions_db.php:2762
 msgid "Inventory Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2753
+#: ../../include/functions_db.php:2767
 msgid "Web Server"
 msgstr ""
 
-#: ../../include/functions_db.php:2765
+#: ../../include/functions_db.php:2779
 msgid "Master Server"
 msgstr ""
 
-#: ../../include/functions_db.php:3111
+#: ../../include/functions_db.php:3125
 msgid "SQL sentence"
 msgstr ""
 
-#: ../../include/functions_db.php:3112
+#: ../../include/functions_db.php:3126
 msgid "Result"
 msgstr ""
 
-#: ../../include/functions_db.php:3113
+#: ../../include/functions_db.php:3127
 msgid "Rows"
 msgstr ""
 
-#: ../../include/functions_db.php:3114
+#: ../../include/functions_db.php:3128
 msgid "Saved"
 msgstr ""
 
-#: ../../include/functions_db.php:3115
+#: ../../include/functions_db.php:3129
 msgid "Time (ms)"
 msgstr ""
 
-#: ../../include/functions_db.php:3125
+#: ../../include/functions_db.php:3139
 #: ../../enterprise/extensions/backup/main.php:96
 #: ../../enterprise/dashboard/widgets/groups_status.php:60
 #: ../../enterprise/dashboard/widgets/maps_status.php:65
@@ -5384,15 +5455,15 @@ msgid "Agent without data"
 msgstr ""
 
 #: ../../include/functions_reporting.php:814
-msgid "At least one module DOWN"
-msgstr ""
-
-#: ../../include/functions_reporting.php:816
 msgid "At least one module in CRITICAL status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:818
+#: ../../include/functions_reporting.php:816
 msgid "At least one module in WARNING status"
+msgstr ""
+
+#: ../../include/functions_reporting.php:818
+msgid "At least one module is UKNOWN"
 msgstr ""
 
 #: ../../include/functions_reporting.php:820
@@ -5466,13 +5537,13 @@ msgstr ""
 msgid "Unknown Type"
 msgstr ""
 
-#: ../../include/functions_agents.php:244
+#: ../../include/functions_agents.php:278
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
 msgstr ""
 
-#: ../../include/functions_agents.php:247
+#: ../../include/functions_agents.php:281
 msgid "Successfully copied"
 msgstr ""
 
@@ -5620,6 +5691,45 @@ msgstr ""
 msgid "Parameters"
 msgstr ""
 
+#: ../../enterprise/godmode/policies/policy_modules.php:227
+msgid "Created successfuly"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_modules.php:267
+msgid "Updated successfuly"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_modules.php:276
+#: ../../enterprise/godmode/policies/policy_agents.php:52
+#: ../../enterprise/godmode/policies/policies.php:74
+#: ../../enterprise/godmode/modules/local_components.php:76
+msgid "Deleted successfuly"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_modules.php:288
+#: ../../enterprise/godmode/policies/policy_agents.php:56
+#: ../../enterprise/godmode/policies/policies.php:84
+#: ../../enterprise/godmode/policies/configure_policy.php:25
+msgid "Policies management"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_modules.php:289
+msgid "Modules in policy"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_agents.php:57
+#, php-format
+msgid "Agents with policy %s"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_agents.php:105
+msgid "Assign agents"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/configure_policy.php:26
+msgid "Configure policy"
+msgstr ""
+
 #: ../../enterprise/godmode/menu.php:11
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:49
 msgid "Inventory modules"
@@ -5631,6 +5741,10 @@ msgstr ""
 
 #: ../../enterprise/godmode/menu.php:23
 msgid "Local components"
+msgstr ""
+
+#: ../../enterprise/godmode/menu.php:29
+msgid "Manage policies"
 msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:50
@@ -5704,7 +5818,7 @@ msgstr ""
 msgid "There are no trap custom values defined"
 msgstr ""
 
-#: ../../enterprise/godmode/setup/setup.php:14
+#: ../../enterprise/godmode/setup/setup.php:16
 msgid "Forward SNMP traps to agent (if exist)"
 msgstr ""
 
@@ -5755,6 +5869,10 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:111
 #: ../../enterprise/godmode/agentes/inventory_manager.php:162
 msgid "Target"
+msgstr ""
+
+#: ../../enterprise/godmode/agentes/inventory_manager.php:122
+msgid "month"
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:129
@@ -5825,10 +5943,6 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:92
 msgid "There are no defined inventory modules"
-msgstr ""
-
-#: ../../enterprise/godmode/modules/local_components.php:76
-msgid "Deleted successfuly"
 msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:87
@@ -6902,7 +7016,7 @@ msgstr ""
 msgid "Free text for search"
 msgstr ""
 
-#: ../../operation/agentes/estado_agente.php:182
+#: ../../operation/agentes/estado_agente.php:186
 msgid "There are no agents included in this group"
 msgstr ""
 

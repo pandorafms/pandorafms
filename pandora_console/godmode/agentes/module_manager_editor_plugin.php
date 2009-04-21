@@ -17,8 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-$extra_title = __('Plugin server module');
-
 define ('ID_NETWORK_COMPONENT_TYPE', 4);
 
 if (empty ($update_module_id)) {
@@ -27,6 +25,8 @@ if (empty ($update_module_id)) {
 } else {
 	/* TODO: Print network component if available */
 }
+
+$extra_title = __('Plugin server module');
 
 $data = array ();
 $data[0] = __('Plugin');

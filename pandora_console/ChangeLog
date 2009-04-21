@@ -1,3 +1,11 @@
+2009-04-21  Sancho Lerena <slerena@gmail.com>
+
+	* operation/servers/view_server.php: New stats for server (threads,
+	modules in queue) and new render view (more useful and with tips in head).
+
+	* functions_db.php: Server info server[img] don't return "master" icon.
+	This icon is now stored in server[master_img].
+
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/pt_BR.po, include/languages/it.mo,

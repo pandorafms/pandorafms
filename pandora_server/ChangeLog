@@ -1,3 +1,8 @@
+2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* util/pandora_dbstress.README: fixed many typos and width, now fits
+	  80 columns.
+
 2009-04-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Re-enabled detection of duplicate data

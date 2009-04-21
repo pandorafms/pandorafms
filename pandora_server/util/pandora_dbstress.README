@@ -1,26 +1,33 @@
 Pandora FMS DB Stress
 =====================
 
-This is a small tool to test your database performance. It also could be used to "pregenerate" random or periodic data (using trigonometry functions) and populate ficticious modules.
+This is a small tool to test your database performance. It also could be used
+to "pregenerate" random or periodic data (using trigonometric functions) and
+populate ficticious modules.
 
-You need to create an agent and assign modules for automated data injection with this tool. You need to name that modules according to this notation:
+You must create an agent and assign modules for automated data injection
+with this tool. You must to name that modules according to this notation:
 
-random - To generate "random" data.
-curve - To generate a math curve using trigonometrical functions, useful to see interpolation working with different intervals, etc
-boolean - Generate "random" boolean data.
+* random - to generate "random" data.
+* curve - to generate a math curve using trigonometric functions, useful to 
+          see interpolation working with different intervals, etc.
+* boolean - to generate "random" boolean data.
 
-So you could use any name that contains words "random, curve or boolean", for example:
+So you can use any name containing the words "random", "curve" or "boolean",
+for example:
 
-random_1 or curve_other
+"random_1" or "curve_other"
 
-You only could choose "data server" kind of module.
+You can only select the "data server" module type.
 
 Finetuning DB stress tool
 =========================
 
-Tool is preconfigured to search in all agents for modules called random, curve or boolean, and to use a interval of 300 and during 30 days.
+Tool is preconfigured to search in all agents for modules called random, curve 
+or boolean, and to use a interval of 300 and during 30 days.
 
-If want to modify this behaviour you should edit pandora_dbstress script and modify some variables at the top of file:
+If you want to modify this behaviour you should edit pandora_dbstress script 
+and modify some variables at the top of file:
 
  # Configure here target (AGENT_ID for Stress)
  my $target_module = -1; # -1 for all modules of that agent
@@ -28,7 +35,8 @@ If want to modify this behaviour you should edit pandora_dbstress script and mod
  my $target_interval = 300;
  my $target_days = 30;
 
-Set there target_module (for a fixed module) or set -1 to process all matching targets
+Set there target_module (for a fixed module) or set -1 to process all matching 
+targets.
 Set there target_agent (for a specific agent).   
 Set target_interval in seconds for default module interval data periodicity. 
 Set target_days, number of days in the past from current timestamp.

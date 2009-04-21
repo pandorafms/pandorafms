@@ -48,6 +48,6 @@ session_write_close ();
 if (file_exists ($page)) {
 	require_once ($page);
 } else {
-	echo '<br /><b class="error">Sorry! I can\'t find the page $page!</b>';
+	echo '<br /><b class="error">Sorry! I can\'t find the page '.$page.'!</b>';
 }
 ?>

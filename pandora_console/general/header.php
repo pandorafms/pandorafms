@@ -82,11 +82,11 @@ echo "</a>";
 // Autorefresh
 echo '</td><td width="20%">';
 if ($config["refr"]) {
-	echo '<a id="autorefresh" class="white_grey_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : 'index.php?' ).'&amp;refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ().'&amp;refr=0"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
 	echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 	echo '</a>';
 } else {
-	echo '<a id="autorefresh" class="white_bold" href="'.((substr ($_SERVER['REQUEST_URI'],-1) != "/") ? safe_input ($_SERVER['REQUEST_URI']) : "index.php?" ).(count($_GET) ? "&amp;" : "?").'refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
+	echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh ().'&amp;refr="><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
 	$values = array ('5' => '5 '.__('seconds'),
 		'10' => '10 '.__('seconds'),
 		'15' => '15 '.__('seconds'),

@@ -49,25 +49,21 @@ if (is_ajax ()) {
 // Take some parameters (GET)
 $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
-$ag_group = get_parameter ("ag_group", $group_id);
-$ag_group = get_parameter_get ("ag_group_refresh", $ag_group); //if it isn't set, defaults to prev. value
 $search = get_parameter ("search", "");
 
 echo "<h2>".__('Pandora Agents')." &raquo; ".__('Summary')."</h2>";
 
-// Show group selector (POST)
-if (isset($_POST["ag_group"])){
-	$ag_group = get_parameter_post ("ag_group");
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;ag_group_refresh='.$ag_group.'">';
+if ($group_id > 1) {
+	echo '<form method="post" action="'.get_url_refresh ().'&amp;group_id='.$group_id.'">';
 } else {
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60">';
+	echo '<form method="post" action="'.get_url_refresh ().'">';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
 $groups = get_user_groups ();
-print_select ($groups, 'ag_group', $ag_group, 'this.form.submit()', '', '');
+print_select ($groups, 'group_id', $group_id, 'this.form.submit()', '', '');
 
 echo '</td><td style="white-space:nowrap;">';
 
@@ -88,8 +84,8 @@ if ($search != ""){
 }
 
 // Show only selected groups	
-if ($ag_group > 1) {
-	$agent_names = get_group_agents ($ag_group, $search_sql, "upper");
+if ($group_id > 1) {
+	$agent_names = get_group_agents ($group_id, $search_sql, "upper");
 // Not selected any specific group
 } else {
 	$user_group = get_user_groups ($config["id_user"], "AR");
@@ -97,7 +93,8 @@ if ($ag_group > 1) {
 }
 
 if (!empty ($agent_names)) {
-	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
+	$num_agents = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
+	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names)), $offset, $config["block_size"]));
 }
 
 if (empty ($agents)) {
@@ -105,7 +102,7 @@ if (empty ($agents)) {
 }
 
 // Prepare pagination
-pagination (count ($agents), "index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60&search=$search", $offset);
+pagination ($num_agents, get_url_refresh ()."&group_id=".$group_id."&search=".$search, $offset);
 
 // Show data.
 $table->cellpadding = 4;

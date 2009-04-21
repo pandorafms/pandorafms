@@ -1,3 +1,17 @@
+2009-04-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/functions_ui.php: Added get_url_refresh which gets the correct
+	url to refresh a page against instead of manually reconstructing for each
+	form. Modified process_page_head to use this new function
+	
+	* general/header.php: Use of new function get_url_refresh. Fixes some
+	minor annoyances I had with this refresh when groups were selected with
+	a post
+	
+	* ajax.php: Error message didn't display the right page name
+	
+	* operation/agentes/estado_agente.php: Fixed bug #2770377
+
 2009-04-21  Sancho Lerena <slerena@gmail.com>
 
 	* operation/servers/view_server.php: New stats for server (threads,

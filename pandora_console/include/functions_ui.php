@@ -577,40 +577,7 @@ function process_page_head ($string, $bitfield) {
 	$output = '';
 	
 	if ($config["refr"] > 0) {
-		// Agent selection filters and refresh
-		$protocol = 'http';
-		$ssl = false;
-		if ($config['https']) {
-			/* Check with "on" because some web servers like Cherokee always
-			 set this value even if SSL is not enabled */
-			if (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
-				$protocol = 'https';
-				$ssl = true;
-			}
-		}
-		
-		$query = $protocol.'://' . $_SERVER['SERVER_NAME'];
-		
-		if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
-			$query .= ":".$_SERVER['SERVER_PORT'];
-		}
-		$query .= $_SERVER['SCRIPT_NAME'];
-		
-		if (sizeof ($_REQUEST))
-			//Some (old) browsers don't like the ?&key=var
-			$query .= '?1=1';
-		
-		//We don't clean these variables up as they're only being passed along
-		foreach ($_GET as $key => $value) {
-			/* Avoid the 1=1 */
-			if ($key == 1)
-				continue;
-			$query .= '&amp;'.$key.'='.$value;
-		}
-		foreach ($_POST as $key => $value) {
-			$query .= '&amp;'.$key.'='.$value;
-		}
-		
+		$query = get_url_refresh (false);
 		$output .= '<meta http-equiv="refresh" content="'.$config["refr"].'; URL='.$query.'" />';
 	}
 	$output .= "\n\t";
@@ -1162,5 +1129,56 @@ function get_include_contents ($filename, $params = false) {
 	ob_end_clean ();
 
 	return $contents;
+}
+
+/**
+ * Construct and return the URL to be used in order to refresh the current page correctly.
+ *
+ * @param bool $relative Whether to return the relative URL or the absolute URL. Returns relative by default
+ */	
+function get_url_refresh ($relative = true) {
+	// Agent selection filters and refresh
+	global $config;
+	$url = '';
+	
+	if (sizeof ($_REQUEST))
+		//Some (old) browsers don't like the ?&key=var
+		$url .= '?1=1';
+	
+	//We don't clean these variables up as they're only being passed along
+	foreach ($_GET as $key => $value) {
+		/* Avoid the 1=1 */
+		if ($key == 1)
+			continue;
+		$url .= '&amp;'.$key.'='.$value;
+	}
+	foreach ($_POST as $key => $value) {
+		$url .= '&amp;'.$key.'='.$value;
+	}
+	
+	if ($relative === false) {
+		if ($config['https']) {
+			//When $config["https"] is set, always force https
+			$protocol = 'https';
+			$ssl = true;
+		} elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
+			$protocol = 'https';
+			$ssl = true;
+		} else {
+			$protocol = 'http';
+			$ssl = false;
+		}
+		
+		$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+		
+		if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
+			$fullurl .= ":".$_SERVER['SERVER_PORT'];
+		}
+		$fullurl .= $_SERVER['SCRIPT_NAME'];
+		
+		return $fullurl.$url;
+	}
+	
+	return $url;
 }
 ?>

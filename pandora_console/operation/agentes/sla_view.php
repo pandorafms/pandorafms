@@ -35,6 +35,11 @@ $id_agent = get_parameter ("id_agente", 0);
 $interval = get_agent_interval ($id_agent);
 $modules = get_agent_modules ($id_agent, '*',
 	array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
+if (empty ($modules)) {
+	print_error_message (__("There are no modules to evaluate the S.L.A. from"));
+	return;
+}
+
 $offset = get_parameter ("offset", 0);
 
 // Get all module from agent

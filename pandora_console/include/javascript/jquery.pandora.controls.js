@@ -4,7 +4,7 @@
 	};
 	
 	$.extend ({
-		pandoraSelectGroup: new function() {
+		pandoraSelectGroupAgent: new function() {
 			this.defaults = {
 				agentSelect: "select#id_agent",
 				loading: "#agent_loading",
@@ -20,7 +20,7 @@
 				return this.each (function() {
 					this.config = {};
 					
-					this.config = $.extend (this.config, $.pandoraSelectGroup.defaults, settings);
+					this.config = $.extend (this.config, $.pandoraSelectGroupAgent.defaults, settings);
 					var config = this.config;
 					
 					$(this).change (function () {
@@ -207,7 +207,7 @@
 	});
 	
 	$.extend ({
-		pandoraSelectGroup: new function() {
+		pandoraSelectGroupIcon: new function() {
 			this.defaults = {
 				alertSelect: "select#id_group",
 				spanPreview: "#group_preview",
@@ -218,7 +218,7 @@
 			this.construct = function (settings) {
 				return this.each (function() {
 					this.config = {};
-					this.config = $.extend (this.config, $.pandoraSelectGroup.defaults, settings);
+					this.config = $.extend (this.config, $.pandoraSelectGroupIcon.defaults, settings);
 					
 					var config = this.config;
 
@@ -249,10 +249,10 @@
 	});
 	
 	$.fn.extend({
-		pandoraSelectGroup: $.pandoraSelectGroup.construct,
+		pandoraSelectGroupAgent: $.pandoraSelectGroupAgent.construct,
 		pandoraSelectAgentModule: $.pandoraSelectAgentModule.construct,
 		pandoraSelectAgentAlert: $.pandoraSelectAgentAlert.construct,
 		pandoraSelectOS: $.pandoraSelectOS.construct,
-		pandoraSelectGroup: $.pandoraSelectGroup.construct
+		pandoraSelectGroupIcon: $.pandoraSelectGroupIcon.construct
 	});
 }) (jQuery);

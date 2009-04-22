@@ -1,3 +1,21 @@
+2009-04-22  Esteban Sánchez  <estebans@artica.es>
+
+	* pandoradb_data.sql: Use 3.0 for version number
+	
+	* include/javascript/jquery.pandora.controls.js: Duplicated
+	pandoraSelectGroup renamed to pandoraSelectGroupAgent.
+	
+	* godmode/agentes/massive_config.php,
+	godmode/agentes/massive_delete_agents.php,
+	godmode/agentes/massive_delete_alerts.php,
+	godmode/agentes/massive_delete_modules.php,
+	godmode/alerts/alert_compounds.php, godmode/alerts/alert_list.php,
+	godmode/reporting/reporting_builder.php: pandoraSelectGroup renamed to
+	pandoraSelectGroupAgent.
+	
+	* godmode/agentes/modificar_agente.php: Tiny changes in remote agent config
+	link.
+
 2009-04-22  Manuel Arostegui <marostegui@artica.es>
 
 	* install.php: Fixed bug #2777317
@@ -76,8 +94,47 @@
 	godmode/agentes/module_manager.php: Some fixes to allow form
 	reutilization.
 	
+	* include/javascript/jquery.pandora.controls.js: Fixed a typo. Added 
+	pandoraSelectGroup control.
+	
+	* include/javascript/jquery.pandora.js: Separate between auto executed code
+	and document ready function.
+	
+	* include/javascript/pandora_modules.js: Added to repository. Functions to
+	use on module editors.
+	
+	* include/functions_agents.php: Added get_agents().
+	
+	* include/functions_db.php: Added get_user_first_group(). Changed
+	user_access_to_agent() parameters order.
+	
+	* include/functions_reporting.php: Style corrections.
+	
+	* include/functions_ui.php: Added doc to print_status_image(). Added 
+	print_ui_agents_list() to print a list of agents with a search form and
+	a lot of configuration options easily.
+	
+	* include/functions_ui_renders.php: Added to repository. New API for
+	renders on UI components.
+	
+	* operation/agentes/estado_agente.php: Make table wider.
+	
 	* godmode/reporting/reporting_builder.php: Replaced exit with return. Use
-	pandoraSelectGroup() control.
+	pandoraSelectGroup control.
+	
+	* godmode/servers/manage_recontask_form.php: Style corrections to fit
+	Pandora styles.
+	
+	* godmode/servers/modificar_server.php: Removed a notice from a typo.
+	
+	* godmode/setup/setup.php: Fixed table data indexes. Removed javascript
+	code from visual setup.
+	
+	* godmode/setup/setup_visuals.php: Some strings changed. Style correction.
+	
+	* godmode/menu.php: Added policies enterprise menu option.
+	
+	* images/policies.png: Added to repository.
 	
 	* godmode/agentes/modificar_agente.php: Style correction by using pandora
 	functions.

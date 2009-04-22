@@ -120,7 +120,7 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#id_group").pandoraSelectGroup ();
+	$("#id_group").pandoraSelectGroupAgent ();
 	$("#id_agent").pandoraSelectAgentModule ({
 		moduleSelect: "select#id_modules"
 	});

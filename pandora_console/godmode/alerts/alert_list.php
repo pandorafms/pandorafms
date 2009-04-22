@@ -414,7 +414,7 @@ require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 $(document).ready (function () {
 <?php if (! $id_agente) : ?>
-	$("#id_group").pandoraSelectGroup ({
+	$("#id_group").pandoraSelectGroupAgent ({
 		callbackBefore: function () {
 			$select = $("#id_agent_module").disable ();
 			$select.siblings ("span#latest_value").hide ();

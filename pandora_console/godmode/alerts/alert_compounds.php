@@ -198,6 +198,6 @@ require_jquery_file ('pandora.controls');
 
 <script type="text/javascript">
 $(document).ready (function () {
-	$("#id_group").pandoraSelectGroup ();
+	$("#id_group").pandoraSelectGroupAgent ();
 });
 </script>

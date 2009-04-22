@@ -14,7 +14,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--- Database Data for Pandora FMS 2.0
+-- Database Data for Pandora FMS 3.0
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -243,7 +243,7 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
 
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 2.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW());
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 3.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent module');
 INSERT INTO tmodule VALUES (2,'Network module');

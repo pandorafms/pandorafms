@@ -627,7 +627,7 @@ function report_type_changed () {
 $(document).ready (function () {
 	$('#id_agent').change (agent_changed);
 	$('#type').change (report_type_changed);
-	$('#report_id_group').pandoraSelectGroup ();
+	$('#report_id_group').pandoraSelectGroupAgent ();
 });
 /* ]]> */
 </script>

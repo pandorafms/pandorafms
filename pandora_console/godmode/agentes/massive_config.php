@@ -169,12 +169,12 @@ require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 var module_alerts;
 $(document).ready (function () {
-	$("#source_id_group").pandoraSelectGroup ({
+	$("#source_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#source_id_agent",
 		loading: "#source_agent_loading"
 	});
 	
-	$("#destiny_id_group").pandoraSelectGroup ({
+	$("#destiny_id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#destiny_id_agent",
 		loading: "#destiny_agent_loading",
 		callbackPost: function (id, value, option) {

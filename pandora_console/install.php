@@ -452,8 +452,8 @@ $config["homeurl"]="'.$url.'";			// Base URL
 
 				if (mysql_error() != "")
 					echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
-
-				mysql_query ("DROP DATABASE $dbname");
+				if ($step1 == 1)
+					mysql_query ("DROP DATABASE $dbname");
 			}		
 		echo "
 		</div>

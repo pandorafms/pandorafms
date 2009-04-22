@@ -1,3 +1,7 @@
+2009-04-22  Manuel Arostegui <marostegui@artica.es>
+
+	* godmode/menu.php: Fixed bug #2770383
+
 2009-04-22  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

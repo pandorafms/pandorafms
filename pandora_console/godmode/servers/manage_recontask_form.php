@@ -115,17 +115,16 @@ $table->data[7][1] = print_select ($values, "create_incident", $create_incident,
 $table->data[8][0] = __('Comments');
 $table->data[8][1] = print_textarea ("description", 2, 70, $description, '', true);
 
-print_table ($table);
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 
+print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_rt != -1) 
 	print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
 else
 	print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
-echo '</form>';
 echo "</div>";
 
 echo "</form>";

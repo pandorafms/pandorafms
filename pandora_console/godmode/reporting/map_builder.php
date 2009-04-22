@@ -76,8 +76,8 @@ if ($create_layout) {
 }
 
 if ($delete_layout) {
-	process_sql_delete ('tlayout_data', array ('id_layout', $id_layout));
-	$result = process_sql_delete ('tlayout', array ('id', $id_layout));
+	process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));
+	$result = process_sql_delete ('tlayout', array ('id' => $id_layout));
 	if ($result) {
 		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
 	} else {

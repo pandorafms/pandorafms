@@ -201,14 +201,14 @@ if ($create_downtime || $update_downtime) {
 	
 		print_select_from_sql ("SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1", "filter_group", $filter_group, '', __("Any"), -1, false, false);
 		echo "<br /><br />";
-		echo print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
+		print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
 		echo print_select ($data, "id_agent[]", '', '', '', 0, false, true);
 		echo "<br /><br /><br />";
-		echo print_submit_button (__('Add'), '', false, 'class="sub next"',false);
+		print_submit_button (__('Add'), '', false, 'class="sub next"',false);
 		echo "</form>";
 		echo "</table>";
 		

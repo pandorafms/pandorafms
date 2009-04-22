@@ -146,7 +146,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	
 	$sub["godmode/servers/plugin"]["text"] = __('Manage plugins');
 	
-	$sub["godmode/servers/manage_export_form"]["text"] = __('Export targets');
+	$sub["godmode/servers/manage_export"]["text"] = __('Export targets');
 	
 	$menu["gservers"]["sub"] = $sub;
 }

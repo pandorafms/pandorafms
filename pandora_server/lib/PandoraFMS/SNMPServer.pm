@@ -47,7 +47,7 @@ sub new ($$;$) {
 	return undef unless $config->{'snmpconsole'} == 1;
 
 	# Start snmptrapd
-	if (system ($config->{'snmp_trapd'} .' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\n 2>/dev/null') != 0) {
+	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v 2>/dev/null') != 0) {
 		print " [E] Could not start snmptrapd.\n\n";
 		return undef;
 	}
@@ -147,12 +147,12 @@ sub pandora_snmptrapd {
 
 			# Insert the trap into the DB
 			if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $dbh]))) {
-				db_insert ($dbh, 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-				           $timestamp, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type);
+				my $trap_id = db_insert ($dbh, 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+				                         $timestamp, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type);
 				logger ($pa_config, "Received SNMP Trap from $source", 4);
 
 				# Evaluate alerts for this trap
-				pandora_evaluate_snmp_alerts ($pa_config, $source, $oid, $oid, $custom_oid . ' ' . $custom_value, $timestamp, $dbh);
+				pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid . ' ' . $custom_value, $dbh);
 			}
 
 			enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $dbh]);

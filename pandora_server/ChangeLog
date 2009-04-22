@@ -1,5 +1,11 @@
 2009-04-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/SNMPServer.pm: Fixed SNMP alerts.
+
+	* lib/PandoraFMS/Core.pm: Fixed forced alert execution.
+
+2009-04-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Server.pm: Enabled thread status detection when
 	  available.
 

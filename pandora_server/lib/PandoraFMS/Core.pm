@@ -451,9 +451,8 @@ sub pandora_execute_action ($$$$$$$) {
 
 	# Internal Audit
 	} elsif ($action->{'name'} eq "Internal Audit") {
-		logger($pa_config, "Internal audit for agent $agent", 3);
 		$field1 = subst_alert_macros ($field1, \%macros);
-		pandora_audit ($pa_config, $field1, $agent->{'nombre'}, "Alert (" . $alert->{'description'} . ")", $dbh);
+		pandora_audit ($pa_config, $field1, defined ($agent) ? $agent->{'nombre'} : 'N/A', 'Alert (' . $alert->{'description'} . ')', $dbh);
 		
 		# Do not generate an event
 		return 0;
@@ -542,6 +541,9 @@ sub pandora_process_module ($$$$$$$$) {
 	if ($status_changes == $module->{'min_ff_event'}) {
 		generate_status_event ($pa_config, $data, $agent, $module, $status, $last_status, $dbh);
 	}
+	
+	# tagente_estado.last_try dafaults to NULL, should default to '0000-00-00 00:00:00'
+	$agent_status->{'last_try'} = '0000-00-00 00:00:00' unless defined ($agent_status->{'last_try'});
 
 	# Do we have to save module data?
 	return unless ($agent_status->{'last_try'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
@@ -795,7 +797,7 @@ sub pandora_exec_forced_alerts {
 		pandora_execute_alert ($pa_config, 'N/A', $alert, undef, $alert, 1, $dbh);
 
 		# Reset the force_execution flag, even if the alert could not be executed
-		db_do ("UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'}, $dbh);
+		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'});
 	}
 }
 
@@ -824,9 +826,9 @@ sub pandora_module_keep_alive_nd {
 ##########################################################################
 # Execute alerts that apply to the given SNMP trap.
 ##########################################################################
-sub pandora_evaluate_snmp_alerts {
-	my ($pa_config, $trap_agent, $trap_oid, $trap_oid_text,
-	    $trap_custom_value, $timestamp, $dbh, $alert_fired) = @_;
+sub pandora_evaluate_snmp_alerts ($$$$$$$) {
+	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
+	    $trap_oid_text, $trap_custom_value, $dbh) = @_;
 	
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp');
@@ -856,22 +858,20 @@ sub pandora_evaluate_snmp_alerts {
 		
 		# Check time threshold
 		my $last_fired = 0;
-		if ($alert->{'last_fired'} =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/) {
+		if ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 			$last_fired = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 		}
 
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-		# Out of limits, start a new interval		
+		# Out of limits, start a new interval
 		($times_fired, $internal_counter) = (0, 0) if ($utimestamp >= ($last_fired + $alert->{'time_threshold'}));
 
 		# Execute the alert
 		my ($min_alerts, $max_alerts) = ($alert->{'min_alerts'}, $alert->{'max_alerts'});
 		if (($internal_counter + 1 >= $min_alerts) && ($times_fired + 1 <= $max_alerts)) {
 			($times_fired++, $internal_counter++);
-
-			logger ($pa_config, 'Executing SNMP Trap alert for ' . $alert->{'agent'} . ' - ' . $alert->{'alert_data'}, 2);
 
 			my %alert = (
 				'name' => '',
@@ -902,8 +902,8 @@ sub pandora_evaluate_snmp_alerts {
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',
 				   $times_fired, $timestamp, $internal_counter, $alert->{'id_as'});
 
-			db_do ($dbh, 'UPDATE ttrap SET alerted = 1, PRIORITY = ? WHERE timestamp = ? AND source = ?',
-				   $alert->{'priority'}, $timestamp, $trap_agent);
+			db_do ($dbh, 'UPDATE ttrap SET alerted = 1, priority = ? WHERE id_trap = ?',
+				   $alert->{'priority'}, $trap_id);
 		} else {
 			$internal_counter++;
 			if ($internal_counter < $min_alerts){

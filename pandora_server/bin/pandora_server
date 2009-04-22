@@ -106,7 +106,7 @@ while (1) {
 	
 	# Update server status
 	foreach my $server (@Servers) {
-		exit (1) unless ($server->checkThreads () == 1);
+		pandora_shutdown () unless ($server->checkThreads () == 1);
 		$server->update ();
 	}
 
@@ -115,6 +115,10 @@ while (1) {
 		pandora_exec_forced_alerts (\%Config, $DBH);
 		pandora_module_keep_alive_nd (\%Config, $DBH);
 	};
+	
+	if ($@) {
+		pandora_shutdown ();
+	}
 
 	threads->yield;
 	sleep ($Config{'server_threshold'});

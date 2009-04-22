@@ -42,6 +42,7 @@ our @EXPORT = qw(
 	pandora_create_module
 	pandora_evaluate_alert
 	pandora_evaluate_compound_alert
+	pandora_evaluate_snmp_alerts
 	pandora_event
 	pandora_event_status
 	pandora_execute_alert
@@ -51,6 +52,8 @@ our @EXPORT = qw(
 	pandora_generate_compound_alerts
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
+	pandora_ping
+	pandora_ping_latency
 	pandora_planned_downtime
 	pandora_process_alert
 	pandora_process_module
@@ -58,21 +61,16 @@ our @EXPORT = qw(
 	pandora_update_agent
 	pandora_update_module_on_error
 	pandora_update_server
-	pandora_evaluate_snmp_alerts
 
 	@ServerTypes
-	@ServerSuffixes
-	@ServerColumns
 	);
 
 # Some global variables
 our @DayNames = qw(monday tuesday wednesday thursday friday saturday sunday);
 our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver);
-our @ServerSuffixes = qw (_Data _Net _SNMP _Recon _Plugin _Prediction _WMI _Export _Inventory _Web);
-our @ServerColumns = qw (data_server network_server snmp_server recon_server plugin_server prediction_server wmi_server export_server inventory_server web_server);
 
 ##########################################################################
-#Generate alerts for a given module.
+# Generate alerts for a given module.
 ##########################################################################
 sub pandora_generate_alerts ($$$$$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh) = @_;
@@ -104,7 +102,7 @@ sub pandora_generate_alerts ($$$$$$$) {
 }
 
 ##########################################################################
-#Evaluate trigger conditions for a given alert. Returns:
+# Evaluate trigger conditions for a given alert. Returns:
 # 0 Execute the alert.
 # 1 Do not execute the alert.
 # 2 Do not execute the alert, but increment its internal counter.
@@ -191,7 +189,7 @@ sub pandora_evaluate_alert ($$$$$$) {
 }
 
 ##########################################################################
-#Process an alert given the status returned by pandora_evaluate_alert.
+# Process an alert given the status returned by pandora_evaluate_alert.
 ##########################################################################
 sub pandora_process_alert ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh) = @_;
@@ -271,8 +269,8 @@ sub pandora_process_alert ($$$$$$$) {
 }
 
 ##########################################################################
-#Evaluate the given compound alert. Returns 1 if the alert should be
-#fired, 0 if not.
+# Evaluate the given compound alert. Returns 1 if the alert should be
+# fired, 0 if not.
 ##########################################################################
 sub pandora_evaluate_compound_alert ($$$) {
 	my ($pa_config, $id, $dbh) = @_;
@@ -323,7 +321,7 @@ sub pandora_evaluate_compound_alert ($$$) {
 }
 
 ##########################################################################
-#Generate compound alerts that depend on a given alert.
+# Generate compound alerts that depend on a given alert.
 ##########################################################################
 sub pandora_generate_compound_alerts ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $alert, $utimestamp, $dbh) = @_;
@@ -481,7 +479,7 @@ sub pandora_execute_action ($$$$$$$) {
 }
 
 ##########################################################################
-#Update agent access table.
+# Update agent access table.
 ##########################################################################
 sub pandora_access_update ($$$) {
 	my ($pa_config, $agent_id, $dbh) = @_;
@@ -492,7 +490,7 @@ sub pandora_access_update ($$$) {
 }
 
 ##########################################################################
-#Process Pandora module.
+# Process Pandora module.
 ##########################################################################
 sub pandora_process_module ($$$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $module_type,
@@ -541,7 +539,7 @@ sub pandora_process_module ($$$$$$$$) {
 	                                     ($agent_status->{'status_changes'} + 1, $agent_status->{'last_status'});
 
 	# Generate events
-	if ($agent_status->{'status_changes'} == $module->{'min_ff_event'}) {
+	if ($status_changes == $module->{'min_ff_event'}) {
 		generate_status_event ($pa_config, $data, $agent, $module, $status, $last_status, $dbh);
 	}
 
@@ -563,7 +561,7 @@ sub pandora_process_module ($$$$$$$$) {
 }
 
 ##########################################################################
-#Update planned downtimes.
+# Update planned downtimes.
 ##########################################################################
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
@@ -601,8 +599,8 @@ sub pandora_planned_downtime ($$) {
 }
 
 ##########################################################################
-#Update server status: 0 dataserver, 1 network server, 2 snmp console, 
-#3 recon, 4 plugin, 5 prediction, 6 wmi.
+# Update server status: 0 dataserver, 1 network server, 2 snmp console, 
+# 3 recon, 4 plugin, 5 prediction, 6 wmi.
 ##########################################################################
 sub pandora_update_server ($$$$$;$$) {
 	my ($pa_config, $dbh, $server_name, $status,
@@ -640,7 +638,7 @@ sub pandora_update_server ($$$$$;$$) {
 }
 
 ##########################################################################
-#Update last contact field in agent table
+# Update last contact field in agent table
 ##########################################################################
 sub pandora_update_agent ($$$$$$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
@@ -662,7 +660,7 @@ sub pandora_update_agent ($$$$$$$) {
 }
 
 ##########################################################################
-#Updates the keep_alive module for the given agent.
+# Updates the keep_alive module for the given agent.
 ##########################################################################
 sub pandora_module_keep_alive ($$$$) {
 	my ($pa_config, $id_agent, $agent_name, $dbh) = @_;
@@ -675,7 +673,7 @@ sub pandora_module_keep_alive ($$$$) {
 }
 
 ##########################################################################
-#Create an internal Pandora incident.
+# Create an internal Pandora incident.
 ##########################################################################
 sub pandora_create_incident ($$$$$$$$) {
 	my ($pa_config, $dbh, $title, $text,
@@ -687,7 +685,7 @@ sub pandora_create_incident ($$$$$$$$) {
 
 
 ##########################################################################
-#Create an internal audit entry.
+# Create an internal audit entry.
 ##########################################################################
 sub pandora_audit ($$$$$) {
 	my ($pa_config, $description, $name, $action, $dbh) = @_;
@@ -704,8 +702,8 @@ sub pandora_audit ($$$$$) {
 }
 
 ##########################################################################
-#Create a new entry in tagente_modulo and the corresponding entry in
-#tagente_estado.
+# Create a new entry in tagente_modulo and the corresponding entry in
+# tagente_estado.
 ##########################################################################
 sub pandora_create_module ($$$$$$$$) {
 	my ($agent_id, $module_type_id, $module_name, $max,
@@ -739,7 +737,7 @@ sub pandora_create_agent ($$$$$$$$$) {
 }
 
 ##########################################################################
-#Generate an event.
+# Generate an event.
 ##########################################################################
 sub pandora_event (%$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
@@ -753,7 +751,7 @@ sub pandora_event (%$$$$$$$$) {
 }
 
 ##########################################################################
-#Generate an event with the given status. TODO: Merge with pandora_event
+# Generate an event with the given status. TODO: Merge with pandora_event
 ##########################################################################
 sub pandora_event_status ($$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
@@ -778,7 +776,7 @@ sub pandora_update_module_on_error ($$$) {
 }
 
 ##########################################################################
-#Execute forced alerts.
+# Execute forced alerts.
 ##########################################################################
 sub pandora_exec_forced_alerts {
 	my ($pa_config, $dbh) = @_;
@@ -802,7 +800,7 @@ sub pandora_exec_forced_alerts {
 }
 
 ##########################################################################
-#Update keep_alive modules for agents without data.
+# Update keep_alive modules for agents without data.
 ##########################################################################
 sub pandora_module_keep_alive_nd {
 	my ($pa_config, $dbh) = @_;
@@ -865,7 +863,7 @@ sub pandora_evaluate_snmp_alerts {
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-		# Out limits, start a new interval		
+		# Out of limits, start a new interval		
 		($times_fired, $internal_counter) = (0, 0) if ($utimestamp >= ($last_fired + $alert->{'time_threshold'}));
 
 		# Execute the alert
@@ -913,11 +911,41 @@ sub pandora_evaluate_snmp_alerts {
 				db_do ($dbh, 'UPDATE talert_snmp SET internal_counter = ?, times_fired = ?, last_fired = ? WHERE id_as = ?',
 				       $internal_counter, $times_fired, $timestamp, $alert->{'id_as'});
 			} else {
-				db_do ($dbh, 'UPDATE talert_snmp SET times_fired=, internal_counter = ? WHERE id_as = ?',
+				db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, internal_counter = ? WHERE id_as = ?',
 				       $times_fired, $internal_counter, $alert->{'id_as'});
 			}
 		}
 	}
+}
+
+##############################################################################
+# Ping the given host. Returns 1 if the host is alive, 0 otherwise.
+##############################################################################
+sub pandora_ping ($$) { 
+	my ($pa_config, $host) = @_;
+
+	# Ping the host
+	`ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+
+	return ($? == 0) ? 1 : 0;
+}
+
+##############################################################################
+# Ping the given host. Returns the average round-trip time.
+##############################################################################
+sub pandora_ping_latency ($$) {
+	my ($pa_config, $host) = @_;
+
+	# Ping the host
+	my @output = `ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+	
+	# Something went wrong
+	return 0 if ($? != 0);
+	
+	# Parse the output
+	my $stats = pop (@output);
+	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+	return $2;
 }
 
 ##########################################################################
@@ -1007,20 +1035,26 @@ sub process_inc_data ($$$$) {
 ##########################################################################
 sub get_module_status ($$) {
 	my ($data, $module, $module_type) = @_;
-	
-	# Critical
-	if (($module->{'min_critical'} ne $module->{'max_critical'})) {
-		return 1 if ($data >= $module->{'min_critical'}  && $data <= $module->{'max_critical'});
+	my ($critical_min, $critical_max, $warning_min, $warning_max) =
+	   ($module->{'min_critical'}, $module->{'max_critical'}, $module->{'min_warning'}, $module->{'max_warning'});
 
-	# Proc modules default to critical if data is 0 and no max/min was specified
-	} elsif ($module_type =~ m/_proc$/ && $data == 0) {
-			return 1;
+	# Set default critical max/min for *proc modules
+	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
+		($critical_min, $critical_max) = (0, 1);
+	}
+
+	# Critical
+	if ($critical_min ne $critical_max) {
+		return 1 if ($data >= $critical_min  && $data < $critical_max);
+		return 1 if ($data >= $critical_min && $critical_max < $critical_min);
 	}
 
 	# Warning
-	return 2 if (($module->{'min_warning'} ne $module->{'max_warning'}) &&
-		         ($data >= $module->{'min_warning'}  && $data <= $module->{'max_warning'}));
-	
+	if ($warning_min ne $warning_max) {
+		return 2 if ($data >= $warning_min  && $data < $warning_max);
+		return 2 if ($data >= $warning_min  && $warning_max < $warning_min);
+	}
+
 	# Normal
 	return 0;
 }

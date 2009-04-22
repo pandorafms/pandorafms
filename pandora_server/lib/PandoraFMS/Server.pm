@@ -153,8 +153,8 @@ sub checkThreads ($) {
 	
 	foreach my $tid (@{$self->{'_threads'}}) {
 		my $thr = threads->object ($tid);
-		return 0 unless defined ($thr);
-		#return 0 unless $thr->is_running ();
+		return 1 unless $thr->can ('is_running');
+		return 0 unless $thr->is_running ();
 	}
 	
 	return 1;
@@ -202,12 +202,14 @@ sub update ($) {
 sub stop ($) {
 	my $self = shift;
 
-	# Update server status
-	pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
+	eval {
+		# Update server status
+		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
 		                       0, $self->{'_server_type'});
 
-	# Generate an event
-	$self->downEvent ();
+		# Generate an event
+		$self->downEvent ();
+	};
 
 	# Kill server threads
 	foreach my $tid (@{$self->{'_threads'}}) {

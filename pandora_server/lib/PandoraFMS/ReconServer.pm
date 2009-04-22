@@ -42,7 +42,6 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
-my $ICMPLock :shared;
 my $TracerouteAvailable = (eval 'use Net::Traceroute::PurePerl; 1') ? 1 : 0;
 
 ########################################################################################
@@ -129,7 +128,7 @@ sub data_consumer ($$) {
        
 		# Is the host alive? (thanks to Evi for the TCP scans)
 		my $alive = 0;
-		if (icmp_scan ($addr, $pa_config->{'networktimeout'}) == 1) {
+		if (pandora_ping ($pa_config, $addr) == 1) {
 			$alive = 1;
 		#Check for Remote Desktop & VNC (Desktop & Server machines)
 		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 3389) == 1 ||
@@ -197,28 +196,6 @@ sub data_consumer ($$) {
 
 	# Mark recon task as done
 	update_recon_task ($dbh, $task_id, -1);
-}
-
-##############################################################################
-# ICMP scan the given host. Returns 1 if successful, 0 otherwise.
-##############################################################################
-sub icmp_scan ($$) {
-	my ($host, $timeout) = @_;
-
-	# Ping the host
-	my $ping;
-	{
-		lock $ICMPLock;
-		$ping = Net::Ping->new ();
-	}		
-
-	# Host is alive
-	if ($ping->ping($host)){
-		$ping->close();
-		return 1;
-	}
-	
-	return 0;
 }
 
 ##############################################################################

@@ -1,3 +1,17 @@
+2009-04-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Server.pm: Enabled thread status detection when
+	  available.
+
+	* lib/PandoraFMS/Core.pm: Fixed module status calculation. Moved and
+	  rewrote the old pandora_ping* functions. Small aesthetic fixes.
+
+	* lib/PandoraFMS/ReconServer.pm, lib/PandoraFMS/NetworkServer.pm: Use
+	  the new pandora_ping* functions. The old functions were not thread
+	  safe and had to lock.
+
+	* bin/pandora_server: Properly shutdown on error.
+
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* util/pandora_dbstress.README: fixed many typos and width, now fits

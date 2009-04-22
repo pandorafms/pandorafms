@@ -41,7 +41,6 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = new Thread::Semaphore;
 my $TaskSem :shared = new Thread::Semaphore (0);
-my $ICMPLock :shared;
 
 ########################################################################################
 # Network Server class constructor.
@@ -131,76 +130,6 @@ sub data_consumer ($$) {
 	my ($self, $task) = @_;
 
 	exec_network_module ($self->getConfig (), $task, $self->getDBH ());
-}
-
-##############################################################################
-# pandora_ping_icmp (config, destination, timeout)
-# Do a ICMP scan, return 1 if alive, 0 if not
-##############################################################################
-sub pandora_ping_icmp { 
-	my $pa_config = $_[0];
-	my $dest = $_[1];
-	my $l_timeout = $_[2];
- 	# temporal vars.
- 	my $result = 0;
-	my $result2 = 0;
-	my $temp;
- 
-	if ($pa_config->{'icmp_checks'} eq ""){
-		$pa_config->{'icmp_checks'} = 1;
-	}
-	
-	# Make more than a single ping (as defined in icmp_checks
-	for ($temp =0; $temp < $pa_config->{'icmp_checks'}; $temp++){
-		my $p;
-	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes min
-		{
-			lock $ICMPLock;
-	 		$p = Net::Ping->new("icmp", $l_timeout, 32);
-		 	$result = $p->ping($dest);
-		}
-
-	 	if (defined ($result)){
-			$p->close();
- 			if ($result == 1){
-	 			$result2 = 1;
-	 			$temp = $pa_config->{'icmp_checks'}; # Exit for
-			}
-		}
-		undef ($p);
-	}
-	return $result2;
-}
-
-##############################################################################
-# pandora_ping_latency (destination, timeout, data, result) - Do a ICMP latency check
-##############################################################################
-sub pandora_ping_latency {
-    my $dest = $_[0];
-    my $l_timeout = $_[1]; 
-    my $module_data = $_[2];
-    my $module_result = $_[3];
-    my $icmp_return;
-    my $icmp_reply;
-    my $icmp_ip;
-    my $nm;
-
-	# Locking for use ICMP call safety
-	{
-		lock $ICMPLock;
-		$nm = Net::Ping->new("icmp", $l_timeout, 32);
-		$nm->hires();
-	        ($icmp_return, $icmp_reply, $icmp_ip) = $nm->ping ($dest,$l_timeout);
-	}
-    if ($icmp_return) {
-        $$module_data = $icmp_reply * 1000; # milliseconds
-        $$module_result = 0; # Successful
-    } else {
-        $$module_result = 1; # Error.
-        $$module_data = 0;
-    }
-    $nm->close();
-    undef($nm);
 }
 
 ##########################################################################
@@ -358,7 +287,7 @@ sub exec_network_module {
 		return 0;
 	}
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agente_modulo);
-	if ($module == -1) {
+	if (! defined ($module)) {
 		logger ($pa_config,"[ERROR] Processing data for invalid module", 0);
 		return 0;
 	}
@@ -383,22 +312,11 @@ sub exec_network_module {
 	    # ICMP Modules
 	    # ------------
 	    if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
-		    $temp = pandora_ping_icmp ($pa_config, $ip_target, $pa_config->{'networktimeout'});
-		    if ($temp == 1 ){
-			    $module_result = 0; # Successful
-			    $module_data = 1;
-		    } else {
-			    $module_result = 0; # If cannot connect, its down.
-			    $module_data = 0;
-		    }
+		    $module_data = pandora_ping ($pa_config, $ip_target);
+		    $module_result = 0; # Successful
 	    } elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
-		    # This module only could be executed if executed as root
-		    if ($> == 0){
-			    pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result);
-		    } else {
-			    $module_result = 0; # Done but, with zero value
-			    $module_data = 0; # This should don't happen
-		    }
+		    $module_data = pandora_ping_latency ($pa_config, $ip_target);
+			$module_result = 0; # Successful
 	    # SNMP Modules (Proc=18, inc, data, string)
 	    # ------------
 	    } elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module

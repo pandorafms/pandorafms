@@ -32,12 +32,12 @@ if ($delete_graph) {
 	if (give_acl ($config['id_user'], 0, "AW")) {
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".__('Deleted successfully')."</h3>";
+			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		$sql = "DELETE FROM tgraph WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".__('Deleted successfully')."</h3>";
+			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		echo $result;

@@ -113,7 +113,7 @@ if (isset($_GET["update"])){ // if modified any parameter
 	if (! $result)
 		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
+		echo "<h3 class='suc'>".__('Successfully updated')."</h3>";
 }
 
 // ------------------
@@ -126,7 +126,7 @@ if (isset($_GET["delete"])){ // if delete
 	if (! $result)
 		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
+		echo "<h3 class='suc'>".__('Successfully deleted')."</h3>";
 	$sql = "DELETE FROM tnetwork_profile_component WHERE id_nc = ".$id_nc;
 	$result = process_sql ($sql);
 }

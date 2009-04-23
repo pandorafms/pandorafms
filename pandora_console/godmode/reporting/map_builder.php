@@ -1,4 +1,4 @@
-<?php
+ss<?php
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
@@ -66,7 +66,7 @@ if ($create_layout) {
 	
 	$id_layout = process_sql_insert ('tlayout', $values);
 	if ($id_layout !== false) {
-		echo '<h3 class="suc">'.__('Successfully ').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 	} else {
 		echo '<h3 class="err">'.__('Could not be created').'</h3>';
 	}
@@ -79,7 +79,7 @@ if ($delete_layout) {
 	process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));
 	$result = process_sql_delete ('tlayout', array ('id' => $id_layout));
 	if ($result) {
-		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	} else {
 		echo '<h3 class="err">'.__('Not deleted. Error deleting data').'</h3>';
 	}

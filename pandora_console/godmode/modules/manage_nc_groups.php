@@ -56,7 +56,7 @@ if ($update) {
 			'parent' => $parent),
 		array ('id_sg' => $id));
 	print_result_message ($result,
-		__('Updated successfully'),
+		__('Successfully updated'),
 		__('Not updated. Error updating data'));
 }
 
@@ -66,7 +66,7 @@ if ($delete) { // if delete
 	$result = process_sql_delete ('tnetwork_component_group',
 		array ('id_sg' => $id));
 	print_result_message ($result,
-		__('Deleted successfully'),
+		__('Successfully deleted'),
 		__('Not deleted. Error deleting data'));
 }
 

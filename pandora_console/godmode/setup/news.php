@@ -50,7 +50,7 @@ if (isset ($_POST["update"])) { // if update
 	$result = process_sql ($sql);
 
 	print_result_message ($result,
-		__('Updated successfully'),
+		__('Successfully updated'),
 		__('Not updated. Error updating data'));
 }
 
@@ -60,7 +60,7 @@ if (isset ($_GET["borrar"])) { // if delete
 	$result = process_sql_delete ('tnews', array ('id_news' => $id_news));
 	
 	print_result_message ($result,
-		__('Deleted successfully'),
+		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
 

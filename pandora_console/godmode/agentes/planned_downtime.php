@@ -80,7 +80,7 @@ if ($delete_downtime) {
 	if (($result === false) OR ($result2 === false)){
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 }
 

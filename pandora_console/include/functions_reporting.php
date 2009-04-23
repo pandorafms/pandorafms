@@ -815,7 +815,7 @@ function get_agent_module_info ($id_agent) {
 		} elseif ($return["monitor_warning"] > 0) {
 			$return["status_img"] = print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
 		} elseif ($return["monitor_down"] > 0) {
-                        $return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is UKNOWN'), true);
+                        $return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);
 		} else {
 			$return["status_img"] = print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
 		} 

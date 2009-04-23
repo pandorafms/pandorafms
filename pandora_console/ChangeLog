@@ -1,3 +1,18 @@
+2009-04-23  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/reporting/graph_viewer.php, godmode/setup/news.php,
+	  godmode/agentes/planned_downtime.php,
+	  godmode/modules/manage_network_components.php,
+	  godmode/modules/manage_nc_groups.php,
+	  godmode/reporting/map_builder.php: Fixed strings to make them
+	  standard for translation.
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated PO template.
+
 2009-04-22  Manuel Arostegui <marostegui@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Fixed bug #2777351

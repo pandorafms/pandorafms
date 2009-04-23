@@ -1024,8 +1024,20 @@ sub process_inc_data ($$$$) {
 		return undef;
 	}
 
+	# Negative increment, reset inc data
+	if ($data < $data_inc->{'datos'}) {
+		db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});		
+		db_insert ($dbh, 'INSERT INTO tagente_datos_inc
+		              (`id_agente_modulo`, `datos`, `utimestamp`)
+		              VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);
+		return undef;
+	}
+
 	# Should not happen
 	return 0 if ($utimestamp == $data_inc->{'utimestamp'});
+
+	# Update inc data
+	db_do ($dbh, 'UPDATE tagente_datos_inc SET datos = ?, utimestamp = ? WHERE id_agente_modulo = ?', $data, $utimestamp, $module->{'id_agente_modulo'});
 
 	return ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
 }

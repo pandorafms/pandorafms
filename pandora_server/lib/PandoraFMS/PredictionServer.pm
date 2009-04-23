@@ -123,14 +123,14 @@ sub data_producer ($) {
 sub data_consumer ($$) {
 	my ($self, $task) = @_;
 
-	exec_prediction_module ($self->getConfig (), $task, $self->getDBH ());
+	exec_prediction_module ($self->getConfig (), $task, $self->getServerID (), $self->getDBH ());
 }
 
 ##########################################################################
 # Execute prediction module.
 ##########################################################################
-sub exec_prediction_module {
-    my ($pa_config, $id_am, $dbh) = @_;
+sub exec_prediction_module ($$$$) {
+    my ($pa_config, $id_am, $server_id, $dbh) = @_;
 
     # Get a full hash for agent_module record reference ($agent_module)
 	my $agent_module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_am);
@@ -234,7 +234,7 @@ sub exec_prediction_module {
         $module_data = $average;
     }
 
-	pandora_process_module ($pa_config, $module_data, '', $agent_module, '', $timestamp, $utimestamp, $dbh);
+	pandora_process_module ($pa_config, $module_data, '', $agent_module, '', $timestamp, $utimestamp, $server_id, $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1, $dbh);
 }
 

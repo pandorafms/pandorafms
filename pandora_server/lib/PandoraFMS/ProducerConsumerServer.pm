@@ -73,6 +73,10 @@ sub getConsumer ($) {
 sub run ($$$$$) {
 	my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
 
+	# Update server status and set server ID
+	$self->update ();
+	$self->setServerID ();
+
 	# Launch consumer threads
 	for (1..$self->getNumThreads ()) {
 		my $thr = threads->create (\&PandoraFMS::ProducerConsumerServer::data_consumer, $self,

@@ -168,7 +168,7 @@ sub pandora_evaluate_alert ($$$$$$) {
 		return $status if ($alert->{'type'} eq "not_equal" && $data == $alert->{'value'});
 
 		if ($alert->{'type'} eq "regex") {
-			return $status if ($alert->{'value'} == 1 && $data =~ m/$alert->{'value'}/i);
+			return $status if ($alert->{'matches_value'} == 1 && $data =~ m/$alert->{'value'}/i);
 
 			return $status if ($data !~ m/$alert->{'value'}/i);
 		}
@@ -491,9 +491,9 @@ sub pandora_access_update ($$$) {
 ##########################################################################
 # Process Pandora module.
 ##########################################################################
-sub pandora_process_module ($$$$$$$$) {
+sub pandora_process_module ($$$$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $module_type,
-	    $timestamp, $utimestamp, $dbh) = @_;
+	    $timestamp, $utimestamp, $server_id, $dbh) = @_;
 
 	# Get module type
 	if ($module_type eq '') {
@@ -553,7 +553,7 @@ sub pandora_process_module ($$$$$$$$) {
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
 	              id_agente = ?, current_interval = ?, running_by = ?, last_execution_try = ?, last_try = ?
 	              WHERE id_agente_modulo = ?', $data, $status, $last_status, $status_changes,
-	              $current_utimestamp, $timestamp, $module->{'id_agente'}, $module->{'module_interval'}, $pa_config->{'server_id'},
+	              $current_utimestamp, $timestamp, $module->{'id_agente'}, $module->{'module_interval'}, $server_id,
 	              $utimestamp,  ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
 
 	# Save module data
@@ -664,14 +664,14 @@ sub pandora_update_agent ($$$$$$$) {
 ##########################################################################
 # Updates the keep_alive module for the given agent.
 ##########################################################################
-sub pandora_module_keep_alive ($$$$) {
-	my ($pa_config, $id_agent, $agent_name, $dbh) = @_;
+sub pandora_module_keep_alive ($$$$$) {
+	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
 	
 	# Update keepalive module 
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = 100', $id_agent);
 	return unless defined ($module);
 
-	pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time(), $dbh);
+	pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
 }
 
 ##########################################################################
@@ -819,7 +819,7 @@ sub pandora_module_keep_alive_nd {
 									AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
 	foreach my $module (@modules) {
-		pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time (), $dbh);
+		pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time (), 0, $dbh);
 	}
 }
 
@@ -857,10 +857,9 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$) {
 		next unless ($fire_alert == 1);
 		
 		# Check time threshold
-		my $last_fired = 0;
-		if ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
-			$last_fired = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-		}
+		$alert->{'last_fired'} = '0000-00-00 00:00:00' unless defined ($alert->{'last_fired'});
+		return unless ($alert->{'last_fired'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
+		my $last_fired = ($1 > 0) ? timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) : 0;
 
 		my $utimestamp = time ();
 		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));

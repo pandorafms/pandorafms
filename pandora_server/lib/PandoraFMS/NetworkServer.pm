@@ -129,7 +129,7 @@ sub data_producer ($) {
 sub data_consumer ($$) {
 	my ($self, $task) = @_;
 
-	exec_network_module ($self->getConfig (), $task, $self->getDBH ());
+	exec_network_module ($self->getConfig (), $task, $self->getServerID (), $self->getDBH ());
 }
 
 ##########################################################################
@@ -276,10 +276,8 @@ sub pandora_query_snmp (%$$$$$) {
 # SUB exec_network_module (paconfig, id_agente_modulo, dbh )
 # Execute network module task 
 ##########################################################################
-sub exec_network_module {
-	my $pa_config = $_[0];
-	my $id_agente_modulo = $_[1];
-	my $dbh = $_[2];
+sub exec_network_module ($$$$) {
+	my ($pa_config, $id_agente_modulo, $server_id, $dbh) = @_;
 	# Init variables
 
 	my @sql_data;
@@ -378,8 +376,7 @@ sub exec_network_module {
 
     # Is everything goes ok
 	if ($module_result == 0) {
-
-		pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $dbh);
+		pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 
 		# Update agent last contact using Pandora version as agent version
 		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, $dbh);

@@ -1,5 +1,16 @@
 2009-04-23  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/SNMPServer.pm: Add a newline character after
+	  writing a trap to the SNMP log to make it more readable.
+
+	* lib/PandoraFMS/PluginServer.pm,
+	  lib/PandoraFMS/ProducerConsumerServer.pm, lib/PandoraFMS/Server.pm,
+	  lib/PandoraFMS/PredictionServer.pm, lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/DataServer.pm, lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/WMIServer.pm: Properly set tagente_estado.running_by.
+
+2009-04-23  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Fixed *inc data processing.
 
 2009-04-22  Ramon Novoa  <rnovoa@artica.es>

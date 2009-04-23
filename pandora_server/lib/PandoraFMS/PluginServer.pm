@@ -174,7 +174,7 @@ sub data_consumer ($$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-	pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $dbh);
+	pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $pa_config->{'servername'}.'_Plugin', $pa_config->{'version'}, -1, $dbh);
 }
 

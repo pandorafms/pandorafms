@@ -129,7 +129,7 @@ sub data_consumer ($$) {
     	}
     	
     	unlink ($file_name);
-		process_xml_data ($self->getConfig (), $xml_data, $self->getDBH ());
+		process_xml_data ($self->getConfig (), $xml_data, $self->getServerID (), $self->getDBH ());
 		return;	
 	}
 
@@ -140,8 +140,8 @@ sub data_consumer ($$) {
 ###############################################################################
 # Process XML data coming from an agent.
 ###############################################################################
-sub process_xml_data {
-	my ($pa_config, $data, $dbh) = @_;
+sub process_xml_data ($$$$) {
+	my ($pa_config, $data, $server_id, $dbh) = @_;
 
 	my ($agent_name, $agent_version, $timestamp, $interval, $os_version) =
 	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
@@ -172,7 +172,7 @@ sub process_xml_data {
 	}
 
 	pandora_update_agent ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh);
-	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $dbh);
+	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 
 	# Process modules
 	foreach my $module_data (@{$data->{'module'}}) {
@@ -186,7 +186,7 @@ sub process_xml_data {
 	    # Single data
 	    if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = (defined ($module_data->{'timestamp'})) ? $module_data->{'timestamp'}->[0] : $timestamp;
-			process_module_data ($pa_config, $module_data, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
+			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
 			next;
 		}
 
@@ -203,7 +203,7 @@ sub process_xml_data {
 							
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = (defined ($data->{'timestamp'})) ? $data->{'timestamp'} : $timestamp;
-				process_module_data ($pa_config, $module_data, $agent_name, $module_name,
+				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh);
 			}
 		}
@@ -213,32 +213,43 @@ sub process_xml_data {
 ##########################################################################
 # Process module data, creating module if necessary.
 ##########################################################################
-sub process_module_data ($$$$$$$$) {
-	my ($pa_config, $data, $agent_name, $module_name,
-	    $module_type, $interval, $timestamp, $dbh) = @_;
+sub process_module_data ($$$$$$$$$) {
+	my ($pa_config, $data, $server_id, $agent_name,
+	    $module_name, $module_type, $interval, $timestamp,
+	    $dbh) = @_;
 
+	# Get agent data
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', $agent_name);
 	return unless defined ($agent);
 
+	# Get module data or create it if it does not exist
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 	if (! defined ($module)) {
+		
+		# Do not auto create modules
+		return unless ($pa_config->{'autocreate'} == 1);
+		
+		# Get the module type
 		my $module_id = get_module_id ($dbh, $module_type);
-		return if ($module_id == -1 && $pa_config->{'autocreate'} == 0);
+		return unless ($module_id > 0);
 
-		my ($min, $max, $description) = (0, 0, '');
-		$max = $data->{'max'}->[0] if (defined ($data->{'max'}));
-		$min = $data->{'min'}->[0] if (defined ($data->{'min'}));
-		$description = $data->{'description'}->[0] if (defined ($data->{'description'}));
+		# Set min/max/description
+		my $max = (defined ($data->{'max'})) ? $data->{'max'}->[0] : 0;
+		my $min = (defined ($data->{'min'})) ? $data->{'min'}->[0] : 0;
+		my $description = (defined ($data->{'description'})) ? $data->{'description'}->[0] : '';
+		
+		# Create the module
 		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
 	                          $max, $min, $description, $interval, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		return unless defined $module;
 	}
 
+	# Parse the timestamp and process the module
 	if ($timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ ||
 	    $timestamp =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 		my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-		pandora_process_module ($pa_config, $data->{'data'}->[0], $agent, $module, $module_type, $timestamp, $utimestamp, $dbh);
+		pandora_process_module ($pa_config, $data->{'data'}->[0], $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
 	}
 }
 

@@ -23,6 +23,7 @@ use warnings;
 use threads;
 use threads::shared;
 
+use PandoraFMS::DB;
 use PandoraFMS::Core;
 
 # defined in PandoraFMS::Core.pm
@@ -35,6 +36,7 @@ sub new ($$$;$) {
     my $class = shift;
     my $self = {
         _pa_config => shift,
+        _server_id => 0,
         _server_type => shift,
         _dbh => shift,
         _num_threads => 1,
@@ -58,6 +60,10 @@ sub new ($$$;$) {
 sub run ($$) {
 	my ($self, $func) = @_;
 
+	# Update server status and set server ID
+	$self->update ();
+	$self->setServerID ();
+
 	for (1..$self->{'_num_threads'}) {
 		my $thr = threads->create (\&{$func}, $self);
 		return unless defined ($thr);
@@ -66,12 +72,24 @@ sub run ($$) {
 }
 
 ########################################################################################
-# Set the number of server threads.
+# Set server ID.
 ########################################################################################
-sub setNumThreads ($$) {
-	my ($self, $num_threads) = @_;
+sub setServerID ($) {
+	my $self = shift;
 	
-	$self->{'_num_threads'} = $num_threads;
+	my $server_id = get_server_id ($self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
+	                               $self->{'_server_type'});
+	return unless ($server_id > 0);
+	$self->{'_server_id'} = $server_id;
+}
+
+########################################################################################
+# Get server ID.
+########################################################################################
+sub getServerID ($) {
+	my $self = shift;
+	
+	return $self->{'_server_id'};
 }
 
 ########################################################################################
@@ -84,9 +102,18 @@ sub setQueueSize ($$) {
 }
 
 ########################################################################################
+# Set the number of server threads.
+########################################################################################
+sub setNumThreads ($$) {
+	my ($self, $num_threads) = @_;
+	
+	$self->{'_num_threads'} = $num_threads;
+}
+
+########################################################################################
 # Get the number of server threads.
 ########################################################################################
-sub getNumThreads ($$) {
+sub getNumThreads ($) {
 	my $self = shift;
 	
 	return $self->{'_num_threads'};

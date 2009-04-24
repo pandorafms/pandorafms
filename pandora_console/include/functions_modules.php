@@ -157,6 +157,20 @@ function get_network_component_groups ($id_module_components = 0) {
 }
 
 /**
+ * Get the name of a network components group.
+ * 
+ * @param int Network components group id.
+ * 
+ * @return string The name of the components group. 
+ */
+function get_network_component_group_name ($id_network_component_group) {
+	if (empty ($id_network_component_group))
+		return false;
+	
+	return @get_db_value ('name', 'tnetwork_component_group', 'id_sg', $id_network_component_group);
+}
+
+/**
  * Deletes a module from an agent.
  *
  * @param mixed Agent module id to be deleted. Accepts an array with ids.

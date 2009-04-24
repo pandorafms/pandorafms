@@ -134,7 +134,7 @@ sub pandora_snmptrapd {
 			my ($custom_oid, $custom_type, $custom_value) = ('', '', $type_desc);
 
 			# Custom OID
-			if ($type == 6) { 	
+			if ($type eq '6') { 	
 					
 				#String data
 				next if ($data =~ m/STRING/) && ($data !~ m/([0-9\.]*)\s\=\s([A-Za-z0-9]*)\:\s\"(.+)\"/);
@@ -152,7 +152,7 @@ sub pandora_snmptrapd {
 				logger ($pa_config, "Received SNMP Trap from $source", 4);
 
 				# Evaluate alerts for this trap
-				pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid . ' ' . $custom_value, $dbh);
+				pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid, $custom_value, $dbh);
 			}
 
 			enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $dbh]);

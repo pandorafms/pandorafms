@@ -1,3 +1,10 @@
+2009-04-24  Esteban Sánchez  <estebans@artica.es>
+
+	* godmode/agentes/module_manager.php: Added extra parameter to
+	enterprise_hook call.
+	
+	* include/functions_modules.php: Added get_network_component_group_name()
+	
 2009-04-24  Manuel Arostegui <marostegui@artica.es>
 
 	* operation/agentes/status_monitor.php: Fixed bug #2779382

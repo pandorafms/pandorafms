@@ -1,3 +1,12 @@
+2009-04-24  Esteban Sánchez  <estebans@artica.es>
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed local components table
+	
+	* godmode/servers/manage_recontask_form.php: Added "any" option to
+	operating system combo.
+	
+	* godmode/snmpconsole/snmp_alert.php: Changed alert templates with actions.
+
 2009-04-23  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/functions_reporting.php,

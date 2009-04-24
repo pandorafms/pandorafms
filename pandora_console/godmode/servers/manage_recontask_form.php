@@ -98,7 +98,7 @@ $table->data[4][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_pr
 // OS
 $table->data[5][0] = __('OS');
 $table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
-	"id_os", $id_os, '', '', '', true);
+	"id_os", $id_os, '', __('Any'), -1, true);
 
 // Group
 $table->data[6][0] = __('Group');

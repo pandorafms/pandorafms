@@ -145,10 +145,10 @@ if (isset ($_GET["update_alert"])) {
 	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
 	
 	// Alert type (e-mail, event etc.)
-	echo '<tr><td class="datos">'.__('Alert type').'</td><td class="datos">';
+	echo '<tr><td class="datos">'.__('Alert action').'</td><td class="datos">';
 	
 	$fields = array ();
-	$result = get_db_all_rows_in_table ("talert_templates", "name");
+	$result = get_db_all_rows_in_table ('talert_actions', "name");
 	if ($result === false) {
 		$result = array ();
 	}
@@ -157,7 +157,8 @@ if (isset ($_GET["update_alert"])) {
 		$fields[$row["id"]] = $row["name"];
 	}
 	
-	print_select ($fields, "alert_type", $alert_type, '', '', '0', false, false, false);
+	print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+		"alert_type", $alert_type, '', '', 0, false, false, false);
 	echo '</td></tr>';
 	
 	// Alert trigger (OID, custom_value)
@@ -251,6 +252,9 @@ if (isset ($_GET["update_alert"])) {
 	echo "</td></tr></table>";
 } else {
 	echo "<h2>".__('Alert Overview')."</h2>";
+	
+	require_once ('include/functions_alerts.php');
+	
 	//Overview
 	$result = get_db_all_rows_in_table ("talert_snmp");
 	if ($result === false) {
@@ -267,7 +271,7 @@ if (isset ($_GET["update_alert"])) {
 	$table->class= "databox";
 	$table->align = array ();
 
-	$table->head[0] = __('Alert type');
+	$table->head[0] = __('Alert action');
 	
 	$table->head[1] = __('Alert trigger');
 	$table->align[1] = 'center';
@@ -296,7 +300,7 @@ if (isset ($_GET["update_alert"])) {
 
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = get_alert_type ($row["id_alert"]);
+		$data[0] = get_alert_action_name ($row["id_alert"]);
 		$data[1] = __('N/A');
 		$data[2] = __('N/A');
 		$data[3] = __('N/A');

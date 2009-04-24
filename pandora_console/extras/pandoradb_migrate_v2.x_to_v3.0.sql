@@ -261,24 +261,6 @@ CREATE TABLE IF NOT EXISTS `talert_compound_actions` (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `tlocal_component` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(80) NOT NULL,
-  `data` mediumtext NOT NULL,
-  `description` varchar(250) default NULL,
-  `id_os` int(10) unsigned default '0',
-  `os_version` varchar(100) default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE IF NOT EXISTS `tlocal_component_group` (
-  `id`  int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(200) NOT NULL default '',
-  `parent` mediumint(8) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 ALTER TABLE tplugin ADD `plugin_type` int(2) UNSIGNED NOT NULL default 0;
 ALTER TABLE treport_content ADD `description` mediumtext;
 

@@ -1,3 +1,7 @@
+2009-04-24  Manuel Arostegui <marostegui@artica.es>
+
+	* operation/agentes/status_monitor.php: Fixed bug #2779382
+
 2009-04-24  Esteban Sánchez  <estebans@artica.es>
 
 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed local components table

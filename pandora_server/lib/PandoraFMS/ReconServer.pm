@@ -150,11 +150,12 @@ sub data_consumer ($$) {
 
 		next unless ($alive == 1);
 
+		# Guess the OS and filter
+		my $id_os = guess_os ($pa_config, $addr);
+		next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
+
 		$hosts_found++;
 		$addr_found .= $addr . " ";
-
-		# Guess the OS		
-		my $id_os = guess_os ($pa_config, $addr);
 
 		# Resolve the address
 		my $host_name = gethostbyaddr(inet_aton($addr), AF_INET);

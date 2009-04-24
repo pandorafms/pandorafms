@@ -826,9 +826,9 @@ sub pandora_module_keep_alive_nd {
 ##########################################################################
 # Execute alerts that apply to the given SNMP trap.
 ##########################################################################
-sub pandora_evaluate_snmp_alerts ($$$$$$$) {
+sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
-	    $trap_oid_text, $trap_custom_value, $dbh) = @_;
+	    $trap_oid_text, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
 	
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp');
@@ -844,10 +844,10 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$) {
 			my $oid = $alert->{'oid'};
 			($fire_alert, $alert_data) = (1, 'SNMP/OID:' . $oid) if ($trap_oid =~ m/$oid/i ||
 			                                                         $trap_oid_text =~ m/$oid/i);
-		# Custom value
+		# Custom OID/value
 		} elsif ($alert_type == 1){ # type 1 is custom value 
 			my $custom_oid = $alert->{'custom_oid'};
-			($fire_alert, $alert_data) = (1, 'SNMP/VALUE:' . $custom_oid) if ($trap_custom_value =~ m/$custom_oid/i);
+			($fire_alert, $alert_data) = (1, 'SNMP/VALUE:' . $custom_oid) if ($trap_custom_value =~ m/$custom_oid/i ||		                                                                  $trap_custom_oid =~ m/$custom_oid/i);
 		# Agent IP
 		} else {
 			my $agent = $alert->{'agent'};
@@ -893,8 +893,11 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$) {
 			                                       FROM talert_actions, talert_commands
 			                                       WHERE talert_actions.id_alert_command = talert_commands.id
 			                                         AND talert_actions.id = ?', $alert->{'id_alert'});
-			if (defined ($action)) {
-				pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, $dbh);
+			if (defined ($action) && pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, $dbh) == 1) {
+
+				# Generate an event
+				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+					           0, 0, $alert->{'priority'}, 0, 0, 'alert_fired',  $dbh);
 			}
 
 			# Update alert status

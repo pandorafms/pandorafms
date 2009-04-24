@@ -1,3 +1,10 @@
+2009-04-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/Core.pm: Generate
+	  an event when executing a SNMP alert. Small fixes.
+
+	* lib/PandoraFMS/ReconServer.pm: Enabled OS filtering.
+
 2009-04-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Add a newline character after

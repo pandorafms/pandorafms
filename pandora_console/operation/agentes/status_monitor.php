@@ -229,9 +229,9 @@ foreach ($result as $row) {
 	$data[2] = '<img src="images/'.show_icon_type ($row["module_type"]).'" border="0" />';
 	
 	$data[3] = substr ($row["module_name"], 0, 30);
-	
-	$data[4] = $row["agent_interval"];
-	
+
+	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
+
 	if ($row["estado"] == 0) {
 		$data[5] = print_status_image(STATUS_MODULE_OK, $row["datos"], true);
 	} elseif ($row["estado"] == 1) {

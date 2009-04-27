@@ -1,5 +1,10 @@
 2009-04-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Generate one event for each alert (instead
+	  of one event for each action).
+
+2009-04-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/ProducerConsumerServer.pm,
 	  lib/PandoraFMS/Server.pm: Properly set task queue size for
 	  statistics.

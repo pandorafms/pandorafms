@@ -390,17 +390,15 @@ sub pandora_execute_alert ($$$$$$$) {
 	# Execute actions
 	foreach my $action (@actions) {
 		logger($pa_config, "Alert (" . $alert->{'name'} . ") executed for agent " . $agent->{'nombre'}, 2);
-		if (pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $dbh) == 1) {
-
-			# Generate an event
-			my $tm_id = (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0;
-			my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
-
-			pandora_event ($pa_config, "Alert $text (" . $alert->{'description'} . ")",
-				           $agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, $tm_id,
-				           $alert->{'id_agent_module'}, $event,  $dbh);
-		}
+		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $dbh);
 	}
+
+	# Generate an event
+	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
+
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'description'} . ")",
+		           $agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
+		           $alert->{'id_agent_module'}, $event,  $dbh);
 }
 
 ##########################################################################
@@ -453,9 +451,6 @@ sub pandora_execute_action ($$$$$$$) {
 	} elsif ($action->{'name'} eq "Internal Audit") {
 		$field1 = subst_alert_macros ($field1, \%macros);
 		pandora_audit ($pa_config, $field1, defined ($agent) ? $agent->{'nombre'} : 'N/A', 'Alert (' . $alert->{'description'} . ')', $dbh);
-		
-		# Do not generate an event
-		return 0;
 
 	# Email		
 	} elsif ($action->{'name'} eq "eMail") {
@@ -469,12 +464,7 @@ sub pandora_execute_action ($$$$$$$) {
 	# Unknown
 	} else {
 		logger($pa_config, "Unknown action " . $action->{'name'}, 1);
-
-		# Do not generate an event
-		return 0 ;
 	}
-
-	return 1;
 }
 
 ##########################################################################
@@ -893,12 +883,12 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 			                                       FROM talert_actions, talert_commands
 			                                       WHERE talert_actions.id_alert_command = talert_commands.id
 			                                         AND talert_actions.id = ?', $alert->{'id_alert'});
-			if (defined ($action) && pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, $dbh) == 1) {
 
-				# Generate an event
-				pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
-					           0, 0, $alert->{'priority'}, 0, 0, 'alert_fired',  $dbh);
-			}
+			pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, $dbh) if (defined ($action));
+
+			# Generate an event
+			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
+				           0, 0, $alert->{'priority'}, 0, 0, 'alert_fired',  $dbh);
 
 			# Update alert status
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',

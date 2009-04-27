@@ -110,7 +110,7 @@ sub data_producer ($$$$$) {
 		my @tasks = &{$self->{'_producer'}}($self);
 		
 		# Update queue size for statistics
-		$self->setQueueSize ($#tasks);
+		$self->setQueueSize (scalar @{$task_queue});
 
 		foreach my $task (@tasks) {
 			$sem->down;

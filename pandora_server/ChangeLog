@@ -1,3 +1,9 @@
+2009-04-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ProducerConsumerServer.pm,
+	  lib/PandoraFMS/Server.pm: Properly set task queue size for
+	  statistics.
+
 2009-04-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/Core.pm: Generate

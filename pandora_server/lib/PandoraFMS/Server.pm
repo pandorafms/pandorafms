@@ -44,6 +44,9 @@ sub new ($$$;$) {
         _queue_size => 0,
     };
 
+	# Share variables that may be set from different threads
+	share ($self->{'_queue_size'});
+
 	# Thread kill signal handler
 	#$SIG{'KILL'} = sub {
     #	threads->exit() if threads->can('exit');
@@ -97,7 +100,7 @@ sub getServerID ($) {
 ########################################################################################
 sub setQueueSize ($$) {
 	my ($self, $size) = @_;
-	
+
 	$self->{'_queue_size'} = $size;
 }
 
@@ -232,7 +235,7 @@ sub stop ($) {
 	eval {
 		# Update server status
 		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
-		                       0, $self->{'_server_type'});
+		                       0, $self->{'_server_type'}, 0, 0);
 
 		# Generate an event
 		$self->downEvent ();

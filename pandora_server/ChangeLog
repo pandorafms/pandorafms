@@ -1,3 +1,10 @@
+2009-04-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Disabled output from snmptrapd.
+
+	* lib/PandoraFMS/Core.pm: Allow string comparisons for equal/not_equal
+	  alerts.
+
 2009-04-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Generate one event for each alert (instead

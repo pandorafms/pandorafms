@@ -47,7 +47,7 @@ sub new ($$;$) {
 	return undef unless $config->{'snmpconsole'} == 1;
 
 	# Start snmptrapd
-	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n 2>/dev/null') != 0) {
+	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n >/dev/null 2>&1') != 0) {
 		print " [E] Could not start snmptrapd.\n\n";
 		return undef;
 	}

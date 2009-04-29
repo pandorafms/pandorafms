@@ -1,5 +1,10 @@
 2009-04-29  Jorge Gonzalez  <jorgegonz@artica.es>
 
+	* pandoradb_data.sql: Added 'Web Server' to tconfig_os, Added 'Web' to
+	tgrupo, and added 'Pandora FMS Manual' to tlink.
+
+2009-04-29  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* install.php: fixed typos.
 
 2009-04-29  Jorge Gonzalez  <jorgegonz@artica.es>

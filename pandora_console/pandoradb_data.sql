@@ -84,6 +84,7 @@ INSERT INTO `tconfig_os` VALUES
 (9,'Windows','Microsoft Windows OS','so_win.png'),
 (10,'Other','Other SO','so_other.png'),
 (11,'Network','Pandora Network Agent','network.png');
+(12,'Web Server','Web Server/Application','network.png');
 UNLOCK TABLES;
 
 
@@ -101,6 +102,7 @@ INSERT INTO `tgrupo` VALUES
 (10,'Unknown','world',0,0,''),
 (11,'Workstations','computer',0,0,''),
 (12,'Applications','applications',0,0,'');
+(13,'Web','world',0,0,'');
 UNLOCK TABLES;
 
 
@@ -155,11 +157,12 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
-(1,'ArticaST','http://www.artica.es'),
-(2,'Pandora FMS','http://pandora.sourceforge.net'),
-(3,'Babel Enterprise','http://babel.sourceforge.net'),
-(4,'Openideas','http://www.openideas.info'),
-(5,'Google','http://www.google.com');
+(1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora_3.x:Documentation'),
+(2,'ArticaST','http://www.artica.es'),
+(3,'Pandora FMS','http://pandora.sourceforge.net'),
+(4,'Babel Enterprise','http://babel.sourceforge.net'),
+(5,'Openideas','http://www.openideas.info'),
+(6,'Google','http://www.google.com');
 UNLOCK TABLES;
 
 

@@ -229,7 +229,7 @@ if ($create_downtime || $update_downtime) {
 		$downtimes = get_db_all_rows_sql ($sql);
 		if ($downtimes === false) {
 			$table->colspan[0][0] = 5;
-			$table->data[0][0] = __('No planned downtime');
+			$table->data[0][0] = __('There are no scheduled downtimes');
 			$downtimes = array();
 		}
 		

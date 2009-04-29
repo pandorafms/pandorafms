@@ -1,4 +1,4 @@
-ss<?php
+<?php
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================

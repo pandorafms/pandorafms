@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-echo "<h2>".__('Pandora audit')." &gt ".__('Review Logs')."</h2>";
+echo "<h2>" . __('Pandora audit') . " &raquo; " .__('Review Logs') . "</h2>";
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');
 

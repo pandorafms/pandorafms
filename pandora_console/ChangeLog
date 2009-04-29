@@ -1,3 +1,19 @@
+2009-04-29  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated spanish
+	translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* godmode/admin_access_logs.php,
+	godmode/agentes/module_manager_editor.php: changed the separator
+	character to &raquo;
+
+	* godmode/reporting/map_builder.php: removed dirty characters at the
+	begining.
+
+	* godmode/agentes/planned_downtime.php: modified a i18n string.
+
 2009-04-24  Esteban Sánchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager.php: Added extra parameter to

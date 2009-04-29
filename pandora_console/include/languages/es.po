@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-04-23 09:29+0200\n"
-"PO-Revision-Date: 2009-04-23 09:31+0200\n"
+"PO-Revision-Date: 2009-04-23 10:29+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -3752,7 +3752,8 @@ msgid "Massive modules deletion"
 msgstr "Borrado masivo de módulos"
 
 #: ../../godmode/agentes/massive_delete_modules.php:50
-msgid "There was an error deleting the module, the operation has been cancelled"
+msgid ""
+"There was an error deleting the module, the operation has been cancelled"
 msgstr "Hubo un error al borrar el módulo; se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_modules.php:51
@@ -4886,7 +4887,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: ../../godmode/alerts/configure_alert_template.php:508
-msgid "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value matches <span id=\\\"value\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor coincida con <span id=\\\"value\\\"></"
 "span>"
@@ -4901,11 +4903,14 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:510
 msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:511
-msgid "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value is not <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:512
 msgid ""
@@ -4924,12 +4929,18 @@ msgstr ""
 "span> y <span id=\\\"max\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:514
-msgid "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
-msgstr "La alerta se disparará cuando el valor esté por debajo de <span id=\\\"min\\\"></span>"
+msgid ""
+"The alert would fire when the value is below <span id=\\\"min\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor esté por debajo de <span id=\\\"min\\"
+"\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:515
-msgid "The alert would fire when the value is avobe <span id=\\\"max\\\"></span>"
-msgstr "La alerta se disparará cuando el valor esté por encima de <span id=\\\"max\\\"></span>"
+msgid ""
+"The alert would fire when the value is avobe <span id=\\\"max\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor esté por encima de <span id=\\\"max\\"
+"\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:516
 #: ../../include/functions_ui.php:423
@@ -5523,7 +5534,7 @@ msgstr "Criticidad"
 #: ../../enterprise/include/functions_reporting_pdf.php:435
 #: ../../operation/events/events.php:366
 msgid "Count"
-msgstr ""
+msgstr "Número"
 
 #: ../../include/functions_reporting.php:759
 #: ../../operation/agentes/bulbs.php:32
@@ -5570,7 +5581,8 @@ msgstr "La alerta se disparará cuando el valor sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:392
 msgid "The alert would fire when the value is not <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:397
 msgid "The alert would fire when the value matches <span id=\"value\"></span>"
@@ -5579,7 +5591,8 @@ msgstr ""
 "span>"
 
 #: ../../include/functions_ui.php:400
-msgid "The alert would fire when the value doesn't match <span id=\"value\"></span>"
+msgid ""
+"The alert would fire when the value doesn't match <span id=\"value\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor no coincida con <span id=\"value\"></"
 "span>"
@@ -5628,7 +5641,8 @@ msgstr "Tipo desconocido"
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
-msgstr "Hubo un error al copiar la configuración del agente, se canceló la copia"
+msgstr ""
+"Hubo un error al copiar la configuración del agente, se canceló la copia"
 
 #: ../../include/functions_agents.php:281
 msgid "Successfully copied"
@@ -6081,24 +6095,28 @@ msgstr "Restaurando un respaldo"
 #: ../../enterprise/include/functions_backup.php:159
 msgid "Restoring a Pandora database backup must be done manually"
 msgstr ""
+"Restaurar un respaldo de la BB. DD. de Pandora FMS se debe hacer de forma "
+"manual"
 
 #: ../../enterprise/include/functions_backup.php:160
 msgid ""
 "It's a complex operation that needs human intervation to avoid system "
 "failures and data loosing"
 msgstr ""
+"Es una operación compleja que necesita intervención humana para evitar "
+"fallos del sistema y pérdida de datos"
 
 #: ../../enterprise/include/functions_backup.php:161
 msgid "To restore the selected backup, please follow these steps"
-msgstr ""
+msgstr "Para restaurar el respaldo seleccionado, realice los siguientes pasos"
 
 #: ../../enterprise/include/functions_backup.php:167
 msgid "Open a root shell in your system located at "
-msgstr ""
+msgstr "Abra en su sistema una terminal de «root» en la dirección "
 
 #: ../../enterprise/include/functions_backup.php:171
 msgid "Connect to MySQL database using the following command"
-msgstr ""
+msgstr "Conéctese con la base de datos MySQL usando el siguiente comando"
 
 #: ../../enterprise/include/functions_backup.php:178
 msgid "Create a new database"
@@ -6110,7 +6128,7 @@ msgstr "Restaurar el respaldo"
 
 #: ../../enterprise/include/functions_backup.php:199
 msgid "Modify console configuration to use this new database"
-msgstr ""
+msgstr "Modifique la configuración de la consola para usar esta nueva BB. DD."
 
 #: ../../enterprise/include/functions_backup.php:200
 msgid "Open configuration file"
@@ -6129,14 +6147,17 @@ msgstr "y reemplazar con"
 #: ../../enterprise/include/functions_backup.php:213
 msgid "Modify servers configuration to use this new database"
 msgstr ""
+"Modifique la configuración de los servidores para usar esta nueva BB. DD."
 
 #: ../../enterprise/include/functions_backup.php:214
 msgid "Find servers configuration file and replace the following lines"
 msgstr ""
+"Busque el fichero de configuración de los servidores y reemplace las "
+"siguientes líneas"
 
 #: ../../enterprise/include/functions_backup.php:226
 msgid "Restart the servers and login again into the console"
-msgstr ""
+msgstr "Reinicie los servidores y vuelva a iniciar sesión en la consola"
 
 #: ../../enterprise/dashboard/main_dashboard.php:138
 msgid "Could not create dashboard"
@@ -6238,7 +6259,8 @@ msgstr ""
 "derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:33
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
 "en el lugar deseado."
@@ -6249,7 +6271,7 @@ msgstr "Gracias por usar Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:18
 msgid "Show a defined custom graph"
-msgstr ""
+msgstr "Mostrar una gráfica personalizada definida"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:23
 #: ../../operation/agentes/estado_ultimopaquete.php:73
@@ -6569,7 +6591,7 @@ msgstr "Carga"
 
 #: ../../operation/servers/view_server.php:57
 msgid "Modules running on this server / Total modules of this type"
-msgstr ""
+msgstr "Módulos ejecutándose en este servidor / Módulos totales de este tipo"
 
 #: ../../operation/servers/view_server.php:59
 #: ../../operation/agentes/tactical.php:176
@@ -7071,7 +7093,7 @@ msgstr "Vista SLA"
 
 #: ../../operation/agentes/sla_view.php:39
 msgid "There are no modules to evaluate the S.L.A. from"
-msgstr ""
+msgstr "No existen módulos en los que evaluar el S.L.A."
 
 #: ../../operation/agentes/sla_view.php:46
 msgid "Automatic SLA for monitors"
@@ -7080,7 +7102,7 @@ msgstr "SLA Automáticos para los monitores"
 #: ../../operation/agentes/sla_view.php:86
 #: ../../operation/agentes/sla_view.php:127
 msgid "Module Down"
-msgstr ""
+msgstr "Módulo caído"
 
 #: ../../operation/agentes/sla_view.php:88
 #: ../../operation/agentes/sla_view.php:129
@@ -7093,7 +7115,7 @@ msgstr "Elementos SLA definidos por el usuario"
 
 #: ../../operation/agentes/estado_agente.php:70
 msgid "Free text for search"
-msgstr ""
+msgstr "Búsqueda de texto libre"
 
 #: ../../operation/agentes/estado_agente.php:183
 msgid "There are no agents included in this group"
@@ -7245,7 +7267,8 @@ msgid "Error updating passwords: %s"
 msgstr "Error al actualizar las contraseñas: %s"
 
 #: ../../operation/users/user_edit.php:60
-msgid "Passwords didn't match or other problem encountered while updating passwords"
+msgid ""
+"Passwords didn't match or other problem encountered while updating passwords"
 msgstr ""
 "Las contraseñas no coincidían o se encontró otro problema al actualizar las "
 "contraseñas"
@@ -7364,4 +7387,3 @@ msgstr "Mensaje sin leer; pulse para leerlo"
 #: ../../operation/messages/message.php:204
 msgid "No Subject"
 msgstr "Sin asunto"
-

@@ -202,7 +202,7 @@ default:
 
 echo '<h3>'.__('Module assignment');
 if (isset ($extra_title))
-	echo ' - '.$extra_title;
+	echo ' &raquo; '.$extra_title;
 echo '</h3>';
 
 echo '<h3 id="message" class="error invisible"></h3>';

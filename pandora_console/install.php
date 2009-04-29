@@ -443,8 +443,8 @@ $config["homeurl"]="'.$url.'";			// Base URL
 				echo "<br><br><a href='install.php?step=5'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			} else {
-				echo "<div class='warn'><b>There was some problems.
-				Installation is not completed.</b> 
+				echo "<div class='warn'><b>There were some problems.
+				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
 				All database schemes created in this step have been dropped. 
 				Try to reload this page if you have a present Pandora FMS configuration.</p>
@@ -473,13 +473,13 @@ function install_step5() {
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h2>Installation complete</h2>
-			<p>You now must delete manually this installer ('<i>install.php</i>') 
-			file for security before trying to access to your Pandora FMS console.
-			<p>You should also install the Pandora FMS Servers before trying to monitor anything, 
+			<p>For security, you now must manually delete this installer 
+			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
+			<p>You should also install Pandora FMS Servers before trying to monitor anything; 
 			please read documentation on how to install it.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.
-			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a></b>
+			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
 			</p>
 		</div>
 		<div id='logo_img'>

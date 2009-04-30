@@ -2165,48 +2165,33 @@ function server_status ($id_server) {
 			$id_server);
 	$moduletype = get_db_all_rows_sql ($sql);
 	if ($moduletype) {
-		$serverinfo["modules"] = get_db_sql ("SELECT COUNT(*)
+		$serverinfo["modules"] = get_db_sql ("SELECT COUNT(tagente_estado.id_agente_modulo)
 						FROM tagente_estado, tagente_modulo
 						WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
 						AND tagente_modulo.disabled = 0
 						AND tagente_estado.running_by = $id_server");
-
-		$serverinfo["module_lag"] = get_db_sql ("SELECT COUNT(*)
-						FROM tagente_estado, tagente_modulo, tagente
-						WHERE tagente_estado.last_execution_try > 0
-						AND tagente_estado.running_by = $id_server
-						AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
-
-		// Lag over 1200 seconds is not lag, is module without contacting data in several time.or with a 
-		// 1200 sec is 20 min
-		$serverinfo["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval)
-						FROM tagente_estado, tagente_modulo, tagente
-						WHERE tagente_estado.last_execution_try > 0
-						AND tagente_estado.running_by = $id_server
-						AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
-
-		if ($serverinfo["lag"] == "")
-			$serverinfo["lag"] = 0;
-		else
-			$serverinfo["lag"] = $serverinfo["lag"] ;
+						
+						
+			$result = get_db_row_sql ("SELECT COUNT(tagente_estado.id_agente_modulo) as lag, MAX(UNIX_TIMESTAMP() -tagente_estado.last_execution_try - tagente_estado.current_interval) as module_lag FROM tagente_estado, tagente_modulo, tagente WHERE tagente_estado.last_execution_try > 0 AND tagente_estado.running_by = $id_server AND tagente_modulo.id_agente = tagente.id_agente AND tagente.disabled = 0 AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND ((UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval) < 1200)");
+			
+			// Lag over current_interval * 2 is not lag, it's a timed out module
+			// And we can't check current_interval = 0 (data modules) because they come as they want
+			
+			if (!empty ($result["lag"])) {
+				$serverinfo["lag"] = $result["lag"];
+			} else 
+				$serverinfo["lag"] = 0;
+				
+			if (!empty ($result["module_lag"])) {
+				$serverinfo["module_lag"] = $result["module_lag"];
+			} else 
+				$serverinfo["module_lag"] = 0;
+				
 	} else {
 		$serverinfo["modules_total"] = 0;
 		$serverinfo["modules"] = 0;
 		$serverinfo["module_lag"] = 0;
 		$serverinfo["lag"] = 0;
-	}
-
-	$nowtime = time();		
-	if ($serverinfo["lag"] != 0){
-		$serverinfo["lag"] = $nowtime - $serverinfo["lag"];
 	}
 	
 	return $serverinfo;

@@ -1,3 +1,11 @@
+2009-04-30  Sancho Lerena  <slerena@artica.es>
+
+	* functions.php: Fixed ugly render of times in certain situations.
+	
+	* functions_db.php: Fixed calculation of network server modules.
+	
+	* estado_grupo.php: Fixed notice.
+
 2009-04-30  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: added two links to tlink, and fixed http://

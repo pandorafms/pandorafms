@@ -79,9 +79,7 @@ foreach ($groups as $id_group => $group_name) {
 			AND tagente_modulo.disabled = 0
 			AND tagente_estado.utimestamp != 0",
 			$id_group);
-	$modules = get_db_all_rows_sql ($sql);
-	if ($modules === false)
-		$modules = array ();
+	if (isset($modules))
 	foreach ($modules as $module) {
 		//if ($config["show_unknown"] > 0) {
 		//this needs to be filled out somehow, but this was a serious bug. If that config var is set, it would short circuit both ok++ and bad++ returning empty for everything

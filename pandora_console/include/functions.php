@@ -485,32 +485,19 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
  * time and given timestamp.
  */
 function human_time_comparation ($timestamp) {
-	if ($timestamp == "") {
-		return "0 ".__('minutes');
-	}
-	
-	$seconds = time () - strtotime ($timestamp);
-	
-	if ($seconds < 60)
-		return format_numeric ($seconds, 0)." ".__('seconds');
-	
-	if ($seconds < 3600) {
-		$minutes = format_numeric ($seconds / 60, 0);
-		$seconds = format_numeric ($seconds % 60, 0);
-		if ($seconds == 0)
-			return $minutes.' '.__('minutes');
-		$seconds = sprintf ("%02d", $seconds);
-		return $minutes.':'.$seconds.' '.__('minutes');
-	}
-	if ($seconds < 86400)
-		return format_numeric ($seconds / 3600, 0)." ".__('hours');
-	
-	if ($seconds < 2592000)
-		return format_numeric ($seconds / 86400, 0)." ".__('days');
-	
-	if ($seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 0)." ".__('months');
-	return " +6 ".__('months');
+        global $config;
+
+        if (!is_numeric ($timestamp)) {
+                $timestamp = strtotime ($timestamp);
+        }
+
+        $seconds = time () - $timestamp;
+
+        return human_time_description_raw ($seconds);
+
+        if ($timestamp == "") {
+                return "0 ".__('minutes');
+        }
 }
 
 /** 
@@ -522,15 +509,38 @@ function human_time_comparation ($timestamp) {
  * @return A human readable translation of minutes.
  */
 function human_time_description_raw ($seconds) {
-	global $lang_label;
-	if ($seconds < 3600)
-		return format_numeric ($seconds / 60, 2)." ".__('minutes');
+
+	if (empty ($seconds)) {
+		return __('Now'); 
+		// slerena 25/03/09
+		// Most times $seconds is empty is because last contact is current date
+		// Put here "uknown" or N/A or something similar is not a good idea
+	}
 	
-	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds / 3600, 2)." ".__('hours');
+	if ($seconds < 60)
+		return format_numeric ($seconds, 0)." ".__('seconds');
 	
-	return format_numeric ($seconds / 86400, 2)." ".__('days');
+	if ($seconds < 3600) {
+		$minutes = floor($seconds / 60);
+		$seconds = $seconds % 60;
+		if ($seconds == 0)
+			return $minutes.' '.__('minutes');
+		$seconds = sprintf ("%02d", $seconds);
+		return $minutes.':'.$seconds.' '.__('minutes');
+	}
+	
+	if ($seconds < 86400)
+		return format_numeric ($seconds / 3600, 0)." ".__('hours');
+	
+	if ($seconds < 2592000)
+		return format_numeric ($seconds / 86400, 0)." ".__('days');
+	
+	if ($seconds < 15552000)
+		return format_numeric ($seconds / 2592000, 0)." ".__('months');
+	
+	return "+6 ".__('months');
 }
+
 
 /** 
  * Get a human readable label for a period of time.

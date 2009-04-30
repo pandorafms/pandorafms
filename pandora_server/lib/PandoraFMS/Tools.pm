@@ -41,6 +41,7 @@ our @EXPORT = qw(
         pandora_sendmail
 		pandora_get_os
 		pandora_trash_ascii
+		pandora_ping_external
     );
 
 ##########################################################################
@@ -129,6 +130,32 @@ sub pandora_daemonize {
 # Pandora other General functions  |
 # -------------------------------------------+
 
+##############################################################################
+# Ping the given host. Returns 1 if the host is alive, 0 otherwise.
+##############################################################################
+sub pandora_ping_external ($$) {
+        my ($pa_config, $host) = @_;
+
+		my $ostype = "$^O";
+		
+      	if ($ostype eq "darwin"){
+      		`ping -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+      	}
+      	elsif ($ostype eq "freebsd"){
+      		`ping -c $pa_config->{'icmp_checks'} -q $host >/dev/null 2>&1`;
+      	}
+      	elsif ($ostype eq "solaris"){
+      		`ping -s $host 32 $pa_config->{'networktimeout'} >/dev/null 2>&1`;
+      	}
+      	elsif ($ostype eq "aix"){
+      		`ping -c $pa_config->{'icmp_checks'} -q $host >/dev/null 2>&1`;
+      	}
+      	else { # Linux included here
+	        # Ping the host
+	        `ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+      	}
+        return ($? == 0) ? 1 : 0;
+}
 
 ##########################################################################
 # SUB pandora_sendmail

@@ -330,7 +330,7 @@ sub pandora_recon_exec_task {
 		# Is this IP listed for any agent ?
         if (pandora_check_ip ($pa_config, $dbh, $target_ip) == 0){
 			# Check ICMP for this IP
-			if ( scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1) {
+			if ( scan_icmp ($pa_config, $target_ip, $pa_config->{'networktimeout'}) == 1) {
 				$id_os = pandora_detect_os ($pa_config, $target_ip);
 				if ($task_id_os == -1){
 					$add_host = 1;
@@ -382,13 +382,18 @@ sub pandora_recon_exec_task {
 }
 
 
-
 ##############################################################################
 # pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
 ##############################################################################
 sub scan_icmp {
-        my $dest = $_[0];
-        my $l_timeout = $_[1];
+		my $pa_config = $_[0];
+        my $dest = $_[1];
+        my $l_timeout = $_[2];
+        
+        # Uses execution of external command if "external_icmp" is enabled
+		if ($pa_config->{'external_icmp'} == 1){
+			return pandora_ping_external ($pa_config, $dest);
+		}
         
 		# Temp vars.
         my $result = 0;

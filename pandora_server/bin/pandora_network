@@ -283,6 +283,25 @@ sub pandora_network_producer ($) {
 	} # Main loop
 }
 
+
+
+##############################################################################
+# Ping the given host. Returns the average round-trip time.
+##############################################################################
+sub pandora_ping_latency_external ($$) {
+        my ($pa_config, $host) = @_;
+
+        # Ping the host
+        my @output = `ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+
+        # Something went wrong
+        return 0 if ($? != 0);
+
+        # Parse the output
+        my $stats = pop (@output);
+        return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+        return $2;
+}
 ##############################################################################
 # pandora_ping_icmp (config, destination, timeout)
 # Do a ICMP scan, return 1 if alive, 0 if not
@@ -299,6 +318,11 @@ sub pandora_ping_icmp {
 	if ($pa_config->{'icmp_checks'} eq ""){
 		$pa_config->{'icmp_checks'} = 1;
 	}
+
+	# Uses execution of external command if "external_icmp" is enabled
+	if ($pa_config->{'external_icmp'} == 1){
+		return pandora_ping_external ($pa_config, $dest);
+	}
 	
 	# Make more than a single ping (as defined in icmp_checks
 	for ($temp =0; $temp < $pa_config->{'icmp_checks'}; $temp++){
@@ -312,7 +336,7 @@ sub pandora_ping_icmp {
 
 	 	if (defined($result)){
 			$p->close();
- 			if ($result == 1){
+			if ($result == 1){
 	 			$result2 = 1;
 	 			$temp = $pa_config->{'icmp_checks'}; # Exit for
 			}
@@ -330,10 +354,17 @@ sub pandora_ping_latency {
     my $l_timeout = $_[1]; 
     my $module_data = $_[2];
     my $module_result = $_[3];
+    my $pa_config = $_[4];
+    
     my $icmp_return;
     my $icmp_reply;
     my $icmp_ip;
     my $nm;
+
+	# Uses execution of external command if "external_icmp" is enabled
+	if ($pa_config->{'external_icmp'} == 1){
+		return pandora_ping_latency_external ($pa_config, $dest);
+	}
 
 	# Locking for use ICMP call safety
 	{
@@ -566,7 +597,7 @@ sub exec_network_module {
 	    } elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 		    # This module only could be executed if executed as root
 		    if ($> == 0){
-			    pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result);
+			    pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result, $pa_config);
 		    } else {
 			    $module_result = 0; # Done but, with zero value
 			    $module_data = 0; # This should don't happen

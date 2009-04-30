@@ -1,3 +1,24 @@
+2009-04-30  Sancho Lerena   <slerena@artica.es>
+
+	* Config.pm: Added new token external_icmp to have ICMP checks externals
+	(using PING command) instead internal Perl function (slow!).
+	
+	* pandora_network: Uses externals execution to get ping modules (latency
+	and status).
+	
+	* Tools.pm: pandora_ping_external() function placed there (for be used
+	in recon too).
+	
+	* pandora_racon: Also uses new pandora_ping_external. 
+	
+	* pandora_wmi: Solves a small problem when non-init modules are constantly 
+	recalled (performance).
+	
+	This change comes from code of 3.0 version. This improves A LOT network
+	ICMP checks because ICMP calls inside Perl are not thread safe, and locking
+	mechanism don't let Pandora to run checks quickly. Using the new system 
+	improves dramatically the performance.
+	
 2009-03-18  Sancho Lerena   <slerena@artica.es>
 
 	* lib/Config.pm: Making sure that snmpget exists, new token

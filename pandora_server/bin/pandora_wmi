@@ -338,6 +338,12 @@ sub exec_wmi_module {
 
 	$module_data = $data2[$agent_module -> {'tcp_port'}];
 		
+	if (!defined($module_data)){
+		update_on_error ($pa_config, $id_am, $dbh);
+		undef $agent_module;
+		return 0;
+	} 
+		
 	# Look for errors
 	if ($module_data =~ /ERROR/) {
 		update_on_error ($pa_config, $id_am, $dbh);

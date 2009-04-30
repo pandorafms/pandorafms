@@ -38,8 +38,8 @@ our @EXPORT = qw(
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "2.1";
-my $pandora_build="PS090224";
+my $pandora_version = "2.1.1";
+my $pandora_build="PS090430";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -183,7 +183,7 @@ sub pandora_loadconfig {
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
     $pa_config->{"dataserver_threads"} = 3; # Introduced on 2.0
-
+    
     # Internal MTA for alerts, each server need its own config.
     $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
     $pa_config->{"mta_port"} = '25'; # Introduced on 2.0
@@ -192,12 +192,15 @@ sub pandora_loadconfig {
     $pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
     $pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0  
 
-	# Xprobe2 for recon OS fingerprinting (optional feature to detect OS)
-	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
-	$pa_config->{'autocreate_group'} = 2;
-	$pa_config->{'autocreate'} = 1;
+    # Xprobe2 for recon OS fingerprinting (optional feature to detect OS)
+    $pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
+    $pa_config->{'autocreate_group'} = 2;
+    $pa_config->{'autocreate'} = 1;
     $pa_config->{'recon_threads'} = 2;
 
+
+    # External ICMP (disabled by default)
+    $pa_config->{'external_icmp'} = 0;
 
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
@@ -409,7 +412,10 @@ sub pandora_loadconfig {
         }
         elsif ($parametro =~ m/^snmpget\s(.*)/i) {
 			$pa_config->{'snmpget'}= clean_blank($1); 
-		}
+	}
+	elsif ($parametro =~ m/^external_icmp\s([0-9]*)/i) {
+                        $pa_config->{'external_icmp'}= clean_blank($1);
+        }
     } # end of loop for parameter #
 
 
@@ -418,6 +424,7 @@ sub pandora_loadconfig {
             print " [*] PID File is written at ".$pa_config->{'PID'}."\n";
         }
 		print " [*] Server basepath is ".$pa_config->{'basepath'}."\n";
+		print " [*] External ICMP is ".$pa_config->{'external_icmp'}."\n";
 		print " [*] Server logfile at ".$pa_config->{"logfile"}."\n";
 		print " [*] Server errorlogfile at ".$pa_config->{"errorlogfile"}."\n";
 		print " [*] Server incoming directory at ".$pa_config->{"incomingdir"}."\n";

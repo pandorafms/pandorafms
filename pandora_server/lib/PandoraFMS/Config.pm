@@ -72,7 +72,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2008 ArticaST\n";
+	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2009 ArticaST\n";
 	printf "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	printf "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
 

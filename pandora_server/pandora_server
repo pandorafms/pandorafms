@@ -52,7 +52,7 @@ case "$1" in
 		;;
   stop)
 	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
-	if [ -z $PANDORA_PID ]
+	if [ -z "$PANDORA_PID" ]
 	then
 		echo "Pandora FMS Data Server is not running, cannot stop it."
 		exit 1

@@ -1,5 +1,8 @@
 2009-04-30  Sancho Lerena   <slerena@artica.es>
 
+	* Minor fixes in startup scripts (notice when trying to stop a non-running
+	daemon). 
+
 	* Config.pm: Added new token external_icmp to have ICMP checks externals
 	(using PING command) instead internal Perl function (slow!).
 	

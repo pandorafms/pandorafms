@@ -1,3 +1,8 @@
+2009-04-30  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: added two links to tlink, and fixed http://
+	* for anotherone.
+
 2009-04-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Removed a notice

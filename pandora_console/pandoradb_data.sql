@@ -151,11 +151,13 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
-(1,'ArticaST','www.artica.es'),
-(2,'Pandora FMS','http://pandora.sourceforge.net'),
-(3,'Babel Enterprise','http://babel.sourceforge.net'),
-(4,'Openideas','http://www.openideas.info'),
-(5,'Google','http://www.google.com');
+(1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora_2.0:Documentation'),
+(2,'Pandora FMS Forum','http://www.openideas.info/vanilla/'),
+(3,'ArticaST','http://www.artica.es'),
+(4,'Pandora FMS','http://pandora.sourceforge.net'),
+(5,'Babel Enterprise','http://babel.sourceforge.net'),
+(6,'Openideas','http://www.openideas.info'),
+(7,'Google','http://www.google.com');
 UNLOCK TABLES;
 
 

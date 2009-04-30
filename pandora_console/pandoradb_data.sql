@@ -83,7 +83,7 @@ INSERT INTO `tconfig_os` VALUES
 (8,'MacOS','MAC OS','so_mac.png'),
 (9,'Windows','Microsoft Windows OS','so_win.png'),
 (10,'Other','Other SO','so_other.png'),
-(11,'Network','Pandora Network Agent','network.png');
+(11,'Network','Pandora Network Agent','network.png'),
 (12,'Web Server','Web Server/Application','network.png');
 UNLOCK TABLES;
 
@@ -101,7 +101,7 @@ INSERT INTO `tgrupo` VALUES
 (9,'Network','transmit',0,0,''),
 (10,'Unknown','world',0,0,''),
 (11,'Workstations','computer',0,0,''),
-(12,'Applications','applications',0,0,'');
+(12,'Applications','applications',0,0,''),
 (13,'Web','world',0,0,'');
 UNLOCK TABLES;
 

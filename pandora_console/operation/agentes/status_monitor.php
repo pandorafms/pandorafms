@@ -243,7 +243,7 @@ foreach ($result as $row) {
 	$seconds = get_system_time () - $row["utimestamp"];
 	
 	
-	if ($seconds >= ($row["agent_interval"] * 2)) {
+	if ($seconds >= ($row["module_interval"] * 2)) {
 		$option = array ("html_attr" => 'class="redb"');
 	} else {
 		$option = array ();

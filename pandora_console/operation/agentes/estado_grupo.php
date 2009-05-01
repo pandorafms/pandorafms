@@ -75,7 +75,7 @@ foreach ($groups as $id_group => $group_name) {
 			'name' => $group_name);
 	
 	// SQL Join to get monitor status for agents belong this group
-	$sql = sprintf ("SELECT tagente_estado.estado, tagente_estado.current_interval,
+	$sql = sprintf ("SELECT tagente_estado.estado, tagente_modulo.module_interval,
 			tagente_estado.utimestamp, tagente_modulo.id_tipo_modulo 
 			FROM tagente, tagente_estado, tagente_modulo 
 			WHERE tagente.disabled = 0 
@@ -90,7 +90,7 @@ foreach ($groups as $id_group => $group_name) {
 		$modules = array ();
 	foreach ($modules as $module) {
 		$seconds = $now - $module['utimestamp'];
-		if ($seconds >= ($module['current_interval'] * 2)) {
+		if ($seconds >= ($module['module_interval'] * 2)) {
 			if ($module['id_tipo_modulo'] < 21) // Avoiding ASYNC and Keepalive
 				$group_info['down']++;
 		} elseif ($module['estado'] == 2) {

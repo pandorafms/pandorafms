@@ -1,0 +1,33 @@
+/* 
+	Plain old table styles
+	written by Chris Heilmann http://wait-till-i.com
+*/
+table.dbmanager,td.dbmanager,th.dbmanager{
+	border:1px solid #888;
+	border-collapse:collapse;
+	margin:0;
+	padding:0;
+}
+td.dbmanager,th.dbmanager{
+	padding:.2em .5em;
+	vertical-align:top;
+	font-weight:normal;
+        background:#fafafa;
+        color:#000;
+	font-size: 9px;
+}
+
+th.dbmanager {
+	color: #fff;
+	text-transform: uppercase;
+	font-size: 8px;
+	background: #888;
+}
+
+
+textarea.dbmanager {
+	min-height: 50px;
+	height: 50px;
+	width: 90%;
+}
+

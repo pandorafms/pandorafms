@@ -1,3 +1,8 @@
+2009-05-01  Sancho Lerena  <slerena@artica.es>
+
+	* extensions/dbmanager*: New extensions to interface with Pandora database
+	using native SQL syntax. Only for administrator (Godmode extension).
+
 2009-04-30  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Fixed wrong ';' values from my last commit.
@@ -27,6 +32,7 @@
 
 	* godmode/agentes/planned_downtime.php: modified a i18n string.
 
+>>>>>>> .r1669
 2009-04-24  Esteban Sánchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager.php: Added extra parameter to

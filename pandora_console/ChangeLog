@@ -1,3 +1,20 @@
+2009-05-02  Sancho Lerena <slerena@artica.es>
+
+	* extensions/dbmanager.php: Fixed problems with quotes.
+
+	* operation/agentes/status_monitor.php: Used module_interval insted deprecated
+	tagente_estado.current_interval.
+
+	* operation/agentes/estado_grupo.php: Same as above.
+
+	* operation/agentes/estado_monitores.php: same as above.
+
+	* godmode/agentes/module_manager.php: Uses new server_type field instead old
+	server fields.
+
+	* godmode/agentes/configurar_agente.php: Added tab in godmode/edit agent
+	to go to a filtered list view per groups from the agent edit view.
+
 2009-05-01  Sancho Lerena  <slerena@artica.es>
 
 	* extensions/dbmanager*: New extensions to interface with Pandora database

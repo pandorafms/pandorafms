@@ -16,19 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-function string_decompose ($mystring){
-
-	$output = "";
-	for ($a=0; $a < strlen($mystring); $a++){
-		$output .= substr($mystring, $a, 1)."|";
-//		$output .= ord(substr($mystring, $a, 1)).":".substr($mystring, $a, 1)."|";
-//		$output .= ord(substr($mystring, $a, 1))."|";
-	}
-	return $output;
-}
-
-function dbmanager_query ($sql, $rettype = "affected_rows") {
+function dbmanager_query ($sql, &$error) {
 	global $config;
 	
 	$retval = array();
@@ -41,30 +29,29 @@ function dbmanager_query ($sql, $rettype = "affected_rows") {
 	// see with a simple echo and mysql reject it, so dont forget to do this.
 
 	$sql = unsafe_string ($sql);
-	$sql = htmlspecialchars_decode ($sql, ENT_QUOTES );
+	$sql = htmlspecialchars_decode ($sql, ENT_QUOTES);
 
 	$result = mysql_query ($sql);
 	if ($result === false) {
 		$backtrace = debug_backtrace ();
-		$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
-			mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-		set_error_handler ('sql_error_handler');
-		trigger_error ($error);
-		restore_error_handler ();
+		$error = mysql_error ();
 		return false;
-	} elseif ($result === true) {
+	}
+	
+	if ($result === true) {
 		if ($rettype == "insert_id") {
 			return mysql_insert_id ();
 		} elseif ($rettype == "info") {
 			return mysql_info ();
 		}
-		return mysql_affected_rows (); //This happens in case the statement was executed but didn't need a resource
-	} else {
-		while ($row = mysql_fetch_array ($result)) {
-			array_push ($retval, $row);
-		}
-		mysql_free_result ($result);
+		return mysql_affected_rows ();
 	}
+	
+	while ($row = mysql_fetch_array ($result, MYSQL_ASSOC)) {
+		array_push ($retval, $row);
+	}
+	mysql_free_result ($result);
+	
 	if (! empty ($retval))
 		return $retval;
 	//Return false, check with === or !==
@@ -73,66 +60,61 @@ function dbmanager_query ($sql, $rettype = "affected_rows") {
 
 
 function dbmgr_extension_main () {
+	require_css_file ('dbmanager', 'extensions/dbmanager/');
 
-	echo '<link rel="stylesheet" href="extensions/dbmanager/dbmanager.css" type="text/css" />';
+	$sql = (string) get_parameter ('sql');
 
-	$sqlcode = get_parameter ("sqlcode", "");
+	echo "<h1>Database interface</h1>";
+	echo '<div class="notify">';
+	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledgue of Pandora FMS internals.";
+	echo '</div>';
 
-	echo "<h1>Database Interface</h1>";
-	echo "<p>This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledgue of Pandora FMS internals.</p>";
-
-	echo "<br>";
-	echo "Some samples of usage: <i><blockquote>SHOW STATUS;<br>DESCRIBE tagente<br>SELECT * FROM tserver<br>UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</blockquote></i>";
+	echo "<br />";
+	echo "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
 
 
-	echo "<br><br>";
+	echo "<br /><br />";
 	echo "<form method='post' action=''>";
-	echo "<textarea class='dbmanager' name='sqlcode'>";
-	echo unsafe_string ($sqlcode);
-	echo "</textarea>";
-	echo "<br><br>";
-	print_submit_button (__('Execute SQL'), '', false, 'class="sub next"',false);
+	print_textarea ('sql', 5, 50, unsafe_string ($sql));
+	echo '<br />';
+	echo '<div class="action-buttons" style="width: 100%">';
+	print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
+	echo '</div>';
 	echo "</form>";
 
 	// Processing SQL Code
-        if ($sqlcode != ""){
-		echo "<br>";
-		echo "<hr>";
-		echo "<br>";
-		$result = dbmanager_query ($sqlcode);
-		if (!is_array($result)){
-			echo "<b>Result: <b>".$result;
-		}
-		else {
-		 	$header = "";
-		        $header_printed = 0;
-			echo '<table width=90% class="dbmanager">';
-			foreach ($result as $item => $value){
-				$data = "";
-				foreach ($value as $row => $value2){
-					if ($header_printed ==0)
-						if (!is_numeric($row))
-							$header .= "<th class='dbmanager'>" . $row;
-					if (!is_numeric($row)){
-						$data .= "<td class='dbmanager'>" . $value2;
-					}
-				}
-				if ($header_printed == 0){
-					echo $header;
-					echo "<tr class='dbmanager'>";
-					$header_printed = 1;
-				}
-				echo $data;
-				echo "<tr class='dbmanager'>";
-			}
-			echo "</table>";
-		}
-	}	
-			
+	if ($sql == '')
+		return;
+
+	echo "<br />";
+	echo "<hr />";
+	echo "<br />";
+	
+	$error = '';
+	$result = dbmanager_query ($sql, $error);
+	
+	if ($result === false) {
+		echo '<strong>An error has occured when querying the database.</strong><br />';
+		echo $error;
+		return;
+	}
+	
+	if (! is_array ($result)) {
+		echo "<strong>Output: <strong>".$result;
+		return;
+	}
+	
+	$table->width = '90%';
+	$table->class = 'dbmanager';
+	$table->head = array_keys ($result[0]);
+	
+	$table->data = $result;
+	
+	print_table ($table);
 }
 
 /* This adds a option in the operation menu */
-add_godmode_menu_option (__('DB Interface'), 'PM');
+add_godmode_menu_option (__('DB interface'), 'PM');
 
 /* This sets the function to be called when the extension is selected in the operation menu */
 add_extension_godmode_function ('dbmgr_extension_main');

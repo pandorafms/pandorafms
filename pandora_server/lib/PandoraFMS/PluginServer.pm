@@ -51,7 +51,8 @@ sub new ($$;$) {
 
 	# Check for pandora_exec
 	if (system($config->{'plugin_exec'} . ' > /dev/null 2>&1') != 256) {
-		print " [E] pandora_exec not found.\n\n";
+		logger ($config, " [E] pandora_exec not found. Plugin Server not started.", 0);
+		print " [E] pandora_exec not found. Plugin Server not started.\n\n";
 		return undef;
 	}
 		

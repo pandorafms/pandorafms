@@ -1,3 +1,11 @@
+2009-05-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Enabled mysql_auto_reconnect.
+
+	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/PluginServer.pm,
+	  lib/PandoraFMS/NetworkServer.pm, lib/PandoraFMS/WMIServer.pm: Log
+	  error messages when external programs are not found.
+
 2009-04-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Disabled output from snmptrapd.

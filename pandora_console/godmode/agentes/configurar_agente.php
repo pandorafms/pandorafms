@@ -286,7 +286,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	if ($nombre_agente == "") { 
 		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
 	//If there is an agent with the same name, but a different ID
-	} elseif (get_agent_id ($nombre_agente) != $id_agente) {
+	} elseif (get_agent_id ($nombre_agente) > 0 && get_agent_id ($nombre_agente) != $id_agente) {
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	} else {
 		//If different IP is specified than previous, add the IP

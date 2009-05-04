@@ -1,3 +1,8 @@
+2009-05-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	
+	* godmode/agentes/configurar_agente.php: get_agent_id changed and caused
+	erroneous behaviour. Fixed it.
+
 2009-05-04  Esteban Sánchez  <estebans@artica.es>
 
 	* extensions/dbmanager.php: Code cleanup, making it easier an without

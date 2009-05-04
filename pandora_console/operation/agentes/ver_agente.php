@@ -34,7 +34,7 @@ if (is_ajax ()) {
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
 		
 		echo json_encode ($agent);
-		exit ();
+		return;
 	}
 
 	if ($get_agent_modules_json) {
@@ -52,7 +52,7 @@ if (is_ajax ()) {
 			($filter != '' ? $filter : false), $indexed);
 		
 		echo json_encode ($agent_modules);
-		exit ();
+		return;
 	}
 	
 	if ($get_agent_status_tooltip) {
@@ -139,10 +139,10 @@ if (is_ajax ()) {
 			echo '</ul>';
 		}
 		
-		exit ();
+		return;
 	}
 
-	exit ();
+	return;
 }
 
 $id_agente = (int) get_parameter ("id_agente", 0);

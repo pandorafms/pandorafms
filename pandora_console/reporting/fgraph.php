@@ -122,7 +122,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	for ($i = 0; $i < $module_number; $i++) {
 		$id_agente_modulo = $module_list[$i];
 		$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-		$id_agente = dame_agente_id ($nombre_agente);
+		$id_agente = get_agent_id ($nombre_agente);
 		$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 		$module_list_name[$i] = substr ($nombre_agente, 0, 9)." / ".substr ($nombre_modulo, 0, 20);
 		for ($j = 0; $j <= $resolution; $j++) {
@@ -282,7 +282,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	
 	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
 	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$id_agente = dame_agente_id ($nombre_agente);
+	$id_agente = get_agent_id ($nombre_agente);
 	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 	
 	// Init tables
@@ -901,7 +901,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	$datelimit = $date - $period; // limit date
 	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
 	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$id_agente = dame_agente_id ($nombre_agente);
+	$id_agente = get_agent_id ($nombre_agente);
 	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 
 	if ($show_event == 1)

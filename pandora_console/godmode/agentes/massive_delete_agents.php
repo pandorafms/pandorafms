@@ -43,8 +43,7 @@ function process_manage_delete ($id_agents) {
 	$copy_modules = (bool) get_parameter ('copy_modules');
 	$copy_alerts = (bool) get_parameter ('copy_alerts');
 	
-	process_sql ('SET AUTOCOMMIT = 0');
-	process_sql ('START TRANSACTION');
+	process_sql_begin ();
 	
 	$error = false;
 	foreach ($id_agents as $id_agent) {
@@ -56,13 +55,11 @@ function process_manage_delete ($id_agents) {
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete agent').' '.get_agent_name ($id_agent).'</h4>';
-		process_sql ('ROLLBACK');
+		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql ('COMMIT');
+		process_sql_commit ();
 	}
-	
-	process_sql ('SET AUTOCOMMIT = 1');
 }
 
 $id_group = (int) get_parameter ('id_group');

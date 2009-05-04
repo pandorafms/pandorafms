@@ -232,8 +232,7 @@ function delete_incidents ($id_incident) {
 	$errors = 0;
 	
 	//Start transaction
-	process_sql ("SET AUTOCOMMIT = 0;");
-	process_sql ("START TRANSACTION;");			
+	process_sql_begin ();
 		
 	foreach ($ids as $id_inc) {
 		//Delete incident
@@ -259,14 +258,12 @@ function delete_incidents ($id_incident) {
 	
 	if ($errors > 0) {
 		//This will also rollback the audit log
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
-	} else {
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
-		return true;
 	}
+	process_sql_commit ();
+	
+	return true;
 }
 
 /** 
@@ -283,26 +280,23 @@ function delete_incidents_note ($id_note, $transact = true) {
 	
 	//Start transaction
 	if ($transact == true){
-		process_sql ("SET AUTOCOMMIT = 0;");
-		process_sql ("START TRANSACTION;");
+		process_sql_begin ();
+		process_sql_commit ();
 	}
 	
 	//Delete notes
 	foreach ($id_note as $id) {
-		$sql = sprintf ("DELETE FROM tnota WHERE id_nota = %d", $id);
-		$ret = process_sql ($sql);
+		$ret = process_sql_delete ('tnota', array ('id_nota' => $id));
 		if ($ret === false) {
 			$errors++;
 		}
 	}
 
 	if ($transact == true && $errors > 0) {
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
 	} elseif ($transact == true) {
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_commit ();
 		return true;
 	} elseif ($errors > 0) {
 		return false;
@@ -327,8 +321,7 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	
 	//Start transaction
 	if ($transact == true) {
-		process_sql ("SET AUTOCOMMIT = 0;");
-		process_sql ("START TRANSACTION;");			
+		process_sql_begin ();
 	}
 	
 	//Delete attachment
@@ -343,12 +336,10 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 	}
 		
 	if ($transact == true && $errors > 0) {
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
 	} elseif ($transact == true) {
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_commit ();
 		return true;
 	} elseif ($errors > 0) {
 		return false;

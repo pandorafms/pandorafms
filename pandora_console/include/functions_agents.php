@@ -18,6 +18,81 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /**
+ * Creates an agent
+ *
+ * @param string Agent name.
+ * @param string Group to be included.
+ * @param int Agent interval
+ * @param string Agent IP
+ *
+ * @return int New agent id if created. False if it could not be created.
+ */
+function create_agent ($name, $id_group, $interval, $ip_address, $values = false) {
+	if (empty ($name))
+		return false;
+	if (empty ($name))
+		return false;
+	if (empty ($ip_address))
+		return false;
+	$interval = safe_int ($interval, 300);
+	if (empty ($interval))
+		return false;
+	if (! is_array ($values))
+		$values = array ();
+	$values['nombre'] = $name;
+	$values['id_grupo'] = $id_group;
+	$values['intervalo'] = $interval;
+	$values['direccion'] = $ip_address;
+	
+	process_sql_begin ();
+	
+	$id_agent = process_sql_insert ('tagente', $values);
+	if ($id_agent === false) {
+		process_sql_rollback ();
+		return false;
+	}
+	
+	// Create address for this agent in taddress
+	agent_add_address ($id_agent, $ip_address);
+	
+	// Create special module agent_keepalive
+	$id_agent_module = process_sql_insert ('tagente_modulo', 
+		array ('nombre' => 'agent_keepalive',
+			'id_agente' => $id_agent,
+			'id_tipo_modulo' => 100,
+			'descripcion' => __('Agent keepalive monitor'),
+			'id_modulo' => 1,
+			'min_warning' => 0,
+			'max_warning' => 1));
+	
+	if ($id_agent_module === false) {
+		process_sql_rollback ();
+		return false;
+	}
+	
+	$result = process_sql_insert ('tagente_estado', 
+			array ('id_agente_modulo' => $id_agent_module,
+				'datos' => '',
+				'timestamp' => 0,
+				'estado' => 0,
+				'id_agente' => $id_agent,
+				'last_try' => 0,
+				'utimestamp' => 0,
+				'current_interval' => 0,
+				'running_by' => 0,
+				'last_execution_try' => 0));
+	
+	if ($result === false) {
+		process_sql_rollback ();
+		return false;
+	}
+	
+	process_sql_commit ();
+	
+	return $id_agent;
+}
+
+/**
  * Get all the simple alerts of an agent.
  *
  * @param int Agent id

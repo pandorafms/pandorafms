@@ -262,7 +262,7 @@ foreach ($contents as $content) {
 		break;
 	case 4:
 	case 'event_report':
-		$id_agent = dame_agente_id ($agent_name);
+		$id_agent = get_agent_id ($agent_name);
 		$data = array ();
 		$data[0] = "<h4>".__('Event report')."</h4>";
 		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";

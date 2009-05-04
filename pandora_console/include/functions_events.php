@@ -87,8 +87,7 @@ function delete_event ($id_event, $similar = true) {
 		}
 	}
 	
-	process_sql ("SET AUTOCOMMIT = 0;");
-	process_sql ("START TRANSACTION;");
+	process_sql_begin ();
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
@@ -104,18 +103,17 @@ function delete_event ($id_event, $similar = true) {
 		}
 		
 		$errors++;
+		break;
 	}
 	
 	if ($errors > 1) {
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
 	} else {
 		foreach ($id_event as $event) {
 			audit_db ($config["id_user"], $config["remote_addr"], "Event deleted", "Deleted event #".$event);
 		}
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_commit ();
 		return true;
 	}
 }
@@ -141,8 +139,7 @@ function validate_event ($id_event, $similars = true) {
 		}
 	}
 	
-	process_sql ("SET AUTOCOMMIT = 0;");
-	process_sql ("START TRANSACTION;");
+	process_sql_begin ();
 	$errors = 0;
 	
 	foreach ($id_event as $event) {
@@ -158,18 +155,17 @@ function validate_event ($id_event, $similars = true) {
 		}
 		
 		$errors++;
+		break;
 	}
 	
 	if ($errors > 1) {
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
 	} else {
 		foreach ($id_event as $event) {
 			audit_db ($config["id_user"], $config["remote_addr"], "Event validated", "Validated event #".$event);
 		}
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_commit ();
 		return true;
 	}
 }

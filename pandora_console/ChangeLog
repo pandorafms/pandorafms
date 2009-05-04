@@ -1,5 +1,13 @@
 2009-05-04  Esteban Sánchez  <estebans@artica.es>
 
+	* extensions/dbmanager.php: Code cleanup, making it easier an without
+	unneded loops. Added error message support when querying.
+	
+	* extensions/dbmanager/dbmanager.css: Use CSS inheritance for cells and
+	header of the table.
+
+2009-05-04  Esteban Sánchez  <estebans@artica.es>
+
 	* include/functions_agents.php: Added create_agent(), 
 	
 	* include/functions_db.php: Renamed dame_agente_id() to get_agent_id ().

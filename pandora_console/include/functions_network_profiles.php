@@ -18,13 +18,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /**
- * Get a custom user report.
+ * Get a network profile.
  *
- * @param int Report id to get.
+ * @param int Profile id to get.
  * @param array Extra filter.
  * @param array Fields to get.
  *
- * @return Report with the given id. False if not available or readable.
+ * @return Profile with the given id. False if not available or readable.
  */
 function get_network_profile ($id_network_profile, $filter = false, $fields = false) {
 	global $config;

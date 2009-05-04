@@ -52,8 +52,8 @@ function process_manage_edit ($module_name) {
 			'nombre' => $module_name),
 		array ('id_agente_modulo'));
 	
-	process_sql ('SET AUTOCOMMIT = 0');
-	process_sql ('START TRANSACTION');
+	process_sql_begin ();
+	
 	if ($modules === false)
 		return false;
 	foreach ($modules as $module) {
@@ -61,8 +61,8 @@ function process_manage_edit ($module_name) {
 	}
 	
 	echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
-	process_sql ('COMMIT');
-	process_sql ('SET AUTOCOMMIT = 1');
+	
+	process_sql_commit ();
 }
 
 $module_type = (int) get_parameter ('module_type');

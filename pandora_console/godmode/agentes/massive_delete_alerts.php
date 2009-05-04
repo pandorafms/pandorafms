@@ -37,8 +37,7 @@ function process_manage_delete ($id_alerts) {
 		return false;
 	}
 	
-	process_sql ('SET AUTOCOMMIT = 0');
-	process_sql ('START TRANSACTION');
+	process_sql_begin ();
 	
 	foreach ($id_alerts as $id_alert) {
 		$success = delete_alert_agent_module ($id_alert);
@@ -49,13 +48,11 @@ function process_manage_delete ($id_alerts) {
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the alert, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete alert').' '.get_agentmodule_name ($id_module).'</h4>';
-		process_sql ('ROLLBACK');
+		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql ('COMMIT');
+		process_sql_commit ();
 	}
-	
-	process_sql ('SET AUTOCOMMIT = 1');
 }
 
 $id_group = (int) get_parameter ('id_group');

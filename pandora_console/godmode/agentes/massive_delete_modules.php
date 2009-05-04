@@ -37,8 +37,7 @@ function process_manage_delete ($id_modules) {
 		return false;
 	}
 	
-	process_sql ('SET AUTOCOMMIT = 0');
-	process_sql ('START TRANSACTION');
+	process_sql_begin ();
 	
 	foreach ($id_modules as $id_module) {
 		$success = delete_agent_module ($id_module);
@@ -49,13 +48,11 @@ function process_manage_delete ($id_modules) {
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the module, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete module').' '.get_agentmodule_name ($id_module).'</h4>';
-		process_sql ('ROLLBACK');
+		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql ('COMMIT');
+		process_sql_commit ();
 	}
-	
-	process_sql ('SET AUTOCOMMIT = 1');
 }
 
 $id_group = (int) get_parameter ('id_group');

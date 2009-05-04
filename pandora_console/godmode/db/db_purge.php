@@ -82,8 +82,8 @@ if (isset($_POST["purgedb"])) {
 		}
 		
 		//Made it in a transaction so it gets done all at once.
-		process_sql ("SET AUTOCOMMIT=0;");
-		process_sql ("START TRANSACTION;"); //We start a transaction for consistency 
+		process_sql_begin ();
+		
 		$errors = 0;
 		foreach ($result as $row) {
 			echo __('Deleting records for module')." ".get_agentmodule_name ($row["id_agente_modulo"]);
@@ -102,12 +102,11 @@ if (isset($_POST["purgedb"])) {
 		}
 		
 		if ($errors > 0) {
-			process_sql ("ROLLBACK;"); //If we have errors, rollback
+			process_sql_rollback ();
 		} else {
-			process_sql ("COMMIT;"); //Otherwise commit
+			process_sql_commit ();
 		}
 		
-		process_sql ("SET AUTOCOMMIT=1;"); //Set autocommit back to 1
 	} else {
 		//All agents
 		echo __('Deleting records for all agents');

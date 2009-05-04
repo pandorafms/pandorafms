@@ -122,7 +122,7 @@ if (! is_file_manager_writable_dir ($real_directory)) {
 	echo '</p>';
 } else {
 	$table->data[1][0] = __('Upload file');
-	$table->data[1][1] = print_input_file ('file', true, $options = false);
+	$table->data[1][1] = print_input_file ('file', true, false);
 	$table->data[1][2] = print_submit_button (__('Go'), 'go', false,
 		'class="sub next"', true);
 	$table->data[1][2] .= print_input_hidden ('upload_file', 1, true);

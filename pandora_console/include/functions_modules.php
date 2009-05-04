@@ -95,7 +95,7 @@ function get_network_components ($id_module, $filter = false, $fields = false) {
 	if (!is_array ($filter))
 		$filter = array ();
 	
-	$filter['id_modulo'] = $id_module;
+	$filter['id_modulo'] = (int) $id_module;
 	$components = get_db_all_rows_filter ('tnetwork_component',
 		$filter, $fields);
 	if ($components === false)
@@ -157,6 +157,74 @@ function get_network_component_groups ($id_module_components = 0) {
 }
 
 /**
+ * Get a network component.
+ *
+ * @param int Component id to be fetched.
+ * @param array Extra filter.
+ * @param array Fields to be fetched.
+ *
+ * @return array A network component matching id and filter.
+ */
+function get_network_component ($id_network_component, $filter = false, $fields = false) {
+	if (empty ($id_network_component))
+		return false;
+	if (! is_array ($filter))
+		$filter = array ();
+	$filter['id_nc'] = (int) $id_network_component;
+	
+	return get_db_row_filter ('tnetwork_component', $filter, $fields);
+}
+
+/**
+ * Creates a module in an agent from a network component.
+ * 
+ * @param int Component id to be created.
+ * @param int Agent id to create module in.
+ *
+ * @return array New agent module id if created. False if could not be created
+ */
+function create_agent_module_from_network_component ($id_network_component, $id_agent) {
+	if (! user_access_to_agent ($id_agent, 'AW'))
+		return false;
+	$component = get_network_component ($id_network_component,
+		false,
+		array ('name',
+			'description AS descripcion',
+			'type AS id_tipo_modulo',
+			'max',
+			'min',
+			'module_interval',
+			'tcp_port',
+			'tcp_send',
+			'tcp_rcv',
+			'snmp_community',
+			'snmp_oid',
+			'id_module_group',
+			'id_modulo',
+			'plugin_user',
+			'plugin_pass',
+			'plugin_parameter',
+			'max_timeout',
+			'history_data',
+			'min_warning',
+			'max_warning',
+			'min_critical',
+			'max_critical',
+			'min_ff_event'));
+	if (empty ($component))
+		return false;
+	$values = $component;
+	$len = count ($values) / 2;
+	for ($i = 0; $i < $len; $i++)
+		unset ($values[$i]);
+	$name = $values['name'];
+	unset ($values['name']);
+	$values['ip_target'] = get_agent_address ($id_agent);
+	
+	return create_agent_module ($id_agent, $name, $values);
+}
+
+/**
  * Get the name of a network components group.
  * 
  * @param int Network components group id.
@@ -206,7 +274,51 @@ function update_agent_module ($id, $values) {
 	if (! is_array ($values))
 		return false;
 	
-	return (bool) process_sql_update ('tagente_modulo', $values,
-		array ('id_agente_modulo' => $id));
+	return (@process_sql_update ('tagente_modulo', $values,
+		array ('id_agente_modulo' => (int) $id)) !== false);
+}
+
+/**
+ * Creates a module in an agent.
+ *
+ * @param int Agent id.
+ * @param int Module name id.
+ * @param array Extra values for the module.
+ *
+ * @return New module id if the module was created. False if not.
+ */
+function create_agent_module ($id_agent, $name, $values = false) {
+	if (empty ($id_agent) || ! user_access_to_agent ($id_agent, 'AW'))
+		return false;
+	if (empty ($name))
+		return false;
+	if (! is_array ($values))
+		$values = array ();
+	$values['nombre'] = $name;
+	$values['id_agente'] = (int) $id_agent;
+	
+	$id_agent_module = process_sql_insert ('tagente_modulo', $values);
+	
+	if ($id_agent_module === false)
+		return false;
+	
+	$result = process_sql_insert ('tagente_estado',
+			array ('id_agente_modulo' => $id_agent_module,
+				'datos' => 0,
+				'timestamp' => '0000-00-00 00:00:00',
+				'estado' => 0,
+				'id_agente' => (int) $id_agent,
+				'utimestamp' => 0,
+				'status_changes' => 0,
+				'last_status' => 0
+			));
+	
+	if ($result === false) {
+		process_sql_delete ('tagente_modulo',
+			array ('id_agente_modulo' => $id_agent_module));
+		return false;
+	}
+	
+	return $id_agent_module;
 }
 ?>

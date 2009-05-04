@@ -524,7 +524,7 @@ function dame_grupo_icono ($id_group) {
  * 
  * @return int Id from the agent of the given name.
  */
-function dame_agente_id ($agent_name) {
+function get_agent_id ($agent_name) {
 	return (int) get_db_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 
@@ -539,14 +539,15 @@ function dame_agente_id ($agent_name) {
 function get_agent_name ($id_agent, $case = "upper") {
 	$agent = (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
 	switch ($case) {
-		case "upper":
-			return mb_strtoupper ($agent,"UTF-8");
-			break;
-		case "lower":
-			return mb_strtolower ($agent,"UTF-8");
-			break;
-		default:
-			return ($agent);
+	case "upper":
+		return mb_strtoupper ($agent,"UTF-8");
+		break;
+	case "lower":
+		return mb_strtolower ($agent,"UTF-8");
+		break;
+	case "none":
+	default:
+		return ($agent);
 	}
 }
 
@@ -1843,6 +1844,7 @@ function process_sql ($sql, $rettype = "affected_rows") {
 			mysql_free_result ($result);
 		}
 	}
+	
 	if (! empty ($retval))
 		return $retval;
 	//Return false, check with === or !==
@@ -2568,11 +2570,7 @@ function delete_agent ($id_agents) {
 		$id_agents = (array) $id_agents;
 
 	//Start transaction
-	process_sql ("SET AUTOCOMMIT = 0;");
-	$trerr = process_sql ("START TRANSACTION;");
-	
-	if ($trerr === false)
-		return false;
+	process_sql_begin ();
 
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
@@ -2582,8 +2580,7 @@ function delete_agent ($id_agents) {
 		/* Check for deletion permissions */
 		$id_group = get_agent_group ($id_agent);
 		if (! give_acl ($config['id_user'], $id_group, "AW")) {
-			process_sql ("ROLLBACK;");
-			process_sql ("SET AUTOCOMMIT = 1;");
+			process_sql_rollback ();
 			return false;
 		}
 		
@@ -2662,12 +2659,10 @@ function delete_agent ($id_agents) {
 	}
 	
 	if ($error) {
-		process_sql ("ROLLBACK;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_rollback ();
 		return false;
 	} else {
-		process_sql ("COMMIT;");
-		process_sql ("SET AUTOCOMMIT = 1;");
+		process_sql_commit ();
 		return true;
 	}
 }
@@ -3063,6 +3058,30 @@ function process_sql_delete ($table, $where, $where_join = 'AND') {
 	}
 	
 	return process_sql ($query);
+}
+
+/**
+ * Starts a database transaction.
+ */
+function process_sql_begin () {
+	mysql_query ('SET AUTOCOMMIT = 0');
+	mysql_query ('START TRANSACTION');
+}
+
+/**
+ * Commits a database transaction.
+ */
+function process_sql_commit () {
+	mysql_query ('COMMIT');
+	mysql_query ('SET AUTOCOMMIT = 0');
+}
+
+/**
+ * Rollbacks a database transaction.
+ */
+function process_sql_rollback () {
+	mysql_query ('ROLLBACK');
+	mysql_query ('SET AUTOCOMMIT = 0');
 }
 
 /** 

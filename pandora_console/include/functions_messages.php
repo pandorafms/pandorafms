@@ -76,22 +76,19 @@ function create_message_group ($usuario_origen, $dest_group, $subject, $mensaje)
 	}
 	
 	//Start transaction so that if it fails somewhere along the way, we roll back
-	process_sql ("SET AUTOCOMMIT = 0;");
-	process_sql ("START TRANSACTION;");
+	process_sql_begin ();
 	
 	foreach ($group_users as $user) {
 		$return = create_message ($usuario_origen, get_user_id ($user), $subject, $mensaje);
 		if ($return === false) {
 			//Error sending message, rollback and return false
-			process_sql ("ROLLBACK;");
-			process_sql ("SET AUTOCOMMIT = 1;");
+			process_sql_rollback ();
 			return false;
 		}
 	}
 	
 	//We got here, so we can commit - if this function gets extended, make sure to do SQL above these lines
-	process_sql ("COMMIT;");
-	process_sql ("SET AUTOCOMMIT = 1;");
+	process_sql_commit ();
 	
 	return true;
 }

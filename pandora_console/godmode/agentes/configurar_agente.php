@@ -112,7 +112,7 @@ if ($create_agent) {
 	$direccion_agente = (string) get_parameter_post ("direccion");
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", 300);
-	$comentarios = (string)get_parameter_post ("comentarios");
+	$comentarios = (string) get_parameter_post ("comentarios");
 	$modo = (int) get_parameter_post ("modo");
 	$id_parent = (int) get_parameter_post ("id_parent");
 	$server_name = (string) get_parameter_post ("server_name");
@@ -124,7 +124,7 @@ if ($create_agent) {
 	if ($nombre_agente == "") {
 		$agent_creation_error = __('No agent name specified');
 		$agent_created_ok = 0;
-	} elseif (dame_agente_id ($nombre_agente) > 0) {
+	} elseif (get_agent_id ($nombre_agente)) {
 		$agent_creation_error = __('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
 	} else {
@@ -281,12 +281,12 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$server_name = (string) get_parameter_post ("server_name");
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
-
+	
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 
 		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
 	//If there is an agent with the same name, but a different ID
-	} elseif (dame_agente_id ($nombre_agente) > 0 && dame_agente_id ($nombre_agente) != $id_agente) {
+	} elseif (get_agent_id ($nombre_agente) != $id_agente) {
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	} else {
 		//If different IP is specified than previous, add the IP
@@ -538,8 +538,7 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	
 	//Init transaction
 	$error = 0;
-	process_sql ("SET AUTOCOMMIT=0;");
-	process_sql ("START TRANSACTION;");
+	process_sql_begin ();
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error
@@ -556,14 +555,11 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	//Check for errors
 	if ($error != 0) {
 		echo '<h3 class="error">'.__('There was a problem deleting the module').'</h3>'; 
-		process_sql ("ROLLBACK;");
+		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Module deleted successfully').'</h3>';
-		process_sql ("COMMIT;");
+		process_sql_commit ();
 	}
-
-	//End transaction
-	process_sql ("SET AUTOCOMMIT=1;");
 }
 
 // -----------------------------------

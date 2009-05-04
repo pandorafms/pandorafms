@@ -83,6 +83,7 @@ pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System
 pandora_start_log (\%Config);
 
 # Load servers
+pandora_reset_server (\%Config, $DBH);
 push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
 push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));

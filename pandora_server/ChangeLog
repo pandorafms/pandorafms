@@ -1,5 +1,13 @@
 2009-05-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Reset server status at start-up in case the
+	  server did not cleanly shut down the last time.
+	
+	* bin/pandora_server: Fixed min_ff_event calculation.
+
+2009-05-04  Ramon Novoa  <rnovoa@artica.es>
+
+
 	* lib/PandoraFMS/DB.pm: Enabled mysql_auto_reconnect.
 
 	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/PluginServer.pm,

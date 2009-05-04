@@ -57,6 +57,7 @@ our @EXPORT = qw(
 	pandora_planned_downtime
 	pandora_process_alert
 	pandora_process_module
+	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_update_agent
 	pandora_update_module_on_error
@@ -528,11 +529,11 @@ sub pandora_process_module ($$$$$$$$$) {
 	                                     ($agent_status->{'status_changes'} + 1, $agent_status->{'last_status'});
 
 	# Generate events
-	if ($status_changes == $module->{'min_ff_event'}) {
+	if ($status_changes == $module->{'min_ff_event'} + 1) {
 		generate_status_event ($pa_config, $data, $agent, $module, $status, $last_status, $dbh);
 	}
 	
-	# tagente_estado.last_try dafaults to NULL, should default to '0000-00-00 00:00:00'
+	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'
 	$agent_status->{'last_try'} = '0000-00-00 00:00:00' unless defined ($agent_status->{'last_try'});
 
 	# Do we have to save module data?
@@ -588,6 +589,15 @@ sub pandora_planned_downtime ($$) {
 			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 		}
 	}
+}
+
+##########################################################################
+# Reset the status of all server types for the current server.
+##########################################################################
+sub pandora_reset_server ($$) {
+	my ($pa_config, $dbh) = @_;
+	    
+	db_do ($dbh, 'UPDATE tserver SET status = 0, threads = 0, queued_modules = 0 WHERE name = ?', $pa_config->{'servername'});
 }
 
 ##########################################################################

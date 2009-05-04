@@ -51,7 +51,15 @@ sub db_connect ($$$$$$) {
 	my ($rdbms, $db_name, $db_host, $db_port, $db_user, $db_pass) = @_;
 
 	if ($rdbms eq 'mysql') {
-		return DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		
+		# Connect to MySQL
+		my $dbh = DBI->connect("DBI:mysql:$db_name:$db_host:3306", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		return undef unless defined ($dbh);
+		
+		# Enable auto reconnect
+		$dbh->{'mysql_auto_reconnect'} = 1;
+
+		return $dbh;
 	}
 	
 	return undef;

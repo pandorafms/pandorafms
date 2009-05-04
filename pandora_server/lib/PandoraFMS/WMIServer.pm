@@ -51,6 +51,7 @@ sub new ($$;$) {
 
 	# Check for a WMI client
 	if (system ($config->{'wmi_client'} . ' > /dev/null 2>&1') != 256) {
+		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 0);
 		print ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.\n\n";
 		return undef;
 	}

@@ -51,6 +51,7 @@ sub new ($$$) {
 	return undef unless $config->{'networkserver'} == 1;
 
 	if (! -e $config->{'snmpget'}) {
+		logger ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 0);
 		print ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.\n\n";
 		return undef;
 	}

@@ -1,3 +1,12 @@
+2009-05-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* mac_osx/plugins/ipmi2xml/impi2xml.php, 
+	linux/plugins/ipmi2xml/impi2xml.php: Updated for latest ipmitool
+	and works with Apple XServe "Nehalem". See blog post for adapting it
+	
+	* mac_osx/plugins/ipmi2xml/README.txt, 
+	linux/plugins/ipmi2xml/README.txt: Updated documentation for dependencies
+
 2009-04-29  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* win32/bin/pandora_agent.conf: fixed typos.

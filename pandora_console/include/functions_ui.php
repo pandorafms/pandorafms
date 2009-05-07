@@ -748,18 +748,28 @@ function process_page_body ($string, $bitfield) {
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false) {
+function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false) {
 	global $config;
 	
 	if (empty ($pagination)) {
 		$pagination = $config["block_size"];
 	}
 	
-	if (empty ($offset)) {
-		$offset = (int) get_parameter ('offset');
+	$offset_name = 'offset';
+	if (is_string ($offset)) {
+		$offset_name = $offset;
+		$offset = (int) get_parameter ($offset_name);
 	}
 	
-	$url = safe_input ($url);
+	if (empty ($offset)) {
+		$offset = (int) get_parameter ($offset_name);
+	}
+	
+	if (empty ($url)) {
+		$url = get_url_refresh (array ($offset_name => false));
+	} else {
+		$url = safe_input ($url);
+	}
 	
 	/* 	URL passed render links with some parameter
 	 &offset - Offset records passed to next page
@@ -800,13 +810,13 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 	
 	$output = '<div class="pagination">';
 	// Show GOTO FIRST button
-	$output .= '<a class="pagination go_first" href="'.$url.'&amp;offset=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0) {
 		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;offset='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
 	}
 	$output .= "&nbsp;&nbsp;";
 	// Draw blocks markers
@@ -822,7 +832,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
 		// it must be shown if not round to block limit)
-		$output .= '<a class="pagination" href="'.$url.'&amp;offset='.$inicio_bloque.'">';
+		$output .= '<a class="pagination" href="'.$url.'&amp;'.$offset_name.'='.$inicio_bloque.'">';
 		if ($inicio_bloque == $offset) {
 			$output .= "<b>[ $i ]</b>";
 		} else {
@@ -837,7 +847,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;offset='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -846,7 +856,7 @@ function pagination ($count, $url, $offset = 0, $pagination = 0, $return = false
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0) {
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
-		$output .= '<a class="pagination go_last" href="'.$url.'&amp;offset='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
 	}
 	// End div and layout
 	$output .= "</div>";
@@ -1134,51 +1144,99 @@ function get_include_contents ($filename, $params = false) {
 /**
  * Construct and return the URL to be used in order to refresh the current page correctly.
  *
- * @param bool $relative Whether to return the relative URL or the absolute URL. Returns relative by default
+ * @param array Extra parameters to be added to the URL. It has prevalence over
+ * GET and POST. False values will be ignored.
+ * @param bool Whether to return the relative URL or the absolute URL. Returns
+ * relative by default
+ * @param bool Whether to add POST values to the URL.
  */	
-function get_url_refresh ($relative = true) {
+function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
 	$url = '';
 	
-	if (sizeof ($_REQUEST))
+	if (sizeof ($_REQUEST)) {
 		//Some (old) browsers don't like the ?&key=var
-		$url .= '?1=1';
+		$url .= '?';
+	}
+	
+	if (! is_array ($params))
+		$params = array ();
 	
 	//We don't clean these variables up as they're only being passed along
 	foreach ($_GET as $key => $value) {
-		/* Avoid the 1=1 */
-		if ($key == 1)
+		if (isset ($params[$key]))
 			continue;
-		$url .= '&amp;'.$key.'='.$value;
-	}
-	foreach ($_POST as $key => $value) {
-		$url .= '&amp;'.$key.'='.$value;
+		$url .= $key.'='.$value.'&amp;';
 	}
 	
-	if ($relative === false) {
-		if ($config['https']) {
-			//When $config["https"] is set, always force https
-			$protocol = 'https';
-			$ssl = true;
-		} elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
-			$protocol = 'https';
-			$ssl = true;
-		} else {
-			$protocol = 'http';
-			$ssl = false;
+	if ($add_post) {
+		foreach ($_POST as $key => $value) {
+			if (isset ($params[$key]))
+				continue;
+			$url .= $key.'='.$value.'&amp;';
 		}
-		
-		$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
-		
-		if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
-			$fullurl .= ":".$_SERVER['SERVER_PORT'];
-		}
-		$fullurl .= $_SERVER['SCRIPT_NAME'];
-		
-		return $fullurl.$url;
+	}
+	
+	foreach ($params as $key => $value) {
+		if ($value === false)
+			continue;
+		$url .= $key.'='.$value.'&amp;';
+	}
+	
+	/* Removes final & */
+	$pos = strrpos ($url, '&amp;', 0);
+	if ($pos) {
+		$url = substr_replace ($url, '', $pos, 5);
+	}
+	
+	if (! $relative) {
+		return get_full_url ($url);
 	}
 	
 	return $url;
+}
+
+/**
+ * Returns a full URL in Pandora.
+ *
+ * An example of full URL is http:/localhost/pandora_console/index.php?sec=gsetup&sec2=godmode/setup/setup
+ *
+ * @param string If provided, it will be added after the index.php
+ *
+ * @return string A full URL in Pandora.
+ */
+function get_full_url ($url = false) {
+	global $config;
+	
+	$was_empty = false;
+	if (empty ($url)) {
+		$was_empty = true;
+		$url = $_SERVER['REQUEST_URI'];
+	}
+	
+	if ($config['https']) {
+		//When $config["https"] is set, always force https
+		$protocol = 'https';
+		$ssl = true;
+	} elseif (isset ($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === true || $_SERVER['HTTPS'] == 'on')) {
+		$protocol = 'https';
+		$ssl = true;
+	} else {
+		$protocol = 'http';
+		$ssl = false;
+	}
+	
+	$fullurl = $protocol.'://' . $_SERVER['SERVER_NAME'];
+	
+	if ((!$ssl && $_SERVER['SERVER_PORT'] != 80) || ($ssl && $_SERVER['SERVER_PORT'] != 443)) {
+		$fullurl .= ":".$_SERVER['SERVER_PORT'];
+	}
+	
+	if (! $was_empty) {
+		$fullurl .= $_SERVER['SCRIPT_NAME'];
+	}
+	
+	return $fullurl.$url;
 }
 ?>

@@ -169,7 +169,7 @@ foreach ($alerts_simple as $alert) {
 echo '<form method="post" action="'.$url.'">';
 
 if (!empty ($table->data)) {
-	pagination ($total, $url, $offset);
+	pagination ($total, $url);
 	print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';

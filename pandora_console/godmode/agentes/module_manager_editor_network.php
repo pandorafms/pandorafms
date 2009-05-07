@@ -78,15 +78,13 @@ push_table_simple ($data, 'snmp_2');
 /* Advanced stuff */
 $data = array ();
 $data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
-$data[1] = print_textarea ('tcp_send', 2, 65,
-	$tcp_send, '', true);
+$data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, '', true);
 $table_advanced->colspan['tcp_send'][1] = 3;
 
 push_table_advanced ($data, 'tcp_send');
 
 $data[0] = __('TCP receive');
-$data[1] = print_textarea ('tcp_rcv', 2, 65,
-	$tcp_rcv, '', true);
+$data[1] = print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, '', true);
 $table_advanced->colspan['tcp_receive'][1] = 3;
 
 push_table_advanced ($data, 'tcp_receive');

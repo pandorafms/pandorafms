@@ -101,7 +101,7 @@ function create_alert_action ($name, $id_alert_command, $values = false) {
 	if (! is_array ($values))
 		$values = array ();
 	$values['name'] = $name;
-	$values['id_alert_command'] = $id_alert_command;
+	$values['id_alert_command'] = (int) $id_alert_command;
 	
 	return @process_sql_insert ('talert_actions', $values);
 }
@@ -384,8 +384,8 @@ function create_alert_agent_module ($id_agent_module, $id_alert_template, $value
 	
 	if (! is_array ($values))
 		$values = array ();
-	$values['id_agent_module'] = $id_agent_module;
-	$values['id_alert_template'] = $id_alert_template;
+	$values['id_agent_module'] = (int) $id_agent_module;
+	$values['id_alert_template'] = (int) $id_alert_template;
 	
 	return @process_sql_insert ('talert_template_modules', $values);
 }
@@ -424,7 +424,7 @@ function get_alerts_agent_module ($id_agent_module, $disabled = false, $filter =
 		$filter = array ();
 	if (! $disabled)
 		$filter['disabled'] = 0;
-	$filter['id_agent_module'] = $id_agent_module;
+	$filter['id_agent_module'] = (int) $id_agent_module;
 	
 	return get_db_all_rows_filter ('talert_template_modules',
 		$filter, $fields);
@@ -463,8 +463,8 @@ function add_alert_agent_module_action ($id_alert_template_module, $id_alert_act
 		return false;
 	
 	$values = array ();
-	$values['id_alert_template_module'] = $id_alert_template_module;
-	$values['id_alert_action'] = $id_alert_action;
+	$values['id_alert_template_module'] = (int) $id_alert_template_module;
+	$values['id_alert_action'] = (int) $id_alert_action;
 	$values['fires_max'] = 0;
 	$values['fires_min'] = 0;
 	if ($options) {
@@ -583,7 +583,7 @@ function copy_alert_agent_module_to_agent_module ($id_agent_alert, $id_destiny_m
 	
 	/* PHP copy arrays on assignment */
 	$new_alert = array ();
-	$new_alert['id_agent_module'] = $id_destiny_module;
+	$new_alert['id_agent_module'] = (int) $id_destiny_module;
 	$new_alert['id_alert_template'] = $alert['id_alert_template'];
 	
 	$id_new_alert = @process_sql_insert ('talert_template_modules', $new_alert);
@@ -630,7 +630,7 @@ function create_alert_compound ($name, $id_agent, $values = false) {
 	if (! is_array ($values))
 		$values = array ();
 	$values['name'] = $name;
-	$values['id_agent'] = $id_agent;
+	$values['id_agent'] = (int) $id_agent;
 	
 	return @process_sql_insert ('talert_compound', $values);
 }
@@ -665,8 +665,8 @@ function add_alert_compound_element ($id_alert_compound, $id_alert_template_modu
 		return false;
 	
 	$values = array ();
-	$values['id_alert_compound'] = $id_alert_compound;
-	$values['id_alert_template_module'] = $id_alert_template_module;
+	$values['id_alert_compound'] = (int) $id_alert_compound;
+	$values['id_alert_template_module'] = (int) $id_alert_template_module;
 	$values['operation'] = $operation;
 	
 	return @process_sql_insert ('talert_compound_elements', $values);
@@ -716,8 +716,8 @@ function add_alert_compound_action ($id_alert_compound, $id_alert_action, $optio
 		return false;
 	
 	$values = array ();
-	$values['id_alert_compound'] = $id_alert_compound;
-	$values['id_alert_action'] = $id_alert_action;
+	$values['id_alert_compound'] = (int) $id_alert_compound;
+	$values['id_alert_action'] = (int) $id_alert_action;
 	$values['fires_max'] = 0;
 	$values['fires_min'] = 0;
 	if ($options) {

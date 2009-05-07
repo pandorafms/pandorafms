@@ -1,3 +1,30 @@
+2009-05-07  Esteban Sánchez  <estebans@artica.es>
+
+	* include/funtions_ui.php: Added get_full_url(). Some changes in
+	get_url_refresh() to make it more powerful. The URL is now optional
+	in pagination(). It's also possible to give the parameter name
+	of the offset so there could be more than one paginations now.
+
+	* operation/agentes/estado_agente.php,
+	general/header.php: Changes in get_url_refresh().
+
+	* godmode/agentes/massive_operations.php: Changed edit icon.
+
+	* godmode/agentes/module_manager.php: Enterprise API changes.
+
+	* godmode/agentes/module_manager_editor_network.php: Style corrections.
+
+	* include/styles/pandora.css: Added conf_error class to textarea
+	elements.
+
+	* include/functions.php: Added index_array(). Useful to manage database
+	results.
+
+	* include/functions_alerts.php: Cast some values to integer.
+
+	* operation/agentes/alerts_status.php: Removed offset parameters,
+	used default value.
+
 2009-05-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 	
 	* godmode/agentes/configurar_agente.php: get_agent_id changed and caused

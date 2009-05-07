@@ -42,6 +42,11 @@ textarea.conf_editor {
 	width: 650px;
 	height: 350px;
 }
+textarea.conf_error {
+	background-image: url(../../images/err.png);
+	background-repeat: no-repeat;
+	background-position: top right;
+}
 input {
 	padding: 2px 3px 4px 3px;
 }

@@ -47,14 +47,13 @@ if (is_ajax ()) {
 }
 
 // Take some parameters (GET)
-$offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
 
 echo "<h2>".__('Pandora Agents')." &raquo; ".__('Summary')."</h2>";
 
 if ($group_id > 1) {
-	echo '<form method="post" action="'.get_url_refresh ().'&amp;group_id='.$group_id.'">';
+	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id)).'">';
 } else {
 	echo '<form method="post" action="'.get_url_refresh ().'">';
 }
@@ -94,7 +93,7 @@ if ($group_id > 1) {
 
 if (!empty ($agent_names)) {
 	$num_agents = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
-	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names)), $offset, $config["block_size"]));
+	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names))));
 }
 
 if (empty ($agents)) {
@@ -102,7 +101,7 @@ if (empty ($agents)) {
 }
 
 // Prepare pagination
-pagination ($num_agents, get_url_refresh ()."&group_id=".$group_id."&search=".$search, $offset);
+pagination ($num_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search)));
 
 // Show data.
 $table->cellpadding = 4;

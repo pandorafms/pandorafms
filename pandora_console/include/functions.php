@@ -965,4 +965,40 @@ function safe_sql_string ($string) {
 function is_ajax () {
 	return defined ('AJAX');
 }
+
+/**
+ * Transform an array of database result into an indexed array.
+ *
+ * This function is useful when the results of a database needs to be used
+ * in a print_select() function.
+ *
+ * @param array Array with the results.
+ * @param string Field of each row in the given array that will act as index. False
+ * will set all the values.
+ * @param string Field of each row in the array that will act as value.
+ *
+ * @return array An array having the given index as fields and the given values
+ * as value.
+ */
+function index_array ($array, $index = 'id', $value = 'name') {
+	$retval = array ();
+	
+	if (! is_array ($array))
+		return $retval;
+	
+	foreach ($array as $element) {
+		if (! isset ($element[$index]))
+			continue;
+		if ($value === false) {
+			$retval[$element[$index]] = $element;
+			continue;
+		}
+		
+		if (! isset ($element[$value]))
+			continue;
+		$retval[$element[$index]] = $element[$value];
+	}
+	
+	return $retval;
+}
 ?>

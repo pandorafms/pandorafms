@@ -46,7 +46,7 @@ echo '</li>';
 
 echo '<li class="'.($tab == 'edit_modules' ? 'nomn_high' : 'nomn').'">';
 echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">';
-print_image ("images/book_edit.png", false, $img_style);
+print_image ("images/edit.png", false, $img_style);
 echo '&nbsp; '.__('Edit modules').'</a>';
 echo '</li>';
 

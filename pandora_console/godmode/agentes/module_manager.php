@@ -55,9 +55,8 @@ if ($wmi_available)
 	$modules['wmiserver'] = __('Create a new WMI Server module');
 if ($prediction_available)
 	$modules['predictionserver'] = __('Create a new prediction Server module');
-if (!isset ($local_components))
-	$local_components = false;
-enterprise_hook ('set_enterprise_module_types', array (&$modules, $local_components));
+
+enterprise_hook ('set_enterprise_module_types', array (&$modules));
 print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
 print_input_hidden ('edit_module', 1);
 echo '</td>';

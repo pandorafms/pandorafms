@@ -1,3 +1,18 @@
+2009-05-11  Esteban Sánchez  <estebans@artica.es>
+
+	* godmode/agentes/agent_manager.php: Show "None" if no server is assigned.
+	Fixes #2768723
+	
+	* godmode/agentes/configurar_agente.php: Removed direct link to
+	farscap.artica.es server. Fixed group tab selection.
+	
+	* godmode/alerts/alert_list.php: Fixed a notice when there are no agents.
+	Fixes #2786519.
+	
+	* general/header.php: Fixed an error when updating agent configuration
+	which was showing all the config in the header. Should be improved for
+	other textarea fields.
+
 2009-05-07  Esteban Sánchez  <estebans@artica.es>
 
 	* include/funtions_ui.php: Added get_full_url(). Some changes in

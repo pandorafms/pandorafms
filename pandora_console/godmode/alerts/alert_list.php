@@ -198,12 +198,14 @@ if ($id_agente) {
 if ($id_agente) {
 	$simple_alerts = get_agent_alerts_simple (array_keys ($agents));
 } else {
-	$sql = sprintf ('SELECT COUNT(*) FROM talert_template_modules
-		WHERE id_agent_module IN (SELECT id_agente_modulo
-			FROM tagente_modulo WHERE id_agente IN (%s))',
-		implode (',', array_keys ($agents)));
-	$total = get_db_sql ($sql);
-	
+	$total = 0;
+	if (! empty ($agents)) {
+		$sql = sprintf ('SELECT COUNT(*) FROM talert_template_modules
+			WHERE id_agent_module IN (SELECT id_agente_modulo
+				FROM tagente_modulo WHERE id_agente IN (%s))',
+			implode (',', array_keys ($agents)));
+		$total = get_db_sql ($sql);
+	}
 	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
 	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), '',
 		array ('offset' => (int) get_parameter ('offset'),

@@ -118,10 +118,12 @@ $table->data[5][1] .= print_os_icon ($id_os, false, true);
 $table->data[5][1] .= '</span>';
 
 // Network server
-
+$none = '';
+if ($server_name == '' && $id_agente)
+	$none = __('None');
 $table->data[6][0] = __('Server');
 $table->data[6][1] = print_select (get_server_names (),
-	'server_name', $server_name, '', '', 0, true);
+	'server_name', $server_name, '', $none, 0, true);
 
 // Custom ID
 $table->data[7][0] = __('Custom ID');

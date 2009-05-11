@@ -81,12 +81,15 @@ echo "</a>";
 // Third column
 // Autorefresh
 echo '</td><td width="20%">';
+$ignored_params = array ('agent_config' => false);
 if ($config["refr"]) {
-	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh (array ('refr' => 0)).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
+	$ignored_params['refr'] = 0;
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
 	echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 	echo '</a>';
-} else {
-	echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh (array ('refr' => '')).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
+} else {	
+	$ignored_params['refr'] = '';
+	echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
 	$values = array ('5' => '5 '.__('seconds'),
 		'10' => '10 '.__('seconds'),
 		'15' => '15 '.__('seconds'),
@@ -99,6 +102,7 @@ if ($config["refr"]) {
 		'3600' => '1 '.__('hour'));
 	echo '<span id="combo_refr" style="display: none">';
 	print_select ($values, 'ref', '', '', __('Select'), '0', false, false, false);
+	unset ($values);
 	echo '</span>';
 }
 

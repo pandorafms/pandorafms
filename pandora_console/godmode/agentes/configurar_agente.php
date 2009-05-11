@@ -216,8 +216,8 @@ if ($id_agente) {
 
 	enterprise_hook ('inventory_tab');
 
-	echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
-	echo '<a href="http://farscape.artica.es/pandora_console/index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
+	echo '<li class="nomn">';
+	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
 	print_image ("images/god4.png", false, $img_style);
         echo '&nbsp; '.__('Group').'</a></li>';
 

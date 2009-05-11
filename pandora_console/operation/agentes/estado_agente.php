@@ -93,7 +93,7 @@ if ($group_id > 1) {
 
 if (!empty ($agent_names)) {
 	$num_agents = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
-	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names))));
+	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names)), (int) get_parameter ("offset"), $config["block_size"]));
 }
 
 if (empty ($agents)) {

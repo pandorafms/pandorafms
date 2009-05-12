@@ -343,8 +343,7 @@ if ($edit_sla_report_content) {
 	$table->data[0][1] = print_input_text ('report_name', $report_name, '', 35, 150, true);
 	$table->data[1][0] = __('Group');
 
-	$sql = 'SELECT DISTINCT (tgrupo.id_grupo), tgrupo.nombre FROM tgrupo, tusuario_perfil WHERE tusuario_perfil.id_usuario = "'.$config["id_user"].'" AND tusuario_perfil.id_grupo = tgrupo.id_grupo';
-	
+	$sql = 'SELECT DISTINCT (tgrupo.id_grupo), tgrupo.nombre FROM tgrupo, tusuario_perfil WHERE tusuario_perfil.id_usuario = "'.$config["id_user"].'"';
 	// Have access to group "all (1)" ?
 	if (give_acl($config['id_user'], 1, "AR")) 
 		$table->data[1][1] = print_select_from_sql ($sql, 'report_id_group', $report_id_group, '', __('All'), 1, true);

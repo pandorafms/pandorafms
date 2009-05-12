@@ -1,3 +1,8 @@
+2009-05-12  Manuel Arostegui <marostegui@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Fixed bug when creating
+	a report, only "All" group was available.
+
 2009-04-30  Sancho Lerena  <slerena@artica.es>
 
 	* functions.php: Fixed ugly render of times in certain situations.

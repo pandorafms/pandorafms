@@ -1,3 +1,14 @@
+2009-05-12  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Update build after last changes.
+	
+	* install.php: Added code to remove database if exists. This was removed
+	in a previous commit.
+
+	* images/console/icons/*.png: Updated some icons and added others.
+
+	* pandoradb_data.sql: Updated header.
+
 2009-05-11  Esteban Sánchez  <estebans@artica.es>
 
 	* operation/agentes/estado_agente.php: Sets a variable outside an if.

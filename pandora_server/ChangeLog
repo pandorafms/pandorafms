@@ -1,3 +1,7 @@
+2009-05-12  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_package_installer: Removed old, unused script.
+
 2009-05-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Reset server status at start-up in case the

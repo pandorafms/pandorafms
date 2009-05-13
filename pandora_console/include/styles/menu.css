@@ -81,7 +81,7 @@
 	font-weight: bold;
 }
 .menu li.links {
-	background: #E9F3D2 url(../../images/link.png) no-repeat 4px 8px;
+	background: url(../../images/link.png) no-repeat 4px 8px;
 	border-width: 1px 0 0 1px;
 	border-style: solid;
 	border-color: #dadbdc;
@@ -89,76 +89,76 @@
 
 /* Icons specified here */
 #icon_oper-dashboard {
- 	background: #E9F3D2 url(../../images/house.png) no-repeat 4px 4px;
+ 	background:  url(../../images/house.png) no-repeat 4px 4px;
 }
 
 #icon_oper-agents {
-	background: #E9F3D2 url(../../images/bricks.png) no-repeat 4px 4px;
+	background: url(../../images/bricks.png) no-repeat 4px 4px;
 }
 #icon_oper-servers {
-	background: #E9F3D2 url(../../images/server_database.png) no-repeat 4px 4px;
+	background: url(../../images/server_database.png) no-repeat 4px 4px;
 }
 #icon_oper-incidents {
-	background: #E9F3D2 url(../../images/book_edit.png) no-repeat 4px 4px;
+	background: url(../../images/book_edit.png) no-repeat 4px 4px;
 }
 #icon_oper-events {
-	background: #E9F3D2 url(../../images/lightning_go.png) no-repeat 4px 4px;
+	background:  url(../../images/lightning_go.png) no-repeat 4px 4px;
 }
 /* users */
 #icon_oper-users {
-	background: #E9F3D2 url(../../images/group.png) no-repeat 4px 4px;
+	background:  url(../../images/group.png) no-repeat 4px 4px;
 }
 /* trap console */
 #icon_oper-snmpc, #icon_god-snmpc {
-	background: #E9F3D2 url(../../images/computer_error.png) no-repeat 4px 4px;
+	background: url(../../images/computer_error.png) no-repeat 4px 4px;
 }
 #icon_oper-messages {
-	background: #E9F3D2 url(../../images/email.png) no-repeat 4px 4px;
+	background:  url(../../images/email.png) no-repeat 4px 4px;
 }
 #icon_oper-reporting {
-	background: #E9F3D2 url(../../images/reporting.png) no-repeat 4px 4px;
+	background:  url(../../images/reporting.png) no-repeat 4px 4px;
 }
 #icon_oper-visualc {
-	background: #E9F3D2 url(../../images/monitor.png) no-repeat 4px 4px;
+	background: url(../../images/monitor.png) no-repeat 4px 4px;
 }
 #icon_oper-extensions, #icon_god-extensions {
-	background: #E9F3D2 url(../../images/extensions.png) no-repeat 4px 4px;
+	background: url(../../images/extensions.png) no-repeat 4px 4px;
 }
 
 /* Godmode images */
 #icon_god-agents {
-	background: #E9F3D2 url(../../images/god1.png) no-repeat 4px 4px;
+	background:  url(../../images/god1.png) no-repeat 4px 4px;
 }
 #icon_god-modules {
-	background: #E9F3D2 url(../../images/brick.png) no-repeat 4px 4px;
+	background:  url(../../images/brick.png) no-repeat 4px 4px;
 }
 #icon_god-alerts {
-	background: #E9F3D2 url(../../images/god2.png) no-repeat 4px 4px;
+	background:  url(../../images/god2.png) no-repeat 4px 4px;
 }
 #icon_god-dbmaint {
-	background: #E9F3D2 url(../../images/god8.png) no-repeat 4px 4px;
+	background:  url(../../images/god8.png) no-repeat 4px 4px;
 }
 #icon_god-users {
-	background: #E9F3D2 url(../../images/god3.png) no-repeat 4px 4px;
+	background: url(../../images/god3.png) no-repeat 4px 4px;
 }
 #icon_god-reporting {
-	background: #E9F3D2 url(../../images/reporting_edit.png) no-repeat 4px 4px;
+	background: url(../../images/reporting_edit.png) no-repeat 4px 4px;
 }
 #icon_god-profiles {
-	background: #E9F3D2 url(../../images/god4.png) no-repeat 4px 4px;
+	background: url(../../images/god4.png) no-repeat 4px 4px;
 }
 #icon_god-servers {
-	background: #E9F3D2 url(../../images/god5.png) no-repeat 4px 4px;
+	background: url(../../images/god5.png) no-repeat 4px 4px;
 }
 #icon_god-audit {
-	background: #E9F3D2 url(../../images/god6.png) no-repeat 4px 4px;
+	background: url(../../images/god6.png) no-repeat 4px 4px;
 }
 #icon_god-setup {
-	background: #E9F3D2 url(../../images/god7.png) no-repeat 4px 4px;
+	background: url(../../images/god7.png) no-repeat 4px 4px;
 }
 #icon_god-policies {
-	background: #E9F3D2 url(../../images/policies.png) no-repeat 4px 4px;
+	background: url(../../images/policies.png) no-repeat 4px 4px;
 }
 #icon_oper-inventory {
-	background: #E9F3D2 url(../../images/page_white_text.png) no-repeat 4px 4px;
+	background: url(../../images/page_white_text.png) no-repeat 4px 4px;
 }

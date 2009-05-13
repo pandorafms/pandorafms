@@ -201,6 +201,7 @@ div#menu {
 	width: 165px;
 	float: left;
 }
+
 div#head {
 	font-size: 8pt;
 	width: 960px;
@@ -208,6 +209,21 @@ div#head {
 	background: url(../../images/header.jpg);
 	border-bottom: solid 2px #555;
 }
+/*
+
+div#head {
+	font-size: 8pt;
+	width: 960px;
+	height: 60px;
+	background: url(../../images/enterprise_header.png);
+	background-color: #020202;
+	background-repeat: repeat-x;
+	background-attachment: scroll;
+	background-position: 0% 0%;
+	border-bottom: solid 2px #000;
+}
+*/
+
 div#foot {
 	font-size: 7pt;
 	border-top: solid 2px #000;
@@ -616,7 +632,7 @@ span.rmess, span.nrmess {
 	float: right;
 	text-align: right;
 	margin-right: 10px;
-	padding-top: 10px;
+	padding-top: 0px;
 }
 #head_m {
 	position: absolute;
@@ -633,6 +649,18 @@ span#logo_text2 {
 	letter-spacing: -2px;
 	color: #aaa;
 }
+
+div#logo_text3 {
+	text-align: right;
+	font: 2em Arial, Sans-serif;
+	letter-spacing: 6px;
+	color: #aaa;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-left: 4px;
+	padding-top: 0px:
+}
+
 .bb0 {
 	border-bottom: 0px;
 }
@@ -911,4 +939,14 @@ div#steps_clean {
 }
 div#event_control {
 	clear:right;
+}
+
+div#pandora_logo_header {
+/*  Put here your company logo (139x60 pixels) like this:  */
+/*	background: url(../../images/MiniLogoArtica.jpg); */
+	background: url(../../images/pandora_logo_head.png);
+	background-position: 0% 0%;
+	width: 139px;
+	height: 60px;
+	float: left;
 }

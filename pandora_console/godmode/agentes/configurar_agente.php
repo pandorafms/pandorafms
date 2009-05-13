@@ -236,8 +236,7 @@ if ($create_agent) {
 }
 
 // Fix / Normalize module data
-// ===========================
-if (isset($_GET["fix_module"])){ 
+if (isset( $_GET["fix_module"])) { 
 	$id_module = get_parameter_get ("fix_module",0);
 	// get info about this module
 	$media = get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
@@ -257,9 +256,7 @@ if (isset($_GET["fix_module"])){
 		__('Error normalizing module %s', $error));
 }
 
-// ================
 // Update AGENT
-// ================
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = (string) get_parameter_post ("agente");

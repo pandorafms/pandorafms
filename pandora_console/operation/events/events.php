@@ -175,12 +175,12 @@ echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
 
 if ($config["pure"] == 1) {
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-	print_image ("images/monitor.png", false, array ("title" => __('Normal screen')));
+	print_image ("images/normalscreen.png", false, array ("title" => __('Normal screen')));
 	echo '</a>';
 } else {
 	// Fullscreen
 	echo '<a target="_top" href="'.$url.'&amp;pure=1">';
-	print_image ("images/monitor.png", false, array ("title" => __('Full screen')));
+	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen')));
 	echo '</a>';
 }
 echo "</h2>";

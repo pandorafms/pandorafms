@@ -1,3 +1,44 @@
+2009-05-12  Esteban Sánchez  <estebans@artica.es>
+
+	* images/clean.png, images/fullscreen.png, images/local_component.png,
+	images/log-out.png, images/normalscreen.png,
+	images/server_export.png: Added to repository. New tango icons.
+
+	* images/application_osx_terminal.png, images/arrow_refresh.png,
+	images/asterisk_yellow.png, images/attach.png,
+	images/drive_network.png, images/drive_user.png,
+	images/page_white_acrobat.png, images/rainbow.png,
+	images/telephone.png: Deleted from repository. Unused images.
+
+	* images/add.png, images/application_double.png,
+	images/application_edit.png, images/application.png,
+	images/book_edit.png, images/calendar_view_day.png,
+	images/camera.png, images/email_open.png, images/email.png,
+	images/god3.png, images/group.png, images/heart.png,
+	images/house.png, images/lupa.png, images/monitor.png,
+	images/mouse.png, images/package.png, images/page_white_magnify.png,
+	images/page_white.png, images/page_white_text.png,
+	images/paste_plain.png, images/pdf.png,
+	images/refresh.png, images/reporting.png, images/rosette.png,
+	images/script.png, images/server_database.png, images/server.png,
+	images/world.png, images/zoom.png: Updated to use tango icons.
+
+	* general/ui/agents_list.php: Added pagination.
+
+	* general/header.php: Logout icon replaced.
+
+	* include/styles/pandora.css: Some styles for tabs.
+
+	* include/functions_db.php: Changed export server icon.
+
+	* operation/events/events.php, operation/snmpconsole/snmp_view.php,
+	operation/visual_console/render_view.php,
+	operation/agentes/networkmap.php: Changed fullscreen icons.
+
+	* godmode/agentes/configurar_agente.php,
+	include/functions_modules.php,
+	include/functions_agents.php: Style correction.
+
 2009-05-12  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Update build after last changes.
@@ -160,7 +201,6 @@
 
 	* godmode/agentes/planned_downtime.php: modified a i18n string.
 
->>>>>>> .r1669
 2009-04-24  Esteban Sánchez  <estebans@artica.es>
 
 	* godmode/agentes/module_manager.php: Added extra parameter to

@@ -52,7 +52,7 @@ if ($msg_cnt > 0) {
 
 //First column, second row (logout button)
 echo '<br /><br />';
-echo '<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" alt="logout" class="bot" />&nbsp;'. __('Logout').'</a>';
+echo '<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="logout" class="bot" />&nbsp;'. __('Logout').'</a>';
 
 // Second column (link to main page)
 echo '</td><td width="20%">';

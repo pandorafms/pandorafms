@@ -299,11 +299,11 @@ function set_filter () {
 echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Network Map').'&nbsp;';
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
-	print_image ("images/monitor.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
+	print_image ("images/normalscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
 	echo '</a>';
 } else {
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1">';
-	print_image ("images/monitor.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
+	print_image ("images/fullscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
 	echo '</a>';
 }
 echo '</h2>';

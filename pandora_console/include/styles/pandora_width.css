@@ -66,3 +66,23 @@ div#events_list {
 	float: left;
 	width: 100%;
 }
+span#logo_text1 {
+	font: bolder 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #eee;
+}
+span#logo_text2 {
+	font: 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #aaa;
+}
+div#logo_text3 {
+	text-align: right;
+	font: 2em Arial, Sans-serif;
+	letter-spacing: 6px;
+	color: #aaa;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-left: 4px;
+	padding-top: 0px:
+}

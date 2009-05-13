@@ -1,3 +1,28 @@
+2009-05-13  Sancho Lerena <slerena@gmail.com>
+
+	* include/styles/pandora_blackmetal.css: New style with custom headers
+	image (used for custom logo). 
+
+	* include/styles/menu.css,
+	include/styles/pandora_red.css
+	include/styles/pandora_black.css
+	include/styles/pandora_width.css
+	include/styles/pandora.css: Improved old themes.
+
+	* include/functions_ui.php: Custom style CSS loads last, to allow rewrite
+	some CSS menu styles.
+
+	* install.php: Ask if want to DROP database if this exists. Show better
+	message about the created password. Don't drop database if not marked in
+	step #3.
+
+	* images/black_header.png: Image for blackmetal style.
+
+	* images/MiniLogoArtica.jpg: Image for blackmetal style.
+
+	* general/header.php: Some changes for style. Now displays OpenSource version
+	or Enterprise version depending of version.
+
 2009-05-13  Esteban Sánchez  <estebans@artica.es>
 
 	* images/clean.png, images/fullscreen.png, images/local_component.png,

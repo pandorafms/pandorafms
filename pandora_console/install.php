@@ -312,6 +312,9 @@ function install_step3() {
 				<div>DB Name (pandora by default)</div>
 				<input class='login' type='text' name='dbname' value='pandora'>
 
+				<input class='login' type='checkbox' name='drop' value=1>				
+				Drop Database if exists
+
 				<div>Full path to HTTP publication directory<br>
 					<span class='f9b'>For example /var/www/pandora_console/. 
 					Needed for graphs and attachments.
@@ -357,6 +360,11 @@ function install_step4() {
 		$dbpassword = $_POST["pass"];
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
+		if (isset($_POST["drop"]))
+			$dbdrop = $_POST["drop"];
+		else
+			$dbdrop = 0;
+				
 		$dbname = $_POST["dbname"];
 		if (isset($_POST["url"]))
 			$url = $_POST["url"];
@@ -375,7 +383,7 @@ function install_step4() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
-	<div id='wizard' style='height: 380px;'>
+	<div id='wizard' style='height: 400px;'>
 		<div id='install_box'>
 			<h2>Creating database and default configuration file</h2>
 			<table>";
@@ -383,6 +391,11 @@ function install_step4() {
 				check_generic ( 0, "Connection with Database");
 			} else {
 				check_generic ( 1, "Connection with Database");
+				
+				// Drop database if needed
+				if ($dbdrop == 1)
+					mysql_query ("DROP DATABASE IF EXISTS $dbname");
+				
 				// Create schema
 				$step1 = mysql_query ("CREATE DATABASE $dbname");
 				check_generic ($step1, "Creating database '$dbname'");
@@ -400,8 +413,7 @@ function install_step4() {
 					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@localhost 
 					IDENTIFIED BY '".$random_password."'");
 					mysql_query ("FLUSH PRIVILEGES");
-					check_generic ($step5, "Established privileges for user pandora <br> 
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password <i>'$random_password'</i>");
+					check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");
 	
 					$step6 = is_writable("include");
 					check_generic ($step6, "Write permissions to save config file in './include'");
@@ -452,13 +464,15 @@ $config["homeurl"]="'.$url.'";			// Base URL
 
 				if (mysql_error() != "")
 					echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
-				mysql_query ("DROP DATABASE $dbname");
+					
+				if ($step1 == 1)
+					mysql_query ("DROP DATABASE $dbname");
 			}		
 		echo "
 		</div>
 	</div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
+			<i>Pandora FMS is an Open Source Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";

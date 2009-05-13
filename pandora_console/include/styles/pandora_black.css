@@ -93,7 +93,6 @@ h3 {
 }
 a {
 	color: #ddd;
-	font-weight: bold;
 	text-decoration: none;
 }
 a:hover {
@@ -608,7 +607,7 @@ span.rmess, span.nrmess {
 	float: right;
 	text-align: right;
 	margin-right: 10px;
-	padding-top: 10px;
+	padding-top: 0px;
 }
 #head_m {
 	position: absolute;
@@ -625,6 +624,18 @@ span#logo_text2 {
 	letter-spacing: -2px;
 	color: #aaa;
 }
+
+div#logo_text3 {
+	text-align: right;
+	font: 2em Arial, Sans-serif;
+	letter-spacing: 6px;
+	color: #aaa;
+	font-weight: bold;
+	margin-top: 0px;
+	margin-left: 4px;
+	padding-top: 0px:
+}
+
 .bb0 {
 	border-bottom: 0px;
 }
@@ -708,3 +719,37 @@ a.big_data {
 	float: right;
 }
 
+div#pandora_logo_header {
+	background: url(../../images/pandora_logo_head.png);
+	background-position: 0% 0%;
+	width: 139px;
+	height: 60px;
+	float: left;
+}
+
+.menu li a {
+	background-color: #000;	
+	color: #CCC;
+}
+
+.submenu li a {
+	background-color: #000;	
+	color: #CCC;
+}
+
+.menu li.selected {
+	background-color: #333 !important;
+}
+
+}
+.menu li.links {
+	border-color: #333;
+}
+
+.submenu li a {
+	border-color: #333;
+}
+
+.menu {
+	border-color: #333;
+}

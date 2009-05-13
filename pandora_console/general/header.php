@@ -20,18 +20,7 @@ require_once ("include/functions_messages.php");
 //First column (logo)
 echo '<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0"><tr><td>';
 
-/* CUSTOM BRANDING STARTS HERE */
-/* TODO: Put the branding in it's own file, variables or database 
- Yes, put here your corporate logo instead pandora_logo_head.png
- The style specifies width and height so that oversized images get resized.
- Optimally your logo would be this size.
-*/
-echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" style="border-width:0px; width:140px; height:60px;" /></a>';
-/* CUSTOM BRANDING ENDS HERE */
-
-
-// Margin to logo
-echo '</td><td width="20">&nbsp;</td>';
+echo '<div id="pandora_logo_header"></div>';
 
 // First column (identifier)
 echo '<td width="20%"><img src="images/user_'.((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' ).'.png" class="bot" alt="user" />&nbsp;'.'<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white">'.__('You are').' [<b>'.$config["id_user"].'</b>]</a> ';
@@ -111,7 +100,15 @@ echo '<br /><br />';
 echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot" />&nbsp;'.__('Events').'</a>';
 
 // Styled text
-echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div></td></tr></table>';
+echo '</td><td width="20%"><div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div>';
+
+/* Enterprise support */
+if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) 
+	echo '<div id="logo_text3">Enterprise</div>';
+else
+	echo '<div id="logo_text3">OpenSource</div>';
+	
+echo '</td></tr></table>';
 
 require_jquery_file ('countdown');
 ?>

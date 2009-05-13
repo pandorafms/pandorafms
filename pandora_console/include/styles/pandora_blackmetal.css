@@ -1,37 +1,10 @@
 /* 
 
 Author: The Pandora FMS team
-Name: Red theme
-Description: A red theme for Pandora FMS
-
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+Name: Black Metal theme
+Description: Default theme used in Enterprise version
 */
 
-@import url(op.css);
-@import url(god.css);
-@import url(link.css);
-@import url(tip.css);
 * {
 	font-family: verdana, sans-serif;
 	font-size: 8pt;
@@ -41,48 +14,48 @@ body {
 }
 input, textarea {
 	border: 1px solid #ddd;
-	font: verdana, sans-serif;
-	font-size: 8pt;
 }
+
 textarea {
 	padding: 5px;
-	height: 100px;
-	font-family: verdana, sans-serif;
-	font-size: 8pt;
+	min-height: 100px;
+	width: 99%;
 }
 textarea.conf_editor {
 	padding: 5px;
-	width: 650;
-	height: 350;
-	font-family: verdana, sans-serif;
-	font-size: 8pt;
+	width: 650px;
+	height: 350px;
+}
+textarea.conf_error {
+	background-image: url(../../images/err.png);
+	background-repeat: no-repeat;
+	background-position: top right;
 }
 input {
 	padding: 2px 3px 4px 3px;
 }
-input.button { 
-	margin: 0; 
-	font: bold, Arial, Sans-serif; 
+input.button {
+	font-family: Arial,Sans-serif; 
 	border: 1px solid #ccc;
-	background: #fff; 
+	background: #fff;
 	padding: 2px 3px; 
 	margin: 10px 15px;
 }
 select {
 	padding: 0px;
 	border:1px solid #ddd;
-	font-family: verdana, sans-serif;
-	font-size: 8pt;
 }
 checkbox {
 	padding: 4px;
 	border:1px solid #eee;
 }
-h1, h2, h3 {
-	font: bold 1em Arial, Sans-serif;
+h1, h2, h3, h4 {
+	font-weight: bold;
+	font-size: 1em;
+	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #A00;
-	padding-bottom: 5px;
+	color: #000;
+	padding-bottom: 4px;
 	padding-top: 7px;
 }
 h1 {
@@ -99,9 +72,10 @@ h4 {
 	padding-bottom: 0px;
 	padding-top: 5px;
 	font-size: 13px;
+	color: #000;
 }
 a {
-	color: #d81616;
+	color: #486787;
 	text-decoration: none;
 }
 a:hover {
@@ -118,7 +92,6 @@ a.white_grey_bold {
 	text-decoration: none;
 	font-weight: bold;
 }
-
 a.white {
 	color: #eee;
 	text-decoration: none;
@@ -143,7 +116,7 @@ div#login {
 	border-left: solid 1px #000;
 	border-top: solid 1px #000;
 	border-bottom: solid 2px #000;
-	border-right: solid 2px #000
+	border-right: solid 2px #000;
 }
 div#login_in, #login_f {
 	margin: 0 auto;
@@ -185,16 +158,17 @@ div#container {
 	border-right: solid 2px #000;
 	border-top: solid 2px #000;
 	margin-top: 5px;
+	background: #fff;
 }
 div#page {
 	width: 960px;
 	background: #fff;
 	clear: both;
-	border-bottom: solid 5px #D44;
-	border-top: solid 5px #D44;
+	border-bottom: solid 5px #000;
+	border-top: solid 5px #000;
 }
 div#main {
-	width: 780px;
+	width: 785px;
 	min-height: 500px;
 	float: right;
 	padding-left: 0px;
@@ -202,31 +176,44 @@ div#main {
 	padding-bottom: 20px;
 	margin-bottom: 25px;
 	background-color: #fefefe;
-    background-image: url(../../images/backgrounds/background_red.png);
+	background-image: url(../../images/backgrounds/background4.jpg);
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
 }
 div#menu {
-	width: 155px;
+	width: 165px;
 	float: left;
 }
-div#page>div#menu {
-	width: 157px;
+
+div#pandora_logo_header {
+/*  Put here your company logo (139x60 pixels) like this: */
+/*	background: url(../../images/xxxxx.png); */
+
+	background: url(../../images/MiniLogoArtica.jpg); 
+	background-position: 0% 0%;
+	width: 83px;
+	height: 31px;
+	float: left;
 }
+
 div#head {
 	font-size: 8pt;
 	width: 960px;
 	height: 60px;
-	background: url(../../images/header_red.jpg);
+	background: url(../../images/black_header.png); 
+	background-color: #000;
+	background-repeat: repeat-x;
+	background-position: 0% 0%;
+	border-bottom: solid 2px #000;
 }
 div#foot {
 	font-size: 7pt;
-	margin-top: solid 2px #000;
+	border-top: solid 2px #000;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	text-align: center;
-	background: #960003;
+	background: #000;
 	width: 960px;
 	clear: both;
 }
@@ -239,16 +226,12 @@ div#foot {
 }
 label {
 	display: block;
-	float: left;
 	padding-top: 4px;
+	font-weight: bold;
+	text-align: left;
 }
-
-
 th > label {
 	padding-top: 7px;
-}
-input:hover {
-	background-color: #d4dccd;
 }
 input.chk {margin-right: 0px;
 	border: 0px none;
@@ -261,7 +244,7 @@ input.datos_readonly {
 	background-color: #050505;
 }
 input.login {
-	border-color: #D44;
+	border-color: #000;
 	background-color: #f5f5f5;
 	margin: 2px 0 8px;
 	width: 90px;
@@ -270,48 +253,60 @@ input.sub {
 	font-weight: bold;
 	border-bottom-color: #708090;
 	border-right-color: #708090;
-	-moz-border-radius: 5%;
+	/*	These borders haven't made it yet in a valid standard 
+	 First one is for Mozilla, second for Webkit (Safari, Konqueror), third one for IE7+ and valid CSS3. 
+	 Percentage values are invalid here but .4em seems big enough */
+	-moz-border-radius: .4em;
+	-webkit-border-radius: .4em;
+	border-radius: .4em;
 	font-size: 8pt;
+	background-color: #e5e5e5;
+	color: #000;
+}
+input.next, input.upd, input.ok, input.wand, input.delete, input.search,
+input.copy, input.add {
+	padding-right: 21px;
 }
 input.next {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
 }
 input.upd {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/upd.png) no-repeat right 3px;
 }
 input.wand {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/wand.png) no-repeat right 3px;
 }
 input.delete {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
 }
 input.search {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/zoom.png) no-repeat right 3px;
 }
 input.copy {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/copy.png) no-repeat right 3px;
 }
 input.ok {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/ok.png) no-repeat right 3px;
+}
+input.add {
+	background: #e5e5e5 url(../../images/add.png) no-repeat right 3px;
 }
 table, img {
 	border: 0px;
 }
-th, td.lb, td.lb_view {
+th {
 	color: #fff;
-	background-color: #D44;
+	background-color: #555;
+	text-align:center;
 }
-td.datos, td.datost, td.datosb , td.datos_id, td.datosf9 {
-	background-color: #fff0f0;
+tr.datos, tr.datost, tr.datosb , tr.datos_id, 
+tr.datosf9, tr.datos2, tr.datos2t, 
+tr.datos2b, tr.datos2_id , tr.datos2f9 {
+	background-color: #f9f9f9;
 }
-td.datos2, td.datos2t, td.datos2b, td.datos2_id , td.datos2f9 {
+tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover, 
+tr.datosf9:hover, tr.datos2:hover, tr.datos2t:hover,
+tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 	background-color: #efefef; 
 }
 td.datos3 {
@@ -320,11 +315,8 @@ td.datos3 {
 td.datos_id {
 	color: #1a313a;
 }
-td.datos_jus, td.datos2_jus {
-	text-align: justify;
-}
 .bg { /* op menu */
-	background-color: #D44;
+	background-color: #555;
 }
 .bg2 { /* main page */
 	background-color: #d84437;
@@ -337,52 +329,53 @@ td.datos_jus, td.datos2_jus {
 }
 .bg, .bg2, .bg3, .bg4 {
 	position: relative;
-	height: 20px;
 	width: 100%;
+}
+.bg  {
+	height: 20px;
+}
+.bg2, .bg3, .bg4 {
+	height: 17px;
 }
 .f10, #ip {
 	font-size: 7pt;
 	text-align: center;
 }
-.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9 {
+.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
 	font-size: 6.5pt;
 }
 .f9i, .redi {
 	font-style: italic;
 }
-.jus {
-	text-align: justify;
-	width: 700px;
-}
 .tit {
-	padding-top: 3px;
+	padding: 3px 1px;
 }
 .tit, .titb {
 	font-weight: bold;
 	color: #fff;
 	text-align: center;
 }
+.suc, .error, .help {
+	padding: 4px 1px 6px 30px;
+}
 .suc {
 	color: #5a8629;
 	background: url(../../images/suc.png) no-repeat 1px;
-	padding: 4px 1px 6px 30px;
 }
 .error {
 	background: url(../../images/err.png) no-repeat;
-	padding: 4px 1px 6px 30px;
 }
-.red , .redb, .redi, .error {
+.help {
+	background: url(../../images/help.png) no-repeat;
+}
+.red, .redb, .redi, .error {
 	color: #f00;
 }
+
 .sep {
 	margin-left: 30px;
 	border-bottom: 1px solid #708090;
 	width: 100%;
-}
-.suc {
-	color: #5a8629;
-	background: url(../../images/suc.png) no-repeat 1px;
-	padding: 4px 1px 6px 30px;
 }
 .green  {
 	color: #5a8629;
@@ -457,26 +450,18 @@ div.title_line {
 	height: 5px;
 	width: 762px;
 }
-#menu_tab_frame {
-    background: #D84437; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+#menu_tab_frame, #menu_tab_frame_view {
+	background:#D84437 none repeat scroll 0 0;
+	border-bottom:1px solid #000;
+	float:left;
+	margin-left:-8px;
+	min-height:25px;
+	padding-right:8px;
+	width:100%;
 }
 #menu_tab_frame_view {
-    background: #66AA44; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #66AA44;
 }
-
-
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;
@@ -486,30 +471,25 @@ div.title_line {
 	float: right;
 	position: relative;
 }
-#menu_tab li a, #menu_tab li.nomn a {
+#menu_tab li a, #menu_tab a {
 	background: #d4ddc6;
-	padding: 2px 10px 2px 10px;
+	padding: 3px 5px;
 	color: #333;
-	border-left: 1px solid #fff;
+	border-left: 2px solid #000;
 	font-weight: bold;
-	line-height: 18px;
+	line-height: 19px;
 }
 #menu_tab li.nomn_high a {
-    background: #799E48;
-    color: #fff;
-    padding: 2px 10px 2px 10px;
-    border-left: 2px solid #778866;
-    /* font-weight: bold; */
-    line-height: 18px;
+	background: #799E48;
+	color: #fff;
 }
-
 #menu_tab .mn li a {
 	display: block;
 	text-decoration: none;
 }
-#menu_tab li.nomn:hover a, 
-#menu_tab li:hover ul a:hover {
-	background: #cde0ad;
+#menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
+	background: #799E48;
+	color: #fff;
 }
 #menu_tab li:hover a {
 	background: #b2b08a url("../images/arrow.png") no-repeat right 3px;
@@ -520,19 +500,22 @@ div.title_line {
 }
 /* TAB TITLE */
 #menu_tab_left .mn, #menu_tab_left ul, #menu_tab_left .mn ul {
+	color: #fff;
+	font-weight: bold;
 	padding: 0px 0px 0px 0px;
 	list-style: none;
-	margin: 0px 0px 0px -20px;
+	margin: 0px 0px 0px 2px;
 }
 #menu_tab_left .mn li {
 	float: left;
 	position: relative;
 }
-#menu_tab_left li a {
+#menu_tab_left li a, #menu_tab_left li span {
+	text-transform: uppercase;
 	background: #d84437;
-	padding: 2px 10px 2px 10px;
+	padding: 2px 5px 2px 5px;
 	color: #fff;
-/*	font-weight: bold; */
+	font-weight: bold;
 	line-height: 18px;
 }
 #menu_tab_left .mn li a {
@@ -568,16 +551,16 @@ span.master {
 	background: url(../../images/master.png) no-repeat;
 }
 span.wmi {
-    background: url(../../images/wmi.png) no-repeat;
+	background: url(../../images/wmi.png) no-repeat;
 }
 span.prediction {
-    background: url(../../images/chart_bar.png) no-repeat;
+	background: url(../../images/chart_bar.png) no-repeat;
 }
 span.plugin {
-    background: url(../../images/plugin.png) no-repeat;
+	background: url(../../images/plugin.png) no-repeat;
 }
 span.export {
-    background: url(../../images/database_refresh.png) no-repeat;
+	background: url(../../images/database_refresh.png) no-repeat;
 }
 span.snmp {
 	background: url(../../images/snmp.png) no-repeat;
@@ -594,13 +577,12 @@ span.rmess {
 span.nrmess {
 	background: url(../../images/email.png) no-repeat;
 }
-
 /* This kind of span do not have any sense, should be replaced on PHP code
 by a real img in code. They are not useful because insert too much margin around
 (for example, not valid to use in the table of server view */
-
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
-span.master, span.snmp, span.binary, span.recon {
+span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
+span.plugin, span.plugin, span.export {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;
@@ -621,9 +603,10 @@ span.rmess, span.nrmess {
 .databox {
 	background-color: #fafafa;
 }
+
 .databox_color {
-	border-left: 4px solid #D44;
 }
+
 #head_l {
 	float: left;
 	margin: 0;
@@ -633,23 +616,24 @@ span.rmess, span.nrmess {
 	float: right;
 	text-align: right;
 	margin-right: 10px;
-	padding-top: 0px;
+	padding-top: 5px;
 }
 #head_m {
 	position: absolute;
-	padding-top: 7px;
-	padding-left: 210px;	
-	
+	padding-top: 6px;
+	padding-left: 12em;	
 }
 span#logo_text1 {
-	font: bolder 3em Arial, Sans-serif;
+	font: bolder 2.5em Arial, Sans-serif;
 	letter-spacing: -2px;
 	color: #eee;
+	text-align: right;
 }
 span#logo_text2 {
-	font: 3em Arial, Sans-serif;
+	font: 2.5em Arial, Sans-serif;
 	letter-spacing: -2px;
 	color: #aaa;
+	text-align: right;
 }
 div#logo_text3 {
 	text-align: right;
@@ -661,64 +645,283 @@ div#logo_text3 {
 	margin-left: 4px;
 	padding-top: 0px:
 }
+
 .bb0 {
 	border-bottom: 0px;
 }
 .bt0 {
 	border-top: 0px;
 }
-
 .action-buttons {
 	text-align: right;
 }
-
 #table-add-item select, #table-add-sla select {
 	width: 180px;
 }
-
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9 {
 	background-color: #BBFFA4;
 }
-
 .datos_red, .datos_redf9 {
 	background-color: #FFC0B5;
 }
-
 .datos_yellow, .datos_yellowf9 {
 	background-color: #F4FFBF;
 }
-
 .datos_blue, .datos_bluef9 {
 	background-color: #CDE2EA;
 }
-
 .datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
 }
-
-.datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9 {
-	font-size: 6.5pt;
-}
-
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
 	padding: 5px 5px 5px 5px;
 }
 /* end of classes for event priorities */
-
 div#main_pure {
-    background-color: #fefefe;
-    text-align: left;
-    margin-bottom: 25px;
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
+	background-color: #fefefe;
+	text-align: left;
+	margin-bottom: 25px;
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+#table-agent-configuration radio {
+	margin-right: 40px;
+}
+.ui-draggable {
+	cursor:move;
+}
+#layout_trash_drop {
+	float: right;
+	width: 300px;
+	height: 180px;
+	background: #fff url("../../images/trash.png") no-repeat bottom left;
+}
+#layout_trash_drop div {
+	display: block;
+}
+#layout_editor_drop {
+	float: left;
+	width: 300px;
+}
+.agent_reporting {
+	margin: 5px;
+	padding: 5px;
+}
+.report_table, .agent_reporting {
+	border: #CCC outset 3px;
+}
+.img_help {
+	cursor: help;
+}
+#loading {
+	position:fixed;
+	width: 200px;
+	margin-left: 250px;
+	text-align:center;
+	top:300px;
+	background-color: #999999;
+	padding: 20px;
+}
+/* big_data is used in tactical and logon_ok */
+a.big_data {
+	text-decoration: none; font: bold 2em Arial, Sans-serif;
+}
+.notify {
+	background-color: #f7ffa5;
+	text-align: center;
+	font-weight: bold;
+	padding: 8px;
+}
+.listing {
+	border-collapse: collapse;
+}
+.listing td {
+	border-bottom: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+}
+ul {
+	list-style-type: none;
+	padding-left: 0;
+	margin-left: 0;
+}
+span.actions {
+	margin-left: 30px;
+}
+code, pre {
+	font-family: courier, serif;
+}
+select#template, select#action {
+	width: 250px;
+}
+#label-checkbox-matches_value,
+#label-checkbox-copy_modules,
+#label-checkbox-copy_alerts {
+	display: inline;
+	font-weight: normal;
+}
+input[type=image] {
+	border:0px;
+}
+table#simple select#id_module_type,
+table#alert_search select#id_agent,
+table#alert_search select#id_group {
+	width: 200px;
+}
+table#simple select#select_snmp_oid,
+table#simple select#id_plugin {
+	width: 270px;
+}
+table#simple input#text-plugin_parameter,
+table#simple input#text-snmp_oid,
+table#simple select#prediction_module,
+table#source_table select,
+table#destiny_table select,
+table#target_table select,
+table#filter_compound_table select,
+table#filter_compound_table #text-search,
+table#delete_table select {
+	width: 100%;
+}
+table#simple select#network_component_group,
+table#simple select#network_component {
+	width: 90%;
+}
+table#simple span#component_group,
+table#simple span#component {
+	width: 45%;
+	font-style: italic;
+}
+.clickable {
+	cursor: pointer;
+}
+table#agent_list tr, table.alert_list tr {
+	vertical-align: top;
+}
+ul.actions_list {
+	list-style-image: url(../../images/arrow.png);
+	list-style-position: inside;
+	margin-top: 0;
+}
+div.loading {
+	background-color: #FFF1A8;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 5px;
+	text-align: center;
+	font-style: italic;
+	width: 95%;
+}
+div.loading img {
+	float: right;
+}
+/* Tablesorter jQuery pager */
+div.pager {
+	margin-left: 10px;
+	margin-top: 5px;
+}
+div.pager img{
+	position: relative;
+	top: 4px;
+	padding-left: 5px;
+}
+div.pager input {
+	padding-left: 5px;
+}
+.pagedisplay {
+	border: 0;
+	width: 35px;
+}
+/* Steps style */
+ol.steps {
+	margin-bottom: 15px;
+	padding: 0;
+	list-style-type: none;
+	list-style-position: outline;
+}
+ol.steps li {
+	float: left;
+	background-color: #efefef;
+	padding: 5px;
+	margin-left: 5px;
+	width: 150px;
+}
+ol.steps li a {
+	color: #000;
+}
+ol.steps li.visited a {
+	color: #999;
+}
+ol.steps li span {
+	font-weight: normal;
+	display: block;
+}
+ol.steps li span {
+	color: #777;
+}
+ol.steps li.visited span {
+	color: #999;
+}
+ol.steps li.current {
+	border-left: 5px solid #000;
+	margin-left: 0;
+	font-weight: bold;
+	background-color: #E9F3D2;
+}
+ol.steps li.visited {
+	color: #999 !important;
 }
 
-div#pandora_logo_header {
-	background: url(../../images/pandora_logo_head.png);
-	background-position: 0% 0%;
-	width: 139px;
-	height: 60px;
+fieldset {
+	border: 2px solid #E9F3D2;
+	padding: 0 0 0 10px;
+	width: 90%;
+	margin-bottom: 15px;
+}
+fieldset legend span,
+span#latest_value {
+	font-style:italic;
+}
+span#latest_value span#value {
+	font-style:normal;
+}
+form#filter_form {
+	margin-bottom: 15px;
+}
+ul.action_list {
+	margin: 0;
+	list-style: none inside url(../../images/arrow.png);
+}
+ul.action_list li div {
+	margin-left: 15px;
+}
+span.action_name {
 	float: left;
+}
+div.actions_container {
+	overflow:auto;
+	width: 100%;
+	max-height: 200px;
+}
+div.actions_container label {
+	display: inline;
+	font-weight: normal;
+	font-style: italic;
+}
+a.add_action {
+	clear: both;
+	display: block;
+}
+
+/* timeEntry styles */
+.timeEntry_control {
+	vertical-align: middle;
+	margin-left: 2px;
+}
+div#steps_clean {
+	clear:both;
+}
+div#event_control {
+	clear:right;
 }

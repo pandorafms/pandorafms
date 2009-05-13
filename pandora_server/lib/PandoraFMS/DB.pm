@@ -2266,11 +2266,12 @@ sub export_module_data {
 	if ($id_export < 1) {
 		return;
 	}
-
+	$data = $dbh->quote($data);
+	
 	$dbh->do("INSERT INTO tserver_export_data (`id_export_server`, `agent_name` ,
 	         `module_name`, `module_type`, `data`, `timestamp`)
 	         VALUES ($id_export, '$agent_name', '$module_name', '$module_type',
-	         '$data', '$timestamp')");
+	         $data, '$timestamp')");
 }
 
 # ---------------------------------------------------------------

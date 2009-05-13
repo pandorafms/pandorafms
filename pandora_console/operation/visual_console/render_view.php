@@ -58,11 +58,11 @@ echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0) {
 	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">';
-	print_image ("images/monitor.png", false, array ("title" => __('Full screen mode')));
+	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen mode')));
 	echo "</a>";
 } else {
 	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">';
-	print_image ("images/monitor.png", false, array ("title" => __('Back to normal mode')));
+	print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
 	echo "</a>";
 }
 

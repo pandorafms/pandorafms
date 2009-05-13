@@ -501,6 +501,8 @@ div.title_line {
 }
 /* TAB TITLE */
 #menu_tab_left .mn, #menu_tab_left ul, #menu_tab_left .mn ul {
+	color: #fff;
+	font-weight: bold;
 	padding: 0px 0px 0px 0px;
 	list-style: none;
 	margin: 0px 0px 0px 2px;
@@ -509,7 +511,8 @@ div.title_line {
 	float: left;
 	position: relative;
 }
-#menu_tab_left li a {
+#menu_tab_left li a, #menu_tab_left li span {
+	text-transform: uppercase;
 	background: #d84437;
 	padding: 2px 5px 2px 5px;
 	color: #fff;

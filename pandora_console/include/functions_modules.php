@@ -245,14 +245,14 @@ function get_network_component_group_name ($id_network_component_group) {
  *
  * @return True if the module was deleted. False if not.
  */
-function delete_agent_module ($id) {
-	$where = array ('id_agent_module' => $id);
+function delete_agent_module ($id_agent_module) {
+	$where = array ('id_agent_module' => $id_agent_module);
 	
 	process_sql_delete ('talert_template_modules', $where);
 	process_sql_delete ('tgraph_source', $where);
 	process_sql_delete ('treport_content', $where);
-	process_sql_delete ('tevento', array ('id_agentmodule' => $id));
-	$where = array ('id_agente_modulo' => $id);
+	process_sql_delete ('tevento', array ('id_agentmodule' => $id_agent_module));
+	$where = array ('id_agente_modulo' => $id_agent_module);
 	process_sql_delete ('tlayout_data', $where);
 	process_sql_delete ('tagente_estado', $where);
 	process_sql_update ('tagente_modulo',

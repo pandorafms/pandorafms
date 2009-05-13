@@ -198,9 +198,9 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
 	if (! is_array ($filter))
 		$filter = array ();
 	
-	if (! isset ($filter['id_grupo']))
+	if (! isset ($filter['id_grupo'])) {
 		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));
-	else
+	} else {
 		if (! is_array ($filter['id_grupo'])) {
 			if (! in_array ($filter['id_grupo'], array_keys (get_user_groups (false, $access))))
 				return false;
@@ -208,10 +208,11 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
 			$user_groups = get_user_groups (false, $access);
 			foreach ($filter['id_grupo'] as $i => $id_group)
 				if (! isset ($user_groups[$id_group]))
-					unset ($filter['id_grupo'][$id]);
+					unset ($filter['id_grupo'][$i]);
 			if (count ($filter['id_grupo']) == 0)
 				$filter['id_grupo'] = $user_groups;
 		}
+	}
 	
 	return @get_db_all_rows_filter ('tagente', $filter, $fields);
 }

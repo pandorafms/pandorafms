@@ -34,7 +34,6 @@ if (is_ajax ()) {
 		
 		$table_renders = str_replace  ("\\\"", "\"", $_POST['table_renders']);
 		$table_renders = json_decode ($table_renders, true);
-		print_r ($fields);
 		$access = (string) get_parameter ('access', 'AR');
 		
 		foreach ($_POST as $field => $value) {
@@ -42,14 +41,13 @@ if (is_ajax ()) {
 			switch ($field) {
 			case 'page':
 			case 'search_agents':
-			case 'search':
 			case 'table_renders':
 			case 'fields':
 			case 'filter':
 			case 'access':
 				continue;
 			case 'search':
-				array_push ($filter, '(nombre LIKE "%%'.$value.'%%" OR descripcion LIKE "%%'.$value.'%%")');
+				array_push ($filter, '(nombre LIKE "%'.$value.'%" OR comentarios LIKE "%'.$value.'%")');
 				break;
 			case 'id_group':
 				if ($value == 1)
@@ -62,7 +60,16 @@ if (is_ajax ()) {
 			}
 		}
 		
+		$total_agents = get_agents ($filter, array ('COUNT(*) AS total'), $access);
+		
+		if ($total_agents !== false)
+			$total_agents = $total_agents[0]['total'];
+		else
+			$total_agents = 0;
+		$filter['limit'] = $config['block_size'];
+		$filter['offset'] = (int) get_parameter ('offset');
 		$agents = get_agents ($filter, $fields, $access);
+		
 		$all_data = array ();
 		if ($agents !== false) {
 			foreach ($agents as $agent) {
@@ -79,6 +86,7 @@ if (is_ajax ()) {
 		}
 		
 		echo json_encode ($all_data);
+		
 		return;
 	}
 	return;
@@ -137,9 +145,19 @@ $table->id = 'agents_table';
 $table->head = $table_heads;
 $table->align = $table_align;
 $table->size = $table_size;
+$table->style = array ();
 $table->data = array ();
 
+$total_agents = get_agents ($filter, array ('COUNT(*) AS total'), $access);
+if ($total_agents !== false)
+	$total_agents = $total_agents[0]['total'];
+else
+	$total_agents = 0;
+$filter['limit'] = $config['block_size'];
+$filter['offset'] = (int) get_parameter ('offset');
 $agents = get_agents ($filter, $fields, $access);
+unset ($filter['limit']);
+unset ($filter['offset']);
 
 echo '<div id="agents_loading" class="loading invisible">';
 echo '<img src="images/spinner.gif" />';
@@ -164,7 +182,10 @@ if ($agents !== false) {
 	}
 }
 
+echo '<div id="agents"'.($agents === false ? ' class="invisible"' : '').'>';
+pagination ($total_agents);
 print_table ($table);
+echo '</div>';
 echo '</div>';
 ?>
 <script type="text/javascript">

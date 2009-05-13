@@ -2752,7 +2752,7 @@ function get_server_info ($id_server = -1) {
 			$id_modulo = 6;
 			break;
 		case 7:
-			$server["img"] = print_image ("images/bullet_go.png", true, array ("title" => __('Export Server')));
+			$server["img"] = print_image ("images/server_export.png", true, array ("title" => __('Export Server')));
 			$server["type"] = "export";
 			$id_modulo = 0;
 			break;

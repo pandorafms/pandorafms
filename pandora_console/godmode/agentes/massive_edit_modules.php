@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Massive alerts deletion').'</h3>';
+echo '<h3>'.__('Massive modules edition').'</h3>';
 
 function process_manage_edit ($module_name) {
 	if (is_int ($module_name) && $module_name <= 0) {

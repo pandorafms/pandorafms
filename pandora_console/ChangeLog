@@ -1,3 +1,14 @@
+2009-05-14  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/massive_edit_modules.php: Fixed title.
+
+	* images/printer.png, images/chart_curve.png, images/target.png,
+	images/suc.png, images/rss.png, images/error.png, images/err.png:
+	Updated with tango icons.
+
+	* images/anchor.png, images/accept.png: Deleted from repository. Unused
+	icons.
+
 2009-05-13  Sancho Lerena <slerena@gmail.com>
 
 	* include/styles/pandora_blackmetal.css: New style with custom headers

@@ -304,7 +304,7 @@ print_image ("images/heart.png", false, array ("title" => __('Marquee display'))
 echo '</a>';
 // RSS
 echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;id_agent='.$id_agent.'">';
-print_image ("images/transmit.png", false, array ("title" => __('RSS Events')));
+print_image ("images/rss.png", false, array ("title" => __('RSS Events')));
 echo '</a>';
 
 echo "</td></tr></table></form>"; //This is the filter div

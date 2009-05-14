@@ -809,13 +809,13 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 	
 	$output = '<div class="pagination">';
 	// Show GOTO FIRST button
-	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.print_image ("images/control_start_blue.png", true, array ("class" => "bot")).'</a>&nbsp;';
+	$output .= '<a class="pagination go_first" href="'.$url.'&amp;'.$offset_name.'=0">'.print_image ("images/go_first.png", true, array ("class" => "bot")).'</a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0) {
 		$index_page_prev = ($index_page - (floor ($block_limit / 2))) * $pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.print_image ("images/control_rewind_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_rewind" href="'.$url.'&amp;'.$offset_name.'='.$index_page_prev.'">'.print_image ("images/go_previous.png", true, array ("class" => "bot")).'</a>';
 	}
 	$output .= "&nbsp;&nbsp;";
 	// Draw blocks markers
@@ -846,7 +846,7 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.print_image ("images/control_fastforward_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_fastforward" href="'.$url.'&amp;'.$offset_name.'='.$prox_bloque.'">'.print_image ("images/go_next.png", true, array ("class" => "bot")).'</a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -855,7 +855,7 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0) {
 		$myoffset = floor (($count - 1) / $pagination) * $pagination;
-		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.print_image ("images/control_end_blue.png", true, array ("class" => "bot")).'</a>';
+		$output .= '<a class="pagination go_last" href="'.$url.'&amp;'.$offset_name.'='.$myoffset.'">'.print_image ("images/go_last.png", true, array ("class" => "bot")).'</a>';
 	}
 	// End div and layout
 	$output .= "</div>";

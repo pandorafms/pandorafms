@@ -580,11 +580,11 @@ if ($step == 1) {
 	/* Pager for alert list using Javascript */
 	echo '<div id="alerts_pager" class="'.($id_agent ? '' : 'invisible ').'pager">';
 	echo '<form>';
-	echo '<img src="images/control_start_blue.png" class="first" />';
-	echo '<img src="images/control_rewind_blue.png" class="prev" />';
+	echo '<img src="images/go_first.png" class="first" />';
+	echo '<img src="images/go_previous.png" class="prev" />';
 	echo '<input type="text" class="pagedisplay" />';
-	echo '<img src="images/control_fastforward_blue.png" class="next" />';
-	echo '<img src="images/control_end_blue.png" class="last" />';
+	echo '<img src="images/go_next.png" class="next" />';
+	echo '<img src="images/go_last.png" class="last" />';
 	echo '<select class="pagesize invisible">';
 	echo '<option selected="selected" value="'.$config['block_size'].'">'.$config['block_size'].'</option>';
 	echo '</select>';

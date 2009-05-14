@@ -73,12 +73,12 @@ echo '</td><td width="20%">';
 $ignored_params = array ('agent_config' => false);
 if ($config["refr"]) {
 	$ignored_params['refr'] = 0;
-	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
+	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_refresh.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');
 	echo ' (<span id="refrcounter">'.date ("i:s", $config["refr"]).'</span>)';
 	echo '</a>';
 } else {	
 	$ignored_params['refr'] = '';
-	echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_lightning.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
+	echo '<a id="autorefresh" class="white_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_refresh.png" class="bot" alt="lightning" />&nbsp;'.__('Autorefresh').'</a>';
 	$values = array ('5' => '5 '.__('seconds'),
 		'10' => '10 '.__('seconds'),
 		'15' => '15 '.__('seconds'),

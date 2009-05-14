@@ -1,5 +1,29 @@
 2009-05-14  Esteban Sanchez  <estebans@artica.es>
 
+	* images/go_first.png, images/go_last.png, images/go_next.png
+	images/go_previous.png, images/page_refresh.png: Added to repository.
+
+	* images/b_blue.png, images/b_green.png, images/binary.png,
+	images/b_magenta.png, images/b_red.png, images/brick.png,
+	images/bricks.png, images/bug.png, images/b_white.png,
+	images/b_yellow.png, images/cog.png, images/comments.png,
+	images/computer_error.png, images/computer.png, images/database_gear.png,
+	images/database_lightning.png, images/database.png,
+	images/database_refresh.png, images/disk.png, images/god3.png,
+	images/god5.png, images/god7.png, images/god8.png,
+	images/lightbulb_off.png, images/lightbulb.png,
+	images/lightning.png, images/network.png, images/plugin.png,
+	images/reporting_edit.png, images/setup.png: Update to tango theme.
+	Some of them were repainted using tango palette.
+
+	* images/control_end_blue.png, images/control_fastforward_blue.png
+	images/control_rewind_blue.png, images/control_start_blue.png
+	images/transmit.png: Deleted. Unused icons.
+
+	* general/header.php: Changed refresh icon.
+
+2009-05-14  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/massive_edit_modules.php: Fixed title.
 
 	* images/printer.png, images/chart_curve.png, images/target.png,

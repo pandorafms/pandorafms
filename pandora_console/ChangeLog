@@ -1,5 +1,37 @@
 2009-05-18  Esteban Sanchez  <estebans@artica.es>
 
+	* images/mod_async_string.png, images/mod_async_inc.png,
+ 	images/mod_data.png, images/file.png, images/mod_image_png.png,
+ 	images/mod_async_data.png, images/config.png, images/mod_tcp_inc.png,
+ 	images/so_other.png, images/dot_magenta.png, images/so_hpux.png,
+ 	images/lock.png, images/plugin.png, images/mod_proc.png,
+ 	images/dot_green.png, images/mod_icmp_data.png, images/tip.png,
+ 	images/so_win.png, images/mod_async_proc.png, images/pill.png,
+ 	images/mod_snmp_string.png, images/mod_snmp_inc.png,
+ 	images/lightning_go.png, images/mod_tcp_data.png,
+ 	images/wrench_orange.png, images/dot_yellow.png, images/up.png,
+ 	images/dot_white.png, images/upd.png, images/mod_snmp_data.png,
+ 	images/recon.png, images/mod_icmp_proc.png, images/mod_tcp_string.png,
+ 	images/page_white.png, images/wrench.png, images/clock.png,
+ 	images/wmi.png, images/mod_string.png, images/mod_tcp_proc.png,
+ 	images/network.png, images/god2.png, images/god4.png, images/god6.png,
+ 	images/mod_snmp_proc.png, images/page_lightning.png,
+ 	images/mod_image_jpg.png, images/so_aix.png,
+ 	images/groups_small/plugin.png, images/groups_small/computer.png,
+ 	images/groups_small/database_gear.png, images/groups_small/heart.png,
+ 	images/groups_small/firewall.png, images/groups_small/bricks.png,
+ 	images/groups_small/chart_organisation.png,
+ 	images/groups_small/drive_network.png, images/groups_small/house.png,
+ 	images/groups_small/lightning.png, images/groups_small/printer.png,
+ 	images/groups_small/applications.png, images/groups_small/email.png,
+ 	images/groups_small/application_osx_terminal.png,
+ 	images/groups_small/world.png, images/groups_small/lock.png,
+ 	images/groups_small/network.png, images/groups_small/server_database.png,
+ 	images/groups_small/clock.png, images/photo.png, images/dot_blue.png,
+ 	images/dot_red.png, images/cross.png: Updated to tango icons.
+
+2009-05-18  Esteban Sanchez  <estebans@artica.es>
+
 	* images/award_star_bronze_1.png, images/award_star_bronze_2.png,
 	images/award_star_bronze_3.png, images/award_star_gold_2.png,
 	images/award_star_silver_1.png, images/bullet_add.png,

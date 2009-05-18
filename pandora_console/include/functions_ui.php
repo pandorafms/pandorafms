@@ -751,7 +751,7 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 	global $config;
 	
 	if (empty ($pagination)) {
-		$pagination = $config["block_size"];
+		$pagination = (int) $config["block_size"];
 	}
 	
 	$offset_name = 'offset';

@@ -1,3 +1,35 @@
+2009-05-18  Esteban Sanchez  <estebans@artica.es>
+
+	* images/award_star_bronze_1.png, images/award_star_bronze_2.png,
+	images/award_star_bronze_3.png, images/award_star_gold_2.png,
+	images/award_star_silver_1.png, images/bullet_add.png,
+	images/bullet_black.png, images/bullet_blue.png,
+	images/bullet_delete.png, images/bullet_disk.png,
+	images/bullet_error.png, images/bullet_go.png,
+	images/bullet_green.png, images/bullet_key.png,
+	images/bullet_white.png, images/bullet_wrench.png,
+	images/bullet_yellow.png, images/dot_down.png, images/exclamation.png,
+	images/flag_blue.png, images/flag_green.png, images/flag_yellow.png,
+	images/help_small.jpg, images/lock_open.png, images/mod_udp_proc.png,
+	images/newspaper.png, images/phone_sound.png, images/pixel_blue.png,
+	images/plugin_disabled.png, images/plugin_enabled.png,
+	images/pulpo_lupa.png, images/shield.png, images/so_beos.png,
+	images/status_busy.png, images/status_online.png, images/user_female.png,
+	images/user_gray.png, images/user_orange.png, images/user_red.png,
+	images/webcam.png: Deleted from repository. Unused icons.
+
+	* images/agents_group.png: Added to repository. New icon.
+
+	* godmode/agentes/configurar_agente.php,
+	operation/agentes/ver_agente.php: Replaced icon for agent group.
+
+	* include/functions_db.php: Replaced icons for data server. Style
+	correction.
+
+	* include/functions_ui.php: Cast block_size value for sanity.
+	
+	* ChangeLog: Added some lines of a previous commit.
+
 2009-05-14  Esteban Sanchez  <estebans@artica.es>
 
 	* images/go_first.png, images/go_last.png, images/go_next.png
@@ -57,6 +89,14 @@
 
 	* general/header.php: Some changes for style. Now displays OpenSource version
 	or Enterprise version depending of version.
+
+2009-05-13  Esteban Sánchez  <estebans@artica.es>
+
+	* images/attachment.png: Added to repository.
+	
+	* images/chart_curve.png, images/chart_bar.png: Replaced with tango icons.
+
+	* operation/incidents/incident.php: Use attachment icon.
 
 2009-05-13  Esteban Sánchez  <estebans@artica.es>
 

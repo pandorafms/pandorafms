@@ -218,7 +218,7 @@ if ($id_agente) {
 
 	echo '<li class="nomn">';
 	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
-	print_image ("images/god4.png", false, $img_style);
+	print_image ("images/agents_group.png", false, $img_style);
         echo '&nbsp; '.__('Group').'</a></li>';
 
 	echo "</ul></div></div>";

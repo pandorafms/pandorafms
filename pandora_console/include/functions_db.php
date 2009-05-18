@@ -1278,7 +1278,7 @@ function show_server_type ($id) {
 	global $config;
 	switch ($id) {
 	case 1:
-		return '<img src="images/data.png" title="Pandora FMS Data server">';
+		return '<img src="images/database.png" title="Pandora FMS Data server">';
 		break;
 	case 2:
 		return '<img src="images/network.png" title="Pandora FMS Network server">';
@@ -1294,8 +1294,9 @@ function show_server_type ($id) {
 		break;
 	case 7: 
 		return '<img src="images/server_web.png" title="Pandora FMS WEB server">';
-                break;
-	default: return "--";
+		break;
+	default:
+		return "--";
 	}
 }
 

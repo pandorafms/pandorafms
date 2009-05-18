@@ -231,7 +231,7 @@ echo "</li>";
 // Group tab
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
-echo "<img src='images/god4.png' class='top' border=0>&nbsp;";
+echo "<img src='images/agents_group.png' class='top' border=0>&nbsp;";
 echo __("Group");
 echo "</a></li>";
 

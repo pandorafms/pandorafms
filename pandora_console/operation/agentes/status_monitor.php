@@ -26,43 +26,27 @@ check_login();
 if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
 	audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation",
 		"Trying to access Agent Management");
-	require ("general/noaccess.php");
-	exit;
+	require ('general/noaccess.php');
+	return;
 }
 
-echo "<h2>".__('Pandora Agents')." &raquo; ".__('Full list of Monitors')."</h2>";
+echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Full list of Monitors').'</h2>';
 
-$ag_freestring = get_parameter ("ag_freestring", "");
-$ag_modulename = get_parameter ("ag_modulename", "");
-$ag_group = get_parameter ("ag_group", -1);
-$offset = get_parameter ("offset", 0);
-$status = get_parameter ("status", 4);
-$modulegroup = get_parameter ("modulegroup", 0);
+$ag_freestring = get_parameter ('ag_freestring');
+$ag_modulename = (string) get_parameter ('ag_modulename');
+$ag_group = (int) get_parameter ('ag_group', -1);
+$offset = (int) get_parameter ('offset');
+$status = (int) get_parameter ('status', 4);
+$modulegroup = (int) get_parameter ('modulegroup');
 
-$url = '';
-if ($ag_group > 0) {
-	$url .= "&ag_group=".$ag_group;
-}
-if ($ag_modulename != "") {
-	$url .= "&ag_modulename=".$ag_modulename;
-}
-if ($ag_freestring != "") {
-	$url .= "&ag_freestring=".$ag_freestring;
-}
-if ($status != 0) {
-	$url .= "&status=".$status;
-}
-if ($modulegroup != 0) {
-	$url .= "&modulegroup=".$modulegroup;
-}
-
-echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'.$url.'">';
+echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60">';
 
 echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
-print_select (get_user_groups (), "ag_group", $ag_group, 'this.form.submit();', '', '0', false, false, false, 'w130');
+print_select (get_user_groups (), "ag_group", $ag_group, 'this.form.submit();',
+	'', '0', false, false, false, 'w130');
 
 echo "</td>";
 echo "<td>".__('Monitor status')."</td><td>";
@@ -77,30 +61,19 @@ $fields[4] = __('Not normal');
 print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
 echo '</td>';
 
-
-
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
-print_select_from_sql ("SELECT * FROM tmodule_group order by name", "modulegroup",$modulegroup, '',__('All'), 0);
-
-
+print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+	'modulegroup', $modulegroup, '',__('All'), 0);
 
 echo '</tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
-$result = get_db_all_rows_sql ("SELECT DISTINCT(nombre) FROM tagente_modulo ORDER BY nombre");
-if ($result === false) {
-	$result = array ();
-}
+$modules = get_db_all_rows_filter ('tagente_modulo', false, 'DISTINCT(nombre)');
+print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
+	$ag_modulename, 'this.form.submit();', __('All'), '');
 
-$fields = array ();
-foreach ($result as $row) {
-	$fields[$row["nombre"]] = $row["nombre"];
-}
-
-print_select ($fields, "ag_modulename", $ag_modulename, 'this.form.submit();', __('All'), "");
-
-echo '</td><td valign="middle">'.__('Free text').'</td>';
+echo '</td><td valign="middle">'.__('Search').'</td>';
 
 echo '<td valign="middle">';
 print_input_text ("ag_freestring", $ag_freestring, '', 15,30, false);
@@ -175,7 +148,7 @@ $sql = "SELECT tagente_modulo.id_agente_modulo,
 $result = get_db_all_rows_sql ($sql);
 
 if ($count > $config["block_size"]) {
-	pagination ($count, "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60".$url, $offset);
+	pagination ($count, false, $offset);
 }
 
 if ($result === false) {

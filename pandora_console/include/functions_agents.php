@@ -192,29 +192,49 @@ function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
  * @param array Fields to get.
  * @param string Access needed in the agents groups.
  * 
- * @return array An array with all alerts defined for an agent.
+ * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
 function get_agents ($filter = false, $fields = false, $access = 'AR') {
-	if (! is_array ($filter))
+	if (! is_array ($filter)) {
 		$filter = array ();
+	}
 	
-	if (! isset ($filter['id_grupo'])) {
-		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));
+	//Get user groups
+	$groups = array_keys (get_user_groups (false, $access));
+
+	//If no group specified, get all user groups
+	if (empty ($filter['id_grupo'])) {
+		$filter['id_grupo'] = $groups;
+	} elseif (! is_array ($filter['id_grupo'])) {
+		//If group is specified but not allowed, return false
+		if (! in_array ($filter['id_grupo'], $groups)) {
+			return false;
+		}
+		$filter['id_grupo'] = (array) $filter['id_grupo']; //Make an array
 	} else {
-		if (! is_array ($filter['id_grupo'])) {
-			if (! in_array ($filter['id_grupo'], array_keys (get_user_groups (false, $access))))
-				return false;
-		} else {
-			$user_groups = get_user_groups (false, $access);
-			foreach ($filter['id_grupo'] as $i => $id_group)
-				if (! isset ($user_groups[$id_group]))
-					unset ($filter['id_grupo'][$i]);
-			if (count ($filter['id_grupo']) == 0)
-				$filter['id_grupo'] = $user_groups;
+		//Check each group specified to the user groups, remove unwanted groups
+		foreach ($filter['id_grupo'] as $key => $id_group) {
+			if (! in_array ($id_group, $groups)) {
+				unset ($filter['id_grupo'][$key]);
+			}
+		}
+		//If no allowed groups are specified return false
+		if (count ($filter['id_grupo']) == 0) {
+			return false;
 		}
 	}
 	
-	return @get_db_all_rows_filter ('tagente', $filter, $fields);
+	if (in_array (1, $filter['id_grupo'])) {
+		unset ($filter['id_grupo']);
+	}
+	
+	if (!is_array ($fields)) {
+		$fields = array ();
+		$fields[0] = "id_agente";
+		$fields[1] = "nombre";
+	}
+
+	return get_db_all_rows_filter ('tagente', $filter, $fields);
 }
 
 /**

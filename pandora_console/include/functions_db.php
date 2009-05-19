@@ -1704,24 +1704,25 @@ get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
  * @return mixed Array of the row or false in case of error.
  */
 function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+	//TODO: Validate and clean fields
 	if (empty ($fields)) {
 		$fields = '*';
-	} else {
-		if (is_array ($fields))
-			$fields = implode (',', $fields);
-		else if (! is_string ($fields))
-			return false;
+	} elseif (is_array ($fields)) {
+		$fields = implode (',', $fields);
+	} elseif (! is_string ($fields)) {
+		return false;	
 	}
 	
-	if (is_array ($filter))
+	//TODO: Validate and clean filter options
+	if (is_array ($filter)) {
 		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
-	else if (is_string ($filter))
+	} elseif (is_string ($filter)) {
 		$filter = 'WHERE '.$filter;
-	else
+	} else {
 		$filter = '';
+	}
 	
-	$sql = sprintf ('SELECT %s FROM %s %s',
-		$fields, $table, $filter);
+	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
 	
 	return get_db_all_rows_sql ($sql);
 }
@@ -2198,17 +2199,58 @@ function get_previous_data ($id_agent_module, $utimestamp = 0) {
 }
 
 /** 
+ * Get all the values of an agent module in a period of time.
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return array The module value and the timestamp
+ */
+function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
+	if ($date < 1) {
+		$date = get_system_time ();
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ("SELECT datos AS data, utimestamp FROM tagente_datos WHERE id_agente_modulo = %d 
+					AND utimestamp > %d AND utimestamp <= %d ORDER BY utimestamp ASC",
+					$id_agent_module, $datelimit, $date);
+	
+	$values = get_db_all_rows_sql ($sql);
+		
+	if ($values === false) {
+		return array ();
+	}
+	
+	$module_name = get_agentmodule_name ($id_agent_module);
+	$agent_id = get_agentmodule_agent ($id_agent_module);
+	$agent_name = get_agentmodule_agent_name ($id_agent_module);
+	
+	foreach ($values as $key => $data) {
+		$values[$key]["module_name"] = $module_name;
+		$values[$key]["agent_id"] = $agent_id;
+		$values[$key]["agent_name"] = $agent_name;
+	}
+	
+	return $values;
+}
+	
+/** 
  * Get the average value of an agent module in a period of time.
  * 
  * @param int Agent module id
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
  * 
- * @return int The average module value in the interval.
+ * @return float The average module value in the interval.
  */
 function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
-	if (! $date)
+	if ($date < 1) {
 		$date = get_system_time ();
+	}
+	
 	$datelimit = $date - $period;
 	
 	$sql = sprintf ("SELECT SUM(datos), COUNT(*) FROM tagente_datos 
@@ -2216,16 +2258,21 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC",
 			$id_agent_module, $datelimit, $date);
+	
 	$values = get_db_row_sql ($sql);
+	
 	$sum = (float) $values[0];
 	$total = (int) $values[1];
 	
 	/* Get also the previous data before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data)
+	
+	if ($previous_data) {
 		return ($previous_data['datos'] + $sum) / ($total + 1);
-	if ($total > 0)
+	} elseif ($total > 0) {
 		return $sum / $total;
+	}
+		
 	return 0;
 }
 
@@ -2291,7 +2338,7 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
  * @param int Period of time to check (in seconds)
  * @param int Top date to check the values. Default current time.
  * 
- * @return int The sumatory of the module values in the interval.
+ * @return float The sumatory of the module values in the interval.
  */
 function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	if (! $date)

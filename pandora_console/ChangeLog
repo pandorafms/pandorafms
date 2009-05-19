@@ -1,3 +1,25 @@
+2009-05-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_incidents.php: Removed upgrade_inc13to21. An old
+	function that shouldn't be there anymore.
+	
+	* include/functions_agents.php: Fixed documentation. Fixed some bugs in
+	get_agents () when empty values were passed.
+	
+	* include/functions_ui.php: Added $config['ignore_callback']. Useful if
+	you decide to flush the buffers (eg. to offer a download)
+	
+	* include/functions_db.php: Cleaned up get_db_all_rows_filter and added
+	some documentation and todo's. Added get_agentmodule_data to get all
+	datapoints of a module. Cleaned up get_agentmodule_data_average	
+	
+	* include/functions_html.php: Some situations generated a warning when alt
+	wasn't specified (can't add keys on non-arrays)
+	
+	* include/exportdata.php: Rewritten. Added filters for group. Works using
+	functions and export into HTML, CSV and Excel with the option for 
+	expansion (specify the delimiter values)
+
 2009-05-19  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/massive_delete_alerts.php: Fixed an error when selecting

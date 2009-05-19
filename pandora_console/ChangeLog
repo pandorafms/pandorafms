@@ -1,3 +1,13 @@
+2009-05-19  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_alerts.php: Added get_agents_with_alert_template().
+	Added extra filter to delete_alert_agent_module().
+
+	* godmode/agentes/massive_delete_alerts.php: Completely changed the way it
+	works. Fixes #2707976.
+	
+	* images/mod_keepalive.png: Replaced with tango icon.
+
 2009-05-18  Esteban Sanchez  <estebans@artica.es>
 
 	* images/mod_async_string.png, images/mod_async_inc.png,

@@ -29,25 +29,43 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 
-echo '<h3>'.__('Massive alerts deletion').'</h3>';
+if (is_ajax ()) {
+	$get_agents = (bool) get_parameter ('get_agents');
+	
+	if ($get_agents) {
+		$id_group = (int) get_parameter ('id_group');
+		$id_alert_template = (int) get_parameter ('id_alert_template');
+		
+		$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+			false, array ('tagente.nombre', 'tagente.id_agente'));
+		
+		echo json_encode (index_array ($agents_alerts, 'id_agente', 'nombre'));
+		return;
+	}
+	return;
+}
 
-function process_manage_delete ($id_alerts) {
-	if (empty ($id_alerts)) {
-		echo '<h3 class="error">'.__('No alerts selected').'</h3>';
+echo '<h3>'.__('Massive alerts deletion').'</h3>';
+function process_manage_delete ($id_alert_template, $id_agents) {
+	if (empty ($id_alert_template)) {
+		echo '<h3 class="error">'.__('No alert selected').'</h3>';
 		return false;
 	}
 	
-	process_sql_begin ();
-	
-	foreach ($id_alerts as $id_alert) {
-		$success = delete_alert_agent_module ($id_alert);
-		if (! $success)
-			break;
+	if (empty ($id_agents)) {
+		echo '<h3 class="error">'.__('No agents selected').'</h3>';
+		return false;
 	}
 	
+	$modules = get_agent_modules ($id_agents, 'id_agente_modulo', false, true);
+	
+	process_sql_begin ();
+	$success = delete_alert_agent_module (false,
+		array ('id_agent_module' => $modules,
+			'id_alert_template' => $id_alert_template));
 	if (! $success) {
 		echo '<h3 class="error">'.__('There was an error deleting the alert, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete alert').' '.get_agentmodule_name ($id_module).'</h4>';
+		echo '<h4>'.__('Could not delete alert in agent %s', get_agent_name ($id_agent)).'</h4>';
 		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
@@ -56,13 +74,13 @@ function process_manage_delete ($id_alerts) {
 }
 
 $id_group = (int) get_parameter ('id_group');
-$id_agent = (int) get_parameter ('id_agent');
-$id_alerts = get_parameter ('id_alerts');
+$id_agents = (array) get_parameter ('id_agents');
+$id_alert_template = (int) get_parameter ('id_alert_template');
 
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($id_alerts);
+	process_manage_delete ($id_alert_template, $id_agents);
 }
 
 $groups = get_user_groups ();
@@ -78,34 +96,23 @@ $table->size[0] = '15%';
 $table->size[1] = '85%';
 
 $table->data = array ();
-$table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'id_group', $id_group,
-	false, '', '', true);
 
-$table->data[1][0] = __('Agent');
-$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.gif" />';
-$table->data[1][0] .= '</span>';
-$table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
-	'id_agent', $id_agent, false, __('None'), 0, true);
+$table->data[0][0] = __('Alert template');
+$table->data[0][1] = print_select (get_alert_templates (),
+	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
+	
+$table->data[1][0] = __('Group');
+$table->data[1][1] = print_select ($groups, 'id_group', $id_group,
+	'', '', '', true, false, true, '', $id_alert_template == 0);
 
-$table->data[2][0] = __('Alerts');
-$table->data[2][0] .= '<span id="alert_loading" class="invisible">';
+$table->data[2][0] = __('Agent');
+$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= '<img src="images/spinner.gif" />';
 $table->data[2][0] .= '</span>';
-$alerts = array ();
-if ($id_agent) {
-	$simple_alerts = get_agent_alerts_simple ($id_agent, '', false);
-	if ($simple_alerts !== false) {
-		foreach ($simple_alerts as $alert) {
-			$name = get_alert_template_name ($alert['id_alert_template']);
-			$name .= ' ('.get_agentmodule_name ($alert['id_agent_module']).')';
-			$alerts[$alert['id']] = $name;
-		}
-	}
-}
-$table->data[2][1] = print_select ($alerts,
-	'id_alerts[]', 0, false, '', '', true, true);
+$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+	false, array ('tagente.nombre', 'tagente.id_agente'));
+$table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
+	'id_agents', '', '', '', '', true, true, true, '', $id_alert_template == 0);
 
 echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
 print_table ($table);
@@ -125,9 +132,37 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#id_group").pandoraSelectGroupAgent ();
-	$("#id_agent").pandoraSelectAgentAlert ({
-		alertSelect: "select#id_alerts"
+	$("#id_alert_template").change (function () {
+		if (this.value != 0) {
+			$("#id_agents").enable ();
+			$("#id_group").enable ().change ();
+			
+		} else {
+			$("#id_group, #id_agents").disable ();
+		}
+	});
+	$("#id_group").change (function () {
+		var $select = $("#id_agents").disable ();
+		$("#agent_loading").show ();
+		$("option[value!=0]", $select).remove ();
+		
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/massive_delete_alerts",
+			"get_agents" : 1,
+			"id_group" : this.value,
+			"id_alert_template" : $("#id_alert_template").attr ("value")
+			},
+			function (data, status) {
+				options = "";
+				jQuery.each (data, function (id, value) {
+					options += "<option value=\""+id+"\">"+value+"</option>";
+				});
+				$("#id_agents").append (options);
+				$("#agent_loading").hide ();
+				$select.enable ();
+			},
+			"json"
+		);
 	});
 });
 /* ]]> */

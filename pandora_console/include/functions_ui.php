@@ -574,6 +574,11 @@ function require_jquery_file ($name, $path = 'include/javascript/') {
  */
 function process_page_head ($string, $bitfield) {
 	global $config;
+
+	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
+		return;
+	}
+	
 	$output = '';
 	
 	if ($config["refr"] > 0) {
@@ -712,6 +717,10 @@ function process_page_head ($string, $bitfield) {
  */
 function process_page_body ($string, $bitfield) {
 	global $config;
+	
+	if (isset ($config['ignore_callback']) && $config['ignore_callback'] == true) {
+		return;
+	}
 	
 	// Show custom background
 	if ($config["pure"] == 0) {

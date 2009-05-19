@@ -403,35 +403,4 @@ function get_incidents_attach ($id_incident) {
 function get_incidents_notes_author ($id_note) {
 	return (string) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
-
-/**
- * @ignore This function should never be used
- */
-function upgrade_inc13to21 () {
-	$sql = "ALTER TABLE  `tincidencia` CHANGE  `id_incidencia`  `id_incidencia` BIGINT( 6 ) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT";
-	process_sql ($sql);
-	$sql = "ALTER TABLE  `tincidencia` ADD  `id_lastupdate` VARCHAR( 60 ) NULL AFTER  `id_creator` ;";
-	process_sql ($sql);
-	$sql = "ALTER TABLE  `tincidencia` CHANGE  `actualizacion`  `actualizacion` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
-	process_sql ($sql);
-	$sql = "ALTER TABLE  `tnota` ADD  `id_incident` BIGINT( 6 ) UNSIGNED ZEROFILL NOT NULL AFTER  `id_nota` ;";
-	process_sql ($sql);
-	$sql = "ALTER TABLE  `tincidencia` ADD  `id_agente_modulo` BIGINT( 100 ) NOT NULL AFTER  `id_lastupdate` ;";
-	process_sql ($sql);
-	$sql = "ALTER TABLE  `tincidencia` ADD INDEX (  `id_agente_modulo` ) ;";
-	process_sql ($sql);
-	
-	$sql = "UPDATE tnota, tnota_inc SET tnota.id_incident = tnota_inc.id_incidencia WHERE tnota.id_nota = tnota_inc.id_nota";
-	$result = process_sql ($sql);
-	if ($result !== false) {
-		$sql = "DROP TABLE `tnota_inc`";
-		process_sql ($sql);
-	}
-}
-
-$sql = 'show tables like "tnota_inc"';
-$result = get_db_sql ($sql);
-if (!empty ($result)) {
-	upgrade_inc13to21 ();
-}
 ?>

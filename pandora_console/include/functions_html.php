@@ -804,12 +804,14 @@ function print_image ($src, $return = false, $options = false) {
 				$output .= $attribute.'="'.safe_input ($options[$attribute]).'" ';
 			}
 		}
+	} else {
+		$options = array ();
 	}
 	
 	if (!isset ($options["alt"]) && isset ($options["title"])) {
 		$options["alt"] = $options["title"]; //Set alt to title if it's not set
 	} elseif (!isset ($options["alt"])) {
-		$options["alt"] = ''; //Alt is mandatory, empty string will do
+		$options["alt"] = "";
 	}
 
 	if (!empty ($style)) {

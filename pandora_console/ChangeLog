@@ -1,5 +1,20 @@
 2009-05-19  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/massive_delete_alerts.php: Fixed an error when selecting
+	multiple agents. Changed some strings. Deleted "None" from the agents list.
+	Style corrections.
+
+	* godmode/agentes/massive_delete_modules.php: Changed the way it works.
+	Fixes #2707976.
+
+	* images/download.png, images/star.png, images/note.png: More tango icons.
+
+	* include/functions_alerts.php: Style corrections.
+	
+	* include/functions_modules.php: Added get_agents_with_module_name().
+
+2009-05-19  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_alerts.php: Added get_agents_with_alert_template().
 	Added extra filter to delete_alert_agent_module().
 

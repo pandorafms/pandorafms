@@ -29,25 +29,44 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 require_once ('include/functions_agents.php');
 require_once ('include/functions_modules.php');
 
+if (is_ajax ()) {
+	$get_agents = (bool) get_parameter ('get_agents');
+	
+	if ($get_agents) {
+		$id_group = (int) get_parameter ('id_group');
+		$module_name = (string) get_parameter ('module_name');
+		
+		$agents_modules = get_agents_with_module_name ($module_name, $id_group,
+			array ('delete_pending' => 0,
+				'`tagente_modulo`.disabled' => 0),
+			array ('tagente.id_agente', 'tagente.nombre'));
+		
+		echo json_encode (index_array ($agents_modules, 'id_agente', 'nombre'));
+		return;
+	}
+	return;
+}
+
 echo '<h3>'.__('Massive modules deletion').'</h3>';
 
-function process_manage_delete ($id_modules) {
-	if (empty ($id_modules)) {
-		echo '<h3 class="error">'.__('No modules selected').'</h3>';
+function process_manage_delete ($module_name, $id_agents) {
+	if (empty ($module_name)) {
+		echo '<h3 class="error">'.__('No module selected').'</h3>';
+		return false;
+	}
+	
+	if (empty ($id_agents)) {
+		echo '<h3 class="error">'.__('No agents selected').'</h3>';
 		return false;
 	}
 	
 	process_sql_begin ();
-	
-	foreach ($id_modules as $id_module) {
-		$success = delete_agent_module ($id_module);
-		if (! $success)
-			break;
-	}
-	
+	$modules = get_agent_modules ($id_agents, 'id_agente_modulo',
+		array ('nombre' => $module_name), true);
+	$success = delete_agent_module ($modules);
 	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the module, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete module').' '.get_agentmodule_name ($id_module).'</h4>';
+		echo '<h3 class="error">'.__('There was an error deleting the modules, the operation has been cancelled').'</h3>';
+		echo '<h4>'.__('Could not delete modules').'</h4>';
 		process_sql_rollback ();
 	} else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
@@ -56,13 +75,13 @@ function process_manage_delete ($id_modules) {
 }
 
 $id_group = (int) get_parameter ('id_group');
-$id_agent = (int) get_parameter ('id_agent');
-$id_modules = get_parameter ('id_modules');
+$id_agents = (array) get_parameter ('id_agents');
+$module_name = (string) get_parameter ('module_name');
 
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($id_modules);
+	process_manage_delete ($module_name, $id_agents);
 }
 
 $groups = get_user_groups ();
@@ -78,26 +97,27 @@ $table->size[0] = '15%';
 $table->size[1] = '85%';
 
 $table->data = array ();
-$table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'id_group', $id_group,
-	false, '', '', true);
 
-$table->data[1][0] = __('Agent');
-$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.gif" />';
-$table->data[1][0] .= '</span>';
-$table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
-	'id_agent', $id_agent, false, __('None'), 0, true);
+$table->data[0][0] = __('Modules');
+$modules = array ();
+$modules = get_db_all_rows_filter ('tagente_modulo', false, 'DISTINCT(nombre)');
+$table->data[0][1] = print_select (index_array ($modules, 'nombre', 'nombre'),
+	'module_name', $module_name, false, __('Select'), '', true);
 
-$table->data[2][0] = __('Modules');
-$table->data[2][0] .= '<span id="module_loading" class="invisible">';
+$table->data[1][0] = __('Group');
+$table->data[1][1] = print_select ($groups, 'id_group', $id_group,
+	false, '', '', true, false, true, '', empty ($module_name));
+
+$table->data[2][0] = __('Agent');
+$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= '<img src="images/spinner.gif" />';
 $table->data[2][0] .= '</span>';
-$modules = array ();
-if ($id_agent)
-	$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
-$table->data[2][1] = print_select ($modules,
-	'id_modules[]', 0, false, '', '', true, true);
+$agents = get_agents_with_module_name ($module_name, $id_group,
+	array ('delete_pending' => 0,
+		'`tagente_modulo`.disabled' => 0),
+	array ('tagente.id_agente', 'tagente.nombre'));
+$table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
+	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
 echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
 print_table ($table);
@@ -117,10 +137,39 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#id_group").pandoraSelectGroupAgent ();
-	$("#id_agent").pandoraSelectAgentModule ({
-		moduleSelect: "select#id_modules"
+	$("#module_name").change (function () {
+		if (this.value != "") {
+			$("#id_agents").enable ();
+			$("#id_group").enable ().change ();
+		} else {
+			$("#id_group, #id_agents").disable ();
+		}
 	});
+	
+	$("#id_group").change (function () {
+		var $select = $("#id_agents").disable ();
+		$("#agent_loading").show ();
+		$("option", $select).remove ();
+		
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/massive_delete_modules",
+			"get_agents" : 1,
+			"id_group" : this.value,
+			"module_name" : $("#module_name").attr ("value")
+			},
+			function (data, status) {
+				options = "";
+				jQuery.each (data, function (id, value) {
+					options += "<option value=\""+id+"\">"+value+"</option>";
+				});
+				$("#id_agents").append (options);
+				$("#agent_loading").hide ();
+				$select.enable ();
+			},
+			"json"
+		);
+	});
+	
 });
 /* ]]> */
 </script>

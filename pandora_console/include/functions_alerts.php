@@ -805,7 +805,7 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 		return false;
 	if (! is_array ($filter))
 		$filter = array ();
-	$filter[] = 'tagente_modulo.id_agente_modulo  = talert_template_modules.id_agent_module';
+	$filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
 	$filter[] = 'tagente_modulo.id_agente  = tagente.id_agente';
 	$filter['id_alert_template'] = $id_alert_template;
 	$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));

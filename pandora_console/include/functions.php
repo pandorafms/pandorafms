@@ -40,10 +40,10 @@ function safe_input ($value) {
 		return $value;
 	}
 
-	if (version_compare(PHP_VERSION, '5.2.3') === 1) {
+	if (version_compare (PHP_VERSION, '5.2.3') === 1) {
 		return htmlentities (utf8_encode ($value), ENT_QUOTES, "UTF-8", false);
 	} else {
-		$translation_table = get_html_translation_table (HTML_ENTITIES,ENT_QUOTES);
+		$translation_table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);
 		$translation_table[chr(38)] = '&';
 		return preg_replace ("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&amp;", strtr ($value, $translation_table));
 	}

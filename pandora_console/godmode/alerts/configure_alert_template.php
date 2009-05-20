@@ -512,7 +512,7 @@ var is_not = "<?php echo __('The alert would fire when the value is not <span id
 var between = "<?php echo __('The alert would fire when the value is between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
 var between_not = "<?php echo __('The alert would fire when the value is not between <span id=\"min\"></span> and <span id=\"max\"></span>');?>";
 var under = "<?php echo __('The alert would fire when the value is below <span id=\"min\"></span>');?>";
-var over = "<?php echo __('The alert would fire when the value is avobe <span id=\"max\"></span>');?>";
+var over = "<?php echo __('The alert would fire when the value is above <span id=\"max\"></span>');?>";
 var warning = "<?php echo __('The alert would fire when the module is in warning status');?>";
 var critical = "<?php echo __('The alert would fire when the module is in critical status');?>";
 

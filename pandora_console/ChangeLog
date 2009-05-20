@@ -1,3 +1,20 @@
+2009-05-20  Esteban Sanchez  <estebans@artica.es>
+
+	* general/ui/agents_list.php: Fixed searching filter. Added pagination
+	via AJAX.
+
+	* godmode/alerts/configure_alert_template.php: Typo error.
+
+	* images/application_edit.png, images/suc.png, images/err.png: Tiny
+	changes.
+
+	* images/application_not_writable.png: Added to repository.
+
+	* include/styles/pandora.css: Make success and error messages a little
+	bit narrower. Typo error.
+
+	* include/functions.php: Style corrections in safe_input().
+
 2009-05-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_incidents.php: Removed upgrade_inc13to21. An old
@@ -8,7 +25,6 @@
 	
 	* include/functions_ui.php: Added $config['ignore_callback']. Useful if
 	you decide to flush the buffers (eg. to offer a download)
-	
 	* include/functions_db.php: Cleaned up get_db_all_rows_filter and added
 	some documentation and todo's. Added get_agentmodule_data to get all
 	datapoints of a module. Cleaned up get_agentmodule_data_average	
@@ -19,6 +35,15 @@
 	* include/exportdata.php: Rewritten. Added filters for group. Works using
 	functions and export into HTML, CSV and Excel with the option for 
 	expansion (specify the delimiter values)
+svn co
+2009-05-19  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/agentes/status_monitor.php: Many fixes in the code for
+	pagination. Fixes #2762175
+
+	* images/networkmap/4.png, images/networkmap/firewall.png,
+	images/networkmap/7.png, images/networkmap/9.png,
+	images/networkmap/printer.png: Updated with tango icons.
 
 2009-05-19  Esteban Sanchez  <estebans@artica.es>
 

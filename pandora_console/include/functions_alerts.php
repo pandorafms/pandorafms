@@ -237,21 +237,8 @@ function delete_alert_template ($id_alert_template) {
 	return @process_sql_delete ('talert_templates', array ('id' => $id_alert_template));
 }
 
-function get_alert_templates ($only_names = true) {
-	$all_templates = get_db_all_rows_in_table ('talert_templates');
-	
-	if ($all_templates === false)
-		return array ();
-	
-	if (! $only_names)
-		return $all_templates;
-	
-	$templates = array ();
-	foreach ($all_templates as $template) {
-		$templates[$template['id']] = $template['name'];
-	}
-	
-	return $templates;
+function get_alert_templates ($filter = false, $fields = false) {
+	return @get_db_all_rows_filter ('talert_templates', $filter, $fields);
 }
 
 function get_alert_template ($id_alert_template) {

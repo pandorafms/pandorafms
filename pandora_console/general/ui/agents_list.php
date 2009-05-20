@@ -22,74 +22,33 @@ require_once ('include/functions_agents.php');
 
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
+	$show_filter_form = (bool) get_parameter ('show_filter_form', false);
+	$access = (string) get_parameter ('access', 'AR');
 	
-	if ($search_agents) {
-		require_once ('include/functions_ui_renders.php');
-		
-		$filter = str_replace  ("\\\"", "\"", $_POST['filter']);
-		$filter = json_decode ($filter, true);
-		$fields = '';
-		if (isset ($_POST['fields']))
-			$fields = json_decode (str_replace  ("\\\"", "\"", $_POST['fields']));
-		
-		$table_renders = str_replace  ("\\\"", "\"", $_POST['table_renders']);
-		$table_renders = json_decode ($table_renders, true);
-		$access = (string) get_parameter ('access', 'AR');
-		
-		foreach ($_POST as $field => $value) {
-			$value = safe_input ($value);
-			switch ($field) {
-			case 'page':
-			case 'search_agents':
-			case 'table_renders':
-			case 'fields':
-			case 'filter':
-			case 'access':
-				continue;
-			case 'search':
-				array_push ($filter, '(nombre LIKE "%'.$value.'%" OR comentarios LIKE "%'.$value.'%")');
-				break;
-			case 'id_group':
-				if ($value == 1)
-					$filter['id_grupo'] = array_keys (get_user_groups (false, $value));
-				else
-					$filter['id_grupo'] = $value;
-				break;
-			default:
-				$filter[$field] = $value;
-			}
-		}
-		
-		$total_agents = get_agents ($filter, array ('COUNT(*) AS total'), $access);
-		
-		if ($total_agents !== false)
-			$total_agents = $total_agents[0]['total'];
-		else
-			$total_agents = 0;
-		$filter['limit'] = $config['block_size'];
-		$filter['offset'] = (int) get_parameter ('offset');
-		$agents = get_agents ($filter, $fields, $access);
-		
-		$all_data = array ();
-		if ($agents !== false) {
-			foreach ($agents as $agent) {
-				$data = array ();
-				foreach ($table_renders as $name => $values) {
-					if (! is_numeric ($name)) {
-						array_push ($data, render_agent_field (&$agent, $name, $values, true));
-					} else {
-						array_push ($data, render_agent_field (&$agent, $values, false, true));
-					}
-				}
-				array_push ($all_data, $data);
-			}
-		}
-		
-		echo json_encode ($all_data);
-		
-		return;
-	}
-	return;
+	$filter = str_replace  ("\\\"", "\"", $_POST['filter']);
+	$filter = json_decode ($filter, true);
+	$id_group = (int) get_parameter ('id_group');
+	if ($id_group > 1 && give_acl ($config['id_user'], $id_group, $access))
+		$filter['id_grupo'] = $id_group;
+	else
+		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));
+	
+	$fields = '';
+	if (isset ($_POST['fields']))
+		$fields = json_decode (str_replace  ("\\\"", "\"", $_POST['fields']));
+	
+	$table_heads = array ();
+	if (isset ($_POST['table_heads']))
+		$table_heads = json_decode (str_replace  ("\\\"", "\"", $_POST['table_heads']));
+	$table_size = array ();
+	if (isset ($_POST['table_size']))
+		$table_size = json_decode (str_replace  ("\\\"", "\"", $_POST['table_size']));
+	$table_size = array ();
+	if (isset ($_POST['table_align']))
+		$table_align = json_decode (str_replace  ("\\\"", "\"", $_POST['table_align']));
+	$table_renders = str_replace  ("\\\"", "\"", $_POST['table_renders']);
+	$table_renders = json_decode ($table_renders, true);
+	
 }
 
 require_once ('include/functions_ui_renders.php');
@@ -122,7 +81,7 @@ if ($show_filter_form) {
 		if ($odd) 
 			$data = array ();
 		$data[] = __('Search');
-		$data[] = print_input_text ('search', '', '', 15, 255, true);
+		$data[] = print_input_text ('search_string', '', '', 15, 255, true);
 		if (! $odd)
 			array_push ($table->data, $data);
 		$odd = !$odd;
@@ -140,13 +99,13 @@ if ($show_filter_form) {
 	require_jquery_file ('form');
 }
 
-$table->width = '90%';
-$table->id = 'agents_table';
-$table->head = $table_heads;
-$table->align = $table_align;
-$table->size = $table_size;
-$table->style = array ();
-$table->data = array ();
+if (! isset ($filter) || ! is_array ($filter))
+	$filter = array ();
+
+$search_string = (string) get_parameter ('search_string');
+if ($search_string != '') {
+	$filter[] = '(nombre LIKE "%'.$search_string.'%" OR comentarios LIKE "%'.$search_string.'%" OR direccion LIKE "%'.$search_string.'%")';
+}
 
 $total_agents = get_agents ($filter, array ('COUNT(*) AS total'), $access);
 if ($total_agents !== false)
@@ -159,15 +118,25 @@ $agents = get_agents ($filter, $fields, $access);
 unset ($filter['limit']);
 unset ($filter['offset']);
 
-echo '<div id="agents_loading" class="loading invisible">';
-echo '<img src="images/spinner.gif" />';
-echo __('Loading').'&hellip;';
-echo '</div>';
+if (! is_ajax ()) {
+	echo '<div id="agents_loading" class="loading invisible">';
+	echo '<img src="images/spinner.gif" />';
+	echo __('Loading').'&hellip;';
+	echo '</div>';
+}
 
 echo '<div id="agents_list"'.($agents === false ? ' class="invisible"' : '').'">';
 echo '<div id="no_agents"'.($agents === false ? '' : ' class="invisible"').'>';
 print_error_message (__('No agents found'));
 echo '</div>';
+
+$table->width = '90%';
+$table->id = 'agents_table';
+$table->head = $table_heads;
+$table->align = $table_align;
+$table->size = $table_size;
+$table->style = array ();
+$table->data = array ();
 if ($agents !== false) {
 	foreach ($agents as $agent) {
 		$data = array ();
@@ -181,55 +150,65 @@ if ($agents !== false) {
 		array_push ($table->data, $data);
 	}
 }
-
 echo '<div id="agents"'.($agents === false ? ' class="invisible"' : '').'>';
-pagination ($total_agents);
+pagination ($total_agents, '#');
 print_table ($table);
 echo '</div>';
 echo '</div>';
+
+if (is_ajax ())
+	return;
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-var table_renders = '<?php echo json_encode ($table_renders) ?>';
-var fields = '<?php echo json_encode ($fields) ?>';
-var filter = '<?php echo json_encode ($filter) ?>';
+
+function send_search_form (offset) {
+	table_renders = '<?php echo json_encode ($table_renders) ?>';
+	fields = '<?php echo json_encode ($fields) ?>';
+	filter = '<?php echo json_encode ($filter) ?>';
+	table_heads = '<?php echo json_encode ($table_heads) ?>';
+	table_align = '<?php echo json_encode ($table_align) ?>';
+	table_size = '<?php echo json_encode ($table_size) ?>';
+	
+	$("#agents_loading").show ();
+	$("#no_agents, #agents_list, table#agents_table").hide ();
+	$("#agents_list").remove ();
+	values = $("form#agent_search").formToArray ();
+	values.push ({name: "page", value: "general/ui/agents_list"});
+	values.push ({name: "table_renders", value: table_renders});
+	values.push ({name: "table_size", value: table_size});
+	values.push ({name: "table_align", value: table_align});
+	values.push ({name: "table_heads", value: table_heads});
+	values.push ({name: "filter", value: filter});
+	values.push ({name: "offset", value: offset});
+	
+	if (fields != "")
+		values.push ({name: "fields", value: fields});
+	jQuery.post ("ajax.php",
+		values,
+		function (data, status) {
+			$("#agents_loading").hide ().after (data);
+			$("#agents_list, table#agents_table").show ();
+			$("a.pagination").click (function () {
+				offset = this.href.split ("=").pop ();
+				send_search_form (offset);
+				return false;
+			});
+		},
+		"html"
+	);
+}
 
 $(document).ready (function () {
 <?php if ($show_filter_form): ?>
 	$("form#agent_search").submit (function () {
-		$("#agents_loading").show ();
-		$("#no_agents, #agents_list, table#agents_table").hide ();
-		$("table#agents_table tbody tr").remove ();
-		values = $(this).formToArray ();
-		values.push ({name: "page", value: "general/ui/agents_list"});
-		values.push ({name: "table_renders", value: table_renders});
-		values.push ({name: "filter", value: filter});
-		
-		if (fields != "")
-			values.push ({name: "fields", value: fields});
-		jQuery.post ("ajax.php",
-			values,
-			function (data, status) {
-				if (! data || data.length == 0) {
-					$("#agents_loading").hide ();
-					$("#agents_list, #no_agents").show ();
-					return;
-				}
-				
-				jQuery.each (data, function () {
-					tr = $("<tr></tr>");
-					len = this.length;
-					for (i = 0; i < len; i++) {
-						td = $("<td></td>").html (this[i]);
-						tr.append (td);
-					}
-					$("table#agents_table tbody").append (tr);
-				});
-				$("#agents_loading").hide ();
-				$("#agents_list, table#agents_table").show ();
-			},
-			"json"
-		);
+		send_search_form (0);
+		return false;
+	});
+	
+	$("a.pagination").click (function () {
+		offset = this.href.split ("=").pop ();
+		send_search_form (offset);
 		return false;
 	});
 <?php endif; ?>

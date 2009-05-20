@@ -373,7 +373,7 @@ td.datos_id {
 	text-align: center;
 }
 .suc, .error, .help {
-	padding: 10px 1px 6px 35px
+	padding: 4px 1px 6px 30px;
 }
 .suc {
 	color: #5a8629;
@@ -658,7 +658,7 @@ div#logo_text3 {
 	font-weight: bold;
 	margin-top: 0px;
 	margin-left: 4px;
-	padding-top: 0px:
+	padding-top: 0px;
 }
 
 .bb0 {

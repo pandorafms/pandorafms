@@ -117,7 +117,7 @@ if (isset ($_GET["check"])) {
 // Mass-process DELETE
 if (isset ($_POST["deletebt"])){
 	$count=0;
-	while ($count <= $config["block_size"]) {
+	while ($count <= 500) {
 		if (isset ($_POST["eventid".$count])) {
 			$event_id = get_parameter_post ("eventid".$count);
 			$descr = return_event_description ($event_id); //Get description before it gets deleted

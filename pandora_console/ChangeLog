@@ -1,3 +1,8 @@
+2009-05-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* operation/events/events.php: Fixed small bug where on deletion of
+	multiple events it skips anything above $config['block_size']
+
 2009-05-12  Manuel Arostegui <marostegui@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Fixed bug when creating

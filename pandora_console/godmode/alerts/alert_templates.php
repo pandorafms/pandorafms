@@ -137,6 +137,49 @@ if ($delete_template) {
 		__('Could not be deleted'));
 }
 
+$url = get_url_refresh (array ('offset' => false));
+
+$search_string = (string) get_parameter ('search_string');
+$search_type = (string) get_parameter ('search_type');
+
+$table->width = '600px';
+$table->data = array ();
+$table->head = array ();
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+
+$table->data[0][0] = __('Type');
+$table->data[0][1] = print_select (get_alert_templates_types (), 'search_type',
+	$search_type, '', __('All'), '', true, false, false);
+$table->data[0][2] = __('Search');
+$table->data[0][3] = print_input_text ('search_string', $search_string, '', 25,
+	255, true);
+$table->data[0][4] = '<div class="action-buttons">';
+$table->data[0][4] .= print_submit_button (__('Search'), 'search', false,
+	'class="sub search"', true);
+$table->data[0][4] .= '</div>';
+
+echo '<form method="post" action="'.$url.'">';
+print_table ($table);
+echo '</form>';
+
+unset ($table);
+
+$filter = array ();
+if ($search_type != '')
+	$filter['type'] = $search_type;
+if ($search_string)
+	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR value LIKE "%'.$search_string.'%")';
+$total_templates = get_alert_templates ($filter, array ('COUNT(*) AS total'));
+$total_templates = $total_templates[0]['total'];
+$filter['offset'] = (int) get_parameter ('offset');
+$filter['limit'] = (int) $config['block_size'];
+$templates = get_alert_templates ($filter,
+	array ('id', 'name', 'description', 'type'));
+if ($templates === false)
+	$templates = array ();
+
 $table->width = '90%';
 $table->data = array ();
 $table->head = array ();
@@ -151,10 +194,6 @@ $table->size[2] = '10%';
 $table->size[3] = '50px';
 $table->align = array ();
 $table->align[3] = 'center';
-
-$templates = get_alert_templates (false);
-if ($templates === false)
-	$templates = array ();
 
 foreach ($templates as $template) {
 	$data = array ();
@@ -179,6 +218,7 @@ foreach ($templates as $template) {
 	array_push ($table->data, $data);
 }
 
+pagination ($total_templates, $url);
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

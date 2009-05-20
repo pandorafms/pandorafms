@@ -96,8 +96,9 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 
+$templates = get_alert_templates (false, array ('id', 'name'));
 $table->data[0][0] = __('Alert template');
-$table->data[0][1] = print_select (get_alert_templates (),
+$table->data[0][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
 	
 $table->data[1][0] = __('Group');

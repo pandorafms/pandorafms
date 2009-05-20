@@ -1,5 +1,17 @@
 2009-05-20  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_alerts.php: Changed interface of
+	get_alert_templates() to allow custom filters.
+
+	* godmode/alerts/alert_list.php,
+	godmode/agentes/massive_delete_alerts.php: Changes in
+	get_alerts_templates().
+
+	* godmode/alerts/alert_templates.php: Added pagination and a search
+	form.
+
+2009-05-20  Esteban Sanchez  <estebans@artica.es>
+
 	* general/ui/agents_list.php: Fixed searching filter. Added pagination
 	via AJAX.
 

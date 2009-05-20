@@ -352,11 +352,9 @@ $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
 $table->data[0][1] .= '<img src="images/spinner.gif" /></span>';
 
 $table->data[1][0] = __('Template');
-$templates = get_alert_templates ();
-if (empty ($templates))
-	$templates = array ();
-$table->data[1][1] = print_select ($templates, 'template', '', '', __('Select'),
-	0, true);
+$templates = get_alert_templates (false, array ('id', 'name'));
+$table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
+	'template', '', '', __('Select'), 0, true);
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">
 	<img class="img_help" src="images/zoom.png" /></a>';
 

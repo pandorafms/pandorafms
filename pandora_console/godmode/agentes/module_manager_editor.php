@@ -16,6 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+require_once ('include/functions_network_components.php');
+
 if (is_ajax ()) {
 	$get_network_component = (bool) get_parameter ('get_network_component');
 	$snmp_walk = (bool) get_parameter ('snmp_walk');

@@ -28,11 +28,16 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-$id_modulo = (int) get_parameter ("id_modulo", "");
-if ($id_modulo == 6) {
-	require ("godmode/modules/manage_network_components_form_wmi.php");
+$id_component_type = (int) get_parameter ('id_component_type');
+if (isset ($id)) {
+	$component = get_network_component ($id, false, 'id_modulo');
+	if ($component !== false)
+		$id_component_type =$component['id_modulo'];
 }
-else if ($id_modulo == 2){
+
+if ($id_component_type == 6) {
+	require ("godmode/modules/manage_network_components_form_wmi.php");
+} else if ($id_component_type == 2) {
 	require ("godmode/modules/manage_network_components_form_network.php");
 }
 

@@ -91,7 +91,7 @@ function add_component_selection ($id_network_component_type) {
 	prepend_table_simple ($data, 'module_component');
 }
 
-require_once ('include/functions_modules.php');
+require_once ('include/functions_network_components.php');
 
 $update_module_id = (int) get_parameter_get ('update_module');
 

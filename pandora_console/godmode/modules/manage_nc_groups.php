@@ -91,7 +91,7 @@ foreach ($groups as $group) {
 	
 	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&edit=1&id_sg='.$group["id_sg"].'">'.$group["name"].'</a>';
 	
-	$data[1] = give_network_component_group_name ($group["parent"]);
+	$data[1] = get_network_component_group_name ($group["parent"]);
 	$data[2] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg='.$group["id_sg"].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">
 		<img src="images/cross.png"></a>';

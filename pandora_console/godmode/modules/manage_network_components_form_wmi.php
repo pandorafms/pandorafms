@@ -26,36 +26,32 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Agent Management");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 // Update an existing component
-if (isset($_GET["update"])){
-	$id_nc = entrada_limpia ($_GET["id_nc"]);
-	$sql1 = "SELECT * FROM tnetwork_component where id_nc = $id_nc ORDER BY name";
-	$result=mysql_query($sql1);
-	$row=mysql_fetch_array($result);
-	$name = $row["name"];
-	$type = $row["type"];
-	$description = $row["description"];
-	$modulo_max = $row["max"];
-	$modulo_min = $row["min"];
-	$module_interval = $row["module_interval"];
-	$tcp_port = $row["tcp_port"];
-	$tcp_rcv = $row["tcp_rcv"];
-	$tcp_send = $row["tcp_send"];
-	$snmp_community = $row["snmp_community"];
-	$snmp_oid = $row["snmp_oid"];
-	$id_module_group = $row["id_module_group"];
-	$id_group = $row["id_group"];
-	$plugin_user = $row["plugin_user"];
-	$plugin_pass = $row["plugin_pass"];
-	$plugin_parameter = $row["plugin_parameter"];
-	$max_timeout = $row["max_timeout"];
-}
-// Add a new component
-elseif (isset($_GET["create"])){
-	$id_nc = -1;
+if ($id) {
+	$component = get_network_component ($id);
+	if ($component === false)
+		return;
+	$name = $component["name"];
+	$type = $component["type"];
+	$description = $component["description"];
+	$modulo_max = $component["max"];
+	$modulo_min = $component["min"];
+	$module_interval = $component["module_interval"];
+	$tcp_port = $component["tcp_port"];
+	$tcp_rcv = $component["tcp_rcv"];
+	$tcp_send = $component["tcp_send"];
+	$snmp_community = $component["snmp_community"];
+	$snmp_oid = $component["snmp_oid"];
+	$id_module_group = $component["id_module_group"];
+	$id_group = $component["id_group"];
+	$plugin_user = $component["plugin_user"];
+	$plugin_pass = $component["plugin_pass"];
+	$plugin_parameter = $component["plugin_parameter"];
+	$max_timeout = $component["max_timeout"];
+} else {
 	$name = "";
 	$snmp_oid = "";
 	$description = "";
@@ -78,14 +74,9 @@ elseif (isset($_GET["create"])){
 }
 
 echo '<h2>' . __('WMI component management') . '</h2>';
-if ($id_nc != -1) {
-	// Update
-	echo '<form name="modulo" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&update=1&id_nc=' . $id_nc . '">';
-} else {
-	// Add
-	echo '<form name="modulo" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1">';
-}
-echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">';
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components">';
+
+echo '<table width="95%" cellspacing="4" cellpadding="4" class="databox_color">';
 echo '<tr>';
 
 // Name
@@ -98,8 +89,8 @@ echo '<td class="datos2">';
 echo '<select name="tipo">';
 echo '<option value="' . $type . '">' . get_moduletype_name ($type);
 $result = mysql_query('SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
-while ($row = mysql_fetch_array($result)){
-	echo '<option value="' . $row['id_tipo'] . '">' . $row['nombre'] . '</option>';
+while ($component = mysql_fetch_array($result)){
+	echo '<option value="' . $component['id_tipo'] . '">' . $component['nombre'] . '</option>';
 }
 echo '</select>';
 echo '</td></tr>';
@@ -108,24 +99,19 @@ echo '<tr>';
 // Component group
 echo '<td class="datos">' . __('Group') . '</td>';
 echo '<td class="datos">';
-echo '<select name="id_group">';
-echo '<option value="' . $id_group . '">' . give_network_component_group_name($id_group) . '</option>';
-$result = mysql_query('SELECT * FROM tnetwork_component_group where id_sg != \'' . $id_group . '\';');
-while ($row = mysql_fetch_array($result)) {
-	echo '<option value="' . $row['id_sg'] . '">' . give_network_component_group_name($row['id_sg']) . '</option>';
-}
-echo '</select>';
+print_select (get_network_component_groups (),
+	'id_group', $id_group, '', '', '', false, false, false);
 
 // Module group
 echo '<td class="datos">' . __('Module group') . '</td>';
 echo '<td class="datos">';
 echo '<select name="id_module_group">';
-if ($id_nc != -1 ) {
+if ($id) {
 	echo '<option value="' . $id_module_group . '">' . get_modulegroup_name($id_module_group);
 }
 $result = mysql_query('SELECT * FROM tmodule_group');
-while ($row = mysql_fetch_array($result))
-	echo '<option value="' . $row['id_mg'] . '">' . $row['name'] . '</option>';
+while ($component = mysql_fetch_array($result))
+	echo '<option value="' . $component['id_mg'] . '">' . $component['name'] . '</option>';
 echo '</select>';
 echo '<tr>';
 
@@ -205,17 +191,19 @@ echo '</textarea>';
 echo '</td></tr>';
 echo '</table>';
 
-// Module type, hidden
-echo '<input type="hidden" name="id_modulo" value="6">';
+print_input_hidden ('id_modulo', $id_component_type);
 
 // Update/Add buttons
-echo '<table width="700px">';
-echo '</tr><td align="right">';
-if ($id_nc != '-1')
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
-else
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
-echo '</td></tr></table>';
+echo '<div class="action-buttons" style="width: 95%">';
+if ($id) {
+	print_input_hidden ('update_component', 1);
+	print_input_hidden ('id', $id);
+	print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
+} else {
+	print_input_hidden ('create_component', 1);
+	print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+}
+echo '</div>';
 echo '</form>';
 
 ?>

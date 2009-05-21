@@ -61,11 +61,11 @@ echo "<tr>";
 echo "<td class='datos2'>".__('Parent')."</td>";
 echo "<td class='datos2'>";
 echo "<select name='parent'>";
-echo "<option value='$parent'>".give_network_component_group_name($parent);
+echo "<option value='$parent'>".get_network_component_group_name($parent);
 $sql1 = "SELECT * FROM tnetwork_component_group where id_sg != '$parent'";
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_sg"]."'>".give_network_component_group_name($row["id_sg"]);
+	echo "<option value='".$row["id_sg"]."'>".get_network_component_group_name($row["id_sg"]);
 echo "</select>";
 
 echo "</td></tr><table>";

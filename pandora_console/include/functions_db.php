@@ -1326,17 +1326,6 @@ function give_modulecategory_name ($id_category) {
 }
 
 /** 
- * Get a network component group name
- * 
- * @param int Id network component group.
- * 
- * @return string Name of the given network component group
- */
-function give_network_component_group_name ($id_network_component_group) {
-	return (string) get_db_value ('name', 'tnetwork_component_group', 'id_sg', $id_network_component_group);
-}
-
-/** 
  * Get a network profile name.
  * 
  * @param int Id network profile

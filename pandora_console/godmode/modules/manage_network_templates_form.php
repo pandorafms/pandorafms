@@ -159,7 +159,7 @@ if ($id_np > 0) {
 		$data[0] = $row["name"];
 		$data[1] = '<img src="images/'.show_icon_type($row["type"]).'" border="0" />';
 		$data[2] = substr($row["description"],0,30);
-		$data[3] = give_network_component_group_name ($row["group"]);
+		$data[3] = get_network_component_group_name ($row["group"]);
 		$data[4] = print_checkbox ("components[]", $row["component_id"], false, true);
 		array_push ($table->data, $data);
 	}

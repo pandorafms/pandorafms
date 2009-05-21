@@ -16,7 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Load global vars
 require ("include/config.php");
 
@@ -29,210 +28,221 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-$type = "0";
-$name = "";
-$description = "";
-$modulo_max="0";
-$modulo_min="0";
-$tcp_send="";
-$tcp_rcv="";
-$tcp_port="";
-$snmp_oid="";
-$snmp_community="";
-$id_module_group="";
-$module_interval="";
-$id_group = "";
-$plugin_parameter = "";
+require_once ('include/functions_network_components.php');
 
-// ------------------
-// CREATE MODULE
-// ------------------
+$type = (int) get_parameter ('tipo');
+$name = (string) get_parameter ('name');
+$description = (string) get_parameter ('descripcion');
+$modulo_max = (int) get_parameter ('modulo_max');
+$modulo_min = (int) get_parameter ('modulo_min');
+$tcp_send = (string) get_parameter ('tcp_send');
+$tcp_rcv = (string) get_parameter ('tcp_rcv');
+$tcp_port = (int) get_parameter ('tcp_port');
+$snmp_oid = (string) get_parameter ('snmp_oid');
+$snmp_community = (string) get_parameter ('snmp_community');
+$id_module_group = (int) get_parameter ('id_module_group');
+$module_interval = (int) get_parameter ('module_interval');
+$id_group = (int) get_parameter ('id_group');
+$plugin_user = (string) get_parameter ('plugin_user');
+$plugin_pass = (string) get_parameter ('plugin_pass');
+$plugin_parameter = (string) get_parameter ('plugin_parameter');
+$max_timeout = (int) get_parameter ('max_timeout');
+$id_modulo = (string) get_parameter ('id_modulo');
+$id = (int) get_parameter ('id');
 
-if (isset($_GET["create"])){ // Create module
-	$type = get_parameter ('tipo');
-	$name = get_parameter ('name');
-	$description = get_parameter ('descripcion');
-	$modulo_max = get_parameter ('modulo_max', 0);
-	$modulo_min = get_parameter ('modulo_min', 0);
-	$tcp_send = get_parameter ('tcp_send');
-	$tcp_rcv = get_parameter ('tcp_rcv');
-	$tcp_port = get_parameter ('tcp_port');
-	$snmp_oid = get_parameter ('snmp_oid');
-	$snmp_community = get_parameter ('snmp_community');
-	$id_module_group = get_parameter ('id_module_group');
-	$module_interval = get_parameter ('module_interval');
-	$id_group = get_parameter ('id_group');
-	$plugin_user = get_parameter ('plugin_user');
-	$plugin_pass = get_parameter ('plugin_pass');
-	$plugin_parameter = get_parameter ('plugin_parameter');
-	$max_timeout = get_parameter ('max_timeout');
-	$id_modulo = get_parameter ('id_modulo');
-	
-	$sql = "INSERT INTO tnetwork_component (name, description, module_interval, type, max, min, tcp_send, tcp_rcv, tcp_port, snmp_oid, snmp_community, id_module_group, id_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout)
-	VALUES ('$name', '$description', '$module_interval', '$type', '$modulo_max', '$modulo_min', '$tcp_send', '$tcp_rcv', '$tcp_port', '$snmp_oid' ,'$snmp_community', '$id_module_group', '$id_group', '$id_modulo', '$plugin_user', '$plugin_pass', '$plugin_parameter', '$max_timeout')";
+$create_component = (bool) get_parameter ('create_component');
+$update_component = (bool) get_parameter ('update_component');
+$delete_component = (bool) get_parameter ('delete_component');
+$new_component = (bool) get_parameter ('new_component');
 
-	$id_module = process_sql ($sql, 'insert_id');
-	if ($id_module === false)
-		echo "<h3 class='error'>".__('Could not be created')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Successfully created')."</h3>";
+if ($create_component) {
+	$id = create_network_component ($name, $type, $id_group, 
+		array ('description' => $description,
+			'module_interval' => $module_interval,
+			'max' => $modulo_max,
+			'min' => $modulo_min,
+			'tcp_send' => $tcp_send,
+			'tcp_rcv' => $tcp_rcv,
+			'tcp_port' => $tcp_port,
+			'snmp_oid' => $snmp_oid,
+			'snmp_community' => $snmp_community,
+			'id_module_group' => $id_module_group,
+			'id_modulo' => $id_modulo,
+			'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass,
+			'plugin_parameter' => $plugin_parameter,
+			'max_timeout' => $max_timeout));
+	if ($id === false) {
+		print_error_message (__('Could not be created'));
+		include_once ('manage_network_components_form.php');
+		return;
 	}
+	print_success_message (__('Created successfully'));
+	$id = 0;
 }
 
-// ------------------
-// UPDATE MODULE
-// ------------------
-if (isset($_GET["update"])){ // if modified any parameter
-	$id_nc = get_parameter ('id_nc');
-
-	$type = get_parameter ('tipo');
-	$name = get_parameter ('name');
-	$description = get_parameter ('descripcion');
-	$modulo_max = get_parameter ('modulo_max', 0);
-	$modulo_min = get_parameter ('modulo_min', 0);
-	$tcp_send = get_parameter ('tcp_send');
-	$tcp_rcv = get_parameter ('tcp_rcv');
-	$tcp_port = get_parameter ('tcp_port');
-	$snmp_oid = get_parameter ('snmp_oid');
-	$snmp_community = get_parameter ('snmp_community');
-	$id_module_group = get_parameter ('id_module_group');
-	$module_interval = get_parameter ('module_interval');
-	$id_group = get_parameter ('id_group');
-	$plugin_user = get_parameter ('plugin_user');
-	$plugin_pass = get_parameter ('plugin_pass');
-	$plugin_parameter = get_parameter ('plugin_parameter');
-	$max_timeout = get_parameter ('max_timeout');
-
-	$sql ="UPDATE tnetwork_component	SET name = '$name',
-	description = '$description', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community',
-	id_group = '$id_group', tcp_rcv = '$tcp_rcv', tcp_send = '$tcp_send', max = '$modulo_max',
-	min = '$modulo_min', tcp_port = '$tcp_port', id_module_group = '$id_module_group', type = '$type',
-	module_interval = '$module_interval', plugin_user = '$plugin_user',  plugin_pass = '$plugin_pass',
-	plugin_parameter = '$plugin_parameter', max_timeout = '$max_timeout' WHERE id_nc = '$id_nc'";
-	$result = process_sql ($sql);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Successfully updated')."</h3>";
+if ($update_component) {
+	$id = (int) get_parameter ('id');
+	
+	$result = update_network_component ($id,
+		array ('type' => $type,
+			'name' => $name,
+			'id_group' => $id_group,
+			'description' => $description,
+			'module_interval' => $module_interval,
+			'max' => $modulo_max,
+			'min' => $modulo_min,
+			'tcp_send' => $tcp_send,
+			'tcp_rcv' => $tcp_rcv,
+			'tcp_port' => $tcp_port,
+			'snmp_oid' => $snmp_oid,
+			'snmp_community' => $snmp_community,
+			'id_module_group' => $id_module_group,
+			'id_modulo' => $id_modulo,
+			'plugin_user' => $plugin_user,
+			'plugin_pass' => $plugin_pass,
+			'plugin_parameter' => $plugin_parameter,
+			'max_timeout' => $max_timeout));
+	if ($result === false) {
+		print_error_message (__('Could not be updated'));
+		include_once ('manage_network_components_form.php');
+		return;
+	}
+	print_success_message (__('Updated successfully'));
+	
+	$id = 0;
 }
 
-// ------------------
-// DELETE MODULE
-// ------------------
-if (isset($_GET["delete"])){ // if delete
-	$id_nc = entrada_limpia ($_GET["id_nc"]);
-	$sql= "DELETE FROM tnetwork_component WHERE id_nc = ".$id_nc;
-	$result = process_sql ($sql);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Successfully deleted')."</h3>";
-	$sql = "DELETE FROM tnetwork_profile_component WHERE id_nc = ".$id_nc;
-	$result = process_sql ($sql);
+if ($delete_component) {
+	$id = (int) get_parameter ('id');
+	
+	$result = delete_network_component ($id);
+	
+	print_result_message ($result,
+		__('Successfully deleted'),
+		__('Could not be deleted'));
+	$id = 0;
 }
 
-// ------------------
-// SHOW MODULES
-// ------------------
+if ($id || $new_component) {
+	include_once ('manage_network_components_form.php');
+	return;
+}
+
+$url = get_url_refresh (array ('offset' => false,
+	'create_component' => false,
+	'update_component' => false,
+	'delete_component' => false,
+	'id_network_component' => false,
+	'tipo' => false,
+	'name' => false,
+	'descripcion' => false,
+	'modulo_max' => false,
+	'modulo_min' => false,
+	'tcp_send' => false,
+	'tcp_rcv' => false,
+	'tcp_port' => false,
+	'snmp_oid' => false,
+	'snmp_community' => false,
+	'id_module_group' => false,
+	'module_interval' => false,
+	'id_group' => false,
+	'plugin_user' => false,
+	'plugin_pass' => false,
+	'plugin_parameter' => false,
+	'max_timeout' => false,
+	'id_modulo' => false));
+
 echo "<h2>".__('Module management')." &raquo; ";
 echo __('Module component management')."</h2>";
 
-// Show group selector
-if (isset($_POST["ncgroup"])) {
-	$ncgroup = $_POST["ncgroup"];
-} else {
-	$ncgroup = 0;
-}
+$search_id_group = (int) get_parameter ('search_id_group');
+$search_string = (string) get_parameter ('search_string');
 
+$table->width = '600px';
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+$table->data = array ();
 
+$table->data[0][0] = __('Group');
+$table->data[0][1] = print_select (get_network_component_groups (),
+	'search_id_group', $search_id_group, '', __('All'), 0, true, false, false);
+$table->data[0][2] = __('Search');
+$table->data[0][3] = print_input_text ('search_string', $search_string, '', 25,
+	255, true);
+$table->data[0][4] = '<div class="action-buttons">';
+$table->data[0][4] .= print_submit_button (__('Search'), 'search', false,
+	'class="sub search"', true);
+$table->data[0][4] .= '</div>';
 
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<tr><td>";
-echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
-echo __('Group') . "&nbsp;";
-echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
-if ($ncgroup != 0){
-	echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup)."</option>";
-}
-echo "<option value='0'>".__('All')."</option>";
-$result = mysql_query("SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup' ORDER BY name");
-while ($row = mysql_fetch_array ($result)) {
-	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"])."</option>";
-}
-echo "</select></form></td>";
-echo "<td>";
-echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
-echo "<select name='id_modulo'>";
-echo "<option value='2'>".__('Create a new network component');
-echo "<option value='6'>".__('Create a new WMI component');
-echo "</select>&nbsp;";
-echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
-echo "</td></tr></table>";
+echo '<form method="post" action="'.$url.'">';
+print_table ($table);
+echo '</form>';
 
-if ($ncgroup != 0) {
-	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup ORDER BY name";
-} else {
-	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group,name";
-}
+$filter = array ();
+if ($search_id_group)
+	$filter['id_group'] = $search_id_group;
+if ($search_string != '')
+	$filter[] = '(nombre LIKE "%'.$search_id_group.'%" OR description LIKE "%'.$search_id_group.'%" OR tcp_send LIKE "%'.$search_id_group.'%" OR tcp_rcv LIKE "%'.$search_id_group.'%")';
+
+$total_components = get_network_components (false, $filter, 'COUNT(*) AS total');
+$total_components = $total_components[0]['total'];
+pagination ($total_components, $url);
+$filter['offset'] = (int) get_parameter ('offset');
+$filter['limit'] = (int) $config['block_size'];
+$components = get_network_components (false, $filter,
+	array ('id_nc', 'name', 'description', 'id_group', 'type', 'max', 'min',
+		'module_interval'));
+if ($components === false)
+	$components = array ();
+
+unset ($table);
+$table->width = '95%';
+$table->head = array ();
+$table->head[0] = __('Module name');
+$table->head[1] = __('Type');
+$table->head[2] = __('Interval');
+$table->head[3] = __('Description');
+$table->head[4] = __('Group');
+$table->head[5] = __('Max/Min');
+$table->head[6] = __('');
+$table->size = array ();
+$table->size[6] = '40px';
+$table->data = array ();
+
+foreach ($components as $component) {
+	$data = array ();
 	
-$result = mysql_query ($sql1);
-if ( $row = mysql_num_rows ($result)){
-	echo '<table width="90%" cellpadding="4" cellspacing="4" class="databox">';
-	echo '<tr>';
-	echo "<th>".__('Module name')."</th>";
-	echo "<th>".__('Type')."</th>";
-	echo "<th>".__('Interval')."</th>";
-	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('NC.Group')."</th>";
-	//echo "<th>".__('Module group');
-	echo "<th>".__('Max/Min')."</th>";
-	echo "<th width=50>".__('Action')."</th>";
-	$color=1;
-	while ($row=mysql_fetch_array($result)){
-		if ($color == 1){
-			$tdcolor="datos";
-			$color =0;
-		} else {
-			$tdcolor="datos2";
-			$color =1;
-		}
-		$id_tipo = $row["type"];
-		$id_group = $row["id_group"];
-		$nombre_modulo =$row["name"];
-		$descripcion = $row["description"];
-		$module_max = $row["max"];
-		$module_min = $row["min"];
-		$module_interval2 = $row["module_interval"];
-		$module_group2 = $row["id_module_group"];
-
-		echo "<tr><td class='".$tdcolor."_id'>";
-		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_modulo=".$row["id_modulo"]."&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a></td>";
-		echo "<td class='".$tdcolor."f9'>";
-		if ($id_tipo > 0) {
-			echo "<img src='images/".show_icon_type($id_tipo)."' border='0'>";
-		}
-		if ($module_interval2!=0){
-			echo "<td class='$tdcolor'>".$module_interval2;
-		} else {
-			echo "<td class='$tdcolor'> N/A";
-		}
-		echo "</td>";
-		echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
-		echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
-		echo "<td class='$tdcolor'>";
-		if ($module_max == $module_min) {
-			$module_max = "N/A";
-			$module_min = "N/A";
-		}
-		echo $module_max." / ".$module_min;
-		echo "<td class='$tdcolor' align='center'>";
-		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&delete=1&id_nc=".$row["id_nc"]."'>";
-		echo "<img src='images/cross.png' border=0 alt='".__('Delete')."'></a></td>";
-		echo "</tr>";
-	}
-	echo "</table>";
-} else {
-	echo "<div class='nf'>No modules</div>";
+	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'">';
+	$data[0] .= $component['name'];
+	$data[0] .= '</a>';
+	$data[1] = print_moduletype_icon ($component['type'], true);
+	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
+	$data[3] = substr ($component['description'], 0, 30);
+	$data[4] = get_network_component_group_name ($component['id_group']);
+	$data[5] = $component['max']." / ".$component['min'];
+	$data[6] = '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\') return false)">';
+	$data[6] .= print_input_hidden ('delete_component', 1, true);
+	$data[6] .= print_input_hidden ('id', $component['id_nc'], true);
+	$data[6] .= print_input_hidden ('search_id_group', $search_id_group, true);
+	$data[6] .= print_input_hidden ('search_string', $search_string, true);
+	$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true,
+			array ('title' => __('Delete')));
+	$data[6] .= '</form>';
+	
+	array_push ($table->data, $data);
 }
 
+print_table ($table);
+
+echo '<form method="post" action="'.$url.'">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+print_input_hidden ('new_component', 1);
+print_select (array (2 => __('Create a new network component'),
+	6 => __('Create a new WMI component')),
+	'id_component_type', '', '', '', '', '');
+print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+echo '</div>';
+echo '</form>'
 ?>

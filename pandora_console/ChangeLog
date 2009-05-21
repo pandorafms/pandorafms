@@ -1,3 +1,37 @@
+2009-05-21  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_network_components.php: Added to repository.
+	Functions relative to network components moved here. Added
+	create_network_component(), update_network_component() and
+	delete_network_component().
+
+	* include/functions_db.php: Removed
+	gve_network_component_group_name(), duplicated in
+	functions_network_components.php.
+
+	* include/functions_modules.php: Moved functions relative to
+	network components to functions_network_components.php.
+
+	* godmode/modules/manage_nc_groups_form.php,
+	godmode/modules/manage_network_templates_form.php,
+	godmode/modules/manage_nc_groups.php: Use
+	get_network_component_group_name() instead of deprecated
+	give_network_component_group_name().
+
+	* godmode/modules/manage_network_components.php: Rewritten
+	to use pandora functions. Added pagination and better filtering
+	and UI.
+
+	* godmode/modules/manage_network_components_form_network.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	godmode/modules/manage_network_components_form.php: Some
+	changes to adapt from manage_network_components file. Use
+	pandora functions.
+
+	* godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager_editor.php: Include new
+	functions_network_components.php file.
+
 2009-05-20  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_alerts.php: Changed interface of

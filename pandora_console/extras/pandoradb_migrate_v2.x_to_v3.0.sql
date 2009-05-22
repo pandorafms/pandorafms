@@ -183,7 +183,8 @@ UNSIGNED NOT NULL DEFAULT  '1', ADD  `min_warning` DOUBLE( 18, 2 ) NOT
 NULL DEFAULT  '0', ADD  `max_warning` DOUBLE( 18, 2 ) NOT NULL  
 DEFAULT  '0', ADD  `min_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT   
 '0', ADD  `max_critical` DOUBLE( 18, 2 ) NOT NULL DEFAULT  '0', ADD   
-`min_ff_event` INT( 4 ) UNSIGNED NOT NULL DEFAULT  '0';
+`min_ff_event` INT( 4 ) UNSIGNED NOT NULL DEFAULT  '0', ADD
+`id_plugin` integer unsigned default 0;
 
 ALTER TABLE  `tusuario` CHANGE  `nombre_real`  `fullname` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 ALTER TABLE  `tusuario` CHANGE  `comentarios`  `comments` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;

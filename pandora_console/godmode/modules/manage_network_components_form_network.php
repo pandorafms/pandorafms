@@ -16,122 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-?>
-<script language="JavaScript" type="text/javascript">
-<!--
-function type_change () {
-	// type 1-4 - Generic_xxxxxx
-	if ((document.modulo.tipo.value > 0) && (document.modulo.tipo.value < 5)){
-		document.modulo.snmp_oid.style.background="#ddd";
-		document.modulo.snmp_oid.disabled=true;
-		document.modulo.snmp_community.style.background="#ddd";
-		document.modulo.snmp_community.disabled=true;
-		document.modulo.tcp_send.style.background="#ddd";
-		document.modulo.tcp_send.disabled=true;
-		document.modulo.tcp_rcv.style.background="#ddd";
-		document.modulo.tcp_rcv.disabled=true;
-		document.modulo.tcp_port.style.background="#ddd";
-		document.modulo.tcp_port.disabled=true;
-		document.modulo.ip_target.style.background="#ddd";
-		document.modulo.ip_target.disabled=true;
-		document.modulo.modulo_max.style.background="#fff";
-		document.modulo.modulo_max.disabled=false;
-		document.modulo.modulo_min.style.background="#fff";
-		document.modulo.modulo_min.disabled=false;
-	}
-	// type 15-18- SNMP
-	if ((document.modulo.tipo.value > 14) && (document.modulo.tipo.value < 19 )){
-		document.modulo.snmp_oid.style.background="#fff";
-		document.modulo.snmp_oid.style.disabled=false;
-		document.modulo.snmp_community.style.background="#fff";
-		document.modulo.snmp_community.disabled=false;
-		document.modulo.combo_snmp_oid.style.background="#fff";
-		document.modulo.combo_snmp_oid.disabled=false;
-		document.modulo.oid.disabled=false;
-		document.modulo.tcp_send.style.background="#ddd";
-		document.modulo.tcp_send.disabled=true;
-		document.modulo.tcp_rcv.style.background="#ddd";
-		document.modulo.tcp_rcv.disabled=true;
-		document.modulo.tcp_port.style.background="#ddd";
-		document.modulo.tcp_port.disabled=true;
-		document.modulo.ip_target.style.background="#fff";
-		document.modulo.ip_target.disabled=false;
-		if (document.modulo.tipo.value == 18) {
-			document.modulo.modulo_max.style.background="#ddd";
-			document.modulo.modulo_max.disabled=true;
-			document.modulo.modulo_min.style.background="#ddd";
-			document.modulo.modulo_min.disabled=true;
-		} else {
-			document.modulo.modulo_max.style.background="#fff";
-			document.modulo.modulo_max.disabled=false;
-			document.modulo.modulo_min.style.background="#fff";
-			document.modulo.modulo_min.disabled=false;
-		}
-	}
-	// type 6-7 - ICMP
-	if ((document.modulo.tipo.value == 6) || (document.modulo.tipo.value == 7)){
-		document.modulo.snmp_oid.style.background="#ddd";
-		document.modulo.snmp_oid.disabled=true;
-		document.modulo.snmp_community.style.background="#ddd";
-		document.modulo.snmp_community.disabled=true;
-		document.modulo.combo_snmp_oid.style.background="#ddd";
-		document.modulo.combo_snmp_oid.disabled=true;
-		document.modulo.oid.disabled=true;
-		document.modulo.tcp_send.style.background="#ddd";
-		document.modulo.tcp_send.disabled=true;
-		document.modulo.tcp_rcv.style.background="#ddd";
-		document.modulo.tcp_rcv.disabled=true;
-		document.modulo.tcp_port.style.background="#ddd";
-		document.modulo.tcp_port.disabled=true;
-		document.modulo.ip_target.style.background="#fff";
-		document.modulo.ip_target.disabled=false;
-		document.modulo.modulo_max.style.background="#fff";
-		document.modulo.modulo_max.disabled=false;
-		document.modulo.modulo_min.style.background="#fff";
-		document.modulo.modulo_min.disabled=false;
-	}
-	// type 8-11 - TCP
-	if ((document.modulo.tipo.value > 7) && (document.modulo.tipo.value < 12)){
-		document.modulo.snmp_oid.style.background="#ddd";
-		document.modulo.snmp_oid.disabled=true;
-		document.modulo.snmp_community.style.background="#ddd";
-		document.modulo.snmp_community.disabled=true;	
-		document.modulo.tcp_send.style.background="#fff";
-		document.modulo.tcp_send.disabled=false;
-		document.modulo.tcp_rcv.style.background="#fff";
-		document.modulo.tcp_rcv.disabled=false;
-		document.modulo.tcp_port.style.background="#fff";
-		document.modulo.tcp_port.disabled=false;
-		document.modulo.ip_target.style.background="#fff";
-		document.modulo.ip_target.disabled=false;
-		document.modulo.modulo_max.style.background="#ddd";
-		document.modulo.modulo_max.disabled=true;
-		document.modulo.modulo_min.style.background="#ddd";
-		document.modulo.modulo_min.disabled=true;
-	}
-	// type 12 - UDP
-	if (document.modulo.tipo.value == 12){
-		document.modulo.snmp_oid.style.background="#ddd";
-		document.modulo.snmp_oid.disabled=true;
-		document.modulo.snmp_community.style.background="#ddd";
-		document.modulo.snmp_community.disabled=true;
-		document.modulo.tcp_send.style.background="#fff";
-		document.modulo.tcp_send.disabled=false;
-		document.modulo.tcp_rcv.style.background="#fff";
-		document.modulo.tcp_rcv.disabled=false;
-		document.modulo.tcp_port.style.background="#fff";
-		document.modulo.tcp_port.disabled=false;
-		document.modulo.ip_target.style.background="#fff";
-		document.modulo.ip_target.disabled=false;
-		document.modulo.modulo_max.style.background="#ddd";
-		document.modulo.modulo_max.disabled=true;
-		document.modulo.modulo_min.style.background="#ddd";
-		document.modulo.modulo_min.disabled=true;
-	}
-}
-//-->
-</script>
-<?PHP
 // Load global vars
 require ("include/config.php");
 
@@ -144,87 +28,43 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if ($id) {
-	$component = get_network_component ($id);
-	if ($component === false)
-		return;
-	$name = $component["name"];
-	$type = $component["type"];
-	$description = $component["description"];
-	$modulo_max = $component["max"];
-	$modulo_min = $component["min"];
-	$module_interval = $component["module_interval"];
-	$tcp_port = $component["tcp_port"];
-	$tcp_rcv = $component["tcp_rcv"];
-	$tcp_send = $component["tcp_send"];
-	$snmp_community = $component["snmp_community"];
-	$snmp_oid = $component["snmp_oid"];
-	$id_module_group = $component["id_module_group"];
-	$id_group = $component["id_group"];
-} else {
-	$name = "";
-	$snmp_oid = "";
-	$description = "";
-	$id_group = 1;
-	$oid = "";
-	$modulo_max = "0";
-	$modulo_min = "0";
-	$module_interval = "0";
-	$tcp_port = "";
-	$tcp_rcv = "";
-	$tcp_send = "";
+if (! $id) {
 	$snmp_community = "public";
-	$id_module_group = "";
-	$id_group = "";
-	$type = 0;
 }
 
 echo "<h2>".__('Module component management')."</h2>";
+echo "<h4>".__('Network component')."</h4>";
 
-echo '<form name="modulo" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components">';
+$data = array ();
+$data[0] = _('Port');
+$data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true);
+$data[2] = __('SNMP community');
+$data[3] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);
 
-echo '<table width="95%" cellspacing="4" cellpadding="4" class="databox_color">';
+push_table_row ($data, 'snmp_port');
 
-// Different Form url if it's a create or if it's a update form
+$data = array ();
+$data[0] = __('SNMP OID');
+$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true);
+$table->colspan['snmp_2'][1] = 3;
 
-echo "<tr>";
-echo '<tr><td class="datos2">'.__('Module name');
-echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>";
+push_table_row ($data, 'snmp_2');
 
-//-- Module type combobox
-echo "<td class='datos2'>".__('Module type')."</td>";
-echo "<td class='datos2'>";
-echo '<select name="tipo" onChange="type_change()">';
-$sql1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo != '$type' ORDER BY nombre";
-$result=mysql_query($sql1);
-echo "<option value='$type'>". get_moduletype_name ($type);
-while ($component=mysql_fetch_array($result)){
-	echo "<option value='".$component["id_tipo"]."'>".$component["nombre"]."</option>";
-}
-echo "</select>";
+/* Advanced stuff */
+$data = array ();
+$data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
+$data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, '', true);
+$table->colspan['tcp_send'][1] = 3;
 
-echo "</td></tr>";
-echo "<tr>";
-echo "<td class='datos'>".__('Group')."</td>";
-echo "<td class='datos'>";
-print_select (get_network_component_groups (),
-	'id_group', $id_group, '', '', '', false, false, false);
+push_table_row ($data, 'tcp_send');
 
-echo "<td class='datos'>".__('Module group')."</td>";
-echo '<td class="datos">';
-echo '<select name="id_module_group">';
-if ($id_nc != -1 )
-	echo "<option value='".$id_module_group."'>".get_modulegroup_name($id_module_group);
-$sql1='SELECT * FROM tmodule_group';
-$result=mysql_query($sql1);
-while ($component=mysql_fetch_array($result))
-	echo "<option value='".$component["id_mg"]."'>".$component["name"]."</option>";
-echo "</select>";
+$data[0] = __('TCP receive');
+$data[1] = print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, '', true);
+$table->colspan['tcp_receive'][1] = 3;
 
-echo "<tr>";
-echo '<td class="datos2">'.__('Module Interval');
-echo '<td class="datos2">';
-echo '<input type="text" name="module_interval" size="5" value="'.$module_interval.'">';
+push_table_row ($data, 'tcp_receive');
+
+return;
 ?>
 
 <td class="datos2"><?php echo __('TCP port') ?></td>

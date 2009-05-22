@@ -1170,6 +1170,10 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	
 	if (! is_array ($params))
 		$params = array ();
+	/* Avoid showing login info */
+	$params['pass'] = false;
+	$params['nick'] = false;
+	$params['unnamed'] = false;
 	
 	//We don't clean these variables up as they're only being passed along
 	foreach ($_GET as $key => $value) {

@@ -1,3 +1,30 @@
+2009-05-22  Esteban Sanchez  <estebans@artica.es>
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql,
+	pandoradb.sql: Added id_plugin. Database breakage requested and
+	approved.
+
+	* godmode/modules/manage_network_components_form_common.php,
+	godmode/modules/manage_network_components_form_plugin.php: Added
+	to repository. New editor for network components.
+
+	* godmode/modules/manage_network_components_form_network.php,
+	godmode/modules/manage_network_components_form_wmi.php,
+	godmode/modules/manage_network_components.php: Adapted to changes
+	in component editors and missing fields. Added option to create
+	plugin components.
+
+	* godmode/modules/manage_network_components_form.php: Make the 
+	different network component editors to reutilize the code and
+	have a common UI.
+
+	* godmode/agentes/module_manager_editor.php: Style correction.
+
+	* include/styles/pandora.css: Style for network component editor.
+
+	* include/functions_ui.php: Security fix in get_url_refresh() to
+	avoid showing login info.
+
 2009-05-21  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_network_components.php: Added to repository.

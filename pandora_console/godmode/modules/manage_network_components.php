@@ -30,11 +30,11 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_network_components.php');
 
-$type = (int) get_parameter ('tipo');
+$type = (int) get_parameter ('type');
 $name = (string) get_parameter ('name');
-$description = (string) get_parameter ('descripcion');
-$modulo_max = (int) get_parameter ('modulo_max');
-$modulo_min = (int) get_parameter ('modulo_min');
+$description = (string) get_parameter ('description');
+$max = (int) get_parameter ('max');
+$min = (int) get_parameter ('min');
 $tcp_send = (string) get_parameter ('tcp_send');
 $tcp_rcv = (string) get_parameter ('tcp_rcv');
 $tcp_port = (int) get_parameter ('tcp_port');
@@ -47,7 +47,14 @@ $plugin_user = (string) get_parameter ('plugin_user');
 $plugin_pass = (string) get_parameter ('plugin_pass');
 $plugin_parameter = (string) get_parameter ('plugin_parameter');
 $max_timeout = (int) get_parameter ('max_timeout');
-$id_modulo = (string) get_parameter ('id_modulo');
+$id_modulo = (int) get_parameter ('id_component_type');
+$id_plugin = (int) get_parameter ('id_plugin');
+$min_warning = (int) get_parameter ('min_warning');
+$max_warning = (int) get_parameter ('max_warning');
+$min_critical = (int) get_parameter ('min_critical');
+$max_critical = (int) get_parameter ('max_critical');
+$ff_event = (int) get_parameter ('ff_event');
+$history_data = (bool) get_parameter ('history_data');
 $id = (int) get_parameter ('id');
 
 $create_component = (bool) get_parameter ('create_component');
@@ -59,8 +66,8 @@ if ($create_component) {
 	$id = create_network_component ($name, $type, $id_group, 
 		array ('description' => $description,
 			'module_interval' => $module_interval,
-			'max' => $modulo_max,
-			'min' => $modulo_min,
+			'max' => $max,
+			'min' => $min,
 			'tcp_send' => $tcp_send,
 			'tcp_rcv' => $tcp_rcv,
 			'tcp_port' => $tcp_port,
@@ -68,13 +75,20 @@ if ($create_component) {
 			'snmp_community' => $snmp_community,
 			'id_module_group' => $id_module_group,
 			'id_modulo' => $id_modulo,
+			'id_plugin' => $id_plugin,
 			'plugin_user' => $plugin_user,
 			'plugin_pass' => $plugin_pass,
 			'plugin_parameter' => $plugin_parameter,
-			'max_timeout' => $max_timeout));
+			'max_timeout' => $max_timeout,
+			'history_data' => $history_data,
+			'min_warning' => $min_warning,
+			'max_warning' => $max_warning,
+			'min_critical' => $min_critical,
+			'max_critical' => $max_critical,
+			'min_ff_event' => $ff_event));
 	if ($id === false) {
 		print_error_message (__('Could not be created'));
-		include_once ('manage_network_components_form.php');
+		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
 	print_success_message (__('Created successfully'));
@@ -90,8 +104,8 @@ if ($update_component) {
 			'id_group' => $id_group,
 			'description' => $description,
 			'module_interval' => $module_interval,
-			'max' => $modulo_max,
-			'min' => $modulo_min,
+			'max' => $max,
+			'min' => $min,
 			'tcp_send' => $tcp_send,
 			'tcp_rcv' => $tcp_rcv,
 			'tcp_port' => $tcp_port,
@@ -99,13 +113,20 @@ if ($update_component) {
 			'snmp_community' => $snmp_community,
 			'id_module_group' => $id_module_group,
 			'id_modulo' => $id_modulo,
+			'id_plugin' => $id_plugin,
 			'plugin_user' => $plugin_user,
 			'plugin_pass' => $plugin_pass,
 			'plugin_parameter' => $plugin_parameter,
-			'max_timeout' => $max_timeout));
+			'max_timeout' => $max_timeout,
+			'history_data' => $history_data,
+			'min_warning' => $min_warning,
+			'max_warning' => $max_warning,
+			'min_critical' => $min_critical,
+			'max_critical' => $max_critical,
+			'min_ff_event' => $ff_event));
 	if ($result === false) {
 		print_error_message (__('Could not be updated'));
-		include_once ('manage_network_components_form.php');
+		include_once ('godmode/modules/manage_network_components_form.php');
 		return;
 	}
 	print_success_message (__('Updated successfully'));
@@ -125,20 +146,23 @@ if ($delete_component) {
 }
 
 if ($id || $new_component) {
-	include_once ('manage_network_components_form.php');
+	include_once ('godmode/modules/manage_network_components_form.php');
 	return;
 }
 
 $url = get_url_refresh (array ('offset' => false,
+	'id' => false,
 	'create_component' => false,
 	'update_component' => false,
 	'delete_component' => false,
 	'id_network_component' => false,
-	'tipo' => false,
+	'upd' => false,
+	'crt' => false,
+	'type' => false,
 	'name' => false,
-	'descripcion' => false,
-	'modulo_max' => false,
-	'modulo_min' => false,
+	'description' => false,
+	'max' => false,
+	'min' => false,
 	'tcp_send' => false,
 	'tcp_rcv' => false,
 	'tcp_port' => false,
@@ -151,7 +175,15 @@ $url = get_url_refresh (array ('offset' => false,
 	'plugin_pass' => false,
 	'plugin_parameter' => false,
 	'max_timeout' => false,
-	'id_modulo' => false));
+	'id_modulo' => false,
+	'id_plugin' => false,
+	'history_data' => false,
+	'min_warning' => false,
+	'max_warning' => false,
+	'min_critical' => false,
+	'max_critical' => false,
+	'ff_event' => false,
+	'id_component_type' => false));
 
 echo "<h2>".__('Module management')." &raquo; ";
 echo __('Module component management')."</h2>";
@@ -214,6 +246,10 @@ $table->data = array ();
 foreach ($components as $component) {
 	$data = array ();
 	
+	if ($component['max'] == $component['min'] && $component['max'] == 0) {
+		$component['max'] = $component['min'] = __('N/A');
+	}
+	
 	$data[0] = '<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'">';
 	$data[0] .= $component['name'];
 	$data[0] .= '</a>';
@@ -240,6 +276,7 @@ echo '<form method="post" action="'.$url.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_input_hidden ('new_component', 1);
 print_select (array (2 => __('Create a new network component'),
+	4 => __('Create a new plugin component'),
 	6 => __('Create a new WMI component')),
 	'id_component_type', '', '', '', '', '');
 print_submit_button (__('Create'), 'crt', false, 'class="sub next"');

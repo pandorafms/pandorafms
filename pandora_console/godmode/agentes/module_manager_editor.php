@@ -178,7 +178,7 @@ case 4:
 case "predictionserver":
 	$moduletype = 5;
 case 5:
-	$categories = array (0,1);
+	$categories = array (0, 1);
 	require ('module_manager_editor_common.php');
 	require ('module_manager_editor_prediction.php');
 	break;

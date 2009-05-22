@@ -78,6 +78,10 @@ function configure_modules_form () {
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group option["+data["id_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
+				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
+				$("#text-plugin_user").attr ("value", html_entity_decode (data["plugin_user"]));
+				$("#password-plugin_pass").attr ("value", html_entity_decode (data["plugin_pass"]));
+				$("#text-plugin_parameter").attr ("value", html_entity_decode (data["plugin_parameter"]));
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();
 				else

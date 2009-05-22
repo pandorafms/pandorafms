@@ -1,5 +1,10 @@
 2009-05-22  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/pandora_modules.js: Set values of plugin
+	component when one of this kind is selected.
+
+2009-05-22  Esteban Sanchez  <estebans@artica.es>
+
 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql,
 	pandoradb.sql: Added id_plugin. Database breakage requested and
 	approved.

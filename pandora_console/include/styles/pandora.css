@@ -781,11 +781,13 @@ input[type=image] {
 }
 table#simple select#id_module_type,
 table#alert_search select#id_agent,
-table#alert_search select#id_group {
+table#alert_search select#id_group,
+table#network_component select#type {
 	width: 200px;
 }
 table#simple select#select_snmp_oid,
-table#simple select#id_plugin {
+table#simple select#id_plugin,
+table#network_component select#id_plugin {
 	width: 270px;
 }
 table#simple input#text-plugin_parameter,

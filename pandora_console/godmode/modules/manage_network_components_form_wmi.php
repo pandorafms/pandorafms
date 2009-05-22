@@ -29,37 +29,37 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
+echo '<h2>'.__('Module component management').'</h2>';
+echo '<h4>'.__('WMI component management').'</h4>';
+
+$data = array ();
+$data[0] = __('WMI query');
+$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 25, 255, true);
+$data[2] = __('Key string').' '.print_help_icon ('wmikey', true);
+$data[3] = print_input_text ('snmp_community', $snmp_community, '', 25, 255, true);
+
+push_table_row ($data, 'wmi_1');
+
+$data = array ();
+$data[0] = __('Field number').' '.print_help_icon ('wmifield', true);
+$data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 25, true);
+$data[2] = __('Namespace').' '.print_help_icon ('wminamespace', true);
+$data[3] = print_input_text ('tcp_send', $tcp_send, '', 25, 255, true);
+
+push_table_row ($data, 'wmi_2');
+
+$data = array ();
+$data[0] = __('Username');
+$data[1] = print_input_text ('plugin_user', $plugin_user, '', 15, 255, true);
+$data[2] = __('Password');
+$data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true);
+
+push_table_row ($data, 'wmi_2');
+
+return;
 // Update an existing component
-if ($id) {
-	$component = get_network_component ($id);
-	if ($component === false)
-		return;
-	$name = $component["name"];
-	$type = $component["type"];
-	$description = $component["description"];
-	$modulo_max = $component["max"];
-	$modulo_min = $component["min"];
-	$module_interval = $component["module_interval"];
-	$tcp_port = $component["tcp_port"];
-	$tcp_rcv = $component["tcp_rcv"];
-	$tcp_send = $component["tcp_send"];
-	$snmp_community = $component["snmp_community"];
-	$snmp_oid = $component["snmp_oid"];
-	$id_module_group = $component["id_module_group"];
-	$id_group = $component["id_group"];
-	$plugin_user = $component["plugin_user"];
-	$plugin_pass = $component["plugin_pass"];
-	$plugin_parameter = $component["plugin_parameter"];
-	$max_timeout = $component["max_timeout"];
-} else {
-	$name = "";
-	$snmp_oid = "";
-	$description = "";
-	$id_group = 1;
-	$oid = "";
-	$modulo_max = "0";
-	$modulo_min = "0";
-	$module_interval = "300";
+if (! $id) {
+	$module_interval = 300;
 	$tcp_port = "";
 	$tcp_rcv = "";
 	$tcp_send = "";
@@ -73,7 +73,6 @@ if ($id) {
 	$max_timeout = 10;
 }
 
-echo '<h2>' . __('WMI component management') . '</h2>';
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_components">';
 
 echo '<table width="95%" cellspacing="4" cellpadding="4" class="databox_color">';

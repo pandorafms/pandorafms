@@ -483,6 +483,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `snmp_oid` varchar(400) NOT NULL,
   `id_module_group` tinyint(4) unsigned NOT NULL default '0',
   `id_modulo` int(10) unsigned default '0',
+  `id_plugin` INTEGER unsigned default '0',
   `plugin_user` varchar(250) default '',
   `plugin_pass` varchar(250) default '',
   `plugin_parameter` text,

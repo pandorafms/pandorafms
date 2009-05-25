@@ -1,5 +1,10 @@
 2009-05-25  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/modules/manage_network_components.php: Fixed a typo on
+	onsubmit paramter that was avoiding asking for confirmation.
+
+2009-05-25  Esteban Sanchez  <estebans@artica.es>
+
 	* general/ui/agents_list.php: Fixed pagination javascript selector
 	to avoid collisions.
 

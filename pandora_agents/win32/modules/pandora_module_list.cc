@@ -24,11 +24,16 @@
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
+#include "pandora_module_freedisk_percent.h"
 #include "pandora_module_freememory.h"
+#include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
+#include "pandora_module_perfcounter.h"
+#include "pandora_module_tcpcheck.h"
+#include "pandora_module_regexp.h"
 #include <fstream>
 
 using namespace std;
@@ -132,12 +137,17 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Proc       *module_proc;
 	Pandora_Module_Service    *module_service;
 	Pandora_Module_Freedisk   *module_freedisk;
+	Pandora_Module_Freedisk_Percent   *module_freedisk_percent;
 	Pandora_Module_Cpuusage   *module_cpuusage;
 	Pandora_Module_Freememory *module_freememory;
+	Pandora_Module_Freememory_Percent *module_freememory_percent;
 	Pandora_Module_Odbc       *module_odbc;
 	Pandora_Module_Logevent   *module_logevent;	
 	Pandora_Module_WMIQuery   *module_wmiquery;	
-	
+	Pandora_Module_Perfcounter *module_perfcounter;	
+	Pandora_Module_Tcpcheck   *module_tcpcheck;	
+    Pandora_Module_Regexp     *module_regexp;	
+
 	module = Pandora_Module_Factory::getModuleFromDefinition (definition);
 	
 	if (module != NULL) {
@@ -164,9 +174,19 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 			modules->push_back (module_freedisk);
 			
 			break;
+		case MODULE_FREEDISK_PERCENT:
+			module_freedisk_percent = (Pandora_Module_Freedisk_Percent *) module;
+			modules->push_back (module_freedisk_percent);
+			
+			break;
 		case MODULE_FREEMEMORY:
 			module_freememory = (Pandora_Module_Freememory *) module;
 			modules->push_back (module_freememory);
+			
+			break;
+		case MODULE_FREEMEMORY_PERCENT:
+			module_freememory_percent = (Pandora_Module_Freememory_Percent *) module;
+			modules->push_back (module_freememory_percent);
 			
 			break;
 		case MODULE_CPUUSAGE:
@@ -185,6 +205,18 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_WMIQUERY:
 			module_wmiquery = (Pandora_Module_WMIQuery *) module;
 			modules->push_back (module_wmiquery);
+			break;
+		case MODULE_PERFCOUNTER:
+			module_perfcounter = (Pandora_Module_Perfcounter *) module;
+			modules->push_back (module_perfcounter);
+			break;
+		case MODULE_TCPCHECK:
+			module_tcpcheck = (Pandora_Module_Tcpcheck *) module;
+			modules->push_back (module_tcpcheck);
+			break;
+		case MODULE_REGEXP:
+			module_regexp = (Pandora_Module_Regexp *) module;
+			modules->push_back (module_regexp);
 			break;
 		default:
 			break;

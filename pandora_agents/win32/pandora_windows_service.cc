@@ -683,6 +683,12 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	string            encoding;
 	bool              saved;
 	static HANDLE     mutex = 0; 
+    ULARGE_INTEGER    free_bytes;
+    double            min_free_bytes = 0;
+	Pandora_Agent_Conf *conf = NULL;
+
+	conf = this->getConf ();
+	min_free_bytes = 1024 * atoi (conf->getValue ("temporal_min_size").c_str ());
 	
 	if (mutex == 0) {
 		mutex = CreateMutex (NULL, FALSE, NULL);
@@ -749,24 +755,76 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	/* Only send if debug is not activated */
 	if (getPandoraDebug () == false) {
-		this->copyDataFile (tmp_filename);
-        Pandora_File::removeFile (tmp_filepath);
+		rc = this->copyDataFile (tmp_filename);
+        
+        /* Delete the file if successfully copied or not enough space available */
+        if (rc == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0
+            && free_bytes.QuadPart < min_free_bytes)) {
+            Pandora_File::removeFile (tmp_filepath);
+	    }
+
+        /* Send any buffered data files */
+        this->sendBufferedXml (conf->getValue ("temporal"));
 	}
-	
+
 	ReleaseMutex (mutex);
+}
+
+void
+Pandora_Windows_Service::sendBufferedXml (string path) {
+    string base_path = path, file_path;
+    WIN32_FIND_DATA file_data;
+    HANDLE find;
+
+	if (base_path[base_path.length () - 1] != '\\') {
+		base_path += "\\";
+	}
+    file_path = base_path + "*.data";
+    
+    /* Search for buffered data files */
+    find = FindFirstFile(file_path.c_str (), &file_data);
+    if (find == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    /* Send data files as long as there are no errors */
+    if (this->copyDataFile (file_data.cFileName) != 0) {
+        FindClose(find);
+        return;
+    }
+    Pandora_File::removeFile (base_path + file_data.cFileName);
+
+    while (FindNextFile(find, &file_data) != 0) {
+        if (this->copyDataFile (file_data.cFileName) != 0) {
+            FindClose(find);
+            return;
+        }
+        Pandora_File::removeFile (base_path + file_data.cFileName);
+    }
+
+    FindClose(find);
 }
 
 void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
+    int startup_delay = 0;
 
 	pandoraDebug ("Run begin");
 	
+	conf = this->getConf ();
+ 	
+ 	/* Sleep if a startup delay was specified */
+ 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ());
+ 	if (startup_delay > 0) {
+        pandoraLog ("Delaying startup %d seconds", startup_delay);
+        Sleep (startup_delay);
+    }
+
 	/* Check for configuration changes */
 	this->checkConfig ();
 
-	conf = this->getConf ();
 	server_addr = conf->getValue ("server_ip");
 
 	execution_number++;

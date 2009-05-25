@@ -72,23 +72,34 @@ namespace Pandora_Modules {
 		MODULE_SERVICE,   /**< The module checks for a running
 				   *   service                         */
 		MODULE_FREEDISK,  /**< The module checks the free      */
+		MODULE_FREEDISK_PERCENT,  /**< The module checks the free      */
 		MODULE_CPUUSAGE,  /**< The module checks the CPU usage */
-		MODULE_FREEMEMORY, /**< The module checks the amount of 
+		MODULE_FREEMEMORY, /**< The module checks the percentage of 
+				   *   freememory in the system        */
+		MODULE_FREEMEMORY_PERCENT, /**< The module checks the amount of 
 				   *   freememory in the system        */
 		MODULE_ODBC,       /**< The module performs a SQL query via ODBC */
 		MODULE_LOGEVENT,       /**< The module checks for log events */	
-		MODULE_WMIQUERY       /**< The module runs WQL queries */		
+		MODULE_WMIQUERY,       /**< The module runs WQL queries */		
+		MODULE_PERFCOUNTER,    /**< The module reads performance counters */
+		MODULE_TCPCHECK,       /**< The module checks whether a tcp port is open */
+		MODULE_REGEXP          /**< The module searches a file for matches of a regular expression */
 	} Module_Kind;
 	
 	const string module_exec_str       = "module_exec";
 	const string module_proc_str       = "module_proc";
 	const string module_service_str    = "module_service";
 	const string module_freedisk_str   = "module_freedisk";
+	const string module_freedisk_percent_str   = "module_freedisk_percent";
 	const string module_freememory_str = "module_freememory";
+	const string module_freememory_percent_str = "module_freememory_percent";
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_odbc_str       = "module_odbc";
 	const string module_logevent_str   = "module_logevent";	
 	const string module_wmiquery_str   = "module_wmiquery";	
+	const string module_perfcounter_str = "module_perfcounter";
+	const string module_tcpcheck_str   = "module_tcpcheck";	
+	const string module_regexp_str     = "module_regexp";	
 
 	/**
 	 * Pandora module super-class exception.

@@ -24,6 +24,12 @@
 
 #include "pandora_module.h"
 
+// Log event read buffer size
+#define	BUFFER_SIZE 1024
+
+// Length of a timestamp string YYYY-MM-DD HH:MM:SS
+#define	TIMESTAMP_LEN 19
+
 namespace Pandora_Modules {
     
 	/**
@@ -33,12 +39,24 @@ namespace Pandora_Modules {
 
 	class Pandora_Module_Logevent : public Pandora_Module {
 	private:
+        int id;
+		int type;
 		string source;
-		string type;
-		string code;
+		string application;
 		string pattern;
+		HANDLE log_event;
+		HANDLE messages_dll;
+
+        HANDLE openLogEvent ();
+        void closeLogEvent ();
+        void discardLogEvents ();
+        int getLogEvents (list<string> &event_list);
+        void timestampToSystemtime (string timestamp, SYSTEMTIME *system_time);
+        void getEventDescription (PEVENTLOGRECORD pevlr, char *message);
+        int filterEvent (PEVENTLOGRECORD pevlr, string description);
+
 	public:
-		Pandora_Module_Logevent (string name, string source, string type, string code, string pattern);
+		Pandora_Module_Logevent (string name, string source, string type, string id, string pattern, string application);
 		void run ();
 	};
 }

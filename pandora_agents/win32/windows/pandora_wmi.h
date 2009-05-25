@@ -41,23 +41,14 @@ namespace Pandora_Wmi {
 	int           isProcessRunning      (string process_name);
 	int           isServiceRunning      (string service_name);
 	unsigned long getDiskFreeSpace      (string disk_id);
+	unsigned long getDiskFreeSpacePercent      (string disk_id);
 	int           getCpuUsagePercentage (int cpu_id);
 	long          getFreememory         ();
+	long          getFreememoryPercent  ();
 	string        getOSName             ();
 	string        getOSVersion          ();
 	string        getOSBuild            ();
-	string        getSystemName         ();
-	
-	void          getEventList          (string source,
-					     string type,
-					     string code,
-					     string pattern,
-					     int interval,
-					     list<string> &event_list);
-	string        getTimestampLimit     (int interval);
-	void          convertWMIDate        (string wmi_date,
-					     SYSTEMTIME *system_time);
-	
+	string        getSystemName         ();	
 	bool          runProgram            (string command, DWORD flags = 0);
 	bool          startService          (string service_name);
 	bool          stopService           (string service_name);

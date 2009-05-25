@@ -65,6 +65,25 @@ function get_network_component_group_name ($id_network_component_group) {
 }
 
 /**
+ * Get a network component group.
+ *
+ * @param int Group id to be fetched.
+ * @param array Extra filter.
+ * @param array Fields to be fetched.
+ *
+ * @return array A network component group matching id and filter.
+ */
+function get_network_component_group ($id_network_component_group, $filter = false, $fields = false) {
+	if (empty ($id_network_component_group))
+		return false;
+	if (! is_array ($filter))
+		$filter = array ();
+	$filter['id_sg'] = (int) $id_network_component_group;
+	
+	return get_db_row_filter ('tnetwork_component_group', $filter, $fields);
+}
+
+/**
  * Get a list of network component groups.
  * 
  * The values returned can be passed directly to print_select(). Child groups

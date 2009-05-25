@@ -216,7 +216,7 @@ $filter = array ();
 if ($search_id_group)
 	$filter['id_group'] = $search_id_group;
 if ($search_string != '')
-	$filter[] = '(nombre LIKE "%'.$search_id_group.'%" OR description LIKE "%'.$search_id_group.'%" OR tcp_send LIKE "%'.$search_id_group.'%" OR tcp_rcv LIKE "%'.$search_id_group.'%")';
+	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR tcp_send LIKE "%'.$search_string.'%" OR tcp_rcv LIKE "%'.$search_stringg.'%")';
 
 $total_components = get_network_components (false, $filter, 'COUNT(*) AS total');
 $total_components = $total_components[0]['total'];

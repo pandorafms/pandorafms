@@ -1,3 +1,18 @@
+2009-05-25  Esteban Sanchez  <estebans@artica.es>
+
+	* general/ui/agents_list.php: Fixed pagination javascript selector
+	to avoid collisions.
+
+	* godmode/modules/manage_nc_groups.php,
+	godmode/modules/manage_nc_groups_form.php: Rewritten to use pandora
+	functions. Code cleanup.
+
+	* godmode/modules/manage_network_components.php: Fixed string search
+	query.
+
+	* include/functions_network_components.php: Added
+	get_network_component_group().
+
 2009-05-25  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

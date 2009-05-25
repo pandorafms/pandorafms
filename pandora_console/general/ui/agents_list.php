@@ -189,7 +189,7 @@ function send_search_form (offset) {
 		function (data, status) {
 			$("#agents_loading").hide ().after (data);
 			$("#agents_list, table#agents_table").show ();
-			$("a.pagination").click (function () {
+			$("#agents a.pagination").click (function () {
 				offset = this.href.split ("=").pop ();
 				send_search_form (offset);
 				return false;
@@ -206,7 +206,7 @@ $(document).ready (function () {
 		return false;
 	});
 	
-	$("a.pagination").click (function () {
+	$("#agents a.pagination").click (function () {
 		offset = this.href.split ("=").pop ();
 		send_search_form (offset);
 		return false;

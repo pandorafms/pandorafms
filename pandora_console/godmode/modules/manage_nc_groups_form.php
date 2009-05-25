@@ -28,55 +28,44 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-$create = (bool) get_parameter ('create');
-$edit = (bool) get_parameter ('edit');
+require_once ('include/functions_network_components.php');
 
-if ($edit) { // Edit mode
-	$id_sg = entrada_limpia ($_GET["id_sg"]);
-	$sql1 = "SELECT * FROM tnetwork_component_group where id_sg = $id_sg";
-	$result=mysql_query($sql1);
-	$row=mysql_fetch_array($result);
-	$name = $row["name"];
-	$parent = $row["parent"];
-} elseif ($create) {
-	$id_sg = -1;
-	$name = "";
-	$parent = "";
+$id = (int) get_parameter ('id');
+
+if ($id) {
+	$group = get_network_component_group ($id);
+	$name = $group['name'];
+	$parent = $group['parent'];
+} else {
+	$name = '';
+	$parent = '';
 }
 
-echo "<h2>".__('Component group management')."</h2>";
-echo '<table width="50%" cellspacing="4" cellpadding="4" class="databox">';
+echo '<h2>'.__('Component group management').'</h2>';
 
-// Different Form url if it's a create or if it's a update form
-if ($id_sg != -1)
-	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&update=1&id_sg=$id_sg'>";
-else
-	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
-	
-echo "<tr>";
-echo "<td class='datos'>".__('Name')."</td>";
-echo "<td class='datos'><input type='text' name='name' size=30 value='$name'></td>";
+$table->width = '50%';
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->data = array ();
 
-echo "<tr>";
-echo "<td class='datos2'>".__('Parent')."</td>";
-echo "<td class='datos2'>";
-echo "<select name='parent'>";
-echo "<option value='$parent'>".get_network_component_group_name($parent);
-$sql1 = "SELECT * FROM tnetwork_component_group where id_sg != '$parent'";
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_sg"]."'>".get_network_component_group_name($row["id_sg"]);
-echo "</select>";
+$table->data[0][0] = __('Name');
+$table->data[0][1] = print_input_text ('name', $name, '', 15, 255, true);
 
-echo "</td></tr><table>";
-echo '<table width="500">';
-echo '<tr><td align="right">';
+$table->data[1][0] = __('Parent');
+$table->data[1][1] = print_select (get_network_component_groups (),
+	'parent', $parent, false, __('None'), 0, true, false, false);
 
-if ($id_sg == -1)
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
-else
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
-
-echo "</form></td></tr></table>";
-
+echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups">';
+print_table ($table);
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+if ($id) {
+	print_input_hidden ('update', 1);
+	print_input_hidden ('id', $id);
+	print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
+} else {
+	print_input_hidden ('create', 1);
+	print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+}
+echo '</div>';
+echo '</form>';
 ?>

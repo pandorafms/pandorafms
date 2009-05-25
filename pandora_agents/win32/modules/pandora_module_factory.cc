@@ -24,11 +24,16 @@
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
+#include "pandora_module_freedisk_percent.h"
 #include "pandora_module_freememory.h"
+#include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
+#include "pandora_module_perfcounter.h"
+#include "pandora_module_tcpcheck.h"
+#include "pandora_module_regexp.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -43,7 +48,9 @@ using namespace Pandora_Strutils;
 #define TOKEN_PROC          ("module_proc ")
 #define TOKEN_SERVICE       ("module_service ")
 #define TOKEN_FREEDISK      ("module_freedisk ")
+#define TOKEN_FREEDISK_PERCENT      ("module_freepercentdisk ")
 #define TOKEN_FREEMEMORY    ("module_freememory")
+#define TOKEN_FREEMEMORY_PERCENT    ("module_freepercentmemory")
 #define TOKEN_CPUUSAGE      ("module_cpuusage ")
 #define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
@@ -55,6 +62,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_EVENTTYPE     ("module_eventtype ")
 #define TOKEN_EVENTCODE     ("module_eventcode ")
 #define TOKEN_PATTERN       ("module_pattern ")
+#define TOKEN_APPLICATION   ("module_application ")
 #define TOKEN_ASYNC         ("module_async")
 #define TOKEN_WATCHDOG      ("module_watchdog ")
 #define TOKEN_START_COMMAND ("module_start_command ")
@@ -63,6 +71,11 @@ using namespace Pandora_Strutils;
 #define TOKEN_RETRIES       ("module_retries ")
 #define TOKEN_STARTDELAY    ("module_startdelay ")
 #define TOKEN_RETRYDELAY    ("module_retrydelay ")
+#define TOKEN_PERFCOUNTER   ("module_perfcounter ")
+#define TOKEN_TCPCHECK      ("module_tcpcheck ")
+#define TOKEN_PORT          ("module_port ")
+#define TOKEN_TIMEOUT       ("module_timeout ")
+#define TOKEN_REGEXP        ("module_regexp ")
 
 string
 parseLine (string line, string token) {
@@ -96,12 +109,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_min, module_max, module_description;
 	string                 module_interval, module_proc, module_service;
 	string                 module_freedisk, module_cpuusage, module_odbc;
+	string                 module_freedisk_percent, module_freememory_percent;
 	string                 module_odbc_query, module_dsn, module_freememory;
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
-	string                 module_pattern, module_async;
+	string                 module_pattern, module_application, module_async;
 	string                 module_watchdog, module_start_command;
 	string                 module_wmiquery, module_wmicolumn;
 	string                 module_retries, module_startdelay, module_retrydelay;
+	string                 module_perfcounter, module_tcpcheck;
+	string                 module_port, module_timeout, module_regexp;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -122,6 +138,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_eventtype     = "";
 	module_eventcode   = "";
 	module_pattern       = "";
+	module_application   = "";
 	module_async         = "";
 	module_watchdog      = "";
 	module_start_command = "";
@@ -130,6 +147,11 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_retries       = "";
 	module_startdelay    = "";
 	module_retrydelay    = "";
+	module_perfcounter   = "";
+	module_tcpcheck      = "";
+	module_port          = "";
+	module_timeout       = "";
+	module_regexp        = "";
 
 	stringtok (tokens, definition, "\n");
 	
@@ -161,8 +183,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_freedisk == "") {
 			module_freedisk = parseLine (line, TOKEN_FREEDISK);
 		}
+		if (module_freedisk_percent == "") {
+			module_freedisk_percent = parseLine (line, TOKEN_FREEDISK_PERCENT);
+		}
 		if (module_freememory == "") {
 			module_freememory = parseLine (line, TOKEN_FREEMEMORY);
+		}
+		if (module_freememory_percent == "") {
+			module_freememory_percent = parseLine (line, TOKEN_FREEMEMORY_PERCENT);
 		}
 		if (module_cpuusage == "") {
 			module_cpuusage = parseLine (line, TOKEN_CPUUSAGE);
@@ -197,6 +225,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_pattern == "") {
 			module_pattern = parseLine (line, TOKEN_PATTERN);
 		}
+		if (module_application == "") {
+			module_application = parseLine (line, TOKEN_APPLICATION);
+		}
 		if (module_async == "") {
 			module_async = parseLine (line, TOKEN_ASYNC);
 		}
@@ -220,6 +251,21 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_retrydelay == "") {
 			module_retrydelay = parseLine (line, TOKEN_RETRYDELAY);
+		}
+		if (module_perfcounter == "") {
+			module_perfcounter = parseLine (line, TOKEN_PERFCOUNTER);
+		}
+		if (module_tcpcheck == "") {
+			module_tcpcheck = parseLine (line, TOKEN_TCPCHECK);
+		}
+		if (module_port == "") {
+			module_port = parseLine (line, TOKEN_PORT);
+		}
+		if (module_timeout == "") {
+			module_timeout = parseLine (line, TOKEN_TIMEOUT);
+		}
+		if (module_regexp == "") {
+			module_regexp = parseLine (line, TOKEN_REGEXP);
 		}
 
 		iter++;
@@ -267,17 +313,20 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_freedisk != "") {
 		module = new Pandora_Module_Freedisk (module_name,
 						      module_freedisk);
+	} else if (module_freedisk_percent != "") {
+		module = new Pandora_Module_Freedisk_Percent (module_name,
+						      module_freedisk_percent);
 	} else if (module_freememory != "") {
 		module = new Pandora_Module_Freememory (module_name);
+	} else if (module_freememory_percent != "") {
+		module = new Pandora_Module_Freememory_Percent (module_name);
 	} else if (module_cpuusage != "") {
 		int cpu_id;
 
 		try {
 			cpu_id = strtoint (module_cpuusage);
 		} catch (Invalid_Conversion e) {
-			pandoraLog ("Invalid CPU id '%s' on module_cpuusage %s",
-				    module_name.c_str ());
-			return NULL;
+			cpu_id = -1;
 		}
 		
 		module = new Pandora_Module_Cpuusage (module_name,
@@ -292,10 +341,17 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						      module_source,
 						      module_eventtype,
 						      module_eventcode,
-						      module_pattern);
+						      module_pattern,
+						      module_application);
 	} else if (module_wmiquery != "") {
 		module = new Pandora_Module_WMIQuery (module_name,
 						      module_wmiquery, module_wmicolumn);
+	} else if (module_perfcounter != "") {
+		module = new Pandora_Module_Perfcounter (module_name, module_perfcounter);
+	} else if (module_tcpcheck != "") {
+		module = new Pandora_Module_Tcpcheck (module_name, module_tcpcheck, module_port, module_timeout);
+	} else if (module_regexp != "") {
+		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern);
 	} else {
 		return NULL;
 	}

@@ -1,3 +1,34 @@
+2009-05-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc, windows/pandora_wmi.h: Added functions for the
+	  new modules. Removed old logevent functions.
+
+	* pandora_windows_service.h, pandora_windows_service.cc: Added support
+	  for data file buffering and startup delay.
+
+	* modules/pandora_module_logevent.cc, modules/pandora_module_logevent.h:
+	  Rewritten to retrieve event log data using the PDH interface instead
+	  of WMI (was too slow).
+
+	* modules/pandora_module_tcpcheck.cc, modules/pandora_module_tcpcheck.h,
+	  modules/pandora_module_regexp.cc, modules/pandora_module_regexp.h,
+	  modules/pandora_module_perfcounter.cc,
+	  modules/pandora_module_perfcounter.h,
+	  modules/pandora_module_freedisk_percent.cc,
+	  modules/pandora_module_freedisk_percent.h,
+	  modules/pandora_module_freememory_percent.cc,
+	  modules/pandora_module_freememory_percent.h: Added to repository.
+	  New modules, see http://openideas.info/wiki/.
+
+	* modules/pandora_module.h, modules/pandora_module.cc,
+	  modules/pandora_module_factory.cc, modules/pandora_module_list.cc:
+	  Added support for the new modules.
+
+	* bin/pandora_agent.conf: Included configuration examples for the new
+	  modules.
+
+	* PandoraAgent.dev: Updated to compile the new modules.
+
 2009-04-13  Esteban Sanchez  <estebans@artica.es>
 
 	* modules/pandora_module_odbc.cc: Fixed log message when no username

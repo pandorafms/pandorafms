@@ -84,6 +84,7 @@ namespace Pandora {
 		
 		void           start        ();
 		int           sendXml      (Pandora_Module_List *modules);
+        void          sendBufferedXml (string path);
 		Pandora_Agent_Conf  *getConf ();
 	};
 }

@@ -180,6 +180,56 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 }
 
 /** 
+ * Get the free space in a logical disk drive.
+ * 
+ * @param disk_id Disk drive letter (C: for example).
+ * 
+ * @return Free space percentage.
+ *
+ * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ *            from WMI database.
+ */
+unsigned long
+Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
+	CDhInitialize      init;
+	CDispPtr           wmi_svc, quickfixes;
+	unsigned long      free_space = 0, size = 0;
+	unsigned long      total_free_space = 0, total_size = 0;
+	string             query, free_str, size_str;
+
+	query = "SELECT Size, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
+
+	try {
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+				     L".ExecQuery(%T)",
+				     query.c_str ()));
+	
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			dhGetValue (L"%s", &free_str, quickfix,
+				    L".FreeSpace");
+			dhGetValue (L"%s", &size_str, quickfix,
+				    L".Size");
+
+			free_space = Pandora_Strutils::strtoulong (free_str);
+			size = Pandora_Strutils::strtoulong (size_str);
+            total_free_space += free_space;
+            total_size += size;
+		} NEXT_THROW (quickfix);
+		
+		if (total_size == 0) {
+            return 0;
+        }
+        
+        return total_free_space * 100 / total_size;
+	} catch (string errstr) {
+		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
+	}
+
+	throw Pandora_Wmi_Exception ();
+}
+
+/** 
  * Get the CPU usage percentage in the last minutes.
  * 
  * @param cpu_id CPU identifier.
@@ -194,24 +244,40 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        query;
-	long          load_percentage;
+	long          load_percentage, total_load;
+	int           total_cpus;
 	std::ostringstream stm;
 
-	stm << cpu_id;
-	query = "SELECT * FROM Win32_Processor WHERE DeviceID = \"CPU" + stm.str () + "\"";
+    // Select all CPUs
+    if (cpu_id < 0) {
+	    query = "SELECT * FROM Win32_Processor";
+    // Select a single CPUs
+    } else {
+	    stm << cpu_id;
+	    query = "SELECT * FROM Win32_Processor WHERE DeviceID = \"CPU" + stm.str () + "\"";
+    }
 
 	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
 				     L".ExecQuery(%T)",
 				     query.c_str ()));
-	
+
+        total_cpus = 0;
+        total_load = 0;
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%d", &load_percentage, quickfix,
 				    L".LoadPercentage");
-		
-			return load_percentage;
+
+			total_cpus++;
+			total_load += load_percentage;
 		} NEXT_THROW (quickfix);
+
+		if (total_cpus == 0) {
+            return 0;
+        }
+
+		return total_load / total_cpus;
 	} catch (string errstr) {
 		pandoraLog ("getCpuUsagePercentage error. %s", errstr.c_str ());
 	}
@@ -243,6 +309,45 @@ Pandora_Wmi::getFreememory () {
 				    L".AvailableMBytes");
 		
 			return free_memory;
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraLog ("getFreememory error. %s", errstr.c_str ());
+	}
+
+	throw Pandora_Wmi_Exception ();	
+}
+
+/** 
+ * Get the percentage of free memory in the system
+ *
+ * @return The percentage of free memory.
+ * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ *            from WMI database.
+ */
+long
+Pandora_Wmi::getFreememoryPercent () {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+	long          free_memory, total_memory;
+
+	try {
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+				     L".ExecQuery(%S)",
+				     L"SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem "));
+	
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			dhGetValue (L"%d", &free_memory, quickfix,
+				    L".FreePhysicalMemory");
+
+			dhGetValue (L"%d", &total_memory, quickfix,
+				    L".TotalVisibleMemorySize");
+
+			if (total_memory == 0) {
+                return 0;
+            }
+            
+            return free_memory * 100 / total_memory;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getFreememory error. %s", errstr.c_str ());
@@ -381,139 +486,6 @@ Pandora_Wmi::getSystemName () {
 	}
 	
 	return ret;
-}
-
-/** 
- * Get a list of events that match a given pattern.
- * 
- * @return The list of events.
- */
-void
-Pandora_Wmi::getEventList (string source, string type, string code,
-			   string pattern, int interval,
-			   list<string> &event_list) {
-	CDhInitialize init;
-	CDispPtr      wmi_svc, quickfixes;
-	char         *value = NULL;
-	WCHAR        *unicode_value;
-	string        event, limit, message, query, timestamp;
-	char         *encode;
-	
-	limit = getTimestampLimit (interval);    
-	if (limit.empty()) {
-		pandoraDebug ("Pandora_Wmi::getEventList: getTimestampLimit error");
-		return;
-	}
-	
-	// Build the WQL query
-	query = "SELECT * FROM Win32_NTLogEvent WHERE TimeWritten >= '" + limit + "'";
-	if (! source.empty()) {
-		query += " AND Logfile = '" + source + "'";
-	}    
-	if (! type.empty()) {
-		query += " AND Type = '" + type + "'";
-	}
-	if (! code.empty()) {
-		query += " AND EventCode = '" + code + "'";
-	}
-
-	try {
-		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
-		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-				     L".ExecQuery(%s)",
-				     query.c_str()));
-
-		FOR_EACH (quickfix, quickfixes, NULL) {
-			// Timestamp
-			dhGetValue (L"%s", &value, quickfix,
-				    L".TimeWritten");
-			timestamp = value;
-			dhFreeString (value);
-			
-			// Message
-			dhGetValue (L"%S", &unicode_value, quickfix,
-				    L".Message");
-			value = Pandora_Strutils::strUnicodeToAnsi (unicode_value);
-			message = Pandora_Strutils::trim (value);
-			dhFreeString (value);
-			
-			// LIKE is not always available, we have to filter ourselves
-			if (pattern.empty () || (message.find (pattern) != string::npos)) {
-				event = timestamp + " " + message;
-				event_list.push_back(event);
-			}
-			
-		} NEXT_THROW (quickfix);
-	} catch (string errstr) {
-		pandoraDebug ("Pandora_Wmi::getEventList: error: %s", errstr.c_str ());
-	}
-}
-
-/** 
- * Returns the limit date (WMI format) for event searches.
- * 
- * @return The timestamp in WMI format.
- */
-string
-Pandora_Wmi::getTimestampLimit (int interval) {
-	char       limit_str[26], diff_sign;
-	time_t     limit_time, limit_time_utc, limit_diff;
-	struct tm *limit_tm = NULL, *limit_tm_utc = NULL;
-	
-	// Get current time
-	limit_time = time(0);
-	if (limit_time == (time_t)-1) {
-		return "";
-	}
-	
-	// Get UTC time
-	limit_tm_utc = gmtime (&limit_time);
-	limit_time_utc = mktime (limit_tm_utc);
-	
-	// Calculate the difference in minutes
-	limit_diff = limit_time - limit_time_utc;
-	if (limit_diff >= 0) {
-		diff_sign = '+';
-	}
-	else {
-		diff_sign = '-';
-	}
-	limit_diff = abs(limit_diff);
-	limit_diff /= 60;
-	
-	// Substract the agent interval
-	limit_time -= interval;
-	
-	limit_tm = localtime (&limit_time);
-	if (limit_tm == NULL) {
-		return "";
-	}
-	
-	// WMI date format: yyyymmddHHMMSS.xxxxxx+UUU
-	snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000%c%.3d",
-		  limit_tm->tm_year + 1900, limit_tm->tm_mon + 1,
-		  limit_tm->tm_mday, limit_tm->tm_hour,
-		  limit_tm->tm_min, limit_tm->tm_sec, diff_sign, limit_diff);
-	limit_str[25] = '\0';
-	
-	return string (limit_str);
-}
-
-/** 
- * Converts a date in WMI format to SYSTEMTIME format.
- * 
- * @param wmi_date Date in WMI format
- * @param system_time Output system time variable
- */
-void
-Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time)
-{
-	system_time->wYear = atoi (wmi_date.substr (0, 4).c_str());
-	system_time->wMonth = atoi (wmi_date.substr (4, 2).c_str());
-	system_time->wDay = atoi (wmi_date.substr (6, 2).c_str());
-	system_time->wHour = atoi (wmi_date.substr (8, 2).c_str());
-	system_time->wMinute = atoi (wmi_date.substr (10, 2).c_str());
-	system_time->wSecond = atoi (wmi_date.substr (12, 2).c_str());
 }
 
 /**

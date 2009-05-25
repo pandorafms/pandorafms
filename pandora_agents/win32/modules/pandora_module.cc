@@ -119,8 +119,12 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_SERVICE;
 	} else if (kind == module_freedisk_str) {
 		return MODULE_FREEDISK;
+	} else if (kind == module_freedisk_percent_str) {
+		return MODULE_FREEDISK_PERCENT;
 	} else if (kind == module_freememory_str) {
 		return MODULE_FREEMEMORY;
+	} else if (kind == module_freememory_percent_str) {
+		return MODULE_FREEMEMORY_PERCENT;
 	} else if (kind == module_cpuusage_str) {
 		return MODULE_CPUUSAGE;
 	} else if (kind == module_odbc_str) {
@@ -129,6 +133,12 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_LOGEVENT;  
 	} else if (kind == module_wmiquery_str) {
 		return MODULE_WMIQUERY;               
+	} else if (kind == module_perfcounter_str) {
+		return MODULE_PERFCOUNTER;
+	} else if (kind == module_tcpcheck_str) {
+		return MODULE_TCPCHECK;
+	} else if (kind == module_regexp_str) {
+		return MODULE_REGEXP;
 	} else {
 		return MODULE_0;
 	}

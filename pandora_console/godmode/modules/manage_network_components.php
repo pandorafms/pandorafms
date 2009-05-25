@@ -258,7 +258,7 @@ foreach ($components as $component) {
 	$data[3] = substr ($component['description'], 0, 30);
 	$data[4] = get_network_component_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
-	$data[6] = '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\') return false)">';
+	$data[6] = '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[6] .= print_input_hidden ('delete_component', 1, true);
 	$data[6] .= print_input_hidden ('id', $component['id_nc'], true);
 	$data[6] .= print_input_hidden ('search_id_group', $search_id_group, true);

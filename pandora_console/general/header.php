@@ -70,7 +70,7 @@ echo "</a>";
 // Third column
 // Autorefresh
 echo '</td><td width="20%">';
-$ignored_params = array ('agent_config' => false);
+$ignored_params = array ('agent_config' => false, 'code' => false);
 if ($config["refr"]) {
 	$ignored_params['refr'] = 0;
 	echo '<a id="autorefresh" class="white_grey_bold" href="'.get_url_refresh ($ignored_params).'"><img src="images/page_refresh.png" class="bot" alt="lightning" />&nbsp;'. __('Autorefresh');

@@ -1,5 +1,12 @@
 2009-05-27  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/fgraph.php: Do not short agent name on
+	graphic_combined_module(). It was causing collisions. Fixes #2785193.
+
+	* reporting/pchart_graph.php: Use AddSerie on combined_graph().
+
+2009-05-27  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_visual_map.php: Problem fixed on
 	get_layout_status() with label elements. Fixed definitely
 	#2787197.

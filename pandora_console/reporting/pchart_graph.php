@@ -264,8 +264,10 @@ class PchartGraph extends PandoraGraphAbstract {
 			}
 		}
 		
-		foreach ($this->legend as $name)
-			$this->dataset->setSerieName($name, $name);
+		foreach ($this->legend as $name) {
+			$this->dataset->setSerieName ($name, $name);
+			$this->dataset->AddSerie ($name);
+		}
 		
 		$this->set_colors ();
 		$this->graph->setFontProperties ($this->fontpath, 8);

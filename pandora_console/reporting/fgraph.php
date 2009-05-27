@@ -121,10 +121,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	// FOR EACH MODULE IN module_list....
 	for ($i = 0; $i < $module_number; $i++) {
 		$id_agente_modulo = $module_list[$i];
-		$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-		$id_agente = get_agent_id ($nombre_agente);
-		$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
-		$module_list_name[$i] = substr ($nombre_agente, 0, 9)." / ".substr ($nombre_modulo, 0, 20);
+		$agent_name = get_agentmodule_agent_name ($id_agente_modulo);
+		$module_name = get_agentmodule_name ($id_agente_modulo);
+		$module_list_name[$i] = $agent_name." / ".substr ($module_name, 0, 20);
 		for ($j = 0; $j <= $resolution; $j++) {
 			$data[$j]['sum'] = 0; // SUM of all values for this interval
 			$data[$j]['count'] = 0; // counter
@@ -134,8 +133,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$data[$j]['max'] = 0; // MAX
 			$data[$j]['events'] = 0; // Event
 		}
+		
 		// Init other general variables
-
 		if ($show_event == 1) {
 			// If we want to show events in graphs
 			$sql = "SELECT utimestamp FROM tevento WHERE id_agentmodule = $id_agente_modulo AND utimestamp > $datelimit";
@@ -215,7 +214,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$data[$j]['max'] = $previous;
 			}
 			// Get max value for all graph
-			if ($data[$j]['max'] > $max_value ){
+			if ($data[$j]['max'] > $max_value) {
 				$max_value = $data[$j]['max'];
 			}
 			// This stores in mod_data max values for each module
@@ -254,13 +253,12 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->data = &$real_data;
-	$engine->legend = &$legend;
+	$engine->legend = $module_list_name;
 	$engine->fontpath = $config['fontpath'];
 	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
 	$engine->show_title = !$pure;
 	$engine->stacked = $stacked;
-	$engine->legend = $module_list_name;
 	$engine->xaxis_interval = $resolution;
 	$events = $show_event ? $real_event : false;
 	$alerts = $show_alert ? array ('low' => $alert_low, 'high' => $alert_high) : false;
@@ -955,8 +953,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	$max_value = 0;
 	
 	$all_data = get_db_all_rows_filter ('tagente_datos',
-		array ('id_agente' => $id_agente,
-			'id_agente_modulo' => $id_agente_modulo,
+		array ('id_agente_modulo' => $id_agente_modulo,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),

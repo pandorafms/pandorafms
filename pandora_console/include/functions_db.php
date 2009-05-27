@@ -2089,19 +2089,21 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 }
 
 /** 
- * Get the status of an alert assigned to an agent module.
+ * Get the status of an agent module.
  * 
  * @param int Id agent module to check.
  * 
- * @return bool True if there were alerts fired.
+ * @return int Module status. Value 4 means that some alerts assigned to the
+ * module were fired.
  */
 function get_agentmodule_status ($id_agentmodule = 0) {
-	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
-	
 	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 	if ($times_fired > 0) {
 		return 4; // Alert
 	}
+	
+	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
+	
 	return $status;
 }
 
@@ -2112,14 +2114,14 @@ function get_agentmodule_status ($id_agentmodule = 0) {
  * 
  * @return int Worst status of an agent for all of its modules
  */
-function return_status_agent ($id_agent = 0) {
+function get_agent_status ($id_agent = 0) {
 	$status = get_db_sql ("SELECT MAX(estado)
-						FROM tagente_estado, tagente_modulo 
-						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0 
-						AND tagente_modulo.delete_pending = 0 
-						AND tagente_modulo.id_agente = $id_agent");
-						
+		FROM tagente_estado, tagente_modulo 
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+		AND tagente_modulo.disabled = 0 
+		AND tagente_modulo.delete_pending = 0 
+		AND tagente_modulo.id_agente = $id_agent");
+	
 	// TODO: Check any alert for that agent who has recept alerts fired
 	
 	return $status;

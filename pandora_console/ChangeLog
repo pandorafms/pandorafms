@@ -1,3 +1,13 @@
+2009-05-27  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: return_status_agent() renamed to
+	get_agent_status(). Improved get_agentmodule_status() documentation
+	and code.
+
+	* include/functions_visual_map.php: Styles correction. Use a switch
+	instead of many ifs. Fixed get_layout_status() so the bad values have
+	preference. Fixes #2787197.
+
 2009-05-25  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/modules/manage_network_components.php: Fixed a typo on

@@ -1,3 +1,8 @@
+2009-05-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: Write .dot files to disk to avoid
+	  problems with large network maps.
+
 2009-05-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* operation/events/events.php: Fixed small bug where on deletion of

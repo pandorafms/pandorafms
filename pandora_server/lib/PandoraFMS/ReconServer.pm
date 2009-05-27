@@ -121,7 +121,9 @@ sub data_consumer ($$) {
 	for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 
 		my $addr = (split(/\//, $net_addr))[0];
-		update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100)));
+		
+		# Update the recon task or break if it does not exist anymore
+		last if (update_recon_task ($dbh, $task_id, ceil ($i / ($total_hosts / 100))) eq '0E0');
 
 		# Does the host already exist?
         next if (get_agent_from_addr ($dbh, $addr) > 0);

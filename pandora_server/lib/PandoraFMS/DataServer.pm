@@ -118,7 +118,7 @@ sub data_consumer ($$) {
 	for (1..3) {
 		eval {
 			threads->yield;
-			$xml_data = XMLin ($file_name, forcearray => 'module');
+			$xml_data = XMLin ($file_name, forcearray => 'module', suppressempty => '');
     	};
     	
     	# Invalid XML
@@ -202,7 +202,7 @@ sub process_xml_data ($$$$) {
 				next unless defined ($data->{'value'});
 							
 				$module_data->{'data'} = $data->{'value'};
-				my $data_timestamp = (defined ($data->{'timestamp'})) ? $data->{'timestamp'} : $timestamp;
+				my $data_timestamp = (defined ($data->{'timestamp'})) ? $data->{'timestamp'}->[0] : $timestamp;
 				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh);
 			}
@@ -237,7 +237,7 @@ sub process_module_data ($$$$$$$$$) {
 		my $max = (defined ($data->{'max'})) ? $data->{'max'}->[0] : 0;
 		my $min = (defined ($data->{'min'})) ? $data->{'min'}->[0] : 0;
 		my $description = (defined ($data->{'description'})) ? $data->{'description'}->[0] : '';
-		
+
 		# Create the module
 		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
 	                          $max, $min, $description, $interval, $dbh);

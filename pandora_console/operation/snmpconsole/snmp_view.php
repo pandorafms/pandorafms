@@ -167,12 +167,12 @@ $table->data[1][3] = print_input_text ('search_string', $search_string, '', 25, 
 
 // Block size for pagination select
 $table->data[2][0] = '<strong>'.__('Block size for pagination').'</strong>';
-$lpagination[25]=25;
-$lpagination[50]=50;
-$lpagination[100]=100;
-$lpagination[200]=200;
-$lpagination[500]=500;
-$table->data[2][1] = print_select ($lpagination, "pagination", $pagination, 'this.form.submit();', __('Default'), $config["block_size"], true);
+$paginations[25] = 25;
+$paginations[50] = 50;
+$paginations[100] = 100;
+$paginations[200] = 200;
+$paginations[500] = 500;
+$table->data[2][1] = print_select ($paginations, "pagination", $pagination, 'this.form.submit();', __('Default'), $config["block_size"], true);
 
 // Severity select
 $table->data[2][2] = '<strong>'.__('Severity').'</strong>';
@@ -286,7 +286,7 @@ foreach ($traps as $trap) {
 		$data[1] = $trap["source"];
 		if (give_acl ($config["id_user"], 0, "AW")) {
 			//We have rights to create agents
-			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&create_agent=1&direccion='.$data[1].'" title="'.__('Create agent').'">'.$data[1].'</a>';	
+			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$data[1].'" title="'.__('Create agent').'">'.$data[1].'</a>';	
 		}
 	} else {
 		//Agent found

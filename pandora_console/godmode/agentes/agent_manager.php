@@ -29,6 +29,11 @@ if (! isset ($id_agente) && ! $new_agent) {
 	return;
 }
 
+if ($new_agent) {
+	if (! empty ($direccion_agente) && empty ($nombre_agente))
+		$nombre_agente = $direccion_agente;
+}
+
 echo "<h2>".__('Agent configuration')." &raquo; ";
 
 if ($id_agente) {

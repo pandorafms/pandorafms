@@ -1,5 +1,15 @@
 2009-05-27  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/configurar_agente.php: Style correction.
+
+	* operation/snmpconsole/snmp_view.php: Fixed creation link when
+	the agent is not found by address. Fixes #2777409
+
+	* godmode/agentes/agent_manager.php: Use address as name on creation
+	when it's given.
+
+2009-05-27  Esteban Sanchez  <estebans@artica.es>
+
 	* general/header.php: Added code to ignored parameters. Fixes #2779381
 
 	* include/functions_ui.php: Ignore form operations on get_url_refresh()

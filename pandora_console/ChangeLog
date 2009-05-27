@@ -1,3 +1,8 @@
+2009-05-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/configurar_agente.php: Should fix bug #2785154. Wasn't
+	clear on how to duplicate but from what I understand this should fix it.
+
 2009-05-27  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Style correction.

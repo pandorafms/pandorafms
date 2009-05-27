@@ -290,6 +290,8 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false) {
 function get_layout_status ($id_layout = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
+
+	$id_layout = (int) $id_layout;
 	
 	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent
 		FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
@@ -299,6 +301,8 @@ function get_layout_status ($id_layout = 0) {
 		return 0;
 	
 	foreach ($result as $rownum => $data) {
+		if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0)
+			continue;
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
 			$status = get_layout_status ($data["id_layout_linked"]);
@@ -309,9 +313,8 @@ function get_layout_status ($id_layout = 0) {
 		} else {
 			$status = get_agent_status ($data["id_agent"]);
 		}
-		
-		if ($status == 0)
-			return 0;
+		if ($status == 1)
+			return 1;
 		if ($status > $temp_total)
 			$temp_total = $status;
 	}

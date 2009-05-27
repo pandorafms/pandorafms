@@ -165,9 +165,8 @@ sub pandora_evaluate_alert ($$$$$$) {
 				               $data <= $alert->{'max_value'});
 		}
 		
-		return $status if ($alert->{'type'} eq "equal" && $data ne $alert->{'value'});
-		return $status if ($alert->{'type'} eq "not_equal" && $data eq $alert->{'value'});
-
+		return $status if ($alert->{'type'} eq "equal" && $data != $alert->{'value'});
+		return $status if ($alert->{'type'} eq "not_equal" && $data == $alert->{'value'});
 		if ($alert->{'type'} eq "regex") {
 			return $status if ($alert->{'matches_value'} == 1 && $data =~ m/$alert->{'value'}/i);
 

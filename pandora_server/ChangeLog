@@ -1,5 +1,10 @@
 2009-05-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Disabled string comparisons for
+	  equal/not_equal alerts (use regex instead).
+
+2009-05-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DataServer.pm: Fixed timestamps for data lists. Made
 	  XML::Simple return an empty string instead of an empty hash when an
 	  empty value is found in an XML data file.

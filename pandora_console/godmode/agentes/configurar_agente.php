@@ -260,9 +260,9 @@ if (isset( $_GET["fix_module"])) {
 // Update AGENT
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
-	$nombre_agente = (string) get_parameter_post ("agente");
-	$direccion_agente = (string) get_parameter_post ("direccion");
-	$address_list = (string) get_parameter_post ("address_list");
+	$nombre_agente = (string) get_parameter_post ("agente", "");
+	$direccion_agente = (string) get_parameter_post ("direccion", "");
+	$address_list = (string) get_parameter_post ("address_list", "");
 	if ($address_list != $direccion_agente && $direccion_agente == get_agent_address ($id_agente) && $address_list != get_agent_address ($id_agente)) {
 		//If we selected another IP in the drop down list to be 'primary': 
 		// a) field is not the same as selectbox
@@ -272,11 +272,11 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	}
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", 300);
-	$comentarios = (string) get_parameter_post ("comentarios");
+	$comentarios = (string) get_parameter_post ("comentarios", "");
 	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
-	$server_name = (string) get_parameter_post ("server_name");
+	$server_name = (string) get_parameter_post ("server_name", "");
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	
@@ -310,11 +310,12 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 				'server_name' => $server_name,
 				'custom_id' => $custom_id),
 			array ('id_agente' => $id_agente));
+			
 		if ($result === false) {
-			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
+			print_error_message (__('There was a problem updating the agent'));
 		} else {
 			enterprise_hook ('update_agent', array ($id_agente));
-			echo '<h3 class="suc">'.__('Agent successfully updated').'</h3>';
+			print_success_message (__('Agent successfully updated'));
 		}
 	}
 }
@@ -333,7 +334,7 @@ if ($id_agente) {
 	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 	if (empty ($agent)) {
 		//Close out the page
-		echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+		print_error_message (__('There was a problem loading the agent'));
 		return;
 	}
 	
@@ -539,11 +540,11 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 
 	//Check for errors
 	if ($error != 0) {
-		echo '<h3 class="error">'.__('There was a problem deleting the module').'</h3>'; 
 		process_sql_rollback ();
+		print_error_message (__('There was a problem deleting the module'));
 	} else {
-		echo '<h3 class="suc">'.__('Module deleted successfully').'</h3>';
 		process_sql_commit ();
+		print_success_message (__('Module deleted succesfully'));
 	}
 }
 
@@ -571,7 +572,7 @@ switch ($tab) {
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab)))
 			//This will make sure that blank pages will have at least some
-			//debug info in them
-			echo '<h3 class="error">DEBUG: Invalid tab specified in '.__FILE__.':'.__LINE__.'</h3>';
+			//debug info in them - do not translate debug
+			print_error_message ("DEBUG: Invalid tab specified in ".__FILE__.":".__LINE__);
 }
 ?>

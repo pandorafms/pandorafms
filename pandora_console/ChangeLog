@@ -1,5 +1,11 @@
 2009-05-27  Esteban Sanchez  <estebans@artica.es>
 
+	* general/header.php: Added code to ignored parameters. Fixes #2779381
+
+	* include/functions_ui.php: Ignore form operations on get_url_refresh()
+
+2009-05-27  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/configurar_agente.php: Use pandora functions to
 	create and update modules. Some fixes when these operations could
 	not be done so the editor appears again. Fixes #2762316

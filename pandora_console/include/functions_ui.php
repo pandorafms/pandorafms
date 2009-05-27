@@ -1179,12 +1179,28 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	foreach ($_GET as $key => $value) {
 		if (isset ($params[$key]))
 			continue;
+		if (strstr ($key, 'create'))
+			continue;
+		if (strstr ($key, 'update'))
+			continue;
+		if (strstr ($key, 'new'))
+			continue;
+		if (strstr ($key, 'delete'))
+			continue;
 		$url .= $key.'='.$value.'&amp;';
 	}
 	
 	if ($add_post) {
 		foreach ($_POST as $key => $value) {
 			if (isset ($params[$key]))
+				continue;
+			if (strstr ($key, 'create'))
+				continue;
+			if (strstr ($key, 'update'))
+				continue;
+			if (strstr ($key, 'new'))
+				continue;
+			if (strstr ($key, 'delete'))
 				continue;
 			$url .= $key.'='.$value.'&amp;';
 		}

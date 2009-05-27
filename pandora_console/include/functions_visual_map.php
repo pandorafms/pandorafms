@@ -17,7 +17,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 /**
  * Prints visual map
  *
@@ -36,11 +35,10 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	if ($layout_datas !== false) {
 		foreach ($layout_datas as $layout_data) {
 			// Linked to other layout ?? - Only if not module defined
-			if ($layout_data['id_layout_linked'] != 0) { 
+			if ($layout_data['id_layout_linked'] != 0) {
 				$status = get_layout_status ($layout_data['id_layout_linked']);
 				$status_parent = 3;
 			} else {
-
 				// Status for a simple module
 				if ($layout_data['id_agente_modulo'] != 0) {
 					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
@@ -51,7 +49,6 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						$status_parent = 3;
 					else
 						$status_parent = get_agentmodule_status ($id_agent_module_parent);
-						
 				// Status for a whole agent
 				} elseif ($layout_data['id_agent'] != 0) {
 					$id_agent = $layout_data['id_agent'];
@@ -86,26 +83,23 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				elseif ($status == 4) // Alert
 					$z_index = 4;
 				else
-					$z_index =  1; // Print BAD over good
+					$z_index = 1; // Print BAD over good
 				
 				// Draw image 
 				echo '<div style="z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
 				
-				if (!isset($id_agent))
+				if (!isset ($id_agent))
 					$id_agent = 0;
 					
 				if ($show_links) {
-				
-					// Link to an agent
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+						// Link to an agent
 						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
-						
-					// Link to a map
-					} elseif ($layout_data['id_layout_linked']>0){
+					} elseif ($layout_data['id_layout_linked'] > 0) {
+						// Link to a map
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
-						
-					// A void object
-					} else { 
+					} else {
+						// A void object
 						echo '<a href="#">';
 					}
 				}
@@ -152,19 +146,17 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo "</div>";
 			}
 
-			// SIMPLE DATA VALIE (type = 2)
-			if ($layout_data['type'] == 2){
-
-				 echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				echo '<b>'.$layout_data['label']. ' ';
-				echo get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
-				echo '</b></div>';
-			}
-
-			 // Percentile bar (type = 3)
-                        if ($layout_data['type'] == 3){
-
-                                 echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+			// SIMPLE DATA VALUE (type = 2)
+			switch ($layout_data['type']) {
+			case 2:
+				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				echo '<strong>'.$layout_data['label']. ' ';
+				echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+				echo '</strong></div>';
+				break;
+			case 3:
+				// Percentile bar (type = 3)
+				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
 				$width = $layout_data['width'];
 				if ( $layout_data['height'] > 0)
@@ -177,12 +169,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo "<img src='".$config["homeurl"]."/reporting/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
 
 				echo '</div>';
-
-			}
-			// SINGLE GRAPH (type = 1)
-			if ($layout_data['type'] == 1) { // single graph
-		
-				// Draw image
+				break;
+			case 1;
+				// SINGLE GRAPH (type = 1)
 				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				if ($show_links) {
 					if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
@@ -194,8 +183,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				print_image ("reporting/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 				echo "</a>";
 				echo "</div>";
-				
+			}
 			// Line, not implemented in editor
+			/*
 			} elseif ($layout_data['type'] == 2) {
 				$line['id'] = $layout_data['id'];
 				$line['x'] = $layout_data['pos_x'];
@@ -205,6 +195,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				$line['color'] = $layout_data['label_color'];
 				array_push ($lines, $line);
 			}
+			*/
 			
 			// Get parent relationship - Create line data
 			if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
@@ -216,6 +207,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			}
 		}
 	}
+	
 	if ($draw_lines) {
 		/* If you want lines in the map, call using Javascript:
 		 draw_lines (lines, id_div);
@@ -301,7 +293,7 @@ function get_layout_status ($id_layout = 0) {
 	
 	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent
 		FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
-	$result = get_db_all_rows_filter ('tlayout_data', array ('id' => $id_layout),
+	$result = get_db_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
 		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent'));
 	if ($result === false)
 		return 0;
@@ -309,24 +301,21 @@ function get_layout_status ($id_layout = 0) {
 	foreach ($result as $rownum => $data) {
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$temp_status = get_layout_status ($data["id_layout_linked"]);
-			if ($temp_status > $temp_total) {
-				$temp_total = $temp_status;
-			}
-			
+			$status = get_layout_status ($data["id_layout_linked"]);
 		// Module
 		} elseif ($data["id_agente_modulo"] != 0) {
-			$temp_status = get_agentmodule_status ($data["id_agente_modulo"]);
-			if ($temp_status > $temp_total)
-				$temp_total = $temp_status;
-				
+			$status = get_agentmodule_status ($data["id_agente_modulo"]);
 		// Agent
 		} else {
-			$temp_status = get_agentmodule_status ($data["id_agent"]);
-			if ($temp_status > $temp_total)
-				$temp_total = $temp_status;
+			$status = get_agent_status ($data["id_agent"]);
 		}
+		
+		if ($status == 0)
+			return 0;
+		if ($status > $temp_total)
+			$temp_total = $status;
 	}
+	
 	return $temp_total;
 }
 ?>

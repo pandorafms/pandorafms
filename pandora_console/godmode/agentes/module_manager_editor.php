@@ -113,42 +113,44 @@ if ($id_agent_module) {
 	$max_critical = $module['max_critical'];
 	$ff_event = $module['min_ff_event'];
 } else {
-	$moduletype = (string) get_parameter ('moduletype');
+	if (!isset ($moduletype)) {
+		$moduletype = (string) get_parameter ('moduletype');
+		
+		// Clean up specific network modules fields
+		$name = '';
+		$description = '';
+		$id_module_group = 1;
+		$id_module_type = 1;
+		$post_process = '';
+		$max_timeout = '';
+		$min = '';
+		$max = '';
+		$interval = '';
+		$prediction_module = '';
+		$id_plugin = '';
+		$id_export = '';
+		$disabled = "0";
+		$tcp_send = '';
+		$tcp_rcv = '';
+		$tcp_port = '';
 	
-	// Clean up specific network modules fields
-	$name = '';
-	$description = '';
-	$id_module_group = 1;
-	$id_module_type = 1;
-	$post_process = '';
-	$max_timeout = '';
-	$min = '';
-	$max = '';
-	$interval = '';
-	$prediction_module = '';
-	$id_plugin = '';
-	$id_export = '';
-	$disabled = "0";
-	$tcp_send = '';
-	$tcp_rcv = '';
-	$tcp_port = '';
-	
-	if ($moduletype == "wmiserver")
-		$snmp_community = '';
-	else
-		$snmp_community = "public";
-	$snmp_oid = '';
-	$ip_target = get_agent_address ($id_agente);
-	$plugin_user = '';
-	$plugin_pass = '';
-	$plugin_parameter = '';
-	$custom_id = '';
-	$history_data = 1;
-	$min_warning = 0;
-	$max_warning = 0;
-	$min_critical = 0;
-	$max_critical = 0;
-	$ff_event = 0;
+		if ($moduletype == "wmiserver")
+			$snmp_community = '';
+		else
+			$snmp_community = "public";
+		$snmp_oid = '';
+		$ip_target = get_agent_address ($id_agente);
+		$plugin_user = '';
+		$plugin_pass = '';
+		$plugin_parameter = '';
+		$custom_id = '';
+		$history_data = 1;
+		$min_warning = 0;
+		$max_warning = 0;
+		$min_critical = 0;
+		$max_critical = 0;
+		$ff_event = 0;
+	}
 }
 
 switch ($moduletype) {

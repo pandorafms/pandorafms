@@ -33,8 +33,10 @@ if (! give_acl ($config["id_user"], $group, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
+
+require_once ('include/functions_modules.php');
 
 // Get passed variables
 $tab = get_parameter ('tab', 'main');
@@ -372,8 +374,8 @@ if ($update_module || $create_module) {
 	$post_process = (float) get_parameter ('post_process');
 	$prediction_module = (int) get_parameter ('prediction_module');
 	$max_timeout = (int) get_parameter ('max_timeout');
-	$minvalue = (int) get_parameter_post ("min");
-	$maxvalue = (int) get_parameter ('max');
+	$min = (int) get_parameter_post ("min");
+	$max = (int) get_parameter ('max');
 	$interval = (int) get_parameter ('module_interval', $intervalo);
 	$id_prediction_module = (int) get_parameter ('id_prediction_module');
 	$id_plugin = (int) get_parameter ('id_plugin');
@@ -405,12 +407,12 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$result = process_sql_update ('tagente_modulo',
+	$result = update_agent_module ($id_agent_module,
 		array ('descripcion' => $description,
 			'id_module_group' => $id_module_group,
 			'nombre' => $name,
-			'max' => $maxvalue,
-			'min' => $minvalue,
+			'max' => $max,
+			'min' => $min,
 			'module_interval' => $interval,
 			'tcp_port' => $tcp_port,
 			'tcp_send' => $tcp_send,
@@ -434,12 +436,11 @@ if ($update_module) {
 			'max_warning' => $max_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
-			'min_ff_event' => $ff_event
-		),
-		'id_agente_modulo = '.$id_agent_module);
+			'min_ff_event' => $ff_event));
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
+		$edit_module = true;
 	} else {
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 		$id_agent_module = false;
@@ -458,13 +459,11 @@ if ($create_module) {
 	
 	$id_module = (int) get_parameter ('id_module');
 	
-	$id_agent_module = process_sql_insert ('tagente_modulo', 
-		array ('id_agente' => $id_agente,
-			'id_tipo_modulo' => $id_module_type,
-			'nombre' => $name, 
+	$id_agent_module = create_agent_module ($id_agente, $name,
+		array ('id_tipo_modulo' => $id_module_type,
 			'descripcion' => $description, 
-			'max' => $maxvalue,
-			'min' => $minvalue, 
+			'max' => $max,
+			'min' => $min, 
 			'snmp_oid' => $snmp_oid,
 			'snmp_community' => $snmp_community,
 			'id_module_group' => $id_module_group, 
@@ -495,19 +494,9 @@ if ($create_module) {
 	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 		$edit_module = true;
+		$moduletype = $id_module;
 	} else {
-		$result = process_sql_insert ('tagente_estado',
-			array ('id_agente_modulo' => $id_agent_module,
-				'datos' => 0, 'timestamp' => '0000-00-00 00:00:00',
-				'estado' => 0, 'id_agente' => $id_agente,
-				'utimestamp' => 0, 'status_changes' => 0,
-				'last_status' => 0
-			));
-		if ($result !== false) {
-			echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
-		} else {
-			echo '<h3 class="error">'.__('Module added successfully').' - '.__('Status init unsuccessful').'</h3>';
-		}
+		echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
 	}

@@ -108,6 +108,8 @@ function delete_agent_module ($id_agent_module) {
 function update_agent_module ($id, $values) {
 	if (! is_array ($values))
 		return false;
+	if (! isset ($values['nombre']) && empty ($values['nombre']))
+		return false;
 	
 	return (@process_sql_update ('tagente_modulo', $values,
 		array ('id_agente_modulo' => (int) $id)) !== false);

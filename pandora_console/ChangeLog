@@ -1,5 +1,17 @@
 2009-05-27  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/configurar_agente.php: Use pandora functions to
+	create and update modules. Some fixes when these operations could
+	not be done so the editor appears again. Fixes #2762316
+
+	* godmode/agentes/module_manager_editor.php: Some patches to work
+	better with configurar_agente.php
+
+	* include/functions_modules.php: Avoid setting an empty name on
+	update_agent_module()
+
+2009-05-27  Esteban Sanchez  <estebans@artica.es>
+
 	* reporting/fgraph.php: Do not short agent name on
 	graphic_combined_module(). It was causing collisions. Fixes #2785193.
 

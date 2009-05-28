@@ -1,3 +1,19 @@
+2009-05-28  Esteban Sanchez  <estebans@artica.es>
+
+	* install.php: Use server address if the db host is not localhost.
+	Fixes #2796790.
+
+	* include/functions_agents.php: Fixed an array cast on
+	get_agent_alerts_compound().
+
+	* include/functions_events.php: Critical and warning colors where
+	swapped on print_events_table().
+
+	* include/functions_reporting.php: Fixed alerts count on
+	get_group_stats() and count combined alerts too. Fixes #2791577
+
+	* operation/agentes/tactical.php: Style corrections.
+
 2009-05-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/configurar_agente.php: Should fix bug #2785154. Wasn't

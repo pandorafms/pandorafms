@@ -169,10 +169,10 @@ function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
 		$filter .= format_array_to_where_clause_sql ($options);
 	}
 	
-	$id_agent = array ($id_agent);
+	$id_agent = (array) $id_agent;
 	
 	$sql = sprintf ("SELECT * FROM talert_compound
-		WHERE id_agent in (%s)%s",
+		WHERE id_agent IN (%s)%s",
 		implode (',', $id_agent), $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);

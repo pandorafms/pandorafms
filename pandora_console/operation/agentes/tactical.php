@@ -23,11 +23,11 @@ require_once ("include/functions_events.php");
 
 check_login ();
 
-if (give_acl ($config['id_user'], 0, "AR") != 1) {
+if (! give_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 require_once ("include/functions_reporting.php");
@@ -185,9 +185,9 @@ foreach ($serverinfo as $server) {
 	$data[0] = $server["name"];
 
 	if ($server["status"] == 0){
-		$data[1] = print_status_image(STATUS_SERVER_DOWN, '', true);
+		$data[1] = print_status_image (STATUS_SERVER_DOWN, '', true);
 	} else {
-		$data[1] = print_status_image(STATUS_SERVER_OK, '', true);
+		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
 	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",

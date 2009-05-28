@@ -23,7 +23,7 @@ check_login ();
 if (! give_acl ($config['id_user'], 0, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
-	exit;
+	return;
 }
 
 require_once ('include/functions_visual_map.php');
@@ -71,7 +71,7 @@ if ($create_layout) {
 		echo '<h3 class="err">'.__('Could not be created').'</h3>';
 	}
 	if (is_ajax ()) {
-		exit;
+		return;
 	}
 }
 
@@ -114,7 +114,7 @@ if ($update_layout) {
 		__('Update layout failed'));
 
 	if (is_ajax ()) {
-		exit;
+		return;
 	}
 }
 
@@ -127,7 +127,7 @@ if ($get_background_info) {
 	}
 	if (is_ajax ()) {
 		echo json_encode ($info);
-		exit;
+		return;
 	}
 }
 
@@ -139,7 +139,7 @@ if ($get_layout_data) {
 	
 	if (is_ajax ()) {
 		echo json_encode ($layout_data);
-		exit;
+		return;
 	}
 }
 
@@ -177,7 +177,7 @@ if ($create_layout_data) {
 		echo '<h3 class="error">'.__('Could not be created').'</h3>';
 	}
 	if (is_ajax ()) {
-		exit;
+		return;
 	}
 }
 
@@ -195,7 +195,7 @@ if ($update_layout_data_coords) {
 		array ('id' => $id_layout_data));
 	
 	if (is_ajax ()) {
-		exit;
+		return;
 	}
 }
 
@@ -211,7 +211,7 @@ if ($delete_layout_data) {
 	}
 	
 	if (is_ajax ()) {
-		exit;
+		return;
 	}
 }
 
@@ -451,10 +451,12 @@ require_jquery_file ('ui.core');
 require_jquery_file ('ui.draggable');
 require_jquery_file ('ui.droppable');
 require_jquery_file ('colorpicker');
+require_jquery_file ('pandora.controls');
 require_javascript_file ('wz_jsgraphics');
 require_javascript_file ('pandora_visual_console');
 ?>
 <script language="javascript" type="text/javascript">
+var id_agent_module = 0;
 $(document).ready (function () {
 <?php if ($id_layout): ?>
 	if (lines)
@@ -547,7 +549,8 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?php echo __('Update'); ?>").removeClass ('wand').addClass ('upd');
 					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
 					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
-					agent_changed (null, data['id_agent'], data['id_agente_modulo']);
+					$("#form_layout_data_editor #agent").change ();
+					id_agent_module = data['id_agente_modulo'];
 				},
 				"json"
 			);
@@ -579,7 +582,12 @@ $(document).ready (function () {
 			$("#image_preview").append ($('<img></img>').attr ('src', 'images/console/icons/' + this.value + '_bad.png'));
 		}
 	});
-	$("#form_layout_data_editor #agent").change (agent_changed);
+	$("#form_layout_data_editor #agent").pandoraSelectAgentModule ({
+		moduleSelect: "#module",
+		callbackAfter : function () {
+			$("#module").attr ("value", id_agent_module);
+		}
+	});
 	$("#form_layout_data_editor #type").change (function () {
 		if (this.value == 0) {
 			$("#table_layout_data #table_layout_data-8").fadeIn ();

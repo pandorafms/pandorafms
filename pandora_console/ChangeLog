@@ -1,5 +1,16 @@
 2009-05-28  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/map_builder.php: Replaced exit with return. Use
+	jquery.pandora_controls extensions to manage agent dropdown.
+	Fixes #2784397
+
+	* include/javascript/jquery.pandora.controls.js: Exclude delete pending
+	modules on pandoraSelectAgentModule.
+
+	* include/javascript/pandora.js: Removed php code on a javascript file.
+
+2009-05-28  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Return -1 on get_agent_status() on case
 	the agent last contact has exceed the agent interval.
 

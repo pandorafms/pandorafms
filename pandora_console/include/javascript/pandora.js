@@ -63,7 +63,7 @@ function agent_changed (event, id_agent, selected) {
 		id_agent = this.value;
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
-	$('#module').append ($('<option></option>').html ("<?php echo __('Loading'); ?>...").attr ("value", 0));
+	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
 				 {"page": "operation/agentes/ver_agente",
 				 "get_agent_modules_json": 1,

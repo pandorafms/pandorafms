@@ -279,11 +279,14 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			$data = array ();
 			
 			/* Colored box */
-			if ($event["estado"] == 0) {
-				$data[0] = print_image ("images/pixel_red.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
+			if ($event["estado"] == 1) {
+				$img = 'images/pixel_red.png';
 			} else {
-				$data[0] = print_image ("images/pixel_green.png", true, array ("width" => 20, "height" => 20, "title" => get_priority_name ($event["criticity"])));
+				$img = 'images/pixel_green.png';
 			}
+			$data[0] = print_image ($img, true, array ("width" => 20,
+				"height" => 20,
+				"title" => get_priority_name ($event["criticity"])));
 			
 			/* Event type */
 			$data[1] = print_event_type_img ($event["event_type"], true);

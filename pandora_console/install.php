@@ -346,7 +346,6 @@ function install_step3() {
 	</div>";
 }
 
-
 function install_step4() {
 	$pandora_config = "include/config.php";
 
@@ -410,7 +409,10 @@ function install_step4() {
 					check_generic ($step4, "Populating database");
 	
 					$random_password = random_name (8);
-					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@localhost 
+					$host = 'localhost';
+					if ($dbhost != 'localhost')
+						$host = $_SERVER['SERVER_ADDR'];
+					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@$host 
 					IDENTIFIED BY '".$random_password."'");
 					mysql_query ("FLUSH PRIVILEGES");
 					check_generic ($step5, "Established privileges for user pandora. A new random password has been generated: <b>$random_password</b><div class='warn'>Please write it down, you will need to setup your Pandora FMS server, editing the </i>/etc/pandora/pandora_server.conf</i> file</div>");

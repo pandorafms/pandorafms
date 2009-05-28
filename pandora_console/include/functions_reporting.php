@@ -118,7 +118,7 @@ function get_group_stats ($id_group = 0) {
 	if ($id_group == 0) {
 		$id_group = array_keys (get_user_groups ());
 	}
-	$agents = array_keys (get_group_agents ($id_group));	
+	$agents = array_keys (get_group_agents ($id_group));
 	
 	if (empty ($agents)) {
 		//No agents in this group, means no data
@@ -134,18 +134,19 @@ function get_group_stats ($id_group = 0) {
 	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
 	
-	$result = get_db_all_rows_filter ('talert_template_modules',
-		array ('id_agent_module' => array_keys ($agents)),
-		array ('times_fired'));
-	if (empty ($result)) {
-		$result = array ();
-	}
+	$alerts = get_agent_alerts ($agents);
 	
-	foreach ($result as $row) {
-		$data["monitor_alerts"]++;
-		if ($row["times_fired"] > 0) {
-			$data["monitor_alerts_fired"]++;
-			$data["monitor_alerts_fire_count"] += $row["times_fired"];
+	if (empty ($alerts))
+		$alerts = array ();
+	
+	$data["monitor_alerts"] = 0;
+	foreach ($alerts as $alert_type) {
+		$data["monitor_alerts"] += count ($alert_type);
+		foreach ($alert_type as $alert) {
+			if ($alert["times_fired"] > 0) {
+				$data["monitor_alerts_fired"]++;
+				$data["monitor_alerts_fire_count"] += $alert["times_fired"];
+			}
 		}
 	}	
 	

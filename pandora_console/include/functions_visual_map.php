@@ -51,19 +51,8 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						$status_parent = get_agentmodule_status ($id_agent_module_parent);
 				// Status for a whole agent
 				} elseif ($layout_data['id_agent'] != 0) {
-					$id_agent = $layout_data['id_agent'];
-					$agent_interval = get_agent_interval ($id_agent);
-					$sql = sprintf ('SELECT MAX(estado)
-						FROM tagente_estado, tagente_modulo 
-						WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND tagente_modulo.disabled = 0 
-						AND tagente_modulo.id_agente = %d
-						AND ((module_interval > 0
-							AND utimestamp >= UNIX_TIMESTAMP() - module_interval * 2)
-							OR (module_interval = 0
-								AND utimestamp >= UNIX_TIMESTAMP() - %d))',
-						$id_agent, $agent_interval * 2);
-					$status = get_db_sql ($sql);
+					$status = get_agent_status ($layout_data["id_agent"]);
+					echo '<h1>'.$status.'</h1>';
 					$status_parent = $status;
 				} else {
 					$status = 3;

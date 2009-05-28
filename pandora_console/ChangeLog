@@ -1,5 +1,13 @@
 2009-05-28  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_db.php: Return -1 on get_agent_status() on case
+	the agent last contact has exceed the agent interval.
+
+	* include/functions_visual_map.php: Call get_agent_status() when
+	an element is to monitor a whole agent. Fixes #2761712
+
+2009-05-28  Esteban Sanchez  <estebans@artica.es>
+
 	* install.php: Use server address if the db host is not localhost.
 	Fixes #2796790.
 

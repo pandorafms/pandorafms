@@ -2112,9 +2112,19 @@ function get_agentmodule_status ($id_agentmodule = 0) {
  * 
  * @param int Id agent  to check.
  * 
- * @return int Worst status of an agent for all of its modules
+ * @return int Worst status of an agent for all of its modules.
+ * The value -1 is returned in case the agent has exceed its interval.
  */
 function get_agent_status ($id_agent = 0) {
+	$time = get_system_time ();
+	$status = get_db_value_filter ('COUNT(*)',
+		'tagente',
+		array ('id_agente' => (int) $id_agent,
+			'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time,
+			'UNIX_TIMESTAMP(ultimo_contacto_remoto) + intervalo * 2 > '.$time));
+	if (! $status)
+		return -1;
+	
 	$status = get_db_sql ("SELECT MAX(estado)
 		FROM tagente_estado, tagente_modulo 
 		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo

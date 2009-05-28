@@ -64,7 +64,7 @@
 				callbackPre: dummyFunc,
 				callbackPost: dummyFunc,
 				callbackAfter: dummyFunc,
-				moduleFilter: 'disabled=0',
+				moduleFilter: 'disabled=0 AND delete_pending=0',
 				debug: false
 			};
 			

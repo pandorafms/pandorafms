@@ -89,7 +89,6 @@ Pandora_Module_Logevent::run () {
 	
 	// No data
 	if (event_list.size () < 1) {
-		this->setOutput ("");
 		return;
 	}
 	
@@ -166,7 +165,7 @@ Pandora_Module_Logevent::discardLogEvents () {
     // Get the offset of the newest event
     GetOldestEventLogRecord (this->log_event, &oldest_event);
     GetNumberOfEventLogRecords (this->log_event, &num_events);
-    newest_event = oldest_event + num_events;
+    newest_event = (oldest_event + num_events) - 1;
 
     // Initialize the event record buffer
     pevlr = (EVENTLOGRECORD *)&bBuffer;

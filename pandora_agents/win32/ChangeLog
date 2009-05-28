@@ -1,3 +1,9 @@
+2009-05-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc: Fixed the calculation of the
+	  newest event offset. Removed module output when no log events are
+	  found.
+
 2009-05-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc, windows/pandora_wmi.h: Added functions for the

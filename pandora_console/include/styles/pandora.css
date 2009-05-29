@@ -27,6 +27,10 @@ Description: The default Pandora FMS theme layout
 }
 body {
 	text-align: center;
+	background-color: #555555;
+}
+body.pure {
+	background-color: #fff;
 }
 input, textarea {
 	border: 1px solid #ddd;
@@ -209,20 +213,6 @@ div#head {
 	background: url(../../images/header.jpg);
 	border-bottom: solid 2px #555;
 }
-/*
-
-div#head {
-	font-size: 8pt;
-	width: 960px;
-	height: 60px;
-	background: url(../../images/enterprise_header.png);
-	background-color: #020202;
-	background-repeat: repeat-x;
-	background-attachment: scroll;
-	background-position: 0% 0%;
-	border-bottom: solid 2px #000;
-}
-*/
 
 div#foot {
 	font-size: 7pt;

@@ -1,3 +1,19 @@
+2009-05-29  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_menu.php: Added menu_icon class.
+
+	* include/styles/menu.css: Split background style for menu icons.
+	Recovered menu colors.
+
+	* include/styles/pandora.css: Added body.pure element.
+
+	* include/styles/pandora_blackmetal.css,
+	include/styles/pandora_black.css: Improve to reuse pandora.css
+
+	* include/functions_ui.php: Use pure class on body element
+	on process_page_body(). Better comment when creating the css array on
+	process_page_head().
+
 2009-05-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/map_builder.php: Replaced exit with return. Use

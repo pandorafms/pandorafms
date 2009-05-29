@@ -1,5 +1,15 @@
 2009-05-29  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/massive_edit_modules.php: Renamed ff_event field
+	to min_ff_event to match tagente_modulo field name. Better code for
+	process_manage_edit(). Fixes #2785011.
+
+	* include/functions_modules.php: Fixed an error on
+	update_agente_module() when no name was given, also added extra
+	check for empty values.
+
+2009-05-29  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_menu.php: Added menu_icon class.
 
 	* include/styles/menu.css: Split background style for menu icons.

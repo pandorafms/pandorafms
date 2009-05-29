@@ -39,7 +39,7 @@ function process_manage_edit ($module_name) {
 	$agents = array_keys (get_group_agents (array_keys (get_user_groups ()), false, "none"));
 	
 	/* List of fields which can be updated */
-	$fields = array ('min_warning', 'max_warning', 'min_critical', 'max_critical', 'ff_event');
+	$fields = array ('min_warning', 'max_warning', 'min_critical', 'max_critical', 'min_ff_event');
 	$values = array ();
 	foreach ($fields as $field) {
 		$value = get_parameter ($field);
@@ -57,12 +57,18 @@ function process_manage_edit ($module_name) {
 	if ($modules === false)
 		return false;
 	foreach ($modules as $module) {
-		update_agent_module ($module['id_agente_modulo'], $values);
+		$result = update_agent_module ($module['id_agente_modulo'], $values);
+		
+		if ($result === false) {
+			process_sql_rollback ();
+			
+			return false;
+		}
 	}
 	
-	echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
-	
 	process_sql_commit ();
+	
+	return true;
 }
 
 $module_type = (int) get_parameter ('module_type');
@@ -71,7 +77,12 @@ $module_name = (string) get_parameter ('module_name');
 $update = (bool) get_parameter_post ('update');
 
 if ($update) {
-	process_manage_edit ($module_name);
+	$result = process_manage_edit ($module_name);
+	
+	print_result_message ($result,
+		__('Successfuly updated'),
+		__('Could not be updated'));
+	
 }
 
 $table->id = 'delete_table';
@@ -141,7 +152,7 @@ $table->data['edit1'][3] .= print_input_text ('max_critical', '', '', 5, 15, tru
 
 /* FF stands for Flip-flop */
 $table->data['edit2'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
-$table->data['edit2'][1] = print_input_text ('ff_event', '', '', 5, 15, true);
+$table->data['edit2'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
 $table->data['edit2'][2] = __('Historical data');
 $table->data['edit2'][3] = print_checkbox ("history_data", 1, '', true);
 

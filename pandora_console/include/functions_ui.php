@@ -612,7 +612,7 @@ function process_page_head ($string, $bitfield) {
 		$config['css'] = array ();
 	}
 	
-	//User style should go last because it could rewrite common styles
+	//User style should go last so it can rewrite common styles
 	$config['css'] = array_merge (array (
 		"common" => "include/styles/common.css", 
 		"menu" => "include/styles/menu.css", 
@@ -723,11 +723,7 @@ function process_page_body ($string, $bitfield) {
 	}
 	
 	// Show custom background
-	if ($config["pure"] == 0) {
-		$output = '<body style="background-color:#555555;">';
-	} else {
-		$output = '<body>'; //Don't enforce a white background color. Let user style sheet do that
-	}
+	$output = '<body'.($config["pure"] ? ' class="pure"' : '').'>';
 	
 	if (!empty ($config["compact_header"])) {
 		require_once ($config["homedir"]."/include/htmlawed.php");

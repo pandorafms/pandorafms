@@ -43,7 +43,7 @@ function print_menu (&$menu) {
 		}
 		
 		$submenu = false;
-		$classes = array ();
+		$classes = array ('menu_icon');
 		if (isset ($main["sub"])) {
 			$classes[] = 'has_submenu';
 			$submenu = true;

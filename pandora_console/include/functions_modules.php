@@ -106,9 +106,9 @@ function delete_agent_module ($id_agent_module) {
  * @return True if the module was updated. False if not.
  */
 function update_agent_module ($id, $values) {
-	if (! is_array ($values))
+	if (! is_array ($values) || empty ($values))
 		return false;
-	if (! isset ($values['nombre']) && empty ($values['nombre']))
+	if (isset ($values['nombre']) && empty ($values['nombre']))
 		return false;
 	
 	return (@process_sql_update ('tagente_modulo', $values,

@@ -1,3 +1,9 @@
+2009-06-01  Sancho lerena <slerena@artica.es>
+
+	* extras/pandora_diag.php: Diagnostic tool. This reports some  
+	details of database usage, configuration and version who can
+	Pandora FMS dev. team some hints about possible problems.
+
 2009-05-29  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/massive_edit_modules.php: Renamed ff_event field

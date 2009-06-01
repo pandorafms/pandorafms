@@ -1,3 +1,9 @@
+2009-06-01  Sancho Lerena <slerena@artica.es>
+
+	*  util/pandora_diagnostic.sh: Command line diagnostic tool  for
+	gather information in order to diagnose problems in system running
+	Pandora FMS. This returns a txt file with a lot of system information.
+
 2009-05-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Interrupt recon tasks being executed

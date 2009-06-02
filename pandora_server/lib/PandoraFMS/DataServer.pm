@@ -118,7 +118,7 @@ sub data_consumer ($$) {
 	for (1..3) {
 		eval {
 			threads->yield;
-			$xml_data = XMLin ($file_name, forcearray => 'module', suppressempty => '');
+			$xml_data = XMLin ($file_name, forcearray => 'module');
     	};
     	
     	# Invalid XML
@@ -176,16 +176,17 @@ sub process_xml_data ($$$$) {
 
 	# Process modules
 	foreach my $module_data (@{$data->{'module'}}) {
-		
-		# Unnamed module
-		next unless (defined ($module_data->{'name'}->[0]));
 
-		my $module_type = $module_data->{'type'}->[0];
-		my $module_name = $module_data->{'name'}->[0];
+		my $module_name = get_tag_value ($module_data, 'name', '');
+
+		# Unnamed module
+		next if ($module_name eq '');
+
+		my $module_type = get_tag_value ($module_data, 'type', 'generic_data');
 
 	    # Single data
 	    if (! defined ($module_data->{'datalist'})) {
-			my $data_timestamp = (defined ($module_data->{'timestamp'})) ? $module_data->{'timestamp'}->[0] : $timestamp;
+			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
 			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
 			next;
 		}
@@ -202,7 +203,7 @@ sub process_xml_data ($$$$) {
 				next unless defined ($data->{'value'});
 							
 				$module_data->{'data'} = $data->{'value'};
-				my $data_timestamp = (defined ($data->{'timestamp'})) ? $data->{'timestamp'}->[0] : $timestamp;
+				my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
 				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh);
 			}
@@ -233,10 +234,10 @@ sub process_module_data ($$$$$$$$$) {
 		my $module_id = get_module_id ($dbh, $module_type);
 		return unless ($module_id > 0);
 
-		# Set min/max/description
-		my $max = (defined ($data->{'max'})) ? $data->{'max'}->[0] : 0;
-		my $min = (defined ($data->{'min'})) ? $data->{'min'}->[0] : 0;
-		my $description = (defined ($data->{'description'})) ? $data->{'description'}->[0] : '';
+		# Get min/max/description
+		my $max = get_tag_value ($data, 'max', 0);
+		my $min = get_tag_value ($data, 'min', 0);
+		my $description = get_tag_value ($data, 'description', '');
 
 		# Create the module
 		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
@@ -249,10 +250,29 @@ sub process_module_data ($$$$$$$$$) {
 	if ($timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ ||
 	    $timestamp =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 		my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-		pandora_process_module ($pa_config, $data->{'data'}->[0], $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
+		my $value = get_tag_value ($data, 'data', '');
+		pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
 	}
 }
 
+##########################################################################
+# Returns the value of an XML tag from a hash returned by XMLin (one level
+# depth).
+##########################################################################
+sub get_tag_value ($$$) {
+	my ($hash_ref, $tag, $def_value) = @_;
+
+	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
+
+	# Return the first found value
+	foreach my $value (@{$hash_ref->{$tag}}) {
+		
+		# If the tag is defined but has no value a ref to an empty hash is returned by XML::Simple
+		return $value unless ref ($value);
+	}
+
+	return $def_value;
+}
 
 1;
 __END__

@@ -1,0 +1,83 @@
+Pandora FMS XML Stress
+======================
+
+This is a small script that generates XML data files like the ones sent by
+Pandora FMS agents.
+
+The scripts reads agent names from a text file and generates XML data files for
+each agent according to a configuration file, where modules are defined as
+templates.
+
+Modules are filled with random data. An initial value and the probability of
+the module data changing may be specified.
+
+Run the script like this:
+
+	./pandora_xml_stress <configuration file>
+
+Sample configuration file
+=========================
+
+# File containing a list of agent names (one per line).
+agent_file agent_names.txt
+
+# Directory where XML data files will be placed, by default /tmp.
+temporal /var/spool/pandora/data_in
+
+# Pandora FMS XML Stress log file, logs to stdout by default.
+log_file pandora_xml_stress.log
+
+# XML version, by default 1.0.
+xml_version 1.0
+
+# XML encoding, by default ISO-8859-1.
+encoding ISO-8859-1
+
+# Operating system (shared by all agents), by default Linux.
+os_name Linux
+
+# Operating system version (shared by all agents), by default 2.6.
+os_version 2.6
+
+# Agent interval, by default 300.
+agent_interval 300
+
+# Data file generation start date, by default now.
+time_from 2009-06-01 00:00:00
+
+# Data file generation end date, by default now.
+time_to 2009-06-05 00:00:00
+
+# Delay after generating the first data file for each agent to avoid
+# race conditions when auto-creating the agent, by default 2.
+startup_delay 2
+
+# Module definitions. Similar to pandora_agent.conf.
+
+module_begin
+module_name Module_1
+module_type generic_data
+module_descripcion Module 1 description.
+module_max 100
+module_min 0
+# Probability of the module data changing, by default 100%
+module_variation 100
+module_end
+
+module_begin
+module_name Module_2
+module_type generic_data_string
+module_descripcion Module 2 description.
+# Maximum string length, by default 0.
+module_max 20
+# Minimum string length, by default 0
+module_min 10
+module_end
+
+module_begin
+module_name Module_3
+module_type generic_proc
+module_descripcion Module 3 description.
+# Initial data.
+module_data 1
+module_end

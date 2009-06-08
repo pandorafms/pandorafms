@@ -1,8 +1,8 @@
 <?php
-// Open Update Manager
-// ===================
-// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
-// Copyright (c) 2008 Esteban Sanchez Muñoz <estebans@artica.es>
+
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -11,8 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
+
 
 $prev_level = error_reporting (0);
 if ((include_once ('XML/RPC.php')) != 1)

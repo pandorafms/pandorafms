@@ -1,20 +1,18 @@
 <?php
-// Pandora FMS - the Flexible Monitoring System
-// ============================================
-// Copyright (c) 2009 Evi Vanoost, vanooste@rcbi.rochester.edu
-// Please see http://pandora.sourceforge.net for full contribution list
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the  GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Database configuration (default ones)
+
 	
 if (!isset ($config)) {
 	die ('You cannot access this file directly!');

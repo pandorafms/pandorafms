@@ -1,24 +1,18 @@
 <?php
 
-// Pandora FMS - the Flexible Monitoring System
-// ============================================
-// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
-// Please see http://pandora.sourceforge.net for full contribution list
+//Pandora FMS- http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
+// modify it under the terms of the  GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-// Pandora FMS uses icons from famfamfam, licensed under CC Atr. 2.5
-// Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
-// Pandora FMS uses Pear Image::Graph code
 
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 if (function_exists ('mb_internal_encoding')) {

@@ -1,7 +1,4 @@
-/* 
-	Plain old table styles
-	written by Chris Heilmann http://wait-till-i.com
-*/
+
 table.dbmanager, table.dbmanager td, table.dbmanager th {
 	border:1px solid #888;
 	border-collapse: collapse;

@@ -24,7 +24,7 @@ use threads::shared;
 use Time::Local;
 use Time::HiRes qw(gettimeofday);
 
-use POSIX qw (strftime);
+use POSIX qw (strftime ceil);
 
 # Global variables used for statistics
 my $Agents :shared = 0;
@@ -78,8 +78,8 @@ sub load_config ($\%\@) {
 ################################################################################
 # Generate XML files.
 ################################################################################
-sub generate_xml_files ($$$) {
-	my ($agent_name, $conf, $modules) = @_;
+sub generate_xml_files ($$$$$) {
+	my ($agents, $start, $step, $conf, $modules) = @_;
 
 	# Read agent configuration
 	my $interval = get_conf_token ($conf, 'interval', '300');
@@ -103,51 +103,57 @@ sub generate_xml_files ($$$) {
 
 	# Generate data files
 	my $utimestamp = $utimestamp_from;
-	while ($utimestamp < $utimestamp_to) {
+	while ($utimestamp <= $utimestamp_to) {
+		for (my $i = $start; $i < $start + $step; $i++) {
 
-		# XML header
-		my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
-		my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
-		$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name'>\n";
-		foreach my $module (@{$modules}) {
+			# Get the name of the agent
+			last unless defined ($agents->[$i]);
+			my $agent_name = $agents->[$i];
 
-			# Skip unnamed modules
-			my $module_name = get_conf_token ($module, 'module_name', '');
-			next if ($module_name eq '');
+			# XML header
+			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
+			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name'>\n";
+			foreach my $module (@{$modules}) {
 
-			# Read module configuration
-			my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
-			my $module_description = get_conf_token ($module, 'module_description', '');
-			my $module_min = get_conf_token ($module, 'module_min', '0');
-			my $module_max = get_conf_token ($module, 'module_max', '255');
-			my $module_variation = get_conf_token ($module, 'module_variation', '100');
-			my $module_data = get_conf_token ($module, 'module_data', '');
+				# Skip unnamed modules
+				my $module_name = get_conf_token ($module, 'module_name', '');
+				next if ($module_name eq '');
 
-			# Generate module data
-			$xml_data .= "\t<module>\n";
-			$xml_data .= "\t\t<name>$module_name</name>\n";
-			$xml_data .= "\t\t<description>$module_description</description>\n";			
-			$xml_data .= "\t\t<type>$module_type</type>\n";
-			my $rnd_data = generate_random_data ($module_type, $module_data, $module_min, $module_max, $module_variation);
-			$module->{'module_data'} = $rnd_data;
-			$xml_data .= "\t\t<data>$rnd_data</data>\n";
-			$xml_data .= "\t</module>\n";
-		}	
+				# Read module configuration
+				my $module_type = get_conf_token ($module, 'module_type', 'generic_data');
+				my $module_description = get_conf_token ($module, 'module_description', '');
+				my $module_min = get_conf_token ($module, 'module_min', '0');
+				my $module_max = get_conf_token ($module, 'module_max', '255');
+				my $module_variation = get_conf_token ($module, 'module_variation', '100');
+				my $module_data = get_conf_token ($module, 'module_data', '');
 
-		$xml_data .= "</agent_data>\n";
+				# Generate module data
+				$xml_data .= "\t<module>\n";
+				$xml_data .= "\t\t<name>$module_name</name>\n";
+				$xml_data .= "\t\t<description>$module_description</description>\n";			
+				$xml_data .= "\t\t<type>$module_type</type>\n";
+				my $rnd_data = generate_random_data ($module_type, $module_data, $module_min, $module_max, $module_variation);
+				$module->{'module_data'} = $rnd_data;
+				$xml_data .= "\t\t<data>$rnd_data</data>\n";
+				$xml_data .= "\t</module>\n";
+			}	
 
-		# Fix the temporal path
-		my $last_char = chop ($temporal);
-		$temporal .= $last_char if ($last_char ne '/');
+			$xml_data .= "</agent_data>\n";
 
-		# Save the XML data file
-		my $xml_file = $temporal . '/' . $agent_name . $utimestamp . '.data';
-		open (FILE, ">", $xml_file) || die ("[error] Could not write to '$xml_file': $!.\n\n");
-		print FILE $xml_data;
-		close (FILE);
+			# Fix the temporal path
+			my $last_char = chop ($temporal);
+			$temporal .= $last_char if ($last_char ne '/');
 
-		copy_xml_file ($conf, $xml_file);
-		$XMLFiles++;
+			# Save the XML data file
+			my $xml_file = $temporal . '/' . $agent_name . '_' . $utimestamp . '.data';
+			open (FILE, ">", $xml_file) || die ("[error] Could not write to '$xml_file': $!.\n\n");
+			print FILE $xml_data;
+			close (FILE);
+
+			copy_xml_file ($conf, $xml_file);
+			$XMLFiles++;
+		}
 
 		# First run, let the server create the new agent before sending more data
 		if ($utimestamp == $utimestamp_from) {
@@ -252,15 +258,24 @@ load_config ($ARGV[0], %conf, @modules);
 die ("[error] No agent file specified in configuration file.\n\n") unless defined ($conf{'agent_file'});
 open (FILE, "<", $conf{'agent_file'}) || die ("[error] Could not open agent configuration file '" . $conf{'agent_file'} . "': $!.\n\n");
 
-my $t0 = gettimeofday ();
-
-# Launch a thread for each agent
+# Read agent names
+my @agents;
 while (my $agent_name = <FILE>) {
 	chomp ($agent_name);
-	threads->create (\&generate_xml_files, $agent_name, \%conf, \@modules);
+	push (@agents, $agent_name);
 	$Agents++;
 }
 close (FILE);
+
+# Get the maximum number of threads and the number of agents per thread
+my $max_threads = get_conf_token (\%conf, 'max_threads', '10');
+$max_threads = 10 unless ($max_threads > 0);
+my $step = ceil ($Agents / $max_threads);
+
+my $t0 = gettimeofday ();
+for (my $i = 0; $i < $Agents; $i += $step) {
+	threads->create (\&generate_xml_files, \@agents, $i, $step, \%conf, \@modules);
+}
 
 # Log some information for the user
 my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());

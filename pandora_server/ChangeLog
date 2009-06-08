@@ -1,3 +1,10 @@
+2009-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl: Let the user specify the maximum number
+	  of threads.
+
+	* util/pandora_xml_stress.README: Updated the documentation.
+
 2009-06-08  Sancho Leren <slerena@artica.es>
 
 	* Header updates.

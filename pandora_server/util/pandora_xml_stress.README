@@ -18,6 +18,9 @@ Run the script like this:
 Sample configuration file
 =========================
 
+# Maximum number of threads, by default 10.
+max_threads 10
+
 # File containing a list of agent names (one per line).
 agent_file agent_names.txt
 
@@ -51,6 +54,12 @@ time_to 2009-06-05 00:00:00
 # Delay after generating the first data file for each agent to avoid
 # race conditions when auto-creating the agent, by default 2.
 startup_delay 2
+
+# Address of the Tentacle server where XML files will be sent (optional).
+# server_ip 192.168.50.1
+
+# Port of the Tentacle server, by default 41121.
+# server_port 41121
 
 # Module definitions. Similar to pandora_agent.conf.
 

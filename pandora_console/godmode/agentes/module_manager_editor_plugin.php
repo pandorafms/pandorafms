@@ -1,10 +1,9 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
-// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
-// Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
-// Please see http://pandora.sourceforge.net for full contribution list
+// Pandora FMS - http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,9 +12,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 define ('ID_NETWORK_COMPONENT_TYPE', 4);
 

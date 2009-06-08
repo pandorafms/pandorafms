@@ -1,3 +1,31 @@
+2009-06-08  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/setup/file_manager.php: Many fixes to the interface. Removed
+	the dropdown menu when uploading a file, it now uploads it to the
+	current dir, which is more natural. Do not show "No files found"
+	anymore, because user may want to create subdirs. Fixes image for
+	previous dir and show it again.
+
+	* include/javascript/jquery.ui.datepicker.js: Changed default date
+	format.
+
+	* include/functions_filemanager.php: Changed
+	get_file_manager_available_directories() to add subdirs too.
+	Changed is_file_manager_writable_dir() to check if parent dir is
+	writable.
+
+	* operation/agentes/estado_agente.php: Use array filters instead
+	of SQL code chunks.
+
+	* operation/reporting/reporting_viewer.php: Fixed link to timeentry
+	jQuery file.
+
+	* images/status_sets/color_text/*, images/status_sets/default/*,
+	images/pixel_yellow.png, images/pixel_gray.png,
+	images/pixel_fucsia.png, images/pixel_red.png,
+	images/pixel_black.png: Use Tango palette. Softer and cleaners
+	colors.
+
 2009-06-01  Sancho lerena <slerena@artica.es>
 
 	* extras/pandora_diag.php: Diagnostic tool. This reports some  

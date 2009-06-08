@@ -106,11 +106,27 @@ if (!function_exists ('mime_content_type')) {
  * operate.
  */
 function get_file_manager_available_directories () {
+	global $config;
+	
 	$dirs = array ();
 	$dirs['images'] = "images";
 	$dirs['attachment'] = "attachment";
 	$dirs['languages'] = "languages";
-
+	
+	foreach ($dirs as $dirname) {
+		$dirpath = realpath ($config['homedir'].'/'.$dirname);
+		$dir = opendir ($dirpath);
+		while ($file = @readdir ($dir)) {
+			/* Ignore hidden files */
+			if ($file[0] == '.')
+				continue;
+			$filepath = $dirpath.'/'.$file;
+			if (is_dir ($filepath)) {
+				$dirs[$dirname.'/'.$file] = $dirname.'/'.$file;
+			}
+		}
+	}
+	
 	return $dirs;
 }
 
@@ -124,6 +140,7 @@ function get_file_manager_available_directories () {
  */
 function is_file_manager_available_directory ($dirname) {
 	$dirs = get_file_manager_available_directories ();
+	
 	return isset ($dirs[$dirname]);
 }
 
@@ -136,10 +153,13 @@ function is_file_manager_available_directory ($dirname) {
  * @param bool Wheter the directory is writeable or not.
  */
 function is_file_manager_writable_dir ($dirpath, $force = false) {
-	if (! is_file_manager_available_directory (basename ($dirpath)))
-		return false;
-	if (! $force)
+	if (is_file_manager_available_directory (basename ($dirpath)))
 		return is_writable ($dirpath);
+	if (is_file_manager_writable_dir (realpath ($dirpath.'/..')))
+		return true;
+	else if (! $force)
+			return is_writable ($dirpath);
+	
 	return (is_writable ($dirpath) || @chmod ($dirpath, 0755));
 }
 

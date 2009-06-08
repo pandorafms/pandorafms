@@ -88,10 +88,6 @@ if (preg_match ("/^manager/", $directory))
 /* Add custom directories here */
 $fallback_directory = "images";
 
-$available_directories['images'] = "images";
-$available_directories['attachment'] = "attachment";
-$available_directories['languages'] = "languages";
-
 $banned_directories['include'] = true;
 $banned_directories['godmode'] = true;
 $banned_directories['operation'] = true;
@@ -111,10 +107,6 @@ $table->width = '50%';
 
 $table->data = array ();
 
-$table->data[0][0] = __('Directory');
-$table->data[0][1] = print_select (get_file_manager_available_directories (),
-	'directory', $directory, 'this.form.submit()', '', '', true, false);
-
 if (! is_file_manager_writable_dir ($real_directory)) {
 	echo "<h3 class='error'>".__('Current directory is not writable by HTTP Server')."</h3>";
 	echo '<p>';
@@ -125,6 +117,7 @@ if (! is_file_manager_writable_dir ($real_directory)) {
 	$table->data[1][1] = print_input_file ('file', true, false);
 	$table->data[1][2] = print_submit_button (__('Go'), 'go', false,
 		'class="sub next"', true);
+	$table->data[1][2] .= print_input_hidden ('directory', $directory, true);
 	$table->data[1][2] .= print_input_hidden ('upload_file', 1, true);
 }
 
@@ -141,11 +134,6 @@ if (! is_dir ($real_directory)) {
 }
 
 $files = list_file_manager_dir ($real_directory);
-
-if (count ($files) == 0) {
-	echo __('No files found');
-	return;
-}
 
 $table->width = '90%';
 $table->class = 'listing';
@@ -172,7 +160,7 @@ for ($i = 0; $i < (count ($prev_dir) - 1); $i++) {
 }
 
 if ($prev_dir_str != '') {
-	$table->data[0][0] = print_image ('go_previous.png', true);
+	$table->data[0][0] = print_image ('images/go_previous.png', true);
 	$table->data[0][1] = '<a href="index.php?sec=gsetup&amp;sec2=godmode/setup/file_manager&directory='.$prev_dir_str.'">';
 	$table->data[0][1] .= __('Parent directory');
 	$table->data[0][1] .='</a>';
@@ -181,14 +169,14 @@ if ($prev_dir_str != '') {
 }
 
 if (is_writable ($real_directory)) {
-	$table->data[0][0] = print_image ('images/mimetypes/directory.png', true,
+	$table->data[1][0] = print_image ('images/mimetypes/directory.png', true,
 		array ('title' => __('Create directory')));
-	$table->data[0][1] = '<form method="post" action="index.php?sec=gsetup&amp;sec2=godmode/setup/file_manager">';
-	$table->data[0][1] .= print_input_text ('dirname', '', '', 15, 255, true);
-	$table->data[0][1] .= print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
-	$table->data[0][1] .= print_input_hidden ('directory', $directory, true);
-	$table->data[0][1] .= print_input_hidden ('create_dir', 1, true);
-	$table->data[0][1] .= '</form>';
+	$table->data[1][1] = '<form method="post" action="index.php?sec=gsetup&amp;sec2=godmode/setup/file_manager">';
+	$table->data[1][1] .= print_input_text ('dirname', '', '', 15, 255, true);
+	$table->data[1][1] .= print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
+	$table->data[1][1] .= print_input_hidden ('directory', $directory, true);
+	$table->data[1][1] .= print_input_hidden ('create_dir', 1, true);
+	$table->data[1][1] .= '</form>';
 	
 	$table->colspan[0][1] = 5;
 }

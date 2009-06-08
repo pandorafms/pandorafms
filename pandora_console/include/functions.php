@@ -41,7 +41,9 @@ function safe_input ($value) {
 	}
 
 	if (version_compare (PHP_VERSION, '5.2.3') === 1) {
-		return htmlentities (utf8_encode ($value), ENT_QUOTES, "UTF-8", false);
+		if (! mb_check_encoding ($value, 'UTF-8'))
+			$value = utf8_encode ($value);
+		return htmlentities ($value, ENT_QUOTES, "UTF-8", false);
 	} else {
 		$translation_table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);
 		$translation_table[chr(38)] = '&';

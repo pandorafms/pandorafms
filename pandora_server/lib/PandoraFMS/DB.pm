@@ -3,8 +3,6 @@ package PandoraFMS::DB;
 # Database Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2009 Ramon Novoa, rnovoa@artica.es
-# Copyright (c) 2004-2009 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or

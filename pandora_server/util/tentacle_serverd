@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tentacle server simple startup script (no pid file is written).
-# Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
 # Linux Version (generic)
 # v0.1 Build 210508
 

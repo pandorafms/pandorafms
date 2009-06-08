@@ -116,7 +116,7 @@ function create_report ($name, $id_group, $values = false) {
  * @return bool True if the report was updated. False otherwise.
  */
 function update_report ($id_report, $values) {
-	$report = get_report ($id_report);
+	$report = get_report ($id_report, false, array ('id_report'));
 	if ($report === false)
 		return false;
 	return (@process_sql_update ('treport',

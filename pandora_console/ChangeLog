@@ -1,5 +1,14 @@
 2009-06-08  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Replaced SQL with pandora
+	database functions. Do not order period values. Some style to delete
+	icons.
+
+	* include/functions_reports.php: Tiny fix on update_report() when
+	checking if report exists. Fixes #2791058.
+
+2009-06-08  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/setup/file_manager.php: Many fixes to the interface. Removed
 	the dropdown menu when uploading a file, it now uploads it to the
 	current dir, which is more natural. Do not show "No files found"

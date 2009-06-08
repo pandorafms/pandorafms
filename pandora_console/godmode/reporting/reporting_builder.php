@@ -184,12 +184,15 @@ if ($edit_sla_report_content) {
 		$sla_min = (float) get_parameter ('sla_min');
 		$sla_limit = (float) get_parameter ('sla_limit');
 		
-		$sql = sprintf ('INSERT INTO treport_content_sla_combined (id_report_content, 
-				id_agent_module, sla_max, sla_min, sla_limit) VALUES (%d, %d, %f, %f, %f)',
-				$id_report_content, $id_module, $sla_max, $sla_min, $sla_limit);
 		
 		if ($id_module) {
-			$result = process_sql ($sql);
+			$result = process_sql_insert ('treport_content',
+				array ('id_repport_content' => $id_report_content,
+					'id_agent_module' => $id_module,
+					'sla_max' => $sla_max,
+					'sla_min' => $sla_min,
+					'sla_limit' => $sla_limit));
+			
 			if ($result !== false) {
 				echo "<h3 class=suc>".__('SLA was successfully created')."</h3>";
 			} else {
@@ -367,7 +370,7 @@ if ($edit_sla_report_content) {
 		$periods[720] = __('1 month');
 		$periods[2160] = __('3 months');
 		$periods[4320] = __('6 months');
-		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true, false, false);
+		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true, false, false, false);
 
 		$table->data[2][0] = __('Source agent');
 		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);
@@ -493,12 +496,15 @@ if ($edit_sla_report_content) {
 		$table->head = array ();
 		$table->align = array ();
 		$table->align[2] = 'center';
+		$table->align[4] = 'center';
 		$table->data = array ();
 		$table->head[0] = __('Report name');
 		$table->head[1] = __('Description');
 		$table->head[2] = __('Private');
 		$table->head[3] = __('Group');
-		$table->head[4] = __('Delete');
+		$table->head[4] = '';
+		$table->size = array ();
+		$table->size[4] = '40px';
 		
 		foreach ($reports as $report) {
 		

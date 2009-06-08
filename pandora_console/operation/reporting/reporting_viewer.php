@@ -86,7 +86,7 @@ echo '</div>';
 require_css_file ('datepicker');
 require_jquery_file ('ui.core');
 require_jquery_file ('ui.datepicker');
-require_jquery_file ('ui.timeentry');
+require_jquery_file ('timeentry');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -117,7 +117,7 @@ $group_name = get_group_name ($report['id_group']);
 $contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
 if ($contents === false) {
 	return;
-};
+}
 foreach ($contents as $content) {
 	$table->data = array ();
 	$table->head = array ();

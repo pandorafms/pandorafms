@@ -77,32 +77,46 @@ print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub"));
 echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
 
 if ($search != ""){
-	$search_sql = array ("string" => '%'.$search.'%');
+	$filter = array ("string" => '%'.$search.'%');
 } else {
-	$search_sql = array ();
+	$filter = array ();
 }
 
 // Show only selected groups	
 if ($group_id > 1) {
-	$agent_names = get_group_agents ($group_id, $search_sql, "upper");
+	$groups = $group_id;
+	$agent_names = get_group_agents ($group_id, $filter, "upper");
 // Not selected any specific group
 } else {
 	$user_group = get_user_groups ($config["id_user"], "AR");
-	$agent_names = get_group_agents (array_keys ($user_group), $search_sql, "upper");
+	$groups = array_keys ($user_group);
+	$agent_names = get_group_agents (array_keys ($user_group), $filter, "upper");
 }
 
-$num_agents = 0;
-if (!empty ($agent_names)) {
-	$num_agents = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente WHERE id_agente IN (%s)", implode (",", array_keys ($agent_names))));
-	$agents = get_db_all_rows_sql (sprintf ("SELECT * FROM tagente WHERE id_agente IN (%s) ORDER BY nombre ASC LIMIT %d,%d", implode (",", array_keys ($agent_names)), (int) get_parameter ("offset"), $config["block_size"]));
-}
+$total_agents = 0;
+$agents = false;
+if (! empty ($agent_names)) {
+	$total_agents = get_agents (array (//'id_agente' => array_keys ($agent_names),
+		'order' => 'nombre ASC',
+		'id_grupo' => $groups),
+		array ('COUNT(*) as total'));
+	$total_agents = isset ($total_agents[0]['total']) ? $total_agents[0]['total'] : 0;
+	$agents = get_agents (array ('id_agente' => array_keys ($agent_names),
+			'order' => 'nombre ASC',
+			'id_grupo' => $groups,
+			'offset' => (int) get_parameter ('offset'),
+			'limit' => (int) $config['block_size']),
+		array ('id_agente',
+			'id_grupo',
+			'id_os',
+			'intervalo'));}
 
 if (empty ($agents)) {
 	$agents = array ();
 }
 
 // Prepare pagination
-pagination ($num_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search)));
+pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search)));
 
 // Show data.
 $table->cellpadding = 4;

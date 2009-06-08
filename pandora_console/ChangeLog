@@ -1,3 +1,7 @@
+2009-06-08  Sancho Lerena <slerena@artica.es>
+
+	* Massive header update.
+
 2009-06-08  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions.php: Added encoding checking on safe_input().

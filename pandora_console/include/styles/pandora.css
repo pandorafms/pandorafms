@@ -6,13 +6,12 @@ Description: The default Pandora FMS theme layout
 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.comnt
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas, info@artica.es
-// Copyright (c) 2008-2009 Evi Vanoost, vanooste@rcbi.rochester.edu
+// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
+
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,6 +20,7 @@ Description: The default Pandora FMS theme layout
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 * {
 	font-family: verdana, sans-serif;
 	font-size: 8pt;

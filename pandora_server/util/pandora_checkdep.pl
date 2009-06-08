@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
+
 use Date::Manip;            # Needed to manipulate DateTime formats of input, output and compare
 use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency

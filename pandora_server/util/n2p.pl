@@ -1,7 +1,6 @@
 #!/usr/bin/perl -s
 ################################################################################
 #
-# Copyright (c) 2007 Ramon Novoa, rnovoa@artica.es
 # Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
 #
 # n2p.pl	Reads Nagios 2.x configuration files and replicates the setup

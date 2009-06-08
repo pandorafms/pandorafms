@@ -3,7 +3,7 @@ package PandoraFMS::PluginServer;
 # Pandora FMS Plugin Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2009 Ramon Novoa, rnovoa@artica.es
+# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License

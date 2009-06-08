@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-
+# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
 use strict;
 use IO::Socket;
 

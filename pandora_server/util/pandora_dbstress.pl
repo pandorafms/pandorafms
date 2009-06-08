@@ -2,7 +2,6 @@
 ################################################################################
 # Pandora DB Stress tool
 ################################################################################
-# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or

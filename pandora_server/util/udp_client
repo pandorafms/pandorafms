@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use IO::Socket;
+# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
 
 if ($#ARGV != 2) {
         print "Usage: $0 <ip address> <port> <command>\n";

@@ -343,9 +343,16 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 		} else {
 			$search_sql .= ' AND disabled = 0';
 		}
+		unset ($search["disabled"]);
 		if (isset ($search["string"])) {
 			$string = safe_input ($search["string"]);
-			$search_sql .= ' AND (nombre LIKE "'.$string.'" OR comentarios LIKE "'.$string.'" OR direccion LIKE "'.$string.'")';
+			$search_sql .= ' AND (nombre LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
+			
+			unset ($search["string"]);
+		}
+		
+		if (! empty ($search)) {
+			$search_sql .= ' AND '.format_array_to_where_clause_sql ($search);
 		}
 	} else {
 		$search_sql .= ' AND disabled = 0';

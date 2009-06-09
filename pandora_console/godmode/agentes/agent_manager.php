@@ -13,6 +13,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (is_ajax ()) {
+	$search_parents = (bool) get_parameter ('search_parents');
+	
+	if ($search_parents) {
+		require_once ('include/functions_agents.php');
+		
+		$id_agent = (int) get_parameter ('id_agent');
+		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+		
+		$filter = array ();
+		$filter[] = 'nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%"';
+		$filter[] = 'id_agente != '.$id_agent;
+		
+		$agents = get_agents ($filter, array ('nombre', 'direccion'));
+		
+		foreach ($agents as $agent) {
+			echo $agent['nombre']."|".$agent['direccion']."\n";
+		}
+		
+		return;
+ 	}
+ 	
+ 	return;
+}
 // Load global vars
 enterprise_include ('godmode/agentes/agent_manager.php');
 
@@ -104,7 +128,9 @@ $groups = get_user_groups ($config["id_user"]);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
-$table->data[2][1] = print_select ($agents, 'id_parent', $id_parent, '', __('None'), 0, true, false, false); //I use get_agent_name because the user might not have rights to the current parent
+$table->data[2][1] = print_input_text ('id_parent', get_agent_name ($id_parent),
+	'', 30, 100, true);
+
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);
@@ -171,11 +197,36 @@ if ($id_agente) {
 echo '</div></form>';
 
 require_jquery_file ('pandora.controls');
+require_jquery_file ('ajaxqueue');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
+	$("#text-id_parent").autocomplete ("ajax.php",
+		{
+			scroll: true,
+			minChars: 2,
+			extraParams: {
+				page: "godmode/agentes/agent_manager",
+				search_parents: 1,
+				id_group: function() { return $("#grupo").val(); },
+				id_agent: <?php echo $id_agente ?>
+			},
+			formatItem: function (data, i, total) {
+				if (total == 0)
+					$("#text-id_parent").css ('background-color', '#cc0000');
+				else
+					$("#text-id_parent").css ('background-color', 'none');
+				if (data == "")
+					return false;
+				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+			},
+			delay: 200
+		}
+	);
 });
 /* ]]> */
 </script>

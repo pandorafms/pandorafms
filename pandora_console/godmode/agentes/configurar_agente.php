@@ -113,7 +113,8 @@ if ($create_agent) {
 	$intervalo = (string) get_parameter_post ("intervalo", 300);
 	$comentarios = (string) get_parameter_post ("comentarios");
 	$modo = (int) get_parameter_post ("modo");
-	$id_parent = (int) get_parameter_post ("id_parent");
+	$id_parent = (string) get_parameter_post ("id_parent");
+	$id_parent = (int) get_agent_id ($id_parent);
 	$server_name = (string) get_parameter_post ("server_name");
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
@@ -274,7 +275,8 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");
-	$id_parent = (int) get_parameter_post ("id_parent", 0);
+	$id_parent = (string) get_parameter_post ("id_parent");
+	$id_parent = (int) get_agent_id ($id_parent);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	
 	//Verify if there is another agent with the same name but different ID

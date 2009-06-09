@@ -1,4 +1,25 @@
-2009-06-08  Esteban Sanchez  <estebans@artica.es>
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/agent_manager.php: Added autocomplete support
+	to parent selection, which is no a dropdown anymore. Partial fix for
+	#2707924.
+
+	* godmode/agentes/configurar_agente.php: Parent data is now the
+	agent name, not the agent id.
+
+	* include/javascript/jquery.ajaxqueue.js,
+	include/javascript/jquery.autocomplete.js,
+	include/javascript/jquery.bgiframe.js: Added to repository.
+	Autocompleter jQuery plugin.
+
+	* include/styles/pandora.css: Added autocomplete styles.
+
+	* include/functions_db.php: Added more support for search
+	parameter to get_group_agents() so you can pass a filter array now.
+
+	* operation/agentes/estado_agente.php: Style correction.
+
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
 	* include/styles/help.css, include/styles/pandora_minimal.css,
 	include/styles/ie.css, include/styles/menu.css,

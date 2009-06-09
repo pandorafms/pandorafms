@@ -42,6 +42,7 @@ if (is_ajax ()) {
 		echo json_encode (get_agent_module_last_value ($id_module));
 		return;
 	}
+	
 	return;
 }
 

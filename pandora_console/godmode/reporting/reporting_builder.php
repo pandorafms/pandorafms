@@ -182,10 +182,9 @@ if ($edit_sla_report_content) {
 		$sla_min = (float) get_parameter ('sla_min');
 		$sla_limit = (float) get_parameter ('sla_limit');
 		
-		
 		if ($id_module) {
-			$result = process_sql_insert ('treport_content',
-				array ('id_repport_content' => $id_report_content,
+			$result = process_sql_insert ('treport_content_sla_combined',
+				array ('id_report_content' => $id_report_content,
 					'id_agent_module' => $id_module,
 					'sla_max' => $sla_max,
 					'sla_min' => $sla_min,

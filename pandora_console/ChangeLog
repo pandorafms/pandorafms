@@ -1,5 +1,10 @@
 2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_visual_map.php: Removed debug that causes maps to
+	work strangely.
+
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/agent_manager.php: Added autocomplete support
 	to parent selection, which is no a dropdown anymore. Partial fix for
 	#2707924.

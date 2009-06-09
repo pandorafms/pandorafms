@@ -50,7 +50,6 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				// Status for a whole agent
 				} elseif ($layout_data['id_agent'] != 0) {
 					$status = get_agent_status ($layout_data["id_agent"]);
-					echo '<h1>'.$status.'</h1>';
 					$status_parent = $status;
 				} else {
 					$status = 3;

@@ -780,9 +780,14 @@ table#simple select#id_plugin,
 table#network_component select#id_plugin {
 	width: 270px;
 }
+table#simple select#prediction_id_group,
+table#simple select#prediction_id_agent,
+table#simple select#prediction_module {
+	width: 50%;
+	display: block;
+}
 table#simple input#text-plugin_parameter,
 table#simple input#text-snmp_oid,
-table#simple select#prediction_module,
 table#source_table select,
 table#destiny_table select,
 table#target_table select,
@@ -798,6 +803,11 @@ table#simple select#network_component {
 table#simple span#component_group,
 table#simple span#component {
 	width: 45%;
+	font-style: italic;
+}
+table#simple label {
+	display: inline;
+	font-weight: normal;
 	font-style: italic;
 }
 .clickable {

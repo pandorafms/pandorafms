@@ -1,6 +1,6 @@
 (function($) {
 	var dummyFunc = function () {
-		return;
+		return true;
 	};
 	
 	$.extend ({
@@ -27,7 +27,8 @@
 						var $select = $(config.agentSelect).disable ();
 						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
-						config.callbackBefore (this);
+						if (! config.callbackBefore (this))
+							return;
 						
 						jQuery.post ("ajax.php",
 							{"page" : "godmode/groups/group_list",
@@ -81,7 +82,8 @@
 						var $select = $(config.moduleSelect).disable ();
 						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
-						config.callbackBefore (this);
+						if (! config.callbackBefore (this))
+							return;
 						
 						jQuery.post ('ajax.php', 
 							{"page": "operation/agentes/ver_agente",
@@ -136,7 +138,8 @@
 						var $select = $(config.alertSelect).disable ();
 						$(config.loading).show ();
 						$("option[value!=0]", $select).remove ();
-						config.callbackBefore (this);
+						if (! config.callbackBefore (this))
+							return;
 						
 						jQuery.post ('ajax.php', 
 							{"page": "godmode/alerts/alert_list",

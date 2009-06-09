@@ -148,17 +148,26 @@ function configure_modules_form () {
 	});
 	
 	$("form#module_form").submit (function () {
-		if ($("#text-name").attr ("value") == "") {
+		if ($("#text-name").val () == "") {
 			$("#text-name").focus ();
 			$("#message").showMessage (no_name_lang);
 			return false;
+		}
+		
+		moduletype = $("#hidden-moduletype").val ();
+		if (moduletype == 5) {
+			if ($("#prediction_module").val () == null) {
+				$("#prediction_module").focus ();
+				$("#message").showMessage (no_module_lang);
+				return false;
+			}
 		}
 		
 		module = $("#id_module_type").attr ("value");
 		
 		if (id_modules_icmp.in_array (module) || id_modules_tcp.in_array (module) || id_modules_snmp.in_array (module)) {
 			/* Network module */
-			if ($("#text-ip_target").attr ("value") == "") {
+			if ($("#text-ip_target").val () == "") {
 				$("#text-ip_target").focus ();
 				$("#message").showMessage (no_target_lang);
 				return false;
@@ -176,5 +185,25 @@ function configure_modules_form () {
 		
 		$("#message").hide ();
 		return true;
+	});
+	
+	$("#prediction_id_group").pandoraSelectGroupAgent ({
+		agentSelect: "select#prediction_id_agent",
+		callbackBefore: function () {
+			$("#module_loading").show ();
+			$("#prediction_module option").remove ();
+			return true;
+		},
+		callbackAfter: function (e) {
+			if ($("#prediction_id_agent").children ().length == 0) {
+				$("#module_loading").hide ();
+				return;
+			}
+			$("#prediction_id_agent").change ();
+		}
+	});
+	
+	$("#prediction_id_agent").pandoraSelectAgentModule ({
+		moduleSelect: "select#prediction_module"
 	});
 }

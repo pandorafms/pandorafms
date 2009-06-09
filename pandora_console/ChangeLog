@@ -1,3 +1,11 @@
+2009-06-08  Esteban Sanchez  <estebans@artica.es>
+
+	* include/styles/help.css, include/styles/pandora_minimal.css,
+	include/styles/ie.css, include/styles/menu.css,
+	include/styles/install.css, include/styles/pandora_red.css,
+	include/styles/pandora_black.css, include/styles/pandora_width.css:
+	Removed an extra close comment character that causes broken CSS.
+
 2009-06-08  Sancho Lerena <slerena@artica.es>
 
 	* Massive header update.

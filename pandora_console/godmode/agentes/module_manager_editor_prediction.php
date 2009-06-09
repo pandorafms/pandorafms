@@ -18,16 +18,34 @@ $extra_title = __('Prediction server module');
 $data = array ();
 $data[0] = __('Source module');
 $data[0] .= print_help_icon ('prediction_source_module', true);
-$agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
-$fields = array ();
-foreach ($agents as $agent_id => $agent_name) {
-	$modules = get_agent_modules ($agent_id, false, 'disabled = 0 AND history_data = 1');
-	foreach ($modules as $module_id => $module_name) {
-		$fields[$module_id] = $agent_name.' / '.$module_name;
-	}
+$groups = get_user_groups ($config["id_user"], "AR");
+$agents = get_group_agents (array_keys ($groups));
+
+if ($prediction_module) {
+	$prediction_id_agent = get_agentmodule_agent ($prediction_module);
+	$prediction_id_group = get_agent_group ($prediction_id_agent);
+} else {
+	$prediction_id_agent = $id_agente;
+	$prediction_id_group = get_agent_group ($id_agente);
 }
-$data[1] = print_select ($fields, 'prediction_module', $prediction_module, '',
+$modules = get_agent_modules ($prediction_id_agent, false, 'disabled = 0 AND history_data = 1');
+
+$data[1] = '<label for="prediction_id_group">'.__('Group').'</label>';
+$data[1] .= print_select ($groups, 'prediction_id_group', $prediction_id_group, '',
 	'', '', true);
+$data[1] .= ' <span id="agent_loading" class="invisible">';
+$data[1] .= '<img src="images/spinner.gif" />';
+$data[1] .= '</span>';
+$data[1] .= '<label for="prediction_id_agent">'.__('Agent').'</label>';
+$data[1] .= print_select ($agents, 'prediction_id_agent', $prediction_id_agent, '',
+	'', '', true);
+$data[1] .= ' <span id="module_loading" class="invisible">';
+$data[1] .= '<img src="images/spinner.gif" />';
+$data[1] .= '</span>';
+$data[1] .= '<label for="prediction_module">'.__('Module').'</label>';
+$data[1] .= print_select ($modules, 'prediction_module', $prediction_module, '',
+	'', '', true);
+
 $table_simple->colspan['prediction_module'][1] = 3;
 
 push_table_simple ($data, 'prediction_module');

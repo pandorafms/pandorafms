@@ -236,6 +236,7 @@ echo '</form>';
 require_jquery_file ('ui');
 require_jquery_file ('form');
 require_jquery_file ('pandora');
+require_jquery_file ('pandora.controls');
 
 require_javascript_file ('pandora_modules');
 ?>
@@ -244,6 +245,7 @@ require_javascript_file ('pandora_modules');
 var no_name_lang = "<?php echo __('No module name provided') ?>";
 var no_target_lang = "<?php echo __('No target IP provided') ?>";
 var no_oid_lang = "<?php echo __('No SNMP OID provided') ?>";
+var no_prediction_module_lang = "<?php echo __('No module to predict') ?>";
 
 $(document).ready (function () {
 	configure_modules_form ();

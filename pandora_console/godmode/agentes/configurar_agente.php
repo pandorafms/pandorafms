@@ -376,7 +376,6 @@ if ($update_module || $create_module) {
 	$min = (int) get_parameter_post ("min");
 	$max = (int) get_parameter ('max');
 	$interval = (int) get_parameter ('module_interval', $intervalo);
-	$id_prediction_module = (int) get_parameter ('id_prediction_module');
 	$id_plugin = (int) get_parameter ('id_plugin');
 	$id_export = (int) get_parameter ('id_export');
 	$disabled = (bool) get_parameter ('disabled');
@@ -477,7 +476,7 @@ if ($create_module) {
 			'plugin_parameter' => $plugin_parameter,
 			'id_plugin' => $id_plugin, 
 			'post_process' => $post_process,
-			'prediction_module' => $id_prediction_module,
+			'prediction_module' => $prediction_module,
 			'max_timeout' => $max_timeout, 
 			'disabled' => $disabled,
 			'id_modulo' => $id_module,

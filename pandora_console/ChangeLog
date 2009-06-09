@@ -1,5 +1,35 @@
 2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/agent_manager.php: Fixed string filter when
+	searching agents. Avoids a PHP notice when none found
+
+	* godmode/agentes/configurar_agente.php: Solved a mess with variable
+	names.
+
+	* godmode/agentes/module_manager_editor_prediction.php: Improved
+	the prediction module selection, adding a filter for agents and
+	module. Fixes #2707907
+
+	* include/javascript/jquery.pandora.controls.js: Returns
+	whenever callbackBefore returns false.
+
+	* include/javascript/pandora_modules.js: Check for module selection
+	when creating a prediction one.
+
+	* include/styles/pandora.css: Added style to prediction module
+	selection.
+
+	* godmode/alerts/alert_list.php: callbackBefore on pandora.controls
+	elements must return true now.
+
+	* godmode/agentes/module_manager_editor_common.php: Added moduletype
+	hidden input to be used in javascript.
+
+	* godmode/agentes/module_manager_editor.php: Use pandora.controls and
+	added a string for javascript.
+
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Fixed a couple of typo
 	errors when adding a SLA report.
 

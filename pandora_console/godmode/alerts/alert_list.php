@@ -417,8 +417,7 @@ $(document).ready (function () {
 			$select = $("#id_agent_module").disable ();
 			$select.siblings ("span#latest_value").hide ();
 			$("option[value!=0]", $select).remove ();
-		},
-		callbackAfter: function () {
+			return true;
 		}
 	});
 	

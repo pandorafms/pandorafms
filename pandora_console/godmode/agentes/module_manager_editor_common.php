@@ -93,6 +93,8 @@ require_once ('include/functions_network_components.php');
 
 $update_module_id = (int) get_parameter_get ('update_module');
 
+print_input_hidden ('moduletype', $moduletype);
+
 $table_simple->id = 'simple';
 $table_simple->width = '90%';
 $table_simple->class = 'databox_color';

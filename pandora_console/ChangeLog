@@ -1,5 +1,10 @@
 2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Fixed a couple of typo
+	errors when adding a SLA report.
+
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_visual_map.php: Removed debug that causes maps to
 	work strangely.
 

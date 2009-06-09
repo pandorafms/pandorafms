@@ -158,7 +158,7 @@ function configure_modules_form () {
 		if (moduletype == 5) {
 			if ($("#prediction_module").val () == null) {
 				$("#prediction_module").focus ();
-				$("#message").showMessage (no_module_lang);
+				$("#message").showMessage (no_prediction_module_lang);
 				return false;
 			}
 		}

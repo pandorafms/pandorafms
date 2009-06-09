@@ -1,5 +1,9 @@
 2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/pandora_modules.js: Fixed variable name.
+
+2009-06-09  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/agent_manager.php: Fixed string filter when
 	searching agents. Avoids a PHP notice when none found
 

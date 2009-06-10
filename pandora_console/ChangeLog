@@ -1,5 +1,10 @@
 2009-06-10  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/modules/manage_network_templates_form.php: Applied
+	Zdenek Janda's patch. Fixes #2802589
+
+2009-06-10  Esteban Sanchez  <estebans@artica.es>
+
 	* operation/agentes/networkmap.php: Avoids a warning when no nodes
 	were found on generate_dot(). Shows a message when no nodes were
 	found. Fixes #2786516. 

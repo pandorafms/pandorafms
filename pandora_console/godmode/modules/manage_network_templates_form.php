@@ -26,6 +26,8 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
+require_once ('include/functions_network_components.php');
+
 $id_np = get_parameter ("id_np", -1); //Network Profile
 $ncgroup = get_parameter ("ncgroup", -1); //Network component group
 $id_nc = get_parameter ("components", array ());

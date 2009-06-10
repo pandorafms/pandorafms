@@ -195,7 +195,7 @@ echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" cla
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
-print_select ($groups, 'ev_group', $ev_group, 'javascript:this.form.submit();', '', 0, false, false, false, 'w130');
+print_select ($groups, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type
@@ -215,7 +215,7 @@ $fields[-1] = __('All event');
 $fields[1] = __('Only validated');
 $fields[0] = __('Only pending');
 
-print_select ($fields, 'status', $status, 'javascript:this.form.submit();', '', '');
+print_select ($fields, 'status', $status, '', '', '');
 
 //NEW LINE
 echo "</td></tr><tr>";
@@ -249,7 +249,7 @@ foreach ($result as $id_row) {
 		$agents[$id_row["id_agent"]] = $name_for_combo;
 }
 
-print_select ($agents, 'id_agent', $id_agent, 'javascript:this.form.submit();', '', '');
+print_select ($agents, 'id_agent', $id_agent, '', '', '');
 echo "</td></tr>";
 
 // User selectable block size
@@ -263,7 +263,7 @@ $lpagination[200] = 200;
 $lpagination[500] = 500;
 
 echo "<td>";
-print_select ($lpagination, "pagination", $pagination, 'javascript:this.form.submit();', __('Default'), $config["block_size"]);
+print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
 echo "</td>";
 
 echo "<td>".__('Max. hours old')."</td>";
@@ -276,7 +276,7 @@ echo "</tr><tr>";
 echo "<td>".__('User ack.')."</td>";
 echo "<td>";
 $users = get_users_info ();
-print_select ($users, "id_user_ack", $id_user_ack, 'javascript:this.form.submit();', __('Any'), 0);
+print_select ($users, "id_user_ack", $id_user_ack, '', __('Any'), 0);
 echo "</td>";
 
 echo "<td>";
@@ -285,7 +285,7 @@ echo "</td><td>";
 
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
-print_select ($repeated_sel, "group_rep", $group_rep, 'javascript:this.form.submit();');
+print_select ($repeated_sel, "group_rep", $group_rep, '');
 echo "</td></tr>";
 
 echo '<tr><td colspan="4" style="text-align:right">';

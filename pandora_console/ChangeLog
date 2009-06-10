@@ -1,3 +1,11 @@
+2009-06-10  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/agentes/networkmap.php: Avoids a warning when no nodes
+	were found on generate_dot(). Shows a message when no nodes were
+	found. Fixes #2786516. 
+
+	* operation/menu.php: Changed label of network maps.
+
 2009-06-09  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/pandora_modules.js: Fixed variable name.

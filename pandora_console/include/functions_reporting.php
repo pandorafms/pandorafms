@@ -28,7 +28,8 @@ require_once ($config["homedir"]."/include/functions_agents.php");
  * ignore max value
  * @param int Beginning date of the report in UNIX time (current date by default).
  * 
- * @return float SLA percentage of the requested module.
+ * @return float SLA percentage of the requested module. False if no data were
+ * found
  */
 function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
 	if (empty ($date)) {
@@ -52,7 +53,7 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 	
 	if (empty ($total)) {
 		//No data to calculate on so we return 100 (fail to good)
-		return 100.0;
+		return false;
 	}
 	
 	$sql = sprintf ('SELECT COUNT(*)

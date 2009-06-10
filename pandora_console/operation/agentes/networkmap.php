@@ -26,6 +26,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
+require_once ('include/functions_agents.php');
 
 $pandora_name = 'Pandora FMS';
 
@@ -61,33 +62,37 @@ function generate_dot ($group, $simple, $font_size) {
 	$parents = array();
 	$orphans = array();
 	
+	$filter = array ();
+	$filter['disabled'] = 0;
+	if ($group >= 1)
+		$filter['id_grupo'] = $group;
+	
+	// Get agent data
+	$agents = get_agents ($filter,
+		array ('id_grupo, nombre, id_os, id_parent, id_agente'));
+	if ($agents === false)
+		return false;
+	
 	// Open Graph
 	$graph = open_graph ();
-
-	// Get agent data	
-	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente
-		FROM tagente
-		WHERE disabled = 0
-		' . ($group < 1 ? '' : "AND id_grupo = $group") . '
-		ORDER BY id_grupo');
-
+	
 	// Parse agents
-	if ($agents){
-		foreach ($agents as $agent) {
-			if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
-				continue;
-			// Save node parent information to define edges later
-			if ($agent['id_parent'] != "0") {
-				$parents[$agent['id_agente']] = $agent['id_parent'];
-			} else {
-				$orphans[$agent['id_agente']] = 1;
-			}
-		
-			// Add node
-			$nodes[$agent['id_agente']] = $agent;
+	$nodes = array ();
+	foreach ($agents as $agent) {
+		// Save node parent information to define edges later
+		if ($agent['id_parent'] != "0") {
+			$parents[$agent['id_agente']] = $agent['id_parent'];
+		} else {
+			$orphans[$agent['id_agente']] = 1;
 		}
+	
+		// Add node
+		$nodes[$agent['id_agente']] = $agent;
 	}
-
+	
+	if (empty ($nodes)) {
+		return false;
+	}
 	// Create nodes
 	foreach ($nodes as $node_id => $node) {
 		if ($center > 0 && ! is_descendant ($node_id, $center, $parents)) {
@@ -377,6 +382,11 @@ $filter = set_filter ();
 
 // Generate dot file
 $graph = generate_dot ($group, $simple, $font_size);
+if ($graph === false) {
+	print_error_message (__('Map could not be generated'));
+	echo __('No agents were found');
+	return;
+}
 
 // Generate image and map
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
@@ -414,7 +424,7 @@ if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > ge
 
 if ($result !== false) {
 	if (! file_exists ($filename_map)) {
-		echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
+		print_error_message (__('Map could not be generated'));
 		echo $result;
 		echo "<br /> Apparently something went wrong reading the output.<br />";
 		echo "<br /> Is ".$config["attachment_store"]." readable by the webserver process?";
@@ -423,7 +433,7 @@ if ($result !== false) {
 	print_image ($filename_img, false, array ("alt" => __('Network Map'), "usemap" => "#networkmap"));
 	require ($filename_map);
 } else {
-	echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
+	print_error_message (__('Map could not be generated'));
 	echo $result;
 	echo "<br /> Apparently something went wrong executing the command or writing the output.";
 	echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";

@@ -13,8 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-
 // Login check
 require ("include/config.php");
 
@@ -230,7 +228,7 @@ foreach ($contents as $content) {
 			$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
 			$data[0] .= $sla['sla_limit'];
 			$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
-							$sla['sla_min'], $sla['sla_max'], $datetime);
+				$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
 				$data[1] .= __('Unknown');
@@ -513,5 +511,4 @@ foreach ($contents as $content) {
 	print_table ($table);
 	flush ();
 }
-
 ?>

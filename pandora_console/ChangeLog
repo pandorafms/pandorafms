@@ -1,5 +1,12 @@
 2009-06-10  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_reporting.php: Return false if no data were found
+	on get_agentmodule_sla(). Fixes #2777541
+
+	* operation/reporting/reporting_viewer.php: Style correction.
+
+2009-06-10  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/modules/manage_network_templates_form.php: Applied
 	Zdenek Janda's patch. Fixes #2802589
 

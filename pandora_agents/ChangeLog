@@ -1,3 +1,10 @@
+2009-06-11  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent_installer: Changed the uninstall options
+	cause if you had the agent in the same machine as the server and the
+	agent is deleted, it would delete /etc/pandora/ (which includes
+	pandora_server.conf) instead of just pandora_agent.conf.
+
 2009-05-05  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* mac_osx/plugins/ipmi2xml/impi2xml.php, 

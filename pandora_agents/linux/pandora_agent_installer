@@ -15,6 +15,7 @@ PANDORA_CFG=/etc/pandora
 PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
 TENTACLE=/usr/bin/tentacle_client
+PANDORA_CFG_FILE=/etc/pandora/pandora_agent.conf
 
 FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
@@ -33,7 +34,7 @@ uninstall () {
         echo "Removing Pandora FMS Agent..."
         rm -Rf $PANDORA_BIN
         rm -Rf $PANDORA_TEMP
-        rm -Rf $PANDORA_CFG
+        rm -Rf $PANDORA_CFG_FILE
         rm -Rf $PANDORA_STARTUP
         rm -Rf $PANDORA_HOME
         rm -Rf $PANDORA_LOG

@@ -1,3 +1,8 @@
+2009-06-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Fixed the call to snmp_trap2agent (was
+	  missing an argument).
+
 2009-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Let the user specify the maximum number

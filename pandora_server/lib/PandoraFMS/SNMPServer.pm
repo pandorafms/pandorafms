@@ -156,7 +156,7 @@ sub pandora_snmptrapd {
 				pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid, $custom_value, $dbh);
 			}
 
-			enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $dbh]);
+			enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $self->getServerID (), $dbh]);
 		}
 		
 		sleep ($pa_config->{'server_threshold'});

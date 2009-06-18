@@ -76,9 +76,10 @@ function update_config () {
 		$style = substr ($style, 0, strlen ($style) - 4);
 	
 	/* Workaround for ugly language and language_code missmatch */
-	$config['language_code'] = (string) get_parameter ('language', $config["language"]);
-	update_config_value ('language_code', $config['language_code']);
-	$config["language"] = $config['language_code'];
+	//$config['language_code'] = (string) get_parameter ('language', $config["language"]);
+	update_config_value ('language_code', (string) get_parameter ('language', $config["language"]));
+	//$config["language"] = $config['language_code'];
+	$config["language"] = (string) get_parameter ('language', $config["language"]);
 	
 	update_config_value ('remote_config', (string) get_parameter ('remote_config', $config["remote_config"]));
 	update_config_value ('block_size', (int) get_parameter ('block_size', $config["block_size"]));

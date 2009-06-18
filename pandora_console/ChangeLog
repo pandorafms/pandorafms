@@ -1,3 +1,8 @@
+2009-06-18	Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_config.php: Fix save change language in setup.
+	Fixes: #2777463
+
 2009-06-10  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/events/events.php: Removed all events on select elements.

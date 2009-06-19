@@ -1,4 +1,8 @@
-2009-06-18	Miguel de Dios <miguel.dedios@artica.es>
+2009-06-19 Jorge Gonzlaez  <jorgegonz@artica.es>
+
+	* AUTHORS: Fixed typo.
+
+2009-06-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_config.php: Fix save change language in setup.
 	Fixes: #2777463

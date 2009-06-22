@@ -53,7 +53,7 @@ echo '</form></div>';
 
 echo '<div style="width:300px; height:140px; float:left;">';
 echo '<img src="reporting/fgraph.php?tipo=user_activity&width=300&height=140" />';
-echo '</div><div style="clear:both;">&nbsp;</div>';
+echo '</div>';
 
 $filter = '';
 if ($tipo_log != 'all') {

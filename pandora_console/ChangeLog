@@ -1,3 +1,8 @@
+2009-06-22  Manuel Arostegui <marostegui@artica.es>
+
+	* include/functions_filemanager.php: Fixed ugly warning, the 
+	languanges path was incorrect.
+
 2009-06-22  Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/admin_access_logs.php: Fix fall the table of logs to

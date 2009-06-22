@@ -108,7 +108,7 @@ function get_file_manager_available_directories () {
 	$dirs = array ();
 	$dirs['images'] = "images";
 	$dirs['attachment'] = "attachment";
-	$dirs['languages'] = "languages";
+	$dirs['languages'] = "include/languages";
 	
 	foreach ($dirs as $dirname) {
 		$dirpath = realpath ($config['homedir'].'/'.$dirname);

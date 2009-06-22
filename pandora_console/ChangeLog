@@ -1,3 +1,8 @@
+2009-06-22  Miguel de Dios <miguel.dedios@artica.es>
+
+	* Fix the error introduced by Miguel de Dios in 2009-06-18, The error
+	was add repeated rows with language_code in DB.
+
 2009-06-19 Jorge Gonzlaez  <jorgegonz@artica.es>
 
 	* AUTHORS: Fixed typo.

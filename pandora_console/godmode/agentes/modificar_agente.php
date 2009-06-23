@@ -147,6 +147,14 @@ pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
+	
+	// Create agent button
+	echo "<table width='95%'><tr><td align='right'>";
+	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+	print_input_hidden ('new_agent', 1);
+	print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo "</form></td></tr></table>";
+	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='95%' class='databox'>";
 	echo "<th>".__('Agent name')."</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";

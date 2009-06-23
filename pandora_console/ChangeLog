@@ -1,5 +1,11 @@
 2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
 
+	* godmode/agentes/modificar_agente.php: add another "create agent" before
+	the list for more usability
+	
+	
+2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/styles/menu.css: Fixed style for elements menu
 	that it have large text.
 	Fixes: #2808843

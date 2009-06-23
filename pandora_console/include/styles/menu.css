@@ -41,7 +41,6 @@
 	text-decoration:none;
 	padding: 6px;
 	margin-left: 23px;
-	white-space: nowrap; /* Breaking the text breaks the menu. */
 }
 
 .menu a:hover {

@@ -239,7 +239,7 @@ if ($count < 1) {
 		$url .= "&amp;texto=".$texto;
 
 	// Show pagination
-	pagination ($count, $url, $offset, 1, false);
+	pagination ($count + $offset, $url, $offset, 15, false); 	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.  
 	echo '<br />';
 	
 	// Show headers

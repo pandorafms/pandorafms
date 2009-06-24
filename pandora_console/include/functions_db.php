@@ -2662,9 +2662,11 @@ function delete_agent ($id_agents) {
 		//Alert
 		temp_sql_delete ("talert_compound", "id_agent", $id_agent);
 		temp_sql_delete ("talert_template_modules", "id_agent_module", $where_modules);
-		
+	
 		//Events (up/down monitors)
-		temp_sql_delete ("tevento", "id_agente", $id_agent);
+		// Dont delete here, could be very time-exausting, let the daily script 
+		// delete them after XXX days
+		// temp_sql_delete ("tevento", "id_agente", $id_agent);
 
 		//Graphs, layouts & reports
 		temp_sql_delete ("tgraph_source", "id_agent_module", $where_modules);
@@ -2675,21 +2677,23 @@ function delete_agent ($id_agents) {
 		temp_sql_delete ("tplanned_downtime_agents", "id_agent", $id_agent);
 		
 		//The status of the module
-		temp_sql_delete ("tagente_estado", "id_agente_modulo", $where_modules);
+		temp_sql_delete ("tagente_estado", "id_agente", $id_agent);
 		
 		//The actual modules, don't put anything based on
-		//tagente_modulo after this
-		temp_sql_delete ("tagente_modulo", "id_agente", $id_agent);
+		// DONT Delete this, just mark for deletion 
+		// temp_sql_delete ("tagente_modulo", "id_agente", $id_agent);
 		
 		process_sql_update ('tagente_modulo',
 			array ('delete_pending' => 1, 'disabled' => 1),
 			'id_agente = '. $id_agent);
 		
-		//Access entries
-		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
+		// Access entries
+		// Dont delete here, this records are deleted in daily script
+		// temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
-		//tagente_datos_inc
-		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $where_modules);
+		// tagente_datos_inc
+		// Dont delete here, this records are deleted later, in database script
+		// temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $where_modules);
 
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {

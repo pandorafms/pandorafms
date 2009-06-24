@@ -42,8 +42,11 @@ echo '<div style="height: 10px">&nbsp;</div>';
 
 //Floating div
 echo '<div style="float:right; width:320px; padding-top:11px;">';
-echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&height=90&width=290" />';
+if ($config["agentaccess"] == 1){
+	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+	echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&height=90&width=290" />';
+}
+	
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
 echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';

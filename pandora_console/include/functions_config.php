@@ -102,6 +102,7 @@ function update_config () {
 	update_config_value ('compact_header', (bool) get_parameter ('compact_header', $config["compact_header"]));
 	update_config_value ('round_corner', (bool) get_parameter ('round_corner', $config["round_corner"]));
 	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
+	update_config_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
 }
 
 /**
@@ -217,6 +218,14 @@ function process_config () {
 	if (!isset ($config["round_corner"])) {
 		update_config_value ('round_corner', false);
 	}
+
+	if (!isset ($config["agentaccess"])){
+		update_config_value ('agentaccess', true);
+	}
+
+	if (!isset ($config["autoupdate"])){
+                update_config_value ('autoupdate', true);
+        }
 
 	if (!isset ($config["auth"])) {
 		require_once ($config["homedir"]."/include/auth/mysql.php");

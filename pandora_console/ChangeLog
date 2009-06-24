@@ -1,3 +1,18 @@
+2009-06-24  Sancho Lerena  <slerena@artica.es>
+
+	* operation/agentes/estado_generalagente.php, 
+	godmode/setup/setup.php: Added support for new option for have enabled or 
+	disabled the agent access data/graphs.
+
+	* include/functions_db.php: Modified the agent_delete function to don't delete
+	all data, just delete agent and mark modules for deletion. This increase a lot
+	the massive agent deletion. This fixes bug #2809015. 
+
+	* include/config_process.php: Updated version/build. 
+
+	* include/functions_config.php: Added autoupdate to config check for
+	non-existant values. Added new agentaccess config token.
+
 2009-06-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/styles/pandora.css: fix sintaxis error in comment.

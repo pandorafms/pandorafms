@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 //Pandora Version
-$build_version = 'PC090512';
+$build_version = 'PC090623';
 $pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);

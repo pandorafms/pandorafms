@@ -110,6 +110,10 @@ $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_
 
 enterprise_hook ('setup');
 
+$table->data[18][0] = __('Use agent access graph');
+$table->data[18][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
+$table->data[18][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
+
 echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
 print_table ($table);

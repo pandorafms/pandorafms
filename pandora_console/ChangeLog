@@ -1,9 +1,13 @@
 2009-06-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/styles/pandora.css: fix sintaxis error in comment.
+
+2009-06-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/estado_monitores.php: add organization list of monitors, add
 	row in table with title the monitor group.
 	* include/styles/pandora.css: add new class for cell used monitor group title
-	in the list of monitors in estado_monitores.php
+	in the list of monitors in estado_monitores.php.
 	Fixes: #2805001
 
 2009-06-24  Jorge Gonzalez  <jorgegonz@artica.es>

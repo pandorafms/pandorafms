@@ -475,6 +475,9 @@ sub pandora_access_update ($$$) {
 
 	return if ($agent_id < 0);
 
+	if ($pa_config->{"agentaccess"} == 0){
+		return;
+	}
 	db_insert ($dbh, "INSERT INTO tagent_access (`id_agent`, `utimestamp`) VALUES (?, ?)", $agent_id, time ());
 }
 

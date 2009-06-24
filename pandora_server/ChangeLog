@@ -1,3 +1,12 @@
+2009-06-23  Sancho Lerena <slerena@artica.es>
+	
+	* lib/pandoraFMS/DataServer.pm, Config.pm: Fixes bug #2811605. This
+	add a new config token to define max files queued to avoid problems
+	reading incoming dir with huge number of files.
+
+	* lib/PandoraFMS/Core.pm: Adds new feature to have optional agent
+	access graph & data. Included to improve the performance in huge systems
+
 2009-06-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Small fixes to compound alert and event

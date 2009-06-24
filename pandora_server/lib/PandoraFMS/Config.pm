@@ -185,6 +185,8 @@ sub pandora_load_config {
     $pa_config->{"export_threads"} = 1; # 3.0
     $pa_config->{"web_threads"} = 1; # 3.0
 
+    $pa_config->{"max_queue_files"} = 250; 
+
     # Internal MTA for alerts, each server need its own config.
     $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
     $pa_config->{"mta_port"} = '25'; # Introduced on 2.0
@@ -467,6 +469,10 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^export_threads\s([0-9]*)/i) {
 			$pa_config->{'export_threads'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^max_queue_files\s([0-9]*)/i) {
+                        $pa_config->{'max_queue_files'}= clean_blank($1);
+                }
+
 	} # end of loop for parameter #
 
 

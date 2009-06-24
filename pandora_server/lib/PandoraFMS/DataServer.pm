@@ -81,7 +81,11 @@ sub data_producer ($) {
 	opendir (DIR, $pa_config->{'incomingdir'})
 	        || die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
+	my $queue_count = 0;
  	while (defined (my $file_name = readdir(DIR))) {
+		if ($queue_count > $pa_config->{"max_queue_files"}) {
+			last;
+		}
 
 		# For backward compatibility
 		if ($file_name =~ /^.*\.checksum$/) {
@@ -89,9 +93,10 @@ sub data_producer ($) {
 			next;
 		} 
 
-		# Data files have the extension .data
+		# Data files must have the extension .data
 		next if ($file_name !~ /^.*\.data$/);
 
+		$queue_count++;
 		push (@tasks, $file_name);
 	}
 

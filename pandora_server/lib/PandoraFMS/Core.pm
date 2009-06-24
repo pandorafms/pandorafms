@@ -97,7 +97,7 @@ sub pandora_generate_alerts ($$$$$$$) {
 		                       
 		# Evaluate compound alerts even if the alert status did not change in
 		# case the compound alert does not recover
-		pandora_generate_compound_alerts ($pa_config, $data, $agent, $module,
+		pandora_generate_compound_alerts ($pa_config, $data, $status, $agent, $module,
 		                                  $alert, $utimestamp, $dbh)
 	}
 }
@@ -323,8 +323,8 @@ sub pandora_evaluate_compound_alert ($$$) {
 ##########################################################################
 # Generate compound alerts that depend on a given alert.
 ##########################################################################
-sub pandora_generate_compound_alerts ($$$$$$$) {
-	my ($pa_config, $data, $agent, $module, $alert, $utimestamp, $dbh) = @_;
+sub pandora_generate_compound_alerts ($$$$$$$$) {
+	my ($pa_config, $data, $status, $agent, $module, $alert, $utimestamp, $dbh) = @_;
 
 	# Get all compound alerts that depend on this alert
 	my @elements = get_db_rows ($dbh, 'SELECT id_alert_compound FROM talert_compound_elements
@@ -338,7 +338,7 @@ sub pandora_generate_compound_alerts ($$$$$$$) {
 		next unless defined ($compound_alert);
 
 		# Evaluate the alert
-		my $rc = pandora_evaluate_alert ($pa_config, $data, '', $alert,
+		my $rc = pandora_evaluate_alert ($pa_config, $data, $status, $alert,
 		                                 $utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
@@ -746,6 +746,7 @@ sub pandora_event (%$$$$$$$$) {
 
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+	$id_agentmodule = 0 unless defined ($id_agentmodule);
 
 	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
 	              VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
@@ -760,6 +761,7 @@ sub pandora_event_status ($$$$$$$$$$) {
 
 	my $utimestamp = time();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	$id_agentmodule = 0 unless defined ($id_agentmodule);
 
 	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);

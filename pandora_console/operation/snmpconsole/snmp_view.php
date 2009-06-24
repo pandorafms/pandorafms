@@ -118,7 +118,7 @@ if (empty ($traps)) {
 }
 
 // Toggle filters
-echo '<a href="#" onmousedown="toggleDiv(\'filters\');"><b>'.__('Toggle filters').'</b>&nbsp;<img src="images/wand.png" /></a>';
+echo '<a href="#" onmousedown="toggleDiv(\'filters\');"><b>'.__('Toggle filter(s)').'</b>&nbsp;<img src="images/wand.png" /></a>';
 
 echo '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $table->width = '90%';

@@ -278,7 +278,7 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 	$table->head = array ();
 	$table->head[0] = __('Agent');
 	$table->head[1] = __('Alert description');
-	$table->head[2] = __('Times Fired');
+	$table->head[2] = __('Times fired');
 	$table->head[3] = __('Priority');
 	
 	foreach ($agents as $id_agent => $alerts) {
@@ -482,7 +482,7 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->head[2] = __('Value');
 	$table->head[3] = __('Threshold');
 	$table->head[4] = __('Last fired');
-	$table->head[5] = __('Times Fired');
+	$table->head[5] = __('Times fired');
 	
 	require_once ($config["homedir"].'/include/functions_alerts.php');
 	

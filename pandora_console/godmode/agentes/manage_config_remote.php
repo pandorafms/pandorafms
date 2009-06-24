@@ -130,7 +130,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		// Destination agent
 		echo '<tr><td class="datost">';
-		echo '<b>'.__('To Agent(s):').'</b><br><br>';
+		echo '<b>'.__('To agent(s):').'</b><br><br>';
 		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
 		if ($id_group > 1)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";

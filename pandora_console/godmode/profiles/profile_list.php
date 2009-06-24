@@ -42,7 +42,7 @@ if ($delete_profile) {
 	if ($ret === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the profile').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Profile successfully deleted').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 	
 	//Delete profile from user data
@@ -77,7 +77,7 @@ if ($update_profile) {
 		$id_profile);
 	$ret = process_sql ($sql);
 	if ($ret !== false) {
-		echo '<h3 class="suc">'.__('Profile successfully updated').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 	} else {
 		echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
 	}
@@ -109,7 +109,7 @@ if ($create_profile) {
 	
 	$ret = process_sql ($sql, 'insert_id');
 	if ($ret !== false) {
-		echo '<h3 class="suc">'.__('Profile successfully created').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
 	}

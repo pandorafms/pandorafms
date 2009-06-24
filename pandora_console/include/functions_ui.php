@@ -969,7 +969,7 @@ function print_moduletype_icon ($id_moduletype, $return = false) {
 	$type = get_db_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
 	if ($type === false) {
 		$type = array ();
-		$type["descripcion"] = __('Unknown Type'); 
+		$type["descripcion"] = __('Unknown type'); 
 		$type["icon"] = 'b_down.png';
 	}
 	$imagepath = 'images/'.$type["icon"];

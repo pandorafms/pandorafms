@@ -78,7 +78,7 @@ if ($update) {
 	$result = process_manage_edit ($module_name);
 	
 	print_result_message ($result,
-		__('Successfuly updated'),
+		__('Successfully updated'),
 		__('Could not be updated'));
 	
 }

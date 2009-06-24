@@ -25,12 +25,18 @@ if (!isset ($id_agente)) {
 }
 
 // Get all module from agent
-$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
-				AND tagente_modulo.id_agente = %d 
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.delete_pending = 0
-				AND tagente_estado.utimestamp != 0 
-				ORDER BY tagente_modulo.nombre", $id_agente);
+$sql = sprintf ("
+	SELECT *
+	FROM tagente_estado, tagente_modulo
+		LEFT JOIN tmodule_group
+		ON tmodule_group.id_mg = tagente_modulo.id_module_group
+	WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+		AND tagente_modulo.id_agente = %d 
+		AND tagente_modulo.disabled = 0
+		AND tagente_modulo.delete_pending = 0
+		AND tagente_estado.utimestamp != 0 
+	ORDER BY tagente_modulo.id_module_group , tagente_modulo.nombre
+	", $id_agente);
 
 $modules = get_db_all_rows_sql ($sql);
 if (empty ($modules)) {
@@ -53,7 +59,25 @@ $table->head[6] = __('Last contact');
 
 $table->align = array("left","left","left","left","center");
 
+
+$last_modulegroup = 0;
+$rowIndex = 0;
 foreach ($modules as $module) {
+	
+	//The code add the row of 1 cell with title of group for to be more organice the list.
+	
+	if ($module["id_module_group"] != $last_modulegroup)
+	{
+		$table->colspan[$rowIndex][0] = count($table->head);
+		$table->rowclass[$rowIndex] = 'datos4';
+		
+		array_push ($table->data, array ('<b>'.$module['name'].'</b>'));
+		
+		$rowIndex++;
+		$last_modulegroup = $module["id_module_group"];
+	}
+	//End of title of group
+	
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
@@ -111,8 +135,10 @@ foreach ($modules as $module) {
 	}
 	$data[6] .= print_timestamp ($module["utimestamp"], true);
 	$data[6] .= '</span>';
+	
 	array_push ($table->data, $data);
-}		
+	$rowIndex++;
+}
 
 if (empty ($table->data)) {
 	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';

@@ -319,6 +319,12 @@ tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 td.datos3 {
 	background-color: #d4ddc6;
 }
+td.datos4 {
+	//Add !important because in php the function print_table write style in cell and this is style head.
+	text-align: center !important;
+	background-color: #d4ddc6;
+}
+
 td.datos_id {
 	color: #1a313a;
 }

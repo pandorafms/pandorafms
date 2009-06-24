@@ -34,7 +34,7 @@ if (isset ($_GET["delete"])) {
 	$sql = sprintf("DELETE FROM trecon_task WHERE id_rt = '%d'",$id);
 	$result = process_sql ($sql);
 	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Succesfully deleted recon task').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted recon task').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('Error deleting recon task').'</h3>';
 	}

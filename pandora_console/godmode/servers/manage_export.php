@@ -63,7 +63,7 @@ if ($delete) {
 	if (process_sql ($sql) === false) {
 		echo '<h3 class="error">'.__('Error deleting export target').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Succesfully deleted export target').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted export target').'</h3>';
 	}
 }
 
@@ -97,7 +97,7 @@ if (!$result) {
 	return;
 }
 
-$table->head = array  (__('Name'), __('Preffix'), __('Interval'), __('Address'), __('Transfer Mode'), __('Action'));
+$table->head = array  (__('Name'), __('Preffix'), __('Interval'), __('Address'), __('Transfer mode'), __('Action'));
 //$table->align = array ("","","","center","","","center","center");
 $table->width = 700;
 $table->cellpadding = 4;

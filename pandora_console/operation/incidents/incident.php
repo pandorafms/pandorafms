@@ -61,8 +61,8 @@ if ($action == "mass") {
 	if ($own_btn != -1) {
 		$result = process_incidents_chown ($id_inc, $config["id_user"]);
 		print_result_message ($result,
-			__('Ssuccessfully reclaimed ownership'),
-			__('Could not reclame owners'));
+			__('Successfully reclaimed ownership'),
+			__('Could not reclame ownership'));
 	}
 
 } elseif ($action == "update") {

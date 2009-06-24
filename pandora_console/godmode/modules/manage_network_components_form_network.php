@@ -72,7 +72,7 @@ return;
 <td class="datos">
 <input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
 </td>
-<td class="datos"><?php echo __('SNMP Community') ?></td>
+<td class="datos"><?php echo __('SNMP community') ?></td>
 <td class="datos">
 <input type="text" name="snmp_community" size="25" value="<?php echo $snmp_community ?>">
 </td></tr>

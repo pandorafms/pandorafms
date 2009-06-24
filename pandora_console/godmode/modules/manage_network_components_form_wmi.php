@@ -123,7 +123,7 @@ echo	'<input type="text" name="max_timeout" size="5" value="' . $max_timeout . '
 echo '</td></tr>';
 
 // WMI Query
-echo '<tr><td class="datos">' . __('WMI Query') ;
+echo '<tr><td class="datos">' . __('WMI query') ;
 print_help_icon("wmiquery");
 echo '</td>';
 echo '<td class="datos">';

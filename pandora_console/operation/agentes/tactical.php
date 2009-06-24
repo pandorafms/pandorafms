@@ -133,7 +133,7 @@ print_cells_temp ($cells);
 echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
 
 $cells = array ();
-$cells[0][0] = __('Total Agents');
+$cells[0][0] = __('Total agents');
 $cells[0][1] = $data["total_agents"];
 $cells[0]["color"] = "#000";
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60";

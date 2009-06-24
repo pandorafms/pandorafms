@@ -140,7 +140,7 @@ if ($add_profile) {
 	
 	$return = create_user_profile ($id, $profile, $group);
 	print_result_message ($return,
-		__('Succesfully created'),
+		__('Successfully created'),
 		__('Could not be created'));
 }
 
@@ -199,7 +199,7 @@ if ($config['admin_can_make_admin']) {
 	$table->data[6][1] .= '<br />';
 	
 	$table->data[6][1] .= print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
-	$table->data[6][1] .= __('Standard user');
+	$table->data[6][1] .= __('Standard User');
 	$table->data[6][1] .= print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
 }
 

@@ -1,38 +1,61 @@
-2009-06-24  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-24  Jorge Gonzalez  <jorgegonz@artica.es>
+
+        * include/functions_reporting.php, include/functions_ui.php,
+        * operation/incidents/incident.php,
+        * operation/snmpconsole/snmp_view.php, operation/events/events.php,
+        * operation/agentes/tactical.php, godmode/users/user_list.php,
+        * godmode/users/configure_user.php,
+        * godmode/profiles/profile_list.php,
+        * godmode/agentes/module_manager_editor_wmi.php,
+        * godmode/agentes/massive_edit_modules.php,
+        * godmode/agentes/manage_config_remote.php,
+        * godmode/modules/manage_network_components_form_network.php,
+        * godmode/modules/manage_network_components_form_wmi.php,
+        * godmode/servers/manage_export.php,
+        * godmode/servers/manage_recontask.php,
+        * godmode/servers/modificar_server.php: Some translatable strings
+        * reused to simplify i18n work.
+
+        * include/languages/es.po, include/languages/es.mo: Updated Spanish
+        * translation.
+
+        * include/languages/index.pot: Updated po template.
+
+2009-06-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/godmode/groups/group_list.php: fix group without image
 	don't print image tag. 
 	Fixes: #2810299
 	
-2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/incidents/incident.php: fix parameters to pass function
 	pagination. 
 	Fixes: #2805804
 	
-2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/modificar_agente.php: add another "create agent" before
 	the list for more usability
 	
-2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/styles/menu.css: Fixed style for elements menu
 	that it have large text.
 	Fixes: #2808843
 
-2009-06-22  Manuel Arostegui <marostegui@artica.es>
+2009-06-22  Manuel Arostegui  <marostegui@artica.es>
 
 	* include/functions_filemanager.php: Fixed ugly warning, the 
 	languanges path was incorrect.
 
-2009-06-22  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/admin_access_logs.php: Fix fall the table of logs to
 	bottom page.
 	Fixes: #2805812
 
-2009-06-22  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* Fix the error introduced by Miguel de Dios in 2009-06-18, The error
 	was add repeated rows with language_code in DB.

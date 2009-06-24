@@ -129,7 +129,7 @@ if (isset($_GET["server"])) {
 		echo '<td><span class="master">'.__('Master').'</span></td>';
 		echo '<td><span class="data">'.__('Data Server').'</span></td>';
 		echo '<td><span class="binary">'.__('MD5 Check').'</span></td>';
-		echo '<td><span class="snmp">'.__('SNMP Console').'</span></td>';
+		echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
 		echo "</tr></table>";
 	} else {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";

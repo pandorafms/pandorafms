@@ -29,13 +29,13 @@ if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
 	print_result_message ($result,
-		__('User successfully deleted'),
+		__('Successfully deleted'),
 		__('There was a problem deleting the user'));
 } elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
 	$result = delete_profile ($id_profile);
 	print_result_message ($result, 
-		__('Profile successfully deleted'),
+		__('Successfully deleted'),
 		__('There was a problem deleting the profile'));
 }
 

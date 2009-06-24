@@ -1,15 +1,19 @@
 2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
 
+	* pandora_console/godmode/groups/group_list.php: fix group without image
+	don't print image tag. 
+	Fixes: #2810299
+	
+2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/incidents/incident.php: fix parameters to pass function
 	pagination. 
 	Fixes: #2805804
-	
 	
 2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/agentes/modificar_agente.php: add another "create agent" before
 	the list for more usability
-	
 	
 2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
 

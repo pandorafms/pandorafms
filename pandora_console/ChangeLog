@@ -1,4 +1,4 @@
-2009-06-23  Miguel de Dios <miguel.dedios@artica.es>
+2009-06-24  Miguel de Dios <miguel.dedios@artica.es>
 
 	* pandora_console/godmode/groups/group_list.php: fix group without image
 	don't print image tag. 

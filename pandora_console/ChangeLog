@@ -1,3 +1,10 @@
+2009-05-25  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	translation.
+
+	* include/languages/index.pot: Updated po template.
+
 2009-05-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/networkmap.php: Write .dot files to disk to avoid

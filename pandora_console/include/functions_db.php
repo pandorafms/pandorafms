@@ -346,7 +346,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 		unset ($search["disabled"]);
 		if (isset ($search["string"])) {
 			$string = safe_input ($search["string"]);
-			$search_sql .= ' AND (nombre LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
+			$search_sql .= ' AND (nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
 			
 			unset ($search["string"]);
 		}

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-25 09:29+0200\n"
-"PO-Revision-Date: 2009-06-25 09:30+0200\n"
+"PO-Revision-Date: 2009-06-25 10:07+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -3669,7 +3669,8 @@ msgid "No alert selected"
 msgstr "No se seleccionó ninguna alerta"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:64
-msgid "There was an error deleting the alerts, the operation has been cancelled"
+msgid ""
+"There was an error deleting the alerts, the operation has been cancelled"
 msgstr "Hubo un error al borrar las alertas, se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:65
@@ -3791,7 +3792,8 @@ msgid "No module selected"
 msgstr "No se seleccionó ningún módulo"
 
 #: ../../godmode/agentes/massive_delete_modules.php:66
-msgid "There was an error deleting the modules, the operation has been cancelled"
+msgid ""
+"There was an error deleting the modules, the operation has been cancelled"
 msgstr "Hubo un error al borrar los módulos, se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_modules.php:67
@@ -4919,7 +4921,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: ../../godmode/alerts/configure_alert_template.php:505
-msgid "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value matches <span id=\\\"value\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor coincida con <span id=\\\"value\\\"></"
 "span>"
@@ -4934,11 +4937,14 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:507
 msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:508
-msgid "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value is not <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:509
 msgid ""
@@ -4957,13 +4963,15 @@ msgstr ""
 "span> y <span id=\\\"max\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:511
-msgid "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
+msgid ""
+"The alert would fire when the value is below <span id=\\\"min\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor esté por debajo de <span id=\\\"min\\"
 "\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:512
-msgid "The alert would fire when the value is above <span id=\\\"max\\\"></span>"
+msgid ""
+"The alert would fire when the value is above <span id=\\\"max\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor esté por encima de <span id=\\\"max\\"
 "\"></span>"
@@ -5605,7 +5613,8 @@ msgstr "La alerta se disparará cuando el valor sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:389
 msgid "The alert would fire when the value is not <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:394
 msgid "The alert would fire when the value matches <span id=\"value\"></span>"
@@ -5614,7 +5623,8 @@ msgstr ""
 "span>"
 
 #: ../../include/functions_ui.php:397
-msgid "The alert would fire when the value doesn't match <span id=\"value\"></span>"
+msgid ""
+"The alert would fire when the value doesn't match <span id=\"value\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor no coincida con <span id=\"value\"></"
 "span>"
@@ -5663,7 +5673,8 @@ msgstr "Tipo desconocido"
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
-msgstr "Hubo un error al copiar la configuración del agente, se canceló la copia"
+msgstr ""
+"Hubo un error al copiar la configuración del agente, se canceló la copia"
 
 #: ../../include/functions_agents.php:375
 msgid "Successfully copied"
@@ -6118,7 +6129,7 @@ msgstr "Tiempo de expiración"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:47
 msgid "Agent browser id"
-msgstr ""
+msgstr "ID del agente del navegador"
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:53
 msgid "Requests"
@@ -6251,7 +6262,8 @@ msgstr "y reemplazar con"
 
 #: ../../enterprise/include/functions_backup.php:210
 msgid "Modify servers configuration to use this new database"
-msgstr "Modifique la configuración de los servidores para usar esta nueva BB. DD."
+msgstr ""
+"Modifique la configuración de los servidores para usar esta nueva BB. DD."
 
 #: ../../enterprise/include/functions_backup.php:211
 msgid "Find servers configuration file and replace the following lines"
@@ -6266,7 +6278,8 @@ msgstr "Reinicie los servidores y vuelva a iniciar sesión en la consola"
 #: ../../enterprise/include/functions_policies.php:435
 #, php-format
 msgid "Agent %s cannot edit remote configuration to add module %s"
-msgstr "El agente %s no puede editar la configuración remota para añadir el módulo %s"
+msgstr ""
+"El agente %s no puede editar la configuración remota para añadir el módulo %s"
 
 #: ../../enterprise/dashboard/main_dashboard.php:139
 msgid "Could not create dashboard"
@@ -6368,7 +6381,8 @@ msgstr ""
 "derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:34
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
 "en el lugar deseado."
@@ -7334,7 +7348,8 @@ msgid "Error updating passwords: %s"
 msgstr "Error al actualizar las contraseñas: %s"
 
 #: ../../operation/users/user_edit.php:59
-msgid "Passwords didn't match or other problem encountered while updating passwords"
+msgid ""
+"Passwords didn't match or other problem encountered while updating passwords"
 msgstr ""
 "Las contraseñas no coincidían o se encontró otro problema al actualizar las "
 "contraseñas"
@@ -7453,4 +7468,3 @@ msgstr "Mensaje sin leer; pulse para leerlo"
 #: ../../operation/messages/message.php:204
 msgid "No Subject"
 msgstr "Sin asunto"
-

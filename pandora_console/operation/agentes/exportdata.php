@@ -28,7 +28,7 @@ if (!give_acl ($config['id_user'], 0, "AR")) {
 
 require_javascript_file ('calendar');
 
-echo "<h2>".__('Pandora Agents')." &raquo; ".__('Export data')."</h2>";
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Export data')."</h2>";
 
 $group = get_parameter_post ('group', 1);
 $agent = get_parameter_post ('agent', 0);

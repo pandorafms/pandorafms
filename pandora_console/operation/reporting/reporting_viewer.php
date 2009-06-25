@@ -248,7 +248,7 @@ foreach ($contents as $content) {
 		if (!empty ($slas)) {
 			$data = array ();
 			if ($sla_failed == false)
-				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('Ok').'</span>';
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
 			else
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 			$n = array_push ($table->data, $data);

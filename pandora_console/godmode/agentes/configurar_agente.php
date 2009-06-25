@@ -314,7 +314,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 			print_error_message (__('There was a problem updating the agent'));
 		} else {
 			enterprise_hook ('update_agent', array ($id_agente));
-			print_success_message (__('Agent successfully updated'));
+			print_success_message (__('Successfully updated'));
 		}
 	}
 }

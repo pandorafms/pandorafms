@@ -100,7 +100,7 @@ if ($tab != '') {
 	$url = $url.'&tab='.$tab;
 }
 
-echo "<h2>".__('Pandora Agents')." &raquo; ".__('Alerts').'</h2>';
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Alerts').'</h2>';
 
 echo '<form method="post" action="'.$url.'">';
 

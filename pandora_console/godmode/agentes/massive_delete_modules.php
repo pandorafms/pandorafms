@@ -117,7 +117,7 @@ $agents = get_agents_with_module_name ($module_name, $id_group,
 $table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
+echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

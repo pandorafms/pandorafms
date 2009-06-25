@@ -66,8 +66,8 @@ if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 }
 # End of get parameters block
 
-echo "<h2>".__('Database Maintenance')." &raquo; ";
-echo  __('Database Audit purge')."</h2>";
+echo "<h2>".__('Database maintenance')." &raquo; ";
+echo  __('Database audit purge')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td class='datos'>";

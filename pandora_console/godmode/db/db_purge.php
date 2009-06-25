@@ -30,7 +30,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 //id_agent = -1: None selected; id_agent = 0: All
 $id_agent = (int) get_parameter_post ("agent", -1);
 
-echo '<h2>'.__('Database Maintenance').' &raquo; '.__('Database purge').'</h2>
+echo '<h2>'.__('Database maintenance').' &raquo; '.__('Database purge').'</h2>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
 	<br /><br />
 	<h3>'.__('Get data from agent').'</h3>';

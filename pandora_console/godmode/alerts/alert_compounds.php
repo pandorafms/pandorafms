@@ -175,7 +175,7 @@ foreach ($id_alerts as $alert) {
 	$data[1] .= '</a>';
 	$data[2] = get_agent_name ($alert['id_agent']);
 	$data[3] = '<a href="'.$url.'&delete_alert=1&id='.$alert['id'].'"
-		onClick="javascript:confirm(\''.__('Are you sure').'\')">';
+		onClick="javascript:confirm(\''.__('Are you sure?').'\')">';
 	$data[3] .= '<img src="images/cross.png" title="'.__('Delete').'" />';
 	$data[3] .= '</a>';
 	

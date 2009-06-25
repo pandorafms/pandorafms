@@ -125,10 +125,10 @@ if (isset($_GET["server"])) {
 		//Legend
 		echo "<table>";
 		echo "<tr>";
-		echo '<td><span class="net">'.__('Network Server').'</span></td>';
+		echo '<td><span class="net">'.__('Network server').'</span></td>';
 		echo '<td><span class="master">'.__('Master').'</span></td>';
-		echo '<td><span class="data">'.__('Data Server').'</span></td>';
-		echo '<td><span class="binary">'.__('MD5 Check').'</span></td>';
+		echo '<td><span class="data">'.__('Data server').'</span></td>';
+		echo '<td><span class="binary">'.__('MD5 check').'</span></td>';
 		echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
 		echo "</tr></table>";
 	} else {

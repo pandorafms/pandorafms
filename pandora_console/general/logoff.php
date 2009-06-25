@@ -15,7 +15,7 @@
 
 ?>
 <div class="databox" id="login">
-	<h1 id="log"><?php echo __('Logged Out'); ?></h1>
+	<h1 id="log"><?php echo __('Logged out'); ?></h1>
 	<div class="databox" style="width: 400px;">
 		<table cellpadding="4" cellspacing="1" width="400">
 		<tr><td align="left">

@@ -154,7 +154,7 @@ $table->data['edit2'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true
 $table->data['edit2'][2] = __('Historical data');
 $table->data['edit2'][3] = print_checkbox ("history_data", 1, '', true);
 
-echo '<form method="post" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
+echo '<form method="post" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

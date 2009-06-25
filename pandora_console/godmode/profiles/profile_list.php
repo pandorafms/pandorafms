@@ -224,16 +224,16 @@ if ($id_profile || $new_profile) {
 	
 	$table->head = array ();
 	$table->head[0] = __('Profiles');
-	$table->head[1] = 'IR'.print_help_tip (__('Read Incidents'), true);
-	$table->head[2] = 'IW'.print_help_tip (__('Create Incidents'), true);
-	$table->head[3] = 'IM'.print_help_tip (__('Manage Incidents'), true);
-	$table->head[4] = 'AR'.print_help_tip (__('Read Agent Information'), true);
-	$table->head[5] = 'AW'.print_help_tip (__('Manage Agents'), true);
-	$table->head[6] = 'LW'.print_help_tip (__('Edit Alerts'), true);
-	$table->head[7] = 'UM'.print_help_tip (__('Manage User Rights'), true);
-	$table->head[8] = 'DM'.print_help_tip (__('Database Management'), true);
-	$table->head[9] = 'LM'.print_help_tip (__('Alerts Management'), true);
-	$table->head[10] = 'PM'.print_help_tip (__('Pandora System Management'), true);
+	$table->head[1] = 'IR'.print_help_tip (__('Read incidents'), true);
+	$table->head[2] = 'IW'.print_help_tip (__('Create incidents'), true);
+	$table->head[3] = 'IM'.print_help_tip (__('Manage incidents'), true);
+	$table->head[4] = 'AR'.print_help_tip (__('Read agent information'), true);
+	$table->head[5] = 'AW'.print_help_tip (__('Manage agents'), true);
+	$table->head[6] = 'LW'.print_help_tip (__('Edit alerts'), true);
+	$table->head[7] = 'UM'.print_help_tip (__('Manage user rights'), true);
+	$table->head[8] = 'DM'.print_help_tip (__('Database management'), true);
+	$table->head[9] = 'LM'.print_help_tip (__('Alerts management'), true);
+	$table->head[10] = 'PM'.print_help_tip (__('Pandora system management'), true);
 	$table->head[11] = __('Delete');
 	
 	$table->align = array ();
@@ -276,7 +276,7 @@ if ($id_profile || $new_profile) {
 	print_table ($table);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	print_input_hidden ('new_profile', 1);
-	print_submit_button (__('Create profile'), "crt", false, 'class="sub next"');
+	print_submit_button (__('Create'), "crt", false, 'class="sub next"');
 	echo "</div>";
 	echo '</form>';
 }

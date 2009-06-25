@@ -50,7 +50,7 @@ if (is_ajax ()) {
 $group_id = get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
 
-echo "<h2>".__('Pandora Agents')." &raquo; ".__('Summary')."</h2>";
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Summary')."</h2>";
 
 if ($group_id > 1) {
 	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id)).'">';

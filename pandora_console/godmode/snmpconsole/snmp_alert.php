@@ -33,7 +33,7 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	}
 }
 
@@ -73,7 +73,7 @@ if (isset ($_GET["submit"])) {
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
 		} else {
-			echo '<h3 class="suc">'.__('Alert successfully created').'</h3>';
+			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		}
 		
 	} else {
@@ -88,7 +88,7 @@ if (isset ($_GET["submit"])) {
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
 		} else {
-			echo '<h3 class="suc">'.__('Alert successfully updated').'</h3>';
+			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		}
 	}
 }
@@ -248,7 +248,7 @@ if (isset ($_GET["update_alert"])) {
 	// End table
 	echo "</td></tr></table>";
 } else {
-	echo "<h2>".__('Alert Overview')."</h2>";
+	echo "<h2>".__('Alert overview')."</h2>";
 	
 	require_once ('include/functions_alerts.php');
 	

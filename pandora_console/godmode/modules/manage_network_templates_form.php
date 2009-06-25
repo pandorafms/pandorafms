@@ -172,7 +172,7 @@ if ($id_np > 0) {
 	}
 	unset ($table);
 	
-	echo "<h3>".__('Add Modules')."</h3>";
+	echo "<h3>".__('Add modules')."</h3>";
 	
 	//Here should be a form to filter group
 

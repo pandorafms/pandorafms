@@ -35,7 +35,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
 */
 
-echo '<h2>'.__('Database Maintenance').' &raquo; '.__('Current database maintenance setup').'</h2>
+echo '<h2>'.__('Database maintenance').' &raquo; '.__('Current database maintenance setup').'</h2>
 <table width="550" cellspacing="3" cellpadding="3" border="0">
 <tr><td>
 <i>'.__('Max. time before compact data').':</i>&nbsp;<b>'.$config['days_compact'].' '.__('days').'</b><br /><br />

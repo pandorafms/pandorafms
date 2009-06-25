@@ -47,11 +47,11 @@ $modules['dataserver'] = __('Create a new data server module');
 if ($network_available)
 	$modules['networkserver'] = __('Create a new network server module');
 if ($plugin_available)
-	$modules['pluginserver'] = __('Create a new plugin Server module');
+	$modules['pluginserver'] = __('Create a new plugin server module');
 if ($wmi_available)
-	$modules['wmiserver'] = __('Create a new WMI Server module');
+	$modules['wmiserver'] = __('Create a new WMI server module');
 if ($prediction_available)
-	$modules['predictionserver'] = __('Create a new prediction Server module');
+	$modules['predictionserver'] = __('Create a new prediction server module');
 
 enterprise_hook ('set_enterprise_module_types', array (&$modules));
 print_select ($modules, 'moduletype', '', '', '', '', false, false, false);

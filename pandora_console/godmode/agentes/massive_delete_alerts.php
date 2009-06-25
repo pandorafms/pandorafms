@@ -112,7 +112,7 @@ $agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
 $table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
+echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

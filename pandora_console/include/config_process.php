@@ -24,9 +24,13 @@ $config['start_time'] = microtime (true);
 $config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
 if (! $config['dbconnection']) {
 	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
+		<html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+		<title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-		</head><body><div style="align:center">
+		</head>
+		<body>
+		<div style="align:center">
 		<div id="db_f">
 		<div>
 		<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
@@ -40,7 +44,9 @@ if (! $config['dbconnection']) {
 		<b>MySQL ERROR:</b> '. mysql_error().'</span>
 		<br />&nbsp;
 		</div>
-		</div></body></html>');
+		</div>
+		</body>
+		</html>');
 }
 
 mysql_select_db ($config["dbname"]);

@@ -2,8 +2,7 @@
 # Pandora FMS Console
 #
 %define name        PandoraFMS_Console
-%define version     2.0.0
-%define release     1
+%define version     3.0.0
 
 
 %define httpd_name      httpd
@@ -51,7 +50,7 @@
 Summary:            Web Console for Pandora FMS
 Name:               %{name}
 Version:            %{version}
-Release:            %{release}
+Release:            1 
 License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
@@ -71,8 +70,9 @@ AutoReq:            0
 %if "%{_vendor}" == "suse"
 Requires:           apache2
 Requires:           php >= 4.3.0
-Requires:           php-gd
-Requires:           mysql, php-mysql, php-snmp, php-pear
+Requires:           php-gd, php-snmp, php-pear
+Requires:           mysql, php-mysql
+Requires:           graphviz
 
 %else
 %if %{is_apache}
@@ -80,9 +80,7 @@ Requires:           apache
 %else
 Requires:           httpd
 %endif
-Requires:           php >= 4.3.0
-Requires:           php-gd
-Requires:           mysql, mysql-server, php-mysql, php-snmp, php-pear
+Requires:           httpd mysql-server php-pear php-mysql php-pear-DB php-devel php-gd php-snmp php-ldap php-mbstring net-snmp-perl net-snmp-utils graphviz-php 
 %endif
 
 Provides:           %{name}-%{version}
@@ -104,23 +102,28 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-#mkdir -p $RPM_BUILD_ROOT/usr/share/
-#mkdir -p $RPM_BUILD_ROOT/usr/share/man/
-#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
-#cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
-#cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
-if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec ] ; then
-    rm $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec
+if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
+   rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
 fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 %post
 echo "Please, now, point your broswer to http://localhost/pandora_console/install.php and follow all the steps described on it."
+
+#
+# Has an install already been done, if so we only want to update the files
+# push install.php aside so that the console works immediately using existing
+# configuration.
+#
+if [ -f %{prefix}/pandora_console/include/config.php ] ; then
+   mv %{prefix}/pandora_console/install.php %{prefix}/pandora_console/install.done
+else
+   pear install DB
+   echo "Please, now, point your broswer to http://localhost/pandora_console/install.php and follow all the steps described on it."
+fi
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
-#%{_mandir}/man1/pandora.1.gz
-#%{_mandir}/man1/pandora_console.1.gz

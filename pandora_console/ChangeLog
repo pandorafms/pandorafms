@@ -1,3 +1,9 @@
+2009-06-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/massive_delete_agents.php,
+	godmode/agentes/massive_delete_agents.php: changes for clarity
+	and maintenance code.
+
 2009-06-25  Jorge Gonzalez  <jorgegonz@aartica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

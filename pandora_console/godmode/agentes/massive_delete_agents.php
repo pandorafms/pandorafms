@@ -27,8 +27,6 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Massive agent deletion').'</h3>';
-
 function process_manage_delete ($id_agents) {
 	if (empty ($id_agents)) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
@@ -63,6 +61,8 @@ $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
 
 $delete = (bool) get_parameter_post ('delete');
+
+echo '<h3>'.__('Massive agent deletion').'</h3>';
 
 if ($delete) {
 	process_manage_delete ($id_agents);

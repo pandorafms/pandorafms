@@ -1,3 +1,10 @@
+2009-06-25  Jorge Gonzalez  <jorgegonz@aartica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	* translation.
+
+	* include/languages/index.pot: Updated po template.
+
 2009-06-25  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/functions_db.php, operation/snmpconsole/snmp_view.php,

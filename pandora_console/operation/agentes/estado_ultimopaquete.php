@@ -44,7 +44,7 @@ $label_group = 0;
 $last_label = "";
 
 // Title
-echo "<h2>".__('Pandora Agents')." &raquo; ";
+echo "<h2>".__('Pandora agents')." &raquo; ";
 echo __('Display of last data modules received by agent');
 echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/refresh.png'></A>";
 echo "</h2>";

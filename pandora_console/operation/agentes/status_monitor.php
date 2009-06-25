@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	return;
 }
 
-echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Full list of Monitors').'</h2>';
+echo '<h2>'.__('Pandora agents').' &raquo; '.__('Full list of monitors').'</h2>';
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
@@ -171,7 +171,7 @@ $table->head[1] = __('Agent');
 $table->head[2] = __('Type');
 $table->align[2] = "center";
 
-$table->head[3] = __('Module Name');
+$table->head[3] = __('Module name');
 
 $table->head[4] = __('Interval');
 $table->align[4] = "center";

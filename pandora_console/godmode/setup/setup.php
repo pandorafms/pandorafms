@@ -72,7 +72,7 @@ $table->data[4][1] = print_input_text ('days_purge', $config["days_purge"], '', 
 $table->data[5][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[5][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[6][0] = __('Auto login (Hash) password');
+$table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
 
 $table->data[7][0] = __('Default hours for event view');

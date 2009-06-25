@@ -143,7 +143,7 @@ foreach ($modules as $module) {
 if (empty ($table->data)) {
 	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
 } else {
-	echo "<h3>".__('Full list of Monitors')."</h3>";
+	echo "<h3>".__('Full list of monitors')."</h3>";
 	print_table ($table);
 }
 

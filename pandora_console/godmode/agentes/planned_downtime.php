@@ -176,7 +176,7 @@ if ($create_downtime || $update_downtime) {
 
 		echo "<td valign=top>";
 		// Show available agents to include into downtime
-		echo '<h3>'.__('Available Agents').':</h3>';
+		echo '<h3>'.__('Available agents').':</h3>';
 	
 	
 		$filter_group = get_parameter("filter_group", -1);
@@ -263,8 +263,8 @@ if ($create_downtime || $update_downtime) {
 		$table->head[1] = __('Description');
 		$table->head[2] = __('From');
 		$table->head[3] = __('To');
-		$table->head[4] = __('Del');
-		$table->head[5] = __('Upd');
+		$table->head[4] = __('Delete');
+		$table->head[5] = __('Update');
 		$table->head[6] = __('Running');
 
 		$sql = "SELECT * FROM tplanned_downtime";

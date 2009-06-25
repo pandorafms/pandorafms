@@ -161,7 +161,7 @@ if (($create != "") OR ($view != "")){
 	$fields[1]= __("Nagios");
 	print_select ($fields, "form_plugin_type", $form_plugin_type);
 	
-	echo '<tr><td class="datos">'.__('Max.Timeout');
+	echo '<tr><td class="datos">'.__('Max. timeout');
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'"></td>';
 

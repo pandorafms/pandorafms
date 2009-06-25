@@ -169,7 +169,7 @@ $table->data[3][1] = print_select (get_group_agents ($layout_group, false, "none
 $table->data[4][0] = __('Modules');
 $table->data[4][1] = print_select (array (), 'module[]', 0, false, '', '', true, true);
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure').'\')) return false;">';
+echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

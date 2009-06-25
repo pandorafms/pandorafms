@@ -39,7 +39,7 @@ if (isset ($_POST["date_purge"])){
 }
 # End of get parameters block
 
-echo "<h2>".__('Database Maintenance')." &raquo; ".__('Event Database cleanup')."</h2>";
+echo "<h2>".__('Database maintenance')." &raquo; ".__('Event database cleanup')."</h2>";
 
 $row = get_db_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
 

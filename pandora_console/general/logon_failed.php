@@ -16,7 +16,7 @@
 
 <div class='databox' id='login'>
 	<div id='login_f' class='databox'>
-		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo __('Authentication Error'); ?></h1>
+		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo __('Authentication error'); ?></h1>
 	
 		<div style='width: 350px'>
 			<a href="index.php"><img src="images/pandora_logo.png" border="0"></a><br>

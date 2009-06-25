@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	exit;
 }
-echo "<h2>".__('Pandora Agents')." &raquo; ".__('Group view')."</h2>";
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Group view')."</h2>";
 
 // Update network modules for this group
 // Check for Network FLAG change request

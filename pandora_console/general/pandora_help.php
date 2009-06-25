@@ -54,7 +54,7 @@ echo '<div>';
 echo '<span style="float:left; margin: 0px; padding: 0px">';
 echo '<img src="../images/pandora_textlogo.png" border=0>';
 echo "</span>";
-echo '<p style="text-align: right"><strong>'.__('Pandora FMS Help System').'</strong></p>';
+echo '<p style="text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
 echo '</div>';
 echo '<hr width="100%" size="1" />';
 echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';

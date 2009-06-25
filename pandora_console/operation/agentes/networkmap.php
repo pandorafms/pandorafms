@@ -300,7 +300,7 @@ function set_filter () {
 
 /* Main code */
 
-echo '<h2>'.__('Pandora Agents').' &raquo; '.__('Network Map').'&nbsp;';
+echo '<h2>'.__('Pandora agents').' &raquo; '.__('Network map').'&nbsp;';
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
 	print_image ("images/normalscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
@@ -384,7 +384,7 @@ $filter = set_filter ();
 $graph = generate_dot ($group, $simple, $font_size);
 if ($graph === false) {
 	print_error_message (__('Map could not be generated'));
-	echo __('No agents were found');
+	echo __('No agents found');
 	return;
 }
 
@@ -430,7 +430,7 @@ if ($result !== false) {
 		echo "<br /> Is ".$config["attachment_store"]." readable by the webserver process?";
 		return;
 	}
-	print_image ($filename_img, false, array ("alt" => __('Network Map'), "usemap" => "#networkmap"));
+	print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	require ($filename_map);
 } else {
 	print_error_message (__('Map could not be generated'));

@@ -468,8 +468,8 @@ function graph_incidents_status () {
 	$data = array (0, 0, 0, 0);
 	
 	$data = array ();
-	$data[__('Open Incident')] = 0;
-	$data[__('Closed Incident')] = 0;
+	$data[__('Open incident')] = 0;
+	$data[__('Closed incident')] = 0;
 	$data[__('Outdated')] = 0;
 	$data[__('Invalid')] = 0;
 	
@@ -480,9 +480,9 @@ function graph_incidents_status () {
 		$incidents = array ();
 	foreach ($incidents as $incident) {
 		if ($incident["estado"] == 0)
-			$data[__("Open Incident")]++;
+			$data[__("Open incident")]++;
 		if ($incident["estado"] == 2)
-			$data[__("Closed Incident")]++;
+			$data[__("Closed incident")]++;
 		if ($incident["estado"] == 3)
 			$data[__("Outdated")]++;
 		if ($incident["estado"] == 13)

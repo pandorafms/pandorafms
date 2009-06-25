@@ -2774,52 +2774,52 @@ function get_server_info ($id_server = -1) {
 	foreach ($result as $server) {
 		switch ($server['server_type']) {
 		case 0:
-			$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data Server')));
+			$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data server')));
 			$server["type"] = "data";
 			$id_modulo = 1;
 			break;
 		case 1:
-			$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network Server')));
+			$server["img"] = print_image ("images/network.png", true, array ("title" => __('Network server')));
 			$server["type"] = "network";
 			$id_modulo = 2;
 			break;
 		case 2:
-			$server["img"] = print_image ("images/snmp.png", true, array ("title" => __('SNMP Server')));
+			$server["img"] = print_image ("images/snmp.png", true, array ("title" => __('SNMP server')));
 			$server["type"] = "snmp";
 			$id_modulo = 0;
 			break;
 		case 3:
-			$server["img"] = print_image ("images/recon.png", true, array ("title" => __('Recon Server')));
+			$server["img"] = print_image ("images/recon.png", true, array ("title" => __('Recon server')));
 			$server["type"] = "recon";
 			$id_modulo = 0;
 			break;
 		case 4:
-			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin Server')));
+			$server["img"] = print_image ("images/plugin.png", true, array ("title" => __('Plugin server')));
 			$server["type"] = "plugin";
 			$id_modulo = 4;
 			break;
 		case 5:
-			$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction Server')));
+			$server["img"] = print_image ("images/chart_bar.png", true, array ("title" => __('Prediction server')));
 			$server["type"] = "prediction";
 			$id_modulo = 5;
 			break;
 		case 6:
-			$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI Server')));
+			$server["img"] = print_image ("images/wmi.png", true, array ("title" => __('WMI server')));
 			$server["type"] = "wmi";
 			$id_modulo = 6;
 			break;
 		case 7:
-			$server["img"] = print_image ("images/server_export.png", true, array ("title" => __('Export Server')));
+			$server["img"] = print_image ("images/server_export.png", true, array ("title" => __('Export server')));
 			$server["type"] = "export";
 			$id_modulo = 0;
 			break;
 		case 8:
-			$server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory Server')));
+			$server["img"] = print_image ("images/page_white_text.png", true, array ("title" => __('Inventory server')));
 			$server["type"] = "inventory";
 			$id_modulo = 0;
 			break;
 		case 9:
-			$server["img"] = print_image ("images/world.png", true, array ("title" => __('Web Server')));
+			$server["img"] = print_image ("images/world.png", true, array ("title" => __('Web server')));
 			$server["type"] = "web";
 			$id_modulo = 0;
 			break;

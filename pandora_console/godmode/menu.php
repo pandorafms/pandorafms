@@ -173,12 +173,12 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 }
 
 if (give_acl ($config['id_user'], 0, "DM")) {
-	$menu["gdbman"]["text"] = __('DB Maintenance');
+	$menu["gdbman"]["text"] = __('DB maintenance');
 	$menu["gdbman"]["sec2"] = "godmode/db/db_main";
 	$menu["gdbman"]["id"] = "god-dbmaint";
 	
 	$sub = array ();
-	$sub["godmode/db/db_info"]["text"] = __('DB Information');
+	$sub["godmode/db/db_info"]["text"] = __('DB information');
 	
 	$sub["godmode/db/db_purge"]["text"] = __('Database purge');
 	

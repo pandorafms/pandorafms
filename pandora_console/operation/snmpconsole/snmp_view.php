@@ -130,7 +130,7 @@ $table->data = array ();
 $agents = array ();
 $oids = array ();
 $severities = get_priorities ();
-$alerted = array (__('Not fired'), __('fired'));
+$alerted = array (__('Not fired'), __('Fired'));
 foreach ($traps as $trap) {
 	$agent = get_agent_with_ip ($trap['source']);
 	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
@@ -349,7 +349,7 @@ foreach ($traps as $trap) {
 		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
 	}
 	if (give_acl ($config["id_user"], 0, "IW")) {
-		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
 	}
 	
 	$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
@@ -372,7 +372,7 @@ print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
 
 if (give_acl ($config['id_user'], 0, "IM")) {
 	echo "&nbsp;";
-	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:confirm(\''.__('Are you sure').'\')"');
+	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:confirm(\''.__('Are you sure?').'\')"');
 }
 echo "</div></form>";
 

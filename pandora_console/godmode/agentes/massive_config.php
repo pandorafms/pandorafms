@@ -28,7 +28,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Configuration Management').'</h3>';
+echo '<h3>'.__('Configuration management').'</h3>';
 
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');

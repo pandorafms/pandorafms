@@ -1,3 +1,11 @@
+2009-06-25  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_console.spec: RPM spec file for 3.0 version.
+	Packages built succesfully for: Centos5, Fedora 11, 
+	RHEL5, SLE9, SLE10, SLE11, OpenSuse 10.3, OpenSuse 11, 
+	OpenSuse 11, OpenSuse Factory. We still need to check
+	the exactly names in Suse distros for dependencies.
+
 2009-06-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: optimice the search agent in DB, quit option

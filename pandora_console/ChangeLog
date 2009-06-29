@@ -1,3 +1,41 @@
+2009-06-29  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/cs.po, include/languages/pt_BR.po,
+	include/languages/nl.mo, include/languages/pl.mo,
+	include/languages/it.mo, include/languages/ko.po,
+	include/languages/sl.mo, include/languages/sk.po,
+	include/languages/uk.po, include/languages/ro.po,
+	include/languages/pt.mo, include/languages/ast.mo,
+	include/languages/bn.po, include/languages/ar.po,
+	include/languages/cs.mo, include/languages/pt_BR.mo,
+	include/languages/ko.mo, include/languages/fr.po,
+	include/languages/sk.mo, include/languages/uk.mo,
+	include/languages/ro.mo, include/languages/ca.po,
+	include/languages/da.po, include/languages/tr.po,
+	include/languages/sv.po, include/languages/de.po,
+	include/languages/ja.po, include/languages/zh_TW.po,
+	include/languages/bn.mo, include/languages/he.po,
+	include/languages/fi.po, include/languages/ar.mo,
+	include/languages/hi.po, include/languages/zh_CN.po,
+	include/languages/fr.mo, include/languages/te.po,
+	include/languages/eu.po, include/languages/hu.po,
+	include/languages/ca.mo, include/languages/da.mo,
+	include/languages/tr.mo, include/languages/de.mo,
+	include/languages/sv.mo, include/languages/ru.po,
+	include/languages/ja.mo, include/languages/zh_TW.mo,
+	include/languages/he.mo, include/languages/fi.mo,
+	include/languages/hi.mo, include/languages/zh_CN.mo,
+	include/languages/el.po, include/languages/gl.po,
+	include/languages/te.mo, include/languages/eu.mo,
+	include/languages/nl.po, include/languages/hu.mo,
+	include/languages/pl.po, include/languages/it.po,
+	include/languages/sl.po, include/languages/pt.po,
+	include/languages/ru.mo, include/languages/ast.po,
+	include/languages/el.mo, include/languages/gl.mo: Updated
+	translations thanks to all contributors from Rosetta.
+
 2009-06-29  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* reporting/pChart/pData.class: fix lost var ($url) in
@@ -105,26 +143,26 @@
 
 2009-06-24  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/functions_reporting.php, include/functions_ui.php,
-        * operation/incidents/incident.php,
-        * operation/snmpconsole/snmp_view.php, operation/events/events.php,
-        * operation/agentes/tactical.php, godmode/users/user_list.php,
-        * godmode/users/configure_user.php,
-        * godmode/profiles/profile_list.php,
-        * godmode/agentes/module_manager_editor_wmi.php,
-        * godmode/agentes/massive_edit_modules.php,
-        * godmode/agentes/manage_config_remote.php,
-        * godmode/modules/manage_network_components_form_network.php,
-        * godmode/modules/manage_network_components_form_wmi.php,
-        * godmode/servers/manage_export.php,
-        * godmode/servers/manage_recontask.php,
-        * godmode/servers/modificar_server.php: Some translatable strings
-        * reused to simplify i18n work.
+	* include/functions_reporting.php, include/functions_ui.php,
+	* operation/incidents/incident.php,
+	* operation/snmpconsole/snmp_view.php, operation/events/events.php,
+	* operation/agentes/tactical.php, godmode/users/user_list.php,
+	* godmode/users/configure_user.php,
+	* godmode/profiles/profile_list.php,
+	* godmode/agentes/module_manager_editor_wmi.php,
+	* godmode/agentes/massive_edit_modules.php,
+	* godmode/agentes/manage_config_remote.php,
+	* godmode/modules/manage_network_components_form_network.php,
+	* godmode/modules/manage_network_components_form_wmi.php,
+	* godmode/servers/manage_export.php,
+	* godmode/servers/manage_recontask.php,
+	* godmode/servers/modificar_server.php: Some translatable strings
+	* reused to simplify i18n work.
 
-        * include/languages/es.po, include/languages/es.mo: Updated Spanish
-        * translation.
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	* translation.
 
-        * include/languages/index.pot: Updated po template.
+	* include/languages/index.pot: Updated po template.
 	
 2009-06-24  Miguel de Dios <miguel.dedios@artica.es>
 
@@ -1072,10 +1110,10 @@ svn co
 
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/languages/es.po, include/languages/es.mo: Updated
-          Spanish translation.
+	* include/languages/es.po, include/languages/es.mo: Updated
+	  Spanish translation.
 
-        * include/languages/index.pot: Updated po template.
+	* include/languages/index.pot: Updated po template.
 
 2009-04-21  Jorge Gonzalez  <jorgegonz@artica.es>
 
@@ -1271,7 +1309,7 @@ svn co
 
 2009-04-13  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * images/console/icons/gateway.png,
+	* images/console/icons/gateway.png,
 	images/console/icons/routerap.png,
 	images/console/icons/pbx_warning.png,
 	images/console/icons/pbx_ok.png, images/console/icons/hub_bad.png,

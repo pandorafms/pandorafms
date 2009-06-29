@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-06-25 10:07+0200\n"
+"POT-Creation-Date: 2009-06-29 15:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,38 +89,38 @@ msgid "Show alerts"
 msgstr ""
 
 #: ../../reporting/fgraph.php:236 ../../reporting/fgraph.php:379
-#: ../../reporting/fgraph.php:1010
+#: ../../reporting/fgraph.php:1013
 msgid "Last hour"
 msgstr ""
 
 #: ../../reporting/fgraph.php:238 ../../reporting/fgraph.php:381
-#: ../../reporting/fgraph.php:1012 ../../godmode/reporting/map_builder.php:386
+#: ../../reporting/fgraph.php:1015 ../../godmode/reporting/map_builder.php:386
 #: ../../godmode/reporting/graph_builder.php:389
 msgid "Last day"
 msgstr ""
 
 #: ../../reporting/fgraph.php:240 ../../reporting/fgraph.php:383
-#: ../../reporting/fgraph.php:1014 ../../godmode/reporting/map_builder.php:388
+#: ../../reporting/fgraph.php:1017 ../../godmode/reporting/map_builder.php:388
 #: ../../godmode/reporting/graph_builder.php:352
 #: ../../godmode/reporting/graph_builder.php:391
 msgid "Last week"
 msgstr ""
 
 #: ../../reporting/fgraph.php:242 ../../reporting/fgraph.php:385
-#: ../../reporting/fgraph.php:1016 ../../godmode/reporting/map_builder.php:390
+#: ../../reporting/fgraph.php:1019 ../../godmode/reporting/map_builder.php:390
 #: ../../godmode/reporting/graph_builder.php:358
 #: ../../godmode/reporting/graph_builder.php:393
 msgid "Last month"
 msgstr ""
 
 #: ../../reporting/fgraph.php:244 ../../reporting/fgraph.php:387
-#: ../../reporting/fgraph.php:1018
+#: ../../reporting/fgraph.php:1021
 #, php-format
 msgid "Last %s days"
 msgstr ""
 
 #: ../../reporting/fgraph.php:257 ../../reporting/fgraph.php:396
-#: ../../reporting/fgraph.php:1027 ../../godmode/reporting/map_builder.php:416
+#: ../../reporting/fgraph.php:1030 ../../godmode/reporting/map_builder.php:416
 #: ../../godmode/reporting/graph_builder.php:213
 #: ../../godmode/reporting/reporting_builder.php:228
 #: ../../godmode/reporting/reporting_builder.php:267
@@ -146,7 +146,7 @@ msgid "Module"
 msgstr ""
 
 #: ../../reporting/fgraph.php:258 ../../reporting/fgraph.php:397
-#: ../../reporting/fgraph.php:1028 ../../godmode/reporting/map_builder.php:418
+#: ../../reporting/fgraph.php:1031 ../../godmode/reporting/map_builder.php:418
 #: ../../godmode/reporting/graph_builder.php:375
 #: ../../godmode/reporting/reporting_builder.php:356
 #: ../../godmode/reporting/reporting_builder.php:413
@@ -232,38 +232,38 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-#: ../../reporting/fgraph.php:692 ../../reporting/fgraph.php:693
-#: ../../reporting/fgraph.php:694
+#: ../../reporting/fgraph.php:694 ../../reporting/fgraph.php:695
+#: ../../reporting/fgraph.php:696
 msgid "Other"
 msgstr ""
 
-#: ../../reporting/fgraph.php:697 ../../include/functions_events.php:370
+#: ../../reporting/fgraph.php:699 ../../include/functions_events.php:370
 msgid "SYSTEM"
 msgstr ""
 
-#: ../../reporting/fgraph.php:833 ../../reporting/fgraph.php:839
+#: ../../reporting/fgraph.php:836 ../../reporting/fgraph.php:842
 msgid "Today"
 msgstr ""
 
-#: ../../reporting/fgraph.php:834 ../../reporting/fgraph.php:840
+#: ../../reporting/fgraph.php:837 ../../reporting/fgraph.php:843
 msgid "Week"
 msgstr ""
 
-#: ../../reporting/fgraph.php:835 ../../reporting/fgraph.php:841
+#: ../../reporting/fgraph.php:838 ../../reporting/fgraph.php:844
 msgid "Month"
 msgstr ""
 
-#: ../../reporting/fgraph.php:836 ../../reporting/fgraph.php:842
-#: ../../reporting/fgraph.php:845
+#: ../../reporting/fgraph.php:839 ../../reporting/fgraph.php:845
+#: ../../reporting/fgraph.php:848
 msgid "Months"
 msgstr ""
 
-#: ../../reporting/fgraph.php:837 ../../reporting/fgraph.php:843
-#: ../../reporting/fgraph.php:845
+#: ../../reporting/fgraph.php:840 ../../reporting/fgraph.php:846
+#: ../../reporting/fgraph.php:848
 msgid "Older"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1171 ../../include/functions_reporting.php:328
+#: ../../reporting/fgraph.php:1175 ../../include/functions_reporting.php:328
 #: ../../enterprise/include/functions_reporting_pdf.php:272
 #: ../../operation/agentes/estado_grupo.php:175
 #: ../../operation/agentes/ver_agente.php:126
@@ -271,15 +271,15 @@ msgstr ""
 msgid "Alerts fired"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1172
+#: ../../reporting/fgraph.php:1176
 msgid "Alerts not fired"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1178
+#: ../../reporting/fgraph.php:1182
 msgid "Monitors OK"
 msgstr ""
 
-#: ../../reporting/fgraph.php:1179
+#: ../../reporting/fgraph.php:1183
 msgid "Monitors BAD"
 msgstr ""
 
@@ -1020,7 +1020,7 @@ msgid "No layout with this id found"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder_wizard.php:43
-#: ../../godmode/agentes/massive_delete_agents.php:34
+#: ../../godmode/agentes/massive_delete_agents.php:32
 #: ../../godmode/agentes/massive_delete_alerts.php:54
 #: ../../godmode/agentes/massive_delete_modules.php:57
 msgid "No agents selected"
@@ -1222,7 +1222,7 @@ msgstr ""
 #: ../../godmode/setup/links.php:60 ../../godmode/setup/news.php:59
 #: ../../godmode/profiles/profile_list.php:45
 #: ../../godmode/agentes/planned_downtime.php:79
-#: ../../godmode/agentes/massive_delete_agents.php:57
+#: ../../godmode/agentes/massive_delete_agents.php:55
 #: ../../godmode/agentes/massive_delete_alerts.php:68
 #: ../../godmode/agentes/massive_delete_modules.php:70
 #: ../../godmode/modules/manage_network_components.php:140
@@ -3611,16 +3611,16 @@ msgstr ""
 msgid "Delete alerts"
 msgstr ""
 
-#: ../../godmode/agentes/massive_delete_agents.php:30
-msgid "Massive agent deletion"
-msgstr ""
-
-#: ../../godmode/agentes/massive_delete_agents.php:53
+#: ../../godmode/agentes/massive_delete_agents.php:51
 msgid "There was an error deleting the agent, the operation has been cancelled"
 msgstr ""
 
-#: ../../godmode/agentes/massive_delete_agents.php:54
+#: ../../godmode/agentes/massive_delete_agents.php:52
 msgid "Could not delete agent"
+msgstr ""
+
+#: ../../godmode/agentes/massive_delete_agents.php:65
+msgid "Massive agent deletion"
 msgstr ""
 
 #: ../../godmode/agentes/massive_delete_alerts.php:46

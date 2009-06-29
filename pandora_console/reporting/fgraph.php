@@ -668,6 +668,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
 	$data = array ();
 	$loop = 0;
+	define (NUM_PIECES_PIE, 6);	
 
 	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
 	//remove bad strings from the query so queries like ; DELETE FROM  don't pass
@@ -679,6 +680,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count
 		FROM tevento WHERE 1=1 %s
 		GROUP BY id_agente ORDER BY count DESC', $url); 
+	
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
 		$result = array();
@@ -688,7 +690,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 		if (!give_acl ($config["id_user"], $row["id_grupo"], "AR") == 1)
 			continue;
 		
-		if ($loop > 5) {
+		if ($loop >= NUM_PIECES_PIE) {
 			if (!isset ($data[__('Other')]))
 				$data[__('Other')] = 0;
 			$data[__('Other')] += $row["count"];
@@ -702,6 +704,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 		}
 		$loop++;
 	}
+	
 	error_reporting (0);
 	generic_pie_graph ($width, $height, $data, array ('show_legend' => false));
 }
@@ -1080,6 +1083,7 @@ $stacked = get_parameter ("stacked", 0);
 $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
 $mode = get_parameter ("mode", 1);
+$url = get_parameter ("url");
 
 if ($graphic_type) {
 	switch ($graphic_type) {
@@ -1116,7 +1120,7 @@ if ($graphic_type) {
 		
 		break;
 	case "group_events":
-		grafico_eventos_grupo ($width, $height);
+		grafico_eventos_grupo ($width, $height,$url);
 		
 		break;
 	case "user_events":

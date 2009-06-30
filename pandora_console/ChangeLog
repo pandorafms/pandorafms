@@ -1,5 +1,10 @@
 2009-06-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/fgraph.php: Limit the number of agents in modules per agent
+	  charts.
+
+2009-06-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_fsgraph.php: Truncate long names for flash charts.
 
 2009-06-30  Ramon Novoa  <rnovoa@artica.es>

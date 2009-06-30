@@ -717,7 +717,7 @@ function graph_db_agentes_modulos ($width, $height) {
 	
 	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo),id_agente
 					FROM tagente_modulo GROUP BY id_agente
-					ORDER BY 1 DESC');
+					ORDER BY 1 DESC LIMIT 8');
 	if ($modules === false)
 		$modules = array ();
 	

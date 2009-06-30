@@ -1,5 +1,9 @@
 2009-06-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_fsgraph.php: Truncate long names for flash charts.
+
+2009-06-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/fgraph.php: Added support for mixing flash/image charts.
 	
 	* include/functions_fsgraph.php: Use user defined colors in module

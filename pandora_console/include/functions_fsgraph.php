@@ -274,9 +274,10 @@ function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 // Clean FLASH string strips non-valid characters for flashchart
 function clean_flash_string ($string) {
 	$string = html_entity_decode ($string, ENT_QUOTES, "UTF-8");
-	$temp = str_replace('&', '', $string);
-	$temp = str_replace(' ', '', $string);
-	return str_replace ('"', '', $temp);
+	$string = str_replace('&', '', $string);
+	$string = str_replace(' ', '', $string);
+	$string = str_replace ('"', '', $string);
+	return substr ($string, 0, 20);
 }
 
 // Prints an error image

@@ -93,6 +93,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$title, $unit_name, $show_event = 0, $show_alert = 0, $pure = 0, $stacked = 0, $date = 0) {
 
 	global $config;
+	global $graphic_type;
 	
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -181,7 +182,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			array ('datos', 'utimestamp'));
 		
 		if ($result === false) {
-			if ($config['flash_charts']) {
+			if (! $graphic_type) {
 				return fs_error_image ();
 			}
 			graphic_error ();
@@ -259,13 +260,13 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 	
 	if ($max_value <= 0) {
-		if ($config['flash_charts']) {
+		if (! $graphic_type) {
 			return fs_error_image ();
 		}
 		graphic_error ();
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_combined_chart ($real_data, $data, $module_list_name, $width, $height, $stacked, $resolution / 10, $time_format);
 	}
 
@@ -291,6 +292,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 				$show_alert, $avg_only = 0, $pure = false,
 				$date = 0) {
 	global $config;
+	global $graphic_type;
 	
 	if (empty ($date))
 		$date = get_system_time ();
@@ -324,7 +326,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 		array ('datos', 'utimestamp'));
 	
 	if ($all_data === false) {
-		if ($config['flash_charts']) {
+		if (! $graphic_type) {
 			return fs_error_image ('../images');
 		}
 		graphic_error ();
@@ -418,7 +420,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 		$time_format = 'M j';
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
 	}
 	
@@ -462,6 +464,7 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
+	global $graphic_type;
 
 	$data = array ();
 
@@ -476,7 +479,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
-		if ($config['flash_charts']) {
+		if (! $graphic_type) {
 			$name = date('G:i', $bottom);
 		} else {
 			$name = $bottom;
@@ -490,7 +493,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 				'utimestamp < '.$top));
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_2d_area_chart ($data, $width, $height, $resolution / 1000, ';decimalPrecision=0');
 	}
 
@@ -512,6 +515,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 
 function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	global $config;
+	global $graphic_type;
 
 	$data = array ();
 
@@ -526,7 +530,7 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	
 	for ($i = 0; $i < $interval; $i++) {
 		$bottom = $datelimit + ($periodtime * $i);
-		if ($config['flash_charts']) {
+		if (! $graphic_type) {
 			$name = date('H\h', $bottom);
 		} else {
 			$name = $bottom;
@@ -549,13 +553,14 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 		
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_agent_event_chart ($data, $width, $height, $resolution / 750);
 	}
 }
 
 function graph_incidents_status () {
 	global $config;
+	global $graphic_type;
 	$data = array (0, 0, 0, 0);
 	
 	$data = array ();
@@ -580,7 +585,7 @@ function graph_incidents_status () {
 			$data[__("Invalid")]++;
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, 370, 180);
 	}
 
@@ -589,6 +594,8 @@ function graph_incidents_status () {
 
 function grafico_incidente_prioridad () {
 	global $config;
+	global $graphic_type;
+
 	$data_tmp = array (0, 0, 0, 0, 0, 0);
 	$sql = 'SELECT COUNT(id_incidencia), prioridad
 		FROM tincidencia GROUP BY prioridad
@@ -607,7 +614,7 @@ function grafico_incidente_prioridad () {
 			__('Very serious') => $data_tmp[4],
 			__('Maintenance') => $data_tmp[5]);
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, 320, 200);
 	}
 
@@ -616,6 +623,8 @@ function grafico_incidente_prioridad () {
 
 function graphic_incident_group () {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia), nombre
@@ -629,7 +638,7 @@ function graphic_incident_group () {
 		$data[$name] = $incident[0];
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, 320, 200);
 	}
 
@@ -638,6 +647,8 @@ function graphic_incident_group () {
 
 function graphic_incident_user () {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia), id_usuario
@@ -649,7 +660,7 @@ function graphic_incident_user () {
 		$data[$name] = $incident[0];
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, 320, 200);
 	}
 
@@ -658,6 +669,8 @@ function graphic_incident_user () {
 
 function graphic_user_activity ($width = 350, $height = 230) {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_usuario), id_usuario
@@ -668,7 +681,7 @@ function graphic_user_activity ($width = 350, $height = 230) {
 		$data[$login[1]] = $login[0];
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
@@ -677,6 +690,8 @@ function graphic_user_activity ($width = 350, $height = 230) {
 
 function graphic_incident_source ($width = 320, $height = 200) {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_incidencia), origen 
@@ -687,7 +702,7 @@ function graphic_incident_source ($width = 320, $height = 200) {
 		$data[$origin[1]] = $origin[0];
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
@@ -696,6 +711,8 @@ function graphic_incident_source ($width = 320, $height = 200) {
 
 function graph_db_agentes_modulos ($width, $height) {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	
 	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo),id_agente
@@ -709,7 +726,7 @@ function graph_db_agentes_modulos ($width, $height) {
 		$data[$agent_name] = $module[0];
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_bar_chart ($data, $width, $height);
 	}
 	
@@ -718,6 +735,8 @@ function graph_db_agentes_modulos ($width, $height) {
 
 function grafico_eventos_usuario ($width, $height) {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 5;
 	$sql = sprintf ('SELECT COUNT(id_evento),id_usuario
@@ -728,7 +747,7 @@ function grafico_eventos_usuario ($width, $height) {
 		$data[$event[1]] = $event[0];
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
@@ -737,6 +756,8 @@ function grafico_eventos_usuario ($width, $height) {
 
 function grafico_eventos_total ($filter = "") {
 	global $config;
+	global $graphic_type;
+
 	$filter = str_replace  ( "\\" , "", $filter);
 	$data = array ();
 	$legend = array ();
@@ -759,7 +780,7 @@ function grafico_eventos_total ($filter = "") {
 	
 	asort ($data);
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, 320, 200);
 	}
 
@@ -768,6 +789,8 @@ function grafico_eventos_total ($filter = "") {
 
 function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	global $config;
+	global $graphic_type;
+
 	$data = array ();
 	$max_items = 6;
 	$sql = sprintf ('SELECT COUNT(id_evento),nombre
@@ -797,7 +820,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$data = array_slice ($data, 0, $max_items);
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
@@ -809,7 +832,8 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
-	
+	global $graphic_type;
+
 	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
 	$data = array ();
 	$loop = 0;
@@ -850,7 +874,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 		$loop++;
 	}
 	
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
@@ -943,6 +967,7 @@ function generic_pie_graph ($width = 300, $height = 200, &$data, $options = fals
 
 function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	global $config;
+	global $graphic_type;
 
 	$data = array ();
 	$legend = array ();
@@ -957,7 +982,7 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 		$data[$agents[$agent_id]] = $value;
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_bar_chart ($data, $width, $height);
 	}
 	
@@ -966,6 +991,7 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 
 function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	global $config;
+	global $graphic_type;
 
 	if ($id_agent < 1) {
 		$id_agent = -1;
@@ -1004,7 +1030,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 	
@@ -1053,6 +1079,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0 ) {
 	global $config;
+	global $graphic_type;
 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -1187,7 +1214,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$time_format = 'M j';
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
 	}
 
@@ -1222,6 +1249,7 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0) {
 	global $config;
+	global $graphic_type;
 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -1356,7 +1384,7 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 		$time_format = 'M j';
 	}
 
-	if ($config['flash_charts']) {
+	if (! $graphic_type) {
 		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
 	}
 	

@@ -1,5 +1,12 @@
 2009-06-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/fgraph.php: Added support for mixing flash/image charts.
+	
+	* include/functions_fsgraph.php: Use user defined colors in module
+	  charts.
+
+2009-06-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/FusionCharts,
 	  include/FusionCharts/FCF_Column3D.swf,
 	  include/FusionCharts/FCF_Pie3D.swf,

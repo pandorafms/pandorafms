@@ -144,7 +144,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Max chart
 	if ($avg_only == 0) {
-		$chart->addDataSet('Max', 'color=BFED05');
+		$chart->addDataSet('Max', 'color=' . $config['graph_color3']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['max']);
 		}
@@ -152,7 +152,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Avg chart
 	$empty = 1;
-	$chart->addDataSet('Avg', 'color=95BB04');
+	$chart->addDataSet('Avg', 'color=' . $config['graph_color2']);
 	foreach ($data as $value) {
 		if ($value['sum'] > 0) {
 			$empty = 0;
@@ -162,7 +162,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Min chart
 	if ($avg_only == 0) {
-		$chart->addDataSet('Min', 'color=6D8703');
+		$chart->addDataSet('Min', 'color=' . $config['graph_color1']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['min']);
 		}

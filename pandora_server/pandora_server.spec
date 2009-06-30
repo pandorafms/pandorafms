@@ -46,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/local
 mkdir -p $RPM_BUILD_ROOT/usr/local/bin
+mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 %if "%{_vendor}" == "redhat"
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 %endif
@@ -60,12 +61,10 @@ mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/Net
 %if "%{_vendor}" == "redhat"
 cp -aRf bin/pandora_* $RPM_BUILD_ROOT/usr/local/bin/
 cp -aRf util/pandora_exec $RPM_BUILD_ROOT/usr/local/bin/
-cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/sbin/
 cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/local/bin/
 %else
 cp -aRf bin/pandora_* $RPM_BUILD_ROOT/usr/local/bin/
 cp -aRf util/pandora_exec $RPM_BUILD_ROOT/usr/local/bin/
-cp -aRf util/tentacle_server $RPM_BUILD_ROOT/usr/local/bin/
 cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/local/bin/
 %endif
 cp -aRf util/wmic $RPM_BUILD_ROOT/usr/bin/
@@ -158,7 +157,6 @@ fi
 /usr/bin/wmic
 /usr/local/bin/pandora_exec
 /usr/local/bin/pandora_server
-/usr/sbin/tentacle_server
 /usr/local/bin/tentacle_server
 
 
@@ -171,4 +169,5 @@ fi
 /var/log/pandora
 /var/spool/pandora/
 #/var/spool/pandora/data_in
+
 

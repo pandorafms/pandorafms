@@ -77,7 +77,7 @@ foreach ($servers as $server) {
 		$data[2] .= print_help_tip (__("This is a master server"), true);
 
 	// Load
-	$data[3] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=60", true, array ("title" => $server["lag_txt"]));
+	$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=60", true, array ("title" => $server["lag_txt"]));
 	$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 	$data[5] = '<span style="white-space:nowrap;">'.$server["lag_txt"].'</span>';
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];

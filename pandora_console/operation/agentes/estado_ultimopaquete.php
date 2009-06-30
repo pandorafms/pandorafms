@@ -176,20 +176,20 @@ foreach ($modules as $module) {
 		
 			
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
-		$url = 'reporting/procesos.php?agente='.$module["id_agente_modulo"];
+		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
 		echo "<td class=".$tdcolor." width='78'>";
 		$graph_label = output_clean_strict ($module["nombre"]);
 		
-		echo "<a href='javascript:winopeng(\"reporting/stat_win.php?type=$graph_type&period=2419200&id=".$module["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img src='images/grafica_m.png' border=0></a>&nbsp;";
+		echo "<a href='javascript:winopeng(\"operation/agentes/stat_win.php?type=$graph_type&period=2419200&id=".$module["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img src='images/grafica_m.png' border=0></a>&nbsp;";
 		
-		$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=604800&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=604800&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.png" border=0></a>&nbsp;';
 		
-		$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.png" border=0></a>&nbsp;';
 
-		$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=3600&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=3600&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.png" border=0></a>';
 	}
 	

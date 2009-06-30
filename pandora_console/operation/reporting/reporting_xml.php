@@ -182,7 +182,7 @@ foreach ($contents as $content) {
 	case 1:
 	case 'simple_graph':	
 		$data["title"] = __('Simple graph');
-		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
+		$data["objdata"]["img"] = 'include/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
 	break;
 	case 2:
 	case 'custom_graph':
@@ -203,7 +203,7 @@ foreach ($contents as $content) {
 			array_push ($weights, $content2["weight"]);
 		}
 
-		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
+		$data["objdata"]["img"] = 'include/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
 	break;
 	case 3:
 	case 'SLA':

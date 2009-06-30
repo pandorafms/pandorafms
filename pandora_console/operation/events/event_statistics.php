@@ -18,6 +18,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/fgraph.php");
 
 check_login ();
 
@@ -29,19 +30,26 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";
-echo '<img src="reporting/fgraph.php?tipo=total_events&width=300&height=200" border=0>';
+if ($config['flash_charts']) {
+	echo grafico_eventos_total ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=total_events&width=300&height=200" border=0>';
+}
 echo "</td><td valign='top'>";
 echo "<h3>".__('Event graph by user')."</h3>";
-echo '<img src="reporting/fgraph.php?tipo=user_events&width=300&height=200" border=0>';
+if ($config['flash_charts']) {
+	echo grafico_eventos_usuario (300, 200);
+} else {
+	echo '<img src="include/fgraph.php?tipo=user_events&width=300&height=200" border=0>';
+}
 echo "</td></tr>";
 echo "<tr><td>";
-if (isset($_GET["test"])){
-	echo "<h3>".__('Event graph by group')."</h3>";
-	echo '<img src="reporting/fgraph2.php?tipo=group_events&width=300&height=200" border=0>';
-	echo "</td><td>";
-}
 echo "<h3>".__('Event graph by group')."</h3>";
-echo '<img src="reporting/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
+if ($config['flash_charts']) {
+	echo grafico_eventos_grupo (300, 200);
+} else {
+	echo '<img src="include/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
+}
 echo '</td></tr>';
 echo "</table>";
 ?>

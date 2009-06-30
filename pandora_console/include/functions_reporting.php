@@ -322,7 +322,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	if (sizeof ($alerts) > 0)
 		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
-	$output .= '<img src="reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
+	$output .= '<img src="include/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
 		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
 	
 	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
@@ -392,7 +392,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$output .= print_table ($table, true);
 	
 	//Floating it was ugly, moved it to the bottom
-	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black" />';
+	$output .= '<img src="include/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black" />';
 	
 	if (!$return)
 		echo $output;

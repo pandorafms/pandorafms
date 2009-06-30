@@ -118,10 +118,9 @@
     }
 
    function AddPoint($Value,$Serie="Serie1",$Description="")
-    {//echo "#$Serie#";print_r($Value);
+    {
      if (is_array($Value) && count($Value) == 1)
-      $Value = reset($Value); //In previous releases has a bug, because  it's
-      //assumed  that array have a numerical indexes, now take the first simply.
+      $Value = $Value[0];
 
      $ID = 0;
      for($i=0;$i<=count($this->Data);$i++)

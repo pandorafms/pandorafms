@@ -14,6 +14,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if ($config['flash_charts']) {
+	require_once ('include/fgraph.php');
+}
 
 /**
  * Get all the custom graphs a user can see.
@@ -77,11 +80,16 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 			continue;
 		array_push ($modules, $source['id_agent_module']);
 		array_push ($weights, $source['weight']);
+	}	
+
+	if ($config['flash_charts']) {
+		$output = graphic_combined_module ($modules, $weights, $period, $width, $height,
+				'', '', 0, 0, 0, $stacked);
+	} else {
+		$modules = implode (',', $modules);
+		$weights = implode (',', $weights);
+		$output = '<img src="include/fgraph.php?tipo=combined&height='.$height.'&width='.$width.'&id='.$modules.'&period='.$period.'&weight_l='.$weights.'&stacked='.$stacked.'">';
 	}
-	$modules = implode (',', $modules);
-	$weights = implode (',', $weights);
-	
-	$output = '<img src="reporting/fgraph.php?tipo=combined&height='.$height.'&width='.$width.'&id='.$modules.'&period='.$period.'&weight_l='.$weights.'&stacked='.$stacked.'">';
 	
 	if ($return)
 		return $output;

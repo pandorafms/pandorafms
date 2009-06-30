@@ -144,7 +144,7 @@ foreach ($contents as $content) {
 		}
 		
 		$data = array ();
-		$data[0] = '<img src="reporting/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
+		$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
 		array_push ($table->data, $data);
 		
 		break;
@@ -182,7 +182,7 @@ foreach ($contents as $content) {
 
 		$table->colspan[1][0] = 4;
 		$data = array ();
-		$data[0] = '<img src="reporting/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$graph_height.'&width='.$graph_width.'&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+		$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$graph_height.'&width='.$graph_width.'&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 		array_push ($table->data, $data);
 		
 		break;

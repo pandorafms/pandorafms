@@ -64,7 +64,7 @@ $table->head = array ();
 $table->data = array ();
 $table->width = "100%";
 
-$img = "reporting/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent=";
+$img = "include/fgraph.php?tipo=progress&height=20&width=280&mode=0&percent=";
 
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 $table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("title" => $data["monitor_health"].'% '.__('of monitors up')));

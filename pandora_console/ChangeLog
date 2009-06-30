@@ -1,3 +1,48 @@
+2009-06-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/FusionCharts,
+	  include/FusionCharts/FCF_Column3D.swf,
+	  include/FusionCharts/FCF_Pie3D.swf,
+	  include/FusionCharts/FusionCharts.js,
+	  include/FusionCharts/FCF_MSLine.swf,
+	  include/FusionCharts/FusionCharts_Gen.php,
+	  include/FusionCharts/FCF_StackedArea2D.swf,
+	  include/FusionCharts/FCF_Area2D.swf,
+	  include/FusionCharts/FCF_MSArea2D.swf,
+	  include/FusionCharts/FusionCharts.php: Added to repository. Fusion
+	  Charts Free.
+
+	* include/functions_fsgraph.php: Added to repository. Fusion Charts
+	  chart generation functions for Pandora FMS.
+	
+	* include/pchart_graph.php, include/pandora_graph.php,
+	  include/fgraph2.php, include/pChart, include/Image,
+	  include/fgraph.php: Moved from reporting to include.
+
+	* operation/agentes/stat_win.php: Moved from reporting to
+	  operation/agentes.
+
+	* reporting: Deleted from repository.
+
+	* general/logon_ok.php, godmode/setup/setup.php,
+	  godmode/admin_access_logs.php, godmode/db/db_main.php,
+	  godmode/db/db_info.php, godmode/db/db_purge.php,
+	  godmode/reporting/graph_builder.php,
+	  operation/reporting/reporting_xml.php,
+	  operation/reporting/reporting_viewer.php,
+	  operation/servers/view_server.php,
+	  operation/servers/view_server_detail.php,
+	  operation/incidents/incident_statistics.php
+	  operation/users/user_statistics.php,
+	  operation/events/event_statistics.php, operation/events/events.php,
+	  operation/agentes/estado_ultimopaquete.php,
+	  operation/agentes/estado_generalagente.php,
+	  operation/agentes/tactical.php, include/functions_config.php,
+	  include/functions_custom_graphs.php,
+	  include/functions_visual_map.php,
+	  include/functions_reporting.php: Added flash charts.
+
+
 2009-06-29  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/index.pot: Updated po template.

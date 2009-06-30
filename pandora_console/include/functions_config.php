@@ -103,6 +103,7 @@ function update_config () {
 	update_config_value ('round_corner', (bool) get_parameter ('round_corner', $config["round_corner"]));
 	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
 	update_config_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
+	update_config_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 }
 
 /**
@@ -242,11 +243,15 @@ function process_config () {
 	}
 	
 	if (!isset ($config['fontpath'])) {
-		update_config_value ( 'fontpath', $config['homedir'].'/reporting/FreeSans.ttf');
+		update_config_value ( 'fontpath', $config['homedir'].'/include/FreeSans.ttf');
 	}
 
 	if (!isset ($config['style'])) {
 		update_config_value ( 'style', 'pandora');
+	}
+
+	if (!isset ($config['flash_charts'])) {
+		update_config_value ( 'flash_charts', true);
 	}
 			
 	/* Finally, check if any value was overwritten in a form */

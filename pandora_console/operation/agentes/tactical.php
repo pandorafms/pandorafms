@@ -61,7 +61,7 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$img = "reporting/fgraph.php?tipo=progress&height=20&width=140&mode=0&percent=";
+$img = "include/fgraph.php?tipo=progress&height=20&width=140&mode=0&percent=";
 
 $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Monitor health').'</b>';
@@ -188,7 +188,7 @@ foreach ($serverinfo as $server) {
 		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
-	$data[2] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
+	$data[2] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
 		true, array ("title" => $server["lag_txt"]));
 	
 	$data[3] = $server["lag_txt"];

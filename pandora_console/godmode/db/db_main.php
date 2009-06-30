@@ -16,6 +16,9 @@
 
 // Load global vars
 require_once ("include/config.php");
+if ($config['flash_charts']) {
+	require_once ("include/fgraph.php");
+}
 
 check_login ();
 
@@ -44,8 +47,12 @@ echo '<h2>'.__('Database maintenance').' &raquo; '.__('Current database maintena
 <tr><td>
 <div align="justify">
 '.__('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora').'
-</div><br />
-<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1&height=250&width=490">
-</td></tr>
+</div><br />';
+if ($config['flash_charts']) {
+	echo grafico_db_agentes_purge ($id_agente, $width, $height);
+} else {
+	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id=-1&height=250&width=490">';
+}
+echo '</td></tr>
 </table>';
 ?>

@@ -16,6 +16,9 @@
 
 // Login check
 require_once ("include/config.php");
+if ($config['flash_charts']) {
+	require_once ('include/fgraph.php');
+}
 
 check_login ();
 
@@ -249,7 +252,12 @@ if (($render == 1) && (isset($modules))) {
 	echo "<h3>".__('Combined image render')."</h3>";
 	echo "<table class='databox'>";
 	echo "<tr><td>";
-	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";
+	if ($config['flash_charts']) {
+		echo graphic_combined_module (split (',', $modules), split (',', $weights), $period, $width, $height,
+				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked);
+	} else {
+		echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";
+	}
 	echo "</td></tr></table>";
 
 }

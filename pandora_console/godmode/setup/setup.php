@@ -114,6 +114,10 @@ $table->data[18][0] = __('Use agent access graph');
 $table->data[18][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
 $table->data[18][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 
+$table->data[19][0] = __('Flash charts');
+$table->data[19][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';
+$table->data[19][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $config["flash_charts"], true);
+
 echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
 print_table ($table);

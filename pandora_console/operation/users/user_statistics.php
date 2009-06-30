@@ -18,10 +18,15 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/fgraph.php");
 
 check_login ();
 
 echo "<h2>".__('Users defined in Pandora')." &raquo; ".__('User activity statistics')."</h2>";
 
-print_image ("reporting/fgraph.php?tipo=user_activity", false, array ("border" => 0));
+if ($config['flash_charts']) {
+	echo graphic_user_activity ();
+} else {
+	print_image ("include/fgraph.php?tipo=user_activity", false, array ("border" => 0));
+}
 ?>

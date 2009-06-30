@@ -15,6 +15,9 @@
 
 
 require_once ("include/config.php");
+if ($config['flash_charts']) {
+	require_once ("include/fgraph.php");
+}
 
 check_login ();
 
@@ -52,7 +55,11 @@ echo '<br /><noscript><input name="uptbutton" type="submit" class="sub" value="'
 echo '</form></div>';
 
 echo '<div style="width:300px; height:140px; float:left;">';
-echo '<img src="reporting/fgraph.php?tipo=user_activity&width=300&height=140" />';
+if ($config['flash_charts']) {
+	echo graphic_user_activity (300, 140);
+} else {
+	echo '<img src="include/fgraph.php?tipo=user_activity&width=300&height=140" />';
+}
 echo '</div>';
 
 $filter = '';

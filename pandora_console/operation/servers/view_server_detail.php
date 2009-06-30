@@ -126,7 +126,7 @@ foreach ($recon_tasks as $task) {
 	if ($task["status"] <= 0 || $task["status"] > 100) {
 		$data[8] = "-";
 	} else {
-		$data[8] = print_image ("reporting/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
+		$data[8] = print_image ("include/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
 	}
 	
 	$data[9] = print_timestamp ($task["utimestamp"], true);

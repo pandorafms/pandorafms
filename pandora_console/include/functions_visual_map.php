@@ -152,7 +152,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo $layout_data['label'];
 				echo "<br>";
 
-				echo "<img src='".$config["homeurl"]."/reporting/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
+				echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
 
 				echo '</div>';
 				break;
@@ -166,7 +166,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 					}
 				}
-				print_image ("reporting/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+				print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 				echo "</a>";
 				echo "</div>";
 			}

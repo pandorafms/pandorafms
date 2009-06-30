@@ -17,6 +17,9 @@
 
 // Load global vars
 require("include/config.php");
+if ($config['flash_charts']) {
+	require('include/fgraph.php');
+}
 
 check_login ();
 
@@ -30,10 +33,14 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 //id_agent = -1: None selected; id_agent = 0: All
 $id_agent = (int) get_parameter_post ("agent", -1);
 
-echo '<h2>'.__('Database maintenance').' &raquo; '.__('Database purge').'</h2>
-	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
-	<br /><br />
-	<h3>'.__('Get data from agent').'</h3>';
+echo '<h2>'.__('Database maintenance').' &raquo; '.__('Database purge').'</h2>';
+if ($config['flash_charts']) {
+	echo grafico_db_agentes_purge ($id_agent, $width, $height);
+} else {
+	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />';
+}
+echo '<br /><br />';
+echo '<h3>'.__('Get data from agent').'</h3>';
 
 // All data (now)
 $time["all"] = get_system_time ();

@@ -16,6 +16,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/fgraph.php");
 
 check_login ();
 
@@ -27,15 +28,35 @@ if (! give_acl ($config['id_user'], 0, "IR") == 1) {
 echo "<h2>".__('Incident management')." &raquo; ".__('Statistics')."</h2>";
 
 echo '<table width="90%">
-	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>
-	<img src="reporting/fgraph.php?tipo=estado_incidente" border="0"></td>
-	<td valign="top"><h3>'.__('Incidents by priority').'</h3>
-	<img src="reporting/fgraph.php?tipo=prioridad_incidente" border="0"></td></tr>
-	<tr><td><h3>'.__('Incidents by group').'</h3>
-	<img src="reporting/fgraph.php?tipo=group_incident" border="0"></td>
-	<td><h3>'.__('Incidents by user').'</h3>
-	<img src="reporting/fgraph.php?tipo=user_incident" border="0"></td></tr>
-	<tr><td><h3>'.__('Incidents by source').'</h3>
-	<img src="reporting/fgraph.php?tipo=source_incident" border="0"></td></tr>
-	</table>';
+	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>';
+if ($config['flash_charts']) {
+	echo graph_incidents_status ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=estado_incidente" border="0"></td>';
+}
+echo '<td valign="top"><h3>'.__('Incidents by priority').'</h3>';
+if ($config['flash_charts']) {
+	echo grafico_incidente_prioridad ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=prioridad_incidente" border="0"></td></tr>';
+}
+echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
+if ($config['flash_charts']) {
+	echo grafico_incidente_prioridad ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=group_incident" border="0"></td>';
+}
+echo '<td><h3>'.__('Incidents by user').'</h3>';
+if ($config['flash_charts']) {
+	echo grafico_incidente_prioridad ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=user_incident" border="0"></td></tr>';
+}
+echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
+if ($config['flash_charts']) {
+	echo grafico_incidente_prioridad ();
+} else {
+	echo '<img src="include/fgraph.php?tipo=source_incident" border="0"></td></tr>';
+}
+echo '</table>';
 ?>

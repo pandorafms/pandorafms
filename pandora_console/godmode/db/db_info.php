@@ -17,6 +17,9 @@
 
 // Load global vars
 require_once ("include/config.php");
+if ($config['flash_charts']) {
+	require('include/fgraph.php');
+}
 
 check_login ();
 	
@@ -42,11 +45,19 @@ echo '<div id="db_info_graph">';
 echo '<table border=0>';
 echo '<tr><td>';
 echo '<h3>'.__('Modules per agent').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=db_agente_modulo&width=600&height=200"><br />';
+if ($config['flash_charts']) {
+	echo graph_db_agentes_modulos ($width, $height);
+} else {
+	echo '<img src="include/fgraph.php?tipo=db_agente_modulo&width=600&height=200"><br />';
+}
 echo '</td></tr><tr><td><br /></tr></td>';
 echo '<tr><td>';
 echo '<h3>'.__('Packets per agent').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=200"><br />';
+if ($config['flash_charts']) {
+	echo grafico_db_agentes_paquetes ($width, $height);
+} else {
+	echo '<img src="include/fgraph.php?tipo=db_agente_paquetes&width=600&height=200"><br />';
+}
 echo '</table>';
 echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;">'.__('Press here to get database information as text').'</a></div>';
 echo '<div id="db_info_data" style="display:none">';

@@ -17,6 +17,9 @@
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_events.php"); //Event processing functions
+if ($config['flash_charts']) {
+	require_once ("include/fgraph.php");
+}
 
 check_login ();
 
@@ -307,7 +310,11 @@ echo '</a>';
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';
-print_image ("reporting/fgraph.php?tipo=group_events&width=220&height=180&url=".rawurlencode ($sql_post), false, array ("border" => 0));
+if ($config['flash_charts']) {
+	echo grafico_eventos_grupo (220, 180, rawurlencode ($sql_post));
+} else {
+	print_image ("include/fgraph.php?tipo=group_events&width=220&height=180&url=".rawurlencode ($sql_post), false, array ("border" => 0));
+}
 echo '</div>';
 echo '<div id="steps_clean">&nbsp;</div>';
 echo '</div>';

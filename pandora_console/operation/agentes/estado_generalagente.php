@@ -17,6 +17,10 @@
 
 // Load global vars
 require_once ("include/config.php");
+if ($config['flash_charts']) {
+	require_once ("include/fgraph.php");
+}
+
 check_login ();
 
 $id_agente = get_parameter_get ("id_agente", -1);
@@ -35,21 +39,27 @@ if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	return;
 }
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Agent general information')."</h2>";
+echo "<h2>".__('Pandora Agents')." &raquo; ".__('Agent general information')."</h2>";
 
 // Blank space below title
-echo '<div style="height: 10px">&nbsp;</div>';
-
+echo '<div style="height: 10px">&nbsp;</div>';	
+	
 //Floating div
 echo '<div style="float:right; width:320px; padding-top:11px;">';
-if ($config["agentaccess"] == 1){
-	echo '<b>'.__('Agent access rate (24h)').'</b><br />';
-	echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&height=90&width=290" />';
+echo '<b>'.__('Agent access rate (24h)').'</b><br />';
+if ($config['flash_charts']) {
+	echo graphic_agentaccess ($id_agente, 280, 110, 86400);
+} else {
+	echo '<img border="1" src="include/fgraph.php?id='.$id_agente.'&tipo=agentaccess&height=90&width=290" />';
 }
-	
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br />';
-echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';
+if ($config['flash_charts']) {
+	echo graphic_agentevents ($id_agente, 290, 60, 86400);
+	echo graph_event_module (290, 120, $id_agente);
+} else {
+	echo '<img border="1" src="include/fgraph.php?tipo=event_module&width=290&height=180&id_agent='.$id_agente.'" />';
+}
 echo '</div>';
 	
 echo '<div width="450px">';
@@ -123,7 +133,7 @@ if ($max > 0) {
 }
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-echo '<td class="datos f9" colspan="2"><img src="reporting/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';
+echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';
 
 //End of table
 echo '</table></div>';

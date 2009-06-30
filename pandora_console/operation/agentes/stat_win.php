@@ -16,7 +16,7 @@
 
 
 // Global & session management
-require_once ('../include/config.php');
+require_once ('../../include/config.php');
 if (!isset ($config["auth"])) {
 	require_once ($config["homedir"]."/include/auth/mysql.php");
 } else {
@@ -28,8 +28,12 @@ if (! isset($_SESSION["id_user"])) {
 	session_write_close();
 }
 
-require_once ('../include/functions.php');
-require_once ('../include/functions_db.php');
+require_once ($config["homedir"] . '/include/functions.php');
+require_once ($config["homedir"] . '/include/functions_db.php');
+
+if ($config['flash_charts']) {
+	require_once ($config["homedir"] . '/include/fgraph.php');
+}
 
 check_login ();
 
@@ -45,11 +49,11 @@ if ($refresh > 0) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Pandora FMS Graph</title>
-<link rel="stylesheet" href="../include/styles/pandora_minimal.css" type="text/css" />
-<script type='text/javaScript' src='../include/javascript/calendar.js'></script>
-<script type='text/javascript' src='../include/javascript/x_core.js'></script>
-<script type='text/javascript' src='../include/javascript/x_event.js'></script>
-<script type='text/javascript' src='../include/javascript/x_slide.js'></script>
+<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
+<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
+<script type='text/javascript' src='../../include/javascript/x_core.js'></script>
+<script type='text/javascript' src='../../include/javascript/x_event.js'></script>
+<script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
 <script type='text/javascript'><!--
 var defOffset = 2;
 var defSlideTime = 220;
@@ -125,22 +129,37 @@ if ($zoom > 1) {
 
 $utime = get_system_time ();
 $current = date("Y-m-d", $utime);
-$image = "fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only;
 
-if ($start_date != $current){
-	$image .= "&date=".$utime;
-	print_image ($image, false, array ("border" => 0));
+if ($config['flash_charts']) {
+	switch ($graph_type) {
+		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
+						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+						break;
+		case 'boolean': echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
+						                             $label, $unit_name, $draw_alerts, 1, $pure, $date);
+						break;
+		case 'string': 	echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
+						                            $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+						break;
+		default: 	echo fs_error_image ('../images');
+	}
 } else {
+	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only;
+
+	if ($start_date != $current){
+		$image .= "&date=".$utime;
+	}
+
 	print_image ($image, false, array ("border" => 0));
-	
-	echo '<table width="450" cellspacing="1" cellpadding="1" class="databox" style="margin-left: 20px">';
-	echo '<tr><td><b>'.__('Max. Value').'</b>: '.format_for_graph (get_agentmodule_data_max ($id, $period));
-	echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_data_average ($id, $period));
-	echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period));
-	echo '</td></tr></table>';
 }
 
-echo '<div id="divmenu" class="menu"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+echo '<table width="450" cellspacing="1" cellpadding="1" class="databox" style="margin-left: 20px">';
+echo '<tr><td><b>'.__('Max. Value').'</b>: '.format_for_graph (get_agentmodule_data_max ($id, $period));
+echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_data_average ($id, $period));
+echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period));
+echo '</td></tr></table>';
+
+echo '<div id="divmenu" class="menu" style="z-index:2;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
 echo '<form method="get" action="stat_win.php">';
 print_input_hidden ("id", $id);
 print_input_hidden ("label", $label);
@@ -161,7 +180,7 @@ print_checkbox ("avg_only", 1, (bool) $avg_only);
 echo '<tr><td>'.__('Begin date').'</td><td>';
 
 print_input_text ("start_date", substr ($start_date, 0, 10),'', 10);
-print_image ("../images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+print_image ("../../images/calendar_view_day.png", false, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
 
 echo '</td></tr><tr><td>'.__('Zoom factor').'</td>';
 echo '<td>';
@@ -206,3 +225,4 @@ echo '</td><td>';
 print_submit_button ('GO', "submit", false, 'class="sub next"');
 
 echo '</td></tr></table></form></div></body></html>';
+?>

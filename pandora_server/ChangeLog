@@ -1,5 +1,9 @@
 2009-06-30  Manuel Arostegui <marostegui@artica.es>
 
+	* pandora_server.spec: Now it builds packages for SLE9.
+
+2009-06-30  Manuel Arostegui <marostegui@artica.es>
+
 	* pandora_server.spec: Rewriten to fit 3.0 requirements.
 	Succesfully built packages for: CentOS5, Fedora 11, RHEL5.Still
 	needs some tests in SuSe.

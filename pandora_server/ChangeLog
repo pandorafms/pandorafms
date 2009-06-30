@@ -1,3 +1,9 @@
+2009-06-30  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server.spec: Rewriten to fit 3.0 requirements.
+	Succesfully built packages for: CentOS5, Fedora 11, RHEL5.Still
+	needs some tests in SuSe.
+
 2009-06-23  Sancho Lerena <slerena@artica.es>
 	
 	* lib/pandoraFMS/DataServer.pm, Config.pm: Fixes bug #2811605. This

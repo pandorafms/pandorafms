@@ -100,6 +100,7 @@ function update_config () {
 	update_config_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd', $config["loginhash_pwd"]));
 	update_config_value ('https', (bool) get_parameter ('https', $config["https"]));
 	update_config_value ('compact_header', (bool) get_parameter ('compact_header', $config["compact_header"]));
+	update_config_value ('fontpath', (string) get_parameter ('fontpath', $config["fontpath"]));
 	update_config_value ('round_corner', (bool) get_parameter ('round_corner', $config["round_corner"]));
 	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
 	update_config_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));

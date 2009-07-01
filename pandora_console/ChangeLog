@@ -1,3 +1,13 @@
+2009-06-30  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	* translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* operation/agentes/estado_generalagente.php: Changed a string to
+	* reuse previous translation.
+
 2009-06-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Limit the number of agents in modules per agent

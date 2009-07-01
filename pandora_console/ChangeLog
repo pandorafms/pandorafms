@@ -1,3 +1,12 @@
+2009-07-01  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_config.php: Fixed setup problem for fontpath token.
+	
+	* godmode/setup/setup.php, setup_visuals.php: Moved some items to other
+	file (fontpath, flashgraph and agent graph options).
+	
+	* godmode/db/db_main.php: Bigger image.
+	
 2009-07-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_custom_graphs.php, include/fgraph.php,

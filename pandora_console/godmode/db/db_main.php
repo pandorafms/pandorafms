@@ -49,9 +49,11 @@ echo '<h2>'.__('Database maintenance').' &raquo; '.__('Current database maintena
 '.__('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora').'
 </div><br />';
 if ($config['flash_charts']) {
+	$width=600;
+	$height=400;
 	echo grafico_db_agentes_purge ($id_agente, $width, $height);
 } else {
-	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id=-1&height=250&width=490">';
+	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id=-1&height=400&width=600">';
 }
 echo '</td></tr>
 </table>';

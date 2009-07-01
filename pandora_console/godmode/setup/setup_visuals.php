@@ -76,6 +76,19 @@ $iconsets["faces"] = __('Faces');
 $iconsets["color_text"] = __('Colors and text');
 $table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
 
+
+$table->data[10][0] = __('Font path');
+$table->data[10][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
+
+$table->data[11][0] = __('Use agent access graph');
+$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
+$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
+
+$table->data[12][0] = __('Flash charts');
+$table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('flash_charts', 0, '', $config["flash_charts"], true);
+
+
 echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
 print_table ($table);

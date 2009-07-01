@@ -333,49 +333,49 @@ echo "<input type='text' name='height' value='$height' size=6>";
 
 switch ($period) {
 	case 3600:
-		$period_label = __('1 hour');
+		$period_label = "1 ".__('hour');
 		break;
 	case 7200:
-		$period_label = __('2 hours');
+		$period_label = "2 ".__('hours');
 		break;
 	case 10800:
-		$period_label = __('3 hours');
+		$period_label = "3 ".__('hours');
 		break;
 	case 21600:
-		$period_label = __('6 hours');
+		$period_label = "6 ".__('hours');
 		break;
 	case 43200:
-		$period_label = __('12 hours');
+		$period_label = "12 ".__('hours');
 		break;
 	case 86400:
-		$period_label = __('1 day');
+		$period_label = "1 ".__('day');
 		break;
 	case 172800:
-		$period_label = __('2 days');
+		$period_label = "2 ".__('days');
 		break;
 	case 345600:
-		$period_label = __('4 days');
+		$period_label = "4 ".__('days');
 		break;
 	case 604800:
 		$period_label = __('Last week');
 		break;
 	case 1296000:
-		$period_label = __('15 days');
+		$period_label = "15 ".__('days');
 		break;
 	case 2592000:
 		$period_label = __('Last month');
 		break;
 	case 5184000:
-		$period_label = __('2 months');
+		$period_label = "2 ".__('months');
 		break;
 	case 15552000:
-		$period_label = __('6 months');
+		$period_label = "6 ".__('months');
 		break;
 	case 31104000:
 		$period_label = __('1 year');
 		break;
 	default:
-		$period_label = __('1 day');
+		$period_label = "1 ".__('day');
 }
 
 
@@ -389,18 +389,18 @@ if ($period==0) {
 } else {
 	echo "<option value=$period>".$period_label."</option>";
 }
-echo "<option value=3600>".__('1 hour')."</option>";
-echo "<option value=7200>".__('2 hours')."</option>";
-echo "<option value=10800>".__('3 hours')."</option>";
-echo "<option value=21600>".__('6 hours')."</option>";
-echo "<option value=43200>".__('12 hours')."</option>";
+echo "<option value=3600>"."1 ".__('hour')."</option>";
+echo "<option value=7200>"."2 ".__('hours')."</option>";
+echo "<option value=10800>"."3 ".__('hours')."</option>";
+echo "<option value=21600>"."6 ".__('hours')."</option>";
+echo "<option value=43200>"."12 ".__('hours')."</option>";
 echo "<option value=86400>".__('Last day')."</option>";
-echo "<option value=172800>".__('2 days')."</option>";
+echo "<option value=172800>"."2 ".__('days')."</option>";
 echo "<option value=604800>".__('Last week')."</option>";
-echo "<option value=1296000>".__('15 days')."</option>";
+echo "<option value=1296000>"."15 ".__('15 days')."</option>";
 echo "<option value=2592000>".__('Last month')."</option>";
-echo "<option value=5184000>".__('2 months')."</option>";
-echo "<option value=15552000>".__('6 months')."</option>";
+echo "<option value=5184000>"."2 ".__('months')."</option>";
+echo "<option value=15552000>"."6 ".__('months')."</option>";
 echo "</select>";
 
 echo "<td class='datos'>";

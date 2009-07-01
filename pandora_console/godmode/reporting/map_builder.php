@@ -378,7 +378,7 @@ if (! $edit_layout && ! $id_layout) {
 		
 		/* Layout_data editor form */
 		$intervals = array ();
-		$intervals[3600] = __('hour');
+		$intervals[3600] = "1 ".__('hour');
 		$intervals[7200] = "2 ".__('hours');
 		$intervals[10800] = "3 ".__('hours');
 		$intervals[21600] = "6 ".__('hours');
@@ -386,10 +386,10 @@ if (! $edit_layout && ! $id_layout) {
 		$intervals[86400] = __('Last day');
 		$intervals[172800] = "2 ". __('days');
 		$intervals[1209600] = __('Last week');
-		$intervals[2419200] = __('15 days');
+		$intervals[2419200] = "15 ".__('days');
 		$intervals[4838400] = __('Last month');
-		$intervals[9676800] = __('Two months');
-		$intervals[29030400] = __('Six months');
+		$intervals[9676800] = "2 ".__('months');
+		$intervals[29030400] = "6 ".__('months');
 		
 		$agents = get_group_agents ($id_group);
 					

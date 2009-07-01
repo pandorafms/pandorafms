@@ -25,7 +25,7 @@ function get_chart_code ($chart, $width, $height, $swf) {
     $output .= '<script type="text/javascript">
     			<!--
         			$(document).ready(function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+        				var myChart = new FusionCharts("' . $config['homeurl'] . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 						myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");
@@ -174,11 +174,11 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
     $output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
-	$output .= '<script language="JavaScript" src="../../include/FusionCharts/FusionCharts.js"></script>';
+	$output .= '<script language="JavaScript" src="' . $config['homeurl'] . '/include/FusionCharts/FusionCharts.js"></script>';
     $output .= '<script type="text/javascript">
     			<!--
         			function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("../../include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+        				var myChart = new FusionCharts("' . $config['homeurl'] . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 						myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");
@@ -281,8 +281,10 @@ function clean_flash_string ($string) {
 }
 
 // Prints an error image
-function fs_error_image ($image_dir = 'images') {
-	return '<img border="0" src="' . $image_dir . '/image_problem.png" />';
+function fs_error_image () {
+	global $config;
+
+	return '<img border="0" src="' . $config['homeurl'] . '/images/image_problem.png" />';
 }
 
 ?>

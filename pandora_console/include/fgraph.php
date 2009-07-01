@@ -327,7 +327,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	
 	if ($all_data === false) {
 		if (! $graphic_type) {
-			return fs_error_image ('../images');
+			return fs_error_image ();
 		}
 		graphic_error ();
 	}
@@ -800,6 +800,9 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			GROUP BY id_agentmodule LIMIT %d', $id_agent, $max_items);
 	$events = get_db_all_rows_sql ($sql);
 	if ($events === false) {
+		if (! $graphic_type) {
+			return fs_error_image ();
+		}
 		graphic_error ();
 		return;
 	}

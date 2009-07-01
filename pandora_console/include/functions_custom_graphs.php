@@ -14,6 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
 if ($config['flash_charts']) {
 	require_once ('include/fgraph.php');
 }

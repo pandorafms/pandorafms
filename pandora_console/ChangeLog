@@ -1,3 +1,15 @@
+2009-06-01  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	* translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* godmode/reporting/map_builder.php,
+	* godmode/reporting/graph_builder.php: Updated translatable period
+	* strings to reduce its number and make them more compliant with the
+	* rest.
+
 2009-06-30  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

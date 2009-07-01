@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-01 08:49+0200\n"
-"PO-Revision-Date: 2009-07-01 08:49+0200\n"
+"POT-Creation-Date: 2009-07-01 12:20+0200\n"
+"PO-Revision-Date: 2009-07-01 12:21+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -419,6 +419,8 @@ msgid "minutes"
 msgstr "minutos"
 
 #: ../../general/header.php:88 ../../godmode/reporting/map_builder.php:381
+#: ../../godmode/reporting/graph_builder.php:336
+#: ../../godmode/reporting/graph_builder.php:392
 #: ../../include/functions_alerts.php:333
 #: ../../enterprise/godmode/agentes/inventory_manager.php:117
 msgid "hour"
@@ -1242,6 +1244,14 @@ msgstr "Arrastre un elemento aquí para borrarlo del mapa"
 #: ../../godmode/reporting/map_builder.php:383
 #: ../../godmode/reporting/map_builder.php:384
 #: ../../godmode/reporting/map_builder.php:385
+#: ../../godmode/reporting/graph_builder.php:339
+#: ../../godmode/reporting/graph_builder.php:342
+#: ../../godmode/reporting/graph_builder.php:345
+#: ../../godmode/reporting/graph_builder.php:348
+#: ../../godmode/reporting/graph_builder.php:393
+#: ../../godmode/reporting/graph_builder.php:394
+#: ../../godmode/reporting/graph_builder.php:395
+#: ../../godmode/reporting/graph_builder.php:396
 #: ../../godmode/reporting/reporting_builder.php:359
 #: ../../godmode/reporting/reporting_builder.php:360
 #: ../../godmode/reporting/reporting_builder.php:361
@@ -1266,8 +1276,14 @@ msgstr "horas"
 msgid "Last day"
 msgstr "Último día"
 
-#: ../../godmode/reporting/map_builder.php:387 ../../godmode/db/db_main.php:44
-#: ../../godmode/db/db_main.php:45 ../../include/functions.php:441
+#: ../../godmode/reporting/map_builder.php:387
+#: ../../godmode/reporting/map_builder.php:389
+#: ../../godmode/reporting/graph_builder.php:354
+#: ../../godmode/reporting/graph_builder.php:357
+#: ../../godmode/reporting/graph_builder.php:363
+#: ../../godmode/reporting/graph_builder.php:398
+#: ../../godmode/db/db_main.php:44 ../../godmode/db/db_main.php:45
+#: ../../include/functions.php:441
 #: ../../enterprise/godmode/agentes/inventory_manager.php:122
 #: ../../enterprise/godmode/agentes/inventory_manager.php:123
 #: ../../enterprise/godmode/agentes/inventory_manager.php:124
@@ -1282,12 +1298,6 @@ msgstr "días"
 msgid "Last week"
 msgstr "Última semana"
 
-#: ../../godmode/reporting/map_builder.php:389
-#: ../../godmode/reporting/graph_builder.php:363
-#: ../../godmode/reporting/graph_builder.php:400
-msgid "15 days"
-msgstr "15 días"
-
 #: ../../godmode/reporting/map_builder.php:390
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:401 ../../include/fgraph.php:255
@@ -1297,12 +1307,14 @@ msgid "Last month"
 msgstr "Último mes"
 
 #: ../../godmode/reporting/map_builder.php:391
-msgid "Two months"
-msgstr "Dos meses"
-
 #: ../../godmode/reporting/map_builder.php:392
-msgid "Six months"
-msgstr "Seis meses"
+#: ../../godmode/reporting/graph_builder.php:369
+#: ../../godmode/reporting/graph_builder.php:372
+#: ../../godmode/reporting/graph_builder.php:402
+#: ../../godmode/reporting/graph_builder.php:403
+#: ../../include/functions.php:444 ../../include/functions.php:446
+msgid "months"
+msgstr "meses"
 
 #: ../../godmode/reporting/map_builder.php:397
 msgid "Map element editor"
@@ -1504,75 +1516,20 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
-#: ../../godmode/reporting/graph_builder.php:336
-#: ../../godmode/reporting/graph_builder.php:392
-#: ../../godmode/reporting/reporting_builder.php:358
-#: ../../include/functions_custom_graphs.php:107
-#: ../../enterprise/dashboard/widgets/events_list.php:30
-#: ../../enterprise/dashboard/widgets/single_graph.php:32
-msgid "1 hour"
-msgstr "1 hora"
-
-#: ../../godmode/reporting/graph_builder.php:339
-#: ../../godmode/reporting/graph_builder.php:393
-#: ../../enterprise/dashboard/widgets/events_list.php:31
-#: ../../enterprise/dashboard/widgets/single_graph.php:33
-msgid "2 hours"
-msgstr "2 horas"
-
-#: ../../godmode/reporting/graph_builder.php:342
-#: ../../godmode/reporting/graph_builder.php:394
-msgid "3 hours"
-msgstr "3 horas"
-
-#: ../../godmode/reporting/graph_builder.php:345
-#: ../../godmode/reporting/graph_builder.php:395
-msgid "6 hours"
-msgstr "6 horas"
-
-#: ../../godmode/reporting/graph_builder.php:348
-#: ../../godmode/reporting/graph_builder.php:396
-#: ../../enterprise/dashboard/widgets/events_list.php:33
-#: ../../enterprise/dashboard/widgets/single_graph.php:35
-msgid "12 hours"
-msgstr "12 horas"
-
 #: ../../godmode/reporting/graph_builder.php:351
 #: ../../godmode/reporting/graph_builder.php:378
-#: ../../godmode/reporting/reporting_builder.php:363
-#: ../../include/functions_custom_graphs.php:112
-#: ../../enterprise/dashboard/widgets/events_list.php:34
-#: ../../enterprise/dashboard/widgets/single_graph.php:36
-msgid "1 day"
-msgstr "1 día"
-
-#: ../../godmode/reporting/graph_builder.php:354
-#: ../../godmode/reporting/graph_builder.php:398
-#: ../../godmode/reporting/reporting_builder.php:364
-#: ../../include/functions_custom_graphs.php:113
-#: ../../enterprise/dashboard/widgets/events_list.php:35
-msgid "2 days"
-msgstr "2 días"
-
-#: ../../godmode/reporting/graph_builder.php:357
-msgid "4 days"
-msgstr "días"
-
-#: ../../godmode/reporting/graph_builder.php:369
-#: ../../godmode/reporting/graph_builder.php:402
-msgid "2 months"
-msgstr "2 meses"
-
-#: ../../godmode/reporting/graph_builder.php:372
-#: ../../godmode/reporting/graph_builder.php:403
-#: ../../godmode/reporting/reporting_builder.php:369
-#: ../../include/functions_custom_graphs.php:116
-msgid "6 months"
-msgstr "6 meses"
+#: ../../include/functions_alerts.php:337
+#: ../../enterprise/godmode/agentes/inventory_manager.php:121
+msgid "day"
+msgstr "día"
 
 #: ../../godmode/reporting/graph_builder.php:375
 msgid "1 year"
 msgstr "1 año"
+
+#: ../../godmode/reporting/graph_builder.php:400
+msgid "15 days"
+msgstr "15 días"
 
 #: ../../godmode/reporting/graph_builder.php:407 ../../operation/menu.php:114
 msgid "View events"
@@ -1756,6 +1713,26 @@ msgstr "Añadir elemento al informe"
 msgid "Reporting type"
 msgstr "Tipo de informe"
 
+#: ../../godmode/reporting/reporting_builder.php:358
+#: ../../include/functions_custom_graphs.php:107
+#: ../../enterprise/dashboard/widgets/events_list.php:30
+#: ../../enterprise/dashboard/widgets/single_graph.php:32
+msgid "1 hour"
+msgstr "1 hora"
+
+#: ../../godmode/reporting/reporting_builder.php:363
+#: ../../include/functions_custom_graphs.php:112
+#: ../../enterprise/dashboard/widgets/events_list.php:34
+#: ../../enterprise/dashboard/widgets/single_graph.php:36
+msgid "1 day"
+msgstr "1 día"
+
+#: ../../godmode/reporting/reporting_builder.php:364
+#: ../../include/functions_custom_graphs.php:113
+#: ../../enterprise/dashboard/widgets/events_list.php:35
+msgid "2 days"
+msgstr "2 días"
+
 #: ../../godmode/reporting/reporting_builder.php:365
 #: ../../include/functions_custom_graphs.php:114
 msgid "1 week"
@@ -1773,6 +1750,11 @@ msgstr "1 mes"
 #: ../../godmode/reporting/reporting_builder.php:368
 msgid "3 months"
 msgstr "3 meses"
+
+#: ../../godmode/reporting/reporting_builder.php:369
+#: ../../include/functions_custom_graphs.php:116
+msgid "6 months"
+msgstr "6 meses"
 
 #: ../../godmode/reporting/reporting_builder.php:384
 msgid "Custom graph name"
@@ -5120,11 +5102,6 @@ msgstr "Igual a"
 msgid "Not equal to"
 msgstr "Diferente a"
 
-#: ../../include/functions_alerts.php:337
-#: ../../enterprise/godmode/agentes/inventory_manager.php:121
-msgid "day"
-msgstr "día"
-
 #: ../../include/functions_alerts.php:338
 msgid "week"
 msgstr "semana"
@@ -5157,10 +5134,6 @@ msgstr ","
 #: ../../include/functions.php:419
 msgid "Now"
 msgstr "Ahora"
-
-#: ../../include/functions.php:444 ../../include/functions.php:446
-msgid "months"
-msgstr "meses"
 
 #: ../../include/functions.php:554 ../../include/functions.php:803
 #: ../../include/functions.php:823 ../../include/fgraph.php:770
@@ -6380,10 +6353,20 @@ msgstr "Salud global"
 msgid "Latest events list"
 msgstr "Lista de los últimos eventos"
 
+#: ../../enterprise/dashboard/widgets/events_list.php:31
+#: ../../enterprise/dashboard/widgets/single_graph.php:33
+msgid "2 hours"
+msgstr "2 horas"
+
 #: ../../enterprise/dashboard/widgets/events_list.php:32
 #: ../../enterprise/dashboard/widgets/single_graph.php:34
 msgid "5 hours"
 msgstr "5 horas"
+
+#: ../../enterprise/dashboard/widgets/events_list.php:33
+#: ../../enterprise/dashboard/widgets/single_graph.php:35
+msgid "12 hours"
+msgstr "12 horas"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:37
 msgid "Limit"

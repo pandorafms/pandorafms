@@ -1,5 +1,9 @@
 2009-07-02  Manuel Arostegui <marostegui@artica.es>
 
+	* linux/pandora_agent.spec: Fixed a typo.
+
+2009-07-02  Manuel Arostegui <marostegui@artica.es>
+
 	* linux/pandora_agent.spec: RPM spec file for 3.0 version.
 	This spec file builds packages for: Centos5,Fedora11,RHEL5,
 	SLE9, SLE10, OpenSuse 10.3, OpenSuse 11.0.

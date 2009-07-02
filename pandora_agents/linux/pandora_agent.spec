@@ -1,4 +1,4 @@
-#ndora Agents
+#Pandora Linux Agent
 #
 %define name        PandoraFMS_Agent
 %define version	    3.0.0

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-06-25 11:02+0200\n"
-"PO-Revision-Date: 2009-06-25 11:03+0200\n"
+"PO-Revision-Date: 2009-07-06 10:22+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -2818,7 +2818,7 @@ msgstr "Agentes disponibles"
 
 #: ../../godmode/agentes/planned_downtime.php:209
 msgid "Filter by group"
-msgstr "Incidentes por grupo"
+msgstr "Filtrar por grupo"
 
 #: ../../godmode/agentes/planned_downtime.php:221
 msgid "Agents planned for this downtime"
@@ -2895,7 +2895,7 @@ msgstr "Crear alerta"
 
 #: ../../godmode/agentes/alert_manager.php:44
 msgid "Create a new combined alert"
-msgstr "Crear incidente"
+msgstr "Crear una alerta combinada nueva"
 
 #: ../../godmode/agentes/alert_manager.php:59
 msgid "Simple alerts"
@@ -2957,7 +2957,7 @@ msgstr "Este agente no tiene ningún módulo definido"
 #: ../../godmode/agentes/alert_manager.php:129
 #: ../../operation/agentes/estado_alertas.php:87
 msgid "Combined alerts"
-msgstr "Alertas asignadas"
+msgstr "Alertas combinadas"
 
 #: ../../godmode/agentes/alert_manager.php:141
 msgid "Combined"
@@ -3003,8 +3003,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:328
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:331
 msgid "Successfully removed module data"
@@ -3358,7 +3360,8 @@ msgid "Time threshold"
 msgstr "Umbral de tiempo"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -3694,7 +3697,10 @@ msgid ""
 "This user has separated permissions to view data in his group agents, create "
 "incidents belong to his groups, add notes in another incidents, create "
 "personal assignments or reviews and other tasks, on different profiles"
-msgstr "usuario hacia hacia grupos"
+msgstr ""
+"Este usuario tiene permisos separados para ver datos en su grupo de agentes, "
+"crear incidentes que pertenezcan a sus grupos, añadir notas en otros "
+"incidentes y crear tareas personales en diferentes perfiles"
 
 #: ../../godmode/users/configure_user.php:220
 msgid "Group(s) available"
@@ -5522,15 +5528,15 @@ msgstr "confirmación"
 
 #: ../../operation/users/user.php:102
 msgid "System incidents reading"
-msgstr "Incidentes activos"
+msgstr "Lectura de incidentes del sistema"
 
 #: ../../operation/users/user.php:105
 msgid "System incidents writing"
-msgstr "Incidentes activos, con comentarios"
+msgstr "Escritura de incidentes del sistema"
 
 #: ../../operation/users/user.php:108
 msgid "System incidents management"
-msgstr "Gestión de incidentes"
+msgstr "Gestión de incidentes del sistema"
 
 #: ../../operation/users/user.php:111
 msgid "Agents reading"
@@ -5621,4 +5627,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

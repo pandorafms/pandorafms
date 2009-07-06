@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-01 12:21+0200\n"
+"POT-Creation-Date: 2009-07-06 14:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -617,7 +617,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:98
 #: ../../godmode/snmpconsole/snmp_alert.php:243
 #: ../../godmode/snmpconsole/snmp_alert.php:333
-#: ../../godmode/setup/setup.php:125 ../../godmode/setup/setup_visuals.php:83
+#: ../../godmode/setup/setup.php:114 ../../godmode/setup/setup_visuals.php:96
 #: ../../godmode/setup/links.php:106 ../../godmode/setup/news.php:113
 #: ../../godmode/profiles/profile_list.php:202
 #: ../../godmode/agentes/agent_template.php:148
@@ -1226,10 +1226,10 @@ msgstr ""
 #: ../../include/functions_alerts.php:334
 #: ../../include/functions_alerts.php:335
 #: ../../include/functions_alerts.php:336 ../../include/functions.php:438
-#: ../../include/functions_custom_graphs.php:108
 #: ../../include/functions_custom_graphs.php:109
 #: ../../include/functions_custom_graphs.php:110
 #: ../../include/functions_custom_graphs.php:111
+#: ../../include/functions_custom_graphs.php:112
 #: ../../enterprise/godmode/agentes/inventory_manager.php:118
 #: ../../enterprise/godmode/agentes/inventory_manager.php:119
 #: ../../enterprise/godmode/agentes/inventory_manager.php:120
@@ -1238,8 +1238,8 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:386
 #: ../../godmode/reporting/graph_builder.php:397 ../../include/fgraph.php:249
-#: ../../include/fgraph.php:410 ../../include/fgraph.php:1204
-#: ../../include/fgraph.php:1374
+#: ../../include/fgraph.php:410 ../../include/fgraph.php:1207
+#: ../../include/fgraph.php:1377
 msgid "Last day"
 msgstr ""
 
@@ -1260,16 +1260,16 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:388
 #: ../../godmode/reporting/graph_builder.php:360
 #: ../../godmode/reporting/graph_builder.php:399 ../../include/fgraph.php:252
-#: ../../include/fgraph.php:413 ../../include/fgraph.php:1207
-#: ../../include/fgraph.php:1377
+#: ../../include/fgraph.php:413 ../../include/fgraph.php:1210
+#: ../../include/fgraph.php:1380
 msgid "Last week"
 msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:390
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:401 ../../include/fgraph.php:255
-#: ../../include/fgraph.php:416 ../../include/fgraph.php:1210
-#: ../../include/fgraph.php:1380
+#: ../../include/fgraph.php:416 ../../include/fgraph.php:1213
+#: ../../include/fgraph.php:1383
 msgid "Last month"
 msgstr ""
 
@@ -1369,7 +1369,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_list.php:341
 #: ../../godmode/alerts/configure_alert_compound.php:451
 #: ../../include/fgraph.php:280 ../../include/fgraph.php:434
-#: ../../include/fgraph.php:1228 ../../include/fgraph.php:1398
+#: ../../include/fgraph.php:1231 ../../include/fgraph.php:1401
 #: ../../enterprise/godmode/policies/policy_alerts.php:72
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:108
 #: ../../enterprise/godmode/agentes/inventory_manager.php:107
@@ -1390,7 +1390,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:356
 #: ../../godmode/reporting/reporting_builder.php:413
 #: ../../include/fgraph.php:281 ../../include/fgraph.php:435
-#: ../../include/fgraph.php:1229 ../../include/fgraph.php:1399
+#: ../../include/fgraph.php:1232 ../../include/fgraph.php:1402
 #: ../../enterprise/dashboard/widgets/custom_graph.php:27
 #: ../../enterprise/dashboard/widgets/single_graph.php:31
 #: ../../operation/reporting/graph_viewer.php:102
@@ -1462,8 +1462,9 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:114
 #: ../../godmode/servers/manage_recontask_form.php:107
 #: ../../godmode/setup/setup.php:93 ../../godmode/setup/setup.php:97
-#: ../../godmode/setup/setup.php:101 ../../godmode/setup/setup.php:114
-#: ../../godmode/setup/setup.php:118 ../../godmode/setup/setup_visuals.php:70
+#: ../../godmode/setup/setup.php:101 ../../godmode/setup/setup_visuals.php:70
+#: ../../godmode/setup/setup_visuals.php:84
+#: ../../godmode/setup/setup_visuals.php:88
 #: ../../include/functions_db.php:2554
 msgid "Yes"
 msgstr ""
@@ -1477,8 +1478,9 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask.php:114
 #: ../../godmode/servers/manage_recontask_form.php:107
 #: ../../godmode/setup/setup.php:94 ../../godmode/setup/setup.php:98
-#: ../../godmode/setup/setup.php:102 ../../godmode/setup/setup.php:115
-#: ../../godmode/setup/setup.php:119 ../../godmode/setup/setup_visuals.php:71
+#: ../../godmode/setup/setup.php:102 ../../godmode/setup/setup_visuals.php:71
+#: ../../godmode/setup/setup_visuals.php:85
+#: ../../godmode/setup/setup_visuals.php:89
 #: ../../include/functions_db.php:2556
 msgid "No"
 msgstr ""
@@ -1681,27 +1683,27 @@ msgid "Reporting type"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:358
-#: ../../include/functions_custom_graphs.php:107
+#: ../../include/functions_custom_graphs.php:108
 #: ../../enterprise/dashboard/widgets/events_list.php:30
 #: ../../enterprise/dashboard/widgets/single_graph.php:32
 msgid "1 hour"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:363
-#: ../../include/functions_custom_graphs.php:112
+#: ../../include/functions_custom_graphs.php:113
 #: ../../enterprise/dashboard/widgets/events_list.php:34
 #: ../../enterprise/dashboard/widgets/single_graph.php:36
 msgid "1 day"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:364
-#: ../../include/functions_custom_graphs.php:113
+#: ../../include/functions_custom_graphs.php:114
 #: ../../enterprise/dashboard/widgets/events_list.php:35
 msgid "2 days"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:365
-#: ../../include/functions_custom_graphs.php:114
+#: ../../include/functions_custom_graphs.php:115
 msgid "1 week"
 msgstr ""
 
@@ -1710,7 +1712,7 @@ msgid "2 weeks"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:367
-#: ../../include/functions_custom_graphs.php:115
+#: ../../include/functions_custom_graphs.php:116
 msgid "1 month"
 msgstr ""
 
@@ -1719,7 +1721,7 @@ msgid "3 months"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:369
-#: ../../include/functions_custom_graphs.php:116
+#: ../../include/functions_custom_graphs.php:117
 msgid "6 months"
 msgstr ""
 
@@ -2665,7 +2667,7 @@ msgid "Time source"
 msgstr ""
 
 #: ../../godmode/setup/setup.php:88 ../../include/functions_events.php:300
-#: ../../include/functions.php:789 ../../include/fgraph.php:814
+#: ../../include/functions.php:789 ../../include/fgraph.php:817
 #: ../../operation/events/events.php:50 ../../operation/events/events.php:109
 #: ../../operation/events/events.php:243 ../../operation/events/events.php:417
 #: ../../operation/events/events.php:448
@@ -2685,19 +2687,7 @@ msgid "Compact CSS and JS into header"
 msgstr ""
 
 #: ../../godmode/setup/setup.php:105
-msgid "Font path"
-msgstr ""
-
-#: ../../godmode/setup/setup.php:108
 msgid "Attachment store"
-msgstr ""
-
-#: ../../godmode/setup/setup.php:113
-msgid "Use agent access graph"
-msgstr ""
-
-#: ../../godmode/setup/setup.php:117
-msgid "Flash charts"
 msgstr ""
 
 #: ../../godmode/setup/file_manager.php:43
@@ -2820,6 +2810,18 @@ msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:76
 msgid "Colors and text"
+msgstr ""
+
+#: ../../godmode/setup/setup_visuals.php:80
+msgid "Font path"
+msgstr ""
+
+#: ../../godmode/setup/setup_visuals.php:83
+msgid "Use agent access graph"
+msgstr ""
+
+#: ../../godmode/setup/setup_visuals.php:87
+msgid "Flash charts"
 msgstr ""
 
 #: ../../godmode/setup/links.php:34
@@ -4985,7 +4987,7 @@ msgstr ""
 msgid "Alert fired"
 msgstr ""
 
-#: ../../include/functions_events.php:370 ../../include/fgraph.php:868
+#: ../../include/functions_events.php:370 ../../include/fgraph.php:871
 msgid "SYSTEM"
 msgstr ""
 
@@ -5303,7 +5305,7 @@ msgstr ""
 msgid "Alert description"
 msgstr ""
 
-#: ../../include/functions_reporting.php:328 ../../include/fgraph.php:1543
+#: ../../include/functions_reporting.php:328 ../../include/fgraph.php:1546
 #: ../../enterprise/include/functions_reporting_pdf.php:272
 #: ../../operation/agentes/estado_grupo.php:175
 #: ../../operation/agentes/ver_agente.php:126
@@ -5467,12 +5469,12 @@ msgid "Successfully copied"
 msgstr ""
 
 #: ../../include/fgraph.php:246 ../../include/fgraph.php:407
-#: ../../include/fgraph.php:1201 ../../include/fgraph.php:1371
+#: ../../include/fgraph.php:1204 ../../include/fgraph.php:1374
 msgid "Last hour"
 msgstr ""
 
 #: ../../include/fgraph.php:258 ../../include/fgraph.php:419
-#: ../../include/fgraph.php:1213 ../../include/fgraph.php:1383
+#: ../../include/fgraph.php:1216 ../../include/fgraph.php:1386
 #, php-format
 msgid "Last %s days"
 msgstr ""
@@ -5493,42 +5495,42 @@ msgstr ""
 msgid "Invalid"
 msgstr ""
 
-#: ../../include/fgraph.php:863 ../../include/fgraph.php:864
-#: ../../include/fgraph.php:865
+#: ../../include/fgraph.php:866 ../../include/fgraph.php:867
+#: ../../include/fgraph.php:868
 msgid "Other"
 msgstr ""
 
-#: ../../include/fgraph.php:1019 ../../include/fgraph.php:1025
+#: ../../include/fgraph.php:1022 ../../include/fgraph.php:1028
 msgid "Today"
 msgstr ""
 
-#: ../../include/fgraph.php:1020 ../../include/fgraph.php:1026
+#: ../../include/fgraph.php:1023 ../../include/fgraph.php:1029
 msgid "Week"
 msgstr ""
 
-#: ../../include/fgraph.php:1021 ../../include/fgraph.php:1027
+#: ../../include/fgraph.php:1024 ../../include/fgraph.php:1030
 msgid "Month"
 msgstr ""
 
-#: ../../include/fgraph.php:1022 ../../include/fgraph.php:1028
-#: ../../include/fgraph.php:1031
+#: ../../include/fgraph.php:1025 ../../include/fgraph.php:1031
+#: ../../include/fgraph.php:1034
 msgid "Months"
 msgstr ""
 
-#: ../../include/fgraph.php:1023 ../../include/fgraph.php:1029
-#: ../../include/fgraph.php:1031
+#: ../../include/fgraph.php:1026 ../../include/fgraph.php:1032
+#: ../../include/fgraph.php:1034
 msgid "Older"
 msgstr ""
 
-#: ../../include/fgraph.php:1544
+#: ../../include/fgraph.php:1547
 msgid "Alerts not fired"
 msgstr ""
 
-#: ../../include/fgraph.php:1550
+#: ../../include/fgraph.php:1553
 msgid "Monitors OK"
 msgstr ""
 
-#: ../../include/fgraph.php:1551
+#: ../../include/fgraph.php:1554
 msgid "Monitors BAD"
 msgstr ""
 

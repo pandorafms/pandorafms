@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-07-01 12:20+0200\n"
-"PO-Revision-Date: 2009-07-06 15:03+0200\n"
+"PO-Revision-Date: 2009-07-08 15:29+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -6271,15 +6271,15 @@ msgstr "Título"
 
 #: ../../enterprise/dashboard/widget.php:185
 msgid "Please, configure this widget before use"
-msgstr "Configure este widget antes de usarlo"
+msgstr "Configure este marco antes de usarlo"
 
 #: ../../enterprise/dashboard/widget.php:187
 msgid "Widget cannot be loaded"
-msgstr "No se pudo cargar el widget"
+msgstr "No se pudo cargar el marco"
 
 #: ../../enterprise/dashboard/widget.php:188
 msgid "Please, configure the widget again to recover it"
-msgstr "Para recuperar el widget, configurelo de nuevo"
+msgstr "Para recuperar el marco, configúrelo de nuevo"
 
 #: ../../enterprise/dashboard/widgets/example.php:18
 msgid "Welcome message to Pandora FMS"
@@ -6310,8 +6310,8 @@ msgid ""
 "To add more elements, click on \"<em>Add widgets</em>\" on the top of this "
 "page."
 msgstr ""
-"Para añadir más elementos pulse \"<em>Añadir marco</em>\" en la parte "
-"superior de esta página."
+"Para añadir más elementos pulse «<em>Añadir marco</em>» en la parte superior "
+"de esta página."
 
 #: ../../enterprise/dashboard/widgets/example.php:33
 #: ../../enterprise/dashboard/widgets/example.php:35

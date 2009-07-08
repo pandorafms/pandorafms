@@ -47,11 +47,15 @@ sub load_config ($\%\@) {
 		if ($line =~ m/module_begin/) {
 			my %module;
 
+			# A comment
+			next if ($line =~ m/^#/);
+
 			while (my $line = <FILE>) {
-				last if ($line =~ m/module_end/);
 
 				# A comment
 				next if ($line =~ m/^#/);
+
+				last if ($line =~ m/module_end/);
 				 
 				# Unknown line
 				next if ($line !~ /^\s*(\w+)\s+(.+)$/);
@@ -63,9 +67,6 @@ sub load_config ($\%\@) {
 			$Modules++;
 			next;
 		}
-
-		# A comment
-		next if ($line =~ m/^#/);
 		
 		# Unknown line
 		next if ($line !~ /^\s*(\w+)\s+(.+)$/);
@@ -82,7 +83,7 @@ sub generate_xml_files ($$$$$) {
 	my ($agents, $start, $step, $conf, $modules) = @_;
 
 	# Read agent configuration
-	my $interval = get_conf_token ($conf, 'interval', '300');
+	my $interval = get_conf_token ($conf, 'agent_interval', '300');
 	my $xml_version = get_conf_token ($conf, 'xml_version', '1.0');
 	my $encoding = get_conf_token ($conf, 'encoding', 'ISO-8859-1');
 	my $os_name = get_conf_token ($conf, 'os_name', 'Linux');

@@ -1,3 +1,10 @@
+2009-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Properly set the new agentaccess
+	  config option. Fixes bug #2815878.
+
+	* util/pandora_xml_stress.pl: Fixed config file comment detection.
+
 2009-06-30  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server.spec: Now it builds packages for SLE9.

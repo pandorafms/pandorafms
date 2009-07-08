@@ -48,7 +48,7 @@ if ($refresh > 0) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Pandora FMS Graph</title>
+<title>Pandora FMS Graph (<?php echo get_agentmodule_agent_name ($id) . ' - ' . $label; ?>)</title>
 <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
 <script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_core.js'></script>

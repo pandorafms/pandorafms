@@ -139,7 +139,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		} else {
 			$show_name = '0';
 		}
-		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . strftime ('%c', $value['timestamp_bottom']) . ';showName=' . $show_name);
+		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $value['timestamp_bottom']) . ';showName=' . $show_name);
 	}
 
 	// Max chart
@@ -221,7 +221,7 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 			$show_name = '0';
 		}
 
-		$chart->addCategory(date($time_format, $category['timestamp_bottom']), 'hoverText=' . strftime ('%c', $category['timestamp_bottom']) . ';showName=' . $show_name);
+		$chart->addCategory(date($time_format, $category['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $category['timestamp_bottom']) . ';showName=' . $show_name);
 	}
 
 	// Stack charts

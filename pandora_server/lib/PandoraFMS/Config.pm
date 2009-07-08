@@ -215,6 +215,9 @@ sub pandora_load_config {
 	# Multicast change report
 	$pa_config->{'mcast_change_group'} = '';
 	$pa_config->{'mcast_change_port'} = '';
+
+	# Update tagent_access
+    $pa_config->{"agentaccess"} = 1; 
 	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -472,6 +475,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^max_queue_files\s([0-9]*)/i) {
                         $pa_config->{'max_queue_files'}= clean_blank($1);
                 }
+		elsif ($parametro =~ m/^agentaccess\s([0-1])/i) {
+			$pa_config->{'agentaccess'}= clean_blank($1);
+		}
 
 	} # end of loop for parameter #
 

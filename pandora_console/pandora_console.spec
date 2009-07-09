@@ -80,7 +80,7 @@ Requires:           apache
 %else
 Requires:           httpd
 %endif
-Requires:           httpd mysql-server php-pear php-mysql php-pear-DB php-devel php-gd php-snmp php-ldap php-mbstring net-snmp-perl net-snmp-utils graphviz-php 
+Requires:           httpd mysql-server php-pear php-mysql php-pear-DB php-gd php-snmp php-ldap php-mbstring net-snmp-perl net-snmp-utils graphviz-php 
 %endif
 
 Provides:           %{name}-%{version}

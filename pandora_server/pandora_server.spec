@@ -27,7 +27,7 @@ Requires(pre):      /usr/sbin/useradd
 %endif
 AutoReq:            0
 Provides:           %{name}-%{version}
-Requires:           mysql, mysql-server perl-ExtUtils-MakeMaker perl-NetAddr-IP
+Requires:           mysql, mysql-server perl-NetAddr-IP
 
 %description
 Pandora watchs your systems and applications, and allows to know the status of any element of that systems. Pandora could detect a network interface down, a defacementin your website, memory leak in one of your server app, or the movement of any value of the NASDAQ new technology market. If you want, Pandora could sent a SMS messagewhen your systems fails... or when Google value low below US$ 33

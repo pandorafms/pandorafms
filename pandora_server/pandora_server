@@ -5,6 +5,8 @@
 # Linux Version (generic)
 # v2.1 Build 081030
 # http://www.pandorafms.com
+# chkconfig: 23 99 99
+# description: Manages starting/stopping of server
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"

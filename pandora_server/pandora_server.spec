@@ -3,7 +3,7 @@
 #
 %define name        PandoraFMS_Server
 %define version	    3.0.0
-%define release     1_
+%define release     1
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -17,7 +17,7 @@ Group:              System/Monitoring
 Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
-BuildArchitectures: i386 
+BuildArchitectures: noarch 
 %if "%{_vendor}" == "suse"
 Requires:           perl-XML-Simple perl-DateManip perl-Net-SNMP
 %endif

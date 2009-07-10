@@ -1,3 +1,10 @@
+2009-07-10  Manuel Arostegui <manuel@todo-linux.com>
+
+	* pandora_server.spec: Changed the architecture, changed the
+	release, the "_" was a mistake.
+
+	* pandora_server: Added chkconfig handling.
+
 2009-07-09  Manuel Arostegui <manuel@todo-linux.com>
 
 	* pandora_server.spec: Removed unnecessary dependency.

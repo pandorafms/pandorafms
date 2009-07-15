@@ -42,7 +42,7 @@ if ($sanity == 1) {
 			WHERE id_agente_modulo = $id_agente_modulo";
 		$total = get_db_sql ($sql);
 		if ($total == 0) {
-			$sql = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 0, 100, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0)";
+			$sql = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 0, 100, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0)";
 			echo "Inserting module $id_agente_modulo in state table <br>";
 			process_sql ($sql);
 		}

@@ -1,3 +1,9 @@
+2009-06-29  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/db/db_sanity.php: remove "cambio" column in query, this column use
+	in old version of pandora (read pandoradb_migrate_v2.x_to_v3.0.sql line 20).
+	Fixes: #2810974
+
 2009-07-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/manage_config_remote.php: fix name of colums in query.

@@ -110,14 +110,15 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		echo '<b>'. __('Source agent').'</b>';
 		print_help_icon ('duplicateconfig');
 		echo '<br><br>';
-	
+
 		// Show combo with SOURCE agents
 		if ($id_group > 1)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
-			$sql1 = "SELECT * FROM tagente WHERE id_group IN ($grouplist) ORDER BY nombre";
-		echo '<select name="origen" style="width:200px">';			
-				$result=mysql_query($sql1);
+			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
+		echo '<select name="origen" style="width:200px">';
+		
+		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
 				$source = $config["remote_config"]."/". md5($row["nombre"]).".conf";
@@ -135,7 +136,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		if ($id_group > 1)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
-			$sql1 = "SELECT * FROM tagente WHERE id_group IN ($grouplist) ORDER BY nombre";
+			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
 
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){

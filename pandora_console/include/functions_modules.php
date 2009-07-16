@@ -31,35 +31,68 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
 		return false;
 	
 	$modules = get_agent_modules ($id_destiny_agent, false,
-		array ('nombre' => $module['nombre']));
+		array ('nombre' => $module['nombre'], 'disabled' => false));
 	
 	if (! empty ($modules))
 		return array_pop (array_keys ($modules));
-	
-	/* PHP copy arrays on assignment */
-	$new_module = $module;
-	
-	/* Rewrite different values */
-	$new_module['id_agente'] = $id_destiny_agent;
-	$new_module['ip_target'] = get_agent_address ($id_destiny_agent);
-	
-	/* Unset numeric indexes or SQL would fail */
-	$len = count ($new_module) / 2;
-	for ($i = 0; $i < $len; $i++)
-		unset ($new_module[$i]);
-	/* Unset original agent module id */
-	unset ($new_module['id_agente_modulo']);
-	
-	$id_new_module = process_sql_insert ('tagente_modulo', $new_module);
-	if ($id_new_module === false) {
-		return false;
+		
+	$modulesDisabled = get_agent_modules ($id_destiny_agent, false,
+		array ('nombre' => $module['nombre'], 'disabled' => true));
+		
+	if (!empty($modulesDisabled)) {
+		//the foreach have only one loop but extract the array index, and it's id_agente_modulo
+		foreach ($modulesDisabled as $id => $garbage) {
+			$id_module = $id;
+			process_sql_update('tagente_modulo', array('disabled' => false, 'delete_pending' => false),
+				array('id_agente_modulo' => $id_module, 'disabled' => true));
+		}
+		
+		$values = array ();
+		$values['id_agente_modulo'] = $id_module;
+		
+		/* PHP copy arrays on assignment */
+		$new_module = $module;
+		
+		/* Rewrite different values */
+		$new_module['id_agente'] = $id_destiny_agent;
+		$new_module['ip_target'] = get_agent_address ($id_destiny_agent);
+		
+		/* Unset numeric indexes or SQL would fail */
+		$len = count ($new_module) / 2;
+		for ($i = 0; $i < $len; $i++)
+			unset ($new_module[$i]);
+		/* Unset original agent module id */
+		unset ($new_module['id_agente_modulo']);
+		
+		$id_new_module = $id_module;
+	}
+	else {
+		/* PHP copy arrays on assignment */
+		$new_module = $module;
+		
+		/* Rewrite different values */
+		$new_module['id_agente'] = $id_destiny_agent;
+		$new_module['ip_target'] = get_agent_address ($id_destiny_agent);
+		
+		/* Unset numeric indexes or SQL would fail */
+		$len = count ($new_module) / 2;
+		for ($i = 0; $i < $len; $i++)
+			unset ($new_module[$i]);
+		/* Unset original agent module id */
+		unset ($new_module['id_agente_modulo']);
+		
+		$id_new_module = process_sql_insert ('tagente_modulo', $new_module);
+		if ($id_new_module === false) {
+			return false;
+		}
+		
+		$values = array ();
+		$values['id_agente_modulo'] = $id_new_module;
 	}
 	
-	$values = array ();
-	$values['id_agente_modulo'] = $id_new_module;
 	$values['id_agente'] = $id_destiny_agent;
 	
-	if (! in_array ($new_module['id_tipo_modulo'], array (2, 6, 9, 18, 21, 100)))
+	if (! in_array ($new_module['id_tipo_modulo'], array (2, 6, 9, 18, 21, 100))) //TODO delete magic numbers
 		/* Not proc modules uses a special estado (status) value */
 		$values['estado'] = 100;
 	

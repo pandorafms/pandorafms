@@ -28,11 +28,11 @@
 function create_agent ($name, $id_group, $interval, $ip_address, $values = false) {
 	if (empty ($name))
 		return false;
-	if (empty ($name))
+	if (empty ($id_group))
 		return false;
 	if (empty ($ip_address))
 		return false;
-	$interval = safe_int ($interval, 300);
+	$interval = safe_int ($interval,1, 300);
 	if (empty ($interval))
 		return false;
 	if (! is_array ($values))

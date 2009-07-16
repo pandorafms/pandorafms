@@ -100,8 +100,8 @@ $table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os 
 
 // Group
 $table->data[6][0] = __('Group');
-$table->data[6][1] = print_select (get_user_groups (), "id_group",
-	$id_group, '', '', '', true);
+$table->data[6][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', '', '', '', 0, true);
+
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));

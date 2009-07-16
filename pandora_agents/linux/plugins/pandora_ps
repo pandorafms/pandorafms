@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+###############################################################################
+#
+# Copyright (c) 2009  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2009  Artica Soluciones Tecnologicas S.L.
+#
+# pandora_ps	Get the status of the given processes.
+# 
+# Sample usage:	./pandora_ps init perl mysqld
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+###############################################################################
+
+use strict;
+
+# Check command line parameters
+if ($#ARGV < 0) {
+	print "Usage: $0 <process_1> [process_2] ...\n\n";
+	exit 1;
+}
+	
+# Parse command line parameters
+my %processes;
+my $module_name = $ARGV[0];
+foreach my $process (@ARGV) {
+	$processes{$process} = 0;
+}
+
+# Retrieve process information
+my @df = `ps -eo ucmd`;
+shift (@df);
+
+# Parse filesystem usage
+foreach my $row (@df) {
+	chomp ($row);
+	$processes{$row} = 1 if defined ($processes{$row});
+}
+
+while (my ($process, $status) = each (%processes)) {
+	# Print module output
+	print "<module>\n";
+	print "  <name><![CDATA[" . $process . "]]></name>\n";
+	print "  <type><![CDATA[generic_data]]></type>\n";
+	print "  <data><value><![CDATA[" . $status . "]]></value></data>\n";
+	print "</module>\n";
+}
+
+exit 0;

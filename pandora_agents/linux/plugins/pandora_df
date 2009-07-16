@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+###############################################################################
+#
+# Copyright (c) 2009  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2009  Artica Soluciones Tecnologicas S.L.
+#
+# pandora_df	Retrieve filesystem disk usage. By default information for all
+#		filesystems is returned, but one or more filesystems may be
+#		specified as command line parameters.
+#
+# Sample usage:	./pandora_df tmpfs /dev/sda1
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+###############################################################################
+
+use strict;
+
+# Retrieve information from all filesystems
+my $all_filesystems = 0;
+
+# Check command line parameters
+if ($#ARGV < 0) {
+	$all_filesystems = 1;
+}
+	
+# Parse command line parameters
+my %filesystems;
+foreach my $fs (@ARGV) {
+	$filesystems{$fs} = '-1%';
+}
+
+# Retrieve filesystem information
+# -P use the POSIX output format for portability
+my @df = `df -P`;
+shift (@df);
+
+# No filesystems? Something went wrong.
+if ($#df < 0) {
+	exit 1;
+}
+
+# Parse filesystem usage
+foreach my $row (@df) {
+	my @columns = split (' ', $row);
+	exit 1 if ($#columns < 4);
+	$filesystems{$columns[0]} = $columns[4] if (defined ($filesystems{$columns[0]}) || $all_filesystems == 1);
+}
+
+while (my ($filesystem, $use) = each (%filesystems)) {
+
+	# Remove the trailing %
+	chop ($use);
+
+	# Print module output
+	print "<module>\n";
+	print "<name><![CDATA[" . $filesystem . "]]></name>\n";
+	print "<type><![CDATA[generic_data]]></type>\n";
+	print "<data><value><![CDATA[" . $use . "]]></value></data>\n";
+	print "<module>\n";
+}
+
+exit 0;

@@ -32,7 +32,7 @@ echo '<h2>'.__('Pandora agents').' &raquo; '.__('Full list of monitors').'</h2>'
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
-$ag_group = (int) get_parameter ('ag_group', -1);
+$ag_group = (int) get_parameter ('ag_group', 1);
 $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup');

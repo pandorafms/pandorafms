@@ -73,7 +73,7 @@ if ($ag_group > 1) {
 	echo "<option value='".$ag_group."'>".get_group_name ($ag_group).
 	"</option>";
 }
-echo "<option value=1>".get_group_name (1)."</option>"; // Group all is always active
+//echo "<option value=1>".get_group_name (1)."</option>"; // Group all is always active
 $mis_grupos = list_group ($config["id_user"]); //Print combo for groups and set an array with all groups
 echo "</select>";
 echo "<td valign='top'>

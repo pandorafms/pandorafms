@@ -1,5 +1,9 @@
 2009-07-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/status_monitor.php: fix bug default group in form.
+
+2009-07-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/modificar_agente.php: fix bug that appear two times the
 	group "All".
 	Fixes: #2822999

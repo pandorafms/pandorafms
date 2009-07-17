@@ -1,3 +1,9 @@
+2009-07-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/modificar_agente.php: fix bug that appear two times the
+	group "All".
+	Fixes: #2822999
+
 2009-07-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_networkmap.php: Added to repository. Functions used

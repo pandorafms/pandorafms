@@ -816,7 +816,6 @@ function get_agent_module_info ($id_agent) {
 			$return["status_img"] = print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
 		else
 			$return["status_img"] = print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
-		} 
 	}
 	
 	//Alert not fired is by default

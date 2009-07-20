@@ -1,5 +1,11 @@
 2009-07-20  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/tactical.php, operation/agentes/status_monitor.php: add
+	link to list monitors "not init".
+	Fixes: 2815098
+
+2009-07-20  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fix bad merge with local installation.
 	
 2009-07-20  Miguel de Dios  <miguel.dedios@artica.es>

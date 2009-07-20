@@ -116,7 +116,7 @@ $cells[4]["color"] = "#C0C0C0";
 $cells[5][0] = __('Monitors not init');
 $cells[5][1] = $data["monitor_not_init"];
 $cells[5]["color"] = "#f00";
-$cells[5]["href"] = "#";
+$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=5"; //Not init
 
 $cells[6][0] = __('Alerts defined');
 $cells[6][1] = $data["monitor_alerts"];

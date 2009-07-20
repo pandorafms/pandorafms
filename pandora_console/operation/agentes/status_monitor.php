@@ -55,6 +55,7 @@ $fields[1] = __('Warning');
 $fields[2] = __('Critical');
 $fields[3] = __('Unknown');
 $fields[4] = __('Not normal');
+$fields[5] = __('Not init');
 
 print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
 echo '</td>';
@@ -125,6 +126,8 @@ if ($status == 0) { //Up
 	$sql .= " AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) ";
 } elseif ($status == 3) { //Unknown
 	$sql .= " AND tagente_modulo.id_tipo_modulo < 21 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
+} elseif ($status == 5) {
+	$sql .= " AND tagente_estado.utimestamp = 0";	
 }
 
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";

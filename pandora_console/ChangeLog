@@ -1,3 +1,11 @@
+2009-07-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: fix bug the any number of modules in
+	unknown status for any agent paint with its colour in the list of
+	agents. Now for the agent has a box colour with color for unknown, it must
+	has all modules in unknown status.
+	Fixes: 2805029
+
 2009-07-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/status_monitor.php: fix bug default group in form.

@@ -806,16 +806,15 @@ function get_agent_module_info ($id_agent) {
 			$return["monitor_normal"]++;
 		}
 	}
-	
-	//No modules is by default
+		
 	if ($return["modules"] > 0) {
-		if ($return["monitor_critical"] > 0) {
+		if ($return["modules"] == $return["monitor_down"])
+			$return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
+		else if ($return["monitor_critical"] > 0)
 			$return["status_img"] = print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
-		} elseif ($return["monitor_warning"] > 0) {
+		else if ($return["monitor_warning"] > 0)
 			$return["status_img"] = print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
-		} elseif ($return["monitor_down"] > 0) {
-                        $return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);
-		} else {
+		else
 			$return["status_img"] = print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
 		} 
 	}

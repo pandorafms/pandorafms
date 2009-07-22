@@ -15,6 +15,96 @@
 // GNU General Public License for more details.
 
 
+/**
+ * Prints an array of fields in a popup menu of a form.
+ * 
+ * Based on choose_from_menu() from Moodle 
+ * 
+ * @param array Array with dropdown values. Example: $fields["value"] = "label"
+ * @param string Select form name
+ * @param variant Current selected value. Can be a single value or an
+ * array of selected values (in combination with multiple)
+ * @param string Javascript onChange code.
+ * @param string Label when nothing is selected.
+ * @param variant Value when nothing is selected
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Set the input to allow multiple selections (optional, single selection by default).
+ * @param bool Whether to sort the options or not (optional, unsorted by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_select_style ($fields, $name, $selected = '', $style='', $script = '', $nothing = '', $nothing_value = 0, $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
+	$output = "\n";
+	
+	static $idcounter = array ();
+	
+	//If duplicate names exist, it will start numbering. Otherwise it won't
+	if (isset ($idcounter[$name])) {
+		$idcounter[$name]++;
+	} else {
+		$idcounter[$name] = 0;
+	}
+	
+	$id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+	
+	$attributes = "";
+	if (!empty ($script)) {
+		$attributes .= ' onchange="'.$script.'"';
+	}
+	if (!empty ($multiple)) {
+		$attributes .= ' multiple="multiple" size="10"';
+	}
+	if (!empty ($class)) {
+		$attributes .= ' class="'.$class.'"';
+	}
+	if (!empty ($disabled)) {
+		$attributes .= ' disabled="disabled"';
+	}
+
+	$output .= '<select style="'.$style.'" id="'.$id.'" name="'.$name.'"'.$attributes.'>';
+
+	if ($nothing != '' || empty ($fields)) {
+		if ($nothing == '') {
+			$nothing = __('None');
+		}		
+		$output .= '<option value="'.$nothing_value.'"';
+		if ($nothing_value == $selected) {
+			$output .= ' selected="selected"';
+		}
+		$output .= '>'.$nothing.'</option>';
+	}
+
+	if (!empty ($fields)) {
+		if ($sort !== false) {
+			asort ($fields);
+		}
+		foreach ($fields as $value => $label) {
+			$output .= '<option value="'.$value.'"';
+			if (is_array ($selected) && in_array ($value, $selected)) {
+				$output .= ' selected="selected"';
+			} elseif (is_numeric ($value) && is_numeric ($selected) && $value == $selected) {
+				//This fixes string ($value) to int ($selected) comparisons 
+				$output .= ' selected="selected"';
+			} elseif ($value === $selected) {
+				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
+				$output .= ' selected="selected"';
+			}
+			if ($label === '') {
+				$output .= '>'.$value."</option>";
+			} else {
+				$output .= '>'.$label."</option>";
+			}
+		}
+	}
+
+	$output .= "</select>";
+
+	if ($return)
+		return $output;
+
+	echo $output;
+}
+
 
 /**
  * Prints an array of fields in a popup menu of a form.

@@ -64,7 +64,7 @@ while (my ($filesystem, $use) = each (%filesystems)) {
 	print "<name><![CDATA[" . $filesystem . "]]></name>\n";
 	print "<type><![CDATA[generic_data]]></type>\n";
 	print "<data><value><![CDATA[" . $use . "]]></value></data>\n";
-	print "<module>\n";
+	print "</module>\n";
 }
 
 exit 0;

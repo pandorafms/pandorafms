@@ -169,29 +169,33 @@ $table->titlestyle = "background-color:#799E48;";
 
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Status');
-$table->head[2] = __('Load');
-$table->head[3] = __('Lag').' '.print_help_icon ("serverlag", true);
-$table->align[1] = 'center';
+$table->head[1] = __('Type');
+$table->head[2] = __('Status');
+$table->head[3] = __('Load');
+$table->head[4] = __('Lag').' '.print_help_icon ("serverlag", true);
 $table->align[2] = 'center';
-$table->align[3] = 'right';
+$table->align[3] = 'center';
+$table->align[4] = 'right';
 
 $table->data = array ();
 
 foreach ($serverinfo as $server) {
 	$data = array ();
 	$data[0] = $server["name"];
-
+	$data[1] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+	if ($server["master"] == 1)
+		$data[1] .= print_help_tip (__("This is a master server"), true);
+	
 	if ($server["status"] == 0){
-		$data[1] = print_status_image (STATUS_SERVER_DOWN, '', true);
+		$data[2] = print_status_image (STATUS_SERVER_DOWN, '', true);
 	} else {
-		$data[1] = print_status_image (STATUS_SERVER_OK, '', true);
+		$data[2] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
-	$data[2] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
+	$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
 		true, array ("title" => $server["lag_txt"]));
 	
-	$data[3] = $server["lag_txt"];
+	$data[4] = $server["lag_txt"];
 
 	array_push ($table->data, $data);
 }

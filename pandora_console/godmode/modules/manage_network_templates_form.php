@@ -125,7 +125,7 @@ echo "</td></tr></table></form>";
 
 if ($id_np > 0) {
 	// Show associated modules, allow to delete, and to add
-	$sql = sprintf ("SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_module_group AS `group`
+	$sql = sprintf ("SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_group AS `group`
 		FROM tnetwork_profile_component AS npc, tnetwork_component AS nc 
 		WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d", $id_np);
 	

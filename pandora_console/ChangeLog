@@ -1,5 +1,11 @@
 2009-07-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_templates_form.php: fix bug that the column
+	group had incorrect content.
+	Fixes: 2815118
+
+2009-07-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* general/header.php, images/lupa_15x15.png, include/functions_html.php
 	include/styles/pandora.css, operation/search_results.php: add global
 	search bar in the header for searching Agents, Maps, Reports, Graphs,

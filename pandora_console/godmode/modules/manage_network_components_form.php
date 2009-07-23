@@ -68,7 +68,8 @@ if (isset ($id)) {
 		$tcp_send = "";
 		$snmp_community = "";
 		$id_module_group = "";
-		$id_group = "";
+		if ($id_component_type == 6) $id_group = 14;
+		else $id_group = "";
 		$type = 0;
 		$min_warning = 0;
 		$max_warning = 0;
@@ -78,6 +79,16 @@ if (isset ($id)) {
 		$history_data = true;
 	}
 }
+
+/**
+ * $id_component_type has these values:
+ * 6 - Module WMI
+ * 4 - Plugin component
+ * 2 - network component
+ * 
+ * You can see this values in file godmode/modules/manage_network_components.php
+ * in the last lines (in the call function "print_select").
+ */
 
 if ($id_component_type == 6) {
 	$categories = array (0, 1, 2);

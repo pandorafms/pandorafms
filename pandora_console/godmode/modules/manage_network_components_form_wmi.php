@@ -51,7 +51,7 @@ $data[1] = print_input_text ('plugin_user', $plugin_user, '', 15, 255, true);
 $data[2] = __('Password');
 $data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true);
 
-push_table_row ($data, 'wmi_2');
+push_table_row ($data, 'wmi_3');
 
 return;
 // Update an existing component

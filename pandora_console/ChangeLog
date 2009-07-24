@@ -1,3 +1,9 @@
+2009-07-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* index.php: fix mistake, add lost lines between my "dirty installation" and
+	"clean project". 
+	Fixes: 2826478
+
 2009-07-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/modules/manage_network_components_form.php: add comments for

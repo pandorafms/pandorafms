@@ -111,6 +111,15 @@ $page = $sec2; //Reference variable for old time sake
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
 
+$searchPage = false;
+$search = get_parameter_get("head_search_keywords");
+if (strlen($search) > 0) {
+	$config['search_keywords'] = trim(get_parameter('keywords'));
+	$config['search_category'] = get_parameter('search_category');
+	if (($config['search_keywords'] != 'Enter keywords to search') && (strlen($config['search_keywords']) > 0))
+		$searchPage = true;
+}
+
 // Hash login process
 if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_data = get_parameter("loginhash_data", "");
@@ -199,23 +208,26 @@ if (!is_writable ("attachment")){
 }
 
 // Page loader / selector
-if ($page != "") {
-	$page .= '.php';
-	if (file_exists ($page)) {
-		if (! is_extension ($page)) {
-			require ($page);
-		} else {
-			if ($sec[0] == 'g') {
-				extension_call_godmode_function (basename ($page));
-			} else {
-				extension_call_main_function (basename ($page));
+if ($searchPage) {
+	require ('operation/search_results.php');
+}
+else
+{
+	if ($page != "") {
+		$page .= '.php';
+		if (file_exists ($page)) {
+			if (! is_extension ($page))
+				require ($page);
+			else {
+				if ($sec[0] == 'g')
+					extension_call_godmode_function (basename ($page));
+				else
+					extension_call_main_function (basename ($page));
 			}
-		}
-	} else {
-		echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
+		} 
+		else echo '<br /><strong class="error">'.__('Sorry! I can\'t find the page!').'</strong>';
 	}
-} else {
-	require ("general/logon_ok.php");
+	else require ("general/logon_ok.php");
 }
 
 if ($config["pure"] == 0) {

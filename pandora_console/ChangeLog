@@ -1,3 +1,10 @@
+2009-07-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php: changes for support maps as widget in
+	dashboard of Pandora Enterprise.
+	* include/Image/image_functions.php: script content functions and code
+	for manage image thumbnails and resize images.
+
 2009-07-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* index.php: fix mistake, add lost lines between my "dirty installation" and

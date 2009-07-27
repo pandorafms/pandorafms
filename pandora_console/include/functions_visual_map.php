@@ -22,11 +22,34 @@
  * @param bool $show_links
  * @param bool $draw_lines
  */
-function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true) {
+function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true, $width = null, $height = null) {
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
-	echo '<div id="layout_map" style="z-index: 0; position:relative; background: url(\'images/console/background/'.safe_input ($layout["background"]).'\'); width:'.$layout["width"].'px; height:'.$layout["height"].'px;">';
+	$resizedMap = false;
+	$proportion = 1;
+	if (!is_null($width)) {
+		$resizedMap = true;
+		if (!is_null($height)) {
+			$mapWidth = $width;
+			$mapHeight = $height;
+		}
+		else {
+			$mapWidth = $width;
+			$proportion = $width / $layout["width"];
+			$mapHeight = $proportion * $layout["height"];
+		}
+		$backgroundImage = 'include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
+			$config['homeurl'] . '/' . 'images/console/background/'.safe_input ($layout["background"]);
+	}
+	else {
+		$mapWidth = $layout["width"];
+		$mapHeight = $layout["height"];
+		$backgroundImage = 'images/console/background/'.safe_input ($layout["background"]);
+	}
+	
+	echo '<div id="layout_map"
+		style="z-index: 0; position:relative; background: url(\'' . $backgroundImage .'\'); width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
@@ -71,8 +94,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				else
 					$z_index = 1; // Print BAD over good
 				
-				// Draw image 
-				echo '<div style="z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
+				// Draw image
+				if ($resizedMap)
+					echo '<div style="z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				else
+					echo '<div style="z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
 				
 				if (!isset ($id_agent))
 					$id_agent = 0;
@@ -120,6 +146,27 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// Default is Grey (Other)
 				}
 				
+				if (is_file($img))
+					$infoImage = getimagesize($img);
+				
+				if (!empty ($layout_data["width"])) {
+					if ($resizedMap)
+						$img_style["width"] = (integer)($proportion * $layout_data["width"]);
+					else
+						$img_style["width"] = $layout_data["width"];
+				}
+				else
+					$img_style["width"] = (integer)($proportion * $infoImage[0]);
+				
+				if (!empty ($layout_data["height"])) {
+					if ($resizedMap)
+						$img_style["height"] = (integer)($proportion * $img_style["height"]);
+					else
+						$img_style["height"] = $layout_data["height"];
+				}
+				else
+					$img_style["height"] = (integer)($proportion * $infoImage[1]);
+				
 				print_image ($img, false, $img_style);
 		
 				echo "</a>";
@@ -135,40 +182,60 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			// SIMPLE DATA VALUE (type = 2)
 			switch ($layout_data['type']) {
 			case 2:
-				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				if ($resizedMap)
+					echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				else
+					echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				echo '<strong>'.$layout_data['label']. ' ';
 				echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
 				echo '</strong></div>';
 				break;
 			case 3:
-				// Percentile bar (type = 3)
-				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
-				$width = $layout_data['width'];
-				if ( $layout_data['height'] > 0)
-					$percentile = $valor / $layout_data['height'] * 100;
-				else
-					$percentile = 100;
-				echo $layout_data['label'];
-				echo "<br>";
+				
+					// Percentile bar (type = 3)
+					if ($resizedMap)
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					else
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
+					$width = $layout_data['width'];
+					if ( $layout_data['height'] > 0)
+						$percentile = $valor / $layout_data['height'] * 100;
+					else
+						$percentile = 100;
+					
+					echo $layout_data['label'];
+					echo "<br>";
 
-				echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
-
-				echo '</div>';
+					if ($resizedMap)
+						echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=".((integer)($proportion * $width))."&mode=1&percent=$percentile'>";
+					else	
+						echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
+	
+					echo '</div>';
+				//}
 				break;
 			case 1;
-				// SINGLE GRAPH (type = 1)
-				echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				if ($show_links) {
-					if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
-						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'&amp;tab=data">';
-					} else {
-						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+					// SINGLE GRAPH (type = 1)
+					if ($resizedMap)
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					else
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					
+					if ($show_links) {
+						if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
+							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'&amp;tab=data">';
+						} else {
+							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+						}
 					}
-				}
-				print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
-				echo "</a>";
-				echo "</div>";
+					if ($resizedMap)
+						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".((integer)($proportion * $layout_data['height']))."&amp;width=".((integer)($proportion * $layout_data['width']))."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+					else
+						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+					echo "</a>";
+					echo "</div>";
+				break;
 			}
 			// Line, not implemented in editor
 			/*

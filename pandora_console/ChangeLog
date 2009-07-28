@@ -1,3 +1,10 @@
+2009-07-28  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_list.php, include/functions_agents.php: changes
+	for to add filter (and html form to set filter) in the list of alerts. 
+	* include/styles/pandora.css, include/functions_html.php: minor changes to
+	fix minor bug css and clean the source code.
+	
 2009-07-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: changes for support maps as widget in

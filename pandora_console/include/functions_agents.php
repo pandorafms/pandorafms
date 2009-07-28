@@ -102,7 +102,7 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent, $filter = '', $options = false) {
+function get_agent_alerts_simple ($id_agent, $filter = '', $options = false, $where = '') {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -128,8 +128,8 @@ function get_agent_alerts_simple ($id_agent, $filter = '', $options = false) {
 	
 	$sql = sprintf ("SELECT talert_template_modules.*
 		FROM talert_template_modules
-		WHERE id_agent_module in (%s)%s",
-		implode (",", $id_modules), $filter);
+		WHERE id_agent_module in (%s) %s %s",
+		implode (",", $id_modules), $where, $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	
@@ -185,7 +185,7 @@ function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
  *
  * By default, it will return all the agents where the user has reading access.
  * 
- * @param array ilter options in an indexed array. See
+ * @param array filter options in an indexed array. See
  * format_array_to_where_clause_sql()
  * @param array Fields to get.
  * @param string Access needed in the agents groups.

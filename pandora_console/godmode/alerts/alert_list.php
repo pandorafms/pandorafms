@@ -192,6 +192,68 @@ if ($id_agente) {
 	$agents = get_group_agents (array_keys ($groups), false, "none");
 }
 
+echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/wand.png", true, array ("title" => __('Toggle filter(s)'))).'</a>';
+
+$templateName = get_parameter('template_name','');
+$moduleName = get_parameter('module_name','');
+$agentID = get_parameter('agent_id','');
+$actionID = get_parameter('action_id','');
+$fieldContent = get_parameter('field_content','');
+$searchType = get_parameter('search_type','');
+$priority = get_parameter('priority','');
+
+if (get_parameter('search',0)) {
+}
+
+//Start div
+echo "<div id='alert_control' style='display:none'>\n";
+	// Table for filter controls
+	echo '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
+	echo "<input type='hidden' name='search' value='1' />\n";
+	echo '<table style="width="550" cellpadding="4" cellspacing="4" class="databox">'."\n";
+	echo "<tr>\n";
+	echo "<td>".__('Template name')."</td><td>";
+	print_input_text ('template_name', $templateName, '', 15);
+	echo "</td>\n";
+	$temp = get_agents();
+	$arrayAgents = array();
+	foreach ($temp as $agentElement) {
+		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+	}
+	echo "<td>".__('Agents')."</td><td>";
+	print_select ($arrayAgents, "agent_id", $agentID, '', __('All'),-1);
+	echo "</td>\n";
+	echo "<td>".__('Module name')."</td><td>";
+	print_input_text ('module_name', $moduleName, '', 15);
+	echo "</td>\n";
+	echo "</tr>\n";
+	
+	echo "<tr>\n";
+	$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions;");
+	$arrayActions = array();
+	foreach ($temp as $actionElement) {
+		$arrayActions[$actionElement['id']] = $actionElement['name'];
+	}
+	echo "<td>".__('Actions')."</td><td>";
+	print_select ($arrayActions, "action_id", $actionID,  '', __('All'),-1);
+	echo "</td>\n";
+	echo "<td>".__('Field content')."</td><td>";
+	print_input_text ('field_content', $fieldContent, '', 15);
+	echo "</td>\n";
+	echo "<td>".__('Priority')."</td><td>";
+	print_select (get_priorities (), 'priority',$priority, '', __('All'),-1);
+	echo "</td>";
+	echo "</tr>\n";
+	
+	echo "<tr>\n";
+	echo "<td colspan='6' align='right'>";
+	print_submit_button (__('Update'), '', false, 'class="sub upd"');
+	echo "</td>";
+	echo "</tr>\n";
+	echo "</table>\n";
+echo "</div>\n";
+
+$simple_alerts = array();
 
 if ($id_agente) {
 	$simple_alerts = get_agent_alerts_simple (array_keys ($agents));
@@ -202,12 +264,33 @@ if ($id_agente) {
 			WHERE id_agent_module IN (SELECT id_agente_modulo
 				FROM tagente_modulo WHERE id_agente IN (%s))',
 			implode (',', array_keys ($agents)));
-		$total = get_db_sql ($sql);
+		
+		$where = '';
+		if (get_parameter('search',0)) {
+			if ($priority != -1 )
+				$where .= " AND priority = " . $priority;
+			if (strlen(trim($templateName)) > 0)
+				$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%" . trim($templateName) . "%')";
+			if (strlen(trim($fieldContent)) > 0)
+				$where .= " AND id_alert_template IN (SELECT id FROM talert_templates
+					WHERE field1 LIKE '%" . trim($fieldContent) . "%' OR field2 LIKE '%" . trim($fieldContent) . "%' OR
+						field3 LIKE '%" . trim($fieldContent) . "%' OR
+						field2_recovery LIKE '%" . trim($fieldContent) . "%' OR
+						field3_recovery LIKE '%" . trim($fieldContent) . "%')";
+			if (strlen(trim($moduleName)) > 0)
+				$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%" . trim($moduleName) . "%')";
+			if ($agentID != -1)
+				$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
+			if ($actionID != -1)
+				$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
+		}
+		
+		$total = get_db_sql ($sql.$where);
 	}
 	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
-	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), '',
+	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 		array ('offset' => (int) get_parameter ('offset'),
-			'limit' => $config['block_size']));
+			'limit' => $config['block_size']), $where);
 }
 
 $table->class = 'alert_list';
@@ -428,6 +511,11 @@ $(document).ready (function () {
 		attribute: 'href',
 		cluetipClass: 'default'
 	}).click (function () {
+		return false;
+	});
+	
+	$("#tgl_alert_control").click (function () {
+		$("#alert_control").toggle ();
 		return false;
 	});
 	

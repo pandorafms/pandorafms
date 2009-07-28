@@ -861,7 +861,7 @@ ol.steps {
 	margin-bottom: 15px;
 	padding: 0;
 	list-style-type: none;
-	list-style-position: outline;
+	list-style-position: outside;
 }
 ol.steps li {
 	float: left;

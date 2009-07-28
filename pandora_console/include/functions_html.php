@@ -124,7 +124,9 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
+function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
+	$multiple = false, $sort = true, $class = '', $disabled = false) {
+	
 	$output = "\n";
 	
 	static $idcounter = array ();

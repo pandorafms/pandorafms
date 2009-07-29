@@ -197,15 +197,13 @@ echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&n
 $templateName = get_parameter('template_name','');
 $moduleName = get_parameter('module_name','');
 $agentID = get_parameter('agent_id','');
+$agentName = get_parameter('agent_name','');
 $actionID = get_parameter('action_id','');
 $fieldContent = get_parameter('field_content','');
 $searchType = get_parameter('search_type','');
 $priority = get_parameter('priority','');
 
-if (get_parameter('search',0)) {
-}
-
-//Start div
+//INI DIV OF FORM FILTER
 echo "<div id='alert_control' style='display:none'>\n";
 	// Table for filter controls
 	echo '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
@@ -221,7 +219,8 @@ echo "<div id='alert_control' style='display:none'>\n";
 		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
 	}
 	echo "<td>".__('Agents')."</td><td>";
-	print_select ($arrayAgents, "agent_id", $agentID, '', __('All'),-1);
+	print_input_text ('agent_name', $agentName, '', 30, 100);
+	//print_select ($arrayAgents, "agent_id", $agentID, '', __('All'),-1);
 	echo "</td>\n";
 	echo "<td>".__('Module name')."</td><td>";
 	print_input_text ('module_name', $moduleName, '', 15);
@@ -251,7 +250,9 @@ echo "<div id='alert_control' style='display:none'>\n";
 	echo "</td>";
 	echo "</tr>\n";
 	echo "</table>\n";
+	echo "</form>\n";
 echo "</div>\n";
+//END DIV OF FORM FILTER
 
 $simple_alerts = array();
 
@@ -259,7 +260,7 @@ if ($id_agente) {
 	$simple_alerts = get_agent_alerts_simple (array_keys ($agents));
 } else {
 	$total = 0;
-	if (! empty ($agents)) {
+	if (!empty ($agents)) {
 		$sql = sprintf ('SELECT COUNT(*) FROM talert_template_modules
 			WHERE id_agent_module IN (SELECT id_agente_modulo
 				FROM tagente_modulo WHERE id_agente IN (%s))',
@@ -279,8 +280,12 @@ if ($id_agente) {
 						field3_recovery LIKE '%" . trim($fieldContent) . "%')";
 			if (strlen(trim($moduleName)) > 0)
 				$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%" . trim($moduleName) . "%')";
-			if ($agentID != -1)
-				$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
+			//if ($agentID != -1)
+				//$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
+			if (strlen(trim($agentName)) > 0)
+				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
+					FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
+					WHERE t1.nombre LIKE '" . trim($agentName) . "')";
 			if ($actionID != -1)
 				$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
 		}
@@ -490,10 +495,39 @@ echo '</form>';
 require_css_file ('cluetip');
 require_jquery_file ('cluetip');
 require_jquery_file ('pandora.controls');
+require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+
+
+//----------------------------
+	$("#text-agent_name").autocomplete ("ajax.php",
+		{
+			scroll: true,
+			minChars: 2,
+			extraParams: {
+				page: "godmode/agentes/agent_manager",
+				search_parents: 1,
+				id_group: function() { return $("#grupo").val(); },
+				id_agent: <?php echo $id_agente ?>
+			},
+			formatItem: function (data, i, total) {
+				if (total == 0)
+					$("#text-id_parent").css ('background-color', '#cc0000');
+				else
+					$("#text-id_parent").css ('background-color', 'none');
+				if (data == "")
+					return false;
+				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+			},
+			delay: 200
+		}
+	);
+//----------------------------
+
+
 <?php if (! $id_agente) : ?>
 	$("#id_group").pandoraSelectGroupAgent ({
 		callbackBefore: function () {

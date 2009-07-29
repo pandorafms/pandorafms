@@ -1,3 +1,10 @@
+2009-07-29  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_list.php: clear and coment some parts of source
+	code. Fix bug that send more data from other forms (I forget close
+	the tag form). And change the combo box of agents to input text rich with
+	ajax for source code is more light and I give more usability to form. 
+	
 2009-07-28  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_list.php, include/functions_agents.php: changes

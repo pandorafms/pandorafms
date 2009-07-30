@@ -1,3 +1,10 @@
+2009-07-30  Manuel Arostegui  <manuel@todo-linux.com>
+
+	* SLES10/pandora_wmi, pandora_plugin, pandora_prediction
+	pandora_snmpconsole, pandora_recon, pandora_server
+	pandora_network: Deleted from repository. We don't need these
+	 scripts anymore.
+
 2009-07-24  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* util/pandora_exec: added execution permision to plugin server.

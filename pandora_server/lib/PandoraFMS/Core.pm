@@ -720,7 +720,7 @@ sub pandora_create_module ($$$$$$$$) {
 
 	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `descripcion`, `module_interval`, `id_modulo`)
 	                        VALUES (?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `last_try`) VALUES (?, \'0000-00-00 00:00:00\')', $module_id);
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
 	return $module_id;
 }
 

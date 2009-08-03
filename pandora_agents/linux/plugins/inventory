@@ -1,0 +1,178 @@
+#!/usr/bin/perl
+###############################################################################
+#
+# Copyright (c) 2009  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2009  Artica Soluciones Tecnologicas S.L.
+#
+# inventory	Generate a hardware/software inventory.
+# 
+# Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software]
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+###############################################################################
+
+use strict;
+use constant TSTAMP_FILE => '/tmp/pandora_inventory.tstamp';
+
+# Parse module information
+sub get_module_data ($$$$) {
+	my ($name, $hwinfo, $keys, $modules) = @_;
+	my %module;
+
+	# Parse module data
+	while (my $line = shift (@{$hwinfo})) {
+		if ($line =~ /\s+\*\-/) {
+			unshift (@{$hwinfo}, $line);
+			last;
+		}
+		foreach my $key (@{$keys}) {
+			if ($line =~ /$key:\s+(.+)/) {
+				$module{$key} = $1;
+				push (@{$module{'_keys'}}, $key);
+			}
+		}
+	}
+
+	# No data found
+	my @data = keys (%module);
+	return unless ($#data >= 0);
+
+	push (@{$modules->{$name}}, \%module);
+}
+
+# Get a list of installed programs
+sub get_software_module_data ($$) {
+	my ($name, $modules) = @_;
+
+	# Guess the current distribution
+	open (RELEASE_FILE, '< /etc/lsb-release') or return;
+	my $distrib_id = <RELEASE_FILE>;
+	last unless ($distrib_id =~ m/DISTRIB_ID\s*=\s*(\S+)/);
+	$distrib_id = $1;
+
+	# List installed programs
+	my @soft;
+	if ($distrib_id eq 'Ubuntu') {
+		@soft = `dpkg -l | grep ii`;
+	} else {
+		return;
+	}
+
+	# Parse data
+	foreach my $row (@soft) {
+		next unless ($row =~ /^ii\s+(\S+)\s+(\S+)/);
+		
+		my %module;
+		$module{'program'} = $1;
+		$module{'version'} = $2;
+		$module{'_keys'} = ['program', 'version'];
+		push (@{$modules->{$name}}, \%module);
+	}
+}
+
+# Print module data
+sub print_module ($$) {
+	my ($name, $module) = @_;
+
+	print "  <inventory_module>\n";
+	print "    <name><![CDATA[" . $name . "]]></name>\n";
+	print "    <datalist>\n";
+	foreach my $item (@{$module}) {
+		# Compose module data
+		my $data = '';
+		foreach my $key (@{$item->{'_keys'}}) {
+			next unless defined ($item->{$key});
+			$data .= ($data eq '' ? '' : ';') . $item->{$key};
+		}
+
+		print "      <data><value><![CDATA[$data]]></value></data>\n";
+	}
+	print "    </datalist>\n";
+	print "  </inventory_module>\n";
+}
+
+# Check command line parameters
+if ($#ARGV < 0) {
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software]\n\n";
+	exit 1;
+}
+
+# Parse command line parameters
+my %enabled;
+my $enable_all = ($#ARGV > 0 ? 0 : 1);
+my $interval = shift (@ARGV);
+foreach my $module (@ARGV) {
+	$enabled{$module} = 1;
+}
+
+# Check execution interval
+if (-f TSTAMP_FILE) {
+	open (FILE, '<' . TSTAMP_FILE) || exit 1;
+	my $last_execution = <FILE>;
+	close (FILE);
+	exit 0 if ($last_execution + 86400 * $interval > time ());
+}
+open (FILE, '>' . TSTAMP_FILE) || exit 1;
+print FILE time ();
+close (FILE);
+
+# Retrieve hardware information
+my @hwinfo = `lshw 2>/dev/null`;
+
+# Parse hardware information
+my %modules;
+while (my $line = shift (@hwinfo)) {
+	chomp ($line);
+
+	# CPU
+	if ($line =~ /\*\-cpu/ && ($enable_all == 1 || $enabled{'cpu'} == 1)) {
+		get_module_data ('CPU', \@hwinfo, ['product', 'vendor', 'capacity'], \%modules);
+	}
+
+	# RAM
+	if ($line =~ /\*\-bank/ && ($enable_all == 1 || $enabled{'ram'} == 1)) {
+		get_module_data ('RAM', \@hwinfo, ['description', 'size'], \%modules);
+	}
+
+	# VIDEO
+	if ($line =~ /\*\-display/ && ($enable_all == 1 || $enabled{'video'} == 1)) {
+		get_module_data ('VIDEO', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	}
+
+	# NIC
+	if ($line =~ /\*\-network/ && ($enable_all == 1 || $enabled{'nic'} == 1)) {
+		get_module_data ('NIC', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	}
+
+	# CDROM
+	if ($line =~ /\*\-cdrom/ && ($enable_all == 1 || $enabled{'cdrom'} == 1)) {
+		get_module_data ('CDROM', \@hwinfo, ['product', 'description', 'vendor'], \%modules);
+	}
+
+	# HD
+	if ($line =~ /\*\-disk/ && ($enable_all == 1 || $enabled{'hd'} == 1)) {
+		get_module_data ('HD', \@hwinfo, ['product', 'description', 'size'], \%modules);
+	}
+}
+
+# Software
+if ($enable_all == 1 || $enabled{'software'} == 1) {
+	get_software_module_data ('Software', \%modules);
+}
+
+# Print module data
+print "<inventory>\n";
+while (my ($name, $module) = each (%modules)) {
+	print_module ($name, $module);
+}
+print "</inventory>\n";
+
+exit 0;

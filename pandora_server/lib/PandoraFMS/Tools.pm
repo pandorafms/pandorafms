@@ -42,6 +42,7 @@ our @EXPORT = qw(
 	enterprise_hook
 	enterprise_load
 	print_message
+	get_tag_value
 );
 
 ##########################################################################
@@ -360,6 +361,25 @@ sub print_message ($$$) {
 	if ($pa_config->{'verbosity'} > $log_level){
     	print STDOUT $message . "\n";
 	}
+}
+
+##########################################################################
+# Returns the value of an XML tag from a hash returned by XMLin (one level
+# depth).
+##########################################################################
+sub get_tag_value ($$$) {
+	my ($hash_ref, $tag, $def_value) = @_;
+
+	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
+
+	# Return the first found value
+	foreach my $value (@{$hash_ref->{$tag}}) {
+		
+		# If the tag is defined but has no value a ref to an empty hash is returned by XML::Simple
+		return $value unless ref ($value);
+	}
+
+	return $def_value;
 }
 
 # End of function declaration

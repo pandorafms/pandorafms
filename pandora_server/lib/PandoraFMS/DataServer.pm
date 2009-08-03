@@ -32,6 +32,9 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 
+# Load enterprise module
+enterprise_load ();
+
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 
@@ -214,6 +217,10 @@ sub process_xml_data ($$$$) {
 			}
 		}
 	}
+
+	# Process inventory modules
+	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
+	                                           $interval, $timestamp, $dbh]);
 }
 
 ##########################################################################
@@ -258,25 +265,6 @@ sub process_module_data ($$$$$$$$$) {
 		my $value = get_tag_value ($data, 'data', '');
 		pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
 	}
-}
-
-##########################################################################
-# Returns the value of an XML tag from a hash returned by XMLin (one level
-# depth).
-##########################################################################
-sub get_tag_value ($$$) {
-	my ($hash_ref, $tag, $def_value) = @_;
-
-	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
-
-	# Return the first found value
-	foreach my $value (@{$hash_ref->{$tag}}) {
-		
-		# If the tag is defined but has no value a ref to an empty hash is returned by XML::Simple
-		return $value unless ref ($value);
-	}
-
-	return $def_value;
 }
 
 1;

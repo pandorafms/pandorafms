@@ -1,3 +1,13 @@
+2009-08-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Add id_agente to tagente_estado when
+	  creating a new module.
+
+	* lib/PandoraFMS/DataServer.pm: Added support for inventory XML files.
+
+	* lib/PandoraFMS/Tools.pm: Moved get_tag_value function from
+	  DataServer.pm to Tools.pm.
+
 2009-07-30  Manuel Arostegui  <manuel@todo-linux.com>
 
 	* SLES10/pandora_wmi, pandora_plugin, pandora_prediction

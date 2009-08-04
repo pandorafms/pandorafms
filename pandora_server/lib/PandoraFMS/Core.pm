@@ -709,17 +709,18 @@ sub pandora_audit ($$$$$) {
 # Create a new entry in tagente_modulo and the corresponding entry in
 # tagente_estado.
 ##########################################################################
-sub pandora_create_module ($$$$$$$$) {
+sub pandora_create_module ($$$$$$$$$) {
 	my ($agent_id, $module_type_id, $module_name, $max,
-	    $min, $description, $interval, $dbh) = @_;
+	    $min, $post_process, $description, $interval, $dbh) = @_;
  
 	# Provide some default values	
 	$max = 0 if ($max eq '');
 	$min = 0 if ($min eq '');
+	$post_process = 0 if ($post_process eq '');
 	$description = 'N/A' if ($description eq '');
 
-	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `descripcion`, `module_interval`, `id_modulo`)
-	                        VALUES (?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $description, $interval);
+	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `id_modulo`)
+	                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
 	return $module_id;
 }
@@ -727,14 +728,16 @@ sub pandora_create_module ($$$$$$$$) {
 ##########################################################################
 # Create a new entry in tagente.
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
-	    $address_id, $group_id, $parent_id, $os_id, $dbh) = @_;
+	    $address_id, $group_id, $parent_id, $os_id,
+		$description, $dbh) = @_;
 
 	logger ($pa_config, "$server_name: Creating agent $agent_name ($address)", 1);
 
+	$description = "Created by $server_name" unless ($description ne '');
 	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
-	                              VALUES  (?, ?, ?, ?, ?, ?, 300, ?, 1)', $agent_name, $address, "Created by $server_name", $group_id, $os_id, $server_name, $parent_id);
+	                              VALUES  (?, ?, ?, ?, ?, ?, 300, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $parent_id);
 
 	pandora_event ($pa_config, "Agent '$agent_name' created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;

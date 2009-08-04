@@ -1,3 +1,10 @@
+2009-08-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/ReconServer.pm,
+	  lib/PandoraFMS/DataServer.pm: Set group, description and post_process
+	  when auto-creating an agent/module. 
+
 2009-08-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Add id_agente to tagente_estado when

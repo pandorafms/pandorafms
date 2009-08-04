@@ -173,9 +173,16 @@ sub process_xml_data ($$$$) {
 			return;
 		}
 		
-		# Create the agent
+		# Get OS, group and description
 		my $os = pandora_get_os ($data->{'os'});
-		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $pa_config->{'autocreate_group'}, 0, $os, $dbh);
+		my $group_id = undef;
+		$group_id = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE nombre = ?', $data->{'group'}) if (defined ($data->{'group'}));
+		$group_id = $pa_config->{'autocreate_group'} unless defined ($group_id);
+		my $description = '';
+		$description = $data->{'description'} if (defined ($data->{'description'}));
+
+		# Create the agent
+		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $dbh);
 		return unless defined ($agent_id);
 	}
 
@@ -246,14 +253,18 @@ sub process_module_data ($$$$$$$$$) {
 		my $module_id = get_module_id ($dbh, $module_type);
 		return unless ($module_id > 0);
 
-		# Get min/max/description
+		# Get min/max/description/post process
 		my $max = get_tag_value ($data, 'max', 0);
 		my $min = get_tag_value ($data, 'min', 0);
 		my $description = get_tag_value ($data, 'description', '');
+		my $post_process = get_tag_value ($data, 'post_process', 0);
+
+		# Allow , as a decimal separator
+		$post_process =~ s/,/./;
 
 		# Create the module
 		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
-	                          $max, $min, $description, $interval, $dbh);
+	                          $max, $min, $post_process, $description, $interval, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		return unless defined $module;
 	}

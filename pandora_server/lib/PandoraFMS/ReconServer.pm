@@ -174,7 +174,7 @@ sub data_consumer ($$) {
 		# Crate a new agent
 		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $addr_id,
-					                                  $task->{'id_group'}, $parent_id, $id_os, $dbh);
+					                                  $task->{'id_group'}, $parent_id, $id_os, '', $dbh);
 		# Assign the new address to the agent
 		db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
 		                  VALUES (?, ?)', $addr_id, $agent_id);

@@ -15,7 +15,7 @@
 
 
 
-if ($config) {
+if (isset($config)) {
 	require_once ($config['homedir'].'/include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_fsgraph.php');
@@ -277,7 +277,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$engine->data = &$real_data;
 	$engine->legend = $module_list_name;
 	$engine->fontpath = $config['fontpath'];
-	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
+	$engine->title = "";
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
 	$engine->show_title = !$pure;
 	$engine->stacked = $stacked;
@@ -1046,7 +1046,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 
 function progress_bar ($progress, $width, $height, $mode = 1) {
 	global $config;
-	
+
 	if ($progress > 100 || $progress < 0) {
 		graphic_error ('outof.png');
 	}
@@ -1254,120 +1254,58 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	global $config;
 	global $graphic_type;
 
-	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
-	
-	if (! $date)
-		$date = get_system_time ();
-	
-	$datelimit = $date - $period; // limit date
-	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
-	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$id_agente = get_agent_id ($nombre_agente);
-	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
+	// This code has been rewritten, taking code from 2.x and adjusted to work
+	// with new code for flash and new pchart functions. (slerena/ago09)
 
-	if ($show_event == 1)
-		$real_event = array ();
+	if ($date == "")
+		$date = time ();
+	$resolution = $config["graph_res"] * 5; // Number of "slices" we want in graph
+	$fechatope = $date - $period;
+	$horasint = $period / $resolution; // Each intervalo is $horasint seconds length
 
-	if ($show_alert == 1) {
-		$alert_high = false;
-		$alert_low = false;
-		// If we want to show alerts limits
+	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
+	for ($i = 0; $i <$resolution; $i++) {
+		$valores[$i][0] = 0; // [0] Valor (contador)
+		$valores[$i][1] = $fechatope + ($horasint * $i);
+		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Top limit for this range
+		$valores[$i][3] = $fechatope + ($horasint * ($i + 1)); // [3] Botom limit
+	}
+	
+	
+	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." and utimestamp > '".$fechatope."'";
+
+	$result=mysql_query($sql1);
+	while ($row=mysql_fetch_array($result)){
+		for ($i = 0; $i < $resolution; $i++){
+			if (($row[0] < $valores[$i][3]) and ($row[0] >= $valores[$i][2]) ){ 
+				// entra en esta fila
+				$valores[$i][0]++;
+			}
+		} 
 		
-		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		
-		// if no valid alert defined to render limits, disable it
-		if (($alert_low === false || $alert_low === NULL) &&
-			($alert_high === false || $alert_high === NULL)) {
-			$show_alert = 0;
-		}
+	}
+	$valor_maximo = 0;
+	for ($i = 0; $i < $resolution; $i++) { // 30 entries in graph, one by day
+		$grafica[$valores[$i][1]]=$valores[$i][0];
+		if ($valores[$i][0] > $valor_maximo)
+			$valor_maximo = $valores[$i][0];
 	}
 
-	// interval - This is the number of "rows" we are divided the time
-	 // to fill data. more interval, more resolution, and slower.
-	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
+	// Rewrite data in format understable by flash charts
 	
-	// Init tables
-	for ($i = 0; $i <= $resolution; $i++) {
-		$data[$i]['sum'] = 0; // SUM of all values for this interval
-		$data[$i]['count'] = 0; // counter
-		$data[$i]['timestamp_bottom'] = $datelimit + ($interval * $i); // [2] Top limit for this range
-		$data[$i]['timestamp_top'] = $datelimit + ($interval * ($i + 1)); // [3] Botom limit
-		$data[$i]['min'] = 1; // MIN
-		$data[$i]['max'] = 0; // MAX
-		$data[$i]['last'] = 0; // Last value
+	for ($i = 0; $i < $resolution; $i++) { // 30 entries in graph, one by day
+		$data[$i]['sum'] = $valores[$i][0];
+		$data[$i]['count'] = $valores[$i][0];
+		$data[$i]['timestamp_bottom'] = $valores[$i][2];
+		$data[$i]['timestamp_top'] = $valores[$i][3];
+		$data[$i]['min'] = 0; // MIN
+		$data[$i]['max'] = $valores[$i][0];
 		$data[$i]['events'] = 0; // Event
 	}
-	// Init other general variables
-	if ($show_event == 1) {
-		// If we want to show events in graphs
-		$sql = "SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $datelimit";
-		$result = get_db_all_rows_sql ($sql);
-		foreach ($result as $row) {
-			$utimestamp = $row['utimestamp'];
-			for ($i = 0; $i <= $resolution; $i++) {
-				if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
-					$data['events']++;
-				}
-			}
-		}
-	}
-	// Init other general variables
-	$max_value = 0;
-	
-	$all_data = get_db_all_rows_filter ('tagente_datos_string',
-		array ('id_agente_modulo' => $id_agente_modulo,
-			"utimestamp > $datelimit",
-			"utimestamp < $date",
-			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
-	
-	if ($all_data === false) {
-		$all_data = array ();
-	}
-	
-	foreach ($all_data as $module_data) {
-		$real_data = 1;
-		$utimestamp = $module_data["utimestamp"];
-		for ($i = 0; $i <= $resolution; $i++) {
-			if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
-				$data[$i]['sum'] += $real_data;
-				$data[$i]['count']++;
-				
-				$data[$i]['last'] = $real_data;
-				
-				$data[$i]['min'] = min ($data[$i]['min'], $real_data);
-				$data[$i]['max'] = max ($data[$i]['max'], $real_data);
-			}
-		}
-		
-	}
-	
-	$previous = (float) get_previous_data ($id_agente_modulo, $datelimit);
-	// Calculate Average value for $data[][0]
-	for ($i = 0; $i <= $resolution; $i++) {
-		if ($data[$i]['count'] == 0) {
-			$data[$i]['sum'] = $previous;
-			$data[$i]['min'] = $previous;
-			$data[$i]['max'] = $previous;
-			$data[$i]['last'] = $previous;
-			
-			$previous = $data[$i]['sum'];
-		} else {
-			$previous = $data[$i]['sum'];
-			if ($data[$i]['count'] > 1) {
-				$previous = $data[$i]['last'];
-				$data[$i]['sum'] = floor ($data[$i]['sum'] / $data[$i]['count']);
-			}
-		}
-		
-		// Get max value for all graph
-		$max_value = max ($max_value, $data[$i]['max']);
-	}
-	
-	$grafica = array ();
-	foreach ($data as $d) {
-		$grafica[$d['timestamp_bottom']] = $d['sum'];
+
+	if ($valor_maximo <= 0) {
+		graphic_error ();
+		return;
 	}
 	
 	if ($period <= 3600) {
@@ -1396,7 +1334,12 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->data = &$grafica;
-	$engine->max_value = $max_value;
+	$engine->max_value = $valor_maximo;
+	
+	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
+	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
+	$id_agente = get_agent_id ($nombre_agente);
+
 	$engine->legend = array ($nombre_modulo);
 	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
@@ -1406,15 +1349,11 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	$engine->alert_top = $show_alert ? $alert_high : false;
 	$engine->alert_bottom = $show_alert ? $alert_low : false;;
 	
-	if ($period < 10000)
-		$engine->xaxis_interval = 20;
-	else
-		$engine->xaxis_interval = $resolution * 4;
+	$engine->xaxis_interval = $resolution/5;		
 	$engine->yaxis_interval = 1;
-	$engine->xaxis_format = 'date';
-	
+	$engine->xaxis_format = 'datetime';
+
 	$engine->single_graph ();
-	
 	return;
 }
 
@@ -1555,6 +1494,10 @@ if ($graphic_type) {
 		generic_pie_graph ($width, $height, $data);
 		
 		break;
+	case 'string':
+		grafico_modulo_string ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		break;
+
 	default:
 		graphic_error ();
 	}

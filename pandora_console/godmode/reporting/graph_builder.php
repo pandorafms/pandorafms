@@ -396,6 +396,7 @@ echo "<option value=21600>"."6 ".__('hours')."</option>";
 echo "<option value=43200>"."12 ".__('hours')."</option>";
 echo "<option value=86400>".__('Last day')."</option>";
 echo "<option value=172800>"."2 ".__('days')."</option>";
+echo "<option value=345600>"."4 ".__('days')."</option>";
 echo "<option value=604800>".__('Last week')."</option>";
 echo "<option value=1296000>"."15 ".__('15 days')."</option>";
 echo "<option value=2592000>".__('Last month')."</option>";
@@ -425,6 +426,7 @@ echo "<td class='datos2'>";
 $stackeds[0] = __('Area');
 $stackeds[1] = __('Stacked area');
 $stackeds[2] = __('Line');
+$stackeds[3] = __('Stacked line');
 print_select ($stackeds, 'stacked', $stacked, '', '', 0);
 echo "</td>";
 

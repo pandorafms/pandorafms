@@ -1,3 +1,46 @@
+
+2009-08-05  Sancho Lerena <slerena@artica.es>
+
+	* include/styles/pandora.css: Adjusted head and removed small heigh 
+	problems in some tabs (agent and search sections).
+		
+	* include/javascript/pandora.js: winopeng call for module graph is now 
+	widther.
+	
+	* index.php: Now defined a default search for agents().
+	
+	* general/header.php: Redesign of header.
+	
+	* general/pandora_help.php: Some visual changes in background and footer.
+	
+	* godmode/modificar_agente.php: Create button replaced.
+	
+	* fgraph.php: Fixed the string graphs and fixed a lot other issues.
+	
+	* include/functions_visual_map.php: Module images are shown in pure mode 
+	(without title) and adding the title defined by user in map definition.
+	
+	* include/pandora_graph.php: Added default colors (up to 9) for combined
+	graphs.
+
+	* include/pchart_graph.php: Created a new method to render datetime
+	data in X axis legend. Reformatted combined and static graph to remove
+	transparent background, title and other issues reported. Also combined
+	stack graph now works adding data from one series to another. 
+	
+	* include/help/en/help_agent_status.php: new help file for agent status.
+	
+	* include/pChart/pChart.class: Added new method for format datetime in two 
+	lines with full date and time information.
+	
+	* operation/search_results.php: reformatted tabs.
+	
+	* operation/agentes/estado_agente.php: removed status information legend 
+	and added a help icon.
+	
+	* godmode/reporting/graph_builder.php,
+	  operation/reporting/graph_viewer.php: Added new graph mode: stacked line.
+	
 2009-07-29  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/search_results.php: fix a query for search alerts. And changed

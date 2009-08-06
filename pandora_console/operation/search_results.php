@@ -153,6 +153,24 @@ if (($config['search_category'] == 'all') || ($config['search_category'] == 'map
 
 /////////	INI MENU AND TABS /////////////
 
+$img_style = array ("class" => "top", "width" => 16);
+
+/*
+echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
+	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
+	print_image ("images/setup.png", false, $img_style);
+	echo '&nbsp; '.mb_substr (get_agent_name ($id_agente), 0, 21).'</a>';
+	echo "</li></ul></div>";
+
+	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
+	print_image ("images/zoom.png", false, $img_style);
+	echo '&nbsp;'.__('View').'</a></li>';
+*/
+
+
+
+
 echo "
 <div id='menu_tab_frame_view'>
 	<div id='menu_tab_left'>
@@ -169,7 +187,9 @@ if ($searchAgents)
 		echo "<li class='nomn_high'>";
 	else
 		echo "<li class='nomn'>";
-	echo "<a href='?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Agents')." <img src='images/bricks.png' /></a>";
+	echo "<a href='?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>";
+	print_image ("images/bricks.png", false, $img_style);
+	echo "&nbsp;".__('Agents')."</a>";
 	echo "</li>";
 }
 
@@ -177,14 +197,18 @@ if ($searchTab == "users")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='?search_category=users&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Users')." <img src='images/group.png' /></a>";
+echo "<a href='?search_category=users&keywords=".$config['search_keywords']. "&head_search_keywords=Search'> ";
+print_image ("images/group.png", false, $img_style);
+echo "&nbsp;".__('Users')."</a>";
 echo "</li>";
 
 if ($searchTab == "alerts")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='?search_category=alerts&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Alerts')." <img src='images/god2.png' /></a>";
+echo "<a href='?search_category=alerts&keywords=".$config['search_keywords']."&head_search_keywords=Search'> ";
+print_image ("images/god2.png", false, $img_style);
+echo "&nbsp;".__('Alerts')."</a>";
 echo "</li>";
 
 if ($searchGraphs)
@@ -193,7 +217,9 @@ if ($searchGraphs)
 		echo "<li class='nomn_high'>";
 	else
 		echo "<li class='nomn'>";
-	echo "<a href='?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Graphs')."  <img src='images/chart_curve.png' /></a>";
+	echo "<a href='?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'> ";
+	print_image ("images/chart_curve.png", false, $img_style);
+	echo "&nbsp;".__('Graphs'). "</a>";
 	echo "</li>";
 }
 
@@ -202,7 +228,9 @@ if ($searchTab == "reports")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Reports')." <img src='images/reporting.png' /></a>";
+echo "<a href='?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'> ";
+print_image ("images/reporting.png", false, $img_style);
+echo "&nbsp;".__('Reports')."</a>";
 echo "</li>";
 
 if ($searchMaps)
@@ -211,7 +239,9 @@ if ($searchMaps)
 		echo "<li class='nomn_high'>";
 	else
 		echo "<li class='nomn'>";
-	echo "<a href='?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".__('Maps')." <img src='images/camera.png' /></a>";
+	echo "<a href='?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'> ";
+	print_image ("images/camera.png", false, $img_style);
+	echo "&nbsp;".__('Maps')."</a>";
 	echo "</li>";
 }
 

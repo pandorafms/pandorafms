@@ -111,6 +111,7 @@ if ($view_graph) {
 		$stackeds[0] = __('Area');
 		$stackeds[1] = __('Stacked area');
 		$stackeds[2] = __('Line');
+		$stackeds[3] = __('Stacked line');
 		print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
 		echo "<td class='datos'>";

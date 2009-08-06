@@ -63,7 +63,7 @@ if (isset($_POST["ag_group"])){
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width=700><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' width=770><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();'
@@ -99,6 +99,12 @@ echo "<input type=text name='search' size='15' >";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' value='".__('Search')."'>";
 echo "</form>";
+echo "<td>";
+echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
+	print_input_hidden ('new_agent', 1);
+	print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+	echo "</form>";
+
 echo "</td></table>";
 
 $search_sql = '';
@@ -148,13 +154,6 @@ echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	
-	// Create agent button
-	echo "<table width='95%'><tr><td align='right'>";
-	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-	print_input_hidden ('new_agent', 1);
-	print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-	echo "</form></td></tr></table>";
-	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='95%' class='databox'>";
 	echo "<th>".__('Agent name')."</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
@@ -184,7 +183,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>".substr(strtoupper($agent["nombre"]),0,20)."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>".substr(salida_limpia($agent["nombre"]),0,20)."</a></strong>";
 		if ($agent["disabled"]) {
 			echo "</em>";
 		}
@@ -241,6 +240,7 @@ if ($agents !== false) {
 }
 
 // Create agent button
+echo '<a name="bottom">';
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 print_input_hidden ('new_agent', 1);
 print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');

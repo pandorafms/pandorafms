@@ -561,6 +561,9 @@
         $Value = $this->ToMetric($Value);        
        if ( $DataDescription["Format"]["Y"] == "currency" )
         $Value = $this->ToCurrency($Value);        
+	   if ( $DataDescription["Format"]["Y"] == "datetime" )
+        $Value = $this->ToDateTime($Value);        
+
 
        $Position  = imageftbbox($this->FontSize,0,$this->FontName,$Value);
        $TextWidth = $Position[2]-$Position[0];
@@ -611,7 +614,9 @@
           $Value = $this->ToMetric($Value);        
          if ( $DataDescription["Format"]["X"] == "currency" )
           $Value = $this->ToCurrency($Value);        
-
+		 if ( $DataDescription["Format"]["X"] == "datetime" )
+          $Value = $this->ToDateTime($Value);  
+        
          $Position   = imageftbbox($this->FontSize,$Angle,$this->FontName,$Value);
          $TextWidth  = abs($Position[2])+abs($Position[0]);
          $TextHeight = abs($Position[1])+abs($Position[3]);
@@ -753,7 +758,11 @@
        if ( $DataDescription["Format"]["Y"] == "metric" )
         $Value = $this->ToMetric($Value);        
        if ( $DataDescription["Format"]["Y"] == "currency" )
-        $Value = $this->ToCurrency($Value);        
+        $Value = $this->ToCurrency($Value);       
+       if ( $DataDescription["Format"]["Y"] == "datetime" )
+        $Value = $this->ToDateTime($Value);       
+
+
 
        $Position  = imageftbbox($this->FontSize,0,$this->FontName,$Value);
        $TextWidth = $Position[2]-$Position[0];
@@ -863,6 +872,8 @@
         $Value = $this->ToMetric($Value);        
        if ( $DataDescription["Format"]["Y"] == "currency" )
         $Value = $this->ToCurrency($Value);        
+       if ( $DataDescription["Format"]["Y"] == "datetime" )
+        $Value = $this->ToDateTime($Value);       
 
        $Position   = imageftbbox($this->FontSize,$Angle,$this->FontName,$Value);
        $TextWidth  = abs($Position[2])+abs($Position[0]);
@@ -907,7 +918,7 @@
     }
 
    /* Compute and draw the scale */
-   function drawGrid($LineWidth,$Mosaic=TRUE,$R=220,$G=220,$B=220,$Alpha=100,$DrawVerticals=FALSE)
+   function drawGrid($LineWidth,$Mosaic=TRUE,$R=220,$G=220,$B=220,$Alpha=100, $DrawVerticals=FALSE)
     {
      /* Draw mosaic */
      if ( $Mosaic )
@@ -3548,6 +3559,13 @@
    function ToDate($Value)
     {
      return(date($this->DateFormat,$Value));
+    }
+
+   /* Convert TS to a datetime format string */
+   /* Added for PandoraFMS, slerena@Ago09 */
+   function ToDateTime($Value)
+    {
+     return(date("Y/m/d\nh:m:s",$Value));
     }
 
    /* Check if a number is a full integer (for scaling) */

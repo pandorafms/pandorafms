@@ -50,7 +50,9 @@ if (is_ajax ()) {
 $group_id = get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Summary')."</h2>";
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Summary').
+print_help_icon ("agent_status", true);
+echo "</h2>";
 
 if ($group_id > 1) {
 	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id)).'">';
@@ -192,10 +194,11 @@ foreach ($agents as $agent) {
 if (!empty ($table->data)) {
 	print_table ($table);
 	unset ($table);
-	require ("bulbs.php");
 } else {
 	echo '<div class="nf">'.__('There are no agents included in this group').'</div>';
 }
+
+/* Godmode controls SHOULD NOT BE HERE 
 
 if (give_acl ($config['id_user'], 0, "LM") || give_acl ($config['id_user'], 0, "AW")
 		|| give_acl ($config['id_user'], 0, "PM") || give_acl ($config['id_user'], 0, "DM")
@@ -206,4 +209,5 @@ if (give_acl ($config['id_user'], 0, "LM") || give_acl ($config['id_user'], 0, "
 		print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 	echo '</form>';
 }
+*/
 ?>

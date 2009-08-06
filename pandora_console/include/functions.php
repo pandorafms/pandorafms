@@ -117,7 +117,7 @@ function safe_int ($value, $min = false, $max = false) {
 }
 
 /** 
- * @deprecated Use get_parameter or safe_input functions
+ * Use to clean HTML entities when get_parameter or safe_input functions dont work
  * 
  * @param string String to be cleaned
  * 
@@ -1002,4 +1002,6 @@ function index_array ($array, $index = 'id', $value = 'name') {
 	
 	return $retval;
 }
+
+
 ?>

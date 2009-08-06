@@ -209,9 +209,10 @@ div#menu {
 div#head {
 	font-size: 8pt;
 	width: 960px;
-	height: 87px;/*84px;*/ /*height: 60px;*/
+	height: 60px;/*84px;*/ /*height: 60px;*/
+	padding-top: 1px;
 	background: url(../../images/header.jpg);
-	border-bottom: solid 2px #555;
+	border-bottom: solid 1px #000;
 }
 
 div#foot {
@@ -361,7 +362,7 @@ td.datos_id {
 	font-style: italic;
 }
 .tit {
-	padding: 3px 1px;
+	padding: 3px 1px; 
 }
 .tit, .titb {
 	font-weight: bold;
@@ -490,7 +491,7 @@ div.title_line {
 	color: #333;
 	border-left: 2px solid #778866;
 	font-weight: bold;
-	line-height: 19px;
+	line-height: 18px;
 }
 #menu_tab li.nomn_high a {
 	background: #799E48;

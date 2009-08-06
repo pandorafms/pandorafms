@@ -185,7 +185,7 @@ if ($id_agente) {
 	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
 	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
 	print_image ("images/setup.png", false, $img_style);
-	echo '&nbsp; '.mb_substr (get_agent_name ($id_agente), 0, 21).'</a>';
+	echo '&nbsp; '.mb_substr(get_agent_name ($id_agente), 0, 15) .'</a>';
 	echo "</li></ul></div>";
 
 	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';

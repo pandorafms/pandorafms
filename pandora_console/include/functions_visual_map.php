@@ -222,6 +222,10 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					else
 						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					
+					echo $layout_data['label'];
+					echo "<br>";
+
+					
 					if ($show_links) {
 						if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
 							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'&amp;tab=data">';
@@ -230,9 +234,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						}
 					}
 					if ($resizedMap)
-						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".((integer)($proportion * $layout_data['height']))."&amp;width=".((integer)($proportion * $layout_data['width']))."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".((integer)($proportion * $layout_data['height']))."&pure=1&amp;width=".((integer)($proportion * $layout_data['width']))."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 					else
-						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&pure=1&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 					echo "</a>";
 					echo "</div>";
 				break;

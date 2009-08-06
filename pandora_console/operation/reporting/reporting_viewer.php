@@ -144,7 +144,7 @@ foreach ($contents as $content) {
 		}
 		
 		$data = array ();
-		$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
+		$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=750&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
 		array_push ($table->data, $data);
 		
 		break;
@@ -159,7 +159,7 @@ foreach ($contents as $content) {
 		
 		// Put description at the end of the module (if exists)
 		if ($content["description"] != ""){
-			$table->colspan[0][0] = 4;
+			$table->colspan[1][0] = 3;
 			$data_desc = array();
 			$data_desc[0] = $content["description"];
 			array_push ($table->data, $data_desc);
@@ -180,11 +180,11 @@ foreach ($contents as $content) {
 		$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$content["id_gs"]);
 
 
-		$table->colspan[1][0] = 4;
+		$table->colspan[2][0] = 3;
 		$data = array ();
-		$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$graph_height.'&width='.$graph_width.'&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+		$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=235&width=750&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 		array_push ($table->data, $data);
-		
+
 		break;
 	case 3:
 	case 'SLA':

@@ -17,7 +17,7 @@ require_once ("include/functions_messages.php");
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
 	<tr>
-		<td><div id="pandora_logo_header"></div></td>
+		<td rowspan=2><div id="pandora_logo_header"></div></td>
 		<td width="20%">
 			<img src="images/user_<?=((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' );?>.png" class="bot" alt="user" />
 			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?=__('You are');?> [<b><?=$config["id_user"];?></b>]</a>
@@ -35,14 +35,11 @@ require_once ("include/functions_messages.php");
 				echo '</a>';
 			}
 			?>
-			<br />
-			<br />
-			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?=__('Logout');?>" class="bot" /> <?=__('Logout');?></a>
+			&nbsp;
+			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?=__('Logout');?>" class="bot" /></a>
 		</td>
+		
 		<td width="20%">
-			<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" alt="info" class="bot" /><?=__('General information');?></a>
-			<br />
-			<br />
 			<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">
 			<?php
 			$servers["all"] = (int) get_db_value ('COUNT(id_server)','tserver');
@@ -93,26 +90,21 @@ require_once ("include/functions_messages.php");
 				unset ($values);
 				echo '</span>';
 			}
-			?>
-			<br />
-			<br />
-			<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5">
-				<img src="images/lightning_go.png" alt="lightning_go" class="bot" /> <?=__('Events');?>
-			</a>
-		</td>
-		<td width="20%">
-			<div id="head_r"><span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span></div>
-			<?php
-			if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) 
-				echo '<div id="logo_text3">Enterprise</div>';
-			else
-				echo '<div id="logo_text3">OpenSource</div>';
-			?>
+		echo "</td>";
+		echo "<td width='20%' rowspan=2>";
+		echo "<a href='index.php?sec=main'>";
+		echo "<div id='head_r'><span id='logo_text1'>Pandora</span> <span id='logo_text2'>FMS</span></div>";
+		if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) 
+			echo '<div id="logo_text3">Enterprise</div>';
+		else
+			echo '<div id="logo_text3">OpenSource</div>';
+		echo "</A>";
+?>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="5" style="padding: 0; height: 20px;">
-			<form method="get" style="" valign="middle">
+	<td colspan=2>
+	<form method="get" style="" valign="middle" name="quicksearch">
 				<script type="text/javascript" language="javascript">
 				var fieldKeyWordEmpty = true;
 				</script>
@@ -125,36 +117,13 @@ require_once ("include/functions_messages.php");
 					else echo "value='" . $config['search_keywords'] . "'";
 					?>
 					onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
-					size="119" style="background: white url('images/lupa_15x15.png') no-repeat left; padding: 0; padding-left:15px; margin: 0; width: 70%; margin-left: 2px;" />
-				<?php
-				if (isset($config['search_category']))
-					$selected = $config['search_category'];
-				else
-					$selected = 'all';
-				$values = array (
-					//'adsf' => ((strlen(__("Search")) > 12) ?  (substr(__("0123456789AB"), 0, 12) . "&hellip;") : __("0123456789AB")), 
-					'all' => ((strlen(__("All")) > 12) ?  (substr(__("All"), 0, 12) . "&hellip;") : __("All")),
-					'users' => ((strlen(__("Users")) > 12) ?  (substr(__("Users"), 0, 12) . "&hellip;") : __("Users")),
-					'alerts' => ((strlen(__("Alerts")) > 12) ?  (substr(__("Alerts"), 0, 12) . "&hellip;") : __("Alerts")),
-					'reports' => ((strlen(__("Reports")) > 12) ?  (substr(__("Reports"), 0, 12) . "&hellip;") : __("Reports"))
-				);
-				
-				//INI SECURITY ACL
-				if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AR")) {
-					$values['agents'] = ((strlen(__("Agents")) > 12) ?  (substr(__("Agents"), 0, 12) . "&hellip;") : __("Agents"));
-					$values['graphs'] = ((strlen(__("Graphs")) > 12) ?  (substr(__("Graphs"), 0, 12) . "&hellip;") : __("Graphs"));
-				}
-				if (give_acl ($config["id_user"], 0, "AR"))
-					$values['maps'] = ((strlen(__("Maps")) > 12) ?  (substr(__("Maps"), 0, 12) . "&hellip;") : __("Maps"));;
-				//END SECURITY ACL
-				
-				print_select_style ($values, 'search_category', $selected, "min-width: 12em;");
-				?>
-				<input id="submit-srcbutton" name="head_search_keywords"
-					value="<?=((strlen(__("Search")) > 12) ?  (substr(__("0123456789ABCD"), 0, 12) . "&hellip;") : __("Search")); ?>"
-					class="sub" type="submit" style="min-width: 12em; height: 23px;" />
-			</form>
-		</td>
+					size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
+				<!-- onClick="javascript: document.quicksearch.submit()" -->					
+				<input type='hidden' name='head_search_keywords' value='abc'>
+				</form>				
+				<td>
+					<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot">&nbsp;Events</a>
+				</td>
 	</tr>
 </table>
 <?php

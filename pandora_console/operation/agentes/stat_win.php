@@ -30,10 +30,7 @@ if (! isset($_SESSION["id_user"])) {
 
 require_once ($config["homedir"] . '/include/functions.php');
 require_once ($config["homedir"] . '/include/functions_db.php');
-
-if ($config['flash_charts']) {
-	require_once ($config["homedir"] . '/include/fgraph.php');
-}
+require_once ($config["homedir"] . '/include/fgraph.php');
 
 check_login ();
 
@@ -97,7 +94,7 @@ function getTermEle(ele) {
 }
 //-->
 </script>
-</head><body>
+</head><body bgcolor="#ffffff">
 <?php
 
 // Get input parameters

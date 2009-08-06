@@ -66,9 +66,17 @@ function get_graph_engine ($period = 3600) {
 	} else {
 		exit;
 	}
+	
 	$engine->graph_color[1] = $config['graph_color1'];
 	$engine->graph_color[2] = $config['graph_color2'];
 	$engine->graph_color[3] = $config['graph_color3'];
+	
+	$engine->graph_color[4] = "#FED000"; // Yellow
+	$engine->graph_color[5] = "#00FEF0"; // Cyan
+	$engine->graph_color[6] = "#FF81EC"; // Pink
+	$engine->graph_color[7] = "#FF8D00"; // Orange
+	$engine->graph_color[8] = "#7E7E7E"; // Grey		
+	$engine->graph_color[9] = "#000000"; // Black
 	
 	if ($period <= 86400)
 		$engine->date_format = 'g:iA';

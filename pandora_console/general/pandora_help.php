@@ -19,7 +19,7 @@ require_once ("../include/functions.php");
 
 echo '<html><head><title>'.__('Pandora FMS help system').'</title></head>';
 echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">';
-echo '<body>';
+echo '<body style="background-color: #fff;">';
 
 $id = get_parameter ('id');
 
@@ -62,7 +62,7 @@ echo '<div style="font-size: 12px; margin-left: 30px; margin-right:25px;">';
 require_once ($help_file);
 echo '</div>';
 echo '<br /><br /><hr width="100%" size="1" />';
-echo '<div style="font-family: verdana, arial; font-size: 11px;">';
+echo '<div style="background-color: #CCC; font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
 ?>
 </body>

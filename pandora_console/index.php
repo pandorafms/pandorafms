@@ -88,11 +88,12 @@ $config["pure"] = (bool) get_parameter ("pure");
 // Auto Refresh page (can now be disabled anywhere in the script)
 $config["refr"] = (int) get_parameter ("refr");
 
+//This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
+ob_start ('process_page_head');
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
-//This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
-ob_start ('process_page_head');
 
 enterprise_include ('index.php');
 

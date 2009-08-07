@@ -1,3 +1,8 @@
+2009-08-07  Miguel de Dios <miguel.dedios@artica.es>
+
+	* index.php: Fix error with writting buffer after ob_start and before
+	Pandora console don't change the http header.
+	Fixes: 2833710 
 
 2009-08-05  Sancho Lerena <slerena@artica.es>
 

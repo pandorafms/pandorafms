@@ -214,10 +214,12 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
  * @param bool $multiple Whether to allow multiple selections or not. Single by default
  * @param bool $sort Whether to sort the options or not. Sorted by default.
+ * @param bool $disabled if it's true, disable the select.
  *
  * @return string HTML code if return parameter is true.
  */
-function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
+function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
+	$multiple = false, $sort = true, $disabled = false) {
 	
 	$fields = array ();
 	$result = get_db_all_rows_sql ($sql);
@@ -228,7 +230,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$fields[$row[0]] = $row[1];
 	}
 	
-	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort);
+	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled);
 }
 
 /**
@@ -340,16 +342,17 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
  * @param int $size Size of the input (optional).
  * @param int $maxlength Maximum length allowed (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $disabled Disable the button (optional, button enabled by default).
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
+function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
 	if ($maxlength == 0)
 		$maxlength = 255;
 	if ($size == 0)
 		$size = 10;
 		
-	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, false, '', '', $return);
+	return print_input_text_extended ($name, $value, 'text-'.$name, '', $size, $maxlength, $disabled, '', '', $return);
 }
 
 /**
@@ -510,6 +513,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *
  * @param object Object with several properties:
  *     $table->head - An array of heading names.
+ *     $table->head_colspan - An array of colspans of each head column.
  *     $table->align - An array of column alignments
  *     $table->valign - An array of column alignments
  *     $table->size  - An array of column sizes
@@ -518,6 +522,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->rowstyle  - An array of personalized style of each row.
  *     $table->rowclass  - An array of personalized classes of each row (odd-evens classes will be ignored).
  *     $table->colspan  - An array of colspans of each column.
+ *     $table->rowspan  - An array of rowspans of each column.
  *     $table->data[] - An array of arrays containing the data.
  *     $table->width  - A percentage of the page
  *     $table->border  - Border of the table.
@@ -592,6 +597,16 @@ function print_table (&$table, $return = false) {
 			}
 		}
 	}
+
+	if (isset ($table->rowspan)) {
+		foreach ($table->rowspan as $keyrow => $rspan) {
+			foreach ($rspan as $key => $span) {
+				$rowspan[$keyrow][$key] = ' rowspan="'.$span.'"';
+			}
+		}
+	}
+
+
 	if (empty ($table->width)) {
 		$table->width = '80%';
 	}
@@ -652,8 +667,13 @@ function print_table (&$table, $return = false) {
 			}
 			if (!isset ($table->headclass[$key])) {
 				$table->headclass[$key] = 'header c'.$key;
-			}	
-			$output .= '<th class="'.$table->headclass[$key].'" scope="col">'. $heading .'</th>';
+			}
+			if (isset ($table->head_colspan[$key])) {
+				$headColspan = 'colspan = "' . $table->head_colspan[$key] . '"';
+			}
+			else $headColspan = '';
+	
+			$output .= '<th class="'.$table->headclass[$key].'" ' . $headColspan . ' scope="col">'. $heading .'</th>';
 		}
 		$output .= '</tr></thead>'."\n";
 	}
@@ -686,6 +706,9 @@ function print_table (&$table, $return = false) {
 				if (!isset ($colspan[$keyrow][$key])) {
 					$colspan[$keyrow][$key] = '';
 				}
+				if (!isset ($rowspan[$keyrow][$key])) {
+					$rowspan[$keyrow][$key] = '';
+				}
 				if (!isset ($align[$key])) {
 					$align[$key] = '';
 				}
@@ -699,7 +722,7 @@ function print_table (&$table, $return = false) {
 					$style[$key] = '';
 				}
 				
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].'  '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";
 		}

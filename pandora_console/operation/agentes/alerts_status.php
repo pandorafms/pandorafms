@@ -155,7 +155,17 @@ $table->data = array ();
 
 $total = 0;
 $printed = 0;
+
+$rowPair = true;
+$iterator = 0;
 foreach ($alerts_simple as $alert) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	$total++;
 	if (empty ($alert) || $printed >= $config["block_size"] || $total <= $offset) {
 		continue;

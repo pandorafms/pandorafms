@@ -1,3 +1,14 @@
+2009-08-07  Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/visual_console/index.php,
+	pandora_console/operation/users/user.php, operation/incidents/incident.php,
+	operation/agentes/status_monitor.php, operation/agentes/estado_agente.php,
+	operation/agentes/alerts_status.php, include/styles/pandora.css,
+	include/styles/pandora_black.css,include/styles/pandora_blackmetal.css,
+	include/styles/pandora_width.css, include/styles/pandora_minimal.css,
+	include/styles/pandora_red.css: the table list now has rows with alternate
+	colours for easy see the data.
+	
 2009-08-10  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

@@ -1,3 +1,7 @@
+2009-08-10  Sancho Lerena <slerena@artica.es>
+
+        * pandora_server.conf: Removed deprecated parameter: Alert_threshold.
+
 2009-08-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm,

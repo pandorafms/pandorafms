@@ -162,6 +162,9 @@ if ($agents !== false) {
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('Delete')."</th>";
 	$color=1;
+	
+	$rowPair = true;
+	$iterator = 0;
 	foreach ($agents as $agent) {
 		$id_grupo = $agent["id_grupo"];
 		if (! give_acl ($config["id_user"], $id_grupo, "AW"))
@@ -175,8 +178,15 @@ if ($agents !== false) {
 			$color = 1;
 		}
 		
+		
+		if ($rowPair)
+			$rowclass = 'rowPair';
+		else
+			$rowclass = 'rowOdd';
+		$rowPair = !$rowPair;
+		$iterator++;
 		// Agent name
-		echo "<tr><td class='$tdcolor' width='40%'>";
+		echo "<tr class='$rowclass'><td class='$tdcolor' width='40%'>";
 		if ($agent["disabled"]){
 			echo "<em>";
 		}

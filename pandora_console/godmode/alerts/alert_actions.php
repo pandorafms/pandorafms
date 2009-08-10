@@ -108,7 +108,16 @@ $actions = get_db_all_rows_in_table ('talert_actions');
 if ($actions === false)
 	$actions = array ();
 
+$rowPair = true;
+$iterator = 0;
 foreach ($actions as $action) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.

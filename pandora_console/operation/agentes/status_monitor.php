@@ -185,7 +185,16 @@ $table->align[5] = "center";
 $table->head[6] = __('Timestamp');
 $table->align[6] = "right";
 
+$rowPair = true;
+$iterator = 0;
 foreach ($result as $row) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	$data = array ();
 	//TODO: This should be processed locally. Don't rely on other URL's to do our dirty work. Maybe a process_agentmodule_flag function
 	$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'&id_agente_modulo='.$row["id_agente_modulo"].'&flag=1&refr=60">';

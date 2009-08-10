@@ -92,3 +92,19 @@ span#logo_text1, span#logo_text2 {
 ol.steps li.current {
 	border-left: 5px solid #000;
 }
+
+tr.rowPair {
+	background-color: #fff;
+}
+
+tr.rowOdd {
+	background-color: #BDC2C7;
+}
+
+tr.rowPair:hover {
+	background-color: #DEDEDE;
+}
+
+tr.rowOdd:hover {
+	background-color: #7D8287;
+}

@@ -316,6 +316,23 @@ td.datos_id {
 td.datos_jus, td.datos2_jus {
 	text-align: justify;
 }
+
+tr.rowPair {
+	background-color: #fff;
+}
+
+tr.rowOdd {
+	background-color: #F08080;
+}
+
+tr.rowPair:hover {
+	background-color: #FFBFBF;
+}
+
+tr.rowOdd:hover {
+	background-color: #F8D0D0;
+}
+
 .bg { /* op menu */
 	background-color: #D44;
 }

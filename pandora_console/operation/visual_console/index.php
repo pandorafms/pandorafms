@@ -33,7 +33,16 @@ $table->align = array ();
 $table->align[1] = 'center';
 $table->align[2] = 'center';
 
+$rowPair = true;
+$iterator = 0;
 foreach ($layouts as $layout) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	if (!give_acl ($config["id_user"], $layout["id_group"], "AR")) {
 		continue;
 	}

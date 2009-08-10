@@ -192,7 +192,16 @@ $table->size[3] = '50px';
 $table->align = array ();
 $table->align[3] = 'center';
 
+$rowPair = true;
+$iterator = 0;
 foreach ($templates as $template) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.

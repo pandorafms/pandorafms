@@ -76,6 +76,23 @@ td.datos3 {
 td.datos_id {
 	color: #1a313a;
 }
+
+tr.rowPair {
+	background-color: #274263;
+}
+
+tr.rowOdd {
+	background-color: #020E1D;
+}
+
+tr.rowPair:hover {
+	background-color: #4782A3;
+}
+
+tr.rowOdd:hover {
+	background-color: #424E5D;
+}
+
 div.title_line {
 	background-color: #000;
 }

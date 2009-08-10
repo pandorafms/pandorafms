@@ -101,3 +101,19 @@ table, img {
 	background-color: #999999;
 	padding: 20px;
 }
+
+tr.rowPair {
+	background-color: #fff;
+}
+
+tr.rowOdd {
+	background-color: #888;
+}
+
+tr.rowPair:hover {
+	background-color: #bbb;
+}
+
+tr.rowOdd:hover {
+	background-color: #444;
+}

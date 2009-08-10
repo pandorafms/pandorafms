@@ -325,7 +325,16 @@ $table->head[4] = __('Actions');
 $table->head[5] = '';
 $table->data = array ();
 
+$rowPair = true;
+$iterator = 0;
 foreach ($simple_alerts as $alert) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+
 	$data = array ();
 	
 	$data[0] = '<form class="disable_alert_form" method="post" style="display: inline;">';

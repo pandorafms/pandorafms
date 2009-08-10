@@ -46,7 +46,16 @@ if (give_acl ($config["id_user"], 0, "UM") == 1) {
 	$info[$config["id_user"]] = get_user_info ($config["id_user"]);
 }
 
+$rowPair = true;
+$iterator = 0;
 foreach ($info as $user_id => $user_info) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+	
 	$data[0] = '<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;id='.$user_id.'">'.$user_id.'</a>';
 	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
 	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';

@@ -270,7 +270,16 @@ if ($count < 1) {
 	$table->align[4] = "center";
 	$table->align[8] = "center";
 	
+	$rowPair = true;
+	$iterator = 0;
 	foreach ($result as $row) {
+		if ($rowPair)
+			$table->rowclass[$iterator] = 'rowPair';
+		else
+			$table->rowclass[$iterator] = 'rowOdd';
+		$rowPair = !$rowPair;
+		$iterator++;
+		
 		$data = array();
 
 		$data[0] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.$row["id_incidencia"].'</a>';

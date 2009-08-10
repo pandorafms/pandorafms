@@ -147,7 +147,16 @@ $table->align[7] = "right";
 
 $table->data = array ();
 
+$rowPair = true;
+$iterator = 0;
 foreach ($agents as $agent) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+		
 	$agent_info = get_agent_module_info ($agent["id_agente"]);
 	
 	$data = array ();

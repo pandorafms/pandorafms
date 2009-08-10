@@ -329,6 +329,23 @@ td.datos4 {
 td.datos_id {
 	color: #1a313a;
 }
+
+tr.rowPair {
+	background-color: #fff;
+}
+
+tr.rowOdd {
+	background-color: #CFD2D4;
+}
+
+tr.rowPair:hover {
+	background-color: #ddd;
+}
+
+tr.rowOdd:hover {
+	background-color: #A2A2C2; /*#8F9294;*/
+}
+
 .bg { /* op menu */
 	background-color: #786;
 }

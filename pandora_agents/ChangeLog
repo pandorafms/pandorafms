@@ -1,3 +1,13 @@
+2009-08-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: sorry, I had got a mistake with copy&paste.
+
+2009-08-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* linux/plugins/inventory: Added the capacity for search services in init,
+	details file system, and modify the software scanner to extract the
+	description.
+
 2009-08-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* linux/plugins/inventory: Added to repository. Inventory plugin.

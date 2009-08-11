@@ -211,7 +211,7 @@ if ($id_agente) {
 	echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
 	print_image ("images/network.png", false, $img_style);
-	echo '&nbsp; '.__('Net. Templates').'</a></li>';
+	echo '&nbsp; '.__('Templates').'</a></li>';
 
 	enterprise_hook ('inventory_tab');
 

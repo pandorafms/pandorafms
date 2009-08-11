@@ -1,3 +1,8 @@
+2009-08-11  Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/configurar_agente.php: change string for more easy
+	understand.
+
 2009-08-07  Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/visual_console/index.php,

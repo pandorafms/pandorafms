@@ -80,7 +80,7 @@ $table->align[3] = "center";
 $table->head[4] = __('Status');
 $table->align[4] = "center";
 
-$table->head[5] = __('Network profile');
+$table->head[5] = __('Module template');
 $table->align[5] = "center";
 
 $table->head[6] = __('Group');

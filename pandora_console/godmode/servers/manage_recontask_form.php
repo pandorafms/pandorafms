@@ -88,8 +88,8 @@ $values[2592000] = __('%d month', 1);
 $table->data[3][0] = __('Interval');
 $table->data[3][1] = print_select ($values, "interval", $interval, '', '', '', true);
 
-// Network profile
-$table->data[4][0] = __('Network profile');
+// Module template
+$table->data[4][0] = __('Module template');
 $table->data[4][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
 	"id_network_profile", $id_network_profile, '', '', '', true);
 

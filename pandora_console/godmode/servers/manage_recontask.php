@@ -94,7 +94,7 @@ echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage recontask')."</h2>";
 $result = get_db_all_rows_in_table ("trecon_task");
 $color=1;
 if ($result !== false) {
-	$table->head = array  (__('Name'), __('Network'), __('Network profile'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Action'));
+	$table->head = array  (__('Name'), __('Network'), __('Module template'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Action'));
 	$table->align = array ("","","","center","","","center","center");
 	$table->width = 700;
 	$table->cellpadding = 4;
@@ -106,7 +106,7 @@ if ($result !== false) {
 			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>',
 		// Network (subnet)
 			$row["subnet"],
-		// Network profile name
+		// Module template name
 			'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id='.$row["id_network_profile"].'">'.get_networkprofile_name ($row["id_network_profile"]).'</a>',
 		// GROUP
 			print_group_icon ($row["id_group"], true),

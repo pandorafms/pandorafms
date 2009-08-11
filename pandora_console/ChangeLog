@@ -1,3 +1,15 @@
+2009-08-11  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console_install: New installer for console.
+	
+	* pandora_console.spec, install.php: minimal fixes.
+	
+	* pandora.css: Color change for table dual colors.
+	
+	* events.php: Added help and removed legend from table bottom.
+	
+	* include/help/en/help_eventview.php:  Help added.
+
 2009-08-11  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* general/header.php: change the short php tags for standar php tags.

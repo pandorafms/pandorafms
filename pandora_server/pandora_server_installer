@@ -1,103 +1,181 @@
-# Pandora FMS 3.0 Server Installer (c) 2008-2009 Artica ST
+#!/bin/bash
+
+# Pandora FMS Server Installer (c) 2008-2009 Artica ST
+# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
+# v3.0 Build 090810
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-
-#!/bin/bash
 
 MODE=$1
 SECOPT=$2
 
+get_distro () {
+
+	# Get Linux Distro type and version
+	if [ -f "/etc/SuSE-release" ]
+	then
+		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+		LINUX_DISTRO=SUSE
+	else
+		if [ -f "/etc/lsb-release" ]
+		then
+			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+			LINUX_DISTRO=UBUNTU
+			OS_VERSION="UBUNTU $OS_VERSION"
+		else
+			if [ -f "/etc/debian_version" ]
+			then
+				OS_VERSION=`cat /etc/debian_version`
+				OS_VERSION="DEBIAN $OS_VERSION"
+				LINUX_DISTRO=DEBIAN
+			else
+				if [ -f "/etc/fedora-release" ]
+				then
+					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+					OS_VERSION="FEDORA $OS_VERSION"
+					LINUX_DISTRO=FEDORA
+				else
+					LINUX_DISTRO=GENERIC
+					OS_VERSION=`uname -r`
+				fi
+			fi
+		fi
+	fi
+	echo $LINUX_DISTRO
+}
+
+
 install () {
 
-perl Makefile.PL > output 2>&1  #&& sleep 2 &&  cat output | grep "found" | wc -l 
-
-DEPENDENCIAS=`cat output | grep "found" | wc -l`
-
-if [ $DEPENDENCIAS -gt 0 ]
-then
-
-	echo "You are missing the following dependencies"
-	echo " "
-	cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
-	echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
-	echo " "
-	echo "Debian-based distribution do:"
-	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
-	echo " "
-	echo "RedHat-based distribution do"
-	echo " "
-	echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-DateManip* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-GD* perl-DateTime* perl-ExtUtils"
-	echo " "
-	echo "To get it from source through CPAN do"
-	echo " "
-	echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format Net::Ping NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
-	echo " "
-	rm output
-else
-	make
-	make install
-	mkdir /var/spool/pandora
-	mkdir /var/spool/pandora/data_in
-	id pandora
-	if [ $? -eq 0 ]; then
+	perl Makefile.PL > output 2>&1  #&& sleep 2 &&  cat output | grep "found" | wc -l 
+	DEPENDENCIAS=`cat output | grep "found" | wc -l`
+	if [ $DEPENDENCIAS -gt 0 ]
+	then
+		echo "You are missing the following dependencies"
 		echo " "
-		echo "User pandora does exist, make sure the SSH directories are correct"
+		cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
+		echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
+		echo " "
+		echo "Debian-based distribution do:"
+		echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
+		echo " "
+		echo "RPM distribution do"
+		echo " "
+		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-GD* perl-DateTime* perl-ExtUtils perl-DBI perl-Date-Manip perl-SNMP"
+		echo " "
+		echo "To get it from source through CPAN do"
+		echo " "
+		echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities Date::Manip"
+		echo " "
+		rm output
 	else
-		useradd pandora
-		mkdir /home/pandora
-		mkdir /home/pandora/.ssh
-		chown -R pandora /home/pandora
-	fi
-	mkdir /var/log/pandora
-	chown pandora:wheel /var/spool/pandora/data_in > /dev/null 2>&1 || chown pandora:root /var/spool/pandora/data_in
-	chmod 770 /var/spool/pandora/data_in
-	mkdir /etc/pandora
-	if [ -e /etc/pandora/pandora_server.conf ]; then
-		echo "Old installation detected, backing up pandora_server.conf"
-		mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.bak
-	fi
-	cp conf/pandora_server.conf /etc/pandora/
-	chmod 770 /etc/pandora/pandora_server.conf
-	if [ "`uname -s`" != "Linux" ]; then
-		echo "This is not a Linux-based distro. The installer will not create files for automatic startup."
-		echo "Copying the binaries into /usr/local/bin"
-		cp pandora_server /usr/local/bin
-	else 
-		echo "Copying the startup scripts into /etc/init.d and linking it to /etc/rc2.d"
-		cp pandora_server /etc/init.d/
-		ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-	fi
+	
+		DISTRO=`get_distro`
+		
+		if [ "$DISTRO" == "UBUNTU" ]
+		then
+			echo "UBUNTU distribution detected"
+		fi
 
-	if [ -e /usr/local/bin/pandora_server ]
-	then
-		ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server
-		ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server
-	fi
+		if [ "$DISTRO" == "SUSE" ]
+		then
+			echo "SUSE distribution detected"
+		fi
+		
+		echo "Installing binaries and libraries"
+		make
+		make install
+		
+		echo "Creating common Pandora FMS directories"
+		mkdir /var/spool/pandora 2> /dev/null
+		mkdir /var/spool/pandora/data_in 2> /dev/null
+		id pandora
+		if [ $? -eq 0 ]; then
+			echo " "
+			echo "User pandora does exist, make sure the SSH directories are correct"
+		else
+			echo "Creating 'pandora' user"
+			useradd pandora 
+			mkdir /home/pandora 2> /dev/null
+			mkdir /home/pandora/.ssh 2> /dev/null
+			chown -R pandora /home/pandora 
+		fi
+		mkdir /var/log/pandora 2> /dev/null
+		
+		echo "Giving proper permission to /var/spool/pandora"
+		if [ "$DISTRO" == "UBUNTU" ]
+		then
+			chown -R pandora:www-data /var/spool/pandora/ 
+		else
+			chown -R pandora:www /var/spool/pandora/ 
+		fi
+		
+		echo "Creating setup directory in /etc/pandora"
+		mkdir /etc/pandora 2> /dev/null
+		if [ -e /etc/pandora/pandora_server.conf ]
+		then
+			OLDFILENAMETMP=`date +"%Y-%m-%d"`
+			echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
+			mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.$OLDFILENAMETMP
+		fi
+		cp conf/pandora_server.conf /etc/pandora/
+		chmod 770 /etc/pandora/pandora_server.conf
+		
+		echo "Copying the daemon script into /etc/init.d/pandora_server"
+		cp pandora_server /etc/init.d/		
+		
+		if [ "$DISTRO" == "UBUNTU" ]
+		then
+			echo "Linking startup script to /etc/rc2.d"
+			ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
+		else
+			INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
+			echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
+			ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+		fi
 
+		echo "Creating links for /usr/local/bin/pandora_server"
+		if [ -e /usr/local/bin/pandora_server ]
+		then
+			ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server 2> /dev/null
+		else
+			ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server 2> /dev/null
+		fi
 
-	if [ "$SECOPT" != "--no-tentacle" ]
-	then
-		# Tentacle server install
-		echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-		cp bin/tentacle_server /usr/local/bin
-		cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-		ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
-	fi
+		if [ "$SECOPT" != "--no-tentacle" ]
+		then
+			if [ "$DISTRO" == "UBUNTU" ]
+			then
+				# Tentacle server install (Ubuntu)
+				echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
+				cp bin/tentacle_server /usr/local/bin
+				cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+				ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+			else
+				# Tentacle server install (SUSE)
+				echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
+				cp bin/tentacle_server /usr/local/bin
+				cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+				ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+			fi
+		fi
 
-	mkdir /usr/share/pandora
-	cp -R util /usr/share/pandora
-	if [ -d /etc/cron.daily ]
-	then
-		echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	
-		echo "perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
-		chmod +x /etc/cron.daily/pandora_purge_db
-	else
-		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
-		echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+		echo "Creating Pandora FMS distribution directory in /usr/share/pandora"
+		mkdir /usr/share/pandora 2> /dev/null
+		cp -R util /usr/share/pandora
+		if [ -d /etc/cron.daily ]
+		then
+			echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	
+			echo "perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
+			chmod +x /etc/cron.daily/pandora_purge_db
+		else
+			echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+			echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+		fi
+		rm output
 	fi
-	rm output
-fi
 
 }
 
@@ -111,22 +189,20 @@ uninstall () {
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "   userdel pandora"
 	echo "   rm -Rf /home/pandora/"
-        ## Just to clarify here. Some people (like me) are using the pandora user for other purposes and/or using an LDAP-based user management
+	
+    ## Just to clarify here. Some people (like me) are using the pandora user 
+    ## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
 
 	rm -Rf /var/log/pandora/  2> /dev/null 
 	rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
 	rm -Rf /etc/init.d/pandora_server  2> /dev/null 
-
 	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
-
+	rm -Rf /etc/rc.d/rc3.d/S90pandora_server  2> /dev/null 
 	rm -Rf /usr/local/bin/pandora_server  2> /dev/null
-
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
-
 	rm -Rf /usr/share/pandora
 	rm -Rf /etc/cron.daily/pandora_purge_db
-
 	echo "Done"
 }
 

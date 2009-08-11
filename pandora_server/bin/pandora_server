@@ -42,7 +42,7 @@ my @Servers;
 my $DBH;
 
 ########################################################################################
-# Server shutdown
+# Server shutdown.  Handler to do a controlled shutdown.
 ########################################################################################
 sub pandora_shutdown () {
 	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 0);
@@ -57,8 +57,24 @@ sub pandora_shutdown () {
 	exit (0);
 }
 
+########################################################################################
+# Server crash. Handler to write in the log unhandled errors and write it to console
+########################################################################################
+sub pandora_crash () {
+
+	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error', 0);
+	print_message (\%Config, '[E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
+	my(@array) = @_;
+	
+	foreach my $error_line (@array) {
+		logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 0);
+		print_message (\%Config, "[E] $error_line \n", 0);
+	}
+}
+
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
+$SIG{__DIE__} = 'pandora_crash';
 
 # Prevent alarm from bombing the main thread when called within a thread
 $SIG{'ALRM'} = 'IGNORE';

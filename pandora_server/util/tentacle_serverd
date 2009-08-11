@@ -23,8 +23,10 @@ TENTACLE_EXT_OPTS=""
 
 # Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty
 # if not running). Can be a list of PIDs if multiple instances are running.
+
 function get_pid {
-	TENTACLE_PID=$(pidof -x $TENTACLE_DAEMON)
+		TENTACLE_PID=`ps aux | grep $TENTACLE_PATH$TENTACLE_DAEMON | grep -v grep | tail -1 | awk '{ print $2 }'`
+		echo $TENTACLE_PID
 }
 
 # Main script
@@ -40,13 +42,13 @@ case "$TENTACLE_PATH" in
 esac
 
 if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
-        echo "Tentacle server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON."
-        exit 1
+	echo "Tentacle server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON."
+	exit 1
 fi
 
 case "$1" in
-  	start)
-		get_pid
+	start)
+		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is already running with PID $TENTACLE_PID."
 			exit 1
@@ -55,7 +57,7 @@ case "$1" in
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
 		sleep 1
 
-		get_pid
+		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is now running with PID $TENTACLE_PID."
 		else
@@ -64,10 +66,10 @@ case "$1" in
 		fi
 
 		exit 0
-        ;;
+	;;
 	
 	stop)
-		get_pid
+		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server does not seem to be running."
 			exit 1;
@@ -88,12 +90,12 @@ case "$1" in
 	;;
 
 	force-reload|restart)
-        	$0 stop
-	        $0 start
-        ;;
+		$0 stop
+		$0 start
+	;;
 
 	status)
-		get_pid
+		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is not running."
 		else
@@ -101,10 +103,10 @@ case "$1" in
 		fi
 		
 		exit 0
-        ;;
+	;;
 
 	*)
- 		echo "Usage: $0 {start|stop|restart|status}"
+		echo "Usage: $0  {start | stop | restart | status}"
 		exit 1
 	;;
 esac

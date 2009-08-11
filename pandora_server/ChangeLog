@@ -1,4 +1,24 @@
-2009-08-10  Sancho Lerena <slerena@artica.es>
+2009-08-11  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server: Using new method to get PID of process, compatible with
+	any distro (SUSE problems reported). Removed old stuff and updated headers.
+	
+	* pandora_server_installer: A lot of improvementes and added separated code
+	for Ubuntu/Debian and SUSE targets. Fixed some minor bugs reported.
+	
+	* bin/pandora_server: Added a new die handled for manage crashes and report
+	more information into logs and console on startup. This helps to determine
+	some common problems.
+	
+	* Config.pm: Updated version number.
+	
+	* util/tentacle_serverd: Fixed startup script to work also in SUSE. New
+	code for getpid compatible with all distros.
+
+	* Makefile.PL,  NetworkServer.pm: Removed Net::Ping dependency, 
+	not used anymore. Pending to remove Date::Manip from pandora_db script.
+	
+2009-08-09  Sancho Lerena <slerena@artica.es>
 
         * pandora_server.conf: Removed deprecated parameter: Alert_threshold.
 

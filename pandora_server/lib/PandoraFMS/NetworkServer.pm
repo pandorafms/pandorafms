@@ -25,7 +25,6 @@ use threads::shared;
 use Thread::Semaphore;
 
 use IO::Socket::INET;
-use Net::Ping;
 use POSIX qw(strftime);
 
 use PandoraFMS::Tools;

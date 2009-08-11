@@ -226,7 +226,7 @@ if (! -e $Log_file) {
 }
 
 # Create index file if it does not exist
-$Idx_file=$Idx_dir . basename($Log_file) . ".idx";
+$Idx_file=$Idx_dir . $Module_name . "_" . basename($Log_file) . ".idx";
 if (! -e $Idx_file) {
 	create_idx();
 	exit 0;

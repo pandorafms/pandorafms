@@ -1,14 +1,13 @@
 #!/bin/bash
 # **********************************************************************
-# Pandora FMS Generic Host Agent
-# GNU/Linux version 2.0
-# (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
-# with the help of many people. Please see http://pandora.sourceforge.net
+# Pandora FMS Generic Linux Agent
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-AGENT_VERSION=2.0
-AGENT_BUILD=081210
+AGENT_VERSION=3.0
+AGENT_BUILD=090608
 
 # **********************************************************************
 # function configure_agent()

@@ -6,7 +6,7 @@
 #
 # inventory	Generate a hardware/software inventory.
 # 
-# Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software]
+# Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem]
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,6 +48,48 @@ sub get_module_data ($$$$) {
 	push (@{$modules->{$name}}, \%module);
 }
 
+# Get a list of information file system in machine
+sub get_file_system($$) {
+	my ($name, $modules) = @_;
+
+	my @fileSystems = `df -h | tail -n +2`; #remove the titles of columns
+
+	foreach my $row (@fileSystems) {
+		next unless ($row =~ /^(\S+)\s+\S+\s+(\S+)\s+(\S+)\s+\S+\s+(\S+)/);
+
+		my %module;
+		$module{'filesystem'} = $1;
+		$module{'used'} = $2;
+		$module{'avail'} = $3;
+		$module{'mount'} = $4;
+                $module{'_keys'} = ['filesystem', 'used','avail', 'mount'];
+                push (@{$modules->{$name}}, \%module);
+        }
+}
+
+# Get a list of services init in machine
+sub get_servicies_init_machine($$) {
+	my ($name, $modules) = @_;
+	my $runlevel = `runlevel | cut -d' ' -f2`;
+
+	#ini trim($runlevel)
+		$runlevel =~ s/^\s*//; #ltrim
+		$runlevel =~ s/\s*$//; #rtrim
+	#end trim($runlevel)
+
+	my $script = "ls /etc/rc" . $runlevel .".d/ -l | grep \"^l.*\" | grep \" S.* \" | cut -d' ' -f11";
+
+	my @services = `$script`;
+	foreach my $row (@services) {
+		next unless ($row =~ /^\S+\/(\S+)$/);
+                
+		my %module;
+                $module{'service'} = $1;
+                $module{'_keys'} = ['service'];
+                push (@{$modules->{$name}}, \%module);
+	}
+}
+
 # Get a list of installed programs
 sub get_software_module_data ($$) {
 	my ($name, $modules) = @_;
@@ -68,12 +110,14 @@ sub get_software_module_data ($$) {
 
 	# Parse data
 	foreach my $row (@soft) {
-		next unless ($row =~ /^ii\s+(\S+)\s+(\S+)/);
-		
+		next unless ($row =~ /^ii\s+(\S+)\s+(\S+)\s+([^\n]+)/);
+
 		my %module;
 		$module{'program'} = $1;
 		$module{'version'} = $2;
-		$module{'_keys'} = ['program', 'version'];
+		$module{'description'} = $3;
+		$module{'_keys'} = ['program', 'version','description'];
+
 		push (@{$modules->{$name}}, \%module);
 	}
 }
@@ -101,7 +145,7 @@ sub print_module ($$) {
 
 # Check command line parameters
 if ($#ARGV < 0) {
-	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software]\n\n";
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem]\n\n";
 	exit 1;
 }
 
@@ -167,6 +211,17 @@ while (my $line = shift (@hwinfo)) {
 if ($enable_all == 1 || $enabled{'software'} == 1) {
 	get_software_module_data ('Software', \%modules);
 }
+
+#init_services
+if ($enable_all == 1 || $enabled{'init_services'} == 1) {
+        get_servicies_init_machine ('Init services', \%modules);
+}
+
+#filesystem
+if ($enable_all == 1 || $enabled{'filesystem'} == 1) {
+	get_file_system('File system', \%modules);
+}
+
 
 # Print module data
 print "<inventory>\n";

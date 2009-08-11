@@ -1,3 +1,7 @@
+2009-08-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* general/header.php: change the short php tags for standar php tags.
+
 2009-08-11  Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/servers/manage_recontask_form.php,

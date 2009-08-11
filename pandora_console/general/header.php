@@ -19,8 +19,8 @@ require_once ("include/functions_messages.php");
 	<tr>
 		<td rowspan=2><div id="pandora_logo_header"></div></td>
 		<td width="20%">
-			<img src="images/user_<?=((is_user_admin ($config["id_user"]) == 1) ? 'suit' : 'green' );?>.png" class="bot" alt="user" />
-			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?=__('You are');?> [<b><?=$config["id_user"];?></b>]</a>
+			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
+			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?php echo __('You are');?> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			$msg_cnt = get_message_count ($config["id_user"]);
 			if ($msg_cnt > 0) {
@@ -36,7 +36,7 @@ require_once ("include/functions_messages.php");
 			}
 			?>
 			&nbsp;
-			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?=__('Logout');?>" class="bot" /></a>
+			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?php echo __('Logout');?>" class="bot" /></a>
 		</td>
 		
 		<td width="20%">

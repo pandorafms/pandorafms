@@ -335,15 +335,15 @@ tr.rowPair {
 }
 
 tr.rowOdd {
-	background-color: #CFD2D4;
+	background-color: #EEEEEE;
 }
 
 tr.rowPair:hover {
-	background-color: #ddd;
+	background-color: #E0E0E0;
 }
 
 tr.rowOdd:hover {
-	background-color: #A2A2C2; /*#8F9294;*/
+	background-color: #E0E0E0
 }
 
 .bg { /* op menu */

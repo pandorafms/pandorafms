@@ -47,12 +47,12 @@
 # Evaluate PHP version
 %define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
 
-Summary:            Web Console for Pandora FMS
+Summary:            Pandora FMS Console
 Name:               %{name}
 Version:            %{version}
 Release:            1 
 License:            GPL
-Vendor:             Sancho Lerena <sancho.lerena@artica.es>
+Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
@@ -110,7 +110,7 @@ fi
 %clean
 rm -rf $RPM_BUILD_ROOT
 %post
-echo "Please, now, point your broswer to http://localhost/pandora_console/install.php and follow all the steps described on it."
+echo "Please, now, point your browser to http://your_ip_address/pandora_console/install.php and follow all the steps described on it."
 
 #
 # Has an install already been done, if so we only want to update the files
@@ -121,7 +121,7 @@ if [ -f %{prefix}/pandora_console/include/config.php ] ; then
    mv %{prefix}/pandora_console/install.php %{prefix}/pandora_console/install.done
 else
    pear install DB
-   echo "Please, now, point your broswer to http://localhost/pandora_console/install.php and follow all the steps described on it."
+   echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)

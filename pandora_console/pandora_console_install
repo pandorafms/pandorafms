@@ -1,0 +1,164 @@
+#!/bin/bash
+
+# Pandora FMS Console Installer (c) 2008-2009 Artica ST
+# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# other Linux distros could not work properly without modifications
+# Please see http://www.pandorafms.org
+# v3.0 Build 090810
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PI_VERSION=3.0.0
+FORCE=0
+LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+MODE=$1
+
+
+get_distro () {
+
+	# Get Linux Distro type and version
+	if [ -f "/etc/SuSE-release" ]
+	then
+		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+		LINUX_DISTRO=SUSE
+	else
+		if [ -f "/etc/lsb-release" ]
+		then
+			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+			LINUX_DISTRO=UBUNTU
+			OS_VERSION="UBUNTU $OS_VERSION"
+		else
+			if [ -f "/etc/debian_version" ]
+			then
+				OS_VERSION=`cat /etc/debian_version`
+				OS_VERSION="DEBIAN $OS_VERSION"
+				LINUX_DISTRO=DEBIAN
+			else
+				if [ -f "/etc/fedora-release" ]
+				then
+					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+					OS_VERSION="FEDORA $OS_VERSION"
+					LINUX_DISTRO=FEDORA
+				else
+					LINUX_DISTRO=GENERIC
+					OS_VERSION=`uname -r`
+				fi
+			fi
+		fi
+	fi
+	echo $LINUX_DISTRO
+}
+
+uninstall () {
+        echo "Removing Pandora FMS Console"
+        rm -Rf $PANDORA_HOME
+	echo "You need to manually drop pandora database from your Database server"
+        echo "Done"
+}
+
+install () {
+
+	DISTRO=`get_distro`
+	OLDFILENAMETMP=`date +"%Y-%m-%d"`
+	
+	if [ "$DISTRO" == "UBUNTU" ]
+	then
+		PANDORA_HOME=/var/www/pandora
+		PANDORA_CONF=$PANDORA_HOME/include/config.php
+	else
+		PANDORA_HOME=/srv/www/htdocs/pandora
+		PANDORA_CONF=$PANDORA_HOME/include/config.php
+	fi
+
+	echo "Detecting Linux distribution: $DISTRO"
+	
+        if [ -f $PANDORA_HOME ] && [ "$FORCE" = "0" ]
+        then
+                echo "Seems that default dir already exists. Please use --force to"
+                echo "force installer to install on $PANDORA_HOME"
+                exit
+        else
+                echo "Checking default dir $PANDORA_HOME..."
+        fi
+
+        # Create directories
+        echo "Creating Pandora FMS Console home directory at $PANDORA_HOME ..."
+        mkdir $PANDORA_HOME 2> /dev/null
+
+        # Copying Pandora FMS console
+        echo "Copying Pandora FMS Console to $PANDORA_HOME.."
+        cp -R * $PANDORA_HOME
+        chmod -R 750 $PANDORA_HOME
+
+	# Creating 'pandora' user
+	id pandora
+	if [ $? -eq 0 ]; then
+		echo " "
+		echo "User pandora does exist, skipping this step"
+	else
+		echo "Creating 'pandora' user"
+		useradd pandora 
+		mkdir /home/pandora 2> /dev/null
+		mkdir /home/pandora/.ssh 2> /dev/null
+		chown -R pandora /home/pandora 
+	fi
+
+	#Ownership
+	if [ "$DISTRO" == "UBUNTU" ]
+	then
+		chown -R www-data:root $PANDORA_HOME
+		chown -R pandora:www-data /var/spool/pandora/
+	else
+		chown -R wwwrun:root $PANDORA_HOME
+		chown -R pandora:www /var/spool/pandora/
+	fi
+        
+        echo "Setting secure permissions for Pandora FMS spool dir..."
+	chmod -R 770 /var/spool/pandora/
+        
+        echo "Done."
+        echo " "
+        echo "You have your Pandora FMS console installed on $PANDORA_HOME."
+	echo " "
+	echo "Now you can setup your Pandora FMS console and install"
+	echo "database using a broser and point to: "
+	echo " " 
+	echo "       http://ip_address_of_this_server/pandora/install.php"
+        echo " "
+	echo " "
+}
+
+help () {
+        echo "     --force-install     To force installation if already installed on system "
+        echo "     --install           To install Pandora FMS Console on this system"
+        echo " "
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS Console Installer $PI_VERSION (c) 2008-2009 ArticaST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+case "$MODE" in
+
+'--force-install')
+        FORCE=1
+        install
+        exit
+        ;;
+
+'--install')
+        install
+        exit
+        ;;
+
+'--uninstall')
+        uninstall
+        exit
+        ;;
+
+*)
+        help
+esac
+

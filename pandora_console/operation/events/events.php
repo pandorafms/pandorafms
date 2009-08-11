@@ -174,6 +174,10 @@ echo '<h3 id="result" style="display:none">&nbsp;</h3>';
 
 echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
 
+
+echo print_help_icon ("eventview", true);
+echo "&nbsp;";
+
 if ($config["pure"] == 1) {
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
 	print_image ("images/normalscreen.png", false, array ("title" => __('Normal screen')));
@@ -504,37 +508,7 @@ if (!empty ($table->data)) {
 		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
 	echo '</div></form>';
-	
-	if ($config["pure"]== 0) {
-		//Print legend
-		echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-		echo '<h3>'.__('Status').'</h3>';
-		print_image ("images/pixel_green.png", false, 
-			array ("width" => 10,
-				"height" => 10,
-				"title" => __('Validated event')));
-		echo ' - '.__('Validated event');
-		echo '<br />';
-		print_image ("images/pixel_red.png", false,
-			array ("width" => 10,
-				"height" => 10,
-				"title" => __('Event not validated')));
-		echo ' - '.__('Event not validated');
-		echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-		echo '<h3>'.__('Actions').'</h3>';
-		print_image ("images/ok.png", false, 
-			array ("title" => __('Validate event')));
-		echo ' - '.__('Validate event');
-		echo '<br />';
-		print_image ("images/cross.png", false,
-			array ("title" => __('Delete event')));
-		echo ' - '.__('Delete event');
-		echo '<br />';
-		print_image ("images/page_lightning.png", false,
-			array ("title" => __('Create incident from event')));
-		echo ' - '.__('Create incident from event');
-		echo '</div><div style="clear:both;">&nbsp;</div>';
-	}
+
 } else {
 	echo '<div class="nf">'.__('No events').'</div>';
 }

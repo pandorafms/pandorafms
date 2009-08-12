@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Jorge Gonzalez <jorge.gonzalez@artica.es>, 2009.
+# Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-12 09:15+0200\n"
-"PO-Revision-Date: 2009-08-12 09:17+0200\n"
+"PO-Revision-Date: 2009-08-12 09:25+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -2041,7 +2041,7 @@ msgstr "Red"
 #: ../../godmode/servers/manage_recontask_form.php:92
 #: ../../operation/servers/view_server_detail.php:83
 msgid "Module template"
-msgstr ""
+msgstr "Plantilla de módulos"
 
 #: ../../godmode/servers/manage_recontask.php:97
 #: ../../godmode/servers/manage_recontask_form.php:108
@@ -2363,7 +2363,7 @@ msgstr "Gestionar módulos"
 
 #: ../../godmode/menu.php:59
 msgid "Component groups"
-msgstr "Grupos de componentes de red"
+msgstr "Grupos de componentes"
 
 #: ../../godmode/menu.php:61
 msgid "Network components"
@@ -2371,7 +2371,7 @@ msgstr "Componentes de red"
 
 #: ../../godmode/menu.php:65 ../../godmode/agentes/agent_template.php:85
 msgid "Module templates"
-msgstr "Plantillas de red"
+msgstr "Plantillas de módulos"
 
 #: ../../godmode/menu.php:73 ../../godmode/profiles/profile_list.php:182
 msgid "Manage alerts"
@@ -3512,7 +3512,8 @@ msgid "No alert selected"
 msgstr "No se seleccionó ninguna alerta"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:64
-msgid "There was an error deleting the alerts, the operation has been cancelled"
+msgid ""
+"There was an error deleting the alerts, the operation has been cancelled"
 msgstr "Hubo un error al borrar las alertas, se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_alerts.php:65
@@ -3634,7 +3635,8 @@ msgid "No module selected"
 msgstr "No se seleccionó ningún módulo"
 
 #: ../../godmode/agentes/massive_delete_modules.php:66
-msgid "There was an error deleting the modules, the operation has been cancelled"
+msgid ""
+"There was an error deleting the modules, the operation has been cancelled"
 msgstr "Hubo un error al borrar los módulos, se canceló la operación"
 
 #: ../../godmode/agentes/massive_delete_modules.php:67
@@ -3910,7 +3912,7 @@ msgstr "Esta plantilla no existe"
 #: ../../godmode/modules/manage_network_templates.php:103
 #: ../../godmode/modules/manage_network_templates_form.php:100
 msgid "Module template management"
-msgstr "Gestión de perfiles de red"
+msgstr "Gestión de plantillas de módulos"
 
 #: ../../godmode/modules/manage_network_templates.php:140
 msgid "There are no defined network profiles"
@@ -4768,7 +4770,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: ../../godmode/alerts/configure_alert_template.php:505
-msgid "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value matches <span id=\\\"value\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor coincida con <span id=\\\"value\\\"></"
 "span>"
@@ -4783,11 +4786,14 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:507
 msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:508
-msgid "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
+msgid ""
+"The alert would fire when the value is not <span id=\\\"value\\\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:509
 msgid ""
@@ -4806,13 +4812,15 @@ msgstr ""
 "span> y <span id=\\\"max\\\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:511
-msgid "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
+msgid ""
+"The alert would fire when the value is below <span id=\\\"min\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor esté por debajo de <span id=\\\"min\\"
 "\"></span>"
 
 #: ../../godmode/alerts/configure_alert_template.php:512
-msgid "The alert would fire when the value is above <span id=\\\"max\\\"></span>"
+msgid ""
+"The alert would fire when the value is above <span id=\\\"max\\\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor esté por encima de <span id=\\\"max\\"
 "\"></span>"
@@ -5543,7 +5551,8 @@ msgstr "La alerta se disparará cuando el valor sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:389
 msgid "The alert would fire when the value is not <span id=\"value\"></span>"
-msgstr "La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
+msgstr ""
+"La alerta se disparará cuando el valor no sea <span id=\"value\"></span>"
 
 #: ../../include/functions_ui.php:394
 msgid "The alert would fire when the value matches <span id=\"value\"></span>"
@@ -5552,7 +5561,8 @@ msgstr ""
 "span>"
 
 #: ../../include/functions_ui.php:397
-msgid "The alert would fire when the value doesn't match <span id=\"value\"></span>"
+msgid ""
+"The alert would fire when the value doesn't match <span id=\"value\"></span>"
 msgstr ""
 "La alerta se disparará cuando el valor no coincida con <span id=\"value\"></"
 "span>"
@@ -5601,7 +5611,8 @@ msgstr "Tipo desconocido"
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
-msgstr "Hubo un error al copiar la configuración del agente, se canceló la copia"
+msgstr ""
+"Hubo un error al copiar la configuración del agente, se canceló la copia"
 
 #: ../../include/functions_agents.php:375
 msgid "Successfully copied"
@@ -6263,7 +6274,8 @@ msgstr "y reemplazar con"
 
 #: ../../enterprise/include/functions_backup.php:210
 msgid "Modify servers configuration to use this new database"
-msgstr "Modifique la configuración de los servidores para usar esta nueva BB. DD."
+msgstr ""
+"Modifique la configuración de los servidores para usar esta nueva BB. DD."
 
 #: ../../enterprise/include/functions_backup.php:211
 msgid "Find servers configuration file and replace the following lines"
@@ -6278,7 +6290,8 @@ msgstr "Reinicie los servidores y vuelva a iniciar sesión en la consola"
 #: ../../enterprise/include/functions_policies.php:435
 #, php-format
 msgid "Agent %s cannot edit remote configuration to add module %s"
-msgstr "El agente %s no puede editar la configuración remota para añadir el módulo %s"
+msgstr ""
+"El agente %s no puede editar la configuración remota para añadir el módulo %s"
 
 #: ../../enterprise/dashboard/main_dashboard.php:139
 msgid "Could not create dashboard"
@@ -6380,7 +6393,8 @@ msgstr ""
 "derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:34
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
 "en el lugar deseado."
@@ -7461,7 +7475,8 @@ msgid "Error updating passwords: %s"
 msgstr "Error al actualizar las contraseñas: %s"
 
 #: ../../operation/users/user_edit.php:59
-msgid "Passwords didn't match or other problem encountered while updating passwords"
+msgid ""
+"Passwords didn't match or other problem encountered while updating passwords"
 msgstr ""
 "Las contraseñas no coincidían o se encontró otro problema al actualizar las "
 "contraseñas"
@@ -7600,4 +7615,3 @@ msgstr "No se encontró ningún resultado"
 #: ../../operation/search_results.php:327
 msgid "Email"
 msgstr "Correo-e"
-

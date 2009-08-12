@@ -1,4 +1,9 @@
-2009-08-11  Sancho Lerena <slerena@artica.es>
+2008-08-12  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	translation
+
+2009-08-11  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_console_install: New installer for console.
 	

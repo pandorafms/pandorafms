@@ -6,10 +6,15 @@
 # other Linux distros could not work properly without modifications
 # v3.0 Build 090810
 # http://www.pandorafms.com
-# chkconfig: 23 99 99
-# description: Manages starting/stopping of server
 
-# Configurable path and filenames
+### BEGIN INIT INTO
+# Provides: pandora_server
+# Default-Start: 2 3 5
+# Default-Stop: 0 1 2 3 5
+# Required-Start: $network
+# Required-Stop: $network
+# Description: Pandora FMS Server startup script
+### END INIT INFO
 
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
 PANDORA_PID_PATH="/var/run"

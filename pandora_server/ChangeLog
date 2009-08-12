@@ -1,3 +1,7 @@
+2009-08-12  sancho Lerena <slerena@artica.es>
+
+	* pandora_server: Added LSB tags to startup daemon for SUSE
+
 2009-08-11  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server: Using new method to get PID of process, compatible with

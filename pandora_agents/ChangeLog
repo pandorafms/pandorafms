@@ -1,3 +1,7 @@
+2009-08-12  sancho Lerena <slerena@artica.es>
+
+        * linux/pandora_agent: Added LSB tags to startup daemon for SUSE
+
 2009-08-11  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent_installer: Some fixes and support for Ubuntu/SUSE

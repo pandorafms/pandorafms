@@ -273,7 +273,7 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	
 	if (is_array ($attributes)) {
 		foreach ($attributes as $attribute => $attr_value) {
-			if (! in_array ($valid_attrs)) {
+			if (! in_array ($attribute,$valid_attrs)) {
 				continue;
 			}
 			$output .= $attribute.'="'.$attr_value.'" ';

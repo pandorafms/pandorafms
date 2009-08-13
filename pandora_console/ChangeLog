@@ -1,3 +1,8 @@
+2009-08-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: fixes hidden bug in attribute array list,
+	for input text.
+
 2009-08-12  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

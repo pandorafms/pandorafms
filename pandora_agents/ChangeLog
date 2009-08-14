@@ -2,6 +2,8 @@
 
 	* linux/pandora_agent_installer: Fixed problems with .conf backup
 
+	* linux/plugins/arp_attack: New agent plugin to detect ARP attacks.
+
 	* linux/plugins/iptables_plugin: New agent plugin for Netfilter.
 
 	* linux/plugins/apache_status: new agent plugin (apache status).

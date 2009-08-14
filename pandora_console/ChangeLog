@@ -1,5 +1,15 @@
 2009-08-14  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/agent_manager.php, godmode/agentes/massive_config.php,
+	godmode/alerts/alert_list.php, godmode/reporting/graph_builder.php,
+	godmode/reporting/map_builder.php, include/functions_db.php,
+	include/functions_html.php, operation/agentes/exportdata.php,
+	operation/agentes/ver_agente.php: very changes for add input text
+	autocomplete with ajax jquery for agent input in several forms. Add to form
+	this exportdata, graph_builder, map_builder.
+
+2009-08-14  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* index.php: add another ob_start for html result is with good order.
 	
 2009-08-14  Miguel de Dios  <miguel.dedios@artica.es>

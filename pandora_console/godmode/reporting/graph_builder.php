@@ -14,6 +14,35 @@
 // GNU General Public License for more details.
 
 
+if (is_ajax ()) {
+	$search_agents = (bool) get_parameter ('search_agents');
+	
+	if ($search_agents) {
+		
+		require_once ('include/functions_agents.php');
+		
+		$id_agent = (int) get_parameter ('id_agent');
+		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+		$id_group = (int) get_parameter('id_group');
+		
+		$filter = array ();
+		$filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		$filter['id_grupo'] = $id_group; 
+		
+		$agents = get_agents ($filter, array ('nombre', 'direccion'));
+		if ($agents === false)
+			return;
+		
+		foreach ($agents as $agent) {
+			echo $agent['nombre']."|".$agent['direccion']."\n";
+		}
+		
+		return;
+ 	}
+ 	
+ 	return;
+}
+
 // Login check
 require_once ("include/config.php");
 if ($config['flash_charts']) {
@@ -282,7 +311,10 @@ echo "<td class='datos' colspan=2>";
 
 $user_groups = implode (',', array_keys (get_user_groups ($config["id_user"])));
 
-print_select_from_sql ("SELECT id_agente, nombre FROM tagente WHERE disabled = 0 AND id_grupo IN ($user_groups) ORDER BY nombre", 'id_agent', $id_agent, '', '--', 0);
+print_input_text_extended ('id_agent', get_agent_name ($id_parent), 'text-id_agent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'));
+echo '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+//print_select_from_sql ("SELECT id_agente, nombre FROM tagente WHERE disabled = 0 AND id_grupo IN ($user_groups) ORDER BY nombre", 'id_agent', $id_agent, '', '--', 0);
 
 // SOURCE MODULE FORM
 if (isset ($chunkdata))
@@ -506,6 +538,11 @@ if (isset($module_array)){
 	echo "</table>";
 }
 
+require_jquery_file ('pandora.controls');
+require_jquery_file ('ajaxqueue');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
+
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -536,6 +573,63 @@ function agent_changed () {
 }
 
 $(document).ready (function () {
-	$('#id_agent').change (agent_changed);
+	//$('#id_agent').change (agent_changed);
+	
+	
+		$("#text-id_agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "godmode/reporting/graph_builder",
+					search_agents: 1,
+					id_group: function() { return $("#group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text-id_agent").css ('background-color', '#cc0000');
+					else
+						$("#text-id_agent").css ('background-color', 'none');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+		
+		$("#text-id_agent").result (
+			function () {
+	
+				
+				var agent_name = this.value;
+				$('#id_module').fadeOut ('normal', function () {
+					$('#id_module').empty ();
+					var inputs = [];
+					inputs.push ("agent_name=" + agent_name);
+					inputs.push ("get_agent_modules_json=1");
+					inputs.push ("page=operation/agentes/ver_agente");
+					jQuery.ajax ({
+						data: inputs.join ("&"),
+						type: 'GET',
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: 'json',
+						success: function (data) {
+							$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+							jQuery.each (data, function (i, val) {
+								s = html_entity_decode (val['nombre']);
+								$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+							});
+							$('#id_module').fadeIn ('normal');
+						}
+					});
+				});
+		
+				
+			}
+		);
+		
 }); 
 </script>

@@ -130,9 +130,9 @@ $groups = get_user_groups ($config["id_user"]);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');
-$table->data[2][1] = print_input_text ('id_parent', get_agent_name ($id_parent),
-	'', 30, 100, true);
-
+$table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);

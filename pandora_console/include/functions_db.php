@@ -351,6 +351,13 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 			unset ($search["string"]);
 		}
 		
+		if (isset ($search["name"])) {
+			$name = safe_input ($search["name"]);
+			$search_sql .= ' AND nombre LIKE "' . $name . '" ';
+			
+			unset ($search["name"]);
+		}
+		
 		if (! empty ($search)) {
 			$search_sql .= ' AND '.format_array_to_where_clause_sql ($search);
 		}
@@ -360,6 +367,13 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 	
 	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
 	$result = get_db_all_rows_sql ($sql);
+	
+	////////////////LOG AJAX///////////////////////
+	///////////////////////////////////////////////
+	//$log = fopen  ( "/tmp/log_sql", "a");
+	//fwrite  ($log, $sql."\n\n");
+	//fclose($log);
+	///////////////////////////////////////////////
 	
 	if ($result === false)
 		return array (); //Return an empty array

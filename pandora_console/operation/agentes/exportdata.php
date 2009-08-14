@@ -13,6 +13,34 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (is_ajax ()) {
+	$search_agents = (bool) get_parameter ('search_agents');
+	
+	if ($search_agents) {
+		
+		require_once ('include/functions_agents.php');
+		
+		$id_agent = (int) get_parameter ('id_agent');
+		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+		$id_group = (int) get_parameter('id_group');
+		
+		$filter = array ();
+		$filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		$filter['id_grupo'] = $id_group; 
+		
+		$agents = get_agents ($filter, array ('nombre', 'direccion'));
+		if ($agents === false)
+			return;
+		
+		foreach ($agents as $agent) {
+			echo $agent['nombre']."|".$agent['direccion']."\n";
+		}
+		
+		return;
+ 	}
+ 	
+ 	return;
+}
 
 
 // Load global vars
@@ -31,7 +59,11 @@ require_javascript_file ('calendar');
 echo "<h2>".__('Pandora agents')." &raquo; ".__('Export data')."</h2>";
 
 $group = get_parameter_post ('group', 1);
-$agent = get_parameter_post ('agent', 0);
+//$agent = get_parameter_post ('agent', 0);
+$agentName = get_parameter_post ('agent', 0);
+$agents = get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
+$agent = $agents[0]['id_agente'];
+
 $module = (array) get_parameter_post ('module_arr', array ());
 $start_date = get_parameter_post ('start_date', 0);
 $end_date = get_parameter_post ('end_date', 0);
@@ -187,6 +219,7 @@ if ($group > 0) {
 
 $agents = array ();
 $rows = get_agents ($filter, false, 'AR');
+if ($rows == null) $rows = array();
 foreach ($rows as $row) {
 	$agents[$row['id_agente']] = $row['nombre'];
 }
@@ -195,7 +228,10 @@ if (!in_array ($agent, array_keys ($agents))) {
 	$agent = current (array_keys ($agents));
 }
 
-$table->data[1][1] = print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+//$table->data[1][1] = print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+$table->data[1][1] = print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
 //Module selector
 $table->data[2][0] = '<b>'.__('Modules').'</b>';
@@ -239,4 +275,60 @@ echo '<div class="action-buttons" style="width:550px;">';
 	print_submit_button (__('Export'), 'export_btn', false, 'class="sub wand"');
 echo '</div></form>';
 
+require_jquery_file ('pandora.controls');
+require_jquery_file ('ajaxqueue');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
 ?>
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	var inputActive = true;
+
+	$.ajax({
+		type: "POST",
+		url: "ajax.php",
+		data: "page=operation/agentes/exportdata&search_agents=1&id_group=" + $("#group").val(),
+		success: function(msg){
+			if (msg.length == 0) {
+				$("#text-agent").css ('background-color', '#FF8080');
+				$("#text-agent").val("<?php echo __("None agent in this category");?>");
+				$("#text-agent").attr("disabled", true);
+				$("#text-agent").css ('color', '#000000');
+				inputActive = false;
+			}
+		}
+	});
+	
+	if (inputActive) {
+		$("#text-agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					id_group: function() { return $("#group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text-agent").css ('background-color', '#cc0000');
+					else
+						$("#text-agent").css ('background-color', 'none');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+	}
+	
+	$("#text-agent").result(function(event, data, formatted) {
+ 		this.form.submit();
+	});
+	
+});
+/* ]]> */
+</script>

@@ -13,6 +13,33 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (is_ajax ()) {
+	$search_agents = (bool) get_parameter ('search_agents');
+	
+	if ($search_agents) {
+		
+		require_once ('include/functions_agents.php');
+		
+		$id_agent = (int) get_parameter ('id_agent');
+		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+		
+		$filter = array ();
+		$filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		
+		$agents = get_agents ($filter, array ('nombre', 'direccion'));
+		if ($agents === false)
+			return;
+		
+		foreach ($agents as $agent) {
+			echo $agent['nombre']."|".$agent['direccion']."\n";
+		}
+		
+		return;
+ 	}
+ 	
+ 	return;
+}
+
 require_once ("include/config.php");
 
 check_login ();
@@ -412,7 +439,10 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[4][0] = __('Width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
 		$table->data[5][0] = __('Agent');
-		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+//		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+		$table->data[5][1] = print_input_text_extended ('agent', '', 'text-agent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 		$table->data[6][0] = __('Module');
 		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
 		$table->data[7][0] = __('Period');
@@ -427,7 +457,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
-		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder">';
+		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder"  onsubmit="javascript: return testAgentCorrect();">';
 		print_table ($table);
 		print_input_hidden ('create_layout_data', 1);
 		print_input_hidden ('update_layout_data', 0);
@@ -451,10 +481,80 @@ require_jquery_file ('colorpicker');
 require_jquery_file ('pandora.controls');
 require_javascript_file ('wz_jsgraphics');
 require_javascript_file ('pandora_visual_console');
+require_jquery_file ('ajaxqueue');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
 ?>
 <script language="javascript" type="text/javascript">
+var selectAgent = false;
 var id_agent_module = 0;
+
+function testAgentCorrect() {
+	if (selectAgent) return true;
+	else {
+		alert ("<? echo __("No selected agent, please select any agent."); ?>");
+		return false;
+	}
+}
+
+
 $(document).ready (function () {
+	
+		$("#text-agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					id_group: function() { return $("#group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text-agent").css ('background-color', '#cc0000');
+					else
+						$("#text-agent").css ('background-color', 'none');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+		
+		$("#text-agent").result (
+			function () {
+				selectAgent = true;
+				var agent_name = this.value;
+				$('#module').fadeOut ('normal', function () {
+					$('#module').empty ();
+					var inputs = [];
+					inputs.push ("agent_name=" + agent_name);
+					inputs.push ("get_agent_modules_json=1");
+					inputs.push ("page=operation/agentes/ver_agente");
+					jQuery.ajax ({
+						data: inputs.join ("&"),
+						type: 'GET',
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: 'json',
+						success: function (data) {
+							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
+							jQuery.each (data, function (i, val) {
+								s = html_entity_decode (val['nombre']);
+								$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+							});
+							$('#module').fadeIn ('normal');
+						}
+					});
+				});
+		
+				
+			}
+		);
+	
+	
 <?php if ($id_layout): ?>
 	if (lines)
 		draw_lines (lines, 'layout_map');

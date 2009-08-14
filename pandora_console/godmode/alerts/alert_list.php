@@ -219,9 +219,12 @@ echo "<div id='alert_control' style='display:none'>\n";
 		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
 	}
 	echo "<td>".__('Agents')."</td><td>";
-	print_input_text ('agent_name', $agentName, '', 30, 100);
-	//print_select ($arrayAgents, "agent_id", $agentID, '', __('All'),-1);
+	echo print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 25, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 	echo "</td>\n";
+	
+	
 	echo "<td>".__('Module name')."</td><td>";
 	print_input_text ('module_name', $moduleName, '', 15);
 	echo "</td>\n";
@@ -429,10 +432,15 @@ if (! $id_agente) {
 		false, '', '', true);
 	
 	$table->data['agent'][0] = __('Agent');
-	$table->data['agent'][1] = print_select (get_group_agents (array_keys ($groups), false, "none"), 'id_agent', 0, false, __('Select'), 0, true);
-	$table->data['agent'][1] .= ' <span id="agent_loading" class="invisible">';
-	$table->data['agent'][1] .= '<img src="images/spinner.gif" />';
-	$table->data['agent'][1] .= '</span>';
+	
+	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	
+//	$table->data['agent'][1] = print_select (get_group_agents (array_keys ($groups), false, "none"), 'id_agent', 0, false, __('Select'), 0, true);
+//	$table->data['agent'][1] .= ' <span id="agent_loading" class="invisible">';
+//	$table->data['agent'][1] .= '<img src="images/spinner.gif" />';
+//	$table->data['agent'][1] .= '</span>';
 }
 
 $table->data[0][0] = __('Module');
@@ -510,6 +518,28 @@ require_jquery_file ('autocomplete');
 /* <![CDATA[ */
 $(document).ready (function () {
 
+	$("#text-id_agent").autocomplete(
+		"ajax.php",
+		{
+			minChars: 2,
+			scroll:true,
+			extraParams: {
+				page: "operation/agentes/exportdata",
+				search_agents: 1,
+				id_group: function() { return $("#id_group").val(); }
+			},
+			formatItem: function (data, i, total) {
+				if (total == 0)
+					$("#text-id_agent").css ('background-color', '#cc0000');
+				else
+					$("#text-id_agent").css ('background-color', 'none');
+				if (data == "")
+					return false;
+				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+			},
+			delay: 200
+		}
+	);
 
 //----------------------------
 	$("#text-agent_name").autocomplete ("ajax.php",
@@ -547,7 +577,7 @@ $(document).ready (function () {
 		}
 	});
 	
-	$("#id_agent").pandoraSelectAgentModule ();
+	//$("#id_agent").pandoraSelectAgentModule ();
 <?php endif; ?>
 	$("a.template_details").cluetip ({
 		arrows: true,

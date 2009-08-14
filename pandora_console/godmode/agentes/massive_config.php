@@ -67,6 +67,10 @@ $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
 
+//$table->data[0][3] = print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 25, 100, false, '',
+//	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+//	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+
 echo '<form id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';

@@ -14,6 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * Prints the print_r with <pre> tags
+ */
+function debugPrint ($var) {
+	echo "<pre>";print_r($var);echo "</pre>";
+}
+
 
 /**
  * Prints an array of fields in a popup menu of a form.

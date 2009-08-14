@@ -1,12 +1,11 @@
 #!/usr/bin/perl
 ###############################################################################
 #
-# Copyright (c) 2009  Ramon Novoa  <rnovoa@artica.es>
 # Copyright (c) 2009  Artica Soluciones Tecnologicas S.L.
 #
 # inventory	Generate a hardware/software inventory.
 # 
-# Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem]
+# Sample usage:	./inventory <interval in days> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [process] [users]
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -90,6 +89,47 @@ sub get_servicies_init_machine($$) {
 	}
 }
 
+# Get a list of running processes
+sub get_processes ($$) {
+	my ($name, $modules) = @_;
+
+	my $script = "ps aux";
+
+        my @services = `$script`;
+        foreach my $row (@services) {
+                my %module;
+				# Remove carriage returns				
+				$row =~ s/[\n\l\f]//g;
+                $module{'service'} = $row;
+                $module{'_keys'} = ['service'];
+                push (@{$modules->{$name}}, \%module);
+        }
+}
+
+# Get a list of valid users in the system
+sub get_users ($$) {
+        my ($name, $modules) = @_;
+
+        my $script = "cat /etc/passwd";
+	my $user = "";
+	my $estado = "";
+
+        my @services = `$script`;
+        foreach my $row (@services) {
+                my %module;
+
+		next unless ($row =~ /^([A-Za-z0-9\-\_]*)/);
+
+                $user = $1;
+                $script = `passwd -S $user`;
+                if ( $script =~ /^(\S+)\sP./){
+	                $module{'user'} = $user;
+                	$module{'_keys'} = ['user'];
+                	push (@{$modules->{$name}}, \%module);
+		}
+        }
+}
+
 # Get a list of installed programs
 sub get_software_module_data ($$) {
 	my ($name, $modules) = @_;
@@ -137,7 +177,7 @@ sub print_module ($$) {
 			$data .= ($data eq '' ? '' : ';') . $item->{$key};
 		}
 
-		print "      <data><value><![CDATA[$data]]></value></data>\n";
+		print "      <data><![CDATA[$data]]></data>\n";
 	}
 	print "    </datalist>\n";
 	print "  </inventory_module>\n";
@@ -145,7 +185,7 @@ sub print_module ($$) {
 
 # Check command line parameters
 if ($#ARGV < 0) {
-	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem]\n\n";
+	print "Usage: $0 <interval> [cpu] [ram] [video] [nic] [hd] [cdrom] [software] [init_services] [filesystem] [users] [process] \n\n";
 	exit 1;
 }
 
@@ -222,6 +262,15 @@ if ($enable_all == 1 || $enabled{'filesystem'} == 1) {
 	get_file_system('File system', \%modules);
 }
 
+#processes
+if ($enable_all == 1 || $enabled{'process'} == 1) {
+	get_processes('Process', \%modules);
+}
+
+#users
+if ($enable_all == 1 || $enabled{'users'} == 1){
+	get_users ('Users', \%modules);
+}
 
 # Print module data
 print "<inventory>\n";

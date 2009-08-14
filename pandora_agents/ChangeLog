@@ -1,3 +1,16 @@
+2009-08-14  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent_installer: Fixed problems with .conf backup
+
+	* linux/plugins/iptables_plugin: New agent plugin for Netfilter.
+
+	* linux/plugins/apache_status: new agent plugin (apache status).
+
+	* linux/plugins/inventory: Added users and process. Fixed weird
+	problem with inexistant XML attribute VALUE ¿?. Now works fine.
+
+	* linux/plugins/pandora_df: New agent plugin (disk space).
+
 2009-08-12  sancho Lerena <slerena@artica.es>
 
         * linux/pandora_agent: Added LSB tags to startup daemon for SUSE

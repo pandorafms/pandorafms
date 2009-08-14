@@ -131,10 +131,10 @@ install () {
         cp pandora_agent_daemon $PANDORA_HOME
 
         echo "Copying Pandora FMS Agent configuration file to $PANDORA_HOME/pandora_agent.conf..."
-        if [ -e $PANDORA_HOME/pandora_agent.conf ]
+        if [ -e /etc/pandora/pandora_agent.conf ]
         then
-        	cp $PANDORA_HOME/pandora_agent.conf $PANDORA_HOME/pandora_agent.conf.$OLDFILENAMETMP
-        	echo "Backing up old configuration file to $PANDORA_HOME/pandora_agent.conf.$OLDFILENAMETMP"
+        	cat /etc/pandora/pandora_agent.conf > /etc/pandora/pandora/pandora_agent.conf.$OLDFILENAMETMP
+        	echo "Backing up old configuration file to /etc/pandora_agent.conf.$OLDFILENAMETMP"
         fi
         
         echo "Copying default agent configuration to $PANDORA_HOME/pandora_agent.conf"

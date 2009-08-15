@@ -26,6 +26,11 @@ TENTACLE_ADDR="0.0.0.0"
 TENTACLE_PORT="41121"
 TENTACLE_EXT_OPTS=""
 
+# Set umask to 0002, because group MUST have access to write files to
+# use remote file management on Pandora FMS Enterprise.
+
+umask 0007
+
 # Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty
 # if not running). Can be a list of PIDs if multiple instances are running.
 

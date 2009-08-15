@@ -1,3 +1,10 @@
+
+2009-08-15  Sancho lerena <slerena@artica.es>
+
+	* util/tentacle_serverd: Call to umask to let tentacle_server create
+	files with mask 0007, because Enterprise version need to write files
+	fetched with tentacle.
+
 2009-08-12  sancho Lerena <slerena@artica.es>
 
 	* pandora_server: Added LSB tags to startup daemon for SUSE

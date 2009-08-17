@@ -448,14 +448,16 @@ if ($step == 2) {
 	$table_alerts->data = array ();
 	$table_alerts->head = array ();
 	$table_alerts->head[0] = '';
-	$table_alerts->head[1] = __('Module');
-	$table_alerts->head[2] = __('Alert');
-	$table_alerts->head[3] = __('Operator');
+	$table_alerts->head[1] = __('Agent');
+	$table_alerts->head[2] = __('Module');
+	$table_alerts->head[3] = __('Alert');
+	$table_alerts->head[4] = __('Operator');
 	$table_alerts->size = array ();
 	$table_alerts->size[0] = '20px';
-	$table_alerts->size[1] = '45%';
-	$table_alerts->size[2] = '45%';
-	$table_alerts->size[3] = '10%';
+	$table_alerts->size[1] = '20%';
+	$table_alerts->size[2] = '40%';
+	$table_alerts->size[3] = '40%';
+	$table_alerts->size[4] = '10%';
 	
 	if ($id) {
 		$conditions = get_alert_compound_elements ($id);
@@ -468,15 +470,18 @@ if ($step == 2) {
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
 			$data[0] .= '<img src="images/delete.png" />';
 			$data[0] .= '</a>';
-			$data[1] = get_alert_template_name ($alert['id_alert_template']);
-			$data[2] = get_agentmodule_name ($alert['id_agent_module']);
+			$idAgent = get_agent_module_id($alert['id_agent_module']);
+			$nameAgent = get_agent_name($idAgent);
+			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $idAgent . '">' . $nameAgent . '</a>';
+			$data[2] = get_alert_template_name ($alert['id_alert_template']);
+			$data[3] = get_agentmodule_name ($alert['id_agent_module']);
 			if ($condition['operation'] == 'NOP') {
-				$data[3] = print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
+				$data[4] = print_input_hidden ('operations['.$alert['id'].']', 'NOP', true);
 			} else {
-				$data[3] = print_select (get_alert_compound_operations (),
+				$data[4] = print_select (get_alert_compound_operations (),
 					'operations['.$alert['id'].']', $condition['operation'], '', '', '', true);
 			}
-			$data[3] .= print_input_hidden ("conditions[]", $alert['id'], true);
+			$data[4] .= print_input_hidden ("conditions[]", $alert['id'], true);
 			
 			array_push ($table_alerts->data, $data);
 		}
@@ -666,6 +671,7 @@ function add_alert () {
 	$("#conditions_list tbody").append (tr);
 	$("#conditions_list").show ();
 	$("#compound-conditions").show ();
+	
 	return false;
 }
 
@@ -739,13 +745,23 @@ $(document).ready (function () {
 						.attr ("href", "#condition")
 						.click (add_alert);
 					td = $('<td></td>').append (a)
-						.attr ("width", "20px");
+						.attr ("width", "20px")
+						.attr ("id", "img_action");
 					tr.append (td);
+					a = $("<a></a>")
+						.attr ("id", "view_agent-"+this["id"])
+						.attr ("href", "index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" + $("#search_id_agent").val())
+						.text($("#search_id_agent :selected").text());
+					td = $('<td></td>').append (a)
+						.attr ("width", "20%")
+						.attr ("id", "img_action");
+					tr.append (td);
+					
 					td = $('<td></td>').append (this["module_name"])
-						.attr ("width", "50%");
+						.attr ("width", "40%");
 					tr.append (td);
 					td = $('<td></td>').append (this["template"]["name"])
-						.attr ("width", "50%");
+						.attr ("width", "40%");
 					tr.append (td);
 					$("#alert_list").append (tr);
 					alerts[this["id"]] = this;

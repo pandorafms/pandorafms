@@ -533,6 +533,17 @@ function dame_grupo_icono ($id_group) {
 	return get_group_icon ($id_group);
 }
 
+/** 
+ * Get agent id from a module id that it has.
+ * 
+ * @param int $id_module Id module is list modules this agent.
+ * 
+ * @return int Id from the agent of the given id module.
+ */
+function get_agent_module_id ($id_agente_modulo) {
+	return (int) get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+}
+
 
 
 /** 

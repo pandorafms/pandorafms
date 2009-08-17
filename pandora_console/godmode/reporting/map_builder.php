@@ -156,8 +156,10 @@ if ($get_background_info) {
 if ($get_layout_data) {
 	$id_layout_data = (int) get_parameter ('id_layout_data');
 	$layout_data = get_db_row ('tlayout_data', 'id', $id_layout_data);
-	if ($layout_data['id_agente_modulo'])
+	if ($layout_data['id_agente_modulo']) {
 		$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
+		$layout_data['name_agent'] = get_agent_name ($layout_data['id_agent'], 'none');
+	}
 	
 	if (is_ajax ()) {
 		echo json_encode ($layout_data);
@@ -166,10 +168,13 @@ if ($get_layout_data) {
 }
 
 if ($create_layout_data) {
+	$layout_data_name_agent = (string) get_parameter ("agent");
+	$layout_data_id_agent = get_agent_id ($layout_data_name_agent);
+	
 	$layout_data_type = (int) get_parameter ("type");
 	$layout_data_label = (string) get_parameter ("label");
 	$layout_data_image = (string) get_parameter ("image");
-	$layout_data_id_agent = (int) get_parameter ("agent");
+	//$layout_data_id_agent = (int) get_parameter ("agent");
 	$layout_data_id_agent_module = (int) get_parameter ("module");
 	$layout_data_label_color = (string) get_parameter ("label_color");
 	$layout_data_parent_item = (int) get_parameter ("parent_item");
@@ -437,7 +442,10 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[4][0] = __('Width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
 		$table->data[5][0] = __('Agent');
-		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+//		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+		$table->data[5][1] = print_input_text_extended ('agent', '', 'text-agent', '', 30, 100, false, '',
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 		$table->data[6][0] = __('Module');
 		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
 		$table->data[7][0] = __('Period');
@@ -631,6 +639,46 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #map_linked").attr ('value', data['id_layout_linked']);
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
+					$("#form_layout_data_editor #text-agent").attr ('value',data['name_agent']);
+					
+				
+				//Refill module select.
+				var data_id_agente_modulo = parseInt(data['id_agente_modulo']);
+				selectAgent = true;
+				var agent_name = $("#text-agent").val();
+				$('#module').fadeOut ('normal', function () {
+					$('#module').empty ();
+					var inputs = [];
+					inputs.push ("agent_name=" + agent_name);
+					inputs.push ("get_agent_modules_json=1");
+					inputs.push ("page=operation/agentes/ver_agente");
+					jQuery.ajax ({
+						data: inputs.join ("&"),
+						type: 'GET',
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: 'json',
+						success: function (data) {
+							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
+							jQuery.each (data, function (i, val) {
+								var val_id_agente_modulo = parseInt(val['id_agente_modulo']);
+								s = html_entity_decode (val['nombre']);
+								
+								option = $("<option></option>");
+								option.attr ('value', val['id_agente_modulo']).text (s);
+								
+								if (val_id_agente_modulo == data_id_agente_modulo)
+									option.attr ('selected', 'selected');
+								
+								$('#module').append (option);
+								
+							});							
+							$('#module').fadeIn ('normal');
+						}
+					});
+				});
+					
+					
 					if (jQuery.browser.msie) {
 						$("#form_layout_data_editor #hidden-id_layout_data").remove ();
 						input = $('<input type="hidden" name="id_layout_data"></input>').attr ('value', id);
@@ -677,7 +725,7 @@ $(document).ready (function () {
 	$("#form_layout_data_editor #agent").pandoraSelectAgentModule ({
 		moduleSelect: "#module",
 		callbackAfter : function () {
-			$("#module").attr ("value", id_agent_module);
+			//$("#module").attr ("value", id_agent_module);
 		}
 	});
 	$("#form_layout_data_editor #type").change (function () {

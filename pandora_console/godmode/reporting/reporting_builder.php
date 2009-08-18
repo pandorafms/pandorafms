@@ -563,6 +563,7 @@ function agent_changed () {
 		inputs.push ("id_agent=" + id_agent);
 		inputs.push ("get_agent_modules_json=1");
 		inputs.push ("page=operation/agentes/ver_agente");
+		inputs.push ("filter=delete_pending%3Dfalse");
 		jQuery.ajax ({
 			data: inputs.join ("&"),
 			type: 'GET',

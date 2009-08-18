@@ -495,7 +495,20 @@ var id_agent_module = 0;
 function testAgentCorrect() {
 	if (selectAgent) return true;
 	else {
-		alert ("<? echo __("No selected agent, please select any agent."); ?>");
+		if ($("#type").val() == 0) {
+			text_label = $("#text-label").val();
+			image = $("#image").val();
+			if (($("#text-label").val().length == 0) &&
+				($("#image").val().length == 0)) {
+			
+				alert("<?php echo __("Please, choose a image or type name for element.");?>");
+				return false;
+			}
+			else
+				return true;
+		}
+		else
+			alert ("<?php echo __("No selected agent, please select any agent."); ?>");
 		return false;
 	}
 }

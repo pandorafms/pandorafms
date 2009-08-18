@@ -1,3 +1,31 @@
+2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+	* ChangeLog: add comments of last commits, I forget update file.
+
+	* godmode/reporting/map_builder.php: add check in javascript for form for to
+	catch the try to save a item without name and withnout image.
+	Fixes: 2815062
+
+2009-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php, godmode/alerts/configure_alert_compound.php:
+	add function "get_agent_module_id" for optain id_agent from id_agent_module.
+	And add new column in correlation condition that containts the name (and
+	link) of agent. And change ajax of page for show this column in the search
+	form in the bottom.
+	Fixes: 2838000
+
+2009-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/map_builder.php: totaly fix the bug of map builder, now
+	you can use new ajax input to search the agent for item map.
+	Fixes: 2838013 
+
+2009-08-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/map_builder.php: partially fix the bug ID: 2838013, now
+	you can move the items in the map and Pandora console save the position. But
+	the edition of item data is'nt working although I am working in it.
+
 2009-08-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/agent_manager.php, godmode/agentes/massive_config.php,

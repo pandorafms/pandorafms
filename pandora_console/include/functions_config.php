@@ -105,6 +105,7 @@ function update_config () {
 	update_config_value ('status_images_set', (string) get_parameter ('status_images_set', $config["status_images_set"]));
 	update_config_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
 	update_config_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
+	update_config_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
 }
 
 /**

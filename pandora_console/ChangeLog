@@ -1,4 +1,9 @@
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+	* godmode/agentes/agent_template.php: refine the query to extract modules
+	from DB, now the query don't search modules are pending to delete.
+	Fixes: 2824695
+
+2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 	* ChangeLog: add comments of last commits, I forget update file.
 
 	* godmode/reporting/map_builder.php: add check in javascript for form for to

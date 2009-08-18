@@ -111,7 +111,7 @@ echo '</div></form>';
 // ==========================
 echo "<h3>".__('Assigned modules')."</h3>";
 
-$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d ORDER BY id_module_group, nombre", $id_agente);
+$sql = sprintf ("SELECT * FROM tagente_modulo WHERE id_agente = %d AND delete_pending = false ORDER BY id_module_group, nombre", $id_agente);
 $result = get_db_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();

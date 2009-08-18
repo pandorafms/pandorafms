@@ -1,4 +1,8 @@
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_config.php: add to save the attachment_store config
+	value.
+
+2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 	* godmode/reporting/reporting_builder.php: add filter parameter in ajax that
 	pick the modules for select in form. The parameter is filter that don't
 	search rows are pending to delete.

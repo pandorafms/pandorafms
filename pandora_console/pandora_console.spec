@@ -21,7 +21,7 @@ Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
-Packager:           Manuel Arostegui <manuel.arostegui@gmail.com>
+Packager:           Manuel Arostegui <manuel@todo-linux.com>
 Prefix:             /srv/www/htdocs
 BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch

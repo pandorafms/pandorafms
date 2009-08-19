@@ -1,3 +1,7 @@
+2009-08-19  Manuel Arostegui <manuel@todo-linux.com>
+
+	* pandora_console.spec: Changed email.
+
 2009-08-18  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_console.spec: A lot of changes, included new dependencies (thinking

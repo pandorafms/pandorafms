@@ -73,12 +73,6 @@ sub pandora_get_os ($) {
 		if ($command =~ m/Windows/i){
 			return 9;
 		}
-		elsif ($command =~ m/Linux/i){
-			return 1;
-		}
-		elsif ($command =~ m/BSD/i){
-			return 4;
-		}
 		elsif ($command =~ m/Cisco/i){
 			return 7;
 		}
@@ -97,8 +91,20 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/Apple/i){
 			return 8;
 		}
+		elsif ($command =~ m/Linux/i){
+			return 1;
+		}
+		elsif ($command =~ m/Enterasys/i){
+			return 11;
+		}
+		elsif ($command =~ m/3com/i){
+			return 11;
+		}
 		elsif ($command =~ m/Octopus/i){
 			return 13;
+		}
+		elsif ($command =~ m/BSD/i){
+			return 4;
 		}
 		else {
 			return 10; # Unknown / Other
@@ -346,12 +352,15 @@ sub enterprise_hook ($$) {
 	# Prepend the package name
 	$func = 'PandoraFMS::Enterprise::' . $func;
 
-	# Try to call the function
-	my $output = eval { &$func (@args); };
-
-	# Check for errors
-	return undef if ($@);
-
+	# Check if exist before try to call it
+	my $output = `perl -e "use $func"`;
+	
+	if ($output){
+		# Try to call the function
+		$output = eval { &$func (@args); };
+	} else {
+		return $undef;
+	}
 	return $output;
 }
 

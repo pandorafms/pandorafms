@@ -37,7 +37,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "3.0-dev";
-my $pandora_build = "PS090810";
+my $pandora_build = "PS090819";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -195,8 +195,12 @@ sub pandora_load_config {
     $pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
     $pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
 
-	# Xprobe2 for recon OS fingerprinting (optional feature to detect OS)
-	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
+	# nmap for recon OS fingerprinting and tcpscan (optional)
+	$pa_config->{"nmap"} = "/usr/bin/nmap";
+
+	# Xprobe2 for recon OS fingerprinting and tcpscan (optional)
+	$pa_config->{"xprobe2"} = "/usr/bin/xprobe";
+
 	
 	# Snmpget for snmpget system command (optional)
 	$pa_config->{"snmpget"} = "/usr/bin/snmpget";
@@ -420,6 +424,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) {
 			$pa_config->{"keepalive"} = clean_blank($1);
 			$pa_config->{"keepalive_orig"} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^nmap\s(.*)/i) {
+			$pa_config->{'nmap'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
 			$pa_config->{'xprobe2'}= clean_blank($1); 

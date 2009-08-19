@@ -4,6 +4,17 @@
 
 2009-08-19  Sancho lerena <slerena@artica.es>
 
+	* pandora_server.spec: Added nmap to required packages, removed xprobe2.
+	
+	* lib/PandoraFMS/Config.pm, conf/pandora_server.conf: New token for nmap.
+	 
+	* lib/PandoraFMS/ReconServer.pm: New parent detection, TCP scanning imple-
+	mented using NMAP. Implemented TCP profile scanning.
+	
+	* lib/PandoraFMS/Tools.pm: Some reordering in pandora_get_os() gives
+	more accurate OS guessing. enterprise_hook() now don't yell when enterprise
+	is not found :-)
+
 	* pandora_server.spec: Updated some dependencies. Also included the 
 	install of pandora_db maintance script in cron.daily.
 	

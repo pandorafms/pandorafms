@@ -25,7 +25,6 @@ use threads::shared;
 use Thread::Semaphore;
 
 use IO::Socket::INET;
-use Net::Ping;
 use NetAddr::IP;
 use POSIX qw(strftime ceil);
 
@@ -128,35 +127,22 @@ sub data_consumer ($$) {
 		# Does the host already exist?
         next if (get_agent_from_addr ($dbh, $addr) > 0);
        
-		# Is the host alive? (thanks to Evi for the TCP scans)
 		my $alive = 0;
 		if (pandora_ping ($pa_config, $addr) == 1) {
 			$alive = 1;
-		#Check for Remote Desktop & VNC (Desktop & Server machines)
-		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 3389) == 1 ||
-		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 5900) == 1) {
-		#	$alive = 1;
-		#Check for management ports 10000 = Webmin, 161 = SNMP (Most embedded devices)
-		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 10000) == 1 ||
-		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 161) == 1) {
-		#	$alive = 1;
-		#Check for SSH & Mail (Servers and Unix machines)
-		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 22) == 1 ||
-		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 25) == 1) {
-		#	$alive = 1;
-		#Check for WWW & MySQL (Webservers and systems in a DMZ)
-		#} elsif (tcp_scan ($addr, $pa_config->{'networktimeout'}, 80) == 1 ||
-		#         tcp_scan ($addr, $pa_config->{'networktimeout'}, 3306) == 1) {
-		#	$alive = 1;
+			# TCP Port profiling 
+			if ((defined ($task->{'recon_ports'})) && ($task->{'recon_ports'} ne "")) {
+				$alive = tcp_scan ($pa_config, $addr, $task->{'recon_ports'});
+			}
 		}
 
-		next unless ($alive == 1);
+		next unless ($alive > 0);
 
 		# Guess the OS and filter
 		my $id_os = guess_os ($pa_config, $addr);
 		next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
 
-		$hosts_found++;
+		$hosts_found ++;
 		$addr_found .= $addr . " ";
 
 		# Resolve the address
@@ -205,22 +191,15 @@ sub data_consumer ($$) {
 # TCP scan the given host/port. Returns 1 if successful, 0 otherwise.
 ##############################################################################
 sub tcp_scan ($$$) {
-	my ($host, $timeout, $port) = @_;
-	my $rc = 0;
-
-	eval {
-		local $SIG{'ALRM'} = sub { return 0; };
-		alarm ($timeout);
-		my $handle=IO::Socket::INET->new(
-				Proto => 'tcp',
-				PeerAddr => $host,
-				PeerPort => $port);
-		$rc = 1 if ($handle);
-		alarm (0);
+	my ($pa_config, $host, $portlist) = @_;
+	my $runcommand;
+	
+	my $nmap = $pa_config->{'nmap'};
+    eval {
+		$runcommand = `$nmap -p$portlist $host | grep open | wc -l`;
 	};
-
-    return 0 if ($@);
-	return $rc;
+	return 0 if ($@);
+	return $runcommand;
 }
 
 ##########################################################################
@@ -228,21 +207,26 @@ sub tcp_scan ($$$) {
 ##########################################################################
 sub guess_os {
     my ($pa_config, $host) = @_;
+    my $nmap = $pa_config->{'nmap'};
+	my $xprobe = $pa_config->{'xprobe2'};
 
-    my $xprobe2 = $pa_config->{'xprobe2'};
-    
-    # Other OS
-    return 10 if (! -e $xprobe2);
-
-	# Execute xprobe2
-    my $output = '';
+    # if xprobe2 not available, use nmap, if not, not able to detect OS	
+	if (! -e $xprobe){
+	    return 10 if (! -e $nmap);
+	}
+	
+	# Execute Nmap (4.x) or Xprobe2
+    my $output = ''; 
     eval {
-		$output = `$xprobe2 $host 2> /dev/null | grep "Running OS" 2> /dev/null | head -1 2> /dev/null`;
+    	if (-e $xprobe){
+    		$output = `$xprobe $host 2> /dev/null | grep 'Running OS' | head -1`;
+    	} else {
+			$output = `$nmap -F -O $host 2> /dev/null | grep 'Aggressive OS guesses'`;
+    	}
     };
 
 	# Check for errors
     return 10 if ($@);
-
 	return pandora_get_os ($output);
 }
 
@@ -328,13 +312,14 @@ sub get_host_parent ($$){
 	# Traceroute not available
     return 0 unless ($TracerouteAvailable != 0);
 
+	my $traceroutetimeout = $pa_config->{'networktimeout'} * 2;
     my $tr = Net::Traceroute::PurePerl->new (
 		 backend        => 'PurePerl',
          host           => $host,
          debug          => 0,
          max_ttl        => 15,
-         query_timeout  => $pa_config->{'networktimeout'},
-         packetlen      => 40,
+         query_timeout  => $traceroutetimeout,
+         packetlen      => 80,
          protocol       => 'udp', # udp or icmp
     );
 
@@ -343,7 +328,7 @@ sub get_host_parent ($$){
 	# Call traceroute
 	eval {
 		local $SIG{'ALRM'} = sub { return 0; };
-		alarm($pa_config->{'networktimeout'});
+		alarm($traceroutetimeout);
 		$success = $tr->traceroute();
 		alarm(0);
 	};
@@ -354,8 +339,21 @@ sub get_host_parent ($$){
 	# Traceroute was not successful
 	return 0 if ($tr->hops < 2 || $success == 0);
 
-	my $parent_addr = $tr->hop_query_host($tr->hops - 1, 0);
-	return get_agent_from_addr ($dbh, $parent_addr);
+	my $hopstotal = $tr->hops;
+	$hopstotal--;
+	
+	# Run all list of parents until find a known parent
+	my $parent_addr;
+	my $parent_addr_check;
+
+	for (my $ax=$hopstotal; $ax >= 0; $ax--){
+		$parent_addr = $tr->hop_query_host($ax, 0);
+		$parent_addr_check = get_addr_id ($dbh, $parent_addr);
+		if ($parent_addr_check != -1){
+			return get_agent_from_addr ($dbh, $parent_addr);
+		}
+	}
+	return 0;
 }
 
 1;

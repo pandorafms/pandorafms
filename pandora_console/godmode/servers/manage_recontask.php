@@ -52,6 +52,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$id_group = get_parameter_post ("id_group");
 	$create_incident = get_parameter_post ("create_incident");
 	$id_network_profile = get_parameter_post ("id_network_profile");
+	$recon_ports = get_parameter_post ("recon_ports", "");
 	$id_os = get_parameter_post ("id_os", 10);
 }
 
@@ -62,7 +63,7 @@ if (isset($_GET["update"])) {
 	$id = get_parameter_get ("update");
 	$sql = sprintf ("UPDATE trecon_task SET id_os = %d, name = '%s', subnet = '%s',
 				description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, 
-				id_network_profile = %d WHERE id_rt = %u",$id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$id);
+				id_network_profile = %d, recon_ports = '%s' WHERE id_rt = %u",$id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$recon_ports, $id);
 	
 	if (process_sql ($sql) !== false) {
 		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
@@ -76,8 +77,8 @@ if (isset($_GET["update"])) {
 // --------------------------------
 if (isset($_GET["create"])) {
 	$sql = sprintf ("INSERT INTO trecon_task 
-			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os) 
-			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d)",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os);
+			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports) 
+			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports);
 	
 	if (process_sql ($sql) !== false) {
 		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
@@ -89,12 +90,14 @@ if (isset($_GET["create"])) {
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage recontask')."</h2>";
+echo "<h2>";
+echo __('Pandora servers')." &raquo; ".__('Manage recontask');
+echo "</h2>";
 
 $result = get_db_all_rows_in_table ("trecon_task");
 $color=1;
 if ($result !== false) {
-	$table->head = array  (__('Name'), __('Network'), __('Module template'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Action'));
+	$table->head = array  (__('Name'), __('Network'), __('Module template'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
 	$table->align = array ("","","","center","","","center","center");
 	$table->width = 700;
 	$table->cellpadding = 4;
@@ -116,10 +119,12 @@ if ($result !== false) {
 			(($row["id_os"] > 0) ? print_os_icon ($row["id_os"], false, true) : __('Any')),
 		// INTERVAL
 			human_time_description_raw($row["interval_sweep"]),
+		// PORTS
+			substr($row["recon_ports"],0,15),
 		// ACTION
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">
-			<img src="images/cross.png" border="0" /></a>&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">
-			<img src="images/config.png" /></a>'
+			"<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'><img src='images/eye.png'></a>&nbsp;".
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'"><img src="images/cross.png" border="0" /></a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">
+			<img src="images/config.png"/></a>'
 		);
 	}
 	print_table ($table);

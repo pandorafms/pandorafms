@@ -1658,7 +1658,6 @@ function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND
 		$filter = 'WHERE '.$filter;
 	else
 		$filter = '';
-	
 	$sql = sprintf ('SELECT %s FROM %s %s',
 		$fields, $table, $filter);
 	
@@ -1739,9 +1738,8 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
 	} else {
 		$filter = '';
 	}
-	
+
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-	
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -2105,7 +2103,17 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		} elseif (is_array ($value)) {
 			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
 		} else {
-			$query .= sprintf ("%s = '%s'", $field, $value);
+			if ($value[0] == ">"){
+				$value = substr($value,1,strlen($value)-1);
+				$query .= sprintf ("%s > '%s'", $field, $value);
+			}
+			else if ($value[0] == "<"){
+				$value = substr($value,1,strlen($value)-1);
+				$query .= sprintf ("%s < '%s'", $field, $value);
+			} 
+			else {
+				$query .= sprintf ("%s = '%s'", $field, $value);
+			}
 		}
 		
 		if ($i < $max) {

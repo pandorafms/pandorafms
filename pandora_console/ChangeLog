@@ -1,3 +1,17 @@
+2009-08-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: A missing table was necessary to be added to allow recon
+	to make scans depending on TCP ports profile (recon_ports field).
+
+	* manage_recontask.php, manage_recontask_form.php: Added recon_port field
+	to recon management system. Added some links and some aditional formatting.
+	
+	* include/funcions_db.php: Improved format_array_to_where_clause_sql()
+	to accept condicionals like > and < in the array field.
+	
+	* operation/servers/view_server_detail.php: Quick link to recontask server
+	admin.
+
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* install.php: change the style of "div#wizard", "div#install_img" and add
@@ -18,21 +32,25 @@
 
 
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_config.php: add to save the attachment_store config
 	value.
 
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/reporting/reporting_builder.php: add filter parameter in ajax that
 	pick the modules for select in form. The parameter is filter that don't
 	search rows are pending to delete.
 	Fixes: 2824695
 
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/agent_template.php: refine the query to extract modules
 	from DB, now the query don't search modules are pending to delete.
 	Fixes: 2826447
 
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* ChangeLog: add comments of last commits, I forget update file.
 
 	* godmode/reporting/map_builder.php: add check in javascript for form for to

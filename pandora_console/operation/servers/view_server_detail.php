@@ -49,7 +49,11 @@ $recon_tasks = get_db_all_rows_field_filter ("trecon_task", "id_recon_server", $
 echo "<h2>". __('Configuration detail') . " - ".safe_input ($server_name);
 echo '&nbsp;<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'">';
 print_image ("images/refresh.png");
-echo "</a></h2>";
+echo "</a>&nbsp;";
+if (check_acl ($config["id_user"],0,"PW")){
+	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask'><img 		src='images/setup.png'></A>";
+}
+echo "</h2>";
 
 
 // Show network tasks for Recon Server

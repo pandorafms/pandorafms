@@ -1,3 +1,12 @@
+2009-08-18  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_console.spec: A lot of changes, included new dependencies (thinking
+	in SUSE 11), and a lot of corrected stuff. Now works 100%.
+
+	* pandoradb_data.sql: Minor updates, version, new SMS alert, new SO type 
+	(octopus).
+
+
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_config.php: add to save the attachment_store config
 	value.

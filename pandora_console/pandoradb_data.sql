@@ -21,8 +21,6 @@
 -- and fails creating database !!!
 
 
-
---
 -- Dumping data for table `talert_commands`
 --
 
@@ -34,7 +32,7 @@ INSERT INTO `talert_commands` VALUES (5,'SNMP Trap','/usr/bin/snmptrap -v 1 -c t
 INSERT INTO `talert_commands` VALUES (6,'Syslog','logger -p daemon.alert Pandora Alert _agent_ _data_ _field1_ _field2_','Uses field1 and field2 to generate Syslog alert in facility daemon with "alert" level.', 0);
 INSERT INTO `talert_commands` VALUES (7,'Sound Alert','/usr/bin/play /usr/share/sounds/alarm.wav','', 0);
 INSERT INTO `talert_commands` VALUES (8,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name', 0);
-
+INSERT INTO `talert_commands` VALUES (9,'SMS','sendsms _field1_ _field2_','Send SMS using the Pandora FMS standard SMS device, using smstools.  Uses field2 as text message, field1 as destination phone (include international prefix!)', 0);
 
 --
 -- Dumping data for table `tconfig`
@@ -48,8 +46,8 @@ INSERT INTO `tconfig` VALUES
 (5,'days_compact','15'),
 (6,'graph_res','5'),
 (7,'step_compact','1'),
-(8,'db_scheme_version','2.1-dev'),
-(9,'db_scheme_build','PD90121'),
+(8,'db_scheme_version','3.0-dev'),
+(9,'db_scheme_build','PD90819'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -83,8 +81,9 @@ INSERT INTO `tconfig_os` VALUES
 (8,'MacOS','MAC OS','so_mac.png'),
 (9,'Windows','Microsoft Windows OS','so_win.png'),
 (10,'Other','Other SO','so_other.png'),
-(11,'Network','Pandora Network Agent','network.png'),
-(12,'Web Server','Web Server/Application','network.png');
+(11,'Network','Pandora FMS Network Agent','network.png'),
+(12,'Web Server','Web Server/Application','network.png'),
+(13,'Octopus','Pandora FMS Hardware Agent','network.png');
 UNLOCK TABLES;
 
 

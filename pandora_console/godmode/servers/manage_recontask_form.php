@@ -38,6 +38,7 @@ if (isset ($_GET["update"])) { // Edit mode
 	$create_incident = $row["create_incident"];
 	$id_network_profile = $row["id_network_profile"];
 	$id_os = $row["id_os"];
+	$recon_ports = $row["recon_ports"];
 } elseif (isset ($_GET["create"])) {
 	$id_rt = -1;
 	$name = "";
@@ -49,28 +50,29 @@ if (isset ($_GET["update"])) { // Edit mode
 	$create_incident = 1;
 	$id_network_profile = 1;
 	$id_os = -1; // Any
+	$recon_ports = ""; // Any
 }
 
 echo '<h2>'.__('Pandora servers').' &raquo; '.__('Manage recontask');
 print_help_icon ("recontask");
 echo '</h2>';
 
-$table->width=700;
+$table->width=600;
 $table->cellspacing=4;
 $table->cellpadding=4;
 $table->class="databox_color";
 
 // Name
-$table->data[0][0] = __('Task name');
+$table->data[0][0] = "<b>".__('Task name')."</b>";
 $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 
 // Recon server
-$table->data[1][0] = __('Recon server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
+$table->data[1][0] = "<b>".__('Recon server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
 $table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name',
 	"id_recon_server", $id_recon_server, '', '', '', true);
 
 // Network 
-$table->data[2][0] = __('Network');
+$table->data[2][0] = "<b>".__('Network');
 $table->data[2][1] = print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
@@ -85,40 +87,45 @@ $values[604800] = __('%d week', 1);
 $values[1209600] = __('%d weeks', 2);
 $values[2592000] = __('%d month', 1);
 
-$table->data[3][0] = __('Interval');
+$table->data[3][0] = "<b>".__('Interval');
 $table->data[3][1] = print_select ($values, "interval", $interval, '', '', '', true);
 
 // Module template
-$table->data[4][0] = __('Module template');
+$table->data[4][0] = "<b>".__('Module template');
 $table->data[4][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
 	"id_network_profile", $id_network_profile, '', '', '', true);
 
 // OS
-$table->data[5][0] = __('OS');
+$table->data[5][0] = "<b>".__('OS');
 $table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
 	"id_os", $id_os, '', __('Any'), -1, true);
 
+// Recon ports
+$table->data[6][0] = "<b>".__('Ports');
+$table->data[6][1] =  print_input_text ('recon_ports', $recon_ports, '', 25, 0, true);
+$table->data[6][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank').'</span></a>';
+
 // Group
-$table->data[6][0] = __('Group');
-$table->data[6][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', "id_group", $id_group, '', '', 0, true);
+$table->data[7][0] = "<b>".__('Group');
+$table->data[7][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', "id_group", $id_group, '', '', 0, true);
 
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));
-$table->data[7][0] = __('Incident');
-$table->data[7][1] = print_select ($values, "create_incident", $create_incident,
+$table->data[8][0] = "<b>".__('Incident');
+$table->data[8][1] = print_select ($values, "create_incident", $create_incident,
 	'','','',true);
 
 // Comments
-$table->data[8][0] = __('Comments');
-$table->data[8][1] = print_textarea ("description", 2, 70, $description, '', true);
+$table->data[9][0] = "<b>".__('Comments');
+$table->data[9][1] =  print_input_text ('description', $description, '', 45, 0, true);
 
 
 // Different Form url if it's a create or if it's a update form
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 
 print_table ($table);
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: 620px">';
 if ($id_rt != -1) 
 	print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
 else

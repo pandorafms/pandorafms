@@ -97,6 +97,9 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/Apple/i){
 			return 8;
 		}
+		elsif ($command =~ m/Octopus/i){
+			return 13;
+		}
 		else {
 			return 10; # Unknown / Other
 		}

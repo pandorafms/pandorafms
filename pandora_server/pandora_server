@@ -13,7 +13,7 @@
 # Default-Stop: 0 1 2 3 5
 # Required-Start: $network
 # Required-Stop: $network
-# Description: Pandora FMS Server startup script
+# Short-Description: Pandora FMS Server startup script
 ### END INIT INFO
 
 PANDORA_HOME="/etc/pandora/pandora_server.conf"

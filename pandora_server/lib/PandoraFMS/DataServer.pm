@@ -26,6 +26,7 @@ use Thread::Semaphore;
 
 use Time::Local;
 use XML::Simple;
+use POSIX qw(setsid strftime);
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -157,10 +158,15 @@ sub process_xml_data ($$$$) {
 
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
-		logger($pa_config, 'ERROR: Received data from an unknown agent', 2);
+		logger($pa_config, 'ERROR: Received data from an unnamed agent', 2);
 		return;
 	}
   
+	# Get current datetime from system if value AUTO is coming in the XML
+	if ( $data->{'timestamp'} =~ /AUTO/ ){
+		$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
+	}
+
   	# Check some variables
    	$interval = 300 unless defined ($interval);
    	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
@@ -174,7 +180,7 @@ sub process_xml_data ($$$$) {
 		}
 		
 		# Get OS, group and description
-		my $os = pandora_get_os ($data->{'os'});
+		my $os = pandora_get_os ($data->{'os_name'});
 		my $group_id = undef;
 		$group_id = get_db_value ($dbh, 'SELECT id_grupo FROM tgrupo WHERE nombre = ?', $data->{'group'}) if (defined ($data->{'group'}));
 		$group_id = $pa_config->{'autocreate_group'} unless defined ($group_id);

@@ -1,5 +1,14 @@
+2009-08-19  Sancho lerena <slerena@artica.es>
 
-2009-08-15  Sancho lerena <slerena@artica.es>
+	* pandora_server.spec: Updated some dependencies. Also included the 
+	install of pandora_db maintance script in cron.daily.
+	
+	* pandora_server, tentacle_serverd: Added short description to able
+	yast visualizate correctly the description in software selection screen.
+	
+	* lib/PandoraFMS/Core.pm: Fixed problem with OS Detection at creation. Added
+	support for AUTOTIME (time of data is given by the server instead by data
+	coming from the agent) and autoimport of agent description. 
 
 	* util/tentacle_serverd: Call to umask to let tentacle_server create
 	files with mask 0007, because Enterprise version need to write files

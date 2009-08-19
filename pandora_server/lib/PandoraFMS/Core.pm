@@ -736,6 +736,7 @@ sub pandora_create_agent ($$$$$$$$$$) {
 	logger ($pa_config, "$server_name: Creating agent $agent_name ($address)", 1);
 
 	$description = "Created by $server_name" unless ($description ne '');
+
 	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
 	                              VALUES  (?, ?, ?, ?, ?, ?, 300, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $parent_id);
 

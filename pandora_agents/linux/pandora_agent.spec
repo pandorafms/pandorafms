@@ -12,7 +12,7 @@ Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://pandorafms.org
 Group:              System/Monitoring
-Packager:           Manuel Arostegui <manuel.arostegui@gmail.com>
+Packager:           Manuel Arostegui <manuel@todo-linux.com>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch

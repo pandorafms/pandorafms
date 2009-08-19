@@ -1,3 +1,7 @@
+2009-08-19  Manuel Arostegui <manuel@todo-linux.com>
+
+	* pandora_server.spec: Changed email.
+
 2009-08-19  Sancho lerena <slerena@artica.es>
 
 	* pandora_server.spec: Updated some dependencies. Also included the 

@@ -1,3 +1,7 @@
+2009-08-19  Manuel Arostegui <manuel@todo-linux.com>
+
+	* linux/pandora_agent.spec: Changed email.
+
 2009-08-18  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent.spec: Fixed some permissions.

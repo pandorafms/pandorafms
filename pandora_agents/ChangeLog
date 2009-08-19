@@ -1,3 +1,12 @@
+2009-08-18  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent.spec: Fixed some permissions.
+
+	* pandora_agent.conf, pandora_agent: Support for description and group
+	passed to the server. Also implemented AUTOTIME, where timestamp used
+	is the server localtime instead agent datetime. Also placed new token for
+	module_postprocess data to be passed to server.
+	
 2009-08-14  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent_installer: Fixed problems with .conf backup

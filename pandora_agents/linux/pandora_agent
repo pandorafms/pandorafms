@@ -1,13 +1,13 @@
 #!/bin/bash
 # **********************************************************************
 # Pandora FMS Generic Linux Agent
-# (c) 2009 Artica Soluciones Tecnológicas SL
+# (c) 2009 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 AGENT_VERSION=3.0
-AGENT_BUILD=090608
+AGENT_BUILD=090818
 
 # **********************************************************************
 # function configure_agent()
@@ -153,14 +153,27 @@ function configure_agent {
 				SECONDARY_TENTACLE_OPTS="$SECONDARY_SERVER_OPTS $SECONDARY_TENTACLE_OPTS"
 				echo "$TIMESTAMP - [SETUP] - Extra options for the secondary Tentacle client $SECONDARY_SERVER_OPTS" >> $PANDORA_LOGFILE
 			fi
+		# Agent description
+		elif [ ! -z "`echo $a | grep -e '^description'`" ]
+		then
+			AGENT_DESCRIPTION=`echo $a | cut -d" " -f2-`
+		# Agent group
+		elif [ ! -z "`echo $a | grep -e '^group'`" ]
+		then
+			AGENT_GROUP=`echo $a | cut -d" " -f2-`
+
+		# Agent autotime (use always current server time)
+		elif [ ! -z "`echo $a | grep -e '^autotime'`" ]
+		then
+			AGENT_AUTOTIME=`echo $a | cut -d" " -f2-`
 		fi	
 	done
 	
 	if [ "$CRON_MODE" == "0" ]
 	then
 		# Script banner at start
-		echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena 2003-2008"
-		echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
+		echo "Pandora FMS Agent $AGENT_VERSION (c) Artica ST 2003-2009"
+		echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "
 	else
@@ -498,6 +511,11 @@ do
  	# Date and time, SERIAL is number of seconds since 1/1/1970, for every packet.
  	TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
  	SERIAL=`date +"%s"`
+	if [ "$AGENT_AUTOTIME" == "1" ]
+	then
+		TIMESTAMP="AUTO"
+	fi
+
  
  	# File names
  	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
@@ -505,7 +523,7 @@ do
  
  	# Makes data packet
 	echo "<?xml version=\"1.0\" encoding=\"$ENCODING\"?> " > $DATA
-	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" >> $DATA
+	echo "<agent_data description='$AGENT_DESCRIPTION' group='$AGENT_GROUP' os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" >> $DATA
 	
  	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
  	do
@@ -594,6 +612,13 @@ do
 			else
 				echo "$TIMESTAMP - Plugin $PANDORA_HOME/plugins/$PLUGIN not found" > $PANDORA_LOGFILE.err
 			fi
+		fi
+
+		# Module postprocess info 
+  		if [ ! -z "`echo $a | grep -e '^module_postprocess'`" ]
+		then
+			pprocess=`echo $a | cut -d" " -f2-`
+			echo "<postprocess><![CDATA[$pprocess]]></postprocess>" >> $DATA2
 		fi
 
 		# If module ends, and execute for this module is enabled

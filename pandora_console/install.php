@@ -226,7 +226,7 @@ function install_step2() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS console installation wizard. Step #2 of 4</h1>
-	<div id='wizard' style='height: 440px;'>
+	<div id='wizard' style='min-height: 390px;'>
 		<div id='install_box'>";
 		echo "<h2>Checking software dependencies</h2>";
 			echo "<table border=0 width=230>";
@@ -256,13 +256,14 @@ function install_step2() {
 				dependencies. Please correct them or this installer 
 				will not be able to finish your installation.
 				</div>
-				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
+				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>";
 			} else {
 				echo "<a href='install.php?step=3'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			}
 			echo "
 		</div>
+		<div style='clear: both;'><!-- --></div>
 	</div>
 	<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 

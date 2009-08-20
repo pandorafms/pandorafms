@@ -352,15 +352,12 @@ sub enterprise_hook ($$) {
 	# Prepend the package name
 	$func = 'PandoraFMS::Enterprise::' . $func;
 
-	# Check if exist before try to call it
-	my $output = `perl -e "use $func"`;
-	
-	if ($output){
-		# Try to call the function
-		$output = eval { &$func (@args); };
-	} else {
-		return $undef;
-	}
+	# Try to call the function
+	my $output = eval { &$func (@args); };
+
+	# Check for errors
+	return undef if ($@);
+
 	return $output;
 }
 

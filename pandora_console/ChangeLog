@@ -1,3 +1,10 @@
+2009-08-20  Sancho Lerena  <slerena@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed bug with agent address 
+	edition (return 0 when no address was supplied).
+
+	* godmode/modules/manage_network_components.php: Fixed typo.
+
 2009-08-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: A missing table was necessary to be added to allow recon
@@ -35,6 +42,7 @@
 
 	* include/functions_config.php: add to save the attachment_store config
 	value.
+
 
 2009-08-18  Miguel de Dios  <miguel.dedios@artica.es>
 

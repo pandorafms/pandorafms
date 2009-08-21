@@ -1,3 +1,15 @@
+2009-08-20  Sancho Lerena <slerena@artica.es>
+
+	* bsd-ipso/pandora_agent.sh
+	aix/pandora_agent
+	mac_osx/pandora_agent
+	openWRT/pandora_agent
+	hp-ux/pandora_agent
+	win32/udp_server/udp_server.cc
+	win32/udp_server/udp_server.h
+	meta_agent/pandora_agent_sim.sh
+	solaris/pandora_agent: Header updates.
+
 2009-08-19  Manuel Arostegui <manuel@todo-linux.com>
 
 	* linux/pandora_agent.spec: Changed email.

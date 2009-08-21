@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # **********************************************************************
-# SIMULADOR DE AGENTES Pandora (Pandora Meta Agent) 
-# Linux version 
-# (c) Sancho Lerena 2003,2004,2005
-# Este codigo esta licenciado bajo la licencia GPL 2.0.
-# This code is licenced under GPL 2.0 licence.
+# Pandora FMS Agent Simulator (MetaAgent)
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
+# This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 IFS=$'\n'

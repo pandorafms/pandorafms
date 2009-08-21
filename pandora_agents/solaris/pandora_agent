@@ -1,10 +1,9 @@
 #!/usr/bin/ksh 
 # **********************************************************************
-# Pandora Agent for Solaris
-# v1.3
-# (c) Sancho Lerena 2003-2006, slerena@gmail.com
-# Este codigo esta licenciado bajo la licencia GPL 2.0 o posterior
-# This code is licenced under GPL 2.0 licence
+# Pandora FMS Solaris Agent
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
+# This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 AGENT_VERSION="1.3"

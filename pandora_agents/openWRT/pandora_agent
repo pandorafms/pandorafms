@@ -1,10 +1,8 @@
 #!/bin/sh
 # **********************************************************************
-# Pandora FMS Agent
-# OpenWRT version 
-# (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
-# (c) 2007-2008 Jorge Loza <jorge@netberry.es>
-# with the help of many people. Please see http://pandora.sourceforge.net
+# Pandora FMS OpenWRT Agent
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 AGENT_VERSION=2.0

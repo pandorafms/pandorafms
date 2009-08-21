@@ -1,10 +1,9 @@
 #!/bin/sh
 # **********************************************************************
-# Agente Generico Pandora
-# FreeBSD/IPSO version
-# (c) Sancho Lerena 2003-2007, slerena@gmail.com
-# Este codigo esta licenciado bajo la licencia GPL 2.0
-# This code is licenced under GPL 2.0 licence.
+# Pandora FMS Generic IPSO/HPUX
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
+# This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 AGENT_VERSION=1.3

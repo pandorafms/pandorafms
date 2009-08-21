@@ -1,9 +1,8 @@
 #!/bin/bash
 # **********************************************************************
-# Pandora FMS Generic Host Agent
-# Mac OS X/Linux version 2.0
-# (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
-# with the help of many people. Please see http://pandora.sourceforge.net
+# Pandora FMS Generic MacOS Agent
+# (c) 2009 Artica Soluciones Tecnológicas SL
+# with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 

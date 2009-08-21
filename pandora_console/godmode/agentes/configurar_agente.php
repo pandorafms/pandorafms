@@ -49,7 +49,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
-$direccion_agente = get_parameter ('direccion');
+$direccion_agente = get_parameter ('direccion', '');
 $intervalo = 300;
 $id_server = "";
 $max_alerts = 0;
@@ -107,18 +107,18 @@ $create_agent = (bool) get_parameter ('create_agent');
 
 // Create agent
 if ($create_agent) {
-	$nombre_agente = (string) get_parameter_post ("agente");
-	$direccion_agente = (string) get_parameter_post ("direccion");
+	$nombre_agente = (string) get_parameter_post ("agente",'');
+	$direccion_agente = (string) get_parameter_post ("direccion",'');
 	$grupo = (int) get_parameter_post ("grupo");
 	$intervalo = (string) get_parameter_post ("intervalo", 300);
-	$comentarios = (string) get_parameter_post ("comentarios");
+	$comentarios = (string) get_parameter_post ("comentarios", '');
 	$modo = (int) get_parameter_post ("modo");
-	$id_parent = (string) get_parameter_post ("id_parent");
+	$id_parent = (string) get_parameter_post ("id_parent",'');
 	$id_parent = (int) get_agent_id ($id_parent);
 	$server_name = (string) get_parameter_post ("server_name");
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
-	$custom_id = (string) get_parameter_post ("custom_id");
+	$custom_id = (string) get_parameter_post ("custom_id",'');
 
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
@@ -259,14 +259,15 @@ if (isset( $_GET["fix_module"])) {
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = (string) get_parameter_post ("agente", "");
-	$direccion_agente = (string) get_parameter_post ("direccion", "");
-	$address_list = (string) get_parameter_post ("address_list", "");
+	$direccion_agente = (string) get_parameter_post ("direccion", '');
+	$address_list = (string) get_parameter_post ("address_list", '');
 	if ($address_list != $direccion_agente && $direccion_agente == get_agent_address ($id_agente) && $address_list != get_agent_address ($id_agente)) {
 		//If we selected another IP in the drop down list to be 'primary': 
 		// a) field is not the same as selectbox
 		// b) field has not changed from current IP
 		// c) selectbox is not the current IP
-		$direccion_agente = $address_list;
+		if ($address_list != 0)
+			$direccion_agente = $address_list;
 	}
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", 300);

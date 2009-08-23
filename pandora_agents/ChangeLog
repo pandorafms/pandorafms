@@ -1,3 +1,7 @@
+2009-08-22  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent.spec: Update uninstall process.
+
 2009-08-20  Sancho Lerena <slerena@artica.es>
 
 	* bsd-ipso/pandora_agent.sh

@@ -104,43 +104,34 @@ fi
 %endif
 
 %preun
-if [ "$1" = 0 ]; then
-   /etc/init.d/pandora_agent_daemon stop
-   /usr/sbin/userdel pandora
-   rm /usr/bin/pandora_agent
-   rm /usr/bin/tentacle_client            
-   rm /etc/init.d/pandora_agent_daemon
-   rm -Rf /usr/share/pandora_agent/
-   rm -Rf /etc/pandora/pandora_agent.conf
-   rm -Rf /etc/pandora/plugins
-   rm -Rf /var/spool/pandora/data_out 
-   rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
+
+/etc/init.d/pandora_agent_daemon stop
+rm /etc/init.d/pandora_agent_daemon
+/usr/sbin/userdel pandora
+rm -Rf /etc/pandora/pandora_agent.conf
+rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
    
-   %if "%{_vendor}" == "redhat"
-      /sbin/chkconfig --del pandora_agent_daemon
-      rm /etc/rc0.d/K99pandora_agent_daemon
-      rm /etc/rc3.d/S99pandora_agent_daemon
-      rm /etc/rc5.d/S99pandora_agent_daemon
-   %else
-      rm /etc/rc.d/rc5.d/S99pandora_agent_daemon
-      rm /etc/rc.d/rc3.d/S99pandora_agent_daemon
-      rm /etc/rc.d/rc2.d/S99pandora_agent_daemon
-      rm /etc/rc.d/rc0.d/K99pandora_agent_daemon
-   %endif
-fi
+%if "%{_vendor}" == "redhat"
+  /sbin/chkconfig --del pandora_agent_daemon
+  rm /etc/rc0.d/K99pandora_agent_daemon
+  rm /etc/rc3.d/S99pandora_agent_daemon
+  rm /etc/rc5.d/S99pandora_agent_daemon
+%else
+  rm /etc/rc.d/rc5.d/S99pandora_agent_daemon
+  rm /etc/rc.d/rc3.d/S99pandora_agent_daemon
+  rm /etc/rc.d/rc2.d/S99pandora_agent_daemon
+  rm /etc/rc.d/rc0.d/K99pandora_agent_daemon
+%endif
 exit 0
 
 %files
 %defattr(750,pandora,root)
-%if "%{_vendor}" == "redhat"
 /usr/bin/pandora_agent
-%else
-/usr/bin/pandora_agent
-%endif
+
 %defattr(770,pandora,root)
 /var/log/pandora/
-/var/spool/pandora/
 /var/spool/pandora/data_out
+
 %defattr(755,pandora,root)
 /usr/bin/tentacle_client
 /etc/init.d/pandora_agent_daemon

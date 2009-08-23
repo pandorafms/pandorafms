@@ -92,8 +92,6 @@ fi
 if [ ! -e /etc/pandora/pandora_server.conf ] ; then
    ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/
    echo "Pandora FMS Server configuration is /etc/pandora/pandora_server.conf"
-#   echo "Pandora FMS Server data has been placed under /var/spool/pandora/data_in/"
-#   echo "Pandora FMS Server logs has been placed under /var/log/"
    echo "Pandora FMS Server main directory is %{prefix}/pandora_server/"
    echo "The manual can be reached at: man pandora or man pandora_server"
    echo "Pandora FMS Documentation is in: http://pandorafms.org"
@@ -103,17 +101,20 @@ fi
 /etc/init.d/tentacle_serverd start
 
 %preun
-if [ "$1" = 0 ]; then
-   # stop pandora silently, but only if it's running
-   /usr/sbin/pandora_server stop &>/dev/null
-   %if "%{_vendor}" == "redhat"
-      /sbin/chkconfig --del pandora_server
-   %endif
-   rm -Rf /etc/init.d/pandora_server
-   rm -Rf /etc/init.d/tentacle_serverd
-   rm -Rf /etc/pandora/pandora_server.conf
-   rm -Rf /usr/share/pandora_server
-fi
+/etc/init.d/pandora_server stop &>/dev/null
+/etc/init.d/tentacle_serverd stop &>/dev/null
+%if "%{_vendor}" == "redhat"
+  /sbin/chkconfig --del pandora_server
+%endif
+rm -Rf /etc/pandora/pandora_server.conf
+rm -Rf /etc/rc.d/rc5.d/S99pandora_server
+rm -Rf /etc/rc.d/rc3.d/S99pandora_server
+rm -Rf /etc/rc.d/rc2.d/S99pandora_server
+rm -Rf /etc/rc.d/rc0.d/K99pandora_server
+rm -Rf /etc/rc.d/rc5.d/S99tentacle_serverd
+rm -Rf /etc/rc.d/rc3.d/S99tentacle_serverd
+rm -Rf /etc/rc.d/rc2.d/S99tentacle_serverd
+rm -Rf /etc/rc.d/rc0.d/K99tentacle_serverd
 
 %files
 

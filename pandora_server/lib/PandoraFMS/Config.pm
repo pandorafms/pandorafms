@@ -222,6 +222,9 @@ sub pandora_load_config {
 
 	# Update tagent_access
     $pa_config->{"agentaccess"} = 1; 
+
+	# Ignore the timestamp in the XML and use the file timestamp instead
+    $pa_config->{'use_xml_timestamp'} = 0; 
 	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -485,7 +488,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^agentaccess\s([0-1])/i) {
 			$pa_config->{'agentaccess'}= clean_blank($1);
 		}
-
+		elsif ($parametro =~ m/^use_xml_timestamp\s([0-1])/i) {
+			$pa_config->{'use_xml_timestamp'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 

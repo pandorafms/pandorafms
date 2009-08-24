@@ -1,3 +1,9 @@
+2009-08-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/DataServer.pm: Added an option to ignore timestamps in
+	  XML data files and use file timestamps instead.
+
 2009-08-23  Sancho Lerena <slerena@artica.es>
 
 	* util/tentacle_serverd: Using SU instead SUDO, idea from

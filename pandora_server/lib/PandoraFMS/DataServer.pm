@@ -137,6 +137,9 @@ sub data_consumer ($$) {
     		next;
     	}
     	
+		# Ignore the timestamp in the XML and use the file timestamp instead
+    	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1');
+
     	unlink ($file_name);
 		process_xml_data ($self->getConfig (), $xml_data, $self->getServerID (), $self->getDBH ());
 		return;	

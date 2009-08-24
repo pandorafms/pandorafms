@@ -1,3 +1,9 @@
+2009-08-24 Sancho Lerena <slerena@artica.es>
+
+        * lib/PandoraFMS/Core.pm: Condition trigger for WARNING and
+        CRITICAL status was inverted. Fixed.
+
+
 2009-08-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Config.pm,

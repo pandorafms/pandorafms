@@ -173,8 +173,8 @@ sub pandora_evaluate_alert ($$$$$$) {
 			return $status if ($data !~ m/$alert->{'value'}/i);
 		}
 
-		return $status if ($last_status == 1 && $alert->{'type'} eq 'critical');
-		return $status if ($last_status == 2 && $alert->{'type'} eq 'warning');
+		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');
+		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
 	}
 	# Compound alert
 	elsif (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $dbh) == 0) {
@@ -185,7 +185,7 @@ sub pandora_evaluate_alert ($$$$$$) {
 	return 2 if (($alert->{'internal_counter'} < $alert->{'min_alerts'}) ||
 		         ($alert->{'times_fired'}  >= $alert->{'max_alerts'}));
 
-	return 0;
+	return 0; #Launch the alert
 }
 
 ##########################################################################

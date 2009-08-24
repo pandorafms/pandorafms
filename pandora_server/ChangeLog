@@ -1,5 +1,11 @@
 2009-08-22  Sancho Lerena <slerena@artica.es>
 
+	* util/agent_names.txt, util/pandora_xml_stress.conf: delete this files
+	because it's the local conf files generates for local configurations, and
+	by mistake I upload.
+
+2009-08-22  Sancho Lerena <slerena@artica.es>
+
 	* pandora_server.spec: Update uninstall process.
 
 2009-08-20  Sancho lerena <slerena@artica.es>

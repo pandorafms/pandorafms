@@ -1,3 +1,8 @@
+2009-08-24  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/alerts_status.php: Show description instead name,
+	and help icon better placed.
+
 2009-08-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/map_builder.php,

@@ -100,7 +100,9 @@ if ($tab != '') {
 	$url = $url.'&tab='.$tab;
 }
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Alerts').'</h2>';
+echo "<h2>".__('Pandora agents')." &raquo; ".__('Alerts');
+echo print_help_icon ('alert_validation', true);
+echo "</h2>";
 
 echo '<form method="post" action="'.$url.'">';
 
@@ -133,14 +135,14 @@ $table->size[1] = '25%';
 $table->size[2] = '50%';
 $table->size[3] = '25%';
 $table->size[4] = '20px';
-$table->size[5] = '20px';
+$table->size[5] = '60px';
 $table->head = array ();
 $table->head[0] = '';
 $table->head[1] = ''; //Placeholder for name
 $table->head[2] = __('Template');
 $table->head[3] = __('Last fired');
 $table->head[4] = __('Status');
-$table->head[5] = __('Validate').print_help_icon ('alert_validation', true);
+$table->head[5] = __('Validate');
 $table->title = __('Single alerts');
 
 if ($print_agent == 0) {
@@ -185,7 +187,7 @@ if (!empty ($table->data)) {
 
 $table->title = __('Compound alerts');
 $table->head[1] = __('Agent');
-$table->head[2] = __('Name');
+$table->head[2] = __('Description');
 $table->data = array ();
 
 $combined_total = 0;

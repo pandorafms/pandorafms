@@ -1,3 +1,9 @@
+2009-08-23  Sancho Lerena <slerena@artica.es>
+
+	* util/tentacle_serverd: Using SU instead SUDO, idea from
+	"paco", from our forums. This makes this script much more
+	compatible with other systems, because sudo is not so common.
+
 2009-08-22  Sancho Lerena <slerena@artica.es>
 
 	* util/agent_names.txt, util/pandora_xml_stress.conf: delete this files

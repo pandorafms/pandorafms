@@ -74,6 +74,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				} elseif ($layout_data['id_agent'] != 0) {
 					$status = get_agent_status ($layout_data["id_agent"]);
 					$status_parent = $status;
+					$id_agent = $layout_data["id_agent"];
 				} else {
 					$status = 3;
 					$status_parent = 3;

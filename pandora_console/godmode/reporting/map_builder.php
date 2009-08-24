@@ -160,6 +160,11 @@ if ($get_layout_data) {
 		$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
 		$layout_data['name_agent'] = get_agent_name ($layout_data['id_agent'], 'none');
 	}
+	else {
+			if ($layout_data['id_agent']) {
+				$layout_data['name_agent'] = get_agent_name ($layout_data['id_agent'], 'none');
+			}
+	}
 	
 	if (is_ajax ()) {
 		echo json_encode ($layout_data);
@@ -441,11 +446,10 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
 		$table->data[4][0] = __('Width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
-		$table->data[5][0] = __('Agent');
+		$table->data[5][0] = __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 //		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
 		$table->data[5][1] = print_input_text_extended ('agent', '', 'text-agent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
 		$table->data[6][0] = __('Module');
 		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
 		$table->data[7][0] = __('Period');

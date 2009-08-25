@@ -1,3 +1,7 @@
+2009-08-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed compound alerts.
+
 2009-08-24 Sancho Lerena <slerena@artica.es>
 
         * lib/PandoraFMS/Core.pm: Condition trigger for WARNING and

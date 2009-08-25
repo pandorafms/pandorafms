@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
       <p class="para">
       El formato de la salida de la cadena de fecha. Consulte las opciones de formato debajo.
       </p>

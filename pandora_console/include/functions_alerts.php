@@ -14,6 +14,19 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
+/**
+ * Insert in talert_commands a new command.
+ *
+ * @param string name command name to save in DB.
+ * @param string command String of command.
+ * @param mixed A single value or array of values to insert (can be a multiple amount of rows)
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
 function create_alert_command ($name, $command, $values = false) {
 	if (empty ($name))
 		return false;

@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Gestión de la configuración</h1>
 
 Ésta herramienta se usa para diversos propoósitos:<br><br>

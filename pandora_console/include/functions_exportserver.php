@@ -15,6 +15,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Gets all export servers out of the database
  *   
  * @param (bool) $active Whether or not to exclude inactive servers (defaults to 1 => no inactive servers)

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Include
+ */
+
 /*
    Copyright (c) 2003 Danilo Segan <danilo@kvota.net>.
    Copyright (c) 2005 Nico Kaiser <nico@siriux.net>
@@ -32,6 +36,8 @@
  * While the cache is enabled by default, it can be switched off with the
  * second parameter in the constructor (e.g. whenusing very large MO files
  * that you don't want to keep in memory)
+ * 
+ * @package Include
  */
 class gettext_reader {
   //public:

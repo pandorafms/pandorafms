@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Tipo de alerta</h1>
 
 Existen algunas alertas predefinidas, las cuales es muy probable que tenga que configurar en caso de que su sistema no proporcione los comandos necesarios para ejecutarlas. El equipo de desarrollo ha probado estas alertas con Red Hat Enterprise Linux (RHEL), CentOS, Debian y Ubuntu Server.

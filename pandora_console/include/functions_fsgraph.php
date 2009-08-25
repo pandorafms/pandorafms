@@ -14,6 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
+/**
+ * Include the FusionCharts class
+ */
 require_once ('FusionCharts/FusionCharts_Gen.php');
 
 // Returns the code needed to display the chart

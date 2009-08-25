@@ -14,10 +14,18 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
+/**#@+
+ * Constants
+ */
 define ('MIME_UNKNOWN', 0);
 define ('MIME_DIR', 1);
 define ('MIME_IMAGE', 2);
 define ('MIME_ZIP', 3);
+/**#@-*/
 
 if (!function_exists ('mime_content_type')) {
 	/**

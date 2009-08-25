@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Alerts</h1>
 
 Alerts in Pandora FMS react to an "out of range" module value. The alert can consist of sending an e-mail or an SMS to the administrator, sending a SNMP trap, write the incident into the system log or into Pandora FMS log ﬁle, etc. Basically, an alert can be anything that can be triggered by a script conﬁgured in the Operating System where Pandora FMS Servers run.

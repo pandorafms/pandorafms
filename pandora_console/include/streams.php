@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Include
+ */
+
 /*
    Copyright (c) 2003, 2005 Danilo Segan <danilo@kvota.net>.
 
@@ -20,9 +24,12 @@
 
 */
 
-
-// Simple class to wrap file streams, string streams, etc.
-// seek is essential, and it should be byte stream
+/**
+ * Simple class to wrap file streams, string streams, etc.
+ * seek is essential, and it should be byte stream
+ * @package Include
+ * @subpackage Streams
+ */
 class StreamReader {
   // should return a string [FIXME: perhaps return array of bytes?]
   function read($bytes) {
@@ -45,6 +52,10 @@ class StreamReader {
   }
 }
 
+/**
+ * @package Include
+ * @subpackage Streams
+ */
 class StringReader {
   var $_pos;
   var $_str;
@@ -80,7 +91,10 @@ class StringReader {
 
 }
 
-
+/**
+ * @package Include
+ * @subpackage Streams
+ */
 class FileReader {
   var $_pos;
   var $_fd;
@@ -139,8 +153,12 @@ class FileReader {
 
 }
 
-// Preloads entire file in memory first, then creates a StringReader 
-// over it (it assumes knowledge of StringReader internals)
+/**
+ * Preloads entire file in memory first, then creates a StringReader 
+ * over it (it assumes knowledge of StringReader internals)
+ * @package Include
+ * @subpackage Streams
+ */
 class CachedFileReader extends StringReader {
   function CachedFileReader($filename) {
     if (file_exists($filename)) {

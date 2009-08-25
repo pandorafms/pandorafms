@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
       <p class="para">
        The format of the outputted date string. See the formatting
        options below.

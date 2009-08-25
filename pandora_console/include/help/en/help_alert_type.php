@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Alert type</h1>
 
 There are some predefined alerts, in which is very likely you will have to adjust, in case your system does not provide the internal commands needed to execute those alerts. The development team has tested these alerts with Red Hat Enterprise Linux (RHEL), CentOS, Debian and Ubuntu Server.

@@ -14,6 +14,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Creates a single config value in the database.
  * 
  * @param string Config token to create.

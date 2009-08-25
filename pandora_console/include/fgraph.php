@@ -13,16 +13,30 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
 
 
 if (isset($config)) {
+/**#@+
+ * If is set global var $config include this files
+ */
 	require_once ($config['homedir'].'/include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_fsgraph.php');
-} else {
+/**#@-*/
+}
+else {
+/**#@+
+ * If is not set global var $config include this files
+ */
 	require_once ('../include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
+/**#@-*/
 }
+
+
 
 set_time_limit (0);
 error_reporting (0);

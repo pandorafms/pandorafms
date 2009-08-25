@@ -15,6 +15,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Get a list of CSS themes installed.
  *
  * @return array An indexed array with the file name in the index and the theme

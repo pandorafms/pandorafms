@@ -1,22 +1,26 @@
 ﻿<?php
-/*
-   FUSIONCHARTS FREE API PHP CLASS 
-   Author  :  Infosoft Global Pvt. Ltd. 
-   version :  FREE
-   Company :  Infosoft Global Pvt. Ltd. 
-   
-   *  Version: 1.0.1 (11 December 2008) [ Fix PHP Short Tag, Function addDatasetsFromDatabase 
-   *                                    Modifiaction for Transposed ,
-   *                                    Fix Transparent setting, FusionCharts.php insight Code  
-   *                                    setInitParam Function Add, addColors Function Add,
-   *                                    encodeXMLChars Function Add ]
-   
-   FusionCharts Class easily handles All FusionCharts XML Structures like
-   graph, categories, dataset, set, Trend Lines, [vline, styles (for Future)] etc.
-   It’s easy to use, it binds data into FusionCharts XML Structures
-   
+/**
+ * @package Include/FusionCharts
  */
 
+/**
+ * FUSIONCHARTS FREE API PHP CLASS 
+ * @author  Infosoft Global Pvt. Ltd. 
+ * version :  FREE
+ * Company :  Infosoft Global Pvt. Ltd. 
+ * 
+ * @version 1.0.1 (11 December 2008) [ Fix PHP Short Tag, Function addDatasetsFromDatabase 
+ *                                    Modifiaction for Transposed ,
+ *                                    Fix Transparent setting, FusionCharts.php insight Code  
+ *                                    setInitParam Function Add, addColors Function Add,
+ *                                    encodeXMLChars Function Add ]
+ * 
+ * FusionCharts Class easily handles All FusionCharts XML Structures like
+ * graph, categories, dataset, set, Trend Lines, [vline, styles (for Future)] etc.
+ * It’s easy to use, it binds data into FusionCharts XML Structures
+ * 
+ * @package Include/FusionCharts
+ */
 class FusionCharts{
 
 	var $chartType;               # Chart Friendly Name

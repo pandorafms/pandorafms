@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Plugin registration</h1>
 
 Pandora FMS Plugin registration tool is used to define what parameters Pandora FMS Plugin server needs to be used in each plugin, and what kind of data will pass after that parameter.

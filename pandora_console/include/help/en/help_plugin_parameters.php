@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Plugin parameters</h1>
 
 This field reffers to all parameters that can be passed to a plugin and are not defined in the form, unlike Port, Password, Max. timeout...

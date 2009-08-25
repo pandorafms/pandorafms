@@ -15,6 +15,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Gets all the possible priorities for incidents in an array
  *
  * @return array The several priorities with their values

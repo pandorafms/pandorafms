@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Map builder</h1>
 
 To create a map, you must first fill the form providing:

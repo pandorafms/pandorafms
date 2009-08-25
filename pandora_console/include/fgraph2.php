@@ -17,11 +17,22 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+/**
+ * @package Include
+ */
+
+/**#@+
+ * Includes for access to DB
+ */
 require_once ('../include/config.php');
 require_once ($config["homedir"].'/include/functions.php');
 require_once ($config["homedir"].'/include/functions_db.php');
 require 'ezc/Base/ezc_bootstrap.php';
+/**#@-*/
 
+/**
+ * @package Include
+ */
 class customPalette extends ezcGraphPalette
 {
         protected $dataSetColor = array(

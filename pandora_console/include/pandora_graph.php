@@ -13,8 +13,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
 
-
+/**
+ * PandoraGraphAbstract a abstract class.
+ * @package Include
+ */
 abstract class PandoraGraphAbstract {
 	public $width = 300;
 	public $height = 200;

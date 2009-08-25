@@ -15,7 +15,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
 
+/**
+ * Include the html and ui functions. 
+ */
 require_once ('functions_html.php');
 require_once ('functions_ui.php');
 

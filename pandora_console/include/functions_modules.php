@@ -15,6 +15,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Copy a module defined in an agent to other agent.
  * 
  * This function avoid duplicated by comparing module names.

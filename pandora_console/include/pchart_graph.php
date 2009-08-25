@@ -13,11 +13,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
 
-
+/**#@+
+ * Include the pChart class.
+ */
 require_once ('pChart/pData.class');
 require_once ('pChart/pChart.class');
+/**#@-*/
 
+/**
+ * @package Include
+ */
 class PchartGraph extends PandoraGraphAbstract {
 	public $palette_path = false;
 	private $graph = NULL;

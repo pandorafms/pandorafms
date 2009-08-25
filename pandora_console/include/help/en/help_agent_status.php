@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Agent status view </h1>
 
 Possible values of an agent status are:

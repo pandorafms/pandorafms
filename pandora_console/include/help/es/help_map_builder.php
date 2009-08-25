@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Constructor de mapas</h1>
 
 Para crear un mapa primero debe rellenar el formulario proporcionando:

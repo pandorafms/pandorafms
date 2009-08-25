@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>SNMP walk</h1>
 
 Pandora FMS has also a simple SNMP browser that allows to walk the MIB of a remote device by a SNMP Walk. 

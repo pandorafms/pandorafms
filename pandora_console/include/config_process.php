@@ -14,7 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-//Pandora Version
+/**
+ * @package Include
+ */
+
+/**
+ * Pandora build version and version 
+ */
 $build_version = 'PC090623';
 $pandora_version = 'v3.0-dev';
 

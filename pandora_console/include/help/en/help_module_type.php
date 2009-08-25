@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Module type</h1>
 
 The following list describes the module types:

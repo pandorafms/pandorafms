@@ -15,7 +15,11 @@
 // GNU General Public License for more details.
 
 /**
- * Prints the print_r with <pre> tags
+ * @package Include
+ */
+
+/**
+ * Prints the print_r with < pre > tags
  */
 function debugPrint ($var) {
 	echo "<pre>";print_r($var);echo "</pre>";

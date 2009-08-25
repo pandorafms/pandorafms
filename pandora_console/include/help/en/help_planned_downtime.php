@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Scheduled downtimes</h1>
 
 <p>

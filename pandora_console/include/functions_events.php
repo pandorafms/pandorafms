@@ -14,6 +14,33 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
+/** 
+ * Get all rows of events from the database, that
+ * pass the filter, and can get only some fields.
+ * 
+ * @param mixed Filters elements. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword). Example:
+ * <code>
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled', 0));
+ * get_db_all_rows_filter ('table', 'disabled = 0');
+ * 
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * </code>
+ * @param mixed Fields of the table to retrieve. Can be an array or a coma
+ * separated string. All fields are retrieved by default
+ * 
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
 function get_events ($filter = false, $fields = false) {
 	return get_db_all_rows_filter ('tevento', $filter, $fields);
 }

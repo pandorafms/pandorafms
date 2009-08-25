@@ -14,6 +14,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
+/**
+ * Include agents function
+ */
 require_once ('functions_agents.php');
 require_css_file ('cluetip');
 require_jquery_file ('cluetip');

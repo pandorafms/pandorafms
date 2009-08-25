@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Comprobación TCP</h1>
 
 <p>

@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Marca de tiempo o comparación de hora </h1>
 
 <p>

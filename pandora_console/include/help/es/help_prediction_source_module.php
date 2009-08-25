@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Módulo origen</h1>
 
 <p>

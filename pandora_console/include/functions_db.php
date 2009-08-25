@@ -14,6 +14,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * @package Include
+ */
+
 /** 
  * Check if login session variables are set.
  *
@@ -1705,15 +1709,15 @@ function get_db_all_rows_sql ($sql) {
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator) or a string, including any SQL clause (without
  * the WHERE keyword). Example:
-<code>
-Both are similars:
-get_db_all_rows_filter ('table', array ('disabled', 0));
-get_db_all_rows_filter ('table', 'disabled = 0');
-
-Both are similars:
-get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
-get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
-</code>
+ * <code>
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled', 0));
+ * get_db_all_rows_filter ('table', 'disabled = 0');
+ * 
+ * Both are similars:
+ * get_db_all_rows_filter ('table', array ('disabled' => 0, 'history_data' => 0), 'name', 'OR');
+ * get_db_all_rows_filter ('table', 'disabled = 0 OR history_data = 0', 'name');
+ * </code>
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
  * @param string Condition of the filter (AND, OR).
@@ -1936,16 +1940,16 @@ function get_db_all_fields_in_table ($table, $field = '', $condition = '', $orde
  * values. Example code:
  *
  * <code>
-  $values = array ();
-  $values['name'] = "Name";
-  $values['description'] = "Long description";
-  $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
-  echo $sql;
-  </code>
+ * $values = array ();
+ * $values['name'] = "Name";
+ * $values['description'] = "Long description";
+ * $sql = 'UPDATE table SET '.format_array_to_update_sql ($values).' WHERE id=1';
+ * echo $sql;
+ * </code>
  * Will return:
-   <code>
-  UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
-   </code>
+ *  <code>
+ * UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
+ *  </code>
  *
  * @param array Values to be formatted in an array indexed by the field name.
  *
@@ -3068,11 +3072,11 @@ function process_sql_insert ($table, $values) {
  * Examples:
  *
  * <code>
-process_sql_update ('table', array ('field' => 1), array ('id' => $id));
-process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
-process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
-process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
- * <code>
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id));
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name));
+ * process_sql_update ('table', array ('field' => 1), array ('id' => $id, 'name' => $name), 'OR');
+ * process_sql_update ('table', array ('field' => 2), 'id in (1, 2, 3) OR id > 10');
+ * </code>
  *
  * @param string Table to insert into
  * @param array An associative array of values to update
@@ -3108,16 +3112,16 @@ function process_sql_update ($table, $values, $where = false, $where_join = 'AND
  * All values should be cleaned before passing. Quoting isn't necessary.
  * Examples:
  *
- * <code>
-process_sql_delete ('table', array ('id' => 1));
-// DELETE FROM table WHERE id = 1
-process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
-// DELETE FROM table WHERE id = 1 AND name = 'example'
-process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
-// DELETE FROM table WHERE id = 1 OR name = 'example'
-process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
-// DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
- * <code>
+ * <code> 
+ * process_sql_delete ('table', array ('id' => 1));
+ * // DELETE FROM table WHERE id = 1
+ * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'));
+ * // DELETE FROM table WHERE id = 1 AND name = 'example'
+ * process_sql_delete ('table', array ('id' => 1, 'name' => 'example'), 'OR');
+ * // DELETE FROM table WHERE id = 1 OR name = 'example'
+ * process_sql_delete ('table', 'id in (1, 2, 3) OR id > 10');
+ * // DELETE FROM table WHERE id in (1, 2, 3) OR id > 10
+ * </code>
  *
  * @param string Table to insert into
  * @param array An associative array of values to update

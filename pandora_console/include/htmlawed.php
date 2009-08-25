@@ -1,14 +1,18 @@
 <?php
-/*
- htmLawed 1.1.7.2, 12 March 2009
- Copyright Santosh Patnaik
- Modified for Pandora FMS by Evi Vanoost
- 
- GPL v3 license
- A PHP Labware internal utility; www.bioinformatics.org/phplabware/internal_utilities/htmLawed
- 
- See htmLawed_README.txt/htm
-*/
+/**
+ * @package Include
+ */
+
+/**
+ * htmLawed 1.1.7.2, 12 March 2009
+ * Copyright Santosh Patnaik
+ * Modified for Pandora FMS by Evi Vanoost
+ * 
+ * GPL v3 license
+ * A PHP Labware internal utility; www.bioinformatics.org/phplabware/internal_utilities/htmLawed
+ *  
+ * See htmLawed_README.txt/htm
+ */
 
 function hl_attrval($t, $p){
 	// check attr val against $S

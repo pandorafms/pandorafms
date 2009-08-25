@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Alertas</h1>
 
 Las alertas en Pandora FMS reaccionan ante un valor &laquo;fuera de rango&raquo;. La alerta puede consistir del envío de un correo-e o un SMS al administrador, enviar un trap SNMP, escribir un incidente en el fichero <i>log</i> del sistema o en el <i>log</i> de Pandora FMS, etc. Básicamente, una alerta puede ser cualquier cosa que se pueda dispoarar desde un <i>script</i> configurado en el Sistema Operativo donde Pandora FMS se ejecuta.

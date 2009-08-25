@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Tarea de reconocimiento (<i>recon</i>)</h1>
 
 <p>

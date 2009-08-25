@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Registro de complementos</h1>
 
 La herramienta de registro de Pandora FMS se usa para definir los parámetros que el servidor de complementos de Pandora FMS necestia usar con cada complemento, y qué tipo de datos se le pasarán posteriormente después del parámetro.

@@ -15,6 +15,10 @@
 // GNU General Public License for more details.
 
 /**
+ * @package Include
+ */
+
+/**
  * Prints a complete menu structure.
  *
  * @param array Menu structure to print.

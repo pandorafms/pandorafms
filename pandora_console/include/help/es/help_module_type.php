@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/es
+ */
+?>
 <h1>Tipo de módulo</h1>
 
 La siguiente lista describe los tipos de módulos:

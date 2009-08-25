@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Alerts</h1>
 
 Assigning Alerts to modules

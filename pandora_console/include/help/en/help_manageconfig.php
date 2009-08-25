@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Configuration management</h1>
 
 This tool is used to several purposes:<br><br>

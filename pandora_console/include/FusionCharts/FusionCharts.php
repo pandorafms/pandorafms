@@ -1,13 +1,19 @@
 <?php
+/**
+ * @package Include/FusionCharts
+ */
+
 // Page: FusionCharts.php
 // Author: InfoSoft Global (P) Ltd.
 // This page contains functions that can be used to render FusionCharts.
 
 
-// encodeDataURL function encodes the dataURL before it's served to FusionCharts.
-// If you've parameters in your dataURL, you necessarily need to encode it.
-// Param: $strDataURL - dataURL to be fed to chart
-// Param: $addNoCacheStr - Whether to add aditional string to URL to disable caching of data
+/**
+ *  encodeDataURL function encodes the dataURL before it's served to FusionCharts.
+ *If you've parameters in your dataURL, you necessarily need to encode it.
+ * Param: $strDataURL - dataURL to be fed to chart
+ * Param: $addNoCacheStr - Whether to add aditional string to URL to disable caching of data
+ */
 function encodeDataURL($strDataURL, $addNoCacheStr=false) {
     //Add the no-cache string if required
     if ($addNoCacheStr==true) {

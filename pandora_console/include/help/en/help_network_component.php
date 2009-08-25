@@ -1,3 +1,8 @@
+<?php
+/**
+ * @package Include/help/en
+ */
+?>
 <h1>Network Component</h1>
 
 The Network Component combo box allows you to select a template from a list of more than a hundred and automatically fill some fields with the typical values.

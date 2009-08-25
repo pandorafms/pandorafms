@@ -193,6 +193,10 @@ sub pandora_evaluate_alert ($$$$$$) {
 ##########################################################################
 sub pandora_process_alert ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh) = @_;
+	
+	# Simple or compound alert?
+	my $id = defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : $alert->{'id'};
+	my $table = defined ($alert->{'id_template_module'}) ? 'talert_template_modules' : 'talert_compound';
 
 	# Do not execute
 	return if ($rc == 1);
@@ -201,13 +205,13 @@ sub pandora_process_alert ($$$$$$$) {
 	if ($rc == 3) {
 
 		# Update alert status
-		db_do($dbh, 'UPDATE talert_template_modules SET times_fired = 0,
-				 internal_counter = 0 WHERE id = ?', $alert->{'id_template_module'});
+		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
+				 internal_counter = 0 WHERE id = ?', $id);
 
 		# Generate an event
 		pandora_event ($pa_config, "Alert ceased (" .
 					   $alert->{'descripcion'} . ")", $agent->{'id_grupo'},
-					   $agent->{'id_agente'}, $alert->{'priority'}, $alert->{'id_template_module'}, $alert->{'id_agent_module'}, 
+					   $agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
 					   "alert_recovered", $dbh);
 
 		return;
@@ -217,8 +221,8 @@ sub pandora_process_alert ($$$$$$$) {
 	if ($rc == 4) {
 
 		# Update alert status
-		db_do($dbh, 'UPDATE talert_template_modules SET times_fired = 0,
-				 internal_counter = 0 WHERE id = ?', $alert->{'id_template_module'});
+		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
+				 internal_counter = 0 WHERE id = ?', $id);
 
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh);
 		return;
@@ -226,8 +230,7 @@ sub pandora_process_alert ($$$$$$$) {
 
 	# Reset internal counter
 	if ($rc == 5) {
-		db_do($dbh, 'UPDATE talert_template_modules SET internal_counter = 0 WHERE id = ?', 
-		      $alert->{'id_template_module'});
+		db_do($dbh, 'UPDATE ' . $table . ' SET internal_counter = 0 WHERE id = ?', $id);
 		return;
 	}
 
@@ -245,9 +248,9 @@ sub pandora_process_alert ($$$$$$$) {
 		$alert->{'internal_counter'} += 1;
 
 		# Do not increment times_fired, but set it in case the alert was reset
-		db_do($dbh, 'UPDATE talert_template_modules SET times_fired = ?,
+		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = ?,
 				     internal_counter = ? ' . $new_interval . ' WHERE id = ?',
-		      $alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'id_template_module'});
+		      $alert->{'times_fired'}, $alert->{'internal_counter'}, $id);
 
 		return;
 	}
@@ -259,10 +262,9 @@ sub pandora_process_alert ($$$$$$$) {
 		$alert->{'times_fired'} += 1;
 		$alert->{'internal_counter'} += 1;
 
-		db_do($dbh, 'UPDATE  talert_template_modules  SET times_fired = ?,
+		db_do($dbh, 'UPDATE  ' . $table . '  SET times_fired = ?,
 				     last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
-		      $alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $alert->{'id_template_module'});
-
+		      $alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh);
 		return;
 	}
@@ -280,7 +282,7 @@ sub pandora_evaluate_compound_alert ($$$) {
 
 	# Get all the alerts associated with this compound alert
 	my @compound_alerts = get_db_rows ($dbh, 'SELECT id_alert_template_module, operation FROM talert_compound_elements
-						  WHERE id_alert_compound = ? ORDER BY order', $id);
+						  WHERE id_alert_compound = ? ORDER BY `order`', $id);
 
 	foreach my $compound_alert (@compound_alerts) {
 
@@ -338,7 +340,7 @@ sub pandora_generate_compound_alerts ($$$$$$$$) {
 		next unless defined ($compound_alert);
 
 		# Evaluate the alert
-		my $rc = pandora_evaluate_alert ($pa_config, $data, $status, $alert,
+		my $rc = pandora_evaluate_alert ($pa_config, $data, $status, $compound_alert,
 		                                 $utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,

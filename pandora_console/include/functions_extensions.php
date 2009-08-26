@@ -128,7 +128,7 @@ function get_extensions ($enterprise = false) {
 }
 
 /**
- * TODO: Document extensions
+ * Load the basic configurations of extension and add extensions into menu.
  *
  * @param array $extensions
  */

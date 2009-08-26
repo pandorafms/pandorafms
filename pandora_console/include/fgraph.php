@@ -15,6 +15,7 @@
 
 /**
  * @package Include
+ * @subpackage Graphs
  */
 
 
@@ -52,6 +53,8 @@ check_login ();
 
 /**
  * Show a brief error message in a PNG graph
+ * 
+ * @param string image File that show when has a problem.
  */
 function graphic_error ($image = 'image_problem.png') {
 	global $config;
@@ -83,7 +86,6 @@ function dame_fecha ($mh) {
  *
  * @return string Formatted date string
  */
-
 function dame_fecha_grafico_timestamp ($timestamp) {
 	return date ('d/m H:i', $timestamp);
 }
@@ -102,6 +104,8 @@ function dame_fecha_grafico_timestamp ($timestamp) {
  * @param int Show alerts in graph (set to 1)
  * @param int Pure mode (without titles) (set to 1)
  * @param int Date to start of getting info.
+ * 
+ * @return Mixed 
  */
 function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 				$title, $unit_name, $show_event = 0, $show_alert = 0, $pure = 0, $stacked = 0, $date = 0) {
@@ -461,6 +465,13 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 	$engine->sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name);
 }
 
+/**
+ * Print a pie graph with module data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
 function graphic_agentmodules ($id_agent, $width, $height) {
 	global $config;
 	
@@ -476,6 +487,14 @@ function graphic_agentmodules ($id_agent, $width, $height) {
 	generic_pie_graph ($width, $height, $data);
 }
 
+/**
+ * Print a graph with access data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
 function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
@@ -527,6 +546,14 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$engine->single_graph ();
 }
 
+/**
+ * Print a graph with event data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
 function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	global $config;
 	global $graphic_type;
@@ -572,6 +599,9 @@ function graphic_agentevents ($id_agent, $width, $height, $period = 0) {
 	}
 }
 
+/**
+ * Print a pie graph with incidents data
+ */
 function graph_incidents_status () {
 	global $config;
 	global $graphic_type;
@@ -606,6 +636,9 @@ function graph_incidents_status () {
 	generic_pie_graph (370, 180, $data);
 }
 
+/**
+ * Print a pie graph with priodity incident
+ */
 function grafico_incidente_prioridad () {
 	global $config;
 	global $graphic_type;
@@ -635,6 +668,9 @@ function grafico_incidente_prioridad () {
 	generic_pie_graph (320, 200, $data);
 }
 
+/**
+ * Print a pie graph with incident data by group
+ */
 function graphic_incident_group () {
 	global $config;
 	global $graphic_type;
@@ -659,6 +695,14 @@ function graphic_incident_group () {
 	generic_pie_graph (320, 200, $data);
 }
 
+/**
+ * Print a graph with access data of agents
+ * 
+ * @param integer id_agent Agent ID
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
 function graphic_incident_user () {
 	global $config;
 	global $graphic_type;
@@ -681,6 +725,13 @@ function graphic_incident_user () {
 	generic_pie_graph (320, 200, $data);
 }
 
+/**
+ * Print a pie graph with users activity in a period of time
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
 function graphic_user_activity ($width = 350, $height = 230) {
 	global $config;
 	global $graphic_type;
@@ -702,6 +753,12 @@ function graphic_user_activity ($width = 350, $height = 230) {
  	generic_pie_graph ($width, $height, $data);
 }
 
+/**
+ * Print a pie graph with access data of incidents source
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
 function graphic_incident_source ($width = 320, $height = 200) {
 	global $config;
 	global $graphic_type;
@@ -723,6 +780,12 @@ function graphic_incident_source ($width = 320, $height = 200) {
 	generic_pie_graph ($width, $height, $data);
 }
 
+/**
+ * Print a horizontal bar graph with modules data of agents
+ * 
+ * @param integer height graph height
+ * @param integer width graph width
+ */
 function graph_db_agentes_modulos ($width, $height) {
 	global $config;
 	global $graphic_type;
@@ -747,6 +810,12 @@ function graph_db_agentes_modulos ($width, $height) {
 	generic_horizontal_bar_graph ($width, $height, $data);
 }
 
+/**
+ * Print a pie graph with events data of users
+ * 
+ * @param integer height pie graph height
+ * @param integer period time period
+ */
 function grafico_eventos_usuario ($width, $height) {
 	global $config;
 	global $graphic_type;
@@ -768,6 +837,11 @@ function grafico_eventos_usuario ($width, $height) {
 	generic_pie_graph ($width, $height, $data);
 }
 
+/**
+ * Print a pie graph with events data in 320x200 size
+ * 
+ * @param string filter Filter for query in DB
+ */
 function grafico_eventos_total ($filter = "") {
 	global $config;
 	global $graphic_type;
@@ -801,6 +875,13 @@ function grafico_eventos_total ($filter = "") {
 	generic_pie_graph (320, 200, $data);
 }
 
+/**
+ * Print a pie graph with events data of agent
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param integer id_agent Agent ID
+ */
 function graph_event_module ($width = 300, $height = 200, $id_agent) {
 	global $config;
 	global $graphic_type;
@@ -846,7 +927,13 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			'show_legend' => false));
 }
 
-
+/**
+ * Print a pie graph with events data of group
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param string url
+ */
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	global $graphic_type;
@@ -899,6 +986,14 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	generic_pie_graph ($width, $height, $data, array ('show_legend' => false));
 }
 
+/**
+ * Print a single graph with data
+ * 
+ * @param integer width graph width
+ * @param integer height graph height
+ * @param mixed data Data for make the graph
+ * @param integer interval interval to print
+ */
 function generic_single_graph ($width = 380, $height = 200, &$data, $interval = 1) {
 	global $config;
 	
@@ -916,6 +1011,14 @@ function generic_single_graph ($width = 380, $height = 200, &$data, $interval = 
 	$engine->single_graph ();
 }
 
+/**
+ * Print a vertical bar graph with data
+ * 
+ * @param integer width graph width
+ * @param integer height graph height
+ * @param mixed data Data for make the graph
+ * @param string legend Legend to show in graph
+ */
 function generic_vertical_bar_graph ($width = 380, $height = 200, &$data, &$legend) {
 	global $config;
 	
@@ -933,6 +1036,14 @@ function generic_vertical_bar_graph ($width = 380, $height = 200, &$data, &$lege
 	$engine->vertical_bar_graph ();
 }
 
+/**
+ * Print a horizontal bar graph with data
+ * 
+ * @param integer width graph width
+ * @param integer height graph height
+ * @param mixed data Data for make the graph
+ * @param string legend Legend to show in graph
+ */
 function generic_horizontal_bar_graph ($width = 380, $height = 200, &$data, $legend = false) {
 	global $config;
 	
@@ -950,6 +1061,14 @@ function generic_horizontal_bar_graph ($width = 380, $height = 200, &$data, $leg
 	$engine->horizontal_bar_graph ();
 }
 
+/**
+ * Print a pie graph with data
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ * @param mixed data Data for make the graph
+ * @param mixed options Options for show graph as 'show_title', 'show_legend' and 'zoom'
+ */
 function generic_pie_graph ($width = 300, $height = 200, &$data, $options = false) {
 	global $config;
 	
@@ -982,6 +1101,12 @@ function generic_pie_graph ($width = 300, $height = 200, &$data, $options = fals
 	$engine->pie_graph ();
 }
 
+/**
+ * Print a horizontal bar graph with packets data of agents
+ * 
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
 function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
@@ -1006,6 +1131,13 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	generic_horizontal_bar_graph ($width, $height, $data, $legend);
 }
 
+/**
+ * Print a pie graph with purge data of agent
+ * 
+ * @param integer id_agent ID of agent to show
+ * @param integer width pie graph width
+ * @param integer height pie graph height
+ */
 function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	global $config;
 	global $graphic_type;
@@ -1054,10 +1186,14 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	generic_pie_graph ($width, $height, $data);
 }
 
-// ***************************************************************************
-// Draw a dynamic progress bar using GDlib directly
-// ***************************************************************************
-
+/**
+ * Draw a dynamic progress bar using GDlib directly
+ * 
+ * @param integer progress bar progress
+ * @param integer height pie graph height
+ * @param integer width pie graph width
+ * @param integer mode style of graph (0 or 1)
+ */
 function progress_bar ($progress, $width, $height, $mode = 1) {
 	global $config;
 
@@ -1092,6 +1228,20 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 	$engine->progress_bar ($progress, $color);
 }
 
+/**
+ * Draw a graph of Module data of agent
+ * 
+ * @param integer id_agent_modulo Agent Module ID
+ * @param integer show_event show event (1 or 0)
+ * @param integer height graph height
+ * @param integer width graph width
+ * @param string title graph title
+ * @param string unit_name String of unit name
+ * @param integer show alerts (1 or 0)
+ * @param integer avg_only calcules avg only (1 or 0)
+ * @param integer pure Fullscreen (1 or 0)
+ * @param integer date date
+ */
 function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0 ) {
@@ -1262,6 +1412,20 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	return;
 }
 
+/**
+ * Draw a graph of Module string data of agent
+ * 
+ * @param integer id_agent_modulo Agent Module ID
+ * @param integer show_event show event (1 or 0)
+ * @param integer height graph height
+ * @param integer width graph width
+ * @param string title graph title
+ * @param string unit_name String of unit name
+ * @param integer show alerts (1 or 0)
+ * @param integer avg_only calcules avg only (1 or 0)
+ * @param integer pure Fullscreen (1 or 0)
+ * @param integer date date
+ */
 function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0) {

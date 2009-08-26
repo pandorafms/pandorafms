@@ -19,6 +19,7 @@
 
 /**
  * @package Include
+ * @subpackage Graphs
  */
 
 /**#@+

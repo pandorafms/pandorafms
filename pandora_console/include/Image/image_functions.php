@@ -50,6 +50,13 @@ if (isset($_GET['getFile'])) {
 }
 //END Lines of code for direct url call script
 
+/**
+ * Get a file change http header and write as binary output for
+ * redirect to file content.
+ * 
+ * @param string destFileName Name for rename file when the browser get the file.
+ * @param string fileLocation The real location the file in server.
+ */
 function getFile ($destFileName,$fileLocation) {
 	error_reporting(E_ALL);
 	
@@ -60,6 +67,13 @@ function getFile ($destFileName,$fileLocation) {
 	readfile($fileLocation);
 }
 
+/**
+ * Create a thumb of image file in filesystem of server.
+ * @param string origFileName Original image
+ * @param string destFileName Thumb image
+ * @param integer newWidth Thumb width
+ * @param integer newHeight Thumb height
+ */
 function createthumb ($origFileName, $destFileName, $newWidth, $newHeight) {
 	//TODO $newWidth and $newHeight values as percent.
 	

@@ -1,5 +1,11 @@
 2009-08-26  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/extensions.php, godmode/extensions.php: fix hidden bug that show
+	a warning when try to show the extension that not is of operation or the
+	other. And add feature can load invible (in menu) extensions.
+
+2009-08-26  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_extensions.php: add the small description in the
 	load_extensions function for phpdoc.
 

@@ -36,6 +36,9 @@ $table->data = array ();
 foreach ($config['extensions'] as $extension) {
 	if ($extension['main_function'] == '')
 		continue;
+	if ($extension['operation_menu'] == null)
+		continue;
+		
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=extensions&amp;sec2='.$extension['operation_menu']['sec2'].'" class="mn">'.$extension['operation_menu']['name'];
 	array_push ($table->data, $data);

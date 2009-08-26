@@ -37,6 +37,8 @@ $table->data = array ();
 foreach ($config['extensions'] as $extension) {
 	if ($extension['godmode_function'] == '')
 		continue;
+	if ($extension['godmode_menu'] == null)
+		continue;
 		
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gextensions&sec2='.$extension['godmode_menu']['sec2'].'" class="mn">'.$extension['godmode_menu']['name'].'</a>';

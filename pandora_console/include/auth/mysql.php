@@ -224,12 +224,30 @@ function delete_user ($id_user) {
 	return true;
 }
 
+/**
+ * Update the password in MD5 for user pass as id_user with
+ * password in plain text.
+ * 
+ * @param string user User ID
+ * @param string password Password in plain text.
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
 function update_user_password ($user, $password_new) {
 	return process_sql_update ('tusuario',
 		array ('password' => md5 ($password_new)),
 		array ('id_user' => $user));
 }
 
+/**
+ * Update the data of a user that user is choose with
+ * id_user.
+ * 
+ * @param string user User ID
+ * @param array values Associative array with index as name of field and content.
+ * 
+ * @return mixed False in case of error or invalid values passed. Affected rows otherwise
+ */
 function update_user ($id_user, $values) {
 	if (! is_array ($values))
 		return false;

@@ -478,21 +478,24 @@ function get_users ($order = false) {
 	return $ldap_cache["cached_users"];
 }
 
-// Strip everything but the username (uid) from a dn.
-//  params:
-//    $dn - the dn you want to strip the uid from.
-//  returns: string - userid
-//
-//  ex: stripdn(uid=jeffh,ou=people,dc=example,dc=com) returns jeffh
+/**
+ * Strip everything but the username (uid) from a dn.
+ * Example: path description
+ * stripdn(uid=jeffh,ou=people,dc=example,dc=com) returns jeffh
+ * @param string dn the dn you want to strip the uid from.
+ * @return string userid
+ */
 function stripdn ($dn) {
 	list ($uid, $trash) = split (',', $dn, 2);
 	list ($trash, $user) = split ('=', $uid);
 	return ($user);
 }
 
-// Connects and binds to the LDAP server
-// Tries to connect as $config["auth"]["ldap_admin_dn"] if we set it.
-//  returns: bind result or false
+/**
+ * Connects and binds to the LDAP server
+ * Tries to connect as $config["auth"]["ldap_admin_dn"] if we set it.
+ * @return boolean Bind result or false
+ */
 function ldap_connect_bind () {
 	global $ldap_cache, $config;
 	

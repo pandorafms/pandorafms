@@ -1,6 +1,7 @@
 <?php
 /**
  * @package Include
+ * @subpackage External Scripts
  */
 
 /*

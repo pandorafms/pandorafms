@@ -4,6 +4,30 @@
 	include/functions_events.php, include/functions_messages.php,
 	include/functions_modules.php, include/functions_exportserver.php,
 	include/functions_reporting.php, include/functions_filemanager.php,
+	include/pchart_graph.php, include/pandora_graph.php, include/auth/ldap.php,
+	include/auth/mysql.php, include/config.inc.php,
+	include/functions_networkmap.php, include/functions_servers.php,
+	include/functions_network_profiles.php, include/gettext.php,
+	include/functions_network_components.php, include/functions_visual_map.php,
+	include/fgraph2.php, include/Image/image_functions.php,
+	include/functions_config.php, include/config_process.php,
+	include/functions_ui.php, include/htmlawed.php,
+	include/functions_custom_graphs.php, include/fgraph.php,
+	include/functions_incidents.php, include/functions.php,
+	include/functions_agents.php, include/functions_db.php,
+	include/functions_themes.php, include/streams.php,
+	include/functions_fsgraph.php, include/functions_alerts.php,
+	include/functions_reports.php, include/functions_extensions.php,
+	include/functions_ui_renders.php: change or add the subpackage in phpdoc
+	comment blocks for to organize more the result phpdoc files. Start to
+	document undocument functions. 
+
+2009-08-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_menu.php, include/functions_html.php,
+	include/functions_events.php, include/functions_messages.php,
+	include/functions_modules.php, include/functions_exportserver.php,
+	include/functions_reporting.php, include/functions_filemanager.php,
 	include/pchart_graph.php, include/pandora_graph.php, include/auth/dev.php,
 	include/auth/ldap.php, include/auth/mysql.php, include/config.inc.php,
 	include/functions_networkmap.php, include/functions_servers.php,

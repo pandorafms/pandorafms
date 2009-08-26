@@ -14,6 +14,7 @@
 
 /**
  * @package Include
+ * @subpackage Config
  */
 
 // Default values

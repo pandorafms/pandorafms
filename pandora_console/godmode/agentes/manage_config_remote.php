@@ -76,11 +76,11 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			$agent_name_dst = get_agent_name($id_agente, "");
 			echo "<br><br>".__('Making copy of configuration file for')." [<b>".$agent_name_src."</b>] ".__('to')." [<b>".$agent_name_dst."</b>]";
 			
-			$source = $config["remote_config"]."/".md5($agent_name_src);
-			$destination = $config["remote_config"]."/".md5($agent_name_dst);
-
-			copy  ( $source.".md5", $destination.".md5" );
-			copy  ( $source.".conf", $destination.".conf" );			
+			$agent_md5_src = md5($agent_name_src);
+			$agent_md5_dst = md5($agent_name_dst);
+	
+			copy  ( $config["remote_config"]."/md5/".$agent_md5_src.".md5", $config["remote_config"]."/md5/".$agent_md5_dst.".md5" );
+			copy  ( $config["remote_config"]."/conf/".$agent_md5_src.".conf", $config["remote_config"]."/conf/".$agent_md5_dst.".conf" );			
 		} // for each destination agent
 	} //end if copy modules or alerts
 
@@ -121,7 +121,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
-				$source = $config["remote_config"]."/". md5($row["nombre"]).".conf";
+				$source = $config["remote_config"]."/conf/". md5($row["nombre"]).".conf";
 				if (file_exists($source)){
 					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 				}

@@ -29,7 +29,7 @@ use Thread::Semaphore;
 use POSIX ":sys_wait_h";
 
 # Program version
-our $VERSION = '0.2.0';
+our $VERSION = '0.2.1';
 
 # Address to listen on
 my $t_address = '0.0.0.0';
@@ -45,6 +45,9 @@ my $t_daemon = 0;
 
 # Storage directory
 my $t_directory = '';
+
+# Filters
+my %t_filters;
 
 # String containing quoted invalid file name characters
 my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
@@ -115,6 +118,7 @@ sub print_help {
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
 	print ("\t-f ca_cert\tVerify that the peer certificate is signed by a ca.\n");
 	print ("\t-h\t\tShow help.\n");
+	print ("\t-i\t\tFilters.\n");
 	print ("\t-k key\t\tOpenSSL private key file.\n");
 	print ("\t-m size\t\tMaximum file size in bytes (default ${t_max_size}b).\n");
 	print ("\t-o\t\tEnable file overwrite.\n");
@@ -190,7 +194,7 @@ sub parse_options {
 	my $tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hk:m:op:qr:s:t:vwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -240,6 +244,21 @@ sub parse_options {
 		$t_ssl_ca = $opts{'f'};
 		if (! -f $t_ssl_ca) {
 			error ("File $t_ssl_ca does not exist.");
+		}
+	}
+
+	# Filters (regexp:dir;regexp:dir...)
+	if (defined ($opts{'i'})) {
+		my @filters = split (';', $opts{'i'});
+		foreach my $filter (@filters) {
+			my ($regexp, $dir) = split (':', $filter);
+			next unless defined ($regexp) && defined ($dir);
+
+			# Remove any trailing /
+			my $char = chop ($dir);
+			$dir .= $char if ($char) ne '/';
+
+			$t_filters{$regexp} = $dir;
 		}
 	}
 
@@ -571,7 +590,8 @@ sub recv_file {
 		return;
 	}
 	
-	$file = "$t_directory/$base_name";
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
 
 	# Check if file exists
 	if (-f $file && $t_overwrite == 0) {
@@ -613,7 +633,8 @@ sub send_file {
 		return;
 	}
 	
-	$file = "$t_directory/$base_name";
+	# Apply filters
+	$file = "$t_directory/" . apply_filters ($base_name) . $base_name;
 
 	# Check if file exists
 	if (! -f $file) {
@@ -854,6 +875,23 @@ sub ask_passwd {
 	chop $pwd1;
 
 	return $pwd1;
+}
+
+################################################################################
+## SUB apply_filters
+## Applies filters to the given file.
+################################################################################
+sub apply_filters ($) {
+	my ($file_name) = @_;
+
+	while (my ($regexp, $dir) = each (%t_filters)) {
+		if ($file_name =~ /$regexp/) {
+			print_log ("File '$file_name' matches filter '$regexp' (changing to directory '$dir')");
+			return $dir . '/';
+		}
+	}
+
+	return '';
 }
 
 ################################################################################

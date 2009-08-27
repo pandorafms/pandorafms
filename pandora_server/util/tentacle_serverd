@@ -3,7 +3,7 @@
 # Tentacle server simple startup script 
 # Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
 # Linux Version (generic)
-# v0.1 Build 210508
+# v0.1 Build 090827
 
 ### BEGIN INIT INTO
 # Provides: tentacle_server
@@ -24,7 +24,7 @@ TENTACLE_USER="pandora"
 
 TENTACLE_ADDR="0.0.0.0"
 TENTACLE_PORT="41121"
-TENTACLE_EXT_OPTS=""
+TENTACLE_EXT_OPTS="-i.*\.conf:conf;.*\.md5:md5"
 
 # Set umask to 0002, because group MUST have access to write files to
 # use remote file management on Pandora FMS Enterprise.

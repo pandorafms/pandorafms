@@ -1,3 +1,10 @@
+2009-08-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/tentacle_serverd: Remote config .conf and
+	  .md5 files are now stored in different subdirectories.
+
+	* bin/tentacle_server: Updated to latest version.
+
 2009-08-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed compound alerts.

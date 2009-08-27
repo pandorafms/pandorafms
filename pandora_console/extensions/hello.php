@@ -20,9 +20,21 @@ function hello_extension_main () {
 	echo "This is a sample of minimal extension";
 }
 
+function test() {
+	echo "<h1>TEST</h1>";
+}
+
 /* This adds a option in the operation menu */
-add_operation_menu_option ('Hello plugin!');
+//add_operation_menu_option ('Hello plugin!');
+add_godmode_menu_option (__('Hello plugin'), 'PM','gagente',"hello/icon.png");
+/**
+ * 'estado' is a option of menu you can see in 'operation/menu.php'
+ */
+add_operation_menu_option(__('Hello plugin'), 'estado',"hello/icon.png");
+
 
 /* This sets the function to be called when the extension is selected in the operation menu */
 add_extension_main_function ('hello_extension_main');
+
+add_extension_godmode_function('prueba');
 ?>

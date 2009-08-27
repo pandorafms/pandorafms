@@ -61,6 +61,9 @@ if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
 	include (ENTERPRISE_DIR."/load_enterprise.php");
 }
 
+/**
+ * Load the basic configurations of extension and add extensions into menu.
+ */
 load_extensions ($config['extensions']);
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {

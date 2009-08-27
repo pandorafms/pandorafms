@@ -199,5 +199,27 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	}
 }
 
+/**
+ * Add the extensions
+ */
+ //debugPrint($config['extensions']);
+ foreach($config['extensions'] as $extension) {
+ 	$operationModeMenu = $extension['operation_menu'];
+ 	if ($operationModeMenu == null)
+ 		continue;
+ 	
+	if (array_key_exists('fatherId',$operationModeMenu)) {
+		if (strlen($operationModeMenu['fatherId']) > 0) {
+			$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["text"] = __($operationModeMenu['name']);
+			$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["refr"] = 60;
+			$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["icon"] = $operationModeMenu['icon'];
+			$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["sec"] = 'extensions';
+			$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["extension"] = true;
+			$menu[$operationModeMenu['fatherId']]['hasExtensions'] = true;
+		}
+	}
+ }
+
+
 print_menu ($menu);
 ?>

@@ -119,7 +119,7 @@ function pandora_update_manager_godmode () {
 }
 
 add_operation_menu_option (__('Update manager'));
-add_godmode_menu_option (__('Update manager settings'), 'PM');
+add_godmode_menu_option (__('Update manager settings'), 'PM','gagente');
 add_extension_main_function ('pandora_update_manager_main');
 add_extension_godmode_function ('pandora_update_manager_godmode');
 add_extension_login_function ('pandora_update_manager_login');

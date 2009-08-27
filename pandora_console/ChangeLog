@@ -1,3 +1,13 @@
+2009-08-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* index.php: add comments for more readable.
+	* include/functions_extensions.php, extensions/update_manager.php,
+	extensions/hello, extensions/hello/icon.png, extensions/hello.php,
+	operation/menu.php, godmode/menu.php: change the mecanic to add extensions
+	into menu, now you can add extension with icon and into the submenu in any
+	position of submenu. Change the example "hello" for to show as be.
+
+
 2009-08-26  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/extensions.php, godmode/extensions.php: fix hidden bug that show

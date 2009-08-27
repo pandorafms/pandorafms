@@ -79,7 +79,8 @@ function is_extension ($page) {
 }
 
 /**
- * TODO: Document extensions
+ * Scan the EXTENSIONS_DIR or ENTERPRISE_DIR.'/'.EXTENSIONS_DIR for search
+ * the files extensions.
  *
  * @param bool $enterprise
  */
@@ -128,7 +129,7 @@ function get_extensions ($enterprise = false) {
 }
 
 /**
- * Load the basic configurations of extension and add extensions into menu.
+ * TODO: Document extensions
  *
  * @param array $extensions
  */
@@ -145,9 +146,11 @@ function load_extensions ($extensions) {
 /**
  * TODO: Document extensions
  *
- * @param string $name
+ * @param string name
+ * @param string fatherId
+ * @param string icon
  */
-function add_operation_menu_option ($name) {
+function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
 	global $config;
 	global $extension_file;
 	
@@ -157,16 +160,20 @@ function add_operation_menu_option ($name) {
 	$option_menu['name'] = substr ($name, 0, 15);
 	$extension = &$config['extensions'][$extension_file];
 	$option_menu['sec2'] = $extension['dir'].'/'.substr ($extension_file, 0, -4);
+	$option_menu['fatherId'] = $fatherId;
+	$option_menu['icon'] = $icon;
 	$extension['operation_menu'] = $option_menu;
 }
 
 /**
  * TODO: Document extensions
  *
- * @param string $name
- * @param string $acl
+ * @param string name
+ * @param string acl
+ * @param string fatherId
+ * @param string icon
  */
-function add_godmode_menu_option ($name, $acl) {
+function add_godmode_menu_option ($name, $acl,$fatherId = null, $icon = null) {
 	global $config;
 	global $extension_file;
 	
@@ -177,6 +184,8 @@ function add_godmode_menu_option ($name, $acl) {
 	$option_menu['name'] = substr ($name, 0, 15);
 	$extension = &$config['extensions'][$extension_file];
 	$option_menu['sec2'] = $extension['dir'].'/'.substr ($extension_file, 0, -4);
+	$option_menu['fatherId'] = $fatherId;
+	$option_menu['icon'] = $icon;
 	$extension['godmode_menu'] = $option_menu;
 }
 

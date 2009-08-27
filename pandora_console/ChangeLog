@@ -1,3 +1,11 @@
+2009-08-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_db.php,
+	  godmode/agentes/modificar_agente.php,
+	  godmode/agentes/manage_config_remote.php,
+	  godmode/agentes/agent_manager.php: Remote config .conf and .md5 files
+	  are now stored in different subdirectories.
+
 2009-08-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* index.php: add comments for more readable.

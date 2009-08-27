@@ -69,8 +69,8 @@ echo '<div style="height: 5px">&nbsp;</div>';
 
 // Agent remote configuration editor
 $agent_md5 = md5 ($nombre_agente, false);
-$filename['md5'] = $config["remote_config"]."/".$agent_md5.".md5";
-$filename['conf'] = $config["remote_config"]."/".$agent_md5.".conf"; 
+$filename['md5'] = $config["remote_config"]."/md5/".$agent_md5.".md5";
+$filename['conf'] = $config["remote_config"]."/conf/".$agent_md5.".conf"; 
 
 $disk_conf = (bool) get_parameter ('disk_conf');
 

@@ -220,7 +220,7 @@ if ($agents !== false) {
 		echo "<td align='center' class='$tdcolor'>";
 		// Has remote configuration ?
 		$agent_md5 = md5 ($agent["nombre"], false);
-		if (file_exists ($config["remote_config"]."/".$agent_md5.".md5")) {
+		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$agent["id_agente"]."&disk_conf=1'>";
 			echo "<img src='images/application_edit.png' align='middle' title='".__('Edit remote config')."'>";
 			echo "</a>";

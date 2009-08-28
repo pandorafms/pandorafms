@@ -1,3 +1,8 @@
+2009-08-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server.spec,
+	  pandora_server_installer: Autocreate the conf and md5 subdirectories.
+
 2009-08-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/tentacle_serverd: Remote config .conf and

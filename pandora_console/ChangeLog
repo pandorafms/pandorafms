@@ -1,3 +1,8 @@
+2009-08-28  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: add function get_all_model_groups for to
+	get all rows of table "tmodule_group".
+
 2009-08-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php,

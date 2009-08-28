@@ -1240,6 +1240,25 @@ function get_users_info ($order = "fullname", $info = "fullname") {
 	}
 	return $ret;
 }
+
+/** 
+ * Get all the Model groups a user has reading privileges.
+ * 
+ * @param string User id
+ * @param string The privilege to evaluate
+ *
+ * @return array A list of the groups the user has certain privileges.
+ */
+function get_all_model_groups () {
+	$groups = get_db_all_rows_in_table ('tmodule_group');
+	
+	$returnGroups = array();
+	foreach ($groups as $group)
+		$returnGroups[$group['id_mg']] = $group['name'];
+		
+	
+	return $returnGroups;
+}
  
 /** 
  * Get all the groups a user has reading privileges.

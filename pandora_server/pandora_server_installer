@@ -91,6 +91,8 @@ install () {
 		echo "Creating common Pandora FMS directories"
 		mkdir /var/spool/pandora 2> /dev/null
 		mkdir /var/spool/pandora/data_in 2> /dev/null
+		mkdir /var/spool/pandora/data_in/conf 2> /dev/null
+		mkdir /var/spool/pandora/data_in/md5 2> /dev/null
 		id pandora
 		if [ $? -eq 0 ]; then
 			echo " "

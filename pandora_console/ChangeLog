@@ -1,5 +1,12 @@
 2009-08-28  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/module_groups, extensions/module_groups/icon_menu.png,
+	extensions/module_groups.php: add extension to show table of modules where
+	the columns is the modules group and the rows is the agents group. And
+	this extension use as example in wiki openideas.	
+
+2009-08-28  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: add function get_all_model_groups for to
 	get all rows of table "tmodule_group".
 

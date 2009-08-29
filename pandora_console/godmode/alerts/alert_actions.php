@@ -38,7 +38,8 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h1>'.__('Alert actions').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ";
+echo __('Alert actions').'</h2>';
 
 $update_action = (bool) get_parameter ('update_action');
 $create_action = (bool) get_parameter ('create_action');

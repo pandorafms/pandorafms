@@ -269,7 +269,8 @@ if ($update_compound) {
 	}
 }
 
-echo '<h1>'.__('Configure correlated alert').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ";
+echo __('Configure correlated alert').'</h2>';
 
 print_alert_compound_steps ($step, $id);
 

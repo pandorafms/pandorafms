@@ -76,7 +76,8 @@ if ($disable_alert) {
 		return;
 }
 
-echo '<h1>'.__('Correlated alerts').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ";
+echo __('Correlated alerts').'</h2>';
 
 $table->id = 'filter_compound_table';
 $table->width = '90%';

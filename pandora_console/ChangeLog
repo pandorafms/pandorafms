@@ -1,3 +1,11 @@
+2009-08-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Update build after last changes
+
+	* operation/events/event_statistics.php, operation/extensions.php,
+	godmode/alerts/alert*.php, godmode/alerts/configure_alert_compound.php:
+	Unify titles, adding parent and change from h1 to h2.
+
 2009-08-28  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/module_groups, extensions/module_groups/icon_menu.png,
@@ -26,7 +34,6 @@
 	operation/menu.php, godmode/menu.php: change the mecanic to add extensions
 	into menu, now you can add extension with icon and into the submenu in any
 	position of submenu. Change the example "hello" for to show as be.
-
 
 2009-08-26  Miguel de Dios  <miguel.dedios@artica.es>
 

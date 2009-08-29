@@ -103,7 +103,8 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h1>'.__('Alert templates').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ";
+echo __('Alert templates')."</h2>";
 $update_template = (bool) get_parameter ('update_template');
 $delete_template = (bool) get_parameter ('delete_template');
 

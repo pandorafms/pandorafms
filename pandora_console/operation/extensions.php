@@ -26,8 +26,8 @@ if (sizeof ($config['extensions']) == 0) {
 	echo '<h3>'.__('There are no extensions defined').'</h3>';
 	return;
 }
-
-echo '<h2>'.__('Defined extensions')."</h2>";
+echo "<h2>".__('Extensions')." &raquo; ";
+echo __('Defined extensions')."</h2>";
 $table->width = '95%';
 $table->head = array ();
 $table->head[0] = __('Name');

@@ -37,7 +37,8 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h1>'.__('Alert commands').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ";
+echo __('Alert commands').'</h2>';
 $update_command = (bool) get_parameter ('update_command');
 $create_command = (bool) get_parameter ('create_command');
 $delete_command = (bool) get_parameter ('delete_command');

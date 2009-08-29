@@ -127,7 +127,7 @@ $graph = generate_dot (__('Pandora FMS'), $group, $simple, $font_size, $layout, 
 
 if ($graph === false) {
 	print_error_message (__('Map could not be generated'));
-	echo __('No agents found');
+	echo '<div class="nf">' . __('No agents found') . '</div>';
 	return;
 }
 

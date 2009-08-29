@@ -6,6 +6,8 @@
 	godmode/alerts/alert*.php, godmode/alerts/configure_alert_compound.php:
 	Unify titles, adding parent and change from h1 to h2.
 
+	* operation/agentes/networkmap.php: Added style when agents not found.
+
 2009-08-28  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/module_groups, extensions/module_groups/icon_menu.png,

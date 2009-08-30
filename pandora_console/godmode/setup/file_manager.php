@@ -61,7 +61,7 @@ if ($delete_file) {
 	}
 }
 
-echo "<h1>".__('File manager')."</h1>";
+echo "<h2>".__('Pandora Setup')." &raquo; ".__('File manager')."</h2>";
 
 $directory = (string) get_parameter ('directory', "/");
 
@@ -122,7 +122,7 @@ echo '<form method="post" action="index.php?sec=gsetup&amp;sec2=godmode/setup/fi
 print_table ($table);
 echo '</form>';
 
-echo '<h2>'.__('Index of %s', $directory).'</h2>';
+echo '<h3>'.__('Index of %s', $directory).'</h3>';
 
 // List files
 if (! is_dir ($real_directory)) {

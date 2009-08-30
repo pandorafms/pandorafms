@@ -187,7 +187,7 @@ if ($id_agente) {
 	echo '<h2>'.__('Agent configuration').' &raquo; '.__('Alerts').'</h2>';
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 } else {
-	echo '<h2>'.__('Alerts').'</h2>';
+	echo '<h2>'.__('Alerts').' &raquo; '.__('Manage alerts').'</h2>';;
 	$groups = get_user_groups ();
 	$agents = get_group_agents (array_keys ($groups), false, "none");
 }

@@ -1,3 +1,12 @@
+2009-08-30  Raul Mateos  <raulofpandora@gmail.com>
+
+	* extensions/update_manager/main.php: Change Pandora FMS text to 3.0
+
+	* extensions/update_manager/settings.php, godmode/alerts/extensions.php,
+	godmode/alerts/alert_list.php, godmode/servers/plugin.php,
+	godmode/db/db_sanity.php, godmode/snmp_console/snmp_alert.php,
+	godmode/setup/*.php: Unify titles improving integrity of appearance.
+
 2009-08-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Update build after last changes

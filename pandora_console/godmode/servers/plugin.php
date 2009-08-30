@@ -132,9 +132,9 @@ if (($create != "") OR ($view != "")){
 	
 	echo "<h2>";
 	if ($create != "")
-		echo __('Plugin creation');
+		echo __('Pandora servers')." &raquo; ". __('Plugin creation');
 	else {
-		echo __('Plugin update');
+		echo __('Pandora servers')." &raquo; ". __('Plugin update');
 		$plugin_id = get_parameter ("view","");
 	}
 	print_help_icon("plugin_definition");
@@ -200,7 +200,9 @@ if (($create != "") OR ($view != "")){
 }
 
 else {
-	echo "<h2>". __('Plugins registered in Pandora FMS')."</h2>";
+	echo "<h2>";
+ 	echo __('Pandora servers')." &raquo; ".__('Plugins registered in Pandora FMS');
+	echo "</h2>";
 	// If not edition or insert, then list available plugins
 	$sql1='SELECT * FROM tplugin ORDER BY name';
 	$result=mysql_query($sql1);

@@ -25,7 +25,8 @@ if (! give_acl ($config["id_user"], 0, "DM")) {
 	return;
 }
 
-echo "<h2>".__('Database sanity tool')."</h2>";
+echo '<h2>'.__('Database maintenance').' &raquo; ';
+echo __('Database sanity tool')."</h2>";
 
 $sanity = get_parameter ("sanity", 0);
 

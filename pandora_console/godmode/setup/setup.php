@@ -48,7 +48,7 @@ enterprise_include ('godmode/setup/setup.php');
  to add it there.
 */
 
-echo "<h2>".__('Setup')." &raquo; ";
+echo "<h2>".__('Pandora Setup')." &raquo; ";
 echo __('General configuration')."</h2>";
 
 $table->width = '90%';

@@ -1,3 +1,8 @@
+2009-08-31  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/estado_grupo.php: Fixed problem with agent group
+	view. Reported on 20Aug09.
+
 2009-07-06  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/index.pot: Updated po template.

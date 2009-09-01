@@ -28,19 +28,15 @@ function mainModuleGroups() {
 	global $config; //the useful global var of Pandora Console, it has many data can you use
 	
 	//The big query
-	$sql = 'SELECT SUM(t1.id_agente) AS count, t5.estado
-		FROM tagente AS t1
-			INNER JOIN tgrupo AS t2
-				ON t1.id_grupo = t2.id_grupo
-			INNER JOIN tagente_modulo AS t3
-				ON t1.id_agente = t3.id_agente
-			INNER JOIN tmodule_group AS t4
-				ON t3.id_module_group = t4.id_mg
-			INNER JOIN tagente_estado AS t5
-				ON t1.id_agente = t5.id_agente
-		WHERE t3.delete_pending IS FALSE AND  t3.disabled IS FALSE AND
-			t2.id_grupo = %d AND t3.id_module_group = %d
-		GROUP BY t5.estado';
+	$sql = "select COUNT(id_agente) AS count, estado
+		FROM tagente_estado
+		WHERE utimestamp != 0 AND id_agente IN
+			(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
+			AND id_agente_modulo IN
+			(SELECT id_agente_modulo 
+				FROM tagente_modulo 
+				WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
+		GROUP BY estado";
 	
 	echo "<h1>" . __("Combine table of agent group and module group") . "</h1>";
 	
@@ -88,8 +84,14 @@ function mainModuleGroups() {
 			$color = 'transparent'; //Defaut color for cell
 			if ($count == 0) {
 				$color = '#babdb6'; //Grey when the cell for this model group and agent group hasn't modules.
+				$alinkStart = '';
+				$alinkEnd = '';
 			}
 			else {
+				$alinkStart = '<a href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
+					'&modulegroup=' . $idModelGroup . '">';
+				$alinkEnd = '</a>';
+				
 				if (array_key_exists(0,$states) && (count($states) == 1))
 					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
 				else {
@@ -106,7 +108,7 @@ function mainModuleGroups() {
 						height: 15px;
 						margin-left: auto; margin-right: auto;
 						text-align: center; padding-top: 5px;">
-					' . $count . ' modules</div>');
+					' . $alinkStart . $count . ' modules' . $alinkEnd . '</div>');
 		}
 		array_push($tableData,$row);
 	}

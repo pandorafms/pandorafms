@@ -1,0 +1,13 @@
+/var/log/pandora/* {
+	weekly
+	missingok
+	rotate 52
+	compress
+	delaycompress
+	notifempty
+	create 640 root root
+	sharedscripts
+	postrotate
+	for i in `ls -1 /etc/init.d/pandora_*`;do $i stop; $i start; done
+	endscript
+}

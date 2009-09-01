@@ -1,3 +1,16 @@
+2009-09-01 Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Using chkconfig for service install. Using the new
+	logrotate config for automatic logfile management. 
+
+	* pandora_server_installer: Using new logrotate config file.
+	
+	* bin/pandora_server: Enterprise load notice are shown after main banner.
+	
+	* lib/PandoraFMS/Config.pm: Updated version (again).
+	
+	* util/pandora_logrotate: New conf file for /etc/logrotate.d/
+	
 2009-08-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server.spec,

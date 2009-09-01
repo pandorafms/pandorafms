@@ -33,9 +33,6 @@ use PandoraFMS::WMIServer;
 use PandoraFMS::PluginServer;
 use PandoraFMS::PredictionServer;
 
-# Load enterprise module
-enterprise_load () && print " [*] Pandora FMS Enterprise module loaded.\n";
-
 # Global vars
 my %Config;
 my @Servers;
@@ -82,6 +79,9 @@ $SIG{'ALRM'} = 'IGNORE';
 # Initialize
 pandora_init(\%Config, 'Pandora FMS Server');
 pandora_load_config (\%Config);
+
+# Load enterprise module
+enterprise_load () && print " [*] Pandora FMS Enterprise module loaded.\n";
 
 # Daemonize and put in background
 if ($Config{'daemon'} == 1) {

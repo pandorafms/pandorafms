@@ -1012,7 +1012,7 @@ function grafico_incidente_estados() {
 			$mayor_data = $data[$i];
 		}
 	}
-	$legend = array ("Open Incident", "Closed Incident", "Outdated", "Invalid");
+	$legend = array ("Open Incident", "Invalid", "Outdated", "Closed");
 	generic_pie_graph (370, 180,$data, $legend);
 }
 

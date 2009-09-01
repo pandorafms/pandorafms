@@ -1,3 +1,7 @@
+2009-09-01  Sancho Lerena <slerena@artica.es>
+
+	* reporting/fgraph.php: Fixed label for incident reporting graph.
+
 2009-08-31  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_grupo.php: Fixed problem with agent group

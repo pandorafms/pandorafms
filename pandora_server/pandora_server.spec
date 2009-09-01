@@ -76,16 +76,11 @@ rm -fr $RPM_BUILD_ROOT
 exit 0
 
 %post
-ln -s /etc/init.d/pandora_server /etc/rc.d/rc5.d/S99pandora_server
-ln -s /etc/init.d/pandora_server /etc/rc.d/rc3.d/S99pandora_server
-ln -s /etc/init.d/pandora_server /etc/rc.d/rc2.d/S99pandora_server
-ln -s /etc/init.d/pandora_server /etc/rc.d/rc0.d/K99pandora_server
-ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc5.d/S99tentacle_serverd
-ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc3.d/S99tentacle_serverd
-ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc2.d/S99tentacle_serverd
-ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc0.d/K99tentacle_serverd
+chkconfig -s pandora_server on 
+chkconfig -s tentacle_serverd on 
 echo "/usr/share/pandora_server/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
 chmod 750 /etc/cron.daily/pandora_db
+cp -aRf util/pandora_logrotate /etc/logrotate.d/pandora
 
 if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora
@@ -108,15 +103,8 @@ fi
 %if "%{_vendor}" == "redhat"
   /sbin/chkconfig --del pandora_server
 %endif
-rm -Rf /etc/pandora/pandora_server.conf
-rm -Rf /etc/rc.d/rc5.d/S99pandora_server
-rm -Rf /etc/rc.d/rc3.d/S99pandora_server
-rm -Rf /etc/rc.d/rc2.d/S99pandora_server
-rm -Rf /etc/rc.d/rc0.d/K99pandora_server
-rm -Rf /etc/rc.d/rc5.d/S99tentacle_serverd
-rm -Rf /etc/rc.d/rc3.d/S99tentacle_serverd
-rm -Rf /etc/rc.d/rc2.d/S99tentacle_serverd
-rm -Rf /etc/rc.d/rc0.d/K99tentacle_serverd
+chkconfig -d pandora_server
+chkconfig -d tentacle_serverd
 
 %files
 

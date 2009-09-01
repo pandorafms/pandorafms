@@ -146,6 +146,9 @@ install () {
 			ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server 2> /dev/null
 		fi
 
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp util/pandora_logrotate /etc/logrotate.d/pandora
+
 		if [ "$SECOPT" != "--no-tentacle" ]
 		then
 			if [ "$DISTRO" == "UBUNTU" ]

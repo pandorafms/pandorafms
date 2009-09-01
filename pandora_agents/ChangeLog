@@ -1,3 +1,9 @@
+2009-09-01  Sancho Lerena <slerena@artica.es>
+	
+	* linux/pandora_agent.spec: Using chkconfig to manage service
+	instalation/deinstallation.
+
+
 2009-08-22  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent.spec: Update uninstall process.

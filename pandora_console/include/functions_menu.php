@@ -35,6 +35,16 @@ function print_menu (&$menu) {
 	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
 	
 	foreach ($menu as $mainsec => $main) {
+		$extensionInMenuParameter = (string) get_parameter ('extension_in_menu','');
+		
+		$showSubsection = true;
+		if ($extensionInMenuParameter != '') {
+			if ($extensionInMenuParameter == $mainsec)
+				$showSubsection = true;
+			else
+				$showSubsection = false;
+		}
+		
 		if ($mainsec == 'class')
 			continue;
 		
@@ -53,10 +63,12 @@ function print_menu (&$menu) {
 		if (!isset ($main["refr"]))
 			$main["refr"] = 0;
 		
-		if ($sec == $mainsec) {
+		if (($sec == $mainsec) && ($showSubsection)) {
 			$classes[] = 'selected';
 		} else {
 			$classes[] = 'not_selected';
+			if ($extensionInMenuParameter == $mainsec)
+				$classes[] = 'selected';
 		}
 		
 		$output = '';
@@ -71,17 +83,21 @@ function print_menu (&$menu) {
 		
 		foreach ($main["sub"] as $subsec2 => $sub) {
 			//Set class
-			if ($sec2 == $subsec2 && isset ($sub[$subsec2]["options"])
+			if (($sec2 == $subsec2 && isset ($sub[$subsec2]["options"]))
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
 				//If the subclass is selected and there are options and that options value is true
 				$class = 'submenu_selected';
 				$selected = true;
 				$visible = true;
 			} elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
-				//If the subclass is selected and there are no options
 				$class = 'submenu_selected';
 				$selected = true;
-				$visible = true;
+				
+				$hasExtensions = (array_key_exists('hasExtensions',$main)) ? $main['hasExtensions'] : false;
+				if (($extensionInMenuParameter != '') && ($hasExtensions))
+					$visible = true;
+				else
+					$visible = false;
 			} else {
 				//Else it's not selected
 				$class = 'submenu_not_selected';
@@ -101,8 +117,35 @@ function print_menu (&$menu) {
 				} else {
 					$link_add = "";
 				}
+				
 				$submenu_output .= '<li'.($class ? ' class="'.$class.'"' : '').'>';
-				$submenu_output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
+				
+				//Ini Add icon extension
+				$secExtension = null;
+				if (array_key_exists('extension',$sub)) $secExtensionBool = $sub["extension"];
+				else $secExtensionBool = false;
+				
+				if ($secExtensionBool) {
+					$imageIcon = 'images/extensions.png';
+					if (strlen($sub["icon"]) > 0)
+						$imageIcon ='extensions/'.$sub["icon"];
+					
+					$submenu_output .= '<div style="background: url('.$imageIcon.') no-repeat; width: 16px; height: 16px; float: left; margin: 5px 0px 0px 3px;">&nbsp;</div>';
+				}
+				
+				
+				$secExtension = null;
+				if (array_key_exists('sec',$sub)) $secExtension = $sub["sec"];
+				if (strlen($secExtension) > 0) {
+					$secUrl = $secExtension;
+					$extensionInMenu = 'extension_in_menu='.$mainsec.'&';
+				}
+				else {
+					$secUrl = $mainsec;
+					$extensionInMenu = '';
+				}
+				
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
 				$submenu_output .= '</li>';
 			}
 		}
@@ -115,6 +158,10 @@ function print_menu (&$menu) {
 			if ($visible || in_array ("selected", $classes)) {
 				$visible = true;
 			}
+			if (!$showSubsection) {
+				$visible = false;
+			}
+			
 			$output .= '<ul class="submenu'.($visible ? '' : ' invisible').'">';
 			$output .= $submenu_output;
 			$output .= '</ul>';

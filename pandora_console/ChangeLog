@@ -1,5 +1,10 @@
 2009-08-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_menu.php: add lines of code that I forget in the
+	previus commits. Now the menu show correctly the extensions.
+
+2009-08-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: add external Module group "Not assigned"
 	because there are modules with this module group as agent software.
 	* extensions/module_groups.php: fix bug that the count are very wrong. And

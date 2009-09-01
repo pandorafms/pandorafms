@@ -47,7 +47,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','3.0-dev'),
-(9,'db_scheme_build','PD90819'),
+(9,'db_scheme_build','PD90901'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -164,7 +164,6 @@ INSERT INTO `tlink` VALUES
 (6,'Google','http://www.google.com');
 UNLOCK TABLES;
 
-
 --
 -- Dumping data for table `tmodule_group`
 --
@@ -175,7 +174,10 @@ INSERT INTO `tmodule_group` VALUES
 (2,'Networking'),
 (3,'Application'),
 (4,'System'),
-(5,'Miscellaneous');
+(5,'Miscellaneous'),
+(6,'Performance'),
+(7,'Database');
+
 UNLOCK TABLES;
 
 --
@@ -184,7 +186,6 @@ UNLOCK TABLES;
 
 INSERT INTO `torigen` VALUES 
 ('Operating System event'),
-('IDS events'),
 ('Firewall records'),
 ('Database event'),
 ('Application data'),
@@ -222,7 +223,6 @@ INSERT INTO `ttipo_modulo` VALUES
 -- Not yet implemented
 -- (19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
 -- (20,'image_png',9,'Image PNG data', 'mod_image_png.png');
--- (24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png')
 
 -- Categoria field is used to segregate several types (plugin, agents, network) on their data
 -- types, could be used or could be avoided and use directly primary key (id_tipo) 

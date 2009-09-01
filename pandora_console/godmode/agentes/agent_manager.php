@@ -123,7 +123,7 @@ if ($id_agente) {
 	$ip_all = get_agent_addresses ($id_agente);
 		
 	$table->data[1][1] .= print_select ($ip_all, "address_list", $direccion_agente, '', '', 0, true);
-	$table->data[1][1] .= print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
+	$table->data[1][1] .= "&nbsp;". print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
 }
 
 $groups = get_user_groups ($config["id_user"]);
@@ -133,6 +133,8 @@ $table->data[2][0] = __('Parent');
 $table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+
+$table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);

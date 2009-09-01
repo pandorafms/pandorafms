@@ -278,3 +278,16 @@ ALTER TABLE tusuario ADD `language` varchar(10) default NULL;
 ALTER TABLE tserver ADD `server_type` tinyint(3) unsigned NOT NULL default '0';
 ALTER TABLE tserver ADD `queued_modules` int(5) unsigned NOT NULL default '0';
 ALTER TABLE tserver ADD `threads` int(5) unsigned NOT NULL default '0';
+
+-- August 2009
+
+ALTER TABLE trecon_task ADD `recon_ports` varchar(250) NOT NULL default '';
+
+ALTER TABLE tagente ADD `cascade_protection` tinyint(2) NOT NULL default '0';
+
+ALTER TABLE tagente DROP id_wmi_server;
+ALTER TABLE tagente DROP id_network_server;
+ALTER TABLE tagente DROP id_plugin_server;
+ALTER TABLE tagente DROP id_prediction_server;
+
+

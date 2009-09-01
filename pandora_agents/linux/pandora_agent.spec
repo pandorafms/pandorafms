@@ -92,36 +92,16 @@ if [ ! -e /etc/pandora/pandora_agent.conf ]; then
 	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf 
 fi
 
-%if "%{_vendor}" == "redhat"
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc0.d/K99pandora_agent_daemon 
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc3.d/S99pandora_agent_daemon 
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc5.d/S99pandora_agent_daemon 
-%else
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc5.d/S99pandora_agent_daemon
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc3.d/S99pandora_agent_daemon
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc2.d/S99pandora_agent_daemon
-   ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc0.d/K99pandora_agent_daemon
-%endif
+chkconfig -s pandora_agent_daemon on
 
 %preun
 
+chkconfig -d pandora_agent_daemon 
 /etc/init.d/pandora_agent_daemon stop
 rm /etc/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora
 rm -Rf /etc/pandora/pandora_agent.conf
 rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
-   
-%if "%{_vendor}" == "redhat"
-  /sbin/chkconfig --del pandora_agent_daemon
-  rm /etc/rc0.d/K99pandora_agent_daemon
-  rm /etc/rc3.d/S99pandora_agent_daemon
-  rm /etc/rc5.d/S99pandora_agent_daemon
-%else
-  rm /etc/rc.d/rc5.d/S99pandora_agent_daemon
-  rm /etc/rc.d/rc3.d/S99pandora_agent_daemon
-  rm /etc/rc.d/rc2.d/S99pandora_agent_daemon
-  rm /etc/rc.d/rc0.d/K99pandora_agent_daemon
-%endif
 exit 0
 
 %files

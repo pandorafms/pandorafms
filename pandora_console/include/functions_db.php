@@ -1256,6 +1256,8 @@ function get_all_model_groups () {
 	foreach ($groups as $group)
 		$returnGroups[$group['id_mg']] = $group['name'];
 		
+	$returnGroups[0] = "Not assigned"; //Module group external to DB but it exist
+		
 	
 	return $returnGroups;
 }

@@ -102,6 +102,7 @@ $server_name = '';
 $grupo = 0;
 $id_os = 9; // Windows
 $custom_id = "";
+$cascade_protection = 0;
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -119,6 +120,7 @@ if ($create_agent) {
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id",'');
+	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
@@ -134,6 +136,7 @@ if ($create_agent) {
 				'id_grupo' => $grupo, 'intervalo' => $intervalo,
 				'comentarios' => $comentarios, 'modo' => $modo,
 				'id_os' => $id_os, 'disabled' => $disabled,
+				'cascade_protection' => $cascade_protection,
 				'server_name' => $server_name,
 				'id_parent' => $id_parent, 'custom_id' => $custom_id));
 		enterprise_hook ('update_agent', array ($id_agente));
@@ -279,6 +282,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_parent = (string) get_parameter_post ("id_parent");
 	$id_parent = (int) get_agent_id ($id_parent);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
+	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 
@@ -307,6 +311,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
 				'comentarios' => $comentarios,
+				'cascade_protection' => $cascade_protection,
 				'server_name' => $server_name,
 				'custom_id' => $custom_id),
 			array ('id_agente' => $id_agente));
@@ -350,6 +355,8 @@ if ($id_agente) {
 	$disabled = $agent["disabled"];
 	$id_parent = $agent["id_parent"];
 	$custom_id = $agent["custom_id"];
+	$cascade_protection = $agent["cascade_protection"];
+
 }
 
 $update_module = (bool) get_parameter ('update_module');
@@ -526,7 +533,9 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	process_sql_begin ();
 	
 	// First delete from tagente_modulo -> if not successful, increment
-	// error
+	// error. NOTICE that we don't delete all data here, just marking for deletion
+	// and delete some simple data.
+	
 	if (process_sql ("UPDATE tagente_modulo SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
 	

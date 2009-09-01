@@ -1,3 +1,21 @@
+2009-09-01  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Updated version, added two new module groups and 
+	some cleanup.
+	
+	* pandoradb.sql: Added cascade_protection field in tagente and removed 
+	old server information from 2.x scheme.
+	
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added new fields (trecon_task 
+	and tagente) and drop old server information from tagente table.
+	
+	* configurar_agente.php, agent_manager.php: Added cascade protection 
+	GUI checkbox and logic.
+	
+	* images/help: Added graph directory for help.
+	
+	* help/en/cascade_protection.php: Added help topic.
+
 2009-08-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_menu.php: add lines of code that I forget in the

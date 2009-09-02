@@ -37,6 +37,8 @@ my $timeout = shift(@opts);
 my $command = quotemeta(shift(@opts));
 my $arguments = join(' ', @opts);
 my $output = '';
+my $ReturnCode = 0;
+
 
 # Check that the command exists
 if (system("$command >/dev/null 2>&1") == 32512) {
@@ -49,6 +51,7 @@ eval {
 	alarm $timeout;
 
 	$output = `$command $arguments`;
+	$ReturnCode = ($? >> 8) & 0xff;
 	alarm 0;
 };
 
@@ -59,4 +62,4 @@ if ($@ eq "alarm\n") {
 
 print $output;
 
-exit 0;
+exit $ReturnCode;

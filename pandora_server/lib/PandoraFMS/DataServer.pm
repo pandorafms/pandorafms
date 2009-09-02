@@ -132,13 +132,12 @@ sub data_consumer ($$) {
     	
     	# Invalid XML
     	if ($@) {
-    		print "$@\n";
     		sleep (60);
     		next;
     	}
     	
 		# Ignore the timestamp in the XML and use the file timestamp instead
-    	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1');
+    	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
     	unlink ($file_name);
 		process_xml_data ($self->getConfig (), $xml_data, $self->getServerID (), $self->getDBH ());

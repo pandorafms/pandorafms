@@ -1,3 +1,17 @@
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Added sample configurations for
+	  inhibit_alerts and use_xml_timestamp.
+
+	* lib/PandoraFMS/Config.pm: Added the inhibit_alerts configuration
+	  token.
+
+	* lib/PandoraFMS/Core.pm: Added the option to inhibit agent alerts if
+	  the parent has fired a critical alert.
+
+	* lib/PandoraFMS/DataServer.pm: Use the XML file last modification time 
+	  if no timestamp is specified.
+
 2009-09-01 Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Using chkconfig for service install. Using the new

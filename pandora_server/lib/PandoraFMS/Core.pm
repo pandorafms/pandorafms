@@ -423,6 +423,10 @@ sub pandora_execute_action ($$$$$$$) {
 		$field3 = $alert->{'field3_recovery'} ne "" ? $alert->{'field3_recovery'} : "[RECOVER]" . $field3;
 	}
 
+	$field1 = decode_entities ($field1);
+	$field2 = decode_entities ($field2);
+	$field3 = decode_entities ($field3);
+
 	# Alert macros
 	my %macros = (_field1_ => $field1,
 				  _field2_ => $field2,
@@ -459,8 +463,8 @@ sub pandora_execute_action ($$$$$$$) {
 
 	# Email		
 	} elsif ($action->{'name'} eq "eMail") {
-		$field2 = decode_entities (subst_alert_macros ($field2, \%macros));
-		$field3 = decode_entities (subst_alert_macros ($field3, \%macros));
+		$field2 = subst_alert_macros ($field2, \%macros);
+		$field3 = subst_alert_macros ($field3, \%macros);
 		foreach my $address (split (',', $field1)) {
 			# Remove blanks
 			$address =~ s/ +//g;

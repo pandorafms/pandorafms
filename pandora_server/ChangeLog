@@ -1,5 +1,9 @@
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Decode HTML entities for all alert types.
+
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: HTML entities in alert fields are properly
 	  decoded. Alert emails can be sent to multiple comma separated
 	  addresses.

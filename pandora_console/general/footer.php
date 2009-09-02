@@ -28,4 +28,5 @@ echo '</a>';
 if (isset ($config['debug'])) {
 	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
 }
+
 ?>

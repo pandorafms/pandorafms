@@ -1,3 +1,16 @@
+2009-09-02  Sancho Lerena <slerena@artica.es>
+
+	* attachment/plugin: New directory to place console uploaded server
+	plugins (from the new extension).
+	
+	* extensions/plugin_registration.php: New extension to upload and register
+	using a new format of packaged plugins (.pspz) files who register 
+	automatically the plugin and add network components defined to use that 
+	plugin. .pspz format are defined in our wiki at 
+	http://openideas.info/wiki/index.php?title=Pandora_3.0:New_options_in_development_version
+
+	* include/styles/pandora.css: Adjusted notify text format.
+
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_alert_macros.php,

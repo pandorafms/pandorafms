@@ -17,11 +17,12 @@
 function hello_extension_main () {
 	/* Here you can do almost all you want! */
 	echo "<h1>Hello world!</h1>";
-	echo "This is a sample of minimal extension";
+	echo "This is a sample of minimal extension in the operation view";
 }
 
 function test() {
-	echo "<h1>TEST</h1>";
+	echo "<h2>Hello administration world</h2>";
+	echo "This is a sample of minimal extension in the godmode view";
 }
 
 /* This adds a option in the operation menu */
@@ -36,5 +37,5 @@ add_operation_menu_option(__('Hello plugin'), 'estado',"hello/icon.png");
 /* This sets the function to be called when the extension is selected in the operation menu */
 add_extension_main_function ('hello_extension_main');
 
-add_extension_godmode_function('prueba');
+add_extension_godmode_function('test');
 ?>

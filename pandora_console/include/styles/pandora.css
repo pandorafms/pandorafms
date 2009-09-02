@@ -761,7 +761,15 @@ a.big_data {
 	text-align: center;
 	font-weight: bold;
 	padding: 8px;
+	width: 95%
 }
+
+.notify a {
+	color: #003a3a;
+	text-decoration: underline;
+}	
+}
+
 .listing {
 	border-collapse: collapse;
 }

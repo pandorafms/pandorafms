@@ -167,6 +167,37 @@ sub data_consumer ($$) {
 	# Execute command
 	$command = $pa_config->{'plugin_exec'} . ' ' . $timeout . ' ' . $command;
 	my $module_data = `$command`;
+	my $ReturnCode = ($? >> 8) & 0xff;
+
+	if ($plugin->{'plugin_type'} == 1) {
+
+		# Get the errorlevel if is a Nagios plugin type (parsing the errorlevel)
+		# Nagios errorlevels: 	
+		#('OK'=>0,'WARNING'=>1,'CRITICAL'=>2,'UNKNOWN'=>3,'DEPENDENT'=>4);
+
+		# Numerical modules (Data) or Alphanumeric modules (String) 
+		# get reported data as is, ignoring return code.
+		# Boolean data, transform module data depending on returning error code.
+
+		if ($module->{'id_tipo_modulo'} == 2){
+			if ($ReturnCode == 0){
+				$module_data = 1;
+			} 
+			elsif ($ReturnCode == 1){
+				$module_data = -1;
+			} 
+			elsif ($ReturnCode == 2){
+				$module_data = 0;
+			} 
+			elsif ($ReturnCode == 3){
+				$module_data = ''; # not defined = Uknown 
+			} 
+			elsif ($ReturnCode == 4){
+				$module_data = 1;
+			}
+		}
+	}
+
 	if (! defined $module_data || $module_data eq '') {
 		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
 		return;

@@ -1,3 +1,8 @@
+2009-09-02  Sancho Lerena <slerena@artica.es> 
+
+	*  lib/PandoraFMS/PluginServer.pm, util/pandora_exec: Nagis plugin 
+	support implemented and working.
+
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed the matches_value alert option (was not

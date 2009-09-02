@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=91
+UnitCount=93
 Type=1
 Ver=1
 ObjFiles=
@@ -949,6 +949,26 @@ BuildCmd=
 
 [Unit91]
 FileName=modules\pandora_module_regexp.cc
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit93]
+FileName=modules\pandora_module_inventory.cc
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit92]
+FileName=modules\pandora_module_inventory.h
 CompileCpp=1
 Folder=Modules
 Compile=1

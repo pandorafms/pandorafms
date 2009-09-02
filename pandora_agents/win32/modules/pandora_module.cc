@@ -42,6 +42,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->has_limits      = false;
 	this->async           = false;
 	this->data_list       = NULL;
+    this->inventory_list  = NULL;
 }
 
 /** 
@@ -71,6 +72,19 @@ Pandora_Module::cleanDataList () {
 		}
 		delete this->data_list;
 		this->data_list = NULL;
+	}
+	if (this->inventory_list) {
+		if (this->inventory_list->size () > 0) {
+			iter = this->inventory_list->begin ();
+			for (iter = this->inventory_list->begin ();
+			     iter != this->inventory_list->end ();
+			     iter++) {
+				data = *iter;
+				delete data;
+			}
+		}
+		delete this->inventory_list;
+		this->inventory_list = NULL;
 	}
 }
 
@@ -127,6 +141,8 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_FREEMEMORY_PERCENT;
 	} else if (kind == module_cpuusage_str) {
 		return MODULE_CPUUSAGE;
+	} else if (kind == module_inventory_str) {
+		return MODULE_INVENTORY;
 	} else if (kind == module_odbc_str) {
 		return MODULE_ODBC;
 	} else if (kind == module_logevent_str) {
@@ -268,10 +284,11 @@ Pandora_Module::setOutput (string output) {
 
 	if (this->data_list == NULL)
 		this->data_list = new list<Pandora_Data *> ();
-	data = new Pandora_Data (output);
+	data = new Pandora_Data (output, this->module_name);
 	this->data_list->push_back (data);
 	this->latest_output = output;
 }
+
 
 /** 
  * Set the output of the module.
@@ -288,7 +305,7 @@ Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
 
 	if (this->data_list == NULL)
 		this->data_list = new list<Pandora_Data *> ();
-	data = new Pandora_Data (output, system_time);
+	data = new Pandora_Data (output, system_time, this->module_name);
 	this->data_list->push_back (data);
 }
 
@@ -311,7 +328,7 @@ Pandora_Module::run () {
 		this->executions++;
 		has_output = false;
 		throw Interval_Not_Fulfilled ();
-	}
+	} 
 	
 	/* Increment the executions after check. This is done to execute the
 	   first time */
@@ -338,6 +355,7 @@ Pandora_Module::run () {
  */
 TiXmlElement *
 Pandora_Module::getXml () {
+ 
 	TiXmlElement *root;
 	TiXmlElement *element;
 	TiXmlElement *data_list_element;

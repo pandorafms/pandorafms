@@ -28,6 +28,7 @@
 using namespace std;
 
 namespace Pandora {
+    const string pandora_data_unknown_source = "unknown_source";
 	/**
 	 * Class to implement the Pandora Windows service.
 	 */
@@ -35,15 +36,21 @@ namespace Pandora {
 	private:
 		string     value;
 		SYSTEMTIME timestamp;
+		string 	   data_origin;
 	public:
 		Pandora_Data            ();
 		Pandora_Data            (string value);
-	Pandora_Data            (string value, SYSTEMTIME *system_time);
+		Pandora_Data            (string value, SYSTEMTIME *system_time);
+		Pandora_Data            (string value, string data_orign);
+		Pandora_Data            (string value, SYSTEMTIME *system_time, string data_orign);
 		~Pandora_Data           ();
 
 		string     getValue     () const;
 		string     getTimestamp () const;
+		string	   getDataOrigin() const;
+		
 		void       setValue     (string value);
+		void	   setDataOrigin(string data_origin);
 	};
 }
 

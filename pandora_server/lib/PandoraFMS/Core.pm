@@ -459,9 +459,13 @@ sub pandora_execute_action ($$$$$$$) {
 
 	# Email		
 	} elsif ($action->{'name'} eq "eMail") {
-		$field2 = subst_alert_macros ($field2, \%macros);
-		$field3 = subst_alert_macros ($field3, \%macros);
-		pandora_sendmail ($pa_config, $field1, $field2, $field3);
+		$field2 = decode_entities (subst_alert_macros ($field2, \%macros));
+		$field3 = decode_entities (subst_alert_macros ($field3, \%macros));
+		foreach my $address (split (',', $field1)) {
+			# Remove blanks
+			$address =~ s/ +//g;
+			pandora_sendmail ($pa_config, $address, $field2, $field3);
+		}
 
 	# Internal event
 	} elsif ($action->{'name'} eq "Pandora FMS Event") {

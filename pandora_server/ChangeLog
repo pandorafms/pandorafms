@@ -1,5 +1,12 @@
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
+	* conf/pandora_server.conf,
+	  lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Core.pm: Removed the inhibit_alerts configuration
+	  token. Alert inhibition is configured on a per-agent basis.
+
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
 	* conf/pandora_server.conf: Added sample configurations for
 	  inhibit_alerts and use_xml_timestamp.
 

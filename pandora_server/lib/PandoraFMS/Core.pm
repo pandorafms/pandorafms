@@ -524,7 +524,9 @@ sub pandora_process_module ($$$$$$$$$) {
 	my $status = get_module_status ($data, $module, $module_type);
 
 	# Generate alerts
-	pandora_generate_alerts ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh);
+	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
+		pandora_generate_alerts ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh);
+	}
 
 	#Update module status
 	my $current_utimestamp = time ();
@@ -1152,6 +1154,30 @@ sub export_module_data ($$$$$$) {
 	db_do($dbh, 'INSERT INTO tserver_export_data 
 	         (`id_export_server`, `agent_name` , `module_name`, `module_type`, `data`, `timestamp`) VALUES
 	         (?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);
+}
+
+##########################################################################
+# Returns 1 if alerts for the given agent should be inhibited, 0 otherwise.
+##########################################################################
+sub pandora_inhibit_alerts ($$$) {
+	my ($pa_config, $agent, $dbh) = @_;
+
+	return 0 if ($pa_config->{'inhibit_alerts'} ne '1' || $agent->{'id_parent'} eq '0');
+
+	# Are any of the parent's critical alerts fired?	
+	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
+	                                 WHERE tagente_modulo.id_agente = ?
+	                                 AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+	                                 AND talert_template_modules.id_alert_template = talert_templates.id
+	                                 AND talert_template_modules.times_fired > 0
+	                                 AND talert_templates.priority = 4', $agent->{'id_parent'});
+	return 1 if ($count > 0);
+
+	# Are any of the parent's critical compound alerts fired?	
+	$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM talert_compound WHERE id_agent = ? AND times_fired > 0 AND priority = 4', $agent->{'id_parent'});
+	return 1 if ($count > 0);
+
+	return 0;
 }
 
 # End of function declaration

@@ -1,3 +1,9 @@
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: HTML entities in alert fields are properly
+	  decoded. Alert emails can be sent to multiple comma separated
+	  addresses.
+
 2009-09-02  Sancho Lerena <slerena@artica.es> 
 
 	*  lib/PandoraFMS/PluginServer.pm, util/pandora_exec: Nagis plugin 

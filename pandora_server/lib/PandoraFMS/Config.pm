@@ -226,9 +226,6 @@ sub pandora_load_config {
 	# Ignore the timestamp in the XML and use the file timestamp instead
     $pa_config->{'use_xml_timestamp'} = 0; 
 
-	# Inhibit alerts if the parent agent fired a critical alert
-    $pa_config->{'inhibit_alerts'} = 0;
-	
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
 	    if ($> == 0){
@@ -493,9 +490,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^use_xml_timestamp\s([0-1])/i) {
 			$pa_config->{'use_xml_timestamp'} = clean_blank($1);
-		}
-		elsif ($parametro =~ m/^inhibit_alerts\s([0-1])/i) {
-			$pa_config->{'inhibit_alerts'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

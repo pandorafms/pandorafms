@@ -1162,7 +1162,7 @@ sub export_module_data ($$$$$$) {
 sub pandora_inhibit_alerts ($$$) {
 	my ($pa_config, $agent, $dbh) = @_;
 
-	return 0 if ($pa_config->{'inhibit_alerts'} ne '1' || $agent->{'id_parent'} eq '0');
+	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0');
 
 	# Are any of the parent's critical alerts fired?	
 	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates

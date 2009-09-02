@@ -1,5 +1,10 @@
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed the matches_value alert option (was not
+	  working properly).
+
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
 	* conf/pandora_server.conf,
 	  lib/PandoraFMS/Config.pm,
 	  lib/PandoraFMS/Core.pm: Removed the inhibit_alerts configuration

@@ -157,20 +157,23 @@ sub pandora_evaluate_alert ($$$$$$) {
 		return $status if ($alert->{'type'} eq "max" && $data <= $alert->{'max_value'});
 
 		if ($alert->{'type'} eq "max_min") {
-			return $status if ($alert->{'matches_value'} == 1 &&
-				               $data <= $alert->{'min_value'} &&
-				               $data >= $alert->{'max_value'});
-
-			return $status if ($data >= $alert->{'min_value'} &&
-				               $data <= $alert->{'max_value'});
+			if ($alert->{'matches_value'} == 1) {
+				return $status if ($data <= $alert->{'min_value'} &&
+				                  $data >= $alert->{'max_value'});
+			} else {
+				return $status if ($data >= $alert->{'min_value'} &&
+							       $data <= $alert->{'max_value'});
+			}
 		}
 		
 		return $status if ($alert->{'type'} eq "equal" && $data != $alert->{'value'});
 		return $status if ($alert->{'type'} eq "not_equal" && $data == $alert->{'value'});
 		if ($alert->{'type'} eq "regex") {
-			return $status if ($alert->{'matches_value'} == 1 && $data =~ m/$alert->{'value'}/i);
-
-			return $status if ($data !~ m/$alert->{'value'}/i);
+			if ($alert->{'matches_value'} == 1) {
+				return $status if ($data !~ m/$alert->{'value'}/i);
+			} else {
+				return $status if ($data =~ m/$alert->{'value'}/i);
+			}
 		}
 
 		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');

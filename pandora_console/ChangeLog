@@ -1,3 +1,11 @@
+2009-09-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_alert_macros.php,
+	  include/help/es/help_alert_macros.php: Added to repository. Alert
+	  macro help files.
+
+	* godmode/alerts/configure_alert_template.php: Show alert macro help.
+
 2009-09-01  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Updated version, added two new module groups and 

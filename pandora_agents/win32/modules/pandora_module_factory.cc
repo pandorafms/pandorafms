@@ -28,6 +28,7 @@
 #include "pandora_module_freememory.h"
 #include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
+#include "pandora_module_inventory.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
@@ -52,6 +53,8 @@ using namespace Pandora_Strutils;
 #define TOKEN_FREEMEMORY    ("module_freememory")
 #define TOKEN_FREEMEMORY_PERCENT    ("module_freepercentmemory")
 #define TOKEN_CPUUSAGE      ("module_cpuusage ")
+#define TOKEN_INVENTORY     ("module_inventory")
+#define TOKEN_INVENTORY_INTERVAL     ("module_inventory_interval")
 #define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
@@ -108,7 +111,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_name, module_type, module_exec;
 	string                 module_min, module_max, module_description;
 	string                 module_interval, module_proc, module_service;
-	string                 module_freedisk, module_cpuusage, module_odbc;
+	string                 module_freedisk, module_cpuusage, module_inventory, module_inventory_interval, module_odbc;
 	string                 module_freedisk_percent, module_freememory_percent;
 	string                 module_odbc_query, module_dsn, module_freememory;
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
@@ -152,7 +155,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_port          = "";
 	module_timeout       = "";
 	module_regexp        = "";
-
+	module_inventory_interval = "";
+	
 	stringtok (tokens, definition, "\n");
 	
 	/* Pick the first and the last value of the token list */
@@ -194,6 +198,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_cpuusage == "") {
 			module_cpuusage = parseLine (line, TOKEN_CPUUSAGE);
+		}
+		if (module_inventory == "") {
+			module_inventory = parseLine (line, TOKEN_INVENTORY);
+		}
+		if (module_inventory_interval == "") {
+			module_inventory_interval = parseLine (line, TOKEN_INVENTORY_INTERVAL);
 		}
 		if (module_odbc == "") {
 			module_odbc = parseLine (line, TOKEN_ODBC);
@@ -332,6 +342,19 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Cpuusage (module_name,
 						      cpu_id);
 
+	} else if (module_inventory != "") {
+		module = new Pandora_Module_Inventory (module_name, module_inventory);
+		if (module_inventory_interval != "") {
+		   try {
+		   	   // Convert the interval to seconds...
+			   int interval = strtoint (module_inventory_interval) *60 *60 *24 ;
+			    pandoraDebug("Inventory_interval = %d", interval);
+    			module->setInterval(interval);
+			} catch (Invalid_Conversion e) {
+			  		pandoraLog("Error in conversion of module_inventory_interval");
+	        }
+		      							 
+		}
 	} else if (module_odbc != "") {
 		module = new Pandora_Module_Odbc (module_name,
 						  module_odbc,
@@ -427,6 +450,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				    module_name.c_str ());
 		}
 	}
-	
+	if (module != NULL)
+	{
+       pandoraDebug("Parsed Moudle: %s\n",module->getName().c_str());
+    }
 	return module;
 }

@@ -38,6 +38,7 @@ namespace Pandora_Wmi {
 	 */
 	class Pandora_Wmi_Exception : public Pandora_Exception { };
 	
+	const string inventory_field_separator = "#$|$#";
 	int           isProcessRunning      (string process_name);
 	int           isServiceRunning      (string service_name);
 	unsigned long getDiskFreeSpace      (string disk_id);
@@ -55,6 +56,15 @@ namespace Pandora_Wmi {
  	void          runWMIQuery       (string wmi_query,
 					     string var,
 					     list<string> &rows);
+   	int           getSoftware       		(list<string> &rows);
+   	int       	  getCdRomInfo           (list<string> &rows);
+   	int       	  getVideoInfo           (list<string> &rows);
+    int       	  getHDsInfo             (list<string> &rows); 
+    int       	  getCPUsInfo            (list<string> &rows); 
+    int       	  getNICsInfo            (list<string> &rows); 
+    int	       	  getPatchInfo           (list<string> &rows); 
+	int 		  getRAMInfo 			 (list<string> &rows); 
+    
 };
 
 #endif

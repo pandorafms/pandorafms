@@ -25,20 +25,23 @@ using namespace Pandora;
 /** 
  * Pandora_Data constructor.
  *
- * Set all attributes
+ * Creates a Pandora_Data object with the value received, the current time
+ * as timestamp and "unknown_source" as data_origin.
  * 
  * @param value Data value.
- * @param timestamp Timeestamp value.
  */
 Pandora_Data::Pandora_Data (string value) {
 	this->value = value;
 	GetSystemTime (&(this->timestamp));
+	this->data_origin = pandora_data_unknown_source;
 }
 
 /** 
  * Pandora_Data constructor.
  *
- * Set all attributes
+ * Creates a Pandora_Data object with the value received, the received
+ * system_time as timestamp and "unknown_source" as data_origin.
+ * 
  * 
  * @param value Data value.
  * @param system_time Timestamp.
@@ -51,6 +54,42 @@ Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time) {
     this->timestamp.wHour = system_time->wHour;
     this->timestamp.wMinute = system_time->wMinute;
     this->timestamp.wSecond = system_time->wSecond;
+    this->data_origin = pandora_data_unknown_source;
+}
+
+/** 
+ * Pandora_Data constructor.
+ *
+ * Creates a Pandora_Data object with the value and data_origin received and the
+ * current time as timestamp 
+ * 
+ * @param value Data value.
+ * @param data_origin Data origin
+ */
+Pandora_Data::Pandora_Data (string value, string data_origin) {
+    this->value = value;
+	GetSystemTime (&(this->timestamp));
+    this->data_origin = data_origin;
+}
+
+/** 
+ * Pandora_Data constructor.
+ *
+ * Set all attributes
+ * 
+ * @param value Data value.
+ * @param system_time Timestamp.
+ * @param data_origin Data origin
+ */
+Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time, string data_origin) {
+    this->value = value;
+    this->timestamp.wYear = system_time->wYear;
+    this->timestamp.wMonth = system_time->wMonth;
+    this->timestamp.wDay = system_time->wDay;
+    this->timestamp.wHour = system_time->wHour;
+    this->timestamp.wMinute = system_time->wMinute;
+    this->timestamp.wSecond = system_time->wSecond;
+    this->data_origin = data_origin;
 }
 
 /** 
@@ -61,6 +100,7 @@ Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time) {
 Pandora_Data::Pandora_Data () {
 	this->value = "";
 	GetSystemTime (&(this->timestamp));
+	this->data_origin = "";
 }
 
 /** 
@@ -105,3 +145,23 @@ Pandora_Data::setValue (string value) {
 	this->value = value;
 }
 
+/** 
+ * Get data_origin property of Pandora_Data object 
+ * 
+ * @return data_origin property.
+ */
+string	   
+Pandora_Data::getDataOrigin() const {
+	return this->data_origin;	   
+}
+
+/** 
+ * Set data_origin property of Pandora_Data object
+ * 
+ * @param data_origin Data Oring to set.
+ */
+
+void
+Pandora_Data::setDataOrigin(string data_origin) {
+	this->data_origin = data_origin;
+}

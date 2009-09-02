@@ -1,3 +1,23 @@
+2009-09-02 Pablo de la Concepción <pablo.concepcion@artica.es>
+	* windows/pandora_wmi.cc, windows/pandora_wmi.h: Added Inventory 
+	functions
+
+	* modules/pandora_module_inventory.h, 
+	modules/pandora_module_inventory.cc,
+	modules/pandora_module.h, modules/pandora_module_list.cc,
+	modules/pandora_module_factory.cc, modules/pandora_module.cc: Added
+	Inventory moudule files and moudule loading logic. 
+
+	* modules/pandora_data.cc, modules/pandora_data.h: Added data_origin
+	atribute, new constructors and getters and setters for the atribute 
+
+	* bin/PandoraAgent.exe: new complide binary
+
+	* bin/pandora_agent.conf: new configuration parameters for inventory 
+	module 
+	
+	* PandoraAgent.dev: Updated project file 
+
 2009-05-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc: Fixed the calculation of the

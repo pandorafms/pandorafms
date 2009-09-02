@@ -28,6 +28,7 @@
 #include "pandora_module_freememory.h"
 #include "pandora_module_freememory_percent.h"
 #include "pandora_module_cpuusage.h"
+#include "pandora_module_inventory.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
 #include "pandora_module_wmiquery.h"
@@ -79,7 +80,7 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 					str_module += buffer + "\n";
 				}
 				
-				this->parseModuleDefinition (str_module);
+				this->parseModuleDefinition (str_module);				
 			}
 		}
 	}
@@ -139,6 +140,7 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Freedisk   *module_freedisk;
 	Pandora_Module_Freedisk_Percent   *module_freedisk_percent;
 	Pandora_Module_Cpuusage   *module_cpuusage;
+	Pandora_Module_Inventory   *module_inventory;
 	Pandora_Module_Freememory *module_freememory;
 	Pandora_Module_Freememory_Percent *module_freememory_percent;
 	Pandora_Module_Odbc       *module_odbc;
@@ -192,7 +194,11 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_CPUUSAGE:
 			module_cpuusage = (Pandora_Module_Cpuusage *) module;
 			modules->push_back (module_cpuusage);
-			
+            			
+            break;
+      	case MODULE_INVENTORY:
+			module_inventory = (Pandora_Module_Inventory *) module;
+			modules->push_back (module_inventory);            			
 			break;
 		case MODULE_ODBC:
 			module_odbc = (Pandora_Module_Odbc *) module;

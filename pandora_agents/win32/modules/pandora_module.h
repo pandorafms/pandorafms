@@ -74,6 +74,7 @@ namespace Pandora_Modules {
 		MODULE_FREEDISK,  /**< The module checks the free      */
 		MODULE_FREEDISK_PERCENT,  /**< The module checks the free      */
 		MODULE_CPUUSAGE,  /**< The module checks the CPU usage */
+		MODULE_INVENTORY, /**< The module gets the inventory of the machine */
 		MODULE_FREEMEMORY, /**< The module checks the percentage of 
 				   *   freememory in the system        */
 		MODULE_FREEMEMORY_PERCENT, /**< The module checks the amount of 
@@ -94,6 +95,7 @@ namespace Pandora_Modules {
 	const string module_freememory_str = "module_freememory";
 	const string module_freememory_percent_str = "module_freememory_percent";
 	const string module_cpuusage_str   = "module_cpuusage";
+	const string module_inventory_str  = "module_inventory";
 	const string module_odbc_str       = "module_odbc";
 	const string module_logevent_str   = "module_logevent";	
 	const string module_wmiquery_str   = "module_wmiquery";	
@@ -132,15 +134,11 @@ namespace Pandora_Modules {
 		int                   executions;
 		int                   max, min;
 		bool                  has_limits;
-		string                module_type_str;
 		Module_Type           module_type;
 		string                module_kind_str;
 		Module_Kind           module_kind;
 		list<Pandora_Data *> *data_list;
-		string                latest_output;
 
-		string getDataOutput (Pandora_Data *data);
-		void   cleanDataList ();
 	protected:
 		/**
 		 * Indicates if the module generated output in
@@ -160,6 +158,21 @@ namespace Pandora_Modules {
 		 * Flag to set a module as asynchronous
 		 */
 		bool                  async;
+		/**
+		 * List of items of the inventory
+		 */
+        list<Pandora_Data *> *inventory_list;
+        /**
+         * Data passed to the latest setOutput
+         */
+		string                latest_output;        
+		/**
+		 * String containing the module type
+		 */
+		string                module_type_str;
+		
+		string getDataOutput (Pandora_Data *data);
+		void   cleanDataList ();
 	public:
 		Pandora_Module                    (string name);
 		virtual ~Pandora_Module           ();
@@ -173,7 +186,8 @@ namespace Pandora_Modules {
 		void         setInterval   (int interval);
 		int          getInterval   ();
 		
-		TiXmlElement *getXml       ();
+		virtual TiXmlElement *getXml       ();
+
 		
 		virtual void run           ();
 		

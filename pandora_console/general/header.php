@@ -91,7 +91,7 @@ require_once ("include/functions_messages.php");
 				echo '</span>';
 			}
 		echo "</td>";
-		echo "<td width='20%' rowspan=2>";
+		echo "<td width='25%' rowspan=2>";
 		echo "<a href='index.php?sec=main'>";
 		echo "<div id='head_r'><span id='logo_text1'>Pandora</span> <span id='logo_text2'>FMS</span></div>";
 		if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) 

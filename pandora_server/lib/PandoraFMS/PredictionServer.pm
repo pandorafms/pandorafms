@@ -184,10 +184,11 @@ sub exec_prediction_module ($$$$) {
 
         $temp1 = $week_utimestamp[$i] + $agent_module->{'module_interval'};
         # Get data for week $i in the past
+        
         $average_interval = get_db_value ($dbh, 'SELECT AVG(datos) FROM tagente_datos WHERE id_agente_modulo = ? AND utimestamp > ? AND utimestamp < ?', $target_module->{'id_agente_modulo'}, $week_utimestamp[$i], $temp1);
 
         # Need to get data outside interval because no data.
-        if ($average_interval == 0){
+        if (!(defined($average_interval)) || ($average_interval == 0)) {
             $last_data = get_db_value ($dbh, 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ? AND utimestamp > ? LIMIT 1', $target_module->{'id_agente_modulo'}, $week_utimestamp[$i]);
             $sum_data++ if ($last_data != 0);
 

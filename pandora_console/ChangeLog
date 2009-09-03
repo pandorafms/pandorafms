@@ -1,3 +1,12 @@
+
+2009-09-03  Sacnho Lerena <slerena@artica.es>
+
+	* extensions/plugin_registration.php: Added two new parameter
+	(pre command and post command to ini parsing).
+
+	* general/header.php: Page looks ugly at 1024x because header width,
+	fixed.
+
 2009-09-02  Sancho Lerena <slerena@artica.es>
 
 	* attachment/plugin: New directory to place console uploaded server

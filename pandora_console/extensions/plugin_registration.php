@@ -64,7 +64,18 @@ function pluginreg_extension_main () {
 	}
 
 	$exec_path = $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
-	if (!file_exists($exec_path)){
+	
+	$file_exec_path = $exec_path;
+	
+	if (isset($ini_array["plugin_definition"]["execution_command"]) && ($ini_array["plugin_definition"]["execution_command"] != "")){
+		$exec_path =  $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
+	}
+	
+	if (isset($ini_array["plugin_definition"]["execution_postcommand"]) && ($ini_array["plugin_definition"]["execution_postcommand"] != "")){
+		$exec_path = $exec_path . " " .$ini_array["plugin_definition"]["execution_postcommand"];
+	}
+	
+	if (!file_exists($file_exec_path)){
 		echo "<h2 class=error>".__("Plugin exec not found. Aborting!")."</h2>";
 		unlink ($config["attachment_store"] . "/plugin_definition.ini");
 		return;

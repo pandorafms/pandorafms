@@ -145,7 +145,7 @@ function print_menu (&$menu) {
 					$extensionInMenu = '';
 				}
 				
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr='.$main["refr"] : '').$link_add.'">'.$sub["text"].'</a>';
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr=0' : '').$link_add.'">'.$sub["text"].'</a>';
 				$submenu_output .= '</li>';
 			}
 		}

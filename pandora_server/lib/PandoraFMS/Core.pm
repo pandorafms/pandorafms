@@ -213,7 +213,7 @@ sub pandora_process_alert ($$$$$$$) {
 
 		# Generate an event
 		pandora_event ($pa_config, "Alert ceased (" .
-					   $alert->{'descripcion'} . ")", $agent->{'id_grupo'},
+					   $alert->{'name'} . ")", $agent->{'id_grupo'},
 					   $agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
 					   "alert_recovered", $dbh);
 
@@ -401,7 +401,7 @@ sub pandora_execute_alert ($$$$$$$) {
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
-	pandora_event ($pa_config, "Alert $text (" . $alert->{'description'} . ")",
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ")",
 		           $agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
 		           $alert->{'id_agent_module'}, $event,  $dbh);
 }

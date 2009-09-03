@@ -1,3 +1,11 @@
+2009-09-03  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Fixed some warning on non init
+	  variables.
+
+	* lib/PandoraFMS/Core.pm: Now uses alert name instead alert description
+	in event description.
+
 2009-09-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Decode HTML entities for all alert types.

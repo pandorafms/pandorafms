@@ -1,3 +1,33 @@
+2009-08-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_menu.php: fix bug that introduce obligatory autorefresh
+	and maybe some extension run bad with autorefresh.
+	
+	*include/functions_reporting.php: add function
+	"get_agent_module_info_with_filter", this function is similar more or less
+	at "get_agent_module_info" but the function can set SQL filter for
+	tune the result.
+	*include/functions_ui.php: add more features at function "print_group_icon"
+	can set style and only icon not link.
+	*images/so_aix_small.png, images/network_small.png, images/so_bsd_small.png,
+	images/so_solaris_small.png, images/so_other_small.png, 
+	images/so_cisco_small.png, 
+	images/status_sets/default/agent_critical_ball.png,
+	images/status_sets/default/module_warning_ball.png,
+	images/status_sets/default/module_ok_ball.png,
+	images/status_sets/default/alert_fired_ball.png,
+	images/status_sets/default/agent_warning_ball.png,
+	images/status_sets/default/agent_no_data_ball.png,
+	images/status_sets/default/alert_disabled_square.png,
+	images/status_sets/default/agent_no_monitors_ball.png,
+	images/status_sets/default/agent_down_ball.png,
+	images/status_sets/default/agent_ok_ball.png,
+	images/status_sets/default/alert_disabled_ball.png,
+	images/status_sets/default/module_critical_ball.png,
+	images/status_sets/default/alert_not_fired_ball.png,
+	images/so_win_small.png, images/so_hpux_small.png, images/so_mac_small.png,
+	images/so_linux_small.png: add many icons for many purposes and new
+	features near in the time.
 
 2009-09-03  Sacnho Lerena <slerena@artica.es>
 

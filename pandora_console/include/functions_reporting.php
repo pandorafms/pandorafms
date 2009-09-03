@@ -838,4 +838,99 @@ function get_agent_module_info ($id_agent) {
 	return $return;
 }	
 
+/** 
+ * Get a detailed report of the modules of the agent
+ * 
+ * @param int $id_agent Agent id to get the report for.
+ * 
+ * @return array An array
+ */
+function get_agent_module_info_with_filter ($id_agent,$filter = '') {
+	global $config;
+	
+	$return = array ();
+	$return["modules"] = 0; //Number of modules
+	$return["monitor_normal"] = 0; //Number of 'good' monitors
+	$return["monitor_warning"] = 0; //Number of 'warning' monitors
+	$return["monitor_critical"] = 0; //Number of 'critical' monitors
+	$return["monitor_down"] = 0; //Number of 'down' monitors
+	$return["last_contact"] = 0; //Last agent contact 
+	$return["interval"] = get_agent_interval ($id_agent); //How often the agent gets contacted
+	$return["status_img"] = print_status_image (STATUS_AGENT_NO_DATA, __('Agent without data'), true);
+	$return["alert_status"] = "notfired";
+	$return["alert_img"] = print_status_image (STATUS_ALERT_NOT_FIRED, __('Alert not fired'), true);
+	$return["agent_group"] = get_agent_group ($id_agent);
+	
+	if (!give_acl ($config["id_user"], $return["agent_group"], "AR")) {
+		return $return;
+	} 
+	
+	$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo 
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
+		tagente_modulo.disabled = 0	AND tagente_modulo.id_agente = %d", $id_agent);
+		
+	$sql .= $filter;
+	
+	$modules = get_db_all_rows_sql ($sql);
+	
+	if ($modules === false) {
+		return $return;
+	}
+	
+	$now = get_system_time ();
+	
+	// Calculate modules for this agent
+	foreach ($modules as $module) {
+		$return["modules"]++;
+		
+		if ($module["module_interval"] > $return["interval"]) {
+			$return["interval"] = $module["module_interval"];
+		} elseif ($module["module_interval"] == 0) {
+			$module["module_interval"] = $return["interval"];
+		}
+		
+		if ($module["utimestamp"] > $return["last_contact"]) {
+			$return["last_contact"] = $module["utimestamp"];
+		}
+		
+		if ($module["id_tipo_modulo"] < 21 || $module["id_tipo_modulo"] != 100) {
+			$async = 0;
+		} else {
+			$async = 1;
+		}
+		
+		if ($async == 0 && ($module["utimestamp"] < ($now - $module["module_interval"] * 2))) {
+			$return["monitor_down"]++;
+		} elseif ($module["estado"] == 2) {
+			$return["monitor_warning"]++;
+		} elseif ($module["estado"] == 1) {
+			$return["monitor_critical"]++;
+		} else {
+			$return["monitor_normal"]++;
+		}
+	}
+		
+	if ($return["modules"] > 0) {
+		if ($return["modules"] == $return["monitor_down"])
+			$return["status_img"] = print_status_image (STATUS_AGENT_DOWN, __('At least one module is in UKNOWN status'), true);	
+		else if ($return["monitor_critical"] > 0)
+			$return["status_img"] = print_status_image (STATUS_AGENT_CRITICAL, __('At least one module in CRITICAL status'), true);
+		else if ($return["monitor_warning"] > 0)
+			$return["status_img"] = print_status_image (STATUS_AGENT_WARNING, __('At least one module in WARNING status'), true);
+		else
+			$return["status_img"] = print_status_image (STATUS_AGENT_OK, __('All Monitors OK'), true);
+	}
+	
+	//Alert not fired is by default
+	if (give_disabled_group ($return["agent_group"])) {
+		$return["alert_status"] = "disabled";
+		$return["alert_img"] = print_status_image (STATUS_ALERT_DISABLED, __('Alert disabled'), true);
+	} elseif (check_alert_fired ($id_agent) == 1) {
+		$return["alert_status"] = "fired";
+		$return["alert_img"] = print_status_image (STATUS_ALERT_FIRED, __('Alert fired'), true);	
+	}
+	
+	return $return;
+}
+
 ?>

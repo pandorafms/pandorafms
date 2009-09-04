@@ -26,8 +26,9 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo '<h2>'.__('Module component management').'</h2>';
-echo '<h4>'.__('WMI component management').'</h4>';
+echo "<h2>".__('Module management')." &raquo; ";
+echo __('Module component management')."</h2>";
+echo "<h3>".__('WMI component management').'</h3>';
 
 $data = array ();
 $data[0] = __('WMI query');

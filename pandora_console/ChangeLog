@@ -1,3 +1,11 @@
+2009-09-04  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Update build after last changes.
+
+	* godmode/modules/manage_nc_groups*.php,
+	godmode/modules/manage_network_components_form*.php: Unify titles
+	improving integrity of appearance.
+
 2009-09-04  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* images/status_sets/default/module_warning_ball.png,

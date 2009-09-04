@@ -38,7 +38,7 @@ if ($id) {
 	$parent = '';
 }
 
-echo '<h2>'.__('Component group management').'</h2>';
+echo '<h2>'.__('Module management').' &raquo; '. __('Component group management').'</h2>';
 
 $table->width = '50%';
 $table->style = array ();

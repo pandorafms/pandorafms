@@ -23,7 +23,7 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-mail-sendmail perl-DBI perl-DBD-mysql perl-time-format 
 Requires:           perl-mail-sendmail perl-netaddr-ip perl-SNMP net-snmp
-Requires:           nmap wmic
+Requires:           nmap wmic sudo
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.
@@ -100,9 +100,6 @@ fi
 %preun
 /etc/init.d/pandora_server stop &>/dev/null
 /etc/init.d/tentacle_serverd stop &>/dev/null
-%if "%{_vendor}" == "redhat"
-  /sbin/chkconfig --del pandora_server
-%endif
 chkconfig -d pandora_server
 chkconfig -d tentacle_serverd
 
@@ -111,6 +108,8 @@ chkconfig -d tentacle_serverd
 %defattr(750,pandora,root)
 /etc/init.d/pandora_server
 /etc/init.d/tentacle_serverd
+
+%defattr(755,pandora,root)
 /usr/local/bin/pandora_exec
 /usr/local/bin/pandora_server
 /usr/local/bin/tentacle_server

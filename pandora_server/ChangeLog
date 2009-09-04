@@ -1,3 +1,10 @@
+2009-09-04  Sancho Lerena zslerena@artica.es>
+
+	* pandora_server.spec: Updated dependency for sudo.
+
+	* util/tentacle_serverd: su cannot work as expected in SLES11, so
+	we fallback to sudo again.
+
 2009-09-03  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/PredictionServer.pm: Fixed some warning on non init

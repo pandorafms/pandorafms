@@ -1,3 +1,10 @@
+2009-09-04  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Commented server type codes.
+
+	* godmode/servers/manage_export_form.php: Fixed problem assigning 
+	export server because wasn't using the new server_type field.
+
 2009-09-04  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Update build after last changes.

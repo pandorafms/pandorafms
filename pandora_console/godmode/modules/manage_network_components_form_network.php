@@ -29,8 +29,9 @@ if (! $id) {
 	$snmp_community = "public";
 }
 
-echo "<h2>".__('Module component management')."</h2>";
-echo "<h4>".__('Network component')."</h4>";
+echo "<h2>".__('Module management')." &raquo; ";
+echo __('Module component management')."</h2>";
+echo "<h3>".__('Network component')."</h3>";
 
 $data = array ();
 $data[0] = _('Port');

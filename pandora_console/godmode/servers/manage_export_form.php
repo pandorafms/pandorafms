@@ -72,7 +72,7 @@ $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 
 // Export server
 $table->data[1][0] = __('Export server');
-$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE export_server = 1 ORDER BY name',
+$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 1 ORDER BY name',
 			'export_server', $export_server, '', __('None'), 0, true);
 
 // Preffix

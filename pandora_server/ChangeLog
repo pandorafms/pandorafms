@@ -1,4 +1,9 @@
-2009-09-04  Sancho Lerena zslerena@artica.es>
+2009-09-07  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Fixed bad calculation of utimestamp limit
+	purgin agent access data.
+
+2009-09-04  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Updated dependency for sudo.
 

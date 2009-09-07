@@ -80,25 +80,21 @@ sub pandora_purgedb {
  	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
 
  	# Calculate limit for deletion, today - $days
- 	my $limit_timestamp = DateCalc("today","-$days days",\$err);
-	my $limit_timestamp2 = DateCalc($limit_timestamp,"+1 minute",\$err);
- 	$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $limit_access = DateCalc("today","-24 hours",\$err);
-	$limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
-	my $ulimit_timestamp =  &UnixDate($limit_access,"%s");
-	print "[PURGE] Deleting old access data (More than 24hr) \n";
-	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_timestamp'");
 
-	$limit_access = DateCalc("today","-$config_days_purge days",\$err);
-    $limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
-    $ulimit_timestamp =  &UnixDate($limit_access,"%s");
+	my $ulimit_access_timestamp =  &UnixDate("today","%s") - 86400;
+	my $ulimit_timestamp = &UnixDate("today","%s") - (86400 * $days);
+	my $limit_timestamp = DateCalc("today","-$days days",\$err);
+
+	print "[PURGE] Deleting old access data (More than 24hr) \n";
+	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
 
 	print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
 	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
 	print "[PURGE] Deleting old data... \n";
 	$dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp'");
+
 	print "[PURGE] Delete old data (string) ... \n";
 	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < '$ulimit_timestamp'");
 

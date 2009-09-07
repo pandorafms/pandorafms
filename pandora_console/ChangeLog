@@ -1,3 +1,10 @@
+2009-09-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora_modules.js: add events for selects in
+	local modules form:
+	* godmode/agentes/module_manager_editor.php: add ajax request for local
+	modules form.
+
 2009-09-04  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: Commented server type codes.

@@ -19,6 +19,65 @@ function configure_modules_form () {
 		}
 	});
 	
+	$("#local_component_group").change (function () {
+	
+		var $select = $("#local_component").hide ();
+		$("#component").hide ();
+		if (this.value == 0)
+			return;
+		$("#component_loading").show ();
+		$(".error, #no_component").hide ();
+		$("option[value!=0]", $select).remove ();
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/module_manager_editor",
+			"get_module_local_components" : 1,
+			"id_module_component_group" : this.value,
+			"id_module_component_type" : $("#hidden-id_module_component_type").attr ("value")
+			},
+			function (data, status) {
+				if (data == false) {
+					$("#component_loading").hide ();
+					$("span#no_component").show ();
+					return;
+				}
+				jQuery.each (data, function (i, val) {
+					option = $("<option></option>")
+						.attr ("value", val['id'])
+						.append (val['name']);
+					$select.append (option);
+				});
+				$("#component_loading").hide ();
+				$select.show ();
+				$("#component").show ();
+			},
+			"json"
+		);
+	
+		}
+	);
+	
+	
+	$("#local_component").change (function () {
+		if (this.value == 0)
+			return;
+		$("#component_loading").show ();
+		$(".error").hide ();
+		jQuery.post ("ajax.php",
+			{"page" : "godmode/agentes/module_manager_editor",
+			"get_module_local_component" : 1,
+			"id_module_component" : this.value
+			},
+			function (data, status) {
+				$("#text-name").attr ("value", html_entity_decode (data["name"]));
+				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
+				$("#textarea_configuration_data").attr ("value", html_entity_decode (data["data"]));
+				$("#component_loading").hide ();
+				$("#id_module_type").change ();
+			},
+			"json"
+		);
+	});
+	
 	$("#network_component_group").change (function () {
 		var $select = $("#network_component").hide ();
 		$("#component").hide ();

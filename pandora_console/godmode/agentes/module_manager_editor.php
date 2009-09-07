@@ -20,6 +20,8 @@ if (is_ajax ()) {
 	$snmp_walk = (bool) get_parameter ('snmp_walk');
 	$get_module_component = (bool) get_parameter ('get_module_component');
 	$get_module_components = (bool) get_parameter ('get_module_components');
+	$get_module_local_components = (bool) get_parameter('get_module_local_components');
+	$get_module_local_component = (bool) get_parameter('get_module_local_component');
 	
 	if ($get_module_component) {
 		$id_component = (int) get_parameter ('id_module_component');
@@ -41,6 +43,25 @@ if (is_ajax ()) {
 			array ('id_nc', 'name'));
 		
 		echo json_encode ($components);
+		return;
+	}
+	
+	if ($get_module_local_components) {
+		require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
+		
+		$id_module_group = (int) get_parameter ('id_module_component_group');
+		$localComponents = get_local_components(array('id_network_component_group' => $id_module_group), array('id', 'name'));
+		
+		echo json_encode($localComponents);
+		return;
+	}
+	
+	if ($get_module_local_component) {
+		$id_component = (int) get_parameter ('id_module_component');
+		
+		$component = get_db_row ('tlocal_component', 'id', $id_component);
+		
+		echo json_encode ($component);
 		return;
 	}
 	

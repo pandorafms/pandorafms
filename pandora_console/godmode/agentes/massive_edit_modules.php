@@ -126,13 +126,18 @@ $table->data[0][1] = print_select ($types,
 
 $modules = array ();
 if ($module_type != '') {
-	$names = get_agent_modules (array_keys ($agents),
-		'DISTINCT(nombre)',
-		array ('id_tipo_modulo' => $module_type), false);
-	foreach ($names as $name) {
-		$modules[$name['nombre']] = $name['nombre'];
-	}
+	$filter = array ('id_tipo_modulo' => $module_type);
 }
+else {
+	$filter = false;
+}
+
+$names = get_agent_modules (array_keys ($agents),
+	'DISTINCT(nombre)', $filter, false);
+foreach ($names as $name) {
+	$modules[$name['nombre']] = $name['nombre'];
+}
+
 $table->data[0][2] = __('Module name');
 $table->data[0][3] = print_select ($modules, 'module_name',
 	$module_name, false, __('Select'), 0, true, false, false);
@@ -172,6 +177,13 @@ require_jquery_file ('pandora.controls');
 /* <![CDATA[ */
 $(document).ready (function () {
 	$("#module_type").change (function () {
+		if (this.value == '0') {
+			filter = '';
+		}
+		else {
+			filter = "id_tipo_modulo="+this.value;
+		}
+	
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
@@ -179,7 +191,7 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
-			"filter" : "id_tipo_modulo="+this.value,
+			"filter" : filter,
 			"fields" : "DISTINCT(nombre)",
 			"indexed" : 0
 			},

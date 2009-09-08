@@ -1,5 +1,12 @@
 2009-09-07  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/massive_edit_modules.php: now the select of
+	Module name have got all modules but you can filter in the select of
+	Module type. Fix in part but #2848951 in tracker sourceforge, exactly
+	the first paragraph of bug.
+	
+2009-09-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_modules.js: add events for selects in
 	local modules form:
 	* godmode/agentes/module_manager_editor.php: add ajax request for local

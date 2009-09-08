@@ -1,0 +1,12 @@
+2009-09-08   Sancho Lerena <slerena@artica.es>
+
+	* Initial load of extras subdir. Expect to have some dirty
+	scripts and misc. stuff here. 
+
+	* extras/tentacle_proxy: Tentacle proxy script to pass data/conf files from
+	one tentacle server, used like a proxy to reach another server. 
+
+	* extras/aditional_rpmspec: Additional RPM's to create RPM packages to
+	satisfy Pandora FMS dependencies.
+
+	* extras/build_rpm_packages.sh: Script to make all Pandora FMS RPM's.

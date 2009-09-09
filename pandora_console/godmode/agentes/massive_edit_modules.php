@@ -116,6 +116,7 @@ if (! $module_type) {
 	$table->rowstyle['edit4'] = 'display: none';
 	$table->rowstyle['edit5'] = 'display: none';
 	$table->rowstyle['edit6'] = 'display: none';
+	$table->rowstyle['edit7'] = 'display: none';
 }
 $agents = get_group_agents (array_keys (get_user_groups ()), false, "none");
 $module_types = get_db_all_rows_filter ('tagente_modulo,ttipo_modulo',
@@ -205,15 +206,15 @@ $table->data['edit5'][1] = print_input_text ('plugin_user', '', '', 15, 60, true
 $table->data['edit5'][2] = __('Password');
 $table->data['edit5'][3] = print_input_password ('plugin_pass', '', '', 15, 60, true);
 
-
-
-
+$table->data['edit6'][0] = __('Export target');
+$table->data['edit6'][1] = print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
+	'id_export', '', '',__('None'),'0', true, false, false);
 
 /* FF stands for Flip-flop */
-$table->data['edit6'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
-$table->data['edit6'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
-$table->data['edit6'][2] = __('Historical data');
-$table->data['edit6'][3] = print_checkbox ("history_data", 1, '', true);
+$table->data['edit7'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
+$table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
+$table->data['edit7'][2] = __('Historical data');
+$table->data['edit7'][3] = print_checkbox ("history_data", 1, '', true);
 
 echo '<form method="post" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
@@ -266,13 +267,13 @@ $(document).ready (function () {
 	$("#module_name").change (function () {
 		if (this.value <= 0) {
 //			$("td#delete_table-0-1").css ("width", "85%");
-			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6").hide ();
+			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
 			return;
 		}
 		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "35%");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").removeAttr ("checked");
-		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6").show ();
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
 	});
 	
 	$("#groups_select").change (

@@ -1,5 +1,11 @@
 2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/massive_edit_modules.php: add the last required field
+	(Export) in the form.
+	Fixes: 2848951
+
+2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/massive_edit_modules.php: add more (user and pass for
 	wmi or plugin) fields to massive edit.
 

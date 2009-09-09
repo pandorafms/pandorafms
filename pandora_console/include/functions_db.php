@@ -1173,6 +1173,24 @@ function give_agentmodule_flag ($id_agent_module) {
 	return get_db_value ('flag', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
+/**
+ * Get all groups in array with index as id_group
+ */
+function get_all_groups($groupWithAgents = false) {
+	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
+	
+	if ($groupWithAgents)
+		$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
+	
+	$rows = get_db_all_rows_sql ($sql);
+	
+	$return = array();
+	foreach ($rows as $row)
+		$return[$row['id_grupo']] = $row['nombre'];
+		
+	return $return;
+}
+
 /** 
  * Prints a list of <options> HTML tags with the groups the user has
  * reading privileges.

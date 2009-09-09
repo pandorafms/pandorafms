@@ -26,6 +26,16 @@ if (is_ajax ()) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
+	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
+
+	if ($get_agents_group_json) {
+		$id_group = get_parameter('id_group');
+		
+		$agents = get_db_all_rows_sql("SELECT id_agente, nombre FROM tagente WHERE id_grupo = ". $id_group);
+		
+		echo json_encode($agents);
+		return;
+	}
 
 	if ($get_agent_json) {
 		$id_agent = (int) get_parameter ('id_agent');

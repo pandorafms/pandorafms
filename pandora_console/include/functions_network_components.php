@@ -92,13 +92,15 @@ function get_network_component_group ($id_network_component_group, $filter = fal
  * The values returned can be passed directly to print_select(). Child groups
  * are indented, so ordering on print_select() is NOT recommendable.
  * 
- * @param int If provided, groups must have at least one component of the module
- * provided. Parents will be included in that case even if they don't have
+ * @param int id_module_components If provided, groups must have at least one component
+ * of the module provided. Parents will be included in that case even if they don't have
  * components directly.
+ * 
+ * @param bool localComponent expecial comportation for local component.
  *
  * @return array An ordered list of component groups with childs indented.
  */
-function get_network_component_groups ($id_module_components = 0) {
+function get_network_component_groups ($id_module_components = 0, $localComponent = false) {
 	/* Special vars to keep track of indentation level */
 	static $level = 0;
 	static $id_parent = 0;
@@ -116,22 +118,39 @@ function get_network_component_groups ($id_module_components = 0) {
 		$level++;
 		$tmp = $id_parent;
 		$id_parent = (int) $group['id_sg'];
-		$childs = get_network_component_groups ($id_module_components);
+		$childs = get_network_component_groups ($id_module_components, $localComponent);
 		$id_parent = $tmp;
 		$level--;
 		
-		if (! empty ($childs) || $id_module_components == 0) {
-			$retval[$group['id_sg']] = $prefix.$group['name'];
-			$retval = $retval + $childs;
-		} else {
-			/* If components id module is provided, only groups with components
-			that belongs to this id module are returned */
-			if ($id_module_components) {
-				$count = get_db_value_filter ('COUNT(*)', 'tnetwork_component',
-					array ('id_group' => (int) $group['id_sg'],
-						'id_modulo' => $id_module_components));
+		if ($localComponent) {
+			if (! empty ($childs)) {
+				$retval[$group['id_sg']] = $prefix.$group['name'];
+				$retval = $retval + $childs;
+			}
+			else {
+				$count = get_db_value_filter ('COUNT(*)', 'tlocal_component',
+					array ('id_network_component_group' => (int) $group['id_sg']));
+				
 				if ($count > 0)
 					$retval[$group['id_sg']] = $prefix.$group['name'];
+			}
+		}
+		else {
+			
+			if (! empty ($childs) || $id_module_components == 0) {
+				$retval[$group['id_sg']] = $prefix.$group['name'];
+				$retval = $retval + $childs;
+			}
+			else {
+				/* If components id module is provided, only groups with components
+				that belongs to this id module are returned */
+				if ($id_module_components) {
+					$count = get_db_value_filter ('COUNT(*)', 'tnetwork_component',
+						array ('id_group' => (int) $group['id_sg'],
+							'id_modulo' => $id_module_components));
+					if ($count > 0)
+						$retval[$group['id_sg']] = $prefix.$group['name'];
+				}
 			}
 		}
 	}

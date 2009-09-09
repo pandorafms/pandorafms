@@ -68,9 +68,11 @@ function configure_modules_form () {
 			"id_module_component" : this.value
 			},
 			function (data, status) {
+				configuration_data = data['data'].replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+				
 				$("#text-name").attr ("value", html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
-				$("#textarea_configuration_data").attr ("value", html_entity_decode (data["data"]));
+				$("#textarea_configuration_data").attr ("value", configuration_data);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
 			},

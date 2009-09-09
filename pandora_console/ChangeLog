@@ -1,5 +1,11 @@
 2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora_modules.js: clean code.
+	* include/javascript/pandora.js: fix bug in ie6 that it remove the "\n".
+
+
+2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_network_components.php: add bool param $localComponent
 	for to filter the tree when it's a local component.
 

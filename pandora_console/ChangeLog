@@ -1,8 +1,17 @@
+2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: add new function "get_all_groups", this function
+	return all groups.
+	* operation/agentes/ver_agente.php: add another code block for to respond
+	new ajax request (new select in form massive_edit_modules.php).
+	* godmode/agentes/massive_edit_modules.php: Fix in part bug #2848951 in
+	tracker sourceforge, rest things for to do is add more fields.
+
 2009-09-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/massive_edit_modules.php: now the select of
 	Module name have got all modules but you can filter in the select of
-	Module type. Fix in part but #2848951 in tracker sourceforge, exactly
+	Module type. Fix in part bug #2848951 in tracker sourceforge, exactly
 	the first paragraph of bug.
 	
 2009-09-07  Miguel de Dios  <miguel.dedios@artica.es>

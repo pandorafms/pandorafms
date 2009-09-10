@@ -29,6 +29,25 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 
 if (is_ajax ()) {
 	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
+	$get_actions_alert_template = (bool) get_parameter("get_actions_alert_template");
+	
+	if ($get_actions_alert_template) {
+		$id_template = get_parameter("id_template");
+		$rows = get_db_all_rows_sql("SELECT t1.id, t1.name,
+				(SELECT COUNT(t2.id) 
+					FROM talert_templates AS t2 
+					WHERE t2.id = " . $id_template . "
+						AND t2.id_alert_action = t1.id) as 'sort_order'
+			FROM talert_actions AS t1 
+			ORDER BY sort_order DESC");
+		
+		
+		if ($rows !== false) {
+			echo json_encode($rows);	
+		}
+		
+		return;
+	}
 	
 	if ($get_agent_module_last_value) {
 		$id_module = (int) get_parameter ('id_agent_module');

@@ -109,22 +109,27 @@ if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
-	print_result_message ($id,
-		__('Successfully created'),
-		__('Could not be created'));
-	if ($id !== false) {
-		$actions = (array) get_parameter ('actions');
-		$fires_min = (array) get_parameter ('fires_min');
-		$fires_max = (array) get_parameter ('fires_max');
-		
-		foreach ($actions as $id_action) {
-			$values = array ();
-			if (isset ($fires_min[$id_action]))
-				$values['fires_min'] = @max ($fires_min[$id_action], 0);
-			if (($fires_max != -1) && (isset ($fires_min[$id_action]))) 
-				$values['fires_max'] = @max ($fires_max[$id_action], 0);
-			add_alert_agent_module_action ($id, $id_action, $values);
+	if (get_db_row_sql("SELECT COUNT(id)
+		FROM talert_template_modules
+		WHERE id_agent_module = " . $id_agent_module . "
+			AND id_alert_template = " . $id_alert_template) > 0) {
+		print_result_message (false, '', __('Yet added'));
+	}
+	else {
+		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
+		print_result_message ($id,
+			__('Successfully created'),
+			__('Could not be created'));
+		if ($id !== false) {
+			$action_select = get_parameter('action_select');
+			
+			if ($action_select != 0) {
+				$values = array();
+				$values['fires_min'] = get_parameter ('fires_min');
+				$values['fires_max'] = get_parameter ('fires_max');
+				
+				add_alert_agent_module_action ($id, $action_select, $values);
+			}
 		}
 	}
 }
@@ -462,23 +467,37 @@ $table->data[1][1] .= ' <a class="template_details invisible" href="#">
 	<img class="img_help" src="images/zoom.png" /></a>';
 
 $table->data[2][0] = __('Actions');
-$actions = get_alert_actions ();
-if (empty ($actions))
-	$actions = array ();
+//$actions = get_alert_actions ();
+//if (empty ($actions))
+//	$actions = array ();
+
+//foreach ($actions as $action_id => $action_name) {
+//	$id = 'actions['.$action_id.']';
+//	$table->data[2][1] .= print_checkbox ($id, $action_id, false, true);
+//	$table->data[2][1] .= print_label ($action_name, 'checkbox-'.$id, true);
+//	$table->data[2][1] .= ' <span id="advanced_'.$action_id.'" class="advanced_actions invisible">';
+//	$table->data[2][1] .=  __('From').' ';
+//	$table->data[2][1] .= print_input_text ('fires_min['.$action_id.']', -1, '', 4, 10, true);
+//	$table->data[2][1] .=  ' '.__('to').' ';
+//	$table->data[2][1] .= print_input_text ('fires_max['.$action_id.']', -1, '', 4, 10, true);
+//	$table->data[2][1] .= ' '.__('matches of the alert');
+//	$table->data[2][1] .= '</span>';
+//	$table->data[2][1] .= '<br />';
+//}
+
+$actions = array ('0' => __('None'));
+
 $table->data[2][1] = '<div class="actions_container">';
-foreach ($actions as $action_id => $action_name) {
-	$id = 'actions['.$action_id.']';
-	$table->data[2][1] .= print_checkbox ($id, $action_id, false, true);
-	$table->data[2][1] .= print_label ($action_name, 'checkbox-'.$id, true);
-	$table->data[2][1] .= ' <span id="advanced_'.$action_id.'" class="advanced_actions invisible">';
-	$table->data[2][1] .=  __('From').' ';
-	$table->data[2][1] .= print_input_text ('fires_min['.$action_id.']', -1, '', 4, 10, true);
-	$table->data[2][1] .=  ' '.__('to').' ';
-	$table->data[2][1] .= print_input_text ('fires_max['.$action_id.']', -1, '', 4, 10, true);
-	$table->data[2][1] .= ' '.__('matches of the alert');
-	$table->data[2][1] .= '</span>';
-	$table->data[2][1] .= '<br />';
-}
+$table->data[2][1] = print_select($actions,'action_select','','','','',true);
+$table->data[2][1] .= ' <span id="action_loading" class="invisible">';
+$table->data[2][1] .= '<img src="images/spinner.gif" /></span>';
+$table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
+$table->data[2][1] .=  __('From').' ';
+$table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);
+$table->data[2][1] .=  ' '.__('to').' ';
+$table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
+$table->data[2][1] .= ' '.__('matches of the alert');
+$table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 
 echo '<form class="add_alert_form" method="post">';
@@ -658,7 +677,47 @@ $(document).ready (function () {
 			}).click (function () {
 				return false;
 			});
+
+		$("#action_select").hide();
+		$("#action_select").html('');
+		$("#action_loading").show ();
+
+		jQuery.post ("ajax.php",
+			{"page" : "operation/agentes/estado_agente",
+			"get_actions_alert_template" : 1,
+			"id_template" : this.value
+			},
+			function (data, status) {
+				 if (data != '') {
+					jQuery.each (data, function (i, val) {
+						option = $("<option></option>")
+							.attr ("value", val["id"])
+							.append (val["name"]);
+						$("#action_select").append (option);
+					});
+				}
+				option = $("<option></option>")
+					.attr ("value", '0')
+					.append ('<?php echo __('None'); ?>');
+				$("#action_select").append (option);
+				
+				$("#action_loading").hide ();
+				$("#action_select").show();
+				$('#advanced_action').show();
+			},
+			"json"
+		);
 	});
+
+	$("#action_select").change(function () {
+			if ($("#action_select").attr ("value") != '0') {
+				$('#advanced_action').show();
+			}
+			else {
+				$('#advanced_action').hide();
+			} 	
+		}
+	);
 	
 	$("#id_agent_module").change (function () {
 		var $value = $(this).siblings ("span#latest_value").hide ();

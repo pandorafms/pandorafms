@@ -1,5 +1,13 @@
 2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/estado_agente.php: add ajax request for actions.
+	* godmode/alerts/alert_list.php: change the checkboxs for a ajax
+	select for actions. And fix messages when you try make two times the same
+	alert.
+	Fixes: 2843852
+
+2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_modules.js: clean code.
 	* include/javascript/pandora.js: fix bug in ie6 that it remove the "\n".
 

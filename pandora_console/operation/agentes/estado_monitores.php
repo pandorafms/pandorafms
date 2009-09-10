@@ -54,8 +54,9 @@ $table->head[1] = __('Type');
 $table->head[2] = __('Module name');
 $table->head[3] = __('Description');
 $table->head[4] = __('Status');
-$table->head[5] = __('Interval');
-$table->head[6] = __('Last contact');
+$table->head[5] = __('Data');
+$table->head[6] = __('Graph');
+$table->head[7] = __('Last contact');
 
 $table->align = array("left","left","left","left","center");
 
@@ -119,22 +120,48 @@ foreach ($modules as $module) {
 
 	$data[4] = print_status_image($status, $title, true);
 
+	if (($module["id_tipo_modulo"] == 3)
+		OR ($module["id_tipo_modulo"] == 10)
+		OR ($module["id_tipo_modulo"] == 17)
+		OR ($module["id_tipo_modulo"] == 23)){
+			$graph_type = "string";
+			$salida = substr(salida_limpia($module["datos"]),0,12);
+		}
+	elseif (($module["id_tipo_modulo"] == 2)
+	OR ($module["id_tipo_modulo"] == 6)
+	OR ($module["id_tipo_modulo"] == 21)
+	OR ($module["id_tipo_modulo"] == 18)
+	OR ($module["id_tipo_modulo"] == 9)) {
+		$graph_type = "boolean";
+		$salida = format_numeric($module["datos"]);
+	}
+	else {
+		$graph_type = "sparse";
+		$salida = format_numeric($module["datos"]);
+	}
 
-	
-	if ($module["module_interval"] > 0) {
-		$data[5] = $module["module_interval"];
-	} else {
-		$data[5] = "--";
+	$data[5] .= $salida;
+
+	if ($module['history_data'] == 1){
+		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
+		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
+		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
+		$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
+
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".$module["nombre"]."&refresh=600','day_".$win_handle."')";
+
+		$data[6] = '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
+		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
 	}
 	
 	$seconds = get_system_time () - $module["utimestamp"];
 	if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
-		$data[6] = '<span class="redb">';
+		$data[7] = '<span class="redb">';
 	} else {
-		$data[6] = '<span>';
+		$data[7] = '<span>';
 	}
-	$data[6] .= print_timestamp ($module["utimestamp"], true);
-	$data[6] .= '</span>';
+	$data[7] .= print_timestamp ($module["utimestamp"], true);
+	$data[7] .= '</span>';
 	
 	array_push ($table->data, $data);
 	$rowIndex++;

@@ -1,3 +1,10 @@
+2009-09-09  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/estado_monitores.php: Main view now also show last
+	data and a quick links to today graphs and data view. This feature has
+	been added because was requested by some users, and we think it's really
+	useful.
+	
 2009-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_agente.php: add ajax request for actions.

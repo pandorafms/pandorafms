@@ -54,7 +54,6 @@ using namespace Pandora_Strutils;
 #define TOKEN_FREEMEMORY_PERCENT    ("module_freepercentmemory")
 #define TOKEN_CPUUSAGE      ("module_cpuusage ")
 #define TOKEN_INVENTORY     ("module_inventory")
-#define TOKEN_INVENTORY_INTERVAL     ("module_inventory_interval")
 #define TOKEN_ODBC          ("module_odbc ")
 #define TOKEN_MAX           ("module_max ")
 #define TOKEN_MIN           ("module_min ")
@@ -155,7 +154,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_port          = "";
 	module_timeout       = "";
 	module_regexp        = "";
-	module_inventory_interval = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -201,9 +199,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_inventory == "") {
 			module_inventory = parseLine (line, TOKEN_INVENTORY);
-		}
-		if (module_inventory_interval == "") {
-			module_inventory_interval = parseLine (line, TOKEN_INVENTORY_INTERVAL);
 		}
 		if (module_odbc == "") {
 			module_odbc = parseLine (line, TOKEN_ODBC);

@@ -26,14 +26,15 @@ the agent is instaled.
 
 namespace Pandora_Modules {
 		  
-  	const string module_invenory_cpu_str        = "CPU";
-  	const string module_invenory_cdrom_str      = "CDROM";
-  	const string module_invenory_video_str      = "Video";
-  	const string module_invenory_hds_str        = "HD";
-  	const string module_invenory_nics_str       = "NIC";
-  	const string module_invenory_patches_str    = "Patches";
-  	const string module_invenory_software_str   = "Software";
-  	const string module_invenory_ram_str   		= "RAM";  	
+  	const string module_inventory_cpu_str        = "CPU";
+  	const string module_inventory_cdrom_str      = "CDROM";
+  	const string module_inventory_video_str      = "Video";
+  	const string module_inventory_hds_str        = "HD";
+  	const string module_inventory_nics_str       = "NIC";
+  	const string module_inventory_patches_str    = "Patches";
+  	const string module_inventory_software_str   = "Software";
+  	const string module_inventory_ram_str   		= "RAM";  	
+  	const string module_inventory_services_str 	= "Services";
   	
 	/**
 	 * Module to retrieve the Inventory of the machine.

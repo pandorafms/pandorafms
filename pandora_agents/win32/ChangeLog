@@ -1,3 +1,18 @@
+2009-09-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_windows_info.h,
+	  windows/pandora_windows_info.cc: Added a new function that searches
+	  the Windows registry for installed software.
+
+	* windows/pandora_wmi.cc, windows/pandora_wmi.h: Avoid reading numeric
+	  values from WMI query results into strings.
+
+	* modules/pandora_module_inventory.h,
+	  modules/pandora_module_inventory.cc,
+	  modules/pandora_module_factory.cc: Added a new inventory module that
+	  lists system services. Updated the software module to use the new
+	  function. Fixed some typos.
+
 2009-09-02 Pablo de la Concepción <pablo.concepcion@artica.es>
 	* windows/pandora_wmi.cc, windows/pandora_wmi.h: Added Inventory 
 	functions

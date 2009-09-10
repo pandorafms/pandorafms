@@ -139,8 +139,7 @@ unsigned long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDhInitialize      init;
 	CDispPtr           wmi_svc, quickfixes;
-	unsigned long long space = 0;
-	string             space_str;
+	double             free_space = 0;
 	string             query;
 
 	query = "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
@@ -156,24 +155,11 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				     query.c_str ()));
 	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-			dhGetValue (L"%s", &fix.free_space, quickfix,
+			dhGetValue (L"%e", &free_space, quickfix,
 				    L".FreeSpace");
 			
-			if (fix.free_space == NULL) 
-				return 0;
-			
-			space_str = fix.free_space;
-			dhFreeString (name);
-
-			try {
-	 			
-				space = Pandora_Strutils::strtoulong (space_str);
-			} catch (Pandora_Exception e) {
-				throw Pandora_Wmi_Exception (); 	 
-			}
-			
-			return space / 1024 / 1024;
+			// 1048576 = 1024 * 1024
+			return (unsigned long) free_space / 1048576;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
@@ -196,8 +182,8 @@ unsigned long
 Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 	CDhInitialize      init;
 	CDispPtr           wmi_svc, quickfixes;
-	unsigned long      free_space = 0, size = 0;
-	unsigned long      total_free_space = 0, total_size = 0;
+	double      free_space = 0, size = 0;
+	double      total_free_space = 0, total_size = 0;
 	string             query, free_str, size_str;
 
 	query = "SELECT Size, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
@@ -209,9 +195,9 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 				     query.c_str ()));
 	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			dhGetValue (L"%s", &free_str, quickfix,
+			dhGetValue (L"%e", &free_space, quickfix,
 				    L".FreeSpace");
-			dhGetValue (L"%s", &size_str, quickfix,
+			dhGetValue (L"%e", &size, quickfix,
 				    L".Size");
 
 			free_space = Pandora_Strutils::strtoulong (free_str);
@@ -224,7 +210,7 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
             return 0;
         }
         
-        return total_free_space * 100 / total_size;
+        return (unsigned long) (total_free_space * 100 / total_size);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
 	}
@@ -1146,6 +1132,54 @@ Pandora_Wmi::getRAMInfo (list<string> &rows) {
             ret.clear();
             dhFreeString(name);
 		} NEXT_THROW (ram_info_item);
+	} catch (string errstr) {
+		pandoraLog ("runWMIQuery error. %s", errstr.c_str ());
+	}
+	return num_objects;
+}
+
+/**
+ * Get a list of running system services
+ * 
+ * @param rows Result list.
+ * @return Result list length.
+ */
+int
+Pandora_Wmi::getServices (list<string> &rows) {
+    CDhInitialize init;
+	CDispPtr      wmi_svc =  NULL, services = NULL;
+	char         *name  = NULL, *path_name = NULL, *state = NULL;
+	string        ret = "";
+    int          num_objects = 0;
+
+ 	try {
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+        dhCheck (dhGetValue (L"%o", &services, wmi_svc,
+				     L".ExecQuery(%S)",
+				     L"SELECT Name, PathName, State FROM Win32_Service"));
+        
+		FOR_EACH (service, services, NULL) {
+            num_objects++;
+			dhGetValue (L"%s", &name, service, L".Name");
+   			if (name != NULL) {
+               ret += name;
+            }
+            ret += inventory_field_separator;
+            dhFreeString(name);
+			dhGetValue (L"%s", &path_name, service, L".PathName");
+			if (path_name != NULL) {
+		  	   ret += path_name;
+		  	}
+            ret += inventory_field_separator;
+            dhFreeString (path_name);		
+			dhGetValue (L"%s", &state, service, L".State");
+   			if (state != NULL) {
+               ret += state;
+            }
+            dhFreeString(state);
+            rows.push_back(ret);
+            ret.clear();
+		} NEXT_THROW (service_item);
 	} catch (string errstr) {
 		pandoraLog ("runWMIQuery error. %s", errstr.c_str ());
 	}

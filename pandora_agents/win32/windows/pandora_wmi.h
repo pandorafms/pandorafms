@@ -22,6 +22,8 @@
 #ifndef	__PANDORA_WMI_H__
 #define	__PANDORA_WMI_H__
 
+#define MAX_KEY_LENGTH 255
+
 #include "../pandora.h"
 #include "wmi/disphelper.h"
 #include <list>
@@ -64,6 +66,7 @@ namespace Pandora_Wmi {
     int       	  getNICsInfo            (list<string> &rows); 
     int	       	  getPatchInfo           (list<string> &rows); 
 	int 		  getRAMInfo 			 (list<string> &rows); 
+    int           getServices            (list<string> &rows);
     
 };
 

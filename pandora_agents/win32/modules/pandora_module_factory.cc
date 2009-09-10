@@ -111,7 +111,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_name, module_type, module_exec;
 	string                 module_min, module_max, module_description;
 	string                 module_interval, module_proc, module_service;
-	string                 module_freedisk, module_cpuusage, module_inventory, module_inventory_interval, module_odbc;
+	string                 module_freedisk, module_cpuusage, module_inventory, module_odbc;
 	string                 module_freedisk_percent, module_freememory_percent;
 	string                 module_odbc_query, module_dsn, module_freememory;
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
@@ -344,11 +344,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	} else if (module_inventory != "") {
 		module = new Pandora_Module_Inventory (module_name, module_inventory);
-		if (module_inventory_interval != "") {
+		if (module_interval != "") {
 		   try {
 		   	   // Convert the interval to seconds...
-			   int interval = strtoint (module_inventory_interval) *60 *60 *24 ;
-			    pandoraDebug("Inventory_interval = %d", interval);
+			   int interval = strtoint (module_interval) *60 *60 *24 ;
     			module->setInterval(interval);
 			} catch (Invalid_Conversion e) {
 			  		pandoraLog("Error in conversion of module_inventory_interval");
@@ -450,9 +449,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				    module_name.c_str ());
 		}
 	}
-	if (module != NULL)
-	{
-       pandoraDebug("Parsed Moudle: %s\n",module->getName().c_str());
-    }
+
 	return module;
 }

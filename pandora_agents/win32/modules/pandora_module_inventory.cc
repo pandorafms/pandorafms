@@ -21,6 +21,7 @@ the agent is instaled.
 
 #include "pandora_module_inventory.h"
 #include "../windows/pandora_wmi.h"
+#include "../windows/pandora_windows_info.h"
 #include "../pandora_strutils.h"
 
 using namespace Pandora;
@@ -60,157 +61,167 @@ Pandora_Module_Inventory::run () {
 
 	// Until no data data is gathered there will be no output
 	this->has_output = false; 
-	pandoraLog("At Inventory - Run\n");
+
 	try {
 		Pandora_Module::run ();
 	} catch (Interval_Not_Fulfilled e) {
 		return;
 	}
-	found = this->options.find(module_invenory_cdrom_str);
+
+	found = this->options.find(module_inventory_cdrom_str);
 	if (found != string::npos){
 		pandoraDebug("	Launching CDRom Query WMI ... \n");
-		
 		num_results = Pandora_Wmi::getCdRomInfo(rows);
-		pandoraLog("Setting Outuput: found %d items\n",num_results);
+		pandoraDebug("Setting Outuput: found %d items\n",num_results);
 		   		
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_cdrom_str);
+			    this->setOutput (*row,module_inventory_cdrom_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-		    pandoraLog("Output Error at Moudle Inventory\n");
+		    pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = false;
 		}
 		
 		rows.clear();
 	}
-	found = this->options.find(module_invenory_video_str);
+	found = this->options.find(module_inventory_video_str);
 	if (found != string::npos){
 		pandoraDebug("	Launching Video Query WMI\n");
-		
 		num_results = Pandora_Wmi::getVideoInfo(rows);
-		pandoraLog("Setting Outuput: found %d items\n",num_results);
+		pandoraDebug("Setting Outuput: found %d items\n",num_results);
 				
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_video_str);
+			    this->setOutput (*row,module_inventory_video_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-		    pandoraLog("Output Error at Moudle Inventory\n");
+		    pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 		
 		rows.clear();
 	}
-	found = this->options.find(module_invenory_hds_str);
+	found = this->options.find(module_inventory_hds_str);
 	if (found != string::npos){
 		pandoraDebug("	Launching HD Query WMI\n");
-	    
 	    num_results = Pandora_Wmi::getHDsInfo(rows);
-	    pandoraLog("Setting Outuput: found %d items\n",num_results);
+	    pandoraDebug("Setting Outuput: found %d items\n",num_results);
 	   		
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_hds_str);
+			    this->setOutput (*row,module_inventory_hds_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-	        pandoraLog("Output Error at Moudle Inventory\n");
+	        pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 	   
 		rows.clear();
 	}
-	found = this->options.find(module_invenory_cpu_str);
+	found = this->options.find(module_inventory_cpu_str);
 	if (found != string::npos){
-		pandoraDebug("	Launching CPUs Query WMI\n");
-	    
+		pandoraDebug("	Launching CPUs Query WMI\n"); 
 	    num_results = Pandora_Wmi::getCPUsInfo(rows);
-	    pandoraLog("Setting Outuput: found %d items\n",num_results);
+	    pandoraDebug("Setting Outuput: found %d items\n",num_results);
 
 		
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_cpu_str);
+			    this->setOutput (*row,module_inventory_cpu_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-	        pandoraLog("Output Error at Moudle Inventory\n");
+	        pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 		rows.clear();
 	}
-	found = this->options.find(module_invenory_nics_str);
+	found = this->options.find(module_inventory_nics_str);
 	if (found != string::npos){
-		pandoraDebug("	Launching NICs Query WMI\n");
-	    
+		pandoraDebug("	Launching NICs Query WMI\n"); 
 	    num_results = Pandora_Wmi::getNICsInfo(rows);
-	    pandoraLog("Setting Outuput: found %d items\n",num_results);
+	    pandoraDebug("Setting Outuput: found %d items\n",num_results);
 		
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_nics_str);
+			    this->setOutput (*row,module_inventory_nics_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-	        pandoraLog("Output Error at Moudle Inventory\n");
+	        pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 	    rows.clear();
     }
-	found = this->options.find(module_invenory_patches_str);
+	found = this->options.find(module_inventory_patches_str);
 	if (found != string::npos){
-		pandoraDebug("	Launching Patch Query WMI\n");
-		
+		pandoraDebug("	Launching Patch Query WMI\n");	
 		num_results = Pandora_Wmi::getPatchInfo(rows);
-		pandoraLog("Setting Outuput: found %d items\n",num_results);
+		pandoraDebug("Setting Outuput: found %d items\n",num_results);
 	
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_patches_str);
+			    this->setOutput (*row,module_inventory_patches_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-		    pandoraLog("Output Error at Moudle Inventory\n");
+		    pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 		rows.clear();
     }
-    found = this->options.find(module_invenory_ram_str);
+    found = this->options.find(module_inventory_ram_str);
 	if (found != string::npos){
-		pandoraDebug("	Launching RAM Query WMI\n");
-		
+		pandoraDebug("	Launching RAM Query WMI\n");	
 		num_results = Pandora_Wmi::getRAMInfo(rows);
-		pandoraLog("Setting Outuput: found %d items\n",num_results);
+		pandoraDebug("Setting Outuput: found %d items\n",num_results);
 		
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_ram_str);
+			    this->setOutput (*row,module_inventory_ram_str);
 			    this->has_output = true;
 		    }	    
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-		    pandoraLog("Output Error at Moudle Inventory\n");
+		    pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = (this->has_output || false);
 		}
 		rows.clear();
     }
-	found = this->options.find(module_invenory_software_str);
+	found = this->options.find(module_inventory_software_str);
 	if (found != string::npos){
 	    pandoraDebug("	Launching Software Query WMI\n");
-	    num_results = Pandora_Wmi::getSoftware(rows);
-	
-	    pandoraLog("Setting Outuput: found %d items\n",num_results);
+	    num_results = Pandora_Windows_Info::getSoftware(rows, Pandora_Wmi::inventory_field_separator);
+	    pandoraDebug("Setting Outuput: found %d items\n",num_results);
 
 		try {		
 			for (row = rows.begin (); row != rows.end(); ++row) {
-			    this->setOutput (*row,module_invenory_software_str);
+			    this->setOutput (*row,module_inventory_software_str);
 		    }
 		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
-	        pandoraLog("Output Error at Moudle Inventory\n");
+	        pandoraLog("Output Error at Module Inventory\n");
 			this->has_output = false;
 		}
+		rows.clear();
+    }
+	found = this->options.find(module_inventory_software_str);
+	if (found != string::npos){
+	    pandoraDebug("	Launching Services Query WMI\n");
+	    num_results = Pandora_Wmi::getServices(rows);
+	    pandoraDebug("Setting Outuput: found %d items\n",num_results);
+
+		try {		
+			for (row = rows.begin (); row != rows.end(); ++row) {
+			    this->setOutput (*row,module_inventory_services_str);
+		    }
+		} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
+	        pandoraLog("Output Error at Module Inventory\n");
+			this->has_output = false;
+		}
+		rows.clear();
     }
 	//pandoraLog("Inventory - Run finish\n");
 }

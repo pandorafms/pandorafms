@@ -40,5 +40,7 @@ namespace Pandora_Windows_Info {
 	string  getSystemName     ();
 	string  getSystemPath     ();
 	HANDLE *getProcessHandles (string name);
+    string  getRegistryValue  (HKEY root, const string treepath, const string keyname);
+    int     getSoftware       (list<string> &rows, string separator);
 }
 #endif

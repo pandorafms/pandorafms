@@ -1,5 +1,10 @@
 2009-09-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* windows/pandora_wmi.cc,
+	  modules/pandora_module_factory.cc: Removed unnecessary code.
+
+2009-09-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* windows/pandora_windows_info.h,
 	  windows/pandora_windows_info.cc: Added a new function that searches
 	  the Windows registry for installed software.

@@ -184,7 +184,7 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 	CDispPtr           wmi_svc, quickfixes;
 	double      free_space = 0, size = 0;
 	double      total_free_space = 0, total_size = 0;
-	string             query, free_str, size_str;
+	string             query;
 
 	query = "SELECT Size, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
 
@@ -200,8 +200,6 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 			dhGetValue (L"%e", &size, quickfix,
 				    L".Size");
 
-			free_space = Pandora_Strutils::strtoulong (free_str);
-			size = Pandora_Strutils::strtoulong (size_str);
             total_free_space += free_space;
             total_size += size;
 		} NEXT_THROW (quickfix);

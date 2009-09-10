@@ -123,7 +123,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
-	
+	long                    agent_interval;
+
 	module_name          = "";
 	module_type          = "";
 	module_min           = "";
@@ -339,16 +340,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	} else if (module_inventory != "") {
 		module = new Pandora_Module_Inventory (module_name, module_inventory);
-		if (module_interval != "") {
-		   try {
-		   	   // Convert the interval to seconds...
-			   int interval = strtoint (module_interval) *60 *60 *24 ;
-    			module->setInterval(interval);
-			} catch (Invalid_Conversion e) {
-			  		pandoraLog("Error in conversion of module_inventory_interval");
-	        }
-		      							 
-		}
 	} else if (module_odbc != "") {
 		module = new Pandora_Module_Odbc (module_name,
 						  module_odbc,

@@ -42,6 +42,7 @@ namespace Pandora_Modules {
 	class Pandora_Module_Inventory : public Pandora_Module {
  	private:
         string options;
+        unsigned char interval_fixed;
 	public:
 		Pandora_Module_Inventory (string name, string options);
 		

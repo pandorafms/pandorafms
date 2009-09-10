@@ -1,3 +1,10 @@
+2009-09-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_inventory.h,
+	  modules/pandora_module_inventory.cc,
+	  modules/pandora_module_factory.cc: Fixed inventory module interval
+	  calculation.
+
 2009-09-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc,

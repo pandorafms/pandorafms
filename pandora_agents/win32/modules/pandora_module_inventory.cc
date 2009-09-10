@@ -22,6 +22,7 @@ the agent is instaled.
 #include "pandora_module_inventory.h"
 #include "../windows/pandora_wmi.h"
 #include "../windows/pandora_windows_info.h"
+#include "../pandora_windows_service.h"
 #include "../pandora_strutils.h"
 
 using namespace Pandora;
@@ -37,6 +38,7 @@ Pandora_Module_Inventory::Pandora_Module_Inventory (string name, string options)
 	: Pandora_Module (name) {	
 	this->setKind (module_inventory_str);
 	this->options = options;
+	this->interval_fixed = 0;
 }
 /** 
  * Run the module and generates the output.
@@ -52,12 +54,20 @@ Pandora_Module_Inventory::Pandora_Module_Inventory (string name, string options)
  */
 void
 Pandora_Module_Inventory::run () {
-
 	list<string> rows;
 	list<string>::iterator row;
 	int num_results = 0;
 	string res;
 	size_t found;
+
+    // Agent interval unknown at module creation time, module interval cannot be
+    // set in constructor.
+    if (this->interval_fixed == 0) {
+        int agent_interval = Pandora_Windows_Service::getInstance ()->interval;
+        // Module interval specified in days for inventory modules (86400 = 60 * 60 * 24)
+		this->setInterval (this->getInterval () * 86400 / (agent_interval / 1000));
+        this->interval_fixed = 1;
+    }
 
 	// Until no data data is gathered there will be no output
 	this->has_output = false; 

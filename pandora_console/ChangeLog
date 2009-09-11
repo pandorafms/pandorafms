@@ -1,3 +1,8 @@
+2009-09-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_list.php: fix bug in "Alerts » Manage alerts" when
+	you choose the agent the module select did'nt change to enable.
+
 2009-09-09  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_monitores.php: Main view now also show last

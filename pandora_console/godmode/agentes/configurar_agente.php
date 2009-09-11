@@ -261,7 +261,7 @@ if (isset( $_GET["fix_module"])) {
 // Update AGENT
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
-	$nombre_agente = (string) get_parameter_post ("agente", "");
+	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	$address_list = (string) get_parameter_post ("address_list", '');
 	if ($address_list != $direccion_agente && $direccion_agente == get_agent_address ($id_agente) && $address_list != get_agent_address ($id_agente)) {
@@ -274,7 +274,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	}
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", 300);
-	$comentarios = (string) get_parameter_post ("comentarios", "");
+	$comentarios = str_replace('`','&lsquo;',(string) get_parameter_post ("comentarios", ""));
 	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");

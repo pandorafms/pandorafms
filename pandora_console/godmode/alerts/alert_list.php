@@ -560,6 +560,39 @@ $(document).ready (function () {
 		}
 	);
 
+
+	$("#text-id_agent").result (
+			function () {
+				selectAgent = true;
+				var agent_name = this.value;
+				$('#id_agent_module').fadeOut ('normal', function () {
+					$('#id_agent_module').empty ();
+					var inputs = [];
+					inputs.push ("agent_name=" + agent_name);
+					inputs.push ("get_agent_modules_json=1");
+					inputs.push ("page=operation/agentes/ver_agente");
+					jQuery.ajax ({
+						data: inputs.join ("&"),
+						type: 'GET',
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: 'json',
+						success: function (data) {
+							$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+							jQuery.each (data, function (i, val) {
+								s = html_entity_decode (val['nombre']);
+								$('#id_agent_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+							});
+							$('#id_agent_module').enable();
+							$('#id_agent_module').fadeIn ('normal');
+						}
+					});
+				});
+		
+				
+			}
+		);
+
 //----------------------------
 	$("#text-agent_name").autocomplete ("ajax.php",
 		{

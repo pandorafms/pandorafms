@@ -17,9 +17,6 @@
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_events.php"); //Event processing functions
-if ($config['flash_charts']) {
-	require_once ("include/fgraph.php");
-}
 
 check_login ();
 
@@ -90,6 +87,10 @@ if (is_ajax ()) {
 	}
 	
 	return;
+}
+
+if ($config['flash_charts']) {
+	require_once ("include/fgraph.php");
 }
 
 $offset = (int) get_parameter ("offset", 0);

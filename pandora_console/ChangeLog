@@ -1,5 +1,11 @@
 2009-09-11  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/events/events.php: change the order to include and write
+	"<script>" in file for don't affect to ajax requests.
+	Fixes: 2848523
+
+2009-09-11  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php: fix bug for character "`" in
 	name also in description, translate to html entitie.
 	Fixes: 2838129

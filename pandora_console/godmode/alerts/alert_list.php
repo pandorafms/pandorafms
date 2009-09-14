@@ -438,7 +438,7 @@ if (! $id_agente) {
 	
 	$table->data['agent'][0] = __('Agent');
 	
-	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text-id_agent', '', 30, 100, false, '',
+	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 	
@@ -531,13 +531,14 @@ echo '</form>';
 require_css_file ('cluetip');
 require_jquery_file ('cluetip');
 require_jquery_file ('pandora.controls');
+require_jquery_file ('bgiframe');
 require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
 
-	$("#text-id_agent").autocomplete(
+	$("#text_id_agent").autocomplete(
 		"ajax.php",
 		{
 			minChars: 2,
@@ -549,11 +550,12 @@ $(document).ready (function () {
 			},
 			formatItem: function (data, i, total) {
 				if (total == 0)
-					$("#text-id_agent").css ('background-color', '#cc0000');
+					$("#text_id_agent").css ('background-color', '#cc0000');
 				else
-					$("#text-id_agent").css ('background-color', 'none');
+					$("#text_id_agent").css ('background-color', '');
 				if (data == "")
 					return false;
+				
 				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
 			},
 			delay: 200
@@ -561,7 +563,7 @@ $(document).ready (function () {
 	);
 
 
-	$("#text-id_agent").result (
+	$("#text_id_agent").result (
 			function () {
 				selectAgent = true;
 				var agent_name = this.value;
@@ -611,6 +613,7 @@ $(document).ready (function () {
 					$("#text-id_parent").css ('background-color', 'none');
 				if (data == "")
 					return false;
+
 				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
 			},
 			delay: 200

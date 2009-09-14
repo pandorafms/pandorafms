@@ -534,7 +534,7 @@ $(document).ready (function () {
 					if (total == 0)
 						$("#text-agent").css ('background-color', '#cc0000');
 					else
-						$("#text-agent").css ('background-color', 'none');
+						$("#text-agent").css ('background-color', '');
 					if (data == "")
 						return false;
 					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';

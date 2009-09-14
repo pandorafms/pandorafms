@@ -1,5 +1,11 @@
 2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/modificar_agente.php: fix the pagination when it has
+	a search, and fix the pagination and delete element in the page.
+	Fixes: 2857846
+
+2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/exportdata.php, godmode/agentes/agent_manager.php,
 	godmode/reporting/map_builder.php, godmode/reporting/graph_builder.php,
 	godmode/alerts/alert_list.php: fix the bug that the div of autocomplete

@@ -95,7 +95,7 @@ if (isset($_POST["ag_group"])){
 }
 
 echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60$group_mod'>";
-echo "<input type=text name='search' size='15' >";
+echo "<input type=text name='search' size='15' value='$search' >";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' value='".__('Search')."'>";
 echo "</form>";
@@ -149,7 +149,7 @@ if ($ag_group > 1) {
 $agents = get_db_all_rows_sql ($sql);
 
 // Prepare pagination
-pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group", $offset);
+pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
@@ -237,8 +237,14 @@ if ($agents !== false) {
 		// Description
 		echo "<td class='".$tdcolor."f9'>".$agent["comentarios"]."</td>";
 		// Action
+		//When there is only one element in page it's necesary go back page.
+		if ((count($agents) == 1) && ($offset >= $config["block_size"]))
+			$offsetArg = $offset - $config["block_size"];
+		else
+			$offsetArg = $offset;
+		
 		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-		borrar_agente=".$agent["id_agente"]."'";
+		borrar_agente=".$agent["id_agente"]."&search=$search&offset=$offsetArg'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo "<img border='0' src='images/cross.png'></a></td>";
 	}

@@ -1,3 +1,14 @@
+2009-09-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix, unix/pandora_agent_installer,
+	  unix/plugins, unix/pandora_agent,
+	  unix/pandora_agent_daemon, unix/AUTHORS,
+	  unix/pandora_agent.conf, unix/COPYING,
+	  unix/pandora_agent.spec, unix/tentacle_client,
+	  unix/README: Added to repository. Generic Pandora FMS Unix agent
+	  written in PERL. The skeleton files where copied from the linux
+	  subdirectory.
+
 2009-09-01  Sancho Lerena <slerena@artica.es>
 	
 	* linux/pandora_agent.spec: Using chkconfig to manage service

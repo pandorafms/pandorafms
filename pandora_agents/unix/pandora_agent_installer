@@ -1,0 +1,226 @@
+#!/bin/bash
+
+# Pandora FMS Agent Installer (c) 2008-2009 Artica ST
+# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# other Linux distros could not work properly without modifications
+# Please see http://www.pandorafms.org
+# v3.0 Build 090810
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PI_VERSION=3.0
+PANDORA_BIN=/usr/bin/pandora_agent
+PANDORA_HOME=/usr/share/pandora_agent
+PANDORA_TEMP=/var/spool/pandora
+PANDORA_CFG=/etc/pandora
+PANDORA_LOG=/var/log/pandora/pandora_agent.log
+PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
+TENTACLE=/usr/bin/tentacle_client
+PANDORA_CFG_FILE=/etc/pandora/pandora_agent.conf
+
+FORCE=0
+LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
+MODE=$1
+
+if [ ! -f "pandora_agent" ]
+then
+	echo " "
+	echo "You need to place pandora_agent file on main distribution directory before install"
+	echo " "
+	exit 1
+fi
+
+get_distro () {
+
+	# Get Linux Distro type and version
+	if [ -f "/etc/SuSE-release" ]
+	then
+		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+		LINUX_DISTRO=SUSE
+	else
+		if [ -f "/etc/lsb-release" ]
+		then
+			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+			LINUX_DISTRO=UBUNTU
+			OS_VERSION="UBUNTU $OS_VERSION"
+		else
+			if [ -f "/etc/debian_version" ]
+			then
+				OS_VERSION=`cat /etc/debian_version`
+				OS_VERSION="DEBIAN $OS_VERSION"
+				LINUX_DISTRO=DEBIAN
+			else
+				if [ -f "/etc/fedora-release" ]
+				then
+					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+					OS_VERSION="FEDORA $OS_VERSION"
+					LINUX_DISTRO=FEDORA
+				else
+					LINUX_DISTRO=GENERIC
+					OS_VERSION=`uname -r`
+				fi
+			fi
+		fi
+	fi
+	echo $LINUX_DISTRO
+}
+
+uninstall () {
+        echo "Removing Pandora FMS Agent..."
+        rm -Rf $PANDORA_BIN
+        rm -Rf $PANDORA_TEMP
+        rm -Rf $PANDORA_CFG_FILE
+        rm -Rf $PANDORA_STARTUP
+        rm -Rf $PANDORA_HOME
+        rm -Rf $PANDORA_LOG
+		rm -Rf $TENTACLE
+        echo "Done"
+}
+
+install () {
+
+		DISTRO=`get_distro`
+		OLDFILENAMETMP=`date +"%Y-%m-%d"`
+		
+		echo "Detecting Linux distribution: $DISTRO"
+		
+        if [ -f $PANDORA_HOME ] && [ "$FORCE" = "0" ]
+        then
+                echo "Seems that default dir already exists. Please use --force to"
+                echo "force installer to install on $PANDORA_HOME"
+                exit
+        else
+                echo "Checking default dir $PANDORA_HOME..."
+        fi
+
+        if [ -f $PANDORA_BIN ] && [ "$FORCE" = "0" ]
+        then
+                echo "Seems that $PANDORA_BIN already exists. Please use --force to"
+                echo "force installer to reinstall overwriting it"
+                echo " "
+                exit
+        else
+                echo "Checking Pandora FMS Agent on $PANDORA_BIN...."
+        fi
+
+        # Create directories
+        echo "Creating Pandora FMS Agent home directory at $PANDORA_HOME ..."
+        mkdir $PANDORA_HOME 2> /dev/null
+        mkdir $PANDORA_TEMP 2> /dev/null
+        mkdir $PANDORA_TEMP/data_out 2> /dev/null
+        mkdir $PANDORA_CFG 2> /dev/null
+		mkdir /var/log/pandora 2> /dev/null
+
+        # Create logfile
+        if [ ! -z "`touch $PANDORA_LOG`" ]
+        then
+                echo "Seems to be a problem generating logfile ($PANDORA_LOG) please check it";
+        else
+                echo "Creating logfile at $PANDORA_LOG..."
+        fi
+
+        echo "$LOG_TIMESTAMP Pandora FMS installer has created this file at startup" > $PANDORA_LOG
+
+        # Copying agent and securing it
+        echo "Copying Pandora FMS Agent to $PANDORA_BIN..."
+        cp pandora_agent $PANDORA_BIN
+        chmod 700 $PANDORA_BIN
+	
+		echo "Copying Pandora FMS Agent contrib dir to $PANDORA_HOME/..."
+        cp pandora_agent_daemon $PANDORA_HOME
+
+        echo "Copying Pandora FMS Agent configuration file to $PANDORA_HOME/pandora_agent.conf..."
+        if [ -e /etc/pandora/pandora_agent.conf ]
+        then
+        	cat /etc/pandora/pandora_agent.conf > /etc/pandora/pandora/pandora_agent.conf.$OLDFILENAMETMP
+        	echo "Backing up old configuration file to /etc/pandora_agent.conf.$OLDFILENAMETMP"
+        fi
+        
+        echo "Copying default agent configuration to $PANDORA_HOME/pandora_agent.conf"
+        cp pandora_agent.conf $PANDORA_HOME/pandora_agent.conf
+        chmod 600 $PANDORA_HOME/pandora_agent.conf
+
+        echo "Copying Pandora FMS Agent plugins to $PANDORA_HOME/plugins..."
+        cp -r plugins $PANDORA_HOME
+        chmod -R 700 $PANDORA_HOME/plugins
+
+		echo "Copying tentacle client to $TENTACLE"
+		cp tentacle_client $TENTACLE
+
+        echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
+        rm $PANDORA_CFG/plugins 2> /dev/null
+        ln -s $PANDORA_HOME/plugins $PANDORA_CFG 2> /dev/null
+
+        echo "Linking Pandora FMS Agent configuration to $PANDORA_CFG/pandora_agent.conf..."
+        rm $PANDORA_CFG/pandora_agent.conf 2> /dev/null
+        ln -s $PANDORA_HOME/pandora_agent.conf $PANDORA_CFG/pandora_agent.conf 
+        
+        echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
+        chown -R root $PANDORA_HOME
+        chmod -R 600 $PANDORA_TEMP/data_out
+        chmod 640 $PANDORA_LOG
+        chgrp root $PANDORA_LOG
+
+        echo "Linking start-up daemon script at $PANDORA_STARTUP";
+        cp pandora_agent_daemon $PANDORA_STARTUP
+
+		if [ "$DISTRO" == "UBUNTU" ]
+		then
+	        echo "Linking start-up daemon script to /etc/rc2.d";
+	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
+		else
+			INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
+			echo "Linking start-up daemon script to /etc/rc.d/rc$INITLV.d";
+	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc$INITLV.d/S90pandora_agent
+		fi
+		
+        chown -R root:root $PANDORA_BIN
+        
+        echo "Done."
+        echo " "
+        echo "You have your startup script ready at $PANDORA_STARTUP"
+		echo " "
+		echo "Tentacle is the default transfer mode since 2.0 version."
+        echo "If you want to use SSH, firstly you need to copy your public SSH keys ($HOME/.ssh/id_dsa)"
+        echo "under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host"
+        echo "You also need to setup your $PANDORA_CFG/pandora_agent.conf config file"
+        echo " "
+
+}
+
+help () {
+        echo "     --force-install     To force installation if already installed on system "
+        echo "     --install           To install Pandora FMS Agent on this system"
+        echo "     --uninstall         To uninstall and remove Pandora FMS Agent on this System"
+        echo " "
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS Agent Installer $PI_VERSION (c) 2008-2009 ArticaST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+case "$MODE" in
+
+'--force-install')
+        FORCE=1
+        install
+        exit
+        ;;
+
+'--install')
+        install
+        exit
+        ;;
+
+'--uninstall')
+        uninstall
+        exit
+        ;;
+
+*)
+        help
+esac
+

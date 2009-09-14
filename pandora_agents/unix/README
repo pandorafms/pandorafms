@@ -1,0 +1,58 @@
+Pandora FMS : The Free Monitoring System v1.3.1
+===============================================
+
+http://pandora.sourceforge.net
+
+How to install
+--------------
+
+Please refer to documentation on our website. This includes schemas, quick-install 
+guides and how to use preconfigured packages and installers for all components.
+
+What is Pandora FMS?
+--------------------
+
+Pandora FMS is a monitoring application to watch systems and applications.
+Pandora FMS allows to know the status of any element of your bussiness systems.
+Pandora FMS watches your hardware, your software, your multilayer system and, of
+course, your Operating System. Pandora FMS can detect a network interface down
+or the movement of any NASDAQ new technology market value. If you wish, Pandora
+FMS can send a SMS message when your system or your application fails... or when
+Google stock value drops below 330 US$.
+
+Pandora FMS will adjust, like an octopus, to your systems and requirements,
+because it has been designed to be open, modular, multiplattform and easy to
+customize. Pandora FMS is developed for system administrators.
+
+What else can Pandora FMS do?
+-----------------------------
+
+Pandora FMS is a monitoring tool that not only measures if a parameter is right
+or wrong. Pandora FMS can quantify the state (right or wrong), or store a value
+(numeric or alphanumeric) for months if necessary. Pandora FMS can measure
+performances, compare values among differen systems and set alarms over
+thresholds. Pandora FMS works against a Database so that it can generate
+reports, statistics, SLA and meausre anything: Operating Systems, aplications
+and hardware systems—such as firewalls, proxies, Databases, web servers, VPN,
+routers, switches, processes, services, remote accesses to servers, etc.
+everything integrated in a open and distributed architecture. Pandora FMS can be
+deployed over any Operating System, with specific agents for each platform.
+There are already agents for Windows (2000, XP, 2003), GNU/Linux, Solaris,
+HP-UX, BSD, AIX, IPSO and OpenWRT.
+
+Pandora FMS not only gathers information through its agents, but it can also
+monitor any hardware sistem with TCP/IP connectivity —such as load balancing
+systems, routers, switches, printers, etc.— through SNMP and TCP/ICMP checks.
+
+Often the question "What kind of things can be monitored?" shows up, since
+Pandora FMS can —virtually— monitor anthing, sometimes is convenient give some
+specific examples. Pandora FMS can monitor any process or system that, though a
+command, returns a value, and also any value inside a log file of the Operating
+System. 
+
+License
+-------
+
+The project is distributed under the GPL License v2 or later.
+Copyright (C) 2004-2008 Pandora FMS development team
+

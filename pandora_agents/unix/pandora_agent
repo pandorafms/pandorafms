@@ -1,0 +1,601 @@
+#!/usr/bin/perl
+# **********************************************************************
+# Pandora FMS Generic Linux Agent
+# (c) 2009 Artica Soluciones Tecnológicas
+# with the help of many people. Please see http://pandorafms.org
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+use strict;
+use warnings;
+
+use POSIX qw(strftime floor);
+use Sys::Hostname;
+use File::Basename;
+use File::Copy;
+
+use constant AGENT_VERSION => '3.0';
+use constant AGENT_BUILD => '090831';
+
+# OS and OS version
+my $OS = $^O;
+my $OS_VERSION;
+
+# Used to calculate the MD5 checksum of a string
+use constant MOD232 => 2**32;
+
+# Directory where pandora_agent.conf is located
+my $ConfDir = '';
+
+# Pandora FMS agent configuration file
+my $ConfFile = 'pandora_agent.conf';
+
+# Configuration tokens
+my %Conf = (
+	'server_ip' => 'localhost',
+	'server_path' => '/var/spool/pandora/data_in',
+	'temporal' => '/var/spool/pandora/data_out',
+	'log_file' => '/var/log/pandora/pandora_agent.log',
+	'interval' => 300,
+	'debug' => 0,		
+	'agent_name' => hostname (),
+	'description' => '',
+	'group' => '',
+	'encoding' => 'ISO-8859-15',
+	'server_port' => 41121,
+	'transfer_mode' => 'tentacle',
+	'server_pwd' => '',
+	'server_ssl' => 'no',
+	'server_opts' => '',
+	'delayed_startup' => 0,
+	'pandora_nice' => 0,
+	'cron_mode' => 0,
+	'remote_config' => 0,
+	'secondary_mode' => 'never',
+	'secondary_server_ip' => 'localhost',
+	'secondary_server_path' => '/var/spool/pandora/data_in',
+	'secondary_server_port' => 41121,
+	'secondary_transfer_mode' => 'tentacle',
+	'secondary_server_pwd' => 'mypassword',
+	'secondary_server_ssl' => 'no',
+	'secondary_server_opts' => '',
+	'autotime' => 0
+# Missing: group, 
+);
+
+# Modules
+my @Modules;
+
+# Plugins
+my @Plugins;
+
+# Logfile file handle
+my $LogFileFH;
+
+# Agent name MD5;
+my $AgentMD5;
+
+# Remote configuration file name
+my $RemoteConfFile;
+
+# Remote md5 file name
+my $RemoteMD5File;
+
+################################################################################
+# Print usage information and exit.
+################################################################################
+sub print_usage () {
+	print "\nUsage: $0 <Pandora home>\n\n";
+	print "\tPandora home is the directory where pandora_agent.conf is located,\n";
+	print "\tby default /etc/pandora.\n\n";
+	exit 1;
+}
+
+################################################################################
+# Print an error message and exit.
+################################################################################
+sub error ($) {
+	my $msg = shift;
+	print ("[ERROR] $msg\n\n");
+	exit 1;
+}
+
+################################################################################
+# Open the agent logfile and start logging.
+################################################################################
+sub start_log () {
+
+	# Get the logfile
+	my $log_file_name = read_config ('logfile');
+	$log_file_name = '/var/log/pandora/pandora_agent.log' unless defined ($log_file_name);
+
+	# Open it
+	open ($LogFileFH, "> $log_file_name") or error ("Could not open log file '$log_file_name' for writing: $!.");
+	print "Logging to $log_file_name\n";
+}
+
+################################################################################
+# Close the agent logfile and stop logging.
+################################################################################
+sub stop_log () {
+	close ($LogFileFH);
+}
+
+################################################################################
+# Log a message to the agent logfile.
+################################################################################
+sub log_message ($$;$) {
+	my ($source, $msg, $dest) = @_;
+	
+	if (defined ($dest)) {
+		print $dest strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+	} else {
+		print $LogFileFH strftime ('%Y/%m/%d %H:%M:%S', localtime ()) . " - [$source] - $msg\n";
+	}
+}
+
+################################################################################
+# Read configuration file. Exit on error.
+################################################################################
+sub read_config (;$) {
+	my $token = shift;
+	my $module;
+
+	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
+	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
+	while (my $line = <CONF_FILE>) {
+	
+		# Skip comments and empty lines
+		next if ($line =~ m/^\s*#/) or ($line =~ m/^\s*$/);
+		
+		# Single token search
+		if (defined ($token)) {
+			return $2 if ($line =~ /^\s*(\S+)\s+(.*)$/ && $1 eq $token);
+			next;
+		}
+
+		# Module definition
+		if ($line =~ /^\s*module_begin\s*$/) {
+			$module = {
+				'name' => '',
+				'type' => 'generic_data',
+				'description' => '',
+				'exec' => '',
+				'description' => '',
+				'interval' => 1,
+				'counter' => 0,
+				'max' => 0,
+				'min' => 0,
+				'postprocess' => 0
+			};
+		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
+			$module->{'name'} = $1;
+		} elsif ($line =~ /^\s*module_description\s+(.+)$/) {
+			$module->{'description'} = $1;
+		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {
+			$module->{'type'} = $1;
+		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
+			$module->{'exec'} = $1;
+		} elsif ($line =~ /^\s*module_max\s+(\d+)\s*$/) {
+			$module->{'max'} = $1;
+		} elsif ($line =~ /^\s*module_min\s+(\d+)\s*$/) {
+			$module->{'max'} = $1;
+		} elsif ($line =~ /^\s*module_end\s*$/) {
+			next unless ($module->{'name'} ne '') and ($module->{'exec'} ne '');
+			push (@Modules, $module);
+		# Plugin
+		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
+			push (@Plugins, $1);
+		# Configuration token
+		} elsif ($line =~ /^\s*(\S+)\s+(.*)$/) {
+			log_message ('setup', "$1 is $2");
+			$Conf{$1} = $2;
+			# Remove trailing spaces
+			$Conf{$1} =~ s/\s*$//;
+		}
+	}
+
+	# Update the agent MD5 since agent_name may have changed
+	$AgentMD5 = md5 ($Conf{'agent_name'}) unless (defined ($token));
+	$RemoteConfFile = "$AgentMD5.conf";
+	$RemoteMD5File = "$AgentMD5.md5";
+
+	close (CONF_FILE);
+	return '';
+}
+
+################################################################################
+# Remove any trailing / from directory names.
+################################################################################
+sub fix_directory ($) {
+	my $dir = shift;
+	
+	my $char = chop ($dir);
+	return $dir if ($char eq '/');
+	return $dir . $char;
+}
+
+################################################################################
+# Sends a file to the server.
+################################################################################
+#sub send_file ($;$) {
+sub send_file {
+	my ($file, $secondary) = @_;
+	my $output;
+
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+ 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >/dev/null`;
+	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >/dev/null`;
+	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+      	my $base = basename ($file);
+      	my $dir = dirname ($file);
+
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >/dev/null <<FEOF1
+quote USER pandora
+quote PASS $Conf{'server_pwd'}
+lcd "$dir"
+cd "$Conf{'server_path'}"
+put "$base"                
+quit
+FEOF1`
+	} elsif ($Conf{'transfer_mode'} eq 'local') {
+        $output = `cp $file $Conf{'server_path'}/ 2>&1 >/dev/null`;
+	}
+
+	# Get the errorlevel
+	my $rc = $? >> 8;
+	if ($rc != 0) {
+		log_message ('error', "Error sending file '$file': $output");
+	}
+
+	return $rc unless (defined ($secondary));
+
+	# Send the file to the secondary server
+	return $rc unless ($Conf{'secondary_mode'} eq 'always' || ($Conf{'secondary_mode'} eq 'on_error' && $rc != 0));
+	
+	swap_servers ();
+	$rc = send_file ($file);
+	swap_servers ();
+	return $rc;
+}
+
+################################################################################
+# Swap primary and secondary servers.
+################################################################################
+sub swap_servers () {
+	($Conf{'server_ip'}, $Conf{'secondary_server_ip'}) = ($Conf{'secondary_server_ip'}, $Conf{'server_ip'});
+	($Conf{'server_path'}, $Conf{'secondary_server_path'}) = ($Conf{'secondary_server_path'}, $Conf{'server_path'});
+	($Conf{'server_port'}, $Conf{'secondary_server_port'}) = ($Conf{'secondary_server_port'}, $Conf{'server_port'});
+	($Conf{'server_transfer_mode'}, $Conf{'secondary_server_transfer_mode'}) = ($Conf{'secondary_server_transfer_mode'}, $Conf{'server_transfer_mode'});
+	($Conf{'server_pwd'}, $Conf{'secondary_server_pwd'}) = ($Conf{'secondary_server_pwd'}, $Conf{'server_pwd'});
+	($Conf{'server_ssl'}, $Conf{'secondary_server_ssl'}) = ($Conf{'secondary_server_ssl'}, $Conf{'server_ssl'});
+	($Conf{'server_opts'}, $Conf{'secondary_server_opts'}) = ($Conf{'secondary_server_opts'}, $Conf{'server_opts'});
+}
+
+################################################################################
+# Receive a file from the server.
+################################################################################
+sub recv_file ($) {
+	my $file = shift;
+	my $output;
+
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+ 		$output = `cd "$Conf{'temporal'}"; tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >/dev/null`
+	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >/dev/null`;
+	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+      	my $base = basename ($file);
+      	my $dir = dirname ($file);
+
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >/dev/null <<FEOF1
+quote USER pandora
+quote PASS $Conf{'server_pwd'}
+lcd "$Conf{'temporal'}"
+cd "$Conf{'server_path'}"
+get "$file"
+quit
+FEOF1`
+	} elsif ($Conf{'transfer_mode'} eq 'local') {
+		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >/dev/null`;
+	}
+
+	# Get the errorlevel
+	my $rc = $? >> 8;
+	if ($rc != 0) {
+		log_message ('error', "Error sending XML data file: $output");
+	}
+
+	return $rc;
+}
+
+################################################################################
+# Check the server for a remote configuration.
+################################################################################
+sub check_remote_config () {
+
+	return unless ($Conf{'remote_config'} eq '1' && $Conf{'debug'} eq '0');
+
+	# Calculate the configuration file MD5 digest
+	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
+    binmode(CONF_FILE);
+	my $conf_md5 = md5 (join ('', <CONF_FILE>));
+    close (CONF_FILE);
+    
+    # Get the remote MD5 file
+	if (recv_file ($RemoteMD5File) != 0) {
+		open (MD5_FILE, "> $Conf{'temporal'}/$RemoteMD5File") || error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
+		print MD5_FILE $conf_md5;
+		close (MD5_FILE);
+		copy ("$ConfDir/$ConfFile", "$Conf{'temporal'}/$RemoteConfFile");
+		send_file ("$Conf{'temporal'}/$RemoteConfFile");
+		send_file ("$Conf{'temporal'}/$RemoteMD5File");
+		log_message ('remote config', 'Uploading configuration for the first time.');
+		unlink ("$Conf{'temporal'}/$RemoteConfFile");
+		unlink ("$Conf{'temporal'}/$RemoteMD5File");
+		return;
+	}
+
+	open (MD5_FILE, "< $Conf{'temporal'}/$RemoteMD5File") || error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
+	my $remote_conf_md5 = <MD5_FILE>;
+	close (MD5_FILE);
+	
+	# No changes
+	return if ($remote_conf_md5 eq $conf_md5);
+	
+	# Get the new configuration file
+	return if (recv_file ($RemoteConfFile) != 0);
+	log_message ('remote config', 'Configuration has changed!');
+
+	# Save the new configuration and reload it
+	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
+	read_config ();
+	
+	# Log file may have changed
+	stop_log ();
+	start_log ();
+}
+
+###############################################################################
+# MD5 leftrotate function. See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub leftrotate ($$) {
+	my ($x, $c) = @_;
+
+	return ($x << $c) | ($x >> (32 - $c));
+}
+
+###############################################################################
+# Initialize some variables needed by the MD5 algorithm.
+# See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+my (@R, @K);
+sub md5_init () {
+
+	# R specifies the per-round shift amounts
+	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
+
+	# Use binary integer part of the sines of integers (radians) as constants
+	for (my $i = 0; $i < 64; $i++) {
+		$K[$i] = floor(abs(sin($i + 1)) * MOD232);
+	}
+}
+
+###############################################################################
+# Return the MD5 checksum of the given string. 
+# Pseudocode from http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub md5 ($) {
+	my $str = shift;
+
+	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
+
+	# Initialize variables
+	my $h0 = 0x67452301;
+	my $h1 = 0xEFCDAB89;
+	my $h2 = 0x98BADCFE;
+	my $h3 = 0x10325476;
+
+	# Pre-processing
+	my $msg = unpack ("B*", pack ("A*", $str));
+	my $bit_len = length ($msg);
+
+	# Append "1" bit to message
+	$msg .= '1';
+
+	# Append "0" bits until message length in bits ≡ 448 (mod 512)
+	$msg .= '0' while ((length ($msg) % 512) != 448);
+
+	# Append bit /* bit, not byte */ length of unpadded message as 64-bit little-endian integer to message
+	$msg .= unpack ("B64", pack ("VV", $bit_len));
+
+	# Process the message in successive 512-bit chunks
+	for (my $i = 0; $i < length ($msg); $i += 512) {
+
+		my @w;
+		my $chunk = substr ($msg, $i, 512);
+
+		# Break chunk into sixteen 32-bit little-endian words w[i], 0 <= i <= 15
+		for (my $j = 0; $j < length ($chunk); $j += 32) {
+			push (@w, unpack ("V", pack ("B32", substr ($chunk, $j, 32))));
+		}
+
+		# Initialize hash value for this chunk
+		my $a = $h0;
+		my $b = $h1;
+		my $c = $h2;
+		my $d = $h3;
+		my $f;
+		my $g;
+
+		# Main loop
+		for (my $y = 0; $y < 64; $y++) {
+			if ($y <= 15) {
+				$f = $d ^ ($b & ($c ^ $d));
+				$g = $y;
+			}
+			elsif ($y <= 31) {
+				$f = $c ^ ($d & ($b ^ $c));
+				$g = (5 * $y + 1) % 16;
+			}
+			elsif ($y <= 47) {
+				$f = $b ^ $c ^ $d;
+				$g = (3 * $y + 5) % 16;
+			}
+			else {
+				$f = $c ^ ($b | (~ $d));
+				$g = (7 * $y) % 16;
+			}
+
+			my $temp = $d;
+			$d = $c;
+			$c = $b;
+			$b = ($b + leftrotate (($a + $f + $K[$y] + $w[$g]) % MOD232, $R[$y])) % MOD232;
+			$a = $temp;
+		}
+
+		# Add this chunk's hash to result so far
+		$h0 = ($h0 + $a) % MOD232;
+		$h1 = ($h1 + $b) % MOD232;
+		$h2 = ($h2 + $c) % MOD232;
+		$h3 = ($h3 + $d) % MOD232;
+	}
+
+	# Digest := h0 append h1 append h2 append h3 #(expressed as little-endian)
+	return unpack ("H*", pack ("V", $h0)) . unpack ("H*", pack ("V", $h1)) . unpack ("H*", pack ("V", $h2)) . unpack ("H*", pack ("V", $h3));
+}
+
+################################################################################
+# Try to guess the OS version.
+################################################################################
+sub guess_os_version ($) {
+	my $os = shift;
+
+	# Linux
+	return `lsb_release -sd` if ($os eq 'linux');
+
+	# Solaris
+	return `uname -r` if ($os eq 'solaris');
+
+	# AIX
+	if ($os eq 'aix') {
+		return "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	}
+
+	# HP-UX
+	return `uname -r` if ($os eq 'aix');
+
+	return '';
+}
+
+################################################################################
+# Main.
+################################################################################
+
+# Check command line arguments
+print_usage unless ($#ARGV == 0);
+$ConfDir = $ARGV[0];
+error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
+
+# Guess the OS version
+$OS_VERSION = guess_os_version ($OS);
+
+# Initialize MD5 variables
+md5_init ();
+
+# Start logging
+start_log ();
+
+# Read configuration file
+read_config ();
+
+# Fix directory names
+$ConfDir = fix_directory ($ConfDir);
+$Conf{'temporal'} = fix_directory ($Conf{'temporal'});
+$Conf{'server_path'} = fix_directory ($Conf{'server_path'});
+$Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
+
+# Startup delay
+log_message ('log', 'Sleeping for ' . $Conf{'delayed_startup'} . ' seconds.') if ($Conf{'delayed_startup'} > 0);
+sleep ($Conf{'delayed_startup'});
+
+# Loop
+while (1) {
+
+	# Check for a new configuration
+	check_remote_config ();
+
+	my $xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
+	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+			  "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
+			  "' version='" . AGENT_VERSION . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
+			  "' agent_name='" . $Conf{'agent_name'} . "'>\n";
+
+	# Execute modules
+	foreach my $module (@Modules) {
+
+		# Check module interval
+		next unless (++$module->{'counter'} >= $module->{'interval'});
+
+		# Reset module counter
+		$module->{'counter'} = 0;
+
+		# Execute the module and generate the XML
+		my @data = `$module->{'exec'} 2> /dev/null`;
+		next unless ($? eq 0 && defined ($data[0]));
+
+		$xml .= "  <module>\n" .
+                "    <name><![CDATA[$module->{'name'}]]></name>\n" .
+		        "    <description><![CDATA[$module->{'description'}]]></description>\n";
+		        
+		# Data list
+		if ($#data > 0) {
+			$xml .= "    <datalist>\n";
+			foreach my $data_item (@data) {
+				chomp ($data_item);
+				$xml .= "      <data><value><![CDATA[$data_item]]></value></data>\n";
+			}
+			$xml .= "    </datalist>\n";
+		# Single data
+		} else {
+			chomp ($data[0]);
+			$xml .= "    <data><![CDATA[$data[0]]]></data>\n";
+		}
+	    $xml .= "  </module>\n";
+	}
+
+	# Execute plugins
+	foreach my $plugin (@Plugins) {
+		my $output = `$ConfDir/plugins/$plugin`;
+		next unless ($? eq 0);
+		$xml .= $output;
+	}
+
+	$xml .= "</agent_data>";
+
+	# Save XML data file
+	my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
+	open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
+	print TEMP_FILE $xml;
+	close (TEMP_FILE);
+
+	# Debug mode
+	if ($Conf{'debug'} eq '1') {
+		log_message ('debug', "Wrote XML data file '$temp_file'");
+		log_message ('debug', "Wrote XML data file '$temp_file'", *STDOUT);
+		last;
+	}
+
+	# Send the XML data file
+	send_file ($temp_file, 1);
+	unlink ($temp_file);
+	
+	# Cron mode
+	last if ($Conf{'cron_mode'} == 1);
+	
+	# Go to sleep
+	sleep ($Conf{'interval'});
+}

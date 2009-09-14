@@ -106,8 +106,13 @@ sub pandora_snmptrapd {
 
 	# Skip already processed lines
 	readline SNMPLOGFILE for (1..$last_line);
+
 	
-	my $trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
+	my $trap2agent = 0;
+	
+	if ($pa_config->{enterprise} == 1){
+		$trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
+	}
 
 	# Main loop
 	while (1) {
@@ -155,8 +160,9 @@ sub pandora_snmptrapd {
 				# Evaluate alerts for this trap
 				pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid, $custom_value, $dbh);
 			}
-
-			enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $self->getServerID (), $dbh]);
+			if ($pa_config->{enterprise} == 1){
+				enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $self->getServerID (), $dbh]);
+			}
 		}
 		
 		sleep ($pa_config->{'server_threshold'});

@@ -234,8 +234,10 @@ sub process_xml_data ($$$$) {
 	}
 
 	# Process inventory modules
-	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
+	if ($pa_config->{enterprise} == 1){
+		enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
 	                                           $interval, $timestamp, $dbh]);
+	}
 }
 
 ##########################################################################

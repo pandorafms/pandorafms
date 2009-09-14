@@ -22,7 +22,7 @@ h1 {
 	font-size: 18px;
 	color: #ffffff;
 }
-
+lef
 h2 {
 	font: bold 1em Arial, Sans-serif;
 	text-transform: uppercase;
@@ -31,7 +31,7 @@ h2 {
 
 div#install_container {
 	margin: 0 auto;
-	margin-top: 35px;
+	margin-top: 15px;
 	width: 600px;
 }
 div#logo_img {
@@ -41,7 +41,7 @@ div#logo_img {
 div#wizard {
 	text-align: left;
 	border: 1px solid #999;
-	margin-top: 3em;
+	margin-top: 1em;
 	padding: 20px;
 	padding-left: 20px;
 	width: 600px;

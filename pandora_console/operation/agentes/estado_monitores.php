@@ -120,28 +120,14 @@ foreach ($modules as $module) {
 
 	$data[4] = print_status_image($status, $title, true);
 
-	if (($module["id_tipo_modulo"] == 3)
-		OR ($module["id_tipo_modulo"] == 10)
-		OR ($module["id_tipo_modulo"] == 17)
-		OR ($module["id_tipo_modulo"] == 23)){
-			$graph_type = "string";
-			$salida = substr(salida_limpia($module["datos"]),0,12);
-		}
-	elseif (($module["id_tipo_modulo"] == 2)
-	OR ($module["id_tipo_modulo"] == 6)
-	OR ($module["id_tipo_modulo"] == 21)
-	OR ($module["id_tipo_modulo"] == 18)
-	OR ($module["id_tipo_modulo"] == 9)) {
-		$graph_type = "boolean";
+	if (is_numeric($module["datos"])){
 		$salida = format_numeric($module["datos"]);
-	}
-	else {
-		$graph_type = "sparse";
-		$salida = format_numeric($module["datos"]);
+	} else {
+		$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(salida_limpia($module["datos"]),0,12)."</span>";
 	}
 
 	$data[5] .= $salida;
-
+	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];

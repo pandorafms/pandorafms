@@ -30,6 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
+<div id="container">
+<div id="main">
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">No configuration file found</h1>
@@ -41,9 +43,12 @@
 	permissions and HTTP server cannot read it. Please read documentation to fix this problem.
 	</div>
 	<div class="msg">
-	You can also try to run the <a href="install.php">installation wizard</a> to create one.
+	You may try to run the <b><a href="install.php">installation wizard</a></b> to create one.
 	</div>
 </div>
 </div>
+</div>
+</div>
+
 </body>
 </html>

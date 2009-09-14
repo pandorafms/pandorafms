@@ -22,38 +22,16 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC090904';
+$build_version = 'PC090914';
 $pandora_version = 'v3.0-dev';
 
 $config['start_time'] = microtime (true);
 
 //Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
-$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
+$config['dbconnection'] = mysql_pconnect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
 if (! $config['dbconnection']) {
-	exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml">
-		<head>
-		<title>Pandora FMS Error</title>
-		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-		</head>
-		<body>
-		<div style="align:center">
-		<div id="db_f">
-		<div>
-		<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
-		</div>
-		<div id="db_ftxt">
-		<h1 id="log_f" class="error">Pandora FMS Console Error DB-001</h1>
-		Cannot connect to the database, please check your database setup in the 
-		<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
-		Probably one or more of your user, database or hostname values are incorrect or 
-		the database server is not running.</i><br /><br /><span class="error">
-		<b>MySQL ERROR:</b> '. mysql_error().'</span>
-		<br />&nbsp;
-		</div>
-		</div>
-		</body>
-		</html>');
+	include ($config["homedir"]."/general/error_authconfig.php");
+	exit;
 }
 
 mysql_select_db ($config["dbname"]);

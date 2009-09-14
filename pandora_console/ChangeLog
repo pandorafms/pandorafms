@@ -1,3 +1,27 @@
+2009-09-14  Sancho Lerena <slerena@artica.es>
+
+	* general/error_dbconfig.php, 
+	  general/error_authconfig.php
+	  general/error_emptyconfig.php: Error messages have it's own page.
+
+	* config_process.php, functions_config.php: Removed "inline" error pages, 
+	and moved out. Auto_update is not set to ON if not present, just once, and
+	this is managed by extension itself.
+
+	* functions.php: Added function "return_graphtype" to calculate graphtype
+	depending on id_module_type.
+
+	* styles/install.css: Some style fixes.
+
+	* operation/agentes/estado_monitores.php: Some code cleanup using the new 
+	function to get graphtype.
+
+	* operation/agentes/estado_ultimopaquete.php: Some code cleanup with the
+	new function to get graphtype and fixed a bug in data timestamp calculation.
+
+	* operation/agentes/status_monitor.php: monitor list now show quick links 
+	to graph and show latest data, like the main agent view.
+
 2009-09-11  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/events/events.php: change the order to include and write

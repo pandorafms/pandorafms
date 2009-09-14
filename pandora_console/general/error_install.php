@@ -30,6 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
+<div id="container">
+<div id="main">
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">Installer active</h1>
@@ -42,6 +44,8 @@
 	For security reasons, normal operation is not possible until you delete installer file.
 	Please delete the <i>./install.php</i> file before running Pandora FMS Console.
 	</div>
+</div>
+</div>
 </div>
 </div>
 </body>

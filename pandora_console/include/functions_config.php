@@ -122,22 +122,8 @@ function process_config () {
 	$configs = get_db_all_rows_in_table ('tconfig');
 	
 	if (empty ($configs)) {
-		exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-			<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Pandora FMS Error</title>
-			<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-			</head><body><div align="center">
-			<div id="db_f">
-			<div>
-			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
-			</div>
-			<div id="db_ftxt">
-			<h1 id="log_f" class="error">Pandora FMS Console Error DB-002</h1>
-			Cannot load configuration variables from database. Please check your database setup in the
-			<b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
-			Most likely your database schema has been created but there are is no data in it, you have a problem with the database access credentials or your schema is out of date.
-			</i><br />
-			</div>
-			</div></body></html>');
+		include ($config["homedir"]."/general/error_emptyconfig.php");
+		exit;
 	}
 	
 	/* Compatibility fix */
@@ -147,25 +133,8 @@ function process_config () {
 			$config['language'] = $c['value'];
 			break;
 		case "auth":
-			exit ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-				<html xmlns="http://www.w3.org/1999/xhtml">
-				<head>
-				<title>Pandora FMS Error</title>
-				<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
-				</head>
-				<body>
-				<div align="center">
-				<div id="db_f">
-				<div>
-				<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo" /></a>
-				</div>
-				<div id="db_ftxt">
-				<h1 id="log_f" class="error">Pandora FMS Console Error DB-003</h1>
-				Cannot override authorization variables from the config database. Remove them from your database by executing:
-				DELETE FROM tconfig WHERE token = "auth";
-				<br />
-				</div>
-				</div></body></html>');
+			include ($config["homedir"]."/general/error_authconfig.php");
+			exit;
 		default:
 			$config[$c['token']] = $c['value'];
 		}
@@ -231,9 +200,14 @@ function process_config () {
 		update_config_value ('agentaccess', true);
 	}
 
-	if (!isset ($config["autoupdate"])){
-                update_config_value ('autoupdate', true);
-        }
+	// This is not set here. The first time, when no
+	// setup is done, update_manager extension manage it
+	// the first time make a conenction and disable itself
+	// Not Managed here !
+	
+	// if (!isset ($config["autoupdate"])){
+	// 	update_config_value ('autoupdate', true);
+        // }
 
 	if (!isset ($config["auth"])) {
 		require_once ($config["homedir"]."/include/auth/mysql.php");

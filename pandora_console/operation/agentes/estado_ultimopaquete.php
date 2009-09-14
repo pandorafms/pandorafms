@@ -147,32 +147,16 @@ foreach ($modules as $module) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
 		echo substr(salida_limpia($module["datos"]),0,12);
 	} else {
-		// String uses colspan2 and different graphtype
-		if (($module["id_tipo_modulo"] == 3)
-		OR ($module["id_tipo_modulo"] == 10)
-		OR ($module["id_tipo_modulo"] == 17)
-		OR ($module["id_tipo_modulo"] == 23)){
-			$graph_type = "string";
-			echo "<td class='".$tdcolor."f9' colspan=2 title='".salida_limpia($module["datos"])."'>";
-		}
-		elseif (($module["id_tipo_modulo"] == 2)
-		OR ($module["id_tipo_modulo"] == 6)
-		OR ($module["id_tipo_modulo"] == 21)
-		OR ($module["id_tipo_modulo"] == 18)
-		OR ($module["id_tipo_modulo"] == 9)) {
-			$graph_type = "boolean";
-			echo "<td class=".$tdcolor.">";
-		}
-		else {
-			$graph_type = "sparse";
-			echo "<td class=".$tdcolor.">";
-		}
 
-		// Kind of data
-		if (is_numeric($module["datos"])) {
+
+		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
+		if (is_numeric($module["datos"])){
+			echo "<td class=".$tdcolor.">";
 			echo format_for_graph($module["datos"] );
-		} else
+		} else {
+			echo "<td class='".$tdcolor."f9' colspan=2 title='".salida_limpia($module["datos"])."'>";
 			echo substr(salida_limpia($module["datos"]),0,42);
+		}
 		
 			
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
@@ -204,24 +188,19 @@ foreach ($modules as $module) {
 		echo "<td class=".$tdcolor."></td>";
 	}
 	  
-
 	echo "<td class='".$tdcolor."f9'>";
-	if ($module["timestamp"] == "0000-00-00 00:00:00"){ 
+	if ($module["utimestamp"] == 0){ 
 		echo __('Never');
 	} else {
-		$ahora = get_system_time ();
-		// Async modules
-		if (($module["id_tipo_modulo"] > 20) AND ($module["id_tipo_modulo"] < 100)){
-			 echo human_time_comparation($module["timestamp"]);
+		$seconds = get_system_time () - $module["utimestamp"];
+		if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
+			echo '<span class="redb">';
 		} else {
-			if ( ($ahora - $module["utimestamp"]) > ($real_interval*2)) {
-				echo "<font color='red'>";
-				echo human_time_comparation($module["timestamp"]);
-				echo "</font>";
-			} else
-				echo human_time_comparation($module["timestamp"]);
+			echo '<span>';
 		}
 	}
+	print_timestamp ($module["utimestamp"], false);
+	echo '</span>';
 	echo "</td></tr>";
 }
 echo '</table>';

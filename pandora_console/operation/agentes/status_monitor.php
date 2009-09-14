@@ -138,6 +138,8 @@ $sql = "SELECT tagente_modulo.id_agente_modulo,
 	tagente.intervalo AS agent_interval,
 	tagente.nombre AS agent_name, 
 	tagente_modulo.nombre AS module_name,
+	tagente_modulo.id_agente_modulo,
+	tagente_modulo.history_data,
 	tagente_modulo.flag AS flag,
 	tagente.id_grupo AS id_group, 
 	tagente.id_agente AS id_agent, 
@@ -166,13 +168,10 @@ $table->data = array ();
 $table->size = array ();
 $table->align = array ();
 
-$table->head[0] = "";
-$table->align[0] = "center";
-
 $table->head[1] = __('Agent');
 
 $table->head[2] = __('Type');
-$table->align[2] = "center";
+$table->align[2] = "left";
 
 $table->head[3] = __('Module name');
 
@@ -182,8 +181,14 @@ $table->align[4] = "center";
 $table->head[5] = __('Status');
 $table->align[5] = "center";
 
-$table->head[6] = __('Timestamp');
-$table->align[6] = "right";
+$table->head[6] = __('Graph');
+$table->align[6] = "left";
+
+$table->head[7] = __('Data');
+$table->align[7] = "left";
+
+$table->head[8] = __('Timestamp');
+$table->align[8] = "right";
 
 $rowPair = true;
 $iterator = 0;
@@ -196,14 +201,6 @@ foreach ($result as $row) {
 	$iterator++;
 	
 	$data = array ();
-	//TODO: This should be processed locally. Don't rely on other URL's to do our dirty work. Maybe a process_agentmodule_flag function
-	$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'&id_agente_modulo='.$row["id_agente_modulo"].'&flag=1&refr=60">';
-	if ($row["flag"] == 0) {
-		$data[0] .= '<img src="images/target.png" />';
-	} else {
-		$data[0] .= '<img src="images/refresh.png" />';
-	}
-	$data[0] .= '</a>';
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
 	$data[1] .= strtoupper (substr ($row["agent_name"], 0, 25));
@@ -223,8 +220,29 @@ foreach ($result as $row) {
 		$data[5] = print_status_image(STATUS_MODULE_WARNING, $row["datos"], true);
 	}
 
+	$data[6] = "";
+
+	if ($row['history_data'] == 1){
+
+		$graph_type = return_graphtype ($row["module_type"]);
+
+		$nombre_tipo_modulo = get_moduletype_name ($row["module_type"]);
+		$handle = "stat".$nombre_tipo_modulo."_".$row["id_agente_modulo"];
+		$url = 'include/procesos.php?agente='.$row["id_agente_modulo"];
+		$win_handle=dechex(crc32($row["id_agente_modulo"].$row["module_name"]));
+
+		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".$row["module_name"]."&refresh=600','day_".$win_handle."')";
+
+		$data[6] = '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
+		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agent"]."&tab=data_view&period=86400&id=".$row["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
+	}
+
+	if (is_numeric($row["datos"]))
+		$data[7] = format_numeric($row["datos"]);
+	else
+		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(salida_limpia($row["datos"]),0,12)."</span>";
+
 	$seconds = get_system_time () - $row["utimestamp"];
-	
 	
 	if ($seconds >= ($row["module_interval"] * 2)) {
 		$option = array ("html_attr" => 'class="redb"');
@@ -232,7 +250,7 @@ foreach ($result as $row) {
 		$option = array ();
 	}
 	
-	$data[6] = print_timestamp ($row["utimestamp"], true, $option);
+	$data[8] = print_timestamp ($row["utimestamp"], true, $option);
 	
 	array_push ($table->data, $data);
 }

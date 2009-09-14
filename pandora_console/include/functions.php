@@ -1010,5 +1010,35 @@ function index_array ($array, $index = 'id', $value = 'name') {
 	return $retval;
 }
 
+/**
+ * Return a graph type (string) given a module_type
+ *
+ * This function is useful to determine what kind of graph will be
+ * used, depending on the source data type, depending if it's 
+ * numeric, boolean or a string type.
+ *
+ * @param int Id of module type
+ * @return string Graph type, as used in stat_win.php (Graphs launcher)
+ */
+
+function return_graphtype ($id_module_type){
+
+	if (($id_module_type == 3)
+	OR ($id_module_type == 10)
+	OR ($id_module_type == 17)
+	OR ($id_module_type == 23)){
+		return "string";
+	}
+	elseif (($id_module_type == 2)
+	OR ($id_module_type == 6)
+	OR ($id_module_type == 21)
+	OR ($id_module_type == 18)
+	OR ($id_module_type == 9)) {
+		return "boolean";
+	}
+
+	return "sparse";
+}
+
 
 ?>

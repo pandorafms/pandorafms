@@ -213,7 +213,7 @@ echo "<div id='alert_control' style='display:none'>\n";
 	// Table for filter controls
 	echo '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
 	echo "<input type='hidden' name='search' value='1' />\n";
-	echo '<table style="width="550" cellpadding="4" cellspacing="4" class="databox">'."\n";
+	echo '<table style="width: 550px;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 	echo "<tr>\n";
 	echo "<td>".__('Template name')."</td><td>";
 	print_input_text ('template_name', $templateName, '', 15);

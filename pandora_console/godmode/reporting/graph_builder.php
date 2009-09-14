@@ -590,7 +590,7 @@ $(document).ready (function () {
 					if (total == 0)
 						$("#text-id_agent").css ('background-color', '#cc0000');
 					else
-						$("#text-id_agent").css ('background-color', 'none');
+						$("#text-id_agent").css ('background-color', '');
 					if (data == "")
 						return false;
 					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';

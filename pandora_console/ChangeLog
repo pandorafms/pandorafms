@@ -1,3 +1,8 @@
+2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/styles/pandora.css, godmode/alerts/alert_list.php: minor fixes
+	for styles warnings.
+
 2009-09-14  Sancho Lerena <slerena@artica.es>
 
 	* general/error_dbconfig.php, 

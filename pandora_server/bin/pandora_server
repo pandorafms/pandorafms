@@ -81,7 +81,10 @@ pandora_init(\%Config, 'Pandora FMS Server');
 pandora_load_config (\%Config);
 
 # Load enterprise module
-enterprise_load () && print " [*] Pandora FMS Enterprise module loaded.\n";
+$Config{"enterprise"} = enterprise_load ();
+if ($Config{"enterprise"} == 1){
+	print " [*] Pandora FMS Enterprise module loaded.\n";
+}
 
 # Daemonize and put in background
 if ($Config{'daemon'} == 1) {
@@ -107,7 +110,10 @@ push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
 push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
 push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
 push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
-enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
+
+if ($Config{"enterprise"} == 1){
+	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
+}
 
 # Remove disabled servers
 @Servers = grep { defined ($_) } @Servers;

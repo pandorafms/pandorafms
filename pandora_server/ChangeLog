@@ -1,3 +1,18 @@
+2009-09-14  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_server: Now uses $Config{"enterprise"} to know if
+	enterprise is loaded, and don't try to call enterprise_hook if is not.
+	I experience a high rate of inventory-enterprise hook errors in log.
+
+	* SNMPServer.pm: Dont call snmp_get_trap2agent enterprise_hook if 
+	not enterprise loaded.
+
+	* DataServer.pm: Dont call process_inventory_data if not 
+	enterprise loaded.
+
+	* util/pandora_backup.sh: New command line backup and restore tool.
+
+
 2009-09-07  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: Fixed bad calculation of utimestamp limit

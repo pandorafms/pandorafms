@@ -105,6 +105,16 @@ $table->data = array ();
 
 $agent_interval = get_agent_interval ($id_agente);
 $last_modulegroup = "0";
+
+//Extract the ids only numeric modules for after show the normalize link. 
+$tempRows = get_db_all_rows_sql("SELECT *
+	FROM ttipo_modulo
+	WHERE nombre NOT LIKE '%string%' AND nombre NOT LIKE '%proc%'");
+$numericModules = array();
+foreach($tempRows as $row) {
+	$numericModules[$row['id_tipo']] = true;
+}
+
 foreach ($modules as $module) {
 	$type = $module["id_tipo_modulo"];
 	$id_module  = $module["id_modulo"];
@@ -172,12 +182,14 @@ foreach ($modules as $module) {
 	$data[6] .= '</a> ';
 	
 	// Make a data normalization
-	if (($type == 22) OR ($type == 1) OR ($type == 4) OR ($type == 7) OR
-		($type == 8) OR ($type == 11) OR ($type == 16) OR ($type == 22)) {
-		$data[6] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-		$data[6] .= print_image ('images/chart_curve.png', true,
-			array ('title' => __('Normalize')));
-		$data[6] .= '</a>';
+
+	if (isset($numericModules[$type])) {
+		if ($numericModules[$type] === true) {
+			$data[6] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[6] .= print_image ('images/chart_curve.png', true,
+				array ('title' => __('Normalize')));
+			$data[6] .= '</a>';
+		}
 	}
 
 	array_push ($table->data, $data);

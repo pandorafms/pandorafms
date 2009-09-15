@@ -14,9 +14,10 @@ function help {
 	echo -e "\t\t-s Source filename for backup restore. p.e: /tmp/pandorafms"
 	echo -e "\t\t-f Restore also files"
 	echo -e "\t\t-q Quiet. No output message (used for scripts/cron)"
+	echo -e "\t\t-b No database backup/restore"
+
 	echo -e "\n\nPlease BE SURE TO USE RESTORE (-s) option. This will OVERWRITE ALL your"
-	echo -e "PandoraFMS install, including files, configuration and data. Consided to"
-	echo -e "make a backup first."
+	echo -e "PandoraFMS install, including files, configuration and data. Please backup first!"
 	echo ""
 	exit 1
 }
@@ -29,11 +30,12 @@ fi
 SOURCEBACKUP="thisnotexist"
 QUIET=0
 RESTOREFILES=0
+DATABASE=1
 TIMESTAMP=`date +"%Y-%m-%d-%H-%M-%S"`
 
 # Main parsing code
 
-while getopts "fhqc:d:s:" optname
+while getopts "bfhqc:d:s:" optname
   do
     case "$optname" in
       "h")
@@ -45,6 +47,9 @@ while getopts "fhqc:d:s:" optname
       "f")
 	        RESTOREFILES=1
         ;;
+      "b")
+		DATABASE=0
+	;;
       "d")
 		BACKUPDIR=$OPTARG
         ;;
@@ -89,8 +94,13 @@ then
 
 	rm -Rf $BACKUPDIR/pandorafms_backup_$TIMESTAMP.tar.gz 2> /dev/null
 
-	mysqldump -u $DBUSER -p$DBPASS -h $DBHOST $DBNAME > pandorafms_backup_$TIMESTAMP.sql
-	tar cvzf pandorafms_backup_$TIMESTAMP.tar.gz pandorafms_backup_$TIMESTAMP.sql $PANDORAPATH /etc/pandora /var/spool/pandora/data_in --exclude .data 2> /dev/null > /dev/null
+	if [ $DATABASE == 1 ]
+	then
+		mysqldump -u $DBUSER -p$DBPASS -h $DBHOST $DBNAME > pandorafms_backup_$TIMESTAMP.sql
+		tar cvzf pandorafms_backup_$TIMESTAMP.tar.gz pandorafms_backup_$TIMESTAMP.sql $PANDORAPATH/* /etc/pandora /var/spool/pandora/data_in --exclude .data 2> /dev/null > /dev/null
+	else
+		tar cvzf pandorafms_backup_$TIMESTAMP.tar.gz $PANDORAPATH/* /etc/pandora /var/spool/pandora/data_in --exclude .data 2> /dev/null > /dev/null	
+	fi
 
 	mv /tmp/$TIMESTAMP/pandorafms_backup_$TIMESTAMP.tar.gz $BACKUPDIR
 	cd /tmp
@@ -107,21 +117,24 @@ else
 	echo "Detected Pandora FMS backup at $SOURCEBACKUP, please wait..."
 	tar xvzf $SOURCEBACKUP > /dev/null 2> /dev/null
 
-	echo "Dropping current database"
-	echo "drop database $DBNAME;" | mysql -u $DBUSER -p$DBPASS -h $DBHOST
+	if [ $DATABASE == 1 ]
+	then
+		echo "Dropping current database"
+		echo "drop database $DBNAME;" | mysql -u $DBUSER -p$DBPASS -h $DBHOST
 
-	echo "Restoring backup database"
-	echo "create database $DBNAME;" | mysql -u $DBUSER -p$DBPASS -h $DBHOST
-	cat *.sql | mysql -u $DBUSER -p$DBPASS -h $DBHOST -D $DBNAME
+		echo "Restoring backup database"
+		echo "CREATE DATABASE $DBNAME;" | mysql -u $DBUSER -p$DBPASS -h $DBHOST
+		cat *.sql | mysql -u $DBUSER -p$DBPASS -h $DBHOST -D $DBNAME
+	fi
 
 	if [ $RESTOREFILES == 1 ]
 	then
 		echo "Restoring files and configuration"
-#Need testing, not finished!
-		echo "mv var/spool/pandora/* /var/spool/pandora"
-		echo "mv etc/pandora/* /etc/pandora"
-		echo "BACKUPBASEPATH=`echo $PANDORAPATH | cut -c2-`"
-		echo "mv $BACKUPBASEPATH $PANDORAPATH"
+		cp -R var/spool/pandora/* /var/spool/pandora
+                cp -R etc/pandora/* /etc/pandora
+                BACKUPBASEPATH="`echo $PANDORAPATH | cut -c2-`"
+                cp -R $BACKUPBASEPATH/* $PANDORAPATH
+
 	fi
 	
 	cd /tmp

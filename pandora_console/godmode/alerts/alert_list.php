@@ -109,7 +109,7 @@ if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	if (get_db_row_sql("SELECT COUNT(id)
+	if (get_db_value_sql("SELECT COUNT(id)
 		FROM talert_template_modules
 		WHERE id_agent_module = " . $id_agent_module . "
 			AND id_alert_template = " . $id_alert_template) > 0) {

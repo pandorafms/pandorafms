@@ -1,11 +1,19 @@
-2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-15  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: add function "get_db_value_sql" for use in
+	alert_list.php and in futures uses. This function returns the first column
+	and first row from a query pass as parameters.
+	* godmode/alerts/alert_list.php: fix bug that you can't add new alerts.
+	Fixes: 2859264
+
+2009-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager.php: change the method for test if a
 	module is a numeric, and can normalize. Now obtain the ids from modules tipe
 	that it's not proc or string, and this ids use to test.
 	Fixes: 2849325
 
-2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/map_builder.php: change (at the moment) the ajax for
 	delete elements by html static form with select, because sometimes (when you

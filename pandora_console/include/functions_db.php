@@ -1605,6 +1605,24 @@ function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
 }
 
 /** 
+ * Get the first value of the first row of a table result from query.
+ * 
+ * @param string SQL select statement to execute.
+ * 
+ * @return the first value of the first row of a table result from query.
+ * 
+ */
+function get_db_value_sql ($sql) {
+	$sql .= " LIMIT 1";
+	$result = get_db_all_rows_sql ($sql);
+	
+	if($result === false) 
+		return false;
+	
+	return $result[0][0];
+}
+
+/** 
  * Get the first row of an SQL database query.
  * 
  * @param string SQL select statement to execute.

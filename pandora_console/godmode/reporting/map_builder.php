@@ -232,15 +232,23 @@ if ($update_layout_data_coords) {
 }
 
 if ($delete_layout_data) {
-	$ids_layout_data = (array) get_parameter ('ids_layout_data');
+	//delete_element
+
+	$delete_element = get_parameter('delete_element',0);
+	$id_layout = get_parameter('id_layout');
 	
-	foreach ($ids_layout_data as $id_layout_data) {
-		process_sql_update ('tlayout_data', array ('parent_item' => 0),
-			array ('parent_item' => $id_layout_data));
-		$sql = sprintf ('DELETE FROM tlayout_data WHERE id = %d',
-				$id_layout_data);
-		process_sql_delete ('tlayout_data', array ('id' => $id_layout_data));
-	}
+	process_sql_delete ('tlayout_data', array ('id' => $delete_element));
+
+	
+//	$ids_layout_data = (array) get_parameter ('ids_layout_data');
+//	
+//	foreach ($ids_layout_data as $id_layout_data) {
+//		process_sql_update ('tlayout_data', array ('parent_item' => 0),
+//			array ('parent_item' => $id_layout_data));
+//		$sql = sprintf ('DELETE FROM tlayout_data WHERE id = %d',
+//				$id_layout_data);
+//		process_sql_delete ('tlayout_data', array ('id' => $id_layout_data));
+//	}
 	
 	if (is_ajax ()) {
 		return;
@@ -400,14 +408,38 @@ if (! $edit_layout && ! $id_layout) {
 		echo '<form id="form_layout_data_trash" action="" method="post">';
 		echo '<div id="layout_trash_drop">';
 		echo '<h1>'.__('Map element trash').'</h1>';
-		echo __('Drag an element here to delete from the map');
+		//	DISABLE UNTIL FIX THE BUG WITH ELEMENTS WITH BIG DIMENSIONS		
+//		echo __('Drag an element here to delete from the map');
 		echo '<span id="elements"> </span>';
+		
 		print_input_hidden ('delete_layout_data', 1);
 		print_input_hidden ('id_layout', $id_layout);
+//		echo '<div class="action-buttons" style="margin-top: 180px">';
+//		print_submit_button (__('Delete'), 'delete_buttons', true, 'class="sub delete"');
+//		echo '</div>';
 		
-		echo '<div class="action-buttons" style="margin-top: 180px">';
-		print_submit_button (__('Delete'), 'delete_buttons', true, 'class="sub delete"');
-		echo '</div>';
+		echo __('Select a element to delete:');
+		
+		echo "<p>";
+		$elements = get_db_all_rows_sql("SELECT t1.id, t1.label,
+				(SELECT t2.nombre 
+				FROM tagente AS t2
+				WHERE t2.id_agente = t1.id_agent) AS name_agent,
+				(SELECT t3.nombre
+				FROM tagente_modulo AS t3
+				WHERE t3.id_agente_modulo = t1.id_agente_modulo) AS name_module
+			FROM tlayout_data AS t1
+			WHERE t1.id_layout = $id_layout");
+		$tempArraySelect = array();
+		foreach ($elements as $element) {
+			$tempArraySelect[$element['id']] = $element['label'] . " - " .
+				$element['name_agent'] . " - " . $element['name_module'];
+		}
+		print_select($tempArraySelect, 'delete_element', '', '', __('None'), 0);
+		print " ";
+		print_submit_button (__('Delete'), 'delete_buttons', false, 'class="sub delete"');
+		echo "</p>";
+		
 		echo '</div>';
 		echo '</form>';
 		
@@ -607,7 +639,17 @@ $(document).ready (function () {
 	$('#text-height').keyup (function () {
 		$("#layout_map").css ('height', this.value + 'px');
 	});
-	$(".layout-data").draggable ({helper: 'clone'});
+
+//	POSSIBLE FIX THE BUG WITH ELEMENTS WITH BIG DIMENSIONS
+
+//	function testHelper() {
+//		obj = $('<div></div>').attr('id','helper_prueba2').attr('style','width: 100px; height: 100px; background: red;');
+//		return obj;
+//	}
+//	$(".layout-data").draggable ({helper: testHelper});
+	
+	$(".layout-data").draggable ({helper: 'clone'});	
+	
 	$("#layout_map").droppable ({
 		accept: ".layout-data",
 		drop: function (ev, ui) {
@@ -713,23 +755,27 @@ $(document).ready (function () {
 			);
 		}
 	});
-	$("#layout_trash_drop").droppable ({
-		accept: ".layout-data",
-		drop: function (ev, ui) {
-			image = $('#'+ ui.draggable[0].id + " img").eq (0);
-			total = $("img", this).length;
-			
-			id = ui.draggable[0].id.split ("-").pop ();
-			$(ui.draggable[0]).clone ().css ('margin-left', 60 * total).
-				css ('margin-top', 0). attr ('id', 'delete-layout-data-' + id).
-				appendTo ("#"+this.id + " #elements");
-			$(ui.draggable[0]).remove ();
-			$('<input type="hidden" name="ids_layout_data[]"></input>').attr ('value', id).
-				appendTo ($("#form_layout_data_trash"));
-			$("#form_layout_data_trash #submit-delete_buttons").removeAttr ('disabled');
-			setTimeout (function() { refresh_lines (lines, 'layout_map'); }, 1000);
-		}
-	});
+
+//	DISABLE UNTIL FIX THE BUG WITH ELEMENTS WITH BIG DIMENSIONS
+	
+//	$("#layout_trash_drop").droppable ({
+//		accept: ".layout-data",
+//		drop: function (ev, ui) {
+//			image = $('#'+ ui.draggable[0].id + " img").eq (0);
+//			total = $("img", this).length;
+//			
+//			id = ui.draggable[0].id.split ("-").pop ();
+//			$(ui.draggable[0]).clone ().css ('margin-left', 60 * total).
+//				css ('margin-top', 0). attr ('id', 'delete-layout-data-' + id).
+//				appendTo ("#"+this.id + " #elements");
+//			$(ui.draggable[0]).remove ();
+//			$('<input type="hidden" name="ids_layout_data[]"></input>').attr ('value', id).
+//				appendTo ($("#form_layout_data_trash"));
+//			$("#form_layout_data_trash #submit-delete_buttons").removeAttr ('disabled');
+//			setTimeout (function() { refresh_lines (lines, 'layout_map'); }, 1000);
+//		}
+//	});
+	
 	$("#form_layout_data_editor #image").change (function () {
 		$("#image_preview").empty ();
 		if (this.value != '') {

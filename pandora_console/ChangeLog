@@ -1,5 +1,12 @@
 2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/map_builder.php: change (at the moment) the ajax for
+	delete elements by html static form with select, because sometimes (when you
+	try delete elements with bigger dimensions fail).
+	Fixes: 2815063
+
+2009-09-14  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/modificar_agente.php: fix the pagination when it has
 	a search, and fix the pagination and delete element in the page.
 	Fixes: 2857846

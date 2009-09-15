@@ -113,6 +113,6 @@ $(document).ready (function () {
 	
 	$("#text-field1").keyup (render_command_preview);
 	$("#text-field2").keyup (render_command_preview);
-	$("#text-field3").keyup (render_command_preview);
+	$("#textarea_field3").keyup (render_command_preview);
 });
 </script>

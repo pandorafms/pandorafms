@@ -9,7 +9,7 @@ function parse_alert_command (command) {
 	re = /_FIELD2_/gi;
 	command = command.replace (re, "\""+value+"\"");
 	
-	value = $("#text-field3").attr ("value");
+	value = $("#textarea_field3").val();
 	re = /_FIELD3_/gi;
 	command = command.replace (re, "\""+value+"\"");
 	

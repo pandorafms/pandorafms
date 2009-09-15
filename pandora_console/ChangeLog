@@ -1,5 +1,13 @@
 2009-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora_alerts.js: fix the id for access to jquery
+	in the field3.
+	* godmode/alerts/configure_alert_action.php: fix the id for access to jquery
+	in the event keyup.
+	Fixes: 2845692
+
+2009-09-15  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: add function "get_db_value_sql" for use in
 	alert_list.php and in futures uses. This function returns the first column
 	and first row from a query pass as parameters.

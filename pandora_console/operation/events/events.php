@@ -169,7 +169,13 @@ if ($event_view_hr > 0) {
 	$sql_post .= " AND utimestamp > ".$unixtime;
 }
 
-$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=".rawurlencode($search)."&amp;event_type=".$event_type."&amp;severity=".$severity."&amp;status=".$status."&amp;ev_group=".$ev_group."&amp;refr=".$config["refr"]."&amp;id_agent=".$id_agent."&amp;id_event=".$id_event."&amp;pagination=".$pagination."&amp;group_rep=".$group_rep."&amp;event_view_hr=".$event_view_hr."&amp;id_user_ack=".$id_user_ack;
+$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
+	rawurlencode($search) . "&amp;event_type=" . $event_type .
+	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
+	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
+	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
+	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
 
 echo '<h3 id="result" style="display:none">&nbsp;</h3>';
 
@@ -330,6 +336,7 @@ if ($group_rep == 0) {
 	$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;	
 } 
 
+//Extract the events by filter (or not) from db
 $result = get_db_all_rows_sql ($sql);
 
 if ($group_rep == 0) {
@@ -338,6 +345,7 @@ if ($group_rep == 0) {
 	$sql = "SELECT COUNT(DISTINCT(evento)) FROM tevento WHERE 1=1 ".$sql_post;
 }
 
+//Count the events with this filter (TODO but not utimestamp).
 $total_events = (int) get_db_sql ($sql);
 
 if (empty ($result)) {

@@ -106,34 +106,42 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent, $filter = '', $options = false, $where = '') {
+function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '') {
 	switch ($filter) {
-	case "notfired":
-		$filter = ' AND times_fired = 0 AND disabled = 0';
-		break;
-	case "fired":
-		$filter = ' AND times_fired > 0 AND disabled = 0';
-		break;
-	case "disabled":
-		$filter = ' AND disabled = 1';
-		break;
-	default:
-		$filter = '';
+		case "notfired":
+			$filter = ' AND times_fired = 0 AND disabled = 0';
+			break;
+		case "fired":
+			$filter = ' AND times_fired > 0 AND disabled = 0';
+			break;
+		case "disabled":
+			$filter = ' AND disabled = 1';
+			break;
+		default:
+			$filter = '';
 	}
-	
-	$id_agent = (array) $id_agent;
-	$id_modules = array_keys (get_agent_modules ($id_agent));
-	if (empty ($id_modules))
-		return array ();
 	
 	if (is_array ($options)) {
 		$filter .= format_array_to_where_clause_sql ($options);
 	}
 	
+	if ($id_agent === false) {
+		$subQuery = 'SELECT id_agente_modulo
+			FROM tagente_modulo WHERE disabled = 0';
+	}
+	else {
+		$id_agent = (array) $id_agent;
+		$id_modules = array_keys (get_agent_modules ($id_agent));
+		if (empty ($id_modules))
+			return array ();
+			
+		$subQuery = implode (",", $id_modules);
+	}
+	
 	$sql = sprintf ("SELECT talert_template_modules.*
-		FROM talert_template_modules
-		WHERE id_agent_module in (%s) %s %s",
-		implode (",", $id_modules), $where, $filter);
+	FROM talert_template_modules
+	WHERE id_agent_module in (%s) %s %s",
+	$subQuery, $where, $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	
@@ -152,7 +160,7 @@ function get_agent_alerts_simple ($id_agent, $filter = '', $options = false, $wh
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
+function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false) {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -171,11 +179,19 @@ function get_agent_alerts_compound ($id_agent, $filter = '', $options = false) {
 		$filter .= format_array_to_where_clause_sql ($options);
 	}
 	
-	$id_agent = (array) $id_agent;
+	if ($id_agent === false) {
+		$subQuery = 'SELECT id_agente
+			FROM tagente WHERE disabled = 0';
+	}
+	else {
+		$id_agent = (array) $id_agent;
+			
+		$subQuery = implode (',', $id_agent);
+	}
 	
 	$sql = sprintf ("SELECT * FROM talert_compound
 		WHERE id_agent IN (%s)%s",
-		implode (',', $id_agent), $filter);
+		$subQuery, $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	
@@ -249,9 +265,9 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
  *
  * @return array An array with all alerts defined for an agent.
  */
-function get_agent_alerts ($id_agent, $filter = false, $options = false) {
-	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter, $options);
+function get_agent_alerts ($id_agent = false, $filter = false, $options = false) {
 	$combined_alerts = get_agent_alerts_compound ($id_agent, $filter, $options);
+	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter, $options);
 	
 	return array ('simple' => $simple_alerts, 'compounds' => $combined_alerts);
 }

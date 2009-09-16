@@ -124,14 +124,27 @@ function get_group_stats ($id_group = 0) {
 	if ($id_group == 0) {
 		$id_group = array_keys (get_user_groups ());
 	}
-	$agents = array_keys (get_group_agents ($id_group));
 	
-	if (empty ($agents)) {
-		//No agents in this group, means no data
-		return $data;
+	if (isAllGroups($id_group)) {
+		$filter = ' 1 = 1 ';
+		$total_agents = get_db_value_sql('SELECT count(id_agente) FROM tagente WHERE disabled = 0');
+		$alerts = get_agent_alerts ();
 	}
-
-	$filter = 'id_agente IN ('.implode (",", $agents).') ';
+	else {
+		$agents = array_keys (get_group_agents ($id_group));
+		$total_agents = count ($agents);
+		
+		if (empty ($agents)) {
+			//No agents in this group, means no data
+			return $data;
+		}
+		$filter = 'id_agente IN ('.implode (",", $agents).') ';
+		
+		$alerts = get_agent_alerts ($agents);	
+	}
+	
+	if (empty ($alerts))
+		$alerts = array ();
 	
 	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter);
 	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp = 0");
@@ -139,11 +152,6 @@ function get_group_stats ($id_group = 0) {
 	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
-	
-	$alerts = get_agent_alerts ($agents);
-	
-	if (empty ($alerts))
-		$alerts = array ();
 	
 	$data["monitor_alerts"] = 0;
 	foreach ($alerts as $alert_type) {
@@ -156,7 +164,7 @@ function get_group_stats ($id_group = 0) {
 		}
 	}	
 	
-	$data["total_agents"] = count ($agents);
+	$data["total_agents"] = $total_agents;
 	$data["total_checks"] = $data["monitor_checks"];
 	$data["total_ok"] = $data["monitor_ok"];
 	//TODO: count SNMP Alerts and Inventory alerts here

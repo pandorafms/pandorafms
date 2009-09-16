@@ -320,6 +320,30 @@ function give_disabled_group ($id_group) {
 }
 
 /**
+ * Test if the param array is all groups in db.
+ * 
+ * @param array $id_groups
+ * 
+ * @return bool It's true when the array is all groups in db.
+ */
+function isAllGroups($idGroups) {
+	if (!is_array($idGroups))
+		$arrayGroups = array($idGroups);
+		
+	$groupsDB = get_db_all_rows_in_table ('tgrupo');
+	
+	$returnVar = true;
+	foreach ($groupsDB as $group) {
+		if (!in_array($group['id_grupo'],$idGroups)) {
+			$returnVar = false;
+			break;
+		}
+	}
+	
+	return $returnVar;
+}
+
+/**
  * Get all the agents within a group(s).
  *
  * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
@@ -1891,7 +1915,8 @@ function process_sql ($sql, $rettype = "affected_rows") {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
 		add_database_debug_trace ($sql);
-	} else {
+	}
+	else {
 		$start = microtime (true);
 		$result = mysql_query ($sql);
 		$time = microtime (true) - $start;
@@ -1904,19 +1929,23 @@ function process_sql ($sql, $rettype = "affected_rows") {
 			trigger_error ($error);
 			restore_error_handler ();
 			return false;
-		} elseif ($result === true) {
+		}
+		elseif ($result === true) {
 			if ($rettype == "insert_id") {
 				$result = mysql_insert_id ();
-			} elseif ($rettype == "info") {
+			}
+			elseif ($rettype == "info") {
 				$result = mysql_info ();
-			} else {
+			}
+			else {
 				$result = mysql_affected_rows ();
 			}
 			
 			add_database_debug_trace ($sql, $result, mysql_affected_rows (),
 				array ('time' => $time));
 			return $result;
-		} else {
+		}
+		else {
 			add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
 				array ('time' => $time));
 			while ($row = mysql_fetch_array ($result)) {

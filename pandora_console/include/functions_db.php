@@ -342,7 +342,8 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
-	} elseif (is_array ($search)) {
+	} 
+	elseif (is_array ($search)) {
 		if (isset ($search["disabled"])) {
 			$search_sql .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
 		} else {
@@ -366,7 +367,8 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
 		if (! empty ($search)) {
 			$search_sql .= ' AND '.format_array_to_where_clause_sql ($search);
 		}
-	} else {
+	}
+	else {
 		$search_sql .= ' AND disabled = 0';
 	}
 	

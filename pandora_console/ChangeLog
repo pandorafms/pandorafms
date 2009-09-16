@@ -1,5 +1,9 @@
 2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: cleanup the source code.
+
+2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/events/events.php: cleanup the source code and add many
 	comments
 

@@ -744,6 +744,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	doc->InsertEndChild (*agent);
 	saved = doc->SaveFile();
 	delete doc;
+	delete decl;
 	delete agent;
 
 	if (!saved) {

@@ -1,3 +1,7 @@
+2009-09-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Fixed a memory leak.
+
 2009-09-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_inventory.h,

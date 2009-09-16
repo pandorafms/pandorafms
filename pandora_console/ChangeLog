@@ -1,5 +1,17 @@
 2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php, include/functions_agents.php: cleanup
+	sourcecode, and important optimize, because the old querys was very huge
+	when the query have consult with all agent ids. That affect when login
+	as admin into Pandora Console in systems with few resources (more or
+	less 1Gb RAM in a desktop computer).
+	* include/functions_db.php: add function "isAllGroups" that test if the
+	array pass as parameter is all groups in DB, and return true o false. And
+	cleanup source code.
+	Fixes: 2824327
+
+2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: cleanup the source code.
 
 2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>

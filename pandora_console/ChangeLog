@@ -1,5 +1,11 @@
 2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/estado_agente.php, godmode/alerts/alert_list.php: fix
+	bug when there aren't not defined or attach action in template alert. Before
+	it was showing the loading ajax gif, now it show the select box with none.
+
+2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php, include/functions_agents.php: cleanup
 	sourcecode, and important optimize, because the old querys was very huge
 	when the query have consult with all agent ids. That affect when login

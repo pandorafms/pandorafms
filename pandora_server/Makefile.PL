@@ -12,16 +12,14 @@ WriteMakefile(
 		IO::Socket => 0,
 		Time::Format => 0,
 		Time::Local => 0,
-		Date::Manip => 0,
 		XML::Simple => 0,
 		Time::HiRes => 0,
 		IO::Socket => 0,
 		Mail::Sendmail => 0,
 		Net::Traceroute::PurePerl => 0,
 		HTML::Entities => 0,
-		SNMP => 0
     },
-    EXE_FILES 		=> [ 'bin/pandora_server', 'util/pandora_exec'],
+    EXE_FILES 		=> [ 'bin/pandora_server', 'bin/pandora_exec'],
     PMLIBDIRS  		=> [ 'lib' ],
     'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
 => '.gz', 'COMPRESS' => 'gzip'}

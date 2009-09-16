@@ -1,3 +1,19 @@
+2009-09-16  Sancho Lerena <slerena@artica.es>
+	
+	* util/pandora_exec -> bin/pandora_exec: Moved.
+
+	* pandora_server -> util/pandora_server: Moved.
+
+	* plugins/pandora_loadgen.pl
+	plugins/pandora_server_status.pl: New plugins for generate data
+	and get Pandora FMS server status and load.
+
+	* Config.pm, pandora_db.pl: Version update.
+
+	* pandora_server.spec, 
+	Makefile.PL, 
+	pandora_server_installer: Updated paths and dependencies
+
 2009-09-15  Sancho Lerena <slerena@artica.es>
 	
 	* util/pandora_backup.sh: Finished backup command line tool

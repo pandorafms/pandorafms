@@ -4,7 +4,7 @@
 #
 # Executes the given command and prints its output to stdout. If the
 # execution times out or the command does not exist nothing is printed
-# to stdout.
+# to stdout. This is part of Pandora FMS Plugin server, do not delete!.
 #
 # Usage: pandora_exec <timeout in seconds> <command> [arguments]
 ##########################################################################

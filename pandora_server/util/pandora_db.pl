@@ -26,7 +26,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define la version actual del programa
-my $version = "2.1 PS090105";
+my $version = "3.0 PS090915";
 
 # Setup variables
 my $dirname="";
@@ -86,9 +86,6 @@ sub pandora_purgedb {
 	my $ulimit_timestamp = &UnixDate("today","%s") - (86400 * $days);
 	my $limit_timestamp = DateCalc("today","-$days days",\$err);
 
-	print "[PURGE] Deleting old access data (More than 24hr) \n";
-	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
-
 	print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
 	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
@@ -116,6 +113,9 @@ sub pandora_purgedb {
 
 	print "[PURGE] Delete old data from SNMP Traps \n"; 
 	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
+
+	print "[PURGE] Deleting old access data (More than 24hr) \n";
+	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
 
     $dbh->disconnect();
 }
@@ -251,7 +251,7 @@ sub pandora_compactdb {
 ##############################################################################
 
 sub pandora_init {
-	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2008 Sancho Lerena\n";
+	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2008 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n";
 

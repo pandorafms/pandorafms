@@ -22,7 +22,7 @@ Requires(pre):      /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-mail-sendmail perl-DBI perl-DBD-mysql perl-time-format 
-Requires:           perl-mail-sendmail perl-netaddr-ip perl-SNMP net-snmp
+Requires:           perl-mail-sendmail perl-netaddr-ip net-snmp
 Requires:           nmap wmic sudo
 
 %description
@@ -36,8 +36,10 @@ rm -rf $RPM_BUILD_ROOT
 %build
 
 %install
+#Uncomment this if you build from other RPM system (fedora, opensuse != 11..)
 #%define perl_version %(rpm -q --queryformat='%{VERSION}' perl)
 #export perl_version=`rpm -q --queryformat='%{VERSION}' perl`
+
 # Temporal hack for For SLES 11 only, warning
 export perl_version=5.10.0
 %define perl_version 5.10.0
@@ -55,18 +57,18 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
+
+# All binaries go to /usr/local/bin
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/local/bin/
-cp -aRf util/pandora_exec $RPM_BUILD_ROOT/usr/local/bin/
+cp -aRf bin/pandora_exec $RPM_BUILD_ROOT/usr/local/bin/
 cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/local/bin/
-#cp -aRf util/wmic $RPM_BUILD_ROOT/usr/bin/
+
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
 cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
-#cp -aRf util/Time/ $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
-#cp -aRf util/Traceroute/ $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/Net
-#cp -aRf util/Traceroute.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/Net
 cp -aRf AUTHORS COPYING ChangeLog README $RPM_BUILD_ROOT%{prefix}/pandora_server/
-cp -aRf pandora_server $RPM_BUILD_ROOT/etc/init.d/
+
+cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 
 %clean

@@ -2,9 +2,9 @@
 
 # Pandora FMS Server, startup script
 # Copyright (c) 2006-2009 Sancho Lerena, <sancho.lerena@artica.es>
-# Linux Version (generic), for SuSe and Debian/Ubuntu.
+# Linux Version (generic), for SuSe, Debian and Ubuntu.
 # other Linux distros could not work properly without modifications
-# v3.0 Build 090810
+# v3.0 Build 090915
 # http://www.pandorafms.com
 
 ### BEGIN INIT INTO
@@ -25,7 +25,7 @@ PANDORA_DAEMON=/usr/local/bin/pandora_server
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
-	PANDORA_PID=`ps aux | grep $PANDORA_DAEMON | grep -v grep | tail -1 | awk '{ print $2 }'`
+	PANDORA_PID=`ps aux | grep $PANDORA_DAEMON $PANDORA_HOME| grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )
 

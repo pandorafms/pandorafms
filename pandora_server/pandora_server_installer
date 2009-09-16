@@ -59,15 +59,15 @@ install () {
 		echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
 		echo " "
 		echo "Debian-based distribution do:"
-		echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
+		echo "	$ apt-get install snmp snmpd libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
 		echo " "
 		echo "RPM distribution do"
 		echo " "
-		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-GD* perl-DateTime* perl-ExtUtils perl-DBI perl-Date-Manip perl-SNMP"
+		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI"
 		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
-		echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities Date::Manip"
+		echo "  $ cpan Digest::MD5 Time::Local DBI XML::Simple IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
 		echo " "
 		rm output
 	else
@@ -111,7 +111,7 @@ install () {
 		then
 			chown -R pandora:www-data /var/spool/pandora/ 
 		else
-			chown -R pandora:www /var/spool/pandora/ 
+			chown -R pandora:www /var/spool/pandora/
 		fi
 		
 		echo "Creating setup directory in /etc/pandora"
@@ -126,7 +126,7 @@ install () {
 		chmod 770 /etc/pandora/pandora_server.conf
 		
 		echo "Copying the daemon script into /etc/init.d/pandora_server"
-		cp pandora_server /etc/init.d/		
+		cp util/pandora_server /etc/init.d/		
 		
 		if [ "$DISTRO" == "UBUNTU" ]
 		then
@@ -136,14 +136,6 @@ install () {
 			INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
 			echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
 			ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
-		fi
-
-		echo "Creating links for /usr/local/bin/pandora_server"
-		if [ -e /usr/local/bin/pandora_server ]
-		then
-			ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server 2> /dev/null
-		else
-			ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server 2> /dev/null
 		fi
 
 		echo "Creating logrotate.d entry for Pandora FMS log management"

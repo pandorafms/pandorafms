@@ -42,9 +42,10 @@ if (is_ajax ()) {
 			ORDER BY sort_order DESC");
 		
 		
-		if ($rows !== false) {
-			echo json_encode($rows);	
-		}
+		if ($rows !== false)
+			echo json_encode($rows);
+		else
+			echo "false";
 		
 		return;
 	}

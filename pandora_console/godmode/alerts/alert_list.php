@@ -724,22 +724,27 @@ $(document).ready (function () {
 			"id_template" : this.value
 			},
 			function (data, status) {
-				 if (data != '') {
-					jQuery.each (data, function (i, val) {
-						option = $("<option></option>")
-							.attr ("value", val["id"])
-							.append (val["name"]);
-						$("#action_select").append (option);
-					});
-				}
 				option = $("<option></option>")
 					.attr ("value", '0')
 					.append ('<?php echo __('None'); ?>');
 				$("#action_select").append (option);
 				
+				if (data == false) {
+					//There aren't any action
+				}
+				else {
+					 if (data != '') {
+						jQuery.each (data, function (i, val) {
+							option = $("<option></option>")
+								.attr ("value", val["id"])
+								.append (val["name"]);
+							$("#action_select").append (option);
+						});
+					}	
+					$('#advanced_action').show();
+				}
 				$("#action_loading").hide ();
 				$("#action_select").show();
-				$('#advanced_action').show();
 			},
 			"json"
 		);

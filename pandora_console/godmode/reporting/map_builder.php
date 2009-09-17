@@ -584,6 +584,7 @@ $(document).ready (function () {
 				$('#module').fadeOut ('normal', function () {
 					$('#module').empty ();
 					var inputs = [];
+					inputs.push ("filter=disabled = 0");
 					inputs.push ("agent_name=" + agent_name);
 					inputs.push ("get_agent_modules_json=1");
 					inputs.push ("page=operation/agentes/ver_agente");

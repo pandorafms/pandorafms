@@ -1,3 +1,11 @@
+2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_console/include/functions_events.php: fix the insert event,
+	before Pandora console inserted timestamp as string timestamp, now Pandora
+	console insert the event with clean and numeric unix timestamp.
+	* pandora_console/include/functions_alerts.php: cleanup the sourcecode.
+	Fixes: 2854087
+
 2009-09-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_agente.php, godmode/alerts/alert_list.php: fix

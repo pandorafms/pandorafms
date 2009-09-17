@@ -236,7 +236,7 @@ function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "",
 	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 		estado, utimestamp, id_usuario, event_type, criticity,
 		id_agentmodule, id_alert_am) 
-		VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
+		VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()), "%s", "%s", %d, %d, %d)',
 		$id_agent, $id_group, $event, $status, $id_user, $event_type,
 		$priority, $id_agent_module, $id_aam);
 	

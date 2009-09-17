@@ -554,7 +554,8 @@ function validate_alert_agent_module ($id_alert_agent_module) {
 				$group_id, $agent_id, 1, $config["id_user"],
 				"alert_manual_validation", 1, $alert["id_agent_module"],
 				$id);
-		} elseif ($result === false) {
+		}
+		elseif ($result === false) {
 			return false;
 		}
 	}

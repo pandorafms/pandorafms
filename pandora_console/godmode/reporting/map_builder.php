@@ -431,9 +431,11 @@ if (! $edit_layout && ! $id_layout) {
 			FROM tlayout_data AS t1
 			WHERE t1.id_layout = $id_layout");
 		$tempArraySelect = array();
-		foreach ($elements as $element) {
-			$tempArraySelect[$element['id']] = $element['label'] . " - " .
-				$element['name_agent'] . " - " . $element['name_module'];
+		if (is_array($elements)) {
+			foreach ($elements as $element) {
+				$tempArraySelect[$element['id']] = $element['label'] . " - " .
+					$element['name_agent'] . " - " . $element['name_module'];
+			}
 		}
 		print_select($tempArraySelect, 'delete_element', '', '', __('None'), 0);
 		print " ";

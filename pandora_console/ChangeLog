@@ -1,5 +1,10 @@
 2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/godmode/reporting/map_builder.php: fix small bug when
+	there are'nt any elements in the map and it try loop foearch.
+
+2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/include/functions_events.php: fix the insert event,
 	before Pandora console inserted timestamp as string timestamp, now Pandora
 	console insert the event with clean and numeric unix timestamp.

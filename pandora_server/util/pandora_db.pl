@@ -26,7 +26,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define la version actual del programa
-my $version = "3.0 PS090915";
+my $version = "3.0-dev PS090917";
 
 # Setup variables
 my $dirname="";
@@ -34,6 +34,8 @@ my $dbname = 'pandora';
 my $dbhost ='';
 my $dbuser ='';
 my $verbosity =0;
+my $onlypurge = 0;
+
 my $dbpass='';
 my $server_threshold='';
 my $log_file="";
@@ -272,6 +274,7 @@ sub pandora_init {
 		elsif ($parametro =~ m/-v\z/i) { $verbosity=5; }
 		elsif ($parametro =~ m/-d\z/i) { $verbosity=10; }
 		elsif ($parametro =~ m/-d\z/i) { $verbosity=0; }
+		elsif ($parametro =~ m/-p\z/i) { $onlypurge=1; }
 		else { ($pandora_path = $parametro); }
 	}
 	if ($pandora_path eq ""){
@@ -491,6 +494,7 @@ sub help_screen{
 	print "             -d   Debug output (very verbose) \n";
 	print "             -v   Verbose output \n";
 	print "             -q   Quiet output \n";
+	print "             -p   Only purge and consistency check, skip compact \n";
 	exit;
 }
 
@@ -504,7 +508,10 @@ sub pandoradb_main {
 	print "Starting at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
 	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
-	pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
+
+	if ($onlypurge == 0){
+		pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
+	}
 	print "Ending at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
 	exit;
 }

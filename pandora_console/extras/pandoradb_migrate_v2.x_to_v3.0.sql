@@ -290,4 +290,8 @@ ALTER TABLE tagente DROP id_network_server;
 ALTER TABLE tagente DROP id_plugin_server;
 ALTER TABLE tagente DROP id_prediction_server;
 
+-- Sept 2009
+
+ALTER TABLE tgraph ADD `id_group` mediumint(8) unsigned NULL default 0;
+
 

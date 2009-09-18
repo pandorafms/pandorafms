@@ -1,3 +1,12 @@
+2009-09-18  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: more changes to schema :(. Added id_group to custom graph
+	
+	* pandoradb_data.sql: Updated build number of DB schema,
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added new field for upgrade
+	script.
+
 2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_modules.php: change the function "update_agent_module"

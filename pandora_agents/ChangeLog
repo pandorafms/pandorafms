@@ -1,3 +1,17 @@
+2009-09-18  sancho Lerena <slerena@artica.es>
+
+	* unix: Added subdir with local daemon script and sample conf
+	file for each supported system: Linux, AIX, Solaris and HPUX. 
+
+	* Installer now detects OS and install startup scripts and 
+	conf depending on OS.
+
+	* Updated RPM spec for Linux agent.
+
+	* Plugins: Let here (at this time) only "common" plugins,
+	in the future will be common plugins and OS dependendant 
+	plugins.
+
 2009-09-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix, unix/pandora_agent_installer,

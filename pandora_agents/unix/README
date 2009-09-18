@@ -6,8 +6,7 @@ http://pandora.sourceforge.net
 How to install
 --------------
 
-Please refer to documentation on our website. This includes schemas, quick-install 
-guides and how to use preconfigured packages and installers for all components.
+./pandora_agent_installer --help
 
 What is Pandora FMS?
 --------------------
@@ -24,31 +23,22 @@ Pandora FMS will adjust, like an octopus, to your systems and requirements,
 because it has been designed to be open, modular, multiplattform and easy to
 customize. Pandora FMS is developed for system administrators.
 
-What else can Pandora FMS do?
------------------------------
+About the generic Unix agent
+----------------------------
 
-Pandora FMS is a monitoring tool that not only measures if a parameter is right
-or wrong. Pandora FMS can quantify the state (right or wrong), or store a value
-(numeric or alphanumeric) for months if necessary. Pandora FMS can measure
-performances, compare values among differen systems and set alarms over
-thresholds. Pandora FMS works against a Database so that it can generate
-reports, statistics, SLA and meausre anything: Operating Systems, aplications
-and hardware systems—such as firewalls, proxies, Databases, web servers, VPN,
-routers, switches, processes, services, remote accesses to servers, etc.
-everything integrated in a open and distributed architecture. Pandora FMS can be
-deployed over any Operating System, with specific agents for each platform.
-There are already agents for Windows (2000, XP, 2003), GNU/Linux, Solaris,
-HP-UX, BSD, AIX, IPSO and OpenWRT.
+This agent is build on Perl and needs the following minimal requisites:
 
-Pandora FMS not only gathers information through its agents, but it can also
-monitor any hardware sistem with TCP/IP connectivity —such as load balancing
-systems, routers, switches, printers, etc.— through SNMP and TCP/ICMP checks.
+PERL version 5.6 or higher.
 
-Often the question "What kind of things can be monitored?" shows up, since
-Pandora FMS can —virtually— monitor anthing, sometimes is convenient give some
-specific examples. Pandora FMS can monitor any process or system that, though a
-command, returns a value, and also any value inside a log file of the Operating
-System. 
+By default this minimum OS has all the requisites to run "standalone":
+
+- Linux: Redhat 6, SUSE 5, Debian 2.x and any distro with Perl 5.6
+- IBM AIX: 5.1
+- Hewlett Packard HPUX: 11.10 or higher. 11.0 comes with Perl 4.0 :(
+- Sun Solaris: 2.9. With 2.8 you can install BlastWare Perl 5.8 package, see more 
+information in our FAQ about how to install Blashware packages.
+- Other Unix: TRU, IRIX, etc not tested, if you want to port the agent to this 
+unixes, please contact with us, we'll glad to port them !!!
 
 License
 -------

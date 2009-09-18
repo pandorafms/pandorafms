@@ -31,42 +31,7 @@ then
 	exit 1
 fi
 
-get_distro () {
-
-	# Get Linux Distro type and version
-	if [ -f "/etc/SuSE-release" ]
-	then
-		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
-		LINUX_DISTRO=SUSE
-	else
-		if [ -f "/etc/lsb-release" ]
-		then
-			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-			LINUX_DISTRO=UBUNTU
-			OS_VERSION="UBUNTU $OS_VERSION"
-		else
-			if [ -f "/etc/debian_version" ]
-			then
-				OS_VERSION=`cat /etc/debian_version`
-				OS_VERSION="DEBIAN $OS_VERSION"
-				LINUX_DISTRO=DEBIAN
-			else
-				if [ -f "/etc/fedora-release" ]
-				then
-					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-					OS_VERSION="FEDORA $OS_VERSION"
-					LINUX_DISTRO=FEDORA
-				else
-					LINUX_DISTRO=GENERIC
-					OS_VERSION=`uname -r`
-				fi
-			fi
-		fi
-	fi
-	echo $LINUX_DISTRO
-}
-
-uninstall () {
+uninstall  {
         echo "Removing Pandora FMS Agent..."
         rm -Rf $PANDORA_BIN
         rm -Rf $PANDORA_TEMP
@@ -80,10 +45,12 @@ uninstall () {
 
 install () {
 
-		DISTRO=`get_distro`
+		OS_VERSION=`uname -r`
+		OS_NAME=`uname -s`
+		
 		OLDFILENAMETMP=`date +"%Y-%m-%d"`
 		
-		echo "Detecting Linux distribution: $DISTRO"
+		echo "Detecting Unix distribution: $OS_NAME version $OS_VERSION"
 		
         if [ -f $PANDORA_HOME ] && [ "$FORCE" = "0" ]
         then
@@ -138,7 +105,7 @@ install () {
         fi
         
         echo "Copying default agent configuration to $PANDORA_HOME/pandora_agent.conf"
-        cp pandora_agent.conf $PANDORA_HOME/pandora_agent.conf
+        cp $OS_NAME/pandora_agent.conf $PANDORA_HOME/pandora_agent.conf
         chmod 600 $PANDORA_HOME/pandora_agent.conf
 
         echo "Copying Pandora FMS Agent plugins to $PANDORA_HOME/plugins..."
@@ -163,12 +130,18 @@ install () {
         chgrp root $PANDORA_LOG
 
         echo "Linking start-up daemon script at $PANDORA_STARTUP";
-        cp pandora_agent_daemon $PANDORA_STARTUP
 
-		if [ "$DISTRO" == "UBUNTU" ]
+        if [ "$OS_NAME" == "AIX" ]
+        then
+        	cp $OS_NAME/pandora_agent_daemon /etc/rc.pandora_agent_daemon
+        else
+	        cp $OS_NAME/pandora_agent_daemon $PANDORA_STARTUP
+		fi
+		
+		if [ "$OS_NAME" == "AIX" ]
 		then
 	        echo "Linking start-up daemon script to /etc/rc2.d";
-	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
+	        ln -s /etc/rc.pandora_agent_daemon /etc/rc2.d/S90pandora_agent
 		else
 			INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
 			echo "Linking start-up daemon script to /etc/rc.d/rc$INITLV.d";
@@ -185,6 +158,8 @@ install () {
         echo "If you want to use SSH, firstly you need to copy your public SSH keys ($HOME/.ssh/id_dsa)"
         echo "under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host"
         echo "You also need to setup your $PANDORA_CFG/pandora_agent.conf config file"
+        echo " "
+        echo "Take a look of your
         echo " "
 
 }

@@ -1,3 +1,0 @@
-#!/bin/sh
-/usr/local/bin/check_xserve_raid --address 0.0.0.0 --debug --debug > /private/var/root/xserve-status
-cat /private/var/root/xserve-status | grep "lhs.array1 optimal, rhs.array1 optimal" | wc -l

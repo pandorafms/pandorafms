@@ -1,8 +1,0 @@
-[encoding: UTF-8]
-# List of source files containing translatable strings.
-# Please keep this file sorted alphabetically.
-
-src/main.c
-src/pandora-applet.c
-src/pandora-info-window.c
-src/pandora-setup-dialog.c

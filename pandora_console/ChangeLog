@@ -1,5 +1,14 @@
 2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_modules.php: change the function "update_agent_module"
+	for to add the update only that not delete pending.
+	* godmode/agentes/massive_edit_modules.php: fix form to set disabled and
+	history data as select box instead checkbox that this had bug because
+	it was disabled didn't set false or true in db.
+	Fixes: 2860987
+
+2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/godmode/reporting/map_builder.php: add parameter to ajax
 	for filter the modules disabled.
 	Fixes: 2857374

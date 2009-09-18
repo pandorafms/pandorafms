@@ -47,7 +47,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','3.0-dev'),
-(9,'db_scheme_build','PD90901'),
+(9,'db_scheme_build','PD90918'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),

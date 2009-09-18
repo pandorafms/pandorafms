@@ -695,6 +695,7 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
   `events` tinyint(1) UNSIGNED NOT NULL default 0,
   `stacked` tinyint(1) UNSIGNED NOT NULL default 0,
+  `id_group` mediumint(8) unsigned NULL default 0,
   PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

@@ -88,7 +88,7 @@ case "$1" in
         ;;
   force-reload|restart)
 		$0 stop
-		sleep 3
+		sleep 10
 		$0 start
 		;;
   *)

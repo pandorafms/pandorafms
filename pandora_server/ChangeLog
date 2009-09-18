@@ -1,3 +1,11 @@
+2009-09-18  Sancho Lerena <slerena@artica.es>
+
+	*  util/pandora_db.pl: Minor improvements in script. Added 
+	a switch for mode without compact.
+
+	* util/pandora_server: Added higher sleep in restart mode to
+	wait some busy threads to stop before start.
+
 2009-09-16  Sancho Lerena <slerena@artica.es>
 	
 	* util/pandora_exec -> bin/pandora_exec: Moved.

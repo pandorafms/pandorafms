@@ -55,6 +55,10 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 			$values[$field] = $value;
 	}
 	
+	if (strlen(get_parameter('history_data')) > 0) {
+		$values['history_data'] = get_parameter('history_data');
+	}
+	
 	$modules = get_db_all_rows_filter ('tagente_modulo',
 		array ('id_agente' => $agents,
 			'nombre' => $module_name),
@@ -65,7 +69,7 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 	if ($modules === false)
 		return false;
 	foreach ($modules as $module) {
-		$result = update_agent_module ($module['id_agente_modulo'], $values);
+		$result = update_agent_module ($module['id_agente_modulo'], $values, true);
 		
 		if ($result === false) {
 			process_sql_rollback ();
@@ -185,7 +189,8 @@ $table->data['edit1'][3] .= print_input_text ('max_critical', '', '', 5, 15, tru
 $table->data['edit2'][0] = __('Interval');
 $table->data['edit2'][1] = print_input_text ('module_interval', '', '', 5, 15, true);
 $table->data['edit2'][2] = __('Disabled');
-$table->data['edit2'][3] = print_checkbox ("disabled", 1, '', true);
+//$table->data['edit2'][3] = print_checkbox ("disabled", 1, '', true);
+$table->data['edit2'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
 
 $table->data['edit3'][0] = __('Post process');
 $table->data['edit3'][1] = print_input_text ('post_process', '', '', 10, 15, true);
@@ -197,7 +202,7 @@ $table->data['edit4'][1] = '<em>'.__('Min.').'</em>';
 $table->data['edit4'][1] .= print_input_text ('min', '', '', 5, 15, true);
 $table->data['edit4'][1] .= '<br /><em>'.__('Max.').'</em>';
 $table->data['edit4'][1] .= print_input_text ('max', '', '', 5, 15, true);
-$table->data['edit4'][2] = __('Group');
+$table->data['edit4'][2] = __('Module group');
 $table->data['edit4'][3] = print_select (get_modulegroups(),
 	'id_module_group', '', '', __('Select'), 0, true, false, false);
 
@@ -214,7 +219,7 @@ $table->data['edit6'][1] = print_select_from_sql ('SELECT id, name FROM tserver_
 $table->data['edit7'][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);
 $table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true);
 $table->data['edit7'][2] = __('Historical data');
-$table->data['edit7'][3] = print_checkbox ("history_data", 1, '', true);
+$table->data['edit7'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
 echo '<form method="post" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);

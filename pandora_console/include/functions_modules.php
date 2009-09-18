@@ -140,14 +140,20 @@ function delete_agent_module ($id_agent_module) {
  *
  * @return True if the module was updated. False if not.
  */
-function update_agent_module ($id, $values) {
+function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
 	if (! is_array ($values) || empty ($values))
 		return false;
 	if (isset ($values['nombre']) && empty ($values['nombre']))
 		return false;
 	
-	return (@process_sql_update ('tagente_modulo', $values,
-		array ('id_agente_modulo' => (int) $id)) !== false);
+	if ($onlyNoDeletePending) {
+		return (@process_sql_update ('tagente_modulo', $values,
+			array ('id_agente_modulo' => (int) $id, 'delete_pending' => 0)) !== false);
+	}
+	else {	
+		return (@process_sql_update ('tagente_modulo', $values,
+			array ('id_agente_modulo' => (int) $id)) !== false);
+	}
 }
 
 /**

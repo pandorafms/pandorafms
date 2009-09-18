@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# Pandora FMS Linux Agent, startup script
+# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
+# AIX 5.x Version (generic),
+# v3.0 Build 090810
+# http://www.pandorafms.com
+
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+PANDORA_PATH=/etc/pandora
+DAEMON=/usr/bin/pandora_agent
+LOGFILE=/var/log/pandora_agent.log
+
+# This function replace pidof, not working in the same way in different linux distros
+
+function pidof_pandora {
+	PANDORA_PID=`ps -Af | grep $DAEMON | grep -v grep | head -1 | awk '{ print $2 }'`
+	echo $PANDORA_PID
+}
+
+if [ ! -f $DAEMON ]
+then
+	echo "Pandora FMS Agent not found at $DAEMON, please check setup"
+	exit
+fi
+
+case "$1" in
+	start)
+		PANDORA_PID=`pidof_pandora`
+		if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is currently running on this machine with PID $PANDORA_PID"
+			echo "Cannot launch again. Aborting."
+			exit 1
+		fi
+		nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
+		sleep 1
+		PANDORA_PID=`pidof_pandora`
+		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
+	;;
+	
+	stop)
+		PANDORA_PID=`pidof_pandora`
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
+			exit 1
+		else
+			echo "Stopping Pandora Agent."
+			kill $PANDORA_PID > /dev/null 2>&1        
+		fi
+	;;
+
+	status)
+		PANDORA_PID=`pidof_pandora`	
+		if [ -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Agent is not running."
+		else
+			echo "Pandora FMS Agent is running with PID $PANDORA_PID."
+		fi
+		exit 0
+	;;
+
+	force-reload|restart)
+		$0 stop
+		sleep 2
+		$0 start
+	;;
+	
+	*)
+        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
+        exit 1
+esac
+

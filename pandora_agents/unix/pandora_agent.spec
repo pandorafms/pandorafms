@@ -1,9 +1,9 @@
 #
 #Pandora FMS Linux Agent
 #
-%define name        pandorafms_agent
+%define name        pandorafms_agent_unix
 %define version	    3.0.0
-Summary:            Pandora FMS Linux agent
+Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
 Version:            %{version}
 Release:            1
@@ -23,11 +23,12 @@ Provides:           %{name}-%{version}
 %description
 Pandora FMS agents are based on native languages in every platform: scripts that can be written in any language. It’s possible to reproduce any agent in any programming language and can be extended without difﬁculty the existing ones in order to cover aspects not taken into account up to the moment.
 These scripts are formed by modules that each one gathers a "chunk" of information. Thus, every agent gathers several "chunks" of information; this one is organized in a data set and stored in a single ﬁle, called data ﬁle.
+This is the PERL 5.8 version of Pandora FMS agent. This includes all the advanced features included in 3.0 version, and will be the default agent in future versions.
 
 %prep
 rm -rf $RPM_BUILD_ROOT
 
-%setup -q -n linux
+%setup -q -n unix
 
 %build
 
@@ -41,20 +42,17 @@ mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_out
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
-cp -aRf  $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
-%if "%{_vendor}" == "redhat"
-   mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-%else
-   mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-%endif
-mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
 
 # Checking old config file (if exists)
 if [ -f /etc/pandora/pandora_agent.conf ] ; then
-	cp /etc/pandora/pandora_agent.conf /etc/pandora/pandora_agent.conf.backup
+	mv /etc/pandora/pandora_agent.conf /etc/pandora/pandora_agent.conf.backup
 fi
 
-cp $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.conf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.conf.rpmnew
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
+
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
     rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
 fi
@@ -67,29 +65,23 @@ rm -Rf $RPM_BUILD_ROOT
 exit 0
 
 
-
 %post
 if [ ! -d /etc/pandora ] ; then
 	mkdir -p /etc/pandora
 fi
 
 if [ ! -f /usr/share/pandora_agent/pandora_agent.conf ] ; then
-    cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
-else
-	cp /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf.backup
-   	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
+    	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
 fi
 
-if [ -f /etc/pandora/pandora_agent.conf ] ; then
-	rm -Rf /etc/pandora/pandora_agent.conf
+if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
+	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
+else
+	ln -s /usr/share/pandora_agent/pandora_agent.conf.rpmnew /etc/pandora/pandora_agent.conf.rpmnew
 fi
 
 if [ ! -e /etc/pandora/plugins ]; then
 	ln -s /usr/share/pandora_agent/plugins /etc/pandora
-fi
-
-if [ ! -e /etc/pandora/pandora_agent.conf ]; then
-	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf 
 fi
 
 chkconfig -s pandora_agent_daemon on
@@ -102,6 +94,7 @@ rm /etc/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora
 rm -Rf /etc/pandora/pandora_agent.conf
 rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
+rm -Rf /usr/share/pandora_agent
 exit 0
 
 %files

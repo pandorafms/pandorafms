@@ -12,36 +12,50 @@ MODE=$1
 SECOPT=$2
 
 get_distro () {
-
 	# Get Linux Distro type and version
+	# We assume we are on Linux unless told otherwise
+	LINUX=TRUE
 	if [ -f "/etc/SuSE-release" ]
 	then
 		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
 		LINUX_DISTRO=SUSE
+	elif [ -f "/etc/lsb-release" ]
+	then
+		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+		LINUX_DISTRO=UBUNTU
+		OS_VERSION="UBUNTU $OS_VERSION"
+	elif [ -f "/etc/debian_version" ]
+	then
+		OS_VERSION=`cat /etc/debian_version`
+		OS_VERSION="DEBIAN $OS_VERSION"
+		LINUX_DISTRO=DEBIAN
+	elif [ -f "/etc/fedora-release" ]
+	then
+		OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+		OS_VERSION="FEDORA $OS_VERSION"
+		LINUX_DISTRO=FEDORA
+	elif [ `uname -s` == "Darwin" ]
+	then
+		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
+		LINUX_DISTRO="Darwin"
+		OS_VERSION=`uname -r`
+		LINUX=FALSE
+	elif [ `uname -s` == "SunOS" ]
+	then
+		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
+		LINUX_DISTRO="Solaris"
+		OS_VERSION=`uname -r`
+		LINUX=FALSE
+	elif [ `uname -s` == "Linux" ]
+	then
+		# Test for Linux to make sure we're on Linux
+		LINUX_DISTRO="GENERIC"
+		OS_VERSION=`uname -r`
 	else
-		if [ -f "/etc/lsb-release" ]
-		then
-			OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-			LINUX_DISTRO=UBUNTU
-			OS_VERSION="UBUNTU $OS_VERSION"
-		else
-			if [ -f "/etc/debian_version" ]
-			then
-				OS_VERSION=`cat /etc/debian_version`
-				OS_VERSION="DEBIAN $OS_VERSION"
-				LINUX_DISTRO=DEBIAN
-			else
-				if [ -f "/etc/fedora-release" ]
-				then
-					OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-					OS_VERSION="FEDORA $OS_VERSION"
-					LINUX_DISTRO=FEDORA
-				else
-					LINUX_DISTRO=GENERIC
-					OS_VERSION=`uname -r`
-				fi
-			fi
-		fi
+		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
+		LINUX_DISTRO=`uname -s`
+		OS_VERSION=`uname -r`
+		LINUX=FALSE
 	fi
 	echo $LINUX_DISTRO
 }
@@ -77,9 +91,7 @@ install () {
 		if [ "$DISTRO" == "UBUNTU" ]
 		then
 			echo "UBUNTU distribution detected"
-		fi
-
-		if [ "$DISTRO" == "SUSE" ]
+		elif [ "$DISTRO" == "SUSE" ]
 		then
 			echo "SUSE distribution detected"
 		fi
@@ -89,30 +101,53 @@ install () {
 		make install
 		
 		echo "Creating common Pandora FMS directories"
-		mkdir /var/spool/pandora 2> /dev/null
-		mkdir /var/spool/pandora/data_in 2> /dev/null
-		mkdir /var/spool/pandora/data_in/conf 2> /dev/null
-		mkdir /var/spool/pandora/data_in/md5 2> /dev/null
 		id pandora
 		if [ $? -eq 0 ]; then
 			echo " "
 			echo "User pandora does exist, make sure the SSH directories are correct"
 		else
-			echo "Creating 'pandora' user"
-			useradd pandora 
-			mkdir /home/pandora 2> /dev/null
-			mkdir /home/pandora/.ssh 2> /dev/null
-			chown -R pandora /home/pandora 
+			echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
+			read AREYOUSURE
+			if [ "$AREYOUSURE" == "y" ]; then
+				useradd pandora 
+				mkdir /home/pandora 2> /dev/null
+				mkdir /home/pandora/.ssh 2> /dev/null
+				chown -R pandora /home/pandora 
+			else
+				echo "Please create the 'pandora' user manually according to your authentication scheme then restart the installation"
+				echo "Aborting..."
+				exit 1
+			fi
 		fi
+
+		mkdir /var/spool/pandora 2> /dev/null
+		mkdir /var/spool/pandora/data_in 2> /dev/null
+		mkdir /var/spool/pandora/data_in/conf 2> /dev/null
+		mkdir /var/spool/pandora/data_in/md5 2> /dev/null
 		mkdir /var/log/pandora 2> /dev/null
 		
 		echo "Giving proper permission to /var/spool/pandora"
-		if [ "$DISTRO" == "UBUNTU" ]
+		id -g www-data > /dev/null
+		if [ $? -eq 0 ]
 		then
 			chown -R pandora:www-data /var/spool/pandora/ 
 		else
-			chown -R pandora:www /var/spool/pandora/
+			id -g www > /dev/null
+			if [ $? -eq 0 ]
+			then
+				chown -R pandora:www /var/spool/pandora/ 
+			else
+				id -g apache  > /dev/null
+				if [ $? -eq 0 ]
+				then
+					chown -R pandora:apache /var/spool/pandora/ 
+				else
+					echo "No web server user found, some functionality might not perform correctly"
+					chown -R pandora:root /var/spool/pandora
+				fi
+			fi
 		fi
+		
 		
 		echo "Creating setup directory in /etc/pandora"
 		mkdir /etc/pandora 2> /dev/null
@@ -125,43 +160,54 @@ install () {
 		cp conf/pandora_server.conf /etc/pandora/
 		chmod 770 /etc/pandora/pandora_server.conf
 		
-		echo "Copying the daemon script into /etc/init.d/pandora_server"
-		cp util/pandora_server /etc/init.d/		
-		
-		if [ "$DISTRO" == "UBUNTU" ]
+		if [ "$LINUX" == TRUE ]
 		then
-			echo "Linking startup script to /etc/rc2.d"
-			ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-		else
-			INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-			echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
-			ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
-		fi
-
-		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp util/pandora_logrotate /etc/logrotate.d/pandora
-
-		if [ "$SECOPT" != "--no-tentacle" ]
-		then
+			echo "Copying the daemon script into /etc/init.d/pandora_server"
+			cp util/pandora_server /etc/init.d/		
+			
 			if [ "$DISTRO" == "UBUNTU" ]
 			then
-				# Tentacle server install (Ubuntu)
-				echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-				cp bin/tentacle_server /usr/local/bin
-				cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-				ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+				echo "Linking startup script to /etc/rc2.d"
+				ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
 			else
-				# Tentacle server install (SUSE)
-				echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
-				cp bin/tentacle_server /usr/local/bin
-				cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-				ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+				INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
+				echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
+				ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+			fi
+		fi
+
+		if [ -d /etc/logrotate.d ]; then
+			echo "Creating logrotate.d entry for Pandora FMS log management"
+			cp util/pandora_logrotate /etc/logrotate.d/pandora
+		else
+			echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+		fi
+		
+		if [ "$LINUX" == TRUE ]
+		then
+			if [ "$SECOPT" != "--no-tentacle" ]
+			then
+				if [ "$DISTRO" == "UBUNTU" ]
+				then
+					# Tentacle server install (Ubuntu)
+					echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
+					cp bin/tentacle_server /usr/local/bin
+					cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+					ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+				else
+					# Tentacle server install (SUSE)
+					echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
+					cp bin/tentacle_server /usr/local/bin
+					cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+					ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+				fi
 			fi
 		fi
 
 		echo "Creating Pandora FMS distribution directory in /usr/share/pandora"
 		mkdir /usr/share/pandora 2> /dev/null
 		cp -R util /usr/share/pandora
+		
 		if [ -d /etc/cron.daily ]
 		then
 			echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	

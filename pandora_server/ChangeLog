@@ -1,3 +1,10 @@
+2009-09-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_server_installer: Fixed a few bugs on non-Linux platforms
+	
+	* util/pandora_server, util/tentacle_serverd: Didn't work on Linux 
+	(Ubuntu). Fixed she-bang.
+
 2009-09-21  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Fixed a few details.  

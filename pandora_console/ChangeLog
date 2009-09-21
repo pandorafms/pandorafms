@@ -1,3 +1,7 @@
+2009-09-21  Sancho Lerena  <slerena@artica.es>
+
+	* install.php: Updated  version in the main screen (2.0 > 3.0)
+
 2009-09-18  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: more changes to schema :(. Added id_group to custom graph

@@ -172,7 +172,7 @@ function install_step1() {
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
 	<div id='wizard' style='height: 490px;'>
 		<div id='install_box'>
-			<h2>Welcome to Pandora FMS 2.0 installation Wizard</h2>
+			<h2>Welcome to Pandora FMS 3.0 installation Wizard</h2>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
 			<p>In four steps checks all dependencies and make your configuration 
 			for a quick installation.</p>
@@ -195,7 +195,7 @@ function install_step1() {
 		</div>";
 
 		echo "<div class='info'><b>Upgrade</b>: 
-		If you want to upgrade from Pandora FMS 1.3.x to 2.0 version, 
+		If you want to upgrade from Pandora FMS 2.x to 3.0 version, 
 		please download the migration tool from our website at 
 		<a href='http://www.pandorafms.com'>PandoraFMS.com web site</a>.</div>";
 		

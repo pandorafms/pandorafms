@@ -7,7 +7,7 @@ RPMHOME=/usr/src/rpm
 echo "Creating source tarballs (/usr/src/rpm/SOURCES)"
 rm -Rf /usr/src/rpm/SOURCES/pandorafms_*.tar.gz
 
-cd $CODEHOME/pandora_agent
+cd $CODEHOME/pandora_agents
 sudo tar zcvf $RPMHOME/SOURCES/pandorafms_agent-3.0.0.tar.gz --exclude \.svn --exclude nohup linux
 cd $CODEHOME
 sudo tar zcvf $RPMHOME/SOURCES/pandorafms_server-3.0.0.tar.gz --exclude \.svn pandora_server
@@ -17,7 +17,7 @@ cd $CODEHOME
 tar zcvf $RPMHOME/SOURCES/pandorafms_console-3.0.0.tar.gz --exclude \.svn --exclude config.php --exclude enterprise pandora_console
 # Console Enterprise
 cd $CODEHOME_ENT/pandora/trunk/pandora_console
-sudo tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-3.0.0.tar.gz --exclude \.svn enterprise/*
+sudo tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-3.0.0.tar.gz --exclude \.svn --exclude tree_view* enterprise/*
 # Server OpenSource
 cd $CODEHOME_ENT/pandora/trunk/pandora_server/
 sudo tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-3.0.0.tar.gz --exclude \.svn  PandoraFMS-Enterprise

@@ -1,3 +1,15 @@
+2009-09-21  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Fixed a few details.  
+
+	* bin/pandora_server: Error handler needs to be reviewed, Enterprise 
+	errors are too nasty :(
+
+	* util/tentacle_serverd: Fixed LSB tags problems for RPM install
+
+	* util/pandora_server: Fixed LSB tags problems and fix a bug who make
+	script inusable :(
+
 2009-09-18  Sancho Lerena <slerena@artica.es>
 
 	*  util/pandora_db.pl: Minor improvements in script. Added 

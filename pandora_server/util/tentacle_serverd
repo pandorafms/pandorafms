@@ -1,17 +1,22 @@
-#!/bin/bash
-
-# Tentacle server simple startup script 
-# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L.
-# Linux Version (generic)
-# v0.1 Build 090827
-
-### BEGIN INIT INTO
-# Provides: tentacle_server
-# Default-Start: 2 3 5
-# Default-Stop: 0 1 2 3 5
+#! /bin/sh
+# Copyright (c) 2005-2009 Artica ST
+#
+# Author: Sancho Lerena <slerena@artica.es> 2006-2009
+#
+# /etc/init.d/tentacle_server
+#
+# System startup script for Tentacle Server
+#
+### BEGIN INIT INFO
+# Provides:       tentacle_server
 # Required-Start: $network
-# Required-Stop: $network
+# Should-Start:   $syslog
+# Required-Stop:  $network
+# Should-Stop:    $network
+# Default-Start:  2 3 5
+# Default-Stop:   0 1 6
 # Short-Description: Tentacle Server startup script
+# Description:    Tentacle Server startup script
 ### END INIT INFO
 
 # Pandora server settings

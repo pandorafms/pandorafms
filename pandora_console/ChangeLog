@@ -11,7 +11,7 @@
 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Added new field for upgrade
 	script.
 
-2009-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_modules.php: change the function "update_agent_module"
 	for to add the update only that not delete pending.

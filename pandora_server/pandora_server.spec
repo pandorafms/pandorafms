@@ -21,8 +21,8 @@ BuildArchitectures: noarch
 Requires(pre):      /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
-Requires:           perl-mail-sendmail perl-DBI perl-DBD-mysql perl-time-format 
-Requires:           perl-mail-sendmail perl-netaddr-ip net-snmp
+Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-time-format 
+Requires:           perl-NetAddr-IP net-snmp
 Requires:           nmap wmic sudo
 
 %description
@@ -82,7 +82,7 @@ chkconfig -s pandora_server on
 chkconfig -s tentacle_serverd on 
 echo "/usr/share/pandora_server/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
 chmod 750 /etc/cron.daily/pandora_db
-cp -aRf util/pandora_logrotate /etc/logrotate.d/pandora
+cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
 
 if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora

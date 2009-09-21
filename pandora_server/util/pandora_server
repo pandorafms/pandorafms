@@ -1,20 +1,24 @@
-#!/bin/bash
-
-# Pandora FMS Server, startup script
-# Copyright (c) 2006-2009 Sancho Lerena, <sancho.lerena@artica.es>
-# Linux Version (generic), for SuSe, Debian and Ubuntu.
-# other Linux distros could not work properly without modifications
-# v3.0 Build 090915
-# http://www.pandorafms.com
-
-### BEGIN INIT INTO
-# Provides: pandora_server
-# Default-Start: 2 3 5
-# Default-Stop: 0 1 2 3 5
-# Required-Start: $network
-# Required-Stop: $network
+#! /bin/sh
+# Copyright (c) 2005-2009 Artica ST
+#
+# Author: Sancho Lerena <slerena@artica.es> 2006-2009
+#
+# /etc/init.d/pandora_server
+#
+# System startup script for Pandora FMS
+#
+### BEGIN INIT INFO
+# Provides:       pandora_server
+# Required-Start: $syslog mysql
+# Should-Start:   $network 
+# Required-Stop:  $syslog mysql
+# Should-Stop:    $network mysql
+# Default-Start:  2 3 5
+# Default-Stop:   0 1 6
 # Short-Description: Pandora FMS Server startup script
+# Description:    Pandora FMS Server startup script
 ### END INIT INFO
+
 
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
 PANDORA_PID_PATH="/var/run"
@@ -25,7 +29,7 @@ PANDORA_DAEMON=/usr/local/bin/pandora_server
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
-	PANDORA_PID=`ps aux | grep $PANDORA_DAEMON $PANDORA_HOME| grep -v grep | tail -1 | awk '{ print $2 }'`
+	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )
 

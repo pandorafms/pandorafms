@@ -71,7 +71,9 @@ sub pandora_crash () {
 
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
-$SIG{__DIE__} = 'pandora_crash';
+
+# Error handler needs to be reviewed, Enterprise not found errors are too nasty :(
+#$SIG{__DIE__} = 'pandora_crash';
 
 # Prevent alarm from bombing the main thread when called within a thread
 $SIG{'ALRM'} = 'IGNORE';

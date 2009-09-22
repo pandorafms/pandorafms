@@ -58,6 +58,23 @@ $create_component = (bool) get_parameter ('create_component');
 $update_component = (bool) get_parameter ('update_component');
 $delete_component = (bool) get_parameter ('delete_component');
 $new_component = (bool) get_parameter ('new_component');
+$duplicate_network_component = (bool) get_parameter ('duplicate_network_component');
+
+if ($duplicate_network_component) {
+	$source_id = (int) get_parameter ('source_id');
+	
+	$id = duplicate_network_component ($source_id);
+	print_result_message ($id,
+		__('Successfully created from %s', get_network_component_name ($source_id)),
+		__('Could not be created'));
+	
+	//List unset for jump the bug in the pagination (TODO) that the make another
+	//copy for each pass into pages.
+	unset($_POST['source_id']);
+	unset($_POST['duplicate_network_component']);
+	
+	$id = 0;
+}
 
 if ($create_component) {
 	$id = create_network_component ($name, $type, $id_group, 
@@ -237,7 +254,7 @@ $table->head[4] = __('Group');
 $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action');
 $table->size = array ();
-$table->size[6] = '40px';
+$table->size[6] = '50px';
 $table->data = array ();
 
 foreach ($components as $component) {
@@ -255,7 +272,13 @@ foreach ($components as $component) {
 	$data[3] = substr ($component['description'], 0, 30);
 	$data[4] = get_network_component_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
-	$data[6] = '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+	
+	$data[6] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/modules/manage_network_components" style="display: inline; float: left">';
+	$data[6] .= print_input_hidden ('duplicate_network_component', 1, true);
+	$data[6] .= print_input_hidden ('source_id', $component['id_nc'], true);
+	$data[6] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+	$data[6] .= '</form> ';
+	$data[6] .= '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[6] .= print_input_hidden ('delete_component', 1, true);
 	$data[6] .= print_input_hidden ('id', $component['id_nc'], true);
 	$data[6] .= print_input_hidden ('search_id_group', $search_id_group, true);

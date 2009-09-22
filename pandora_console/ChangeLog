@@ -1,5 +1,12 @@
 2009-09-21  Sancho Lerena  <slerena@artica.es>
 
+	* include/functions_network_components.php,
+	godmode/modules/manage_network_components.php: add icon duplicate (and
+	necesary code...functions), that it's use for duplicate with easy the local
+	components.
+
+2009-09-21  Sancho Lerena  <slerena@artica.es>
+
 	* install.php: Updated  version in the main screen (2.0 > 3.0)
 
 2009-09-18  Sancho Lerena  <slerena@artica.es>

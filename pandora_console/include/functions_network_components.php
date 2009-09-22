@@ -292,4 +292,55 @@ function create_agent_module_from_network_component ($id_network_component, $id_
 	
 	return create_agent_module ($id_agent, $name, $values);
 }
+
+/**
+ * Get the name of a network component.
+ *
+ * @param int Component id to get.
+ *
+ * @return Component name with the given id. False if not available or readable.
+ */
+function get_network_component_name ($id_network_component) {
+	if (empty ($id_network_component))
+		return false;
+	return @get_db_value ('name', 'tnetwork_component', 'id', $id_network_component);
+}
+
+/**
+ * Duplicate local compoment.
+ * @param integer id_local_component Id of localc component for duplicate.
+ */
+function duplicate_network_component ($id_local_component) {	
+	$network = get_network_component ($id_local_component);
+	
+	if ($network === false)
+		return false;
+	
+	$name = __('Copy of').' '.$network['name'];
+
+    $networkCopy['description'] = $network['description'];
+    $networkCopy['max'] = $network['max'];
+    $networkCopy['min'] = $network['min'];
+    $networkCopy['module_interval'] = $network['module_interval'];
+    $networkCopy['tcp_port'] = $network['tcp_port'];
+    $networkCopy['tcp_send'] = $network['tcp_send'];
+    $networkCopy['tcp_rcv'] = $network['tcp_rcv'];
+    $networkCopy['snmp_community'] = $network['snmp_community'];
+    $networkCopy['snmp_oid'] = $network['snmp_oid'];
+    $networkCopy['id_module_group'] = $network['id_module_group'];
+    $networkCopy['id_modulo'] = $network['id_modulo'];
+    $networkCopy['id_plugin'] = $network['id_plugin'];
+    $networkCopy['plugin_user'] = $network['plugin_user'];
+    $networkCopy['plugin_pass'] = $network['plugin_pass'];
+    $networkCopy['plugin_parameter'] = $network['plugin_parameter'];
+    $networkCopy['max_timeout'] = $network['max_timeout'];
+    $networkCopy['history_data'] = $network['history_data'];
+    $networkCopy['min_warning'] = $network['min_warning'];
+    $networkCopy['max_warning'] = $network['max_warning'];
+    $networkCopy['min_critical'] = $network['min_critical'];
+    $networkCopy['max_critical'] = $network['max_critical'];
+    $networkCopy['min_ff_event'] = $network['min_ff_event'];
+	
+	return create_network_component ($name, $network['type'], $network['id_group'], $networkCopy);
+}
 ?>

@@ -40,7 +40,7 @@ umask 0007
 # if not running). Can be a list of PIDs if multiple instances are running.
 
 function get_pid {
-		TENTACLE_PID=`ps aux | grep $TENTACLE_PATH$TENTACLE_DAEMON | grep -v grep | tail -1 | awk '{ print $2 }'`
+		TENTACLE_PID=`ps aux | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
 		echo $TENTACLE_PID
 }
 
@@ -70,8 +70,7 @@ case "$1" in
 		fi
 	
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
-		sleep 1
-
+		sleep 4
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is now running with PID $TENTACLE_PID."

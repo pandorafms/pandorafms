@@ -1,3 +1,13 @@
+2009-09-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: Fixes some problems detecting Linux 
+	(was skipping tentacle installation).
+
+	* util/tentacle_serverd: Fixed some problems starting tentacle
+	because short timeout after starting and because the unquoted grep.
+
+ 	* util/pandora_server: Incresed sleep time on start.
+
 2009-09-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_server_installer: Fixed a few bugs on non-Linux platforms

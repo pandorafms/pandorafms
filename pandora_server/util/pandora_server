@@ -57,7 +57,7 @@ case "$1" in
 		fi
 	
 		$PANDORA_DAEMON $PANDORA_HOME -D
-		sleep 2
+		sleep 4
 
 		PANDORA_PID=`pidof_pandora`
 		if [ ! -z "$PANDORA_PID" ]

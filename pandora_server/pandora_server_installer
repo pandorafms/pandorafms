@@ -14,7 +14,7 @@ SECOPT=$2
 get_distro () {
 	# Get Linux Distro type and version
 	# We assume we are on Linux unless told otherwise
-	LINUX=TRUE
+	LINUX=YES
 	if [ -f "/etc/SuSE-release" ]
 	then
 		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
@@ -39,13 +39,19 @@ get_distro () {
 		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
 		LINUX_DISTRO="Darwin"
 		OS_VERSION=`uname -r`
-		LINUX=FALSE
+		LINUX=NO
+	elif [ `uname -s` == "AIX" ]
+        then
+                # For future reference, AIX doesn't have /etc/init.d
+                LINUX_DISTRO="AIX"
+                OS_VERSION=`uname -r`
+                LINUX=NO
 	elif [ `uname -s` == "SunOS" ]
 	then
 		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
 		LINUX_DISTRO="Solaris"
 		OS_VERSION=`uname -r`
-		LINUX=FALSE
+		LINUX=NO
 	elif [ `uname -s` == "Linux" ]
 	then
 		# Test for Linux to make sure we're on Linux
@@ -55,9 +61,9 @@ get_distro () {
 		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
 		LINUX_DISTRO=`uname -s`
 		OS_VERSION=`uname -r`
-		LINUX=FALSE
+		LINUX=NO
 	fi
-	echo $LINUX_DISTRO
+	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
 }
 
 
@@ -85,9 +91,13 @@ install () {
 		echo " "
 		rm output
 	else
+
+		# This returns a multiple value string, separated with ":" -> $LINUX_DISTRO:$OS_VERSION:$LINUX	
+		GET_DISTRO="`get_distro`"
+		DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
+		OS_VERSION=`echo $GET_DISTRO | cut -f 2 -d ":"`
+		LINUX=`echo $GET_DISTRO | cut -f 3 -d ":"`	
 	
-		DISTRO=`get_distro`
-		
 		if [ "$DISTRO" == "UBUNTU" ]
 		then
 			echo "UBUNTU distribution detected"
@@ -160,7 +170,7 @@ install () {
 		cp conf/pandora_server.conf /etc/pandora/
 		chmod 770 /etc/pandora/pandora_server.conf
 		
-		if [ "$LINUX" == TRUE ]
+		if [ "$LINUX" == "YES" ]
 		then
 			echo "Copying the daemon script into /etc/init.d/pandora_server"
 			cp util/pandora_server /etc/init.d/		
@@ -182,8 +192,8 @@ install () {
 		else
 			echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 		fi
-		
-		if [ "$LINUX" == TRUE ]
+	
+		if [ "$LINUX" == "YES" ]
 		then
 			if [ "$SECOPT" != "--no-tentacle" ]
 			then
@@ -227,7 +237,7 @@ uninstall () {
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 	fi
 	echo "Removing Pandora Servers"
-		rm -Rf /var/spool/pandora/data_in/
+	rm -Rf /var/spool/pandora/data_in/
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "   userdel pandora"

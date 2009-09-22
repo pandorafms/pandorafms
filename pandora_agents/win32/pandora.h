@@ -76,8 +76,8 @@ namespace Pandora {
 	bool   getPandoraDebug        ();
 	string getPandoraAgentVersion ();
 	
-	void   pandoraDebug           (char *format, ...);
-	void   pandoraLog             (char *format, ...);
+	void   pandoraDebug           (const char *format, ...);
+	void   pandoraLog             (const char *format, ...);
 	void   pandoraFree            (void * e);
 	
 	bool   is_enabled             (string value);

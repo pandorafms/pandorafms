@@ -34,7 +34,7 @@ namespace Pandora {
 	class UDP_Server {
 		public:
 			UDP_Server (Pandora_Windows_Service *service, string address, string auth_address, unsigned int port);
-			~UDP_Server ();
+			virtual ~UDP_Server ();
 			unsigned long getAddress ();
 			unsigned long getAuthAddress ();
 			unsigned long getPort ();

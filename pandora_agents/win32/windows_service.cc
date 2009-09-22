@@ -206,8 +206,7 @@ Windows_Service::install (LPCTSTR application_binary_path) {
 				    service_name,                /* name of service           */
 				    service_display_name,        /* service name to display   */
 				    SERVICE_ALL_ACCESS,          /* desired access            */
-				    SERVICE_WIN32_OWN_PROCESS |
-				    SERVICE_INTERACTIVE_PROCESS, /* service type, interactive */
+				    SERVICE_WIN32_OWN_PROCESS,   /* service type, interactive */
 				    SERVICE_AUTO_START,          /* start type                */
 				    SERVICE_ERROR_NORMAL,        /* error control type        */
 				    application_binary_path,     /* service's binary          */

@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <WinSock2.h>
+#include <winsock2.h>
 
 #include "udp_server.h"
 #include "../pandora.h"
@@ -98,6 +98,11 @@ UDP_Server::UDP_Server (Pandora_Windows_Service *service, string address, string
 	this->running = 0;
 	this->service = service;
 }
+
+/** 
+ * UDP_Server destructor.
+ */
+UDP_Server::~UDP_Server () {};
 
 /** 
  * Starts the server.

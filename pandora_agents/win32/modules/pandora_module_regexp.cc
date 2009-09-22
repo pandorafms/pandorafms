@@ -49,7 +49,7 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
     // Open the file and skip to the end
     this->file.open (source.c_str ());
     if (this->file.is_open ()) {
-        this->file.seekg (0, ios_base::end);
+        //this->file.seekg (0, ios_base::end);
     } else {
         pandoraLog ("Error opening file %s", source.c_str ());
     }
@@ -61,6 +61,7 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
  * Pandora_Module_Regexp destructor.
  */
 Pandora_Module_Regexp::~Pandora_Module_Regexp () {
+	regfree (&this->regexp);
     this->file.close();
 }
 
@@ -95,7 +96,7 @@ Pandora_Module_Regexp::run () {
         if (line.empty ()) {
             continue;
         }
-        
+
         // Try to match the line with the regexp
         if (regexec (&this->regexp, line.c_str (), 0, NULL, 0) == 0) {
             if (type == TYPE_GENERIC_DATA_STRING || type == TYPE_ASYNC_STRING) {

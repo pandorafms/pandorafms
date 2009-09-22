@@ -22,6 +22,9 @@
 #include "pandora_windows_service.h"
 #include "ssh/pandora_ssh_test.h"
 #include "ftp/pandora_ftp_test.h"
+#ifdef __DEBUG__
+	#include "debug_new.h"
+#endif
 
 #define PATH_SIZE                         _MAX_PATH+1
 #define SERVICE_INSTALL_CMDLINE_PARAM    "--install"

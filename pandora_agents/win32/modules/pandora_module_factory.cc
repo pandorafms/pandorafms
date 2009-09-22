@@ -341,9 +341,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_inventory != "") {
 		module = new Pandora_Module_Inventory (module_name, module_inventory);
 	} else if (module_odbc != "") {
-		module = new Pandora_Module_Odbc (module_name,
-						  module_odbc,
-						  module_odbc_query);
+		module = new Pandora_Module_Odbc (module_name, module_odbc, module_odbc_query);
 	} else if (module_logevent != "") {
 		module = new Pandora_Module_Logevent (module_name,
 						      module_source,

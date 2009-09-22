@@ -377,6 +377,7 @@ Pandora_Module_Inventory::getXml() {
 			delete element;
 
 			inventory_list_element->InsertEndChild (*data_element);
+			delete data_element;
 		}
 		if (inventory_list_element != NULL)
         {

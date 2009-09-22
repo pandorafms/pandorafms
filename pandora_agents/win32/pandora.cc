@@ -129,7 +129,7 @@ pandoraWriteLog (string filename, string line) {
  * @param ... Variable argument list
  */
 void
-Pandora::pandoraLog (char *format, ...) {
+Pandora::pandoraLog (const char *format, ...) {
 	va_list    args;
 	char       msg[5000];
 	
@@ -150,7 +150,7 @@ Pandora::pandoraLog (char *format, ...) {
  * @param ... Variable argument list
  */
 void
-Pandora::pandoraDebug (char *format, ...) {
+Pandora::pandoraDebug (const char *format, ...) {
 	if (pandora_debug) {
 		va_list    args;
 		char       msg[5000];

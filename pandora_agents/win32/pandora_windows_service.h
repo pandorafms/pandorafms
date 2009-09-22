@@ -44,7 +44,8 @@ namespace Pandora {
 		long                 elapsed_transfer_time;
 		long                 transfer_interval;
 		bool                 started;
-		
+		void                 *udp_server;
+
 		TiXmlElement  *getXmlHeader    ();
 		int           copyDataFile    (string filename);
 		int           copyTentacleDataFile (string host,

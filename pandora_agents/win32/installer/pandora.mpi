@@ -1,18 +1,18 @@
 array set info {
 AllowLanguageSelection
-Yes
+{Yes}
 
 AppName
-{Pandora FMS Windows Agent 2.0}
+{Pandora FMS Windows Agent 3.0}
 
 ApplicationID
-17E3D2CF-CA02-406B-8A80-9D31C17BD08F
+{17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
 
 ApplicationURL
-http://pandora.sourceforge.net
+{http://pandora.sourceforge.net}
 
 AutoRefreshFiles
-Yes
+{Yes}
 
 BuildFailureAction
 {Fail (recommended)}
@@ -21,79 +21,106 @@ CancelledInstallAction
 {Rollback and Stop}
 
 CleanupCancelledInstall
-Yes
+{Yes}
 
 CommandLineFailureAction
 {Fail (recommended)}
 
 Company
-ArticaST
+{ArticaST}
 
 CompressionLevel
-7
+{7}
 
 CompressionMethod
-zlib
+{zlib}
 
 Copyright
-2004-2008
+{2004-2009}
 
 DefaultDirectoryLocation
 {}
 
 DefaultLanguage
-English
+{English}
+
+DefaultToSystemLanguage
+{Yes}
+
+EnableResponseFiles
+{Yes}
 
 Ext
-.exe
+{.exe}
 
 ExtractSolidArchivesOnStartup
-No
+{No}
 
 Icon
-C:/pandora_installer/logo.png
+{logo.png}
+
+IgnoreDirectories
+{}
+
+IgnoreFiles
+{}
 
 Image
-C:/pandora_installer/logo.png
+{logo.png}
 
 IncludeDebugging
-0
+{0}
 
 InstallPassword
 {}
 
 InstallVersion
-2.0.0.2
+{3.0.0.0}
+
+Language,ca
+{Yes}
+
+Language,cs
+{Yes}
 
 Language,de
-Yes
+{Yes}
 
 Language,en
-Yes
+{Yes}
 
 Language,es
-Yes
+{Yes}
 
 Language,fr
-Yes
+{Yes}
 
 Language,hu
-Yes
+{Yes}
 
 Language,it
-Yes
+{Yes}
+
+Language,lt
+{Yes}
 
 Language,nl
-Yes
+{Yes}
 
 Language,pl
-Yes
+{Yes}
 
 Language,pt_br
-Yes
+{Yes}
 
 Language,ru
-Yes
+{Yes}
+
+LastIgnoreDirectories
+{}
+
+LastIgnoreFiles
+{}
 
 PackageDescription
 {Pandora FMS Windows Agent}
@@ -105,70 +132,70 @@ PackageMaintainer
 {Esteban Sanchez <esteban.sanchez@artica.es>}
 
 PackageName
-<%ShortAppName%>
+{<%ShortAppName%>}
 
 PackagePackager
 {Raul Mateos <raulofpandora@gmail.com>, Sancho Lerena <sancho.lerena@artica.es>, Manuel Arostegui <marostegui@artica.es>}
 
 PackageRelease
-<%PatchVersion%>
+{<%PatchVersion%>}
 
 PackageSummary
 {This is the installer for Pandora FMS agent for windows platforms}
 
 PackageVersion
-<%MajorVersion%>.<%MinorVersion%>
+{<%MajorVersion%>.<%MinorVersion%>}
 
 PreserveFileAttributes
-Yes
+{Yes}
 
 PreserveFilePermissions
-No
+{No}
 
 ProjectID
-0EA13B96-1BB2-4238-B248-101B4F906C15
+{0EA13B96-1BB2-4238-B248-101B4F906C15}
 
 ProjectVersion
-1.2.9.0
+{1.2.14.1}
 
 SaveOnlyToplevelDirs
-No
+{No}
 
 ScriptExt
-.bat
+{.bat}
 
 ShortAppName
 {Pandora FMS}
 
 SkipUnusedFileGroups
-No
+{No}
 
 SystemLanguage
-es
+{es}
 
 Theme
-Modern_Wizard
+{Modern_Wizard}
 
 ThemeDir
-Modern_Wizard
+{Modern_Wizard}
 
 ThemeVersion
-1
+{1}
 
 UpgradeApplicationID
 {}
 
 Version
-080610
+{090922}
 
 ViewReadme
-Yes
+{Yes}
 
 WizardHeight
-365
+{365}
 
 WizardWidth
-500
+{500}
 
 }
 
@@ -185,12 +212,28 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Windows MacOS-X} -name {Program Files} -parent FileGroups
-File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Windows MacOS-X FreeBSD-5-x86 FreeBSD-6-x86 FreeBSD-7-x86 Linux-x86_64 Solaris-x86} -name {Program Files} -parent FileGroups
+File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name ../bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::7E8B4918-C894-4FCE-98F0-1DDDBF9818F8 -name id_dsa.pub -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::D2362133-1FE1-4D75-8607-083C08CFDE94 -name PUT_SSH_KEYS_HERE -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
-File ::6E5B73B7-8B81-48D7-BF49-59D8D92FB830 -type dir -name C:/pandora_installer/bin/util -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36 -type dir -name .svn -active 0 -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
+File ::9AF0652D-DF48-17E1-CAC6-C7A95749BF39 -name all-wcprops -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::1752E819-4309-7363-EE84-9F995878B58A -name entries -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::B2A5618C-97E8-618A-F575-AF5111A86436 -name format -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::EC823A02-66E1-E5D0-222D-50EC848E935D -type dir -name prop-base -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::CDE9655C-0BB8-862F-BC70-81E68E4E780B -name id_dsa.pub.svn-base -active 0 -parent EC823A02-66E1-E5D0-222D-50EC848E935D
+File ::0A68C64D-C7FD-BEAD-710C-15A33BF42394 -name id_dsa.svn-base -active 0 -parent EC823A02-66E1-E5D0-222D-50EC848E935D
+File ::412B52E5-5FC9-6C45-AAA8-61E792250F0C -type dir -name props -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::AC4C1CD4-E4E5-CED0-C4F8-8F72C3BD5C99 -type dir -name text-base -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::69B9D8E8-AA25-F6BA-D556-6601B1679C11 -name id_dsa.pub.svn-base -active 0 -parent AC4C1CD4-E4E5-CED0-C4F8-8F72C3BD5C99
+File ::73569099-F7B9-CC82-A469-52F721A70B61 -name id_dsa.svn-base -active 0 -parent AC4C1CD4-E4E5-CED0-C4F8-8F72C3BD5C99
+File ::3A083CE1-9577-2E23-60B6-B4628E3AFF7A -name PUT_SSH_KEYS_HERE.svn-base -active 0 -parent AC4C1CD4-E4E5-CED0-C4F8-8F72C3BD5C99
+File ::A3D31F9A-9C90-6019-0D36-2BF7D54FBAFC -type dir -name tmp -active 0 -parent A2DBFC3C-AC45-DAE1-0F04-D279DDC1EB36
+File ::8E51353E-6421-44F0-866E-FA3A75AF303E -type dir -name prop-base -active 0 -parent A3D31F9A-9C90-6019-0D36-2BF7D54FBAFC
+File ::685ECBDE-3A87-4D92-4954-BC35E4768E42 -type dir -name props -active 0 -parent A3D31F9A-9C90-6019-0D36-2BF7D54FBAFC
+File ::42CF5A97-A991-05CF-E5F7-7F78D5D52CEE -type dir -name text-base -active 0 -parent A3D31F9A-9C90-6019-0D36-2BF7D54FBAFC
+File ::6E5B73B7-8B81-48D7-BF49-59D8D92FB830 -type dir -name ../bin/util -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::C410E57A-3F3E-4622-AB1B-DB6A0EBCED01 -name cut.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::9EB6D55B-F596-4486-9A5A-6A374A3E6CDA -name date.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::0F0DB1A3-D6CA-4ADF-87A3-A0ED76C60C6B -name expr.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
@@ -204,18 +247,67 @@ File ::F792F4E1-B3E9-43AB-A17B-44E2B3013093 -name tail.exe -parent 6E5B73B7-8B81
 File ::306C9DF0-CC33-48DC-8AFC-2B99ED4E00A0 -name tr.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::1900A2B4-09F5-468A-90AD-75CBE17C727B -name wc.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::B3D9FD4E-6021-45E6-B9B8-F81CC940540E -directory <%WINDOWS%> -name tentacle_client.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
-File ::EE3962D4-48B8-4715-B986-40794679FC89 -name C:/pandora_installer/bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name C:/pandora_installer/bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -name C:/pandora_installer/bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::71EFB181-1BAE-4749-B7E7-7837E378BA3D -name C:/pandora_installer/bin/PandoraAgent.exe -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::C36B2E54-801B-4FDE-A894-330D396AC100 -name C:/pandora_installer/bin/zlib1.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::50980131-CDA1-4F32-86E0-FD53B1097F67 -name C:/pandora_installer/pandora.ico -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::3267E440-2104-4BA2-BDEB-DFDA32441FC2 -name C:/pandora_installer/LICENSE.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name C:/pandora_installer/README.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::9F4D1B79-C9AE-4F1F-AC50-876657B3361C -type dir -name C:/pandora_installer/bin/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::AD36A2E6-370D-E5CF-3A6A-56AC4137E60C -type dir -name .svn -active 0 -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
+File ::A57FA3AE-443F-FC25-F777-70CAE8FB0892 -name all-wcprops -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::5CAE2970-9FA4-CDA6-6156-C0FB81206C93 -name entries -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::0C863D99-65DA-2CA7-9CA8-70FBB30A4F02 -name format -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::F4812143-55ED-3C48-3FC3-23D8C1456058 -type dir -name prop-base -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::5A577337-9685-8CD3-7666-54E6BD51D70C -name cut.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::14D86BD8-85DE-A53C-34F9-FD6EAF3AC3E6 -name date.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::B5474580-9B89-F881-AF0F-D89DFE27B74B -name expr.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::2B1C2B5B-187C-8566-8EDF-0E908A20DBEE -name gawk.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::346E0DB7-627C-DB73-C59E-B11DB7C3324A -name grep.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::2360BC3D-5346-2B9A-0707-397F033D6385 -name head.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::C1F38550-393D-79E1-6C1D-D7AEFA932F01 -name ls.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::F56EAD1E-60C0-B1F2-F01D-4887B9D0FF0B -name md5.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::BC5CBC91-43CB-BAB7-622D-A2F93E566458 -name puttygen.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::D4510D67-0DA2-F7F1-E6A1-924452FA9E74 -name tail.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::7AE3F476-020E-BA1A-626B-C631F1D6DEBC -name tr.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::BB01F71B-2DA6-A63E-C112-542974B20C30 -name wc.exe.svn-base -active 0 -parent F4812143-55ED-3C48-3FC3-23D8C1456058
+File ::1867308F-F69E-2BE3-9DF6-A5ECD58AA2CE -type dir -name props -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::D7C4B924-B3CE-BE13-A62B-9EB256F73AB4 -name tentacle_client.exe.svn-work -active 0 -parent 1867308F-F69E-2BE3-9DF6-A5ECD58AA2CE
+File ::13FFC58B-812B-624A-170C-B8954D13574D -type dir -name text-base -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::9BD4AAF6-4D9F-0D52-21FC-388AE4C148C4 -name cut.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::CFC49473-239A-EDC9-EAC3-74282513DFAF -name date.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::9F8DF1C5-531E-EDC6-E477-F49C063F927C -name expr.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::783FD37D-8F07-6991-E37D-22A2706716CB -name gawk.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::2305CCBD-4447-BAF4-0E7F-E38133567DB4 -name grep.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::B1E1E90B-9A96-2526-9583-E31A370A15C9 -name head.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::BA9586FF-BA3E-2E73-B262-CF7AF48AB4DC -name ls.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::732C7A8A-3FC1-172E-B943-0CF1BFADA5F2 -name md5.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::8021D8AA-4F3C-0B5D-61D1-610F3616572B -name puttygen.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::139033A0-D9E6-870A-5BFF-2261D1D707D1 -name tail.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::D25CAB78-44B6-9998-7B56-1E6DE957ED78 -name tr.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::2E2CE748-D169-27FE-DC76-13933FA60A6D -name wc.exe.svn-base -active 0 -parent 13FFC58B-812B-624A-170C-B8954D13574D
+File ::FC2CF695-F050-712A-EAC4-B57D19D00C77 -type dir -name tmp -active 0 -parent AD36A2E6-370D-E5CF-3A6A-56AC4137E60C
+File ::17DD23ED-CFF6-4E2E-AE99-2AA03F4DC4C4 -type dir -name prop-base -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
+File ::7FFC041E-C253-BA7D-D890-3D88CDBA434C -type dir -name props -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
+File ::955A9B5D-775D-4C4B-07C6-1E457A3AEF04 -type dir -name text-base -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
+File ::EE3962D4-48B8-4715-B986-40794679FC89 -name ../bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name ../bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -name ../bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::71EFB181-1BAE-4749-B7E7-7837E378BA3D -name ../bin/PandoraAgent.exe -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::C36B2E54-801B-4FDE-A894-330D396AC100 -name ../bin/zlib1.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::50980131-CDA1-4F32-86E0-FD53B1097F67 -name ../installer/pandora.ico -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::3267E440-2104-4BA2-BDEB-DFDA32441FC2 -name ../installer/LICENSE.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name ../installer/README.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::9F4D1B79-C9AE-4F1F-AC50-876657B3361C -type dir -name ../installer/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::8C09E6D4-4B09-4AA5-B025-441389C76F70 -name start_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::BA05415F-E246-45AE-A0B1-21C7AB400402 -name stop_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
-File ::94EE5172-C243-4F11-80CE-C356D9055323 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2 -type dir -name .svn -active 0 -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
+File ::FCD8D912-5FEE-9260-43B9-AAC4A3D97A74 -name all-wcprops -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::B52ADC0B-DDFE-19EA-217D-A9879FDB0ED0 -name entries -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::F1C08FA0-FC7D-A314-A3ED-79CABF0D6691 -name format -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::7C00D02E-E023-12F5-37DB-99EF5C139127 -type dir -name prop-base -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::9D70EC00-D797-99F7-D436-A245939366E9 -type dir -name props -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::916998A8-1F74-A5B7-EF97-4576BF4640EE -type dir -name text-base -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::022AD27A-A285-F9D4-6374-56A6DCB382DA -name start_pandora_agent.bat.svn-base -active 0 -parent 916998A8-1F74-A5B7-EF97-4576BF4640EE
+File ::5F1E6560-AEB6-9C49-4A34-9D0410B1BB5D -name stop_pandora_agent.bat.svn-base -active 0 -parent 916998A8-1F74-A5B7-EF97-4576BF4640EE
+File ::23F0FBAE-5849-2617-4616-D50FE1FCB137 -type dir -name tmp -active 0 -parent F9332D6C-1AB8-5657-0FD3-02D1B30B6EC2
+File ::9513C1EE-B08B-2ABE-38EF-C153696EFCD6 -type dir -name prop-base -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
+File ::2BBBE1D9-BA80-E6CA-835E-9D958A4CF3C3 -type dir -name props -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
+File ::486CB634-5092-8E3B-7621-5B3A044ACCCC -type dir -name text-base -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
+File ::94EE5172-C243-4F11-80CE-C356D9055323 -type dir -name ../bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::38108568-E397-4360-9FDD-BBD7574607E0 -name how_to_keys.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
 File ::096DCAC9-2E8F-4765-9EC5-E40DAFC26B36 -name how_to_keys_es.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
 File ::550F286E-2409-4221-A51A-CA980C9EA9DC -type dir -name images -parent 94EE5172-C243-4F11-80CE-C356D9055323
@@ -226,9 +318,47 @@ File ::5EA49A68-6952-43BF-9A54-1CDF8E48C3D8 -name 4.jpg -parent 550F286E-2409-42
 File ::0C33AC8D-503A-4A9C-801F-2FDEF9FA98C0 -name 5.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::1B81E274-2375-4287-90D7-953BE3F71FA7 -name 6.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::C2E02994-9B4E-430C-B399-E93986DD9B0F -name logo.png -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
-File ::9E5D6A00-E82C-49B4-B654-3F36D4D48A83 -name C:/pandora_installer/bin/libodbc++.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
-SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
+File ::9D2B9A51-22B6-A99C-5081-FA2019F25C7C -type dir -name .svn -active 0 -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::EE4C4794-AF1B-9B38-C3F3-4A0F30414237 -name all-wcprops -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::CDEFB24E-78EC-D33D-C03B-1BF69F9D7240 -name entries -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::AE60977B-1615-C577-177E-5B7D25BC1B9D -name format -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::2FF9A303-F999-58D0-3FBA-14DBDCCDA37B -type dir -name prop-base -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::A315BDD0-BFAC-9951-DBA9-9C0069787C3C -name 1.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::F6039348-9850-F462-2574-1E5E891BF3E6 -name 2.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::FC2B37A3-0080-541B-9966-57C1D1C1E1D6 -name 3.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::298ED0DB-1234-5BD8-18B8-518B5FB6D496 -name 4.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::053EB4AF-E3D2-3585-97C5-74101DE38A5A -name 5.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::205526D5-AB41-59CD-4E93-921AB6B2C76D -name 6.jpg.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::14581560-7252-5709-FDFF-633B5A3E280A -name logo.png.svn-base -active 0 -parent 2FF9A303-F999-58D0-3FBA-14DBDCCDA37B
+File ::6F85271E-257E-557C-FAC2-F49C1EDC2096 -type dir -name props -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::93B66474-8BCC-512F-7745-93C6A7363B6C -type dir -name text-base -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::63801B7E-91F6-27E3-6B1E-FAE252743DB2 -name 1.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::69C1BE32-1589-926A-57A7-8CF8462EE436 -name 2.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::AB5F3408-BEB6-43EB-BB36-01C2099CDA73 -name 3.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::E3C5F440-0EA5-B02E-E0CA-914C0D752579 -name 4.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::9FFDE5CB-2B86-E099-0A6D-A963C5DACFED -name 5.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::01DD93C8-FC8F-F04F-41E2-4CCE23B17446 -name 6.jpg.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::47103393-BF3D-73AA-DF55-6EC06D168B87 -name logo.png.svn-base -active 0 -parent 93B66474-8BCC-512F-7745-93C6A7363B6C
+File ::AF12F531-ADF4-4FFA-AD4E-51E147AC2AB3 -type dir -name tmp -active 0 -parent 9D2B9A51-22B6-A99C-5081-FA2019F25C7C
+File ::E74367AD-B33C-C7BC-29EA-1DD751790525 -type dir -name prop-base -active 0 -parent AF12F531-ADF4-4FFA-AD4E-51E147AC2AB3
+File ::03BE7202-3CE6-912B-55BD-C83BE24DE78D -type dir -name props -active 0 -parent AF12F531-ADF4-4FFA-AD4E-51E147AC2AB3
+File ::C298402E-C607-9ECB-3868-3EC497EE76E9 -type dir -name text-base -active 0 -parent AF12F531-ADF4-4FFA-AD4E-51E147AC2AB3
+File ::ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949 -type dir -name .svn -active 0 -parent 94EE5172-C243-4F11-80CE-C356D9055323
+File ::1F6E3F35-3360-B6DF-DE07-FC8D97EDA429 -name all-wcprops -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::92DE54C3-70E3-54B0-6ACA-C4AB3ED414C5 -name entries -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::09CCD851-4F46-30C3-CEDF-3CF15F2F4725 -name format -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::4B269A0F-E9EF-8E24-DA33-EF312CB9366A -type dir -name prop-base -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::171423D2-828C-A2F0-6460-817D86D6AEC6 -type dir -name props -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::A95B27E3-0731-5350-09F6-A20ED47C3DBC -type dir -name text-base -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::72957FF3-D51C-5F57-9A6A-188E7DF551A3 -name how_to_keys.html.svn-base -active 0 -parent A95B27E3-0731-5350-09F6-A20ED47C3DBC
+File ::2ACB40DB-9D1D-97DD-6889-E63A89437823 -name how_to_keys_es.html.svn-base -active 0 -parent A95B27E3-0731-5350-09F6-A20ED47C3DBC
+File ::33B94DB4-C180-92CA-28A9-8E748747A201 -type dir -name tmp -active 0 -parent ECEC7A07-7C36-C3CD-BFF1-53DD1B27A949
+File ::9A553712-B42A-6A8F-00B1-4E8933B83D00 -type dir -name prop-base -active 0 -parent 33B94DB4-C180-92CA-28A9-8E748747A201
+File ::9376A1BB-540D-AF99-82D1-DEEDB5621B31 -type dir -name props -active 0 -parent 33B94DB4-C180-92CA-28A9-8E748747A201
+File ::FDE18B19-66AE-E8C6-38A9-FB675E103E81 -type dir -name text-base -active 0 -parent 33B94DB4-C180-92CA-28A9-8E748747A201
+File ::9E5D6A00-E82C-49B4-B654-3F36D4D48A83 -name ../bin/libodbc++.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms {Windows FreeBSD-5-x86 FreeBSD-6-x86 FreeBSD-7-x86 Linux-x86_64 Solaris-x86} -name {Default Component} -parent Components
+SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Windows FreeBSD-5-x86 FreeBSD-6-x86 FreeBSD-7-x86 Linux-x86_64 Solaris-x86} -name Typical -parent SetupTypes
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
@@ -258,10 +388,10 @@ InstallComponent 34F6EFDE-4008-4CD2-942B-401D2E55F334 -setup Install -type actio
 InstallComponent E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 0C4A17DA-7867-40CC-81B4-0D1F170581AC -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 1F7BE720-7885-4150-9550-F25FB1C69423 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent StandardInstall
-InstallComponent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -setup Install -type action -conditions {8112E00E-C24D-458F-9C19-03E63937E908 29B86DFA-93EA-4584-A9CF-DE823F4787F2} -title {Start Windows Service} -component StartWindowsService -command reorder -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
+InstallComponent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -setup Install -type action -conditions {8112E00E-C24D-458F-9C19-03E63937E908 29B86DFA-93EA-4584-A9CF-DE823F4787F2} -title {Start Windows Service} -component StartWindowsService -command insert -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 Condition 8112E00E-C24D-458F-9C19-03E63937E908 -active Yes -parent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -title {Ask Yes or No} -component AskYesOrNo -TreeObject::id 8112E00E-C24D-458F-9C19-03E63937E908
 Condition 29B86DFA-93EA-4584-A9CF-DE823F4787F2 -active Yes -parent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -title {String Is Condition} -component StringIsCondition -TreeObject::id 29B86DFA-93EA-4584-A9CF-DE823F4787F2
-InstallComponent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -setup Install -type action -conditions {D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B} -title {View Readme Checkbutton} -component AddWidget -command reorder -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
+InstallComponent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -setup Install -type action -conditions {D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B} -title {View Readme Checkbutton} -component AddWidget -command insert -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 Condition D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {File Exists Condition} -component FileExistsCondition -TreeObject::id D8C1E7BD-813A-43ED-95A4-4F5DA45D5886
 Condition 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {String Is Condition} -component StringIsCondition -TreeObject::id 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B
 InstallComponent 6059F771-3AA1-491C-8B84-788812912E73 -setup Install -type pane -title {Copying Files} -component CopyFiles -active Yes -parent DefaultInstall
@@ -325,7 +455,7 @@ array set Properties {
 {Before Next Pane is Displayed}
 
 0C4A17DA-7867-40CC-81B4-0D1F170581AC,Files
-pandora_agent.conf
+{pandora_agent.conf}
 
 0C4A17DA-7867-40CC-81B4-0D1F170581AC,StringMap
 {$ServerIP$ <%ServerIP%>
@@ -337,28 +467,28 @@ $AgentTemp$ <%AgentTemp%>}
 {Before Action is Executed}
 
 0F1370DF-FF15-4CE7-ADF6-CA74BC642334,Operator
-false
+{false}
 
 0F1370DF-FF15-4CE7-ADF6-CA74BC642334,String
-<%LicenseAccepted%>
+{<%LicenseAccepted%>}
 
 103DC6E3-97DC-46AC-81C5-DED8E4E319E7,CheckCondition
 {Before Action is Executed}
 
 103DC6E3-97DC-46AC-81C5-DED8E4E319E7,String
-<%GuiMode%>
+{<%GuiMode%>}
 
 10D62EB5-B108-461C-91D4-1D18A9CB5B08,Conditions
 {2 conditions}
 
 10D62EB5-B108-461C-91D4-1D18A9CB5B08,ServiceName
-pandoraFMSagent
+{pandoraFMSagent}
 
 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC,Conditions
 {0 conditions}
 
 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC,State
-disabled
+{disabled}
 
 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC,Widget
 {NextButton; CancelButton}
@@ -370,13 +500,13 @@ disabled
 {<%InstallDir%>\pandora.ico}
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,ShortcutName
-<%StopPandoraService%>
+{<%StopPandoraService%>}
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,TargetFileName
 {<%InstallDir%>\scripts\stop_pandora_agent.bat}
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 18774B81-6D13-4BD2-B6F2-852BF95814BD,Alias
 {Finish Actions}
@@ -385,88 +515,88 @@ disabled
 {0 conditions}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,BackButton,subst
-1
+{1}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,CancelButton,subst
-1
+{1}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Caption,subst
-1
+{1}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Conditions
 {0 conditions}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message,subst
-1
+{1}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,NextButton,subst
-1
+{1}
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,Conditions
 {0 conditions}
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,ShortcutName
-<%Readme%>
+{<%Readme%>}
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,TargetFileName
-<%ProgramReadme%>
+{<%ProgramReadme%>}
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Conditions
 {0 conditions}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message,subst
-1
+{1}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,BackButton,subst
-1
+{1}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,CancelButton,subst
-1
+{1}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,Caption,subst
-1
+{1}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,Conditions
 {0 conditions}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,Message,subst
-1
+{1}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,NextButton,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,BackButton,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,CancelButton,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,Caption,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,Conditions
 {0 conditions}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,FileLabel,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,Message,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,NextButton,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,ProgressValue,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,Subtitle,subst
-1
+{1}
 
 268B55D8-DE61-421A-AB68-A5D4821D981F,Title,subst
-1
+{1}
 
 29B86DFA-93EA-4584-A9CF-DE823F4787F2,CheckCondition
 {Before Action is Executed}
@@ -475,67 +605,67 @@ disabled
 {Error starting Pandora FMS service}
 
 29B86DFA-93EA-4584-A9CF-DE823F4787F2,String
-<%Answer%>
+{<%Answer%>}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,BackButton,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,CancelButton,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Caption,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Conditions
 {1 condition}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Message,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,NextButton,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Subtitle,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Text,subst
-1
+{1}
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Title,subst
-1
+{1}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Conditions
 {0 conditions}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Height
-20
+{20}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,LabelSide
-left
+{left}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,LabelWidth
 {}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text,subst
-1
+{1}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Type
-entry
+{entry}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Value
-agent1
+{agent1}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,VirtualText
-AgentName
+{AgentName}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Width
-165
+{165}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,X
-20
+{20}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Y
-240
+{240}
 
 354871D2-65BD-4414-BB04-F466798FA027,CheckCondition
 {Before Action is Executed}
@@ -547,13 +677,13 @@ AgentName
 {Before Action is Executed}
 
 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B,Operator
-false
+{false}
 
 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B,String
-<%InstallStopped%>
+{<%InstallStopped%>}
 
 466DC16E-3453-409B-999C-CCDF853AA03D,ExitType
-Finish
+{Finish}
 
 4CDCA2A2-0948-4DD1-BA24-C173D4D72E79,Conditions
 {0 conditions}
@@ -562,22 +692,22 @@ Finish
 {<%AppName%> Stopping Pandora FMS agent}
 
 4CDCA2A2-0948-4DD1-BA24-C173D4D72E79,ProgramCommandLine
-stop_pandora_agent.bat
+{stop_pandora_agent.bat}
 
 4CDCA2A2-0948-4DD1-BA24-C173D4D72E79,WorkingDirectory
-<%InstallDir%>/scripts
+{<%InstallDir%>/scripts}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Conditions
 {0 conditions}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message,subst
-1
+{1}
 
 57BABE6F-717F-4D6A-8A66-921B404862F5,Conditions
 {0 conditions}
 
 57BABE6F-717F-4D6A-8A66-921B404862F5,State
-disabled
+{disabled}
 
 57BABE6F-717F-4D6A-8A66-921B404862F5,Widget
 {Back Button;Next Button}
@@ -586,79 +716,79 @@ disabled
 {Before Action is Executed}
 
 5CC9615C-1568-415A-A9BA-8D48DD155F7E,String
-<%ViewReadme%>
+{<%ViewReadme%>}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Caption,subst
-1
+{1}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,CloseButton,subst
-1
+{1}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Conditions
 {3 conditions}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Message,subst
-1
+{1}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,TextFile
-<%ProgramReadme%>
+{<%ProgramReadme%>}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Title,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,BackButton,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,CancelButton,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,Caption,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,Conditions
 {0 conditions}
 
 6059F771-3AA1-491C-8B84-788812912E73,FileLabel,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,Message,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,NextButton,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,ProgressValue,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,Subtitle,subst
-1
+{1}
 
 6059F771-3AA1-491C-8B84-788812912E73,Title,subst
-1
+{1}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Background
-white
+{white}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Checked
-Yes
+{Yes}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Conditions
 {2 conditions}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Text,subst
-1
+{1}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Type
-checkbutton
+{checkbutton}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,VirtualText
-ViewReadme
+{ViewReadme}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,X
-185
+{185}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Y
-140
+{140}
 
 60FEFCD5-D31D-4DEA-86D7-E0246ABF0DF5,Action
 {Uninstall Actions}
@@ -679,16 +809,16 @@ ViewReadme
 {<%InstallDir%>\util}
 
 61CE1D31-E460-4F25-BFA3-499F25E90FE0,Level
-system
+{system}
 
 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93,String
-<%ErrorsOccurred%>
+{<%ErrorsOccurred%>}
 
 63A986C1-609D-430F-8119-EBEDFC8315EF,Conditions
 {0 conditions}
 
 63A986C1-609D-430F-8119-EBEDFC8315EF,State
-disabled
+{disabled}
 
 63A986C1-609D-430F-8119-EBEDFC8315EF,Widget
 {Back Button;Next Button}
@@ -700,55 +830,55 @@ disabled
 {0 conditions}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Active
-Yes
+{Yes}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,BackButton,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,CancelButton,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Conditions
 {0 conditions}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,NextButton,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle,subst
-1
+{1}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title,subst
-1
+{1}
 
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,Conditions
 {0 conditions}
 
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,ExitType
-Finish
+{Finish}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,BackButton,subst
-1
+{1}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,CancelButton,subst
-1
+{1}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,Caption,subst
-1
+{1}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,Conditions
 {0 conditions}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,Message,subst
-1
+{1}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,NextButton,subst
-1
+{1}
 
 6B488B72-9080-4AF7-8690-8D823CCD86AE,Conditions
 {0 conditions}
@@ -763,13 +893,13 @@ Finish
 {0 conditions}
 
 736623D0-C176-476C-A899-35C05DD59147,ShortcutName
-<%HelpGeneratingSSHKeys%>
+{<%HelpGeneratingSSHKeys%>}
 
 736623D0-C176-476C-A899-35C05DD59147,TargetFileName
-<%InstallDir%>/help/<%HowTo%>
+{<%InstallDir%>/help/<%HowTo%>}
 
 736623D0-C176-476C-A899-35C05DD59147,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 73AB9FDF-9481-4EC3-8B31-C109BAA1086C,Alias
 {Uninstall Actions}
@@ -781,34 +911,34 @@ Finish
 {0 conditions}
 
 75288342-4CEB-473C-B242-450642503F74,Height
-20
+{20}
 
 75288342-4CEB-473C-B242-450642503F74,LabelSide
-left
+{left}
 
 75288342-4CEB-473C-B242-450642503F74,LabelWidth
 {}
 
 75288342-4CEB-473C-B242-450642503F74,Text,subst
-1
+{1}
 
 75288342-4CEB-473C-B242-450642503F74,Type
-entry
+{entry}
 
 75288342-4CEB-473C-B242-450642503F74,Value
-192.168.100.101
+{192.168.100.101}
 
 75288342-4CEB-473C-B242-450642503F74,VirtualText
-ServerIP
+{ServerIP}
 
 75288342-4CEB-473C-B242-450642503F74,Width
-265
+{265}
 
 75288342-4CEB-473C-B242-450642503F74,X
-20
+{20}
 
 75288342-4CEB-473C-B242-450642503F74,Y
-190
+{190}
 
 75B1D869-C9BA-42C4-9C07-E1D156DA80A8,Conditions
 {0 conditions}
@@ -823,16 +953,16 @@ ServerIP
 {PandoraAgent.exe --install}
 
 78DA1080-A7D6-4FC9-AEC0-E08A82E6E8A7,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288,Conditions
 {0 conditions}
 
 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288,UpdateFilePercentage
-Yes
+{Yes}
 
 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288,UpdateFileText
-Yes
+{Yes}
 
 8112E00E-C24D-458F-9C19-03E63937E908,CheckCondition
 {Before Action is Executed}
@@ -841,31 +971,31 @@ Yes
 {Service not initialized. Try to init Pandora Windows Agent Service manually.}
 
 8112E00E-C24D-458F-9C19-03E63937E908,Message,subst
-1
+{1}
 
 8112E00E-C24D-458F-9C19-03E63937E908,Title,subst
-1
+{1}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Background
-white
+{white}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Conditions
 {2 conditions}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text,subst
-1
+{1}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Type
-checkbutton
+{checkbutton}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,VirtualText
-ViewReadme
+{ViewReadme}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,X
-185
+{185}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Y
-140
+{140}
 
 8A1B144A-F5F6-430F-A334-C31494182599,Conditions
 {0 conditions}
@@ -877,13 +1007,13 @@ ViewReadme
 {<%InstallDir%>\pandora.ico}
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,ShortcutName
-<%StartPandoraService%>
+{<%StartPandoraService%>}
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,TargetFileName
 {<%InstallDir%>\scripts\start_pandora_agent.bat}
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 9439434F-D9FB-4645-A50A-23D65C0A5E2C,Conditions
 {0 conditions}
@@ -895,13 +1025,13 @@ ViewReadme
 {PandoraAgent.exe --uninstall}
 
 9439434F-D9FB-4645-A50A-23D65C0A5E2C,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Destination
-<%InstallDir%>
+{<%InstallDir%>}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-7812767
+{7037884}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -910,10 +1040,10 @@ ViewReadme
 {Before Action is Executed}
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,Operator
-false
+{false}
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,String
-<%Answer%>
+{<%Answer%>}
 
 97F814AB-227B-4241-94E4-0E2061D62063,Conditions
 {0 conditions}
@@ -922,7 +1052,7 @@ false
 {<%InstallDir%>\pandora_agent.log}
 
 97F814AB-227B-4241-94E4-0E2061D62063,IgnoreErrors
-Yes
+{Yes}
 
 9C96DF15-FD21-468D-9996-76D96466D335,Alias
 {Install Actions}
@@ -934,7 +1064,7 @@ Yes
 {Before Action is Executed}
 
 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82,Filename
-<%ProgramReadme%>
+{<%ProgramReadme%>}
 
 9F763EAB-21A4-41E7-B51B-EDC4ACF4C5C8,Action
 {Install Actions}
@@ -946,34 +1076,34 @@ A4155ACD-0377-4A2C-B952-2C19BF592347,Conditions
 {0 conditions}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,FileName
-<%ShortAppName%>-uninstall
+{<%ShortAppName%>-uninstall}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,ShortcutName
-<%UninstallApplicationText%>
+{<%UninstallApplicationText%>}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,TargetFileName
-<%Uninstaller%>
+{<%Uninstaller%>}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 A518E166-9DC7-454F-8EFE-CD4461F093FB,Action
 {Uninstall Actions}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Components
-FB96078B-BA3C-498C-8C20-B01C1F28ACA9
+{FB96078B-BA3C-498C-8C20-B01C1F28ACA9}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Description,subst
-1
+{1}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,DisplayName,subst
-1
+{1}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Name
-Typical
+{Typical}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,ShowSetupType
-No
+{No}
 
 AA00EDED-9979-419F-A32C-DF1480E9EFF0,Alias
 {Finish Actions}
@@ -985,88 +1115,94 @@ ACFFE9C0-C404-4FD9-AD70-8F60E822DE65,Conditions
 {0 conditions}
 
 AIX-ppc,Active
-No
+{No}
+
+AIX-ppc,BuildSeparateArchives
+{No}
 
 AIX-ppc,DefaultDirectoryPermission
-0755
+{0755}
 
 AIX-ppc,DefaultFilePermission
-0755
+{0755}
 
 AIX-ppc,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 AIX-ppc,FallBackToConsole
-Yes
+{Yes}
 
 AIX-ppc,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 AIX-ppc,InstallMode
-Standard
+{Standard}
 
 AIX-ppc,InstallType
-Typical
+{Typical}
 
 AIX-ppc,ProgramExecutable
 {}
 
 AIX-ppc,ProgramFolderAllUsers
-No
+{No}
 
 AIX-ppc,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 AIX-ppc,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/installer/LICENSE.txt}
 
 AIX-ppc,ProgramName
 {}
 
 AIX-ppc,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/installer/README.txt}
 
 AIX-ppc,PromptForRoot
-Yes
+{Yes}
 
 AIX-ppc,RequireRoot
-No
+{No}
 
 AIX-ppc,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BackButton,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BrowseButton,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BrowseText,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,CancelButton,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,Caption,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,Conditions
 {2 conditions}
 
+B2E20690-C57D-4286-9977-F2541E04D71F,Destination,subst
+{1}
+
 B2E20690-C57D-4286-9977-F2541E04D71F,DestinationLabel,subst
-0
+{0}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,Message,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,NextButton,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,Subtitle,subst
-1
+{1}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,Title,subst
-1
+{1}
 
 B923CC3C-CD18-4F8A-9648-51ADE1168D4A,Alias
 {Startup Actions}
@@ -1084,61 +1220,61 @@ BC4AB013-F50F-49BF-BF98-FF7EBE16BCA4,Alias
 {Cancel Actions}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,BackButton,subst
-1
+{1}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,CancelButton,subst
-1
+{1}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Caption,subst
-1
+{1}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Conditions
 {0 conditions}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Message,subst
-1
+{1}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,NextButton,subst
-1
+{1}
 
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Conditions
 {0 conditions}
 
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Default
-Yes
+{Yes}
 
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Prompt
-<%UninstallStartupText%>
+{<%UninstallStartupText%>}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,BackButton,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,CancelButton,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Conditions
 {0 conditions}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Message,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,NextButton,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Subtitle,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Text,subst
-1
+{1}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Title,subst
-1
+{1}
 
 CFEEDA4E-6870-4C25-8847-2ABB087DF90D,ExitType
-Finish
+{Finish}
 
 CFF365EA-C5AD-4E16-9D09-E20AADED45ED,Alias
 {Cancel Actions}
@@ -1153,10 +1289,10 @@ D3D6A68D-37DE-4FC8-874D-33A762512634,CheckCondition
 {Before Action is Executed}
 
 D3D6A68D-37DE-4FC8-874D-33A762512634,Operator
-false
+{false}
 
 D3D6A68D-37DE-4FC8-874D-33A762512634,String
-<%InstallStopped%>
+{<%InstallStopped%>}
 
 D567240B-2A30-47FD-97AA-3EDA09B64E9F,Alias
 {Setup Actions}
@@ -1168,127 +1304,127 @@ D6128B0E-6CFE-4626-87CC-64C883554F0F,Conditions
 {0 conditions}
 
 D6128B0E-6CFE-4626-87CC-64C883554F0F,ShortcutName
-<%PandoraLicense%>
+{<%PandoraLicense%>}
 
 D6128B0E-6CFE-4626-87CC-64C883554F0F,TargetFileName
-<%ProgramLicense%>
+{<%ProgramLicense%>}
 
 D6128B0E-6CFE-4626-87CC-64C883554F0F,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 D8C1E7BD-813A-43ED-95A4-4F5DA45D5886,CheckCondition
 {Before Action is Executed}
 
 D8C1E7BD-813A-43ED-95A4-4F5DA45D5886,Filename
-<%ProgramReadme%>
+{<%ProgramReadme%>}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,CheckCondition
 {Before Action is Executed}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Message,subst
-1
+{1}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Title,subst
-1
+{1}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,TrueValue
-No
+{No}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,AcceptRadiobutton,subst
-0
+{0}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Active
-Yes
+{Yes}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,BackButton,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,CancelButton,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Caption,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Conditions
 {0 conditions}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,DeclineRadiobutton,subst
-0
+{0}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Message,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,NextButton,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Subtitle,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Text,subst
-1
+{1}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Title,subst
-1
+{1}
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,Conditions
 {0 conditions}
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,ShortcutName
-<%EditConfiguration%>
+{<%EditConfiguration%>}
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,TargetFileName
 {<%InstallDir%>\pandora_agent.conf}
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,WorkingDirectory
-<%InstallDir%>
+{<%InstallDir%>}
 
 E573F839-1FCD-4668-93F9-E39764B8CB78,CheckCondition
 {Before Action is Executed}
 
 E573F839-1FCD-4668-93F9-E39764B8CB78,Filename
-<%ProgramReadme%>
+{<%ProgramReadme%>}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Conditions
 {0 conditions}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Height
-20
+{20}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,LabelSide
-left
+{left}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,LabelWidth
 {}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text,subst
-1
+{1}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Type
-entry
+{entry}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Value
 {C:\Windows\Temp}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,VirtualText
-AgentTemp
+{AgentTemp}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Width
-260
+{260}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,X
-20
+{20}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Y
-265
+{265}
 
 E8952A0A-82A0-4AD0-8FA8-8902870AF848,CheckCondition
 {Before Next Pane is Displayed}
 
 E8952A0A-82A0-4AD0-8FA8-8902870AF848,FailureMessage
-<%DirectoryPermissionText%>
+{<%DirectoryPermissionText%>}
 
 E8952A0A-82A0-4AD0-8FA8-8902870AF848,Filename
-<%InstallDir%>
+{<%InstallDir%>}
 
 E8952A0A-82A0-4AD0-8FA8-8902870AF848,Permission
 {can create}
@@ -1297,10 +1433,10 @@ EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38,Conditions
 {2 conditions}
 
 EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38,State
-disabled
+{disabled}
 
 EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38,Widget
-NextButton
+{NextButton}
 
 ED3D7C90-4A56-40EE-A2C5-E845C3A57C12,Alias
 {Setup Actions}
@@ -1312,37 +1448,37 @@ EDB4771C-ED91-462E-84D9-66E4AE0A9D9C,CheckCondition
 {Before Action is Executed}
 
 EDB4771C-ED91-462E-84D9-66E4AE0A9D9C,String
-<%GuiMode%>
+{<%GuiMode%>}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,BackButton,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,CancelButton,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Caption,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Conditions
 {0 conditions}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,FileValue,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Message,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,NextButton,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,ProgressValue,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Subtitle,subst
-1
+{1}
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Title,subst
-1
+{1}
 
 F0BC8450-668B-41B2-A442-F1BE095D1BFB,Conditions
 {0 conditions}
@@ -1351,34 +1487,34 @@ F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Conditions
 {0 conditions}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Height
-20
+{20}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelSide
-left
+{left}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelWidth
 {}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text,subst
-1
+{1}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Type
-entry
+{entry}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Value
-/var/spool/pandora/data_in
+{/var/spool/pandora/data_in}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,VirtualText
-ServerPath
+{ServerPath}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Width
-400
+{400}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,X
-20
+{20}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Y
-215
+{215}
 
 F6A6DB43-C89D-4A19-98D3-1E24284260AE,Comment
 {Do not display this pane if this is an upgrade install unless there is more than one installation present}
@@ -1390,481 +1526,736 @@ F71872ED-E931-4B96-B4F8-1F65356FE848,Action
 {Uninstall Actions}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description,subst
-1
+{1}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,DisplayName,subst
-1
+{1}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,FileGroups
-946FC43B-0E32-4C38-86EF-4F9252C67E16
+{946FC43B-0E32-4C38-86EF-4F9252C67E16}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Name
 {Default Component}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,RequiredComponent
-Yes
+{Yes}
 
 FreeBSD-4-x86,Active
-No
+{No}
+
+FreeBSD-4-x86,BuildSeparateArchives
+{No}
 
 FreeBSD-4-x86,DefaultDirectoryPermission
-0755
+{0755}
 
 FreeBSD-4-x86,DefaultFilePermission
-0755
+{0755}
 
 FreeBSD-4-x86,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 FreeBSD-4-x86,FallBackToConsole
-Yes
+{Yes}
 
 FreeBSD-4-x86,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 FreeBSD-4-x86,InstallMode
-Standard
+{Standard}
 
 FreeBSD-4-x86,InstallType
-Typical
+{Typical}
 
 FreeBSD-4-x86,ProgramExecutable
 {}
 
 FreeBSD-4-x86,ProgramFolderAllUsers
-No
+{No}
 
 FreeBSD-4-x86,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 FreeBSD-4-x86,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 FreeBSD-4-x86,ProgramName
 {}
 
 FreeBSD-4-x86,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 FreeBSD-4-x86,PromptForRoot
-Yes
+{Yes}
 
 FreeBSD-4-x86,RequireRoot
-No
+{No}
 
 FreeBSD-4-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
+
+FreeBSD-5-x86,Active
+{No}
+
+FreeBSD-5-x86,BuildSeparateArchives
+{No}
+
+FreeBSD-5-x86,DefaultDirectoryPermission
+{0755}
+
+FreeBSD-5-x86,DefaultFilePermission
+{0755}
+
+FreeBSD-5-x86,Executable
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
+
+FreeBSD-5-x86,FallBackToConsole
+{Yes}
+
+FreeBSD-5-x86,InstallDir
+{<%Home%>/<%ShortAppName%>}
+
+FreeBSD-5-x86,InstallMode
+{Standard}
+
+FreeBSD-5-x86,InstallType
+{Typical}
+
+FreeBSD-5-x86,ProgramExecutable
+{}
+
+FreeBSD-5-x86,ProgramFolderAllUsers
+{No}
+
+FreeBSD-5-x86,ProgramFolderName
+{<%AppName%>}
+
+FreeBSD-5-x86,ProgramLicense
+{<%InstallDir%>/LICENSE.txt}
+
+FreeBSD-5-x86,ProgramName
+{}
+
+FreeBSD-5-x86,ProgramReadme
+{<%InstallDir%>/README.txt}
+
+FreeBSD-5-x86,PromptForRoot
+{Yes}
+
+FreeBSD-5-x86,RequireRoot
+{No}
+
+FreeBSD-5-x86,RootInstallDir
+{/usr/local/<%ShortAppName%>}
+
+FreeBSD-6-x86,Active
+{No}
+
+FreeBSD-6-x86,BuildSeparateArchives
+{No}
+
+FreeBSD-6-x86,DefaultDirectoryPermission
+{0755}
+
+FreeBSD-6-x86,DefaultFilePermission
+{0755}
+
+FreeBSD-6-x86,Executable
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
+
+FreeBSD-6-x86,FallBackToConsole
+{Yes}
+
+FreeBSD-6-x86,InstallDir
+{<%Home%>/<%ShortAppName%>}
+
+FreeBSD-6-x86,InstallMode
+{Standard}
+
+FreeBSD-6-x86,InstallType
+{Typical}
+
+FreeBSD-6-x86,ProgramExecutable
+{}
+
+FreeBSD-6-x86,ProgramFolderAllUsers
+{No}
+
+FreeBSD-6-x86,ProgramFolderName
+{<%AppName%>}
+
+FreeBSD-6-x86,ProgramLicense
+{<%InstallDir%>/LICENSE.txt}
+
+FreeBSD-6-x86,ProgramName
+{}
+
+FreeBSD-6-x86,ProgramReadme
+{<%InstallDir%>/README.txt}
+
+FreeBSD-6-x86,PromptForRoot
+{Yes}
+
+FreeBSD-6-x86,RequireRoot
+{No}
+
+FreeBSD-6-x86,RootInstallDir
+{/usr/local/<%ShortAppName%>}
+
+FreeBSD-7-x86,Active
+{No}
+
+FreeBSD-7-x86,BuildSeparateArchives
+{No}
+
+FreeBSD-7-x86,DefaultDirectoryPermission
+{0755}
+
+FreeBSD-7-x86,DefaultFilePermission
+{0755}
+
+FreeBSD-7-x86,Executable
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
+
+FreeBSD-7-x86,FallBackToConsole
+{Yes}
+
+FreeBSD-7-x86,InstallDir
+{<%Home%>/<%ShortAppName%>}
+
+FreeBSD-7-x86,InstallMode
+{Standard}
+
+FreeBSD-7-x86,InstallType
+{Typical}
+
+FreeBSD-7-x86,ProgramExecutable
+{}
+
+FreeBSD-7-x86,ProgramFolderAllUsers
+{No}
+
+FreeBSD-7-x86,ProgramFolderName
+{<%AppName%>}
+
+FreeBSD-7-x86,ProgramLicense
+{<%InstallDir%>/LICENSE.txt}
+
+FreeBSD-7-x86,ProgramName
+{}
+
+FreeBSD-7-x86,ProgramReadme
+{<%InstallDir%>/README.txt}
+
+FreeBSD-7-x86,PromptForRoot
+{Yes}
+
+FreeBSD-7-x86,RequireRoot
+{No}
+
+FreeBSD-7-x86,RootInstallDir
+{/usr/local/<%ShortAppName%>}
 
 FreeBSD-x86,Active
-No
+{No}
+
+FreeBSD-x86,BuildSeparateArchives
+{No}
 
 FreeBSD-x86,DefaultDirectoryPermission
-0755
+{0755}
 
 FreeBSD-x86,DefaultFilePermission
-0755
+{0755}
 
 FreeBSD-x86,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 FreeBSD-x86,FallBackToConsole
-Yes
+{Yes}
 
 FreeBSD-x86,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 FreeBSD-x86,InstallMode
-Standard
+{Standard}
 
 FreeBSD-x86,InstallType
-Typical
+{Typical}
 
 FreeBSD-x86,ProgramExecutable
 {}
 
 FreeBSD-x86,ProgramFolderAllUsers
-No
+{No}
 
 FreeBSD-x86,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 FreeBSD-x86,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 FreeBSD-x86,ProgramName
 {}
 
 FreeBSD-x86,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 FreeBSD-x86,PromptForRoot
-Yes
+{Yes}
 
 FreeBSD-x86,RequireRoot
-No
+{No}
 
 FreeBSD-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
 HPUX-hppa,Active
-No
+{No}
+
+HPUX-hppa,BuildSeparateArchives
+{No}
 
 HPUX-hppa,DefaultDirectoryPermission
-0755
+{0755}
 
 HPUX-hppa,DefaultFilePermission
-0755
+{0755}
 
 HPUX-hppa,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 HPUX-hppa,FallBackToConsole
-Yes
+{Yes}
 
 HPUX-hppa,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 HPUX-hppa,InstallMode
-Standard
+{Standard}
 
 HPUX-hppa,InstallType
-Typical
+{Typical}
 
 HPUX-hppa,ProgramExecutable
 {}
 
 HPUX-hppa,ProgramFolderAllUsers
-No
+{No}
 
 HPUX-hppa,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 HPUX-hppa,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 HPUX-hppa,ProgramName
 {}
 
 HPUX-hppa,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 HPUX-hppa,PromptForRoot
-Yes
+{Yes}
 
 HPUX-hppa,RequireRoot
-No
+{No}
 
 HPUX-hppa,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
 Linux-x86,Active
-No
+{No}
+
+Linux-x86,BuildSeparateArchives
+{No}
 
 Linux-x86,DefaultDirectoryPermission
-0755
+{0755}
 
 Linux-x86,DefaultFilePermission
-0755
+{0755}
 
 Linux-x86,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 Linux-x86,FallBackToConsole
-Yes
+{Yes}
 
 Linux-x86,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 Linux-x86,InstallMode
-Standard
+{Standard}
 
 Linux-x86,InstallType
-Typical
+{Typical}
 
 Linux-x86,ProgramExecutable
-<%InstallDir%>/pandora_agent
+{<%InstallDir%>/pandora_agent}
 
 Linux-x86,ProgramFolderAllUsers
-No
+{No}
 
 Linux-x86,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 Linux-x86,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 Linux-x86,ProgramName
 {}
 
 Linux-x86,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 Linux-x86,PromptForRoot
-Yes
+{Yes}
 
 Linux-x86,RequireRoot
-No
+{No}
 
 Linux-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
-MacOS-X,Active
-No
+Linux-x86_64,Active
+{No}
 
-MacOS-X,DefaultDirectoryPermission
-0755
+Linux-x86_64,BuildSeparateArchives
+{No}
 
-MacOS-X,DefaultFilePermission
-0755
+Linux-x86_64,DefaultDirectoryPermission
+{0755}
 
-MacOS-X,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+Linux-x86_64,DefaultFilePermission
+{0755}
 
-MacOS-X,FallBackToConsole
-Yes
+Linux-x86_64,Executable
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
-MacOS-X,InstallDir
-<%Home%>/<%ShortAppName%>
+Linux-x86_64,FallBackToConsole
+{Yes}
 
-MacOS-X,InstallMode
-Standard
+Linux-x86_64,InstallDir
+{<%Home%>/<%ShortAppName%>}
 
-MacOS-X,InstallType
-Typical
+Linux-x86_64,InstallMode
+{Standard}
 
-MacOS-X,ProgramExecutable
+Linux-x86_64,InstallType
+{Typical}
+
+Linux-x86_64,ProgramExecutable
 {}
 
-MacOS-X,ProgramFolderAllUsers
-No
+Linux-x86_64,ProgramFolderAllUsers
+{No}
 
-MacOS-X,ProgramFolderName
-<%AppName%>
+Linux-x86_64,ProgramFolderName
+{<%AppName%>}
 
-MacOS-X,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+Linux-x86_64,ProgramLicense
+{<%InstallDir%>/LICENSE.txt}
 
-MacOS-X,ProgramName
+Linux-x86_64,ProgramName
 {}
 
-MacOS-X,ProgramReadme
-<%InstallDir%>/README.txt
+Linux-x86_64,ProgramReadme
+{<%InstallDir%>/README.txt}
 
-MacOS-X,PromptForRoot
-Yes
+Linux-x86_64,PromptForRoot
+{Yes}
 
-MacOS-X,RequireRoot
-No
+Linux-x86_64,RequireRoot
+{No}
 
-MacOS-X,RootInstallDir
-/usr/local/<%ShortAppName%>
+Linux-x86_64,RootInstallDir
+{/usr/local/<%ShortAppName%>}
 
 Solaris-sparc,Active
-No
+{No}
+
+Solaris-sparc,BuildSeparateArchives
+{No}
 
 Solaris-sparc,DefaultDirectoryPermission
-0755
+{0755}
 
 Solaris-sparc,DefaultFilePermission
-0755
+{0755}
 
 Solaris-sparc,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 Solaris-sparc,FallBackToConsole
-Yes
+{Yes}
 
 Solaris-sparc,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 Solaris-sparc,InstallMode
-Standard
+{Standard}
 
 Solaris-sparc,InstallType
-Typical
+{Typical}
 
 Solaris-sparc,ProgramExecutable
 {}
 
 Solaris-sparc,ProgramFolderAllUsers
-No
+{No}
 
 Solaris-sparc,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 Solaris-sparc,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 Solaris-sparc,ProgramName
 {}
 
 Solaris-sparc,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 Solaris-sparc,PromptForRoot
-Yes
+{Yes}
 
 Solaris-sparc,RequireRoot
-No
+{No}
 
 Solaris-sparc,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
+
+Solaris-x86,Active
+{No}
+
+Solaris-x86,BuildSeparateArchives
+{No}
+
+Solaris-x86,DefaultDirectoryPermission
+{0755}
+
+Solaris-x86,DefaultFilePermission
+{0755}
+
+Solaris-x86,Executable
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
+
+Solaris-x86,FallBackToConsole
+{Yes}
+
+Solaris-x86,InstallDir
+{<%Home%>/<%ShortAppName%>}
+
+Solaris-x86,InstallMode
+{Standard}
+
+Solaris-x86,InstallType
+{Typical}
+
+Solaris-x86,ProgramExecutable
+{}
+
+Solaris-x86,ProgramFolderAllUsers
+{No}
+
+Solaris-x86,ProgramFolderName
+{<%AppName%>}
+
+Solaris-x86,ProgramLicense
+{<%InstallDir%>/LICENSE.txt}
+
+Solaris-x86,ProgramName
+{}
+
+Solaris-x86,ProgramReadme
+{<%InstallDir%>/README.txt}
+
+Solaris-x86,PromptForRoot
+{Yes}
+
+Solaris-x86,RequireRoot
+{No}
+
+Solaris-x86,RootInstallDir
+{/usr/local/<%ShortAppName%>}
 
 TarArchive,Active
-No
+{No}
+
+TarArchive,BuildSeparateArchives
+{No}
 
 TarArchive,CompressionLevel
-6
+{6}
 
 TarArchive,DefaultDirectoryPermission
-0755
+{0755}
 
 TarArchive,DefaultFilePermission
-0755
+{0755}
 
 TarArchive,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 TarArchive,FallBackToConsole
-Yes
+{Yes}
 
 TarArchive,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 TarArchive,InstallMode
-Standard
+{Standard}
 
 TarArchive,InstallType
-Typical
+{Typical}
 
 TarArchive,OutputFileName
-<%ShortAppName%>-<%Version%>.tar.gz
+{<%ShortAppName%>-<%Version%>.tar.gz}
 
 TarArchive,ProgramExecutable
 {}
 
 TarArchive,ProgramFolderAllUsers
-No
+{No}
 
 TarArchive,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 TarArchive,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 TarArchive,ProgramName
 {}
 
 TarArchive,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 TarArchive,PromptForRoot
-Yes
+{Yes}
 
 TarArchive,RequireRoot
-No
+{No}
 
 TarArchive,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
 TarArchive,VirtualTextMap
 {<%InstallDir%> <%ShortAppName%>}
 
 Windows,Active
-Yes
+{Yes}
+
+Windows,BuildSeparateArchives
+{No}
 
 Windows,Executable
-<%AppName%>-Setup<%Ext%>
+{<%AppName%>-Setup<%Ext%>}
+
+Windows,FileDescription
+{<%AppName%> <%Version%> Setup}
 
 Windows,IncludeTWAPI
-No
+{No}
 
 Windows,InstallDir
-<%PROGRAM_FILES%>/pandora_agent
+{<%PROGRAM_FILES%>/pandora_agent}
 
 Windows,InstallMode
-Standard
+{Standard}
 
 Windows,InstallType
-Typical
+{Typical}
+
+Windows,LastRequireAdministrator
+{Yes}
 
 Windows,ProgramExecutable
-<%InstallDir%>/PandoraAgent.exe
+{<%InstallDir%>/PandoraAgent.exe}
 
 Windows,ProgramFolderAllUsers
-No
+{No}
 
 Windows,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 Windows,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 Windows,ProgramName
 {}
 
 Windows,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
+
+Windows,RequireAdministrator
+{Yes}
+
+Windows,UseUncompressedBinaries
+{No}
 
 Windows,WindowsIcon
-C:/pandora_installer/pandora.ico
+{pandora.ico}
 
 ZipArchive,Active
-No
+{No}
+
+ZipArchive,BuildSeparateArchives
+{No}
 
 ZipArchive,CompressionLevel
-6
+{6}
 
 ZipArchive,DefaultDirectoryPermission
-0755
+{0755}
 
 ZipArchive,DefaultFilePermission
-0755
+{0755}
 
 ZipArchive,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+{<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>}
 
 ZipArchive,FallBackToConsole
-Yes
+{Yes}
 
 ZipArchive,InstallDir
-<%Home%>/<%ShortAppName%>
+{<%Home%>/<%ShortAppName%>}
 
 ZipArchive,InstallMode
-Standard
+{Standard}
 
 ZipArchive,InstallType
-Typical
+{Typical}
 
 ZipArchive,OutputFileName
-<%ShortAppName%>-<%Version%>.zip
+{<%ShortAppName%>-<%Version%>.zip}
 
 ZipArchive,ProgramExecutable
 {}
 
 ZipArchive,ProgramFolderAllUsers
-No
+{No}
 
 ZipArchive,ProgramFolderName
-<%AppName%>
+{<%AppName%>}
 
 ZipArchive,ProgramLicense
-<%InstallDir%>/LICENSE.txt
+{<%InstallDir%>/LICENSE.txt}
 
 ZipArchive,ProgramName
 {}
 
 ZipArchive,ProgramReadme
-<%InstallDir%>/README.txt
+{<%InstallDir%>/README.txt}
 
 ZipArchive,PromptForRoot
-Yes
+{Yes}
 
 ZipArchive,RequireRoot
-No
+{No}
 
 ZipArchive,RootInstallDir
-/usr/local/<%ShortAppName%>
+{/usr/local/<%ShortAppName%>}
 
 ZipArchive,VirtualTextMap
 {<%InstallDir%> <%ShortAppName%>}
@@ -1882,16 +2273,16 @@ Nach der Installierung sollten Sie Konfigurationsdatei editieren, um Server IP A
 Klicken Sie auf Weiter um Fortzufahren oder auf  Abbrechen, um das Setup zu beenden.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
@@ -1909,7 +2300,7 @@ Klicken Sie auf Weiter um Fortzufahren oder auf  Abbrechen, um das Setup zu been
 {Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
 {Agent Temp folder:}
@@ -1938,37 +2329,37 @@ After installation, you should edit default configuration file to define server 
 Click Next to continue or Cancel to exit Setup.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,Message
-<%InstallStartupText%>
+{<%InstallStartupText%>}
 
 4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,Title
-<%InstallApplicationText%>
+{<%InstallApplicationText%>}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Caption
-<%ApplicationReadmeText%>
+{<%ApplicationReadmeText%>}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Message
 {}
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Title
-<%ApplicationReadmeText%>
+{<%ApplicationReadmeText%>}
 
 6057A263-437C-4EB8-93AB-DBC7055A759F,Description
-<%CustomInstallDescription%>
+{<%CustomInstallDescription%>}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Text
-<%ViewReadmeText%>
+{<%ViewReadmeText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {These values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
@@ -1998,7 +2389,7 @@ Click Next to continue or Cancel to exit Setup.}
 {Pandora FMS Windows Agent Service}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text
-<%ViewReadmeText%>
+{<%ViewReadmeText%>}
 
 A84F44C7-9ABD-43C6-AA57-CF527E0C82A5,Caption
 {Please enter Server IP}
@@ -2010,19 +2401,19 @@ A84F44C7-9ABD-43C6-AA57-CF527E0C82A5,Title
 {Server IP}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Description
-<%TypicalInstallDescription%>
+{<%TypicalInstallDescription%>}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
 {Setup has enough information to start copying the program files. If you want to review or change any settings, click Back.  If you are satisfied with the settings, click Next to begin copying files.}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Message
-<%UninstallStartupText%>
+{<%UninstallStartupText%>}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Title
-<%UninstallApplicationText%>
+{<%UninstallApplicationText%>}
 
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Text
 {GNU GENERAL PUBLIC LICENSE
@@ -2128,19 +2519,19 @@ F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
 {Server Path for Incoming Packets:}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description
-<%ProgramFilesDescription%>
+{<%ProgramFilesDescription%>}
 
 HelpGeneratingSSHKeys
 {Help Generating SSH Keys}
 
 HowTo
-how_to_keys.html
+{how_to_keys.html}
 
 PandoraLicense
 {Pandora FMS License}
 
 Readme
-Readme
+{Readme}
 
 StartPandoraService
 {Start <%AppName%> Service}
@@ -2160,7 +2551,7 @@ Al finalizar la instalación, debe editarse el fichero de configuración para de
 Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,Caption
 {La instalación ha finalizado}
@@ -2169,13 +2560,13 @@ Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 {El instalador ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Nombre del agente:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {Los siguientes datos serán guardados en el fichero pandora_agent.conf de la carpeta <%ProgramFolderName%> . Modifique los datos según su propia configuración.}
@@ -2213,7 +2604,7 @@ B2E20690-C57D-4286-9977-F2541E04D71F,Caption
 Para instalar en esa carpeta, pulse Siguiente. Para instalar en una carpeta diferente, pulse Examinar y seleccione otra.}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
 {Se ha recopilado la información necesaria para comenzar a copiar los archivos del programa. Si desea revisar o cambiar la configuración, pulse Atrás. Si esta conforme con la configuración, pulse Siguiente para comenzar a copiar los archivos.}
@@ -2234,7 +2625,7 @@ HelpGeneratingSSHKeys
 {Creación de claves SSH}
 
 HowTo
-how_to_keys_es.html
+{how_to_keys_es.html}
 
 InstallStartupText
 {Se va a instalar <%AppName%> en su equipo.  ¿Desea continuar?}
@@ -2257,9 +2648,6 @@ StopPandoraService
 StopPanodoraService
 {Stop Pandora Service}
 
-UninstallLeftoverText
-{Algunos componentes no pudieron ser eliminados. ¿Desea borrarlos de todos modos? (no recomendado)}
-
 UninstallStartupText
 {Se eliminará completamente <%AppName%> de su sistema. ¿Seguro que desea continuar?}
 
@@ -2275,16 +2663,16 @@ Après avoir terminé l'installation, il faut éditer le fichier de configuratio
 Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
@@ -2302,7 +2690,7 @@ Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 {Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
 {Agent Temp folder:}
@@ -2444,16 +2832,16 @@ Zalecane jest zamkniÄ™cie wszystkich programÃ³w przed instalacjÄ….
 Kliknij Dalej, aby kontynuowaÄ‡ lub Anuluj, aby opuÅ›ciÄ‡ instalator.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
@@ -2471,7 +2859,7 @@ Kliknij Dalej, aby kontynuowaÄ‡ lub Anuluj, aby opuÅ›ciÄ‡ instalator.}
 {Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
 {Agent Temp folder:}
@@ -2497,16 +2885,16 @@ Depois da instalação, você deve editar o arquivo de configuração para defin
 Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
-<%UninstallingApplicationText%>
+{<%UninstallingApplicationText%>}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
-<%InstallationCompleteText%>
+{<%InstallationCompleteText%>}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
-<%UninstallCompleteText%>
+{<%UninstallCompleteText%>}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
 {This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
@@ -2524,7 +2912,7 @@ Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
 {Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
-<%InstallingApplicationText%>
+{<%InstallingApplicationText%>}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
 {Agent Temp folder:}

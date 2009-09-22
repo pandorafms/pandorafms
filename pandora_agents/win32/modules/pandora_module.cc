@@ -420,6 +420,7 @@ Pandora_Module::getXml () {
 			delete element;
 
 			data_list_element->InsertEndChild (*data_element);
+			delete data_element;
 		}
 
 		root->InsertEndChild (*data_list_element);

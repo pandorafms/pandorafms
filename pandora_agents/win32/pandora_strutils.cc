@@ -38,7 +38,7 @@ using namespace Pandora;
  */
 string
 Pandora_Strutils::trim (const string str) {
-	char *            delims = " \t\r\n";
+	const char *      delims = " \t\r\n";
 	string            result = str;
 	string::size_type index = result.find_last_not_of (delims);
 	

@@ -1,3 +1,41 @@
+2009-09-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* debug_new.h, fast_mutex.h,
+	  debug_new.cpp, static_assert.h: Added to repository. Wu Yongwei's
+	  memory leak detection tool (part of Nvwa). Only compiled when
+	  debugging is enabled.
+
+	* bin/util/tentacle_client.exe: Added to repository. Tentacle client
+	  needed to build the installer.
+
+	* installer/pandora_2.0.mpi: moved to installer/pandora.mpi. Updated.
+	  The installer can now be built directly from the installer
+	  subdirectory.
+
+	* configure.in, Makefile.am, autogen.sh: Created a proper
+	  configure.in and Makefile.am. The agent can now be cross-compiled
+	  from Linux :-D
+
+	* bin/pandora_agent.conf: Fixed. A local configuration had been
+	  uploaded.
+	
+	* pandora_windows_service.h,pandora_windows_service.cc,
+	  udp_server/udp_server.cc, udp_server/udp_server.h: Properly shutdown
+	  the UDP server.
+
+	* modules/pandora_module_regexp.cc,
+	  modules/pandora_module_inventory.cc,
+	  modules/pandora_module_factory.cc,
+	  modules/pandora_module.cc, pandora_strutils.cc,
+	  pandora.h, pandora.cc: Fixed a couple of memory leaks. Small changes
+	  to avoid compile warnings when cross-compiling from Linux.
+
+	* windows_service.cc: Removed the interactive service flag to avoid
+	  'black windows'.
+
+	* main.cc: Include the memory leak detection tool if debugging is
+	  enabled.
+
 2009-09-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Fixed a memory leak.

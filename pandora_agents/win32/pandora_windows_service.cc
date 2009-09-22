@@ -69,16 +69,23 @@ Pandora_Windows_Service::setValues (const char * svc_name,
 	this->interval              = 60000;
 	this->transfer_interval     = this->interval;
 	this->elapsed_transfer_time = 0;
+	this->udp_server            = NULL;
 }
 
 /** 
  * Destroys a Pandora_Windows_Service object.
  */
 Pandora_Windows_Service::~Pandora_Windows_Service () {
+
 	if (this->conf != NULL) {
 		delete this->conf;
 	}
 	
+	if (this->udp_server != NULL) {
+		((UDP_Server *)udp_server)->stop ();
+		delete (UDP_Server *)udp_server;
+	}
+
 	if (this->modules != NULL) {
 		delete this->modules;
 	}
@@ -106,7 +113,6 @@ void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
-	static UDP_Server *udp_server = NULL;
 
 	setPandoraDebug (true);
 	
@@ -150,12 +156,12 @@ Pandora_Windows_Service::pandora_init () {
 	
 	/* Launch UDP Server */
 	udp_server_enabled = conf->getValue ("udp_server");
-	if (udp_server == NULL && udp_server_enabled.compare ("1") == 0) {
+	if (udp_server_enabled.compare ("1") == 0 && this->udp_server == NULL) {
 		udp_server_port = conf->getValue ("udp_server_port");
 		udp_server_addr = conf->getValue ("udp_server_address");
 		udp_server_auth_addr = conf->getValue ("udp_server_auth_address");
-		udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
-		udp_server->start ();
+		this->udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
+		((UDP_Server *)this->udp_server)->start ();
 	}
 }
 

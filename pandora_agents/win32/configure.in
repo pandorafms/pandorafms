@@ -1,10 +1,54 @@
-AC_PREREQ(2.59)
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
 
-AC_INIT([pandora-agent-win32], [1.0.0])
+AC_PREREQ([2.63])
+AC_INIT([Pandora Agent], [3.0], [rnovoa@artica.es])
+AC_CONFIG_SRCDIR([pandora_strutils.h])
+AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE
 
-AC_OUTPUT([
-Doxyfile
-Makefile
-])
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+
+# Get rid of the -g flag
+CXXFLAGS=
+
+# Debugging
+AC_ARG_ENABLE([debug], [  --enable-debug          produce debugging information (disabled by default)], debug="yes", debug="no")
+AM_CONDITIONAL(DEBUG, test "$debug" = "yes")
+
+# Checks for libraries.
+AC_CHECK_LIB([ws2_32], [main], , AC_MSG_ERROR([MingGW not found. You can get it from http://www.mingw.org/]))
+AC_CHECK_LIB([psapi], [main], , )
+AC_CHECK_LIB([ole32], [main], , )
+AC_CHECK_LIB([oleaut32], [main], , )
+AC_CHECK_LIB([uuid], [main], , )
+AC_CHECK_LIB([regex], [main], , AC_MSG_ERROR([Boost.Regex not not found. Get it from http://www.boost.org/ and rename it to libregex.a]))
+AC_CHECK_LIB([z], [main], , )
+AC_CHECK_LIB([gdi32], [main], , )
+AC_CHECK_LIB([crypto], [main], , )
+AC_CHECK_LIB([ssl], [main], , )
+AC_CHECK_LIB([curl], [main], , )
+AC_CHECK_LIB([odbc++], [main], , )
+
+# Checks for header files.
+AC_CHECK_HEADERS([fcntl.h stddef.h stdlib.h string.h sys/socket.h sys/time.h unistd.h wchar.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_SIZE_T
+AC_CHECK_TYPES([ptrdiff_t])
+
+# Checks for library functions.
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_MALLOC
+AC_FUNC_MKTIME
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([floor gethostbyname gettimeofday inet_ntoa memchr memmove memset regcomp select socket strchr strdup strrchr strtol])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

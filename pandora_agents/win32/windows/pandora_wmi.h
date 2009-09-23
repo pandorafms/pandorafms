@@ -40,7 +40,7 @@ namespace Pandora_Wmi {
 	 */
 	class Pandora_Wmi_Exception : public Pandora_Exception { };
 	
-	const string inventory_field_separator = "#$|$#";
+	const string inventory_field_separator = ";";
 	int           isProcessRunning      (string process_name);
 	int           isServiceRunning      (string service_name);
 	unsigned long getDiskFreeSpace      (string disk_id);

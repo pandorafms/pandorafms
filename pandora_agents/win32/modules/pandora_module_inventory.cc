@@ -354,28 +354,18 @@ Pandora_Module_Inventory::getXml() {
 				inventory_list_element = new TiXmlElement ("datalist");
 		     }
 			data_element = new TiXmlElement ("data");
-			element = new TiXmlElement ("value");
 			try {
 				data_clean = strreplace (this->getDataOutput (data),
 							 "%", "%%" );
 			} catch (Output_Error e) {
-		 		delete element;
+		 		delete data_element;
 				continue;
 			}
 			
 			text = new TiXmlText (data_clean);
-			element->InsertEndChild (*text);
-			data_element->InsertEndChild (*element);
+			data_element->InsertEndChild (*text);
 			delete text;
-			delete element;
 			
-			element = new TiXmlElement ("timestamp");
-			text = new TiXmlText (data->getTimestamp ());
-			element->InsertEndChild (*text);
-			data_element->InsertEndChild (*element);
-			delete text;
-			delete element;
-
 			inventory_list_element->InsertEndChild (*data_element);
 			delete data_element;
 		}

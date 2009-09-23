@@ -132,16 +132,22 @@ main (int argc, char *argv[]) {
 			return 1;
 		}
 	}
+
+#ifdef __DEBUG__
+	service->pandora_init ();
+	service->pandora_run ();
+#else
 	if (process) {
 		cout << "Pandora agent is now running" << endl;
 		service->pandora_init ();
 		while (1) {
 			service->pandora_run ();
-			Sleep (service->interval / 1000);
+			Sleep (service->interval * 1000);
 		}
 	} else {
 		service->run ();
 	}
+#endif
 	
 	delete service;
 	

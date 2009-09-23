@@ -1,3 +1,11 @@
+2009-09-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.h, modules/pandora_module_inventory.cc: Changed
+	  the format of the inventory XML.
+
+	* main.cc: Execute the agent and exit when compiled with debugging
+	  enabled.
+
 2009-09-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* debug_new.h, fast_mutex.h,

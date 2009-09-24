@@ -133,7 +133,7 @@ install () {
         echo "Copying Pandora FMS Agent configuration file to $PANDORA_HOME/pandora_agent.conf..."
         if [ -e /etc/pandora/pandora_agent.conf ]
         then
-        	cat /etc/pandora/pandora_agent.conf > /etc/pandora/pandora/pandora_agent.conf.$OLDFILENAMETMP
+        	cat /etc/pandora/pandora_agent.conf > /etc/pandora/pandora_agent.conf.$OLDFILENAMETMP
         	echo "Backing up old configuration file to /etc/pandora_agent.conf.$OLDFILENAMETMP"
         fi
         

@@ -87,7 +87,7 @@ foreach ($result as $row) {
 	}
 	$data[1] = print_timestamp ($row["utimestamp"], true);
 	if (is_numeric ($row["datos"])) {
-		$data[2] = format_for_graph ($row["datos"]);
+		$data[2] = $row["datos"];
 	} else {
 		$data[2] = safe_input ($row["datos"]);
 	}

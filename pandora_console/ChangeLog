@@ -1,3 +1,8 @@
+2009-09-24  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_console/operation/agentes/datos_agente.php: Data in dataview 
+	must be complete data, not "rounded" data.
+
 2009-09-21  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions_network_components.php,

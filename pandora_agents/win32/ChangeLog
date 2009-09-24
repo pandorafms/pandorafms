@@ -1,3 +1,21 @@
+2009-09-24  Sancho Lerena <slerena@artica.es>
+
+	* modules/pandora_module_tcpcheck.cc: WSAStartup memory management 
+	was leaking memory, so we will create and destroy in each loop the WSA
+	structure. Tested and leak-proof :-))
+
+	* modules/pandora_module_inventory.cc: Fixed typo with string label of 
+	services inventory module.
+
+	* bin/PandoraAgent.exe: New binary (woah, compiled from linux!).
+
+	* pandora_windows_service.cc: Fixed problem in os XML Tag, was os_name 
+	not os. Fixed problem with windows version, now is passwd full string to xml.  
+	Tentacle call is passwd between quotes, because tentacle could be
+	in paths with blank spaces (by default \program files\pandora_agent).
+
+	* pandora.cc: Build updated. 
+
 2009-09-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.h, modules/pandora_module_inventory.cc: Changed

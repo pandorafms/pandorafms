@@ -217,7 +217,7 @@ Pandora_Module_Inventory::run () {
 		}
 		rows.clear();
     }
-	found = this->options.find(module_inventory_software_str);
+	found = this->options.find(module_inventory_services_str);
 	if (found != string::npos){
 	    pandoraDebug("	Launching Services Query WMI\n");
 	    num_results = Pandora_Wmi::getServices(rows);

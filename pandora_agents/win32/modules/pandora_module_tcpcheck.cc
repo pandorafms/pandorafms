@@ -35,10 +35,8 @@ using namespace Pandora_Modules;
 Pandora_Module_Tcpcheck::Pandora_Module_Tcpcheck (string name, string address, string port, string timeout)
 	: Pandora_Module (name) {
     int rc;
-    WSADATA wsa_data;
  
     // Initialize Winsock
-    WSAStartup (MAKEWORD(2,2), &wsa_data);
     
     this->address = address;
     this->port = atoi (port.c_str ());
@@ -56,7 +54,6 @@ Pandora_Module_Tcpcheck::Pandora_Module_Tcpcheck (string name, string address, s
  * Pandora_Module_Tcpcheck destructor.
  */
 Pandora_Module_Tcpcheck::~Pandora_Module_Tcpcheck () {
-    WSACleanup ();
 }
 
 void
@@ -68,6 +65,13 @@ Pandora_Module_Tcpcheck::run () {
 	fd_set socket_set;
 	timeval timer;
 
+	WSADATA wsa_data;
+ 
+    // Initialize Winsock
+    WSAStartup (MAKEWORD(2,2), &wsa_data);
+
+
+
 	// Run
 	try {
 		Pandora_Module::run ();
@@ -76,6 +80,7 @@ Pandora_Module_Tcpcheck::run () {
 	}
 
 	if (this->address.empty ()) {
+		WSACleanup ();
 		return;
 	}
 
@@ -83,6 +88,7 @@ Pandora_Module_Tcpcheck::run () {
 	sock = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock == SOCKET_ERROR) {
 		pandoraLog ("Error %d creating socket", WSAGetLastError ());
+		WSACleanup ();
 		return;
 	}
 
@@ -96,13 +102,14 @@ Pandora_Module_Tcpcheck::run () {
 		host = gethostbyname(this->address.c_str ());
 		if (host == NULL) {
 			pandoraLog ("Could not resolve address for %s", this->address.c_str ());
+			WSACleanup ();
 			return;
 		}
 		
 		memcpy(&server.sin_addr, host->h_addr_list[0], host->h_length);
 	}
 
-    // Use non-blocking sockets to implement a timeout
+     // Use non-blocking sockets to implement a timeout
 	ioctlsocket (sock, FIONBIO, &mode);
 
 	// Connection request
@@ -111,6 +118,7 @@ Pandora_Module_Tcpcheck::run () {
         rc = WSAGetLastError ();
         if (rc != WSAEWOULDBLOCK) {
 		    pandoraLog ("connect error %d", rc);
+		    WSACleanup ();
 		    return;
         }
 	}
@@ -124,8 +132,10 @@ Pandora_Module_Tcpcheck::run () {
 	rc = select(0, NULL, &socket_set, NULL, &timer);
 	if (rc == 0) {
         this->setOutput ("0");
+
+	WSACleanup ();
         return;
     }
-    
+    WSACleanup ();
     this->setOutput ("1");
 }

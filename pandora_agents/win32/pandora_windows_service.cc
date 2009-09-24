@@ -197,9 +197,9 @@ Pandora_Windows_Service::getXmlHeader () {
 	agent->SetAttribute ("interval", value);
 	
 	value = Pandora_Windows_Info::getOSName ();
-	agent->SetAttribute ("os", value);
+	agent->SetAttribute ("os_name", value);
 	
-	value = Pandora_Windows_Info::getOSVersion ();
+	value = value + Pandora_Windows_Info::getOSVersion ();
 	agent->SetAttribute ("os_version", value);
 	
 	return agent;
@@ -245,7 +245,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 		tentacle_cmd += " " + opts;
 	}
 
-	tentacle_cmd += " " +  filepath;
+	tentacle_cmd += " \"" +  filepath + "\"";
 	
 	/* Copy the file */
 	pandoraDebug ("Remote copying XML %s on server %s",

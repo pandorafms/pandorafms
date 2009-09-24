@@ -1,3 +1,7 @@
+2009-09-24  Sancho Lerena zslerena@artica.es>
+
+	* linux/agent_installer: Fixed a typo in old setup backup cmd. 
+
 2009-09-18  sancho Lerena <slerena@artica.es>
 
 	* unix: Added subdir with local daemon script and sample conf

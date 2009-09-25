@@ -2823,11 +2823,13 @@ function delete_agent ($id_agents) {
 
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {
-			$agent_md5 = md5 (get_agent_name ($id_agent), FALSE);
+			$agent_md5 = md5 (get_agent_name ($id_agent,'none'), FALSE);
+			
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 				// Agent remote configuration editor
 				$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
 				@unlink ($file_name);
+				
 				$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
 				@unlink ($file_name);
 			}

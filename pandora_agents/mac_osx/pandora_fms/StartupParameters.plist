@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>Pandora FMS Agent 2.0 (Mac)</string>
+	<string>Pandora FMS Agent 3.0 (Mac)</string>
 	<key>OrderPreference</key>
 	<string>None</string>
 	<key>Provides</key>

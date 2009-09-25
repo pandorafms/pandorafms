@@ -1,3 +1,8 @@
+
+2009-09-25  Sancho lerena <slerena@artica.es>
+
+	* pandoradb.sql: SUSE is not very happy with some comments, fixed.
+
 2009-09-24  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_console/operation/agentes/datos_agente.php: Data in dataview 

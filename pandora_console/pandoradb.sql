@@ -596,17 +596,17 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---server types:
---0 data
---1 network
---2 snmp trap console
---3 recon
---4 plugin
---5 prediction
---6 wmi
---7 export
---8 inventory
---9 web
+-- server types:
+-- 0 data
+-- 1 network
+-- 2 snmp trap console
+-- 3 recon
+-- 4 plugin
+-- 5 prediction
+-- 6 wmi
+-- 7 export
+-- 8 inventory
+-- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
 CREATE TABLE IF NOT EXISTS `tsesion` (

@@ -39,7 +39,7 @@ fi
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
-	PANDORA_PID=`ps -Af | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	PANDORA_PID=`ps -Af | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )
 

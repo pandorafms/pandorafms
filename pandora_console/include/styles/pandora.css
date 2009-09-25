@@ -1033,3 +1033,7 @@ div#pandora_logo_header {
 	height: 60px;
 	float: left;
 }
+
+.disabled_module {
+	color: #aaa;
+}

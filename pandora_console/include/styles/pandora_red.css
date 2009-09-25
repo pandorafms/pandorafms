@@ -732,3 +732,7 @@ div#pandora_logo_header {
 	height: 60px;
 	float: left;
 }
+
+.disabled_module {
+	color: #d88c8c;
+}

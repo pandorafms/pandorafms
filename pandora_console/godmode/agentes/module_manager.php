@@ -16,7 +16,7 @@
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-	echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>"; 
+	echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>";
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
@@ -64,6 +64,60 @@ echo "</table>";
 
 if (! isset ($id_agente))
 	return;
+	
+
+$multiple_delete = get_parameter('multiple_delete');
+
+if ($multiple_delete) {
+	$id_agent_modules_delete = (array)get_parameter('id_delete');
+	
+	foreach($id_agent_modules_delete as $id_agent_module_del) {
+		$id_grupo = (int) dame_id_grupo ($id_agente);
+		
+		if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
+			audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
+			"Trying to delete a module without admin rights");
+			require ("general/noaccess.php");
+			exit;
+		}
+		
+		if ($id_agent_module_del < 1) {
+			audit_db ($config["id_user"],$REMOTE_ADDR, "HACK Attempt",
+			"Expected variable from form is not correct");
+			die ("Nice try buddy");
+			exit;
+		}
+		
+		//Init transaction
+		$error = 0;
+		process_sql_begin ();
+		
+		// First delete from tagente_modulo -> if not successful, increment
+		// error. NOTICE that we don't delete all data here, just marking for deletion
+		// and delete some simple data.
+		
+		if (process_sql ("UPDATE tagente_modulo
+			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+			$error++;
+		
+		if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+			$error++;
+	
+		if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_agent_module_del) === false)
+			$error++;
+		
+	
+		//Check for errors
+		if ($error != 0) {
+			process_sql_rollback ();
+			print_error_message (__('There was a problem deleting the module'));
+		} else {
+			process_sql_commit ();
+			print_success_message (__('Module deleted succesfully'));
+		}
+	}
+}
+
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
@@ -139,7 +193,7 @@ foreach ($modules as $module) {
 
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
-		$data[0] .= '<em>'.$module['nombre'].'</em>';
+		$data[0] .= '<em class="disabled_module">'.$module['nombre'].'</em>';
 	else
 		$data[0] .= $module['nombre'];
 	$data[0] .= '</a>';
@@ -175,7 +229,8 @@ foreach ($modules as $module) {
 	$data[5] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
 
 	// Delete module
-	$data[6] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[6] = print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+	$data[6] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[6] .= print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
@@ -195,5 +250,12 @@ foreach ($modules as $module) {
 	array_push ($table->data, $data);
 }
 
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module"
+	onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
 print_table ($table);
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+print_input_hidden ('multiple_delete', 1);
+print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub"');
+echo '</div>';
+echo '</form>'
 ?>

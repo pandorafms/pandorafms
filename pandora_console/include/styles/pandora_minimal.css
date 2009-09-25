@@ -117,3 +117,7 @@ tr.rowPair:hover {
 tr.rowOdd:hover {
 	background-color: #444;
 }
+
+.disabled_module {
+	color: #98c2ed;
+}

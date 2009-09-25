@@ -1,3 +1,9 @@
+2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/module_manager.php: add checkbox to multiple delete
+	modules in agent managent. And add class style css for disabled modules.
+	* include/styles/pandora_minimal.css, include/styles/pandora_red.css,
+	include/styles/pandora.css: Add "disabled_module" class for use this style.
 
 2009-09-25  Sancho lerena <slerena@artica.es>
 

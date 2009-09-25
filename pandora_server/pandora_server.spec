@@ -80,7 +80,7 @@ exit 0
 %post
 chkconfig -s pandora_server on 
 chkconfig -s tentacle_serverd on 
-echo "/usr/share/pandora_server/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
+echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
 chmod 750 /etc/cron.daily/pandora_db
 cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
 

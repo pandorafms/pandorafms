@@ -19,6 +19,24 @@
 # Description:    Tentacle Server startup script
 ### END INIT INFO
 
+# Check for SUSE status scripts
+if [ -f /etc/rc.status ]
+then
+        . /etc/rc.status
+        rc_reset
+else
+        # Define rc functions for non-suse systems, "void" functions.
+        function rc_status () (VOID=1;)
+        function rc_exit () (exit;)
+        function rc_failed () (VOID=1;)
+
+fi
+
+function get_pid {
+                TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+                echo $TENTACLE_PID
+}
+
 # Pandora server settings
 PANDORA_SERVER_PATH="/var/spool/pandora/data_in"
 
@@ -36,14 +54,6 @@ TENTACLE_EXT_OPTS="-i.*\.conf:conf;.*\.md5:md5"
 
 umask 0007
 
-# Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty
-# if not running). Can be a list of PIDs if multiple instances are running.
-
-function get_pid {
-		TENTACLE_PID=`ps aux | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
-		echo $TENTACLE_PID
-}
-
 # Main script
 TENTACLE_OPTS="-a $TENTACLE_ADDR -p $TENTACLE_PORT -s $PANDORA_SERVER_PATH $TENTACLE_EXT_OPTS -d"
 
@@ -58,7 +68,8 @@ esac
 
 if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
 	echo "Tentacle server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON."
-	exit 1
+	rc_failed 1
+	rc_exit
 fi
 
 case "$1" in
@@ -66,57 +77,62 @@ case "$1" in
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is already running with PID $TENTACLE_PID."
-			exit 1
+			rc_failed 2
+			rc_exit	
 		fi
 	
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
-		sleep 4
+		sleep 1
+
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is now running with PID $TENTACLE_PID."
+			rc_status -v
 		else
 			echo "Tentacle server could not be started."
-			exit 1
+			rc_status -v
 		fi
 
-		exit 0
 	;;
 	
 	stop)
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server does not seem to be running."
-			exit 1;
+			rc_failed 2
 		else
-			kill $TENTACLE_PID > /dev/null 2>&1
+			kill $TENTACLE_PID
 			sleep 1
+			TENTACLE_PID=`get_pid`
 
-			get_pid
 			if [ ! -z "$TENTACLE_PID" ]; then
 				echo "Tentacle server could not be stopped."
-				exit 1
+				rc_status -s
 			fi
 
 			echo "Tentacle server stopped."
+			rc_status -v
 		fi
 
-		exit 0
 	;;
 
 	force-reload|restart)
 		$0 stop
+		sleep 1
 		$0 start
+		rc_status
 	;;
 
 	status)
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is not running."
+			rc_status 
 		else
 			echo "Tentacle server is running with PID $TENTACLE_PID."
+			rc_status 
 		fi
 		
-		exit 0
 	;;
 
 	*)
@@ -125,3 +141,4 @@ case "$1" in
 	;;
 esac
 
+rc_exit

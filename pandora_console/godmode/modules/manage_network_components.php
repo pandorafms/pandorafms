@@ -59,6 +59,7 @@ $update_component = (bool) get_parameter ('update_component');
 $delete_component = (bool) get_parameter ('delete_component');
 $new_component = (bool) get_parameter ('new_component');
 $duplicate_network_component = (bool) get_parameter ('duplicate_network_component');
+$delete_multiple = (bool) get_parameter('delete_multiple');
 
 if ($duplicate_network_component) {
 	$source_id = (int) get_parameter ('source_id');
@@ -70,8 +71,8 @@ if ($duplicate_network_component) {
 	
 	//List unset for jump the bug in the pagination (TODO) that the make another
 	//copy for each pass into pages.
-	unset($_POST['source_id']);
-	unset($_POST['duplicate_network_component']);
+	unset($_GET['source_id']);
+	unset($_GET['duplicate_network_component']);
 	
 	$id = 0;
 }
@@ -273,19 +274,26 @@ foreach ($components as $component) {
 	$data[4] = get_network_component_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	
-	$data[6] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/modules/manage_network_components" style="display: inline; float: left">';
-	$data[6] .= print_input_hidden ('duplicate_network_component', 1, true);
-	$data[6] .= print_input_hidden ('source_id', $component['id_nc'], true);
-	$data[6] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
-	$data[6] .= '</form> ';
-	$data[6] .= '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
-	$data[6] .= print_input_hidden ('delete_component', 1, true);
-	$data[6] .= print_input_hidden ('id', $component['id_nc'], true);
-	$data[6] .= print_input_hidden ('search_id_group', $search_id_group, true);
-	$data[6] .= print_input_hidden ('search_string', $search_string, true);
-	$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true,
-			array ('title' => __('Delete')));
-	$data[6] .= '</form>';
+	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group='  . $search_id_group .
+		'search_string=' . $search_string . '&duplicate_network_component=1&source_id=' . $component['id_nc'] . '">' . 
+		print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate'))) . '</a>';
+//	$data[6] .= '<form method="post" action="index.php?sec=galertas&sec2=godmode/modules/manage_network_components" style="display: inline; float: left">';
+//	$data[6] .= print_input_hidden ('duplicate_network_component', 1, true);
+//	$data[6] .= print_input_hidden ('source_id', $component['id_nc'], true);
+//	$data[6] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+//	$data[6] .= '</form> ';
+	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group='  . $search_id_group .
+		'search_string=' . $search_string . 
+		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
+		print_input_image ('delete', 'images/cross.png', 1, '', true, array ('title' => __('Delete'))) . '</a>';
+//	$data[6] .= '<form method="post" action="'.$url.'" onsubmit="if (! confirm (\''.__('Are you sure?').'\')) return false">';
+//	$data[6] .= print_input_hidden ('delete_component', 1, true);
+//	$data[6] .= print_input_hidden ('id', $component['id_nc'], true);
+//	$data[6] .= print_input_hidden ('search_id_group', $search_id_group, true);
+//	$data[6] .= print_input_hidden ('search_string', $search_string, true);
+//	$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true,
+//			array ('title' => __('Delete')));
+//	$data[6] .= '</form>';
 	
 	array_push ($table->data, $data);
 }

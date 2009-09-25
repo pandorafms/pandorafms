@@ -1,5 +1,11 @@
 2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_components.php: change the duplicate
+	method and delete method, before it's a form with post and now it's a
+	link with get.
+
+2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php: add the feature to delete remote
 	conf file in the agent configuration.
 

@@ -1,5 +1,10 @@
 2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/configurar_agente.php: add the feature to delete remote
+	conf file in the agent configuration.
+
+2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: fix the delete the conf and md5 files of agent
 	to delete, before try delete conf and md5 files with name in uppercase.
 

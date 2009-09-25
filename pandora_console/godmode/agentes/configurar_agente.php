@@ -230,6 +230,30 @@ if ($id_agente) {
 	echo '<div style="height: 25px;">&nbsp;</div>';
 }
 
+$delete_conf_file = (bool) get_parameter('delete_conf_file');
+
+if ($delete_conf_file) {
+	$correct = false;
+	// Delete remote configuration
+	if (isset ($config["remote_config"])) {
+		$agent_md5 = md5 (get_agent_name ($id_agente,'none'), FALSE);
+		
+		if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
+			// Agent remote configuration editor
+			$file_name = $config["remote_config"]."/conf/".$agent_md5.".conf";
+			$correct = @unlink ($file_name);
+			
+			$file_name = $config["remote_config"]."/md5/".$agent_md5.".md5";
+			$correct = @unlink ($file_name);
+		}
+	}
+	
+	print_result_message ($correct,
+		__('Successfully delete conf file'),
+		__('Could not be delete conf file'));
+}
+
+
 // Show agent creation results
 if ($create_agent) {
 	print_result_message ($agent_created_ok,

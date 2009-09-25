@@ -9,8 +9,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:       pandora_server
-# Required-Start: $syslog mysql
-# Should-Start:   $network 
+# Required-Start: $syslog mysql cron
+# Should-Start:   $network cron
 # Required-Stop:  $syslog mysql
 # Should-Stop:    $network mysql
 # Default-Start:  2 3 5
@@ -20,31 +20,36 @@
 ### END INIT INFO
 
 
-PANDORA_HOME="/etc/pandora/pandora_server.conf"
-PANDORA_PID_PATH="/var/run"
-PANDORA_PID=$PANDORA_PID_PATH/pandora_server.pid
-PANDORA_DAEMON=/usr/local/bin/pandora_server
+export PANDORA_HOME="/etc/pandora/pandora_server.conf"
+export PANDORA_DAEMON=/usr/local/bin/pandora_server
 
+# Check for SUSE status scripts
+if [ -f /etc/rc.status ]
+then
+	. /etc/rc.status
+	rc_reset
+else
+	# Define rc functions for non-suse systems, "void" functions.
+	function rc_status () (VOID=1;)
+	function rc_exit () (exit;)
+	function rc_failed () (VOID=1;)
 
+fi
+	
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
-	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	PANDORA_PID=`ps -Af | grep "$PANDORA_DAEMON $PANDORA_HOME" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )
 
 # Main script
 
-if [ ! -d "$PANDORA_PID_PATH" ]
-then
-	echo "Pandora FMS cannot write it's PID file in $PANDORA_PID_PATH. Please create that directory"
-	exit
-fi
-
 if [ ! -f $PANDORA_DAEMON ]
 then
 	echo "Pandora FMS Server not found, please check setup and read manual"
-	exit
+	rc_status -s
+	rc_exit
 fi
 
 case "$1" in
@@ -53,19 +58,23 @@ case "$1" in
 		if [ ! -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
-			exit 1
+			rc_failed 1
+			rc_exit 
 		fi
 	
 		$PANDORA_DAEMON $PANDORA_HOME -D
-		sleep 4
+		sleep 1
 
 		PANDORA_PID=`pidof_pandora`
+		
 		if [ ! -z "$PANDORA_PID" ]
 		then
 			echo "Pandora Server is now running with PID $PANDORA_PID"
+			rc_status -v
 		else
 			echo "Cannot start Pandora FMS Server. Aborted."
 			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.log'"
+			rc_status -s
 		fi
 	;;
 		
@@ -74,10 +83,24 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running, cannot stop it."
-			exit 1
+			rc_failed 
 		else
 			echo "Stopping Pandora FMS Server"
 			kill $PANDORA_PID > /dev/null 2>&1
+			COUNTER=0
+
+	                while [  $COUNTER -lt 10 ]
+             		do
+                        	PANDORA_PID=`pidof_pandora`
+                        	if [ -z "$PANDORA_PID" ]
+ 		                then
+                                	COUNTER=10
+                        	fi
+                        	COUNTER=`expr $COUNTER + 1`
+                        	sleep 1
+                	done
+
+			rc_status -v
 		fi
 	;;
 	status)
@@ -85,10 +108,11 @@ case "$1" in
 		if [ -z "$PANDORA_PID" ]
 		then
 			echo "Pandora FMS Server is not running."
+			rc_status 
 		else
 			echo "Pandora FMS Server is running with PID $PANDORA_PID."
+			rc_status
 		fi
-		exit 0
         ;;
   force-reload|restart)
 		$0 stop
@@ -99,4 +123,4 @@ case "$1" in
 		echo "Usage: pandora_server { start | stop | restart | status }"
 		exit 1
 esac
-
+rc_exit

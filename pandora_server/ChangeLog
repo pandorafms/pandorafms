@@ -1,3 +1,15 @@
+2009-09-25  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Some fixes to SUSE RPM.
+
+	* conf/pandora_server.conf: Added some missing default values
+
+	* lib/PandoraFMS/Config.pm: Added some missing default values.
+
+	* util/tentacle_serverd, util/pandora_server: SUSE rc.status 
+	addon. Need working, SUSE continues giving erratic problems inn
+	startup :(
+
 2009-09-22  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_installer: Fixes some problems detecting Linux 

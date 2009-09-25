@@ -1,5 +1,10 @@
 2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: fix the delete the conf and md5 files of agent
+	to delete, before try delete conf and md5 files with name in uppercase.
+
+2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: add second parameter for trace a log in server
 	file (plain text).
 

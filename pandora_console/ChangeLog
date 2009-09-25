@@ -1,25 +1,30 @@
-2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora_modules.js: fix the js and add more entities
+	for decode.
+
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/modules/manage_network_components.php: change the duplicate
 	method and delete method, before it's a form with post and now it's a
 	link with get.
 
-2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php: add the feature to delete remote
 	conf file in the agent configuration.
 
-2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: fix the delete the conf and md5 files of agent
 	to delete, before try delete conf and md5 files with name in uppercase.
 
-2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php: add second parameter for trace a log in server
 	file (plain text).
 
-2009-09-18  Miguel de Dios  <miguel.dedios@artica.es>
+2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager.php: add checkbox to multiple delete
 	modules in agent managent. And add class style css for disabled modules.

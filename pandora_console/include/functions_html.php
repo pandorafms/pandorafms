@@ -22,8 +22,22 @@
 /**
  * Prints the print_r with < pre > tags
  */
-function debugPrint ($var) {
-	echo "<pre>";print_r($var);echo "</pre>";
+function debugPrint ($var, $file = '') {
+	if ($file === true)
+		$file = '/tmp/logDebug';
+	if (strlen($file) > 0) {
+		$f = fopen($file, "a");
+		ob_start();
+		echo date("Y/m/d H:i:s") . "\n";
+		print_r($var);
+		echo "\n\n";
+		$output = ob_get_clean();
+		fprintf($f,"%s",$output);
+		fclose($f);
+	}
+	else {
+		echo "<pre>";print_r($var);echo "</pre>";
+	}
 }
 
 

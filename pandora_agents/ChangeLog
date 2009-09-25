@@ -1,3 +1,24 @@
+2009-09-25  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* mac_osx/pandora_fms/pandora_fms, 
+	mac_osx/pandora_fms/StartupParameters.plist: Updated for 3.0
+
+	* mac_osx/tentacle_client: Added for 3.0
+
+	* mac_osx/pandora_agent: Copied from Linux and modified
+
+	* mac_osx/pandora_agent.conf: Slight modifications for 3.0
+
+	* mac_osx/pandora_agent_installer: Copied from Linux and 
+	modified
+
+	* mac_osx/Pandora FMS.pmdoc: PackageMaker definition file 
+	to create Mac Packages for easy (automatic) deployment
+
+	* mac_osx/Pandora Agent 3.0 for Mac: Package (installer) for 
+	Mac. This is an easy (click-to-run) package.
+
+
 2009-09-24  Sancho Lerena zslerena@artica.es>
 
 	* linux/agent_installer: Fixed a typo in old setup backup cmd. 

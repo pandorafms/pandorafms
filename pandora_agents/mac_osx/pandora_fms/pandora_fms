@@ -3,7 +3,7 @@
 # Generic GNU/Linux version
 # (c) Sancho Lerena, <slerena@gmail.com>
 # (c) Evi Vanoost <vanooste@rcbi.rochester.edu> 
-# v2.0 
+# v3.0 
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
@@ -32,8 +32,8 @@ StartService()
                 fi
         fi
 	
-	nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
-        echo $MYPID > $PIDFILE
+	$DAEMON $PANDORA_PATH > $LOGFILE 2>&1 & 
+    echo $! > $PIDFILE
 	echo "Pandora FMS Agent is now running with PID $MYPID"
 }
 
@@ -41,15 +41,15 @@ StopService()
 {
         if [ -f $PIDFILE ]
         then
-		echo "Stopping Pandora Agent."
-		PID_2=`cat $PIDFILE`
-		if [ ! -z "`ps -A | grep -v grep | grep 'pandora_agent'`" ]
-		then
-			kill -9 $PID_2
-		fi
-		rm -f $PIDFILE 
+			echo "Stopping Pandora Agent."
+			PID_BA=`cat $PIDFILE`
+			if [ ! -z "`ps -A | grep -v grep | grep 'pandora_agent'`" ]
+			then
+				kill $PID_BA
+			fi
+			rm -f $PIDFILE 
         else
-		echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
+			echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
         fi
 }
  

@@ -1,13 +1,13 @@
 #!/bin/bash
 # **********************************************************************
-# Pandora FMS Generic MacOS Agent
-# (c) 2009 Artica Soluciones Tecnológicas SL
+# Pandora FMS Generic Linux Agent
+# (c) 2009 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-AGENT_VERSION=2.0
-AGENT_BUILD=081211
+AGENT_VERSION=3.0
+AGENT_BUILD=090818
 
 # **********************************************************************
 # function configure_agent()
@@ -91,7 +91,7 @@ function configure_agent {
 		elif [ ! -z "`echo $a | grep -e '^cron_mode'`" ]
 		then
 					CRON_MODE=1
-					echo "$TIMESTAMP - [SETUP] - Scheduled mode enabled" >> $PANDORA_LOGFILE
+					echo "$TIMESTAMP - [SETUP] - Cronmode enabled" >> $PANDORA_LOGFILE
 		elif [ ! -z "`echo $a | grep -e '^server_opts'`" ]
 		then
 			SERVER_OPTS=`echo $a | cut -d" " -f2-`
@@ -153,27 +153,37 @@ function configure_agent {
 				SECONDARY_TENTACLE_OPTS="$SECONDARY_SERVER_OPTS $SECONDARY_TENTACLE_OPTS"
 				echo "$TIMESTAMP - [SETUP] - Extra options for the secondary Tentacle client $SECONDARY_SERVER_OPTS" >> $PANDORA_LOGFILE
 			fi
+		# Agent description
+		elif [ ! -z "`echo $a | grep -e '^description'`" ]
+		then
+			AGENT_DESCRIPTION=`echo $a | cut -d" " -f2-`
+		# Agent group
+		elif [ ! -z "`echo $a | grep -e '^group'`" ]
+		then
+			AGENT_GROUP=`echo $a | cut -d" " -f2-`
+
+		# Agent autotime (use always current server time)
+		elif [ ! -z "`echo $a | grep -e '^autotime'`" ]
+		then
+			AGENT_AUTOTIME=`echo $a | cut -d" " -f2-`
 		fi	
 	done
 	
 	if [ "$CRON_MODE" == "0" ]
 	then
 		# Script banner at start
-		echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena 2003-2008"
-		echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
+		echo "Pandora FMS Agent $AGENT_VERSION (c) Artica ST 2003-2009"
+		echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "
 	else
-		# Checks if there is another instance running in cron mode
-		# there is no pidof in Mac OS X. We use good ol' pid files
-		PID_RUNNING=`cat /tmp/pandora_agent_cron.pid 2> /dev/null || echo 0`
+		# Checks if there is another instance running
+		PID_RUNNING=`pidof -x pandora_agent`
 		PID_ME=$$
 		if [ "$PID_ME" != "$PID_RUNNING" ]
 		then
 			echo "Aborting execution. Another instance of Pandora FMS running"
 			exit
-		else
-			echo $PID_ME > /tmp/pandora_agent_cron.pid
 		fi
 	fi
 
@@ -354,15 +364,15 @@ function check_remote_config {
 		return 1
 	fi
 
-	# Agent name md5 (md5sum is not available on Mac OS X except through Fink)
-	AGENT_MD5=`echo -n $NOMBRE_HOST | md5`
+	# Agent name md5sum
+	AGENT_MD5=`echo -n $NOMBRE_HOST | md5sum | cut -d" " -f1`
 	CONFIG_FILE="$AGENT_MD5.conf"
 	MD5_FILE="$AGENT_MD5.md5"
 	
-	# Local config file md5 (md5 has the hash on 4 instead of md5sum's 1)
-	CONFIG_MD5=`md5 $PANDORA_HOME/pandora_agent.conf | cut -d" " -f4`
+	# Local config file md5sum
+	CONFIG_MD5=`md5sum $PANDORA_HOME/pandora_agent.conf | cut -d" " -f1`
 	
-	# Get remote config file
+	# Get remote config file md5sum
 	recv_file "$MD5_FILE"
 	
 	# Configuration has not been uploaded to the server
@@ -454,33 +464,35 @@ OS_NAME=`uname -s`
 PANDORA_LOGFILE=/var/log/pandora/pandora_agent.log
 TEMP=/tmp
 
-# Check version
+# Get Linux Distro type and version
 if [ -f "/etc/SuSE-release" ]
 then
-        OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
-        LINUX_DISTRO=SUSE
-elif [ -f "/etc/lsb-release" ]
-then
-        OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-        LINUX_DISTRO=UBUNTU
-        OS_VERSION="UBUNTU $OS_VERSION"
-elif [ -f "/etc/debian_version" ]
-then
-        OS_VERSION=`cat /etc/debian_version`
-        OS_VERSION="DEBIAN $OS_VERSION"
-        LINUX_DISTRO=DEBIAN
-elif [ -f "/etc/fedora-release" ]
-then
-        OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-        OS_VERSION="FEDORA $OS_VERSION"
-        LINUX_DISTRO=FEDORA
-elif [ $OS_NAME = "Darwin" ]
-then
-        LINUX_DISTRO="Mac OS X"
-        OS_VERSION=`sw_vers | awk 'NR==2 {print $2}'`
+	OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+	LINUX_DISTRO=SUSE
 else
-        LINUX_DISTRO=$OS_NAME
-        OS_VERSION=`uname -r`
+	if [ -f "/etc/lsb-release" ]
+	then
+		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+		LINUX_DISTRO=UBUNTU
+		OS_VERSION="UBUNTU $OS_VERSION"
+	else
+		if [ -f "/etc/debian_version" ]
+		then
+			OS_VERSION=`cat /etc/debian_version`
+			OS_VERSION="DEBIAN $OS_VERSION"
+			LINUX_DISTRO=DEBIAN
+		else
+			if [ -f "/etc/fedora-release" ]
+			then
+				OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+				OS_VERSION="FEDORA $OS_VERSION"
+				LINUX_DISTRO=FEDORA
+			else
+				LINUX_DISTRO=GENERIC
+				OS_VERSION=`uname -r`
+			fi
+		fi
+	fi
 fi
 
 # Configure this agent
@@ -499,6 +511,11 @@ do
  	# Date and time, SERIAL is number of seconds since 1/1/1970, for every packet.
  	TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
  	SERIAL=`date +"%s"`
+	if [ "$AGENT_AUTOTIME" == "1" ]
+	then
+		TIMESTAMP="AUTO"
+	fi
+
  
  	# File names
  	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
@@ -506,7 +523,7 @@ do
  
  	# Makes data packet
 	echo "<?xml version=\"1.0\" encoding=\"$ENCODING\"?> " > $DATA
-	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" >> $DATA
+	echo "<agent_data description='$AGENT_DESCRIPTION' group='$AGENT_GROUP' os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" >> $DATA
 	
  	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
  	do
@@ -597,6 +614,13 @@ do
 			fi
 		fi
 
+		# Module postprocess info 
+  		if [ ! -z "`echo $a | grep -e '^module_postprocess'`" ]
+		then
+			pprocess=`echo $a | cut -d" " -f2-`
+			echo "<postprocess><![CDATA[$pprocess]]></postprocess>" >> $DATA2
+		fi
+
 		# If module ends, and execute for this module is enabled
 		# then write 
 
@@ -644,12 +668,10 @@ do
 	# Cron mode
 	if [ "$CRON_MODE" == "1" ]
 	then
-		#remove pid file first
-		rm /tmp/pandora_agent_cron.pid
-		exit 
+		exit
 	fi
 	
 	# Go to bed :-)
 	sleep $INTERVAL
 done
-# This runs forever!
+# This runs forever! 

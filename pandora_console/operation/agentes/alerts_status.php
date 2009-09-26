@@ -72,6 +72,7 @@ if (isset ($_GET["id_agente"])) {
 	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter);
 	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
 	$print_agent = false;
+	$inside_main = 1;
 } else {
 	if (!give_acl ($config["id_user"], 0, "AR")) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
@@ -93,16 +94,27 @@ if (isset ($_GET["id_agente"])) {
 	}
 	
 	$print_agent = true;
+	$inside_main = 0;
 }
+
 
 $tab = get_parameter_get ("tab");
 if ($tab != '') {
 	$url = $url.'&tab='.$tab;
 }
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Alerts');
-echo print_help_icon ('alert_validation', true);
-echo "</h2>";
+
+if ($inside_main == 1 && $tab != 'alert') {
+	echo "<h3>";
+	echo __('Alerts');
+	echo "</h3>";
+
+} else {
+	echo "<h2>";
+	echo __('Pandora agents'). " &raquo; ".__('Alerts');
+	echo print_help_icon ('alert_validation', true);
+	echo "</h2>";
+}
 
 echo '<form method="post" action="'.$url.'">';
 

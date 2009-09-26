@@ -1,3 +1,10 @@
+2009-09-26  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Update build after last changes.
+
+	* operation/agentes/alerts_status.php, operation/agentes/sla_view.php: 
+	Unify titles improving integrity of appearance.
+
 2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora_modules.js: fix the js and add more entities

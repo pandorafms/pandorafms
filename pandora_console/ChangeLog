@@ -5,6 +5,8 @@
 	* operation/agentes/alerts_status.php, operation/agentes/sla_view.php: 
 	Unify titles improving integrity of appearance.
 
+	* operation/search_results.php: Add style to not found message.
+
 2009-09-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora_modules.js: fix the js and add more entities

@@ -254,7 +254,7 @@ echo "<div style='height: 25px'> </div>";
 
 if (($agents === false) && ($users === false) && ($alerts === false) && ($graphs === false)
 	&& ($reports === false) && ($maps === false)) {
-		echo "<h2>" . __("Zero results found") . "</h2>\n";
+		echo "<br><div class='nf'>" . __("Zero results found") . "</div>\n";
 }
 else {
 	if ($agents !== false) {

@@ -47,10 +47,10 @@ else {
 	$preffix = '';
 	$interval = 300;
 	$ip_server = '';
-	$connect_mode = 'ssh';
-	$user = 'pandora';
+	$connect_mode = 'tentacle';
+	$user = '';
 	$password = '';
-	$port = 22;
+	$port = 41121;
 	$directory = '/var/spool/pandora/data_in';
 	$options = '';
 }
@@ -72,7 +72,7 @@ $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 
 // Export server
 $table->data[1][0] = __('Export server');
-$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 1 ORDER BY name',
+$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 7 ORDER BY name',
 			'export_server', $export_server, '', __('None'), 0, true);
 
 // Preffix

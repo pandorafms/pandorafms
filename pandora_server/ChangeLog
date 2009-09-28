@@ -1,3 +1,12 @@
+2009-09-28  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Updatged build.
+
+	* lib/PandoraFMS/Core.pm: Added new macro fields for alerts:
+	id_agent, alert_priority, alert name and module name. Also
+	fixed a problem in macro substitution when recursive fields
+	was used.  
+
 2009-09-25  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Some fixes to SUSE RPM.

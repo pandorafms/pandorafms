@@ -214,6 +214,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `field1` varchar(255) NOT NULL default '',
   `field2` varchar(255) default '',
   `field3` varchar(255) default '',
+  `id_group` mediumint(8) unsigned NULL default 0,
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
@@ -248,6 +249,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field2_recovery` varchar(255) NOT NULL default '',
   `field3_recovery` mediumtext NOT NULL,
   `priority` tinyint(4) default '0',
+  `id_group` mediumint(8) unsigned NULL default 0,
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
     ON DELETE SET NULL ON UPDATE CASCADE
@@ -838,6 +840,7 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
   `date_from` bigint(20) NOT NULL default '0',
   `date_to` bigint(20) NOT NULL default '0',
   `executed` tinyint(1) UNSIGNED NOT NULL default 0,
+  `id_group` mediumint(8) unsigned NULL default 0,
   PRIMARY KEY (  `id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

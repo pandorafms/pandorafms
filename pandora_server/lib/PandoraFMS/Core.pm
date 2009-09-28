@@ -395,7 +395,7 @@ sub pandora_execute_alert ($$$$$$$) {
 	# Execute actions
 	foreach my $action (@actions) {
 		logger($pa_config, "Alert (" . $alert->{'name'} . ") executed for agent " . $agent->{'nombre'}, 2);
-		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $dbh);
+		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh);
 	}
 
 	# Generate an event
@@ -409,9 +409,9 @@ sub pandora_execute_alert ($$$$$$$) {
 ##########################################################################
 # Execute the given action.
 ##########################################################################
-sub pandora_execute_action ($$$$$$$) {
+sub pandora_execute_action ($$$$$$$$) {
 	my ($pa_config, $data, $agent, $alert,
-	    $alert_mode, $action, $dbh) = @_;
+	    $alert_mode, $action, $module, $dbh) = @_;
 
 	my $field1 =  $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
 	my $field2 =  $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
@@ -427,23 +427,31 @@ sub pandora_execute_action ($$$$$$$) {
 	$field2 = decode_entities ($field2);
 	$field3 = decode_entities ($field3);
 
+	# Thanks to people of Cordoba univ. for the patch for adding module and 
+	# id_agent macros to the alert.
+	
 	# Alert macros
 	my %macros = (_field1_ => $field1,
 				  _field2_ => $field2,
 				  _field3_ => $field3,
 				  _agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				  _address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
-				  _timestamp_ => localtime(),
+				  _timestamp_ => strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				  _data_ => $data,
+  				  _alert_ => $alert->{'name'},
 				  _alert_description_ => $alert->{'description'},
 				  _alert_threshold_ => $alert->{'time_threshold'},
 				  _alert_times_fired_ => $alert->{'times_fired'},
+  				  _alert_priority_ => $alert->{'priority'},
+				  _module_ => (defined ($module)) ? $module->{'nombre'} : '',
+				  _id_agent_ => (defined ($agent)) ? $module->{'id_agente'} : '', 
 				 );
 
 
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
 		my $command = decode_entities(subst_alert_macros ($action->{'command'}, \%macros));
+		$command = subst_alert_macros ($command, \%macros);
 
 		eval {
 			system ($command);
@@ -458,7 +466,9 @@ sub pandora_execute_action ($$$$$$$) {
 
 	# Internal Audit
 	} elsif ($action->{'name'} eq "Internal Audit") {
+
 		$field1 = subst_alert_macros ($field1, \%macros);
+
 		pandora_audit ($pa_config, $field1, defined ($agent) ? $agent->{'nombre'} : 'N/A', 'Alert (' . $alert->{'description'} . ')', $dbh);
 
 	# Email		
@@ -917,7 +927,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 			                                       WHERE talert_actions.id_alert_command = talert_commands.id
 			                                         AND talert_actions.id = ?', $alert->{'id_alert'});
 
-			pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, $dbh) if (defined ($action));
+			pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, undef, $dbh) if (defined ($action));
 
 			# Generate an event
 			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",

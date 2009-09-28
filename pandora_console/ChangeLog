@@ -1,5 +1,7 @@
 2009-09-28  Sancho Lerena <slerena@artica.es>
 
+	* include/help/en/help_alert_macros.php: Updated macros help
+
 	* pandoradb.sql: Added id_group to talert_action, talert_templates and   
 	tplanned_downtime to be able to segregate all pandora functions for
 	different groups/users. Need to implement in interface code.

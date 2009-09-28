@@ -1,3 +1,11 @@
+2009-09-28  Sancho Lerena  <slerena@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: Postprocess field
+	is now bigger.
+
+	* godmode/servers/manage_export_form.php: Export servers was incorrectly
+	assigned. Fixed.
+
 2009-09-26  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Update build after last changes.

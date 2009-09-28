@@ -174,7 +174,7 @@ $table_advanced->data[2][1] = print_input_text ('module_interval', $interval,
 	
 $table_advanced->data[2][2] = __('Post process').' '.print_help_icon ('postprocess', true);
 $table_advanced->data[2][3] = print_input_text ('post_process',
-	$post_process, '', 5, 5, true);
+	$post_process, '', 7, 15, true);
 
 $table_advanced->data[3][0] = __('Min. Value');
 $table_advanced->data[3][1] = print_input_text ('min', $min, '', 5, 15, true);

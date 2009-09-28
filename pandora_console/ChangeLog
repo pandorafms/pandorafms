@@ -1,3 +1,12 @@
+2009-09-28  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Added id_group to talert_action, talert_templates and   
+	tplanned_downtime to be able to segregate all pandora functions for
+	different groups/users. Need to implement in interface code.
+
+ 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Updated migration script 
+	for latest SQL changes.
+
 2009-09-28  Sancho Lerena  <slerena@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: Postprocess field

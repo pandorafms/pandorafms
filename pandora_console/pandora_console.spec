@@ -31,7 +31,7 @@ Requires:           php >= 4.3.0
 Requires:           php5-gd, php5-snmp, php5-pear, php5-json, php5-gettext
 Requires:           php5-mysql, php5-ldap, php5-mbstring, php5
 Requires:           graphviz, xorg-x11-fonts-core
-Requires:           php-pear-db php-pear-xml_rpc
+Requires:           php5-pear-db php-pear-xml_rpc
 Provides:           %{name}-%{version}
 
 %description
@@ -66,6 +66,11 @@ if [ -f %{prefix}/pandora_console/include/config.php ] ; then
 else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
+
+
+%preun
+rm -Rf %{prefix}/pandora_console
+
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs

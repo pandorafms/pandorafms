@@ -1,3 +1,7 @@
+2009-09-29  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: fix small typing bug.
+
 2009-09-28  Sancho Lerena <slerena@artica.es>
 
 	* include/help/en/help_alert_macros.php: Updated macros help

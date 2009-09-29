@@ -365,10 +365,10 @@ if ($step == 2) {
 		5, 7, true);
 	
 	$table->data['field1'][0] = __('Field 1') . print_help_icon ('alert_macros', true);
-	$table->data['field1'][1] = print_input_text ('field1', $field1, '', 35, 255, true);
+	$table->data['field1'][1] = print_input_text ('field1', $field1, '', 70, 255, true);
 	
 	$table->data['field2'][0] = __('Field 2') . print_help_icon ('alert_macros', true);
-	$table->data['field2'][1] = print_input_text ('field2', $field2, '', 35, 255, true);
+	$table->data['field2'][1] = print_input_text ('field2', $field2, '', 70, 255, true);
 	
 	$table->data['field3'][0] = __('Field 3') . print_help_icon ('alert_macros', true);
 	$table->data['field3'][1] = print_textarea ('field3', 10, 30, $field3, '', true);

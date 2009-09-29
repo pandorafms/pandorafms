@@ -30,7 +30,10 @@ function html_entity_decode (str) {
 	if (! str)
 		return "";
 	var ta = document.createElement ("textarea");
-	ta.innerHTML = str.replace (/</g, "&lt;").replace (/>/g,"&gt;");
+	ta.innerHTML = str.replace (/</g, "&lt;").
+		replace (/>/g,"&gt;").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+		.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
+		.replace(/&amp;/g,'&');
 
 	return ta.value;
 }

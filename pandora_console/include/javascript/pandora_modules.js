@@ -68,9 +68,7 @@ function configure_modules_form () {
 			"id_module_component" : this.value
 			},
 			function (data, status) {
-				configuration_data = data['data']
-					.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-					.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'').replace(/&amp;/g,'&');
+				configuration_data = html_entity_decode (data['data']);
 				
 				$("#text-name").attr ("value", html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));

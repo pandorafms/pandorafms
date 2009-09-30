@@ -1,5 +1,7 @@
 2009-09-30  Sancho Lerena <slerena@artica.es>
 
+	* win32/installer/pandora.mpi: Updated installer.
+
 	* linux/pandora_agent_installer: Fixed "accidental" deletion
 	of /var/spool/pandora uninstalling the agent, now only
 	delete /var/spool/pandora/data_out 

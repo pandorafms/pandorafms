@@ -105,6 +105,20 @@ fi
 chkconfig -d pandora_server
 chkconfig -d tentacle_serverd
 
+%postun
+rm -Rf /etc/init.d/tentacle_serverd
+rm -Rf /etc/init.d/pandora_server
+rm -Rf %{prefix}pandora_server
+rm -Rf /var/log/pandora
+rm -Rf /usr/lib/perl5/site_perl/%{perl_version}/PandoraFMS/
+rm -Rf /etc/pandora/pandora_server.conf
+rm -Rf /var/spool/pandora
+rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
+rm -Rf /usr/local/bin/pandora_exec /usr/local/bin/pandora_server
+rm -Rf /usr/local/bin/tentacle_server 
+rm -Rf /etc/cron.daily/pandora_db
+rm -Rf /etc/logrotate.d/pandora
+
 %files
 
 %defattr(750,pandora,root)

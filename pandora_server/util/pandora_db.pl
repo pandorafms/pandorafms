@@ -26,7 +26,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define la version actual del programa
-my $version = "3.0-dev PS090917";
+my $version = "3.0-dev PS090930";
 
 # Setup variables
 my $dirname="";
@@ -394,16 +394,35 @@ sub pandora_checkdb_consistency {
 
 	# 1. Check for modules that do not have tagente_estado but have tagente_module
 	
-    my $dbname = $_[0];
-    my $dbuser = $_[1];
-    my $dbpass = $_[2];
-    my $dbhost = $_[3];
+	my $dbname = $_[0];
+	my $dbuser = $_[1];
+	my $dbpass = $_[2];
+	my $dbhost = $_[3];
+
  	my @query;
  	my $counter;
 	my $err; # error code in datecalc function
  	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
 
-	print "[CHECKDB] Checking database consistency (step1)... \n";
+	print "[CHECKDB] Deleting non-init data... \n";
+        my $query4 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
+        my $prep4 = $dbh->prepare($query4);
+        $prep4 ->execute;
+        my @datarow4;
+        if ($prep4->rows != 0) {
+                # for each record in tagente_modulo
+                while (@datarow4 = $prep4->fetchrow_array()) {
+                        my $id_agente_modulo = $datarow4[1];
+                        my $query0 = "DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = $id_agente_modulo";
+                        my $prep0 = $dbh->prepare($query0);
+                        $prep0 ->execute;
+                        $prep0->finish();
+                }
+        }
+        $prep4->finish();
+
+	print "[CHECKDB] Checking database consistency (Missing status)... \n";
+
 	my $query1 = "SELECT * FROM tagente_modulo";
 	my $prep1 = $dbh->prepare($query1);
 	$prep1 ->execute;
@@ -416,7 +435,7 @@ sub pandora_checkdb_consistency {
 			my $query2 = "SELECT * FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 			my $prep2 = $dbh->prepare($query2);
 			$prep2->execute;
-			# If have 0 items, we need to create tagente_estado record
+			# If have 0 items, we need to re-create tagente_estado record
 			if ($prep2->rows == 0) {
 				my $id_agente = $datarow1[1];
 				my $query3 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUE ($id_agente_modulo, 0, '0000-00-00 00:00:00', 1, $id_agente, '0000-00-00 00:00:00', 0, 0, 0, 0)";
@@ -430,8 +449,9 @@ sub pandora_checkdb_consistency {
 	}
 	$prep1->finish();
 	
-	print "[CHECKDB] Checking database consistency (step2)... \n";
+	print "[CHECKDB] Checking database consistency (Missing module)... \n";
 	# 2. Check for modules in tagente_estado that do not have tagente_modulo, if there is any, delete it
+
 	my $query1 = "SELECT * FROM tagente_estado";
 	my $prep1 = $dbh->prepare($query1);
 	$prep1 ->execute;
@@ -458,30 +478,6 @@ sub pandora_checkdb_consistency {
 	}
 	$prep1->finish();
 	
-	print "[CHECKDB] Deleting non-init data... \n";
-	my $query4 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
-	my $prep4 = $dbh->prepare($query4);
-	$prep4 ->execute;
-	my @datarow4;
-	if ($prep4->rows != 0) {
-		# for each record in tagente_modulo
-		while (@datarow4 = $prep4->fetchrow_array()) {
-			my $id_agente_modulo = $datarow4[1];
-			my $query0 = "DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
-			my $prep0 = $dbh->prepare($query0);
-			$prep0 ->execute;
-			$prep0->finish();
-		}
-	}
-	$prep4->finish();
-	
-	# Delete from tagente_estado	
-	my $query0 = "DELETE FROM tagente_estado WHERE utimestamp = 0";
-	my $prep0 = $dbh->prepare($query0);
-	$prep0 ->execute;
-	$prep0->finish();
-
-
 }
 
 ##############################################################################

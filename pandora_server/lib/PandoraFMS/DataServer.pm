@@ -132,7 +132,7 @@ sub data_consumer ($$) {
     	
     	# Invalid XML
     	if ($@) {
-    		sleep (60);
+    		sleep (10);
     		next;
     	}
     	

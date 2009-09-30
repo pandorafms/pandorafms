@@ -1,5 +1,16 @@
 2009-09-30  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/DataServer.pm: Reduced timeout for sleep
+	on BADXML from 60 to 10 sec. This could result in bottleneck
+	when several BADXML found at the same time. Default code 
+	retries 3 times x 10 secs, time enough to discard and retry.
+
+	* util/pandora_db.pl: Disabled non-init modules are not deleted.
+	This is needed for disabled modules coming from a remote conf
+	(manual or by policy) who cannot execute in agent. If are
+	deleted each day after purge, will appear as "unknown" and     
+	admin will need to disable it again, and the same next day.
+
 	* pandora_server.spec: A complete uninstall for RPM. Database
 	is not killed because user could be just uninstalling one of
 	multiple servers and drop it will not be funny :-)

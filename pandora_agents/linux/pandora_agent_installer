@@ -11,7 +11,7 @@
 PI_VERSION=3.0
 PANDORA_BIN=/usr/bin/pandora_agent
 PANDORA_HOME=/usr/share/pandora_agent
-PANDORA_TEMP=/var/spool/pandora
+PANDORA_TEMP=/var/spool/pandora/data_out 
 PANDORA_CFG=/etc/pandora
 PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
@@ -74,7 +74,7 @@ uninstall () {
         rm -Rf $PANDORA_STARTUP
         rm -Rf $PANDORA_HOME
         rm -Rf $PANDORA_LOG
-		rm -Rf $TENTACLE
+	rm -Rf $TENTACLE
         echo "Done"
 }
 
@@ -107,8 +107,7 @@ install () {
         # Create directories
         echo "Creating Pandora FMS Agent home directory at $PANDORA_HOME ..."
         mkdir $PANDORA_HOME 2> /dev/null
-        mkdir $PANDORA_TEMP 2> /dev/null
-        mkdir $PANDORA_TEMP/data_out 2> /dev/null
+        mkdir -p $PANDORA_TEMP/data_out 2> /dev/null
         mkdir $PANDORA_CFG 2> /dev/null
 		mkdir /var/log/pandora 2> /dev/null
 

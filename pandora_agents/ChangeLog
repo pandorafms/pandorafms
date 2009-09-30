@@ -1,3 +1,9 @@
+2009-09-30  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent_installer: Fixed "accidental" deletion
+	of /var/spool/pandora uninstalling the agent, now only
+	delete /var/spool/pandora/data_out 
+
 2009-09-25  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* mac_osx/pandora_fms/pandora_fms, 

@@ -1,5 +1,11 @@
 2009-10-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/godmode/reporting/reporting_builder.php: change the
+	agent select html for ajax autocomplete ajax. Fix in part the bug
+	#2870769, exactly 1º paragraph.
+
+2009-10-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/godmode/alerts/alert_list.php: fix small bug that throw
 	notice message for a array uninitialize.
 

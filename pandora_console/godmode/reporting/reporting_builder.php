@@ -370,7 +370,11 @@ if ($edit_sla_report_content) {
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true, false, false, false);
 
 		$table->data[2][0] = __('Source agent');
-		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);
+//		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);
+		
+		$table->data[2][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
+			array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+			. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 		
 		$table->data[3][0] = __('Module');
 		$modules = array ();
@@ -547,6 +551,8 @@ if ($edit_sla_report_content) {
 }
 
 require_jquery_file ('pandora.controls');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
@@ -555,32 +561,32 @@ function refresh_table () {
 	$('#table-add-item > tbody > tr:even td').removeClass('datos').addClass('datos2');
 }
 
-function agent_changed () {
-	var id_agent = this.value;
-	$('#id_module').fadeOut ('normal', function () {
-		$('#id_module').empty ();
-		var inputs = [];
-		inputs.push ("id_agent=" + id_agent);
-		inputs.push ("get_agent_modules_json=1");
-		inputs.push ("page=operation/agentes/ver_agente");
-		inputs.push ("filter=delete_pending%3Dfalse");
-		jQuery.ajax ({
-			data: inputs.join ("&"),
-			type: 'GET',
-			url: "ajax.php",
-			timeout: 10000,
-			dataType: 'json',
-			success: function (data) {
-				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-				jQuery.each (data, function (i, val) {
-					s = html_entity_decode (val['nombre']);
-					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
-				});
-				$('#id_module').fadeIn ('normal');
-			}
-		});
-	});
-}
+//function agent_changed () {
+//	var id_agent = this.value;
+//	$('#id_module').fadeOut ('normal', function () {
+//		$('#id_module').empty ();
+//		var inputs = [];
+//		inputs.push ("id_agent=" + id_agent);
+//		inputs.push ("get_agent_modules_json=1");
+//		inputs.push ("page=operation/agentes/ver_agente");
+//		inputs.push ("filter=delete_pending%3Dfalse");
+//		jQuery.ajax ({
+//			data: inputs.join ("&"),
+//			type: 'GET',
+//			url: "ajax.php",
+//			timeout: 10000,
+//			dataType: 'json',
+//			success: function (data) {
+//				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+//				jQuery.each (data, function (i, val) {
+//					s = html_entity_decode (val['nombre']);
+//					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
+//				});
+//				$('#id_module').fadeIn ('normal');
+//			}
+//		});
+//	});
+//}
 
 var previous_report_type;
 
@@ -629,7 +635,63 @@ function report_type_changed () {
 }
 
 $(document).ready (function () {
-	$('#id_agent').change (agent_changed);
+	$("#text_id_agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					id_group: function() { return $("#id_group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text_id_agent").css ('background-color', '#cc0000');
+					else
+						$("#text_id_agent").css ('background-color', '');
+					if (data == "")
+						return false;
+					
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+
+
+		$("#text_id_agent").result (
+				function () {
+					var agent_name = this.value;
+					$('#id_module').fadeOut ('normal', function () {
+						$('#id_module').empty ();
+						var inputs = [];
+						inputs.push ("agent_name=" + agent_name);
+						inputs.push ("get_agent_modules_json=1");
+						inputs.push ("page=operation/agentes/ver_agente");
+						jQuery.ajax ({
+							data: inputs.join ("&"),
+							type: 'GET',
+							url: "ajax.php",
+							timeout: 10000,
+							dataType: 'json',
+							success: function (data) {
+								$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+								jQuery.each (data, function (i, val) {
+									s = html_entity_decode (val['nombre']);
+									$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
+								});
+								$('#id_module').fadeIn ('normal');
+							}
+						});
+					});
+				}
+			);
+
+	//----------------------------
+
+	
+	//$('#id_agent').change (agent_changed);
 	$('#type').change (report_type_changed);
 	$('#report_id_group').pandoraSelectGroupAgent ();
 });

@@ -238,8 +238,10 @@ echo "<div id='alert_control' style='display:none'>\n";
 	echo "<tr>\n";
 	$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions;");
 	$arrayActions = array();
-	foreach ($temp as $actionElement) {
-		$arrayActions[$actionElement['id']] = $actionElement['name'];
+	if (is_array($temp)) {
+		foreach ($temp as $actionElement) {
+			$arrayActions[$actionElement['id']] = $actionElement['name'];
+		}
 	}
 	echo "<td>".__('Actions')."</td><td>";
 	print_select ($arrayActions, "action_id", $actionID,  '', __('All'),-1);

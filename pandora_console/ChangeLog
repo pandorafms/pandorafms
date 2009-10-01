@@ -1,3 +1,8 @@
+2009-10-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_console/godmode/alerts/alert_list.php: fix small bug that throw
+	notice message for a array uninitialize.
+
 2009-09-30  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_console.spec: Updated spec for a more complete  uninstall. 

@@ -126,7 +126,7 @@ foreach ($modules as $module) {
 		$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(salida_limpia($module["datos"]),0,12)."</span>";
 	}
 
-	$data[5] .= $salida;
+	$data[5] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);

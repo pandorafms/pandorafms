@@ -84,7 +84,7 @@ Pandora_Windows_Info::getSystemPath () {
 }
 
 HANDLE *
-Pandora_Windows_Info::getProcessHandles (string name) {
+Pandora_Windows_Info::getProcessHandles (string name, int *num_proc) {
 	HANDLE  handle;
 	HANDLE  handles[128];
 	HANDLE *retval;
@@ -95,6 +95,7 @@ Pandora_Windows_Info::getProcessHandles (string name) {
 	bool    success;
 	TCHAR   process_name[MAX_PATH];
 
+	*num_proc = 0;
 	if (! EnumProcesses (pids, sizeof (pids), &needed))
 		return NULL;
 	
@@ -119,11 +120,15 @@ Pandora_Windows_Info::getProcessHandles (string name) {
 		if (stricmp (process_name, name.c_str ()) == 0) {
 			/* Process found */
 			handles[count++] = handle;
+		} else {
+			CloseHandle (handle);
 		}
 	}
 	
 	if (count == 0)
 		return NULL;
+	
+	*num_proc = count;
 	retval = (HANDLE *) malloc (count * sizeof (HANDLE));
 	for (i = 0; i < count; i++)
 		retval[i] = handles[i];

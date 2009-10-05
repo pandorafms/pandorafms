@@ -23,7 +23,7 @@
 
 #include <string>
 #include "../pandora.h"
-#include <curl/curl.h>
+#include <curl.h>
 
 using namespace std;
 

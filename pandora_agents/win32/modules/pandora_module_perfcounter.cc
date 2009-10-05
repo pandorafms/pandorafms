@@ -137,6 +137,7 @@ Pandora_Module_Perfcounter::run () {
     status = PdhAddCounter (query, this->source.c_str (), 0, &counter);
     if (status != ERROR_SUCCESS) {
         pandoraLog ("PdhAddCounter failed with error %d", status);
+		PdhCloseQuery (query);
         return;
     }
 
@@ -144,6 +145,7 @@ Pandora_Module_Perfcounter::run () {
     status = PdhCollectQueryData (query);
     if (status != ERROR_SUCCESS) {
         // No data
+		PdhCloseQuery (query);
         return;
     }
 

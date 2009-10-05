@@ -1,3 +1,13 @@
+2009-10-05  Sancho Lerena   <slerena@artica.es>
+
+	* include/fgraph.php: Solved ticks in X label for boolean graphs.
+
+	* operation/agentes/datos_agente.php: Show absolute timestamp and
+	data with format_numeric() filter.
+
+	* operation/agentes/estado_monitores.php: Solved typo.
+
+
 2009-10-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/godmode/reporting/reporting_builder.php: change the

@@ -1399,12 +1399,8 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	$engine->fontpath = $config['fontpath'];
 	$engine->alert_top = $show_alert ? $alert_high : false;
 	$engine->alert_bottom = $show_alert ? $alert_low : false;;
-	
-	if ($period < 10000)
-		$engine->xaxis_interval = 20;
-	else
-		$engine->xaxis_interval = $resolution * 4;
-	$engine->yaxis_interval = 1;
+
+	$engine->xaxis_interval = $resolution/10; // Fixed to 10 ticks
 	$engine->xaxis_format = 'date';
 	
 	$engine->single_graph ();
@@ -1577,10 +1573,11 @@ if ($graphic_type) {
 	switch ($graphic_type) {
 	case 'sparse': 
 		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-					$label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		$label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
 	case "boolean":
-		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure, $date);
+		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , 
+		$label, $unit_name, $draw_alerts, 1, $pure, $date);
 		
 		break;
 	case "estado_incidente":

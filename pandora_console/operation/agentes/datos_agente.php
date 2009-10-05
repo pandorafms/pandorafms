@@ -85,9 +85,14 @@ foreach ($result as $row) {
 	} else {
 		$data[0] = '';
 	}
-	$data[1] = print_timestamp ($row["utimestamp"], true);
+	
+	// This returns data with absolute user-defined timestamp format
+	// and numeric by data managed with 2 decimals, and not using Graph format 
+	// (replacing 1000 by K and 1000000 by G, like version 2.x
+	
+	$data[1] = date ($config["date_format"], $row["utimestamp"]);
 	if (is_numeric ($row["datos"])) {
-		$data[2] = $row["datos"];
+		$data[2] = format_numeric($row["datos"],2);
 	} else {
 		$data[2] = safe_input ($row["datos"]);
 	}

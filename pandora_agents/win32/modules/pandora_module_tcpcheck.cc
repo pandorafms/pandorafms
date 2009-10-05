@@ -131,11 +131,13 @@ Pandora_Module_Tcpcheck::run () {
 
 	rc = select(0, NULL, &socket_set, NULL, &timer);
 	if (rc == 0) {
+		closesocket (sock);
+		WSACleanup ();
         this->setOutput ("0");
-
-	WSACleanup ();
         return;
     }
+
+	closesocket (sock);
     WSACleanup ();
     this->setOutput ("1");
 }

@@ -128,7 +128,7 @@ async_run (Pandora_Module_Proc *module) {
 	Pandora_Module_List *modules;
 	string               str_res;
 	string               prev_res;
-	int                  i, res, counter = 0;
+	int                  i, res, counter = 0, num_proc;
 	
 	prev_res = module->getLatestOutput ();
 	modules = new Pandora_Module_List ();
@@ -136,7 +136,7 @@ async_run (Pandora_Module_Proc *module) {
 	Sleep (module->getStartDelay ());
 
 	while (1) {
-		processes = getProcessHandles (module->getProcessName ());
+		processes = getProcessHandles (module->getProcessName (), &num_proc);
 		if (processes == NULL) {
 			if (module->isWatchdog ()) {
 				if (counter >= module->getRetries ()) {
@@ -173,7 +173,7 @@ async_run (Pandora_Module_Proc *module) {
 		
 		if (result > (WAIT_OBJECT_0 + nprocess - 1)) {
 			/* No event happened */
-			for (i = 0; i < nprocess; i++)
+			for (i = 0; i < num_proc; i++)
 				CloseHandle (processes[i]);
 			pandoraFree (processes);
 			continue;
@@ -189,7 +189,7 @@ async_run (Pandora_Module_Proc *module) {
 		}
 		
 		/* Free handles */
-		for (i = 0; i < nprocess; i++)
+		for (i = 0; i < num_proc; i++)
 			CloseHandle (processes[i]);
 		pandoraFree (processes);
 	}

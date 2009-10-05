@@ -1,3 +1,22 @@
+2009-10-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* ftp/pandora_ftp_client.h: Fixed the path of curl.h to match
+	  that in the Dev-cpp libcurl devpack.
+
+	* modules/pandora_module_tcpcheck.cc: Properly close the connection
+	  socket.
+
+	* modules/pandora_module_regexp.cc: Removed debugging code.
+
+	* modules/pandora_module_perfcounter.cc: Close the query handle even if
+	  no data was returned to avoid memory leaks.
+
+	* windows/pandora_windows_info.h,
+	  windows/pandora_windows_info.cc,
+	  modules/pandora_module_proc.cc: Fixed a process handle leak.
+
+	* configure.in: Improved library detection.
+
 2009-09-24  Sancho Lerena <slerena@artica.es>
 
 	* modules/pandora_module_tcpcheck.cc: WSAStartup memory management 

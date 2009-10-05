@@ -49,7 +49,7 @@ Pandora_Module_Regexp::Pandora_Module_Regexp (string name, string source, string
     // Open the file and skip to the end
     this->file.open (source.c_str ());
     if (this->file.is_open ()) {
-        //this->file.seekg (0, ios_base::end);
+        this->file.seekg (0, ios_base::end);
     } else {
         pandoraLog ("Error opening file %s", source.c_str ());
     }

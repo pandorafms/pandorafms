@@ -1,5 +1,10 @@
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.php: fix in part the bug #2870769,
+	exactly the second and third paragraph.
+
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/estado_generalagente.php,
 	operation/agentes/estado_agente.php: change the intervals, and use the
 	new function "getNextAgentContact" for interval in agent view.

@@ -1,5 +1,13 @@
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/agent_manager.php: change the textbox interval for
+	"print_extended_select_for_time" widget.
+	* include/styles/pandora_minimal.css, operation/agentes/stat_win.php: change
+	the period widget for "print_extended_select_for_time" too, and change
+	the css for enlarge the float menu for new item.
+
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: add "exactly" param to "human_time_description_raw"
 	for return the time in time fractions as example "1 day 23:23:2".
 

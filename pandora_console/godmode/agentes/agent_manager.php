@@ -140,7 +140,18 @@ $table->data[3][0] = __('Group');
 $table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);
 
 $table->data[4][0] = __('Interval');
-$table->data[4][1] = print_input_text ('intervalo', $intervalo, '', 16, 100, true);
+
+$intervals = array ();
+$intervals[30] = human_time_description_raw (30);
+$intervals[60] = human_time_description_raw (60);
+$intervals[300] = human_time_description_raw (300);
+$intervals[600] = human_time_description_raw (600);
+$intervals[1200] = human_time_description_raw (1200);
+$intervals[1800] = human_time_description_raw (1800);
+$intervals[3600] = human_time_description_raw (3600);
+$intervals[7200] = human_time_description_raw (7200);
+$table->data[4][1] = print_extended_select_for_time ($intervals, 'intervalo', $intervalo, '', '', '0', 10, true) . __(" seconds.");
+//$table->data[4][1] = print_input_text ('intervalo', $intervalo, '', 16, 100, true);
 
 $table->data[5][0] = __('OS');
 $table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',

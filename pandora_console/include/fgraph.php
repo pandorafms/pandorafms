@@ -1678,4 +1678,7 @@ if ($graphic_type) {
 	}
 }
 ?>
-<script language="JavaScript" src="include/FusionCharts/FusionCharts.js"></script>
+<script language="JavaScript" src="<?php echo $config['homeurl']?>/include/FusionCharts/FusionCharts.js"></script>
+
+
+

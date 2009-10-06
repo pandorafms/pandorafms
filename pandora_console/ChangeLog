@@ -1,6 +1,11 @@
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
-	* operation/agentes/stat_win.php: fix the jquery lost in the last query, fix
+	* include/fgraph.php: lost in the last commit this file, fix the path for
+	javascript.
+
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/stat_win.php: fix the jquery lost in the last commit, fix
 	the auto-refresh graph, fix z-index level for calendar and fix the set begin
 	data for graph.
 	Fixes: 2857280

@@ -397,4 +397,26 @@ function process_manage_config ($source_id_agent, $destiny_id_agents, $copy_modu
 	}
 	process_sql ('SET AUTOCOMMIT = 1');
 }
+
+function getNextAgentContact($idAgent, $maxModules = false) {
+	
+	$agent = get_db_row_sql("SELECT * FROM tagente WHERE id_agente = " . $idAgent);
+	
+	
+	$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
+	
+	
+	$max = $agent["intervalo"];
+	if ($maxModules) {
+		$sql = sprintf ("SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = %d", $id_agente);
+		$maxModules = (int) get_db_sql ($sql);
+		if ($maxModules > 0)
+			$max = $maxModules;
+	}
+	
+	if ($max > 0)
+		return round ($difference / (($max * 2) / 100));
+	else
+		return false;
+}
 ?>

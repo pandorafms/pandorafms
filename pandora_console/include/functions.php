@@ -417,16 +417,36 @@ function get_system_time () {
  * strings of minutes, hours or days.
  * 
  * @param int $seconds Seconds elapsed time
+ * @param int $exactly If it's true, return the exactly human time
  * 
  * @return string A human readable translation of minutes.
  */
-function human_time_description_raw ($seconds) {
+function human_time_description_raw ($seconds, $exactly = false) {
 
 	if (empty ($seconds)) {
 		return __('Now'); 
 		// slerena 25/03/09
 		// Most times $seconds is empty is because last contact is current date
 		// Put here "uknown" or N/A or something similar is not a good idea
+	}
+	
+	if ($exactly) {
+		$secs = $seconds % 60;
+		$mins = ($seconds /60) % 60;
+		$hours = ($seconds / 3600) % 24;
+		$days = ($seconds / 86400) % 30;
+		$months = format_numeric ($seconds / 2592000, 0);
+		
+		if (($mins == 0) && ($hours == 0) && ($days == 0) && ($months == 0))
+			return format_numeric ($secs, 0).' '.__('seconds');
+		else if (($hours == 0) && ($days == 0) && ($months == 0))
+			return sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
+		else if (($days == 0) && ($months == 0))
+			return sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
+		else if (($months == 0))
+			return $days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
+		else
+			return $months.' '.__('moths').' '.$days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
 	}
 	
 	if ($seconds < 60)

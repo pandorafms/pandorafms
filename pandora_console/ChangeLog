@@ -1,5 +1,11 @@
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_agents.php: add the function "getNextAgentContact"
+	that return the percentage of time for next contanct of agent (pass as
+	id_agent).
+
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: lost in the last commit this file, fix the path for
 	javascript.
 

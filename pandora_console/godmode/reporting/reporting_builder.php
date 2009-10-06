@@ -456,12 +456,22 @@ if ($edit_sla_report_content) {
 				}
 				$data[1] = get_report_name ($report_content['type']);
 				$data[2] = get_agent_name ($report_content['id_agent']);
-				$data[3] = '--';
-				if (get_report_type_data_source ($report_content['type']) == 'module') {
-					if ($report_content['id_agent_module'] > 0)
-						$data[2] = strtolower (get_agentmodule_agent_name ($report_content['id_agent_module']));
-					$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
+				
+				switch (get_report_type_data_source ($report_content['type'])) {
+					case 'module':
+						if ($report_content['id_agent_module'] > 0)
+							$data[2] = strtolower (get_agentmodule_agent_name ($report_content['id_agent_module']));
+						$data[3] = '<span title= "' . __(get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module'])) . 
+							'">' . strtolower (get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module'])) . "</span>";
+						break;
+					case 'custom-graph':
+						$data[3] = $report_content['description'];
+						break;
+					default:
+						$data[3] = '--';
+						break;
 				}
+				
 				$data[4] = human_time_description ($report_content['period']);
 				$data[5] = '';
 				if ($report_content['type'] == 'SLA') {

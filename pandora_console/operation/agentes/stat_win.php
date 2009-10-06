@@ -56,7 +56,7 @@ var defOffset = 2;
 var defSlideTime = 220;
 var tnActive = 0;
 var visibleMargin = 15;
-var menuW = 325;
+var menuW = 400;
 var menuH = 310;
 window.onload = function() {
 	var d;
@@ -207,8 +207,10 @@ $options[2592000] = human_time_description_raw (2592000);
 $options[5184000] = human_time_description_raw (5184000);
 $options[15552000] = human_time_description_raw (15552000);
 
-print_select ($options, "period", $period);
-
+print_extended_select_for_time($options, 'period', $period, '', '', 0, 7);
+//print_select ($options, "period_select", $period,"javascript: $('#text-period').val($('#period_select').val());");
+//print_input_text ("period", $period, '', 10);
+echo __(' secs.');
 echo '</td></tr><tr><td>'.__('Show events').'</td><td>';
 
 print_checkbox ("draw_events", 1, (bool) $draw_events);

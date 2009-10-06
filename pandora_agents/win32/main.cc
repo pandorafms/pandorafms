@@ -142,7 +142,7 @@ main (int argc, char *argv[]) {
 		service->pandora_init ();
 		while (1) {
 			service->pandora_run ();
-			Sleep (service->interval * 1000);
+			Sleep (service->interval);
 		}
 	} else {
 		service->run ();

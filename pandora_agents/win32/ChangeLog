@@ -1,3 +1,10 @@
+2009-10-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* main.cc: Fixed the agent interval when running in process mode.
+
+	* pandora_windows_service.cc: Moved the startup delay to the right
+	  place.
+
 2009-10-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* ftp/pandora_ftp_client.h: Fixed the path of curl.h to match

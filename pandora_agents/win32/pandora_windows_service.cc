@@ -113,6 +113,7 @@ void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
+    int startup_delay = 0;
 
 	setPandoraDebug (true);
 	
@@ -151,7 +152,14 @@ Pandora_Windows_Service::pandora_init () {
 	
 	srand ((unsigned) time (0));
 	this->setSleepTime (this->interval);
-	
+
+ 	/* Sleep if a startup delay was specified */
+ 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
+ 	if (startup_delay > 0) {
+        pandoraLog ("Delaying startup %d seconds", startup_delay);
+        Sleep (startup_delay);
+    }
+
 	pandoraLog ("Pandora agent started");
 	
 	/* Launch UDP Server */
@@ -816,18 +824,10 @@ void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
-    int startup_delay = 0;
 
 	pandoraDebug ("Run begin");
 	
 	conf = this->getConf ();
- 	
- 	/* Sleep if a startup delay was specified */
- 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ());
- 	if (startup_delay > 0) {
-        pandoraLog ("Delaying startup %d seconds", startup_delay);
-        Sleep (startup_delay);
-    }
 
 	/* Check for configuration changes */
 	this->checkConfig ();

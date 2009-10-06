@@ -260,6 +260,43 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 }
 
 /**
+ * Render a pair of select for times and text box for set the time more fine.
+ * 
+ * @param array Array with dropdown values. Example: $fields["value"] = "label"
+ * @param string Select form name
+ * @param variant Current selected value. Can be a single value or an
+ * array of selected values (in combination with multiple)
+ * @param string Javascript onChange (select) code.
+ * @param string Label when nothing is selected.
+ * @param variant Value when nothing is selected
+ * @param integer $size Size of the input.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * 
+ * @return string HTML code if return parameter is true.
+ */
+
+function print_extended_select_for_time ($fields, $name, $selected = '', $script = '', $nothing = '',
+	$nothing_value = '0', $size = false, $return = false) {
+	
+	if (($selected !== false) && (!isset($fields[$selected]))) {
+		$fields[$selected] = human_time_description_raw($selected,true);
+	}
+	
+	ob_start();
+	
+	print_select ($fields, $name . '_select', $selected,"javascript: $('#text-" . $name . "').val($('#" . $name . "_select').val());" . $script,
+		$nothing, $nothing_value, false, false, false);
+	print_input_text ($name, $selected, '', $size);
+	
+	$returnString = ob_get_clean();
+	
+	if ($return)
+		return $returnString;
+	else
+		echo $returnString;
+}
+
+/**
  * Render an input text element. Extended version, use print_input_text() to simplify.
  * 
  * @param string $name Input name.

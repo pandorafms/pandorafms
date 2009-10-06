@@ -1,3 +1,11 @@
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: add new function for add extend widget
+	"print_extended_select_for_time", that write a two html control a
+	select and textbox and scripting for interconet twice components and
+	when change the textbox and save add the value in select and when
+	change the selected put in textbox.
+
 2009-10-05  Sancho Lerena   <slerena@artica.es>
 
 	* include/fgraph.php: Solved ticks in X label for boolean graphs.

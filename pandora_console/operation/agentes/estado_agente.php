@@ -192,11 +192,14 @@ foreach ($agents as $agent) {
 	
 	$data[1] = print_os_icon ($agent["id_os"], false, true);
 
-	if ($agent_info["interval"] > $agent["intervalo"]) {
-		$data[2] = '<span class="green">'.$agent_info["interval"].'</span>';
-	} else {
-		$data[2] = $agent["intervalo"];
-	}
+	//The interval we are thinking that it must be the agent interval in this
+	//cell and it'snt the interval of modules.
+//	if ($agent_info["interval"] > $agent["intervalo"]) {
+//		$data[2] = '<span class="green">'.$agent_info["interval"].'</span>';
+//	} else {
+//		$data[2] = $agent["intervalo"];
+//	}
+	$data[2] = $agent["intervalo"];
 	
 	$data[3] = print_group_icon ($agent["id_grupo"], true);
 	

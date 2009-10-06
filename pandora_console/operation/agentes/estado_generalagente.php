@@ -17,6 +17,9 @@
 
 // Load global vars
 require_once ("include/config.php");
+
+require_once ("include/functions_agents.php");
+
 if ($config['flash_charts']) {
 	require_once ("include/fgraph.php");
 }
@@ -118,19 +121,7 @@ if ($agent["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
 echo '</td></tr>';
 
 // Next contact (agent)
-$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
-$sql = sprintf ("SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = %d", $id_agente);
-$max = (int) get_db_sql ($sql);
-if ($max > 0) {
-	//First check if there is a maximum module interval
-	$progress = round ($difference / (($max * 2) / 100));
-} elseif ($agent["intervalo"] > 0) {
-	//Then if there is a generic agent interval
-	$progress = round ($difference / (($agent["intervalo"] * 2) / 100));
-} else {
-	//Otherwise there is no progress to be reported
-	$progress = -1;
-}
+$progress = getNextAgentContact($id_agente);
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
 echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';

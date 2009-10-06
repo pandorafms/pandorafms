@@ -1,5 +1,10 @@
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions.php: add "exactly" param to "human_time_description_raw"
+	for return the time in time fractions as example "1 day 23:23:2".
+
+2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: add new function for add extend widget
 	"print_extended_select_for_time", that write a two html control a
 	select and textbox and scripting for interconet twice components and

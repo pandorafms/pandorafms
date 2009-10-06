@@ -33,17 +33,19 @@ require_once ($config["homedir"] . '/include/functions_db.php');
 require_once ($config["homedir"] . '/include/fgraph.php');
 
 check_login ();
-
-// Parsing the refresh before sending any header
-$refresh = (int) get_parameter ("refresh", -1);
-if ($refresh > 0) {
-	header('Refresh: '.$refresh);
-}
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<?php
+// Parsing the refresh before sending any header
+$refresh = (int) get_parameter ("refresh", -1);
+if ($refresh > 0) {
+	$query = get_url_refresh (false);
+	
+	echo '<meta http-equiv="refresh" content="'.$refresh.'; URL='.$query.'" />';
+}
+?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Pandora FMS Graph (<?php echo get_agentmodule_agent_name ($id) . ' - ' . $label; ?>)</title>
 <link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
@@ -51,6 +53,7 @@ if ($refresh > 0) {
 <script type='text/javascript' src='../../include/javascript/x_core.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_event.js'></script>
 <script type='text/javascript' src='../../include/javascript/x_slide.js'></script>
+<script type='text/javascript' src='../../include/javascript/jquery.js'></script>
 <script type='text/javascript'><!--
 var defOffset = 2;
 var defSlideTime = 220;
@@ -127,6 +130,11 @@ if ($zoom > 1) {
 $utime = get_system_time ();
 $current = date("Y-m-d", $utime);
 
+if ($start_date != $current)
+	$date = strtotime($start_date);
+else
+	$date = $utime;
+
 if ($config['flash_charts']) {
 	switch ($graph_type) {
 		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
@@ -140,12 +148,11 @@ if ($config['flash_charts']) {
 						break;
 		default: 	echo fs_error_image ('../images');
 	}
-} else {
+}
+else {
 	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only;
 
-	if ($start_date != $current){
-		$image .= "&date=".$utime;
-	}
+	$image .= "&date=" . $date;
 
 	print_image ($image, false, array ("border" => 0));
 }
@@ -156,7 +163,8 @@ echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_
 echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period));
 echo '</td></tr></table>';
 
-echo '<div id="divmenu" class="menu" style="z-index:2;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
+//z-index is 1 because 2 made the calendar show under the divmenu.
+echo '<div id="divmenu" class="menu" style="z-index:1;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
 echo '<form method="get" action="stat_win.php">';
 print_input_hidden ("id", $id);
 print_input_hidden ("label", $label);

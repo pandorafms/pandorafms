@@ -1,3 +1,22 @@
+2009-10-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v2.x_to_v3.0.sql: change the field
+	"name" in the table "tagente" to binary varchar.
+	* include/functions_events.php, operation/events/events.php: add new
+	columns, the severity colummn and the validate colummn.
+	* images/tag_red.png, images/tick.png,
+	images/status_sets/default/severity_informational.png,
+	images/status_sets/default/severity_maintenance.png,
+	images/status_sets/default/severity_critical.png,
+	images/status_sets/default/severity_warning.png,
+	images/status_sets/default/severity_normal.png: add the new files to use in
+	the events list new colummns.
+	* include/help/en/help_eventview.php: change the content in this help for
+	show help info of new colummns.
+	Comments: I hate the massive and mixed commits...but I have not choice, and
+	in this commit there are two parts, the changes in the sql table and the
+	changes in the event list colummn. 
+
 2009-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.php: fix in part the bug #2870769,

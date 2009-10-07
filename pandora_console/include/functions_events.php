@@ -278,24 +278,27 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 		$table->data = array ();
 		$table->align = array ();
 		
-		$table->head[0] = __('St');
-		$table->align[0] = "center";
+		$table->head[0] = "<span title='" . __('Validate') . "'>" . __('V.') . "</span>";
+		$table->align[0] = 'center';
 		
-		$table->head[1] = __('Type');
-		$table->headclass[1] = "datos3 f9";
-		$table->align[1] = "center";
+		$table->head[1] = "<span title='" . __('Severity') . "'>" . __('S.') . "</span>";
+		$table->align[1] = 'center';
 		
-		$table->head[2] = __('Event name');
+		$table->head[2] = __('Type');
+		$table->headclass[2] = "datos3 f9";
+		$table->align[2] = "center";
 		
-		$table->head[3] = __('Agent name');
+		$table->head[3] = __('Event name');
 		
-		$table->head[4] = __('User ID');
-		$table->headclass[4] = "datos3 f9";
-		$table->align[4] = "center";
+		$table->head[4] = __('Agent name');
 		
-		$table->head[5] = __('Timestamp');
+		$table->head[5] = __('User ID');
 		$table->headclass[5] = "datos3 f9";
-		$table->align[5] = "right";
+		$table->align[5] = "center";
+		
+		$table->head[6] = __('Timestamp');
+		$table->headclass[6] = "datos3 f9";
+		$table->align[6] = "right";
 		
 		foreach ($result as $event) {
 			if (! give_acl ($config["id_user"], $event["id_grupo"], "AR")) {
@@ -303,42 +306,75 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			}
 			$data = array ();
 			
-			/* Colored box */
-			if ($event["estado"] == 1) {
-				$img = 'images/pixel_red.png';
-			} else {
-				$img = 'images/pixel_green.png';
+			// Colored box
+			if ($event["estado"] == 0) {
+				$img = "images/cross.png";
+				$title = __('Event validate');
 			}
-			$data[0] = print_image ($img, true, array ("width" => 20,
-				"height" => 20,
-				"title" => get_priority_name ($event["criticity"])));
+			else {
+				$img = "images/tick.png";
+				$title = __('Event not validate');
+			}
+			$data[0] = print_image ($img, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"height" => 16,
+					"title" => $title));
+			
+			switch ($event["criticity"]) {
+				default:
+				case 0: 
+					$img = "images/status_sets/default/severity_maintenance.png";
+					break;
+				case 1:
+					$img = "images/status_sets/default/severity_informational.png";
+					break;
+				case 2:
+					$img = "images/status_sets/default/severity_normal.png";
+					break;
+				case 3:
+					$img = "images/status_sets/default/severity_warning.png";
+					break;
+				case 4:
+					$img = "images/status_sets/default/severity_critical.png";
+					break;
+			}
+			
+			$data[1] = print_image ($img, true, 
+				array ("class" => "image_status",
+					"width" => 12,
+					"height" => 12,
+					"title" => get_priority_name ($event["criticity"])));
 			
 			/* Event type */
-			$data[1] = print_event_type_img ($event["event_type"], true);
+			$data[2] = print_event_type_img ($event["event_type"], true);
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
 			$wrap = floor ($width / 10);
-			$data[2] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input ($event["evento"]).'</span>';
+			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input ($event["evento"]).'</span>';
 			
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$data[3] = print_agent_name ($event["id_agente"], true);
+				$data[4] = print_agent_name ($event["id_agente"], true);
 			// for System or SNMP generated alerts
-			} elseif ($event["event_type"] == "system") {
-				$data[3] = __('System');
-			} else {
-				$data[3] = __('Alert')."SNMP";
+			}
+			elseif ($event["event_type"] == "system") {
+				$data[4] = __('System');
+			}
+			else {
+				$data[4] = __('Alert')."SNMP";
 			}
 			
 			// User who validated event
 			if ($event["estado"] != 0) {
-				$data[4] = print_username ($event["id_usuario"], true);
-			} else {
-				$data[4] = '';
+				$data[5] = print_username ($event["id_usuario"], true);
+			}
+			else {
+				$data[5] = '';
 			}
 			
 			// Timestamp
-			$data[5] = print_timestamp ($event["timestamp"], true);
+			$data[6] = print_timestamp ($event["timestamp"], true);
 			
 			array_push ($table->rowclass, get_priority_class ($event["criticity"]));
 			array_push ($table->data, $data);

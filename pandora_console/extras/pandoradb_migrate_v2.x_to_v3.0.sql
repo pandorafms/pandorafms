@@ -297,3 +297,8 @@ ALTER TABLE tgraph ADD `id_group` mediumint(8) unsigned NULL default 0;
 ALTER TABLE talert_templates ADD `id_group` mediumint(8) unsigned NULL default 0;
 ALTER TABLE talert_actions ADD `id_group` mediumint(8) unsigned NULL default 0;
 ALTER TABLE tplanned_downtime ADD `id_group` mediumint(8) unsigned NULL default 0;
+
+-- Oct 2009
+
+ALTER TABLE `pandora`.`tagente` MODIFY COLUMN `nombre` VARCHAR(100) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '';
+

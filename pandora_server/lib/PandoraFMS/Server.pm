@@ -42,10 +42,12 @@ sub new ($$$;$) {
         _num_threads => 1,
         _threads => [],
         _queue_size => 0,
+		_errstr => ''
     };
 
 	# Share variables that may be set from different threads
 	share ($self->{'_queue_size'});
+	share ($self->{'_errstr'});
 
 	# Thread kill signal handler
 	#$SIG{'KILL'} = sub {
@@ -168,6 +170,24 @@ sub getServerType ($) {
 }
 
 ########################################################################################
+# Set error string.
+########################################################################################
+sub setErrStr ($$) {
+	my ($self, $errstr) = @_;
+
+	$self->{'_errstr'} = $errstr;
+}
+
+########################################################################################
+# Get error string.
+########################################################################################
+sub getErrStr ($) {
+	my $self = shift;
+	
+	return $self->{'_errstr'};
+}
+
+########################################################################################
 # Add a thread to the server thread list.
 ########################################################################################
 sub addThread ($$) {
@@ -215,6 +235,18 @@ sub downEvent ($) {
 }
 
 ########################################################################################
+# Generate a 'restarting' event.
+########################################################################################
+sub restartEvent ($$) {
+	my ($self, $msg) = @_;
+
+	return unless defined ($self->{'_dbh'});
+	pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} .
+	               $ServerTypes[$self->{'_server_type'}] . " RESTARTING ($msg)",
+	               0, 0, 4, 0, 0, 'system', $self->{'_dbh'});
+}
+
+########################################################################################
 # Update server status.
 ########################################################################################
 sub update ($) {
@@ -236,9 +268,6 @@ sub stop ($) {
 		# Update server status
 		pandora_update_server ($self->{'_pa_config'}, $self->{'_dbh'}, $self->{'_pa_config'}->{'servername'},
 		                       0, $self->{'_server_type'}, 0, 0);
-
-		# Generate an event
-		$self->downEvent ();
 	};
 
 	# Kill server threads

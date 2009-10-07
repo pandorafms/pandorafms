@@ -32,9 +32,6 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::Server;
 
-# Load enterprise module
-enterprise_load ();
-
 # Inherits from PandoraFMS::Server
 our @ISA = qw(PandoraFMS::Server);
 
@@ -107,12 +104,7 @@ sub pandora_snmptrapd {
 	# Skip already processed lines
 	readline SNMPLOGFILE for (1..$last_line);
 
-	
-	my $trap2agent = 0;
-	
-	if ($pa_config->{enterprise} == 1){
-		$trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
-	}
+	my $trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
 
 	# Main loop
 	while (1) {

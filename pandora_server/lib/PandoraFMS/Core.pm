@@ -44,7 +44,6 @@ our @EXPORT = qw(
 	pandora_evaluate_compound_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
-	pandora_event_status
 	pandora_execute_alert
 	pandora_execute_action
 	pandora_exec_forced_alerts
@@ -785,21 +784,6 @@ sub pandora_event (%$$$$$$$$) {
 }
 
 ##########################################################################
-# Generate an event with the given status. TODO: Merge with pandora_event
-##########################################################################
-sub pandora_event_status ($$$$$$$$$$) {
-	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $status, $dbh) = @_;
-
-	my $utimestamp = time();
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-	$id_agentmodule = 0 unless defined ($id_agentmodule);
-
-	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
-}
-
-##########################################################################
 # Update module status on error.
 ##########################################################################
 sub pandora_update_module_on_error ($$$) {
@@ -1147,8 +1131,8 @@ sub generate_status_event ($$$$$$$) {
 	}
 
 	# Generate the event
-	pandora_event_status ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, $status, $dbh);
+	pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, $dbh);
 }
 
 ##########################################################################

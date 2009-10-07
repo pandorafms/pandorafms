@@ -99,37 +99,43 @@ sub data_producer ($$$$$) {
 	my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
 	my $pa_config = $self->getConfig ();
 
-	# Connect to the DB
-	my $dbh = db_connect ('mysql', $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
-                          $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
-	$self->setDBH ($dbh);
+	eval {
+		# Connect to the DB
+		my $dbh = db_connect ('mysql', $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
+							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+		$self->setDBH ($dbh);
 
-	while (1) {
+		while (1) {
 
-		# Get pending tasks
-		my @tasks = &{$self->{'_producer'}}($self);
-		
-		# Update queue size for statistics
-		$self->setQueueSize (scalar @{$task_queue});
-
-		foreach my $task (@tasks) {
-			$sem->down;
+			# Get pending tasks
+			my @tasks = &{$self->{'_producer'}}($self);
 			
-			if (defined $pending_tasks->{$task}) {
-				$sem->up;
-				next;
-			}
+			# Update queue size for statistics
+			$self->setQueueSize (scalar @{$task_queue});
+
+			foreach my $task (@tasks) {
+				$sem->down;
 				
-			# Queue task and signal consumers
-			$pending_tasks->{$task} = 0;
-			push (@{$task_queue}, $task);
-			$task_sem->up;
-			
-			$sem->up;
-		}
+				if (defined $pending_tasks->{$task}) {
+					$sem->up;
+					next;
+				}
+					
+				# Queue task and signal consumers
+				$pending_tasks->{$task} = 0;
+				push (@{$task_queue}, $task);
+				$task_sem->up;
+				
+				$sem->up;
+			}
 
-		threads->yield;
-		sleep ($pa_config->{'server_threshold'});
+			threads->yield;
+			sleep ($pa_config->{'server_threshold'});
+		}
+	};
+	
+	if ($@) {
+		$self->setErrStr ($@);
 	}
 }
 
@@ -140,29 +146,35 @@ sub data_consumer ($$$$$) {
 	my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
 	my $pa_config = $self->getConfig ();
 
-	# Connect to the DB
-	my $dbh = db_connect ('mysql', $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
-                          $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
-	$self->setDBH ($dbh);
+	eval {
+		# Connect to the DB
+		my $dbh = db_connect ('mysql', $pa_config->{'dbname'}, $pa_config->{'dbhost'}, 3306,
+							  $pa_config->{'dbuser'}, $pa_config->{'dbpass'});
+		$self->setDBH ($dbh);
 
-	while (1) {
+		while (1) {
 
-		# Wait for data
-		$task_sem->down;
+			# Wait for data
+			$task_sem->down;
 
-		$sem->down;
-		my $task = shift (@{$task_queue});
-		$sem->up;
+			$sem->down;
+			my $task = shift (@{$task_queue});
+			$sem->up;
 
-		# Execute task
-		&{$self->{'_consumer'}}($self, $task);
+			# Execute task
+			&{$self->{'_consumer'}}($self, $task);
 
-		# Update task status
-		$sem->down;
-		delete ($pending_tasks->{$task});
-		$sem->up;
+			# Update task status
+			$sem->down;
+			delete ($pending_tasks->{$task});
+			$sem->up;
 
-		threads->yield;
+			threads->yield;
+		}
+	};
+
+	if ($@) {
+		$self->setErrStr ($@);
 	}
 }
 

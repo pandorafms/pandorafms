@@ -33,9 +33,6 @@ use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
 
-# Load enterprise module
-enterprise_load ();
-
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 
@@ -170,7 +167,7 @@ sub process_xml_data ($$$$) {
 	}
 
   	# Check some variables
-   	$interval = 300 unless defined ($interval);
+   	$interval = 300 if (! defined ($interval) || $interval eq '');
    	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
   
   	# Get agent id
@@ -234,10 +231,8 @@ sub process_xml_data ($$$$) {
 	}
 
 	# Process inventory modules
-	if ($pa_config->{enterprise} == 1){
-		enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
+	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
 	                                           $interval, $timestamp, $dbh]);
-	}
 }
 
 ##########################################################################

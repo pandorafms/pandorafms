@@ -1,3 +1,21 @@
+2009-10-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm,
+	  lib/PandoraFMS/DataServer.pm: Reverted the way enterprise functions
+	  are called.
+
+	* lib/PandoraFMS/Server.pm
+	  lib/PandoraFMS/ProducerConsumerServer.pm: Handle fatal errors and
+	  save error messages (useful for console event generation).
+
+	* lib/PandoraFMS/Tools.pm: Improved enterprise_hook.
+
+	* lib/PandoraFMS/Core.pm: Merged pandora_event_status into
+	  pandora_event.
+
+	* bin/pandora_server, lib/PandoraFMS/Config.pm: Added restart on error
+	  and auto-restart features.
+
 2009-09-30  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Reduced timeout for sleep

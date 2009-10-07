@@ -46,12 +46,71 @@ sub pandora_shutdown () {
 
 	# Stop servers
 	foreach my $server (@Servers) {
+		$server->downEvent ();
 		$server->stop ();
 	}
 
 	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 0);
 	db_disconnect ($DBH);
 	exit (0);
+}
+
+########################################################################################
+# Server startup.
+########################################################################################
+sub pandora_startup () {
+
+	# Connect to the DB
+	$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
+					   $Config{'dbuser'}, $Config{'dbpass'});
+
+	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
+
+	# Start logging
+	pandora_start_log (\%Config);
+
+	# Load servers
+	pandora_reset_server (\%Config, $DBH);
+	push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
+	push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+
+	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
+
+	# Remove disabled servers
+	@Servers = grep { defined ($_) } @Servers;
+
+	# Run
+	foreach my $server (@Servers) {
+		$server->run ();
+	}
+}
+
+########################################################################################
+# Server restart.
+########################################################################################
+sub pandora_restart () {
+
+	# Stop the servers
+	foreach my $server (@Servers) {
+		$server->stop ();
+	}
+
+	# Remove the servers
+	while (pop (@Servers)) {};
+	
+	# Close STDERR, redirected by pandora_start_log
+	close (STDERR);
+
+	# Wait before trying to start again
+	sleep ($Config{'restart_delay'});
+
+	# Start the servers
+	pandora_startup ();
 }
 
 ########################################################################################
@@ -83,8 +142,9 @@ pandora_init(\%Config, 'Pandora FMS Server');
 pandora_load_config (\%Config);
 
 # Load enterprise module
-$Config{"enterprise"} = enterprise_load ();
-if ($Config{"enterprise"} == 1){
+if (enterprise_load () == 0) {
+	print " [*] Pandora FMS Enterprise module not available.\n";
+} else {
 	print " [*] Pandora FMS Enterprise module loaded.\n";
 }
 
@@ -94,55 +154,53 @@ if ($Config{'daemon'} == 1) {
 	pandora_daemonize (\%Config);
 }
 
-# Connect to the DB
-$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
-                   $Config{'dbuser'}, $Config{'dbpass'});
+# Start the servers
+pandora_startup ();
 
-pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
-
-# Start logging
-pandora_start_log (\%Config);
-
-# Load servers
-pandora_reset_server (\%Config, $DBH);
-push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
-push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
-
-if ($Config{"enterprise"} == 1){
-	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
-}
-
-# Remove disabled servers
-@Servers = grep { defined ($_) } @Servers;
-
-# Run
+# Generate 'going up' events
 foreach my $server (@Servers) {
-	$server->run ();
 	$server->upEvent ();
 }
 
 # Main loop
+my $time_ref = time ();
 while (1) {
-	
-	# Update server status
-	foreach my $server (@Servers) {
-		pandora_shutdown () unless ($server->checkThreads () == 1);
-		$server->update ();
-	}
 
-	eval {
+	eval {	
+		
+		# Update server status
+		foreach my $server (@Servers) {
+			die ($server->getErrStr ()) unless ($server->checkThreads () == 1);
+			$server->update ();
+		}
+
 		pandora_planned_downtime (\%Config, $DBH);
 		pandora_exec_forced_alerts (\%Config, $DBH);
 		pandora_module_keep_alive_nd (\%Config, $DBH);
 	};
-	
+
+	# Restart on error or auto restart
 	if ($@) {
-		pandora_shutdown ();
+
+		# Generate 'restarting' events
+		foreach my $server (@Servers) {
+			$server->restartEvent ($@);
+		}
+
+		logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in ' . $Config{'restart_delay'} . ' seconds.', 0);
+		pandora_restart ();
+	} elsif (($Config{'auto_restart'} > 0) && (time () - $time_ref > $Config{'auto_restart'})) {
+		$time_ref = time ();
+
+		# Mute
+		open(OLDOUT, ">&STDOUT");
+		open (STDOUT, '>/dev/null');
+
+		# Restart
+		pandora_restart ();
+		
+		# Unmute
+		open(STDOUT, ">&OLDOUT");
 	}
 
 	threads->yield;

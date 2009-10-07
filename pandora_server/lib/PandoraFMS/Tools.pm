@@ -21,6 +21,7 @@ use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
 use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
+use Module::Loaded;
 
 require Exporter;
 
@@ -334,7 +335,14 @@ sub float_equal {
 # enterprise_hook ().
 ##########################################################################
 sub enterprise_load () {
-	eval 'use PandoraFMS::Enterprise;';
+
+	# Already loaded
+	return 1 if (is_loaded ('PandoraFMS::Enterprise'));
+	
+	# Try to load the module
+	eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
+	
+	# Ops
 	return 0 if ($@);
 	return 1;
 }
@@ -351,6 +359,7 @@ sub enterprise_hook ($$) {
 
 	# Prepend the package name
 	$func = 'PandoraFMS::Enterprise::' . $func;
+	return undef unless (defined (&$func));
 
 	# Try to call the function
 	my $output = eval { &$func (@args); };

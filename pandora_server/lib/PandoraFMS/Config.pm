@@ -226,6 +226,12 @@ sub pandora_load_config {
 	# Ignore the timestamp in the XML and use the file timestamp instead
     $pa_config->{'use_xml_timestamp'} = 0; 
 
+	# Server restart delay in seconds
+    $pa_config->{'restart_delay'} = 60; 
+
+	# Auto restart every x seconds
+    $pa_config->{'auto_restart'} = 0; 
+
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
 	    if ($> == 0){
@@ -490,6 +496,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^use_xml_timestamp\s([0-1])/i) {
 			$pa_config->{'use_xml_timestamp'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^restart_delay\s+(\d+)/i) {
+                        $pa_config->{'restart_delay'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^auto_restart\s+(\d+)/i) {
+                        $pa_config->{'auto_restart'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

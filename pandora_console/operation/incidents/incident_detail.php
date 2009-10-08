@@ -36,7 +36,7 @@ $actualizacion = get_system_time ();
 
 // EDITION MODE
 if (isset ($_GET["id"])) {
-	$id_inc = get_parameter_get ("id", 0);
+	$id_inc = (int) get_parameter_get ("id", 0);
 	
 	// Obtain group of this incident
 	$row = get_db_row ("tincidencia","id_incidencia",$id_inc);

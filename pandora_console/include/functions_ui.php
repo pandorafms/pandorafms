@@ -1186,7 +1186,7 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 			continue;
 		if (strstr ($key, 'delete'))
 			continue;
-		$url .= $key.'='.$value.'&amp;';
+		$url .= $key.'='.$value.'&';
 	}
 	
 	if ($add_post) {
@@ -1201,22 +1201,23 @@ function get_url_refresh ($params = false, $relative = true, $add_post = true) {
 				continue;
 			if (strstr ($key, 'delete'))
 				continue;
-			$url .= $key.'='.$value.'&amp;';
+			$url .= $key.'='.$value.'&';
 		}
 	}
 	
 	foreach ($params as $key => $value) {
 		if ($value === false)
 			continue;
-		$url .= $key.'='.$value.'&amp;';
+		$url .= $key.'='.$value.'&';
 	}
 	
 	/* Removes final & */
-	$pos = strrpos ($url, '&amp;', 0);
+	$pos = strrpos ($url, '&', 0);
 	if ($pos) {
 		$url = substr_replace ($url, '', $pos, 5);
 	}
 	
+	$url = htmlspecialchars ($url);
 	if (! $relative) {
 		return get_full_url ($url);
 	}

@@ -201,6 +201,7 @@ while (1) {
 		
 		# Unmute
 		open(STDOUT, ">&OLDOUT");
+		close (OLDOUT);
 	}
 
 	threads->yield;

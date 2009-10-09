@@ -177,6 +177,7 @@ while (1) {
 		pandora_planned_downtime (\%Config, $DBH);
 		pandora_exec_forced_alerts (\%Config, $DBH);
 		pandora_module_keep_alive_nd (\%Config, $DBH);
+		enterprise_hook('mcast_status_report', [\%Config, $DBH]);
 	};
 
 	# Restart on error or auto restart

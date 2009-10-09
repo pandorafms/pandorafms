@@ -1,3 +1,8 @@
+2009-10-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Server.pm, bin/pandora_server: Small fixes to avoid
+	  warnings.
+
 2009-10-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm,

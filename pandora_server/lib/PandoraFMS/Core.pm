@@ -1103,12 +1103,12 @@ sub generate_status_event ($$$$$$$) {
 	if ($status == 0) {
 		($event_type, $severity) = ('going_down_normal', 2);
 		$description .= "going down to NORMAL";
-		
+		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'OK', $dbh]);
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
 		$description .= "going up to CRITICAL";
-		
+		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'ERR', $dbh]);
 	# Warning
 	} elsif ($status == 2) {
 		
@@ -1125,6 +1125,7 @@ sub generate_status_event ($$$$$$$) {
 			# Unknown last_status
 			return;
 		}
+		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'WARN', $dbh]);
 	} else {
 		# Unknown status
 		return;

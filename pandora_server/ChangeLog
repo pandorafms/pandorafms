@@ -1,5 +1,10 @@
 2009-10-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm, bin/pandora_server: Re-enabled multicast
+	  reports (Enterprise feature).
+
+2009-10-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Server.pm, bin/pandora_server: Small fixes to avoid
 	  warnings.
 

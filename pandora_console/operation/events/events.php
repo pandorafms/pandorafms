@@ -407,7 +407,7 @@ foreach ($result as $event) {
 	
 	// Colored box
 	if ($event["estado"] == 0) {
-		$img = "images/cross.png";
+		$img = "images/tick_off.png";
 		$title = __('Event validate');
 	}
 	else {

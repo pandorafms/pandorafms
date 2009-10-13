@@ -1,5 +1,12 @@
 2009-10-13  Sancho Lerena <slerena@artica.es>
 
+	* operation/events/events.php: Replaced old icon (red cross) by a 
+	white tick.
+
+	* images/tick_off.png: White tick.
+
+	* include/config_process.php: Ooopps, this is RC1 !
+
 	Upps, Tuesday #13, bad day for a last commit before launch RC1 ! :-S
 	
 	* general/logon_ok.php: Fixed ugly format of table showing last activity 

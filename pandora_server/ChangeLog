@@ -1,5 +1,13 @@
 2009-10-13  Sancho Lerena <slerena@artica.es>
 
+	* util/pandora_server: Incremented shutting down grace time to 60 secs
+	because in some systems could take a lot of time to close all threads.
+
+	* conf/pandora_server.conf: Better defaults for Pandora FMS server default 
+	install. 
+
+	* Config.pm: Hey, this is officially RC1....
+
 	* pandora_server_installer: Fixed usage of old pathnames /usr/share/pandora
 	Fixed name of pandora_db cron.daily entry.
 	

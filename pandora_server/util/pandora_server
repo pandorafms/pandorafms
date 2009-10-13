@@ -89,12 +89,12 @@ case "$1" in
 			kill $PANDORA_PID > /dev/null 2>&1
 			COUNTER=0
 
-	                while [  $COUNTER -lt 10 ]
+	                while [  $COUNTER -lt 60 ]
              		do
                         	PANDORA_PID=`pidof_pandora`
                         	if [ -z "$PANDORA_PID" ]
  		                then
-                                	COUNTER=10
+                                	COUNTER=60
                         	fi
                         	COUNTER=`expr $COUNTER + 1`
                         	sleep 1

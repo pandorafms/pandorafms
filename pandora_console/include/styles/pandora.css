@@ -541,7 +541,7 @@ div.title_line {
 	position: relative;
 }
 #menu_tab_left li a, #menu_tab_left li span {
-	text-transform: uppercase;
+/*	text-transform: uppercase; */
 	background: #d84437;
 	padding: 2px 5px 2px 5px;
 	color: #fff;

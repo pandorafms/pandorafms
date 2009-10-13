@@ -596,8 +596,10 @@ function get_agent_id ($agent_name) {
  * 
  * @return string Name of the given agent.
  */
-function get_agent_name ($id_agent, $case = "upper") {
+function get_agent_name ($id_agent, $case = "none") {
 	$agent = (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
+	// Version 3.0 has enforced case sensitive agent names
+	// so we always should show real case names.
 	switch ($case) {
 	case "upper":
 		return mb_strtoupper ($agent,"UTF-8");

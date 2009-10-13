@@ -49,7 +49,9 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 $table->data[1][0] = __('Command');
-$table->data[1][1] = print_input_text ('command', $command, '', 35, 255, true);
+$table->data[1][0] .= print_help_icon ('alert_macros', true);
+$table->data[1][1] = print_input_text ('command', $command, '', 80, 255, true);
+
 $table->data[2][0] = __('Description');
 $table->data[2][1] = print_textarea ('description', 10, 30, $description, '', true);
 

@@ -402,7 +402,12 @@ if ($update_module || $create_module) {
 	$description = (string) get_parameter ('description');
 	$id_module_group = (int) get_parameter ('id_module_group');
 	$flag = (bool) get_parameter ('flag');
-	$post_process = (float) get_parameter ('post_process');
+
+	// Don't read as (float) because it lost it's decimals when put into MySQL
+	// where are very big and PHP uses scientific notation, p.e:
+	// 1.23E-10 is 0.000000000123
+	
+	$post_process = (string) get_parameter ('post_process');
 	$prediction_module = (int) get_parameter ('prediction_module');
 	$max_timeout = (int) get_parameter ('max_timeout');
 	$min = (int) get_parameter_post ("min");

@@ -109,7 +109,7 @@ echo "</td></table>";
 
 $search_sql = '';
 if ($search != ""){
-	$search_sql = " AND ( nombre LIKE '%$search%' OR direccion LIKE '%$search%') ";
+	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
 } else {
 }
 
@@ -193,7 +193,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>".substr(salida_limpia($agent["nombre"]),0,20)."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>".$agent["nombre"]."</a></strong>";
 		if ($agent["disabled"]) {
 			echo "</em>";
 		}

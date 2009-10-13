@@ -45,7 +45,7 @@ if ($searchTab == 'agents') {
 			FROM tagente
 				INNER JOIN tgrupo
 					ON tgrupo.id_grupo = tagente.id_grupo
-			WHERE tagente.nombre LIKE '%" . $stringSearchSQL . "%' OR
+			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
 				tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'
 			LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 		$agents = process_sql($sql);
@@ -54,7 +54,7 @@ if ($searchTab == 'agents') {
 			FROM tagente
 				INNER JOIN tgrupo
 					ON tgrupo.id_grupo = tagente.id_grupo
-			WHERE tagente.nombre LIKE '%" . $stringSearchSQL . "%' OR
+			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
 				tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'";
 		$totalAgents = get_db_row_sql($sql);
 		$totalAgents = $totalAgents[0];

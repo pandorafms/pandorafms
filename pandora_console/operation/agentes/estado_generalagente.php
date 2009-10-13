@@ -69,7 +69,7 @@ echo '<div width="450px">';
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
-echo '<td class="datos"><b>'.strtoupper($agent["nombre"]).'</b></td>';
+echo '<td class="datos"><b>'.$agent["nombre"].'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" /></a>&nbsp;';
 echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'" /></a></td></tr>';
 
@@ -81,7 +81,17 @@ echo '</td></tr>';
 
 //OS
 echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
-echo '<td class="datos" colspan="2">'.print_os_icon ($agent["id_os"], true, true).' '.$agent["os_version"].'</td></tr>';
+echo '<td class="datos" colspan="2">'.print_os_icon ($agent["id_os"], true, true);
+
+// Want to print last 15 characters of OS version, or start from 0 if smaller
+$osversion_offset = strlen($agent["os_version"]);
+if ($osversion_offset > 15)
+	$osversion_offset = $osversion_offset - 15;
+else
+	$osversion_offset = 0;
+
+
+echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_version"],$osversion_offset,15).' </span></i></td></tr>';
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';

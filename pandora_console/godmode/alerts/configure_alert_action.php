@@ -61,7 +61,7 @@ $table->data[2][0] = __('Field 1');
 $table->data[2][1] = print_input_text ('field1', $field1, '', 35, 255, true);
 
 $table->data[3][0] = __('Field 2');
-$table->data[3][1] = print_input_text ('field2', $field2, '', 35, 255, true);
+$table->data[3][1] = print_input_text ('field2', $field2, '', 80, 255, true);
 
 $table->data[4][0] = __('Field 3');
 $table->data[4][1] = print_textarea ('field3', 10, 30, $field3, '', true);

@@ -164,6 +164,8 @@ foreach my $server (@Servers) {
 
 # Main loop
 my $time_ref = time ();
+my $mcast_timer = 0;
+
 while (1) {
 
 	eval {	
@@ -177,7 +179,13 @@ while (1) {
 		pandora_planned_downtime (\%Config, $DBH);
 		pandora_exec_forced_alerts (\%Config, $DBH);
 		pandora_module_keep_alive_nd (\%Config, $DBH);
-		enterprise_hook('mcast_status_report', [\%Config, $DBH]);
+		
+		# Multicast status report each 30 x Server Threshold secs
+		if ($mcast_timer > 30){
+			enterprise_hook('mcast_status_report', [\%Config, $DBH]);
+			$mcast_timer = 0;
+		}
+		$mcast_timer++;
 	};
 
 	# Restart on error or auto restart

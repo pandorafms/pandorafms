@@ -214,18 +214,19 @@ install () {
 			fi
 		fi
 
-		echo "Creating Pandora FMS distribution directory in /usr/share/pandora"
-		mkdir /usr/share/pandora 2> /dev/null
-		cp -R util /usr/share/pandora
+		echo "Creating Pandora FMS distribution directory in /usr/share/pandora_server"
+		mkdir /usr/share/pandora_server 2> /dev/null
+		cp -R util /usr/share/pandora_server
 		
 		if [ -d /etc/cron.daily ]
 		then
-			echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	
-			echo "perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
-			chmod +x /etc/cron.daily/pandora_purge_db
+			echo "Create the Cron script to run daily Pandora DB tool"
+			echo "#!/bin/bash" > /etc/cron.daily/pandora_db	
+			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
+			chmod +x /etc/cron.daily/pandora_db
 		else
 			echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
-			echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+			echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 		fi
 		rm output
 	fi
@@ -254,8 +255,8 @@ uninstall () {
 	rm -Rf /etc/rc.d/rc3.d/S90pandora_server  2> /dev/null 
 	rm -Rf /usr/local/bin/pandora_server  2> /dev/null
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
-	rm -Rf /usr/share/pandora
-	rm -Rf /etc/cron.daily/pandora_purge_db
+	rm -Rf /usr/share/pandora_server
+	rm -Rf /etc/cron.daily/pandora_db
 	echo "Done"
 }
 

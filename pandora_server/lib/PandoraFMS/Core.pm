@@ -400,7 +400,7 @@ sub pandora_execute_alert ($$$$$$$) {
 	# Generate an event
 	my ($text, $event) = ($alert_mode == 0) ? ('recovered', 'alert_recovered') : ('fired', 'alert_fired');
 
-	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ")",
+	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") assigned to (". $module->{'nombre'} .")",
 		           $agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
 		           $alert->{'id_agent_module'}, $event,  $dbh);
 }
@@ -1102,12 +1102,12 @@ sub generate_status_event ($$$$$$$) {
 	# Normal
 	if ($status == 0) {
 		($event_type, $severity) = ('going_down_normal', 2);
-		$description .= "going down to NORMAL";
+		$description .= "going to NORMAL";
 		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'OK', $dbh]);
 	# Critical
 	} elsif ($status == 1) {
 		($event_type, $severity) = ('going_up_critical', 4);
-		$description .= "going up to CRITICAL";
+		$description .= "going to CRITICAL";
 		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'ERR', $dbh]);
 	# Warning
 	} elsif ($status == 2) {
@@ -1115,12 +1115,12 @@ sub generate_status_event ($$$$$$$) {
 		# From normal
 		if ($last_status == 0) {
 			($event_type, $severity) = ('going_up_warning', 3);
-			$description .= "going up to WARNING";
+			$description .= "going to WARNING";
 			
 		# From critical
 		} elsif ($last_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
-			$description .= "going down to WARNING";
+			$description .= "going to WARNING";
 		} else {
 			# Unknown last_status
 			return;

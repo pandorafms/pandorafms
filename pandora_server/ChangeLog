@@ -1,3 +1,15 @@
+2009-10-13  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: Fixed usage of old pathnames /usr/share/pandora
+	Fixed name of pandora_db cron.daily entry.
+	
+	* bin/pandora_server: Multicast status report now report each 30 x 
+	server_threshold. 
+	
+	* lib/Core.pm: Alert event now show more information (module name). Alert
+	messages like XXX going down to / going up from are replaced by more 
+	simple "going to CRITICAL/NORMAL/WARNING", I hope this will be more clear.
+
 2009-10-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm, bin/pandora_server: Re-enabled multicast

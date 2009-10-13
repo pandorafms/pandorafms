@@ -3,7 +3,7 @@ AllowLanguageSelection
 {Yes}
 
 AppName
-{Pandora FMS Windows agent v3.0-dev}
+{Pandora FMS Windows agent v3.0 RC1}
 
 ApplicationID
 {17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
@@ -30,7 +30,7 @@ Company
 {Artica ST http://www.artica.es}
 
 CompressionLevel
-{7}
+{9}
 
 CompressionMethod
 {zlib}
@@ -75,16 +75,16 @@ InstallPassword
 {}
 
 InstallVersion
-{3.0.9.30}
+{3.0.10.12}
 
 Language,ca
-{Yes}
+{No}
 
 Language,cs
-{Yes}
+{No}
 
 Language,de
-{Yes}
+{No}
 
 Language,en
 {Yes}
@@ -93,28 +93,28 @@ Language,es
 {Yes}
 
 Language,fr
-{Yes}
+{No}
 
 Language,hu
-{Yes}
+{No}
 
 Language,it
-{Yes}
+{No}
 
 Language,lt
-{Yes}
+{No}
 
 Language,nl
-{Yes}
+{No}
 
 Language,pl
-{Yes}
+{No}
 
 Language,pt_br
-{Yes}
+{No}
 
 Language,ru
-{Yes}
+{No}
 
 LastIgnoreDirectories
 {}
@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{090930}
+{091012}
 
 ViewReadme
 {Yes}
@@ -286,6 +286,9 @@ File ::FC2CF695-F050-712A-EAC4-B57D19D00C77 -type dir -name tmp -active 0 -paren
 File ::17DD23ED-CFF6-4E2E-AE99-2AA03F4DC4C4 -type dir -name prop-base -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
 File ::7FFC041E-C253-BA7D-D890-3D88CDBA434C -type dir -name props -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
 File ::955A9B5D-775D-4C4B-07C6-1E457A3AEF04 -type dir -name text-base -active 0 -parent FC2CF695-F050-712A-EAC4-B57D19D00C77
+File ::57A504DC-687C-F126-8B39-6A70F43C156A -name cmp.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
+File ::B71D3B59-A60B-6C21-76D4-292FA73C1613 -name getreg.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
+File ::DB77AA43-D4B7-239C-0F48-52502E17D4DC -name sort.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::EE3962D4-48B8-4715-B986-40794679FC89 -name ../bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name ../bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -filemethod {Never overwrite files} -name ../bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
@@ -310,6 +313,8 @@ File ::23F0FBAE-5849-2617-4616-D50FE1FCB137 -type dir -name tmp -active 0 -paren
 File ::9513C1EE-B08B-2ABE-38EF-C153696EFCD6 -type dir -name prop-base -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
 File ::2BBBE1D9-BA80-E6CA-835E-9D958A4CF3C3 -type dir -name props -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
 File ::486CB634-5092-8E3B-7621-5B3A044ACCCC -type dir -name text-base -active 0 -parent 23F0FBAE-5849-2617-4616-D50FE1FCB137
+File ::012BFA02-7F3D-897C-072A-877021FDC7D7 -name restart_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
+File ::02213E74-8E86-E4AC-58D0-B70412A05656 -name install_service_restart.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::94EE5172-C243-4F11-80CE-C356D9055323 -type dir -name ../bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::38108568-E397-4360-9FDD-BBD7574607E0 -name how_to_keys.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
 File ::096DCAC9-2E8F-4765-9EC5-E40DAFC26B36 -name how_to_keys_es.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
@@ -377,18 +382,16 @@ InstallComponent 57BABE6F-717F-4D6A-8A66-921B404862F5 -setup Install -type actio
 InstallComponent 9F763EAB-21A4-41E7-B51B-EDC4ACF4C5C8 -setup Install -type action -title {Execute Action} -component ExecuteAction -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent DF53044A-9776-DD6C-AC74-8096DEC9ADE2 -setup Install -type action -title {Create Folder} -component CreateFolder -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 61CE1D31-E460-4F25-BFA3-499F25E90FE0 -setup Install -type action -title {Add Directory To Path} -component AddDirectoryToPath -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
-InstallComponent 3A459246-12CD-03D3-5704-1C5B3F224CDC -setup Install -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 78DA1080-A7D6-4FC9-AEC0-E08A82E6E8A7 -setup Install -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 183B25D6-4AD5-4300-BE27-6D2076CA8110 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 922F877C-14DD-462F-8BB4-0CD378D81C95 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 1D3EE8A2-B735-4756-9BB6-7BBC42077575 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
-InstallComponent 736623D0-C176-476C-A899-35C05DD59147 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent D6128B0E-6CFE-4626-87CC-64C883554F0F -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
+InstallComponent F1651434-2539-7283-6835-FB0B9C37B3B1 -setup Install -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 8A1B144A-F5F6-430F-A334-C31494182599 -setup Install -type action -title {Move Forward} -component MoveForward -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1 -setup Install -type pane -title {Custom Blank Pane 2} -component CustomBlankPane2 -active Yes -parent StandardInstall
 InstallComponent 75288342-4CEB-473C-B242-450642503F74 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
-InstallComponent F1A58A0A-58DF-4236-9316-8BE4D22D4FF6 -setup Install -type action -title {Add Widget} -component AddWidget -command reorder -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 0C4A17DA-7867-40CC-81B4-0D1F170581AC -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 1F7BE720-7885-4150-9550-F25FB1C69423 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent StandardInstall
 InstallComponent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -setup Install -type action -conditions {8112E00E-C24D-458F-9C19-03E63937E908 29B86DFA-93EA-4584-A9CF-DE823F4787F2} -title {Start Windows Service} -component StartWindowsService -command insert -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
@@ -485,9 +488,7 @@ array set Properties {
 
 0C4A17DA-7867-40CC-81B4-0D1F170581AC,StringMap
 {$ServerIP$ <%ServerIP%>
-$ServerPath$ <%ServerPath%>
-$AgentTemp$ <%InstallDir%>\\temp
-}
+$AgentTemp$ <%InstallDir%>\\temp}
 
 0F1370DF-FF15-4CE7-ADF6-CA74BC642334,CheckCondition
 {Before Action is Executed}
@@ -612,6 +613,9 @@ $AgentTemp$ <%InstallDir%>\\temp
 268B55D8-DE61-421A-AB68-A5D4821D981F,BackButton,subst
 {1}
 
+268B55D8-DE61-421A-AB68-A5D4821D981F,Buttons
+{Cancel}
+
 268B55D8-DE61-421A-AB68-A5D4821D981F,CancelButton,subst
 {1}
 
@@ -695,15 +699,6 @@ $AgentTemp$ <%InstallDir%>\\temp
 
 354871D2-65BD-4414-BB04-F466798FA027,String
 {<%Property <%CurrentPane%> UserMustAcceptLicense%>}
-
-3A459246-12CD-03D3-5704-1C5B3F224CDC,Conditions
-{0 conditions}
-
-3A459246-12CD-03D3-5704-1C5B3F224CDC,ConsoleTitle
-{<%AppName%> Programming AT for 5-day maintance restart of Pandora FMS Agent}
-
-3A459246-12CD-03D3-5704-1C5B3F224CDC,ProgramCommandLine
-{at 00:00 /every:1,5,10,15,20,25,30 "net stop PandoraFMSAgent & net start PandoraFMSAgent"}
 
 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B,CheckCondition
 {Before Action is Executed}
@@ -838,7 +833,7 @@ $AgentTemp$ <%InstallDir%>\\temp
 {185}
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Y
-{140}
+{250}
 
 60FEFCD5-D31D-4DEA-86D7-E0246ABF0DF5,Action
 {Uninstall Actions}
@@ -951,18 +946,6 @@ $AgentTemp$ <%InstallDir%>\\temp
 716175FD-DD14-46E4-AC3E-2E6483C6FF7D,Conditions
 {2 conditions}
 
-736623D0-C176-476C-A899-35C05DD59147,Conditions
-{0 conditions}
-
-736623D0-C176-476C-A899-35C05DD59147,ShortcutName
-{<%HelpGeneratingSSHKeys%>}
-
-736623D0-C176-476C-A899-35C05DD59147,TargetFileName
-{<%InstallDir%>/help/<%HowTo%>}
-
-736623D0-C176-476C-A899-35C05DD59147,WorkingDirectory
-{<%InstallDir%>}
-
 73AB9FDF-9481-4EC3-8B31-C109BAA1086C,Alias
 {Uninstall Actions}
 
@@ -994,7 +977,7 @@ $AgentTemp$ <%InstallDir%>\\temp
 {ServerIP}
 
 75288342-4CEB-473C-B242-450642503F74,Width
-{430}
+{420}
 
 75288342-4CEB-473C-B242-450642503F74,X
 {20}
@@ -1105,7 +1088,7 @@ $AgentTemp$ <%InstallDir%>\\temp
 {<%InstallDir%>}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-{9184513}
+{9222570}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -1281,6 +1264,9 @@ B2E20690-C57D-4286-9977-F2541E04D71F,BrowseButton,subst
 B2E20690-C57D-4286-9977-F2541E04D71F,BrowseText,subst
 {1}
 
+B2E20690-C57D-4286-9977-F2541E04D71F,Buttons
+{Next/Cancel}
+
 B2E20690-C57D-4286-9977-F2541E04D71F,CancelButton,subst
 {1}
 
@@ -1364,6 +1350,9 @@ C19EE9A4-6BBE-4631-8013-7B7DCA588367,Prompt
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,BackButton,subst
 {1}
+
+C862BDC0-8F67-4546-B658-4A9A8ADCE385,Buttons
+{Next/Cancel}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,CancelButton,subst
 {1}
@@ -1578,38 +1567,17 @@ F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Title,subst
 F0BC8450-668B-41B2-A442-F1BE095D1BFB,Conditions
 {0 conditions}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Conditions
+F1651434-2539-7283-6835-FB0B9C37B3B1,Conditions
 {0 conditions}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Height
-{20}
+F1651434-2539-7283-6835-FB0B9C37B3B1,IgnoreErrors
+{Yes}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelSide
-{left}
+F1651434-2539-7283-6835-FB0B9C37B3B1,ProgramCommandLine
+{install_service_restart.bat}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelWidth
-{28}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text,subst
-{1}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Type
-{entry}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Value
-{/var/spool/pandora/data_in}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,VirtualText
-{ServerPath}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Width
-{430}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,X
-{20}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Y
-{215}
+F1651434-2539-7283-6835-FB0B9C37B3B1,WorkingDirectory
+{<%InstallDir%>\scripts}
 
 F6A6DB43-C89D-4A19-98D3-1E24284260AE,Comment
 {Do not display this pane if this is an upgrade install unless there is more than one installation present}
@@ -2397,9 +2365,6 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 EditConfiguration
 {Bearbeiten der Konfiguration}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
-
 StartPandoraService
 {Startet <%AppName%> Dienst}
 
@@ -2416,6 +2381,11 @@ Please click on Next button to continue, or Cancel to exit this setup.
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 {<%UninstallingApplicationText%>}
+
+1F7BE720-7885-4150-9550-F25FB1C69423,Message
+{The InstallJammer Wizard has successfully installed <%AppName%>.  Click Finish to exit the wizard.
+
+NOTE: In some Windows systems, it is needed to restart the server after installing a Service and adding new directories to system path. We recommend to restart your server, but this is not always needed.}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 {<%InstallationCompleteText%>}
@@ -2463,7 +2433,7 @@ Please click on Next button to continue, or Cancel to exit this setup.
 {Starting Pandora FMS service}
 
 75288342-4CEB-473C-B242-450642503F74,Text
-{Pandora Server IP Address:}
+{Pandora FMS Server address}
 
 8112E00E-C24D-458F-9C19-03E63937E908,Message
 {Do you want to start Pandora FMS Agent Service?}
@@ -2595,9 +2565,6 @@ END OF TERMS AND CONDITIONS}
 EditConfiguration
 {Edit Configuration}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
-
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description
 {<%ProgramFilesDescription%>}
 
@@ -2637,7 +2604,9 @@ Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 {La instalación ha finalizado}
 
 1F7BE720-7885-4150-9550-F25FB1C69423,Message
-{El instalador ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
+{El instalador ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.
+
+NOTA: En algunos sistemas Windows es necesario reiniciar después de instalar un servicio y agregar un nuevo directorio al PATH del sistema. Recomendamos por tanto que reinicie este servidor.}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 {<%InstallationCompleteText%>}
@@ -2692,9 +2661,6 @@ DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Subtitle
 EditConfiguration
 {Editar fichero de configuración}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Ruta en el servidor para los paquetes de datos:}
-
 HelpGeneratingSSHKeys
 {Creación de claves SSH}
 
@@ -2714,13 +2680,13 @@ SeparatorText
 {Instalador de Pandora FMS}
 
 StartPandoraService
-{Iniciar el servicio <%AppName%>}
+{Pandora FMS Service - Iniciar Servicio}
 
 StopPandoraService
-{Parar el servicio <%AppName%>}
+{Pandora FMS Service - Parar Servicio}
 
 StopPanodoraService
-{Stop Pandora Service}
+{Pandora FMS Service - Parar Servicio}
 
 UninstallStartupText
 {Se eliminará completamente <%AppName%> de su sistema. ¿Seguro que desea continuar?}
@@ -2766,9 +2732,6 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 EditConfiguration
 {Modifier la configuration}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
-
 StartPandoraService
 {Démarre le service <%AppName%>}
 
@@ -2798,9 +2761,6 @@ StopPandoraService
 
 75288342-4CEB-473C-B242-450642503F74,Text
 {Pandora Server IP Address:}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Start Pandora Service}
@@ -2832,9 +2792,6 @@ Premere su Avanti per continuare o su Annulla per uscire dall'installazione.}
 75288342-4CEB-473C-B242-450642503F74,Text
 {Pandora Server IP Address:}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
-
 StartPandoraService
 {Start Pandora Service}
 
@@ -2862,9 +2819,6 @@ Klik op <%Next%> om verder  te gaan of op <%Cancel%> om deze installatie af te b
 
 75288342-4CEB-473C-B242-450642503F74,Text
 {Pandora Server IP Address:}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Start Pandora Service}
@@ -2907,9 +2861,6 @@ Kliknij Dalej, aby kontynuowaÄ‡ lub Anuluj, aby opuÅ›ciÄ‡ instalator.}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 {<%InstallingApplicationText%>}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
 
 StartPandoraService
 {}
@@ -2958,9 +2909,6 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 EditConfiguration
 {Editar a configuração}
 
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
-
 StartPandoraService
 {Inicia o serviço <%AppName%>}
 
@@ -2983,9 +2931,6 @@ StopPandoraService
 
 75288342-4CEB-473C-B242-450642503F74,Text
 {Pandora Server IP Address:}
-
-F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Start Pandora Service}

@@ -1,3 +1,22 @@
+2009-10-13  Sancho Lerena <slerena@artica.es>
+
+	* bin/PandoraAgent.exe: Last build of agent binary.
+	
+	* bin/pandora_agent.conf: new default .conf for packaging.
+	
+	* bin/util/getreg.exe, bin/util/cmp.exe, bin/util/sort.exe: New bin tools
+	for the 3.0 agent util directory.
+	
+	* installer/scripts/install_service_restart.bat: Install daily agent
+	restart with AT command.
+	
+	* installer/scripts/restart_pandora_agent.bat: Make a service restart from
+	command line (using net commands).
+	
+	* installer/pandora.mpi: Many fixes and improvements for the installer.
+
+	* installer/README.txt: Updated readme.
+
 2009-10-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* main.cc: Fixed the agent interval when running in process mode.

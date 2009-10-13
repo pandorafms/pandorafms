@@ -26,7 +26,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_group');
 		
 		$filter = array ();
-		$filter[] = '(nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
 		$filter['id_grupo'] = $id_group; 
 		
 		$agents = get_agents ($filter, array ('nombre', 'direccion'));

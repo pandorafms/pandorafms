@@ -188,7 +188,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}
 		
-	$data[0] .= print_agent_name ($agent["id_agente"], true, "upper");
+	$data[0] .= print_agent_name ($agent["id_agente"], true, "none");
 	
 	$data[1] = print_os_icon ($agent["id_os"], false, true);
 

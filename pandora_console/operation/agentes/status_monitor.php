@@ -203,7 +203,7 @@ foreach ($result as $row) {
 	$data = array ();
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
-	$data[1] .= strtoupper (substr ($row["agent_name"], 0, 25));
+	$data[1] .=  substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
 	$data[2] = '<img src="images/'.show_icon_type ($row["module_type"]).'" border="0" />';

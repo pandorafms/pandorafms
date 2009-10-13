@@ -1,3 +1,52 @@
+2009-10-13  Sancho Lerena <slerena@artica.es>
+
+	Upps, Tuesday #13, bad day for a last commit before launch RC1 ! :-S
+	
+	* general/logon_ok.php: Fixed ugly format of table showing last activity 
+	(has a too wide table width).
+	
+	* godmode/admin_access_logs.php: Removed that crappy div fashion code and
+	replaced by old and reliable table-based-code :-) to fix the mess with the
+	pagination.
+	
+	* godmode/agentes/configurar_agente.php: fixed problem with postprocess 
+	values very bug (like 0.0000000123), parameter is now passed as string 
+	because PHP is passing the value as scientific notation and mYsql don't 
+	understand that.
+	
+	* operation/agentes/exportdata.php, 
+	* operation/search_results.php, 
+	* godmode/reporting/map_builder.php, 
+	* godmode/agentes/agent_manager.php,
+	* godmode/reporting/graph_builder.php,
+	* godmode/agentes/modificar_agente.php: Added non-case search SQL code for make 
+	agent searches non case sensitive (nombre COLLATE utf8_general_ci LIKE...)
+	
+	* module_manager_editor_common.php: More size for postprocess field.
+	
+	* pandora_console/godmode/alerts/configure_alert_action.php: More width for
+	field2 in action form.
+	
+	* godmode/alerts/configure_alert_command.php: Command field has more width
+	and added a help icon for macro subtitutions.
+	
+	* include/functions_db.php: get_agent_name() now defaults to non uppercase
+	the agent names, because 3.0 has case sensitive agent names, and all
+	data must show the real Case.
+	
+	* include/styles/pandora.css: removed uppercase transition for menu items
+	and agent tabs.
+	
+	* operation/agentes/estado_agente.php: Agent is not shown in uppercase 
+	anymore.
+	
+	* operation/agentes/estado_generalagente.php: Agent name and parent name 
+	is not in uppercase. OS version shows only last 15 characters or full string
+	if strlen() < 15.
+	
+	* operation/agentes/status_monitor.php: Agent name is not in uppercase
+	 anymore.
+	 
 2009-10-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_ui.php,

@@ -32,10 +32,15 @@ echo "<h2>" . __('Pandora audit') . " &raquo; " .__('Review Logs') . "</h2>";
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');
 
-echo '<div style="width:450px; float:left;">';
+echo '<table width=100% border=0>';
+echo "<tr><td colspan=2>";
 echo '<h3>'.__('Filter').'</h3>';
-
-// generate select
+echo "<td rowspan=2>";
+if ($config['flash_charts']) {
+	echo graphic_user_activity (300, 140);
+} else {
+	echo '<img src="include/fgraph.php?tipo=user_activity&width=300&height=140" />';
+}
 
 $rows = get_db_all_rows_sql ("SELECT DISTINCT(accion) FROM tsesion");
 if (empty ($rows)) {
@@ -47,20 +52,18 @@ $actions = array ();
 foreach ($rows as $row) {
 	$actions[$row["accion"]] = $row["accion"]; 
 }
-	
+
+echo "</td></td></tr>";
+echo "<tr><td>";
 echo '<form name="query_sel" method="post" action="index.php?sec=godmode&sec2=godmode/admin_access_logs">';
 echo __('Action').': ';
+echo "</td><td>";
 print_select ($actions, 'tipo_log', $tipo_log, 'this.form.submit();', __('All'), 'all');
 echo '<br /><noscript><input name="uptbutton" type="submit" class="sub" value="'.__('Show').'"></noscript>';
-echo '</form></div>';
+echo '</form>';
 
-echo '<div style="width:300px; height:140px; float:left;">';
-if ($config['flash_charts']) {
-	echo graphic_user_activity (300, 140);
-} else {
-	echo '<img src="include/fgraph.php?tipo=user_activity&width=300&height=140" />';
-}
-echo '</div>';
+
+echo "</td></td></tr>";
 
 $filter = '';
 if ($tipo_log != 'all') {
@@ -71,8 +74,10 @@ $sql = "SELECT COUNT(*) FROM tsesion".$filter;
 $count = get_db_sql ($sql);
 $url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
 
-pagination ($count, $url, $offset);
 
+echo "<tr><td colspan=3>";
+pagination ($count, $url, $offset);
+echo "</td></td></tr></table>";
 
 $sql = sprintf ("SELECT * FROM tsesion%s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
 $result = get_db_all_rows_sql ($sql);

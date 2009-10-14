@@ -138,9 +138,9 @@ if ($agents !== false) {
 		$data = array ();
 		foreach ($table_renders as $name => $values) {
 			if (! is_numeric ($name)) {
-				array_push ($data, render_agent_field (&$agent, $name, $values, true));
+				array_push ($data, render_agent_field ($agent, $name, $values, true));
 			} else {
-				array_push ($data, render_agent_field (&$agent, $values, false, true));
+				array_push ($data, render_agent_field ($agent, $values, false, true));
 			}
 		}
 		array_push ($table->data, $data);

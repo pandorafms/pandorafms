@@ -1,3 +1,11 @@
+2009-10-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* general/ui/agents_list.php: remove the pass-by-reference in the two calls
+	to "render_agent_field" because it are not necesary that in the function
+	"render_agent_field" there aren't any change in the $agent param.
+	* include/styles/pandora.css: fix minor bug that the path to arrow.png was
+	wrong.
+
 2009-10-13  Sancho Lerena <slerena@artica.es>
 
 	* operation/events/events.php: Replaced old icon (red cross) by a 

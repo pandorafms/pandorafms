@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 require_once ('include/functions_network_components.php');
+require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
 
 if (is_ajax ()) {
 	$get_network_component = (bool) get_parameter ('get_network_component');
@@ -60,6 +61,10 @@ if (is_ajax ()) {
 		$id_component = (int) get_parameter ('id_module_component');
 		
 		$component = get_db_row ('tlocal_component', 'id', $id_component);
+		
+		$typeName = parseLocalModuleExtractValue('module_type',$component['data']);
+		
+		$component['type'] = get_db_value_sql('SELECT id_tipo FROM ttipo_modulo WHERE nombre LIKE "' . $typeName . '"');
 		
 		echo json_encode ($component);
 		return;

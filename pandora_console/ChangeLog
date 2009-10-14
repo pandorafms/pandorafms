@@ -1,3 +1,8 @@
+2009-10-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/status_monitor.php: fix, show only monitor in unknow
+	status when you click in the "Unknown monitors" in tactical agent view.
+
 2009-10-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* general/ui/agents_list.php: remove the pass-by-reference in the two calls

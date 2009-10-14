@@ -74,7 +74,8 @@ function configure_modules_form () {
 				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").attr ("value", configuration_data);
 				$("#component_loading").hide ();
-				$("#id_module_type").change ();
+				
+				$("#id_module_type option[value="+data["type"]+"]").select (1);
 			},
 			"json"
 		);

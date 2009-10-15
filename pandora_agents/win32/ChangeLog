@@ -1,3 +1,10 @@
+2009-10-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows_service.cc: Enable service recovery by default.
+
+	* pandora_windows_service.cc: Added autotime, group and description
+	  configuration options.
+
 2009-10-13  Sancho Lerena <slerena@artica.es>
 
 	* bin/PandoraAgent.exe: Last build of agent binary.

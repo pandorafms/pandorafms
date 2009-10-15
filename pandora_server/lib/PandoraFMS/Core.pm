@@ -836,7 +836,7 @@ sub pandora_module_keep_alive_nd {
 									AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
 	foreach my $module (@modules) {
-		pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time (), 0, $dbh);
+		pandora_process_module ($pa_config, 0, '', $module, 'keep_alive', '', time (), 0, $dbh);
 	}
 }
 
@@ -1079,6 +1079,10 @@ sub get_module_status ($$) {
 	if ($module_type =~ m/_proc$/ && ($critical_min eq $critical_max)) {
 		($critical_min, $critical_max) = (0, 1);
 	}
+
+	if ($module_type =~ m/keep_alive/ && ($critical_min eq $critical_max)) {
+                ($critical_min, $critical_max) = (0, 1);
+        }
 
 	# Critical
 	if ($critical_min ne $critical_max) {

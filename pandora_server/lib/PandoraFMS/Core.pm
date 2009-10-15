@@ -443,7 +443,7 @@ sub pandora_execute_action ($$$$$$$$) {
 				  _alert_times_fired_ => $alert->{'times_fired'},
   				  _alert_priority_ => $alert->{'priority'},
 				  _module_ => (defined ($module)) ? $module->{'nombre'} : '',
-				  _id_agent_ => (defined ($agent)) ? $module->{'id_agente'} : '', 
+				  _id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				 );
 
 
@@ -905,13 +905,19 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 				'priority' => $alert->{'priority'},
 			);
 
+			my %agent = (
+				'nombre' => $trap_agent,
+			    'direccion' => $trap_agent,
+			);
+
 			# Execute alert
 			my $action = get_db_single_row ($dbh, 'SELECT *
 			                                       FROM talert_actions, talert_commands
 			                                       WHERE talert_actions.id_alert_command = talert_commands.id
 			                                         AND talert_actions.id = ?', $alert->{'id_alert'});
 
-			pandora_execute_action ($pa_config, '', undef, \%alert, 1, $action, undef, $dbh) if (defined ($action));
+			my $trap_rcv_full = $trap_oid . " " .  $trap_custom_oid . " " . $trap_custom_value;
+			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh) if (defined ($action));
 
 			# Generate an event
 			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",

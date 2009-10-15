@@ -365,7 +365,10 @@ sub enterprise_hook ($$) {
 	my $output = eval { &$func (@args); };
 
 	# Check for errors
-	return undef if ($@);
+	#return undef if ($@);
+
+	# undef is returned only if the enterprise function was not found
+	return '' unless defined ($output);
 
 	return $output;
 }

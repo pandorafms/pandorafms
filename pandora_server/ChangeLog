@@ -1,3 +1,19 @@
+2009-10-15  Sancho lerena <slernea@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Fixed small problem in snmp2agent
+	forwarding and better implementation of server error control.
+	Also solved problem with duplicated traps in SNMP console.
+
+	* lib/PandoraFMS/Server.pm: better implementation of server error control.
+
+	* lib/PandoraFMS/Core.pm: SNMP alerts now show the IP in _agent_ macro 
+
+	* lib/PandoraFMS/Tools.pm: Better management of enterprise_hook on 
+	opensource version. 
+
+	* util/alert_multicast.pl: Added sample of alert script for render
+	alerts as multicast XML.
+
 2009-10-13  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_server: Incremented shutting down grace time to 60 secs

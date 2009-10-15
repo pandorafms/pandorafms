@@ -165,6 +165,8 @@ void
 Windows_Service::install (LPCTSTR application_binary_path) { 
 	SC_HANDLE           sc_manager;
 	SERVICE_DESCRIPTION sd_buf;
+	SERVICE_FAILURE_ACTIONS fa;
+    SC_ACTION sa[2];
 	
 	cout << " [SERVICE] Attempting to install the service.\n";
 	cout << " [SERVICE] The full path to the binary is: " << application_binary_path << endl;
@@ -276,6 +278,23 @@ Windows_Service::install (LPCTSTR application_binary_path) {
 		cout << " [SERVICE] Unable to add a description to the service. " << msg << endl;
 	}        
 	
+	/* Enable service recovery */
+    fa.dwResetPeriod = 86400; // One day
+    fa.lpRebootMsg = NULL;
+    fa.lpCommand = NULL;
+    fa.cActions = 2;
+    sa[0].Delay = 300000; // One minute
+    sa[0].Type = SC_ACTION_RESTART;
+    sa[1].Delay = 0;
+    sa[1].Type = SC_ACTION_NONE;
+    fa.lpsaActions = sa;
+    if (!ChangeServiceConfig2 (sc_service, SERVICE_CONFIG_FAILURE_ACTIONS, &fa)) {
+		TCHAR msg[1000];
+		
+		svc_format_message (msg, sizeof (msg));
+		cout << " [SERVICE] Service recovery could not be enabled. " << msg << endl;
+	}
+
 	cout << " [SERVICE] Successfully added the service to the Services database." << endl; 
 	
 	CloseServiceHandle (sc_service);

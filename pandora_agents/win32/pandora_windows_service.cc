@@ -189,17 +189,23 @@ Pandora_Windows_Service::getXmlHeader () {
 	}
 	agent->SetAttribute ("agent_name", value);
 	
+	value = conf->getValue ("description");
+	agent->SetAttribute ("description", value);
+
 	agent->SetAttribute ("version", getPandoraAgentVersion ());
 	
 	// Get current time
 	ctime = time(0);
 	ctime_tm = localtime(&ctime);
 
-	sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
-		ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
-		ctime_tm->tm_min, ctime_tm->tm_sec);
+	value = conf->getValue ("autotime");
+	if (value != "1") {
+		sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
+			ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
+			ctime_tm->tm_min, ctime_tm->tm_sec);
 	
-	agent->SetAttribute ("timestamp", timestamp);
+		agent->SetAttribute ("timestamp", timestamp);
+	}
 	
 	value = conf->getValue ("interval");
 	agent->SetAttribute ("interval", value);
@@ -210,6 +216,9 @@ Pandora_Windows_Service::getXmlHeader () {
 	value = value + Pandora_Windows_Info::getOSVersion ();
 	agent->SetAttribute ("os_version", value);
 	
+	value = conf->getValue ("group");
+	agent->SetAttribute ("group", value);
+
 	return agent;
 }
 

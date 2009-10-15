@@ -39,7 +39,11 @@ fi
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
-	PANDORA_PID=`ps -Af | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	# This sets COLUMNS to 200 chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=200
+	PANDORA_PID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )
 
@@ -99,6 +103,11 @@ case "$1" in
                         	COUNTER=`expr $COUNTER + 1`
                         	sleep 1
                 	done
+		
+			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
+			# to be sure is really dead, and not pretending...
+
+			kill -9 $PANDORA_PID > /dev/null 2>&1
 
 			rc_status -v
 		fi

@@ -1,3 +1,12 @@
+2009-10-16  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Keepalive was not working properly. Keepalive
+	moduletype is now managed like a proc (0 = BAD) in get_status function.
+
+       	* util/pandora_server: Start/Stop daemon now works and problem has been
+	fixed, and I'm very happy after so many days trying to figure what the
+	hell was happening here. 
+
 2009-10-15  Sancho lerena <slernea@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Fixed small problem in snmp2agent

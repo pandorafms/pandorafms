@@ -1,3 +1,10 @@
+2009-10-17  Sancho Lerena <slerena@artica.es>
+
+	* configure.in: Modified path to libregex.a instead original boost
+	library name (very large and complex). This should be fix with the 
+	library package uploaded in sourceforge and compile nicely (works
+	for me :-)
+
 2009-10-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows_service.cc: Enable service recovery by default.

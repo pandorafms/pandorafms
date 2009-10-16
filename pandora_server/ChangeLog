@@ -1,3 +1,8 @@
+2009-10-16  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_server: Updated error string when service cannot startup
+	(show both pandora_server.log and pandora_server.error)
+
 2009-10-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Do not process disabled modules.

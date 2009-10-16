@@ -77,7 +77,7 @@ case "$1" in
 			rc_status -v
 		else
 			echo "Cannot start Pandora FMS Server. Aborted."
-			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.log'"
+			echo "Check Pandora FMS log files at '/var/log/pandora/pandora_server.error & pandora_server.log'"
 			rc_status -s
 		fi
 	;;

@@ -1,3 +1,10 @@
+2009-10-17  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent_daemon: Fixed problems in small term with    
+	PID detection.
+
+	* unix/Linux/pandora_agent_daemon: Same as above.
+
 2009-09-30  Sancho Lerena <slerena@artica.es>
 
 	* win32/installer/pandora.mpi: Updated installer.

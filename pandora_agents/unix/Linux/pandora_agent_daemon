@@ -24,6 +24,7 @@ LOGFILE=/var/log/pandora_agent.log
 # This function replace pidof, not working in the same way in different linux distros
 
 function pidof_pandora () (
+	COLUMNS=250
 	PANDORA_PID=`ps aux | grep $DAEMON | grep -v grep | head -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID
 )

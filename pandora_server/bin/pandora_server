@@ -60,14 +60,14 @@ sub pandora_shutdown () {
 ########################################################################################
 sub pandora_startup () {
 
+	# Start logging
+	pandora_start_log (\%Config);
+
 	# Connect to the DB
 	$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
 					   $Config{'dbuser'}, $Config{'dbpass'});
 
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
-
-	# Start logging
-	pandora_start_log (\%Config);
 
 	# Load servers
 	pandora_reset_server (\%Config, $DBH);

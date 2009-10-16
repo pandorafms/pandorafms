@@ -133,7 +133,7 @@ sub data_consumer ($$) {
     		next;
     	}
     	
-		# Ignore the timestamp in the XML and use the file timestamp instead
+	# Ignore the timestamp in the XML and use the file timestamp instead
     	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
     	unlink ($file_name);
@@ -273,6 +273,9 @@ sub process_module_data ($$$$$$$$$) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		return unless defined $module;
 	}
+
+	# Module disabled!
+	return if ($module->{'disabled'} eq '1');
 
 	# Parse the timestamp and process the module
 	if ($timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ ||

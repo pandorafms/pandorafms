@@ -49,9 +49,9 @@ function check_login () {
  * Check access privileges to resources
  *
  * Access can be:
- * IR - Incident Read
- * IW - Incident Write
- * IM - Incident Management
+ * IR - Incident/report Read
+ * IW - Incident/report Write
+ * IM - Incident/report Management
  * AR - Agent Read
  * AW - Agent Write
  * LW - Alert Write

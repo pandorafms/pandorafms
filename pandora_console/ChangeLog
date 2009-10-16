@@ -1,3 +1,7 @@
+2009-10-17  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_db.php: Updated description for ACL flags.
+
 2009-10-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora_modules.js,

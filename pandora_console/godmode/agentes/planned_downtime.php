@@ -115,7 +115,8 @@ if ($create_downtime || $update_downtime) {
 		}
 	}
 }
-
+echo '<h2>'.__('Agent configuration').' &raquo; ';
+echo __('Planned Downtime').'</h2>';
 // Show create / update form
 	
 	if (($first_create != 0) OR ($first_update != 0)){
@@ -255,7 +256,6 @@ if ($create_downtime || $update_downtime) {
 	// View available downtimes present in database (if any of them)
 		$table->class = 'databox';
 		//Start Overview of existing planned downtime
-		echo '<h3>'.__('Planned Downtime present on system').':</h3>';
 		$table->width = '90%';
 		$table->data = array ();
 		$table->head = array ();
@@ -272,6 +272,7 @@ if ($create_downtime || $update_downtime) {
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
 		} else {
+			echo '<h3>'.__('Planned Downtime present on system').':</h3>';
 			foreach ($downtimes as $downtime) {
 				$data = array();
 				$total  = get_db_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);

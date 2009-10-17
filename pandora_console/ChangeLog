@@ -1,5 +1,13 @@
 2009-10-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_custom_graphs.php, operation/reporting/graph_viewer.php,
+	godmode/reporting/graphs.php, godmode/reporting/graph_builder.php,
+	godmode/menu.php: change the process to create graphs, now you can edit
+	all parts of any grahps (edit, delete, add..) and has a list of graphs.
+	Start to add ACL in graphs...only pending test.
+
+2009-10-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.php: set default action in alert combo box when
 	you make a new alert.
 

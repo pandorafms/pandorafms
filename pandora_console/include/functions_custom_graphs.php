@@ -55,9 +55,13 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false) {
 		
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];
-		} else {
+		}
+		else {
 			$graphs[$graph['id_graph']] = $graph;
 		}
+		
+		$graphsCount = get_db_value_sql("SELECT COUNT(id_gs) FROM tgraph_source WHERE id_graph = " . $graph['id_graph']);
+		$graphs[$graph['id_graph']]['graphs_count'] = $graphsCount;
 	}
 	
 	return $graphs;

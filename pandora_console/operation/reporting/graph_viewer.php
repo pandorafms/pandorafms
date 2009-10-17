@@ -39,7 +39,8 @@ if ($delete_graph) {
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		echo $result;
-	} else {
+	}
+	else {
 		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
 		include ("general/noaccess.php");
 		exit;
@@ -140,8 +141,6 @@ if (! empty ($graphs)) {
 	$table->head = array ();
 	$table->head[0] = __('Graph name');
 	$table->head[1] = __('Description');
-	if (give_acl ($config['id_user'], 0, "AW"))
-		$table->head[2] = __('Delete');
 	$table->data = array ();
 	
 	foreach ($graphs as $graph) {
@@ -150,12 +149,6 @@ if (! empty ($graphs)) {
 		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
 			$graph['id_graph'].'">'.$graph['name'].'</a>';
 		$data[1] = $graph["description"];
-		
-		if (give_acl ($config['id_user'], 0, "AW")) {
-			$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete_graph=1&id='
-				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;"><img src="images/cross.png" /></a>';
-		}
 		
 		array_push ($table->data, $data);
 	}

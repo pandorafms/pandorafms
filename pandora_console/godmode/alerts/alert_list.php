@@ -443,11 +443,6 @@ if (! $id_agente) {
 	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
-	
-//	$table->data['agent'][1] = print_select (get_group_agents (array_keys ($groups), false, "none"), 'id_agent', 0, false, __('Select'), 0, true);
-//	$table->data['agent'][1] .= ' <span id="agent_loading" class="invisible">';
-//	$table->data['agent'][1] .= '<img src="images/spinner.gif" />';
-//	$table->data['agent'][1] .= '</span>';
 }
 
 $table->data[0][0] = __('Module');
@@ -740,6 +735,10 @@ $(document).ready (function () {
 							option = $("<option></option>")
 								.attr ("value", val["id"])
 								.append (val["name"]);
+
+							if (val["sort_order"] == 1)
+								option.attr ("selected", true);
+							
 							$("#action_select").append (option);
 						});
 					}	

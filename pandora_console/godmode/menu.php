@@ -119,7 +119,7 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	$sub["godmode/reporting/reporting_builder"]["text"] = __('Report builder');
 
 	// Custom graph builder
-	$sub["godmode/reporting/graph_builder"]["text"] = __('Graph builder');
+	$sub["godmode/reporting/graphs"]["text"] = __('Graph builder');
 	
 	// Custom map builder
 	$sub["godmode/reporting/map_builder"]["text"] = __('Map builder');

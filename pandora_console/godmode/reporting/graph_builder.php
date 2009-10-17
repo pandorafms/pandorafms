@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
 	
@@ -71,12 +70,14 @@ $render=1; // by default
 $stacked = 0;
 
 $add_module = (bool) get_parameter ('add_module');
+$editGraph = (bool) get_parameter('edit_graph');
 
 if (isset ($_GET["store_graph"])) {
 	$name = get_parameter_post ("name");
 	$description = get_parameter_post ("description");
 	$module_number = get_parameter_post ("module_number");
-	$private = get_parameter_post ("private");
+	//$private = get_parameter_post ("private");
+	$idGroup = get_parameter_post ('graph_id_group');
 	$width = get_parameter_post ("width");
 	$height = get_parameter_post ("height");
 	$events = get_parameter_post ("events");
@@ -86,14 +87,15 @@ if (isset ($_GET["store_graph"])) {
 	$period = get_parameter_post ("period");
 	// Create graph
 	$sql = "INSERT INTO tgraph
-		(id_user, name, description, period, width, height, private, events, stacked) VALUES
+		(id_user, name, description, period, width, height, private, id_group, events, stacked) VALUES
 		('".$config['id_user']."',
 		'$name',
 		'$description',
 		$period,
 		$width,
 		$height,
-		$private,
+		0,
+		$idGroup,
 		$events,
 		$stacked)";
 		//echo "DEBUG $sql<br>";
@@ -116,6 +118,19 @@ if (isset ($_GET["store_graph"])) {
 		echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
 }
 
+if (isset($_GET['change_graph'])) {
+	$id = get_parameter('id');
+	$name = get_parameter('name');
+    $id_group = get_parameter('graph_id_group');
+    $description = get_parameter('description');
+    
+    $success = process_sql_update('tgraph', 
+    	array('name' => $name, 'id_group' => $id_group, 'description' => $description), 
+    	array('id_graph' => $id));
+    
+    print_result_message($success, __("Update the graph"), __("Bad update the graph"));
+}
+
 if (isset ($_GET["get_agent"])) {
 	$id_agent = $_POST["id_agent"];
 	if (isset($_POST["chunk"]))
@@ -123,76 +138,104 @@ if (isset ($_GET["get_agent"])) {
 }
 
 if (isset ($_GET["delete_module"] )) {
-	$chunkdata = $_POST["chunk"];
-	if (isset($chunkdata)) {
-		$chunk1 = array();
-		$chunk1 = split ("\|", $chunkdata);
-		$modules="";$weights="";
-		for ($a = 0; $a < count ($chunk1); $a++) {
-			if (isset ($_POST["delete_$a"])) {
-				$id_module = $_POST["delete_$a"];
-				$deleted_id[]=$id_module;
-			}	
+	if ($editGraph) {
+		$deleteGraphs = get_parameter('delete');
+		foreach ($deleteGraphs as $deleteGraph) {
+			process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
 		}
-		$chunkdata2 = "";
-		$module_array = array ();
-		$weight_array = array ();
-		$agent_array = array ();
-		for ($a = 0; $a < count ($chunk1); $a++) {
-			$chunk2[$a] = array();
-			$chunk2[$a] = split (",", $chunk1[$a]);
-			$skip_module =0;
-			for ($b = 0; $b < count ($deleted_id); $b++) {
-				if ($deleted_id[$b] == $chunk2[$a][1]) {
-					$skip_module = 1;
+	}
+	else
+	{
+		$chunkdata = $_POST["chunk"];
+		if (isset($chunkdata)) {
+			$chunk1 = array();
+			$chunk1 = split ("\|", $chunkdata);
+			$modules="";$weights="";
+			for ($a = 0; $a < count ($chunk1); $a++) {
+				if (isset ($_POST["delete_$a"])) {
+					$id_module = $_POST["delete_$a"];
+					$deleted_id[]=$id_module;
+				}	
+			}
+			$chunkdata2 = "";
+			$module_array = array ();
+			$weight_array = array ();
+			$agent_array = array ();
+			for ($a = 0; $a < count ($chunk1); $a++) {
+				$chunk2[$a] = array();
+				$chunk2[$a] = split (",", $chunk1[$a]);
+				$skip_module =0;
+				for ($b = 0; $b < count ($deleted_id); $b++) {
+					if ($deleted_id[$b] == $chunk2[$a][1]) {
+						$skip_module = 1;
+					}
+				}
+				if (($skip_module == 0) && (strpos ($modules, $chunk2[$a][1]) == 0)) {  // Skip
+					$module_array[] = $chunk2[$a][1];
+					$agent_array[] = $chunk2[$a][0];
+					$weight_array[] = $chunk2[$a][2];
+					if ($chunkdata2 == "")
+						$chunkdata2 .= $chunk2[$a][0].",".$chunk2[$a][1].",".$chunk2[$a][2];
+					else
+						$chunkdata2 .= "|".$chunk2[$a][0].",".$chunk2[$a][1].",".$chunk2[$a][2];
+					if ($modules !="")
+						$modules = $modules.",".$chunk2[$a][1];
+					else
+						$modules = $chunk2[$a][1];
+					if ($weights !="")
+						$weights = $weights.",".$chunk2[$a][2];
+					else
+						$weights = $chunk2[$a][2];
 				}
 			}
-			if (($skip_module == 0) && (strpos ($modules, $chunk2[$a][1]) == 0)) {  // Skip
-				$module_array[] = $chunk2[$a][1];
-				$agent_array[] = $chunk2[$a][0];
-				$weight_array[] = $chunk2[$a][2];
-				if ($chunkdata2 == "")
-					$chunkdata2 .= $chunk2[$a][0].",".$chunk2[$a][1].",".$chunk2[$a][2];
-				else
-					$chunkdata2 .= "|".$chunk2[$a][0].",".$chunk2[$a][1].",".$chunk2[$a][2];
-				if ($modules !="")
-					$modules = $modules.",".$chunk2[$a][1];
-				else
-					$modules = $chunk2[$a][1];
-				if ($weights !="")
-					$weights = $weights.",".$chunk2[$a][2];
-				else
-					$weights = $chunk2[$a][2];
-			}
+			$chunkdata = $chunkdata2;
 		}
-		$chunkdata = $chunkdata2;
 	}
 }
 
 if ($add_module) {
-	$id_agent = $_POST["id_agent"];
-	$id_module = $_POST["id_module"];
-	if (isset($_POST["factor"]))
-		$factor = $_POST["factor"];
-	else
-		$factor = 1;
-	$period = $_POST["period"];
-	$render = $_POST["render"];
-	$stacked = get_parameter ("stacked",0);
-// 	$alerts = $_POST["alerts"];
-	if (isset($_POST["chunk"]))
-		$chunkdata = $_POST["chunk"];
-	$events = $_POST["events"];
-	$factor = $_POST["factor"];
-	if ($_POST["width"]!= "")
-		$width = $_POST["width"];
-	if ($_POST["height"]!= "")
-		$height = $_POST["height"];
-	if ($id_module > 0){	
-		if (!isset($chunkdata) OR ($chunkdata == ""))
-			$chunkdata = "$id_agent,$id_module,$factor";
+	if ($editGraph) {
+		
+		$id = get_parameter('id');
+		$id_module = get_parameter('id_module');
+		$factor = get_parameter('factor');
+		process_sql_insert('tgraph_source', array('id_graph' => $id, 'id_agent_module' => $id_module, 'weight' => $factor));
+		
+		$period = get_parameter('period');
+		$width = get_parameter('width');
+		$height = get_parameter('height');
+		$events = get_parameter('events');		
+		$stacked = get_parameter('stacked');
+		
+		process_sql_update('tgraph', array('period' => $period, 
+			'width' => $width, 'height' => $height, 'events' => $events,
+			'stacked' => $stacked), array('id_graph' => $id));
+	}
+	else {
+		$id_agent = $_POST["id_agent"];
+		$id_module = $_POST["id_module"];
+		if (isset($_POST["factor"]))
+			$factor = $_POST["factor"];
 		else
-			$chunkdata = $chunkdata."|$id_agent,$id_module,$factor";
+			$factor = 1;
+		$period = $_POST["period"];
+		$render = $_POST["render"];
+		$stacked = get_parameter ("stacked",0);
+	// 	$alerts = $_POST["alerts"];
+		if (isset($_POST["chunk"]))
+			$chunkdata = $_POST["chunk"];
+		$events = $_POST["events"];
+		$factor = $_POST["factor"];
+		if ($_POST["width"]!= "")
+			$width = $_POST["width"];
+		if ($_POST["height"]!= "")
+			$height = $_POST["height"];
+		if ($id_module > 0){	
+			if (!isset($chunkdata) OR ($chunkdata == ""))
+				$chunkdata = "$id_agent,$id_module,$factor";
+			else
+				$chunkdata = $chunkdata."|$id_agent,$id_module,$factor";
+		}
 	}
 }
 
@@ -228,10 +271,55 @@ if (! isset($_GET["delete_module"])) {
 	}
 }
 
+if ($editGraph) {
+	$id = (integer) get_parameter('id');
+	$graphRows = get_db_all_rows_sql("SELECT t1.*,
+		(SELECT t3.nombre 
+			FROM tagente AS t3 
+			WHERE t3.id_agente = 
+				(SELECT t2.id_agente 
+					FROM tagente_modulo AS t2
+					WHERE t2.id_agente_modulo = t1.id_agent_module)) 
+		AS agent_name
+		FROM tgraph_source AS t1
+		WHERE t1.id_graph = " . $id);
+	$chunk1 = true;
+	$module_array = array();
+	$weight_array = array();
+	$agent_array = array();
+	$chunk1 = array();
+	$tempChunkdata = array();
+	$chunkdata = "";
+	
+	foreach ($graphRows as $graphRow) {
+		$idsTable[] = $graphRow['id_gs'];
+		$module_array[] = $graphRow['id_agent_module'];
+		$weight_array[] = $graphRow['weight'];
+		$agent_array[] = $graphRow['agent_name'];
+		
+		$tempChunkdata[] = $graphRow['agent_name'] . "," . 
+			$graphRow['id_agent_module'] . "," .
+			$graphRow['weight'];
+	}
+	
+	$graphInTgraph = get_db_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id);
+	$stacked = $graphInTgraph['stacked'];
+	$events = $graphInTgraph['events'];
+	
+	$modules = implode(',', $module_array);
+	$weights = implode(',', $weight_array);
+	$chunkdata = implode('|', $tempChunkdata);
+}
+
 echo "<h2>".__('Reporting')." &raquo; ";
 if (isset ($chunk1)) {
 	echo __('Graph builder module list')."</h2>";
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";
+	if ($editGraph) {
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&delete_module=1&id=" . $id . "'>";
+	}
+	else {
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";
+	}
 	if (isset($chunkdata))
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 	if ($id_agent)
@@ -245,8 +333,8 @@ if (isset ($chunk1)) {
 	<th>".__('Module')."</th>
 	<th>".__('Weight')."</th>
 	<th>".__('Delete')."</th>";
-	$color=0;
-	for ($a=0; $a < count($module_array); $a++){
+	$color = 0;
+	for ($a = 0; $a < count($module_array); $a++){
 		// Calculate table line color
 		if ($color == 1){
 			$tdcolor = "datos";
@@ -264,7 +352,12 @@ if (isset ($chunk1)) {
 		echo "<td class='$tdcolor'>";
 		echo $weight_array[$a]."</td>";
 		echo "<td class='$tdcolor' align='center'>";
-		echo "<input type=checkbox name='delete_$a' value='".$module_array[$a]."'></td></tr>";
+		if ($editGraph) {
+			echo "<input type=checkbox name='delete[]" . $idsTable[$a] . "' value='".$idsTable[$a]."'></td></tr>";
+		} else
+		{
+			echo "<input type=checkbox name='delete_$a' value='".$module_array[$a]."'></td></tr>";
+		}
 	}
 	echo "</table>";
 	echo "<table width='500px'>";
@@ -297,8 +390,13 @@ if (($render == 1) && (isset($modules))) {
 
 echo __('Graph builder')."</h2>";
 echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>";
-echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder'>";
-print_input_hidden ('add_module', 1);
+if ($editGraph) {
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&add_module=1&id=" . $id . "'>";
+}
+else {
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder'>";
+	print_input_hidden ('add_module', 1);
+}
 if (isset($period))
     echo "<input type='hidden' name='period' value='$period'>";
 
@@ -494,44 +592,66 @@ echo "</td></tr></table>";
 if (isset($module_array)){
 	echo "<h3>".__('Custom graph store')."</h3>";
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&store_graph=1'>";
-
-	// hidden fields with data begin
-	echo "<input type='hidden' name='module_number' value='".count($module_array)."'>";
-	echo "<input type='hidden' name='width' value='$width'>";
-	echo "<input type='hidden' name='height' value='$height'>";
-	echo "<input type='hidden' name='period' value='$period'>";
-	echo "<input type='hidden' name='events' value='$events'>";
-	echo "<input type='hidden' name='stacked' value='$stacked'>";
-
-	for ($a=0; $a < count($module_array); $a++){
-			$id_agentemodulo = $module_array[$a];
-			$id_agentemodulo_w = $weight_array[$a];
-			echo "<input type='hidden' name='module_$a' value='$id_agentemodulo'>";
-			echo "<input type='hidden' name='module_weight_$a' value='$id_agentemodulo_w'>";
+	
+	if ($editGraph) {
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&change_graph=1&id=" . $id . "'>";
+	}
+	else
+	{
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&store_graph=1'>";
+	
+		// hidden fields with data begin
+		echo "<input type='hidden' name='module_number' value='".count($module_array)."'>";
+		echo "<input type='hidden' name='width' value='$width'>";
+		echo "<input type='hidden' name='height' value='$height'>";
+		echo "<input type='hidden' name='period' value='$period'>";
+		echo "<input type='hidden' name='events' value='$events'>";
+		echo "<input type='hidden' name='stacked' value='$stacked'>";
+		
+		debugPrint($module_array);
+		debugPrint($width);
+		debugPrint($height);
+		debugPrint($period);
+		debugPrint($events);
+		debugPrint($stacked);
+	
+		for ($a=0; $a < count($module_array); $a++){
+				$id_agentemodulo = $module_array[$a];
+				$id_agentemodulo_w = $weight_array[$a];
+				echo "<input type='hidden' name='module_$a' value='$id_agentemodulo'>";
+				echo "<input type='hidden' name='module_weight_$a' value='$id_agentemodulo_w'>";
+		}
 	}
 	// hidden fields end
-
 	echo "<tr>";
 	echo "<td class='datos'><b>".__('Name')."</b></td>";
 	echo "</b>";
-	echo "<td class='datos'><input type='text' name='name' size='35'>";
-
-	echo "<td class='datos'><b>".__('Private')."</b></td>";
-	echo "</b>";
-	echo "<td class='datos'><select name='private'>";
-	echo "<option value=0>".__('No')."</option>";
-	echo "<option value=1>".__('Yes')."</option>";
-	echo "</select>";
-	echo "</td></tr>";
+	echo "<td class='datos'><input type='text' name='name' size='35' ";
+	if ($editGraph) {
+		echo "value='" . $graphInTgraph['name'] . "' ";
+	}
+	echo ">";
+	
+	$group_select = get_user_groups ($config['id_user']);
+	echo "<td><b>".__('Group')."</b></td><td>" .
+		print_select ($group_select, 'graph_id_group', $graphInTgraph['id_group'], '', '', '', true) .
+		"</td></tr>";
 	echo "<tr>";
 	echo "<td class='datos2'><b>".__('Description')."</b></td>";
 	echo "</b>";
 	echo "<td class='datos2' colspan=4><textarea name='description' style='height:45px;' cols=55 rows=2>";
+	if ($editGraph) {
+		echo $graphInTgraph['description'];
+	}
 	echo "</textarea>";
 	echo "</td></tr></table>";
 	echo "<table width='500px'>";
-	echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".__('Store')."'>";
+	if ($editGraph) {
+		echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".__('Edit')."'>";
+	}
+	else {
+		echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".__('Store')."'>";
+	}
 
 
 	echo "</form>";

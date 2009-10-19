@@ -182,7 +182,13 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
     $output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
-	$output .= '<script language="JavaScript" src="' . $config['homeurl'] . '/include/FusionCharts/FusionCharts.js"></script>';
+   
+	if ($config["homeurl"] == "/")
+		$pre_url = "";
+	else
+		$pre_url = $config["homeurl"];
+
+	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
     $output .= '<script type="text/javascript">
     			<!--
         			function pie_' . $chart_id . ' () {

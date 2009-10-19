@@ -2584,10 +2584,7 @@ function __ ($string /*, variable arguments */) {
 function check_server_status () {
 	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
 	$status = (int) get_db_sql ($sql); //Cast as int will assure a number value
-	// Set servers to down
-	if ($status == 0){ 
-		process_sql ("UPDATE tserver SET status = 0");
-	}
+	// This function should just ack of server down, not set it down.
 	return $status;
 }
 

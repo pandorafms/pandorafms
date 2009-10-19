@@ -29,8 +29,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<div id="container">
-<div id="main">
+
+<div id="main" style='float:left; margin-left: 100px'>
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">Bad permission for include/config.php</h1>
@@ -44,7 +44,6 @@
 	(usually www-data or http daemon user), normal operation is not possible until you change 
 	permissions for <i>include/config.php</i> file. Please do it, it's for your security.
 	</div>
-</div>
 </div>
 </div>
 </div>

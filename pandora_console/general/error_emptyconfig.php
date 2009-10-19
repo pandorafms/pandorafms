@@ -30,8 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<div id="container">
-<div id="main">
+
+<div id="main" style='float:left; margin-left: 100px'>
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">Empty configuration table</h1>
@@ -46,7 +46,6 @@
 	permissions and HTTP server cannot read it. Please read documentation to fix this problem.
 	</div>
 
-</div>
 </div>
 </div>
 </div>

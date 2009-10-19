@@ -30,8 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<div id="container">
-<div id="main">
+
+<div id="main" style='float:left; margin-left: 100px'>
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">Problem with Pandora FMS auth system</h1>
@@ -39,10 +39,15 @@
 		<img src="images/pandora_logo.png" border="0"></a>
 	</div>
 	<div class="msg">
-	Cannot override authorization variables from the config database. Remove them from your database by executing:<br><br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
+	Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />
+	Probably one or more of your user, database or hostname values are incorrect or 
+	the database server is not running.</i><br /><br /><span class="error">
+		<b>MySQL ERROR:</b> <?php echo mysql_error() ?></span>
+	</div>	
+	<div class="msg">
+	If you have modified auth system, problem could be because Pandora cannot override authorization variables from the config database. Remove them from your database by executing:<br><br><pre>DELETE FROM tconfig WHERE token = "auth";</pre>
 	</div>
 
-</div>
 </div>
 </div>
 </div>

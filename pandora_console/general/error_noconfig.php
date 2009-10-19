@@ -30,8 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<div id="container">
-<div id="main">
+
+<div id="main" style='float:left; margin-left: 100px'>
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">No configuration file found</h1>
@@ -45,7 +45,6 @@
 	<div class="msg">
 	You may try to run the <b><a href="install.php">installation wizard</a></b> to create one.
 	</div>
-</div>
 </div>
 </div>
 </div>

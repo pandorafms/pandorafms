@@ -30,8 +30,8 @@
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<div id="container">
-<div id="main">
+
+<div id="main" style='float:left; margin-left: 100px'>
 <div align='center'>
 <div id='login_f'>
 	<h1 id="log_f" class="error">Problem with Pandora FMS database</h1>
@@ -47,7 +47,7 @@
 	</div>
 </div>
 </div>
-</div>
+
 </div>
 
 </body>

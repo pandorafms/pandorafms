@@ -1,3 +1,10 @@
+2009-10-20  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_db.php: Fixed bug #2859919 (Transaction lock timeout).
+
+	* include/error*: Fixed a formatting error and added better error
+	message when mysql is up but credentials doesn't work.
+
 2009-10-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_custom_graphs.php, operation/reporting/graph_viewer.php,

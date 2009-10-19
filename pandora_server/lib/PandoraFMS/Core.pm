@@ -1010,10 +1010,13 @@ sub process_data ($$$$$) {
 		return undef;
 	}
 
+	# If is a number, we need to replace "," for "."
+	$data =~ s/\,/\./;
+
 	# Out of bounds
 	return undef if (($module->{'max'} != $module->{'min'}) &&
 	                 ($data > $module->{'max'} || $data < $module->{'min'}));
-	
+
 	# Process INC modules
 	if ($module_type =~ m/_inc$/) {
 		$data = process_inc_data ($data, $module, $utimestamp, $dbh);
@@ -1027,6 +1030,8 @@ sub process_data ($$$$$) {
 		$data = $data * $module->{'post_process'};
 	}
 
+	# TODO: Float precission should be adjusted here in the future with a global
+	# config parameter
 	# Format data
 	$data = sprintf("%.2f", $data);
 

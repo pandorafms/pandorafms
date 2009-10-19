@@ -191,15 +191,17 @@ sub is_numeric {
 	if (!defined($val)){
 		return 0;
 	}
+	# Replace "," for "."
+	$val =~ s/\,/\./;
 	
-    my $DIGITS = qr{ \d+ (?: [.] \d*)? | [.] \d+ }xms;
-    my $SIGN   = qr{ [+-] }xms;
-    my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
-    if ( $val !~ /^${NUMBER}$/ ) {
-    	return 0;   #Non-numeric
-    } else {
-        return 1;   #Numeric
-    }
+	my $DIGITS = qr{ \d+ (?: [.] \d*)? | [.] \d+ }xms;
+	my $SIGN   = qr{ [+-] }xms;
+	my $NUMBER = qr{ ($SIGN?) ($DIGITS) }xms;
+	if ( $val !~ /^${NUMBER}$/ ) {
+		return 0;   #Non-numeric
+	} else {
+		return 1;   #Numeric
+	}
 }
 
 ##########################################################################

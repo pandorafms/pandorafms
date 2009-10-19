@@ -1,3 +1,9 @@
+2009-10-20  Sancho Lerena <slerena@artica.es>
+
+        * tools.pm, core.pm: Float data with "," will be replace this
+        character with "." and manage it properly as float.
+
+
 2009-10-16  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_server: Updated error string when service cannot startup

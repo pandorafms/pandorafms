@@ -1677,8 +1677,15 @@ if ($graphic_type) {
 		graphic_error ();
 	}
 }
+
+// For / url has problems rendering http://xxxx//include/FusionCharts/fussionCharts.js
+// just make a substitution in / case
+if ($config["homeurl"] == "/")
+	$pre_url = "";
+else
+	$pre_url = $config["homeurl"];
 ?>
-<script language="JavaScript" src="<?php echo $config['homeurl']?>/include/FusionCharts/FusionCharts.js"></script>
+<script language="JavaScript" src="<?php echo $pre_url?>/include/FusionCharts/FusionCharts.js"></script>
 
 
 

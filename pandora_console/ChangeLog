@@ -1,3 +1,12 @@
+2009-10-20  Sancho Lerena <slerena@artica.es>
+
+	RC1 Release 
+
+	* include/help/en/help_ff_threshold.php: Added missing help topic.
+
+	* general/error_perms.php, general/error_install.php: Removed print of 
+	version, don't know this variable at this point.
+
 2009-10-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/operation/menu.php,

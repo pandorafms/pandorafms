@@ -20,6 +20,7 @@ if (isset ($id_agente)) {
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 // Create module/type combo
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">';
@@ -140,21 +141,23 @@ if ($modules === false) {
 $table->width = '95%';
 $table->head = array ();
 $table->head[0] = __('Name');
-/* S stands for "Server" */;
-$table->head[1] = __('S');
-$table->head[2] = __('Type');
-$table->head[3] = __('Interval');
-$table->head[4] = __('Description');
-$table->head[5] = __('Max/Min');
-$table->head[6] = __('Action');
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+$table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>";
+$table->head[3] = __('Type');
+$table->head[4] = __('Interval');
+$table->head[5] = __('Description');
+$table->head[6] = __('Max/Min');
+$table->head[7] = __('Action');
 
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[6] = '65px';
+$table->size[2] = '35px';
+$table->size[7] = '65px';
 $table->align = array ();
-$table->align[1] = 'center';
-$table->align[6] = 'center';
+$table->align[2] = 'left';
+$table->align[7] = 'left';
 $table->data = array ();
 
 $agent_interval = get_agent_interval ($id_agente);
@@ -186,7 +189,10 @@ foreach ($modules as $module) {
 		$data[0] = '<strong>'.get_modulegroup_name ($last_modulegroup).'</strong>';
 		$i = array_push ($table->data, $data);
 		$table->rowclass[$i - 1] = 'datos3';
-		$table->colspan[$i - 1][0] = 7;
+		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+				$table->colspan[$i - 1][0] = 8;
+		else
+			$table->colspan[$i - 1][0] = 7;
 		
 		$data = array ();
 	}
@@ -198,52 +204,65 @@ foreach ($modules as $module) {
 		$data[0] .= $module['nombre'];
 	$data[0] .= '</a>';
 	
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		$policyInfo = isModuleInPolicy($module['id_agente_modulo'], false);
+		if ($policyInfo === false)
+			$data[1] = '';
+		else {
+			$img = 'images/policies.png';
+				
+			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
+				'</a>';
+		}
+	}
+	
 	// Module type (by server type )
-	$data[1] = '';
+	$data[2] = '';
 	if ($module['id_modulo'] > 0) {
-		$data[1] = show_server_type ($module['id_modulo']);
+		$data[2] = show_server_type ($module['id_modulo']);
 	}
 
 	// This module is initialized ? (has real data)
         $module_init = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
         if ($module_init == 0)
-                $data[1] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
+                $data[2] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
-	$data[2] = '';
+	$data[3] = '';
 	if ($type) {
-		$data[2] = print_moduletype_icon ($type, true);
+		$data[3] = print_moduletype_icon ($type, true);
 	}
 
 	// Module interval
 	if ($module['module_interval']) {
-		$data[3] = $module['module_interval'];
+		$data[4] = $module['module_interval'];
 	} else {
-		$data[3] = $agent_interval;
+		$data[4] = $agent_interval;
 	}
 	
-	$data[4] = substr ($module['descripcion'], 0, 30);
+	$data[5] = substr ($module['descripcion'], 0, 30);
 	
 	// MAX / MIN values
-	$data[5] = $module["max"] ? $module["max"] : __('N/A');
-	$data[5] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
+	$data[6] = $module["max"] ? $module["max"] : __('N/A');
+	$data[6] .= ' / '.($module["min"] != $module['max']? $module["min"] : __('N/A'));
 
 	// Delete module
-	$data[6] = print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
-	$data[6] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
+	$data[7] = print_checkbox('id_delete[]', $module['id_agente_modulo'], false, true);
+	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&delete_module='.$module['id_agente_modulo'].'"
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-	$data[6] .= print_image ('images/cross.png', true,
+	$data[7] .= print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
-	$data[6] .= '</a> ';
+	$data[7] .= '</a> ';
 	
 	// Make a data normalization
 
 	if (isset($numericModules[$type])) {
 		if ($numericModules[$type] === true) {
-			$data[6] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			$data[6] .= print_image ('images/chart_curve.png', true,
+			$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+			$data[7] .= print_image ('images/chart_curve.png', true,
 				array ('title' => __('Normalize')));
-			$data[6] .= '</a>';
+			$data[7] .= '</a>';
 		}
 	}
 

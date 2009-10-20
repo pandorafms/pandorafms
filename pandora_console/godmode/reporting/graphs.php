@@ -56,7 +56,7 @@ if ($delete_graph) {
 echo "<h2>".__('Reporting')." &raquo; " . __('Graphs management').'</h2>';
 
 $graphs = get_user_custom_graphs ();
-//debugPrint($graphs);
+
 if (! empty ($graphs)) {
 	$table->width = '650px';
 	$tale->class = 'databox_frame';

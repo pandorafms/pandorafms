@@ -1,3 +1,17 @@
+2009-10-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_console/operation/menu.php,
+	pandora_console/godmode/reporting/graphs.php,
+	pandora_console/godmode/reporting/graph_builder.php: clean debug trace
+	functions.
+	* pandora_console/godmode/agentes/module_manager.php,
+	pandora_console/godmode/alerts/alert_list.php: add the enterprise column
+	that it has a icon when the alert or module is make for policy.
+	* pandora_console/godmode/agentes/agent_manager.php: fix bug that when
+	create a new agent and in the md5 dir has a file with the next name
+	d41d8cd98f00b204e9800998ecf8427e, that name is a md5 of empty string. When
+	you has this file, the form take as conf file.
+
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
 	* include/help/en/help_alert_macros.php: Updated help. 

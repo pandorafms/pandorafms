@@ -202,7 +202,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 /**
  * Add the extensions
  */
- //debugPrint($config['extensions']);
  foreach($config['extensions'] as $extension) {
  	$operationModeMenu = $extension['operation_menu'];
  	if ($operationModeMenu == null)

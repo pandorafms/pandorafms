@@ -607,13 +607,6 @@ if (isset($module_array)){
 		echo "<input type='hidden' name='period' value='$period'>";
 		echo "<input type='hidden' name='events' value='$events'>";
 		echo "<input type='hidden' name='stacked' value='$stacked'>";
-		
-		debugPrint($module_array);
-		debugPrint($width);
-		debugPrint($height);
-		debugPrint($period);
-		debugPrint($events);
-		debugPrint($stacked);
 	
 		for ($a=0; $a < count($module_array); $a++){
 				$id_agentemodulo = $module_array[$a];

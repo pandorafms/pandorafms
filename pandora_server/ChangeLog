@@ -1,3 +1,8 @@
+2009-10-20  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_server: Fixed incorrect message for SUSE daemon when stop
+	the server.
+
 2009-10-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Save as much information as possible if

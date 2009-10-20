@@ -156,7 +156,7 @@ sub pandora_evaluate_alert ($$$$$$) {
 		return $status if ($alert->{'type'} eq "max" && $data <= $alert->{'max_value'});
 
 		if ($alert->{'type'} eq "max_min") {
-			if ($alert->{'matches_value'} == 1) {
+			if ($alert->{'matches_value'} != 1) {
 				return $status if ($data <= $alert->{'min_value'} &&
 				                  $data >= $alert->{'max_value'});
 			} else {

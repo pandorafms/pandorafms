@@ -1,5 +1,9 @@
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
+	RC1 Release date
+
+	* lib/Config.pm: Updated build.
+
 	* util/pandora_server: Fixed incorrect message for SUSE daemon when stop
 	the server.
 

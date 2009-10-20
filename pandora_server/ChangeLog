@@ -1,3 +1,11 @@
+2009-10-21  Sancho Lerena <slerena@artica.es>
+
+	First bug detected & fixed after RC1, whoah :/
+
+	* lib/PandoraFMS/Core.pm: Max/Min alert logic is inverted on match check
+	box/switch option in interface. Fixed in server code. This is applicable
+	only on max & min alert (when used both).
+
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
 	RC1 Release date

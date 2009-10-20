@@ -106,9 +106,10 @@ case "$1" in
 		
 			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
 			# to be sure is really dead, and not pretending...
-
-			kill -9 $PANDORA_PID > /dev/null 2>&1
-
+			if [ ! -z "$PANDORA_PID" ]
+                        then
+                                kill -9 $PANDORA_PID   > /dev/null 2>&1
+                        fi
 			rc_status -v
 		fi
 	;;

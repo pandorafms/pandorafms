@@ -1,5 +1,7 @@
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
+	* include/help/en/help_alert_macros.php: Updated help. 
+
 	* include/fgraph.php, 
 	include/functions_fsgraph.php: Solves a small problem with Flash graphs
 	when pandora fms console install dir is "/".

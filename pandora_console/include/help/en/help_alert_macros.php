@@ -19,7 +19,7 @@ The following macros are available:
 <li>_alert_threshold_ : Alert threshold.</li>
 <li>_alert_times_fired_ : Number of times the alert has been fired.</li>
 <li>_module_ : Module name</li>
-<li>_alert_ : Alert name </li>
+<li>_alert_name_ : Alert name </li>
 <li>_alert_priority_ : Numerical alert priorityu </li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.
 </ul>

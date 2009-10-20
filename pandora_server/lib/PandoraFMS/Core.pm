@@ -437,7 +437,7 @@ sub pandora_execute_action ($$$$$$$$) {
 				  _address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				  _timestamp_ => strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				  _data_ => $data,
-  				  _alert_ => $alert->{'name'},
+  				  _alert_name_ => $alert->{'name'},
 				  _alert_description_ => $alert->{'description'},
 				  _alert_threshold_ => $alert->{'time_threshold'},
 				  _alert_times_fired_ => $alert->{'times_fired'},

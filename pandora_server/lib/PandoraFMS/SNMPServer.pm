@@ -130,19 +130,13 @@ sub pandora_snmptrapd {
 				my $timestamp = $date . ' ' . $time;
 				$value = limpia_cadena ($value);
 
-				my ($custom_oid, $custom_type, $custom_value) = ('', '', $type_desc);
+				my ($custom_oid, $custom_type, $custom_value) = ('', '', '');
+				($custom_oid, $custom_type, $custom_value) = ($1, $2, limpia_cadena ($3)) if ($data =~ m/([0-9\.]*)\s\=\s([A-Za-z0-9]*)\:\s(.+)/);
 
-				# Custom OID
-				if ($type eq '6') { 	
-						
-					#String data
-					next if ($data =~ m/STRING/) && ($data !~ m/([0-9\.]*)\s\=\s([A-Za-z0-9]*)\:\s\"(.+)\"/);
-
-					next if ($data !~ m/([0-9\.]*)\s\=\s([A-Za-z0-9]*)\:\s(.+)/);
-
-					($custom_oid, $custom_type, $custom_value) = ($1, $2, $3);
-					$custom_value = limpia_cadena ($custom_value);
-				}
+				# Try to save as much information as possible if the trap could not be parsed
+				$oid = $type_desc if ($oid eq '' || $oid eq '.');
+				$custom_value = $type_desc if ($custom_oid eq '' || $custom_oid eq '.');
+				$custom_value = $data if ($custom_value eq '');
 
 				# Insert the trap into the DB
 				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $dbh]))) {

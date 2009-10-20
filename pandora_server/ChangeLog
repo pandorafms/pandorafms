@@ -1,3 +1,11 @@
+2009-10-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Save as much information as possible if
+	  the trap could not be properly parsed.
+
+	* lib/PandoraFMS/Core.pm: Changed the name of the alert name macro to
+	  avoid conflicts with other macros.
+
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
         * tools.pm, core.pm: Float data with "," will be replace this

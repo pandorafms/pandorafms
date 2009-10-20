@@ -36,7 +36,6 @@
 	<h1 id="log_f" class="error">Bad permission for include/config.php</h1>
 	<div>
 		<img src="images/pandora_logo.png" border="0"></a><br>
-		<font size="1"><?php echo $pandora_version; ?></font>
 	</div>
 	<div class="msg"><br><br>
 	For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users 

@@ -1,3 +1,7 @@
+2009-10-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed max_min alerts.
+
 2009-10-21  Sancho Lerena <slerena@artica.es>
 
 	First bug detected & fixed after RC1, whoah :/

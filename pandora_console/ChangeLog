@@ -1,5 +1,10 @@
 2009-10-21  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_events.php: tiny fix, the icon for event not validate
+	was old file.
+
+2009-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/search_results.php: fix interval agent in the search result
 	list.
 

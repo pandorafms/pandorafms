@@ -19,7 +19,7 @@ require ("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
+if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Recon Task Management");
 	require ("general/noaccess.php");

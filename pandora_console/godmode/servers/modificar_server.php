@@ -18,7 +18,7 @@ require("include/config.php");
 
 check_login();
 
-if (! give_acl ($config["id_user"], 0, "AR") && ! give_acl($config['id_user'], 0, "AW")) {
+if (! give_acl ($config["id_user"], 0, "PM")) {
 	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Server Management");
 	require ("general/noaccess.php");

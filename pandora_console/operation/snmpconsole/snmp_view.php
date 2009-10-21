@@ -276,18 +276,15 @@ foreach ($traps as $trap) {
 
 	// Agent matching source address
 	$agent = get_agent_with_ip ($trap['source']);
-	if ($agent !== false && ! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
-		//Agent found, no rights
-		continue;
-	} elseif ($agent === false) {
-		//Agent not found
-		$data[1] = $trap["source"];
-		if (give_acl ($config["id_user"], 0, "AW")) {
-			//We have rights to create agents
-			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$data[1].'" title="'.__('Create agent').'">'.$data[1].'</a>';	
+	if ($agent === false) {
+		if (! give_acl ($config["id_user"], 0, "AW")) {
+			continue;
 		}
+		$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
 	} else {
-		//Agent found
+		if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
+			continue;
+		}
 		$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
 		$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
 	}
@@ -348,7 +345,7 @@ foreach ($traps as $trap) {
 	if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
 		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
 	}
-	if (give_acl ($config["id_user"], 0, "IW")) {
+	if (give_acl ($config["id_user"], 0, "IM")) {
 		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
 	}
 	
@@ -368,7 +365,9 @@ if ($idx == 0) {
 unset ($table);
 
 echo '<div style="width:735px; text-align:right;">';
-print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
+if (give_acl ($config["id_user"], 0, "IW")) {
+	print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
+}
 
 if (give_acl ($config['id_user'], 0, "IM")) {
 	echo "&nbsp;";

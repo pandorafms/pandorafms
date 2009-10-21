@@ -1,5 +1,20 @@
 2009-10-21  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: add param "style" in the function
+	"print_agent_name" for set the css style in the agent name return html
+	string.
+	Add in the "format_alert_row" the features: show icon policy from
+	enterprise and css grey disabled alert.
+	*include/functions_agents.php: add in the function "get_agent_alerts_simple"
+	and the function "get_agent_alerts_compound" the search "filter" param
+	posibility "all_enabled".
+	* operation/agentes/alerts_status, godmode/alerts/alert_list.php: add the
+	show rows of disabled alert, and add the select the "all (enabled)" (by
+	default show only alerts enabled). And add the icon of policy in the
+	enterprise version.
+
+2009-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_events.php: tiny fix, the icon for event not validate
 	was old file.
 

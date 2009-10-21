@@ -313,7 +313,7 @@ $table->class = 'alert_list';
 $table->width = '90%';
 $table->size = array ();
 $table->head = array ();
-$table->head[0] = '';
+$table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span>";
 if (! $id_agente) {
 	$table->style = array ();
 	$table->style[1] = 'font-weight: bold';
@@ -343,12 +343,18 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 }
 $table->head[5] = __('Actions');
 $table->head[6] = '';
+
 $table->data = array ();
 
 $rowPair = true;
 $iterator = 0;
 
 foreach ($simple_alerts as $alert) {
+	if ($alert['disabled']) {
+		 $table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';
+		 $table->style[$iterator][1] = 'font-style: italic; color: #aaaaaa;';
+	}
+	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -373,8 +379,13 @@ foreach ($simple_alerts as $alert) {
 	if (! $id_agente) {
 		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
 		$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
+		if ($alert['disabled'])
+			$data[1] .= '<span style="font-style: italic; color: #aaaaaa;">';
 		$data[1] .= get_agent_name ($id_agent);
+		if ($alert['disabled'])
+			$data[1] .= '</span>';
 		$data[1] .= '</a>';
+
 	}
 	$data[2] = get_agentmodule_name ($alert['id_agent_module']);
 	$data[3] = ' <a class="template_details"
@@ -385,11 +396,11 @@ foreach ($simple_alerts as $alert) {
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$policyInfo = isAlertInPolicy($alert['id_agent_module'], $alert['id_alert_template'], false);
 		if ($policyInfo === false)
-			$data[1] = '';
+			$data[4] = '';
 		else {
 			$img = 'images/policies.png';
 				
-			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+			$data[4] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
 				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
 				'</a>';
 		}
@@ -399,7 +410,10 @@ foreach ($simple_alerts as $alert) {
 	$data[5] = '<ul class="action_list">';
 	foreach ($actions as $action_id => $action) {
 		$data[5] .= '<li><div>';
-		$data[5] .= '<span class="action_name">';
+		if ($alert['disabled'])
+			$data[5] .= '<span class="action_name" style="font-style: italic; color: #aaaaaa;">';
+		else
+			$data[5] .= '<span class="action_name">';
 		$data[5] .= $action['name'];
 		$data[5] .= ' <em>(';
 		if ($action['fires_min'] == $action['fires_max']) {
@@ -431,7 +445,10 @@ foreach ($simple_alerts as $alert) {
 	
 	$data[5] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
 	$data[5] .= print_image ('images/add.png', true);
-	$data[5] .= ' '.__('Add action');
+	if ($alert['disabled'])
+		$data[5] .= ' '. '<span style="font-style: italic; color: #aaaaaa;">' .__('Add action') . '</span>';
+	else
+		$data[5] .= ' ' . __('Add action');
 	$data[5] .= '</a>';
 	
 	$data[6] = '<form class="delete_alert_form" method="post" style="display: inline;">';

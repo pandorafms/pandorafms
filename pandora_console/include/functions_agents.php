@@ -117,6 +117,9 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 		case "disabled":
 			$filter = ' AND disabled = 1';
 			break;
+		case 'all_enabled':
+			$filter = ' AND disabled = 0';
+			break;
 		default:
 			$filter = '';
 	}
@@ -170,6 +173,9 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 		break;
 	case "disabled":
 		$filter = ' AND disabled = 1';
+		break;
+	case 'all_enabled':
+		$filter = ' AND disabled = 0';
 		break;
 	default:
 		$filter = '';

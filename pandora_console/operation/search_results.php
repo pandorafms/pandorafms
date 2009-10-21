@@ -302,7 +302,7 @@ else {
 			array_push($table->data, array(
 				print_agent_name ($agent["id_agente"], true, "upper"),
 				print_os_icon ($agent["id_os"], false, true),
-				(($agent_info["interval"] > $agent["intervalo"]) ? $agent_info["interval"]  : $agent['intervalo']),
+				$agent['intervalo'],
 				print_group_icon ($agent["id_grupo"], true),
 				$modulesCell,
 				$agent_info["status_img"],

@@ -1,3 +1,12 @@
+2009-10-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_custom_graphs.php,
+	  operation/snmpconsole/snmp_view.php,
+	  operation/events/events.php,
+	  godmode/servers/manage_export.php,
+	  godmode/servers/manage_recontask.php,
+	  godmode/servers/modificar_server.php: ACL related fixes.
+
 2009-10-20  Sancho Lerena <slerena@artica.es>
 
 	RC1 Release 

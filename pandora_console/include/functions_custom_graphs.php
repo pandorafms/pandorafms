@@ -84,14 +84,6 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 	$modules = array ();
 	$weights = array ();
 	foreach ($sources as $source) {
-		$sql = sprintf ("SELECT id_grupo
-			FROM tagente, tagente_modulo
-			WHERE tagente_modulo.id_agente_modulo = %d
-			AND tagente.id_agente = tagente_modulo.id_agente",
-			$source['id_agent_module']);
-		$id_group = get_db_sql ($sql);
-		if (! give_acl ($config["id_user"], $id_group, 'AR'))
-			continue;
 		array_push ($modules, $source['id_agent_module']);
 		array_push ($weights, $source['weight']);
 	}	

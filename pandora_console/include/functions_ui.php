@@ -251,12 +251,13 @@ function print_os_icon ($id_os, $name = true, $return = false) {
  * @param int Agent id
  * @param bool Whether to return the string or echo it too
  * @param int Now uses styles to accomplish this
+ * @param string Style of name in css.
  * 
  * @return string HTML with agent name and link
  */
-function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
+function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '') {
 	$agent_name = (string) get_agent_name ($id_agent);
-	$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name.'"><b>'.$agent_name.'</b></a>';
+	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name.'"><b>'.$agent_name.'</b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	
@@ -278,48 +279,97 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
  */
 function format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
 	require_once ("include/functions_alerts.php");
+	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+	
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+		$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
+			'description' => 3, 'template' => 3, 'last_fired' => 4, 'status' => 5,
+		'validate' => 6);
+	else
+		$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 1,
+			'description' => 2, 'template' => 2, 'last_fired' => 3, 'status' => 4,
+		'validate' => 5);
+	
+	if ($alert['disabled']) {
+		$disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">'; 
+		$disabledHtmlEnd = '</span>';
+		$styleDisabled = "font-style: italic; color: #aaaaaa;";
+	}
+	else {
+		$disabledHtmlStart = ''; 
+		$disabledHtmlEnd = '';
+		$styleDisabled = "";
+	}
 	
 	if (empty ($alert))
-		return array ("", "", "", "", "", "", "");
+	{
+		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+			return array ("", "", "", "", "", "", "", "");
+		else
+			return array ("", "", "", "", "", "", "");
+	}
 	
 	// Get agent id
 	if ($compound) {
 		$id_agent = $alert['id_agent'];
 		$description = $alert['description'];
-	} else {
+	} 
+	else {
 		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
 		$template = get_alert_template ($alert['id_alert_template']);
 		$description = $template['name'];
 	}
 	$data = array ();
 	
+	if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && (!$compound)) {
+		$policyInfo = isAlertInPolicy($alert['id_agent_module'], $alert['id_alert_template'], false);
+		if ($policyInfo === false)
+			$data[$index['policy']] = '';
+		else {
+			$img = 'images/policies.png';
+				
+			$data[$index['policy']] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
+				'</a>';
+		}
+	}
+	else if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && ($compound))
+		$data[$index['policy']] = '';
+	
 	// Force alert execution
-	$data[0] = '';
+	$data[$index['force_execution']] = '';
 	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
-			$data[0] = '<a href="'.$url.'&id_alert='.$alert["id"].'&force_execution=1&refr=60"><img src="images/target.png" ></a>';
-		} else {
-			$data[0] = '<a href="'.$url.'&id_alert='.$alert["id"].'&refr=60"><img src="images/refresh.png" /></a>';
+			$data[$index['force_execution']] =
+				'<a href="'.$url.'&id_alert='.$alert["id"].'&force_execution=1&refr=60"><img src="images/target.png" ></a>';
+		} 
+		else {
+			$data[$index['force_execution']] =
+				'<a href="'.$url.'&id_alert='.$alert["id"].'&refr=60"><img src="images/refresh.png" /></a>';
 		}
 	}
 	
+	$data[$index['agent_name']] = $disabledHtmlStart;
 	if ($compound) {
-		$data[1] =  print_agent_name ($id_agent, true, 20);
-	} elseif ($agent == 0) {
-		$data[1] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
-	} else {
-		$data[1] = print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20);
+		$data[$index['agent_name']] .= print_agent_name ($id_agent, true, 20, $styleDisabled);
+	} 
+	elseif ($agent == 0) {
+		$data[$index['module_name']] .= mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
+	} 
+	else {
+		$data[$index['agent_name']] .= print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
 	}
+	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
-	$data[2] = '';
+	$data[$index['description']] = '';
 	if (! $compound) {
-		$data[2] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
-		$data[2] .= print_image ('images/zoom.png', true);
-		$data[2] .= '</a> ';
+		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
+		$data[$index['template']] .= print_image ('images/zoom.png', true);
+		$data[$index['template']] .= '</a> ';
 	}
-	$data[2] .= mb_substr (safe_input ($description), 0, 35);
+	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
-	$data[3] = print_timestamp ($alert["last_fired"], true);
+	$data[$index['last_fired']] = $disabledHtmlStart . print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
 	
 
 	$status = STATUS_ALERT_NOT_FIRED;
@@ -336,13 +386,14 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 		$title = __('Alert not fired');
 	}
 	
-	$data[4] = print_status_image($status, $title, true);
+	$data[$index['status']] = print_status_image($status, $title, true);
 
 	
 	if ($compound) {
-		$data[5] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
-	} else {
-		$data[5] = print_checkbox ("validate[]", $alert["id"], false, true);
+		$data[$index['validate']] = print_checkbox ("validate_compound[]", $alert["id"], false, true);
+	}
+	else {
+		$data[$index['validate']] = print_checkbox ("validate[]", $alert["id"], false, true);
 	}
 	
 	return $data;

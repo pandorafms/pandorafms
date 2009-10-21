@@ -17,8 +17,9 @@
 check_login ();
 
 require_once ("include/functions_agents.php");
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-$filter = get_parameter ("filter", "all");
+$filter = get_parameter ("filter", "undefined");
 $offset = (int) get_parameter_get ("offset", 0);
 $id_group = (int) get_parameter ("ag_group", 1); //1 is the All group (selects all groups)
 
@@ -73,7 +74,14 @@ if (isset ($_GET["id_agente"])) {
 	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
 	$print_agent = false;
 	$inside_main = 1;
-} else {
+	
+	if ($filter == "undefined")
+		$filter = "all";
+} 
+else {
+	if ($filter == "undefined")
+		$filter = "all_enabled";
+	
 	if (!give_acl ($config["id_user"], 0, "AR")) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
@@ -128,6 +136,7 @@ if ($print_agent) {
 		'javascript:this.form.submit();', '', '', true);
 		
 	$alert_status_filter = array();
+	$alert_status_filter['all_enabled'] = __('All (Enabled)');
 	$alert_status_filter['all'] = __('All');
 	$alert_status_filter['fired'] = __('Fired');
 	$alert_status_filter['notfired'] = __('Not fired');
@@ -141,30 +150,69 @@ echo '</form>';
 
 $table->width = '90%';
 $table->class = "databox";
+
 $table->size = array ();
-$table->size[0] = '20px';
-$table->size[1] = '25%';
-$table->size[2] = '50%';
-$table->size[3] = '25%';
-$table->size[4] = '20px';
-$table->size[5] = '60px';
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->size[0] = '20px';
+	$table->size[1] = '20px';
+	$table->size[2] = '25%';
+	$table->size[3] = '50%';
+	$table->size[4] = '25%';
+	$table->size[5] = '20px';
+	$table->size[6] = '60px';
+}
+else
+{
+	$table->size[0] = '20px';
+	$table->size[1] = '25%';
+	$table->size[2] = '50%';
+	$table->size[3] = '25%';
+	$table->size[4] = '20px';
+	$table->size[5] = '60px';
+}
+
 $table->head = array ();
-$table->head[0] = '';
-$table->head[1] = ''; //Placeholder for name
-$table->head[2] = __('Template');
-$table->head[3] = __('Last fired');
-$table->head[4] = __('Status');
-$table->head[5] = __('Validate');
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+	$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+	$table->head[2] = ''; //Placeholder for name
+	$table->head[3] = __('Template');
+	$table->head[4] = __('Last fired');
+	$table->head[5] = __('Status');
+	$table->head[6] = __('Validate');
+}
+else
+{
+	$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+	$table->head[1] = ''; //Placeholder for name
+	$table->head[2] = __('Template');
+	$table->head[3] = __('Last fired');
+	$table->head[4] = __('Status');
+	$table->head[5] = __('Validate');
+}
 $table->title = __('Single alerts');
 
 if ($print_agent == 0) {
-	$table->head[1] = __('Module');
-} else {
-	$table->head[1] = __('Agent');
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+		$table->head[2] = __('Module');
+	else
+		$table->head[1] = __('Module');
+} 
+else {
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+		$table->head[2] = __('Agent');
+	else
+		$table->head[1] = __('Agent');
 }
 $table->align = array ();
-$table->align[4] = 'center';
-$table->align[5] = 'center';
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->align[5] = 'center';
+	$table->align[6] = 'center';
+}
+else {
+	$table->align[4] = 'center';
+	$table->align[5] = 'center';
+}
 $table->data = array ();
 
 $total = 0;
@@ -198,8 +246,18 @@ if (!empty ($table->data)) {
 }
 
 $table->title = __('Compound alerts');
-$table->head[1] = __('Agent');
-$table->head[2] = __('Description');
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->head[0] = '';
+	$table->head[1] = '';
+	$table->head[2] = __('Agent');
+	$table->head[3] = __('Description');
+}
+else
+{
+	$table->head[0] = '';
+	$table->head[1] = __('Agent');
+	$table->head[2] = __('Description');
+}
 $table->data = array ();
 
 $combined_total = 0;

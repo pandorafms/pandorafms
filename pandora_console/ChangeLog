@@ -1,5 +1,10 @@
 2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/godmode/agentes/module_manager_editor.php: fix the
+	bug in when create a module manually in open versión of Pandora Console.
+
+2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/include/functions_api.php,
 	pandora_console/include/api.php: new feature, API to call by format url for
 	values or CSV list of values to connect Pandora with your or other

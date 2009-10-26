@@ -349,20 +349,26 @@ function isAllGroups($idGroups) {
  * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
  * @param mixed $search to add Default: False. If True will return disabled agents as well. If searching array (disabled => (bool), string => (string))
  * @param string $case Which case to return the agentname as (lower, upper, none)
+ * @param boolean $noACL jump the ACL test.
  *
  * @return array An array with all agents in the group or an empty array
  */
-function get_group_agents ($id_group = 0, $search = false, $case = "lower") {
+function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false) {
 	global $config;
 	
-	$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
-	
-	if (empty ($id_group)) {
-		//An empty array means the user doesn't have access
-		return array ();
+	if (!$noACL) {
+		$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+		
+		if (empty ($id_group)) {
+			//An empty array means the user doesn't have access
+			return array ();
+		}
 	}
 	
-	$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
+	if (is_array($id_group))
+		$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
+	else
+		$search_sql = sprintf ('WHERE id_grupo = %d', $id_group);
 
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
@@ -2889,7 +2895,7 @@ function get_server_info ($id_server = -1) {
 	
 	$recon_total = get_db_sql ("SELECT COUNT(*) FROM trecon_task");
 	
-	$sql = "SELECT * FROM tserver".$select_id;
+	$sql = "SELECT * FROM tserver".$select_id . " ORDER BY server_type";
 	$result = get_db_all_rows_sql ($sql);
 	$time = get_system_time ();
 	

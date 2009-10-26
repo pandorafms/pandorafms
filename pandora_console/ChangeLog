@@ -1,5 +1,26 @@
 2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/include/functions_api.php,
+	pandora_console/include/api.php: new feature, API to call by format url for
+	values or CSV list of values to connect Pandora with your or other
+	aplications. Please see the wiki for more information.
+	* pandora_console/include/functions_agents.php,
+	pandora_console/godmode/setup/setup.php: add the field ACL IP list for
+	access API and change the function "update_config_value" for divide in
+	chunks the list of IPs and save in serveral rows (if necesary). And change
+	the function "process_config" to paste the chunks of rows in one config
+	item. 
+	* pandora_console/include/functions_config.php,
+	pandora_console/include/functions_db.php: changes for engage the
+	API with Pandora Console. The function "get_agent_alerts_simple" add
+	parammeter "allModules" return all modules (disabled and enabled). The
+	function "get_group_agents" add the parameter "noACL" for engage the API
+	call.
+	* pandora_console/godmode/agentes/agent_manager.php: fix typo and ident
+	source code.
+
+2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/operation/agentes/exportdata.php: fix the export data
 	the order of dates were wrong.
 

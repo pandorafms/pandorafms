@@ -45,18 +45,67 @@ function create_config_value ($token, $value) {
 function update_config_value ($token, $value) {
 	global $config;
 	
-	if (!isset ($config[$token]))
-		return (bool) create_config_value ($token, $value);
-	
-	/* If it has not changed */
-	if ($config[$token] == $value)
-		return true;
-	
-	$config[$token] = $value;
-	
-	return (bool) process_sql_update ('tconfig', 
-		array ('value' => $value),
-		array ('token' => $token));
+	switch ($token) {
+		case 'list_ACL_IPs_for_API':
+			$rows = get_db_all_rows_sql('SELECT id_config
+				FROM tconfig 
+				WHERE token LIKE "%list_ACL_IPs_for_API_%"');
+			
+			if ($rows !== false) {
+				foreach ($rows as $row)
+					$idListACLofIP[] = $row['id_config'];
+				
+				process_sql_delete('tconfig', 'id_config IN (' . implode(',', $idListACLofIP) . ')' );
+			}
+			
+			if (strpos($value, "\r\n") !== false)
+				$ips = explode("\r\n", $value);
+			else
+				$ips = explode("\n", $value);
+
+			$valueDB = '';
+			$count = 0;
+			$lastInsert = false;
+			foreach ($ips as $ip) {
+				$lastInsert = false;
+				if (strlen($valueDB . ';' . $ip) < 100) {
+					//100 is the size of field 'value' in tconfig.
+					if (strlen($valueDB) == 0)
+						$valueDB .= $ip;
+					else
+						$valueDB .= ';' . $ip;
+				}
+				else {
+					if (strlen($ip) > 100)
+						return false;
+						
+					process_sql_insert('tconfig',
+						array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
+					$valueDB = $ip;
+					$count++;
+					$lastInsert = true;
+				}
+			}
+			if (!$lastInsert)
+				process_sql_insert('tconfig',
+					array('token' => 'list_ACL_IPs_for_API_' . $count , 'value' => $valueDB));
+			
+			break;
+		default:
+			if (!isset ($config[$token]))
+				return (bool) create_config_value ($token, $value);
+			
+			/* If it has not changed */
+			if ($config[$token] == $value)
+				return true;
+			
+			$config[$token] = $value;
+			
+			return (bool) process_sql_update ('tconfig', 
+				array ('value' => $value),
+				array ('token' => $token));
+			break;
+	}
 }
 
 /**
@@ -111,6 +160,7 @@ function update_config () {
 	update_config_value ('agentaccess', (int) get_parameter ('agentaccess', $config['agentaccess']));
 	update_config_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 	update_config_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
+	update_config_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
 }
 
 /**
@@ -199,6 +249,24 @@ function process_config () {
 	if (!isset ($config["agentaccess"])){
 		update_config_value ('agentaccess', true);
 	}
+	
+	/* 
+	 *Parse the ACL IP list for access API that it's save in chunks as
+	 *list_ACL_IPs_for_API_<num>, because the value has a limit of 100
+	 *characters.
+	 */
+	
+	$config['list_ACL_IPs_for_API'] = array();
+	$keysConfig = array_keys($config);
+	foreach($keysConfig as $keyConfig)
+		if (strpos($keyConfig, 'list_ACL_IPs_for_API_') !== false) {
+			$ips = explode(';',$config[$keyConfig]);
+			$config['list_ACL_IPs_for_API'] =
+				array_merge($config['list_ACL_IPs_for_API'], $ips);
+			
+			unset($config[$keyConfig]);
+		}
+	
 
 	// This is not set here. The first time, when no
 	// setup is done, update_manager extension manage it

@@ -102,11 +102,12 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * will not do any filter.
  * @param array Extra filter options in an indexed array. See
  * format_array_to_where_clause_sql()
+ * @param boolean $allModules
  *
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '') {
+function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false) {
 	switch ($filter) {
 		case "notfired":
 			$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -129,8 +130,10 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	}
 	
 	if ($id_agent === false) {
+		if ($allModules) $disabled = '';
+		else $disabled = 'WHERE disabled = 0';
 		$subQuery = 'SELECT id_agente_modulo
-			FROM tagente_modulo WHERE disabled = 0';
+			FROM tagente_modulo ' . $disabled;
 	}
 	else {
 		$id_agent = (array) $id_agent;

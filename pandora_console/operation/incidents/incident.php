@@ -313,12 +313,15 @@ if ($count < 1) {
 	
 	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
 	print_table ($table);
-	if (give_acl ($config["id_user"], 0, "IM")) {
-		echo '<div style="text-align:right; float:right; padding-right: 30px;">';
+	echo '<div style="text-align:right; float:right; padding-right: 30px;">';
+	if (give_acl ($config["id_user"], 0, "IW")) {
 		print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
-		print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
-		echo '</div>';
 	}
+
+	if (give_acl ($config["id_user"], 0, "IM")) {
+		print_submit_button (__('Become owner'), 'own_btn', false, 'class="sub upd"');
+	}
+	echo '</div>';
 	echo '</form>';
 	unset ($table);
 }

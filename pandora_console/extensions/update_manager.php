@@ -69,6 +69,11 @@ function pandora_update_manager_main () {
 	global $config;
 	global $db;
 	
+	if (! give_acl ($config['id_user'], 0, "PM")) {
+		require ("general/noaccess.php");
+		return;
+	}
+
 	load_update_manager_lib ();
 	update_settings_database_connection ();
 	

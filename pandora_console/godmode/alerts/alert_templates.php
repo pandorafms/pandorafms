@@ -19,14 +19,6 @@ require_once ('include/functions_alerts.php');
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "LM")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access Alert Management");
-	require ("general/noaccess.php");
-	exit;
-}
-
-
 if (is_ajax ()) {
 	$get_template_tooltip = (bool) get_parameter ('get_template_tooltip');
 	
@@ -101,6 +93,13 @@ if (is_ajax ()) {
 	}
 	
 	return;
+}
+
+if (! give_acl ($config['id_user'], 0, "LM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Alert Management");
+	require ("general/noaccess.php");
+	exit;
 }
 
 echo "<h2>".__('Alerts')." &raquo; ";

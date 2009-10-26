@@ -105,6 +105,11 @@ $table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0
 $table->data[14][0] = __('Attachment store');
 $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
 
+$table->data[14][0] = __('ACL IP list for access API') . 
+	print_help_tip (__("The list of IPs separate with carriage return."), true);
+$list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
+$table->data[14][1] = print_textarea('list_ACL_IPs_for_API', 10, 15, $list_ACL_IPs_for_API, null, true);
+
 enterprise_hook ('setup');
 
 echo '<form id="form_setup" method="post">';

@@ -100,7 +100,8 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->data = array ();
 
-$table->data[0][0] = __('Agent name').print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
+$table->data[0][0] = __('Agent name') . 
+	print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);
 $table->data[0][1] = print_input_text ('agente', $nombre_agente, '', 30, 100,true); 
 
 if ($id_agente) {

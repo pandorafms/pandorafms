@@ -551,6 +551,7 @@ echo '</div></form>';
 echo '<form id="add_action_form" method="post" class="invisible">';
 print_input_hidden ('add_action', 1);
 print_input_hidden ('id_alert_module', 0);
+$actions = get_alert_actions ();
 print_select ($actions, 'action', '', '', __('None'), 0);
 echo '<br />';
 echo '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';

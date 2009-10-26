@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 require_once ('include/functions_network_components.php');
-require_once ($config['homedir'].'/'.ENTERPRISE_DIR.'/include/functions_local_components.php');
+enterprise_include_once('include/functions_local_components.php');
 
 if (is_ajax ()) {
 	$get_network_component = (bool) get_parameter ('get_network_component');

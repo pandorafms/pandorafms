@@ -92,8 +92,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "excel":
 		case "csv":
 			foreach ($module as $selected) {
-				$data_single = get_agentmodule_data ($selected, $period, $start);
-				
+				$data_single = get_agentmodule_data ($selected, $period, $end);
 				if (!empty ($data_single)) {
 					$data = array_merge ($data, $data_single);
 				}
@@ -102,7 +101,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "avg":
 			foreach ($module as $selected) {
 				$arr = array ();
-				$arr["data"] = get_agentmodule_data_average ($selected, $period, $start);
+				$arr["data"] = get_agentmodule_data_average ($selected, $period, $end);
 				if ($arr["data"] === false) {
 					continue;
 				}	

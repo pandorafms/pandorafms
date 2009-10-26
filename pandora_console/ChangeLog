@@ -1,5 +1,10 @@
 2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/operation/agentes/exportdata.php: fix the export data
+	the order of dates were wrong.
+
+2009-10-26  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/godmode/alerts/alert_list.php: fix bug that load ajax
 	empty select of actions.
 	Fixes: 2885901 

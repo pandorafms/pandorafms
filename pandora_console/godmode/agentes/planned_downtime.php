@@ -27,6 +27,7 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 
 //Initialize data
 $id_agent = get_parameter ("id_agent");
+$id_group = (int) get_parameter ("id_group", 1);
 $name = '';
 $description = '';
 $date_from = (string) get_parameter ('date_from', date ('Y-m-j'));
@@ -46,6 +47,7 @@ $id_downtime = (int) get_parameter ('id_downtime',0);
 $insert_downtime_agent = (int) get_parameter ("insert_downtime_agent", 0);
 $delete_downtime_agent = (int) get_parameter ("delete_downtime_agent", 0);
 
+$groups = get_user_groups ();
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent == 1){
@@ -94,17 +96,17 @@ if ($create_downtime || $update_downtime) {
 		$sql = '';
 		if ($create_downtime) {
 			$sql = sprintf ("INSERT INTO tplanned_downtime (`name`,
-				`description`, `date_from`, `date_to`) 
-				VALUES ('%s','%s',%d,%d)",
+				`description`, `date_from`, `date_to`, `id_group`) 
+				VALUES ('%s','%s',%d,%d, %d)",
 				$name, $description, $datetime_from,
-				$datetime_to);
+				$datetime_to, $id_group);
 		} else if ($update_downtime) {
 			$sql = sprintf ("UPDATE tplanned_downtime 
 				SET `name`='%s', `description`='%s', `date_from`=%d,
-				`date_to`=%d 
+				`date_to`=%d, `id_group`=%d
 				WHERE `id` = '%d'",
 				$name, $description, $datetime_from,
-				$datetime_to, $id_downtime);
+				$datetime_to, $id_group, $id_downtime);
 		}
 		
 		$result = process_sql ($sql);
@@ -148,7 +150,9 @@ echo __('Planned Downtime').'</h2>';
 		$table->data[4][0] = __('Timestamp to');
 		$table->data[4][1] = print_input_text ('date_to', $date_to, '', 10, 10, true);
 		$table->data[4][1] .= print_input_text ('time_to', $time_to, '', 7, 7, true);
-		
+
+		$table->data[5][0] = __('Group');
+		$table->data[5][1] = print_select ($groups, 'id_group', $id_group, '', '', 0, true);
 		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
@@ -180,23 +184,24 @@ echo __('Planned Downtime').'</h2>';
 		echo '<h3>'.__('Available agents').':</h3>';
 	
 	
-		$filter_group = get_parameter("filter_group", -1);
-		if ($filter_group != -1)
+		$filter_group = get_parameter("filter_group", 1);
+		if ($filter_group != 1)
 			$filter_cond = " AND id_grupo = $filter_group ";
 		else
 			$filter_cond = "";
-		$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre FROM tagente WHERE tagente.id_agente NOT IN (SELECT tagente.id_agente FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d) AND disabled = 0 $filter_cond ORDER by tagente.nombre", $id_downtime);
-		
+		$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre, tagente.id_grupo FROM tagente WHERE tagente.id_agente NOT IN (SELECT tagente.id_agente FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d) AND disabled = 0 $filter_cond ORDER by tagente.nombre", $id_downtime);
 		$downtimes = get_db_all_rows_sql ($sql);
 		$data = array ();
 		if ($downtimes)
 			foreach ($downtimes as $downtime) {		
-				$data[$downtime['id_agente']] = $downtime['nombre'];
+				if (give_acl ($config["id_user"], $downtime['id_grupo'], "AR")) {
+					$data[$downtime['id_agente']] = $downtime['nombre'];
+				}
 			}
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
-	
-		print_select_from_sql ("SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1", "filter_group", $filter_group, '', __("Any"), -1, false, false);
+
+		print_select ($groups, 'filter_group', $filter_group);	
 		echo "<br /><br />";
 		print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";
@@ -261,13 +266,14 @@ echo __('Planned Downtime').'</h2>';
 		$table->head = array ();
 		$table->head[0] = __('Name #Ag.');
 		$table->head[1] = __('Description');
-		$table->head[2] = __('From');
-		$table->head[3] = __('To');
-		$table->head[4] = __('Delete');
-		$table->head[5] = __('Update');
-		$table->head[6] = __('Running');
+		$table->head[2] = __('Group');
+		$table->head[3] = __('From');
+		$table->head[4] = __('To');
+		$table->head[5] = __('Delete');
+		$table->head[6] = __('Update');
+		$table->head[7] = __('Running');
 
-		$sql = "SELECT * FROM tplanned_downtime";
+		$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
 		$downtimes = get_db_all_rows_sql ($sql);
 		if (!$downtimes) {
 			echo '<div class="nf">'.__('No planned downtime').'</div>';
@@ -279,19 +285,20 @@ echo __('Planned Downtime').'</h2>';
 
 				$data[0] = $downtime['name']. " ($total)";
 				$data[1] = $downtime['description'];
-				$data[2] = date ("Y-m-d H:i", $downtime['date_from']);
-				$data[3] = date ("Y-m-d H:i", $downtime['date_to']);
+				$data[2] = print_group_icon ($downtime['id_group'], true);
+				$data[3] = date ("Y-m-d H:i", $downtime['date_from']);
+				$data[4] = date ("Y-m-d H:i", $downtime['date_to']);
 				if ($downtime["executed"] == 0){
-					$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
+					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
 					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">
 					<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
-					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">
+					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">
 					<img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
 				}
 				if ($downtime["executed"] == 0)
-					$data[6] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
+					$data[7] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
-					$data[6] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+					$data[7] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 
 				array_push ($table->data, $data);
 			}

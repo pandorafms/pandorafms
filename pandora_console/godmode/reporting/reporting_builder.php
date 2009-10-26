@@ -19,7 +19,7 @@ require_once ("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AW")) {
+if (! give_acl ($config['id_user'], 0, "IW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");

@@ -17,15 +17,6 @@ require_once ('include/config.php');
 
 check_login ();
 
-if ((! give_acl ($config['id_user'], 0, "LM")) 
-&& (! give_acl ($config['id_user'], 0, "AW")) 
-&& (! give_acl ($config['id_user'], 0, "LW"))
-&& (! give_acl ($config['id_user'], 0, "PM")) 
-&& (! give_acl ($config['id_user'], 0, "DM")) 
-&& (! give_acl ($config['id_user'], 0, "UM"))) {
-	return;
-}
-
 enterprise_include ('godmode/menu.php');
 require_once ('include/functions_menu.php');
 
@@ -86,7 +77,9 @@ if (give_acl ($config['id_user'], 0, "LM")) {
 	$menu["galertas"]["sub"] = $sub;
 }
 
-enterprise_hook ('policies_menu');
+if (give_acl ($config['id_user'], 0, "AW")) {
+	enterprise_hook ('policies_menu');
+}
 
 if (give_acl ($config['id_user'], 0, "UM")) {
 	$menu["gusuarios"]["text"] = __('Manage users');
@@ -109,7 +102,7 @@ if (give_acl($config['id_user'], 0, "LW")) {
 }
 
 // Reporting
-if (give_acl ($config['id_user'], 0, "AW")) {
+if (give_acl ($config['id_user'], 0, "IW")) {
 	$menu["greporting"]["text"] = __('Manage reports');
 	$menu["greporting"]["sec2"] = "godmode/reporting/reporting_builder";
 	$menu["greporting"]["id"] = "god-reporting";

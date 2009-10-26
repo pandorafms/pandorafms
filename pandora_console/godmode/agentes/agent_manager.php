@@ -142,7 +142,8 @@ $table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id
 $table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
 
 $table->data[3][0] = __('Group');
-$table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);
+$groups = get_user_groups ();
+$table->data[3][1] = print_select ($groups, 'grupo', $grupo, '', '', 0, true);
 
 $table->data[4][0] = __('Interval');
 

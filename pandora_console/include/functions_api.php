@@ -129,6 +129,10 @@ function returnData($returnType, $data, $separator = ';') {
 function isInACL($ip) {
 	global $config;
 	
+	//If set * in the list ACL return true 
+	if(in_array('*', $config['list_ACL_IPs_for_API']))
+		return true;
+	
 	if (in_array($ip, $config['list_ACL_IPs_for_API']))
 		return true;
 	else

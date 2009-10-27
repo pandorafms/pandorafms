@@ -1,3 +1,8 @@
+2009-10-26  Sancho Lerena <slerena@artica.es>
+
+	* spec: Added net-tools dependency (includes ping and traceroute).
+	Updated release of spec.
+
 2009-10-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed max_min alerts.

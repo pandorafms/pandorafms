@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version	    3.0.0
-%define release     1
+%define release     2
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -22,7 +22,7 @@ Requires(pre):      /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-time-format 
-Requires:           perl-NetAddr-IP net-snmp
+Requires:           perl-NetAddr-IP net-snmp net-tools
 Requires:           nmap wmic sudo
 
 %description

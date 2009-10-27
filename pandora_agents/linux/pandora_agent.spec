@@ -6,7 +6,7 @@
 Summary:            Pandora FMS Linux agent
 Name:               %{name}
 Version:            %{version}
-Release:            1
+Release:            2
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
@@ -38,7 +38,6 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_out
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf  $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
@@ -81,7 +80,7 @@ else
 fi
 
 if [ -f /etc/pandora/pandora_agent.conf ] ; then
-	rm -Rf /etc/pandora/pandora_agent.conf
+	mv /etc/pandora/pandora_agent.conf /etc/pandora/pandora_agent.conf_backup
 fi
 
 if [ ! -e /etc/pandora/plugins ]; then
@@ -110,7 +109,6 @@ exit 0
 
 %defattr(770,pandora,root)
 /var/log/pandora/
-/var/spool/pandora/data_out
 
 %defattr(755,pandora,root)
 /usr/bin/tentacle_client

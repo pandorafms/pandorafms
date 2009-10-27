@@ -67,6 +67,10 @@ function returnError($typeError, $returnType) {
 			returnData($returnType,
 				array('type' => 'string', 'data' => __('No exist id in BD.')));
 			break;
+		default:
+			returnData('string',
+				array('type' => 'string', 'data' => __($returnType)));
+			break;
 	}
 }
 

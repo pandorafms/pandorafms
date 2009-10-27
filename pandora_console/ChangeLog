@@ -1,5 +1,9 @@
 2009-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_api.php: extend the funcionality "returnError".
+
+2009-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_api.php: add in the function "isInACL" the posibility
 	to no filter if set in ACL the character "*".
 

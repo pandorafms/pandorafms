@@ -1,5 +1,9 @@
 2009-10-29  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/postinst: add the same message as RPM in the finish installation.
+
+2009-10-29  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst: debian base files for
 	to make a .deb package.
 	* make_deb_package.sh: shell script for make automatically the debs packages

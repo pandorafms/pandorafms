@@ -11,3 +11,5 @@ chown www-data /var/www/pandora_console -R
 
 echo Restart the apache.
 /etc/init.d/apache2 restart
+
+echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#I think that all world was online ;) .
+#echo Install PEAR XML/RPC.php PHP Library.
+#pear install XML_RPC
+
+echo Change the user and group to /var/www/pandora_console.
+chmod 755 /var/www/pandora_console -R
+chgrp www-data /var/www/pandora_console -R
+chown www-data /var/www/pandora_console -R
+
+echo Restart the apache.
+/etc/init.d/apache2 restart

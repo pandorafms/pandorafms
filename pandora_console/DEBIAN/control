@@ -1,10 +1,10 @@
-package: PandoraFMS-Agent
-Version: 3.0.0.rc1
+package: PandoraFMS-Console
+Version: 3.0.0.20091028
 Architecture: all
 Priority: optional
 Section: admin
-Installed-Size: 260
+Installed-Size: 42112
 Maintainer: Miguel de Dios <miguel.dedios@artica.es>
 Homepage: http://pandorafms.org/
-Depends: coreutils, perl
-Description: andora FMS agents are based on native languages in every platform: scripts that can be written in any language. It’s possible to reproduce any agent in any programming language and can be extended without difﬁculty the existing ones in order to cover aspects not taken into account up to the moment. These scripts are formed by modules that each one gathers a "chunk" of information. Thus, every agent gathers several "chunks" of information; this one is organized in a data set and stored in a single ﬁle, called data ﬁle.
+Depends: apache2, mysql-server, libapache2-mod-php5, php5, php5-snmp, php5-gd, php5-mysql, php-pear, php-db, php5-xmlrpc, php-gettext, graphviz, dbconfig-common, php5-ldap, mysql-client
+Description: The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system. 

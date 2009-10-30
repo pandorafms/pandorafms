@@ -1,5 +1,13 @@
 2009-10-30  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_api.php: fix the tiny bug that not set the default
+	separator in function "get_tree_agents".
+	* godmode/reporting/reporting_builder.php: fix the bug that don't change the
+	select box of module.
+	Fixes: 2888988
+
+2009-10-30  Miguel de Dios <miguel.dedios@artica.es>
+
 	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst, DEBIAN/prerm,
 	DEBIAN/conffiles: sorry, I had the permissions to directory DEBIAN not
 	"755" and in the previus commit don't upload.

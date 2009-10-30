@@ -224,7 +224,7 @@ function get_module_last_value($idAgentModule, $trash1, $other = ';', $returnTyp
  * @return unknown_type
  */
 function get_tree_agents($trash1, $trahs2, $other, $returnType)
-{	
+{
 	if ($other['type'] == 'array') {
 		$separator = $other['data'][0];
 		$returnReplace = $other['data'][1];
@@ -238,7 +238,10 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 		
 	}
 	else {
-		$separator = $other['data'];
+		if (strlen($other['data']) == 0)
+			$separator = ';'; //by default
+		else
+			$separator = $other['data'];
 		$returnReplace = ' ';
 		$fields = false;
 	}

@@ -1,3 +1,9 @@
+2009-10-30  Miguel de Dios <miguel.dedios@artica.es>
+
+	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst, DEBIAN/prerm,
+	DEBIAN/conffiles: sorry, I had the permissions to directory DEBIAN not
+	"755" and in the previus commit don't upload.
+
 2009-10-29  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/postinst: add the same message as RPM in the finish installation.

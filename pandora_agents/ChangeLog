@@ -1,3 +1,11 @@
+2009-10-30  Miguel de Dios <miguel.dedios@artica.es>
+
+	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst, DEBIAN/prerm,
+	DEBIAN/conffiles: debian base files for to make a .deb package.
+	* make_deb_package.sh: shell script for make automatically the deb package
+	for standard installation in a Debian Lenny, this script make a package
+	"pandorafms.agent_3.0.0.rc1.deb".
+
 2009-10-26  Sancho Lerena <slerena@artica.es>
 
 	* Updated conf files: temporal variable to use /tmp by default.

@@ -33,6 +33,7 @@ $filter_agent = (string) get_parameter ("filter_agent", '');
 $filter_oid = (string) get_parameter ("filter_oid", '');
 $filter_severity = (int) get_parameter ("filter_severity", -1);
 $filter_fired = (int) get_parameter ("filter_fired", -1);
+$filter_status = (int) get_parameter ("filter_status", 0);
 $search_string = (string) get_parameter ("search_string", '');
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
@@ -176,6 +177,13 @@ $table->data[2][1] = print_select ($paginations, "pagination", $pagination, 'thi
 $table->data[2][2] = '<strong>'.__('Severity').'</strong>';
 $table->data[2][3] = print_select ($severities, 'filter_severity', $filter_severity, 'this.form.submit();', __('All'), -1, true);
 
+// Status
+$table->data[3][0] = '<strong>'.__('Status').'</strong>';
+$status[-1] = __('All');
+$status[0] = __('Not validated');
+$status[1] = __('Validated');
+$table->data[3][1] = print_select ($status, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
+
 print_table ($table);
 unset ($table);
 
@@ -250,6 +258,10 @@ foreach ($traps as $trap) {
 	}
 
 	if ($filter_fired != -1 && $trap["alerted"] != $filter_fired) {
+		continue;
+	}
+
+	if ($filter_status != -1 && $trap["status"] != $filter_status) {
 		continue;
 	}
 
@@ -346,7 +358,7 @@ foreach ($traps as $trap) {
 		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
 	}
 	if (give_acl ($config["id_user"], 0, "IM")) {
-		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
 	}
 	
 	$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
@@ -371,7 +383,7 @@ if (give_acl ($config["id_user"], 0, "IW")) {
 
 if (give_acl ($config['id_user'], 0, "IM")) {
 	echo "&nbsp;";
-	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:confirm(\''.__('Are you sure?').'\')"');
+	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"');
 }
 echo "</div></form>";
 

@@ -21,9 +21,9 @@
 use strict;
 use Time::Local;			# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
-use Date::Manip;			# Date/Time manipulation
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+use POSIX qw(strftime);
 
 # version: define la version actual del programa
 my $version = "3.0-dev PS090930";
@@ -82,11 +82,11 @@ sub pandora_purgedb {
  	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
 
  	# Calculate limit for deletion, today - $days
-	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
-	my $ulimit_access_timestamp =  &UnixDate("today","%s") - 86400;
-	my $ulimit_timestamp = &UnixDate("today","%s") - (86400 * $days);
-	my $limit_timestamp = DateCalc("today","-$days days",\$err);
+	my $ulimit_access_timestamp =  time() - 86400;
+	my $ulimit_timestamp = time() - (86400 * $days);
+	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
 	print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
 	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
@@ -501,13 +501,13 @@ sub help_screen{
 ###############################################################################
 sub pandoradb_main {
 
-	print "Starting at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
+	print "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
 	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
 
 	if ($onlypurge == 0){
 		pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
 	}
-	print "Ending at ". &UnixDate("today","%Y/%m/%d %H:%M:%S"). "\n";
+	print "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
 	exit;
 }

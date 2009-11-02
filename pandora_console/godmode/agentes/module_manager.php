@@ -30,7 +30,7 @@ echo "<tr><td class='datos'>";
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
-$network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 2");
+$network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 1");
 $wmi_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 6");
 $plugin_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 4");
 $prediction_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 5");

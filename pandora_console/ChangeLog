@@ -1,3 +1,14 @@
+2009-11-02  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php: Updated build/version.
+
+	* pandora_console.spec: Updated to release 2; preparing the rc2.
+
+	* godmode/agentes/module_manager.php: Fixed a small problem, don't allow
+	to create network modules if not have the snmpconsole due a bad SQL. Fixed.
+
+	* include/api.php: Removed ending line.
+
 2009-10-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Added a status filter. Fixed

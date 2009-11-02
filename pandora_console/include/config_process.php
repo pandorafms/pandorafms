@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091020';
-$pandora_version = 'v3.0RC1';
+$build_version = 'PC091103';
+$pandora_version = 'v3.0RC2';
 
 $config['start_time'] = microtime (true);
 

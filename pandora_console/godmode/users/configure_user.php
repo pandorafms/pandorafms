@@ -68,7 +68,7 @@ if ($create_user) {
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$is_admin = (bool) get_parameter ('is_admin', 0);
+	$values['is_admin'] = $is_admin = (bool) get_parameter ('is_admin', 0);
 	
 	if ($password_new == '') {
 		print_error_message (__('Passwords cannot be empty'));
@@ -76,13 +76,15 @@ if ($create_user) {
 		$password_new = '';
 		$password_confirm = '';
 		$new_user = true;
-	} elseif ($password_new != $password_confirm) {
+	}
+	elseif ($password_new != $password_confirm) {
 		print_error_message (__('Passwords didn\'t match'));
 		$user_info = $values;
 		$password_new = '';
 		$password_confirm = '';
 		$new_user = true;
-	} else {
+	}
+	else {
 		$result = create_user ($id, $password_new, $values);
 		print_result_message ($result,
 			__('Successfully created'),

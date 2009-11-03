@@ -271,13 +271,13 @@ if ($id_agente) {
 	$simple_alerts = get_agent_alerts_simple (array_keys ($agents));
 } else {
 	$total = 0;
+	$where = '';
 	if (!empty ($agents)) {
 		$sql = sprintf ('SELECT COUNT(*) FROM talert_template_modules
 			WHERE id_agent_module IN (SELECT id_agente_modulo
 				FROM tagente_modulo WHERE id_agente IN (%s))',
 			implode (',', array_keys ($agents)));
 		
-		$where = '';
 		if (get_parameter('search',0)) {
 			if ($priority != -1 )
 				$where .= " AND priority = " . $priority;

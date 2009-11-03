@@ -121,10 +121,14 @@ if ($search != '')
 		$search, $search);
 if ($id_agent)
 	$agents = array ($id_agent => $id_agent);
-$sql = sprintf ('SELECT COUNT(*) FROM talert_compound
-	WHERE id_agent in (%s)%s',
-	implode (',', array_keys ($agents)), $where);
-$total = (int) get_db_sql ($sql);
+
+$total = 0;
+if (count($agents) > 0) {
+	$sql = sprintf ('SELECT COUNT(*) FROM talert_compound
+		WHERE id_agent in (%s)%s',
+		implode (',', array_keys ($agents)), $where);
+	$total = (int) get_db_sql ($sql);
+}
 pagination ($total, $url);
 
 $table->id = 'alert_list';
@@ -144,11 +148,14 @@ $table->head[1] = __('Name');
 $table->head[2] = __('Agent');
 $table->head[3] = __('Delete');
 
-$sql = sprintf ('SELECT id FROM talert_compound
-	WHERE id_agent in (%s)%s LIMIT %d OFFSET %d',
-	implode (',', array_keys ($agents)), $where,
-	$config['block_size'], get_parameter ('offset'));
-$id_alerts = get_db_all_rows_sql ($sql);
+$id_alerts = false;
+if (count($agents)) {
+	$sql = sprintf ('SELECT id FROM talert_compound
+		WHERE id_agent in (%s)%s LIMIT %d OFFSET %d',
+		implode (',', array_keys ($agents)), $where,
+		$config['block_size'], get_parameter ('offset'));
+	$id_alerts = get_db_all_rows_sql ($sql);
+}
 
 if ($id_alerts === false)
 	$id_alerts = array ();

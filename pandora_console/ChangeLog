@@ -1,4 +1,11 @@
 2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
+	* godmode/alerts/alert_list.php: fix notice alert php describe in the
+	tracker of sourceforge.
+	* godmode/alerts/alert_compounds.php: fix the SQL query bug in PHP when
+	load this page without agent in Pandora.
+	Fixes: 2891215
+
+2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
 	* godmode/agentes/module_manager_editor_plugin.php: fix the size of field
 	"Plugin parameters".
 	Fixes: 2888996

@@ -1,3 +1,8 @@
+2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
+	* DEBIAN/make_deb_package.sh: move the script to make the deb package into
+	the DEBIAN and change some things into the sourcecode for the directory
+	change.
+
 2009-11-03  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/alerts/configure*.php: Improving integrity of 

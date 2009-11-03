@@ -16,53 +16,52 @@
 
 pandora_console_version="3.0.0.rc1"
 
-echo Test if you has the tools for to make the packages.
+echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"dpkg-deb\" aplication, please install.
+	echo "No found \"dpkg-deb\" aplication, please install."
 	exit 1
 else
-	echo Found \"dpkg-debs\".
+	echo "Found \"dpkg-debs\"."
 fi
 
 whereis dh-make-pear | cut -d":" -f2 | grep dh-make-pear > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"dh-make-pear\" aplication, please install.
+	echo "No found \"dh-make-pear\" aplication, please install."
 	exit 1
 else
-	echo Found \"dh-make-pear\".
+	echo "Found \"dh-make-pear\"."
 fi
 
 whereis fakeroot | cut -d":" -f2 | grep fakeroot > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"fakeroot\" aplication, please install.
+	echo "No found \"fakeroot\" aplication, please install."
 	exit 1
 else
-	echo Found \"fakeroot\".
+	echo "Found \"fakeroot\"."
 fi
 
 whereis dpkg-buildpackage | cut -d":" -f2 | grep dpkg-buildpackage > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"dpkg-buildpackage\" aplication, please install.
+	echo "No found \"dpkg-buildpackage\" aplication, please install."
 	exit 1
 else
-	echo Found \"dpkg-buildpackage\".
+	echo "Found \"dpkg-buildpackage\"."
 fi
 
-echo Make a \"temp_package\" temp dir for job.
-mkdir temp_package
-mkdir temp_package/var
-mkdir temp_package/var/www/
-mkdir temp_package/var/www/pandora_console
+echo "Make a \"temp_package\" temp dir for job."
+mkdir -p ../temp_package/var/www/pandora_console
+cd ..
 
-echo Make directory system tree for package.
-for item in `ls`
+echo "Make directory system tree for package."
+for item in `ls `
 do
 	echo -n "."
+
 	if [ $item != 'temp_package' -a $item != 'pandora_console.spec' ]
 	then
 		if [ $item = 'DEBIAN' ]
@@ -73,10 +72,13 @@ do
 		fi
 	fi
 done
+echo "END"
 
-echo ""
+#	if [ $item != 'temp_package' -a $item != 'pandora_console.spec' -a $item != 'make_deb_package.sh' ]
+#	then
+#	fi
 
-echo Remove the SVN files.
+echo "Remove the SVN files and other temp files."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -86,11 +88,17 @@ do
 	then
 		rm -rf $item
 	fi
+	
+	echo $item | grep "make_deb_package.sh" > /dev/null
+	#last command success
+	if [ $? -eq 0 ]
+	then
+		rm -rf $item
+	fi
 done
+echo "END"
 
-echo ""
-
-echo Calcule md5sum for md5sums file control of package
+echo "Calcule md5sum for md5sums file control of package."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -108,15 +116,13 @@ do
 		fi
 	fi
 done
+echo "END"
 
-echo ""
-
-echo Make the package \"Pandorafms console\".
+echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
 mv temp_package.deb pandorafms.console_$pandora_console_version.deb
 
-
-echo Make the package \"php-xml-rpc\".
+echo "Make the package \"php-xml-rpc\"."
 cd temp_package
 dh-make-pear --maintainer "Miguel de Dios <miguel.dedios@artica.es>" XML_RPC
 cd php-xml-rpc-*
@@ -125,5 +131,6 @@ cd ..
 mv php-xml-rpc*.deb ..
 cd ..
 
-echo Delete the \"temp_package\" temp dir for job.
+
+echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

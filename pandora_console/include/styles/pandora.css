@@ -124,8 +124,8 @@ h1#log {
 	color: #000;	
 }
 h1#log_f {
-	color: #f00;
-	border-bottom: 1px solid #f00;
+	color: #c00;
+	border-bottom: 1px solid #c00;
 	padding-bottom: 3px;
 }
 div#login {
@@ -324,27 +324,21 @@ td.datos4 {
 	text-align: center !important;
 	background-color: #d4ddc6;
 }
-
 td.datos_id {
 	color: #1a313a;
 }
-
 tr.rowPair {
 	background-color: #fff;
 }
-
 tr.rowOdd {
 	background-color: #EEEEEE;
 }
-
 tr.rowPair:hover {
 	background-color: #E0E0E0;
 }
-
 tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
-
 .bg { /* op menu */
 	background-color: #786;
 }
@@ -399,7 +393,7 @@ tr.rowOdd:hover {
 	background: url(../../images/help.png) no-repeat;
 }
 .red, .redb, .redi, .error {
-	color: #f00;
+	color: #c00;
 }
 
 .sep {

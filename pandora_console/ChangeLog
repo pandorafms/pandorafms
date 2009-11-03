@@ -1,3 +1,13 @@
+2009-11-03  Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/alerts/configure*.php: Improving integrity of 
+	appareance in title.
+
+	* godmode/alerts/alert_actions.php, godmode/alerts/alert_templates.php: 
+	Added text if no action, list or template defined.
+
+	* godmode/alerts/alert_list.php: Small fix
+
 2009-11-02  Sancho Lerena <slerena@artica.es>
 
 	* include/config_process.php: Updated build/version.

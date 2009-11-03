@@ -1,3 +1,10 @@
+2009-12-03  Miguel de Dios <miguel.dedios@artica.es>
+	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst, DEBIAN/prerm,
+	DEBIAN/conffiles: debian base files for to make a .deb package.
+	* make_deb_package.sh: shell script for make automatically the deb package
+	for standard installation in a Debian Lenny, this script make a package
+	"pandorafms.server_3.0.0.rc1.deb" and the other necesary packages (perl).
+
 2009-11-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Date::Manip is not used anymore.

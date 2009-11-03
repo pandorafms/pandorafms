@@ -1,0 +1,119 @@
+#!/bin/bash
+
+get_distro () {
+	# Get Linux Distro type and version
+	# We assume we are on Linux unless told otherwise
+	LINUX=YES
+	if [ -f "/etc/SuSE-release" ]
+	then
+		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+		LINUX_DISTRO=SUSE
+	elif [ -f "/etc/lsb-release" ]
+	then
+		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+		LINUX_DISTRO=UBUNTU
+		OS_VERSION="UBUNTU $OS_VERSION"
+	elif [ -f "/etc/debian_version" ]
+	then
+		OS_VERSION=`cat /etc/debian_version`
+		OS_VERSION="DEBIAN $OS_VERSION"
+		LINUX_DISTRO=DEBIAN
+	elif [ -f "/etc/fedora-release" ]
+	then
+		OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+		OS_VERSION="FEDORA $OS_VERSION"
+		LINUX_DISTRO=FEDORA
+	elif [ `uname -s` == "Darwin" ]
+	then
+		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
+		LINUX_DISTRO="Darwin"
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	elif [ `uname -s` == "AIX" ]
+        then
+                # For future reference, AIX doesn't have /etc/init.d
+                LINUX_DISTRO="AIX"
+                OS_VERSION=`uname -r`
+                LINUX=NO
+	elif [ `uname -s` == "SunOS" ]
+	then
+		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
+		LINUX_DISTRO="Solaris"
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	elif [ `uname -s` == "Linux" ]
+	then
+		# Test for Linux to make sure we're on Linux
+		LINUX_DISTRO="GENERIC"
+		OS_VERSION=`uname -r`
+	else
+		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
+		LINUX_DISTRO=`uname -s`
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	fi
+	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
+}
+
+
+
+echo "Giving proper permission to /var/spool/pandora"
+id -g www-data > /dev/null
+if [ $? -eq 0 ]
+then
+	chown -R pandora:www-data /var/spool/pandora/ 
+else
+	id -g www > /dev/null
+	if [ $? -eq 0 ]
+	then
+		chown -R pandora:www /var/spool/pandora/ 
+	else
+		id -g apache  > /dev/null
+		if [ $? -eq 0 ]
+		then
+			chown -R pandora:apache /var/spool/pandora/ 
+		else
+			echo "No web server user found, some functionality might not perform correctly"
+			chown -R pandora:root /var/spool/pandora
+		fi
+	fi
+fi
+
+chmod 770 /etc/pandora/pandora_server.conf
+
+GET_DISTRO="`get_distro`"
+DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
+
+if [ "$DISTRO" == "UBUNTU" ]
+then
+	echo "Linking startup script to /etc/rc2.d"
+	ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
+else
+	INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
+	echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
+	ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+fi
+
+if [ "$DISTRO" == "UBUNTU" ]
+then
+	# Tentacle server install (Ubuntu)
+	echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
+	ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+else
+	# Tentacle server install (SUSE)
+	echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
+	ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+fi
+
+if [ -d /etc/cron.daily ]
+then
+	echo "Create the Cron script to run daily Pandora DB tool"
+	echo "#!/bin/bash" > /etc/cron.daily/pandora_db	
+	echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
+	chmod 750 /etc/cron.daily/pandora_db
+else
+	echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+	echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+fi
+
+echo "Please, now, edit the /etc/pandora/pandora_server.conf and launch the Pandora Server with /etc/init.d/Pandora ."

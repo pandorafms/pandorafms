@@ -520,7 +520,7 @@ echo '</form>';
 
 /* Show alert search when we're on the first step */
 if ($step == 1) {
-	echo '<h2>'.__('Add condition').'</h2>';
+	echo '<h3>'.__('Add condition').'</h3>';
 	
 	$id_group = (int) get_parameter ('id_group');
 	

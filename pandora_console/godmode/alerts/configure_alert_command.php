@@ -38,7 +38,7 @@ if ($id) {
 	$description = $alert['description'];
 }
 
-echo '<h1>'.__('Configure alert command').'</h1>';
+echo '<h2>'.__('Alerts').' &raquo; '.__('Configure alert command').'</h2>';
 
 $table->width = '90%';
 $table->style = array ();

@@ -225,8 +225,11 @@ foreach ($templates as $template) {
 }
 
 pagination ($total_templates, $url);
-print_table ($table);
-
+if (isset($data)){
+	print_table ($table);
+} else {
+	echo "<div class='nf'>".__('No alert templates defined')."</div>";
+}
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
 print_submit_button (__('Create'), 'create', false, 'class="sub next"');

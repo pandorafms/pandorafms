@@ -42,7 +42,7 @@ if ($id) {
 	$field3 = $action['field3'];
 }
 
-echo '<h1>'.__('Configure alert action').'</h1>';
+echo "<h2>".__('Alerts')." &raquo; ".__('Configure alert action')."</h2>";
 
 $table->width = '90%';
 $table->style = array ();

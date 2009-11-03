@@ -129,8 +129,11 @@ foreach ($actions as $action) {
 	
 	array_push ($table->data, $data);
 }
-
-print_table ($table);
+if (isset($data)){
+	print_table ($table);
+} else {
+	echo "<div class='nf'>".__('No alert actions configured')."</div>";
+}
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';

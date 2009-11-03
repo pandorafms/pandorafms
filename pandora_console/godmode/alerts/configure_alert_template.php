@@ -294,7 +294,7 @@ if ($id && ! $create_template) {
 	$priority = $template['priority'];
 }
 
-echo '<h1>'.__('Configure alert template').'</h1>';
+echo '<h2>'.__('Alerts').' &raquo; '.__('Configure alert template').'</h2>';
 
 print_alert_template_steps ($step, $id);
 

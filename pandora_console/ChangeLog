@@ -1,4 +1,9 @@
 2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
+	* godmode/agentes/module_manager_editor_plugin.php: fix the size of field
+	"Plugin parameters".
+	Fixes: 2888996
+
+2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
 	* godmode/users/configure_user.php: fix to set the admin user when
 	you create new user.
 

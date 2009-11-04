@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.0.0.rc1"
+pandora_console_version="3.0.0.rc2"
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]
@@ -23,39 +23,32 @@ then
 	exit 1
 fi
 
-echo Test if you has the tools for to make the packages.
+echo "Test if you has the tools for to make the packages."
 whereis dh-make-perl | cut -d":" -f2 | grep dh-make-perl > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"dh-make-perl\" aplication, please install.
+	echo "No found \"dh-make-perl\" aplication, please install."
 	exit 1
 else
-	echo Found \"dh-make-perl\".
+	echo "Found \"dh-make-perl\"."
 fi
 
-echo Make a \"temp_package\" temp dir for job.
+cd ..
+
+echo "Make a \"temp_package\" temp dir for job."
 mkdir temp_package
 
-echo Make the fake tree system in \"temp_package\".
-mkdir temp_package/var
-mkdir temp_package/var/spool
-mkdir temp_package/var/spool/pandora
-mkdir temp_package/var/spool/pandora/data_in
-mkdir temp_package/var/spool/pandora/data_in/conf
-mkdir temp_package/var/spool/pandora/data_in/md5
-mkdir temp_package/var/log
-mkdir temp_package/var/log/pandora
-mkdir temp_package/etc
-mkdir temp_package/etc/pandora
-mkdir temp_package/etc/init.d/
-mkdir temp_package/etc/logrotate.d
-mkdir temp_package/usr
-mkdir temp_package/usr/share
-mkdir temp_package/usr/share/pandora_server
-mkdir temp_package/usr/local
-mkdir temp_package/usr/local/bin
+echo "Make the fake tree system in \"temp_package\"."
+mkdir -p temp_package/var/spool/pandora/data_in/conf
+mkdir -p temp_package/var/spool/pandora/data_in/md5
+mkdir -p temp_package/var/log/pandora
+mkdir -p temp_package/etc/pandora
+mkdir -p temp_package/etc/init.d/
+mkdir -p temp_package/etc/logrotate.d
+mkdir -p temp_package/usr/share/pandora_server
+mkdir -p temp_package/usr/local/bin
 
-echo Make the perl of Pandora Server.
+echo "Make the perl of Pandora Server."
 perl Makefile.PL
 make
 cat Makefile | sed -e "s/PREFIX = \/usr/PREFIX = temp_package\/usr/" > Makefile.temp
@@ -63,7 +56,7 @@ mv Makefile.temp Makefile
 rm Makefile.temp
 make install
 
-echo Copy other files in fake file.
+echo "Copy other files in fake file."
 cp util/pandora_logrotate temp_package/etc/logrotate.d/pandora
 
 cp bin/tentacle_server temp_package/usr/local/bin
@@ -76,7 +69,7 @@ cp -R util temp_package/usr/share/pandora_server
 
 cp -R DEBIAN temp_package/
 
-echo Remove the SVN files.
+echo "Remove the SVN files and other temp files."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -86,11 +79,17 @@ do
 	then
 		rm -rf $item
 	fi
+	
+	echo $item | grep "make_deb_package.sh" > /dev/null
+	#last command success
+	if [ $? -eq 0 ]
+	then
+		rm -rf $item
+	fi
 done
+echo "END"
 
-echo ""
-
-echo Calcule md5sum for md5sums file control of package
+echo "Calcule md5sum for md5sums file control of package."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -109,28 +108,26 @@ do
 	fi
 done
 
-exit
-
-echo ""
+echo "END"
 
 echo "Make the package \"Pandorafms server\"."
 dpkg-deb --build temp_package
 mv temp_package.deb pandorafms.server_$pandora_console_version.deb
 chmod 777 pandorafms.server_$pandora_console_version.deb
 
-echo Make the package \"libnet-traceroute-pureperl-perl\".
+echo "Make the package \"libnet-traceroute-pureperl-perl\"."
 cd temp_package
 dh-make-perl --build --cpan Net::Traceroute::PurePerl
 chmod 777 libnet-traceroute-pureperl-perl*.deb
 mv libnet-traceroute-pureperl-perl*.deb ..
 cd ..
 
-echo Make the package \"libnet-traceroute-perl\".
+echo "Make the package \"libnet-traceroute-perl\"."
 cd temp_package
 dh-make-perl --build --cpan Net::Traceroute
 chmod 777 libnet-traceroute-perl*.deb
 mv libnet-traceroute-perl*.deb ..
 cd ..
 
-echo Delete the \"temp_package\" temp dir for job.
+echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

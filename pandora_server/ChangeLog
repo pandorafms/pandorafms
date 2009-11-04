@@ -1,3 +1,8 @@
+2009-11-04  Miguel de Dios <miguel.dedios@artica.es>
+	* DEBIAN/make_deb_package.sh: move the script to make the deb package into
+	the DEBIAN and change some things into the sourcecode for the directory
+	change.
+
 2009-12-03  Miguel de Dios <miguel.dedios@artica.es>
 	* DEBIAN/control, DEBIAN/md5sums, DEBIAN/postinst, DEBIAN/prerm,
 	DEBIAN/conffiles: debian base files for to make a .deb package.

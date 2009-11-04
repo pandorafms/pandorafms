@@ -16,33 +16,26 @@
 
 pandora_agent_version="3.0.0.rc1"
 
-echo Test if you has the tools for to make the packages.
+echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
 if [ $? = 1 ]
 then
-	echo No found \"dpkg-deb\" aplication, please install.
+	echo "No found \"dpkg-deb\" aplication, please install."
 	exit 1
 else
-	echo Found \"dpkg-debs\".
+	echo "Found \"dpkg-debs\"."
 fi
 
-echo Make a \"temp_package\" temp dir for job.
-mkdir temp_package
-mkdir temp_package/usr
-mkdir temp_package/usr/bin
-mkdir temp_package/usr/share
-mkdir temp_package/usr/share/pandora_agent
-mkdir temp_package/var
-mkdir temp_package/var/spool
-mkdir temp_package/var/spool/pandora
-mkdir temp_package/var/spool/pandora/data_out
-mkdir temp_package/var/log
-mkdir temp_package/var/log/pandora/ 
-mkdir temp_package/etc
-mkdir temp_package/etc/pandora
-mkdir temp_package/etc/init.d/
+echo "Make a \"temp_package\" temp dir for job."
+mkdir -p temp_package/usr/share/pandora_agent
+mkdir -p temp_package/var/spool/pandora/data_out
+mkdir -p temp_package/var/log/pandora/ 
+mkdir -p temp_package/etc/pandora
+mkdir -p temp_package/etc/init.d/
 
-echo Make directory system tree for package.
+cd ..
+
+echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
 
 PANDORA_LOG=temp_package/var/log/pandora/pandora_agent.log
@@ -82,7 +75,7 @@ cp pandora_agent_daemon $PANDORA_STARTUP
 
 touch $PANDORA_CFG/pandora_agent.conf
 
-echo Remove the SVN files.
+echo "Remove the SVN files and other temp files."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -92,11 +85,17 @@ do
 	then
 		rm -rf $item
 	fi
+	
+	echo $item | grep "make_deb_package.sh" > /dev/null
+	#last command success
+	if [ $? -eq 0 ]
+	then
+		rm -rf $item
+	fi
 done
+echo "END"
 
-echo ""
-
-echo Calcule md5sum for md5sums file control of package
+echo "Calcule md5sum for md5sums file control of package"
 for item in `find temp_package`
 do
 	echo -n "."
@@ -114,12 +113,11 @@ do
 		fi
 	fi
 done
+echo "END"
 
-echo ""
-
-echo Make the package \"Pandorafms console\".
+echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
 mv temp_package.deb pandorafms.agent_$pandora_agent_version.deb
 
-echo Delete the \"temp_package\" temp dir for job.
+echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

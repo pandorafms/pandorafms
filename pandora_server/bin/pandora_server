@@ -19,6 +19,7 @@
 
 use strict;
 use warnings;
+use POSIX qw(strftime);
 
 # Pandora Modules
 use PandoraFMS::DB;
@@ -175,6 +176,9 @@ while (1) {
 			die ($server->getErrStr ()) unless ($server->checkThreads () == 1);
 			$server->update ();
 		}
+
+		# Update fallen servers
+		db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ?", strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $Config{'keepalive'})));
 
 		pandora_planned_downtime (\%Config, $DBH);
 		pandora_exec_forced_alerts (\%Config, $DBH);

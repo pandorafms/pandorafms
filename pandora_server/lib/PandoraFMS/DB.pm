@@ -36,6 +36,7 @@ our @EXPORT = qw(
 		get_db_rows
 		get_db_single_row
 		get_db_value
+		get_group_name
 		get_module_id
 		get_nc_profile_name
 		get_server_id
@@ -124,12 +125,21 @@ sub get_module_id ($$) {
 }
 
 ##########################################################################
-## Return a network component's profile name given it's ID.
+## Return a network component's profile name given its ID.
 ##########################################################################
 sub get_nc_profile_name ($$) {
 	my ($dbh, $nc_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT * FROM tnetwork_profile WHERE id_np = ?", $nc_id);
+}
+
+##########################################################################
+## Return a group's name given its ID.
+##########################################################################
+sub get_group_name ($$) {
+	my ($dbh, $group_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT nombre FROM tgrupo WHERE id_grupo = ?", $group_id);
 }
 
 ##########################################################################

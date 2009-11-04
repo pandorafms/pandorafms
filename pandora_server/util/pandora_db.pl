@@ -342,7 +342,7 @@ sub pandora_loadconfig {
 	
 	# Open database to get days_purge days_compact values
 	my $query; my $query_ready; my @data; my $rows_selected;
-	my $dbh = DBI->connect("DBI:mysql:pandora:$dbhost:3306",$dbuser, $dbpass, {RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass, {RaiseError => 1, AutoCommit => 1 });
 	$query = "select * from tconfig where token = 'days_purge'";
 	$query_ready = $dbh->prepare($query);
 	$query_ready ->execute();

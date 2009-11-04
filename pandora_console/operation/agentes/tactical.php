@@ -106,7 +106,7 @@ $cells[2]["color"] = "#FFB900";
 $cells[3][0] = __('Monitors critical');
 $cells[3][1] = $data["monitor_critical"];
 $cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Down
-$cells[3]["color"] = "#f00";
+$cells[3]["color"] = "#c00";
 
 $cells[4][0] = __('Monitors unknown');
 $cells[4][1] = $data["monitor_unknown"];
@@ -115,7 +115,7 @@ $cells[4]["color"] = "#C0C0C0";
 
 $cells[5][0] = __('Monitors not init');
 $cells[5][1] = $data["monitor_not_init"];
-$cells[5]["color"] = "#f00";
+$cells[5]["color"] = "#c00";
 $cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=5"; //Not init
 
 $cells[6][0] = __('Alerts defined');
@@ -126,7 +126,7 @@ $cells[6]["color"] = "#000";
 $cells[7][0] = __('Alerts fired');
 $cells[7][1] = $data["monitor_alerts_fired"];
 $cells[7]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
-$cells[7]["color"] = "#f00";
+$cells[7]["color"] = "#c00";
 
 print_cells_temp ($cells);
 	

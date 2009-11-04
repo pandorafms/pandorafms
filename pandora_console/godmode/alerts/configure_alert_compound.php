@@ -561,7 +561,7 @@ if ($step == 1) {
 		$alerts = get_agent_alerts_simple ($id_agent);
 		
 		if (empty ($alerts)) {
-			$table_alerts->data[0][0] = __('No alerts found');
+			$table_alerts->data[0][0] = "<div class='nf'>".__('No alerts found')."</div>";
 			$table_alerts->colspan[0][0] = 3;
 			$id_agent = 0;
 		}
@@ -724,11 +724,11 @@ $(document).ready (function () {
 			"get_agent_alerts_simple" : 1,
 			"id_agent" : this.value
 			},
-			function (data, status) {
+			function (data, status) {	
 				if (! data) {
 					$("#alerts_loading").hide ();
 					tr = $('<tr></tr>').append ($('<td></td>')
-						.append ("<?php echo __('No alerts found') ?>")
+						.append ("<?php echo '<div class=\'nf\'>'.__('No alerts found').'</div>'; ?>")
 						.attr ("colspan", 3));
 					$("#alert_list").append (tr)
 						.trigger ("update")

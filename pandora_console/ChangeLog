@@ -1,3 +1,14 @@
+2009-11-04  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/alerts_status.php: different colour for table header.
+
+	* operation/agentes/tactical.php: Use red colour from tango palette.
+
+	* godmode/alerts/alert_lists.php, godmode/alerts/alert_compounds.php,
+	godmode/alerts/configure_alerts.php: Added text if no alerts defined.
+
+	*  Changelog: Added missed change.
+
 2009-11-04  Miguel de Dios <miguel.dedios@artica.es>
 	* DEBIAN/make_deb_package.sh: simplify the source code of script.
 
@@ -28,9 +39,11 @@
 	appareance in title.
 
 	* godmode/alerts/alert_actions.php, godmode/alerts/alert_templates.php: 
-	Added text if no action, list or template defined.
+	Added text if no action or template defined.
 
 	* godmode/alerts/alert_list.php: Small fix
+
+	* include/styles/pandora.css: Use red colour from tango palette in error.
 
 2009-11-02  Sancho Lerena <slerena@artica.es>
 

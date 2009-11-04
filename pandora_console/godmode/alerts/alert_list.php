@@ -198,7 +198,7 @@ if ($id_agente) {
 	$agents = get_group_agents (array_keys ($groups), false, "none");
 }
 
-echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/wand.png", true, array ("title" => __('Toggle filter(s)'))).'</a>';
+echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/wand.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
 $templateName = get_parameter('template_name','');
 $moduleName = get_parameter('module_name','');
@@ -460,7 +460,11 @@ foreach ($simple_alerts as $alert) {
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+if (isset($data)){
+	print_table ($table);
+} else {
+	echo "<div class='nf'>".__('No alerts defined')."</div>";
+}
 
 echo '<h3>'.__('Add alert').'</h3>';
 

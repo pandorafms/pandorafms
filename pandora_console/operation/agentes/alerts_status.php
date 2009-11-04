@@ -191,6 +191,7 @@ else
 	$table->head[5] = __('Validate');
 }
 $table->title = __('Single alerts');
+$table->titlestyle = "background-color:#799E48;";
 
 if ($print_agent == 0) {
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
@@ -246,6 +247,8 @@ if (!empty ($table->data)) {
 }
 
 $table->title = __('Compound alerts');
+$table->titlestyle = "background-color:#799E48;";
+
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[0] = '';
 	$table->head[1] = '';

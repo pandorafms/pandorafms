@@ -879,7 +879,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 		my $oid = $alert->{'oid'};
 		if ($oid ne '' && $trap_oid =~ m/$oid/i || $trap_oid_text =~ m/$oid/i) {
 			$fire_alert = 1;
-			$alert_data) .= "OID: $oid ";
+			$alert_data .= "OID: $oid ";
 		}
 		# Custom OID/value
 		my $custom_oid = $alert->{'custom_oid'};

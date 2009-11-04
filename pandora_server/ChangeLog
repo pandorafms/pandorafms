@@ -1,5 +1,9 @@
 2009-11-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed a typo.
+
+2009-11-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm, lib/PandoraFMS/Core.pm,
 	  lib/PandoraFMS/DataServer.pm, lib/PandoraFMS/WMIServer.pm,
 	  bin/pandora_server, util/pandora_db.pl: Fixed all pending tracker

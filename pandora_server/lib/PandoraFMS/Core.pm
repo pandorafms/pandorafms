@@ -214,7 +214,7 @@ sub pandora_process_alert ($$$$$$$) {
 		pandora_event ($pa_config, "Alert ceased (" .
 					   $alert->{'name'} . ")", $agent->{'id_grupo'},
 					   $agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
-					   "alert_recovered", $dbh);
+					   "alert_ceased", $dbh);
 
 		return;
 	}
@@ -434,6 +434,8 @@ sub pandora_execute_action ($$$$$$$$) {
 				  _field2_ => $field2,
 				  _field3_ => $field3,
 				  _agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
+				  _agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
+				  _agentgroup_ => (defined ($agent)) ? get_group_name ($dbh, $agent->{'id_grupo'}) : '',
 				  _address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
 				  _timestamp_ => strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				  _data_ => $data,
@@ -443,6 +445,7 @@ sub pandora_execute_action ($$$$$$$$) {
 				  _alert_times_fired_ => $alert->{'times_fired'},
   				  _alert_priority_ => $alert->{'priority'},
 				  _module_ => (defined ($module)) ? $module->{'nombre'} : '',
+				  _moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				  _id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				 );
 
@@ -451,6 +454,7 @@ sub pandora_execute_action ($$$$$$$$) {
 	if ($action->{'internal'} == 0) {
 		my $command = decode_entities(subst_alert_macros ($action->{'command'}, \%macros));
 		$command = subst_alert_macros ($command, \%macros);
+		logger($pa_config, "Executing command $command", 4);
 
 		eval {
 			system ($command);
@@ -513,20 +517,27 @@ sub pandora_process_module ($$$$$$$$$) {
 	# Get module type
 	if ($module_type eq '') {
 		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});
-		return unless defined ($module_type);
+		if (! defined ($module_type)) {
+			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+			return;
+		}
 	}
 
 	# Process data
  	$data = process_data ($data, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($data)) {
 		logger($pa_config, "Received invalid data from module '" . $module->{'nombre'} . "'", 3);
+		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
 
 	# Get agent information
 	if ($agent eq '') {
 		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
-		return unless defined ($agent);
+		if (! defined ($agent)) {
+			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+			return;
+		}
 	}
 
 	if ($timestamp eq '') {
@@ -538,7 +549,10 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Get previous status
 	my $agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
-	return unless defined ($agent_status);
+	if (! defined ($agent_status)) {
+		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+		return;
+	}
 
 	# Get current status
 	my $status = get_module_status ($data, $module, $module_type);
@@ -563,7 +577,11 @@ sub pandora_process_module ($$$$$$$$$) {
 	$agent_status->{'last_try'} = '0000-00-00 00:00:00' unless defined ($agent_status->{'last_try'});
 
 	# Do we have to save module data?
-	return unless ($agent_status->{'last_try'} =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/);
+	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+		return;
+	}
+
 	my $last_try  = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $data || $last_try < (time() - 86400))) ? 1 : 0;
 		
@@ -801,20 +819,21 @@ sub pandora_exec_forced_alerts {
 	my ($pa_config, $dbh) = @_;
 
 	# Get alerts marked for forced execution (even disabled alerts)
-	my @alerts = get_db_rows ($dbh, 'SELECT talert_template_modules.id as id_template_module, talert_template_modules.*, talert_templates.*, tagente.*
-	                               FROM talert_template_modules, talert_templates, tagente, tagente_modulo
-	                               WHERE talert_template_modules.id_alert_template = talert_templates.id
-	                               AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
-	                               AND tagente_modulo.id_agente = tagente.id_agente
-	                               AND force_execution = 1');
+	my @alerts = get_db_rows ($dbh, 'SELECT * FROM talert_template_modules WHERE force_execution = 1');
 
 	foreach my $alert (@alerts) {
+		
+		# Get the agent and module associated with the alert
+		my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
+		next unless defined ($module);
+		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+		next unless defined ($agent);
 
 		# $alert already contains agent data!
-		pandora_execute_alert ($pa_config, 'N/A', $alert, undef, $alert, 1, $dbh);
+		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh);
 
 		# Reset the force_execution flag, even if the alert could not be executed
-		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'});
+		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id'});
 	}
 }
 
@@ -856,19 +875,23 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 		my ($times_fired, $internal_counter, $alert_type) =
 		   ($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
 
-		# OID only
-		if ($alert->{'alert_type'} == 0) {
-			my $oid = $alert->{'oid'};
-			($fire_alert, $alert_data) = (1, 'SNMP/OID:' . $oid) if ($trap_oid =~ m/$oid/i ||
-			                                                         $trap_oid_text =~ m/$oid/i);
+		# OID
+		my $oid = $alert->{'oid'};
+		if ($oid ne '' && $trap_oid =~ m/$oid/i || $trap_oid_text =~ m/$oid/i) {
+			$fire_alert = 1;
+			$alert_data) .= "OID: $oid ";
+		}
 		# Custom OID/value
-		} elsif ($alert_type == 1){ # type 1 is custom value 
-			my $custom_oid = $alert->{'custom_oid'};
-			($fire_alert, $alert_data) = (1, 'SNMP/VALUE:' . $custom_oid) if ($trap_custom_value =~ m/$custom_oid/i ||		                                                                  $trap_custom_oid =~ m/$custom_oid/i);
+		my $custom_oid = $alert->{'custom_oid'};
+		if ($custom_oid ne '' && $trap_custom_value =~ m/$custom_oid/i || $trap_custom_oid =~ m/$custom_oid/i) {
+			$fire_alert = 1;
+			$alert_data .= "CUSTOM OID: $custom_oid ";
+		}
 		# Agent IP
-		} else {
-			my $agent = $alert->{'agent'};
-			($fire_alert, $alert_data) = (1, 'SNMP/SOURCE:' . $agent) if ($trap_agent =~ m/$agent/i );
+		my $agent = $alert->{'agent'};
+		if ($agent ne '' && $trap_agent =~ m/$agent/i ) {
+			$fire_alert = 1;
+			$alert_data .= "AGENT: $agent";
 		}
 
 		next unless ($fire_alert == 1);

@@ -168,7 +168,7 @@ sub data_consumer ($$) {
 	}
 
 	# Check for errors
-	if ($output[0] =~ /ERROR/) {
+	if ($output[0] =~ m/ERROR/) {
 		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
 		return;
 	} 
@@ -177,8 +177,12 @@ sub data_consumer ($$) {
 	my @row = split(/\|/, $output[2]);
 
 	# Get the specified column
-	$module_data = $row[$module->{'tcp_port'}];
-
+	$module_data = $row[$module->{'tcp_port'}] if defined ($row[$module->{'tcp_port'}]);
+	if ($module_data =~ m/^ERROR/) {
+		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		return;
+	} 
+		
 	# Regexp
 	if ($module->{'snmp_community'} ne ''){
 		my $filter = $module->{'snmp_community'};

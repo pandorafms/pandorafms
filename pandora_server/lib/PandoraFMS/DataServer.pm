@@ -253,6 +253,9 @@ sub process_module_data ($$$$$$$$$) {
 		
 		# Do not auto create modules
 		return unless ($pa_config->{'autocreate'} == 1);
+
+		# Is the agent learning?
+		return unless ($agent->{'modo'} eq '1');
 		
 		# Get the module type
 		my $module_id = get_module_id ($dbh, $module_type);

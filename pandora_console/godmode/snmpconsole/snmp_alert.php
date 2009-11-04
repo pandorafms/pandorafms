@@ -43,7 +43,6 @@ if (isset ($_GET["submit"])) {
 	$id_as = (int) get_parameter_get ("submit", -1);
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
-	$alert_trigger = (int) get_parameter_post ("alert_trigger"); //OID, Custom Value
 	$description = (string) get_parameter_post ("description");
 	$oid = (string) get_parameter_post ("oid");
 	$custom_value = (string) get_parameter_post ("custom_value");
@@ -62,11 +61,11 @@ if (isset ($_GET["submit"])) {
 	
 	if ($id_as < 1) {
 		$sql = sprintf ("INSERT INTO talert_snmp 
-			(id_alert, al_field1, al_field2, al_field3, description, alert_type,
+			(id_alert, al_field1, al_field2, al_field3, description,
 			agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
 			VALUES
-			(%d, '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d) ",
-			$alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);
+			(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d) ",
+			$alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);
 		
 		$result = process_sql ($sql);
 
@@ -78,9 +77,9 @@ if (isset ($_GET["submit"])) {
 		
 	} else {
 		$sql = sprintf ("UPDATE talert_snmp SET
-			priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', alert_type = %d, agent = '%s', custom_oid = '%s',
+			priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', agent = '%s', custom_oid = '%s',
 			oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
-			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value,
+			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $source_ip, $custom_value,
 			$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
 		
 		$result = process_sql ($sql);
@@ -101,7 +100,6 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$id_as = $alert["id_as"];
 	$source_ip = $alert["agent"];
 	$alert_type = $alert["id_alert"];
-	$alert_trigger = $alert["alert_type"];
 	$description = $alert["description"];
 	$oid = $alert["oid"];
 	$custom_value = $alert["custom_oid"];
@@ -117,7 +115,6 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$id_as = -1;
 	$source_ip = "";
 	$alert_type = 1; //Event, e-mail
-	$alert_trigger = 0; //OID, Custom Value
 	$description = "";
 	$oid = "";
 	$custom_value = "";
@@ -158,17 +155,6 @@ if (isset ($_GET["update_alert"])) {
 		"alert_type", $alert_type, '', '', 0, false, false, false);
 	echo '</td></tr>';
 	
-	// Alert trigger (OID, custom_value)
-	echo '<tr><td class="datos2">'.__('Alert trigger').'</td><td class="datos2">';
-	
-	$fields = array ();
-	$fields[0] = "OID";
-	$fields[1] = "Custom Value/OID";
-	$fields[2] = "SNMP Agent";
-	
-	print_select ($fields, "alert_trigger", $alert_trigger);
-	echo '</td></tr>';
-	
 	// Description
 	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
 	print_input_text ("description", $description, '', 60);
@@ -180,12 +166,12 @@ if (isset ($_GET["update_alert"])) {
 	echo '</td></tr>';
 
 	// OID Custom
-	echo '<tr id="tr-custom_value" style="display:none"><td class="datos">'.__('Custom Value')."/".__("OID").'</td><td class="datos">';
+	echo '<tr id="tr-custom_value"><td class="datos">'.__('Custom Value')."/".__("OID").'</td><td class="datos">';
 	print_input_text ("custom_value", $custom_value, '', 30);
 	echo '</td></tr>';
 
 	// SNMP Agent
-	echo '<tr id="tr-source_ip" style="display:none"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
+	echo '<tr id="tr-source_ip"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
 	print_input_text ("source_ip", $source_ip, '', 30);
 	echo '</td></tr>';
 		
@@ -270,64 +256,49 @@ if (isset ($_GET["update_alert"])) {
 
 	$table->head[0] = __('Alert action');
 	
-	$table->head[1] = __('Alert trigger');
+	$table->head[1] = __('SNMP Agent');
+	$table->size[1] = 75;
 	$table->align[1] = 'center';
-	
-	$table->head[2] = __('SNMP Agent');
-	$table->size[2] = 75;
-	$table->align[2] = 'center';
 
-	$table->head[3] = __('OID');
+	$table->head[2] = __('OID');
+	$table->align[2] = 'center';
+	
+	$table->head[3] = __('Custom Value/OID');
 	$table->align[3] = 'center';
 	
-	$table->head[4] = __('Custom Value/OID');
-	$table->align[4] = 'center';
+	$table->head[4] = __('Description');
 	
-	$table->head[5] = __('Description');
+	$table->head[5] = __('Times fired');
+	$table->align[5] = 'center';
 	
-	$table->head[6] = __('Times fired');
+	$table->head[6] = __('Last fired');
 	$table->align[6] = 'center';
-	
-	$table->head[7] = __('Last fired');
-	$table->align[7] = 'center';
 
-	$table->head[8] = __('Action');
-	$table->size[8] = 50;
-	$table->align[8] = 'right';
+	$table->head[7] = __('Action');
+	$table->size[7] = 50;
+	$table->align[7] = 'right';
 
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = get_alert_action_name ($row["id_alert"]);
-		$data[1] = __('N/A');
-		$data[2] = __('N/A');
-		$data[3] = __('N/A');
-		$data[4] = __('N/A');
-									
-		switch ($row["alert_type"]) {
-		case 0:
-			$data[1] = __('OID');
-			$data[3] = $row["oid"];
-			break;
-		case 1:
-			$data[1] = __('Custom Value/OID');
-			$data[4] = $row["custom_oid"];
-			break;
-		case 2:
-			$data[1] = __('SNMP Agent');
-			$data[2] = $row["agent"];
-			break;
-		}
+
+		$data[1] = __('SNMP Agent');
+		$data[1] = $row["agent"];					
+		$data[2] = __('OID');
+		$data[2] = $row["oid"];
+		$data[3] = __('Custom Value/OID');
+		$data[3] = $row["custom_oid"];
 			
-		$data[5] = $row["description"];
-		$data[6] = $row["times_fired"];
+		$data[4] = $row["description"];
+		$data[5] = $row["times_fired"];
 		
 		if ($row["last_fired"] != "0000-00-00 00:00:00") {
-			$data[7] = $row["last_fired"];
+			$data[6] = $row["last_fired"];
 		} else {
-			$data[7] = __('Never');
+			$data[6] = __('Never');
 		}
 		
-		$data[8] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">
+		$data[7] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">
 				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>&nbsp;
 				<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">
 				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
@@ -367,34 +338,7 @@ function time_changed () {
 	}
 }
 
-function trigger_changed (trigger) {
-	if (trigger == 0) {
-		$('#tr-custom_value').fadeOut ('fast');
-		$('#tr-source_ip').fadeOut ('fast');
-		$('#tr-oid').fadeIn ('slow');
-		return;
-	} 
-	if (trigger == 1) {
-		$('#tr-oid').fadeOut ('fast');
-		$('#tr-source_ip').fadeOut ('fast');
-		$('#tr-custom_value').fadeIn ('slow');
-		return;
-	} 
-	if (trigger == 2) {
-		$('#tr-oid').fadeOut ('fast');
-		$('#tr-custom_value').fadeOut ('fast');
-		$('#tr-source_ip').fadeIn ('slow');
-		return;
-	}
-}
-
 $(document).ready (function () {
 	$('#time_threshold').change (time_changed);
-	$('#alert_trigger').change (function () {
-		trigger_changed (this.value)
-	});
-<?php if (isset ($id_as) && $id_as) : ?>
-	trigger_changed ("<?php echo $alert_trigger ?>");
-<?php endif; ?>
 }); 
 </script>

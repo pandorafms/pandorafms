@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# Pandora FMS Linux Agent, startup script
+# Pandora FMS HP-UX Agent, startup script
 # Copyright (c) 2006-2009 Artica ST, <info@artica.es>
-# AIX 5.x Version (generic),
-# v3.0 Build 090810
+# HP-UX Version (generic)
+# v3.0.1 Build 091104
 # http://www.pandorafms.com
 
 
@@ -12,7 +12,7 @@ PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
 LOGFILE=/var/log/pandora_agent.log
 
-# This function replace pidof, not working in the same way in different linux distros
+# This function replace pidof, not working in the same way in different UNIX
 
 function pidof_pandora {
 	PANDORA_PID=`ps -Af | grep $DAEMON | grep -v grep | head -1 | awk '{ print $2 }'`
@@ -70,7 +70,7 @@ case "$1" in
 	;;
 	
 	*)
-        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
+        echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
         exit 1
 esac
 

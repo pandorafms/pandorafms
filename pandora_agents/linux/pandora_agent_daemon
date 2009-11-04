@@ -4,7 +4,7 @@
 # Copyright (c) 2006-2009 Artica ST, <info@artica.es>
 # Linux Version (generic), for SuSe and Debian/Ubuntu.
 # other Linux distros could not work properly without modifications
-# v3.0 Build 090810
+# v3.0.1 Build 091104
 # http://www.pandorafms.com
 
 ### BEGIN INIT INFO
@@ -80,7 +80,7 @@ case "$1" in
 	;;
 	
 	*)
-        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
+        echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
         exit 1
 esac
 

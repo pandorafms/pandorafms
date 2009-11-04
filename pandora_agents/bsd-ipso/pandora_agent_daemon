@@ -1,8 +1,11 @@
 #!/bin/csh
-# Script de arranque de Agente Pandora
-# Sancho Lerena, <slerena@gmail.com>
-# Version para IPSO/BSD (csh)
-# version 1.1
+
+# Pandora FMS IPSO/BSD, startup script
+# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
+# IPSO/BSD (csh)
+# v1.2 Build 091104
+# http://www.pandorafms.com
+
 
 set PANDORA_PATH=/opt/pandora_agent
 set DAEMON=pandora_agent.sh
@@ -35,7 +38,7 @@ switch ($1)
   $0 start
   breaksw
  default: 
- echo "Uso: ./pandora_agent {start|stop|restart|force-reload}"
+ echo "Usage: ./pandora_agent {start|stop|restart|force-reload}"
         breaksw
         
 endsw

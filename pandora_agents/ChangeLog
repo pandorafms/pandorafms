@@ -1,3 +1,8 @@
+2009-11-04  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandora_agent_daemon: Changed "Uso" string to "Usage" string. Unify headers
+	and customized according to each UNIX/Linux versions.
+
 2009-11-04  Miguel de Dios <miguel.dedios@artica.es>
 	* DEBIAN/make_deb_package.sh: move the script to make the deb package into
 	the DEBIAN and change some things into the sourcecode for the directory

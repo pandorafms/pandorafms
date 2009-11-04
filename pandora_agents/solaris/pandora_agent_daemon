@@ -1,8 +1,10 @@
 #!/usr/bin/ksh
-# Startup Script for Pandora Agent
-# Sancho Lerena, <slerena@gmail.com>
-# Version para Solaris
-# v1.3
+
+# Pandora FMS Solaris Agent, startup script
+# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
+# Solaris Version (generic)
+# v1.3.1 Build 091104
+# http://www.pandorafms.com
 
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
@@ -47,7 +49,7 @@ case "$1" in
         $0 start
         ;;
   *)
-        echo "Uso: /etc/init.d/pandora_agent {start|stop|restart|force-reload}"
+        echo "Usage: /etc/init.d/pandora_agent {start|stop|restart|force-reload}"
         exit 1
 esac
 

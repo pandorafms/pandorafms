@@ -1,8 +1,9 @@
 #!/bin/sh
-# Script de arranque de Agente Pandora
-# Sancho Lerena, <slerena@gmail.com>
-# Version para HPUX
-# v1.1
+
+# Pandora FMS HP-UX Agent, startup script
+# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
+# v1.2 Build 091104
+# http://www.pandorafms.com
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/usr/share/pandora_agent/
@@ -42,7 +43,7 @@ case "$1" in
         $0 start
         ;;
   *)
-        echo "Uso: /etc/init.d/pandora_agent {start|stop|restart|force-reload}"
+        echo "Usage: /etc/init.d/pandora_agent {start|stop|restart|force-reload}"
         exit 1
 esac
 

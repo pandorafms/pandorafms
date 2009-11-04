@@ -1,3 +1,6 @@
+2009-11-04  Miguel de Dios <miguel.dedios@artica.es>
+	* DEBIAN/make_deb_package.sh: simplify the source code of script.
+
 2009-11-03  Miguel de Dios <miguel.dedios@artica.es>
 	* godmode/alerts/alert_list.php: fix notice alert php describe in the
 	tracker of sourceforge.

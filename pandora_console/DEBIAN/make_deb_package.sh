@@ -53,9 +53,10 @@ else
 	echo "Found \"dpkg-buildpackage\"."
 fi
 
-echo "Make a \"temp_package\" temp dir for job."
-mkdir -p ../temp_package/var/www/pandora_console
 cd ..
+
+echo "Make a \"temp_package\" temp dir for job."
+mkdir -p temp_package/var/www/pandora_console
 
 echo "Make directory system tree for package."
 for item in `ls `

@@ -15,7 +15,7 @@ use File::Basename;
 use File::Copy;
 
 use constant AGENT_VERSION => '3.0';
-use constant AGENT_BUILD => '090831';
+use constant AGENT_BUILD => '091103';
 
 # OS and OS version
 my $OS = $^O;

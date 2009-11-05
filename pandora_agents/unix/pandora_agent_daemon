@@ -1,21 +1,32 @@
 #!/bin/sh
 
-# Pandora FMS AIX Agent, startup script
-# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
-# AIX 5.x Version (generic),
-# v3.0.1 Build 091104
-# http://www.pandorafms.com
-
+# **********************************************************************
+# Pandora FMS Agent Daemon launcher for Unix (AIX, HP-UX, SunOS, Linux)
+# (c) 2008-2009 Artica ST
+# (c) 2008-2009 Sancho Lerena <slerena@gmail.com>
+#
+# Please see http://www.pandorafms.org
+# v3.0 Build 091103
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
 LOGFILE=/var/log/pandora_agent.log
 
-# This function replace pidof, not working in the same way in different UNIX
+# This function replace pidof, not working in the same way in different linux distros
 
-function pidof_pandora {
-	PANDORA_PID=`ps -Alf | grep $DAEMON | grep -v grep | head -1 | awk '{ print $4 }'`
+pidof_pandora () {
+	COLUMNS=300
+	OS_NAME=`uname -s`
+	if [ $OS_NAME = "HP-UX" ]
+	then
+		PANDORA_PID=`ps -ex | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $1 }'`
+	else
+		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+	fi
+	
 	echo $PANDORA_PID
 }
 
@@ -35,7 +46,8 @@ case "$1" in
 			exit 1
 		fi
 		nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
-		sleep 1
+		rm nohup.out 2> /dev/null
+		sleep 2
 		PANDORA_PID=`pidof_pandora`
 		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
 	;;
@@ -70,7 +82,7 @@ case "$1" in
 	;;
 	
 	*)
-        echo "Usage: /etc/rc.pandora_agent_daemon {start|stop|restart|status|force-reload}"
+        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|status}"
         exit 1
 esac
 

@@ -1,0 +1,11 @@
+2009-11-05  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_agent_installer: Added a common installer for all systems.
+
+	* Deleted daemon script for all systems, creaded a general one.
+
+	* Modified HPUX to HP-UX directory.
+
+	* Updated some .conf
+
+

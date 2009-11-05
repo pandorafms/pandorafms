@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
-    if 0; # not running under some shell
 ################################################################################
 #
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>

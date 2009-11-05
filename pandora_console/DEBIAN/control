@@ -6,5 +6,5 @@ Section: admin
 Installed-Size: 42112
 Maintainer: Miguel de Dios <miguel.dedios@artica.es>
 Homepage: http://pandorafms.org/
-Depends: apache2, mysql-server, libapache2-mod-php5, php5, php5-snmp, php5-gd, php5-mysql, php-pear, php-db, php5-xmlrpc, php-gettext, graphviz, dbconfig-common, php5-ldap, mysql-client
+Depends: apache2, libapache2-mod-php5, php5, php5-snmp, php5-gd, php5-mysql, php-pear, php-db, php5-xmlrpc, php-gettext, graphviz, dbconfig-common, php5-ldap, mysql-client
 Description: The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system. 

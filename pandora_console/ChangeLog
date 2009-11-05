@@ -1,5 +1,10 @@
 2009-11-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* DEBIAN/control: fix dependencies, not necesary mysql-server, because the
+	mysql can install in another machine.
+
+2009-11-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/snmpconsole/snmp_alert.php: An agent, OID and custom OID may
 	  be specified at the same time.
 

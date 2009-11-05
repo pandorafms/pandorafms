@@ -1,12 +1,14 @@
-Pandora FMS : The Free Monitoring System v1.3.1
+Pandora FMS : The Free Monitoring System v3.0
 ===============================================
 
-http://pandora.sourceforge.net
+http://pandorafms.org
 
 How to install
 --------------
 
-./pandora_agent_installer --help
+Run this command  to see available options:
+
+   ./pandora_agent_installer 
 
 What is Pandora FMS?
 --------------------
@@ -28,7 +30,7 @@ About the generic Unix agent
 
 This agent is build on Perl and needs the following minimal requisites:
 
-PERL version 5.6 or higher.
+PERL version 5.8 or higher.
 
 By default this minimum OS has all the requisites to run "standalone":
 

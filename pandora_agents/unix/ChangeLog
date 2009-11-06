@@ -1,3 +1,9 @@
+2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* *.conf: Updated URL and some small fixes.
+
+	* README: Updated name :-D
+
 2009-11-05  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_agent_installer: Added a common installer for all systems.

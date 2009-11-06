@@ -16,7 +16,7 @@
 
 pandora_console_version="3.0.0.rc2"
 
-echo "Test if you has the tools for to make the packages."
+echo "Test if you have all the needed tools to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
 if [ $? = 1 ]
 then
@@ -29,7 +29,7 @@ fi
 whereis dh-make-pear | cut -d":" -f2 | grep dh-make-pear > /dev/null
 if [ $? = 1 ]
 then
-	echo "No found \"dh-make-pear\" aplication, please install."
+	echo " \"dh-make-pear\" aplication not found, please install."
 	exit 1
 else
 	echo "Found \"dh-make-pear\"."
@@ -38,7 +38,7 @@ fi
 whereis fakeroot | cut -d":" -f2 | grep fakeroot > /dev/null
 if [ $? = 1 ]
 then
-	echo "No found \"fakeroot\" aplication, please install."
+	echo " \"fakeroot\" aplication not found, please install."
 	exit 1
 else
 	echo "Found \"fakeroot\"."
@@ -47,7 +47,7 @@ fi
 whereis dpkg-buildpackage | cut -d":" -f2 | grep dpkg-buildpackage > /dev/null
 if [ $? = 1 ]
 then
-	echo "No found \"dpkg-buildpackage\" aplication, please install."
+	echo " \"dpkg-buildpackage\" aplication not found, please install."
 	exit 1
 else
 	echo "Found \"dpkg-buildpackage\"."
@@ -55,7 +55,7 @@ fi
 
 cd ..
 
-echo "Make a \"temp_package\" temp dir for job."
+echo "Make a \"temp_package\" temporary dir for job."
 mkdir -p temp_package/var/www/pandora_console
 
 echo "Make directory system tree for package."
@@ -99,7 +99,7 @@ do
 done
 echo "END"
 
-echo "Calcule md5sum for md5sums file control of package."
+echo "Calculate md5sum for md5sums package control file."
 for item in `find temp_package`
 do
 	echo -n "."
@@ -133,5 +133,5 @@ mv php-xml-rpc*.deb ..
 cd ..
 
 
-echo "Delete the \"temp_package\" temp dir for job."
+echo "Delete the \"temp_package\" temporary dir for job."
 rm -rf temp_package

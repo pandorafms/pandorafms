@@ -142,10 +142,48 @@ foreach ($traps as $trap) {
 	$oids[$oid] = $oid;
 }
 
+//Make query to extract traps of DB.
+$sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
+$whereSubquery = 'WHERE 1=1';
+	if ($filter_agent != '')
+		$whereSubquery .= ' AND source LIKE "' . $filter_agent . "'";
+	
+	if ($filter_oid != '') {
+		//Test if install the enterprise to search oid in text or oid field in ttrap.
+		if ($config['enterprise_installed'])
+			$whereSubquery .= ' AND (text LIKE "' . $filter_oid . '" OR oid LIKE "' . $filter_oid . '")';
+		else
+			$whereSubquery .= ' AND oid LIKE "' . $filter_oid . '"';
+	}
+	if ($filter_fired != -1)
+		$whereSubquery .= ' AND alerted = ' . $filter_fired;
+	if ($search_string != '')
+		$whereSubquery .= ' AND value LIKE "%' . $search_string . '%"';
+
+	if ($filter_severity != -1) {
+		//Test if install the enterprise to search oid in text or oid field in ttrap.
+		if ($config['enterprise_installed'])
+			$whereSubquery .= ' AND (
+				(alerted = 0 AND severity = ' . $filter_severity . ') OR
+				(alerted = 1 AND priority = ' . $filter_severity . '))';
+		else
+			$whereSubquery .= ' AND (
+				(alerted = 0 AND 1 = ' . $filter_severity . ') OR
+				(alerted = 1 AND priority = ' . $filter_severity . '))';
+	}
+	if ($filter_status != -1)
+		$whereSubquery .= ' AND status = ' . $filter_status;
+	
+
+$sql = sprintf($sql, $whereSubquery, $offset, $config['block_size']);
+
+$traps = get_db_all_rows_sql($sql);
+
 if ($config["pure"] == 1) {
 	echo '<div id="filters" style="display:none;">';
-} else {
-	echo '<div id="filters" style="display:block;">'; //There is no value all to property display
+}
+else {
+	echo '<div id="filters" style="display: none;">';
 }
 
 // Agent select
@@ -193,8 +231,13 @@ echo '</div>';
 echo '<br />';
 
 // Prepare index for pagination
-$trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap");
-pagination ($trapcount, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&pagination=".$pagination."&offset=".$offset."&refr=".$config["refr"]."&pure=".$config["pure"], $offset, $pagination);
+$trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap " . $whereSubquery);
+
+$urlPagination = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=" . $filter_agent
+	. "&filter_oid=" . $filter_oid . "&filter_severity=" . $filter_severity
+	. "&filter_fired=" . $filter_fired . "&filter_status=" . $filter_status
+	. "&search_string=" . $search_string . "&pagination=".$pagination."&offset=".$offset."&refr=".$config["refr"]."&pure=".$config["pure"];
+pagination ($trapcount, $urlPagination, $offset, $pagination);
 
 echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pagination='.$pagination.'&offset='.$offset.'">';
 
@@ -240,131 +283,133 @@ $table->align[9] = "center";
 
 // Skip offset records
 $idx = 0;
-foreach ($traps as $trap) {
-	$data = array ();
-
-	// Apply filters
-	if ($filter_agent != '' && $trap["source"] != $filter_agent) {
-		continue;
-	}
+if ($traps !== false) {
+	foreach ($traps as $trap) {
+		$data = array ();
 	
-	$oid = enterprise_hook ('get_oid', array ($trap));
-	if ($oid === ENTERPRISE_NOT_HOOK) {
-		$oid = $trap["oid"];
-	}
-
-	if ($filter_oid != '' && $oid != $filter_oid) {
-		continue;
-	}
-
-	if ($filter_fired != -1 && $trap["alerted"] != $filter_fired) {
-		continue;
-	}
-
-	if ($filter_status != -1 && $trap["status"] != $filter_status) {
-		continue;
-	}
-
-	$severity = enterprise_hook ('get_severity', array ($trap));
-	if ($severity === ENTERPRISE_NOT_HOOK) {
-		$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
-	}
-
-	if ($filter_severity != -1 && $severity != $filter_severity) {
-		continue;
-	}
-
-	if ($search_string != '' && ereg ($search_string, $trap["value"]) == 0 && 
-	    ereg ($search_string, $trap["value_custom"]) == 0) {
-	    continue;
-	}
-
-	//Status
-	if ($trap["status"] == 0) {
-		$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
-	} else {
-		$data[0] = '<img src="images/pixel_green.png" title="'.__('Validated').'" width="20" height="20" />';
-	}
-
-	// Agent matching source address
-	$agent = get_agent_with_ip ($trap['source']);
-	if ($agent === false) {
-		if (! give_acl ($config["id_user"], 0, "AW")) {
-			continue;
+	//	// Apply filters
+	//	if ($filter_agent != '' && $trap["source"] != $filter_agent) {
+	//		continue;
+	//	}
+	//	
+	//	$oid = enterprise_hook ('get_oid', array ($trap));
+	//	if ($oid === ENTERPRISE_NOT_HOOK) {
+	//		$oid = $trap["oid"];
+	//	}
+	//
+	//	if ($filter_oid != '' && $oid != $filter_oid) {
+	//		continue;
+	//	}
+	//
+	//	if ($filter_fired != -1 && $trap["alerted"] != $filter_fired) {
+	//		continue;
+	//	}
+	//
+	//	if ($filter_status != -1 && $trap["status"] != $filter_status) {
+	//		continue;
+	//	}
+	//
+		$severity = enterprise_hook ('get_severity', array ($trap));
+		if ($severity === ENTERPRISE_NOT_HOOK) {
+			$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
 		}
-		$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
-	} else {
-		if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
-			continue;
+	//
+	//	if ($filter_severity != -1 && $severity != $filter_severity) {
+	//		continue;
+	//	}
+	//
+	//	if ($search_string != '' && ereg ($search_string, $trap["value"]) == 0 && 
+	//	    ereg ($search_string, $trap["value_custom"]) == 0) {
+	//	    continue;
+	//	}
+	
+		//Status
+		if ($trap["status"] == 0) {
+			$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
+		} else {
+			$data[0] = '<img src="images/pixel_green.png" title="'.__('Validated').'" width="20" height="20" />';
 		}
-		$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-		$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
-	}
-
-	//OID
-	if (empty ($trap["oid"])) {
-		$data[2] = __('N/A');
-	} else {
-		$data[2] = enterprise_hook ('editor_link', array ($trap));
-		if ($data[2] === ENTERPRISE_NOT_HOOK) {
-			$data[2] = $trap["oid"];
+	
+		// Agent matching source address
+		$agent = get_agent_with_ip ($trap['source']);
+		if ($agent === false) {
+			if (! give_acl ($config["id_user"], 0, "AW")) {
+				continue;
+			}
+			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&new_agent=1&direccion='.$trap["source"].'" title="'.__('Create agent').'">'.$trap["source"].'</a>';	
+		} else {
+			if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
+				continue;
+			}
+			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
+			$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
 		}
-	}
-
-	//Value
-	$data[3] = substr ($trap["value"], 0, 15);
 	
-	if (empty ($data[3])) {
-		$data[3] = __('N/A');
-	} elseif (strlen ($trap["value"]) > 15) {
-		$data[3] = '<span title="'.$trap["value"].'">'.$data[3].'...</span>';
-	}
+		//OID
+		if (empty ($trap["oid"])) {
+			$data[2] = __('N/A');
+		} else {
+			$data[2] = enterprise_hook ('editor_link', array ($trap));
+			if ($data[2] === ENTERPRISE_NOT_HOOK) {
+				$data[2] = $trap["oid"];
+			}
+		}
 	
-	//Custom
-	$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
-
-	if (empty ($data[4])) {
-		$data[4] = __('N/A');
-	} elseif (strlen ($trap["value_custom"]) > 15) {
-		$data[4] = '<span title="'.$trap["value_custom"].'">'.$data[4].'...</span>';
-	}	
-
-	//User
-	if (!empty ($trap["status"])) {
-		$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
-		$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.dame_nombre_real($trap["id_usuario"]).'</span></a>';
-	} else {
-		$data[5] = '--';
-	}
+		//Value
+		$data[3] = substr ($trap["value"], 0, 15);
+		
+		if (empty ($data[3])) {
+			$data[3] = __('N/A');
+		} elseif (strlen ($trap["value"]) > 15) {
+			$data[3] = '<span title="'.$trap["value"].'">'.$data[3].'...</span>';
+		}
+		
+		//Custom
+		$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
 	
-	// Timestamp
-	$data[6] = '<span title="'.$trap["timestamp"].'">';
-	$data[6] .= human_time_comparation ($trap["timestamp"]);
-	$data[6] .= '</span>';
+		if (empty ($data[4])) {
+			$data[4] = __('N/A');
+		} elseif (strlen ($trap["value_custom"]) > 15) {
+			$data[4] = '<span title="'.$trap["value_custom"].'">'.$data[4].'...</span>';
+		}	
 	
-	// Use alert severity if fired
-	if (!empty ($trap["alerted"])) {
-		$data[7] = '<img src="images/pixel_yellow.png" width="20" height="20" border="0" title="'.__('Alert fired').'" />';		
-	} else {
-		$data[7] = '<img src="images/pixel_gray.png" width="20" height="20" border="0" title="'.__('Alert not fired').'" />';
-	}
-
-	// Severity	
-	$table->rowclass[$idx] = get_priority_class ($severity);
-
-	//Actions
-	$data[8] = "";
-	if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
-		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
-	}
-	if (give_acl ($config["id_user"], 0, "IM")) {
-		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
-	}
+		//User
+		if (!empty ($trap["status"])) {
+			$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
+			$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.dame_nombre_real($trap["id_usuario"]).'</span></a>';
+		} else {
+			$data[5] = '--';
+		}
+		
+		// Timestamp
+		$data[6] = '<span title="'.$trap["timestamp"].'">';
+		$data[6] .= human_time_comparation ($trap["timestamp"]);
+		$data[6] .= '</span>';
+		
+		// Use alert severity if fired
+		if (!empty ($trap["alerted"])) {
+			$data[7] = '<img src="images/pixel_yellow.png" width="20" height="20" border="0" title="'.__('Alert fired').'" />';		
+		} else {
+			$data[7] = '<img src="images/pixel_gray.png" width="20" height="20" border="0" title="'.__('Alert not fired').'" />';
+		}
 	
-	$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
-
-	array_push ($table->data, $data);
-	$idx++;
+		// Severity	
+		$table->rowclass[$idx] = get_priority_class ($severity);
+	
+		//Actions
+		$data[8] = "";
+		if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
+		}
+		if (give_acl ($config["id_user"], 0, "IM")) {
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+		}
+		
+		$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
+	
+		array_push ($table->data, $data);
+		$idx++;
+	}
 }
 
 // No matching traps

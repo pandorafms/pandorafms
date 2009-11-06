@@ -1,4 +1,13 @@
-2009-11-04  Ramon Novoa  <rnovoa@artica.es>
+2009-11-06 Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/snmpconsole/snmp_view.php: fix and optimize the query to traps
+	in DB, because the old style didn't run with paginator and it was slow with
+	much traps registers.
+	* operation/agentes/status_monitor.php,
+	godmode/alerts/configure_alert_compound.php: little fix arround the code
+	style.
+
+2009-11-04 Miguel de Dios <miguel.dedios@artica.es>
 
 	* DEBIAN/control: fix dependencies, not necesary mysql-server, because the
 	mysql can install in another machine.

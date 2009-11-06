@@ -94,22 +94,22 @@ $cells[1]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_moni
 
 $cells[2][0] = __('Monitors critical');
 $cells[2][1] = $data["monitor_critical"];
-$cells[2]["color"] = "#f00";
+$cells[2]["color"] = "#c00";
 $cells[2]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=2";
 
 $cells[3][0] = __('Monitors warning');
 $cells[3][1] = $data["monitor_warning"];
-$cells[3]["color"] = "#FFB900";
+$cells[3]["color"] = "#ffb900";
 $cells[3]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=1";
 
 $cells[4][0] = __('Monitors normal');
 $cells[4][1] = $data["monitor_ok"];
-$cells[4]["color"] = "#00ff00";
+$cells[4]["color"] = "#8ae234";
 $cells[4]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=0";
 
 $cells[5][0] = __('Monitors unknown');
 $cells[5][1] = $data["monitor_unknown"];
-$cells[5]["color"] = "#aaaaaa";
+$cells[5]["color"] = "#aaa";
 $cells[5]["href"] = "index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60&amp;status=3";
 
 $cells[6][0] = __('Alerts defined');

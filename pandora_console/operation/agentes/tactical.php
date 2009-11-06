@@ -93,29 +93,29 @@ $cells[0][1] = $data["monitor_checks"];
 $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
 $cells[0]["color"] = "#000";
 
-$cells[1][0] = __('Monitors normal');
-$cells[1][1] = $data["monitor_ok"];
-$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Up
-$cells[1]["color"] = "#000";
-
-$cells[2][0] = __('Monitors warning');
-$cells[2][1] = $data["monitor_warning"];
-$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Down
-$cells[2]["color"] = "#FFB900";
-	
 $cells[3][0] = __('Monitors critical');
 $cells[3][1] = $data["monitor_critical"];
 $cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Down
 $cells[3]["color"] = "#c00";
 
+$cells[2][0] = __('Monitors warning');
+$cells[2][1] = $data["monitor_warning"];
+$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Down
+$cells[2]["color"] = "#ffb900";
+
+$cells[1][0] = __('Monitors normal');
+$cells[1][1] = $data["monitor_ok"];
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Up
+$cells[1]["color"] = "#8ae234";
+
 $cells[4][0] = __('Monitors unknown');
 $cells[4][1] = $data["monitor_unknown"];
 $cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=3"; //Unknown
-$cells[4]["color"] = "#C0C0C0";
+$cells[4]["color"] = "#aaa";
 
 $cells[5][0] = __('Monitors not init');
 $cells[5][1] = $data["monitor_not_init"];
-$cells[5]["color"] = "#c00";
+$cells[5]["color"] = "#ef2929";
 $cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=5"; //Not init
 
 $cells[6][0] = __('Alerts defined');

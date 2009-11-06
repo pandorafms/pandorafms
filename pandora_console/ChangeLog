@@ -1,3 +1,14 @@
+2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/tactical.php, general/logon_ok.php: Use the same
+	order for summary, use the same colors (some from tango palette) in both
+	files.
+
+	* images/status_sets/default/server_ok.png: Use the same colour as the
+	other OK status images (from tango palette).
+
+	* DEBIAN/make_deb_package.sh: Improved english texts.
+
 2009-11-06 Miguel de Dios <miguel.dedios@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: fix and optimize the query to traps

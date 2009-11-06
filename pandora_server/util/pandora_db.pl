@@ -171,8 +171,8 @@ sub pandora_compactdb {
 	}
 
 	# Calculate the start date
-	my $start_date = DateCalc("today","-$days days",\$err);
-	my $start_utime = &UnixDate($start_date,"%s");
+	my $start_utime = time() - $days * 24 * 60 * 60;
+	my $start_date = strftime ("%Y-%m-%d %H:%M:%S", localtime($start_utime));
 	my $stop_date;
 	my $stop_utime;
 
@@ -413,8 +413,19 @@ sub pandora_checkdb_consistency {
                 # for each record in tagente_modulo
                 while (@datarow4 = $prep4->fetchrow_array()) {
                         my $id_agente_modulo = $datarow4[1];
+						
+						# Skip policy modules
+                        next if (is_policy_module ($dbh, $id_agente_modulo));
+
+                        # Delete the module
                         my $query0 = "DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = $id_agente_modulo";
                         my $prep0 = $dbh->prepare($query0);
+                        $prep0 ->execute;
+                        $prep0->finish();
+                        
+                        # Delete any alerts associated to the module
+						$query0 = "DELETE FROM talert_template_modules WHERE id_agent_module = $id_agente_modulo";
+                        $prep0 = $dbh->prepare($query0);
                         $prep0 ->execute;
                         $prep0->finish();
                 }
@@ -478,6 +489,51 @@ sub pandora_checkdb_consistency {
 	}
 	$prep1->finish();
 	
+}
+
+###############################################################################
+# Returns undef if the module is not a policy module.
+###############################################################################
+sub is_policy_module ($$) {
+	my ($dbh, $module_id) = @_;
+	my ($agent_id, $module_name, $policy_id) = (undef, undef, undef);
+
+	# Get agent id
+	my $sth = $dbh->prepare('SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ?');
+	$sth->execute ($module_id);
+	while (my @row = $sth->fetchrow_array()) {
+			$agent_id = $row[0];
+			last;
+	}
+	$sth->finish();
+	return unless defined ($agent_id);
+
+	# Get module name
+	$sth = $dbh->prepare('SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?');
+	$sth->execute ($module_id);
+	while (my @row = $sth->fetchrow_array()) {
+			$module_name = $row[0];
+			last;
+	}
+	$sth->finish();
+	return unless defined ($module_name);
+
+	# Search policies
+	$sth = $dbh->prepare('SELECT t3.id FROM tpolicy_agents AS t1
+			INNER JOIN tpolicy_modules AS t2 ON t1.id_policy = t2.id_policy
+			INNER JOIN tpolicies AS t3 ON t1.id_policy = t3.id
+		WHERE t1.id_agent = ? AND t2.name LIKE ?');
+	$sth->execute ($agent_id, $module_name);
+	while (my @row = $sth->fetchrow_array()) {
+			$policy_id = $row[0];
+			last;
+	}
+	$sth->finish();
+	
+	# Not a policy module
+	return undef unless defined ($policy_id);
+
+	return $policy_id;
 }
 
 ##############################################################################

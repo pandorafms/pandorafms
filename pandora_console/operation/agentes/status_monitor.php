@@ -118,11 +118,14 @@ if ($ag_freestring != "") {
 // Status selector
 if ($status == 0) { //Up
 	$sql .= " AND tagente_estado.estado = 0 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";
-} elseif ($status == 2) { //Critical
+}
+elseif ($status == 2) { //Critical
 	$sql .= " AND tagente_estado.estado = 1 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";
-} elseif ($status == 1) { //warning
+}
+elseif ($status == 1) { //warning
 	$sql .= " AND tagente_estado.estado = 2 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";	
-} elseif ($status == 4) { //not normal
+}
+elseif ($status == 4) { //not normal
 	$sql .= " AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) ";
 } elseif ($status == 3) { //Unknown
 	$sql .= " AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo < 21 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
@@ -246,7 +249,8 @@ foreach ($result as $row) {
 	
 	if ($seconds >= ($row["module_interval"] * 2)) {
 		$option = array ("html_attr" => 'class="redb"');
-	} else {
+	}
+	else {
 		$option = array ();
 	}
 	

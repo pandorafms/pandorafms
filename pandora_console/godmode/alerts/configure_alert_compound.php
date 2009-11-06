@@ -724,7 +724,7 @@ $(document).ready (function () {
 			"get_agent_alerts_simple" : 1,
 			"id_agent" : this.value
 			},
-			function (data, status) {	
+			function (data, status) {
 				if (! data) {
 					$("#alerts_loading").hide ();
 					tr = $('<tr></tr>').append ($('<td></td>')

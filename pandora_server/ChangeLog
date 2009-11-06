@@ -1,3 +1,11 @@
+2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* lib/PandoraFMS/Config.pm: Changed string from RC1 to RC2.
+	Use tabs instead spaces. Updated build due to last changes.
+
+	* pandora_server_installer: Added text to help the user to change the
+	default password. Added TO DO.
+
 2009-11-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Fixed bug #2893302.

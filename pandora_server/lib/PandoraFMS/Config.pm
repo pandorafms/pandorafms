@@ -30,14 +30,14 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
         pandora_help_screen
-		pandora_init
-		pandora_load_config
+	pandora_init
+	pandora_load_config
         pandora_start_log
     );
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "3.0RC1";
-my $pandora_build = "PS091020";
+my $pandora_version = "3.0RC2";
+my $pandora_build = "PS091106";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -55,8 +55,8 @@ sub help_screen {
 	printf "      -v        :  Verbose mode activated. Writes more information in the logfile \n";
 	printf "      -d        :  Debug mode activated. Writes extensive information in the logfile \n";
 	printf "      -D        :  Daemon mode (runs in background)\n";
-    printf "      -P <file> :  Store PID to file.\n";
-    printf "      -q        :  Quiet startup \n";
+	printf "      -P <file> :  Store PID to file.\n";
+	printf "      -q        :  Quiet startup \n";
 	printf "      -h        :  This screen. Shows a little help screen \n";
 	printf " \n";
 	exit;
@@ -80,38 +80,39 @@ sub pandora_init {
 		help_screen;
 		exit;
 	}
-   	$pa_config->{"verbosity"}=0;	# Verbose 1 by default
+	$pa_config->{"verbosity"}=0;	# Verbose 1 by default
 	$pa_config->{"daemon"}=0;	# Daemon 0 by default
-    $pa_config->{'PID'}="";	# PID file not exist by default
-    $pa_config->{"quiet"}=0;	# Daemon 0 by default
+	$pa_config->{'PID'}="";	# PID file not exist by default
+	$pa_config->{"quiet"}=0;	# Daemon 0 by default
 
 	# If there are not valid parameters
 	my $parametro;
 	my $ltotal=$#ARGV; my $ax;
-    for ($ax=0;$ax<=$ltotal;$ax++){
-        $parametro = $ARGV[$ax];
-        if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
-            help_screen();
-        }
-        elsif ($parametro =~ m/-v\z/i) {
-            $pa_config->{"verbosity"}=5;
-        }
-        elsif ($parametro =~ m/^-P\z/i) {
-            $pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
-        }
-        elsif ($parametro =~ m/-d\z/) {
-            $pa_config->{"verbosity"}=10;
-        }
-        elsif ($parametro =~ m/-q\z/) {
-            $pa_config->{"quiet"}=1;
-        }
-        elsif ($parametro =~ m/-D\z/) {
-            $pa_config->{"daemon"}=1;
-        }
-        else {
-            ($pa_config->{"pandora_path"} = $parametro);
-        }
-    }
+
+	for ($ax=0;$ax<=$ltotal;$ax++){
+        	$parametro = $ARGV[$ax];
+		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
+		    help_screen();
+		}
+		elsif ($parametro =~ m/-v\z/i) {
+		    $pa_config->{"verbosity"}=5;
+		}
+		elsif ($parametro =~ m/^-P\z/i) {
+		    $pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
+		}
+		elsif ($parametro =~ m/-d\z/) {
+		    $pa_config->{"verbosity"}=10;
+		}
+		elsif ($parametro =~ m/-q\z/) {
+		    $pa_config->{"quiet"}=1;
+		}
+		elsif ($parametro =~ m/-D\z/) {
+		    $pa_config->{"daemon"}=1;
+		}
+		else {
+		    ($pa_config->{"pandora_path"} = $parametro);
+		}
+	}
 	if ($pa_config->{"pandora_path"} eq ""){
 		print " [ERROR] I need at least one parameter: Complete path to Pandora FMS configuration file. \n";
 		print "		For example: ./pandora_server /etc/pandora/pandora_server.conf \n\n";
@@ -124,76 +125,76 @@ sub pandora_init {
 ##########################################################################
 
 sub pandora_load_config {
-    my $pa_config = $_[0];
-    my $archivo_cfg = $pa_config->{'pandora_path'};
-    my $buffer_line;
-    my @command_line;
-    my $tbuf;
+	my $pa_config = $_[0];
+	my $archivo_cfg = $pa_config->{'pandora_path'};
+	my $buffer_line;
+	my @command_line;
+	my $tbuf;
 
-    # Default values
-    $pa_config->{'version'} = $pandora_version;
-    $pa_config->{'build'} = $pandora_build;
-    $pa_config->{"dbuser"} = "pandora";
-    $pa_config->{"dbpass"} = "pandora";
-    $pa_config->{"dbhost"} = "localhost";
-    $pa_config->{"dbname"} = "pandora";
-    $pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
-    $pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
-    $pa_config->{"server_threshold"} = 30;
-    $pa_config->{"alert_threshold"} = 60;
-    $pa_config->{"logfile"} = "/var/log/pandora_server.log";
-    $pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
-    $pa_config->{"networktimeout"} = 5;	# By default, not in config file yet
-    $pa_config->{"pandora_master"} = 1;	# on by default
-    $pa_config->{"pandora_check"} = 0; 	# Deprecated since 2.0
-    $pa_config->{"servername"} = `hostname`;
-    $pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
-    $pa_config->{"dataserver"} = 1; # default
-    $pa_config->{"networkserver"} = 1; # default
-    $pa_config->{"snmpconsole"} = 1; # default
-    $pa_config->{"reconserver"} = 1; # default
-    $pa_config->{"wmiserver"} = 1; # default
-    $pa_config->{"pluginserver"} = 1; # default
-    $pa_config->{"predictionserver"} = 1; # default
-    $pa_config->{"exportserver"} = 1; # default
-    $pa_config->{"inventoryserver"} = 1; # default
-    $pa_config->{"webserver"} = 1; # 3.0
-    $pa_config->{"servermode"} = "";
-    $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
-    $pa_config->{"network_threads"} = 3; # Fixed default
-    $pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
-    $pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
-    $pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
-    $pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
-    $pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
-    $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
-    $pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
-    $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
-    $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
-    $pa_config->{"snmp_proc_deadresponse"} = 1; # Introduced on 1.3.1 10 Feb08
-    $pa_config->{"plugin_threads"} = 2; # Introduced on 2.0
-    $pa_config->{"plugin_exec"} = '/usr/local/bin/pandora_exec'; # 3.0
-    $pa_config->{"recon_threads"} = 2; # Introduced on 2.0
-    $pa_config->{"prediction_threads"} = 1; # Introduced on 2.0
-    $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
-    $pa_config->{"wmi_threads"} = 2; # Introduced on 2.0
-    $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
+	# Default values
+	$pa_config->{'version'} = $pandora_version;
+	$pa_config->{'build'} = $pandora_build;
+	$pa_config->{"dbuser"} = "pandora";
+	$pa_config->{"dbpass"} = "pandora";
+	$pa_config->{"dbhost"} = "localhost";
+	$pa_config->{"dbname"} = "pandora";
+	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
+	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+	$pa_config->{"server_threshold"} = 30;
+	$pa_config->{"alert_threshold"} = 60;
+	$pa_config->{"logfile"} = "/var/log/pandora_server.log";
+	$pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
+	$pa_config->{"networktimeout"} = 5;	# By default, not in config file yet
+	$pa_config->{"pandora_master"} = 1;	# on by default
+	$pa_config->{"pandora_check"} = 0; 	# Deprecated since 2.0
+	$pa_config->{"servername"} = `hostname`;
+	$pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
+	$pa_config->{"dataserver"} = 1; # default
+	$pa_config->{"networkserver"} = 1; # default
+	$pa_config->{"snmpconsole"} = 1; # default
+	$pa_config->{"reconserver"} = 1; # default
+	$pa_config->{"wmiserver"} = 1; # default
+	$pa_config->{"pluginserver"} = 1; # default
+	$pa_config->{"predictionserver"} = 1; # default
+	$pa_config->{"exportserver"} = 1; # default
+	$pa_config->{"inventoryserver"} = 1; # default
+	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"servermode"} = "";
+	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
+	$pa_config->{"network_threads"} = 3; # Fixed default
+	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
+	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
+	$pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
+	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
+	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
+	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+	$pa_config->{"snmp_trapd"} = '/usr/sbin/snmptrapd'; # 3.0
+	$pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
+	$pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
+	$pa_config->{"snmp_proc_deadresponse"} = 1; # Introduced on 1.3.1 10 Feb08
+	$pa_config->{"plugin_threads"} = 2; # Introduced on 2.0
+	$pa_config->{"plugin_exec"} = '/usr/local/bin/pandora_exec'; # 3.0
+	$pa_config->{"recon_threads"} = 2; # Introduced on 2.0
+	$pa_config->{"prediction_threads"} = 1; # Introduced on 2.0
+	$pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
+	$pa_config->{"wmi_threads"} = 2; # Introduced on 2.0
+	$pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
 	$pa_config->{"wmi_client"} = 'wmic'; # 3.0
-    $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
-    $pa_config->{"dataserver_threads"} = 2; # Introduced on 2.0
-    $pa_config->{"inventory_threads"} = 2; # 2.1
-    $pa_config->{"export_threads"} = 1; # 3.0
-    $pa_config->{"web_threads"} = 1; # 3.0
+	$pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
+	$pa_config->{"dataserver_threads"} = 2; # Introduced on 2.0
+	$pa_config->{"inventory_threads"} = 2; # 2.1
+	$pa_config->{"export_threads"} = 1; # 3.0
+	$pa_config->{"web_threads"} = 1; # 3.0
 
-    $pa_config->{"max_queue_files"} = 250; 
+	$pa_config->{"max_queue_files"} = 250; 
 
-    # Internal MTA for alerts, each server need its own config.
-    $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
-    $pa_config->{"mta_port"} = '25'; # Introduced on 2.0
-    $pa_config->{"mta_user"} = ''; # Introduced on 2.0
-    $pa_config->{"mta_pass"} = ''; # Introduced on 2.0
-    $pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
-    $pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
+	# Internal MTA for alerts, each server need its own config.
+	$pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
+	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0
+	$pa_config->{"mta_user"} = ''; # Introduced on 2.0
+	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
+	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
+	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
 
 	# nmap for recon OS fingerprinting and tcpscan (optional)
 	$pa_config->{"nmap"} = "/usr/bin/nmap";
@@ -221,24 +222,24 @@ sub pandora_load_config {
 	$pa_config->{'mcast_change_port'} = '';
 
 	# Update tagent_access
-    $pa_config->{"agentaccess"} = 1; 
+	$pa_config->{"agentaccess"} = 1; 
 
 	# Ignore the timestamp in the XML and use the file timestamp instead
-    $pa_config->{'use_xml_timestamp'} = 0; 
+	$pa_config->{'use_xml_timestamp'} = 0; 
 
 	# Server restart delay in seconds
-    $pa_config->{'restart_delay'} = 60; 
+	$pa_config->{'restart_delay'} = 60; 
 
 	# Auto restart every x seconds
-    $pa_config->{'auto_restart'} = 0; 
+	$pa_config->{'auto_restart'} = 0; 
 
 	# Check for UID0
-    if ($pa_config->{"quiet"} != 0){
+	if ($pa_config->{"quiet"} != 0){
 	    if ($> == 0){
-		    printf " [W] Not all Pandora FMS components need to be executed as root\n";
-			printf "	please consider starting it with a non-privileged user.\n";
+		printf " [W] Not all Pandora FMS components need to be executed as root\n";
+		printf "	please consider starting it with a non-privileged user.\n";
 	    }
-    }
+	}
 
 	# Check for file
 	if ( ! -e $archivo_cfg ) {

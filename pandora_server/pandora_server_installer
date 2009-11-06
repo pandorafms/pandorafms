@@ -4,9 +4,11 @@
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.0 Build 090810
+# v3.0 Build 091106
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
+
+# TO DO: Add K Scripts
 
 MODE=$1
 SECOPT=$2
@@ -220,7 +222,7 @@ install () {
 		
 		if [ -d /etc/cron.daily ]
 		then
-			echo "Create the Cron script to run daily Pandora DB tool"
+			echo "Creating the Cron script to run daily Pandora DB tool"
 			echo "#!/bin/bash" > /etc/cron.daily/pandora_db	
 			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
 			chmod +x /etc/cron.daily/pandora_db
@@ -228,6 +230,9 @@ install () {
 			echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
 			echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 		fi
+		echo
+		echo "Now you have to edit your /etc/pandora/pandora_server.conf file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
+		echo "After setting password you can start your Pandora FMS Server!!"
 		rm output
 	fi
 

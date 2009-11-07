@@ -46,12 +46,13 @@ $id_server = (int) get_parameter ("server_id", -1);
 $server_name = get_server_name ($id_server);
 $recon_tasks = get_db_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
 
-echo "<h2>". __('Configuration detail') . " - ".safe_input ($server_name);
+echo "<h2>".__('Pandora servers')." &raquo; ";
+echo __('Configuration detail') . " - ".safe_input ($server_name);
 echo '&nbsp;<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'">';
 print_image ("images/refresh.png");
 echo "</a>&nbsp;";
 if (check_acl ($config["id_user"],0,"PW")){
-	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask'><img 		src='images/setup.png'></A>";
+	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask'><img src='images/setup.png'></a>";
 }
 echo "</h2>";
 
@@ -69,7 +70,7 @@ $table->head = array ();
 $table->data = array ();
 $table->align = array ();
 
-$table->head[0] = '';
+$table->head[0] = __('Force');
 $table->align[0] = "center";
 
 $table->head[1] = __('Task name');
@@ -99,7 +100,7 @@ $table->align[8] = "center";
 $table->head[9] = __('Updated at');
 $table->align[9] = "center";
 
-$table->head[10] = '';
+$table->head[10] = __('Edit');
 $table->align[10] = "center";
 
 foreach ($recon_tasks as $task) {

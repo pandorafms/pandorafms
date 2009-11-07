@@ -1,3 +1,10 @@
+2009-11-07  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/servers/view_server_detail.php: Change title to show the
+	father section and some added texts.
+
+	* include/help/en/help_*.php: Several language fixes.
+
 2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/tactical.php, general/logon_ok.php: Use the same

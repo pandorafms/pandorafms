@@ -6,7 +6,7 @@
 <h1>TCP Check</h1>
 
 <p>
-This module just send character strings to destination IP / port, wait for response and optionally match it's response with a predefined response. If TCP SEND / TCP RCV. fields are emply just check for an open port in destination.
+This module just send character strings to destination IP / port, wait for response and optionally match it's response with a predefined response. If TCP SEND / TCP RCV. fields are empty, it just checks for an open port in destination.
 </p>
 <p>
 You can use ^M string to send a carriage return, and also can use a multi request / multi response conversation. Several request and responses are separated with | character.
@@ -16,7 +16,7 @@ You can use ^M string to send a carriage return, and also can use a multi reques
 <h2>Example #1. Checking WEB service</h2>
 
 <p>
-Just imagine that you want to check that www.yahoo.com reply correctly to a HTTP request. Put this in TCP Send:<br><BR>
+Just imagine that you want to check that www.yahoo.com reply correctly to a HTTP request. Put this in TCP Send:<br><br>
 GET / HTTP/1.0^M^M
 <br /><br />
 And this on TCP receive:

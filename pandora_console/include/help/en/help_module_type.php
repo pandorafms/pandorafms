@@ -7,14 +7,14 @@
 
 The following list describes the module types:
 <ul>
-	<li>async_data: Asyncronous numeric data</li>
-	<li>async_inc: Asyncronous incremental data</li>
-	<li>async_proc: Asyncronous proc data</li>
-	<li>async_string: Asyncronous string data</li>
-	<li>generic_data: Generic module to adquire numeric data</li>
-	<li>generic_data_inc: Generic module to adquire numeric incremental data</li>
-	<li>generic_data_string: Generic module to adquire alphanumeric data</li>
-	<li>generic_proc: Generic module to adquire boolean data</li>
+	<li>async_data: Asynchronous numeric data</li>
+	<li>async_inc: Asynchronous incremental data</li>
+	<li>async_proc: Asynchronous proc data</li>
+	<li>async_string: Asynchronous string data</li>
+	<li>generic_data: Generic module to acquire numeric data</li>
+	<li>generic_data_inc: Generic module to acquire numeric incremental data</li>
+	<li>generic_data_string: Generic module to acquire alphanumeric data</li>
+	<li>generic_proc: Generic module to acquire boolean data</li>
 	<li>image_jpg: Image JPG data</li>
 	<li>image_png: Image PNG data</li>
 	<li>keep_alive: KeepAlive</li>

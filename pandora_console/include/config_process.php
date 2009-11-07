@@ -28,7 +28,7 @@ $pandora_version = 'v3.0RC2';
 $config['start_time'] = microtime (true);
 
 //Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
-$config['dbconnection'] = mysql_pconnect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
+$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
 if (! $config['dbconnection']) {
 	include ($config["homedir"]."/general/error_authconfig.php");
 	exit;

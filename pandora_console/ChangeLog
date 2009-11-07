@@ -1,3 +1,11 @@
+2009-11-07  Sancho Lerena <slerena@gmail.com>
+
+	* include/config_process.php: COme back to non-persistent pconnect 
+	who seems to raise some "MySQL has gone away" in PHP 5.3.x
+
+	* extensions/update_manager/sql/update_manager.sql: Updated update
+	manager URL to point 3.0 version.
+
 2009-11-07  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/servers/view_server_detail.php: Change title to show the

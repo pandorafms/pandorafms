@@ -19,15 +19,18 @@ install () {
 	chmod 750 bin/*
 	chmod 750 pandora_* 
 	chmod 750 util/*.pl
+	chmod 750 util/*.sh
 	chmod 750 util/pandora_exec
-	chmod 750 util/SLES10/*
+	chmod 750 util/tentacle_serverd
+	chmod 750 util/pandora_server
 	chmod 750 util/plugin/*
 
 	echo "Copying utilities...."
-	cp -R util /usr/share/pandora
+	cp -R util /usr/share/pandora_server
 
 	echo "Copying startup scripts to /etc/init.d...."
-        cp pandora_* /etc/init.d
+        cp pandora_server /etc/init.d
+	cp util/tentacle_serverd /etc/init.d
 
 	if [ ! -e  /etc/cron.daily/pandora_purge_db ]
 	then
@@ -37,7 +40,7 @@ install () {
 	fi
 
 	echo " "
-	echo "DONE!. Don't forget to restart all your Pandora FMS servers"
+	echo "DONE!. Don't forget to restart all your Pandora FMS servers running in this machine"
 	echo " "
 }
 

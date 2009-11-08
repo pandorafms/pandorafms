@@ -1,3 +1,27 @@
+2009-11-07  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_installer: A few bunch of upgrades for SUSE, added
+	logrotate.d and some minor fixes.
+
+	* pandora_server_upgrade: Some minor fixes.
+
+	* PandoraFMS/Tools.pm: Fixes to internal SMTP Auth mechanism. 
+
+	* util/pandora_logrotate: Much better configuration for pandora 
+	logrotate config, this also rotate pandora_server.error and delete
+	files after 5 days.
+
+	* util/pandora_server: more fixes and small improvements to daemon
+	script: Removed Mysql dependency on LSB, added variable for let user
+	to choose timeout before KILL, and now checks for especific .conf file
+	on detecting PID, this should work with several servers running in the
+	same server.
+
+	* util/plugin/ssh_pandoraplugin.sh: rewritten to use real parameters
+	and be more verbose and easy to integrate in Pandora FMS Plugin server.
+
+	* util/plugin/udp_nmap_plugin.sh: Same as above.
+
 2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* lib/PandoraFMS/Config.pm: Changed string from RC1 to RC2.

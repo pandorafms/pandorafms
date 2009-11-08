@@ -87,6 +87,8 @@ install () {
 		echo " "
 		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI"
 		echo " "
+		echo "  You also will need to install xprobe2 and wmiclient from rpm (download from our website)"
+		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
 		echo "  $ cpan Digest::MD5 Time::Local DBI XML::Simple IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
@@ -182,9 +184,20 @@ install () {
 				echo "Linking startup script to /etc/rc2.d"
 				ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
 			else
-				INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-				echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
-				ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+				if [ "$DISTRO" == "SUSE" ]
+				then
+					echo "Creating startup daemons"
+					insserv pandora_server
+				else
+					# Pandora FMS Server install (Other Distros)
+					INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
+					if [ -z "$INITLV" ]
+					then
+						INITLV=2
+					fi
+					echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
+					ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+				fi
 			fi
 		fi
 
@@ -207,11 +220,19 @@ install () {
 					cp util/tentacle_serverd /etc/init.d/tentacle_serverd
 					ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
 				else
-					# Tentacle server install (SUSE)
-					echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
-					cp bin/tentacle_server /usr/local/bin
-					cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-					ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+					if [ "$DISTRO" == "SUSE" ]
+					then
+						echo "Creating Tentacle startup daemon"
+						cp bin/tentacle_server /usr/local/bin
+						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+						insserv tentacle_serverd
+					else
+						# Tentacle server install (Other Distros)
+						echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
+						cp bin/tentacle_server /usr/local/bin
+						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
+						ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+					fi
 				fi
 			fi
 		fi
@@ -234,6 +255,12 @@ install () {
 		echo "Now you have to edit your /etc/pandora/pandora_server.conf file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
 		echo "After setting password you can start your Pandora FMS Server!!"
 		rm output
+
+		if [ -d "/etc/logrotate.d" ]
+		then
+			echo "Managing Pandora FMS logs with logrotate (Distro independent)"
+			cp -aRf util/pandora_logrotate /etc/logrotate.d/pandora
+		fi
 	fi
 
 }
@@ -249,8 +276,8 @@ uninstall () {
 	echo "   userdel pandora"
 	echo "   rm -Rf /home/pandora/"
 	
-    ## Just to clarify here. Some people (like me) are using the pandora user 
-    ## for other purposes and/or using an LDAP-based user management
+    	## Just to clarify here. Some people (like me) are using the pandora user 
+    	## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
 
 	rm -Rf /var/log/pandora/  2> /dev/null 
@@ -262,6 +289,7 @@ uninstall () {
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
 	rm -Rf /usr/share/pandora_server
 	rm -Rf /etc/cron.daily/pandora_db
+	rm -Rf /etc/logrotate.d/pandora
 	echo "Done"
 }
 

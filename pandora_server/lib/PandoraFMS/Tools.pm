@@ -154,7 +154,11 @@ sub pandora_daemonize {
 # param4 - Email Message body
 ##########################################################################
 
-sub pandora_sendmail {                  # added in 2.0 version
+sub pandora_sendmail {                  
+
+	#WARNING: To use MTA Auth is needed v0.79_16 or higer of Mail:Sendmail
+	#http://cpansearch.perl.org/src/MIVKOVIC/Mail-Sendmail-0.79_16/Sendmail.pm
+	
 	my $pa_config = $_[0];
 	my $to_address = $_[1];
 	my $subject = $_[2];
@@ -163,21 +167,23 @@ sub pandora_sendmail {                  # added in 2.0 version
 	my %mail = ( To   => $to_address,
 			  Message => $message,
 			  Subject => $subject,
+			  'X-Mailer' => "Pandora FMS",
 			  Smtp    => $pa_config->{"mta_address"},
 			  Port    => $pa_config->{"mta_port"},
 			  From    => $pa_config->{"mta_from"},
 	);
 
 	if ($pa_config->{"mta_user"} ne ""){
-		$mail{auth} = {user=>$config->{"mta_user"}, password=>$config->{"mta_pass"}, method=>$config->{"mta_auth"}, required=>0 }
+		$mail{auth} = {user=>$pa_config->{"mta_user"}, password=>$pa_config->{"mta_pass"}, method=>$pa_config->{"mta_auth"}, required=>1 };
 	}
-	eval {
-		sendmail(%mail);
-	};
-	if ($@){
+
+	if (sendmail %mail) { 
+		return;
+	} else {
 		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		logger ($pa_config, "ERROR Code: $@", 4);
+		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
 	}
+
 }
 
 ##########################################################################

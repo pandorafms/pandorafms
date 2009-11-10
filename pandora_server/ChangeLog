@@ -1,3 +1,9 @@
+2009-11-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Fixed bug #2894950.
+	
+	* lib/PandoraFMS/DataServer.pm: Fixed bug #2894737.
+
 2009-11-08  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_checkdep.pl: Deleted old dep checker, not used anymore.

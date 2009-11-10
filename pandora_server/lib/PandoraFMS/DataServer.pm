@@ -41,6 +41,7 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
+my $AgentSem :shared = Thread::Semaphore->new (1);
 
 ########################################################################################
 # Data Server class constructor.
@@ -171,10 +172,12 @@ sub process_xml_data ($$$$) {
    	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
   
   	# Get agent id
+  	$AgentSem->down ();
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {
 			logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 3);
+			$AgentSem->up ();
 			return;
 		}
 		
@@ -188,8 +191,12 @@ sub process_xml_data ($$$$) {
 
 		# Create the agent
 		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $dbh);
-		return unless defined ($agent_id);
+		if (! defined ($agent_id)) {
+			$AgentSem->up ();
+			return;
+		}
 	}
+  	$AgentSem->up ();
 
 	pandora_update_agent ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh);
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);

@@ -60,17 +60,13 @@ rm /etc/pandora/pandora_server.conf
 GET_DISTRO="`get_distro`"
 DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 
-if [ "$DISTRO" == "UBUNTU" ]
-then
-	rm /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-	rm /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
-else
-	INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-	rm /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
-	rm /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
-fi
+rm /etc/init.d/pandora_server 
+rm /etc/rc2.d/S90pandora_server
+rm /etc/init.d/tentacle_serverd 
+rm /etc/rc2.d/S80tentacle_serverd
 
 if [ -d /etc/cron.daily ]
 then
 	rm /etc/cron.daily/pandora_db
 fi
+

@@ -56,54 +56,26 @@ get_distro () {
 }
 
 
+echo "Creating common Pandora FMS directories"
+useradd pandora 2> /dev/null
+mkdir -p /home/pandora/.ssh 2> /dev/null
+chown -R pandora:root /home/pandora 
+chmod 755 /usr/local/bin/tentacle_server
 
 echo "Giving proper permission to /var/spool/pandora"
-id -g www-data > /dev/null
-if [ $? -eq 0 ]
-then
-	chown -R pandora:www-data /var/spool/pandora/ 
-else
-	id -g www > /dev/null
-	if [ $? -eq 0 ]
-	then
-		chown -R pandora:www /var/spool/pandora/ 
-	else
-		id -g apache  > /dev/null
-		if [ $? -eq 0 ]
-		then
-			chown -R pandora:apache /var/spool/pandora/ 
-		else
-			echo "No web server user found, some functionality might not perform correctly"
-			chown -R pandora:root /var/spool/pandora
-		fi
-	fi
-fi
+chown -R pandora /var/spool/pandora/ 
+
+echo "Creating setup directory in /etc/pandora"
+mkdir /etc/pandora 2> /dev/null
 
 chmod 770 /etc/pandora/pandora_server.conf
 
-GET_DISTRO="`get_distro`"
-DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
+echo "Linking startup script to /etc/rc2.d"
+ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
 
-if [ "$DISTRO" == "UBUNTU" ]
-then
-	echo "Linking startup script to /etc/rc2.d"
-	ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-else
-	INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-	echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
-	ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
-fi
-
-if [ "$DISTRO" == "UBUNTU" ]
-then
-	# Tentacle server install (Ubuntu)
-	echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-	ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
-else
-	# Tentacle server install (SUSE)
-	echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
-	ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
-fi
+# Tentacle server install
+echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
+ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
 
 if [ -d /etc/cron.daily ]
 then

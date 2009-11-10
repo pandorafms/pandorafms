@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_agent_version="3.0.0.rc1"
+pandora_agent_version="3.0.0.rc2"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -26,20 +26,21 @@ else
 	echo "Found \"dpkg-debs\"."
 fi
 
+cd ..
+
 echo "Make a \"temp_package\" temp dir for job."
 mkdir -p temp_package/usr/share/pandora_agent
 mkdir -p temp_package/var/spool/pandora/data_out
 mkdir -p temp_package/var/log/pandora/ 
 mkdir -p temp_package/etc/pandora
 mkdir -p temp_package/etc/init.d/
-
-cd ..
+mkdir -p temp_package/usr/bin
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
 
 PANDORA_LOG=temp_package/var/log/pandora/pandora_agent.log
-PANDORA_BIN=temp_package/usr/bin
+PANDORA_BIN=temp_package/usr/bin/pandora_agent
 PANDORA_HOME=temp_package/usr/share/pandora_agent
 TENTACLE=temp_package/usr/bin/tentacle_client
 PANDORA_CFG=temp_package/etc/pandora

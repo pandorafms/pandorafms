@@ -16,6 +16,7 @@
 Summary:            Pandora FMS Console
 Name:               %{name}
 Version:            %{version}
+Release:            %{release}
 License:            GPL
 Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz

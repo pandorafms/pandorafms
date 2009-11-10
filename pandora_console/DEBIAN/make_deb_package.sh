@@ -59,45 +59,10 @@ echo "Make a \"temp_package\" temporary dir for job."
 mkdir -p temp_package/var/www/pandora_console
 
 echo "Make directory system tree for package."
-for item in `ls `
-do
-	echo -n "."
-
-	if [ $item != 'temp_package' -a $item != 'pandora_console.spec' ]
-	then
-		if [ $item = 'DEBIAN' ]
-		then
-			cp $item temp_package -R
-		else
-			cp $item temp_package/var/www/pandora_console -R
-		fi
-	fi
-done
-echo "END"
-
-#	if [ $item != 'temp_package' -a $item != 'pandora_console.spec' -a $item != 'make_deb_package.sh' ]
-#	then
-#	fi
-
-echo "Remove the SVN files and other temp files."
-for item in `find temp_package`
-do
-	echo -n "."
-	echo $item | grep "svn" > /dev/null
-	#last command success
-	if [ $? -eq 0 ]
-	then
-		rm -rf $item
-	fi
-	
-	echo $item | grep "make_deb_package.sh" > /dev/null
-	#last command success
-	if [ $? -eq 0 ]
-	then
-		rm -rf $item
-	fi
-done
-echo "END"
+cp -R $(ls | grep -v temp_package | grep -v DEBIAN ) temp_package/var/www/pandora_console
+cp -R DEBIAN temp_package
+find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
+rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
 
 echo "Calculate md5sum for md5sums package control file."
 for item in `find temp_package`
@@ -134,4 +99,6 @@ cd ..
 
 
 echo "Delete the \"temp_package\" temporary dir for job."
-rm -rf temp_package
+rm -Rf temp_package
+
+echo "DONE: Package ready at: ../pandorafms.console_$pandora_console_version.deb"

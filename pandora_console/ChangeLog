@@ -1,3 +1,12 @@
+2009-11-10  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_console.spec: Fixed small problem with .spec
+
+	* DEBIAN/control: Edited package description.
+
+	* DEBIAN/make_deb_package.sh: Several changes, deletion and copy
+	of files and .svn are not made with cp and xargs | rm: Faster.
+	
 2009-11-07  Sancho Lerena <slerena@gmail.com>
 
 	* include/config_process.php: COme back to non-persistent pconnect 

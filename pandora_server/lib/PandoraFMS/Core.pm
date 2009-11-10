@@ -452,7 +452,7 @@ sub pandora_execute_action ($$$$$$$$) {
 
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
-		my $command = decode_entities(subst_alert_macros ($action->{'command'}, \%macros));
+		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
 		$command = subst_alert_macros ($command, \%macros);
 		logger($pa_config, "Executing command $command", 4);
 
@@ -819,8 +819,11 @@ sub pandora_exec_forced_alerts {
 	my ($pa_config, $dbh) = @_;
 
 	# Get alerts marked for forced execution (even disabled alerts)
-	my @alerts = get_db_rows ($dbh, 'SELECT * FROM talert_template_modules WHERE force_execution = 1');
-
+	my @alerts = get_db_rows ($dbh, 'SELECT talert_template_modules.id as id_template_module,
+	                                talert_template_modules.*, talert_templates.*
+	                                FROM talert_template_modules, talert_templates
+	                                WHERE talert_template_modules.id_alert_template = talert_templates.id
+	                                AND force_execution = 1');
 	foreach my $alert (@alerts) {
 		
 		# Get the agent and module associated with the alert
@@ -829,11 +832,10 @@ sub pandora_exec_forced_alerts {
 		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 		next unless defined ($agent);
 
-		# $alert already contains agent data!
 		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh);
 
 		# Reset the force_execution flag, even if the alert could not be executed
-		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id'});
+		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'});
 	}
 }
 

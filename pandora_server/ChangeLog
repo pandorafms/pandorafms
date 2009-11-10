@@ -1,5 +1,10 @@
 2009-11-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed forced alert execution. Substitute alert
+	  macros after decoding HTML entities.
+
+2009-11-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/PredictionServer.pm: Fixed bug #2894950.
 	
 	* lib/PandoraFMS/DataServer.pm: Fixed bug #2894737.

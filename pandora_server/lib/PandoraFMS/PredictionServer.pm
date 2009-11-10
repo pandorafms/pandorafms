@@ -190,11 +190,11 @@ sub exec_prediction_module ($$$$) {
         # Need to get data outside interval because no data.
         if (!(defined($average_interval)) || ($average_interval == 0)) {
             $last_data = get_db_value ($dbh, 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ? AND utimestamp > ? LIMIT 1', $target_module->{'id_agente_modulo'}, $week_utimestamp[$i]);
-            $sum_data++ if ($last_data != 0);
-
+            next unless defined ($last_data);
             $first_data = get_db_value ($dbh, 'SELECT datos FROM tagente_datos WHERE id_agente_modulo = ? AND utimestamp < ? LIMIT 1', $target_module->{'id_agente_modulo'}, $temp1);
+            next unless defined ($first_data);
+            $sum_data++ if ($last_data != 0);
             $sum_data++ if ($first_data != 0);
-
             $week_data[$i] = (($last_data + $first_data) / $sum_data);
         } else {
             $week_data[$i] = $average_interval;

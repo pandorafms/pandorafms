@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Pandora FMS- http:#pandorafms.com
+# Pandora FMS- http://pandorafms.com
 # ==================================================
 # Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
 # Please see http:#pandorafms.org for full contribution list
@@ -66,7 +66,6 @@ cp conf/pandora_server.conf temp_package/etc/pandora/
 cp util/pandora_server temp_package/etc/init.d/
 
 cp -R util temp_package/usr/share/pandora_server
-
 cp -R DEBIAN temp_package/
 
 echo "Remove the SVN files and other temp files."

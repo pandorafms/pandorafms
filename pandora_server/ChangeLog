@@ -1,3 +1,23 @@
+2009-11-08  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_checkdep.pl: Deleted old dep checker, not used anymore.
+	
+	* pandora_server_upgrade: Several fixes, adding logrotate conf and more
+	link, permissions and startup scripts stuff fixed.
+	
+	* DEBIAN/control: Updated to RC2, deleted old deps not used anymore.
+	
+	* DEBIAN/postinst: Simplified some stuff who don't work nice (startup 
+	script links, logrotate missing and pandora user doesn't exist. Also problems
+	with permissions with tentacle_server.
+	
+	* DEBIAN/prerm: Simplified, fixed problems deleting startup links.
+	
+	* DEBIAN/conffiles: Was not working and causes pandora_server.conf to do
+	not exist in target systems. Removing it works nice.
+	
+	DEBian packages works 100%, tested on latest Debian Stable from scratch.
+	
 2009-11-07  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_installer: A few bunch of upgrades for SUSE, added

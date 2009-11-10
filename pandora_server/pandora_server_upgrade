@@ -20,23 +20,37 @@ install () {
 	chmod 750 pandora_* 
 	chmod 750 util/*.pl
 	chmod 750 util/*.sh
-	chmod 750 util/pandora_exec
 	chmod 750 util/tentacle_serverd
 	chmod 750 util/pandora_server
 	chmod 750 util/plugin/*
 
 	echo "Copying utilities...."
 	cp -R util /usr/share/pandora_server
+	cp bin/pandora_exec /usr/local/bin
+	
+	echo "Rebuilding links /usr/local/bin -> /usr/bin"
+	rm /usr/bin/pandora_server
+	rm /usr/bin/pandora_exec
+	ln -s /usr/local/bin/pandora_server /usr/bin
+	ln -s /usr/local/bin/pandora_exec /usr/bin	
+	ln -s /usr/local/bin/tentacle_server /usr/bin
+
+	if [ -d /etc/logrotate.d ]; then
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp util/pandora_logrotate /etc/logrotate.d/pandora
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+	fi
 
 	echo "Copying startup scripts to /etc/init.d...."
-        cp pandora_server /etc/init.d
+	cp util/pandora_server /etc/init.d
 	cp util/tentacle_serverd /etc/init.d
 
 	if [ ! -e  /etc/cron.daily/pandora_purge_db ]
 	then
 		echo "You don't have a /etc/cron.daily/pandora_purge_db file, you should consider"
 		echo "to setup the Pandora FMS daily Database Maintance script: "
-		echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+		echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 	fi
 
 	echo " "

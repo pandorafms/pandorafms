@@ -427,7 +427,10 @@ if ($update_module || $create_module) {
 	}
 	$ip_target = (string) get_parameter ('ip_target');
 	$plugin_user = (string) get_parameter ('plugin_user');
-	$plugin_pass = (string) get_parameter ('plugin_pass');
+	if (get_parameter('id_module_component_type') == 7)
+		$plugin_pass = (int) get_parameter ('plugin_pass');
+	else
+		$plugin_pass = (string) get_parameter ('plugin_pass');
 	$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');

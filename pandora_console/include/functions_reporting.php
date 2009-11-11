@@ -146,10 +146,12 @@ function get_group_stats ($id_group = 0) {
 	if (empty ($alerts))
 		$alerts = array ();
 	
-	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter);
-	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp = 0");
-	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
-	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+	$disabledQuery = "id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled = 0) AND ";
+	
+	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter);
+	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp = 0");
+	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");debugPrint("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
+	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp > 0 AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
 	

@@ -1,0 +1,90 @@
+#!/bin/sh
+
+# **********************************************************************
+# Generic Daemon launcher for Unix (AIX, HP-UX, SunOS, Linux)
+# (c) 2008-2009 Artica ST
+# (c) 2008-2009 Sancho Lerena <slerena@gmail.com>
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+DAEMON="/home/slerena/code/pandora/trunk/extras/daemon_watchdog"
+
+# This function replace pidof, not working in the same way in different linux distros
+
+pidof_daemon () {
+	COLUMNS=300
+	OS_NAME=`uname -s`
+	if [ $OS_NAME = "HP-UX" ]
+	then
+		A_PID=`ps -ex | grep "$DAEMON" | grep -v grep | head -1 | awk '{ print $1 }'`
+	else
+		A_PID=`ps -Af | grep "$DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+	fi
+	
+	echo $A_PID
+}
+
+if [ ! -f $DAEMON ]
+then
+	echo "$DAEMON not found, please check setup. Exiting"
+	exit
+fi
+
+case "$1" in
+	start)
+		A_PID=`pidof_daemon`
+		if [ ! -z "$A_PID" ]
+		then
+			echo "$DAEMON is currently running on this machine with PID $A_PID"
+			echo "Cannot launch again. Aborting."
+			exit 1
+		fi
+		nohup $DAEMON 2> /dev/null > /dev/null & 
+		sleep 2
+		rm nohup.out 2> /dev/null
+		
+		A_PID=`pidof_daemon`
+		if [ -z "$A_PID" ]
+		then
+			echo "Cannot start $DAEMON. Exitting"
+			exit 1
+		else
+			echo "$DAEMON is now running with PID $A_PID"
+		fi
+	;;
+	
+	stop)
+		A_PID=`pidof_daemon`
+		if [ -z "$A_PID" ]
+		then
+			echo "$DAEMON is not running, cannot stop it. Aborting now..."
+			exit 1
+		else
+			echo "Stopping $DAEMON"
+			kill $A_PID > /dev/null 2>&1        
+		fi
+	;;
+
+	status)
+		A_PID=`pidof_daemon`	
+		if [ -z "$A_PID" ]
+		then
+			echo "$DAEMON is not running."
+		else
+			echo "$DAEMON is running with PID $A_PID."
+		fi
+		exit 0
+	;;
+
+	force-reload|restart)
+		$0 stop
+		sleep 2
+		$0 start
+	;;
+	
+	*)
+        echo "Uso: generic_daemon_launcher {start|stop|restart|status}"
+        exit 1
+esac
+

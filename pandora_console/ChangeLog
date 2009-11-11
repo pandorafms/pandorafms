@@ -1,3 +1,10 @@
+2009-11-11  Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/agentes/configurar_agente.php: fix the web module, change the
+	field to save the request retry.
+	* godmode/agentes/configurar_agente.php: change the query for tactical view
+	the counts of modules before count the disabled modules.
+
 2009-11-10  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_console.spec: Fixed small problem with .spec

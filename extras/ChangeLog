@@ -1,3 +1,19 @@
+2009-11-11   Sancho Lerena <slerena@artica.es>
+
+	* tentacle_proxy: Upgrade to support a previous check of connectiviy
+	before trying to copy nothing to up server.
+
+	* generic_daemon_launcher: A generic script used to launch other 
+	apps/scripts as daemons. Could be used with tentacle_proxy, daemon_watchdog
+	a secondary pandora_agent or pandora_server instance, for example.
+
+	* daemon_watchdog: A script used to watchdog for another process, for
+	example a pandora_server or a mysql. This also try to "restart" the process
+	if it's down and has a custom execution field to notify directly admin
+	when a daemon is not restarting and it's down.
+
+	* build_rpm_packages.sh: Some fixes in RPM build script.
+
 2009-09-08   Sancho Lerena <slerena@artica.es>
 
 	* Initial load of extras subdir. Expect to have some dirty

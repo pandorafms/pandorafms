@@ -1,5 +1,10 @@
 2009-11-11  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: fix the debug trace I forget in source
+	code.
+
+2009-11-11  Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php: fix the web module, change the
 	field to save the request retry.
 	* godmode/agentes/configurar_agente.php: change the query for tactical view

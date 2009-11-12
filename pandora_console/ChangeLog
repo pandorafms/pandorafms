@@ -1,3 +1,9 @@
+2009-11-12  Sancho lerena <slerena@artica.es>
+
+	* include/help/en/help_web_checks.php: Added missing help.
+
+	* include/help/en/help_alert_macros.php: Added missing macros.
+
 2009-11-11  Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: fix the debug trace I forget in source

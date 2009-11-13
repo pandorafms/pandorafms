@@ -65,7 +65,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS Recon Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS Recon Server.", 1);
 	$self->setNumThreads ($pa_config->{'recon_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -110,7 +110,7 @@ sub data_consumer ($$) {
 	# Get a NetAddr::IP object for the target network
 	my $net_addr = new NetAddr::IP ($task->{'subnet'});
 	if (! defined ($net_addr)) {
-		logger ($pa_config, 'Invalid network ' . $task->{'subnet'} . ' for task ' . $task->{'name'}, 2);
+		logger ($pa_config, "Invalid network " . $task->{'subnet'} . " for task '" . $task->{'name'} . "'.", 3);
 		update_recon_task ($dbh, $task_id, -1);
 		return -1;
 	}
@@ -137,10 +137,14 @@ sub data_consumer ($$) {
 		}
 
 		next unless ($alive > 0);
+		logger($pa_config, "Found host $addr.", 10);
 
 		# Guess the OS and filter
 		my $id_os = guess_os ($pa_config, $addr);
-		next if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os);
+		if ($task->{'id_os'} > 0 && $task->{'id_os'} != $id_os) {
+			logger($pa_config, "Skipping host $addr os ID $id_os.", 10);
+			next;
+		}
 
 		$hosts_found ++;
 		$addr_found .= $addr . " ";
@@ -155,7 +159,10 @@ sub data_consumer ($$) {
 		# Add the new address if it does not exist
 		my $addr_id = get_addr_id ($dbh, $addr);
 		$addr_id = add_address ($dbh, $addr) unless ($addr_id > 0);
-		next unless ($addr_id > 0);
+		if ($addr_id <= 0) {
+			logger($pa_config, "Could not add address '$addr' for host '$host_name'.", 3);
+			next;
+		}
 
 		# Crate a new agent
 		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
@@ -282,10 +289,15 @@ sub create_network_profile_modules {
 	my @np_components = get_db_rows ($dbh, 'SELECT * FROM tnetwork_profile_component WHERE id_np = ?', $np_id);
 
 	foreach my $np_component (@np_components) {
-		
+
 		# Get network component data
 		my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component wHERE id_nc = ?', $np_component->{'id_nc'});
-		next unless defined ($component);
+		if (! defined ($component)) {
+			logger($pa_config, "Network component ID " . $np_component->{'id_nc'} . " for agent $addr not found.", 3);
+			next;
+		}
+
+		logger($pa_config, "Processing network component '" . $component->{'name'} . "' for agent $addr.", 10);
 
 		# Create the module
 		my $module_id = db_insert ($dbh, 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo )
@@ -293,13 +305,11 @@ sub create_network_profile_modules {
 		                                             $agent_id, $component->{'type'}, $component->{'description'}, $component->{'name'}, $component->{'max'}, $component->{'min'}, $component->{'module_interval'}, $component->{'tcp_port'}, $component->{'tcp_send'}, $component->{'tcp_rcv'}, $component->{'snmp_community'},
 		                                             $component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'});
 
-		logger($pa_config, 'Recon Server: Creating module ' . $component->{'name'} . " for agent $addr", 3);
-
 		# An entry in tagente_estado is necessary for the module to work
 		db_insert ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by)
 		                  VALUES (?, \'\', \'0000-00-00 00:00:00\', 1, ?, \'0000-00-00 00:00:00\', 0, ?, 0)', 
 		                   $module_id, $agent_id, $component->{'module_interval'});
-
+		logger($pa_config, 'Creating module ' . $component->{'name'} . " for agent $addr from network component '" . $component->{'name'} . "'.", 10);
 	}
 }
 

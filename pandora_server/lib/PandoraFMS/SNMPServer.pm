@@ -45,8 +45,8 @@ sub new ($$;$) {
 
 	# Start snmptrapd
 	if (system ($config->{'snmp_trapd'} . ' -t -On -n -a -Lf ' . $config->{'snmp_logfile'} . ' -p /var/run/pandora_snmptrapd.pid -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\\\n >/dev/null 2>&1') != 0) {
-		logger ($config, " [E] Could not start snmptrapd.\n\n", 0);
-		print " [E] Could not start snmptrapd.\n\n";
+		logger ($config, " [E] Could not start snmptrapd.", 1);
+		print_message ($config, " [E] Could not start snmptrapd.", 1);
 		return undef;
 	}
 
@@ -62,8 +62,9 @@ sub new ($$;$) {
 ###############################################################################
 sub run ($) {
 	my $self = shift;
+	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS SNMP Console. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS SNMP Console.", 1);
 	$self->SUPER::run (\&PandoraFMS::SNMPServer::pandora_snmptrapd);
 }
 
@@ -124,6 +125,7 @@ sub pandora_snmptrapd {
 				# Unknown data
 				next if ($line !~ m/\[\*\*\]/);
 
+				logger($pa_config, "Reading trap '$line'", 10);
 				my ($date, $time, $source, $oid,
 					$type, $type_desc, $value, $data) = split(/\[\*\*\]/, $line);
 

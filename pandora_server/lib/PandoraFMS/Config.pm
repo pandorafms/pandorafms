@@ -50,15 +50,15 @@ my %pa_config;
 ##########################################################################
 
 sub help_screen {
-	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
-	printf "Following options are optional : \n";
-	printf "      -v        :  Verbose mode activated. Writes more information in the logfile \n";
-	printf "      -d        :  Debug mode activated. Writes extensive information in the logfile \n";
-	printf "      -D        :  Daemon mode (runs in background)\n";
-	printf "      -P <file> :  Store PID to file.\n";
-	printf "      -q        :  Quiet startup \n";
-	printf "      -h        :  This screen. Shows a little help screen \n";
-	printf " \n";
+	print "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
+	print "Following options are optional : \n";
+	print "      -v        :  Verbose mode activated. Writes more information in the logfile \n";
+	print "      -d        :  Debug mode activated. Writes extensive information in the logfile \n";
+	print "      -D        :  Daemon mode (runs in background)\n";
+	print "      -P <file> :  Store PID to file.\n";
+	print "      -q        :  Quiet startup \n";
+	print "      -h        :  This screen. Shows a little help screen \n";
+	print " \n";
 	exit;
 }
 
@@ -70,9 +70,9 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2009 ArticaST\n";
-	printf "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
-	printf "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2009 ArticaST\n";
+	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
+	print "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
@@ -232,6 +232,9 @@ sub pandora_load_config {
 
 	# Auto restart every x seconds
 	$pa_config->{'auto_restart'} = 0; 
+
+	# Restart server on error
+	$pa_config->{'restart'} = 0; 
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -504,6 +507,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^auto_restart\s+(\d+)/i) {
                         $pa_config->{'auto_restart'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^restart\s+([0-1])/i) {
+                        $pa_config->{'restart'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 
@@ -533,7 +539,7 @@ sub pandora_load_config {
 		}
 	}
 
-	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 0);
+	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 1);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options", 1);
 }
@@ -544,7 +550,7 @@ sub pandora_start_log ($){
 
 	# Dump all errors to errorlog
 	open (STDERR, ">> " . $pa_config->{'errorlogfile'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
-	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . $pa_config->{'servermode'} . " Starting Pandora FMS Server. Error logging activated \n";
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . $pa_config->{'servermode'} . " Starting Pandora FMS Server. Error logging activated.\n";
 }
 
 # End of function declaration

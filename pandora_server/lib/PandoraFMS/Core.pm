@@ -68,6 +68,7 @@ our @EXPORT = qw(
 # Some global variables
 our @DayNames = qw(monday tuesday wednesday thursday friday saturday sunday);
 our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver);
+our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
 # Generate alerts for a given module.
@@ -88,7 +89,7 @@ sub pandora_generate_alerts ($$$$$$$) {
 	                               AND id_agent_module = ? AND disabled = 0', $module->{'id_agente_modulo'});
 
 	foreach my $alert (@alerts) {
-		my $rc = pandora_evaluate_alert($pa_config, $data, $status, $alert,
+		my $rc = pandora_evaluate_alert($pa_config, $agent, $data, $status, $alert,
 		                                $utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
@@ -110,8 +111,10 @@ sub pandora_generate_alerts ($$$$$$$) {
 # 4 Recover the alert.
 # 5 Reset internal counter (alert not fired, interval elapsed).
 ##########################################################################
-sub pandora_evaluate_alert ($$$$$$) {
-    my ($pa_config, $data, $last_status, $alert, $utimestamp, $dbh) = @_;
+sub pandora_evaluate_alert ($$$$$$$) {
+    my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh) = @_;
+
+	logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "'.", 10);
 
 	# Value returned on valid data
 	my $status = 1;
@@ -179,7 +182,7 @@ sub pandora_evaluate_alert ($$$$$$) {
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
 	}
 	# Compound alert
-	elsif (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $dbh) == 0) {
+	elsif (pandora_evaluate_compound_alert($pa_config, $alert->{'id'}, $alert->{'name'}, $dbh) == 0) {
 		return $status
 	}
 
@@ -196,6 +199,8 @@ sub pandora_evaluate_alert ($$$$$$) {
 sub pandora_process_alert ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh) = @_;
 	
+	logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
+
 	# Simple or compound alert?
 	my $id = defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : $alert->{'id'};
 	my $table = defined ($alert->{'id_template_module'}) ? 'talert_template_modules' : 'talert_compound';
@@ -276,8 +281,10 @@ sub pandora_process_alert ($$$$$$$) {
 # Evaluate the given compound alert. Returns 1 if the alert should be
 # fired, 0 if not.
 ##########################################################################
-sub pandora_evaluate_compound_alert ($$$) {
-	my ($pa_config, $id, $dbh) = @_;
+sub pandora_evaluate_compound_alert ($$$$) {
+	my ($pa_config, $id, $name, $dbh) = @_;
+
+	logger ($pa_config, "Evaluating compound alert '$name'.", 10);
 
 	# Return value
 	my $status = 0;
@@ -318,6 +325,8 @@ sub pandora_evaluate_compound_alert ($$$) {
 		}
 		elsif ($operation eq "NOP") {
 			$status = $fired;
+		} else {
+			logger ($pa_config, "Unknown operation: $operation.", 3);
 		}
 	}
 
@@ -342,7 +351,7 @@ sub pandora_generate_compound_alerts ($$$$$$$$) {
 		next unless defined ($compound_alert);
 
 		# Evaluate the alert
-		my $rc = pandora_evaluate_alert ($pa_config, $data, $status, $compound_alert,
+		my $rc = pandora_evaluate_alert ($pa_config, $agent, $data, $status, $compound_alert,
 		                                 $utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
@@ -357,6 +366,8 @@ sub pandora_execute_alert ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module,
 	    $alert, $alert_mode, $dbh) = @_;
 	
+	logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
+
 	# Get active actions/commands
 	my @actions;
 
@@ -389,11 +400,13 @@ sub pandora_execute_alert ($$$$$$$) {
 	}
 
 	# No actions defined
-	return if ($#actions < 0);
+	if ($#actions < 0) {
+		logger ($pa_config, "No actions defined for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+		return;
+	}
 
 	# Execute actions
 	foreach my $action (@actions) {
-		logger($pa_config, "Alert (" . $alert->{'name'} . ") executed for agent " . $agent->{'nombre'}, 2);
 		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh);
 	}
 
@@ -411,6 +424,8 @@ sub pandora_execute_alert ($$$$$$$) {
 sub pandora_execute_action ($$$$$$$$) {
 	my ($pa_config, $data, $agent, $alert,
 	    $alert_mode, $action, $module, $dbh) = @_;
+
+	logger($pa_config, "Executing action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 10);
 
 	my $field1 =  $action->{'field1'} ne "" ? $action->{'field1'} : $alert->{'field1'};
 	my $field2 =  $action->{'field2'} ne "" ? $action->{'field2'} : $alert->{'field2'};
@@ -454,24 +469,20 @@ sub pandora_execute_action ($$$$$$$$) {
 	if ($action->{'internal'} == 0) {
 		my $command = subst_alert_macros (decode_entities ($action->{'command'}), \%macros);
 		$command = subst_alert_macros ($command, \%macros);
-		logger($pa_config, "Executing command $command", 4);
+		logger($pa_config, "Executing command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 8);
 
 		eval {
 			system ($command);
-			if ($? != 0) {
-				logger($pa_config, 'Executed command for alert ' . $alert->{'name'} . ' returned with errorlevel ' . ($? >> 8), 1);
-			}
+			logger($pa_config, "Command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
 		};
 
 		if ($@){
-			logger($pa_config, "Error $@ executing command $command", 1);
+			logger($pa_config, "Error $@ executing command '$command' for action '" . $action->{'name'} . "' alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') ."'.", 8);
 		}
 
 	# Internal Audit
 	} elsif ($action->{'name'} eq "Internal Audit") {
-
 		$field1 = subst_alert_macros ($field1, \%macros);
-
 		pandora_audit ($pa_config, $field1, defined ($agent) ? $agent->{'nombre'} : 'N/A', 'Alert (' . $alert->{'description'} . ')', $dbh);
 
 	# Email		
@@ -489,7 +500,7 @@ sub pandora_execute_action ($$$$$$$$) {
 
 	# Unknown
 	} else {
-		logger($pa_config, "Unknown action " . $action->{'name'}, 1);
+		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 3);
 	}
 }
 
@@ -514,52 +525,55 @@ sub pandora_process_module ($$$$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $module_type,
 	    $timestamp, $utimestamp, $server_id, $dbh) = @_;
 
+	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
+
 	# Get module type
-	if ($module_type eq '') {
+	if (! defined ($module_type)) {
 		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});
 		if (! defined ($module_type)) {
+			logger($pa_config, "Invalid module type ID " . $module->{'id_tipo_modulo'} . " module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
+			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+			return;
+		}
+	}
+
+	# Get agent information
+	if (! defined ($agent)) {
+		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
+		if (! defined ($agent)) {
+			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while processing module '" . $module->{'nombre'} . "'.", 3);
 			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 			return;
 		}
 	}
 
 	# Process data
- 	$data = process_data ($data, $module, $module_type, $utimestamp, $dbh);
+ 	my $processed_data = process_data ($data, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($data)) {
-		logger($pa_config, "Received invalid data from module '" . $module->{'nombre'} . "'", 3);
+		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
 
-	# Get agent information
-	if ($agent eq '') {
-		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
-		if (! defined ($agent)) {
-			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
-			return;
-		}
-	}
-
-	if ($timestamp eq '') {
-		$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-	}
+	$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp)) if (! defined ($timestamp) || $timestamp eq '');
 
 	# Export data
-	export_module_data ($data, $agent, $module, $module_type, $timestamp, $dbh);
+	export_module_data ($pa_config, $processed_data, $agent, $module, $module_type, $timestamp, $dbh);
 
 	# Get previous status
 	my $agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 	if (! defined ($agent_status)) {
+		logger($pa_config, "Status for agent '" . $agent->{'nombre'} . "' not found while processing module " . $module->{'nombre'} . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
 
 	# Get current status
-	my $status = get_module_status ($data, $module, $module_type);
+	my $status = get_module_status ($processed_data, $module, $module_type);
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
-		pandora_generate_alerts ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh);
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh);
 	}
 
 	#Update module status
@@ -570,7 +584,7 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Generate events
 	if ($status_changes == $module->{'min_ff_event'} + 1) {
-		generate_status_event ($pa_config, $data, $agent, $module, $status, $last_status, $dbh);
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $status, $last_status, $dbh);
 	}
 	
 	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'
@@ -578,22 +592,23 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Do we have to save module data?
 	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		logger($pa_config, "Invalid last try timestamp '" . $agent_status->{'last_try'} . "' for agent '" . $agent->{'nombre'} . "' not found while processing module '" . $module->{'nombre'} . "'.", 3);
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
 
 	my $last_try  = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $data || $last_try < (time() - 86400))) ? 1 : 0;
+	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < (time() - 86400))) ? 1 : 0;
 		
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
 	              id_agente = ?, current_interval = ?, running_by = ?, last_execution_try = ?, last_try = ?
-	              WHERE id_agente_modulo = ?', $data, $status, $last_status, $status_changes,
+	              WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $status_changes,
 	              $current_utimestamp, $timestamp, $module->{'id_agente'}, $module->{'module_interval'}, $server_id,
 	              $utimestamp,  ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
 
 	# Save module data
 	if ($save == 1) {
-		save_module_data ($data, $module, $module_type, $utimestamp, $dbh);
+		save_module_data ($processed_data, $module, $module_type, $utimestamp, $dbh);
 	}
 }
 
@@ -602,7 +617,6 @@ sub pandora_process_module ($$$$$$$$$) {
 ##########################################################################
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
-	
 	my $utimestamp = time();
 
 	# Start pending downtimes (disable agents)
@@ -610,13 +624,15 @@ sub pandora_planned_downtime ($$) {
 
 	foreach my $downtime (@downtimes) {
 
+		logger($pa_config, "Starting planned downtime '" . $downtime->{'nombre'} . "'.", 10);
+
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 1 WHERE id = ?', 	$downtime->{'id'});
 		pandora_event ($pa_config, "Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
 		
 		my @downtime_agents = db_do($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 		
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_grupo = ?', $downtime_agent->{'id_group'});
 		}
 	}
 
@@ -624,13 +640,15 @@ sub pandora_planned_downtime ($$) {
 	@downtimes = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime WHERE executed = 1 AND date_to <= ?', $utimestamp);
 	foreach my $downtime (@downtimes) {
 
+		logger($pa_config, "Ending planned downtime '" . $downtime->{'nombre'} . "'.", 10);
+
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 0 WHERE id = ?', $downtime->{'id'});
 		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
 
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agrupo = ?', $downtime_agent->{'id_group'});
 		}
 	}
 }
@@ -640,7 +658,7 @@ sub pandora_planned_downtime ($$) {
 ##########################################################################
 sub pandora_reset_server ($$) {
 	my ($pa_config, $dbh) = @_;
-	    
+
 	db_do ($dbh, 'UPDATE tserver SET status = 0, threads = 0, queued_modules = 0 WHERE name = ?', $pa_config->{'servername'});
 }
 
@@ -666,7 +684,10 @@ sub pandora_update_server ($$$$$;$$) {
 		$server = get_db_single_row ($dbh, 'SELECT * FROM tserver
 		                                    WHERE id_server = ?',
 		                             $server_id);
-		return unless defined ($server);
+		if (! defined ($server)) {
+			logger($pa_config, "Server '" . $pa_config->{'servername'} . "' not found.", 3);
+			return;
+		}
 	}
 
 	# Server going up
@@ -711,6 +732,8 @@ sub pandora_update_agent ($$$$$$$) {
 sub pandora_module_keep_alive ($$$$$) {
 	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
 	
+	logger($pa_config, "Updating keep_alive module for agent '" . $agent_name . "'.", 10);
+
 	# Update keepalive module 
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = 100', $id_agent);
 	return unless defined ($module);
@@ -725,6 +748,8 @@ sub pandora_create_incident ($$$$$$$$) {
 	my ($pa_config, $dbh, $title, $text,
 	    $priority, $status, $origin, $id_group) = @_;
 
+	logger($pa_config, "Creating incident '$text' source '$origin'.", 8);
+
 	db_do($dbh, 'INSERT INTO tincidencia (`inicio`, `titulo`, `descripcion`, `origen`, `estado`, `prioridad`, `id_grupo`)
 	             VALUES (NOW(), ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group);
 }
@@ -736,6 +761,8 @@ sub pandora_create_incident ($$$$$$$$) {
 sub pandora_audit ($$$$$) {
 	my ($pa_config, $description, $name, $action, $dbh) = @_;
 	my $disconnect = 0;
+
+	logger($pa_config, "Creating audit entry '$description' name '$name' action '$action'.", 10);
 
 	my $utimestamp = time();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
@@ -751,9 +778,11 @@ sub pandora_audit ($$$$$) {
 # Create a new entry in tagente_modulo and the corresponding entry in
 # tagente_estado.
 ##########################################################################
-sub pandora_create_module ($$$$$$$$$) {
-	my ($agent_id, $module_type_id, $module_name, $max,
+sub pandora_create_module ($$$$$$$$$$) {
+	my ($pa_config, $agent_id, $module_type_id, $module_name, $max,
 	    $min, $post_process, $description, $interval, $dbh) = @_;
+ 
+ 	logger($pa_config, "Creating module '$module_name' for agent ID $agent_id.", 10);
  
 	# Provide some default values	
 	$max = 0 if ($max eq '');
@@ -775,7 +804,7 @@ sub pandora_create_agent ($$$$$$$$$$) {
 	    $address_id, $group_id, $parent_id, $os_id,
 		$description, $dbh) = @_;
 
-	logger ($pa_config, "$server_name: Creating agent $agent_name ($address)", 1);
+	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 
 	$description = "Created by $server_name" unless ($description ne '');
 
@@ -793,6 +822,8 @@ sub pandora_event (%$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $dbh) = @_;
 
+	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
+
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
@@ -806,6 +837,8 @@ sub pandora_event (%$$$$$$$$) {
 ##########################################################################
 sub pandora_update_module_on_error ($$$) {
 	my ($pa_config, $id_agent_module, $dbh) = @_;
+
+	logger($pa_config, "Updating module ID $id_agent_module on error.", 10);
 
 	# Update last_execution_try
 	db_do ($dbh, 'UPDATE tagente_estado SET last_execution_try = ?
@@ -828,9 +861,15 @@ sub pandora_exec_forced_alerts {
 		
 		# Get the agent and module associated with the alert
 		my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $alert->{'id_agent_module'});
-		next unless defined ($module);
+		if (! defined ($module)) {
+			logger($pa_config, "Module ID " . $alert->{'id_agent_module'} . " not found for alert ID " . $alert->{'id_template_module'} . ".", 10);
+			next;
+		}
 		my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
-		next unless defined ($agent);
+		if (! defined ($agent)) {
+			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found for module ID " . $module->{'id_agente_modulo'} . " alert ID " . $alert->{'id_template_module'} . ".", 10);
+			next;
+		}
 
 		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh);
 
@@ -857,6 +896,7 @@ sub pandora_module_keep_alive_nd {
 									AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
 	foreach my $module (@modules) {
+		logger($pa_config, "Updating keep_alive module for module '" . $module->{'nombre'} . "' agent ID " . $module->{'id_agente'} . " (agent without data).", 10);
 		pandora_process_module ($pa_config, 0, '', $module, 'keep_alive', '', time (), 0, $dbh);
 	}
 }
@@ -867,12 +907,15 @@ sub pandora_module_keep_alive_nd {
 sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
 	    $trap_oid_text, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
-	
+
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp');
 
 	# Find those that apply to the given SNMP trap
 	foreach my $alert (@snmp_alerts) {
+
+		logger($pa_config, "Evaluating SNMP alert ID " . $alert->{'id_as'} . ".", 10);
+
 		my ($fire_alert, $alert_data) = (0, '');		
 		my ($times_fired, $internal_counter, $alert_type) =
 		   ($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
@@ -1136,7 +1179,6 @@ sub get_module_status ($$) {
 sub generate_status_event ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $status, $last_status, $dbh) = @_;
 	my ($event_type, $severity);
-
 	my $description = "Module " . $module->{'nombre'} . " ($data) is ";
 
 	# Normal
@@ -1168,6 +1210,7 @@ sub generate_status_event ($$$$$$$) {
 		enterprise_hook('mcast_change_report', [$pa_config, $module->{'nombre'}, $module->{'custom_id'}, strftime ("%Y-%m-%d %H:%M:%S", localtime()), 'WARN', $dbh]);
 	} else {
 		# Unknown status
+		logger($pa_config, "Unknown status $status for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
 		return;
 	}
 
@@ -1191,12 +1234,13 @@ sub save_module_data ($$$$$) {
 ##########################################################################
 # Export module data.
 ##########################################################################
-sub export_module_data ($$$$$$) {
-	my ($data, $agent, $module, $module_type, $timestamp, $dbh) = @_;
+sub export_module_data ($$$$$$$) {
+	my ($pa_config, $data, $agent, $module, $module_type, $timestamp, $dbh) = @_;
 
 	# Data export is disabled
  	return if ($module->{'id_export'} < 1);
 
+	logger($pa_config, "Exporting data for module '" . $module->{'nombre'} . "' agent '" . $agent->{'nombre'} . "'.", 10);
 	db_do($dbh, 'INSERT INTO tserver_export_data 
 	         (`id_export_server`, `agent_name` , `module_name`, `module_type`, `data`, `timestamp`) VALUES
 	         (?, ?, ?, ?, ?, ?)', $module->{'id_export'}, $agent->{'nombre'}, $module->{'nombre'}, $module_type, $data, $timestamp);

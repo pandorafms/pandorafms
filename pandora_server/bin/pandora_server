@@ -43,7 +43,7 @@ my $DBH;
 # Server shutdown.  Handler to do a controlled shutdown.
 ########################################################################################
 sub pandora_shutdown () {
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 0);
+	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
 
 	# Stop servers
 	foreach my $server (@Servers) {
@@ -51,7 +51,7 @@ sub pandora_shutdown () {
 		$server->stop ();
 	}
 
-	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 0);
+	print_message (\%Config, ' [*] Shutting down ' . $Config{'servername'} . "(received signal)...\n", 1);
 	db_disconnect ($DBH);
 	exit (0);
 }
@@ -119,13 +119,12 @@ sub pandora_restart () {
 ########################################################################################
 sub pandora_crash () {
 
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error', 0);
-	print_message (\%Config, '[E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
-	my(@array) = @_;
+	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
+	#print_message (\%Config, '[E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
 	
-	foreach my $error_line (@array) {
-		logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 0);
-		print_message (\%Config, "[E] $error_line \n", 0);
+	foreach my $error_line (@_) {
+		logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
+		#print_message (\%Config, "[E] $error_line \n", 0);
 	}
 }
 
@@ -133,7 +132,7 @@ $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
 # Error handler needs to be reviewed, Enterprise not found errors are too nasty :(
-#$SIG{__DIE__} = 'pandora_crash';
+$SIG{__DIE__} = 'pandora_crash';
 
 # Prevent alarm from bombing the main thread when called within a thread
 $SIG{'ALRM'} = 'IGNORE';
@@ -143,15 +142,15 @@ pandora_init(\%Config, 'Pandora FMS Server');
 pandora_load_config (\%Config);
 
 # Load enterprise module
-if (enterprise_load () == 0) {
-	print " [*] Pandora FMS Enterprise module not available.\n";
+if (enterprise_load (\%Config) == 0) {
+	print_message (\%Config, " [*] Pandora FMS Enterprise module not available.", 1);
 } else {
-	print " [*] Pandora FMS Enterprise module loaded.\n";
+	print_message (\%Config, " [*] Pandora FMS Enterprise module loaded.", 1);
 }
 
 # Daemonize and put in background
 if ($Config{'daemon'} == 1) {
-	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n\n", 0);
+	print_message (\%Config, " [*] Backgrounding Pandora FMS Server process.\n", 1);
 	pandora_daemonize (\%Config);
 }
 
@@ -195,12 +194,17 @@ while (1) {
 	# Restart on error or auto restart
 	if ($@) {
 
+		if ($Config{'restart'} eq '0') {
+			print_message (\%Config, $@, 1);
+			pandora_shutdown ();
+		}
+
 		# Generate 'restarting' events
 		foreach my $server (@Servers) {
 			$server->restartEvent ($@);
 		}
 
-		logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in ' . $Config{'restart_delay'} . ' seconds.', 0);
+		logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in ' . $Config{'restart_delay'} . ' seconds.', 1);
 		pandora_restart ();
 	} elsif (($Config{'auto_restart'} > 0) && (time () - $time_ref > $Config{'auto_restart'})) {
 		$time_ref = time ();

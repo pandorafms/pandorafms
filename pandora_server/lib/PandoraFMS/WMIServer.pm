@@ -51,8 +51,8 @@ sub new ($$;$) {
 
 	# Check for a WMI client
 	if (system ($config->{'wmi_client'} . ' > /dev/null 2>&1') != 256) {
-		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 0);
-		print ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.\n\n";
+		logger ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
+		print_message ($config, ' [E] ' . $config->{'wmi_client'} . " not found. Pandora FMS WMI Server needs a DCOM/WMI client.", 1);
 		return undef;
 	}
 		
@@ -70,7 +70,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS WMI Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS WMI Server.", 1);
 	$self->setNumThreads ($pa_config->{'wmi_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -192,7 +192,7 @@ sub data_consumer ($$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-	pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh);
+	pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $self->getServerID (), $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'},  $pa_config->{'servername'} . '_WMI', $pa_config->{'version'}, -1, $dbh);
 }
 

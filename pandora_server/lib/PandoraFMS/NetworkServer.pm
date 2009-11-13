@@ -50,8 +50,8 @@ sub new ($$$) {
 	return undef unless $config->{'networkserver'} == 1;
 
 	if (! -e $config->{'snmpget'}) {
-		logger ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 0);
-		print ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.\n\n";
+		logger ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 1);
+		print_message ($config, ' [E] ' . $config->{'snmpget'} . " needed by Pandora FMS Network Server not found.", 1);
 		return undef;
 	}
 
@@ -69,7 +69,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS Network Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS Network Server.", 1);
 	$self->setNumThreads ($pa_config->{'network_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -376,7 +376,7 @@ sub exec_network_module ($$$$) {
 
     # Is everything goes ok
 	if ($module_result == 0) {
-		pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
+		pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $server_id, $dbh);
 
 		# Update agent last contact using Pandora version as agent version
 		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, $dbh);

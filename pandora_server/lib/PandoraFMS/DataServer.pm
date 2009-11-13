@@ -42,6 +42,7 @@ my %PendingTasks :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
 my $AgentSem :shared = Thread::Semaphore->new (1);
+my $ModuleSem :shared = Thread::Semaphore->new (1);
 
 ########################################################################################
 # Data Server class constructor.
@@ -65,7 +66,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS Data Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS Data Server.", 1);
 	$self->setNumThreads ($pa_config->{'dataserver_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -138,7 +139,7 @@ sub data_consumer ($$) {
     	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
     	unlink ($file_name);
-		process_xml_data ($self->getConfig (), $xml_data, $self->getServerID (), $self->getDBH ());
+		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		return;	
 	}
 
@@ -149,8 +150,8 @@ sub data_consumer ($$) {
 ###############################################################################
 # Process XML data coming from an agent.
 ###############################################################################
-sub process_xml_data ($$$$) {
-	my ($pa_config, $data, $server_id, $dbh) = @_;
+sub process_xml_data ($$$$$) {
+	my ($pa_config, $file_name, $data, $server_id, $dbh) = @_;
 
 	my ($agent_name, $agent_version, $timestamp, $interval, $os_version) =
 	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
@@ -158,7 +159,7 @@ sub process_xml_data ($$$$) {
 
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
-		logger($pa_config, 'ERROR: Received data from an unnamed agent', 2);
+		logger($pa_config, "$file_name has data from an unnamed agent", 3);
 		return;
 	}
   
@@ -252,21 +253,37 @@ sub process_module_data ($$$$$$$$$) {
 
 	# Get agent data
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', $agent_name);
-	return unless defined ($agent);
+	if (! defined ($agent)) {
+		logger($pa_config, "Invalid agent '$agent_name' for module '$module_name'.", 3);
+		return;
+	}
 
 	# Get module data or create it if it does not exist
+	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 	if (! defined ($module)) {
 		
 		# Do not auto create modules
-		return unless ($pa_config->{'autocreate'} == 1);
+		if ($pa_config->{'autocreate'} ne '1') {
+			logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
+			$ModuleSem->up ();
+			return;
+		}
 
 		# Is the agent learning?
-		return unless ($agent->{'modo'} eq '1');
+		if ($agent->{'modo'} ne '1') {
+			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
+			$ModuleSem->up ();
+			return;
+		}
 		
 		# Get the module type
 		my $module_id = get_module_id ($dbh, $module_type);
-		return unless ($module_id > 0);
+		if ($module_id <= 0) {
+			logger($pa_config, "Invalid module type '$module_type' for module '$module_name' agent '$agent_name'.", 3);
+			$ModuleSem->up ();
+			return;
+		}
 
 		# Get min/max/description/post process
 		my $max = get_tag_value ($data, 'max', 0);
@@ -278,22 +295,33 @@ sub process_module_data ($$$$$$$$$) {
 		$post_process =~ s/,/./;
 
 		# Create the module
-		pandora_create_module ($agent->{'id_agente'}, $module_id, $module_name,
+		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
 	                          $max, $min, $post_process, $description, $interval, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
-		return unless defined $module;
+		if (! defined ($module)) {
+			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
+			$ModuleSem->up ();
+			return;
+		}
 	}
+	$ModuleSem->up ();
 
 	# Module disabled!
-	return if ($module->{'disabled'} eq '1');
+	if ($module->{'disabled'} eq '1') {
+		logger($pa_config, "Skipping disabled module '$module_name' agent '$agent_name'.", 10);
+		return;
+	}
 
 	# Parse the timestamp and process the module
-	if ($timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ ||
-	    $timestamp =~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
-		my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-		my $value = get_tag_value ($data, 'data', '');
-		pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
+	if ($timestamp !~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ &&
+	    $timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
+		return;
 	}
+
+	my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $value = get_tag_value ($data, 'data', '');
+	pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
 }
 
 1;

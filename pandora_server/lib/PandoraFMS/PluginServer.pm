@@ -51,8 +51,8 @@ sub new ($$;$) {
 
 	# Check for pandora_exec
 	if (system($config->{'plugin_exec'} . ' > /dev/null 2>&1') != 256) {
-		logger ($config, " [E] pandora_exec not found. Plugin Server not started.", 0);
-		print " [E] pandora_exec not found. Plugin Server not started.\n\n";
+		logger ($config, " [E] pandora_exec not found. Plugin Server not started.", 1);
+		print_message ($config, " [E] pandora_exec not found. Plugin Server not started.", 1);
 		return undef;
 	}
 		
@@ -70,7 +70,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS Plugin Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS Plugin Server.", 1);
 	$self->setNumThreads ($pa_config->{'plugin_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -206,7 +206,7 @@ sub data_consumer ($$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
-	pandora_process_module ($pa_config, $module_data, '', $module, '', $timestamp, $utimestamp, $self->getServerID (), $dbh);
+	pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $self->getServerID (), $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $pa_config->{'servername'}.'_Plugin', $pa_config->{'version'}, -1, $dbh);
 }
 

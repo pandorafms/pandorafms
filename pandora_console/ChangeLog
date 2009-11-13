@@ -1,3 +1,9 @@
+2009-11-12  Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/db/db_sanity.php: fix typo error there was one "zero" more in
+	query SQL.
+	Fixes: 2895298
+
 2009-11-12  Sancho lerena <slerena@artica.es>
 
 	* include/help/en/help_web_checks.php: Added missing help.

@@ -64,7 +64,7 @@ sub run ($) {
 	my $self = shift;
 	my $pa_config = $self->getConfig ();
 
-	print " [*] Starting Pandora FMS Prediction Server. \n";
+	print_message ($pa_config, " [*] Starting Pandora FMS Prediction Server.", 1);
 	$self->setNumThreads ($pa_config->{'prediction_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);
 }
@@ -235,7 +235,7 @@ sub exec_prediction_module ($$$$) {
         $module_data = $average;
     }
 
-	pandora_process_module ($pa_config, $module_data, '', $agent_module, '', $timestamp, $utimestamp, $server_id, $dbh);
+	pandora_process_module ($pa_config, $module_data, undef, $agent_module, undef, $timestamp, $utimestamp, $server_id, $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1, $dbh);
 }
 

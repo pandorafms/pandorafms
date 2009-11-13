@@ -247,46 +247,24 @@ sub md5check {
 }
 
 ##########################################################################
-# SUB logger (pa_config, param_1, param_2)
+# SUB logger (pa_config, message, level)
 # Log to file
 ##########################################################################
-# param_1 : Data file
-# param_2 : Data
+sub logger ($$;$) {
+	my ($pa_config, $message, $level) = @_;
 
-sub logger {
-	my $pa_config = $_[0];
-	my $fichero = $pa_config->{"logfile"};
-	my $datos = $_[1];
-	my $param2= $_[2];
-	my $verbose_level = 2; # if parameter not passed, verbosity is 2 
-
-	if (!defined $pa_config->{"verbosity"}){
-		$pa_config->{"verbosity"} = 0;
-	}
-
-	if (defined $param2){
-		if (is_numeric($param2)){
-			$verbose_level = $param2;
-		} 
-	}
+	return if ($level > $pa_config->{'verbosity'});
 	
-	if ($verbose_level <= $pa_config->{"verbosity"}) {
-		if ($verbose_level > 0) {
-			$datos = "[V".$verbose_level."] ".$datos;
-		}
+	my $file = $pa_config->{'logfile'};
 	
-		my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-		if (-e $fichero){
-			my $filesize = (stat($fichero))[7];
-			if ( $filesize > $pa_config->{'max_log_size'}) {
-				rename ($fichero, $fichero.".old");
-			}	
-		}
-		open (FILE, ">> $fichero") or die "[FATAL] Cannot open logfile at $fichero";
-		my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
-		print FILE "$time_now $server_name $datos \n";
-		close (FILE);
+	# Log rotation
+	if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
+		rename ($file, $file.'.old');
 	}
+		
+	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$fichero'";
+	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
+	close (FILE);
 }
 
 ##########################################################################
@@ -342,7 +320,15 @@ sub float_equal {
 # Tries to load the PandoraEnterprise module. Must be called once before
 # enterprise_hook ().
 ##########################################################################
-sub enterprise_load () {
+sub enterprise_load ($) {
+	my $pa_config = shift;
+
+	# Check dependencies
+	eval 'local $SIG{__DIE__}; require IO::Socket::Multicast';
+	if ($@) {
+		print_message ($pa_config, " [*] Error loading Pandora FMS Enterprise: IO::Socket::Multicast not found.", 1);
+		return 0;
+	}
 
 	# Already loaded
 	#return 1 if (is_loaded ('PandoraFMS::Enterprise'));
@@ -387,9 +373,7 @@ sub enterprise_hook ($$) {
 sub print_message ($$$) {
 	my ($pa_config, $message, $log_level) = @_;
 
-	if ($pa_config->{'verbosity'} > $log_level){
-    	print STDOUT $message . "\n";
-	}
+	print STDOUT $message . "\n" if ($pa_config->{'verbosity'} >= $log_level);
 }
 
 ##########################################################################

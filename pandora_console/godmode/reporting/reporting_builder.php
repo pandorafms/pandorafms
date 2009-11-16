@@ -679,6 +679,7 @@ $(document).ready (function () {
 						$('#id_module').empty ();
 						var inputs = [];
 						inputs.push ("agent_name=" + agent_name);
+						inputs.push ('filter=delete_pending = 0');
 						inputs.push ("get_agent_modules_json=1");
 						inputs.push ("page=operation/agentes/ver_agente");
 						jQuery.ajax ({

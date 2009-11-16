@@ -1,3 +1,10 @@
+2009-11-16  Miguel de Dios <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/graph_builder.php, godmode/alerts/alert_list.php: fix the
+	bug that show the modules "pending delete" in more select box in some forms.
+	Fixes: 2894921
+
 2009-11-12  Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/db/db_sanity.php: fix typo error there was one "zero" more in

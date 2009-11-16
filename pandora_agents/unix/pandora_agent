@@ -15,7 +15,7 @@ use File::Basename;
 use File::Copy;
 
 use constant AGENT_VERSION => '3.0';
-use constant AGENT_BUILD => '091103';
+use constant AGENT_BUILD => '091118';
 
 # OS and OS version
 my $OS = $^O;
@@ -41,7 +41,7 @@ my %Conf = (
 	'agent_name' => hostname (),
 	'description' => '',
 	'group' => '',
-	'encoding' => 'ISO-8859-15',
+	'encoding' => 'ISO-8859-1',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
 	'server_pwd' => '',

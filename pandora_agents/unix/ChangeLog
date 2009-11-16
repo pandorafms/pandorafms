@@ -1,3 +1,9 @@
+2009-11-16  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Updated default encoding to iso-8859-1 instead
+	iso-8859-15, because in some systems this encoding is not installed
+	and don't work :-(. Thanks for summa_sp for report this.
+
 2009-11-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* *.conf: Updated URL and some small fixes.

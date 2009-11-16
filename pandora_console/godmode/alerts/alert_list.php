@@ -494,7 +494,8 @@ if (! $id_agente) {
 $table->data[0][0] = __('Module');
 $modules = array ();
 if ($id_agente)
-	$modules = get_agent_modules ($id_agente);
+	$modules = get_agent_modules ($id_agente, false, array("delete_pending" => 0));
+
 $table->data[0][1] = print_select ($modules, 'id_agent_module', 0, true,
 	__('Select'), 0, true, false, true, '', ($id_agente == 0));
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
@@ -510,23 +511,6 @@ $table->data[1][1] .= ' <a class="template_details invisible" href="#">
 	<img class="img_help" src="images/zoom.png" /></a>';
 
 $table->data[2][0] = __('Actions');
-//$actions = get_alert_actions ();
-//if (empty ($actions))
-//	$actions = array ();
-
-//foreach ($actions as $action_id => $action_name) {
-//	$id = 'actions['.$action_id.']';
-//	$table->data[2][1] .= print_checkbox ($id, $action_id, false, true);
-//	$table->data[2][1] .= print_label ($action_name, 'checkbox-'.$id, true);
-//	$table->data[2][1] .= ' <span id="advanced_'.$action_id.'" class="advanced_actions invisible">';
-//	$table->data[2][1] .=  __('From').' ';
-//	$table->data[2][1] .= print_input_text ('fires_min['.$action_id.']', -1, '', 4, 10, true);
-//	$table->data[2][1] .=  ' '.__('to').' ';
-//	$table->data[2][1] .= print_input_text ('fires_max['.$action_id.']', -1, '', 4, 10, true);
-//	$table->data[2][1] .= ' '.__('matches of the alert');
-//	$table->data[2][1] .= '</span>';
-//	$table->data[2][1] .= '<br />';
-//}
 
 $actions = array ('0' => __('None'));
 
@@ -615,6 +599,7 @@ $(document).ready (function () {
 					$('#id_agent_module').empty ();
 					var inputs = [];
 					inputs.push ("agent_name=" + agent_name);
+					inputs.push ('filter=delete_pending = 0');
 					inputs.push ("get_agent_modules_json=1");
 					inputs.push ("page=operation/agentes/ver_agente");
 					jQuery.ajax ({

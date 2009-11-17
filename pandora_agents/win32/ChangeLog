@@ -1,3 +1,9 @@
+2009-11-17  Sancho Lerena <slerena@artica.es>
+
+	* Installer/Pandora_silent.mpi: Installer in silent mode. Should
+	replace pandora.mpi in the future, includes both, using a command
+	line to choose standard or un-attended install.
+
 2009-10-17  Sancho Lerena <slerena@artica.es>
 
 	* configure.in: Modified path to libregex.a instead original boost

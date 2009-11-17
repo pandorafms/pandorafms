@@ -1,3 +1,8 @@
+2009-11-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent: Fixed a problem sending the module type in the XML.
+	This causes that all modules were "generic_data". 
+
 2009-11-16  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent: Updated default encoding to iso-8859-1 instead

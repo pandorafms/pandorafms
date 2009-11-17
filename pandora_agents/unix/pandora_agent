@@ -34,7 +34,7 @@ my $ConfFile = 'pandora_agent.conf';
 my %Conf = (
 	'server_ip' => 'localhost',
 	'server_path' => '/var/spool/pandora/data_in',
-	'temporal' => '/var/spool/pandora/data_out',
+	'temporal' => '/var/spool/pandora',
 	'log_file' => '/var/log/pandora/pandora_agent.log',
 	'interval' => 300,
 	'debug' => 0,		
@@ -549,8 +549,9 @@ while (1) {
 
 		$xml .= "  <module>\n" .
                 "    <name><![CDATA[$module->{'name'}]]></name>\n" .
-		        "    <description><![CDATA[$module->{'description'}]]></description>\n";
-		        
+		        "    <description><![CDATA[$module->{'description'}]]></description>\n" . 
+				"    <type>$module->{'type'}</type>\n";
+
 		# Data list
 		if ($#data > 0) {
 			$xml .= "    <datalist>\n";

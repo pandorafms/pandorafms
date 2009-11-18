@@ -99,7 +99,20 @@ $search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurlde
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
-$id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
+//$id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
+$text_agent = (string) get_parameter("id_agent", "All");
+switch ($text_agent)
+{
+	case 'All':
+		$id_agent = -1;
+		break;
+	case 'Server':
+		$id_agent = 0;
+	default:
+		$id_agent = get_agent_id($text_agent);
+		break;
+}
+
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $groups = get_user_groups ($config["id_user"], "IR");
@@ -241,18 +254,30 @@ echo '</td>';
 
 //Agent search
 echo "<td>".__('Agent search')."</td><td>";
-$sql = "SELECT DISTINCT(id_agente) AS id_agent FROM tevento WHERE 1=1 ".$sql_post;
-$result = get_db_all_rows_sql ($sql);
+//$sql = "SELECT DISTINCT(id_agente) AS id_agent FROM tevento WHERE 1=1 ".$sql_post;
+//$result = get_db_all_rows_sql ($sql);
+//
+//if ($result === false)
+//	$result = array();
+//
+//$agents = array ();
+//$agents[-1] = __('All');
+//
+//if (is_user_admin ($config["id_user"])) {
+//	$agents[0] = __('System');
+//}
 
-if ($result === false)
-	$result = array();
 
-$agents = array ();
-$agents[-1] = __('All');
+//foreach ($result as $id_row) {
+//	$name_for_combo = "";
+//	if ($id_row["id_agent"] > 0)
+//		$name_for_combo = mb_substr (get_agent_name ($id_row["id_agent"], "lower"),0,20);
+//
+//	if ($name_for_combo != "")
+//		$agents[$id_row["id_agent"]] = $name_for_combo;
+//}
 
-if (is_user_admin ($config["id_user"])) {
-	$agents[0] = __('System');
-}
+
 
 foreach ($result as $id_row) {
 	$name_for_combo = "";
@@ -263,7 +288,11 @@ foreach ($result as $id_row) {
 		$agents[$id_row["id_agent"]] = $name_for_combo;
 }
 
-print_select ($agents, 'id_agent', $id_agent, '', '', '');
+print_input_text_extended ('id_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
+array('style' => 'background: url(images/lightning.png) no-repeat right;'))
+. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+
+
 echo "</td></tr>";
 
 // User selectable block size
@@ -333,8 +362,8 @@ echo '</div>';
 if ($group_rep == 0) {
 	$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 } else {
-	$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;	
-} 
+	$sql = "SELECT *, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep FROM tevento WHERE 1=1 ".$sql_post." GROUP BY evento, id_agentmodule ORDER BY timestamp_rep DESC LIMIT ".$offset.",".$pagination;
+}
 
 //Extract the events by filter (or not) from db
 $result = get_db_all_rows_sql ($sql);
@@ -422,7 +451,7 @@ foreach ($result as $event) {
 	
 	switch ($event["criticity"]) {
 		default:
-		case 0: 
+		case 0:
 			$img = "images/status_sets/default/severity_maintenance.png";
 			break;
 		case 1:
@@ -486,15 +515,15 @@ foreach ($result as $event) {
 	$data[6] = print_group_icon ($event["id_grupo"], true);
 
 	if ($group_rep == 1) {
-		$data[7] = $event["event_rep"];	
-	} 
+		$data[7] = $event["event_rep"];
+	}
 	else {
 		if (!empty ($event["estado"])) {
 			if ($event["id_usuario"] != '0' && $event["id_usuario"] != ''){
-			  $data[7] = '<a href="index.php?sec=usuario&amp;sec2=operation/user/user_edit&amp;ver='.$event["id_usuario"].'" title="'.dame_nombre_real ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
+				$data[7] = '<a href="index.php?sec=usuario&amp;sec2=operation/user/user_edit&amp;ver='.$event["id_usuario"].'" title="'.dame_nombre_real ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
 			}
 			else {
-			  $data[7] = __('System');
+				$data[7] = __('System');
 			}
 		}
 		else {
@@ -556,16 +585,48 @@ if (!empty ($table->data)) {
 	}
 	echo '</div></form>';
 
-} else {
+}
+else {
 	echo '<div class="nf">'.__('No events').'</div>';
 }
 echo '</div>';
 
 unset ($table);
+
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
 ?>
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
+
 $(document).ready( function() {
+
+	$("#text_id_agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					add: '<?php echo json_encode(array('-1' => "All", '0' => "System"));?>',
+					id_group: function() { return $("#id_group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text_id_agent").css ('background-color', '#cc0000');
+					else
+						$("#text_id_agent").css ('background-color', '');
+					if (data == "")
+						return false;
+					
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+	
+	
 	$("input[name=allbox]").change (function() {
 		$("input[name='eventid[]']").attr('checked', $(this).attr('checked'));
 	});

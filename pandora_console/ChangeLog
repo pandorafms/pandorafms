@@ -1,3 +1,11 @@
+2009-11-18  Miguel de Dios <miguel.dedios@artica.es>
+
+	* operation/agentes/exportdata.php: change "search_agents" in the ajax, now
+	you can add paramater "add" as array json with the names of agents or other
+	things that you want show in the box of result.
+	* operation/events/events.php: change the select box for a ajax autocomplete
+	box for agent form filter.
+
 2009-11-16  Miguel de Dios <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.php,

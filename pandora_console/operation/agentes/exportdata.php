@@ -23,6 +23,14 @@ if (is_ajax ()) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
 		$id_group = (int) get_parameter('id_group');
+		$addedItems = html_entity_decode((string) get_parameter('add'));
+		$addedItems = json_decode($addedItems);
+		
+		if ($addedItems != null) {
+			foreach ($addedItems as $item) {
+				echo $item . "|\n";
+			}
+		}
 		
 		$filter = array ();
 		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
@@ -31,7 +39,7 @@ if (is_ajax ()) {
 		$agents = get_agents ($filter, array ('nombre', 'direccion'));
 		if ($agents === false)
 			return;
-		
+			
 		foreach ($agents as $agent) {
 			echo $agent['nombre']."|".$agent['direccion']."\n";
 		}

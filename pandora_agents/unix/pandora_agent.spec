@@ -83,6 +83,7 @@ if [ ! -e /etc/pandora/plugins ]; then
 	ln -s /usr/share/pandora_agent/plugins /etc/pandora
 fi
 
+mkdir -p /var/spool/pandora/data_out
 chkconfig -s pandora_agent_daemon on
 
 %preun

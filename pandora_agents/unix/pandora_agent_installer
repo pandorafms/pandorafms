@@ -11,8 +11,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=3.0.0
-PI_BUILD=091105
+PI_VERSION=3.0.0RC2
+PI_BUILD=091119
 OS_NAME=`uname -s`
 
 PANDORA_HOME=/usr/share/pandora_agent
@@ -258,6 +258,7 @@ install () {
 
 help () {
     echo "  --force-install      To force installation if already installed on system"
+    echo "                       (Not compatible with --install-with-links "
     echo "  --install            To install Pandora FMS Agent on this system"
     echo "  --uninstall          To uninstall/remove Pandora FMS Agent on this System"
     echo "  --install-with-links <base_dir> "

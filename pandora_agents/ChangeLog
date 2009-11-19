@@ -1,9 +1,24 @@
+2009-11-19 Sancho Lerena <slerena@artica.es>
+
+	*    unix/pandora_agent_installer: Updated help to avoid confussion about force
+	install mode.
+
+	* unix/pandora_agent.spec: Create temp directory. Fixed.
+
+2009-11-10  Sancho Lerena <slerena@artica.es>
+
+	* linux/DEBIAN/control: Updated to RC2.
+
+	* linux/DEBIAN/make_deb_package.sh: /usr/bin/pandora_agent was not being copied
+	FIXED. DEB package tested and running fine in latest Debian Stable.
+
 2009-11-04  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandora_agent_daemon: Changed "Uso" string to "Usage" string. Unify headers
 	and customized according to each UNIX/Linux versions.
 
 2009-11-04  Miguel de Dios <miguel.dedios@artica.es>
+
 	* DEBIAN/make_deb_package.sh: move the script to make the deb package into
 	the DEBIAN and change some things into the sourcecode for the directory
 	change.

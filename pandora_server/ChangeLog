@@ -1,3 +1,8 @@
+2009-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Check for empty module/agent when processing
+	  module data.
+
 2009-11-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Updated configuration tokens.

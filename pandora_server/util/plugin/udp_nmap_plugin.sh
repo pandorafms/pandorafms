@@ -50,5 +50,5 @@ while getopts ":hp:t:" optname
 done
 
 # execution
-nmap -T5 -p $PORT -sU $HOST | grep open | wc -l
+nmap -T5 -p $PORT -sU $HOST | grep open | wc -l 2> /dev/null
 

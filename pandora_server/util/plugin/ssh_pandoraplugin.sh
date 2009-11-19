@@ -3,7 +3,7 @@
 # (c) Sancho Lerena 2008-2009
 
 # Default values
-USER=""
+USER="root"
 HOST=""
 COMMAND=""
 PORT=22
@@ -39,7 +39,7 @@ while getopts ":hp:t:c:u:" optname
 	        help
 	;;
       "u")
-		PORT=$OPTARG
+		USER=$OPTARG
         ;;
       "t")
 		HOST=$OPTARG

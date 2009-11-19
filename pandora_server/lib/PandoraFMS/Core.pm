@@ -462,6 +462,7 @@ sub pandora_execute_action ($$$$$$$$) {
 				  _module_ => (defined ($module)) ? $module->{'nombre'} : '',
 				  _moduledescription_ => (defined ($module)) ? $module->{'descripcion'} : '',
 				  _id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				  _id_alert_ => $alert->{'id'}   
 				 );
 
 

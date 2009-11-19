@@ -1,5 +1,13 @@
 2009-11-19  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions.php: change the "safe_input" for estandarize the input
+	and clean bugs for this cause. Now Pandora Console depends of 5.2.3 PHP
+	version or up.
+	* extensions/dbmanager.php: change the source code to use correctly the
+	"safe_input".
+
+2009-11-19  Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/modules/manage_network_components_form_plugin.php: tiny fix in the
 	size of field "plugin_parameter".
 

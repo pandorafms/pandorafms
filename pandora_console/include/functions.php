@@ -37,24 +37,61 @@ define ('ENTERPRISE_NOT_HOOK', -1);
  * 
  * @return mixed The cleaned string or array.
  */
-function safe_input ($value) {
-	if (is_numeric ($value))
-		return $value;
+//function safe_input ($value) {
+//	if (is_numeric ($value))
+//		return $value;
+//
+//	if (is_array ($value)) {
+//		array_walk ($value, 'safe_input');
+//		return $value;
+//	}
+//
+//	if (version_compare (PHP_VERSION, '5.2.3') === 1) {
+//		if (! mb_check_encoding ($value, 'UTF-8'))
+//			$value = utf8_encode ($value);
+//		return htmlentities ($value, ENT_QUOTES, "UTF-8", false);
+//	} else {
+//		$translation_table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);
+//		$translation_table[chr(38)] = '&';
+//		return preg_replace ("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&amp;", strtr ($value, $translation_table));
+//	}
+//}
 
-	if (is_array ($value)) {
-		array_walk ($value, 'safe_input');
+/** 
+ * Cleans a string by encoding to UTF-8 and replacing the HTML
+ * entities. UTF-8 is necessary for foreign chars like asian 
+ * and our databases are (or should be) UTF-8
+ * 
+ * @param mixed String or array of strings to be cleaned.
+ * 
+ * @return mixed The cleaned string or array.
+ */
+function safe_input($value) {
+	//Stop!! Are you sure to modify this critical code? Because the older
+	//versions are serius headache in many places of Pandora.
+	
+	if (is_numeric($value))
+		return $value;
+		
+	if (is_array($value)) {
+		array_walk($value, "safe_input");
 		return $value;
 	}
-
-	if (version_compare (PHP_VERSION, '5.2.3') === 1) {
-		if (! mb_check_encoding ($value, 'UTF-8'))
-			$value = utf8_encode ($value);
-		return htmlentities ($value, ENT_QUOTES, "UTF-8", false);
-	} else {
-		$translation_table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);
-		$translation_table[chr(38)] = '&';
-		return preg_replace ("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "&amp;", strtr ($value, $translation_table));
+	
+	//Clean the trash mix into string because of magic quotes.
+	if (get_magic_quotes_gpc() == 1) {
+		$value = stripslashes($value);
 	}
+	
+	if (! mb_check_encoding ($value, 'UTF-8'))
+		$value = utf8_encode ($value);
+	
+	$valueHtmlEncode =  htmlentities ($value, ENT_QUOTES, "UTF-8", true);
+		
+	//Replace the character '\' for the equivalent html entitie
+	$valueHtmlEncode = str_replace('\\', "&#92;", $valueHtmlEncode);
+	
+	return $valueHtmlEncode;
 }
 
 /** 

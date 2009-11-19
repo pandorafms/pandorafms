@@ -19,13 +19,8 @@ function dbmanager_query ($sql, &$error) {
 
 	if ($sql == '')
 		return false;
-
-	// This following two lines are for real clean the string coming from the PHP
-	// because add &#039; for single quote and &quot; for the double, you cannot 
-	// see with a simple echo and mysql reject it, so dont forget to do this.
-
-	$sql = unsafe_string ($sql);
-	$sql = htmlspecialchars_decode ($sql, ENT_QUOTES);
+		
+	$sql = html_entity_decode($sql, ENT_QUOTES);
 
 	$result = mysql_query ($sql);
 	if ($result === false) {
@@ -71,7 +66,7 @@ function dbmgr_extension_main () {
 
 	echo "<br /><br />";
 	echo "<form method='post' action=''>";
-	print_textarea ('sql', 5, 50, unsafe_string ($sql));
+	print_textarea ('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
 	echo '<br />';
 	echo '<div class="action-buttons" style="width: 100%">';
 	print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');

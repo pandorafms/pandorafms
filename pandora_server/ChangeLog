@@ -1,3 +1,14 @@
+2009-11-19  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Added id_alert to alert macros. Could be
+	useful to pass a numeric ID to do alert correlation externally to 
+	Pandora FMS.
+
+	* util/plugin/ssh_pandoraplugin.sh: Fixed bug in user parameter 
+	processing. Thanks Victoria.
+
+	* util/plugin/udp_nmap_plugin.sh: Removed output of errors.
+
 2009-11-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Check for empty module/agent when processing

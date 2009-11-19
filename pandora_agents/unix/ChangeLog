@@ -1,3 +1,7 @@
+2009-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed bug #2888991. Skip remote_config if debug is enabled.
+
 2009-11-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent: Fixed a problem sending the module type in the XML.

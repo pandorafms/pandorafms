@@ -497,7 +497,7 @@ sub guess_os_version ($) {
 
 # Check command line arguments
 print_usage unless ($#ARGV == 0);
-$ConfDir = $ARGV[0];
+$ConfDir = fix_directory ($ARGV[0]);
 error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
 
 # Guess the OS version
@@ -513,8 +513,8 @@ start_log ();
 read_config ();
 
 # Fix directory names
-$ConfDir = fix_directory ($ConfDir);
 $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
+error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.") unless (-d "$Conf{'temporal'}");
 $Conf{'server_path'} = fix_directory ($Conf{'server_path'});
 $Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
 
@@ -526,7 +526,7 @@ sleep ($Conf{'delayed_startup'});
 while (1) {
 
 	# Check for a new configuration
-	check_remote_config ();
+	check_remote_config () unless ($Conf{'debug'} eq '1');
 
 	my $xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
 	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
@@ -570,8 +570,14 @@ while (1) {
 
 	# Execute plugins
 	foreach my $plugin (@Plugins) {
+
+		# Verify that the plugin exists and execute it
+		next unless (-x '$ConfDir/plugins/$plugin');
 		my $output = `$ConfDir/plugins/$plugin`;
+
+		# Do not save the output if there was an error
 		next unless ($? eq 0);
+
 		$xml .= $output;
 	}
 

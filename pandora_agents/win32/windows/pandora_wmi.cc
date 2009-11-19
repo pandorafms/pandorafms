@@ -159,7 +159,7 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				    L".FreeSpace");
 			
 			// 1048576 = 1024 * 1024
-			return (unsigned long) free_space / 1048576;
+			return (unsigned long) (free_space / 1048576);
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());

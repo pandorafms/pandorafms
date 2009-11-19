@@ -23,7 +23,7 @@ static inline int writev(int sock, struct iovec *iov, int nvecs)
 }
 
 /* not really usleep, but safe for the way we use it in this lib */
-static inline int usleep(int udelay)
+static inline int u_sleep(int udelay)
 {
 	Sleep(udelay / 1000);
 	return 0;

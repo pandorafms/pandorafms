@@ -407,6 +407,7 @@ Pandora_Module::getXml () {
 			}
 			
 			text = new TiXmlText (data_clean);
+			text->SetCDATA (true);
 			element->InsertEndChild (*text);
 			data_element->InsertEndChild (*element);
 			delete text;

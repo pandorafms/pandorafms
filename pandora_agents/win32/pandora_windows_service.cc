@@ -697,7 +697,7 @@ Pandora_Windows_Service::checkConfig () {
 
 int
 Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
-    int rc = 0;
+    int rc = 0, xml_buffer;
 	TiXmlDeclaration *decl;
 	TiXmlDocument    *doc;
 	TiXmlElement     *local_xml, *agent;
@@ -712,6 +712,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 	conf = this->getConf ();
 	min_free_bytes = 1024 * atoi (conf->getValue ("temporal_min_size").c_str ());
+	xml_buffer = atoi (conf->getValue ("xml_buffer").c_str ());
 	
 	if (mutex == 0) {
 		mutex = CreateMutex (NULL, FALSE, NULL);
@@ -781,14 +782,15 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	if (getPandoraDebug () == false) {
 		rc = this->copyDataFile (tmp_filename);
         
-        /* Delete the file if successfully copied or not enough space available */
-        if (rc == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0
-            && free_bytes.QuadPart < min_free_bytes)) {
-            Pandora_File::removeFile (tmp_filepath);
-	    }
+		/* Delete the file if successfully copied, buffer disabled or not enough space available */
+		if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
+			Pandora_File::removeFile (tmp_filepath);
+		}
 
-        /* Send any buffered data files */
-        this->sendBufferedXml (conf->getValue ("temporal"));
+		/* Send any buffered data files */
+		if (xml_buffer == 1) {
+			this->sendBufferedXml (conf->getValue ("temporal"));
+		}
 	}
 
 	ReleaseMutex (mutex);
@@ -839,7 +841,9 @@ Pandora_Windows_Service::pandora_run () {
 	conf = this->getConf ();
 
 	/* Check for configuration changes */
-	this->checkConfig ();
+	if (getPandoraDebug == false) {
+		this->checkConfig ();
+	}
 
 	server_addr = conf->getValue ("server_ip");
 

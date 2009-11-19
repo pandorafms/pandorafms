@@ -673,7 +673,7 @@ static int libssh2_blocking_read(LIBSSH2_SESSION *session, unsigned char *buf, s
 				if (polls++ > LIBSSH2_SOCKET_POLL_MAXLOOPS) {
 					return -1;
 				}
-				usleep(LIBSSH2_SOCKET_POLL_UDELAY);
+				u_sleep(LIBSSH2_SOCKET_POLL_UDELAY);
 #endif /* POLL/SELECT/SLEEP */
 				continue;
 			}

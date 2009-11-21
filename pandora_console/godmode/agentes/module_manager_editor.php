@@ -227,9 +227,11 @@ default:
 	}
 }
 
+echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>";
+
 echo '<h3>'.__('Module assignment');
 if (isset ($extra_title))
-	echo ' &raquo; '.$extra_title;
+	echo ' - '.$extra_title;
 echo '</h3>';
 
 echo '<h3 id="message" class="error invisible"></h3>';
@@ -237,9 +239,9 @@ echo '<h3 id="message" class="error invisible"></h3>';
 echo '<form method="post" id="module_form">';
 print_table ($table_simple);
 
-echo '<a href="#" id="show_advanced" onclick="$(\'div#advanced\').show ();$(this).remove (); return false">';
-echo __('Advanced options').' &raquo;';
-echo '</a>';
+echo '<b><a href="#" id="show_advanced" onclick="$(\'div#advanced\').show ();$(this).remove (); return false">';
+echo __('Advanced options').'&nbsp;' .print_image ("images/down.png", true, array ("title" => __('Advanced options')));
+echo '</a></b>';
 
 echo '<div id="advanced" style="display: none">';
 print_table ($table_advanced);

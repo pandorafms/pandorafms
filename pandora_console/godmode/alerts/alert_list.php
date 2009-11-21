@@ -198,7 +198,7 @@ if ($id_agente) {
 	$agents = get_group_agents (array_keys ($groups), false, "none");
 }
 
-echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/wand.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
+echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
 $templateName = get_parameter('template_name','');
 $moduleName = get_parameter('module_name','');

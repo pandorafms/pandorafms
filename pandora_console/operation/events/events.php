@@ -211,7 +211,7 @@ if ($config["pure"] == 1) {
 echo "</h2>";
 
 //Link to toggle filter
-echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.print_image ("images/wand.png", true, array ("title" => __('Toggle filter(s)'))).'</a>';
+echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
 //Start div
 echo '<div id="event_control" style="display:none">';

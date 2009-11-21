@@ -1,5 +1,13 @@
 2009-11-21  Raul Mateos  <raulofpandora@gmail.com>
 
+	* godmode/alerts/alert_list.php, operation/events/events.php,
+	operation/snmpconsole/snmp_view.php: Use down icon instead wand icon, 
+	due to wand is reserved for creation purposes.
+
+	* godmode/agentes/module_manager_editor.php: Added header and down icon.
+
+2009-11-21  Raul Mateos  <raulofpandora@gmail.com>
+
 	* extensions/*.php: Changed title for all extensions, improving common
 	apparence. By the way... It's my brithday!!!
 

@@ -22,7 +22,7 @@ $db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 
 $settings = um_db_load_settings ();
 
-echo '<h2>'.__('Update manager').'</h2>';
+echo '<h2>'.__('Extensions'). " &raquo; ". __('Update manager').'</h2>';
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';

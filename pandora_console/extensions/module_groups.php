@@ -38,9 +38,10 @@ function mainModuleGroups() {
 				WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
 		GROUP BY estado";
 	
-	echo "<h1>" . __("Combine table of agent group and module group") . "</h1>";
+	echo "<h2>".__('Extensions'). " &raquo; ";
+	echo __("Combined table of agent group and module group") . "</h2>";
 	
-	echo "<p>" . __("This table show in columns the modules group and for rows agents group. The cell show all modules") . "</p>";
+	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
 	
 	
 	$agentGroups = get_user_groups ($config['id_user']);
@@ -119,17 +120,23 @@ function mainModuleGroups() {
 	echo "<p>" . __("The colours meaning:") .
 		"<ul>" .
 		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey when the cell for this model group and agent group hasn't modules.") . "</li>" .
+			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Red when the cell for this model group and agent has at least one module in critical state and the others in any state.") .
+		'</li>' .
 		'<li style="clear: both;">
-			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' . 
-			__("Green when the cell for this model group and agent has OK state all modules.") . "</li>" .
-		'<li style="clear: both;"><div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' . 
-			__("Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.") . "</li>" .
-		'<li style="clear: both;"><div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' . 
-			__("Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.") . "</li>" .
+			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Yellow when the cell for this model group and agent has at least one in warning state and the others in green state.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Green when the cell for this model group and agent has OK state all modules.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Grey when the cell for this model group and agent group haven't modules.") .
+		'</li>' .
 		"</ul>" .
-		"</p>";
+	"</p>";
 }
  
 add_operation_menu_option("Modules groups", 'estado', 'module_groups/icon_menu.png');

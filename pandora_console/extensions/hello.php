@@ -16,12 +16,12 @@
 
 function hello_extension_main () {
 	/* Here you can do almost all you want! */
-	echo "<h1>Hello world!</h1>";
+	echo "<h2>".__('Extensions'). " &raquo; Hello world!</h2>";
 	echo "This is a sample of minimal extension in the operation view";
 }
 
 function test() {
-	echo "<h2>Hello administration world</h2>";
+	echo "<h2>".__('Extensions'). " &raquo; Hello administration world</h2>";
 	echo "This is a sample of minimal extension in the godmode view";
 }
 

@@ -1,3 +1,8 @@
+2009-11-21  Raul Mateos  <raulofpandora@gmail.com>
+
+	* extensions/*.php: Changed title for all extensions, improving common
+	apparence. By the way... It's my brithday!!!
+
 2009-11-19  Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions.php: change the "safe_input" for estandarize the input

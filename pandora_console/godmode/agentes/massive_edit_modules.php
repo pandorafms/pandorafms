@@ -142,7 +142,7 @@ foreach ($module_types as $type) {
 $table->data = array ();
 $table->data[0][0] = __('Module type');
 $table->data[0][0] .= '<span id="module_loading" class="invisible">';
-$table->data[0][0] .= '<img src="images/spinner.gif" />';
+$table->data[0][0] .= '<img src="images/spinner.png" />';
 $table->data[0][0] .= '</span>';
 $table->data[0][1] = print_select ($types,
 	'module_type', $module_type, false, __('Select'), 0, true, false, false);

@@ -62,7 +62,7 @@ $table->data[0][1] = print_select ($groups, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';
-$table->data[0][2] .= print_image ("images/spinner.gif", true);
+$table->data[0][2] .= print_image ("images/spinner.png", true);
 $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "none"),
 	'source_id_agent', $source_id_agent, false, __('Select'), 0, true);
@@ -128,7 +128,7 @@ $table->data[2][1] .= '<em>'.__('No alerts for this agent').'</em>';
 $table->data[2][1] .= '</span>';
 
 echo '<div id="modules_loading" class="loading invisible">';
-print_image ("images/spinner.gif");
+print_image ("images/spinner.png");
 echo __('Loading').'&hellip;';
 echo '</div>';
 
@@ -146,7 +146,7 @@ $table->data[0][1] = print_select ($groups, 'destiny_id_group', $destiny_id_grou
 
 $table->data[1][0] = __('Agent');
 $table->data[1][0] .= '<span id="destiny_agent_loading" class="invisible">';
-$table->data[1][0] .= print_image ("images/spinner.gif", true);
+$table->data[1][0] .= print_image ("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($destiny_id_group, false, "none"),
 	'destiny_id_agent[]', 0, false, '', '', true, true);

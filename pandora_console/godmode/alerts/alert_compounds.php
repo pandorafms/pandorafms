@@ -97,7 +97,7 @@ $table->data[0][1] = print_select ($groups, 'id_group', $id_group, false, '',
 	'', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="agent_loading" class="invisible">';
-$table->data[0][2] .= '<img src="images/spinner.gif" />';
+$table->data[0][2] .= '<img src="images/spinner.png" />';
 $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select ($agents, 'id_agent', $id_agent, false,
 	__('All'), 0, true);

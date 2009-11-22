@@ -540,12 +540,12 @@ if ($step == 1) {
 	$table->data[0][3] = print_select (get_group_agents ($id_group, false, "none"),
 		'search_id_agent', $id_agent, false, __('Select'), 0, true);
 	$table->data[0][3] .= '<span id="agent_loading" class="invisible">';
-	$table->data[0][3] .= '<img src="images/spinner.gif" />';
+	$table->data[0][3] .= '<img src="images/spinner.png" />';
 	$table->data[0][3] .= '</span>';
 	
 	print_table ($table);
 	echo '<div id="alerts_loading" class="loading invisible">';
-	echo '<img src="images/spinner.gif" />';
+	echo '<img src="images/spinner.png" />';
 	echo __('Loading').'&hellip;';
 	echo '</div>';
 	

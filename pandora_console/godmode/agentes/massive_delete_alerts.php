@@ -105,7 +105,7 @@ $table->data[1][1] = print_select ($groups, 'id_group', $id_group,
 
 $table->data[2][0] = __('Agent');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[2][0] .= '<img src="images/spinner.gif" />';
+$table->data[2][0] .= '<img src="images/spinner.png" />';
 $table->data[2][0] .= '</span>';
 $agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));

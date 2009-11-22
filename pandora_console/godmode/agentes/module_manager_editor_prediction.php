@@ -34,13 +34,13 @@ $data[1] = '<label for="prediction_id_group">'.__('Group').'</label>';
 $data[1] .= print_select ($groups, 'prediction_id_group', $prediction_id_group, '',
 	'', '', true);
 $data[1] .= ' <span id="agent_loading" class="invisible">';
-$data[1] .= '<img src="images/spinner.gif" />';
+$data[1] .= '<img src="images/spinner.png" />';
 $data[1] .= '</span>';
 $data[1] .= '<label for="prediction_id_agent">'.__('Agent').'</label>';
 $data[1] .= print_select ($agents, 'prediction_id_agent', $prediction_id_agent, '',
 	'', '', true);
 $data[1] .= ' <span id="module_loading" class="invisible">';
-$data[1] .= '<img src="images/spinner.gif" />';
+$data[1] .= '<img src="images/spinner.png" />';
 $data[1] .= '</span>';
 $data[1] .= '<label for="prediction_module">'.__('Module').'</label>';
 $data[1] .= print_select ($modules, 'prediction_module', $prediction_module, '',

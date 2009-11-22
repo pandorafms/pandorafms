@@ -36,7 +36,7 @@ if ($update_settings) {
 
 $settings = um_db_load_settings ();
 
-echo '<h2>'.__('Update manager')." &raquo; ". __('Settings').'</h2>';
+echo '<h2>'.__('Extensions'). " &raquo; ". __('Update manager').' - '. __('Settings').'</h2>';
 echo '<form method="post">';
 
 $table->width = '95%';

@@ -80,7 +80,7 @@ function add_component_selection ($id_network_component_type) {
 		'---'.__('Manual setup').'---', 0, true);
 	$data[1] .= '</span>';
 	$data[1] .= ' <span id="component_loading" class="invisible">';
-	$data[1] .= '<img src="images/spinner.gif" />';
+	$data[1] .= '<img src="images/spinner.png" />';
 	$data[1] .= '</span>';
 	
 	$table_simple->colspan['module_component'][1] = 3;

@@ -226,10 +226,7 @@ sub pandora_compactdb {
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {
 				$value_hash{$key} /= $count_hash{$key};
-				$stop_date = localtime($stop_utime);
-				$stop_date = &UnixDate($stop_date,
-				                       "%Y-%m-%d %H:%M:%S");
-
+				$stop_date = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 				$dbh->do("INSERT INTO tagente_datos (id_agente_modulo,
 					  datos, utimestamp) VALUES
 				         ($key, $value_hash{$key} ,

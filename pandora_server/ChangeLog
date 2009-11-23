@@ -1,3 +1,7 @@
+2009-11-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Removed the last call to UnixDate.
+
 2009-11-19  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added id_alert to alert macros. Could be

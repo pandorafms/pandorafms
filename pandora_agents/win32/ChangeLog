@@ -1,3 +1,12 @@
+2009-11-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* installer/pandora_silent.mpi: Removed from repository. Merged changes
+	  into pandora.mpi.
+
+	* installer/pandora.mpi: Merged with pandora_silent.mpi.
+
+	* pandora.cc: Updated version string.
+
 2009-11-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Fixed bug #2895307.

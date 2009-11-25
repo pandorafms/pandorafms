@@ -114,11 +114,11 @@ foreach ($result as $row) {
 	$rss_feed .= '<item><guid>';
 	$rss_feed .= safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['event_id']);
 	$rss_feed .= '</guid><title>';
-	$rss_feed .= safe_output_xml ($row['agent_name']);
+	$rss_feed .= safe_input ($row['agent_name']);
 	$rss_feed .= '</title><description>';
-	$rss_feed .= safe_output_xml ($row['event_descr']);
+	$rss_feed .= safe_input ($row['event_descr']);
 	if($row['validated'] == 1) {
-		$rss_feed .= '<br /><br />Validated by ' . safe_output_xml ($row['validated_by']);
+		$rss_feed .= '<br /><br />Validated by ' . safe_input ($row['validated_by']);
 	}
 	$rss_feed .= '</description><link>';
 	$rss_feed .= safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["event_id"]);

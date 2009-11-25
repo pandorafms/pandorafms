@@ -283,12 +283,12 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 		$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
-			'description' => 3, 'template' => 3, 'last_fired' => 4, 'status' => 5,
-		'validate' => 6);
+			'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
+		'validate' => 7);
 	else
 		$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 1,
-			'description' => 2, 'template' => 2, 'last_fired' => 3, 'status' => 4,
-		'validate' => 5);
+			'description' => 2, 'template' => 2, 'action' => 3, 'last_fired' => 4, 'status' => 5,
+		'validate' => 6);
 	
 	if ($alert['disabled']) {
 		$disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">'; 
@@ -369,6 +369,14 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	}
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
+	$actions = get_alert_agent_module_actions ($alert['id']);
+	$actionText = '<ul>';
+	foreach ($actions as $action)
+		$actionText .= '<li>' . $action['name'] . '</li>';
+	$actionText .= '</ul>';
+		
+	$data[$index['action']] = $actionText;
+	
 	$data[$index['last_fired']] = $disabledHtmlStart . print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
 	
 
@@ -387,7 +395,6 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	}
 	
 	$data[$index['status']] = print_status_image($status, $title, true);
-
 	
 	if ($compound) {
 		$data[$index['validate']] = print_checkbox ("validate_compound[]", $alert["id"], false, true);

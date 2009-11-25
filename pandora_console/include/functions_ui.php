@@ -832,8 +832,6 @@ function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return
 	
 	if (empty ($url)) {
 		$url = get_url_refresh (array ($offset_name => false));
-	} else {
-		$url = safe_input ($url);
 	}
 	
 	/* 	URL passed render links with some parameter

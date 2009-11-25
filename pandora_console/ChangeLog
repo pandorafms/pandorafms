@@ -1,5 +1,11 @@
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: fix the bug in the pagination that write wrong
+	the url of pages.
+	Fixes: 2903774
+
+2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
+
 	* operation/events/events_rss.php: fix the bug in the creation of xml.
 	Fixes: 2902134
 

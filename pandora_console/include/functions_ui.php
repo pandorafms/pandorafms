@@ -317,7 +317,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	else {
 		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
 		$template = get_alert_template ($alert['id_alert_template']);
-		$description = $template['name'];
+		$description = safe_output($template['name']);
 	}
 	$data = array ();
 	

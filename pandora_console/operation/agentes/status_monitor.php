@@ -243,7 +243,7 @@ foreach ($result as $row) {
 	if (is_numeric($row["datos"]))
 		$data[7] = format_numeric($row["datos"]);
 	else
-		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(salida_limpia($row["datos"]),0,12)."</span>";
+		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(safe_output($row["datos"]),0,12)."</span>";
 
 	$seconds = get_system_time () - $row["utimestamp"];
 	

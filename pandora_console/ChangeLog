@@ -1,5 +1,11 @@
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_modules.php: fix the deletion of module in the function
+	"delete_agent_module" for change the name to avoid the row collision. This
+	change is advised by Sancho lerena.
+
+2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_io.php, include/functions.php: change and add functions
 	for manage the input output with correct encoding and decoding.
 

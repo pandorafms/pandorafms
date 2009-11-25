@@ -1,5 +1,12 @@
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_filemanager.php: fix bug that the url content "//" in
+	cases for example install in root of www directory. Only fix in this part
+	of source code because the rest of sources run fine.
+	Fixes: 2903005
+
+2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
+
 	* index.php: clean source code, the blank end line in the end of document
 	and show in the browser too.
 	* include/functions_ui.php, operation/agentes/alerts_status.php: add new

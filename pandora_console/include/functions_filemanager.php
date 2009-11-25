@@ -187,7 +187,7 @@ function get_file_manager_file_info ($filepath) {
 		'link' => 0,
 		'is_dir' => false,
 		'name' => basename ($realpath),
-		'url' => $config['homeurl'].str_ireplace ($config['homedir'], '', $realpath),
+		'url' => str_replace('//', '/', $config['homeurl'].str_ireplace ($config['homedir'], '', $realpath)),
 		'realpath' => $realpath,
 		'size' => filesize ($realpath),
 		'last_modified' => filemtime ($realpath)

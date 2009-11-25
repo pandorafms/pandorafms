@@ -126,7 +126,7 @@ function delete_agent_module ($id_agent_module) {
 	process_sql_delete ('tlayout_data', $where);
 	process_sql_delete ('tagente_estado', $where);
 	process_sql_update ('tagente_modulo',
-		array ('delete_pending' => 1, 'disabled' => 1),
+		array ('nombre' => 'delete_pending', 'delete_pending' => 1, 'disabled' => 1),
 		$where);
 	
 	return true;

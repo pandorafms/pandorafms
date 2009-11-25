@@ -342,7 +342,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[4] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }
 $table->head[5] = __('Actions');
-$table->head[6] = '';
+$table->head[6] = __('Status');
+$table->head[7] = '';
 
 $table->data = array ();
 
@@ -451,12 +452,28 @@ foreach ($simple_alerts as $alert) {
 		$data[5] .= ' ' . __('Add action');
 	$data[5] .= '</a>';
 	
-	$data[6] = '<form class="delete_alert_form" method="post" style="display: inline;">';
+	$status = STATUS_ALERT_NOT_FIRED;
+	$title = "";
 	
-	$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
-	$data[6] .= print_input_hidden ('delete_alert', 1, true);
-	$data[6] .= print_input_hidden ('id_alert', $alert['id'], true);
-	$data[6] .= '</form>';
+	if ($alert["times_fired"] > 0) {
+		$status = STATUS_ALERT_FIRED;
+		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+	} elseif ($alert["disabled"] > 0) {
+		$status = STATUS_ALERT_DISABLED;
+		$title = __('Alert disabled');
+	} else {
+		$status = STATUS_ALERT_NOT_FIRED;
+		$title = __('Alert not fired');
+	}
+	
+	$data[6] = "<center>" . print_status_image($status, $title, true) . "</center>";
+	
+	$data[7] = '<form class="delete_alert_form" method="post" style="display: inline;">';
+	
+	$data[7] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+	$data[7] .= print_input_hidden ('delete_alert', 1, true);
+	$data[7] .= print_input_hidden ('id_alert', $alert['id'], true);
+	$data[7] .= '</form>';
 	array_push ($table->data, $data);
 }
 

@@ -563,7 +563,8 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
 	}
 	
 	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
-	$output .= safe_input ($value);
+	//$output .= safe_input ($value);
+	$output .= ($value);
 	$output .= '</textarea>';
 	
 	if ($return)

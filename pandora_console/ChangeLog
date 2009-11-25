@@ -1,5 +1,16 @@
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
+	* include/functions_io.php, include/functions.php: change and add functions
+	for manage the input output with correct encoding and decoding.
+
+	*include/functions_html.php, include/functions_ui.php,
+	operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php: change the function "salida_limpia"
+	for "safe_output" and other changes.
+
+2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.php: add column status of alert in alert
 	management view in agent.
 

@@ -115,7 +115,7 @@ foreach ($modules as $module) {
 	if (is_numeric($module["datos"])) {
 		$title .= " : " . format_for_graph($module["datos"]);
 	} else {
-		$title .= " : " . substr(salida_limpia($module["datos"]),0,42);
+		$title .= " : " . substr(safe_output($module["datos"]),0,42);
 	}
 
 	$data[4] = print_status_image($status, $title, true);
@@ -123,7 +123,7 @@ foreach ($modules as $module) {
 	if (is_numeric($module["datos"])){
 		$salida = format_numeric($module["datos"]);
 	} else {
-		$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(salida_limpia($module["datos"]),0,12)."</span>";
+		$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
 	}
 
 	$data[5] = $salida;

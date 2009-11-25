@@ -118,7 +118,7 @@ foreach ($modules as $module) {
 		}
 	}
 	$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
-	echo "<td class='".$tdcolor."_id' title='".salida_limpia($module["nombre"])."'>";
+	echo "<td class='".$tdcolor."_id' title='".safe_output($module["nombre"])."'>";
 	print_string_substr ($module["nombre"]);
 	echo "</td><td class='".$tdcolor."'> ";
 	
@@ -136,8 +136,8 @@ foreach ($modules as $module) {
 	AND ($module["id_tipo_modulo"] != 10)
 	AND ($module["id_tipo_modulo"] != 17)
 	AND ($module["id_tipo_modulo"] != 23)){
-		echo "</td><td class='".$tdcolor."f9' title='".salida_limpia($module["descripcion"])."'>"; 
-		echo salida_limpia(substr($module["descripcion"],0,32));
+		echo "</td><td class='".$tdcolor."f9' title='".safe_output($module["descripcion"])."'>"; 
+		echo safe_output(substr($module["descripcion"],0,32));
 		if (strlen($module["descripcion"]) > 32){
 			echo "...";
 		}
@@ -145,7 +145,7 @@ foreach ($modules as $module) {
 	} 
 	if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
-		echo substr(salida_limpia($module["datos"]),0,12);
+		echo substr(safe_output($module["datos"]),0,12);
 	} else {
 
 
@@ -154,8 +154,8 @@ foreach ($modules as $module) {
 			echo "<td class=".$tdcolor.">";
 			echo format_for_graph($module["datos"] );
 		} else {
-			echo "<td class='".$tdcolor."f9' colspan=2 title='".salida_limpia($module["datos"])."'>";
-			echo substr(salida_limpia($module["datos"]),0,42);
+			echo "<td class='".$tdcolor."f9' colspan=2 title='".safe_output($module["datos"])."'>";
+			echo substr(safe_output($module["datos"]),0,42);
 		}
 		
 			

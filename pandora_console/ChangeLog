@@ -1,5 +1,14 @@
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
+	* index.php: clean source code, the blank end line in the end of document
+	and show in the browser too.
+	* include/functions_ui.php, operation/agentes/alerts_status.php: add new
+	colummn, the action column that it show the actions of alert.
+	* godmode/alerts/alert_templates.php: add the 'Time threshold' in the
+	tooltip.
+
+2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
+
 	* include/functions_modules.php: fix the deletion of module in the function
 	"delete_agent_module" for change the name to avoid the row collision. This
 	change is advised by Sancho lerena.

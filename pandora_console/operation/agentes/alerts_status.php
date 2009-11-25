@@ -177,18 +177,20 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 	$table->head[2] = ''; //Placeholder for name
 	$table->head[3] = __('Template');
-	$table->head[4] = __('Last fired');
-	$table->head[5] = __('Status');
-	$table->head[6] = __('Validate');
+	$table->head[4] = __('Action');
+	$table->head[5] = __('Last fired');
+	$table->head[6] = __('Status');
+	$table->head[7] = __('Validate');
 }
 else
 {
 	$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 	$table->head[1] = ''; //Placeholder for name
 	$table->head[2] = __('Template');
-	$table->head[3] = __('Last fired');
-	$table->head[4] = __('Status');
-	$table->head[5] = __('Validate');
+	$table->head[3] = __('Action');
+	$table->head[4] = __('Last fired');
+	$table->head[5] = __('Status');
+	$table->head[6] = __('Validate');
 }
 $table->title = __('Single alerts');
 $table->titlestyle = "background-color:#799E48;";
@@ -207,12 +209,12 @@ else {
 }
 $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->align[5] = 'center';
 	$table->align[6] = 'center';
+	$table->align[7] = 'center';
 }
 else {
-	$table->align[4] = 'center';
 	$table->align[5] = 'center';
+	$table->align[6] = 'center';
 }
 $table->data = array ();
 

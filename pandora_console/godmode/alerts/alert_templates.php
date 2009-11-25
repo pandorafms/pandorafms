@@ -54,7 +54,8 @@ if (is_ajax ()) {
 			
 			/* Everyday */
 			echo '<strong>'.__('Everyday').'</strong><br />';
-		} else {
+		}
+		else {
 			$days = array ('monday' => __('Monday'),
 				'tuesday' => __('Tuesday'),
 				'wednesday' => __('Wednesday'),
@@ -76,8 +77,11 @@ if (is_ajax ()) {
 				echo ' '.__('and').' ';
 			}
 			echo $last;
+			echo "<br />";
 			
 		}
+		echo "<strong>" . __('Time threshold') . ": </strong>";
+		echo $template['time_threshold'];
 		echo '<br />';
 		
 		if ($template['time_from'] != $template['time_to']) {
@@ -87,7 +91,6 @@ if (is_ajax ()) {
 			echo $template['time_to'];
 			echo '<br />';
 		}
-		
 		
 		return;
 	}

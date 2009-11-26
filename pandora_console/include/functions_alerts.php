@@ -350,6 +350,9 @@ function get_alert_template_threshold_values () {
 	$times['43200'] = '12 '.__('hours');
 	$times['86400'] = '1 '.__('day');
 	$times['604800'] = '1 '.__('week');
+	$times['1209600'] = '2 '.__('weeks');
+	$times['18144000'] = '1 '.__('month');
+	$times['108864000'] = '6 '.__('months');
 	$times['-1'] = __('Other value');
 	
 	return $times;

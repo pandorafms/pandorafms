@@ -1,3 +1,7 @@
+2008-11-26  Raul Mateos  <raulofpandora@gmail.com>
+
+	* installer/pandora.mpi: Updated installer build to RC3.
+
 2009-11-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* installer/pandora_silent.mpi: Removed from repository. Merged changes

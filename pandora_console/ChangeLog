@@ -1,3 +1,12 @@
+2009-11-26  Miguel de Dios <miguel.dedios@artica.es>
+
+	* include/functions_alerts.php: add more values into function
+	"get_alert_template_threshold_values", values as 1 week, 2 weeks, 1 month
+	and 6 months.
+	* godmode/alerts/configure_alert_template.php: change the default value
+	to 1 day.
+	Fixes: 2902458
+
 2009-11-25  Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: fix the bug in the pagination that write wrong

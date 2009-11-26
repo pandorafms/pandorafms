@@ -111,12 +111,19 @@ Pandora_Windows_Service::start () {
 
 void
 Pandora_Windows_Service::pandora_init () {
-	string conf_file, interval, debug, transfer_interval;
+	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
     int startup_delay = 0;
 
 	setPandoraDebug (true);
 	
+	// Add the util subdirectory to the PATH
+	util_dir = Pandora::getPandoraInstallDir ();
+	util_dir += "util";
+	path = getenv ("PATH");
+	env = "PATH=" + path + ";" + util_dir;
+	putenv (env.c_str ());
+
 	conf_file = Pandora::getPandoraInstallDir ();
 	conf_file += "pandora_agent.conf";
 	
@@ -841,7 +848,7 @@ Pandora_Windows_Service::pandora_run () {
 	conf = this->getConf ();
 
 	/* Check for configuration changes */
-	if (getPandoraDebug == false) {
+	if (getPandoraDebug () == false) {
 		this->checkConfig ();
 	}
 

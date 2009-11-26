@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{091124}
+{091125}
 
 ViewReadme
 {Yes}
@@ -201,7 +201,7 @@ WizardWidth
 
 array set ::InstallJammer::InstallCommandLineOptions {
 mode
-{InstallMode Choice No No {Console Silent Standard} {Set the mode to run the installer in}}
+{InstallMode Choice No No {Silent Standard} {Set the mode to run the installer in}}
 
 prefix
 {InstallDir String No No {} {Set the installation directory}}
@@ -212,7 +212,7 @@ debugconsole
 {ShowConsole Switch Yes No {} {run uninstaller with a debug console open}}
 
 mode
-{UninstallMode Choice No No {Console Silent Standard} {set the mode to run the uninstaller in}}
+{UninstallMode Choice No No {Silent Standard} {set the mode to run the uninstaller in}}
 
 test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
@@ -403,10 +403,11 @@ InstallComponent 6B06C7C2-97A8-4642-B286-3B089943F359 -setup Install -type pane 
 InstallComponent D945ADEC-CFCF-87DD-B8EC-480E6A87F4AF -setup Install -type action -title {Install Everything} -component ExecuteAction -active Yes -parent ConsoleInstall
 InstallComponent 4F41161A-813F-4BE4-F776-3ED4F26B0CF3 -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent ConsoleInstall
 InstallComponent B5904821-3970-1701-002C-0318B8BECA06 -setup Install -type action -title {Console Message} -component ConsoleMessage -active Yes -parent ConsoleInstall
+InstallComponent 613FA629-E245-7370-9591-3648E0F25E00 -setup Install -type action -title {Start Windows Service} -component StartWindowsService -command reorder -active Yes -parent ConsoleInstall
 InstallComponent 4D9FB66C-1A02-271A-B6C3-7C88498D1A57 -setup Install -type action -title Exit -component Exit -active Yes -parent ConsoleInstall
-InstallComponent A2D703B9-395E-59F4-B03C-1655F2690FB7 -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent SilentInstall
 InstallComponent 811B66F7-9751-FF4C-8189-5AB5F50E19FC -setup Install -type action -title {Install Everything} -component ExecuteAction -active Yes -parent SilentInstall
-InstallComponent 613FA629-E245-7370-9591-3648E0F25E00 -setup Install -type action -title {Start Windows Service} -component StartWindowsService -command reorder -active Yes -parent SilentInstall
+InstallComponent A2D703B9-395E-59F4-B03C-1655F2690FB7 -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent SilentInstall
+InstallComponent 6EF6AADF-D373-CE5A-2D2C-26FB5BA9154D -setup Install -type action -title {Start Windows Service} -component StartWindowsService -active Yes -parent SilentInstall
 InstallComponent 466DC16E-3453-409B-999C-CCDF853AA03D -setup Install -type action -title Exit -component Exit -active Yes -parent SilentInstall
 InstallComponent D567240B-2A30-47FD-97AA-3EDA09B64E9F -setup Install -type actiongroup -title {Setup Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB -setup Install -type actiongroup -title {Startup Actions} -active Yes -parent ActionGroupsInstall
@@ -484,7 +485,8 @@ array set Properties {
 
 0C4A17DA-7867-40CC-81B4-0D1F170581AC,StringMap
 {$ServerIP$ <%ServerIP%>
-$AgentTemp$ <%InstallDir%>\\temp}
+ $ServerPath$ /var/spool/pandora/data_in
+ $AgentTemp$ <%InstallDir%>\\temp}
 
 0F1370DF-FF15-4CE7-ADF6-CA74BC642334,CheckCondition
 {Before Action is Executed}
@@ -518,7 +520,8 @@ $AgentTemp$ <%InstallDir%>\\temp}
 
 13C83B15-ECEF-9C00-F46C-6E799ABF2157,StringMap
 {$ServerIP$ localhost
-$AgentTemp$ <%InstallDir%>}
+ $ServerPath$ /var/spool/pandora/data_in
+ $AgentTemp$ <%InstallDir%>\\temp}
 
 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC,Conditions
 {0 conditions}
@@ -717,12 +720,8 @@ $AgentTemp$ <%InstallDir%>}
 
 4F41161A-813F-4BE4-F776-3ED4F26B0CF3,StringMap
 {$ServerIP$ localhost
-$ServerPath$ /var/spool/pandora/data_in
-$AgentTemp$ <%InstallDir%>\\temp
-
-
-
-}
+ $ServerPath$ /var/spool/pandora/data_in
+ $AgentTemp$ <%InstallDir%>\\temp}
 
 57BABE6F-717F-4D6A-8A66-921B404862F5,Conditions
 {0 conditions}
@@ -922,6 +921,12 @@ $AgentTemp$ <%InstallDir%>\\temp
 6B488B72-9080-4AF7-8690-8D823CCD86AE,Conditions
 {0 conditions}
 
+6EF6AADF-D373-CE5A-2D2C-26FB5BA9154D,Conditions
+{0 conditions}
+
+6EF6AADF-D373-CE5A-2D2C-26FB5BA9154D,ServiceName
+{pandoraFMSagent}
+
 716175FD-DD14-46E4-AC3E-2E6483C6FF7D,Comment
 {Ask the user if they want to proceed with the uninstall.}
 
@@ -1028,7 +1033,7 @@ $AgentTemp$ <%InstallDir%>\\temp
 {<%InstallDir%>}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-{9044254}
+{9043742}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -1071,8 +1076,8 @@ A2D703B9-395E-59F4-B03C-1655F2690FB7,Files
 
 A2D703B9-395E-59F4-B03C-1655F2690FB7,StringMap
 {$ServerIP$ localhost
-$ServerPath$ /var/spool/pandora/data_in
-$AgentTemp$ <%InstallDir%>\\temp}
+ $ServerPath$ /var/spool/pandora/data_in
+ $AgentTemp$ <%InstallDir%>\\temp}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,Conditions
 {0 conditions}

@@ -13,6 +13,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+enterprise_include_once('include/functions_policies.php');
+
+$disabledBecauseInPolicy = false;
+$disabledTextBecauseInPolicy = '';
+if ($config['enterprise_installed'] && ($id_agent_module != 0)) {
+	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+	if ($disabledBecauseInPolicy)
+		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+}
+
 define ('ID_NETWORK_COMPONENT_TYPE', 4);
 
 if (empty ($update_module_id)) {
@@ -27,7 +37,7 @@ $extra_title = __('Plugin server module');
 $data = array ();
 $data[0] = __('Plugin');
 $data[1] = print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
-	'id_plugin', $id_plugin, '', __('None'), 0, true, false, false);
+	'id_plugin', $id_plugin, '', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
 $table_simple->colspan['plugin_1'][1] = 3;
 
 push_table_simple ($data, 'plugin_1');
@@ -51,7 +61,7 @@ push_table_simple ($data, 'plugin_2');
 $data = array ();
 $data[0] = __('Plugin parameters');
 $data[0] .= print_help_icon ('plugin_parameters', true);
-$data[1] = print_input_text ('plugin_parameter', $plugin_parameter, '', 255, 255, true);
+$data[1] = print_input_text ('plugin_parameter', $plugin_parameter, '', 255, 255, true, $disabledBecauseInPolicy);
 $table_simple->colspan['plugin_3'][1] = 3;
 
 push_table_simple ($data, 'plugin_3');

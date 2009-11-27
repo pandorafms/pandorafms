@@ -13,6 +13,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+enterprise_include_once('include/functions_policies.php');
+
+$disabledBecauseInPolicy = false;
+$disabledTextBecauseInPolicy = '';
+if ($config['enterprise_installed'] && ($id_agent_module != 0)) {
+	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+	if ($disabledBecauseInPolicy)
+		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+}
+
 define ('ID_NETWORK_COMPONENT_TYPE', 2);
 
 if (empty ($update_module_id)) {
@@ -28,7 +38,7 @@ $data = array ();
 $data[0] = __('Target IP');
 $data[1] = print_input_text ('ip_target', $ip_target, '', 15, 60, true);
 $data[2] = _('Port');
-$data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true);
+$data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'target_ip');
 
@@ -37,16 +47,16 @@ $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $data = array ();
 $data[0] = __('SNMP community');
-$data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);
+$data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
 
 $data[2] = _('SNMP version');
 $snmp_version = 1;
 if ($id_module_type >= 15 && $id_module_type <= 18) {
 	$data[3] = print_select ($snmp_versions, 'snmp_version', $snmp_version,
-		'', '', '', true);
+		'', '', '', true, false, false, '', $disabledBecauseInPolicy);
 } else {
 	$data[3] = print_select ($snmp_versions, 'snmp_version', 0, '', '',
-		'', true);
+		'', true, false, false, '', $disabledBecauseInPolicy);
 }
 
 push_table_simple ($data, 'snmp_1');
@@ -54,16 +64,24 @@ push_table_simple ($data, 'snmp_1');
 $data = array ();
 $data[0] = __('SNMP OID');
 $data[1] = '<span class="left"; style="width: 50%">';
-$data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true);
+$data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true, $disabledBecauseInPolicy);
 $data[1] .= '<span class="invisible" id="oid">';
-$data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true);
+$data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true, false, false, '', $disabledBecauseInPolicy);
 $data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid" />';
 $data[1] .= '</span>';
 $data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
 $data[1] .= '</span> <span class="right" style="width: 50%; text-align: right"><span id="oid_loading" class="invisible">';
 $data[1] .= '<img src="images/spinner.png" />';
 $data[1] .= '</span>';
-$data[1] .= print_button (__('SNMP walk'), 'snmp_walk', $ip_target == '', '',
+if ($disabledBecauseInPolicy)
+	$disableButton = true;
+else
+	if ($ip_target == '')
+		$disableButton = true;
+	else
+		$disableButton = false;
+
+$data[1] .= print_button (__('SNMP walk'), 'snmp_walk', $disableButton, '',
 	'class="sub next"', true);
 $data[1] .= print_help_icon ('snmpwalk', true);
 $data[1] .= '</span>';
@@ -74,13 +92,13 @@ push_table_simple ($data, 'snmp_2');
 /* Advanced stuff */
 $data = array ();
 $data[0] = __('TCP send').' '.print_help_icon ("tcp_send", true);
-$data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, '', true);
+$data[1] = print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true);
 $table_advanced->colspan['tcp_send'][1] = 3;
 
 push_table_advanced ($data, 'tcp_send');
 
 $data[0] = __('TCP receive');
-$data[1] = print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, '', true);
+$data[1] = print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, $disabledTextBecauseInPolicy, true);
 $table_advanced->colspan['tcp_receive'][1] = 3;
 
 push_table_advanced ($data, 'tcp_receive');

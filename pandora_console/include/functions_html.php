@@ -383,11 +383,12 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
  * @param int $size Size of the input (optional).
  * @param int $maxlength Maximum length allowed (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $disabled Disable the button (optional, button enabled by default).
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false) {
-	$output = print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, false, '', '', true, true);
+function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
+	$output = print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', '', true, true);
 
 	if ($return)
 		return $output;
@@ -917,11 +918,12 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
  * @param string Input value.
  * @param string Set the button to be marked (optional, unmarked by default).
  * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $disabled Disable the button (optional, button enabled by default).
  *
  * @return string HTML code if return parameter is true.
  */
-function print_checkbox ($name, $value, $checked = false, $return = false) {
-	$output = print_checkbox_extended ($name, $value, (bool) $checked, false, '', '', true);
+function print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false) {
+	$output = print_checkbox_extended ($name, $value, (bool) $checked, $disabled, '', '', true);
 
 	if ($return === false)
 		echo $output;

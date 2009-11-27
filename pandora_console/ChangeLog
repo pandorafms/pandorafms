@@ -1,3 +1,15 @@
+2009-11-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_html.php: add disabled parameter in functions,
+	"print_input_password" and "print_checkbox". 
+	* godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php: check the module is in
+	any policy and disable some form fields.
+	Fixes: 2902631
+
 2009-11-26  Miguel de Dios <miguel.dedios@artica.es>
 
 	* include/functions_alerts.php: add more values into function

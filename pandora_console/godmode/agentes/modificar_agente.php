@@ -42,8 +42,7 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 	$id_grupo = dame_id_grupo ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
-		if (delete_agent ($id_agentes))
-		  audit_db($config["id_user"],$REMOTE_ADDR, "Agent \'$agent_name\' deleted", "Agent Management");
+		delete_agent ($id_agentes);
 	} else { // NO permissions.
 		audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 			"Trying to delete agent \'$agent_name\'");

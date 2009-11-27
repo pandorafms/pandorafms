@@ -118,6 +118,16 @@ if ($create_alert) {
 	}
 	else {
 		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
+//get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
+	
+
+		$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
+		$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
+		$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+
+		audit_db ($config["id_user"],$REMOTE_ADDR, "Alert management",
+		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+
 		print_result_message ($id,
 			__('Successfully created'),
 			__('Could not be created'));
@@ -138,6 +148,16 @@ if ($create_alert) {
 if ($delete_alert) {
 	$id_alert_agent_module = (int) get_parameter ('id_alert');
 	
+	$temp =  get_db_row ("talert_template_modules","id", $id_alert_agent_module);
+	$id_alert_template = $temp["id_alert_template"];
+	$id_agent_module = $temp["id_agent_module"];
+	$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
+	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
+	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+
+	audit_db ($config["id_user"],$REMOTE_ADDR, "Alert management",
+	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+
 	$result = delete_alert_agent_module ($id_alert_agent_module);
 	print_result_message ($id,
 		__('Successfully deleted'),

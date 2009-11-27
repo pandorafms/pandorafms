@@ -628,7 +628,7 @@ span.rmess, span.nrmess {
 	background-color: #fafafa;
 }
 .databox_color {
-	border-left: 4px solid #786;
+	background-color: #fafafa;
 }
 #head_l {
 	float: left;

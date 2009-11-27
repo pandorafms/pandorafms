@@ -290,7 +290,7 @@ if ($count < 1) {
 		
 		$data[1] = print_incidents_status_img ($row["estado"], true);
 		
-		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.safe_input (substr ($row["titulo"],0,45)).'</a>';
+		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.substr(safe_output($row["titulo"]),0,45).'</a>';
 		
 		$data[3] = print_incidents_priority_img ($row["prioridad"], true);																																																													
 		

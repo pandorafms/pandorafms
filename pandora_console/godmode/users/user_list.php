@@ -28,6 +28,10 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
+
+	audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+		"Deleted user ".safe_input($id_user));
+
 	print_result_message ($result,
 		__('Successfully deleted'),
 		__('There was a problem deleting the user'));

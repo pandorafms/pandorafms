@@ -132,24 +132,30 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	
 	$menu["eventos"]["sub"] = $sub;
-	
-	// Users
-	$menu["usuarios"]["text"] = __('View users');
-	$menu["usuarios"]["sec2"] = "operation/users/user";
-	$menu["usuarios"]["id"] = "oper-users";
-	
-	$sub = array ();
-	$sub["operation/users/user_edit"]["text"] = __('Edit my user');
-	$sub["operation/users/user_edit"]["options"]["name"] = "ver";
-	$sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
-	
-	if (give_acl ($config["id_user"], 0, "UM")) {
-		$sub["operation/users/user_statistics"]["text"] = __('Statistics');
-	}
-	
-	$menu["usuarios"]["sub"] = $sub;
-	//End of Users
-	
+}
+
+// ANY user can view itself !
+
+// Users
+$menu["usuarios"]["text"] = __('View users');
+$menu["usuarios"]["sec2"] = "operation/users/user";
+$menu["usuarios"]["id"] = "oper-users";
+
+$sub = array ();
+$sub["operation/users/user_edit"]["text"] = __('Edit my user');
+$sub["operation/users/user_edit"]["options"]["name"] = "ver";
+$sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
+
+if (give_acl ($config["id_user"], 0, "UM")) {
+	$sub["operation/users/user_statistics"]["text"] = __('Statistics');
+}
+
+$menu["usuarios"]["sub"] = $sub;
+//End of Users
+
+// Rest of options, all with AR privilege (or should events be with incidents?)
+if (give_acl ($config['id_user'], 0, "AR")) {
+
 	//SNMP Console
 	$menu["snmpconsole"]["text"] = __('SNMP console');
 	$menu["snmpconsole"]["refr"] = 60;

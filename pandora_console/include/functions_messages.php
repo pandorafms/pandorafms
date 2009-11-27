@@ -40,8 +40,8 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
 	$values = array ();
 	$values["id_usuario_origen"] = $usuario_origen;
 	$values["id_usuario_destino"] = $usuario_destino;
-	$values["subject"] = safe_input ($subject);
-	$values["mensaje"] = safe_input ($mensaje);
+	$values["subject"] = $subject;
+	$values["mensaje"] = $mensaje;
 	$values["timestamp"] = get_system_time ();
 	
 	$return = process_sql_insert ("tmensajes", $values);
@@ -146,8 +146,8 @@ function get_message ($message_id) {
 	}
 	
 	$return["sender"] = $row["id_usuario_origen"];
-	$return["subject"] = safe_input ($row["subject"]); //Although not strictly necessary, we don't know what other systems might dump in this. So we clean up
-	$return["message"] = safe_input ($row["mensaje"]);
+	$return["subject"] = $row["subject"];
+	$return["message"] = $row["mensaje"];
 	$return["timestamp"] = $row["timestamp"];
 	
 	return $return;

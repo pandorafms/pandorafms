@@ -1,3 +1,50 @@
+2009-11-27  Sancho lerena <slerena@artica.es>
+
+	* operation/menu.php: User section has no ACL check, always can be seen.
+
+	* index.php: Added suppor for user-defined custom language (this code was
+	on my disk for 3 months, pending to be commited!).
+
+	* include/functions_db.php,
+	* include/functions_agents.php,
+	* godmode/alerts/alert_list.php,
+	* godmode/agentes/modificar_agente.php, 
+	* godmode/agentes/configurar_agente.php: Added audit calls to several 
+	management operations who don't have or have insufficient audit info.
+
+	* godmode/users/configure_user.php: Fixed several annoyings bugs. Added
+	custom language support, and added more audit info on management operations.
+
+	* godmode/users/user_list.php: More audit info.
+
+	* include/config_process.php: Add new debug option to render error log to
+	/pandora_console.log. Also set timezone if not defined (this makes warnings
+	on several PHP 5.x setups). Added user custom language support.
+
+	* include/functions_events.php: More audit info. Fixed problems with HTML
+	encoding render.
+
+	* functions_io.php: Some cleaning.
+
+	* include/functions_messages.php: Fixed problems with HTML
+	encoding render.
+
+	* functions_ui.php: Fixed problems with HTML encoding render in 
+	print_string_substr() function.
+
+	* auth/mysql.php: is_user_admin() functions seems to be broken ¿?¿!. Fixed.
+
+	* styles/pandora.css: removed green colored left border in default style.
+
+	* message.php, incident*:  Fixed problems with HTML encoding render.
+
+	* user.php: Better ACL check before let user to view/edit another user.
+
+	* user_edit: Removed some un-used form fields, some arrangements in layout,
+	and FIXED forever problems with password change (new code written).  
+
+	* users/user_statistics.php: Now user can see its own audit records.
+
 2009-11-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_html.php: add disabled parameter in functions,

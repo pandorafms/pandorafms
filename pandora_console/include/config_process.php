@@ -22,12 +22,25 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091103';
-$pandora_version = 'v3.0RC2';
+$build_version = 'PC091127';
+$pandora_version = 'v3.0RC3-dev';
+
+/* Help to debug problems. Override global PHP configuration */
+error_reporting(E_ERROR);
+ini_set("display_errors", 0);
+ini_set("error_log", $config["homedir"]."/pandora_console.log");
+
+// Set a default timezone default if not configured
+// to avoid warnings and bad timestamp calculation in PHP > 5.1 
+
+if (ini_get('date.timezone') == ""){
+	date_default_timezone_set("Europe/Berlin");
+}
 
 $config['start_time'] = microtime (true);
 
-//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
+// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
+// If you want persistent connections change it to mysql_pconnect(). 
 $config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
 if (! $config['dbconnection']) {
 	include ($config["homedir"]."/general/error_authconfig.php");
@@ -43,6 +56,15 @@ process_config ();
 
 require_once ('streams.php');
 require_once ('gettext.php');
+
+
+// Set user language if provided, overriding System language
+if (isset ($config['id_user'])){
+	$userinfo = get_user_info ($config['id_user']);
+	if ($userinfo["language"] != ""){
+		$config['language'] = $userinfo["language"];
+	}
+} 
 
 $l10n = NULL;
 if (file_exists ('./include/languages/'.$config["language"].'.mo')) {

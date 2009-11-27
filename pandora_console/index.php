@@ -165,6 +165,18 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 		$config['id_user'] = $nick;
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
+
+		// Set user language if provided, overriding System language
+		$userinfo = get_user_info ($config['id_user']);
+		if ($userinfo["language"] != ""){
+			$config['language'] = $userinfo["language"];
+		}
+
+		$l10n = NULL;
+		if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
+			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
+			$l10n->load_tables();
+		}
 	} else {
 		// User not known
 		$login_failed = true;

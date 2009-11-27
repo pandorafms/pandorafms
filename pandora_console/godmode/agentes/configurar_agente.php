@@ -145,6 +145,9 @@ if ($create_agent) {
 			agent_add_address ($id_agente, $direccion_agente);
 			
 			$agent_created_ok = true;
+
+			audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Created agent $nombre_agente");
 			
 			// Create special module agent_keepalive
 			$id_agent_module = process_sql_insert ('tagente_modulo', 
@@ -345,6 +348,9 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		} else {
 			enterprise_hook ('update_agent', array ($id_agente));
 			print_success_message (__('Successfully updated'));
+			audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Updated agent $nombre_agente");
+
 		}
 	}
 }
@@ -483,6 +489,11 @@ if ($update_module) {
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
+
+		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+
+		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Updated module '$name' for agent ".$agent["nombre"]);
 	}
 }
 
@@ -537,6 +548,10 @@ if ($create_module) {
 		echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
+
+		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Added module '$name' for agent ".$agent["nombre"]);
 	}
 }
 
@@ -544,7 +559,8 @@ if ($create_module) {
 // =================
 if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$id_grupo = (int) dame_id_grupo ($id_agente);	
+	$module_data = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
+	$id_grupo = (int) dame_id_grupo ($id_agente);
 	
 	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
@@ -556,7 +572,7 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	if ($id_borrar_modulo < 1) {
 		audit_db ($config["id_user"],$REMOTE_ADDR, "HACK Attempt",
 		"Expected variable from form is not correct");
-		die ("Nice try buddy");
+		require ("general/noaccess.php");
 		exit;
 	}
 	
@@ -585,6 +601,10 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	} else {
 		process_sql_commit ();
 		print_success_message (__('Module deleted succesfully'));
+
+		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
 	}
 }
 

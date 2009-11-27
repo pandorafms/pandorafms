@@ -65,7 +65,7 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 if (isset ($_GET["new_msg"])) { //create message
 	echo "<h2>".__('Messages')." &raquo; ".__('New message').'</h2>';
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
-	<table width="600" class="databox_color" cellpadding="4" cellspacing="4">
+	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
 		<td class="datos">'.__('From').':</td>
 		<td class="datos"><b>'.print_username ($config["id_user"], true).'</b></td>
@@ -158,7 +158,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 	if (empty ($messages)) {
 		echo '<div class="nf">'.__('There are no messages').'</div>';
 	} else {
-		$table->width = "100%";
+		$table->width = "85%";
 		$table->class = "databox";
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
@@ -217,7 +217,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 		print_table ($table);
 		echo '</form>';
 	}
-	echo '<div class="action-buttons" style="width:100%">';
+	echo '<div class="action-buttons" style="width:85%">';
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">';
 	print_submit_button (__('New message'), "send_mes", false, 'class="sub next"');
 	echo '</form></div>';

@@ -12,6 +12,15 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
+enterprise_include_once('include/functions_policies.php');
+
+$disabledBecauseInPolicy = false;
+$disabledTextBecauseInPolicy = '';
+if ($config['enterprise_installed'] && ($id_agent_module != 0)) {
+	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+	if ($disabledBecauseInPolicy)
+		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+}
 
 $extra_title = __('WMI server module');
 
@@ -29,7 +38,7 @@ $data[0] = __('Target IP');
 $data[1] = print_input_text ('ip_target', $ip_target, '', 15, 60, true);
 $data[2] = _('Namespace');
 $data[2] .= print_help_icon ('wminamespace', true);
-$data[3] = print_input_text ('tcp_send', $tcp_send, '', 5, 20, true);
+$data[3] = print_input_text ('tcp_send', $tcp_send, '', 5, 20, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'target_ip');
 
@@ -44,7 +53,7 @@ push_table_simple ($data, 'user_pass');
 $data = array ();
 $data[0] = __('WMI query');
 $data[0] .= print_help_icon ('wmiquery', true);
-$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 35, 255, true);
+$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 35, 255, true, $disabledBecauseInPolicy);
 $table_simple->colspan['wmi_query'][1] = 3;
 
 push_table_simple ($data, 'wmi_query');
@@ -52,10 +61,10 @@ push_table_simple ($data, 'wmi_query');
 $data = array ();
 $data[0] = __('Key string');
 $data[0] .= print_help_icon ('wmikey', true);
-$data[1] = print_input_text ('snmp_community', $snmp_community, '', 20, 60, true);
+$data[1] = print_input_text ('snmp_community', $snmp_community, '', 20, 60, true, $disabledBecauseInPolicy);
 $data[2] = __('Field number');
 $data[2] .= print_help_icon ('wmifield', true);
-$data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 15, true);
+$data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 15, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'key_field');
 ?>

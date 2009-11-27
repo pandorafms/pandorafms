@@ -56,7 +56,11 @@ foreach ($info as $user_id => $user_info) {
 	$rowPair = !$rowPair;
 	$iterator++;
 	
-	$data[0] = '<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;id='.$user_id.'">'.$user_id.'</a>';
+	if ((check_acl ($config["id_user"], get_user_groups ($user_id), "UM")) OR ($config["id_user"] == $user_id)){
+		$data[0] = '<b><a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;id='.$user_id.'">'.$user_id.'</a></b>';
+	} else {
+		$data[0] = $user_id;
+	}
 	$data[1] = $user_info["fullname"].'<a href="#" class="tip"><span>';
 	$data[1] .= __('First name').': '.$user_info["firstname"].'<br />';
 	$data[1] .= __('Last name').': '.$user_info["lastname"].'<br />';

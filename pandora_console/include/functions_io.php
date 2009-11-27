@@ -36,6 +36,34 @@ function safe_input($value) {
 	return $valueHtmlEncode;
 }
 
+/**
+ * Convert the $value encode in html entity to clear char string. This function 
+ * should be called always to "clean" HTML encoded data; to render to a text
+ * plain ascii file, to render to console, or to put in any kind of data field
+ * who doesn't make the HTML render by itself.
+ * 
+ * @param mixed String or array of strings to be cleaned.
+ * 
+ * @return unknown_type
+ */
+function safe_output($value)
+{	
+	if (is_numeric($value))
+		return $value;
+		
+	if (is_array($value)) {
+		array_walk($value, "safe_output");
+		return $value;
+	}
+	
+	if (! mb_check_encoding ($value, 'UTF-8'))
+		$value = utf8_encode ($value);
+	
+	$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
+	
+	return $valueHtmlEncode;	
+}
+
 /** 
  * Use to clean HTML entities when get_parameter or safe_input functions dont work
  * 
@@ -105,28 +133,5 @@ function unsafe_string ($string) {
 	return $string;
 }
 
-/**
- * Convert the $value encode in html entity to clear char string.
- * 
- * @param mixed String or array of strings to be cleaned.
- * 
- * @return unknown_type
- */
-function safe_output($value)
-{	
-	if (is_numeric($value))
-		return $value;
-		
-	if (is_array($value)) {
-		array_walk($value, "safe_output");
-		return $value;
-	}
-	
-	if (! mb_check_encoding ($value, 'UTF-8'))
-		$value = utf8_encode ($value);
-	
-	$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
-	
-	return $valueHtmlEncode;	
-}
+
 ?>

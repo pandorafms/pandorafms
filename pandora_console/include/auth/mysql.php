@@ -67,11 +67,14 @@ function process_user_login ($login, $pass) {
  * @return bool True is the user is admin
  */
 function is_user_admin ($id_user) {
+	/* This code below was here, but I don't understand WHY. This always returns TRUE ¿?¿?
+
 	static $is_admin = -1;
 	
 	if ($is_admin !== -1)
 		return $is_admin;
-	
+	*/
+
 	$is_admin = (bool) get_db_value ('is_admin', 'tusuario', 'id_user', $id_user);
 	return $is_admin;
 }

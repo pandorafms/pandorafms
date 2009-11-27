@@ -419,7 +419,17 @@ function print_string_substr ($string, $cutoff = 16, $return = false) {
 	if (empty ($string)) {
 		return "";
 	}
-	$string = '<span title="'.safe_input ($string).'">'.mb_substr ($string, 0, $cutoff, "UTF-8").(mb_strlen ($string. "UTF-8") > $cutoff ? '...' : '').'</span>';
+
+	$string2 = safe_output ($string);
+	if (mb_strlen($string2, "UTF-8") >  $cutoff){
+		$string3 = "...";
+	} else {
+		$string3 = "";
+	}
+
+	
+	$string = '<span title="'.safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
+
 	if ($return === false) {
 		echo $string;
 	} 

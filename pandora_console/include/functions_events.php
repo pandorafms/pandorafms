@@ -123,8 +123,10 @@ function delete_event ($id_event, $similar = true) {
 			//Check ACL
 			audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation", "Attempted deleting event #".$event);
 		} elseif ($ret !== false) {
+			audit_db ($config["id_user"], $config["remote_addr"], "Event deleted", "Deleted event #".$event);
 			//ACL didn't fail nor did return
 			continue;
+
 		}
 		
 		$errors++;
@@ -135,9 +137,6 @@ function delete_event ($id_event, $similar = true) {
 		process_sql_rollback ();
 		return false;
 	} else {
-		foreach ($id_event as $event) {
-			audit_db ($config["id_user"], $config["remote_addr"], "Event deleted", "Deleted event #".$event);
-		}
 		process_sql_commit ();
 		return true;
 	}
@@ -351,8 +350,11 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			
 			// Event description wrap around by default at 44 or ~3 lines (10 seems to be a good ratio to wrap around for most sizes. Smaller number gets longer strings)
 			$wrap = floor ($width / 10);
-			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9" title="'.safe_input ($event["evento"]).'">'.safe_input ($event["evento"]).'</span>';
-			
+
+
+
+			$data[3] = '<span class="'.get_priority_class ($event["criticity"]).'f9">'. print_string_substr ($event["evento"],45,true). '</span>';
+
 			if ($event["id_agente"] > 0) {
 				// Agent name
 				$data[4] = print_agent_name ($event["id_agente"], true);

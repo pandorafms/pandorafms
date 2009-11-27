@@ -286,12 +286,13 @@ if (empty ($id_creator)) {
 echo '</td></tr><tr><td class="datos2" colspan="4">';
 
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_textarea ("descripcion", 15, 80, safe_input ($texto), 'style="height:200px;"');
+	print_textarea ("descripcion", 15, 80,  $texto, 'style="height:200px;"');
 } else {
-	print_textarea ("descripcion", 15, 80, safe_input ($texto), 'style="height:200px;" disabled');
+	print_textarea ("descripcion", 15, 80,  $texto, 'style="height:200px;" disabled');
 }
 
 echo '</td></tr></table><div style="width: 600px; text-align:right;">';
+
 // Only if user is the used who opened incident or (s)he is admin
 if (isset ($id_inc) AND ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
 	print_submit_button (__('Update incident'), "accion", false, 'class="sub upd"');
@@ -337,7 +338,7 @@ if (isset ($id_inc)) {
 		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
 			$data[0] .= print_input_image ("delete_nota", "images/cross.png", $row["id_nota"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
 		}
-		$data[1] = safe_input ($row["nota"]);
+		$data[1] = $row["nota"];
 		array_push ($table->data, $data);
 	}
 	

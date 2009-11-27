@@ -1489,6 +1489,10 @@ function agent_delete_address ($id_agent, $ip_address) {
 		$sql = sprintf ("DELETE FROM taddress_agent WHERE id_ag = %d",$id_ag);	
 		process_sql ($sql);
 	}
+	$agent_name = get_agent_name($id_agent, "");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+	"Deleted IP $ip_address from agent '$agent_name'");
+
 	// Need to change main address?
 	if (get_agent_address ($id_agent) == $ip_address) {
 		$new_ips = get_agent_addresses ($id_agent);
@@ -2761,6 +2765,8 @@ function delete_agent ($id_agents) {
 		if ($id_agent < 1)
 			continue;
 		
+		$agent_name = get_agent_name($id_agent, "");
+	
 		/* Check for deletion permissions */
 		$id_group = get_agent_group ($id_agent);
 		if (! give_acl ($config['id_user'], $id_group, "AW")) {
@@ -2828,7 +2834,7 @@ function delete_agent ($id_agents) {
 
 		// Delete remote configuration
 		if (isset ($config["remote_config"])) {
-			$agent_md5 = md5 (get_agent_name ($id_agent,'none'), FALSE);
+			$agent_md5 = md5 ($agent_name, FALSE);
 			
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5")) {
 				// Agent remote configuration editor
@@ -2842,6 +2848,10 @@ function delete_agent ($id_agents) {
 		
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
+
+		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		"Deleted agent '$agent_name'");
+
 		
 		/* Break the loop on error */
 		if ($error)

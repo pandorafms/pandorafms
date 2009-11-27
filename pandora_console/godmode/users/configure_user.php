@@ -19,6 +19,9 @@ require_once ('include/config.php');
 check_login ();
 $id = get_parameter ('id', $config['id_user']); // ID given as parameter
 $user_info = get_user_info ($id);
+if ($user_info["language"] == ""){
+	$user_info["language"] = $config["language"];
+}
 $id = $user_info['id_user'];
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
@@ -50,6 +53,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['phone'] = '';
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
+	$user_info['language'] = $config["language"];
 }
 
 if ($create_user) {
@@ -63,12 +67,13 @@ if ($create_user) {
 	$values['fullname'] = (string) get_parameter ('fullname');
 	$values['firstname'] = (string) get_parameter ('firstname');
 	$values['lastname'] = (string) get_parameter ('lastname');
-	$password_new = (string) get_parameter ('password_new');
-	$password_confirm = (string) get_parameter ('password_confirm');
+	$password_new = (string) get_parameter ('password_new', '');
+	$password_confirm = (string) get_parameter ('password_confirm', '');
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$values['is_admin'] = $is_admin = (bool) get_parameter ('is_admin', 0);
+	$values['is_admin'] = get_parameter ('is_admin', 0);
+	$values['language'] = get_parameter ('language', $config["language"]);
 	
 	if ($password_new == '') {
 		print_error_message (__('Passwords cannot be empty'));
@@ -86,15 +91,19 @@ if ($create_user) {
 	}
 	else {
 		$result = create_user ($id, $password_new, $values);
+
+		audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+		"Created user ".safe_input($id));
+
 		print_result_message ($result,
 			__('Successfully created'),
 			__('Could not be created'));
 		$user_info = get_user_info ($id);
 		$password_new = '';
 		$password_confirm = '';
+		$new_user = false;
 	}
 	
-	$user_info['is_admin'] = $is_admin;
 }
 
 if ($update_user) {
@@ -105,14 +114,15 @@ if ($update_user) {
 	$values['email'] = (string) get_parameter ('email');
 	$values['phone'] = (string) get_parameter ('phone');
 	$values['comments'] = (string) get_parameter ('comments');
-	$values['is_admin'] = (bool) get_parameter ('is_admin');
-	
+	$values['is_admin'] = get_parameter ('is_admin', 0 );
+	$values['language'] = (string) get_parameter ('language', $config["language"]);
+
 	$res1 = update_user ($id, $values);
 	
 	if ($config['user_can_update_password']) {
-		$password_new = (string) get_parameter ('password_new');
-		$password_confirm = (string) get_parameter ('password_confirm');
-		if ($password_new !== '') {
+		$password_new = (string) get_parameter ('password_new', '');
+		$password_confirm = (string) get_parameter ('password_confirm', '');
+		if ($password_new != '') {
 			if ($password_confirm == $password_new) {
 				$res2 = update_user_password ($id, $password_new);
 				print_result_message ($res1 || $res2,
@@ -122,6 +132,8 @@ if ($update_user) {
 				print_error_message (__('Passwords does not match'));
 			}
 		} else {
+			audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+		"Updated user ".safe_input($id));
 			print_result_message ($res1,
 				__('User info successfully updated'),
 				__('Error updating user info (no change?)'));
@@ -136,20 +148,24 @@ if ($update_user) {
 }
 
 if ($add_profile) {
-	$id = (string) get_parameter ('id_user');
-	$group = (int) get_parameter ('assign_group');
-	$profile = (int) get_parameter ('assign_profile');
-	
-	$return = create_user_profile ($id, $profile, $group);
+	$id2 = (string) get_parameter ('id_user');
+	$group2 = (int) get_parameter ('assign_group');
+	$profile2 = (int) get_parameter ('assign_profile');
+	audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+		"Added profile for user ".safe_input($id2));
+	$return = create_user_profile ($id2, $profile2, $group2);
 	print_result_message ($return,
-		__('Successfully created'),
-		__('Could not be created'));
+		__('Profile added successfully'),
+		__('Profile cannot be added'));
 }
 
 if ($delete_profile) {
 	$id = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
-	
+		
+	audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+		"Deleted profile for user ".safe_input($id));
+
 	$return = delete_user_profile ($id, $id_up);
 	print_result_message ($return,
 		__('Successfully deleted'),
@@ -158,7 +174,7 @@ if ($delete_profile) {
 
 echo "<h2>".__('Pandora users')." &raquo; ".__('User detail editor')."</h2>";
 
-$table->width = '50%';
+$table->width = '80%';
 $table->data = array ();
 $table->colspan = array ();
 $table->size = array ();
@@ -175,6 +191,11 @@ $table->data[1][0] = __('Full (display) name');
 $table->data[1][1] = print_input_text_extended ('fullname', $user_info['fullname'],
 	'', '', 30, 255, $view_mode, '', '', true);
 
+$table->data[2][0] = __('Language');
+$table->data[2][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
+	'language', $user_info["language"], '', '', '', true);
+
+/*
 $table->data[2][0] = __('First name');
 $table->data[2][1] = print_input_text_extended ('firstname', $user_info['firstname'],
 	'', '', 30, 255, $view_mode, '', '', true);
@@ -182,6 +203,7 @@ $table->data[2][1] = print_input_text_extended ('firstname', $user_info['firstna
 $table->data[3][0] = __('Last name');
 $table->data[3][1] = print_input_text_extended ('lastname', $user_info['lastname'],
 	'', '', 30, 255, $view_mode, '', '', true);
+*/
 
 if ($config['user_can_update_password']) {
 	$table->data[4][0] = __('Password');
@@ -194,7 +216,6 @@ if ($config['user_can_update_password']) {
 
 if ($config['admin_can_make_admin']) {
 	$table->data[6][0] = __('Global Profile');
-	
 	$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
 	$table->data[6][1] .= __('Administrator');
 	$table->data[6][1] .= print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
@@ -214,7 +235,7 @@ $table->data[8][1] = print_input_text_extended ("phone", $user_info['phone'],
 	'', '', 10, 30, $view_mode, '', '', true);
 
 $table->data[9][0] = __('Comments');
-$table->data[9][1] = print_textarea ("comments", 5, 55, $user_info['comments'],
+$table->data[9][1] = print_textarea ("comments", 2, 65, $user_info['comments'],
 	($view_mode ? 'readonly="readonly"' : ''), true);
 
 echo '<form method="post">';

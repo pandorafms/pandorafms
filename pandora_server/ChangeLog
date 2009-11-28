@@ -1,3 +1,11 @@
+2009-11-28  Raul Mateos  <raulofpandora@gmail.com>
+
+	* lib/PandoraFMS/Config.pm: Changed string from RC2 to RC3.
+	Updated build due to last changes.
+
+	* DEBIAN/control, DEBIAN/make_deb_package.sh: Changed string from rc2
+	to RC3
+
 2009-11-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Removed the last call to UnixDate.

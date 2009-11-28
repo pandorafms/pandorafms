@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.0.0.rc2"
+pandora_console_version="3.0.0.RC3"
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]

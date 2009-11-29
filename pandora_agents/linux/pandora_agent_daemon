@@ -19,7 +19,7 @@
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
-LOGFILE=/var/log/pandora_agent.log
+LOGFILE=/var/log/pandora/pandora_agent.log
 
 # This function replace pidof, not working in the same way in different linux distros
 
@@ -57,7 +57,7 @@ case "$1" in
 			echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
 			exit 1
 		else
-			echo "Stopping Pandora Agent."
+			echo "Stopping Pandora FMS Agent."
 			kill $PANDORA_PID > /dev/null 2>&1        
 		fi
 	;;

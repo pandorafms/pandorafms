@@ -17,7 +17,8 @@ require_once ("include/functions_messages.php");
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
 	<tr>
-		<td rowspan=2><div id="pandora_logo_header"></div></td>
+		<td rowspan=2>
+		<?php echo "<img height=60 width=139 src='images/custom_logo/".$config["custom_logo"]."'></td>"; ?>
 		<td width="20%">
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
 			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?php echo __('You are');?> [<b><?php echo $config["id_user"];?></b>]</a>
@@ -91,14 +92,13 @@ require_once ("include/functions_messages.php");
 				echo '</span>';
 			}
 		echo "</td>";
-		echo "<td width='25%' rowspan=2>";
+		echo "<td width='20%' rowspan=2>";
 		echo "<a href='index.php?sec=main'>";
-		echo "<div id='head_r'><span id='logo_text1'>Pandora</span> <span id='logo_text2'>FMS</span></div>";
-		if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) 
-			echo '<div id="logo_text3">Enterprise</div>';
-		else
-			echo '<div id="logo_text3">OpenSource</div>';
-		echo "</A>";
+		if (file_exists ($ENTERPRISE_DIR."/load_enterprise.php")){ 
+			echo "<img border=0 src='images/pandora_header_logo.png'>";	
+		} else {
+			echo "<img border=0 src='images/pandora_header_logo_enterprise.png'>";	
+		}
 ?>
 		</td>
 	</tr>

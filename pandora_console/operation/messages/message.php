@@ -22,8 +22,8 @@ require_once ("include/functions_messages.php");
 //First Queries - also inits the variables so it can be passed along
 $dest_user = get_parameter ("dest_user");
 $dest_group = get_parameter ("dest_group");
-$subject = urldecode (get_parameter ("subject"));
-$message = urldecode (get_parameter ("message"));
+$subject = get_parameter ("subject");
+$message = get_parameter ("mensaje");
 
 if (isset ($_POST["delete_message"])) {
 	$id = (int) get_parameter_post ("delete_message");
@@ -116,8 +116,13 @@ if (isset ($_GET["new_msg"])) { //create message
 	<td class="datos2" valign="top"><b>'.$message["subject"].'</b></td></tr>';
 	
 	// text
+	
+	$order   = array("\r\n", "\n", "\r");
+	$replace = '<br />';
+	$parsed_message = str_replace($order, $replace, $message["message"]);
+
 	echo '<tr><td class="datos" valign="top">'.__('Message').':</td>
-	<td class="datos"><pre>'.$message["message"].'</pre></td></tr></table>';
+	<td class="datos">'.$parsed_message.'</td></tr></table>';
 	
 	//Prevent RE: RE: RE:
 	if (strstr ($message["subject"], "RE:")) {
@@ -125,7 +130,8 @@ if (isset ($_GET["new_msg"])) { //create message
 	} else {
 		$new_subj = "RE: ".$message["subject"];
 	}
-	
+
+
 	//Start the message much like an e-mail reply 
 	$new_msg = "\n\n\nOn ".date ($config["date_format"], $message["timestamp"]).' '.get_user_fullname ($message["sender"]).' '.__('wrote').":\n\n".$message["message"];
 	

@@ -26,7 +26,7 @@ $build_version = 'PC091127';
 $pandora_version = 'v3.0RC3-dev';
 
 /* Help to debug problems. Override global PHP configuration */
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 ini_set("display_errors", 0);
 ini_set("error_log", $config["homedir"]."/pandora_console.log");
 
@@ -57,6 +57,9 @@ process_config ();
 require_once ('streams.php');
 require_once ('gettext.php');
 
+global $REMOTE_ADDR;
+
+$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
 // Set user language if provided, overriding System language
 if (isset ($config['id_user'])){

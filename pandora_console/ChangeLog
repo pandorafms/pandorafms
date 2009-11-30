@@ -1,3 +1,44 @@
+2009-11-31  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: SLA readjust to be used in SLA view.
+
+	* include/config_process.php,
+	* include/functions_config.php: Added support for custom_logo option.
+
+	* include/help/en/help_agent_access.php,
+	include/help/en/help_custom_logo.php: New help topics.
+
+	* include/functions_agents.php: Replaced audit_db with pandora_audit().
+
+	* include/functions_db.php: pandora_audit() will replace audit_db().
+
+	* operation/agentes/sla_view.php: now show render ok modules with min_critical
+	defined and uses to calculate automatically a SLA based on it's critical
+	definition.
+
+	* operation/messages/message.php: Message view was not working!. Fixed
+	
+	* Some new images added:
+		images/people_2.png
+		images/MiniLogoArtica.jpg
+		images/pandora_header_logo_enterprise.png
+		images/custom_logo
+		images/custom_logo/sourceforge.png
+		images/custom_logo/artica_logo.png
+		images/custom_logo/pandora_logo_head.png
+		images/pandora_header_logo.png
+		images/people_1.png: 
+
+	* general/header.php: Changes to add new custom logo feature and replace
+	logos with a image instead text.
+
+	* godmode/setup/setup_visuals.php: now is possible to choose a custom logo
+	to be displayed in header.
+
+	*operation/agentes/ver_agente.php,
+	* godmode/agentes/configurar_agente.php: Tabs do not have text at sides. This
+	avoid problems in other languages different than english with long text strings.
+
 2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_agents.php: added new parameter for order the result of

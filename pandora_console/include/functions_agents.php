@@ -91,8 +91,7 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
 	
 	process_sql_commit ();
 	
-	audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
-		"New agent '$name' created");
+	pandora_audit ("Agent management", "New agent '$name' created");
 
 	return $id_agent;
 }

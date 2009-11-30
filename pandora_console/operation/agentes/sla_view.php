@@ -75,7 +75,13 @@ foreach ($modules as $module_id => $module) {
 	$data = array ();
 	$data[0] = print_moduletype_icon ($module["id_tipo_modulo"], true);
 	$data[1] = print_string_substr ($module["nombre"], 25, true);
-	$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
+	if ($module["min_critical"] != 0){
+		$sla_min = $module["min_critical"];
+		$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], $sla_min));
+		$data[2] = 100 - $data[2]. "%";
+	} else {
+		$data[2] = format_numeric (get_agentmodule_sla ($module_id, $config["sla_period"], 1)).'%';
+	}
 
 	//TODO: Make this work for all new status
 	$status = get_agentmodule_status ($module_id);

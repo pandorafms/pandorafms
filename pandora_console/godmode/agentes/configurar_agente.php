@@ -192,40 +192,35 @@ if ($id_agente) {
 	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
 	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
 	print_image ("images/setup.png", false, $img_style);
-	echo '&nbsp; '.mb_substr(get_agent_name ($id_agente), 0, 15) .'</a>';
+	echo '&nbsp; '.mb_substr(get_agent_name ($id_agente), 0, 21) .'</a>';
 	echo "</li></ul></div>";
 
 	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-	print_image ("images/zoom.png", false, $img_style);
-	echo '&nbsp;'.__('View').'</a></li>';
+	echo "<img src='images/zoom.png' class=top title='".__('View')."'>&nbsp;</a></li>";
 
 	echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
-	print_image ("images/cog.png", false, $img_style);
-	echo '&nbsp; '.__('Setup').'</a></li>';
+	echo "<img src='images/cog.png' class='top' title='".__('Setup')."'>&nbsp;</a></li>";
 
 	echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
-	print_image ("images/lightbulb.png", false, $img_style);
-	echo '&nbsp; '.__('Modules').'</a></li>';
+	echo "<img src='images/lightbulb.png' class='top' title='".__('Modules')."'>&nbsp;</a></li>";
 
 	echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
-	print_image ("images/bell.png", false, $img_style);
-	echo '&nbsp; '.__('Alerts').'</a></li>';
+	echo "<img src='images/bell.png' class='top' title='".__('Alerts')."'>&nbsp;</a></li>";
+
 
 	echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
-	print_image ("images/network.png", false, $img_style);
-	echo '&nbsp; '.__('Templates').'</a></li>';
+	echo "<img src='images/network.png' class='top' title='".__('Module templates')."'>&nbsp;</a></li>";
 
 	enterprise_hook ('inventory_tab');
 
 	echo '<li class="nomn">';
 	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
-	print_image ("images/agents_group.png", false, $img_style);
-        echo '&nbsp; '.__('Group').'</a></li>';
+	echo "<img src='images/agents_group.png' class='top' title='".__('Group')."'>&nbsp;</a></li>";
 
 	echo "</ul></div></div>";
 	

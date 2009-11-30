@@ -288,7 +288,7 @@ echo "</div>\n";
 $simple_alerts = array();
 
 if ($id_agente) {
-	$simple_alerts = get_agent_alerts_simple (array_keys ($agents));
+	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), '', false, '', false, 'agent_module_name');
 } else {
 	$total = 0;
 	$where = '';

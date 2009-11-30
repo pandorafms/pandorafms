@@ -1,5 +1,13 @@
 2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_alerts.php: fix deletion of compound alerts in the
+	function "delete_alert_agent_module".
+	Fixes: 2902618
+	* godmode/agentes/configurar_agente.php: use the "delete_alert_agent_module"
+	instead the sql method.
+
+2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php: delete the simple alerts
 	asociated to deleted module.
 

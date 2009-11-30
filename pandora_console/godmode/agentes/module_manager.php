@@ -59,7 +59,7 @@ print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
 print_input_hidden ('edit_module', 1);
 echo '</td>';
 echo '<td class="datos">';
-echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('Create').'">';
+echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 echo "</form>";
 echo "</table>";
 

@@ -308,7 +308,7 @@ echo __('Planned Downtime').'</h2>';
 
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 	print_input_hidden ("first_create", 1);
-	print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
+	print_submit_button (__('Create'), 'create', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';
 }

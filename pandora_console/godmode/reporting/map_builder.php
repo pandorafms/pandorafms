@@ -340,7 +340,7 @@ if (! $edit_layout && ! $id_layout) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	echo '<form action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder" method="post">';
 	print_input_hidden ('edit_layout', 1);
-	print_submit_button (__('Create'), '', false, 'class="sub wand"');
+	print_submit_button (__('Create'), '', false, 'class="sub next"');
 	echo '</form>';
 	echo '</div>';
 } else {
@@ -379,7 +379,7 @@ if (! $edit_layout && ! $id_layout) {
 		print_input_hidden ('update_layout', 1);
 		print_input_hidden ('id_layout', $id_layout);
 	} else {
-		print_submit_button (__('Create'), 'create_layout', false, 'class="sub wand"');
+		print_submit_button (__('Add'), 'create_layout', false, 'class="sub wand"');
 		print_input_hidden ('create_layout', 1);
 	}
 	echo '</div>';

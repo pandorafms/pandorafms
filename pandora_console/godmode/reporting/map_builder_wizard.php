@@ -113,7 +113,8 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 	print_success_message (__('Modules successfully added to layout'));
 }
 
-echo '<h2>'.__('Visual map wizard').' - '.$layout["name"].'</h2>';
+echo "<h2>".__('Reporting')." &raquo; ";
+echo __('Visual map wizard').' - '.$layout["name"].'</h2>';
 
 $id_agents = get_parameter ('id_agents', array ());
 $id_modules = get_parameter ('module', array ());
@@ -175,7 +176,7 @@ print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 print_input_hidden ('add', 1);
 print_input_hidden ('id_layout', $layout["id"]);
-print_submit_button (__('Add'), 'go', false, 'class="sub wizard"');
+print_submit_button (__('Add'), 'go', false, 'class="sub wizard wand"');
 echo '</div>';
 echo '</form>';
 ?>

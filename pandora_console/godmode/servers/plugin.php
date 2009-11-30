@@ -245,7 +245,7 @@ else {
 	echo "<table width=730>";
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</table>";
 }
 

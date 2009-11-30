@@ -1,3 +1,12 @@
+2009-11-30  Raul Mateos <raulofpandora@gmail.com>
+
+	* godmode/servers/plugin.php, godmode/reporting/map_builder.php,
+	godmode/profiles/profile_list.php, godmode/reporting/map_builder_wizard.php,
+	godmode/agentes/module_manager.php, godmode/agentes/planned_downtime.php:
+	Better use of icons in creating components, improving appearance.
+
+	* DEBIAN/make_deb_package.sh: Changed version string from rc2 to RC3.
+
 2009-11-27  Sancho lerena <slerena@artica.es>
 
 	* operation/menu.php: User section has no ACL check, always can be seen.

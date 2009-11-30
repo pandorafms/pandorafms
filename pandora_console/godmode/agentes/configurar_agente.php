@@ -592,6 +592,9 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 
 	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
+
+	if (process_sql ("DELETE FROM talert_template_modules WHERE id_agent_module = ".$id_borrar_modulo) === false)
+		$error++;
 	
 
 	//Check for errors

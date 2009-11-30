@@ -161,6 +161,8 @@ function update_config () {
 	update_config_value ('flash_charts', (bool) get_parameter ('flash_charts', $config["flash_charts"]));
 	update_config_value ('attachment_store', (string) get_parameter ('attachment_store', $config["attachment_store"]));
 	update_config_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
+
+	update_config_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
 }
 
 /**
@@ -303,6 +305,10 @@ function process_config () {
 		update_config_value ( 'flash_charts', true);
 	}
 			
+	if (!isset ($config["custom_logo"])){
+		update_config_value ('custom_logo', 'pandora_logo_head.png');
+	}
+
 	/* Finally, check if any value was overwritten in a form */
 	update_config ();
 }

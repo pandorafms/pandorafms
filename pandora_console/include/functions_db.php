@@ -184,7 +184,7 @@ function safe_acl_group ($id_user, $id_groups, $access) {
 
 	
 /** 
- * Adds an audit log entry.
+ * Adds an audit log entry (DEPRECATED!)
  * 
  * @param string $id User id
  * @param string $ip Client IP
@@ -197,6 +197,26 @@ function audit_db ($id, $ip, $accion, $descripcion){
 	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
 	process_sql ($sql);
 }
+
+
+/** 
+ * Adds an audit log entry (new function in 3.0)
+ * 
+ * @param string $accion Action description
+ * @param string $descripcion Long action description
+ */
+function pandora_audit ($accion, $descripcion){
+	global $config;
+	$ip = $config["remote_addr"]; 
+	$id = $config["id_user"];
+
+	$accion = safe_input($accion);
+	$descripcion = safe_input($descripcion);
+	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
+	process_sql ($sql);
+}
+
+
 
 /**
  * Log in a user into Pandora.

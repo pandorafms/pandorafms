@@ -193,7 +193,7 @@ if (isset($_GET["flag_agent"])){
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(get_agent_name($id_agente),0,21)."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".mb_substr(get_agent_name($id_agente),0,21)."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");
@@ -205,7 +205,7 @@ if (give_acl ($config['id_user'],$id_grupo, "AW")) {
 		echo "<li class='nomn'>";
 	}
 	// Manage agent
-	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".__('Manage')." </a>";
+	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0 title='".__('Manage')."'>&nbsp;</a>";
 	echo "</li>";
 }
 
@@ -215,7 +215,7 @@ if ($tab == "main") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".__('Main')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0 title='".__('Main')."'>&nbsp;</a>";
 echo "</li>";
 
 // Data
@@ -224,7 +224,7 @@ if (($tab == "data") OR ($tab == "data_view")) {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".__('Data')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0 title='".__('Data')."'>&nbsp;</a>";
 echo "</li>";
 
 // Alerts
@@ -233,7 +233,7 @@ if ($tab == "alert") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".__('Alerts')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0 title='".__('Alerts')."'>&nbsp;</a>";
 echo "</li>";
 
 // Go to SLA view
@@ -242,15 +242,13 @@ if ($tab == "sla") {
 } else {
 	echo "<li class='nomn'>";
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A.')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0 title='".__('S.L.A.')."'>&nbsp;</a>";
 echo "</li>";
 
 // Group tab
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
-echo "<img src='images/agents_group.png' class='top' border=0>&nbsp;";
-echo __("Group");
-echo "</a></li>";
+echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Group"). "'>&nbsp;</a></li>";
 
 // Inventory
 enterprise_hook ('inventory_tab');

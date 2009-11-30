@@ -44,7 +44,7 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 		$date = get_system_time ();	
 	}
 	
-	if (empty ($period)) {
+	if ((empty ($period)) OR ($period == 0))  {
 		global $config;
 		$period = $config["sla_period"];
 	}

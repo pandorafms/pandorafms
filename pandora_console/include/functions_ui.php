@@ -369,10 +369,20 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	}
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
+	$actionDefault = get_db_value_sql("SELECT id_alert_action
+			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
+	
 	$actions = get_alert_agent_module_actions ($alert['id']);
 	$actionText = '<ul>';
-	foreach ($actions as $action)
-		$actionText .= '<li>' . $action['name'] . '</li>';
+	foreach ($actions as $action) {
+		$defaultTagIni = $defaultTagEnd = '';
+		if ($action['id'] == $actionDefault) {
+			$defaultTagIni = '<i>';
+			$defaultTagEnd = ' (' . __('default') . ') </i>';
+		}
+		$actionText .= '<li>' . $defaultTagIni . $action['name'] .
+			$defaultTagEnd . '</li>';
+	}
 	$actionText .= '</ul>';
 		
 	$data[$index['action']] = $actionText;

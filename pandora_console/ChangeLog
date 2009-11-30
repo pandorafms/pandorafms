@@ -1,5 +1,10 @@
 2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_ui.php: show the deault action with other style.
+	Fixes: 2905966
+
+2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_alerts.php: fix deletion of compound alerts in the
 	function "delete_alert_agent_module".
 	Fixes: 2902618

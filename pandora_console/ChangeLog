@@ -1,3 +1,9 @@
+2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: fix now don't show alerts with
+	delete pending modules. 
+	* index.php: clean source code, end return that show in browser.
+
 2009-11-30  Raul Mateos <raulofpandora@gmail.com>
 
 	* godmode/servers/plugin.php, godmode/reporting/map_builder.php,

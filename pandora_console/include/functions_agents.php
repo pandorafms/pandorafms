@@ -140,7 +140,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	}
 	else {
 		$id_agent = (array) $id_agent;
-		$id_modules = array_keys (get_agent_modules ($id_agent));
+		$id_modules = array_keys (get_agent_modules ($id_agent, false, array('delete_pending' => 0)));
 		if (empty ($id_modules))
 			return array ();
 			

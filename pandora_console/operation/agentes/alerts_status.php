@@ -70,7 +70,7 @@ if (isset ($_GET["id_agente"])) {
 		exit;
 	}
 	
-	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter);
+	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter, false, '', false, 'agent_module_name');
 	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
 	$print_agent = false;
 	$inside_main = 1;

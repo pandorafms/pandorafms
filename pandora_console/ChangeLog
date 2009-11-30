@@ -1,5 +1,13 @@
 2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_agents.php: added new parameter for order the result of
+	query, $orderby.
+	* operation/agentes/alerts_status.php, godmode/alerts/alert_list.php: use
+	new parameter to order by module name.
+	Fixes: 2902603
+
+2009-11-30  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: show the deault action with other style.
 	Fixes: 2905966
 

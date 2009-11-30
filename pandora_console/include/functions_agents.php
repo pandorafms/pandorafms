@@ -110,7 +110,8 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false) {
+function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false) {
+	
 	switch ($filter) {
 		case "notfired":
 			$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -147,10 +148,15 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 		$subQuery = implode (",", $id_modules);
 	}
 	
-	$sql = sprintf ("SELECT talert_template_modules.*
+	if ($orderby !== false)
+		$orderbyText = sprintf("ORDER BY %s", $orderby);
+		
+	$sql = sprintf ("SELECT talert_template_modules.*, t2.nombre AS agent_module_name
 	FROM talert_template_modules
-	WHERE id_agent_module in (%s) %s %s",
-	$subQuery, $where, $filter);
+		INNER JOIN tagente_modulo AS t2
+			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+	WHERE id_agent_module in (%s) %s %s %s",
+	$subQuery, $where, $filter, $orderbyText);
 	
 	$alerts = get_db_all_rows_sql ($sql);
 	

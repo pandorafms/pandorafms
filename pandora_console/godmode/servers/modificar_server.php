@@ -15,6 +15,7 @@
 
 // Load global vars
 require("include/config.php");
+require_once ("include/functions_servers.php");
 
 check_login();
 

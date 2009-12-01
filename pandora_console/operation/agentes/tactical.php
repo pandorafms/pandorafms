@@ -18,6 +18,7 @@
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_events.php");
+require_once ("include/functions_servers.php");
 
 check_login ();
 
@@ -129,7 +130,34 @@ $cells[7]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&
 $cells[7]["color"] = "#c00";
 
 print_cells_temp ($cells);
-	
+
+$server_performance = get_server_performance();
+echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
+$cells = array ();
+
+$cells[0][0] = __('Local modules rate');
+$cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
+$cells[0]["color"] = "#000";
+
+$cells[1][0] = __('Remote modules rate');
+$cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
+$cells[1]["color"] = "#000";
+
+$cells[2][0] = __('Local modules');
+$cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
+$cells[2]["color"] = "#000";
+
+$cells[3][0] = __('Remote modules');
+$cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
+$cells[3]["color"] = "#000";
+
+$cells[4][0] = __('Total running modules');
+$cells[4][1] = format_numeric($server_performance ["total_modules"]);
+$cells[4]["color"] = "#000";
+
+
+print_cells_temp ($cells);
+
 echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
 
 $cells = array ();
@@ -192,10 +220,18 @@ foreach ($serverinfo as $server) {
 		$data[2] = print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
-	$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80",
-		true, array ("title" => $server["lag_txt"]));
-	
-	$data[4] = $server["lag_txt"];
+	if ($server["type"] != "snmp") {
+		$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, '');	
+
+		if ($server["type"] != "recon"){
+			$data[4] = $server["lag_txt"];
+		} else {
+			$data[4] = __("N/A");
+		}
+	} else {
+		$data[3] = "";
+		$data[4] = __("N/A");
+	}
 
 	array_push ($table->data, $data);
 }

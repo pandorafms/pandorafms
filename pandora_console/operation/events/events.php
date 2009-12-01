@@ -99,15 +99,20 @@ $search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurlde
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
-//$id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
+//$id_agent = (int) get_parameter ("id_agent", ""); //-1 all, 0 system
 $text_agent = (string) get_parameter("id_agent", "All");
+
 switch ($text_agent)
 {
+	case '-1':
+		$id_agent = -1;
+		break;
 	case 'All':
 		$id_agent = -1;
 		break;
 	case 'Server':
 		$id_agent = 0;
+		break;
 	default:
 		$id_agent = get_agent_id($text_agent);
 		break;
@@ -149,14 +154,17 @@ if ($validate) {
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
 	$sql_post = " AND id_grupo = $ev_group";
-} elseif (is_user_admin ($config["id_user"])) {
-	//Do nothing if you're admin, you get full access
-	$sql_post = "";
-	$groups[0] = __('System Events');
 } else {
-	//Otherwise select all groups the user has rights to.
-	$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	if (is_user_admin ($config["id_user"])) {
+		//Do nothing if you're admin, you get full access
+		$sql_post = "";
+		$groups[0] = __('System Events');
+	} else {
+		//Otherwise select all groups the user has rights to.
+		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+	}
 }
+
 
 if ($status == 1) {
 	$sql_post .= " AND estado = 1";
@@ -174,8 +182,10 @@ if ($id_agent != -1)
 	$sql_post .= " AND id_agente = ".$id_agent;
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
-if ($id_user_ack  != 0)
-	$sql_post .= " AND id_usuario == '".$id_user_ack."'";
+
+if ($id_user_ack != "0")
+	$sql_post .= " AND id_usuario = '".$id_user_ack."'";
+
 
 if ($event_view_hr > 0) {
 	$unixtime = get_system_time () - ($event_view_hr * 3600); //Put hours in seconds
@@ -373,6 +383,8 @@ if ($group_rep == 0) {
 } else {
 	$sql = "SELECT COUNT(DISTINCT(evento)) FROM tevento WHERE 1=1 ".$sql_post;
 }
+
+
 
 //Count the events with this filter (TODO but not utimestamp).
 $total_events = (int) get_db_sql ($sql);

@@ -70,13 +70,13 @@ if ($tipo_log != 'all') {
 	$filter = sprintf (" WHERE accion = '%s'", $tipo_log);
 }
 
-$sql = "SELECT COUNT(*) FROM tsesion".$filter;
+$sql = "SELECT COUNT(*) FROM tsesion ".$filter;
 $count = get_db_sql ($sql);
 $url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
 
 
 echo "<tr><td colspan=3>";
-pagination ($count, $url, $offset);
+pagination ($count, $url);
 echo "</td></td></tr></table>";
 
 $sql = sprintf ("SELECT * FROM tsesion%s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
@@ -88,7 +88,7 @@ if (empty ($result)) {
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 700;
+$table->width = 750;
 $table->class = "databox";
 $table->size = array ();
 $table->data = array ();
@@ -105,8 +105,18 @@ $table->size[2] = 130;
 $table->size[3] = 100;
 $table->size[4] = 200;
 
+$rowPair = true;
+$iterator = 0;
+
 // Get data
 foreach ($result as $row) {
+	if ($rowPair)
+		$table->rowclass[$iterator] = 'rowPair';
+	else
+		$table->rowclass[$iterator] = 'rowOdd';
+	$rowPair = !$rowPair;
+	$iterator++;
+
 	$data = array ();
 	$data[0] = $row["ID_usuario"];
 	$data[1] = $row["accion"];

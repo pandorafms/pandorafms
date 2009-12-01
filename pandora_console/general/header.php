@@ -94,7 +94,8 @@ require_once ("include/functions_messages.php");
 		echo "</td>";
 		echo "<td width='20%' rowspan=2>";
 		echo "<a href='index.php?sec=main'>";
-		if (file_exists ($ENTERPRISE_DIR."/load_enterprise.php")){ 
+
+		if (!defined ('PANDORA_ENTERPRISE')){
 			echo "<img border=0 src='images/pandora_header_logo.png'>";	
 		} else {
 			echo "<img border=0 src='images/pandora_header_logo_enterprise.png'>";	

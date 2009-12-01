@@ -1,3 +1,41 @@
+2009-12-1  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: Fixed some innacurate queries, skipping 
+	non-init modules, async modules and keepalive modules. 
+
+	* include/functions_servers.php: Improved LAG calculation algorithm, now
+	is VERY precise. Added performance meter for local & remote checks.
+
+	* include/config_process.php: error_reporting() has better default values
+	now (skipping notices and non-important messages) for pandora_console.log
+
+	* include/functions_agents.php: Fixing a problem in an alert SQL on function 
+	get_agent_alerts_simple().
+
+	* include/functions_db.php: get_server_info() moved to functions_servers.php
+
+	* operation/events/events.php: Fixed a bug with pagination and other bug with
+	user validated events search.
+
+	* operation/agentes/status_monitor.php: Better management of async modules,
+	non init and unknown modules. Now works as expected.
+
+	* operation/agentes/estado_monitores.php: Removed blank space between icons to
+	let table row more compact.
+
+	* operation/agentes/tactical.php: Added performance information. Removed some
+	information (not used) from snmp and recon servers.
+
+	* general/header.php: Latest changes here don't work as expected. Rewritten
+	and now works fine (enterprise/open logo in header).
+
+	* godmode/admin_access_logs.php: Fixed pagination bug in tracker. Added table
+	layout with two alternate colors (rowOdd method).
+
+	* operation/servers/view_server.php,
+	* godmode/servers/modificar_server.php: Added include to functions_servers.php
+	to use the new server functions, moved from functions_db.php.
+
 2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_alerts.php: fix the select box of correlation alerts,

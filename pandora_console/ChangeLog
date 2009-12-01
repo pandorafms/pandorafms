@@ -1,4 +1,10 @@
-2009-11-31  Sancho Lerena <slerena@artica.es>
+2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* extensions/module_groups.php: fix the style of page, adjust the with of
+	table of modules, and fix the description text that fail in panoramic style.
+	Fixes: 2866316 
+	
+2009-12-1  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: SLA readjust to be used in SLA view.
 

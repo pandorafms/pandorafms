@@ -56,6 +56,7 @@ function mainModuleGroups() {
 	$table->align[0] = 'right'; //Align to right the first column.
 	$table->style[0] = 'color: #ffffff; background-color: #778866; font-weight: bolder;';
 	$table->head = $head;
+	$table->width = '95%';
 	
 	//The content of table
 	$tableData = array();
@@ -118,7 +119,7 @@ function mainModuleGroups() {
 	print_table($table);
 	
 	echo "<p>" . __("The colours meaning:") .
-		"<ul>" .
+		"<ul style='float: left;'>" .
 		'<li style="clear: both;">
 			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Red when the cell for this model group and agent has at least one module in critical state and the others in any state.") .

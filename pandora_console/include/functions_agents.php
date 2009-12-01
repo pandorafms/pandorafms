@@ -113,16 +113,16 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	
 	switch ($filter) {
 		case "notfired":
-			$filter = ' AND times_fired = 0 AND disabled = 0';
+			$filter = ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
 			break;
 		case "fired":
-			$filter = ' AND times_fired > 0 AND disabled = 0';
+			$filter = ' AND times_fired > 0 AND talert_template_modules.disabled = 0';
 			break;
 		case "disabled":
-			$filter = ' AND disabled = 1';
+			$filter = ' AND talert_template_modules.disabled = 1';
 			break;
 		case 'all_enabled':
-			$filter = ' AND disabled = 0';
+			$filter = ' AND talert_template_modules.disabled = 0';
 			break;
 		default:
 			$filter = '';

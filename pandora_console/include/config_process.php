@@ -22,11 +22,14 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091127';
+$build_version = 'PC091201';
 $pandora_version = 'v3.0RC3-dev';
 
 /* Help to debug problems. Override global PHP configuration */
-error_reporting(E_ALL);
+
+// error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
 ini_set("display_errors", 0);
 ini_set("error_log", $config["homedir"]."/pandora_console.log");
 
@@ -57,6 +60,7 @@ process_config ();
 require_once ('streams.php');
 require_once ('gettext.php');
 
+// Set IP address of user connected to Pandora console and store it in session array
 global $REMOTE_ADDR;
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];

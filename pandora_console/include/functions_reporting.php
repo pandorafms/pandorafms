@@ -146,13 +146,17 @@ function get_group_stats ($id_group = 0) {
 	if (empty ($alerts))
 		$alerts = array ();
 	
-	$disabledQuery = "id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled = 0) AND ";
+	$disabledQuery = "tagente_estado.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled = 0) AND ";
 	
 	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter);
 	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp = 0");
-	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
+
+	$data["monitor_unknown"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado, tagente_modulo WHERE " . $disabledQuery . $filter."AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_tipo_modulo NOT IN (21,23,23, 100) AND utimestamp > 0 AND UNIX_TIMESTAMP() - utimestamp >= current_interval * 2");	
+
 	$data["monitor_critical"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp > 0 AND estado = 1 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+
 	$data["monitor_warning"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE ".$filter."AND utimestamp > 0 AND estado = 2 AND UNIX_TIMESTAMP() - utimestamp < current_interval * 2");
+
 	$data["monitor_ok"] = $data["monitor_checks"] - $data["monitor_not_init"] - $data["monitor_unknown"] - $data["monitor_critical"] - $data["monitor_warning"];
 	
 	$data["monitor_alerts"] = 0;
@@ -783,8 +787,10 @@ function get_agent_module_info ($id_agent) {
 	} 
 	
 	$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo 
-		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
-		tagente_modulo.disabled = 0	AND tagente_modulo.id_agente = %d", $id_agent);
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+		AND tagente_modulo.disabled = 0 
+		AND tagente_estado.utimestamp > 0 
+		AND tagente_modulo.id_agente = %d", $id_agent);
 	
 	$modules = get_db_all_rows_sql ($sql);
 	
@@ -808,7 +814,7 @@ function get_agent_module_info ($id_agent) {
 			$return["last_contact"] = $module["utimestamp"];
 		}
 		
-		if ($module["id_tipo_modulo"] < 21 || $module["id_tipo_modulo"] != 100) {
+		if (($module["id_tipo_modulo"] < 21 || $module["id_tipo_modulo"] > 23 ) AND ($module["id_tipo_modulo"] != 100)) {
 			$async = 0;
 		} else {
 			$async = 1;
@@ -876,8 +882,10 @@ function get_agent_module_info_with_filter ($id_agent,$filter = '') {
 	} 
 	
 	$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo 
-		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
-		tagente_modulo.disabled = 0	AND tagente_modulo.id_agente = %d", $id_agent);
+		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+		AND tagente_modulo.disabled = 0	
+		AND tagente_estado.utimestamp > 0 
+		AND tagente_modulo.id_agente = %d", $id_agent);
 		
 	$sql .= $filter;
 	
@@ -903,7 +911,7 @@ function get_agent_module_info_with_filter ($id_agent,$filter = '') {
 			$return["last_contact"] = $module["utimestamp"];
 		}
 		
-		if ($module["id_tipo_modulo"] < 21 || $module["id_tipo_modulo"] != 100) {
+		if (($module["id_tipo_modulo"] < 21 || $module["id_tipo_modulo"] > 23 ) AND  ($module["id_tipo_modulo"] != 100)) {
 			$async = 0;
 		} else {
 			$async = 1;

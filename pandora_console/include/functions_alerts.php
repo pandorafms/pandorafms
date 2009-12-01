@@ -632,6 +632,7 @@ function get_alert_compound_operations () {
 
 	$operations['OR'] = 'OR';
 	$operations['AND'] = 'AND';
+	$operations['XOR'] = 'XOR';
 	$operations['NOR'] = 'NOR';
 	$operations['NAND'] = 'NAND';
 	$operations['NXOR'] = 'NXOR';

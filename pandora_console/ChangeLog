@@ -1,5 +1,11 @@
 2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_alerts.php: fix the select box of correlation alerts,
+	now it has the XOR operation.
+	Fixes: 2849260
+
+2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* extensions/module_groups.php: fix the style of page, adjust the with of
 	table of modules, and fix the description text that fail in panoramic style.
 	Fixes: 2866316 

@@ -69,10 +69,11 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 		WHERE id_agente_modulo = %d
 		AND utimestamp > %d
 		AND utimestamp <= %d
-		AND datos < %d', $id_agentmodule, $datelimit, $date, $min_value);
-	if ($max_value > $min_value) {
-		$sql .= sprintf (' AND datos > %d', $max_value);
-	}
+		AND ', $id_agentmodule, $datelimit, $date);
+	if ($max_value > $min_value)
+		$sql .= sprintf ('( datos < %s OR datos > %d )', $min_value, $max_value);
+	else
+		$sql .= sprintf ('datos < %d', $mins_value);
 	$bad = get_db_sql ($sql);
 	if (empty ($bad)) {
 		$bad = 0;

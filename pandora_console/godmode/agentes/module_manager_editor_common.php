@@ -95,6 +95,7 @@ enterprise_include_once('include/functions_policies.php');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
+
 if ($config['enterprise_installed'] && ($id_agent_module != 0)) {
 	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
 	if ($disabledBecauseInPolicy)

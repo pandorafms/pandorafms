@@ -1,3 +1,8 @@
+2009-12-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Empty modules and plugins before loading a remote
+	  configuration. Made the md5 function 64bit proof :-)
+
 2009-11-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Fixed bug #2888991. Skip remote_config if debug is enabled.

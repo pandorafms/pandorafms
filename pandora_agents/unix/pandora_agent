@@ -140,7 +140,7 @@ sub log_message ($$;$) {
 sub read_config (;$) {
 	my $token = shift;
 	my $module;
-
+	
 	error ("File '$ConfDir/$ConfFile' not found.") unless (-e "$ConfDir/$ConfFile");
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
 	while (my $line = <CONF_FILE>) {
@@ -347,6 +347,10 @@ sub check_remote_config () {
 	return if (recv_file ($RemoteConfFile) != 0);
 	log_message ('remote config', 'Configuration has changed!');
 
+	# Empty modules and plugins
+	@Modules = ();
+	@Plugins = ();
+
 	# Save the new configuration and reload it
 	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
 	read_config ();
@@ -362,7 +366,7 @@ sub check_remote_config () {
 sub leftrotate ($$) {
 	my ($x, $c) = @_;
 
-	return ($x << $c) | ($x >> (32 - $c));
+	return (0xFFFFFFFF & ($x << $c)) | ($x >> (32 - $c));
 }
 
 ###############################################################################
@@ -446,7 +450,7 @@ sub md5 ($) {
 				$g = (3 * $y + 5) % 16;
 			}
 			else {
-				$f = $c ^ ($b | (~ $d));
+				$f = $c ^ ($b | (0xFFFFFFFF & (~ $d)));
 				$g = (7 * $y) % 16;
 			}
 

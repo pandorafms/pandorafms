@@ -1,3 +1,9 @@
+2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/map_builder.php: tiny fix the text for select all
+	modules in select box.
+	Fixes: 2897433
+
 2009-12-1  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: Fixed some innacurate queries, skipping 

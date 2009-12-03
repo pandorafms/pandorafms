@@ -485,7 +485,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[5][1] = print_input_text_extended ('agent', '', 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
 		$table->data[6][0] = __('Module');
-		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
+		$table->data[6][1] = print_select (array (), 'module', '', '', __('Any'), 0, true);
 		$table->data[7][0] = __('Period');
 		$table->data[7][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
 		$table->data[8][0] = __('Image');

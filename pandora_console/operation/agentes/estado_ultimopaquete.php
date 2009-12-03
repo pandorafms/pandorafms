@@ -153,8 +153,11 @@ foreach ($modules as $module) {
 		if (is_numeric($module["datos"])){
 			echo "<td class=".$tdcolor.">";
 			echo format_for_graph($module["datos"] );
-		} else {
-			echo "<td class='".$tdcolor."f9' colspan=2 title='".safe_output($module["datos"])."'>";
+		}
+		else {
+			if (strlen($module["datos"]) > 0 ) $colspan = 2;
+			else $colspan= 1;
+			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
 			echo substr(safe_output($module["datos"]),0,42);
 		}
 		

@@ -1,5 +1,11 @@
 2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/estado_ultimopaquete.php: fix the column of data with
+	a empty module string.
+	Fixes: 2881181
+
+2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: clean source code.
 	* include/functions_reporting.php: fix the query to count bad modules for
 	SLA.

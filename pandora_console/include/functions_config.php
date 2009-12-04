@@ -306,7 +306,7 @@ function process_config () {
 	}
 			
 	if (!isset ($config["custom_logo"])){
-		update_config_value ('custom_logo', 'pandora_logo_head.png');
+		update_config_value ('custom_logo', 'none.png');
 	}
 
 	/* Finally, check if any value was overwritten in a form */

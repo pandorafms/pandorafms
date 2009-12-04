@@ -73,7 +73,7 @@ h1, h2, h3, h4 {
 	font-size: 1em;
 	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #786;
+	color: #666;
 	padding-bottom: 4px;
 	padding-top: 7px;
 }
@@ -183,8 +183,8 @@ div#page {
 	width: 960px;
 	background: #fff;
 	clear: both;
-	border-bottom: solid 5px #786;
-	border-top: solid 5px #786;
+	border-bottom: solid 5px #666;
+	border-top: solid 5px #666;
 }
 div#main {
 	width: 785px;
@@ -251,7 +251,7 @@ input.datos_readonly {
 	background-color: #050505;
 }
 input.login {
-	border-color: #786;
+	border-color: #666;
 	background-color: #f5f5f5;
 	margin: 2px 0 8px;
 	width: 90px;
@@ -303,7 +303,7 @@ table, img {
 }
 th {
 	color: #fff;
-	background-color: #786;
+	background-color: #666;
 	text-align:center;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
@@ -340,7 +340,7 @@ tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
 .bg { /* op menu */
-	background-color: #786;
+	background-color: #666;
 }
 .bg2 { /* main page */
 	background-color: #d84437;
@@ -498,7 +498,7 @@ div.title_line {
 #menu_tab li a, #menu_tab a {
 	background: #d4ddc6;
 	padding: 3px 5px;
-	color: #333;
+	color: #666;
 	border-left: 2px solid #778866;
 	font-weight: bold;
 	line-height: 18px;

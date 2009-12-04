@@ -18,7 +18,17 @@ require_once ("include/functions_messages.php");
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
 	<tr>
 		<td rowspan=2>
-		<?php echo "<img height=60 width=139 src='images/custom_logo/".$config["custom_logo"]."'></td>"; ?>
+
+		<a href="index.php?sec=main">
+<?php
+		if (!defined ('PANDORA_ENTERPRISE')){
+			echo "<img border=0 src='images/pandora_header_logo.png'>";	
+		} else {
+			echo "<img border=0 src='images/pandora_header_logo_enterprise.png'>";	
+		}
+?>
+		</A>
+		</td>
 		<td width="20%">
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
 			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?php echo __('You are');?> [<b><?php echo $config["id_user"];?></b>]</a>
@@ -94,12 +104,7 @@ require_once ("include/functions_messages.php");
 		echo "</td>";
 		echo "<td width='20%' rowspan=2>";
 		echo "<a href='index.php?sec=main'>";
-
-		if (!defined ('PANDORA_ENTERPRISE')){
-			echo "<img border=0 src='images/pandora_header_logo.png'>";	
-		} else {
-			echo "<img border=0 src='images/pandora_header_logo_enterprise.png'>";	
-		}
+		echo "<img height=60 width=139 src='images/custom_logo/".$config["custom_logo"]."'>"; 
 ?>
 		</td>
 	</tr>

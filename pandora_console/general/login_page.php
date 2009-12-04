@@ -20,11 +20,15 @@ if (!empty ($page) && !empty ($sec)) {
 	}
 }
 
-echo '<div class="databox" id="login">
-	<h1 id="log">'.__('Pandora FMS Web Console').'</h1><br />
+echo '<div class="databox" id="login">';
+
+	//echo '<h1>Put here your custom welcome message</h1>";
+
+echo '<br><br>';
+echo '
 	<div class="databox" id="login_in">
 		<form method="post" action="index.php'.$url.'">
-		<table cellpadding="4" cellspacing="1" width="400">';
+		<table cellpadding="4" cellspacing="1" width="420">';
 
 if (isset ($login_failed)) {
 	echo '<tr><td colspan="3">';

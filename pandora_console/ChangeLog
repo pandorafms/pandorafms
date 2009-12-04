@@ -1,3 +1,15 @@
+2009-12-04 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php: Solved notice when PHP < 5.3
+
+	* general/header.php: Add some alts and title.
+
+	* general/include/cluetip.css: Changed .gif to .png.
+
+	* images/daarrow*.png: New files, converted from .gif files.
+
+	* Changelog: Format dates.
+
 2009-12-04  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/datos_agente.php: fix the bug when you have a large,
@@ -26,32 +38,32 @@
 	
 	* include/functions_config.php: By default custom logo is "none"
 
-2009-12-4  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-04  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_templates.php: use the function to translate the
 	seconds time to "human time" for time threshold.
 	Fixes: 2905968
 
-2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_ultimopaquete.php: fix the column of data with
 	a empty module string.
 	Fixes: 2881181
 
-2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php: clean source code.
 	* include/functions_reporting.php: fix the query to count bad modules for
 	SLA.
 	Fixes: 2908101
 
-2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/map_builder.php: tiny fix the text for select all
 	modules in select box.
 	Fixes: 2897433
 
-2009-12-1  Sancho Lerena <slerena@artica.es>
+2009-12-01  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: Fixed some innacurate queries, skipping 
 	non-init modules, async modules and keepalive modules. 
@@ -89,19 +101,19 @@
 	* godmode/servers/modificar_server.php: Added include to functions_servers.php
 	to use the new server functions, moved from functions_db.php.
 
-2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-01 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_alerts.php: fix the select box of correlation alerts,
 	now it has the XOR operation.
 	Fixes: 2849260
 
-2009-12-1 Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-01 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/module_groups.php: fix the style of page, adjust the with of
 	table of modules, and fix the description text that fail in panoramic style.
 	Fixes: 2866316 
 	
-2009-12-1  Sancho Lerena <slerena@artica.es>
+2009-12-01  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: SLA readjust to be used in SLA view.
 

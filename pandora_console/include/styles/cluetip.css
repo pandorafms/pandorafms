@@ -72,15 +72,15 @@
 /* default arrows */
 
 .clue-right-default .cluetip-arrows {
-	background-image: url(../../images/darrowleft.gif);
+	background-image: url(../../images/darrowleft.png);
 }
 .clue-left-default .cluetip-arrows {
-	background-image: url(../../images/darrowright.gif);
+	background-image: url(../../images/darrowright.png);
 	left: 100%;
 	margin-right: -11px;
 }
 .clue-top-default .cluetip-arrows {
-	background-image: url(../../images/darrowdown.gif);
+	background-image: url(../../images/darrowdown.png);
 	top: 100%;
 	left: 50%;
 	margin-left: -11px;
@@ -88,7 +88,7 @@
 	width: 22px;	
 }	
 .clue-bottom-default .cluetip-arrows {
-	background-image: url(../../images/darrowup.gif);
+	background-image: url(../../images/darrowup.png);
 	top: -11px;
 	left: 50%;
 	margin-left: -11px;

@@ -1,4 +1,4 @@
-2009-12-04  Sancho Lerena <slerena@artica.es>
+2009-12-04  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/datos_agente.php: fix the bug when you have a large,
 	very large list of data of module. And add the pagination.

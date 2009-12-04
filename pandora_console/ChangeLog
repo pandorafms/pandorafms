@@ -1,3 +1,25 @@
+2009-12-04  Sancho Lerena <slerena@artica.es>
+
+	* include/styles/pandora.css: Modified style for 3.0
+
+	* images/pandora_textlogo.png,
+	images/pandora_header_logo_enterprise.png, 
+	images/custom_logo/none.png	
+	images/custom_logo/sourceforge.png
+	images/custom_logo/artica_logo.png
+	images/header.jpg
+	images/pandora_header_logo.png
+	images/pandora_logo.png: New logos and background for 3.0 style.
+
+	* general/login_page.php: Updated style.
+
+	* general/logon_ok.php: Removed small bug in the audit log block.
+
+	* general/header.php: Pandora logo is now in left, and custom logo 
+	at right. 
+	
+	* include/functions_config.php: By default custom logo is "none"
+
 2009-12-4  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_templates.php: use the function to translate the

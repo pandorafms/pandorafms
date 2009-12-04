@@ -22,12 +22,12 @@ require_once ("include/functions_messages.php");
 		<a href="index.php?sec=main">
 <?php
 		if (!defined ('PANDORA_ENTERPRISE')){
-			echo "<img border=0 src='images/pandora_header_logo.png'>";	
+			echo "<img border=0 src='images/pandora_header_logo.png' alt='Pandora FMS Opensource'>";
 		} else {
-			echo "<img border=0 src='images/pandora_header_logo_enterprise.png'>";	
+			echo "<img border=0 src='images/pandora_header_logo_enterprise.png' alt='Pandora FMS Enterprise'>";
 		}
 ?>
-		</A>
+		</a>
 		</td>
 		<td width="20%">
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
@@ -36,7 +36,7 @@ require_once ("include/functions_messages.php");
 			$msg_cnt = get_message_count ($config["id_user"]);
 			if ($msg_cnt > 0) {
 				echo '<div id="dialog_messages" style="display: none"></div>';
-	
+
 				require_css_file ('dialog');
 				require_jquery_file ('ui.core');
 				require_jquery_file ('ui.dialog');
@@ -47,7 +47,7 @@ require_once ("include/functions_messages.php");
 			}
 			?>
 			&nbsp;
-			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?php echo __('Logout');?>" class="bot" /></a>
+			<a class="white_bold" href="index.php?bye=bye"><img src="images/log-out.png" alt="<?php echo __('Logout');?>" class="bot" title="<?php echo __('Logout');?>" /></a>
 		</td>
 		
 		<td width="20%">

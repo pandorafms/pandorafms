@@ -22,13 +22,21 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091201';
+$build_version = 'PC091204';
 $pandora_version = 'v3.0RC3-dev';
 
 /* Help to debug problems. Override global PHP configuration */
 
 // error_reporting(E_ALL);
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
+if (strnatcmp(phpversion(),'5.3') >= 0) 
+	{ 
+	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+	}
+else 
+	{ 
+	error_reporting(E_ALL & ~E_NOTICE);
+	}
 
 ini_set("display_errors", 0);
 ini_set("error_log", $config["homedir"]."/pandora_console.log");

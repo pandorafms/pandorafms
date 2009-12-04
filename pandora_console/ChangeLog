@@ -1,3 +1,9 @@
+2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/pandora.png, pandora_logo.jpg: Deleted old files.
+
+	* images/image_problem: Change background with new logo.	
+
 2009-12-04 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Solved notice when PHP < 5.3

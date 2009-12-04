@@ -1,5 +1,11 @@
 2009-12-04  Sancho Lerena <slerena@artica.es>
 
+	* operation/agentes/datos_agente.php: fix the bug when you have a large,
+	very large list of data of module. And add the pagination.
+	Fixes: 2908241
+
+2009-12-04  Sancho Lerena <slerena@artica.es>
+
 	* include/styles/pandora.css: Modified style for 3.0
 
 	* images/pandora_textlogo.png,

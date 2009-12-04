@@ -43,13 +43,24 @@ if (isset ($_GET["delete"])) {
 
 // Different query for string data type
 if (preg_match ("/string/", get_moduletype_name (get_agentmodule_type ($module_id)))) {
-	$sql = sprintf ("SELECT * FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	$sql = sprintf ("SELECT * 
+		FROM tagente_datos_string 
+		WHERE id_agente_modulo = %d AND utimestamp > %d 
+		ORDER BY utimestamp DESC
+		LIMIT %d OFFSET %d", $module_id, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+	$sqlCount = sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	$string_type = 1;
 } else {
-	$sql = sprintf ("SELECT * FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
+	$sql = sprintf ("SELECT * 
+	FROM tagente_datos 
+	WHERE id_agente_modulo = %d AND utimestamp > %d 
+	ORDER BY utimestamp DESC
+	LIMIT %d OFFSET %d", $module_id, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+	$sqlCount = sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	$string_type = 0;
 }
-	
+
+$countData = get_db_value_sql($sqlCount); 
 $result = get_db_all_rows_sql ($sql);
 if ($result === false) {
 	$result = array ();
@@ -58,53 +69,87 @@ if ($result === false) {
 echo "<h2>".__('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id)." </h2>";
 echo "<h3>".human_time_description ($period) ."</h3>";
 
-$table->cellpadding = 3;
-$table->cellspacing = 3;
-$table->width = 600;
-$table->class = "databox";
-$table->head = array ();
-$table->data = array ();
-$table->align = array ();
+//WIP
+//echo "<form method='get' action='index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente'>";
+//$intervals = array ();
+//$intervals[30] = human_time_description_raw (30);
+//$intervals[60] = human_time_description_raw (60);
+//$intervals[300] = human_time_description_raw (300);
+//$intervals[600] = human_time_description_raw (600);
+//$intervals[1200] = human_time_description_raw (1200);
+//$intervals[1800] = human_time_description_raw (1800);
+//$intervals[3600] = human_time_description_raw (3600);
+//$intervals[7200] = human_time_description_raw (7200);
+//echo print_extended_select_for_time ($intervals, 'intervalo', $period, '', '', '0', 10) . __(" seconds.");
+//echo "</form><br />";
 
-$table->head[0] = __('Delete');
-$table->align[0] = 'center';
-
-$table->head[1] = __('Timestamp');
-$table->align[1] = 'center';
-$table->head[2] = __('Data');
-$table->align[2] = 'center';
-
-foreach ($result as $row) {
-	$data = array ();
-	if (give_acl ($config['id_user'], $group, "AW") ==1) {
-		if ($string_type == 0) {
-			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$row["id_agente_datos"].'"><img src="images/cross.png" border="0" /></a>';
-		} else {
-			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$row["id_tagente_datos_string"].'"><img src="images/cross.png" border="0" /></a>';
-		}
-	} else {
-		$data[0] = '';
-	}
-	
-	// This returns data with absolute user-defined timestamp format
-	// and numeric by data managed with 2 decimals, and not using Graph format 
-	// (replacing 1000 by K and 1000000 by G, like version 2.x
-	
-	$data[1] = date ($config["date_format"], $row["utimestamp"]);
-	if (is_numeric ($row["datos"])) {
-		$data[2] = format_numeric($row["datos"],2);
-	} else {
-		$data[2] = safe_input ($row["datos"]);
-	}
-	
-	array_push ($table->data, $data);
-}
-
-if (empty ($table->data)) {
+if ($result === false) {
 	echo '<h3 class="error">'.__('There was a problem locating the source of the graph').'</h3>';
-} else {
-	print_table ($table);
-	unset ($table);
+}
+else {
+	pagination ($countData, false) ;
+	
+	echo '
+	<table width="600" cellpadding="3" cellspacing="3" border="0" class="databox" id="table1">
+		<thead>
+			<tr>
+				<th class="header c0"  scope="col">' . __('Delete') . '</th>
+				<th class="header c1"  scope="col">' . __('Timestamp') . '</th>
+				<th class="header c2"  scope="col">' . __('Data') . '</th></tr>
+		</thead>
+	';
+	$count = 0;
+	foreach ($result as $row) {
+		
+		if (($count % 2) == 0) 
+			$classPairOdd = 'rowPair';
+		else
+			$classPairOdd = 'rowOdd';
+		
+		if ($count > 100) break;
+		$count++;
+		
+		echo('<tr id="table1-3" style="" class="datos ' . $classPairOdd . '">');
+		
+		if (give_acl ($config['id_user'], $group, "AW") ==1) {
+			if ($string_type == 0) {
+				echo('<td id="table1-' . $count . '-0" style="text-align: center;" class="datos">
+					<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$row["id_agente_datos"].'&offset=' . get_parameter ('offset') . '"><img src="images/cross.png" border="0" /></a>
+				</td>');
+			}
+			else {
+				echo('<td id="table1-' . $count . '-0" style="text-align: center;" class="datos">
+					<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$row["id_tagente_datos_string"].'&offset=' . get_parameter ('offset') . '"><img src="images/cross.png" border="0" /></a>
+				</td>');
+			}
+		}
+		else {
+			echo('<td id="table1-' . $count . '-0" style="text-align: center;" class="datos"></td>');
+		}
+		
+		// This returns data with absolute user-defined timestamp format
+		// and numeric by data managed with 2 decimals, and not using Graph format 
+		// (replacing 1000 by K and 1000000 by G, like version 2.x
+		
+		echo('<td id="table1-' . $count . '-1" style="text-align: center;" class="datos">' .
+			date ($config["date_format"], $row["utimestamp"]) .
+			'</td>');
+		if (is_numeric ($row["datos"])) {
+			echo('<td id="table1-' . $count . '-2" style="text-align: center;" class="datos">' .
+				format_numeric($row["datos"],2) .
+			'</td>');
+		}
+		else {
+			echo('<td id="table1-' . $count . '-2" style="text-align: center;" class="datos">' .
+				safe_input ($row["datos"]) .
+			'</td>');
+		}
+		echo('</tr>');
+	}
+	echo '</table>';
+	
+	pagination ($countData, false) ;
+	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";
 }
 
 ?>

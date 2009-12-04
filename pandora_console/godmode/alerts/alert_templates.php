@@ -81,7 +81,7 @@ if (is_ajax ()) {
 			
 		}
 		echo "<strong>" . __('Time threshold') . ": </strong>";
-		echo $template['time_threshold'];
+		echo human_time_description_raw($template['time_threshold']);
 		echo '<br />';
 		
 		if ($template['time_from'] != $template['time_to']) {

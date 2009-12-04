@@ -1,3 +1,9 @@
+2009-12-4  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_templates.php: use the function to translate the
+	seconds time to "human time" for time threshold.
+	Fixes: 2905968
+
 2009-12-3  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_ultimopaquete.php: fix the column of data with

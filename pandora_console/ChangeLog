@@ -1,3 +1,8 @@
+2009-12-05  Sancho Lerena <slerena@gmail.com>
+
+	* operation/agentes/estado_monitores.php: Names and description
+	was cutted and not shown as popup description. Fixed.
+
 2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
 
 	* install.php: Modified description for XML_RPC.

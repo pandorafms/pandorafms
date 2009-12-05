@@ -1,3 +1,7 @@
+2009-12-05  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed bug #2905434
+
 2009-11-28  Raul Mateos  <raulofpandora@gmail.com>
 
 	* lib/PandoraFMS/Config.pm: Changed string from RC2 to RC3.

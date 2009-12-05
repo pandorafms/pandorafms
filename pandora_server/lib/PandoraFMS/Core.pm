@@ -550,7 +550,7 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Process data
  	my $processed_data = process_data ($data, $module, $module_type, $utimestamp, $dbh);
- 	if (! defined ($data)) {
+ 	if (! defined ($processed_data)) {
 		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;

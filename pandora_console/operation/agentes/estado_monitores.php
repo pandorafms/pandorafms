@@ -60,7 +60,6 @@ $table->head[7] = __('Last contact');
 
 $table->align = array("left","left","left","left","center");
 
-
 $last_modulegroup = 0;
 $rowIndex = 0;
 foreach ($modules as $module) {
@@ -95,9 +94,8 @@ foreach ($modules as $module) {
 	if (give_acl ($config['id_user'], $id_grupo, "AW")) 
 	  $data[1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&id_agent_module='.$module["id_agente_modulo"].'&edit_module='.$module["id_modulo"].'"><img src="images/config.png"></a>';
 	  
-	$data[2] = substr ($module["nombre"], 0, 25);
-	$data[3] = substr ($module["descripcion"], 0, 35);
-
+	$data[2] = print_string_substr ($module["nombre"], 25, true);
+	$data[3] = print_string_substr ($module["descripcion"], 30, true);
 
 	$status = STATUS_MODULE_WARNING;
 	$title = "";

@@ -15,7 +15,42 @@
 
 $prev_level = error_reporting (0);
 if ((include_once ('XML/RPC.php')) != 1)
-	die ('<p>PEAR::XML_RPC not found. Please install it with: <pre>pear install XML_RPC</pre></p>');
+	die ('
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Pandora FMS - The Flexible Monitoring System - Console error</title>
+<meta http-equiv="expires" content="0">
+<meta http-equiv="content-type" content="text/html; charset=utf8">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="author" content="Sancho Lerena">
+<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
+<meta name="keywords" content="pandora, monitoring, system, GPL, software">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="images/pandora.ico" type="image/ico">
+<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
+</head>
+<body>
+<div id="main" style="float:left; margin-left: 100px">
+<div align="center">
+<div id="login_f">
+	<h1 id="log_f" class="error">PEAR::XML_RPC not found</h1>
+	<div>
+		<img src="images/pandora_logo.png" border="0"></a>
+	</div>
+	<div class="msg">
+		<span class="error"><b>ERROR:</b> PEAR::XML_RPC not found</span>
+		<p>
+		Please install it from command line with:
+		<pre>sudo pear install XML_RPC</pre>
+		</p>
+	</div>
+</div>
+</div>
+</body>
+</html>
+');
 error_reporting ($prev_level);
 unset ($prev_level);
 

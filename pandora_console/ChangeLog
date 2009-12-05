@@ -1,5 +1,12 @@
 2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
 
+	* install.php: Modified description for XML_RPC.
+
+	* extensions/pdate_manager/lib/libupdate_manager_client.php:
+	Format error page if XML_PRC not found.
+
+2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
+
 	* images/pandora.png, pandora_logo.jpg: Deleted old files.
 
 	* images/image_problem: Change background with new logo.	

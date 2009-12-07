@@ -21,7 +21,7 @@ require_once ("include/config.php");
 check_login();
 
 $module_id = get_parameter_get ("id", 0);
-$period = get_parameter_get ("period", 86400);
+$period = get_parameter ("period", 86400);
 $group = get_agentmodule_group ($module_id);
 
 if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
@@ -67,21 +67,17 @@ if ($result === false) {
 }
 
 echo "<h2>".__('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id)." </h2>";
-echo "<h3>".human_time_description ($period) ."</h3>";
+echo "<h3>" . __("From the last") . " " . human_time_description ($period) ."</h3>";
 
-//WIP
-//echo "<form method='get' action='index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente'>";
-//$intervals = array ();
-//$intervals[30] = human_time_description_raw (30);
-//$intervals[60] = human_time_description_raw (60);
-//$intervals[300] = human_time_description_raw (300);
-//$intervals[600] = human_time_description_raw (600);
-//$intervals[1200] = human_time_description_raw (1200);
-//$intervals[1800] = human_time_description_raw (1800);
-//$intervals[3600] = human_time_description_raw (3600);
-//$intervals[7200] = human_time_description_raw (7200);
-//echo print_extended_select_for_time ($intervals, 'intervalo', $period, '', '', '0', 10) . __(" seconds.");
-//echo "</form><br />";
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=4&tab=data_view&id=17'>";
+echo __("Choose a time from now") . ": ";
+$intervals = array ();
+$intervals[3600] = human_time_description_raw (3600); // 1 hour
+$intervals[86400] = human_time_description_raw (86400); // 1 day 
+$intervals[604800] = human_time_description_raw (604800); // 1 week
+$intervals[2592000] = human_time_description_raw (2592000); // 1 month
+echo print_extended_select_for_time ($intervals, 'period', $period, 'this.form.submit();', '', '0', 10) . __(" seconds.");
+echo "</form><br />";
 
 if ($result === false) {
 	echo '<h3 class="error">'.__('There was a problem locating the source of the graph').'</h3>';

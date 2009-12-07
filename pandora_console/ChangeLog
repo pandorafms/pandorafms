@@ -1,3 +1,8 @@
+2009-12-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/datos_agente.php: add a select box for select chunck to
+	time to show data of agent module.
+
 2009-12-05  Sancho Lerena <slerena@gmail.com>
 
 	* operation/agentes/estado_monitores.php: Names and description

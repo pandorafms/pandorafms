@@ -1,3 +1,19 @@
+2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+	* Changelog: Changelog with the last chagnes that I forgot to include in 
+	the last commit.
+
+2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+	* include/functions_api.php, include/functions.php,
+	extensions/plugin_registration.php, operation/events/events.php,
+	operation/agentes/exportdata.php, operation/agentes/stat_win.php,
+	godmode/setup/setup.php, godmode/agentes/configurar_agente.php,
+	godmode/agentes/agent_manager.php, godmode/reporting/reporting_builder.php,
+	godmode/reporting/map_builder.php, godmode/reporting/graphs.php,
+	godmode/reporting/graph_builder.php, godmode/alerts/alert_list.php: English
+	text strings updated to be more clear.
+
+	* include/languages/index.pot: Regenerated with updated strings
+
 2009-12-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_modules.php: in the function "create_agent_module" add

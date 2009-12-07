@@ -1,3 +1,8 @@
+2009-12-07  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandora_server_installer: Added variables and used in the code.
+	Added Ubuntu specific stop scripts. Added link removing with update-rc.d.
+
 2009-12-05  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed bug #2905434

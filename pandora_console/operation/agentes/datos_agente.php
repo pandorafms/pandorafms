@@ -52,10 +52,10 @@ if (preg_match ("/string/", get_moduletype_name (get_agentmodule_type ($module_i
 	$string_type = 1;
 } else {
 	$sql = sprintf ("SELECT * 
-	FROM tagente_datos 
-	WHERE id_agente_modulo = %d AND utimestamp > %d 
-	ORDER BY utimestamp DESC
-	LIMIT %d OFFSET %d", $module_id, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+		FROM tagente_datos 
+		WHERE id_agente_modulo = %d AND utimestamp > %d 
+		ORDER BY utimestamp DESC
+		LIMIT %d OFFSET %d", $module_id, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
 	$sqlCount = sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	$string_type = 0;
 }

@@ -1,5 +1,21 @@
 2009-12-07  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_modules.php: in the function "create_agent_module" add
+	new parameter $disableACL (by default false) for use in API.
+	
+	* include/functions_api.php: add new functions for add new features to
+	api, functions: "set_new_agent" create agent, "set_delete_agent"
+	delete agent, "set_create_network_module" create network module,
+	"get_module_data" get module data as CSV format in a period time,
+	"get_graph_module_data" get a image file of module data in a period time.
+	
+	* include/functions_db.php: in function "delete_agent" add new parameter
+	$disableACL (by default false) for use in API for example.
+	
+	* operation/agentes/datos_agente.php: clean source code.
+
+2009-12-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/datos_agente.php: add a select box for select chunck to
 	time to show data of agent module.
 

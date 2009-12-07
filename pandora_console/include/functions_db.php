@@ -2765,10 +2765,11 @@ function temp_sql_delete ($table, $row, $value) {
  * Delete an agent from the database.
  *
  * @param mixed An array of agents ids or a single integer id to be erased
+ * @param bool Disable the ACL checking, for default false.
  *
  * @return bool False if error, true if success.
 */
-function delete_agent ($id_agents) {
+function delete_agent ($id_agents, $disableACL = false) {
 	global $config;
 	
 	$error = false;
@@ -2789,7 +2790,7 @@ function delete_agent ($id_agents) {
 	
 		/* Check for deletion permissions */
 		$id_group = get_agent_group ($id_agent);
-		if (! give_acl ($config['id_user'], $id_group, "AW")) {
+		if ((! give_acl ($config['id_user'], $id_group, "AW")) && !$disableACL) {
 			process_sql_rollback ();
 			return false;
 		}

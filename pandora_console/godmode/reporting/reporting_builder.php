@@ -265,7 +265,7 @@ if ($edit_sla_report_content) {
 	$table->data[0][0] = __('Agent');
 	$table->data[0][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 		array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-		. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+		. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	$table->data[1][0] = __('Module');
 	$table->data[1][1] = print_select (array (), 'id_module', 0, '', '--', 0, true);
 	$table->data[2][0] = __('SLA Min. (value)');
@@ -376,7 +376,7 @@ if ($edit_sla_report_content) {
 		
 		$table->data[2][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 			array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-			. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+			. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 		
 		$table->data[3][0] = __('Module');
 		$modules = array ();

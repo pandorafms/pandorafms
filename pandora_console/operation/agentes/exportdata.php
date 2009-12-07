@@ -238,7 +238,7 @@ if (!in_array ($agent, array_keys ($agents))) {
 //$table->data[1][1] = print_select ($agents, "agent", $agent, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 $table->data[1][1] = print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
 //Module selector
 $table->data[2][0] = '<b>'.__('Modules').'</b>';

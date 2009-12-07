@@ -218,7 +218,7 @@ $options[15552000] = human_time_description_raw (15552000);
 print_extended_select_for_time($options, 'period', $period, '', '', 0, 7);
 //print_select ($options, "period_select", $period,"javascript: $('#text-period').val($('#period_select').val());");
 //print_input_text ("period", $period, '', 10);
-echo __(' secs.');
+echo ' '.__('secs.');
 echo '</td></tr><tr><td>'.__('Show events').'</td><td>';
 
 print_checkbox ("draw_events", 1, (bool) $draw_events);

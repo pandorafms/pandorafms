@@ -62,11 +62,11 @@ function returnError($typeError, $returnType) {
 			break;
 		case 'no_exist_operation':
 			returnData($returnType,
-				array('type' => 'string', 'data' => __('No exist this operation.')));
+				array('type' => 'string', 'data' => __('This operation does not exist.')));
 			break;
 		case 'id_not_found':
 			returnData($returnType,
-				array('type' => 'string', 'data' => __('No exist id in BD.')));
+				array('type' => 'string', 'data' => __('Id does not exist in BD.')));
 			break;
 		default:
 			returnData('string',

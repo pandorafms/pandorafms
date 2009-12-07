@@ -248,8 +248,8 @@ if ($delete_conf_file) {
 	}
 	
 	print_result_message ($correct,
-		__('Successfully delete conf file'),
-		__('Could not be delete conf file'));
+		__('Conf file deleted successfully'),
+		__('Could not delete conf file'));
 }
 
 

@@ -17,6 +17,7 @@
 //Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
 
 require_once('functions_agents.php');
+require_once('functions_modules.php');
 
 /**
  * Parse the "other" parameter.
@@ -594,4 +595,206 @@ function get_tree_agents($trash1, $trahs2, $other, $returnType)
 		returnData($returnType, $data, $separator);
 }
 
+/**
+ * Create a new agent, and print the id for new agent.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <agent_name>;<ip>;<id_parent>;<id_group>;
+ *  <cascade_protection>;<interval_sec>;<id_os>;<name_server>;<custom_id>;<learning_mode>;<disabled>;<description> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_agent&other=pepito|1.1.1.1|0|4|0|30|8|miguel-portatil||0|0|nose%20nose&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function set_new_agent($thrash1, $thrash2, $other, $thrash3) {
+	$name = $other['data'][0];
+	$ip = $other['data'][1];
+	$idParent = $other['data'][2];
+	$idGroup = $other['data'][3];
+	$cascadeProtection = $other['data'][4];
+	$intervalSeconds = $other['data'][5];
+	$idOS = $other['data'][6];
+	$nameServer = $other['data'][7];
+	$customId = $other['data'][8];
+	$learningMode = $other['data'][9];
+	$disabled = $other['data'][10];
+	$description = $other['data'][11];
+	
+	if (get_agent_id ($name)) {
+		returnError('agent_name_exist', 'The name of agent yet exist in DB.');
+	}
+	else if (($idParent != 0) && 
+		(get_db_value_sql('SELECT id_agente FROM tagente WHERE id_agente = ' . $idParent) === false)) {
+			returnError('parent_agent_not_exist', 'The agent parent don`t exist.');
+	}
+	else if (get_db_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = ' . $idGroup) === false) {
+		returnError('id_grupo_not_exist', 'The group don`t exist.');
+	}
+	else if (get_db_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = ' . $idOS) === false) {
+		returnError('id_os_not_exist', 'The OS don`t exist.');
+	}
+	else if (get_db_value_sql('SELECT name FROM tserver WHERE name LIKE "' . $nameServer . '"') === false) {
+		returnError('server_not_exist', 'The Pandora Server don`t exist.');
+	}
+	else {
+		$idAgente = process_sql_insert ('tagente', 
+			array ('nombre' => $name,
+				'direccion' => $ip,
+				'id_grupo' => $idGroup,
+				'intervalo' => $intervalSeconds,
+				'comentarios' => $description,
+				'modo' => $learningMode,
+				'id_os' => $idOS,
+				'disabled' => $disabled,
+				'cascade_protection' => $cascadeProtection,
+				'server_name' => $nameServer,
+				'id_parent' => $idParent,
+				'custom_id' => $customId));
+		
+		returnData('string',
+				array('type' => 'string', 'data' => $idAgente));
+	}
+}
+
+/**
+ * Delete a agent with the name pass as parameter.
+ * 
+ * @param string $id Name of agent to delete.
+ * @param $thrash1 Don't use.
+ * @param $thrast2 Don't use.
+ * @param $thrash3 Don't use.
+ */
+function set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
+	$agentName = $id;
+	$idAgent[0] = get_agent_id($agentName);
+	if (!delete_agent ($idAgent, true))
+		returnError('error_delete', 'Error in delete operation.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+}
+
+/**
+ * Create a module in agent. And return the id_agent_module of new module.
+ * 
+ * @param string $id Name of agent to add the module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module>;<disabled>;<id_module_type>;
+ *  <id_module_group>;<min_warning>;<max_warning>;<min_critical>;<max_critical>;<ff_threshold>;
+ *  <history_data>;<ip_target>;<tcp_port>;<snmp_community>;<snmp_oid>;<module_interval>;<post_process>;
+ *  <min>;<max>;<custom_id>;<description> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=create_network_module&id=pepito&other=prueba|0|7|1|0|0|0|0|0|1|127.0.0.1|0||0|180|0|0|0||latency%20ping&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use
+ */
+function set_create_network_module($id, $thrash1, $other, $thrash3) {
+	$agentName = $id;
+	$idAgent = get_agent_id($agentName);
+
+	$name = $other['data'][0];
+	
+	$values = array(
+		'id_agente' => $idAgent,
+		'disabled' => $other['data'][1],
+		'id_tipo_modulo' => $other['data'][2],
+		'id_module_group' => $other['data'][3],
+		'min_warning' => $other['data'][4],
+		'max_warning' => $other['data'][5],
+		'min_critical' => $other['data'][6],
+		'max_critical' => $other['data'][7],
+		'min_ff_event' => $other['data'][8],
+		'history_data' => $other['data'][9],
+		'ip_target' => $other['data'][10],
+		'tcp_port' => $other['data'][11],
+		'snmp_community' => $other['data'][12],
+		'snmp_oid' => $other['data'][13],
+		'module_interval' => $other['data'][14],
+		'post_process' => $other['data'][15],
+		'min' => $other['data'][16],
+		'max' => $other['data'][17],
+		'custom_id' => $other['data'][18],
+		'descripcion' => $other['data'][19],
+	);
+	
+	$idModule = create_agent_module($idAgent, $name, $values, true);
+	
+	if ($idModule === false)
+		returnError('error_create_network_module', 'Error in creation network module.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $idModule));
+}
+
+/**
+ * Get module data in CSV format.
+ * 
+ * @param integer $id The ID of module in DB. 
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <separator>;<period> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=module_data&id=17&other=;|604800&other_mode=url_encode_separator_|
+ *  
+ * @param $returnType Don't use.
+ */
+function get_module_data($id, $thrash1, $other, $returnType) {
+	
+	$separator = $other['data'][0];
+	$periodSeconds = $other['data'][1];
+	
+	$sql = sprintf ("SELECT utimestamp, datos 
+		FROM tagente_datos 
+		WHERE id_agente_modulo = %d AND utimestamp > %d 
+		ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+	
+	$data['type'] = 'array';
+	$data['list_index'] = array('utimestamp', 'datos');
+	$data['data'] = get_db_all_rows_sql($sql);
+	
+	if ($data === false)
+		returnError('error_query_module_data', 'Error in the query of module data.');
+	else
+		returnData('csv', $data, $separator);
+}
+
+/**
+ * Return a image file of sparse graph of module data in a period time.
+ * 
+ * @param integer $id id of a module data.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <period>;<width>;<height>;<label>;<start_date>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=graph_module_data&id=17&other=604800|555|245|pepito|2009-12-07&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+ */
+function get_graph_module_data($id, $thrash1, $other, $thrash2) {
+	
+	$period = $other['data'][0];
+	$width = $other['data'][1];
+	$height = $other['data'][2];
+	$graph_type = 'sparse';
+	$draw_alerts = 0;
+	$draw_events = 0;
+	$zoom = 1;
+	$label = $other['data'][3];
+	$avg_only = 0;
+	$start_date = $other['data'][4];
+	$date = strtotime($start_date);
+	
+	$image = "fgraph.php?tipo=" . $graph_type .
+		"&draw_alerts=" . $draw_alerts . "&draw_events=" . $draw_events . 
+		"&id=" . $id . "&zoom=" . $zoom . "&label=" . $label .
+		"&height=" . $height . "&width=" . $width . "&period=" . $period .
+		"&avg_only=" . $avg_only . "&date=" . $date;
+
+	header('Location: ' . $image);
+}
 ?>

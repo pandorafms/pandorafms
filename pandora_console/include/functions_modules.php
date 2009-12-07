@@ -162,12 +162,17 @@ function update_agent_module ($id, $values, $onlyNoDeletePending = false) {
  * @param int Agent id.
  * @param int Module name id.
  * @param array Extra values for the module.
+ * @param bool Disable the ACL checking, for default false.
  *
  * @return New module id if the module was created. False if not.
  */
-function create_agent_module ($id_agent, $name, $values = false) {
-	if (empty ($id_agent) || ! user_access_to_agent ($id_agent, 'AW'))
-		return false;
+function create_agent_module ($id_agent, $name, $values = false, $disableACL = false) {
+
+	if (!$disableACL) {
+		if (empty ($id_agent) || ! user_access_to_agent ($id_agent, 'AW'))
+			return false;
+	}
+
 	if (empty ($name))
 		return false;
 	if (! is_array ($values))

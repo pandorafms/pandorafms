@@ -1,3 +1,8 @@
+2009-12-07  Raul Mateos  <raulofpandora@gmail.com>
+
+	* linux/pandora_agent_installer: Use tabs instead spaces. Small text
+	fix.
+
 2009-11-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* linux/pandora_agent_installer: Added Ubuntu specific stop scripts.

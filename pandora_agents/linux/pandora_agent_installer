@@ -11,7 +11,7 @@
 PI_VERSION=3.0
 PANDORA_BIN=/usr/bin/pandora_agent
 PANDORA_HOME=/usr/share/pandora_agent
-PANDORA_TEMP=/var/spool/pandora/data_out 
+PANDORA_TEMP=/var/spool/pandora/data_out
 PANDORA_CFG=/etc/pandora
 PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
@@ -172,11 +172,11 @@ install () {
 	if [ "$DISTRO" == "UBUNTU" ]
 		then
 	        echo "Linking start-up daemon script to /etc/rc2.d";
-	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon
-		echo "Linking stop daemon script";
-	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc0.d/K90pandora_agent_daemon
-	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc1.d/K90pandora_agent_daemon
-	        ln -s /etc/init.d/pandora_agent_daemon /etc/rc6.d/K90pandora_agent_daemon
+		ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon
+		echo "Linking stop daemon scripts";
+		ln -s /etc/init.d/pandora_agent_daemon /etc/rc0.d/K90pandora_agent_daemon
+		ln -s /etc/init.d/pandora_agent_daemon /etc/rc1.d/K90pandora_agent_daemon
+		ln -s /etc/init.d/pandora_agent_daemon /etc/rc6.d/K90pandora_agent_daemon
 	else
 		INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
 		echo "Linking start-up daemon script to /etc/rc.d/rc$INITLV.d";

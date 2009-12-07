@@ -300,7 +300,7 @@ foreach ($result as $id_row) {
 
 print_input_text_extended ('id_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'))
-. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
 
 echo "</td></tr>";
@@ -449,11 +449,11 @@ foreach ($result as $event) {
 	// Colored box
 	if ($event["estado"] == 0) {
 		$img = "images/tick_off.png";
-		$title = __('Event validate');
+		$title = __('Event validated');
 	}
 	else {
 		$img = "images/tick.png";
-		$title = __('Event not validate');
+		$title = __('Event not validated');
 	}
 	$data[0] = print_image ($img, true, 
 		array ("class" => "image_status",

@@ -360,7 +360,7 @@ function human_time_description_raw ($seconds, $exactly = false) {
 		else if (($months == 0))
 			return $days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
 		else
-			return $months.' '.__('moths').' '.$days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
+			return $months.' '.__('months').' '.$days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
 	}
 	
 	if ($seconds < 60)

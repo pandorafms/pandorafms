@@ -411,7 +411,7 @@ $user_groups = implode (',', array_keys (get_user_groups ($config["id_user"])));
 
 print_input_text_extended ('id_agent', get_agent_name ($id_parent), 'text-id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'));
-echo '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+echo '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 //print_select_from_sql ("SELECT id_agente, nombre FROM tagente WHERE disabled = 0 AND id_grupo IN ($user_groups) ORDER BY nombre", 'id_agent', $id_agent, '', '--', 0);
 
 // SOURCE MODULE FORM

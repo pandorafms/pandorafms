@@ -418,7 +418,7 @@ if (! $edit_layout && ! $id_layout) {
 //		print_submit_button (__('Delete'), 'delete_buttons', true, 'class="sub delete"');
 //		echo '</div>';
 		
-		echo __('Select a element to delete:');
+		echo __('Select an element to delete:');
 		
 		echo "<p>";
 		$elements = get_db_all_rows_sql("SELECT t1.id, t1.label,
@@ -480,7 +480,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
 		$table->data[4][0] = __('Width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
-		$table->data[5][0] = __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+		$table->data[5][0] = __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 //		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
 		$table->data[5][1] = print_input_text_extended ('agent', '', 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
@@ -539,7 +539,7 @@ function testAgentCorrect() {
 			if (($("#text-label").val().length == 0) &&
 				($("#image").val().length == 0)) {
 			
-				alert("<?php echo __("Please, choose a image or type name for element.");?>");
+				alert("<?php echo __("Please, choose an image or type a name for the element.");?>");
 				return false;
 			}
 			else

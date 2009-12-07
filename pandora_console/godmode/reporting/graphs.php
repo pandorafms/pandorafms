@@ -68,7 +68,7 @@ if (! empty ($graphs)) {
 	$table->head[0] = '';
 	$table->head[1] = __('Graph name');
 	$table->head[2] = __('Description');
-	$table->head[3] = __('Num Graphs');
+	$table->head[3] = __('Number of Graphs');
 	$table->head[4] = __('Group');
 	$table->size[0] = '20px';
 	$table->size[3] = '80px';

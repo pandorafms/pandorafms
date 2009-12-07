@@ -114,7 +114,7 @@ if ($create_alert) {
 		FROM talert_template_modules
 		WHERE id_agent_module = " . $id_agent_module . "
 			AND id_alert_template = " . $id_alert_template) > 0) {
-		print_result_message (false, '', __('Yet added'));
+		print_result_message (false, '', __('Already added'));
 	}
 	else {
 		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
@@ -247,7 +247,7 @@ echo "<div id='alert_control' style='display:none'>\n";
 	echo "<td>".__('Agents')."</td><td>";
 	echo print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 25, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	echo "</td>\n";
 	
 	
@@ -525,7 +525,7 @@ if (! $id_agente) {
 	
 	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 }
 
 $table->data[0][0] = __('Module');

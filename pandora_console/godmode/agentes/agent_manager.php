@@ -137,7 +137,7 @@ $agents = get_group_agents (array_keys ($groups));
 $table->data[2][0] = __('Parent');
 $table->data[2][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
+	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
 $table->data[2][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
 

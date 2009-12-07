@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091204';
+$build_version = 'PC091207';
 $pandora_version = 'v3.0RC3-dev';
 
 /* Help to debug problems. Override global PHP configuration */

@@ -31,7 +31,7 @@ require_once ("include/functions_messages.php");
 		</td>
 		<td width="20%">
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
-			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"><?php echo __('You are');?> [<b><?php echo $config["id_user"];?></b>]</a>
+			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 			$msg_cnt = get_message_count ($config["id_user"]);
 			if ($msg_cnt > 0) {

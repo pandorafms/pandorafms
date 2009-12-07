@@ -41,6 +41,16 @@
 
 2009-12-04  Sancho Lerena <slerena@artica.es>
 
+	* extensions/users_connected.php: New extension that shows
+	currently active users connected to console.
+
+	* extensions/pandora_logs.php: New extension that show to the
+	user the contents of main log files (console, and server logs)
+	only for Pandora administrators, of course.
+
+	* general/header.php: Removed text label, this give problems
+	on some languages and doesn't give needed information.
+
 	* include/styles/pandora.css: Modified style for 3.0
 
 	* images/pandora_textlogo.png,

@@ -4,14 +4,21 @@
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.0 Build 091106
+# v3.0.1 Build 091207
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-# TO DO: Add K Scripts
 
 MODE=$1
 SECOPT=$2
+PANDORA_SPOOL=/var/spool/pandora
+PANDORA_HOME=/usr/share/pandora_server
+PANDORA_CFG_DIR=/etc/pandora
+PANDORA_LOG=/var/log/pandora
+PANDORA_SERVER=/etc/init.d/pandora_server
+TENTACLE_SERVER=/etc/init.d/tentacle_serverd
+PANDORA_CFG_FILE=/etc/pandora/pandora_server.conf
+
 
 get_distro () {
 	# Get Linux Distro type and version
@@ -134,45 +141,46 @@ install () {
 			fi
 		fi
 
-		mkdir /var/spool/pandora 2> /dev/null
-		mkdir /var/spool/pandora/data_in 2> /dev/null
-		mkdir /var/spool/pandora/data_in/conf 2> /dev/null
-		mkdir /var/spool/pandora/data_in/md5 2> /dev/null
-		mkdir /var/log/pandora 2> /dev/null
+		mkdir $PANDORA_SPOOL 2> /dev/null
+		mkdir $PANDORA_SPOOL/data_in 2> /dev/null
+		mkdir $PANDORA_SPOOL/data_in/conf 2> /dev/null
+		mkdir $PANDORA_SPOOL/data_in/md5 2> /dev/null
+		mkdir $PANDORA_LOG 2> /dev/null
 		
 		echo "Giving proper permission to /var/spool/pandora"
 		id -g www-data > /dev/null
 		if [ $? -eq 0 ]
 		then
-			chown -R pandora:www-data /var/spool/pandora/ 
+			chown -R pandora:www-data $PANDORA_SPOOL
 		else
 			id -g www > /dev/null
 			if [ $? -eq 0 ]
 			then
-				chown -R pandora:www /var/spool/pandora/ 
+				chown -R pandora:www $PANDORA_SPOOL
 			else
 				id -g apache  > /dev/null
 				if [ $? -eq 0 ]
 				then
-					chown -R pandora:apache /var/spool/pandora/ 
+					chown -R pandora:apache $PANDORA_SPOOL
 				else
 					echo "No web server user found, some functionality might not perform correctly"
-					chown -R pandora:root /var/spool/pandora
+					chown -R pandora:root $PANDORA_SPOOL
 				fi
 			fi
 		fi
 		
 		
 		echo "Creating setup directory in /etc/pandora"
-		mkdir /etc/pandora 2> /dev/null
-		if [ -e /etc/pandora/pandora_server.conf ]
+		mkdir $PANDORA_CFG_DIR 2> /dev/null
+		if [ -e $PANDORA_CFG_FILE ]
 		then
 			OLDFILENAMETMP=`date +"%Y-%m-%d"`
 			echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
-			mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.$OLDFILENAMETMP
+			mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
 		fi
-		cp conf/pandora_server.conf /etc/pandora/
-		chmod 770 /etc/pandora/pandora_server.conf
+		echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
+		cp conf/pandora_server.conf $PANDORA_CFG_DIR
+		chmod 770 $PANDORA_CFG_FILE
 		
 		if [ "$LINUX" == "YES" ]
 		then
@@ -182,7 +190,11 @@ install () {
 			if [ "$DISTRO" == "UBUNTU" ]
 			then
 				echo "Linking startup script to /etc/rc2.d"
-				ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
+				ln -s $PANDORA_SERVER /etc/rc2.d/S90pandora_server
+				echo "Linking stop daemon scripts";
+				ln -s $PANDORA_SERVER /etc/rc0.d/K90pandora_server
+				ln -s $PANDORA_SERVER /etc/rc1.d/K90pandora_server
+				ln -s $PANDORA_SERVER /etc/rc6.d/K90pandora_server
 			else
 				if [ "$DISTRO" == "SUSE" ]
 				then
@@ -196,7 +208,7 @@ install () {
 						INITLV=2
 					fi
 					echo "Linking startup script to /etc/rc.d/rc$INITLV.d"
-					ln -s /etc/init.d/pandora_server /etc/rc.d/rc$INITLV.d/S90pandora_server
+					ln -s $PANDORA_SERVER /etc/rc.d/rc$INITLV.d/S90pandora_server
 				fi
 			fi
 		fi
@@ -217,8 +229,11 @@ install () {
 					# Tentacle server install (Ubuntu)
 					echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
 					cp bin/tentacle_server /usr/local/bin
-					cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-					ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+					cp util/tentacle_serverd $TENTACLE_SERVER
+					ln -s $TENTACLE_SERVER /etc/rc2.d/S80tentacle_serverd
+					ln -s $TENTACLE_SERVER /etc/rc0.d/K80tentacle_serverd
+					ln -s $TENTACLE_SERVER /etc/rc1.d/K80tentacle_serverd
+					ln -s $TENTACLE_SERVER /etc/rc6.d/K80tentacle_serverd
 				else
 					if [ "$DISTRO" == "SUSE" ]
 					then
@@ -231,15 +246,15 @@ install () {
 						echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
 						cp bin/tentacle_server /usr/local/bin
 						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
-						ln -s /etc/init.d/tentacle_serverd /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
+						ln -s $TENTACLE_SERVER /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
 					fi
 				fi
 			fi
 		fi
 
 		echo "Creating Pandora FMS distribution directory in /usr/share/pandora_server"
-		mkdir /usr/share/pandora_server 2> /dev/null
-		cp -R util /usr/share/pandora_server
+		mkdir $PANDORA_HOME 2> /dev/null
+		cp -R util $PANDORA_HOME
 		
 		if [ -d /etc/cron.daily ]
 		then
@@ -266,11 +281,13 @@ install () {
 }
 
 uninstall () {
+	GET_DISTRO="`get_distro`"
+	DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 	if [ "`uname -s`" != "Linux" ]; then
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 	fi
 	echo "Removing Pandora Servers"
-	rm -Rf /var/spool/pandora/data_in/
+	rm -Rf $PANDORA_SPOOL/data_in/
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "   userdel pandora"
@@ -280,16 +297,21 @@ uninstall () {
     	## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
 
-	rm -Rf /var/log/pandora/  2> /dev/null 
-	rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
-	rm -Rf /etc/init.d/pandora_server  2> /dev/null 
-	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
-	rm -Rf /etc/rc.d/rc3.d/S90pandora_server  2> /dev/null 
+	rm -Rf $PANDORA_LOG  2> /dev/null 
+	rm -Rf $PANDORA_CFG_FILE  2> /dev/null
+	rm -Rf $PANDORA_SERVER  2> /dev/null 
 	rm -Rf /usr/local/bin/pandora_server  2> /dev/null
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
-	rm -Rf /usr/share/pandora_server
+	rm -Rf $PANDORA_HOME
 	rm -Rf /etc/cron.daily/pandora_db
 	rm -Rf /etc/logrotate.d/pandora
+	if [ "$DISTRO" == "UBUNTU" ]
+	then
+		update-rc.d -f pandora_server remove
+		update-rc.d -f tentacle_serverd remove
+	fi
+	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
+	rm -Rf /etc/rc.d/rc3.d/S90pandora_server  2> /dev/null 
 	echo "Done"
 }
 

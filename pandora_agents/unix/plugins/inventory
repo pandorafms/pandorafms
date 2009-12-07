@@ -135,18 +135,26 @@ sub get_software_module_data ($$) {
 	my ($name, $modules) = @_;
 
 	# Guess the current distribution
-	open (RELEASE_FILE, '< /etc/lsb-release') or return;
-	my $distrib_id = <RELEASE_FILE>;
-	last unless ($distrib_id =~ m/DISTRIB_ID\s*=\s*(\S+)/);
-	$distrib_id = $1;
+	my $distrib_id = "";
+
+	if ( -e "/etc/SuSE-release"){
+			$distrib_id = "SUSE";
+	} else {
+		open (RELEASE_FILE, '< /etc/lsb-release') or return;
+		$distrib_id = <RELEASE_FILE>;
+		last unless ($distrib_id =~ m/DISTRIB_ID\s*=\s*(\S+)/);
+		$distrib_id = $1;
+	}
 
 	# List installed programs
 	my @soft;
 	if ($distrib_id eq 'Ubuntu') {
 		@soft = `dpkg -l | grep ii`;
 	} else {
-		return;
+
+		@soft = `rpm -q -a --qf "ii\t%{NAME}\t%{VERSION}\t%{SUMMARY}\n"`;
 	}
+
 
 	# Parse data
 	foreach my $row (@soft) {
@@ -157,7 +165,6 @@ sub get_software_module_data ($$) {
 		$module{'version'} = $2;
 		$module{'description'} = $3;
 		$module{'_keys'} = ['program', 'version','description'];
-
 		push (@{$modules->{$name}}, \%module);
 	}
 }
@@ -191,9 +198,18 @@ if ($#ARGV < 0) {
 
 # Parse command line parameters
 my %enabled;
-my $enable_all = ($#ARGV > 0 ? 0 : 1);
-my $interval = shift (@ARGV);
-foreach my $module (@ARGV) {
+my $interval = 1;
+my $enable_all = 0;
+
+$interval = $ARGV[0];
+if ($#ARGV == 0){
+	$enable_all = 1;
+}
+
+foreach my $module (@ARGV) { 
+	if ($module eq "all"){
+		$enable_all = 1;
+	}
 	$enabled{$module} = 1;
 }
 

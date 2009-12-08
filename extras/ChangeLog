@@ -1,3 +1,11 @@
+2009-12-08   Sancho lerena <slerena@gmail.com>
+
+	* aditional_sources: Added directory to put there sources of
+	modified packages used in Pandora FMS.
+
+	* aditional_sources/xprobe_0.3: Patched version to compile with gcc4.x
+	and used to do SUSE RPM packages for 11.x
+
 2009-11-11   Sancho Lerena <slerena@artica.es>
 
 	* tentacle_proxy: Upgrade to support a previous check of connectiviy

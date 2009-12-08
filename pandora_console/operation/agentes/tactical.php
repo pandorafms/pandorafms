@@ -138,22 +138,27 @@ $cells = array ();
 $cells[0][0] = __('Local modules rate');
 $cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
 $cells[0]["color"] = "#000";
+$cells[0]["href"] = "";
 
 $cells[1][0] = __('Remote modules rate');
 $cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
 $cells[1]["color"] = "#000";
+$cells[1]["href"] = "";
 
 $cells[2][0] = __('Local modules');
 $cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
 $cells[2]["color"] = "#000";
+$cells[2]["href"] = "";
 
 $cells[3][0] = __('Remote modules');
 $cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
 $cells[3]["color"] = "#000";
+$cells[3]["href"] = "";
 
 $cells[4][0] = __('Total running modules');
 $cells[4][1] = format_numeric($server_performance ["total_modules"]);
 $cells[4]["color"] = "#000";
+$cells[4]["href"] = "";
 
 
 print_cells_temp ($cells);

@@ -1,5 +1,10 @@
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php, operation/agentes/tactical.php: fix notice
+	undefined var message.
+
 2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>
-	* Changelog: Changelog with the last chagnes that I forgot to include in 
+	* Changelog: Changelog with the last changes that I forgot to include in 
 	the last commit.
 
 2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>

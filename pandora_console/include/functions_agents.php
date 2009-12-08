@@ -147,6 +147,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 		$subQuery = implode (",", $id_modules);
 	}
 	
+	$orderbyText = '';
 	if ($orderby !== false)
 		$orderbyText = sprintf("ORDER BY %s", $orderby);
 		

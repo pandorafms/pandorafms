@@ -1,5 +1,9 @@
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/events/events.php: fix notice undefined var message.
+
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_agents.php, operation/agentes/tactical.php: fix notice
 	undefined var message.
 

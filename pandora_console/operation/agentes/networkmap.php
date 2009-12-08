@@ -63,24 +63,24 @@ $layout_array = array (
 			'flat' => 'flat');
 
 echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
-echo '<table cellpadding="4" cellspacing="4" class="databox">';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="100%">';
 echo '<tr>';
-echo '<td valign="top">' . __('Group') . ' &nbsp;';
+echo '<td valign="top">' . __('Group')  . '<br />';
 print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'group', $group, '', 'All', 0, false);
 echo '</td>';
-echo '<td valign="top">' . __('Layout') . ' &nbsp;';
+echo '<td valign="top">' . __('Layout')  . '<br />';
 print_select ($layout_array, 'layout', $layout, '', '', '');
 echo '</td>';
 
-echo '<td valign="top">' . __('No Overlap') . ' &nbsp;';
+echo '<td valign="top">' . __('No Overlap')  . '<br />';
 print_checkbox ('nooverlap', '1', $nooverlap);
 echo '</td>';
 
-echo '<td valign="top">' . __('Simple') . ' &nbsp;';
+echo '<td valign="top">' . __('Simple')  . '<br />';
 print_checkbox ('simple', '1', $simple);
 echo '</td>';
 
-echo '<td valign="top">' . __('Regenerate') . ' &nbsp;';
+echo '<td valign="top">' . __('Regenerate')  . '<br />';
 print_checkbox ('regen', '1', $regen);
 echo '</td>';
 
@@ -95,7 +95,7 @@ if ($pure == "1") {
 		'5' => 'x10',
 	);
 
-	echo '<td valign="top">' . __('Zoom') . ' &nbsp;';
+	echo '<td valign="top">' . __('Zoom') . '<br />';
 	print_select ($zoom_array, 'zoom', $zoom, '', '', '');
 	echo '</td>';
 	
@@ -103,14 +103,14 @@ if ($pure == "1") {
 
 if ($nooverlap == 1){
 	echo "<td>";
-	echo __('Distance between nodes') . ' &nbsp;';
+	echo __('Distance between nodes') . '<br />';
 	print_input_text ('ranksep', $ranksep, $alt = 'Separation between elements in the map (in Non-overlap mode)', 3, 4, 0);
 	echo "</td>";
 }
 
 echo "<td>";
-echo __('Font') . ' &nbsp;';
-print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
+echo __('Font') . '<br />';
+print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, 0);
 echo "</td>";
 
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';

@@ -1,5 +1,11 @@
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php: fix style for to clean form in
+	networkmap when active "No Overlap".
+	Fixes: 2821967
+
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: add in "get_db_all_rows_filter" new parameter
 	$returnSQL for return the string formated SQL instead the data. And add new
 	function "get_db_all_row_by_steps_sql" that return row by row the data of

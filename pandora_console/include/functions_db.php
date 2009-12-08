@@ -1837,10 +1837,11 @@ function get_db_all_rows_sql ($sql) {
  * @param mixed Fields of the table to retrieve. Can be an array or a coma
  * separated string. All fields are retrieved by default
  * @param string Condition of the filter (AND, OR).
+ * @param bool $returnSQL Return a string with SQL instead the data, by default false.
  *
  * @return mixed Array of the row or false in case of error.
  */
-function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND') {
+function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND', $returnSQL = false) {
 	//TODO: Validate and clean fields
 	if (empty ($fields)) {
 		$fields = '*';
@@ -1860,7 +1861,27 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
 	}
 
 	$sql = sprintf ('SELECT %s FROM %s %s', $fields, $table, $filter);
-	return get_db_all_rows_sql ($sql);
+	if ($returnSQL)
+		return $sql;
+	else
+		return get_db_all_rows_sql ($sql);
+}
+
+/**
+ * Get row by row the DB by SQL query. The first time pass the SQL query and
+ * rest of times pass none for iterate in table and extract row by row, and
+ * the end return false.
+ * 
+ * @param string $sql 
+ * @return mixed The row or false in error.
+ */
+function get_db_all_row_by_steps_sql($sql = null) {
+	static $result;
+	
+	if ($sql !== null) 
+		$result = mysql_query($sql);
+	
+	return mysql_fetch_assoc($result);
 }
 
 /**

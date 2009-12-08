@@ -1,5 +1,17 @@
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: add in "get_db_all_rows_filter" new parameter
+	$returnSQL for return the string formated SQL instead the data. And add new
+	function "get_db_all_row_by_steps_sql" that return row by row the data of
+	query.
+	
+	* operation/events/export_csv.php: fixed the memory overload when try save
+	into CSV a 10000 events or more, now use "get_db_all_row_by_steps_sql" for
+	extract row by row the data.
+	Fixes: 2859758
+
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/events/events.php: fix notice undefined var message.
 
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>

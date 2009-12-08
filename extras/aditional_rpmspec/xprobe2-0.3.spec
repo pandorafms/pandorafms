@@ -12,6 +12,9 @@ Provides:	xprobe2
 Requires:	libpcap
 BuildRequires: 	gcc-c++ libpcap-devel
 
+#This is for SUSE build service, to avoid enforce FHS paths
+#!BuildIgnore:	  post-build-checks
+
 %description
 Xprobe is an alternative to some tools which are heavily dependent upon the
 usage of the TCP protocol for remote active operating system fingerprinting.
@@ -53,8 +56,7 @@ ln -s /usr/local/bin/xprobe2 /usr/bin
 /usr/local/bin/xprobe2
 /usr/local/etc/xprobe2
 /usr/local/etc/xprobe2/xprobe2.conf
-
-
+/usr/local/etc
 
 %changelog
 * Tue Dec 08 2009 Sancho Lerena <slerena@gmail.com> 3.2-1

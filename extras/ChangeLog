@@ -1,3 +1,8 @@
+2009-12-09  Sancho Lerena <slerena@gmail.com>
+
+	* * aditional_rpmspec/xprobe2-0.3.spec: Fixed parameter to avoid FHS
+	enforcing on SUSE Build Service.
+
 2009-12-08   Sancho lerena <slerena@gmail.com>
 
 	* aditional_sources: Added directory to put there sources of

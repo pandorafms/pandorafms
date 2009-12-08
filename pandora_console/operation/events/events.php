@@ -264,40 +264,6 @@ echo '</td>';
 
 //Agent search
 echo "<td>".__('Agent search')."</td><td>";
-//$sql = "SELECT DISTINCT(id_agente) AS id_agent FROM tevento WHERE 1=1 ".$sql_post;
-//$result = get_db_all_rows_sql ($sql);
-//
-//if ($result === false)
-//	$result = array();
-//
-//$agents = array ();
-//$agents[-1] = __('All');
-//
-//if (is_user_admin ($config["id_user"])) {
-//	$agents[0] = __('System');
-//}
-
-
-//foreach ($result as $id_row) {
-//	$name_for_combo = "";
-//	if ($id_row["id_agent"] > 0)
-//		$name_for_combo = mb_substr (get_agent_name ($id_row["id_agent"], "lower"),0,20);
-//
-//	if ($name_for_combo != "")
-//		$agents[$id_row["id_agent"]] = $name_for_combo;
-//}
-
-
-
-foreach ($result as $id_row) {
-	$name_for_combo = "";
-	if ($id_row["id_agent"] > 0)
-		$name_for_combo = mb_substr (get_agent_name ($id_row["id_agent"], "lower"),0,20);
-	
-	if ($name_for_combo != "")
-		$agents[$id_row["id_agent"]] = $name_for_combo;
-}
-
 print_input_text_extended ('id_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';

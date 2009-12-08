@@ -275,10 +275,11 @@ function get_profiles () {
  * @param string User ID
  * @param int Profile ID (default 1 => AR)
  * @param int Group ID (default 1 => All) 
+ * @param string Assign User who assign the profile to user.
  *
  * @return bool True if succesful, false if not
  */
-function create_user_profile ($id_user, $id_profile = 1, $id_group = 1) {
+function create_user_profile ($id_user, $id_profile = 1, $id_group = 1, $assignUser = false) {
 	global $config;
 	
 	if (empty ($id_profile))
@@ -292,6 +293,9 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 1) {
 	} else {
 		$assign = $id_user;
 	}
+	
+	if ($assignUser !== false)
+		$assign = $assignUser;
 	
 	$insert = array (
 		"id_usuario"  => $id_user,
@@ -1882,6 +1886,18 @@ function get_db_all_row_by_steps_sql($sql = null) {
 		$result = mysql_query($sql);
 	
 	return mysql_fetch_assoc($result);
+}
+
+/**
+ * Return the count of rows of query.
+ * 
+ * @param $sql
+ * @return integer The count of rows of query.
+ */
+function get_db_num_rows ($sql) {
+	$result = mysql_query($sql);
+	
+	return mysql_num_rows($result);
 }
 
 /**

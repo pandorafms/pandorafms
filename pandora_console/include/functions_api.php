@@ -797,4 +797,156 @@ function get_graph_module_data($id, $thrash1, $other, $thrash2) {
 
 	header('Location: ' . $image);
 }
+
+/**
+ * Create new user.
+ * 
+ * @param string $id String username for user login in Pandora
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <fullname>;<firstname>;<lastname>;<middlename>;
+ *  <email>;<phone>;<languages>;<comments> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_user&id=md&other=miguel|de%20dios|matias|kkk|pandora|md@md.com|666|es|descripcion%20y%20esas%20cosas&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use.
+ */
+function set_new_user($id, $thrash2, $other, $thrash3) {
+	$values = array ();
+	$values['fullname'] = $other['data'][0];
+	$values['firstname'] = $other['data'][1];
+	$values['lastname'] = $other['data'][2];
+	$values['middlename'] = $other['data'][3];
+	$password = $other['data'][4];
+	$values['email'] = $other['data'][5];
+	$values['phone'] = $other['data'][6];
+	$values['language'] = $other['data'][7];
+	$values['comments'] = $other['data'][8];
+	
+	if (!create_user ($id, $password, $values))
+		returnError('error_create_user', 'Error create user');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Create user.')));
+}
+
+/**
+ * Delete user.
+ * 
+ * @param $id string Username to delete.
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param $thrash3 Don't use.
+ */
+function set_delete_user($id, $thrash1, $thrash2, $thrash3) {
+	if (!delete_user($id))
+		returnError('error_delete_user', 'Error delete user');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Delete user.')));
+}
+
+/**
+ * Add user to profile and group.
+ * 
+ * @param $id string Username to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <group>;<profile> in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=add_user_profile&id=md&other=12|4&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+
+ */
+function set_add_user_profile($id, $thrash1, $other, $thrash2) {
+	$group = $other['data'][0];
+	$profile = $other['data'][1];
+
+	if (!create_user_profile ($id, $profile, $group,'API'))
+		returnError('error_add_user_profile', 'Error add user profile.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Add user profile.')));
+}
+
+/**
+ * Deattach user from group and profile.
+ * 
+ * @param $id string Username to delete.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <group>;<profile> in this
+ *  order and separator char (after text ; ) and separator (pass in param
+ *  othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=delete_user_profile&id=md&other=12|4&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash2 Don't use.
+ */
+function set_delete_user_profile($id, $thrash1, $other, $thrash2) {
+	$group = $other['data'][0];
+	$profile = $other['data'][1];
+	
+	$sql = sprintf ('DELETE FROM tusuario_perfil WHERE id_usuario LIKE "%s" AND id_perfil = %d AND id_grupo = %d', $id, $profile, $group);
+	$return = process_sql ($sql);
+	if ($return === false)
+		returnError('error_delete_user_profile', 'Error delete user profile.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Delete user profile.')));
+}
+
+/**
+ * Create new incident in Pandora.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param is <title>;<description>;
+ *  <origin>;<priority>;<state>;<group> in this order and separator char
+ *  (after text ; ) and separator (pass in param othermode as
+ *  othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=new_incident&other=titulo|descripcion%20texto|Logfiles|2|10|12&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use.
+ */
+function set_new_incident($thrash1, $thrash2, $other, $thrash3) {
+	$title = $other['data'][0];
+	$description = $other['data'][1];
+	$origin = $other['data'][2];
+	$priority = $other['data'][3];
+	$id_creator = 'API';
+	$state = $other['data'][4];
+	$group = $other['data'][5];
+	$sql = sprintf("INSERT INTO tincidencia 
+			(inicio, actualizacion, titulo, descripcion, id_usuario, origen, 
+			estado, prioridad, id_grupo, id_creator) VALUES 
+			(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')",
+		$title, $description, 'API', $origin, $state, $priority, $group, $id_creator);
+	$idIncident = process_sql ($sql, "insert_id");
+	
+	if ($return === false)
+		returnError('error_new_incident', 'Error create new incident.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $idIncident));
+}
+
+/**
+ * Add note into a incident.
+ * 
+ * @param $id string Username author of note.
+ * @param $id2 integer ID of incident.
+ * @param $other string Note.
+ * @param $thrash2 Don't use.
+ */
+function set_new_note_incident($id, $id2, $other, $thrash2) {
+	$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')", $id, $id, $other['data']);
+	$idNote = process_sql ($sql, "insert_id");
+	
+	if ($idNote === false)
+		returnError('error_new_incident', 'Error create new incident.');
+	else
+		returnData('string', array('type' => 'string', 'data' => $idNote));
+}
 ?>

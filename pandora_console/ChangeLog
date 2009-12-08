@@ -1,3 +1,16 @@
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: in function "create_user_profile" add the
+	parameter $assignUser to set assign user in table. And add the function
+	"get_db_num_rows" that return the num of rows get from SQL. 
+	
+	* include/functions_api.php: add functions for new calls in the API,
+	"set_new_user" create new user, "set_delete_user" delete a user,
+	"set_add_user_profile" attach a user into group and profile,
+	"set_delete_user_profile" deattach a user into group and profile,
+	"set_new_incident" add new incident, "set_new_note_incident" add into
+	new note into incident.
+
 2009-12-08  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/auth/*.php: added style to error when accessing the files

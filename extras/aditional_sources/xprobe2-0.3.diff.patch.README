@@ -1,0 +1,62 @@
+Get the original xprobe2-0.3 from Sourceforge:
+
+http://downloads.sourceforge.net/project/xprobe/xprobe2/Xprobe2%200.3/xprobe2-0.3.tar.gz
+
+Uncompress it under, for example /tmp/xprobe2-0.3 directory
+
+Copy the diff file at /tmp
+
+Execute the patch command:
+
+ patch -p1 < ../xprobe2-0.3.diff.patch 
+
+This should look like:
+
+patching file CHANGELOG
+patching file config.status
+patching file configure
+patching file libs-external/USI++/src/config.h
+patching file libs-external/USI++/src/config.log
+patching file libs-external/USI++/src/config.status
+patching file libs-external/USI++/src/ip.cc
+patching file libs-external/USI++/src/Makefile
+patching file libs-external/USI++/src/misc.cc
+patching file libs-external/USI++/src/usi++/arp.h
+patching file libs-external/USI++/src/usi++/config.h
+patching file libs-external/USI++/src/usi++/datalink.h
+patching file libs-external/USI++/src/usi++/icmp.h
+patching file libs-external/USI++/src/usi++/if.h
+patching file libs-external/USI++/src/usi++/ip.h
+patching file libs-external/USI++/src/usi++/Layer2.h
+patching file libs-external/USI++/src/usi++/README
+patching file libs-external/USI++/src/usi++/RX.h
+patching file libs-external/USI++/src/usi++/tcp.h
+patching file libs-external/USI++/src/usi++/TX.h
+patching file libs-external/USI++/src/usi++/TX_IP.h
+patching file libs-external/USI++/src/usi++/udp.h
+patching file libs-external/USI++/src/usi++/usi++
+patching file libs-external/USI++/src/usi++/usi++.h
+patching file libs-external/USI++/src/usi++/usi-structs.h
+patching file libs-external/USI++/usi++/config.h
+patching file libs-external/USI++/usi++/tcp.h
+patching file Makefile
+patching file src/config.h
+patching file src/defines.h
+patching file src/Makefile
+patching file src/xplib/Makefile
+patching file src/xpmodules/alive_probe/Makefile
+patching file src/xpmodules/alive_probe/portscanner/Makefile
+patching file src/xpmodules/alive_probe/ttl_calc/Makefile
+patching file src/xpmodules/Makefile
+patching file src/xpmodules/os_probe/icmp_addrmask/Makefile
+patching file src/xpmodules/os_probe/icmp_echo_id/Makefile
+patching file src/xpmodules/os_probe/icmp_inforeq/Makefile
+patching file src/xpmodules/os_probe/icmp_port_unreach/Makefile
+patching file src/xpmodules/os_probe/icmp_timestamp/Makefile
+patching file src/xpmodules/os_probe/Makefile
+patching file src/xpmodules/os_probe/smb/Makefile
+patching file src/xpmodules/os_probe/snmp/Makefile
+patching file src/xpmodules/os_probe/tcp_handshake/Makefile
+patching file src/xpmodules/os_probe/tcp_rst/Makefile
+
+Your patched code is now ready to be used.

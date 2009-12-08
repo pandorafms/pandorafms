@@ -1,3 +1,8 @@
+2009-12-08  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/auth/*.php: added style to error when accessing the files
+	directly.
+
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fix style for to clean form in
@@ -25,11 +30,11 @@
 	* include/functions_agents.php, operation/agentes/tactical.php: fix notice
 	undefined var message.
 
-2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2009-12-07  Pablo de la Concepcipón <pablo.concepcion@artica.es>
 	* Changelog: Changelog with the last changes that I forgot to include in 
 	the last commit.
 
-2009-12-07	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2009-12-07  Pablo de la Concepcipón <pablo.concepcion@artica.es>
 	* include/functions_api.php, include/functions.php,
 	extensions/plugin_registration.php, operation/events/events.php,
 	operation/agentes/exportdata.php, operation/agentes/stat_win.php,
@@ -67,20 +72,20 @@
 	* operation/agentes/estado_monitores.php: Names and description
 	was cutted and not shown as popup description. Fixed.
 
-2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
+2009-12-05  Raul Mateos  <raulofpandora@gmail.com>
 
 	* install.php: Modified description for XML_RPC.
 
 	* extensions/pdate_manager/lib/libupdate_manager_client.php:
 	Format error page if XML_PRC not found.
 
-2009-12-05 Raul Mateos  <raulofpandora@gmail.com>
+2009-12-05  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/pandora.png, pandora_logo.jpg: Deleted old files.
 
 	* images/image_problem: Change background with new logo.	
 
-2009-12-04 Raul Mateos  <raulofpandora@gmail.com>
+2009-12-04  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php: Solved notice when PHP < 5.3
 

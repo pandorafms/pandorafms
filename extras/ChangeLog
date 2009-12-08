@@ -6,6 +6,8 @@
 	* aditional_sources/xprobe_0.3: Patched version to compile with gcc4.x
 	and used to do SUSE RPM packages for 11.x
 
+	* aditional_rpmspec/xprobe2-0.3.spec: Added spec for xprobe2 (SUSE and RH).
+
 2009-11-11   Sancho Lerena <slerena@artica.es>
 
 	* tentacle_proxy: Upgrade to support a previous check of connectiviy

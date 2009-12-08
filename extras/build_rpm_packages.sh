@@ -5,7 +5,7 @@
 # CONFIG BEGINS HERE
 CODEHOME=~/code/pandora/trunk
 CODEHOME_ENT=~/code/artica/code/
-RPMHOME=/usr/src/rpm
+RPMHOME=/usr/src/packages
 VERSION=3.0.0
 
 # CONFIG ENDS HERE

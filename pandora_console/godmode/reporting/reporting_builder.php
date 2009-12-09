@@ -45,7 +45,7 @@ $create_report = (bool) get_parameter ('create_report');
 $delete_report = (int) get_parameter ('delete_report');
 $update_report = (int) get_parameter ('update_report');
 $delete_report_content = (bool) get_parameter ('delete_report_content');
-$report_name = (string) get_parameter ('report_name');
+$report_name = trim((string) get_parameter ('report_name'));
 $report_description = (string) get_parameter ('report_description');
 $report_private = (bool) get_parameter ('report_private', 0);
 $id_report = (int) get_parameter ('id_report');
@@ -134,9 +134,13 @@ if ($create_report) {
 	$values = array ();
 	$values['description'] = $report_description;
 	$values['private'] = $report_private;
-	$id_report = create_report ($report_name, $report_id_group, $values);
-	print_result_message ($id_report,
-		__('Successfully created'),
+	
+	if (strlen($report_name) == 0)
+		$result = false;
+	else {
+		$result = $id_report = create_report ($report_name, $report_id_group, $values);
+	}
+	print_result_message ($result, __('Successfully created'),
 		__('Could not be created'));
 }
 
@@ -148,9 +152,12 @@ if ($update_report) {
 	$values['private'] = $report_private;
 	$values['id_group'] = $report_id_group;
 	
-	$result = update_report ($id_report, $values);
-	print_result_message ($result,
-		__('Successfully updated'),
+	if (strlen($report_name) == 0)
+		$result = false;
+	else {
+		$result = update_report ($id_report, $values);
+	}
+	print_result_message ($result, __('Successfully updated'),
 		__('Could not be updated'));
 }
 
@@ -321,7 +328,9 @@ if ($edit_sla_report_content) {
 	$table->data[3][0] = __('Description');
 	$table->data[3][1] = print_textarea ('report_description', 3, 40, $report_description, '', true);
 
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
+	echo "<form method='post'
+		action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'
+		onsubmit='var nameReport = this.report_name.value; /*trim*/ nameReport = nameReport.replace(/^\\s*|\\s*$/g,\"\"); if (nameReport.length == 0) {alert(\"" . __('Report name is empty') . "\"); return false; }'>";
 	print_table ($table);
 	// Button
 	echo '<div class="action-buttons" style="width: 500px;">';

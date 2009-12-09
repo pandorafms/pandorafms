@@ -1,3 +1,9 @@
+2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php: test empty title report before on
+	submit in javascript, and test empty this title in PHP.
+	Fixes: 2910627
+
 2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/db/db_info.php: Added icon to download database info.

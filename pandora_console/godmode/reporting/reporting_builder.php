@@ -348,7 +348,7 @@ if ($edit_sla_report_content) {
 	
 	if ($id_report) {
 		// Part 2 - Add new items to report
-		echo "<h2>".__('Add item to report')."</h2>";
+		echo "<h3>".__('Add item to report')."</h3>";
 		
 		/* We're reusing some $table attributes */
 		$table->id = 'table-add-item';
@@ -414,7 +414,6 @@ if ($edit_sla_report_content) {
 		echo "</form>";
 		
 		// Part 3 - List of already assigned report items
-		echo "<h2>".__('Report items')."</h2>";
 		$table->id = 'table-assigned-reports';
 		$table->width = '90%';
 		$table->data = array ();
@@ -436,7 +435,7 @@ if ($edit_sla_report_content) {
 		}
 		
 		$report_contents = get_report_contents ($id_report);
-		
+
 		if (sizeof ($report_contents)) {
 			$first_id = $report_contents[0]['id_rc'];
 			$last_id = $report_contents[sizeof ($report_contents) - 1]['id_rc'];
@@ -465,6 +464,7 @@ if ($edit_sla_report_content) {
 						true, array ('title' => __('Down')));
 					$data[0] .= '</form>';
 				}
+
 				$data[1] = get_report_name ($report_content['type']);
 				$data[2] = get_agent_name ($report_content['id_agent']);
 				
@@ -502,7 +502,12 @@ if ($edit_sla_report_content) {
 				array_push ($table->data, $data);
 			}
 		}
-		print_table ($table);
+		if ($data) {
+			echo "<h3>".__('Report items')."</h3>";
+			print_table ($table);
+		} else {
+			echo "<div class='nf'>".__('No items defined')."</div>";
+		}
 	}
 } else {
 	// Report LIST

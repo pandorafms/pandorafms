@@ -1,6 +1,11 @@
-2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
-	* godmode/reporting/reporting_builder.php: test empty title report before on
+	* godmode/reporting/reporting_builder.php: Print table of items only
+	if the the tables has data, else print no items defined.
+
+2009-12-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Test empty title report before on
 	submit in javascript, and test empty this title in PHP.
 	Fixes: 2910627
 

@@ -1,5 +1,19 @@
 2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
+	* images/god9.png: New image.
+
+	* include/styles/menu.css: Added style for new menu item.
+
+	* godmode/menu.php: New menu item.
+
+	* godmode/reporting/map_builder.php: Updated internal links and title 
+	because it will be a new entry in the menu.
+
+	* operation/visual_console/render_view.php: Updated internal link for
+	setup.
+
+2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
+
 	* godmode/reporting/map_builder.php: Changed H1 to H3, to maintain coherence.
 
 	* operation/visual_console/render_view.php: Added title.

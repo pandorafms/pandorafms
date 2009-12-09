@@ -299,7 +299,7 @@ if ($id_layout) {
 	$height = $layout['height'];
 }
 
-echo "<h2>".__('Reporting')." &raquo; ".__('Map builder');
+echo "<h2>".__('Maps')." &raquo; ".__('Map builder');
 print_help_icon ("map_builder");
 echo "</h2>";
 
@@ -323,14 +323,14 @@ if (! $edit_layout && ! $id_layout) {
 		foreach ($maps as $map) {			
 			if (give_acl ($config['id_user'], $map['id_group'], "AW")){
 				$data = array ();
-				$data[0] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'">'.$map['name'].'</a>';
+				$data[0] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'">'.$map['name'].'</a>';
 			
 				$data[1] = print_group_icon ($map['id_group'], true).'&nbsp;';
 				$data[1] .= get_group_name ($map['id_group']);
 				$data[2] = get_db_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
-				$data[3] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$map['id'].'">'.print_image ("images/pill.png", true).'</a>';
+				$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$map['id'].'">'.print_image ("images/pill.png", true).'</a>';
 			
-				$data[4] = '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
+				$data[4] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
 				array_push ($table->data, $data);
 			}
 		}
@@ -338,7 +338,7 @@ if (! $edit_layout && ! $id_layout) {
 	}
 	
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	echo '<form action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder" method="post">';
+	echo '<form action="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder" method="post">';
 	print_input_hidden ('edit_layout', 1);
 	print_submit_button (__('Create'), '', false, 'class="sub next"');
 	echo '</form>';
@@ -354,7 +354,7 @@ if (! $edit_layout && ! $id_layout) {
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
 	
 	if ($id_layout){
-		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$id_layout.'">'.print_image ("images/pill.png", true).'</a>';
+		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder_wizard&amp;id_layout='.$id_layout.'">'.print_image ("images/pill.png", true).'</a>';
 		
 		$table->data[0][1] .= '&nbsp;&nbsp;<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr=60">'.print_image ("images/eye.png", true).'</a>';
 	}
@@ -370,7 +370,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[4][0] = __('Height');
 		$table->data[4][1] = print_input_text ('height', $height, '', 3, 5, true);
 	}
-	echo '<form action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder" method="post">';
+	echo '<form action="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder" method="post">';
 	print_table ($table);
 	
 	echo '<div style="width: '.$table->width.'" class="action-buttons">';
@@ -498,7 +498,7 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
-		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder"  onsubmit="javascript: return testAgentCorrect();">';
+		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder"  onsubmit="javascript: return testAgentCorrect();">';
 		print_table ($table);
 		print_input_hidden ('create_layout_data', 1);
 		print_input_hidden ('update_layout_data', 0);

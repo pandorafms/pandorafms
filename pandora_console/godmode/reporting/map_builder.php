@@ -90,7 +90,7 @@ if ($create_layout) {
 	if ($id_layout !== false) {
 		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 	} else {
-		echo '<h3 class="err">'.__('Could not be created').'</h3>';
+		echo '<h3 class="error">'.__('Could not be created').'</h3>';
 	}
 	if (is_ajax ()) {
 		return;
@@ -103,7 +103,7 @@ if ($delete_layout) {
 	if ($result) {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 	} else {
-		echo '<h3 class="err">'.__('Not deleted. Error deleting data').'</h3>';
+		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	}
 	$id_layout = 0;
 }

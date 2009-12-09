@@ -1,5 +1,11 @@
 2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
+	* godmode/reporting/map_builder.php: Changed H1 to H3, to maintain coherence.
+
+	* operation/visual_console/render_view.php: Added title.
+
+2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
+
 	* godmode/reporting/reporting_builder.php: Print table of items only
 	if the the tables has data, else print no items defined.
 

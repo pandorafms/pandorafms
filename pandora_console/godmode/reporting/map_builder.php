@@ -387,7 +387,7 @@ if (! $edit_layout && ! $id_layout) {
 	
 	if ($id_layout) {
 		/* Show visual map preview */
-		echo '<h1>'.__('preview').'</h1>';
+		echo '<h3>'.__('preview').'</h3>';
 		print_pandora_visual_map ($id_layout, false, true);
 		
 		$images_list = array ();
@@ -407,7 +407,7 @@ if (! $edit_layout && ! $id_layout) {
 		/* Layout data trash */
 		echo '<form id="form_layout_data_trash" action="" method="post">';
 		echo '<div id="layout_trash_drop">';
-		echo '<h1>'.__('Map element trash').'</h1>';
+		echo '<h3>'.__('Map element trash').'</h3>';
 		//	DISABLE UNTIL FIX THE BUG WITH ELEMENTS WITH BIG DIMENSIONS		
 //		echo __('Drag an element here to delete from the map');
 		echo '<span id="elements"> </span>';
@@ -463,7 +463,7 @@ if (! $edit_layout && ! $id_layout) {
 		$agents = get_group_agents ($id_group);
 					
 		echo '<div id="layout_editor_drop">';
-		echo '<h1>'.__('Map element editor').'</h1>';
+		echo '<h3>'.__('Map element editor').'</h3>';
 		echo __('Drag an element here to edit the properties');
 		
 		$table->data = array ();

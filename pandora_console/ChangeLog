@@ -1,5 +1,15 @@
 2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
+	* godmode/db/db_info.php: Added icon to download database info.
+
+	* include/style/tip.css: Removed unused style. Still help style is in
+	the file. Not removed, maybe used some day...
+
+	* operation/agentes/estado_grupo.php: Added colours to the numbers.
+	Added the text "modules".
+
+2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
+
 	* include/fgraph2.php: Deleted test file, never used. Will ezComponents
 	graph be used someday...?
 

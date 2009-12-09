@@ -52,7 +52,8 @@ if (! give_acl ($config["id_user"], $id_group, "AR")) {
 }
 
 // Render map
-echo "<h1>".$layout_name."&nbsp;&nbsp;";
+echo "<h2>".__('Visual console')." &raquo; ".__('Map');
+echo "&nbsp;".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0) {
 	echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">';
@@ -64,10 +65,10 @@ if ($config["pure"] == 0) {
 	echo "</a>";
 }
 
-if (give_acl ($config["id_user"], $id_group, "AW")) 
+if (give_acl ($config["id_user"], $id_group, "AW"))
 	echo '<a href="index.php?sec=greporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 
-echo '</h1>';
+echo '</h2>';
 
 print_pandora_visual_map ($id_layout);
 

@@ -59,7 +59,7 @@ if ($config['flash_charts']) {
 	echo '<img src="include/fgraph.php?tipo=db_agente_paquetes&width=600&height=200"><br />';
 }
 echo '</table>';
-echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;">'.__('Press here to get database information as text').'</a></div>';
+echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;"><b>'.__('Press here to get database information as text').'</b>&nbsp;<img src="images/down.png" alt="down" title="down"></a></div>';
 echo '<div id="db_info_data" style="display:none">';
 
 //Merged from db_info_data.php because the queries are the same, so the cache

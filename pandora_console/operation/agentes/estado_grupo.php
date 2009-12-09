@@ -186,23 +186,23 @@ for ($table = 0; $table < $ancho; $table++) {
 		}
 		
 		// By default green border
-		$celda = '<td class="top" style="border: 5px solid #aeff21;" width="100">';
+		$celda = '<td class="top" style="border: 5px solid #8ae234;" width="100">';
 		
 		// Grey border if agent down
 		if ($group_info["down"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #aabbaa;" width="100">';
+			$celda = '<td class="top" style="border: 5px solid #aaa;" width="100">';
 		
 		// Yellow border if agents WARNING
 		if ($group_info["warning"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #FFD800;" width="100">';
+			$celda = '<td class="top" style="border: 5px solid #ffb900;" width="100">';
 		
 		// Red border if agents CRITICAL
 		if ($group_info["critical"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #FF0000;" width="100">';
+			$celda = '<td class="top" style="border: 5px solid #c00;" width="100">';
 		
 		// Magenta border if agents with alerts
 		if ($group_info["alerts"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #F200FF;" width="100">';
+			$celda = '<td class="top" style="border: 5px solid #f200ff;" width="100">';
 		
 		// Black if alerts and down modules
 		if (($group_info["critical"] > 0) && ($group_info["alerts"] > 0))
@@ -214,25 +214,22 @@ for ($table = 0; $table < $ancho; $table++) {
 		$celda .= '<img class="top" src="images/groups_small/'.$icono_grupo.'.png" height="32" width="32" alt="" />';
 		
 		// Add float info table
-		$celda .= '<span><table cellspacing="0" cellpadding="0" style="margin-left:2px; background: #ffffff;">
-					<tr><th colspan="2" width="140">'.__('Agents').':</th></tr>
-					<tr><td colspan="2" class="datos" align="center"><b>'.$group_info["agent"].'</b></td></tr>
-				</table>
-				<table cellspacing="0" cellpadding="2" style="margin-left:2px">
-					
-					<tr><td class="datos"><img src="images/b_green.png" align="top" alt="" />'.__('Normal').'</td>
-					<td class="datos"><b>'.format_for_graph ($group_info["normal"] , 1).'</b></td></tr>
-					<tr><td class="datos"><img src="images/b_yellow.png" align="top" alt="" />'.__('Warning').'</td>
-					<td class="datos"><b>'.format_for_graph ($group_info["warning"] , 1).'</b></td></tr>
-					<tr><td class="datos"><img src="images/b_red.png" align="top" alt="" />'.__('Critical').'</td>
-					<td class="datos"><b>'.format_for_graph ($group_info["critical"] , 1).'</b></td></tr>';
-		
-			$celda .= '<tr><td class="datos"><img src="images/b_white.png" align="top" alt="" />'.__('Down').'</td>
-				<td class="datos"><b>'.format_for_graph ($group_info["down"] , 1).'</b></td></tr>';
-		
-			$celda .= '<tr><td class="datos"><img src="images/b_magenta.png" align="top" alt="" />'.__('Alerts').'</td>
-				<td class="datos"><b>'.$group_info["alerts"].'</b></td></tr>';
-		
+		$celda .= '<span><table cellspacing="1" cellpadding="1" style="margin-left:2px; background: #ffffff;">
+				<tr><th colspan="2" width="140">'.__('Agents').": ".$group_info["agent"].'</th></tr>
+				<tr class="datos2"><td class="datos2" colspan="2"><b>'.__('Modules').'</b></td>
+				<tr><td class="datos"><img src="images/b_red.png" align="top" alt="" />'.__('Critical').'</td>
+				<td class="datos"><b><font color="#c00">'.format_for_graph ($group_info["critical"] , 1).'</font></b></td></tr>
+				<tr><td class="datos"><img src="images/b_yellow.png" align="top" alt="" />'.__('Warning').'</td>
+				<td class="datos"><b><font color="#ffb900">'.format_for_graph ($group_info["warning"] , 1).'</font></b></td></tr>
+				<tr><td class="datos"><img src="images/b_green.png" align="top" alt="" />'.__('Normal').'</td>
+				<td class="datos"><b><font color="#8ae234">'.format_for_graph ($group_info["normal"] , 1).'</font></b></td></tr>';
+
+		$celda .= '<tr><td class="datos"><img src="images/b_white.png" align="top" alt="" />'.__('Down').'</td>
+			<td class="datos"><b><font color="#aaa">'.format_for_graph ($group_info["down"] , 1).'</font></b></td></tr>';
+
+		$celda .= '<tr><td class="datos"><img src="images/b_magenta.png" align="top" alt="" />'.__('Alerts').'</td>
+			<td class="datos"><b><font color="#ef2929">'.$group_info["alerts"].'</font></b></td></tr>';
+
 		$celda .= "</table></span></a>";
 		
 		// Render network exec module button, only when this group is writtable by user

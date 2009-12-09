@@ -1,12 +1,7 @@
-a.tip, a.tip2, a.tipp {
+a.tip {
 	cursor: help;
 	background: url(../../images/tip.png) no-repeat;
-}
-a.tip , a.tip2 {
 	padding: 5px 2px 5px 12px;
-}
-a.tipp {
-	padding: 2px 2px 2px 12px;
 }
 a.help {
 	cursor: help;
@@ -18,41 +13,21 @@ a.help {
 a.info {
 	padding: 25px 0px 0px 0px;
 }
-
-a.info_table { 
-    padding: 25px 0px 0px 0px;
-    margin: -50px 0px 0px 0px;
-}
-
-a.info2 {
-	padding: 2px 0px 0px 0px;
-}
-
-a.tip, a.tip2, a.tipp, a.help , a.info, a.info2, a.info_table {
+a.tip, a.help , a.info {
 	position: relative;
 	text-decoration: none;
 }
 a.tip:hover {
 	text-decoration: none;
-	background-color: #f9f9f9;
+	background-color: #efefef;
 }
-a.tip2:hover {
-	text-decoration: none;
-/*	background-color: #e6e9cd;*/
-	background-color: #efefef
-}
-a.tipp:hover {
-	text-decoration: none;
-	background-color: #778866;
-}
-a.info:hover, a.info2:hover, a.help:hover, a.info_table:hover {
+a.info:hover, a.help:hover {
 	text-decoration: none;
 }
-a.tip span, a.tip2 span, a.tipp span, a.info span, a.info2 span, a.help span, a.info_table span {
+a.tip span, a.info span, a.help span {
 	display: none;
 }
-a.tip:hover span, a.tip2:hover span,a.tipp:hover span, a.info:hover span, 
-a.info2:hover span, a.help:hover span, a.info_table:hover span {
+a.tip:hover span, a.info:hover span, a.help:hover span {
 	display: block;
 	text-decoration: none;
 	position: absolute;
@@ -66,24 +41,12 @@ a.info2:hover span, a.help:hover span, a.info_table:hover span {
 	padding: 2px;
 }
 
-a.info_table:hover span{
-    width: 1px;
-    height: 1px;
-    left: -140px;
-    top: 50px;
-    background-color: #fff;
-    border: 0px solid #fff;
-}
-
 a.info:hover span {
 	top: 45px;
 	left: 20px;
 	width: 120px;
 	background-color: #ffffff;
 	border: 1px solid #aaaaaa;
-}
-a.info2:hover span {
-	top: 8px;
 }
 a.help:hover span {
 	top: 15px;

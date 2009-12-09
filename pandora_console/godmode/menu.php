@@ -114,10 +114,13 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 	// Custom graph builder
 	$sub["godmode/reporting/graphs"]["text"] = __('Graph builder');
 	
-	// Custom map builder
-	$sub["godmode/reporting/map_builder"]["text"] = __('Map builder');
-	
 	$menu["greporting"]["sub"] = $sub;
+}
+if (give_acl ($config['id_user'], 0, "IW")) {
+	// Custom map builder
+	$menu["gmap"]["text"] = __('Map builder');
+	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
+	$menu["gmap"]["id"] = "god-map";
 }
 
 if (give_acl ($config['id_user'], 0, "PM")) {

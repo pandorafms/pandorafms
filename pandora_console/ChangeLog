@@ -1,3 +1,8 @@
+2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/fgraph2.php: Deleted test file, never used. Will ezComponents
+	graph be used someday...?
+
 2009-12-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: in function "create_user_profile" add the

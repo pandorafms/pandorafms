@@ -73,9 +73,10 @@ $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
 $sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true);
-get_db_all_row_by_steps_sql($sql);
 
-while ($event = get_db_all_row_by_steps_sql()) {
+$new = true;
+while ($event = get_db_all_row_by_steps_sql($new, $result, $sql)) {
+	$new = false;
 	if (! give_acl ($config["id_user"], $event["id_grupo"], "AR"))
 		continue;
 	

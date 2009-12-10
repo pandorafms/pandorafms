@@ -1,3 +1,12 @@
+2009-12-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: change the function
+	"get_db_all_row_by_steps_sql", now it support more connection with
+	parameter $new for new conection and $result for connection.
+	
+	* operation/events/export_csv.php: rewrite to adapt the new 
+	"get_db_all_row_by_steps_sql".
+
 2009-12-09  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/god9.png: New image.

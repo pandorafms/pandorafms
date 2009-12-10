@@ -1876,13 +1876,13 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
  * rest of times pass none for iterate in table and extract row by row, and
  * the end return false.
  * 
+ * @param bool $new Default true, if true start to query.
+ * @param resource $result The resource of mysql for access to query.
  * @param string $sql 
  * @return mixed The row or false in error.
  */
-function get_db_all_row_by_steps_sql($sql = null) {
-	static $result;
-	
-	if ($sql !== null) 
+function get_db_all_row_by_steps_sql($new = true, &$result, $sql = null) {
+	if ($new == true)
 		$result = mysql_query($sql);
 	
 	return mysql_fetch_assoc($result);

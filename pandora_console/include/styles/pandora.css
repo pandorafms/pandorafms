@@ -73,7 +73,7 @@ h1, h2, h3, h4 {
 	font-size: 1em;
 	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #666;
+	color: #3f4e2f;
 	padding-bottom: 4px;
 	padding-top: 7px;
 }
@@ -183,8 +183,8 @@ div#page {
 	width: 960px;
 	background: #fff;
 	clear: both;
-	border-bottom: solid 5px #666;
-	border-top: solid 5px #666;
+	border-bottom: solid 5px #3f4e2f;
+	border-top: solid 5px #3f4e2f;
 }
 div#main {
 	width: 785px;
@@ -251,7 +251,7 @@ input.datos_readonly {
 	background-color: #050505;
 }
 input.login {
-	border-color: #666;
+	border-color: #3f4e2f;
 	background-color: #f5f5f5;
 	margin: 2px 0 8px;
 	width: 90px;
@@ -303,7 +303,7 @@ table, img {
 }
 th {
 	color: #fff;
-	background-color: #666;
+	background-color: #3f4e2f;
 	text-align:center;
 }
 tr.datos, tr.datost, tr.datosb , tr.datos_id, 
@@ -340,13 +340,13 @@ tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
 .bg { /* op menu */
-	background-color: #666;
+	background-color: #3f4e2f;
 }
 .bg2 { /* main page */
-	background-color: #d84437;
+	background-color: #ce5c00;
 }
 .bg3 { /* godmode */
-	background-color: #d84437;
+	background-color: #ce5c00;
 }
 .bg4 { /* links */
 	background-color: #5385bf;
@@ -475,7 +475,7 @@ div.title_line {
 	width: 762px;
 }
 #menu_tab_frame, #menu_tab_frame_view {
-	background:#D84437 none repeat scroll 0 0;
+	background:#ce5c00 none repeat scroll 0 0;
 	border-bottom:1px solid #778866;
 	float:left;
 	margin-left:-8px;
@@ -536,7 +536,7 @@ div.title_line {
 }
 #menu_tab_left li a, #menu_tab_left li span {
 /*	text-transform: uppercase; */
-	background: #d84437;
+	background: #ce5c00;
 	padding: 2px 5px 2px 5px;
 	color: #fff;
 	font-weight: bold;

@@ -1,3 +1,9 @@
+2009-12-13  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Changed some colours.
+
+	* godmode/reporting/map_builder_wizard.php: Updated title.
+
 2009-12-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: change the function

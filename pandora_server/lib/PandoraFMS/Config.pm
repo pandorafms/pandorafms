@@ -29,15 +29,15 @@ our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
-        pandora_help_screen
+	pandora_help_screen
 	pandora_init
 	pandora_load_config
-        pandora_start_log
-    );
+	pandora_start_log
+	);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "3.0RC3";
-my $pandora_build = "PS091119";
+my $pandora_build = "PS091205";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -52,12 +52,12 @@ my %pa_config;
 sub help_screen {
 	print "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
 	print "Following options are optional : \n";
-	print "      -v        :  Verbose mode activated. Writes more information in the logfile \n";
-	print "      -d        :  Debug mode activated. Writes extensive information in the logfile \n";
-	print "      -D        :  Daemon mode (runs in background)\n";
-	print "      -P <file> :  Store PID to file.\n";
-	print "      -q        :  Quiet startup \n";
-	print "      -h        :  This screen. Shows a little help screen \n";
+	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
+	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
+	print "	-D        :  Daemon mode (runs in background)\n";
+	print "	-P <file> :  Store PID to file.\n";
+	print "	-q        :  Quiet startup \n";
+	print "	-h        :  This screen. Shows a little help screen \n";
 	print " \n";
 	exit;
 }
@@ -90,27 +90,27 @@ sub pandora_init {
 	my $ltotal=$#ARGV; my $ax;
 
 	for ($ax=0;$ax<=$ltotal;$ax++){
-        	$parametro = $ARGV[$ax];
+		$parametro = $ARGV[$ax];
 		if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) {
-		    help_screen();
+			help_screen();
 		}
 		elsif ($parametro =~ m/-v\z/i) {
-		    $pa_config->{"verbosity"}=5;
+			$pa_config->{"verbosity"}=5;
 		}
 		elsif ($parametro =~ m/^-P\z/i) {
-		    $pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
+			$pa_config->{'PID'}= clean_blank($ARGV[$ax+1]);
 		}
 		elsif ($parametro =~ m/-d\z/) {
-		    $pa_config->{"verbosity"}=10;
+			$pa_config->{"verbosity"}=10;
 		}
 		elsif ($parametro =~ m/-q\z/) {
-		    $pa_config->{"quiet"}=1;
+			$pa_config->{"quiet"}=1;
 		}
 		elsif ($parametro =~ m/-D\z/) {
-		    $pa_config->{"daemon"}=1;
+			$pa_config->{"daemon"}=1;
 		}
 		else {
-		    ($pa_config->{"pandora_path"} = $parametro);
+			($pa_config->{"pandora_path"} = $parametro);
 		}
 	}
 	if ($pa_config->{"pandora_path"} eq ""){
@@ -238,17 +238,17 @@ sub pandora_load_config {
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
-	    if ($> == 0){
-		printf " [W] Not all Pandora FMS components need to be executed as root\n";
-		printf "	please consider starting it with a non-privileged user.\n";
-	    }
+		if ($> == 0){
+			printf " [W] Not all Pandora FMS components need to be executed as root\n";
+			printf "	please consider starting it with a non-privileged user.\n";
+		}
 	}
 
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
 		printf "\n [ERROR] Cannot open configuration file at $archivo_cfg. \n";
 		printf "	Please specify a valid Pandora FMS configuration file in command line. \n";
-		print  "	Standard configuration file is at /etc/pandora/pandora_server.conf \n";
+		print "	Standard configuration file is at /etc/pandora/pandora_server.conf \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 
@@ -273,14 +273,14 @@ sub pandora_load_config {
 
  	# Has read setup file ok ?
  	if ( $ltotal == 0 ) {
-  		print "[ERROR] No valid setup tokens readed in $archivo_cfg ";
-  		exit;
+		print "[ERROR] No valid setup tokens readed in $archivo_cfg ";
+		exit;
  	}
  
  	for ($ax=0;$ax<=$ltotal;$ax++){
-  		$parametro = $args[$ax];
+		$parametro = $args[$ax];
 
-		if ($parametro =~ m/^incomingdir\s(.*)/i) {  
+		if ($parametro =~ m/^incomingdir\s(.*)/i) {
 			$tbuf= clean_blank($1); 
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"incomingdir"} =$pa_config->{"basepath"}.$1;
@@ -307,7 +307,7 @@ sub pandora_load_config {
 			}
 		}
 
-        # MTA setup (2.0)
+	# MTA setup (2.0)
 		elsif ($parametro =~ m/^mta_user\s(.*)/i) { 
 			$pa_config->{'mta_user'}= clean_blank($1); 
 		}
@@ -493,8 +493,8 @@ sub pandora_load_config {
 			$pa_config->{'export_threads'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^max_queue_files\s([0-9]*)/i) {
-                        $pa_config->{'max_queue_files'}= clean_blank($1);
-                }
+			$pa_config->{'max_queue_files'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^agentaccess\s([0-1])/i) {
 			$pa_config->{'agentaccess'}= clean_blank($1);
 		}
@@ -502,13 +502,13 @@ sub pandora_load_config {
 			$pa_config->{'use_xml_timestamp'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^restart_delay\s+(\d+)/i) {
-                        $pa_config->{'restart_delay'} = clean_blank($1);
+			$pa_config->{'restart_delay'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^auto_restart\s+(\d+)/i) {
-                        $pa_config->{'auto_restart'} = clean_blank($1);
+			$pa_config->{'auto_restart'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^restart\s+([0-1])/i) {
-                        $pa_config->{'restart'} = clean_blank($1);
+			$pa_config->{'restart'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 
@@ -525,11 +525,11 @@ sub pandora_load_config {
 		print " [*] Server threshold ".$pa_config->{"server_threshold"}."\n";
 	}
  	# Check for valid token token values
- 	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "")  || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
+ 	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "") || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
 		print " [ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
-    
+
 	if (($pa_config->{"quiet"} == 0) && ($pa_config->{"verbosity"} > 4)) {
 		if ($pa_config->{"pandora_check"} == 1) {
 			print " [*] MD5 Security enabled.\n";

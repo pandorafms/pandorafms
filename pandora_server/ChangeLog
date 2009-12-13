@@ -1,3 +1,10 @@
+2009-12-14  Raul Mateos  <raulofpandora@gmail.com>
+
+	* lib/PandoraFMS/Core.pm: Changed spaces for tabs.
+
+	* lib/PandoraFMS/Config.pm: Updated build to last change. Changed spaces
+	for tabs.
+
 2009-12-07  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandora_server_installer: Added variables and used in the code.

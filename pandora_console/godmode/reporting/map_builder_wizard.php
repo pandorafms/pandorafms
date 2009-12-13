@@ -71,7 +71,7 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
 	}
 	
 	print_success_message (__('Agent successfully added to layout'));
-	echo '<h3><a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$id_layout.'">'.__('Map builder').'</a></h3>';
+	echo '<h3><a href="index.php?sec=gmap&sec2=godmode/reporting/map_builder&id_layout='.$id_layout.'">'.__('Map builder').'</a></h3>';
 }
 
 function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
@@ -113,7 +113,7 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 	print_success_message (__('Modules successfully added to layout'));
 }
 
-echo "<h2>".__('Reporting')." &raquo; ";
+echo "<h2>".__('Maps')." &raquo; ";
 echo __('Visual map wizard').' - '.$layout["name"].'</h2>';
 
 $id_agents = get_parameter ('id_agents', array ());

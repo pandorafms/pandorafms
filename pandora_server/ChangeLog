@@ -1,5 +1,9 @@
 2009-12-14  Raul Mateos  <raulofpandora@gmail.com>
 
+	* util/pandora_db.pl: Improved help.
+
+2009-12-14  Raul Mateos  <raulofpandora@gmail.com>
+
 	* lib/PandoraFMS/Core.pm: Changed spaces for tabs.
 
 	* lib/PandoraFMS/Config.pm: Updated build to last change. Changed spaces

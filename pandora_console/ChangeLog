@@ -1,4 +1,8 @@
-2009-12-14  Raul Mateos  <raulofpandora@gmail.com>
+2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: fix before copy&paste.
+
+2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/swiftmailer/* : add the library "Swift Mailer" for make more
 	easy and less bugs the source code.

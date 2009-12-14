@@ -25,8 +25,8 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use POSIX qw(strftime);
 
-# version: define la version actual del programa
-my $version = "3.0-dev PS090930";
+# version: define current version
+my $version = "3.0-dev PS091214";
 
 # Setup variables
 my $dirname="";
@@ -84,7 +84,7 @@ sub pandora_purgedb {
  	# Calculate limit for deletion, today - $days
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
-	my $ulimit_access_timestamp =  time() - 86400;
+	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $days);
 	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
@@ -103,7 +103,7 @@ sub pandora_purgedb {
 	print "[PURGE] Delete pending deleted modules (data string table)...\n";
 	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 	
-	print "[PURGE] Delete pending deleted modules (data inc  table)...\n";
+	print "[PURGE] Delete pending deleted modules (data inc table)...\n";
 	$dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 	
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
@@ -119,7 +119,7 @@ sub pandora_purgedb {
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
 	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
 
-    $dbh->disconnect();
+	$dbh->disconnect();
 }
 
 ###############################################################################
@@ -143,7 +143,7 @@ sub pandora_compactdb {
 
 	# Connect to the database
 	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,
-	                       { RaiseError => 1, AutoCommit => 1 });
+				{ RaiseError => 1, AutoCommit => 1 });
 
 	if ($config_step_compact < 1) {
 		return;
@@ -180,7 +180,7 @@ sub pandora_compactdb {
 
 	# Prepare the query to retrieve data from an interval
 	$query = "SELECT * FROM tagente_datos WHERE utimestamp < ? AND
-	            utimestamp >= ?";
+		utimestamp >= ?";
 	$query_st = $dbh->prepare($query);
 
 	while (1) {
@@ -221,16 +221,16 @@ sub pandora_compactdb {
 
 			# Delete interval from the database
 			$dbh->do("DELETE FROM tagente_datos WHERE utimestamp < $start_utime
-			         AND utimestamp >= $stop_utime");
+				AND utimestamp >= $stop_utime");
 
 			# Insert interval average value
 			foreach my $key (keys(%value_hash)) {
 				$value_hash{$key} /= $count_hash{$key};
 				$stop_date = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 				$dbh->do("INSERT INTO tagente_datos (id_agente_modulo,
-					  datos, utimestamp) VALUES
-				         ($key, $value_hash{$key} ,
-				         $stop_utime)");
+						datos, utimestamp) VALUES
+					($key, $value_hash{$key} ,
+					$stop_utime)");
 
 				delete($value_hash{$key});
 				delete($count_hash{$key});
@@ -250,24 +250,25 @@ sub pandora_compactdb {
 ##############################################################################
 
 sub pandora_init {
-	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2008 Artica ST\n";
+	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "FATAL ERROR: I Need at least one parameter: Complete path to pandora_server.conf file !!\n\n";
+		print "\n[ERROR] I Need at least one parameter: Complete path to pandora_server.conf file\n";
+		help_screen();
 		exit;
 	}
-   
+
 	# If there are not valid parameters
 	my $parametro;
 	my $ltotal=$#ARGV; my $ax;
 	for ($ax=0;$ax<=$ltotal;$ax++){
 		$parametro = $ARGV[$ax];
-		if ($parametro =~ m/-h\z/i ) { help_screen();  }
-			elsif ($parametro =~ m/-help\z/i ) { help_screen();  }
-			elsif ($parametro =~ m/--help\z/i ) { help_screen();  }
+		if ($parametro =~ m/-h\z/i ) { help_screen(); }
+			elsif ($parametro =~ m/-help\z/i ) { help_screen(); }
+			elsif ($parametro =~ m/--help\z/i ) { help_screen(); }
 		elsif ($parametro =~ m/-v\z/i) { $verbosity=5; }
 		elsif ($parametro =~ m/-d\z/i) { $verbosity=10; }
 		elsif ($parametro =~ m/-d\z/i) { $verbosity=0; }
@@ -275,7 +276,7 @@ sub pandora_init {
 		else { ($pandora_path = $parametro); }
 	}
 	if ($pandora_path eq ""){
-		print "FATAL ERROR: I Need complete path to pandora_server.conf file !!\n\n";
+		print "\n[ERROR] I Need complete path to pandora_server.conf file \n\n";
 		exit;
 	}
 }
@@ -291,7 +292,7 @@ sub pandora_loadconfig {
 	my @command_line;
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
-		printf "[ERROR] Cannot open configuration file. Please specify a valid one in command line \n";
+		printf "\n[ERROR] Cannot open configuration file. Please specify a valid one in command line \n";
 		exit 1;
 	}
 
@@ -304,7 +305,7 @@ sub pandora_loadconfig {
 		push @command_line,$2;
 		}
 	}
- 
+
  
  	close (CFG);
  	# Process this array with commandline like options 
@@ -315,26 +316,26 @@ sub pandora_loadconfig {
 
  	# Has read setup file ok ?
  	if ( $ltotal == 0 ) {
-  		print "[ERROR] No valid setup tokens readed in $archivo_cfg ";
-  		exit;
+		print "\n[ERROR] No valid setup tokens readed in $archivo_cfg ";
+		exit;
  	}
  
  	for ($ax=0;$ax<=$ltotal;$ax++){
-  		$parametro = $args[$ax];
-  		if ($parametro =~ m/dirname\z/) {  $dirname = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/dbuser\z/) { $dbuser  = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/dbpass\z/) { $dbpass = $args[$ax+1]; $ax++; }
-  		elsif ($parametro =~ m/dbname\z/) { $dbname = $args[$ax+1]; $ax++; }
-  		elsif ($parametro =~ m/dbhost\z/) { $dbhost  = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/log_file\z/) { $log_file = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/server_threshold\z/) { $server_threshold = $args[$ax+1]; $ax++; }
+		$parametro = $args[$ax];
+		if ($parametro =~ m/dirname\z/) { $dirname = $args[$ax+1]; $ax++; } 
+		elsif ($parametro =~ m/dbuser\z/) { $dbuser = $args[$ax+1]; $ax++; } 
+		elsif ($parametro =~ m/dbpass\z/) { $dbpass = $args[$ax+1]; $ax++; }
+		elsif ($parametro =~ m/dbname\z/) { $dbname = $args[$ax+1]; $ax++; }
+		elsif ($parametro =~ m/dbhost\z/) { $dbhost = $args[$ax+1]; $ax++; } 
+		elsif ($parametro =~ m/log_file\z/) { $log_file = $args[$ax+1]; $ax++; } 
+		elsif ($parametro =~ m/server_threshold\z/) { $server_threshold = $args[$ax+1]; $ax++; }
  	}
  
  	# Check for valid token token values
- 	if (( $dbuser eq "" ) || ( $log_file eq "" ) || ( $dbhost eq "")  || ($dbpass eq "" ) ) {
-  		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file";
+ 	if (( $dbuser eq "" ) || ( $log_file eq "" ) || ( $dbhost eq "") || ($dbpass eq "" ) ) {
+		print "\n[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file";
 		print "\n\n";
-  		exit;
+		exit;
  	}
 	
 	# Open database to get days_purge days_compact values
@@ -348,7 +349,7 @@ sub pandora_loadconfig {
 		@data = $query_ready->fetchrow_array();
 		$config_days_purge = $data[2]; # value
 	} else {
-		print "[ERROR] I cannot find in database a config item (DAYS_PURGE)\n";
+		print "\n[ERROR] I cannot find in database a config item (DAYS_PURGE)\n";
 		exit(-1);
 	}
 	$query_ready->finish();
@@ -381,7 +382,7 @@ sub pandora_loadconfig {
 	$query_ready->finish();
 	$dbh->disconnect;
 	
-  	printf "Pandora DB now initialized and running (PURGE=$config_days_purge days, COMPACT=$config_days_compact days, STEP=$config_step_compact) ... \n\n";
+	printf "Pandora DB now initialized and running (PURGE=$config_days_purge days, COMPACT=$config_days_compact days, STEP=$config_step_compact) ... \n\n";
 }
 	
 ###############################################################################
@@ -401,35 +402,35 @@ sub pandora_checkdb_consistency {
 	my $err; # error code in datecalc function
  	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{RaiseError => 1, AutoCommit => 1 });
 
-	print "[CHECKDB] Deleting non-init data... \n";
-        my $query4 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
-        my $prep4 = $dbh->prepare($query4);
-        $prep4 ->execute;
-        my @datarow4;
-        if ($prep4->rows != 0) {
-                # for each record in tagente_modulo
-                while (@datarow4 = $prep4->fetchrow_array()) {
-                        my $id_agente_modulo = $datarow4[1];
+	print "\n[CHECKDB] Deleting non-init data... \n";
+	my $query4 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
+	my $prep4 = $dbh->prepare($query4);
+	$prep4 ->execute;
+	my @datarow4;
+	if ($prep4->rows != 0) {
+		# for each record in tagente_modulo
+		while (@datarow4 = $prep4->fetchrow_array()) {
+			my $id_agente_modulo = $datarow4[1];
 						
 						# Skip policy modules
-                        next if (is_policy_module ($dbh, $id_agente_modulo));
+			next if (is_policy_module ($dbh, $id_agente_modulo));
 
-                        # Delete the module
-                        my $query0 = "DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = $id_agente_modulo";
-                        my $prep0 = $dbh->prepare($query0);
-                        $prep0 ->execute;
-                        $prep0->finish();
-                        
-                        # Delete any alerts associated to the module
-						$query0 = "DELETE FROM talert_template_modules WHERE id_agent_module = $id_agente_modulo";
-                        $prep0 = $dbh->prepare($query0);
-                        $prep0 ->execute;
-                        $prep0->finish();
-                }
-        }
-        $prep4->finish();
+			# Delete the module
+			my $query0 = "DELETE FROM tagente_modulo WHERE disabled = 0 AND id_agente_modulo = $id_agente_modulo";
+			my $prep0 = $dbh->prepare($query0);
+			$prep0 ->execute;
+			$prep0->finish();
 
-	print "[CHECKDB] Checking database consistency (Missing status)... \n";
+			# Delete any alerts associated to the module
+			$query0 = "DELETE FROM talert_template_modules WHERE id_agent_module = $id_agente_modulo";
+			$prep0 = $dbh->prepare($query0);
+			$prep0 ->execute;
+			$prep0->finish();
+		}
+	}
+	$prep4->finish();
+
+	print "\n[CHECKDB] Checking database consistency (Missing status)... \n";
 
 	my $query1 = "SELECT * FROM tagente_modulo";
 	my $prep1 = $dbh->prepare($query1);
@@ -457,7 +458,7 @@ sub pandora_checkdb_consistency {
 	}
 	$prep1->finish();
 	
-	print "[CHECKDB] Checking database consistency (Missing module)... \n";
+	print "\n[CHECKDB] Checking database consistency (Missing module)... \n";
 	# 2. Check for modules in tagente_estado that do not have tagente_modulo, if there is any, delete it
 
 	my $query1 = "SELECT * FROM tagente_estado";
@@ -534,16 +535,19 @@ sub is_policy_module ($$) {
 }
 
 ##############################################################################
-# SUB help_screen()
+# SUB ERRORhelp_screen()
 #  Show a help screen an exits
 ##############################################################################
 
 sub help_screen{
-	printf "\n\nSintax: \n pandora_db.pl  fullpathname_to_pandora_server.conf \n\n";
-	print "             -d   Debug output (very verbose) \n";
-	print "             -v   Verbose output \n";
-	print "             -q   Quiet output \n";
-	print "             -p   Only purge and consistency check, skip compact \n";
+	printf "\nSyntax: \n pandora_db.pl fullpathname_to_pandora_server.conf \n\n";
+	print "	 -d   Debug output (very verbose) \n";
+	print "	 -v   Verbose output \n";
+	print "	 -q   Quiet output \n";
+	print "	 -p   Only purge and consistency check, skip compact \n\n";
+	print "If you get the Undefined subroutine &main::UnixDate error, ";
+	print "verify that you have the Date::Manip Perl module. ";
+	print "If not, install it using cpan Date::Manip \n\n";
 	exit;
 }
 

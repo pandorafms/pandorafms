@@ -139,7 +139,7 @@ function load_extensions ($extensions) {
 	
 	foreach ($extensions as $extension) {
 		$extension_file = $extension['file'];
-		include_once (realpath ($extension['dir']."/".$extension_file));
+		require_once (realpath ($extension['dir']."/".$extension_file));
 	}
 }
 

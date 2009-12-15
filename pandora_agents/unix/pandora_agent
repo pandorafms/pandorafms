@@ -180,6 +180,11 @@ sub read_config (;$) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(\d+)\s*$/) {
 			$module->{'max'} = $1;
+		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
+			$module->{'interval'} = $1;
+
+			# Make the module run the first time
+			$module->{'counter'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'exec'} ne '');
 			push (@Modules, $module);
@@ -543,7 +548,7 @@ while (1) {
 
 		# Check module interval
 		next unless (++$module->{'counter'} >= $module->{'interval'});
-
+print "INTERVAL: " . $module->{'interval'} . "\n";
 		# Reset module counter
 		$module->{'counter'} = 0;
 

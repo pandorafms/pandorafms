@@ -1,3 +1,7 @@
+2009-12-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Make modules with a module_interval run the first time.
+
 2009-12-07  Sancho Lerena <slerena@artica.es>
 
 	* plugins/inventory: Fixed some problems with the plugin (for linux). Added

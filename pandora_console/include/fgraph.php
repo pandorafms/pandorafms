@@ -1300,9 +1300,8 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		foreach ($result as $row) {
 			$utimestamp = $row['utimestamp'];
 			for ($i = 0; $i <= $resolution; $i++) {
-				if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
+				if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom'])
 					$data['events']++;
-				}
 			}
 		}
 	}
@@ -1316,15 +1315,14 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'));
 	
-	if ($all_data === false) {
+	if ($all_data === false)
 		$all_data = array ();
-	}
 	
 	foreach ($all_data as $module_data) {
 		$real_data = intval ($module_data["datos"]) ? 1 : 0;
 		$utimestamp = $module_data["utimestamp"];
 		for ($i = 0; $i <= $resolution; $i++) {
-			if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
+			if ($utimestamp <= $data[$i]['timestamp_top'] || $utimestamp >= $data[$i]['timestamp_bottom']) {
 				$data[$i]['sum'] += $real_data;
 				$data[$i]['count']++;
 				
@@ -1360,30 +1358,32 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 	}
 	
 	$grafica = array ();
-	foreach ($data as $d) {
+	foreach ($data as $d)
 		$grafica[$d['timestamp_bottom']] = $d['sum'];
-	}
 	
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
 		$time_format = 'G:i:s';
-	} elseif ($period <= 86400) {
+	}
+	elseif ($period <= 86400) {
 		$title_period = __('Last day');
 		$time_format = 'G:i';
-	} elseif ($period <= 604800) {
+	}
+	elseif ($period <= 604800) {
 		$title_period = __('Last week');
 		$time_format = 'M j';
-	} elseif ($period <= 2419200) {
+	}
+	elseif ($period <= 2419200) {
 		$title_period = __('Last month');
 		$time_format = 'M j';
-	} else {
+	} 
+	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
 
-	if (! $graphic_type) {
+	if (! $graphic_type)
 		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
-	}
 
 	$engine = get_graph_engine ($period);
 	

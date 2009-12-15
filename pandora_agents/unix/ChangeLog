@@ -1,5 +1,9 @@
 2009-12-15  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Removed debugging code.
+
+2009-12-15  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent: Make modules with a module_interval run the first time.
 
 2009-12-07  Sancho Lerena <slerena@artica.es>

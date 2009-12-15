@@ -548,7 +548,7 @@ while (1) {
 
 		# Check module interval
 		next unless (++$module->{'counter'} >= $module->{'interval'});
-print "INTERVAL: " . $module->{'interval'} . "\n";
+
 		# Reset module counter
 		$module->{'counter'} = 0;
 

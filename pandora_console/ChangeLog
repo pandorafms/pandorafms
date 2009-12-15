@@ -1,3 +1,7 @@
+2009-12-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_fsgraph.php: Fixed bug #2913813.
+
 2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: fix before copy&paste.

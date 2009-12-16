@@ -1,5 +1,12 @@
 2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/fgraph.php: fix print image error as tag <image> instead content
+	file when there is error in data string. And add new type of graph, error
+	graph.
+	Fixes: 2908174
+
+2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* ChangeLog: fix the days in the last dates.
 
 2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>

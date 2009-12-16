@@ -1,3 +1,10 @@
+2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* installer/pandora.mpi, README:Preparing release
+	changing version to final.
+
+	* installer/logo.png: Updated logo.
+
 2009-11-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* installer/pandora.mpi: Updated version and silent install mode.
@@ -7,7 +14,7 @@
 
 	* pandora.cc: Updated version.
 
-2008-11-26  Raul Mateos  <raulofpandora@gmail.com>
+2009-11-26  Raul Mateos  <raulofpandora@gmail.com>
 
 	* installer/pandora.mpi: Updated installer build to RC3.
 

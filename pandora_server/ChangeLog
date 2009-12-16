@@ -1,3 +1,9 @@
+2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* DEBIAN/make_deb_package.sh, lib/PandoraFMS/Config.pm, README,
+	pandora_server_upgrade, pandora_server_installer: Preparing release
+	changing version to final. Clean code.
+
 2009-12-14  Raul Mateos  <raulofpandora@gmail.com>
 
 	* util/pandora_db.pl: Improved help.

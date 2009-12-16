@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.0.0.RC3"
+pandora_console_version="3.0.0."
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]
@@ -102,7 +102,7 @@ do
 			
 			#delete "temp_package" in the path
 			final_path=${item#temp_package}
-			echo  $md5" "$final_path >> temp_package/DEBIAN/md5sums
+			echo $md5" "$final_path >> temp_package/DEBIAN/md5sums
 		fi
 	fi
 done

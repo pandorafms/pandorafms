@@ -7,7 +7,7 @@
 # **********************************************************************
 
 AGENT_VERSION=3.0
-AGENT_BUILD=090818
+AGENT_BUILD=091216
 
 # **********************************************************************
 # function configure_agent()
@@ -215,36 +215,36 @@ function send_file {
 
 	if [ "$TRANSFER_MODE" == "tentacle" ]
 	then
- 		eval tentacle_client -v -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $FILE > /dev/null 2>  $PANDORA_LOGFILE.err
+ 		eval tentacle_client -v -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $FILE > /dev/null 2> $PANDORA_LOGFILE.err
  		return $?
 	fi
 
 	if [ "$TRANSFER_MODE" == "ssh" ]
 	then
- 		scp -P $SERVER_PORT $FILE pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+ 		scp -P $SERVER_PORT $FILE pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
  		return $?
 	fi
 
 	if [ "$TRANSFER_MODE" == "ftp" ]
-    then
-      	BASENAME=`basename $FILE`
-       	DIRNAME=`dirname $FILE`
-	
+	then
+		BASENAME=`basename $FILE`
+		DIRNAME=`dirname $FILE`
+
 		ftp -n $SERVER_IP $SERVER_PORT > /dev/null 2> $PANDORA_LOGFILE.err <<FEOF1
 quote USER pandora
 quote PASS $SERVER_PWD
 lcd "$DIRNAME"
 cd "$SERVER_PATH"
-put "$BASENAME"                
+put "$BASENAME"
 quit
 FEOF1
 		return $?
-    fi
+	fi
 
 	if [ "$TRANSFER_MODE" == "local" ]
-    then
-                cp $FILE $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
-                return $?
+	then
+		cp $FILE $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
+		return $?
 	fi
 	
 	return 1
@@ -303,7 +303,7 @@ function recv_file {
 	fi
 
 	if [ "$TRANSFER_MODE" == "ftp" ]
-    then	
+	then	
 		ftp -n $SERVER_IP $SERVER_PORT > /dev/null 2> $PANDORA_LOGFILE.err <<FEOF1
 quote USER pandora
 quote PASS $SERVER_PWD
@@ -313,12 +313,12 @@ get "$FILE"
 quit
 FEOF1
 		return $?
-    fi
+	fi
 
 	if [ "$TRANSFER_MODE" == "local" ]
 	then
-                cp $SERVER_PATH/$FILE $TEMP > /dev/null 2> $PANDORA_LOGFILE.err
-                return $?
+		cp $SERVER_PATH/$FILE $TEMP > /dev/null 2> $PANDORA_LOGFILE.err
+		return $?
 	fi
 	
 	return 1
@@ -329,9 +329,9 @@ FEOF1
 # Switches the values of var1 and var2
 # **********************************************************************
 function switch {
-        eval "TEMP=\"\$$1\""
-        eval "$1=\"\$$2\""
-        eval "$2=\"\$TEMP\""
+	eval "TEMP=\"\$$1\""
+	eval "$1=\"\$$2\""
+	eval "$2=\"\$TEMP\""
 }
 
 # **********************************************************************
@@ -422,7 +422,7 @@ then
 	echo " "
 	echo "Fatal error: I need an argument to Pandora FMS Agent config directory"
  	echo " "
- 	echo " example: pandora_agent /etc/pandora  "
+ 	echo " example: pandora_agent /etc/pandora"
  	echo " "
  	exit -1
 else
@@ -527,27 +527,27 @@ do
 	
  	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
  	do
-  		a=`echo $a | tr -s " " " "`
+		a=`echo $a | tr -s " " " "`
  
-         	if [ ! -z "`echo $a | grep -e '^module_exec'`" ]
-         	then
+	 	if [ ! -z "`echo $a | grep -e '^module_exec'`" ]
+	 	then
 			if [ $EXECUTE -eq 0 ]
 			then
-	            		execution=`echo $a | cut -c 13- `
-            			res=`eval $execution`
-            			if [ -z "$flux_string" ]
-            			then
-	             			res=`eval expr $res 2> $PANDORA_LOGFILE.err`
-     				fi
-            			echo "<data><![CDATA[$res]]></data>" >> $DATA2
+				execution=`echo $a | cut -c 13- `
+				res=`eval $execution`
+				if [ -z "$flux_string" ]
+				then
+					res=`eval expr $res 2> $PANDORA_LOGFILE.err`
+				fi
+				echo "<data><![CDATA[$res]]></data>" >> $DATA2
 			fi
-         	fi
+		fi
  
-         	if [ ! -z "`echo $a | grep -e '^module_name'`" ]
-         	then
-            		name=`echo $a | cut -c 13- `
-     			echo "<name><![CDATA[$name]]></name>" >> $DATA2
-         	fi
+		if [ ! -z "`echo $a | grep -e '^module_name'`" ]
+		then
+			name=`echo $a | cut -c 13- `
+			echo "<name><![CDATA[$name]]></name>" >> $DATA2
+		fi
 		
 		if [ ! -z "`echo $a | grep -e '^module_begin'`" ]
 		then
@@ -572,40 +572,40 @@ do
 			desc=`echo $a | cut -c 20- `
 			echo "<description><![CDATA[$desc]]></description>" >> $DATA2
 		fi
-  
-         	if [ ! -z "`echo $a | grep -e '^module_end'`" ]
-         	then
-         	   	echo "</module>" >> $DATA2
+ 
+	 	if [ ! -z "`echo $a | grep -e '^module_end'`" ]
+	 	then
+			echo "</module>" >> $DATA2
 			MODULE_END=1
 		else
 			MODULE_END=0
-         	fi
+		fi
  
-         	if [ ! -z "`echo $a | grep -e '^module_type'`" ]
-         	then
-            		mtype=`echo $a | awk '{ print $2 }' `
-            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ] || [ ! -z "`echo $mtype | grep 'async_string'`" ]
-     			then
-   				flux_string=1
-     			else
-                 		flux_string=0
-                 		unset flux_string
-            		fi
-            		echo "<type><![CDATA[$mtype]]></type>" >> $DATA2
-         	fi
+ 		if [ ! -z "`echo $a | grep -e '^module_type'`" ]
+		then
+			mtype=`echo $a | awk '{ print $2 }' `
+			if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ] || [ ! -z "`echo $mtype | grep 'async_string'`" ]
+			then
+				flux_string=1
+			else
+				flux_string=0
+		 		unset flux_string
+			fi
+			echo "<type><![CDATA[$mtype]]></type>" >> $DATA2
+		fi
 		
-  		if [ ! -z "`echo $a | grep '^module_interval'`" ]
-  		then
-              		# Determine if execution is to be done
-              		MODULEINTERVAL=`echo $a | awk '{ print $2 }'`
-              		EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
-  		fi
+		if [ ! -z "`echo $a | grep '^module_interval'`" ]
+		then
+			# Determine if execution is to be done
+			MODULEINTERVAL=`echo $a | awk '{ print $2 }'`
+			EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
+		fi
 
 		# Plugin execution
-  		if [ ! -z "`echo $a | grep '^module_plugin'`" ]
-  		then
-  			PLUGIN=`echo $a | cut -d" " -f2`
-  			PARAMS=`echo $a | cut -d" " -f3-`
+		if [ ! -z "`echo $a | grep '^module_plugin'`" ]
+		then
+			PLUGIN=`echo $a | cut -d" " -f2`
+			PARAMS=`echo $a | cut -d" " -f3-`
 			if [ -f $PANDORA_HOME/plugins/$PLUGIN ]
 			then
 				eval $PANDORA_HOME/plugins/$PLUGIN $PARAMS >> $DATA
@@ -615,7 +615,7 @@ do
 		fi
 
 		# Module postprocess info 
-  		if [ ! -z "`echo $a | grep -e '^module_postprocess'`" ]
+		if [ ! -z "`echo $a | grep -e '^module_postprocess'`" ]
 		then
 			pprocess=`echo $a | cut -d" " -f2-`
 			echo "<postprocess><![CDATA[$pprocess]]></postprocess>" >> $DATA2

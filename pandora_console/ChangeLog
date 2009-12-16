@@ -1,3 +1,8 @@
+2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config_process.php, DEBIAN/make_deb_package.sh: Preparing
+	release	changing version to final.
+
 2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/modules/manage_network_components.php: fix re-duplicate modules

@@ -1478,10 +1478,12 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	}
 
 	if ($valor_maximo <= 0) {
-		graphic_error ();
+		$image = "../../include/fgraph.php?tipo=graphic_error";
+		print_image ($image, false, array ("border" => 0));
+		
 		return;
 	}
-	
+		
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
 		$time_format = 'G:i:s';
@@ -1673,6 +1675,7 @@ if ($graphic_type) {
 		grafico_modulo_string ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
 
+	case 'graphic_error':
 	default:
 		graphic_error ();
 	}

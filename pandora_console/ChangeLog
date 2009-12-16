@@ -1,5 +1,11 @@
 2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_components.php: fix re-duplicate modules
+	now only generate one copy.
+	Fixes: 2915470
+
+2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: fix print image error as tag <image> instead content
 	file when there is error in data string. And add new type of graph, error
 	graph.

@@ -73,7 +73,10 @@ function get_server_performance () {
 
 	$data["avg_interval_remote_modules"] = get_db_sql ("SELECT AVG(module_interval) FROM tagente_modulo, tagente_estado where tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0");
 
-	$data["remote_modules_rate"] =  $data["total_remote_modules"] / $data["avg_interval_remote_modules"];
+	if ($data["total_remote_modules"] == 0)
+		$data["remote_modules_rate"] = 0;
+	else
+		$data["remote_modules_rate"] =  $data["total_remote_modules"] / $data["avg_interval_remote_modules"];
 
 	// For local modules (ignoring local modules with custom invervals for simplicity).
 

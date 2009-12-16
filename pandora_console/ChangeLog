@@ -1,5 +1,10 @@
 2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_servers.php: tiny fix (a zero division) the tactical
+	view when start with a empty Pandora. 
+	
+2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: fix in the function "grafico_modulo_boolean" for
 	show correct graph, and clean source code.
 	* include/functions_extensions.php: change include_once to require_once for

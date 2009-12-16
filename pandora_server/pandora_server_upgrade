@@ -1,9 +1,12 @@
-# Pandora FMS 3.0 Server Installer (c) 2009 Artica ST
-# Please see http://www.pandorafms.com
+#!/bin/bash
+
+# Pandora FMS Server Upgrader (c) 2008-2009 Artica ST
+# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# other Linux distros could not work properly without modifications
+# Please see http://www.pandorafms.org
+# v3.0.1 Build 091216
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-
-#!/bin/bash
 
 MODE=$1
 
@@ -46,11 +49,11 @@ install () {
 	cp util/pandora_server /etc/init.d
 	cp util/tentacle_serverd /etc/init.d
 
-	if [ ! -e  /etc/cron.daily/pandora_purge_db ]
+	if [ ! -e /etc/cron.daily/pandora_purge_db ]
 	then
 		echo "You don't have a /etc/cron.daily/pandora_purge_db file, you should consider"
 		echo "to setup the Pandora FMS daily Database Maintance script: "
-		echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+		echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 	fi
 
 	echo " "
@@ -59,24 +62,24 @@ install () {
 }
 
 help () {
-        echo "     --upgrade           To upgrade Pandora FMS Servers on this system (You have to be root)"
-        echo " "
+	echo "	--upgrade	To upgrade Pandora FMS Servers on this system (You have to be root)"
+	echo " "
 }
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 2.0 Server Upgrade (c) 2009 Artica ST"
-echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo "Pandora FMS 3.0 Server Upgrade (c) 2009 Artica ST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 
 case "$MODE" in
 
 '--upgrade')
-        install
-        exit
-        ;;
+	install
+	exit
+	;;
 
 *)
-        help
+	help
 esac
 

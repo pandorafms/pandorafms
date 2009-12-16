@@ -50,11 +50,11 @@ get_distro () {
 		OS_VERSION=`uname -r`
 		LINUX=NO
 	elif [ `uname -s` == "AIX" ]
-        then
-                # For future reference, AIX doesn't have /etc/init.d
-                LINUX_DISTRO="AIX"
-                OS_VERSION=`uname -r`
-                LINUX=NO
+	then
+		# For future reference, AIX doesn't have /etc/init.d
+		LINUX_DISTRO="AIX"
+		OS_VERSION=`uname -r`
+		LINUX=NO
 	elif [ `uname -s` == "SunOS" ]
 	then
 		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
@@ -78,7 +78,7 @@ get_distro () {
 
 install () {
 
-	perl Makefile.PL > output 2>&1  #&& sleep 2 &&  cat output | grep "found" | wc -l 
+	perl Makefile.PL > output 2>&1 #&& sleep 2 && cat output | grep "found" | wc -l 
 	DEPENDENCIAS=`cat output | grep "found" | wc -l`
 	if [ $DEPENDENCIAS -gt 0 ]
 	then
@@ -94,11 +94,11 @@ install () {
 		echo " "
 		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI"
 		echo " "
-		echo "  You also will need to install xprobe2 and wmiclient from rpm (download from our website)"
+		echo "	You also will need to install xprobe2 and wmiclient from rpm (download from our website)"
 		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
-		echo "  $ cpan Digest::MD5 Time::Local DBI XML::Simple IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
+		echo "	$ cpan Digest::MD5 Time::Local DBI XML::Simple IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
 		echo " "
 		rm output
 	else
@@ -158,7 +158,7 @@ install () {
 			then
 				chown -R pandora:www $PANDORA_SPOOL
 			else
-				id -g apache  > /dev/null
+				id -g apache > /dev/null
 				if [ $? -eq 0 ]
 				then
 					chown -R pandora:apache $PANDORA_SPOOL
@@ -264,7 +264,7 @@ install () {
 			chmod +x /etc/cron.daily/pandora_db
 		else
 			echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
-			echo "   perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+			echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 		fi
 		echo
 		echo "Now you have to edit your /etc/pandora/pandora_server.conf file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
@@ -290,17 +290,17 @@ uninstall () {
 	rm -Rf $PANDORA_SPOOL/data_in/
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
-	echo "   userdel pandora"
-	echo "   rm -Rf /home/pandora/"
+	echo "	userdel pandora"
+	echo "	rm -Rf /home/pandora/"
 	
-    	## Just to clarify here. Some people (like me) are using the pandora user 
-    	## for other purposes and/or using an LDAP-based user management
+	## Just to clarify here. Some people (like me) are using the pandora user 
+	## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
 
-	rm -Rf $PANDORA_LOG  2> /dev/null 
-	rm -Rf $PANDORA_CFG_FILE  2> /dev/null
-	rm -Rf $PANDORA_SERVER  2> /dev/null 
-	rm -Rf /usr/local/bin/pandora_server  2> /dev/null
+	rm -Rf $PANDORA_LOG 2> /dev/null 
+	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
+	rm -Rf $PANDORA_SERVER 2> /dev/null 
+	rm -Rf /usr/local/bin/pandora_server 2> /dev/null
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
 	rm -Rf $PANDORA_HOME
 	rm -Rf /etc/cron.daily/pandora_db
@@ -310,18 +310,18 @@ uninstall () {
 		update-rc.d -f pandora_server remove
 		update-rc.d -f tentacle_serverd remove
 	fi
-	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
-	rm -Rf /etc/rc.d/rc3.d/S90pandora_server  2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_server 2> /dev/null 
+	rm -Rf /etc/rc.d/rc3.d/S90pandora_server 2> /dev/null 
 	echo "Done"
 }
 
 help () {
-        echo "     --install           To install Pandora FMS Servers on this system (You have to be root)"
-        echo "     --uninstall         To uninstall and remove Pandora FMS Servers on this System"
+	echo "	--install	To install Pandora FMS Servers on this system (You have to be root)"
+	echo "	--uninstall	To uninstall and remove Pandora FMS Servers on this System"
 	echo " "
 	echo " Additional parameters (after --install) "
-        echo " "
-	echo "     --no-tentacle        Skip tentacle server installation (by default tentacle server installed)"
+	echo " "
+	echo "	--no-tentacle	Skip tentacle server installation (by default tentacle server installed)"
 	echo " "
 }
 
@@ -334,16 +334,16 @@ echo " "
 case "$MODE" in
 
 '--install')
-        install
-        exit
-        ;;
+	install
+	exit
+	;;
 
 '--uninstall')
-        uninstall
-        exit
-        ;;
+	uninstall
+	exit
+	;;
 
 *)
-        help
+	help
 esac
 

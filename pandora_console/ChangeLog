@@ -1,9 +1,13 @@
-2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: fix the days in the last dates.
+
+2009-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_servers.php: tiny fix (a zero division) the tactical
 	view when start with a empty Pandora. 
 	
-2009-12-14  Miguel de Dios  <miguel.dedios@artica.es>
+2009-12-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/fgraph.php: fix in the function "grafico_modulo_boolean" for
 	show correct graph, and clean source code.

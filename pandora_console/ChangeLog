@@ -1,3 +1,8 @@
+2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandora_console/extensions/update_manager/load_updatemanager.php: add more
+	info (Pandora version and build) to statistics in update process.
+
 2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config_process.php, DEBIAN/make_deb_package.sh: Preparing

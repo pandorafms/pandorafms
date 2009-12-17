@@ -57,10 +57,13 @@ function get_user_key ($settings) {
 	   We only want to know this for statistics records.
 	   Feel free to disable this extension if you want.
 	 */
+	global $build_version;
+	global $pandora_version; 
+	
 	$n = (int) get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
 	$m = (int) get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
 				'disabled', 0);
-	$user_key = array ('A' => $n, 'M' => $m);
+	$user_key = array ('A' => $n, 'M' => $m, 'B' => $build_version, 'P' => $pandora_version);
 	
 	return json_encode ($user_key);
 }

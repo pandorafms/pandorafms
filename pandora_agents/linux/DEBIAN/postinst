@@ -29,8 +29,7 @@ chmod 640 $PANDORA_LOG
 chgrp root $PANDORA_LOG
 chown -R root:root $PANDORA_BIN
 
-INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
 echo "Linking start-up daemon script to /etc/rc$INITLV.d";
-ln -s /etc/init.d/pandora_agent_daemon /etc/rc$INITLV.d/S90pandora_agent
+update-rc.d pandora_agent_daemon defaults
 
 echo "Please, now setup the $PANDORA_HOME/pandora_agent.conf and before start the /etc/init.d/pandora_agent_daemon"

@@ -1,3 +1,8 @@
+2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* linux/DEBIAN/postinst: change the code to insert as service the agent.
+	Fixes: 2911327
+
 2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* linux/pandora_agent, linux/DEBIAN/make_deb_package.sh: Preparing 

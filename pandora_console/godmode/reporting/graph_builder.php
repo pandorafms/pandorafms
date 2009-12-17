@@ -195,21 +195,22 @@ if (isset ($_GET["delete_module"] )) {
 
 if ($add_module) {
 	if ($editGraph) {
-		
 		$id = get_parameter('id');
 		$id_module = get_parameter('id_module');
-		$factor = get_parameter('factor');
-		process_sql_insert('tgraph_source', array('id_graph' => $id, 'id_agent_module' => $id_module, 'weight' => $factor));
-		
-		$period = get_parameter('period');
-		$width = get_parameter('width');
-		$height = get_parameter('height');
-		$events = get_parameter('events');		
-		$stacked = get_parameter('stacked');
-		
-		process_sql_update('tgraph', array('period' => $period, 
-			'width' => $width, 'height' => $height, 'events' => $events,
-			'stacked' => $stacked), array('id_graph' => $id));
+		if ($id_module != -1) {
+			$factor = get_parameter('factor');
+			process_sql_insert('tgraph_source', array('id_graph' => $id, 'id_agent_module' => $id_module, 'weight' => $factor));
+			
+			$period = get_parameter('period');
+			$width = get_parameter('width');
+			$height = get_parameter('height');
+			$events = get_parameter('events');		
+			$stacked = get_parameter('stacked');
+			
+			process_sql_update('tgraph', array('period' => $period, 
+				'width' => $width, 'height' => $height, 'events' => $events,
+				'stacked' => $stacked), array('id_graph' => $id));
+		}
 	}
 	else {
 		$id_agent = $_POST["id_agent"];
@@ -345,8 +346,7 @@ if (isset ($chunk1)) {
 			$color = 1;
 		}
 
-		echo "<tr><td class='$tdcolor'>";
-		echo get_agent_name ($agent_array[$a])."</td>";
+		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo get_agentmodule_name ($module_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";

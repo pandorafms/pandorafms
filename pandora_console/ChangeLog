@@ -1,5 +1,12 @@
 2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandora_console/godmode/reporting/graph_builder.php: fix blank row when
+	redraw graph in builder, and fix the empty column agent name in table of
+	modules.
+	Fixes: 2916194
+
+2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_console/extensions/update_manager/load_updatemanager.php: add more
 	info (Pandora version and build) to statistics in update process.
 

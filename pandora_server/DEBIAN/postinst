@@ -71,11 +71,11 @@ mkdir /etc/pandora 2> /dev/null
 chmod 770 /etc/pandora/pandora_server.conf
 
 echo "Linking startup script to /etc/rc2.d"
-ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
+update-rc.d pandora_server defaults
 
 # Tentacle server install
 echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-ln -s /etc/init.d/tentacle_serverd /etc/rc2.d/S80tentacle_serverd
+update-rc.d tentacle_serverd defaults
 
 if [ -d /etc/cron.daily ]
 then

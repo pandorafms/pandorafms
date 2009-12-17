@@ -1,3 +1,9 @@
+2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/postinst: change the code to insert as service the server and
+	the server tentacle.
+	Fixes: 2911327
+
 2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* DEBIAN/make_deb_package.sh, lib/PandoraFMS/Config.pm, README,

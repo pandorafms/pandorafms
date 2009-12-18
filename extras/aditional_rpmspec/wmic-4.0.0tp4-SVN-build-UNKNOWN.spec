@@ -2,11 +2,11 @@
 #
 %define name        wmic
 %define version	    4.0.0SVN
-Summary:            Linux binary to do WMI querys
+Summary:            Linux WMI client to do WMI querys using DCOM http://samba.org
 Name:               %{name}
 Version:            %{version}
 Release:            0
-License:            Other License(s), see package
+License:            GPL2
 Group:		    System/Management
 Source0:            %{name}-%{version}.tar.bz2
 BuildRoot:          %{_tmppath}/%{name}-%{version}-build
@@ -15,7 +15,7 @@ AutoReq:            1
 Provides:           %{name}-%{version}
 
 %description
-Linux binary to do WMI querys
+Linux WMI client to do WMI querys. More information at SAMBA4 project at http://www.samba.org/
 
 %prep
 rm -rf $RPM_BUILD_ROOT

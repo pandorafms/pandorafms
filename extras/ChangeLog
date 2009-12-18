@@ -1,3 +1,11 @@
+2009-12-18 Sancho lerena <slerena@gmail.com>
+
+	* extras/aditional_rpmspec/xprobe2-0.3.spec: Updated to make it
+	compatible with SUSE build service.
+
+	* extras/aditional_rpmspec/wmic-4.0.0tp4-SVN-build-UNKNOWN.spec: Final
+	changes (updated web, license and description).
+
 2009-12-09  Sancho Lerena <slerena@gmail.com>
 
 	* * aditional_rpmspec/xprobe2-0.3.spec: Fixed parameter to avoid FHS

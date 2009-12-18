@@ -1,3 +1,10 @@
+2009-12-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/control: Updated version.
+
+	* util/pandora_db.pl: Added history database support. Re-wrote some
+	  parts.
+
 2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/postinst: change the code to insert as service the server and

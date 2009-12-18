@@ -1,14 +1,14 @@
 Name:   	xprobe2
 Version:	0.3
-Release:	1
-Summary:	Tool to detect OS remotely by TCP/IP fingerprinting.
+Release:	2
+Summary:	Tool to detect OS remotely by TCP/IP fingerprinting
 License:	GPLv2
-Group:          	Network/Security
-URL:            	http://xprobe.sourceforge.net/
+Group:     Network/Security
+URL:       	http://xprobe.sourceforge.net/
 Packager:	Sancho Lerena <slerena@gmail.com>
 Source:		http://dl.sf.net/xprobe/xprobe2-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}
-Provides:	xprobe2
+Provides:	%{name}-%{version}
 Requires:	libpcap
 BuildRequires: 	gcc-c++ libpcap-devel
 
@@ -50,15 +50,24 @@ ln -s /usr/local/bin/xprobe2 /usr/bin
 %postun
 
 %files
-%defattr(-,root,root,0755)
+
+%defattr(755,root,root)
+/usr/local/etc
+/usr/local/etc/xprobe2
+
+%defattr(644,root,root)
 %doc AUTHORS CHANGELOG COPYING CREDITS README TODO docs/*
 %doc /usr/share/man/man1/xprobe2.1.gz
-/usr/local/bin/xprobe2
-/usr/local/etc/xprobe2
 /usr/local/etc/xprobe2/xprobe2.conf
-/usr/local/etc
+
+%defattr(755,root,root)
+/usr/local/bin/xprobe2
+
 
 %changelog
+* Fri Dec 18 2009 Sancho Lerena <slerena@gmail.com> 3.2-2
+- A lot of changes to be ready for all RPM plattforms available on build.opensuse.org
+
 * Tue Dec 08 2009 Sancho Lerena <slerena@gmail.com> 3.2-1
 - First RPM Spec for SUSE Systems, based on CentOS Spec from Dag Wieers
 

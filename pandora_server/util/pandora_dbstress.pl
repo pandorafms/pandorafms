@@ -42,7 +42,7 @@ use PandoraFMS::Core;
 ################################################################################
 ################################################################################
 
-my $version = "2.0 PS080903";
+my $version = "3.0 PS091214";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -68,11 +68,11 @@ print " [*] Interval for this workload is $target_interval \n";
 my $query_idag;
 
 if ($target_agent ne -1){
-    if ($target_module ne -1){
-	    $query_idag = "select * from tagente_modulo where id_agente = $target_agent AND id_agente_modulo = $target_module";
-    } else {
-           $query_idag = "select * from tagente_modulo where id_agente = $target_agent";
-    }
+	if ($target_module ne -1){
+		$query_idag = "select * from tagente_modulo where id_agente = $target_agent AND id_agente_modulo = $target_module";
+	} else {
+		$query_idag = "select * from tagente_modulo where id_agente = $target_agent";
+	}
 } else {
 	$query_idag = "select * from tagente_modulo";
 }
@@ -131,7 +131,7 @@ sub process_module($$$$$){
 		$b = 0;
 		$factor=rand(20);
 		for ($a=1;$a<$iterations;$a++){
-        		$valor = 1 + cos(deg2rad($b));
+			$valor = 1 + cos(deg2rad($b));
 			$b = $b + $factor/10;
 			if ($b > 180){
 				$b =0;
@@ -141,8 +141,8 @@ sub process_module($$$$$){
 			$valor = $valor * $b * 10;
 			$valor = sprintf("%.2f", $valor);
 			$valor =~ s/\,/\./g;
-        		if (($a % 20) == 0) {
-				print "\r   -> ".int($a / ($iterations / 100))."% generated for ($target_name)                                                     ";
+			if (($a % 20) == 0) {
+				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
 			}
 			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
 			# print LOG $mysql_date, $target_name, $valor, "\n";
@@ -156,13 +156,13 @@ sub process_module($$$$$){
 	if ( $target_name =~ /random/i ){
 		# Random values over line a static line
 		for ($a=1;$a<$iterations;$a++){
-        		$valor = rand(15) + rand(15) + rand(15) + rand(15) + rand(15) + rand(15);
+			$valor = rand(15) + rand(15) + rand(15) + rand(15) + rand(15) + rand(15);
 			$valor = sprintf("%.2f", $valor);
 			$valor =~ s/\,/\./g; 
 			$utimestamp += $target_interval;
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 			if ($a % 20 == 0) {
-				print "\r   -> ".int($a / ($iterations / 100))."% generated for ($target_name)                                                     ";
+				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
 			}
 			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
 			#print LOG $mysql_date, $target_name, $valor, "\n";
@@ -176,7 +176,7 @@ sub process_module($$$$$){
 	# Generate pseudo-random data for boolean data
 	if ( $target_name =~ /boolean/i ){
 		for ($a=1;$a<$iterations;$a++){
-        		$valor = rand(50);
+			$valor = rand(50);
 			if ($valor > 2){ 
 				$valor = 1;
 			} else {
@@ -185,7 +185,7 @@ sub process_module($$$$$){
 			$utimestamp += $target_interval;
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 			if ($a % 20 eq 0) {
-				print "\r   -> ".int($a / ($iterations / 100))."% generated for ($target_name)                                                     ";
+				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
 			}
 			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
 			#print LOG $mysql_date, $target_name, $valor, "\n";
@@ -203,7 +203,7 @@ sub process_module($$$$$){
 			$utimestamp += $target_interval;
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 			if ($a % 20 eq 0) {
-				print "\r   -> ".int($a / ($iterations / 100))."% generated for ($target_name)                                                     ";
+				print "\r -> ".int($a / ($iterations / 100))."% generated for ($target_name)				";
 			}
 			pandora_update_agent($pa_config, $timestamp, $target_agent, "none","1.2", $target_interval, $dbh);
 			#print LOG $mysql_date, $target_name, $valor, "\n";

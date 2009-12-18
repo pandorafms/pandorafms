@@ -6,7 +6,7 @@
 Summary:            Pandora FMS Linux agent
 Name:               %{name}
 Version:            %{version}
-Release:            2
+Release:            4
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz

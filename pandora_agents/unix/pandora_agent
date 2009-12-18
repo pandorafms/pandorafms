@@ -486,18 +486,13 @@ sub guess_os_version ($) {
 	# Linux
 	return `lsb_release -sd` if ($os eq 'linux');
 
-	# Solaris
-	return `uname -r` if ($os eq 'solaris');
-
 	# AIX
 	if ($os eq 'aix') {
 		return "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
 	}
 
-	# HP-UX
-	return `uname -r` if ($os eq 'aix');
-
-	return '';
+	# Solaris, HP-UX, BSD and others
+	return `uname -r`;
 }
 
 ################################################################################

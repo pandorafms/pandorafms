@@ -1,3 +1,11 @@
+2009-12-18  Sancho Lerena <slerena@artica.es>
+
+	* unix/pandora_agent_installer,
+	* linux/DEBIAN/control,
+	* linux/pandora_agent.spec:  Updated versions.
+
+	* unix/pandora_agent: Fixed bug #2887050. Updated version
+
 2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* linux/DEBIAN/postinst: change the code to insert as service the agent.

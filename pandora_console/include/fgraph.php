@@ -197,7 +197,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'));
+			array ('datos', 'utimestamp'), 'AND', true);
 		
 		if ($result === false) {
 			if (! $graphic_type) {
@@ -341,7 +341,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', true);
 	
 	if ($all_data === false) {
 		if (! $graphic_type) {
@@ -1165,17 +1165,17 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	// Three months ago
 	$time["3month"] = $time["all"] - 7776000;
 	
-	$data[__("Today")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
-	$data["1 ".__("Week")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
-	$data["1 ".__("Month")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
-	$data["3 ".__("Months")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
+	$data[__("Today")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
 	$data[__("Older")] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
 	
-	$data[__("Today")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
-	$data["1 ".__("Week")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
-	$data["1 ".__("Month")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
-	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
-	$data[__("Older")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query));
+	$data[__("Today")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query), 0, true);
+	$data["1 ".__("Week")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query), 0, true);
+	$data["1 ".__("Month")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query), 0, true);
+	$data["3 ".__("Months")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query), 0, true);
+	$data[__("Older")] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query), 0, true);
 
 	$data[__("Older")] = $data[__("Older")] - $data["3 ".__("Months")];
 
@@ -1267,8 +1267,8 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$alert_low = false;
 		// If we want to show alerts limits
 		
-		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
+		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
+		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
 		
 		// if no valid alert defined to render limits, disable it
 		if (($alert_low === false || $alert_low === NULL) &&
@@ -1313,7 +1313,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', true);
 	
 	if ($all_data === false)
 		$all_data = array ();
@@ -1447,11 +1447,13 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	
 	
 	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." and utimestamp > '".$fechatope."'";
+	$result = get_db_all_rows_sql ($sql1, true);
+	if ($result === false)
+		$result = array ();
 
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
+	foreach ($result as $row){
 		for ($i = 0; $i < $resolution; $i++){
-			if (($row[0] < $valores[$i][3]) and ($row[0] >= $valores[$i][2]) ){ 
+			if (($row['utimestamp'] < $valores[$i][3]) and ($row['utimestamp'] >= $valores[$i][2]) ){ 
 				// entra en esta fila
 				$valores[$i][0]++;
 			}

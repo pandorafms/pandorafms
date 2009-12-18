@@ -163,6 +163,16 @@ function update_config () {
 	update_config_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API'])));
 
 	update_config_value ('custom_logo', (string) get_parameter ('custom_logo', $config["custom_logo"]));
+	update_config_value ('history_db_enabled', (bool) get_parameter ('history_db_enabled', $config['history_db_enabled']));
+	update_config_value ('history_db_host', (string) get_parameter ('history_db_host', $config['history_db_host']));
+	update_config_value ('history_db_port', (int) get_parameter ('history_db_port', $config['history_db_port']));
+	update_config_value ('history_db_name', (string) get_parameter ('history_db_name', $config['history_db_name']));
+	update_config_value ('history_db_user', (string) get_parameter ('history_db_user', $config['history_db_user']));
+	update_config_value ('history_db_pass', (string) get_parameter ('history_db_pass', $config['history_db_pass']));
+	update_config_value ('history_db_days', (string) get_parameter ('history_db_days', $config['history_db_days']));
+	update_config_value ('history_db_step', (string) get_parameter ('history_db_step', $config['history_db_step']));
+	update_config_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
+
 }
 
 /**
@@ -307,6 +317,42 @@ function process_config () {
 			
 	if (!isset ($config["custom_logo"])){
 		update_config_value ('custom_logo', 'none.png');
+	}
+
+	if (!isset ($config['history_db_enabled'])) {
+		update_config_value ( 'history_db_enabled', false);
+	}
+
+	if (!isset ($config['history_db_host'])) {
+		update_config_value ( 'history_db_host', '');
+	}
+
+	if (!isset ($config['history_db_port'])) {
+		update_config_value ( 'history_db_port', 3306);
+	}
+
+	if (!isset ($config['history_db_name'])) {
+		update_config_value ( 'history_db_name', 'pandora');
+	}
+
+	if (!isset ($config['history_db_user'])) {
+		update_config_value ( 'history_db_user', 'pandora');
+	}
+
+	if (!isset ($config['history_db_pass'])) {
+		update_config_value ( 'history_db_pass', '');
+	}
+
+	if (!isset ($config['history_db_days'])) {
+		update_config_value ( 'history_db_days', 0);
+	}
+
+	if (!isset ($config['history_db_step'])) {
+		update_config_value ( 'history_db_step', 0);
+	}
+
+	if (!isset ($config['history_db_delay'])) {
+		update_config_value ( 'history_db_delay', 0);
 	}
 
 	/* Finally, check if any value was overwritten in a form */

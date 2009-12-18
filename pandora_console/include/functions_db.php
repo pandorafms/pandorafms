@@ -1127,7 +1127,7 @@ function get_agent_modules_data_count ($id_agent = 0) {
 		$modules = array_keys (get_agent_modules ($agent_id));
 		foreach ($query as $sql) {
 			//Add up each table's data
-			$count[$agent_id] += (int) get_db_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")");
+			$count[$agent_id] += (int) get_db_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")", 0, true);
 		}
 		//Add total agent count to total count
 		$count["total"] += $count[$agent_id];
@@ -1135,7 +1135,7 @@ function get_agent_modules_data_count ($id_agent = 0) {
 	
 	if ($count["total"] == 0) {
 		foreach ($query as $sql) {
-			$count["total"] += (int) get_db_sql ($sql);
+			$count["total"] += (int) get_db_sql ($sql, 0, true);
 		}
 	}
 	
@@ -1602,7 +1602,7 @@ $sql_cache = array ('saved' => 0);
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
+function get_db_value ($field, $table, $field_search = 1, $condition = 1, $search_history_db = false) {
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
@@ -1613,7 +1613,7 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
 				$field, $table, $field_search, $condition);
 	}
-	$result = get_db_all_rows_sql ($sql);
+	$result = get_db_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
 		return false;
@@ -1691,9 +1691,9 @@ function get_db_value_sql ($sql) {
  * 
  * @return mixed The first row of the result or false
  */
-function get_db_row_sql ($sql) {
+function get_db_row_sql ($sql, $search_history_db = false) {
 	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql ($sql);
+	$result = get_db_all_rows_sql ($sql, $search_history_db);
 	
 	if($result === false) 
 		return false;
@@ -1796,8 +1796,8 @@ function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND
  *
  * @return mixed The selected field of the first row in a select statement.
  */
-function get_db_sql ($sql, $field = 0) {
-	$result = get_db_all_rows_sql ($sql);
+function get_db_sql ($sql, $field = 0, $search_history_db = false) {
+	$result = get_db_all_rows_sql ($sql, $search_history_db);
 	if($result === false)
 		return false;
 
@@ -1812,11 +1812,34 @@ function get_db_sql ($sql, $field = 0) {
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function get_db_all_rows_sql ($sql) {
-	$return = process_sql ($sql);
-	
-	if (! empty ($return))
-		return $return;
+function get_db_all_rows_sql ($sql, $search_history_db = false) {
+	global $config;
+	$cache = true;
+	$history = array ();
+
+	// Read from the history DB if necessary
+	if ($search_history_db) {
+		$cache = false;
+		$history = process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+		if ($history === false) {
+			$history = array ();
+		}
+	}
+
+	$return = process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
+	if ($return === false) {
+		return false;
+	}
+
+	// Append result to the history DB data
+	if (! empty ($return)) {
+		foreach ($return as $row) {
+			array_push ($history, $row);
+		}
+	}
+
+	if (! empty ($history))
+		return $history;
 	//Return false, check with === or !==
 	return false;
 }
@@ -1845,7 +1868,7 @@ function get_db_all_rows_sql ($sql) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND', $returnSQL = false) {
+function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
 	//TODO: Validate and clean fields
 	if (empty ($fields)) {
 		$fields = '*';
@@ -1868,7 +1891,7 @@ function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join =
 	if ($returnSQL)
 		return $sql;
 	else
-		return get_db_all_rows_sql ($sql);
+		return get_db_all_rows_sql ($sql, $search_history_db);
 }
 
 /**
@@ -1971,7 +1994,7 @@ function add_database_debug_trace ($sql, $result = false, $affected = false, $ex
  *
  * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
  */
-function process_sql ($sql, $rettype = "affected_rows") {
+function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
 	global $config;
 	global $sql_cache;
 	
@@ -1980,14 +2003,19 @@ function process_sql ($sql, $rettype = "affected_rows") {
 	if ($sql == '')
 		return false;
 	
-	if (! empty ($sql_cache[$sql])) {
+	if ($cache && ! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
 		add_database_debug_trace ($sql);
 	}
 	else {
 		$start = microtime (true);
-		$result = mysql_query ($sql);
+		if ($dbconnection == '') {
+			$result = mysql_query ($sql);
+		}
+		else {
+			$result = mysql_query ($sql, $dbconnection);
+		}
 		$time = microtime (true) - $start;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
@@ -2395,7 +2423,7 @@ function get_previous_data ($id_agent_module, $utimestamp = 0) {
 			ORDER BY utimestamp DESC',
 			$id_agent_module, $utimestamp, $utimestamp - $interval);
 	
-	return get_db_row_sql ($sql);
+	return get_db_row_sql ($sql, true);
 }
 
 /** 
@@ -2418,7 +2446,7 @@ function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 					AND utimestamp > %d AND utimestamp <= %d ORDER BY utimestamp ASC",
 					$id_agent_module, $datelimit, $date);
 	
-	$values = get_db_all_rows_sql ($sql);
+	$values = get_db_all_rows_sql ($sql, true);
 		
 	if ($values === false) {
 		return array ();
@@ -2459,7 +2487,7 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 			ORDER BY utimestamp ASC",
 			$id_agent_module, $datelimit, $date);
 	
-	$values = get_db_row_sql ($sql);
+	$values = get_db_row_sql ($sql, true);
 	
 	$sum = (float) $values[0];
 	$total = (int) $values[1];
@@ -2494,7 +2522,7 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d  AND utimestamp <= %d",
 			$id_agent_module, $datelimit, $date);
-	$max = (float) get_db_sql ($sql);
+	$max = (float) get_db_sql ($sql, 0, true);
 	
 	/* Get also the previous report before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
@@ -2522,7 +2550,7 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d",
 			$id_agent_module, $datelimit, $date);
-	$min = (float) get_db_sql ($sql);
+	$min = (float) get_db_sql ($sql, 0, true);
 	
 	/* Get also the previous data before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
@@ -2557,7 +2585,7 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
 			$id_agent_module, $datelimit, $date);
-	$datas = get_db_all_rows_sql ($sql);
+	$datas = get_db_all_rows_sql ($sql, true);
 	
 	/* Get also the previous data before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);

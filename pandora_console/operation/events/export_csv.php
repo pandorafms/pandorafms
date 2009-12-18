@@ -72,7 +72,7 @@ echo chr (13);
 $fields = array ('id_grupo', 'id_agente', 'evento', 'estado', 'id_usuario',
 	'event_type', 'criticity', 'timestamp');
 
-$sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true);
+$sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
 
 $new = true;
 while ($event = get_db_all_row_by_steps_sql($new, $result, $sql)) {

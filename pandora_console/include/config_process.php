@@ -97,4 +97,13 @@ require_once ('functions_extensions.php');
 
 $config['extensions'] = get_extensions ();
 
+// Connect to the history DB
+if ($config['history_db_enabled']) {
+	$config['history_db_connection'] = mysql_connect ($config['history_db_host'] . ':' . $config['history_db_port'], $config['history_db_user'], $config['history_db_pass']);
+	mysql_select_db ($config['history_db_name'], $config['history_db_connection']);
+}
+
+// Make dbconnection the default connection again (the link identifier of the already opened link will be returned)
+$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
+
 ?>

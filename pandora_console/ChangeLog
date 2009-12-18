@@ -1,3 +1,15 @@
+2009-12-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Fixed SLA calculation. Was not working.
+
+	* include/functions_fsgraph.php: Fixed bug #2913813.
+
+	* include/functions_config.php, include/config_process.php,
+	  include/fgraph.php, include/functions_db.php,
+	  operation/events/export_csv.php, operation/agentes/export_csv.php,
+	  operation/agentes/datos_agente.php, godmode/menu.ph: Added history
+	  database support.
+
 2009-12-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_console/godmode/reporting/graph_builder.php: fix blank row when

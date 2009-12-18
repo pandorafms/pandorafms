@@ -192,7 +192,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
     $output .= '<script type="text/javascript">
     			<!--
         			function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+        				var myChart = new FusionCharts("' . $config['homeurl'] . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 						myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");

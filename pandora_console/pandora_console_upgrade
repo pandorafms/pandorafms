@@ -49,13 +49,52 @@ pandora_upgrade () {
 	WWWUSER=`ls -la $PANDORAPATH/index.php | awk '{ print $3 }'` 
 	echo "Setting permissions for $WWWUSER in $PANDORAPATH"
 	chown -R $WWWUSER $PANDORAPATH
-	
+        if [ "$?" -ne 0 ]
+	then
+		echo "ERROR (Cannot change $PANDORAPATH to $WWWUSER ownership)!"
+		return 1
+	fi
+
+	WWWGROUP=`ls -la $PANDORAPATH/index.php | awk '{ print $4 }'` 
 	echo "Setting permissions for $WWWUSER in /var/spool/pandora/data_in"
-	chgrp -R $WWWUSER /var/spool/pandora/data_in
-	
+	chgrp -R $WWWGROUP /var/spool/pandora/data_in
+	if [ "$?" -ne 0 ]
+	then
+		echo "ERROR (Cannot change group ownership to /var/spool/pandora/data_in to $WWWGROUP)!"
+		return 1
+	fi
+
+        # Remove installer file
+
+	[ -f $PANDORAPATH/install.php ] && rm -f $PANDORAPATH/install.php
+
+	# Only root should have read/write access to config.php
+
+	chmod 600 $PANDORAPATH/include/config.php
+	if [ "$?" -ne 0 ]
+	then
+		echo "ERROR (Cannot do chmod 600 $PANDORAPATH/include/config.php)!"
+		return 1
+	fi
+
+    # Remove unnecessary files (optional, set variable to activate)
+
+	REMOVEFILES=0
+	if [ "${REMOVEFILES}" -eq 1 ]
+	then
+		rm -f $PANDORAPATH/AUTHORS
+		rm -f $PANDORAPATH/COPYING
+		rm -f $PANDORAPATH/ChangeLog
+		rm -f $PANDORAPATH/pandora_console_install
+		rm -f $PANDORAPATH/pandora_console_upgrade
+		rm -f $PANDORAPATH/pandoradb.sql
+		rm -f $PANDORAPATH/pandoradb_data.sql
+	fi
+
 	echo " "
 	echo "DONE!"
 	echo " "
+	return 0
 }
 
 help () {

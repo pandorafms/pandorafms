@@ -1,3 +1,8 @@
+2009-12-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/fgraph.php: fix the graph boolean, it's rewrite.
+	Fixes: 2916195
+
 2009-12-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Fixed SLA calculation. Was not working.

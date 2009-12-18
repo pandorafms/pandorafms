@@ -1,3 +1,33 @@
+2009-12-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Added xprobe2 dep (we made the xprobe2 rpm package
+	so now it's possible to satisfy dependency). Alter all paths to binary from
+	/usr/local/bin to /usr/bin. Other minor issues in RPM fixed.
+
+	* pandora_server_installer: Added description to get deps from zypper and yum.
+	Installing services in debian/ubunty systems with update-rc.d. 
+	Make check to link from /usr/local/bin to /usr/bin if install
+	deploy binary at /usr/local. /usr/bin is the new default.
+
+	* pandora_server_upgrade: /usr/bin as new default. Link issue fixed.
+
+	* DEBIAN/make_deb_package.sh: Fixed Makefile replace regexp to replace all 
+	target binary to put then in the jail under /usr/bin path.
+
+	* DEBIAN/postinst: Fixed path for tentacle_server at /usr/bin
+
+	* DEBIAN/prerm: Using native debian commands to remove services.
+
+	* Tools.pm: If there is a problem loading something in the enterprise, show it
+	to log.
+
+	* util/pandora_server,
+	util/tentacle_serverd: new path to /usr/bin/
+	
+	* pandora_server.conf: new path for pandora_exec to /usr/bin/
+
+	* util/plugin/udp_nmap_plugin.sh: Check parameters before calling to namp.
+
 2009-12-18  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandora_dbstress.pl, pandora_db.pl: Clean code, updated year.

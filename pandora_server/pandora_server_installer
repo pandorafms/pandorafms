@@ -88,11 +88,17 @@ install () {
 		echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
 		echo " "
 		echo "Debian-based distribution do:"
-		echo "	$ apt-get install snmp snmpd libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
+		echo "	# apt-get install snmp snmpd libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
 		echo " "
-		echo "RPM distribution do"
+		echo "For CentOS / RHEL do: "
 		echo " "
-		echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI"
+		echo "	# yum install perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-DateTime* perl-ExtUtils perl-DBI nmap xprobe2"
+		echo " "
+		echo "For OpenSUSE / SLES do : "
+		echo " "
+		echo "	# zypper install install nmap perl-DBD-mysql perl-DBI perl-Date-Calc perl-HTML-Parser 
+perl-HTML-Encoding perl-HTML-Tree perl-IO-Socket-Multicast perl-Mail-Sendmail perl-NetAddr-IP 
+perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		echo " "
 		echo "	You also will need to install xprobe2 and wmiclient from rpm (download from our website)"
 		echo " "
@@ -121,6 +127,18 @@ install () {
 		make
 		make install
 		
+	    echo "Checking binaries at /usr/local/bin -> /usr/bin"
+		if [ ! -e "/usr/bin/pandora_server" ]
+		then
+			if [ ! -e "/usr/local/bin/pandora_server" ]
+			then
+				echo "ERROR compiling Pandora FMS Server from sources. Aborting"
+				exit 1
+			fi
+			ln -s /usr/local/bin/pandora_server /usr/bin
+			ln -s /usr/local/bin/pandora_exec /usr/bin		
+		fi
+
 		echo "Creating common Pandora FMS directories"
 		id pandora
 		if [ $? -eq 0 ]; then
@@ -145,8 +163,8 @@ install () {
 		mkdir $PANDORA_SPOOL/data_in 2> /dev/null
 		mkdir $PANDORA_SPOOL/data_in/conf 2> /dev/null
 		mkdir $PANDORA_SPOOL/data_in/md5 2> /dev/null
-		mkdir $PANDORA_LOG 2> /dev/null
-		
+		mkdir $PANDORA_LOG 2> /dev/null	
+
 		echo "Giving proper permission to /var/spool/pandora"
 		id -g www-data > /dev/null
 		if [ $? -eq 0 ]
@@ -187,14 +205,11 @@ install () {
 			echo "Copying the daemon script into /etc/init.d/pandora_server"
 			cp util/pandora_server /etc/init.d/		
 			
-			if [ "$DISTRO" == "UBUNTU" ]
+			if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
 			then
+			
 				echo "Linking startup script to /etc/rc2.d"
-				ln -s $PANDORA_SERVER /etc/rc2.d/S90pandora_server
-				echo "Linking stop daemon scripts";
-				ln -s $PANDORA_SERVER /etc/rc0.d/K90pandora_server
-				ln -s $PANDORA_SERVER /etc/rc1.d/K90pandora_server
-				ln -s $PANDORA_SERVER /etc/rc6.d/K90pandora_server
+				update-rc.d pandora_server defaults
 			else
 				if [ "$DISTRO" == "SUSE" ]
 				then
@@ -224,34 +239,31 @@ install () {
 		then
 			if [ "$SECOPT" != "--no-tentacle" ]
 			then
-				if [ "$DISTRO" == "UBUNTU" ]
+				if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
 				then
 					# Tentacle server install (Ubuntu)
-					echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-					cp bin/tentacle_server /usr/local/bin
+					echo "Installing tentacle server"
+					cp bin/tentacle_server /usr/bin
 					cp util/tentacle_serverd $TENTACLE_SERVER
-					ln -s $TENTACLE_SERVER /etc/rc2.d/S80tentacle_serverd
-					ln -s $TENTACLE_SERVER /etc/rc0.d/K80tentacle_serverd
-					ln -s $TENTACLE_SERVER /etc/rc1.d/K80tentacle_serverd
-					ln -s $TENTACLE_SERVER /etc/rc6.d/K80tentacle_serverd
+   				    update-rc.d tentacle_serverd defaults
 				else
 					if [ "$DISTRO" == "SUSE" ]
 					then
 						echo "Creating Tentacle startup daemon"
-						cp bin/tentacle_server /usr/local/bin
+						cp bin/tentacle_server /usr/bin
 						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
 						insserv tentacle_serverd
 					else
 						# Tentacle server install (Other Distros)
 						echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
-						cp bin/tentacle_server /usr/local/bin
+						cp bin/tentacle_server /usr/bin
 						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
 						ln -s $TENTACLE_SERVER /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
 					fi
 				fi
 			fi
 		fi
-
+		 	
 		echo "Creating Pandora FMS distribution directory in /usr/share/pandora_server"
 		mkdir $PANDORA_HOME 2> /dev/null
 		cp -R util $PANDORA_HOME
@@ -300,12 +312,12 @@ uninstall () {
 	rm -Rf $PANDORA_LOG 2> /dev/null 
 	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
 	rm -Rf $PANDORA_SERVER 2> /dev/null 
-	rm -Rf /usr/local/bin/pandora_server 2> /dev/null
 	rm -Rf /usr/bin/pandora_server 2> /dev/null
+	rm -Rf /usr/bin/pandora_exec 2> /dev/null
 	rm -Rf $PANDORA_HOME
 	rm -Rf /etc/cron.daily/pandora_db
 	rm -Rf /etc/logrotate.d/pandora
-	if [ "$DISTRO" == "UBUNTU" ]
+	if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
 	then
 		update-rc.d -f pandora_server remove
 		update-rc.d -f tentacle_serverd remove

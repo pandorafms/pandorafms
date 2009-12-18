@@ -23,7 +23,7 @@
 # this script to another name, editing PANDORA_HOME to the new .conf 
 
 export PANDORA_HOME="/etc/pandora/pandora_server.conf"
-export PANDORA_DAEMON=/usr/local/bin/pandora_server
+export PANDORA_DAEMON=/usr/bin/pandora_server
 
 # Uses a wait limit before sending a KILL signal, before trying to stop
 # Pandora FMS server nicely. Some big systems need some time before close

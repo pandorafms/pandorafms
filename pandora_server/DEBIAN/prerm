@@ -60,10 +60,10 @@ rm /etc/pandora/pandora_server.conf
 GET_DISTRO="`get_distro`"
 DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 
-rm /etc/init.d/pandora_server 
-rm /etc/rc2.d/S90pandora_server
-rm /etc/init.d/tentacle_serverd 
-rm /etc/rc2.d/S80tentacle_serverd
+rm /etc/init.d/pandora_server
+rm /etc/init.d/tentacle_serverd
+update-rc.d pandora_server remove
+update-rc.d tentacle_serverd remove
 
 if [ -d /etc/cron.daily ]
 then

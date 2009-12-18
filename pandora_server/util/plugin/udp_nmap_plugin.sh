@@ -49,6 +49,11 @@ while getopts ":hp:t:" optname
     esac
 done
 
+if [ -z "$PORT" ] || [ -z "$HOST" ]
+then
+	help
+fi
+
 # execution
 nmap -T5 -p $PORT -sU $HOST | grep open | wc -l 2> /dev/null
 

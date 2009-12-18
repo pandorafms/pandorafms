@@ -42,7 +42,7 @@ PANDORA_SERVER_PATH="/var/spool/pandora/data_in"
 
 # Tentacle server settings
 TENTACLE_DAEMON="tentacle_server"
-TENTACLE_PATH="/usr/local/bin"
+TENTACLE_PATH="/usr/bin"
 TENTACLE_USER="pandora"
 
 TENTACLE_ADDR="0.0.0.0"

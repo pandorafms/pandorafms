@@ -60,7 +60,7 @@ echo "Creating common Pandora FMS directories"
 useradd pandora 2> /dev/null
 mkdir -p /home/pandora/.ssh 2> /dev/null
 chown -R pandora:root /home/pandora 
-chmod 755 /usr/local/bin/tentacle_server
+chmod 755 /usr/bin/tentacle_server
 
 echo "Giving proper permission to /var/spool/pandora"
 chown -R pandora /var/spool/pandora/ 

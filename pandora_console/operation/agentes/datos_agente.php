@@ -61,7 +61,7 @@ if (preg_match ("/string/", get_moduletype_name (get_agentmodule_type ($module_i
 }
 
 $countData = get_db_value_sql($sqlCount); 
-$result = get_db_all_rows_sql ($sql);
+$result = get_db_all_rows_sql ($sql, true);
 if ($result === false) {
 	$result = array ();
 }

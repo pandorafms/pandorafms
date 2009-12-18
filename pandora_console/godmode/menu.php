@@ -165,6 +165,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
+	enterprise_hook ('historydb_submenu');
 	$menu["gsetup"]["sub"] = $sub;
 }
 

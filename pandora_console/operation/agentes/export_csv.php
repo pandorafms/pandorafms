@@ -65,10 +65,13 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 		$sql1 = "SELECT * FROM tagente_datos_string WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule ORDER BY utimestamp DESC";
 	else
 		$sql1 = "SELECT * FROM tagente_datos WHERE utimestamp > $from_date AND utimestamp < $to_date AND id_agente_modulo = $id_agentmodule ORDER BY utimestamp DESC";
-	$result1=mysql_query($sql1);
-	
+	$result1 = get_db_all_rows_sql ($sql1, true);
+	if ($result1 === false) {
+		$result1 = array ();
+	}
+
 	// Render data
-	while ($row=mysql_fetch_array($result1)){
+	foreach ($result1 as $row){
 		echo $agentmodule_name;
 		echo ",";
 		echo $row["datos"];

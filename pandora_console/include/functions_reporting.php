@@ -40,49 +40,46 @@ require_once ($config["homedir"]."/include/functions_agents.php");
  * found
  */
 function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
-	if (empty ($date)) {
-		$date = get_system_time ();	
+	global $config;
+	
+	// Initialize variables
+	if (empty ($date)) $date = get_system_time ();
+	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
+	
+	// Limit date to start searching data
+	$datelimit = $date - $period;
+	
+	// Get interval data
+	$sql = sprintf ('SELECT * FROM tagente_datos
+	                 WHERE id_agente_modulo = %d
+	                 AND utimestamp > %d AND utimestamp <= %d',
+	                 $id_agentmodule, $datelimit, $date);
+	$interval_data = get_db_all_rows_sql ($sql, true);
+	if ($interval_data === false) $interval_data = array ();
+	
+	// Calculate for how long the module has not met the SLA
+	$mark = 0;
+	$bad_period = 0;
+	foreach ($interval_data as $data) {
+		// bad data
+		if ((($max_value > $min_value AND ($data['datos'] > $max_value OR  $data['datos'] < $min_value))) OR
+		     ($max_value <= $min_value AND $data['datos'] < $min_value)) {
+			// good data turns bad
+			if ($mark == 0) {
+				$mark = $data['utimestamp'];
+			}
+		// good data
+		} else {
+			// bad data turns good
+			if ($mark != 0) {
+				$bad_period += $data['utimestamp'] - $mark;
+				$mark = 0;
+			}
+		}
 	}
 	
-	if ((empty ($period)) OR ($period == 0))  {
-		global $config;
-		$period = $config["sla_period"];
-	}
-	
-	$datelimit = $date - $period; // start date
-	
-	/* Get the total data entries in the interval */
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente_datos
-		WHERE id_agente_modulo = %d
-		AND utimestamp > %d
-		AND utimestamp <= %d', $id_agentmodule, $datelimit, $date);
-	$total = get_db_sql ($sql);
-	
-	if (empty ($total)) {
-		//No data to calculate on so we return 100 (fail to good)
-		return false;
-	}
-	
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente_datos
-		WHERE id_agente_modulo = %d
-		AND utimestamp > %d
-		AND utimestamp <= %d
-		AND ', $id_agentmodule, $datelimit, $date);
-	if ($max_value > $min_value)
-		$sql .= sprintf ('( datos < %s OR datos > %d )', $min_value, $max_value);
-	else
-		$sql .= sprintf ('datos < %d', $mins_value);
-	$bad = get_db_sql ($sql);
-	if (empty ($bad)) {
-		$bad = 0;
-	}
-	
-	//Calculate percentage
-	$result = 100 - ($bad / $total) * 100;
-	
-	return (float) $result;
+	// Return the percentage of SLA compliance
+	return (float) (100 - ($bad_period / $period) * 100);
 }
 
 /** 

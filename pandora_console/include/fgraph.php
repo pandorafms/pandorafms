@@ -1228,6 +1228,120 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 	$engine->progress_bar ($progress, $color);
 }
 
+function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
+	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
+	 $date = 0 ) {
+	global $config;
+	global $graphic_type;
+
+		/******WIP****************************************/
+	$nameAgent = get_agentmodule_agent_name ($idModuleAgent);
+	$idAgent = get_agent_id ($nameAgent);
+	$nameModule = get_agentmodule_name ($idModuleAgent);
+	
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$interval = (int) ($period / $resolution);
+	
+	
+	//TODO
+	//EVENTS AND ALERTS
+	//NEEED TO CODE 
+	
+	$data = get_db_all_rows_filter ('tagente_datos',
+		array ('id_agente_modulo' => $idModuleAgent,
+			"utimestamp > $datelimit",
+			"utimestamp < $date",
+			'order' => 'utimestamp ASC'),
+		array ('datos', 'utimestamp'));
+	
+	$previousData = get_db_value_sql("SELECT datos FROM tagente_datos 
+		WHERE id_agente_modulo = " . $idModuleAgent . "
+			AND utimestamp < " . $datelimit . " 
+		ORDER BY utimestamp
+		DESC");
+	
+	$moduleData = array_shift($data);
+	
+	$graphPoints = array();
+	
+	for ($iterator = 0; $iterator < $resolution; $iterator++) {
+		$timestamp = $datelimit + ($interval * $iterator);
+		
+		if (($timestamp <= $moduleData['utimestamp']) && (($timestamp + $interval) > $moduleData['utimestamp'])) {
+			if ($moduleData["datos"] > 0) $value = 1;
+			else $value = 0;
+			
+			$graphPoints[$timestamp] = $value;
+			$graphPoints[$timestamp + 1] = (int)(!$value);
+			
+			$moduleData = array_shift($data);
+			if ($moduleData !== null)
+				$previousData = $moduleData['datos'];
+		}
+		else {
+			if ($previousData > 0) $value = 1;
+			else $value = 0;
+				
+			$graphPoints[$timestamp] = $value;
+		}
+	}
+
+	//And the last make the graph
+	if ($period <= 3600) {
+		$title_period = __('Last hour');
+		$time_format = 'G:i:s';
+	}
+	elseif ($period <= 86400) {
+		$title_period = __('Last day');
+		$time_format = 'G:i';
+	}
+	elseif ($period <= 604800) {
+		$title_period = __('Last week');
+		$time_format = 'M j';
+	}
+	elseif ($period <= 2419200) {
+		$title_period = __('Last month');
+		$time_format = 'M j';
+	} 
+	else {
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+		$time_format = 'M j';
+	}
+
+	$max_value = 1;
+	
+	if (! $graphic_type)
+		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
+
+	$engine = get_graph_engine ($period);
+	
+	$engine->width = $width;
+	$engine->height = $height;
+	$engine->data = &$graphPoints;
+	$engine->max_value = $max_value;
+	$engine->legend = array ($nameModule);
+	$engine->title = '   '.strtoupper ($nameAgent)." - ".__('Module').' '.$title;
+	$engine->subtitle = '     '.__('Period').': '.$title_period;
+	$engine->show_title = !$pure;
+	$engine->events = $show_event ? $real_event : false;
+	$engine->fontpath = $config['fontpath'];
+	$engine->alert_top = $show_alert ? $alert_high : false;
+	$engine->alert_bottom = $show_alert ? $alert_low : false;;
+
+	$engine->xaxis_interval = $resolution / 10; // Fixed to 10 ticks
+	$engine->xaxis_format = 'date';
+	
+	$engine->single_graph ();
+	
+	return;
+	
+	/******WIP****************************************/
+	
+	 }
+
 /**
  * Draw a graph of Module data of agent
  * 
@@ -1242,7 +1356,7 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
  * @param integer pure Fullscreen (1 or 0)
  * @param integer date date
  */
-function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
+function grafico_modulo_booleanOLD ($id_agente_modulo, $period, $show_event,
 	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
 	 $date = 0 ) {
 	global $config;
@@ -1322,7 +1436,7 @@ function grafico_modulo_boolean ($id_agente_modulo, $period, $show_event,
 		$real_data = intval ($module_data["datos"]) ? 1 : 0;
 		$utimestamp = $module_data["utimestamp"];
 		for ($i = 0; $i <= $resolution; $i++) {
-			if ($utimestamp <= $data[$i]['timestamp_top'] || $utimestamp >= $data[$i]['timestamp_bottom']) {
+			if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
 				$data[$i]['sum'] += $real_data;
 				$data[$i]['count']++;
 				

@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -50,7 +50,7 @@ if (enterprise_load (\%conf) == 0) {
 # Connect to the DB
 my $dbh = db_connect ('mysql', $conf{'dbname'}, $conf{'dbhost'}, '3306', $conf{'dbuser'}, $conf{'dbpass'});
 my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
-                   $conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 
 # Main
 pandoradb_main(\%conf, $dbh, $history_dbh);
@@ -73,7 +73,7 @@ sub pandora_purgedb ($$) {
  	# Calculate limit for deletion, today - $conf->{'_days_purge'}
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
-	my $ulimit_access_timestamp =  time() - 86400;
+	my $ulimit_access_timestamp = time() - 86400;
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
@@ -191,13 +191,13 @@ sub pandora_compactdb ($$) {
 sub pandora_init ($) {
 	my $conf = shift;
 
-	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2008 Artica ST\n";
+	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
-   
+
 	# If there are not valid parameters
 	foreach my $param (@ARGV) {
 		
@@ -227,10 +227,10 @@ sub pandora_load_config ($) {
 		$conf->{$1} = $2;
 	}
  	close (CFG);
-  
-   	# Check conf tokens
+
+	# Check conf tokens
  	foreach my $param ('dbuser', 'dbpass', 'dbname', 'dbhost', 'log_file') {
-  		die ("[ERROR] Bad config values. Make sure " . $conf->{'_pandora_path'} . " is a valid config file.\n\n") unless defined ($conf->{$param});
+		die ("[ERROR] Bad config values. Make sure " . $conf->{'_pandora_path'} . " is a valid config file.\n\n") unless defined ($conf->{$param});
  	}
 
 	# Read additional tokens from the DB
@@ -250,7 +250,7 @@ sub pandora_load_config ($) {
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	db_disconnect ($dbh);
 
-  	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";
+	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";
 }
 	
 ###############################################################################
@@ -330,7 +330,7 @@ sub is_policy_module ($$) {
 
 	# Search policies
 	my $policy_id = get_db_value ($dbh, 'SELECT t3.id FROM tpolicy_agents AS t1 INNER JOIN tpolicy_modules AS t2 ON t1.id_policy = t2.id_policy
-	                                     INNER JOIN tpolicies AS t3 ON t1.id_policy = t3.id WHERE t1.id_agent = ? AND t2.name LIKE ?', $agent_id, $module_name);
+	INNER JOIN tpolicies AS t3 ON t1.id_policy = t3.id WHERE t1.id_agent = ? AND t2.name LIKE ?', $agent_id, $module_name);
 	
 	# Not a policy module
 	return undef unless defined ($policy_id);
@@ -343,7 +343,7 @@ sub is_policy_module ($$) {
 ##############################################################################
 sub help_screen{
 	print "\n\nUsage: $0 <path to pandora_server.conf> [options]\n\n";
-	print "\n\tAvailable options:\n\t\t-d   Debug output (very verbose).\n";
+	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
 	print "\t\t-v   Verbose output.\n";
 	print "\t\t-q   Quiet output.\n";
 	print "\t\t-p   Only purge and consistency check, skip compact.\n\n";

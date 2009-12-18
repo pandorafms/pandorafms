@@ -1,3 +1,7 @@
+2009-12-18  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandora_dbstress.pl, pandora_db.pl: Clean code, updated year.
+
 2009-12-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control: Updated version.

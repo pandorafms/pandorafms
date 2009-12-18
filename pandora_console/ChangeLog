@@ -1,3 +1,14 @@
+2009-12-18  Sancho lerena <slerena@artica.es>
+
+	* pandora_console.spec: Ypdated build.
+
+	* pandora_console_upgrade: Applied patch for more verbose information, submitted in 
+	Sourceforge.
+
+	* pandoradb_data.sql: Updated version to FINAL build and version ;-)
+
+	* include/config_process.php: Updated build.
+
 2009-12-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/fgraph.php: fix the graph boolean, it's rewrite.

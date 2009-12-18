@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.0.0."
+pandora_console_version="3.0.0"
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]
@@ -46,20 +46,31 @@ mkdir -p temp_package/etc/pandora
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/etc/logrotate.d
 mkdir -p temp_package/usr/share/pandora_server
-mkdir -p temp_package/usr/local/bin
+mkdir -p temp_package/usr/bin
 
 echo "Make the perl of Pandora Server."
 perl Makefile.PL
 make
+
+# Adjust Makefile to use our "fake" root dir to install libraries and also binaries"
 cat Makefile | sed -e "s/PREFIX = \/usr/PREFIX = temp_package\/usr/" > Makefile.temp
+
+# This is needed to create .DEB in OpenSUSE.
+
+cat Makefile.temp | sed -e "s/INSTALLBIN = .*/INSTALLBIN = temp_package\/usr\/bin/" > Makefile
+cat Makefile | sed -e "s/INSTALLSITEBIN = .*/INSTALLSITEBIN = temp_package\/usr\/bin/" > Makefile.temp
+cat Makefile.temp | sed -e "s/INSTALLVENDORBIN = .*/INSTALLVENDORBIN = temp_package\/usr\/bin/" > Makefile
+cat Makefile | sed -e "s/INSTALLSCRIPT = .*/INSTALLSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
+cat Makefile.temp | sed -e "s/INSTALLSITESCRIPT = .*/INSTALLSITESCRIPT = temp_package\/usr\/bin/" > Makefile
+cat Makefile | sed -e "s/INSTALLVENDORSCRIPT = .*/INSTALLVENDORSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
+
 mv Makefile.temp Makefile
-rm Makefile.temp
 make install
 
 echo "Copy other files in fake file."
 cp util/pandora_logrotate temp_package/etc/logrotate.d/pandora
 
-cp bin/tentacle_server temp_package/usr/local/bin
+cp bin/tentacle_server temp_package/usr/bin
 cp util/tentacle_serverd temp_package/etc/init.d/tentacle_serverd
 
 cp conf/pandora_server.conf temp_package/etc/pandora/

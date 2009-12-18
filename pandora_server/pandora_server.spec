@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version	    3.0.0
-%define release     2
+%define release     4
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -23,7 +23,7 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-time-format 
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           nmap wmic sudo
+Requires:           nmap wmic sudo xprobe2
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.
@@ -46,8 +46,6 @@ export perl_version=5.10.0
 
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
-mkdir -p $RPM_BUILD_ROOT/usr/local
-mkdir -p $RPM_BUILD_ROOT/usr/local/bin
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
@@ -58,10 +56,10 @@ mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
 
-# All binaries go to /usr/local/bin
-cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/local/bin/
-cp -aRf bin/pandora_exec $RPM_BUILD_ROOT/usr/local/bin/
-cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/local/bin/
+# All binaries go to /usr/bin
+cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/bin/
+cp -aRf bin/pandora_exec $RPM_BUILD_ROOT/usr/bin/
+cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/bin/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
@@ -73,13 +71,19 @@ cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 
 %clean
 rm -fr $RPM_BUILD_ROOT
+
 %pre
 /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+if [ -e "/etc/pandora/pandora_server.conf" ]
+then
+	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
+fi
 exit 0
 
 %post
 chkconfig -s pandora_server on 
 chkconfig -s tentacle_serverd on 
+
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
 chmod 750 /etc/cron.daily/pandora_db
 cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
@@ -114,8 +118,7 @@ rm -Rf /usr/lib/perl5/site_perl/%{perl_version}/PandoraFMS/
 rm -Rf /etc/pandora/pandora_server.conf
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
-rm -Rf /usr/local/bin/pandora_exec /usr/local/bin/pandora_server
-rm -Rf /usr/local/bin/tentacle_server 
+rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
 rm -Rf /etc/cron.daily/pandora_db
 rm -Rf /etc/logrotate.d/pandora
 
@@ -126,9 +129,9 @@ rm -Rf /etc/logrotate.d/pandora
 /etc/init.d/tentacle_serverd
 
 %defattr(755,pandora,root)
-/usr/local/bin/pandora_exec
-/usr/local/bin/pandora_server
-/usr/local/bin/tentacle_server
+/usr/bin/pandora_exec
+/usr/bin/pandora_server
+/usr/bin/tentacle_server
 
 %defattr(755,pandora,root)
 /usr/lib/perl5/site_perl/%{perl_version}/PandoraFMS/

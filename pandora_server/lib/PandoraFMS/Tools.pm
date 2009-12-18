@@ -334,7 +334,8 @@ sub enterprise_load ($) {
 	#return 1 if (is_loaded ('PandoraFMS::Enterprise'));
 	
 	# Try to load the module
-	eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
+	# eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
+	eval 'require PandoraFMS::Enterprise;';
 	
 	# Ops
 	return 0 if ($@);

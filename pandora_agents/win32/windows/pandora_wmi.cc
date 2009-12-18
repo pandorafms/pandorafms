@@ -255,9 +255,11 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%d", &load_percentage, quickfix,
 				    L".LoadPercentage");
-
-			total_cpus++;
-			total_load += load_percentage;
+			// Sanity check
+			if (load_percentage >= 0 && load_percentage <= 100) {
+				total_cpus++;
+				total_load += load_percentage;
+			}
 		} NEXT_THROW (quickfix);
 
 		if (total_cpus == 0) {

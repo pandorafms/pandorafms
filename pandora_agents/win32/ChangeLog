@@ -1,3 +1,11 @@
+2009-12-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: Fixed bug #2907481.
+
+	* bin/PandoraAgent.exe: Updated to current revision.
+	
+	* installer/pandora.mpi, pandora.cc: Updated build.
+
 2009-12-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* installer/pandora.mpi, README:Preparing release

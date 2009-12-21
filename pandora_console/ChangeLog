@@ -1,3 +1,7 @@
+2009-12-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/api.php: Added an Enterprise API.
+
 2009-12-21  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* install.php: clean source code.

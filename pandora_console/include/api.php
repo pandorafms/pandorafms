@@ -18,6 +18,7 @@
 
 require_once ("config.php");
 require_once("functions_api.php");
+enterprise_include_once ('include/functions_enterprise_api.php');
 
 //Get the parameters and parse if necesary.
 $ipOrigin = $_SERVER['REMOTE_ADDR'];

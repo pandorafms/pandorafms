@@ -1,3 +1,7 @@
+2009-12-21  Sancho Lerena <slerena@artica.es>
+
+	* util/tentacle_served: Fixed call to get_pid, using a width of 300 cols.
+
 2009-12-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Properly read agent_interval

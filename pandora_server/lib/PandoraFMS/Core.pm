@@ -527,7 +527,7 @@ sub pandora_process_module ($$$$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $module_type,
 		$timestamp, $utimestamp, $server_id, $dbh) = @_;
 
-	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
+	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 
 	# Get module type
 	if (! defined ($module_type) || $module_type eq '') {

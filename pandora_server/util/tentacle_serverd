@@ -33,8 +33,12 @@ else
 fi
 
 function get_pid {
-                TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
-                echo $TENTACLE_PID
+	# This sets COLUMNS to XXX chars, because if command is run 
+        # in a "strech" term, ps aux don't report more than COLUMNS
+        # characters and this will not work. 
+        COLUMNS=300
+        TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+        echo $TENTACLE_PID
 }
 
 # Pandora server settings

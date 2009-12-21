@@ -43,7 +43,8 @@ function check_extension ( $ext, $label ){
 	if (!extension_loaded($ext)){
 		echo "<img src='images/dot_red.png'>";
 		return 1;
-	} else {
+	}
+	else {
 		echo "<img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -57,7 +58,8 @@ function check_include ( $ext, $label ){
 	if (!include($ext)){
 		echo "<img src='images/dot_red.png'>";
 		return 1;
-	} else {
+	}
+	else {
 		echo "<img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -71,7 +73,8 @@ function check_exists ( $file, $label ){
 	if (!file_exists ($file)){
 		echo " <img src='images/dot_red.png'>";
 		return 1;
-	} else {
+	}
+	else {
 		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -85,7 +88,8 @@ function check_generic ( $ok, $label ){
 	if ($ok == 0 ){
 		echo " <img src='images/dot_red.png'>";
 		return 1;
-	} else {
+	}
+	else {
 		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
@@ -101,7 +105,8 @@ function check_writable ( $fullpath, $label ){
 			echo " <img src='images/dot_green.png'>";
 			echo "</td></tr>";
 			return 0;
-		} else {
+		}
+		else {
 			echo " <img src='images/dot_red.png'>";
 			echo "</td></tr>";
 			return 1;
@@ -122,14 +127,17 @@ function check_variable ( $var, $value, $label, $mode ){
 		if ($var >= $value){
 			echo " <img src='images/dot_green.png'>";
 			return 0;
-		} else {
+		}
+		else {
 			echo " <img src='images/dot_red.png'>";
 			return 1;
 		}
-	} elseif ($var == $value){
-			echo " <img src='images/dot_green.png'>";
-			return 0;
-	} else {
+	}
+	elseif ($var == $value){
+		echo " <img src='images/dot_green.png'>";
+		return 0;
+	}
+	else {
 		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
@@ -154,15 +162,16 @@ function parse_mysql_dump($url){
 			}
 		}
 		return 1;
-	} else {
-		return 0;
 	}
+	else
+		return 0;
 }
 
 function random_name ($size){
 	$temp = "";
 	for ($a=0;$a< $size;$a++)
 		$temp = $temp. chr(rand(122,97));
+	
 	return $temp;
 }
 
@@ -206,9 +215,10 @@ function install_step1() {
 			<img src='images/step0.png' border='0'>
 		</div>
 		<div id='install_img'>";
-		if ($writable == 0)
+		if ($writable == 0) {
 			echo "
 			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border='0'></a>";
+		}
 		else
 			echo "<div class='warn'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
 		echo "
@@ -257,7 +267,8 @@ function install_step2() {
 				will not be able to finish your installation.
 				</div>
 				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>";
-			} else {
+			}
+			else {
 				echo "<a href='install.php?step=3'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			}
@@ -353,7 +364,8 @@ function install_step4() {
 		$dbuser = "";
 		$dbhost = "";
 		$dbname = "";
-	} else {
+	}
+	else {
 		$dbpassword = $_POST["pass"];
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
@@ -377,6 +389,7 @@ function install_step4() {
 	$step2=0;
 	$step3=0;
 	$step4=0; $step5=0; $step6=0; $step7=0;
+
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
@@ -386,7 +399,8 @@ function install_step4() {
 			<table>";
 			if (! mysql_connect ($dbhost,$dbuser,$dbpassword)) {
 				check_generic ( 0, "Connection with Database");
-			} else {
+			}
+			else {
 				check_generic ( 1, "Connection with Database");
 				
 				// Drop database if needed
@@ -396,7 +410,7 @@ function install_step4() {
 				// Create schema
 				$step1 = mysql_query ("CREATE DATABASE $dbname");
 				check_generic ($step1, "Creating database '$dbname'");
-				if ($step1 == 1){
+				if ($step1 == 1) {
 					$step2 = mysql_select_db($dbname);
 					check_generic ($step2, "Opening database '$dbname'");
 	
@@ -422,15 +436,15 @@ function install_step4() {
 					$cfgout = fopen ($pandora_config,"w");
 					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 					$config_new = '<?php
-// Begin of automatic config file
-$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
-$config["dbuser"]="pandora";			// DB User
-$config["dbpass"]="'.$random_password.'";	// DB Password
-$config["dbhost"]="'.$dbhost.'";			// DB Host
-$config["homedir"]="'.$path.'";		// Config homedir
-$config["homeurl"]="'.$url.'";			// Base URL
-// End of automatic config file
-?>';
+					// Begin of automatic config file
+					$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
+					$config["dbuser"]="pandora";			// DB User
+					$config["dbpass"]="'.$random_password.'";	// DB Password
+					$config["dbhost"]="'.$dbhost.'";			// DB Host
+					$config["homedir"]="'.$path.'";		// Config homedir
+					$config["homeurl"]="'.$url.'";			// Base URL
+					// End of automatic config file
+					?>';
 					$step7 = fputs ($cfgout, $config_new);
 					$step7 = $step7 + fputs ($cfgout, $config_contents);
 					if ($step7 > 0)
@@ -454,7 +468,8 @@ $config["homeurl"]="'.$url.'";			// Base URL
 			if ($everything_ok == 1) {
 				echo "<br><br><a href='install.php?step=5'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
-			} else {
+			}
+			else {
 				echo "<div class='warn'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.

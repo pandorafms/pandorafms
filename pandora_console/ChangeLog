@@ -1,3 +1,11 @@
+2009-12-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* install.php: clean source code.
+	
+	* operation/agentes/datos_agente.php: fix bug, there was a wrong copy&paste,
+	now there is correct parameters.
+	Fixes: 2916332
+
 2009-12-18  Sancho lerena <slerena@artica.es>
 
 	* pandora_console.spec: Ypdated build.

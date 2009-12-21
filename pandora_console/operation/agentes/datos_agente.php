@@ -23,6 +23,7 @@ check_login();
 $module_id = get_parameter_get ("id", 0);
 $period = get_parameter ("period", 86400);
 $group = get_agentmodule_group ($module_id);
+$agentId = get_parameter('id_agente'); 
 
 if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -69,7 +70,7 @@ if ($result === false) {
 echo "<h2>".__('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id)." </h2>";
 echo "<h3>" . __("From the last") . " " . human_time_description ($period) ."</h3>";
 
-echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=4&tab=data_view&id=17'>";
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
 echo __("Choose a time from now") . ": ";
 $intervals = array ();
 $intervals[3600] = human_time_description_raw (3600); // 1 hour

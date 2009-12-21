@@ -282,7 +282,7 @@ for (my $i = 0; $i < $Agents; $i += $step) {
 my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());
 my $time_from = get_conf_token (\%conf, 'time_from', $time_now);
 my $time_to = get_conf_token (\%conf, 'time_to', $time_now);
-my $interval = get_conf_token (\%conf, 'interval', '300');
+my $interval = get_conf_token (\%conf, 'agent_interval', '300');
 log_message (\%conf, "Generating XML data files for $Agents agents from $time_from to $time_to interval $interval.");
 
 # Wait for all threads to finish

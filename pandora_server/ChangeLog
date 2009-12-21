@@ -1,3 +1,8 @@
+2009-12-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl: Properly read agent_interval
+	  configuration token.
+
 2009-12-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Added xprobe2 dep (we made the xprobe2 rpm package

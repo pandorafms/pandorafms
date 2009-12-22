@@ -140,9 +140,10 @@ if ($config['flash_charts']) {
 		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 						break;
-		case 'boolean': echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-						                             $label, $unit_name, $draw_alerts, 1, $pure, $date);
-						break;
+		case 'boolean': 
+			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, 1, $pure, $date);
+			break;
 		case 'string': 	echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
 						                            $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
 						break;

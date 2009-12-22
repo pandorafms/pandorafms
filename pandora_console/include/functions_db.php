@@ -1820,7 +1820,11 @@ function get_db_all_rows_sql ($sql, $search_history_db = false) {
 	// Read from the history DB if necessary
 	if ($search_history_db) {
 		$cache = false;
-		$history = process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+		$history = false;
+		
+		if (isset($config['history_db_connection']))
+			$history = process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
+			
 		if ($history === false) {
 			$history = array ();
 		}

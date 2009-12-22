@@ -104,7 +104,8 @@ require_once ("include/functions_messages.php");
 		echo "</td>";
 		echo "<td width='20%' rowspan=2>";
 		echo "<a href='index.php?sec=main'>";
-		echo "<img height=60 width=139 src='images/custom_logo/".$config["custom_logo"]."'>"; 
+		if (isset($config["custom_logo"]))
+			echo "<img height=60 width=139 src='images/custom_logo/" . $config["custom_logo"] . "'>"; 
 ?>
 		</td>
 	</tr>

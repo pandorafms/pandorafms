@@ -1,5 +1,11 @@
 2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_custom_graphs.php: fix the name of custom graphs in the
+	config select box in widget.
+	Fixes: 2918740
+
+2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/config_process.php, include/functions_db.php: fix alert message
 	when the history DB is'nt setup.
 	

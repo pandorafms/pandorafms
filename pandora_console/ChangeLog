@@ -1,5 +1,12 @@
 2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/config_process.php, include/functions_db.php: fix alert message
+	when the history DB is'nt setup.
+	
+	* general/header.php: fix alert message when the custom logo didn't exit.
+
+2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: clean source code, fix when try show boolean without
 	data, and some changes in "grafico_modulo_sparse".
 	

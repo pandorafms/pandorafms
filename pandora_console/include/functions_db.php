@@ -1514,7 +1514,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 		process_sql ($sql);
 	}
 	$agent_name = get_agent_name($id_agent, "");
-	audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 	"Deleted IP $ip_address from agent '$agent_name'");
 
 	// Need to change main address?
@@ -2935,7 +2935,7 @@ function delete_agent ($id_agents, $disableACL = false) {
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
 
-		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Deleted agent '$agent_name'");
 
 		

@@ -1,3 +1,14 @@
+2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: add debug function "f2str" that return as
+	string any call of function, for example "var_dump".
+	
+	*include/fgraph.php: into function "grafico_modulo_boolean" re-add alarms,
+	clean source code and show again the flash graph.
+	
+	*include/functions_db.php: fix the access to IP client, it used very
+	deprecate var, that clean of notice php message of error for this cause.
+
 2009-12-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/api.php: Added an Enterprise API.

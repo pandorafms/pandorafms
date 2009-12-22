@@ -40,6 +40,14 @@ function debugPrint ($var, $file = '') {
 	}
 }
 
+function f2str($function, $params) {
+	ob_start();
+	
+	call_user_func_array($function, $params);
+	
+	return ob_get_clean();
+}
+
 
 /**
  * Prints an array of fields in a popup menu of a form.

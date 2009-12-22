@@ -1233,8 +1233,7 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
 	 $date = 0 ) {
 	global $config;
 	global $graphic_type;
-
-		/******WIP****************************************/
+	
 	$nameAgent = get_agentmodule_agent_name ($idModuleAgent);
 	$idAgent = get_agent_id ($nameAgent);
 	$nameModule = get_agentmodule_name ($idModuleAgent);
@@ -1246,9 +1245,23 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
 	$interval = (int) ($period / $resolution);
 	
 	
-	//TODO
-	//EVENTS AND ALERTS
-	//NEEED TO CODE 
+	if ($show_event == 1)
+		$real_event = array ();
+
+	if ($show_alert == 1) {
+		$alert_high = false;
+		$alert_low = false;
+		// If we want to show alerts limits
+		
+		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
+		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
+		
+		// if no valid alert defined to render limits, disable it
+		if (($alert_low === false || $alert_low === NULL) &&
+			($alert_high === false || $alert_high === NULL)) {
+			$show_alert = 0;
+		}
+	}
 	
 	$data = get_db_all_rows_filter ('tagente_datos',
 		array ('id_agente_modulo' => $idModuleAgent,
@@ -1313,9 +1326,24 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
 
 	$max_value = 1;
 	
-	if (! $graphic_type)
-		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
-
+    //if flash graph
+	if (! $graphic_type) {
+		$graphPoints2 = array();
+	    foreach($graphPoints as $time => $value) {
+			$graphPoints2[] = array(
+				'sum' => $value,
+				'count' => 0,
+				'timestamp_bottom' => $time,
+				'timestamp_top' => ($time + $interval),
+				'min' => 1,
+				'max' => 1,
+				'last' => 1,
+				'events' => 0);
+	    }
+		
+		return fs_module_chart ($graphPoints2, $width, $height, $avg_only, $resolution / 10, $time_format);
+	}
+	
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
@@ -1337,10 +1365,7 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
 	$engine->single_graph ();
 	
 	return;
-	
-	/******WIP****************************************/
-	
-	 }
+}
 
 /**
  * Draw a graph of Module data of agent

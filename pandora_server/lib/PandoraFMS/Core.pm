@@ -802,17 +802,17 @@ sub pandora_create_module ($$$$$$$$$$) {
 ##########################################################################
 # Create a new entry in tagente.
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$address_id, $group_id, $parent_id, $os_id,
-		$description, $dbh) = @_;
+		$description, $interval, $dbh) = @_;
 
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 
 	$description = "Created by $server_name" unless ($description ne '');
 
 	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
-				VALUES (?, ?, ?, ?, ?, ?, 300, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $parent_id);
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 
 	pandora_event ($pa_config, "Agent '$agent_name' created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;

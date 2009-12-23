@@ -191,7 +191,7 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 
 		# Create the agent
-		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $dbh);
+		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $interval, $dbh);
 		if (! defined ($agent_id)) {
 			$AgentSem->up ();
 			return;

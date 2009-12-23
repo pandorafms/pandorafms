@@ -353,12 +353,14 @@ function give_disabled_group ($id_group) {
 function isAllGroups($idGroups) {
 	if (!is_array($idGroups))
 		$arrayGroups = array($idGroups);
+	else
+		$arrayGroups = $idGroups;
 		
 	$groupsDB = get_db_all_rows_in_table ('tgrupo');
 	
 	$returnVar = true;
 	foreach ($groupsDB as $group) {
-		if (!in_array($group['id_grupo'],$idGroups)) {
+		if (!in_array($group['id_grupo'], $arrayGroups)) {
 			$returnVar = false;
 			break;
 		}

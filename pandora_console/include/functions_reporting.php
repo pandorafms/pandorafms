@@ -123,6 +123,7 @@ function get_group_stats ($id_group = 0) {
 		$id_group = array_keys (get_user_groups ());
 	}
 	
+	
 	if (isAllGroups($id_group)) {
 		$filter = ' 1 = 1 ';
 		$total_agents = get_db_value_sql('SELECT count(id_agente) FROM tagente WHERE disabled = 0');
@@ -136,7 +137,7 @@ function get_group_stats ($id_group = 0) {
 			//No agents in this group, means no data
 			return $data;
 		}
-		$filter = 'id_agente IN ('.implode (",", $agents).') ';
+		$filter = 'tagente_estado.id_agente IN ('.implode (",", $agents).') ';
 		
 		$alerts = get_agent_alerts ($agents);	
 	}

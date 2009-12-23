@@ -2487,27 +2487,44 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	
 	$datelimit = $date - $period;
 	
-	$sql = sprintf ("SELECT SUM(datos), COUNT(*) FROM tagente_datos 
+	$sql = sprintf ("SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC",
 			$id_agent_module, $datelimit, $date);
 	
-	$values = get_db_row_sql ($sql, true);
-	
-	$sum = (float) $values[0];
-	$total = (int) $values[1];
-	
-	/* Get also the previous data before the selected interval. */
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	
-	if ($previous_data) {
-		return ($previous_data['datos'] + $sum) / ($total + 1);
-	} elseif ($total > 0) {
-		return $sum / $total;
+	$values = get_db_all_rows_sql ($sql, true);
+	if ($values === false) {
+		$values = array ();
 	}
-		
-	return 0;
+
+	/* Get also the previous data before the selected interval. */
+	$sum = 0;
+	$total = 0;
+	$module_interval = get_module_interval ($id_agent_module);
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$values = array_merge (array ($previous_data), $values);
+	}
+
+	foreach ($values as $data) {
+		$interval_total = 1;
+		$interval_sum = $data['datos'];
+		if ($previous_data !== false && $data['utimestamp'] - $previous_data['utimestamp'] > $module_interval) {
+			$interval_total = round (($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval, 0);
+			$interval_sum *= $interval_total;
+			
+		}
+		$total += $interval_total;
+		$sum += $interval_sum;
+		$previous_data = $data;
+	}
+
+	if ($total == 0) {
+		return 0;
+	}
+
+	return $sum / $total;
 }
 
 /** 

@@ -1,3 +1,10 @@
+2009-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm,
+          lib/PandoraFMS/ReconServer.pm,
+          lib/PandoraFMS/DataServer.pm: Use agent provided interval for agent
+          auto creation. The default interval was being used instead.
+
 2009-12-23  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed some typos in planned downtime subroutine.

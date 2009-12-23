@@ -294,11 +294,15 @@ echo __('Planned Downtime').'</h2>';
 					<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
 					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">
 					<img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
+				} else {
+					$data[5]= "N/A";
+					$data[6]= "N/A";
+
 				}
 				if ($downtime["executed"] == 0)
 					$data[7] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
 				else
-					$data[7] = print_image ("images/pixel_green.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+					$data[7] = print_image ("images/pixel_red.png", true, array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 
 				array_push ($table->data, $data);
 			}

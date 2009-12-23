@@ -1,3 +1,11 @@
+2009-12-23  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed some typos in planned downtime subroutine.
+
+	* bin/pandora_server: Some operations like planned downtime check and
+	server down detection are put in a low-priority check, more efficient and
+	less time-consuming.
+
 2009-12-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed agent check in logger call.

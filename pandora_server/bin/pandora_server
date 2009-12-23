@@ -164,7 +164,7 @@ foreach my $server (@Servers) {
 
 # Main loop
 my $time_ref = time ();
-my $mcast_timer = 0;
+my $task_timer = 0;
 
 while (1) {
 
@@ -179,16 +179,24 @@ while (1) {
 		# Update fallen servers
 		db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ?", strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $Config{'keepalive'})));
 
-		pandora_planned_downtime (\%Config, $DBH);
 		pandora_exec_forced_alerts (\%Config, $DBH);
+
 		pandora_module_keep_alive_nd (\%Config, $DBH);
 		
-		# Multicast status report each 30 x Server Threshold secs
-		if ($mcast_timer > 30){
+		# Tasks executed only each Server Threshold x 30 secs, for low-priority tasks
+
+		if ($task_timer > 30){
+			# Multicast status report each 30 x Server Threshold secs
 			enterprise_hook('mcast_status_report', [\%Config, $DBH]);
-			$mcast_timer = 0;
+			$task_timer = 0;
+
+			# Downtimes are executed only 30 x Server Threshold secs
+			pandora_planned_downtime (\%Config, $DBH);
+
+			# Update fallen servers
+	                db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ?", strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $Config{'keepalive'})));
 		}
-		$mcast_timer++;
+		$task_timer++;
 	};
 
 	# Restart on error or auto restart

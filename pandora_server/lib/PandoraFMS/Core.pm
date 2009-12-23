@@ -626,15 +626,15 @@ sub pandora_planned_downtime ($$) {
 
 	foreach my $downtime (@downtimes) {
 
-		logger($pa_config, "Starting planned downtime '" . $downtime->{'nombre'} . "'.", 10);
+		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 1 WHERE id = ?', 	$downtime->{'id'});
 		pandora_event ($pa_config, "Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
 		
-		my @downtime_agents = db_do($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
+		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 		
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_grupo = ?', $downtime_agent->{'id_group'});
+			db_do ($dbh, 'UPDATE tagente SET disabled = 1 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 		}
 	}
 
@@ -642,15 +642,16 @@ sub pandora_planned_downtime ($$) {
 	@downtimes = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime WHERE executed = 1 AND date_to <= ?', $utimestamp);
 	foreach my $downtime (@downtimes) {
 
-		logger($pa_config, "Ending planned downtime '" . $downtime->{'nombre'} . "'.", 10);
+		logger($pa_config, "Ending planned downtime '" . $downtime->{'name'} . "'.", 10);
 
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 0 WHERE id = ?', $downtime->{'id'});
+
 		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
 
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 
 		foreach my $downtime_agent (@downtime_agents) {
-			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agrupo = ?', $downtime_agent->{'id_group'});
+			db_do ($dbh, 'UPDATE tagente SET disabled = 0 WHERE id_agente = ?', $downtime_agent->{'id_agent'});
 		}
 	}
 }

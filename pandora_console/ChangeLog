@@ -1,3 +1,7 @@
+2009-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_db.php: Fixed avg. calculation in custom reports. 
+
 2009-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/planned_downtime.php: fixes bug in several fields of

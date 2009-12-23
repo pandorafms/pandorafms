@@ -1,3 +1,10 @@
+2009-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: fix warning messages when pass only group as
+	string or integer in the function "isAllGroups".
+	* include/functions_reporting.php: fix ambiguous colummn in query in the
+	function "get_group_stats".
+
 2009-12-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_custom_graphs.php: fix the name of custom graphs in the

@@ -124,7 +124,7 @@ echo __('Planned Downtime').'</h2>';
 	if (($first_create != 0) OR ($first_update != 0)){
 		// Have any data to show ?
 		if ($id_downtime > 0) {
-			$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`
+			$sql = sprintf ("SELECT `id`, `name`, `description`, `date_from`, `date_to`, `id_group`
 					FROM `tplanned_downtime` WHERE `id` = %d",
 					$id_downtime);
 			
@@ -133,8 +133,10 @@ echo __('Planned Downtime').'</h2>';
 			$description = $result["description"];
 			$date_from = strftime ('%Y-%m-%d', $result["date_from"]);
 			$date_to = strftime ('%Y-%m-%d', $result["date_to"]);
+			
+			if ($id_group == 1)
+				$id_group = $result['id_group'];
 		}
-		
 			
 		$table->class = 'databox_color';
 		$table->width = '90%';
@@ -183,12 +185,8 @@ echo __('Planned Downtime').'</h2>';
 		// Show available agents to include into downtime
 		echo '<h3>'.__('Available agents').':</h3>';
 	
-	
-		$filter_group = get_parameter("filter_group", 1);
-		if ($filter_group != 1)
-			$filter_cond = " AND id_grupo = $filter_group ";
-		else
-			$filter_cond = "";
+		$filter_group = get_parameter("filter_group", $result['id_group']);
+		$filter_cond = " AND id_grupo = $filter_group ";
 		$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre, tagente.id_grupo FROM tagente WHERE tagente.id_agente NOT IN (SELECT tagente.id_agente FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d) AND disabled = 0 $filter_cond ORDER by tagente.nombre", $id_downtime);
 		$downtimes = get_db_all_rows_sql ($sql);
 		$data = array ();

@@ -96,7 +96,8 @@ enterprise_include_once('include/functions_policies.php');
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 
-if ($config['enterprise_installed'] && ($id_agent_module != 0)) {
+$page = get_parameter('page', '');
+if (strstr($page, "policy_modules") === false) {
 	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
 	if ($disabledBecauseInPolicy)
 		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
@@ -121,8 +122,9 @@ $table_simple->data[0][2] = __('Disabled');
 $table_simple->data[0][3] = print_checkbox ("disabled", 1, $disabled, true);
 
 $table_simple->data[1][0] = __('Type').' '.print_help_icon ('module_type', true);
-if ($id_agent_module) {
-	$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
+if (isset($id_agent_module)) {
+	if ($id_agent_module)
+		$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
 }
 else {
 	$sql = sprintf ('SELECT id_tipo, descripcion

@@ -1,3 +1,12 @@
+2009-12-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php: change the lines to
+	test if the form is for policy use. And clean source code.
+
 2009-12-24  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/postinst: Fixed some perms on postinstall.

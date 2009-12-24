@@ -98,7 +98,10 @@ $disabledTextBecauseInPolicy = '';
 
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
-	$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+	if ($config['enterprise_installed'])
+		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+	else
+		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
 		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
 }

@@ -1,5 +1,14 @@
 2009-12-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php: fix bug to call
+	enterprise function without test if the enterprise install.
+
+2009-12-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: fix bug that show SQL error message and don't
 	show the actions for compound alerts.
 	* include/functions_alerts.php: in function "get_alert_agent_module_actions"

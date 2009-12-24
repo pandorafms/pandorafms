@@ -4,7 +4,7 @@
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.0 Build 090810
+# v3.0 Build 091224
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -88,7 +88,8 @@ install () {
         # Copying Pandora FMS console
         echo "Copying Pandora FMS Console to $PANDORA_HOME.."
         cp -R * $PANDORA_HOME
-        chmod -R 750 $PANDORA_HOME
+		chmod -R u+rwX,g+rX,g-w,o-rwx $PANDORA_HOME
+
 
 	# Creating 'pandora' user
 	id pandora
@@ -108,13 +109,14 @@ install () {
 	then
 		chown -R www-data:root $PANDORA_HOME
 		chown -R pandora:www-data /var/spool/pandora/
-	else
+	else 
+		# Assuming SUSE
 		chown -R wwwrun:root $PANDORA_HOME
 		chown -R pandora:www /var/spool/pandora/
 	fi
         
         echo "Setting secure permissions for Pandora FMS spool dir..."
-	chmod -R 770 /var/spool/pandora/
+		chmod -R u+rwX,g+rwX,o-rwx /var/spool/pandora/
         
         echo "Done."
         echo " "

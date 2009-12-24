@@ -366,13 +366,15 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 		$data[$index['template']] .= '<a class="template_details" href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$template['id'].'">';
 		$data[$index['template']] .= print_image ('images/zoom.png', true);
 		$data[$index['template']] .= '</a> ';
+		$actionDefault = get_db_value_sql("SELECT id_alert_action
+			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
+	}
+	else {
+		$actionDefault = get_db_value_sql("SELECT id_alert_action FROM talert_compound_actions WHERE id_alert_compound = " . $alert['id']);
 	}
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
-	$actionDefault = get_db_value_sql("SELECT id_alert_action
-			FROM talert_templates WHERE id = " . $alert['id_alert_template']);
-	
-	$actions = get_alert_agent_module_actions ($alert['id']);
+	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
 	$actionText = '<ul>';
 	foreach ($actions as $action) {
 		$defaultTagIni = $defaultTagEnd = '';

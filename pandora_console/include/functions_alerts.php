@@ -504,13 +504,20 @@ function delete_alert_agent_module_action ($id_alert_agent_module_action) {
 		array ('id' => $id_alert_agent_module_action))) !== false;
 }
 
-function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false) {
+function get_alert_agent_module_actions ($id_alert_agent_module, $fields = false, $compound = false) {
 	if (empty ($id_alert_agent_module))
 		return false;
 	
-	$actions = get_db_all_rows_filter ('talert_template_module_actions',
-		array ('id_alert_template_module' => $id_alert_agent_module),
+	if ($compound) {
+		$actions = get_db_all_rows_filter ('talert_compound_actions',
+		array ('id_alert_compound' => $id_alert_agent_module),
 		$fields);
+	}
+	else {	
+		$actions = get_db_all_rows_filter ('talert_template_module_actions',
+			array ('id_alert_template_module' => $id_alert_agent_module),
+			$fields);
+	}
 	if ($actions === false)
 		return array ();
 	if ($fields !== false)

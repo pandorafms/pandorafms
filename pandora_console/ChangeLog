@@ -1,3 +1,11 @@
+2009-12-24  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/postinst: Fixed some perms on postinstall.
+
+	* pandora_console_install: Fixed some perms on postinstall.
+
+	* pandora_console.spec: Removed one blank space :-))
+
 2009-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php: Fixed avg. calculation in custom reports. 

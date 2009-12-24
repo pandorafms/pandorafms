@@ -1,3 +1,8 @@
+2009-12-24  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* images/pandora_logo.jpg: New file, used in dashboard (dashboard should
+	use the .png instead this .jpg.
+
 2009-12-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager_editor_common.php,

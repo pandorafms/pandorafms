@@ -1,3 +1,10 @@
+2009-12-27  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* extensions/users/menu.png: New file
+
+	* extensions/users_connected.php: Added icon and changed menu section.
+	Added new godmode function that allows the user to be edited.
+
 2009-12-24  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* images/pandora_logo.jpg: New file, used in dashboard (dashboard should

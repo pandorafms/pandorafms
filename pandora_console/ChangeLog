@@ -1,9 +1,13 @@
 2009-12-27  Raúl Mateos  <raulofpandora@gmail.com>
 
-	* extensions/users/menu.png: New file
+	* extensions/users/menu.png, extensions/dbmanager/menu.png: New files
 
 	* extensions/users_connected.php: Added icon and changed menu section.
 	Added new godmode function that allows the user to be edited.
+
+	* extensions/dbmanager.php: Added icon. Added link to the db menu.
+
+	* extensions/pandora_logs.php, update_manager.php: Changed menu section.
 
 2009-12-24  Raúl Mateos  <raulofpandora@gmail.com>
 

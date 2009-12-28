@@ -1,5 +1,7 @@
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
+	* util/pandora_logrotate: Optimized logrotate setup.
+
 	* pandora_server.spec: Start tentacle after install breaks the
 	Upgrade process on RPM (error if already running).
 

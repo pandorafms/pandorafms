@@ -1,14 +1,40 @@
-/var/log/pandora/pandora*.log /var/log/pandora/pandora_server.error {
+/var/log/pandora/pandora_agent.log 
+/var/log/pandora/pandora_server.log 
+/var/log/pandora/pandora_server.error {
 	weekly
 	missingok
-	size 262144
-	rotate 5
+	size 128144
+	rotate 3
 	maxage 15
 	compress
 	notifempty
-	create 640 root root
+	create 644 root root
 	sharedscripts
 	postrotate
-	for i in `ls -1 /etc/init.d/pandora_*`;do $i stop; $i start; done
+	/etc/init.d/pandora_server restart
 	endscript
+}
+
+# Only for SUSE / DEBIAN / UBUNTU 
+
+/var/www/pandora_console 
+/srv/www/htdocs/pandora_console/pandora_console.log {
+	weekly
+	missingok
+	size 100000
+	rotate 3
+	maxage 15
+	compress
+	notifempty
+	create 644 wwwrun www
+}
+
+/var/log/pandora/pandora_snmptrap.log {
+	daily
+	missingok
+	size 150000
+	rotate 1
+	maxage 7
+	notifempty
+	create 644 root root
 }

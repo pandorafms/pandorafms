@@ -1,5 +1,7 @@
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
+	* includes/languages/* : Updated languages for 3.0 final release.
+
 	* include/config_process: Fixed problems detected in system/user 
 	language settings. Now use config["language"] avoiding use of old 
 	token "language_code"

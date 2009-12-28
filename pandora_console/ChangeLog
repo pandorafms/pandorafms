@@ -1,5 +1,8 @@
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
+	* pandoradb.sql: tnetwork_component double(18,13) -> double (18,3) by
+	a typo !¡¿?. That is the type for tagente_modulo.
+
 	* includes/languages/* : Updated languages for 3.0 final release.
 
 	* include/config_process: Fixed problems detected in system/user 

@@ -1,5 +1,8 @@
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
+	* module_manager_editor_common.php: Latest changes from mdtrooper break
+	some code, reverted specific changes in order to work.
+
 	* pandoradb.sql: tnetwork_component double(18,13) -> double (18,3) by
 	a typo !¡¿?. That is the type for tagente_modulo.
 

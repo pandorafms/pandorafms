@@ -10,7 +10,7 @@
 ### BEGIN INIT INFO
 # Provides:       pandora_server
 # Required-Start: $syslog cron
-# Should-Start:   $network cron
+# Should-Start:   $network cron mysql
 # Required-Stop:  $syslog 
 # Should-Stop:    $network 
 # Default-Start:  2 3 5

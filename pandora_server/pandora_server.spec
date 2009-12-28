@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version	    3.0.0
-%define release     4
+%define release     5
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -101,7 +101,8 @@ if [ ! -e /etc/pandora/pandora_server.conf ] ; then
    echo " "
 fi
 
-/etc/init.d/tentacle_serverd start
+echo "Don't forget to start Tentacle Server daemon if you want to receive"
+echo "data using tentacle"
 
 %preun
 /etc/init.d/pandora_server stop &>/dev/null

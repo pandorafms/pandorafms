@@ -1,3 +1,8 @@
+2009-12-28  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent.spec: Fixed missing var/spool/pandora/data_out
+	directory :-/
+
 2009-12-18  Sancho Lerena <slerena@artica.es>
 
 	* unix/pandora_agent_installer,

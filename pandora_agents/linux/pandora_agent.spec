@@ -39,13 +39,10 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_out
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf  $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
-%if "%{_vendor}" == "redhat"
-   mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-%else
-   mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-%endif
+mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
 
 # Checking old config file (if exists)
@@ -64,7 +61,6 @@ rm -Rf $RPM_BUILD_ROOT
 %pre
 /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 exit 0
-
 
 
 %post

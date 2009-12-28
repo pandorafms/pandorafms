@@ -40,7 +40,7 @@ INSERT INTO `talert_commands` VALUES (9,'SMS','sendsms _field1_ _field2_','Send 
 
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` VALUES 
-(1,'language_code','en'),
+(1,'language','en'),
 (3,'block_size','20'),
 (4,'days_purge','60'),
 (5,'days_compact','15'),

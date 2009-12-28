@@ -1,3 +1,19 @@
+2009-12-28  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process: Fixed problems detected in system/user 
+	language settings. Now use config["language"] avoiding use of old 
+	token "language_code"
+	
+	* include/function_config.php: config["language"] is now a "stardard" 
+	config token, avoding to use as special one, was giving a big headache in
+	order to maintain old compatibility. Now will use config["language"] always
+	and create it if doesnt exist using english as base lang.
+
+	* pandoradb_data.sql: Token is not "language" instead "language_code"
+
+	* godmode/setup/setup.php: Use config["language"], manage like other 
+	variable in the sytem, avoiding conflicts and problems detected.
+
 2009-12-27  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* extensions/users/menu.png, extensions/dbmanager/menu.png: New files

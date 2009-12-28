@@ -488,10 +488,10 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `plugin_parameter` text,
   `max_timeout` tinyint(3) unsigned default '0',
   `history_data` tinyint(1) unsigned default '1',
-  `min_warning` double(18,13) default 0,
-  `max_warning` double(18,13) default 0,
-  `min_critical` double(18,13) default 0,
-  `max_critical` double(18,13) default 0,
+  `min_warning` double(18,2) default 0,
+  `max_warning` double(18,2) default 0,
+  `min_critical` double(18,2) default 0,
+  `max_critical` double(18,2) default 0,
   `min_ff_event` int(4) unsigned default '0',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091223';
+$build_version = 'PC091228';
 $pandora_version = 'v3.0';
 
 /* Help to debug problems. Override global PHP configuration */
@@ -72,18 +72,20 @@ require_once ('gettext.php');
 global $REMOTE_ADDR;
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
+$config['user_language'] = $config["language"];
 
 // Set user language if provided, overriding System language
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
 	if ($userinfo["language"] != ""){
-		$config['language'] = $userinfo["language"];
+		$config['user_language'] = $userinfo["language"];
 	}
 } 
 
-$l10n = NULL;
-if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
-	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
+$l10n = NULL; 
+
+if (file_exists ('./include/languages/'.$config["user_language"].'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["user_language"].'.mo'));
 	$l10n->load_tables();
 }
 

@@ -53,9 +53,18 @@ echo __('General configuration')."</h2>";
 
 $table->width = '90%';
 $table->data = array ();
+
+// Current config["language"] could be set by user, not taken from global setup !
+
+$current_system_lang = get_db_sql ('SELECT `value` FROM tconfig WHERE `token` = "language"');
+
+if ($current_system_lang == ""){
+	$current_system_lang = "en";
+}
+
 $table->data[0][0] = __('Language code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $config["language"], '', '', '', true);
+	'language', $current_system_lang , '', '', '', true);
 
 $table->data[1][0] = __('Remote config directory');
 $table->data[1][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);

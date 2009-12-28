@@ -128,12 +128,8 @@ function update_config () {
 	$style = (string) get_parameter ('style', $config["style"]);
 	if ($style != $config['style'])
 		$style = substr ($style, 0, strlen ($style) - 4);
-	
-	/* Workaround for ugly language and language_code missmatch */
-	$config['language_code'] = $config['language']; //Old value for comparation into update_config_value because in php use language but in db is language_code
-	update_config_value ('language_code', (string) get_parameter ('language', $config["language"]));
-	$config["language"] = (string) get_parameter ('language', $config["language"]);
-	
+
+	update_config_value ('language', (string) get_parameter ('language', $config["language"]));	
 	update_config_value ('remote_config', (string) get_parameter ('remote_config', $config["remote_config"]));
 	update_config_value ('block_size', (int) get_parameter ('block_size', $config["block_size"]));
 	update_config_value ('days_purge', (int) get_parameter ('days_purge', $config["days_purge"]));
@@ -191,9 +187,6 @@ function process_config () {
 	/* Compatibility fix */
 	foreach ($configs as $c) {
 		switch ($c["token"]) {
-		case "language_code":
-			$config['language'] = $c['value'];
-			break;
 		case "auth":
 			include ($config["homedir"]."/general/error_authconfig.php");
 			exit;
@@ -202,6 +195,10 @@ function process_config () {
 		}
 	}
 	
+	if (!isset ($config['language'])) {
+		update_config_value ('language', 'en');
+	}
+
 	if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 		$config['homeurl'] = '/'.$config['homeurl'];
 	}

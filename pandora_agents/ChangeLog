@@ -1,3 +1,10 @@
+2009-12-29  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent_daemon: Some ugly warnings are fixed.
+
+	* linux/pandora_agent.spec: /spool../data_out was not correctly
+	working, fixed.
+
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent.spec: Fixed missing var/spool/pandora/data_out

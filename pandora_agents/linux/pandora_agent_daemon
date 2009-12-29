@@ -11,7 +11,7 @@
 # Provides: pandora_agent
 # Required-Start: $network
 # Required-Stop: $network
-# Default-Start:  S 2 3 4 5
+# Default-Start:  2 3 5
 # Default-Stop: 0 1 6
 # Short-Description: Startup script daemon for Pandora FMS agent
 ### END INIT INFO

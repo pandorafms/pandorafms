@@ -87,6 +87,11 @@ if [ ! -e /etc/pandora/pandora_agent.conf ]; then
 	ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf 
 fi
 
+# Create default temp dir for agent. If not exist, agent will not work !
+if [ ! -d /var/spool/pandora/data_out ] ; then
+	mkdir -p /var/spool/pandora/data_out
+fi
+
 chkconfig -s pandora_agent_daemon on
 
 %preun

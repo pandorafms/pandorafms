@@ -1,5 +1,12 @@
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
+	* include/Image/image_functions.php: PHP 5.2 and higher does 
+	not support (deprecated) get_mimetype. Avoiding headers lets
+	the browser to decide contents of stream and now this works
+	on modern PHP, before not :(
+
+	* extensions/hello: Removed sample.
+
 	* include/functions_servers.php: Fixed notice (division by 0).
 
 	* include/functions_visual_map.php: Fixed problem in graphs 

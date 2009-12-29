@@ -814,7 +814,7 @@ sub pandora_create_agent ($$$$$$$$$$$) {
 	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 
-	pandora_event ($pa_config, "Agent '$agent_name' created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
+	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;
 }
 

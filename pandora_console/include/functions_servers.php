@@ -84,7 +84,11 @@ function get_server_performance () {
 
 	$data["avg_interval_local_modules"] = get_db_sql ("SELECT AVG(tagente.intervalo) FROM tagente WHERE  disabled = 0 AND intervalo > 0");
 
-	$data["local_modules_rate"] =  $data["total_local_modules"] / $data["avg_interval_local_modules"];
+	if ($data["avg_interval_local_modules"] > 0){
+		$data["local_modules_rate"] =  $data["total_local_modules"] / $data["avg_interval_local_modules"]; 
+	} else {
+		$data["local_modules_rate"] = 0;
+	}
 
 	$data["total_modules"] = $data["total_local_modules"] + $data["total_remote_modules"];
 

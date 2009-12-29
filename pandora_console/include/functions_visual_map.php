@@ -239,9 +239,13 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						}
 					}
 					if ($resizedMap)
-						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".((integer)($proportion * $layout_data['height']))."&pure=1&amp;width=".((integer)($proportion * $layout_data['width']))."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+
+					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
+					// resulting fault image links :(
+
+						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=".safe_input ($layout_data['label'])."&height=".((integer)($proportion * $layout_data['height']))."&pure=1&width=".((integer)($proportion * $layout_data['width']))."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 					else
-						print_image ("include/fgraph.php?tipo=sparse&amp;id=".$layout_data['id_agente_modulo']."&amp;label=".safe_input ($layout_data['label'])."&amp;height=".$layout_data['height']."&pure=1&amp;width=".$layout_data['width']."&amp;period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=".safe_input ($layout_data['label'])."&height=".$layout_data['height']."&pure=1&width=".$layout_data['width']."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 					echo "</a>";
 					echo "</div>";
 				break;

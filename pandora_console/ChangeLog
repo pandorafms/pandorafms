@@ -1,3 +1,17 @@
+2009-12-29  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_servers.php: Fixed notice (division by 0).
+
+	* include/functions_visual_map.php: Fixed problem in graphs 
+	embedded in the visual console maps (problem with &amp; in fgraph
+	call !!?).
+
+	* include/config_process.php: Added supression of DEPRECATED
+	system messages for PHP 5.2.11 or higher insted 5.3
+
+	* godmode/agentes/module_manager_editor_prediction.php: Fixed several
+	missing fields in the prediction module edition.
+
 2009-12-28  Sancho Lerena <slerena@artica.es>
 
 	* module_manager_editor_common.php: Latest changes from mdtrooper break

@@ -64,8 +64,6 @@ $table_simple->colspan['prediction_module'][1] = 3;
 push_table_simple ($data, 'prediction_module');
 
 /* Removed common useless parameter */
-unset ($table_simple->data[2]);
-unset ($table_simple->data[3]);
 unset ($table_advanced->data[3]);
 unset ($table_advanced->data[2][2]);
 unset ($table_advanced->data[2][3]);

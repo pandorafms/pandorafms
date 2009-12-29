@@ -29,7 +29,7 @@ $pandora_version = 'v3.0';
 
 // error_reporting(E_ALL);
 
-if (strnatcmp(phpversion(),'5.3') >= 0) 
+if (strnatcmp(phpversion(),'5.2.11') >= 0) 
 	{ 
 	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 	}

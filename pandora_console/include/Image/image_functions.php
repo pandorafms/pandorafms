@@ -58,12 +58,19 @@ if (isset($_GET['getFile'])) {
  * @param string fileLocation The real location the file in server.
  */
 function getFile ($destFileName,$fileLocation) {
-	error_reporting(E_ALL);
-	
-	//header('Content-type: aplication/octet-stream;');
-	header('Content-type: ' . mime_content_type($fileLocation) . ';');
-	header( "Content-Length: " . filesize($fileLocation));
-	header('Content-Disposition: attachment; filename="' . $destFileName . '"');
+	error_reporting(0);
+
+
+	// NOTICE: mime_conent_type() IS NOT SUPPORTED IN PHP >= 5.2.11 anymore
+	// THIS DOESNT WORK ON SUSE 11.x !
+
+
+//	header('Content-type: aplication/octet-stream;');
+//	header('Content-type: ' . mime_content_type($fileLocation) . ';');
+//	header( "Content-Length: " . filesize($fileLocation));
+//	header('Content-Disposition: attachment; filename="' . $destFileName . '"');
+
+	// Do not send any header, rely on browser
 	readfile($fileLocation);
 }
 

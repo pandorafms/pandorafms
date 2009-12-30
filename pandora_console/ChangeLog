@@ -1,5 +1,12 @@
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
+	* pandoradb.sql: upps, too small, in huge systems could give a 
+	problem in the autoinsert ID.
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Fixed a broken line
+	that make problems in our upgrade script. Added upgrade for
+	update manager from 2.x to 3.0 version URL.
+
 	* include/Image/image_functions.php: PHP 5.2 and higher does 
 	not support (deprecated) get_mimetype. Avoiding headers lets
 	the browser to decide contents of stream and now this works

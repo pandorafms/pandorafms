@@ -612,7 +612,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
 CREATE TABLE IF NOT EXISTS `tsesion` (
-  `ID_sesion` bigint(4) unsigned NOT NULL auto_increment,
+  `ID_sesion` bigint(20) unsigned NOT NULL auto_increment,
   `ID_usuario` varchar(60) NOT NULL default '0',
   `IP_origen` varchar(100) NOT NULL default '',
   `accion` varchar(100) NOT NULL default '',

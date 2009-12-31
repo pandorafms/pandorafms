@@ -18,7 +18,7 @@
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
 -- -----------------------------------------------------------
--- Pandora FMS official tables for 2.0 version              --
+-- Pandora FMS official tables for 3.1 version              --
 -- -----------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `taddress` (
@@ -705,7 +705,7 @@ CREATE TABLE IF NOT EXISTS `tgraph_source` (
   `id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
   `id_graph` int(11) NOT NULL default 0,
   `id_agent_module` int(11) NOT NULL default 0,
-  `weight` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_gs`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

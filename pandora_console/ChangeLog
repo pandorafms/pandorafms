@@ -1,3 +1,11 @@
+2009-12-31  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Custom graph weights now can be float.
+
+	* include/config_process.php: Updated version to 3.1-dev
+
+	This is the first commit of 3.1 version ! :-)
+	
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: upps, too small, in huge systems could give a 

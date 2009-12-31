@@ -18,9 +18,7 @@ ALTER TABLE `tagente_datos` DROP `timestamp`, DROP `id_agente`;
 ALTER TABLE `tagente_datos_inc` DROP `timestamp`;
 ALTER TABLE `tagente_datos_string` DROP `timestamp`, DROP `id_agente`;
 ALTER TABLE `tagente_estado` DROP `cambio`;
-ALTER TABLE  `tagente_estado` ADD  `status_changes` TINYINT( 4 ) NOT  
-NULL DEFAULT  '0', ADD  `last_status` TINYINT( 4 ) NOT NULL DEFAULT   
-'0';
+ALTER TABLE  `tagente_estado` ADD  `status_changes` TINYINT( 4 ) NOT NULL DEFAULT  '0', ADD  `last_status` TINYINT( 4 ) NOT NULL DEFAULT '0';
 ALTER TABLE  `tagente_estado` ADD INDEX (  `current_interval` );
 ALTER TABLE  `tagente_estado` ADD INDEX (  `running_by` );
 ALTER TABLE  `tagente_estado` ADD INDEX (  `last_execution_try` );
@@ -286,7 +284,7 @@ ALTER TABLE trecon_task ADD `recon_ports` varchar(250) NOT NULL default '';
 ALTER TABLE tagente ADD `cascade_protection` tinyint(2) NOT NULL default '0';
 
 ALTER TABLE tagente DROP id_wmi_server;
-ALTER TABLE tagente DROP id_network_server;
+ALTER TABLE tagente DROP id_network_server; 
 ALTER TABLE tagente DROP id_plugin_server;
 ALTER TABLE tagente DROP id_prediction_server;
 
@@ -301,4 +299,9 @@ ALTER TABLE tplanned_downtime ADD `id_group` mediumint(8) unsigned NULL default 
 -- Oct 2009
 
 ALTER TABLE `pandora`.`tagente` MODIFY COLUMN `nombre` VARCHAR(100) BINARY CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '';
+
+
+-- Dec 2009
+
+UPDATE tupdate_settings SET `value` = "/pandoraupdate3/server.php" WHERE `key` = "update_server_path";
 

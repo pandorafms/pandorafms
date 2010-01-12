@@ -1,3 +1,12 @@
+2010-01-12  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandoradb.sql: Added GIS tables, and timezone_offset, 
+	icon, and update_gis_data to tagente.
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added new migration script
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Removed old migration script
+
 2009-12-31  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: Custom graph weights now can be float.
@@ -368,11 +377,11 @@
 	* include/functions_agents.php, operation/agentes/tactical.php: fix notice
 	undefined var message.
 
-2009-12-07  Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2009-12-07  Pablo de la Concepción <pablo.concepcion@artica.es>
 	* Changelog: Changelog with the last changes that I forgot to include in 
 	the last commit.
 
-2009-12-07  Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2009-12-07  Pablo de la Concepción <pablo.concepcion@artica.es>
 	* include/functions_api.php, include/functions.php,
 	extensions/plugin_registration.php, operation/events/events.php,
 	operation/agentes/exportdata.php, operation/agentes/stat_win.php,
@@ -2210,7 +2219,7 @@
 	* operation/agentes/networkmap.php: Moved network map generation
 	  functions to functions_networkmap.php.
 
-2009-07-16  Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2009-07-16  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	*  include/functions_agents.php: fixed repeated empty test and safe_int call
 

@@ -727,7 +727,7 @@ sub pandora_update_agent ($$$$$$$$) {
 	}
 	
 	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?  WHERE id_agente = ?',
-		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id, $timezone_offset);
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
 }
 
 ##########################################################################

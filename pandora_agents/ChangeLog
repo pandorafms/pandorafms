@@ -1,3 +1,10 @@
+2010-01-12	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+	
+	* unix/Linux/pandora_agent.conf, unix/AIX/pandora_agent.conf,
+	unix/HP-UX/pandora_agent.conf, unix/pandora_agent,
+	unix/SunOS/pandora_agent.conf: Updated unix agent to send 
+	GIS information (altitude, latitude, longitude, and timezone_offset)
+
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent_daemon: Some ugly warnings are fixed.

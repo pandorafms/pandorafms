@@ -59,7 +59,11 @@ my %Conf = (
 	'secondary_server_pwd' => 'mypassword',
 	'secondary_server_ssl' => 'no',
 	'secondary_server_opts' => '',
-	'autotime' => 0
+	'autotime' => 0,
+	'timezone_offset' => 0,
+	'latitude' => 0,
+	'longitude' => 0,
+	'altitude' => 0
 # Missing: group, 
 );
 
@@ -536,7 +540,8 @@ while (1) {
 	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
 			  "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 			  "' version='" . AGENT_VERSION . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-			  "' agent_name='" . $Conf{'agent_name'} . "'>\n";
+			  "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}. "' longitude='" .$Conf{'longitude'} .
+			  "' latitude='" .$Conf{'latitude'} ."' altitude='" .$Conf{'altitude'}."'>\n";
 
 	# Execute modules
 	foreach my $module (@Modules) {

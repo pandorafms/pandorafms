@@ -1,4 +1,8 @@
-2010-01-12	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2010-01-12	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a bug introduced in last commmit
+
+2010-01-12	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Updated to process GIS information from 
 	the .data (altitude, latitude, longitude and timezone_offset).

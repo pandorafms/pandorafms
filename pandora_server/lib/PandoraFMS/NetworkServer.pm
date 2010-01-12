@@ -379,7 +379,7 @@ sub exec_network_module ($$$$) {
 		pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $server_id, $dbh);
 
 		# Update agent last contact using Pandora version as agent version
-		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, $dbh);
+		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, 0, $dbh);
 	
     } else {
 		# Modules who cannot connect or something go bad, update last_execution_try field

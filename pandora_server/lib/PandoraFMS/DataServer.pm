@@ -157,6 +157,30 @@ sub process_xml_data ($$$$$) {
 	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
 	    $data->{'interval'}, $data->{'os_version'});
 
+	# Get GIS information
+	my ($timezone_offset, $latitude, $longitude, $altitude) = ($data->{'timezone_offset'},
+	    $data->{'latitude'}, $data->{'longitude'}, $data->{'altitude'});
+
+	# Validate the GIS informtation
+	# Timezone offset must be an integer beween -12 and +12
+	if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
+		$timezone_offset = 0; # Default value
+	}
+	# Longitude must be a real number
+	if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+		$longitude = 0.0; # Default value
+	}
+	# Latitude must be a real number
+	if ($latitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+		$latitude = 0.0; # Default value
+	}
+	# Altitude must be a real number
+	if ($altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+		$altitude = 0.0; # Default value
+	}
+			
+	logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset latitude=$latitude longitude=$longitude altitude=$altitude", 10);
+
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
 		logger($pa_config, "$file_name has data from an unnamed agent", 3);
@@ -199,7 +223,9 @@ sub process_xml_data ($$$$$) {
 	}
   	$AgentSem->up ();
 
-	pandora_update_agent ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $timezone_offset, $dbh);
+	# TODO: Check if it's needed to update the position
+	pandora_update_position($pa_config, $agent_id, $latitude, $longitude, $altitude, $dbh);
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 
 	# Process modules

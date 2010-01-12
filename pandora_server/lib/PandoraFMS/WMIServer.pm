@@ -193,7 +193,7 @@ sub data_consumer ($$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 
 	pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $self->getServerID (), $dbh);
-	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'},  $pa_config->{'servername'} . '_WMI', $pa_config->{'version'}, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'},  $pa_config->{'servername'} . '_WMI', $pa_config->{'version'}, -1,  0,$dbh);
 }
 
 1;

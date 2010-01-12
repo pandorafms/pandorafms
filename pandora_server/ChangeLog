@@ -1,3 +1,19 @@
+2010-01-12	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Updated to process GIS information from 
+	the .data (altitude, latitude, longitude and timezone_offset).
+
+	* lib/PandoraFMS/Core.pm: Added pandora_update_position function, to 
+	store GIS information on the databse.
+
+	* lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/PredictionServer.pm,
+	lib/PandoraFMS/NetworkServer.pm, lib/PandoraFMS/WMIServer.pm: Updated
+	to send timezone_offset to pandora_update_agent function.
+
+	* util/pandora_xml_stress.pl, util/pandora_xml_stress.README: Updated
+	to generate agents with GIS information (altitude, latitude, longitude
+	and timezone_offset).
+
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed problem generating events with 

@@ -89,7 +89,12 @@ sub generate_xml_files ($$$$$) {
 	my $os_name = get_conf_token ($conf, 'os_name', 'Linux');
 	my $os_version = get_conf_token ($conf, 'os_version', '2.6');
 	my $temporal = get_conf_token ($conf, 'temporal', '/tmp');
-	my $startup_delay = get_conf_token ($conf, 'startup_delay', '5');
+	my $startup_delay = get_conf_token ($conf, 'startup_delay', '5')
+	my $ag_timezone_offset = get_conf_token ($conf, 'timezone_offset', '0')
+	my $latitude_base = get_conf_token ($conf, 'latitude_base', '40.42056');
+	my $longitude_base = get_conf_token ($conf, 'longitude_base', '-3.708187');
+	my $altitude_base = get_conf_token ($conf, 'altitude_base', '0');
+	my $position_radius = get_conf_token ($conf, 'position_radius', '10');
 
 	# Get time_from
 	my $time_now = strftime ("%Y-%m-%d %H:%M:%S", localtime ());
@@ -110,11 +115,15 @@ sub generate_xml_files ($$$$$) {
 			# Get the name of the agent
 			last unless defined ($agents->[$i]);
 			my $agent_name = $agents->[$i];
-
+			# Agent random position
+			my $ag_latitude = $latitude_base + (rand ($position_radius) - $position_radius/2)/100;
+			my $ag_longitude = $longitude_base + (rand ($position_radius) - $position_radius/2)/100;
+			my $ag_altitude = $altitude_base + (rand ($position_radius) - $position_radius/2)/100;
+			
 			# XML header
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
-			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name'>\n";
+			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude' />\n";
 			foreach my $module (@{$modules}) {
 
 				# Skip unnamed modules

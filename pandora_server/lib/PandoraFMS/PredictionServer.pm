@@ -236,7 +236,7 @@ sub exec_prediction_module ($$$$) {
     }
 
 	pandora_process_module ($pa_config, $module_data, undef, $agent_module, undef, $timestamp, $utimestamp, $server_id, $dbh);
-	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1,  0,$dbh);
 }
 
 1;

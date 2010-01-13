@@ -1,3 +1,8 @@
+2010-01-13  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandoradb.sql: Changed comment to show this is the official
+	tables for 3.0 version instead of 2.0 version
+
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql: upps, too small, in huge systems could give a 

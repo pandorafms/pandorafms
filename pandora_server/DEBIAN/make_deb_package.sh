@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.0.0"
+pandora_server_version="3.0.0"
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]
@@ -100,8 +100,8 @@ echo "END"
 
 echo "Make the package \"Pandorafms server\"."
 dpkg-deb --build temp_package
-mv temp_package.deb pandorafms.server_enterprise_$pandora_console_version.deb
-chmod 777 pandorafms.server_enterprise_$pandora_console_version.deb
+mv temp_package.deb pandorafms.server_enterprise_$pandora_server_version.deb
+chmod 777 pandorafms.server_enterprise_$pandora_server_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."
 rm Makefile

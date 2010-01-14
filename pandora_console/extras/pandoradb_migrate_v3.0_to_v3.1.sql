@@ -6,8 +6,8 @@ ALTER TABLE tagente ADD `last_longitude` DOUBLE NULL COMMENT 'last longitude of 
 ALTER TABLE tagente ADD `last_altitude` DOUBLE NULL COMMENT 'last altitude of the agent' ;
 
 ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0;
--- GIS extension Tables
 
+-- GIS extension Tables
 
 -- -----------------------------------------------------
 -- Table `tgis_data`
@@ -28,30 +28,30 @@ CREATE  TABLE IF NOT EXISTS `tgis_data` (
 ENGINE = InnoDB
 COMMENT = 'Table to store GIS information of the agents';
 
-
 -- -----------------------------------------------------
 -- Table `tgis_map`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map` (
-  `id_tgis_map` INT NOT NULL COMMENT 'table identifier' ,
+  `id_tgis_map` INT NOT NULL AUTO_INCREMENT COMMENT 'table identifier' ,
   `map_name` VARCHAR(63) NOT NULL COMMENT 'Name of the map' ,
   `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
   `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
   `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  `zoom_level` TINYINT(2) NULL DEFAULT '1' COMMENT 'Zoom level to show when the map is loaded.' ,
   `map_background` VARCHAR(127) NULL COMMENT 'path on the server to the background image of the map' ,
   `default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
   `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
   `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
+  `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
   PRIMARY KEY (`id_tgis_map`) )
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
-
 
 -- -----------------------------------------------------
 -- Table `tgis_map_connection`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
-  `id_tmap_connection` INT NOT NULL COMMENT 'table id' ,
+  `id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
   `conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)' ,
   `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map that uses this connection' ,
   PRIMARY KEY (`id_tmap_connection`) ,
@@ -64,12 +64,11 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
 ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
 
-
 -- -----------------------------------------------------
 -- Table `tgis_map_layer`
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
-  `id_tmap_layer` INT NOT NULL COMMENT 'table id' ,
+  `id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
   `layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ' ,
   `view_layer` TINYINT(1) NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
   `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
@@ -89,4 +88,3 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';
-

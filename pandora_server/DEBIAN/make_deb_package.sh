@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_server_version="3.0.0"
+pandora_console_version="3.0.0"
 
 echo "This script to make deb must run as root (because the dh-make-perl need this). Then test if you are root."
 if [ `id -u` != 0 ]
@@ -23,10 +23,30 @@ then
 	exit 1
 fi
 
+echo "Test if you has the tools for to make the packages."
+whereis dh-make-perl | cut -d":" -f2 | grep dh-make-perl > /dev/null
+if [ $? = 1 ]
+then
+	echo "No found \"dh-make-perl\" aplication, please install."
+	exit 1
+else
+	echo "Found \"dh-make-perl\"."
+fi
+
 cd ..
 
 echo "Make a \"temp_package\" temp dir for job."
 mkdir temp_package
+
+echo "Make the fake tree system in \"temp_package\"."
+mkdir -p temp_package/var/spool/pandora/data_in/conf
+mkdir -p temp_package/var/spool/pandora/data_in/md5
+mkdir -p temp_package/var/log/pandora
+mkdir -p temp_package/etc/pandora
+mkdir -p temp_package/etc/init.d/
+mkdir -p temp_package/etc/logrotate.d
+mkdir -p temp_package/usr/share/pandora_server
+mkdir -p temp_package/usr/bin
 
 echo "Make the perl of Pandora Server."
 perl Makefile.PL
@@ -45,10 +65,18 @@ cat Makefile.temp | sed -e "s/INSTALLSITESCRIPT = .*/INSTALLSITESCRIPT = temp_pa
 cat Makefile | sed -e "s/INSTALLVENDORSCRIPT = .*/INSTALLVENDORSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
 
 mv Makefile.temp Makefile
-
 make install
 
 echo "Copy other files in fake file."
+cp util/pandora_logrotate temp_package/etc/logrotate.d/pandora
+
+cp bin/tentacle_server temp_package/usr/bin
+cp util/tentacle_serverd temp_package/etc/init.d/tentacle_serverd
+
+cp conf/pandora_server.conf temp_package/etc/pandora/
+cp util/pandora_server temp_package/etc/init.d/
+
+cp -R util temp_package/usr/share/pandora_server
 cp -R DEBIAN temp_package/
 
 echo "Remove the SVN files and other temp files."
@@ -57,12 +85,6 @@ do
 	echo -n "."
 	echo $item | grep "svn" > /dev/null
 	#last command success
-	if [ $? -eq 0 ]
-	then
-		rm -rf $item
-	fi
-	
-	echo $item | grep "perllocal.pod" > /dev/null
 	if [ $? -eq 0 ]
 	then
 		rm -rf $item
@@ -100,11 +122,22 @@ echo "END"
 
 echo "Make the package \"Pandorafms server\"."
 dpkg-deb --build temp_package
-mv temp_package.deb pandorafms.server_enterprise_$pandora_server_version.deb
-chmod 777 pandorafms.server_enterprise_$pandora_server_version.deb
+mv temp_package.deb pandorafms.server_$pandora_console_version.deb
+chmod 777 pandorafms.server_$pandora_console_version.deb
+
+echo "Make the package \"libnet-traceroute-pureperl-perl\"."
+cd temp_package
+dh-make-perl --build --cpan Net::Traceroute::PurePerl
+chmod 777 libnet-traceroute-pureperl-perl*.deb
+mv libnet-traceroute-pureperl-perl*.deb ..
+cd ..
+
+echo "Make the package \"libnet-traceroute-perl\"."
+cd temp_package
+dh-make-perl --build --cpan Net::Traceroute
+chmod 777 libnet-traceroute-perl*.deb
+mv libnet-traceroute-perl*.deb ..
+cd ..
 
 echo "Delete the \"temp_package\" temp dir for job."
-rm Makefile
-rm -rf blib
-rm pm_to_blib
 rm -rf temp_package

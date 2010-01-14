@@ -1,3 +1,7 @@
+2010-01-14  Miguel de Dios  <miguel.dedios@artica.es>
+	* DEBIAN/* : restore previus version, I had mistake with this directory in
+	Eclipse aplication between Enterprise and Open.
+
 2010-01-12	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a bug introduced in last commmit

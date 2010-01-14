@@ -1,2 +1,72 @@
 #!/bin/bash
 
+get_distro () {
+	# Get Linux Distro type and version
+	# We assume we are on Linux unless told otherwise
+	LINUX=YES
+	if [ -f "/etc/SuSE-release" ]
+	then
+		OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+		LINUX_DISTRO=SUSE
+	elif [ -f "/etc/lsb-release" ]
+	then
+		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+		LINUX_DISTRO=UBUNTU
+		OS_VERSION="UBUNTU $OS_VERSION"
+	elif [ -f "/etc/debian_version" ]
+	then
+		OS_VERSION=`cat /etc/debian_version`
+		OS_VERSION="DEBIAN $OS_VERSION"
+		LINUX_DISTRO=DEBIAN
+	elif [ -f "/etc/fedora-release" ]
+	then
+		OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+		OS_VERSION="FEDORA $OS_VERSION"
+		LINUX_DISTRO=FEDORA
+	elif [ `uname -s` == "Darwin" ]
+	then
+		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
+		LINUX_DISTRO="Darwin"
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	elif [ `uname -s` == "AIX" ]
+        then
+                # For future reference, AIX doesn't have /etc/init.d
+                LINUX_DISTRO="AIX"
+                OS_VERSION=`uname -r`
+                LINUX=NO
+	elif [ `uname -s` == "SunOS" ]
+	then
+		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
+		LINUX_DISTRO="Solaris"
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	elif [ `uname -s` == "Linux" ]
+	then
+		# Test for Linux to make sure we're on Linux
+		LINUX_DISTRO="GENERIC"
+		OS_VERSION=`uname -r`
+	else
+		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
+		LINUX_DISTRO=`uname -s`
+		OS_VERSION=`uname -r`
+		LINUX=NO
+	fi
+	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
+}
+
+rm /etc/pandora/pandora_server.conf
+
+GET_DISTRO="`get_distro`"
+DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
+
+rm /etc/init.d/pandora_server
+rm /etc/init.d/tentacle_serverd
+update-rc.d pandora_server remove
+update-rc.d tentacle_serverd remove
+
+if [ -d /etc/cron.daily ]
+then
+	rm /etc/cron.daily/pandora_db
+fi
+

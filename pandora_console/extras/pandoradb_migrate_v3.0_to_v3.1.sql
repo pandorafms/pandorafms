@@ -17,7 +17,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_data` (
   `longitude` DOUBLE NOT NULL ,
   `latitude` DOUBLE NOT NULL ,
   `altitude` DOUBLE NULL ,
-  `start_timestamp` TIMESTAMP NOT NULL COMMENT 'timestamp on wich the agente started to be in this position' ,
+  `start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'timestamp on wich the agente started to be in this position' ,
   `end_timestamp` TIMESTAMP NULL COMMENT 'timestamp on wich the agent was placed for last time on this position' ,
   `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
   `manual_placement` TINYINT(1) NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,

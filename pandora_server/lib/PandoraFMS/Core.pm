@@ -38,6 +38,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
 	pandora_audit
 	pandora_create_agent
+	pandora_create_agent_gis
 	pandora_create_incident
 	pandora_create_module
 	pandora_evaluate_alert
@@ -59,9 +60,9 @@ our @EXPORT = qw(
 	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_update_agent
+	pandora_update_agent_gis
 	pandora_update_module_on_error
 	pandora_update_server
-	pandora_update_position
 
 	@ServerTypes
 	);
@@ -711,24 +712,80 @@ sub pandora_update_server ($$$$$;$$) {
 ##########################################################################
 # Update last contact field in agent table
 ##########################################################################
-sub pandora_update_agent ($$$$$$$$) {
+sub pandora_update_agent ($$$$$$$) {
 	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
-		$agent_version, $agent_interval, $timezone_offset, $dbh) = @_;
+		$agent_version, $agent_interval, $dbh) = @_;
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	
 	pandora_access_update ($pa_config, $agent_id, $dbh);
 
-	# No update for interval nor timezone field (some old agents don't support it
+	# No update for interval field (some old agents don't support it)
 	if ($agent_interval == -1){
 		db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
 		$agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
 		return;
 	}
 	
-	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?  WHERE id_agente = ?',
-		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
+	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
 }
+
+##########################################################################
+# Update last contact, timezone and position fields in agent table
+##########################################################################
+sub pandora_update_agent_gis ($$$$$$$$$$$) {
+    my ($pa_config, $agent_timestamp, $agent_id, $os_version,
+        $agent_version, $agent_interval, $timezone_offset,
+		$longitude, $latitude, $altitude, $dbh) = @_;
+
+    my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+
+    pandora_access_update ($pa_config, $agent_id, $dbh);
+
+    # No update for interval, timezone and position fields (some old agents don't support it)
+    if ($agent_interval == -1){
+        db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
+        $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
+        return;
+    }
+
+	logger($pa_config, "Agent id $agent_id",10);
+	# Get the last position to see if it has moved.
+	my $last_agent_info= get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
+
+	logger($pa_config, "Old Agent data: last-latitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
+
+	# If the agent has moved outside the range stablised as 
+	if (distance_moved($last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_altitude'}, $latitude, $longitude, $altitude) > 10 ){
+		# Save the agent data in the agent table
+		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_altitude'}, $agent_id, $dbh);
+	}	
+	else {
+		# Update the end timestamp for the agent
+		update_agent_position($pa_config, $timestamp, $agent_id, $dbh);
+	}
+
+    db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
+		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},
+		$last_agent_info->{'last_altitude'}, $agent_id);
+}
+
+
+sub distance_moved ($$$$$$) {
+	my ($last_latitude, $last_longitude, $last_altiude, $latitude, $longitude, $altitude) = @_;
+
+	# Quick and dirty function to check if the point has moved.
+	# $prec_factor = 1000000;
+	# if (int ($last_latitude * $prec_factor) == int ($latitude * $prec_factor) &&
+	#	 int ($last_longitude * $prec_factor) == int ($longitude * $prec_factor) &&
+	#	 int ($last_altitude * $prec_factor) == int ($altitude * $prec_factor) ) { return false } else { return true}
+
+	# TODO: Replace with a valid calculation of the distance
+	return rand(12);
+}
+
 
 ##########################################################################
 # Updates the keep_alive module for the given agent.
@@ -815,6 +872,27 @@ sub pandora_create_agent ($$$$$$$$$$$) {
 	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 
+	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
+	return $agent_id;
+}
+##########################################################################
+# Create a new entry in tagente with position information
+##########################################################################
+sub pandora_create_agent_gis ($$$$$$$$$$$$$$$) {
+	my ($pa_config, $server_name, $agent_name, $address,
+		$address_id, $group_id, $parent_id, $os_id,
+		$description, $interval, $timezone_offset,
+		$longitude, $latitude, $altitude, $dbh) = @_;
+
+	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
+
+	$description = "Created by $server_name" unless ($description ne '');
+
+	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
+				`timezone_offset`, `last_longitude`, `last_latitude`, `last_altitude`,`modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, 
+				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $longitude, $latitude, $altitude);
+
+	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;
 }
@@ -1274,20 +1352,33 @@ sub pandora_inhibit_alerts ($$$) {
 	return 0;
 }
 
+##########################################################################
+# Updates the end_timestamp of an agent in the tgis_data table
+##########################################################################
+sub update_agent_position($$$$) {
+	my ($pa_config, $timestamp, $agent_id, $dbh) = @_;
+
+    logger($pa_config, "Updating agent position: end_timestamp=$timestamp agent_id=$agent_id", 10);
+
+	# Find the last data from the received agent
+	my $agent_position = get_db_single_row ($dbh, 'SELECT * FROM tgis_data WHERE tagente_id_agente  = ? ORDER BY start_timestamp DESC LIMIT 1', $agent_id );
+ 	return unless (defined ($agent_position));
+
+	# Upadate the timestap of the received agent
+	db_do ($dbh, 'UPDATE tgis_data SET end_timestamp = ? WHERE id_tgis_data = ?', $timestamp, $agent_position->{'id_tgis_data'});
+
+}
 
 ##########################################################################
-# Sets the new position of an agent in the tgis_data table
+# Saves the last position of an agent in the tgis_data table
 ##########################################################################
-sub pandora_update_position($$$$$$) {
-	my ($pa_config, $agent_id, $latitude, $longitude, $altitude, $dbh) = @_;
-	
-	my $utimestamp = time ();
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
-	
+sub save_agent_position($$$$$$$) {
+    my ($pa_config, $timestamp, $longitude,$latitude, $altitude, $agent_id, $dbh) = @_;
+
     logger($pa_config, "Updating agent position: timestamp=$timestamp latitude=$latitude longitude=$longitude altitude=$altitude", 10);
 
 	db_insert($dbh, 'INSERT INTO tgis_data (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`, `end_timestamp`) VALUES (?, ?, ?, ?, ?, ?)', 
-		  "".$longitude, "".$latitude, $altitude, $agent_id, $timestamp, $timestamp);
+		  $longitude, $latitude, $altitude, $agent_id, $timestamp, $timestamp);
 
 }
 

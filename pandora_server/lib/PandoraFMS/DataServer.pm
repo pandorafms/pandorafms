@@ -215,7 +215,9 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 
 		# Create the agent
-		$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $interval, $dbh);
+		logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+		$agent_id = pandora_create_agent_gis ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $interval, $timezone_offset, 
+					$longitude, $latitude, $altitude, $dbh);
 		if (! defined ($agent_id)) {
 			$AgentSem->up ();
 			return;
@@ -223,9 +225,10 @@ sub process_xml_data ($$$$$) {
 	}
   	$AgentSem->up ();
 
-	pandora_update_agent ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $timezone_offset, $dbh);
-	# TODO: Check if it's needed to update the position
-	pandora_update_position($pa_config, $agent_id, $latitude, $longitude, $altitude, $dbh);
+    logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+	# Update agent information including position information
+	pandora_update_agent_gis ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $timezone_offset, $latitude, $longitude, $altitude, $dbh);
+
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 
 	# Process modules

@@ -1,3 +1,17 @@
+2010-01-15	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Modified to have different functions for the
+	creation and update of the agent when it has position information, also
+	added some auxiliary functions to store and update this position information.
+
+	* lib/PandoraFMS/DataServer.pm: Modified to use the new functions to create
+	and update the agent data adding also the position information.
+
+	* lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/PredictionServer.pm,
+	lib/PandoraFMS/NetworkServer.pm, lib/PandoraFMS/WMIServer.pm: Modified to use
+	again the old functions to create and update the angent as in this servers
+	we don't have the position information.
+
 2010-01-14  Miguel de Dios  <miguel.dedios@artica.es>
 	* DEBIAN/* : restore previus version, I had mistake with this directory in
 	Eclipse aplication between Enterprise and Open.

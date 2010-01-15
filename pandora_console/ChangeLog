@@ -1,3 +1,11 @@
+2010-01-15  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: Modified DB
+	schema to give a default value to start_timestamp on tgis_data, without
+	it as is a timestamp MySQL sets the default value as CURRENT_TIMESTAMP
+	and also sets the CURRENT_TIMESTAMP ON UPDATE, setting the DEFAULT 
+	CURRENT_TIMESTAMP prevents MySQL to set the ON UPDATE CURRENT_TIMESTAMP.
+
 2010-01-14  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: Modified DB

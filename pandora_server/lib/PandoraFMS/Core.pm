@@ -754,12 +754,12 @@ sub pandora_update_agent_gis ($$$$$$$$$$$) {
 	# Get the last position to see if it has moved.
 	my $last_agent_info= get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
 
-	logger($pa_config, "Old Agent data: last-latitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
+	logger($pa_config, "Old Agent data: last-longitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
 
 	# If the agent has moved outside the range stablised as 
-	if (distance_moved($last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_altitude'}, $latitude, $longitude, $altitude) > 10 ){
+	if (distance_moved($last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > 10 ){
 		# Save the agent data in the agent table
-		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_altitude'}, $agent_id, $dbh);
+		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $agent_id, $dbh);
 	}	
 	else {
 		# Update the end timestamp for the agent
@@ -768,13 +768,12 @@ sub pandora_update_agent_gis ($$$$$$$$$$$) {
 
     db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
 		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
-		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_longitude'},
-		$last_agent_info->{'last_altitude'}, $agent_id);
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $longitude, $latitude, $altitude, $agent_id);
 }
 
 
 sub distance_moved ($$$$$$) {
-	my ($last_latitude, $last_longitude, $last_altiude, $latitude, $longitude, $altitude) = @_;
+	my ($last_longitude, $last_latitude, $last_altiude, $longitude, $latitude, $altitude) = @_;
 
 	# Quick and dirty function to check if the point has moved.
 	# $prec_factor = 1000000;
@@ -1358,7 +1357,7 @@ sub pandora_inhibit_alerts ($$$) {
 sub update_agent_position($$$$) {
 	my ($pa_config, $timestamp, $agent_id, $dbh) = @_;
 
-    logger($pa_config, "Updating agent position: end_timestamp=$timestamp agent_id=$agent_id", 10);
+    logger($pa_config, "Updating agent end_timestamp: end_timestamp=$timestamp agent_id=$agent_id", 10);
 
 	# Find the last data from the received agent
 	my $agent_position = get_db_single_row ($dbh, 'SELECT * FROM tgis_data WHERE tagente_id_agente  = ? ORDER BY start_timestamp DESC LIMIT 1', $agent_id );
@@ -1375,7 +1374,7 @@ sub update_agent_position($$$$) {
 sub save_agent_position($$$$$$$) {
     my ($pa_config, $timestamp, $longitude,$latitude, $altitude, $agent_id, $dbh) = @_;
 
-    logger($pa_config, "Updating agent position: timestamp=$timestamp latitude=$latitude longitude=$longitude altitude=$altitude", 10);
+    logger($pa_config, "Saving new agent position: timestamp=$timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
 	db_insert($dbh, 'INSERT INTO tgis_data (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`, `end_timestamp`) VALUES (?, ?, ?, ?, ?, ?)', 
 		  $longitude, $latitude, $altitude, $agent_id, $timestamp, $timestamp);

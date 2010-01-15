@@ -1,5 +1,11 @@
 2010-01-15	Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Fixed a bug with
+	some parameters called on wrong order, standarized the order of the 
+	position parameters so always is longitude, latitude, altitude.
+
+2010-01-15	Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Modified to have different functions for the
 	creation and update of the agent when it has position information, also
 	added some auxiliary functions to store and update this position information.

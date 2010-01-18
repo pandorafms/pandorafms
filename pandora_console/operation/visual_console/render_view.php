@@ -65,6 +65,8 @@ if ($config["pure"] == 0) {
 	echo "</a>";
 }
 
+echo "&nbsp;";
+
 if (give_acl ($config["id_user"], $id_group, "AW"))
 	echo '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 

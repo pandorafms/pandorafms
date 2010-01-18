@@ -120,6 +120,9 @@
 #icon_oper-visualc {
 	background-image: url(../../images/monitor.png);
 }
+#icon_oper-gismaps {
+	background-image: url(../../images/server_web.png);
+}
 #icon_oper-extensions, #icon_god-extensions {
 	background-image: url(../../images/extensions.png);
 }

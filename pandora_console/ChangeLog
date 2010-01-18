@@ -1,5 +1,14 @@
 2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/visual_console/render_view.php: fix style, add a white space.
+	
+	* include/styles/menu.css, include/styles/pandora.css: add styles for
+	GIS maps.
+	* operation/gis_maps/*, operation/menu.php, images/gis_map,
+	godmode/setup/gis.php, godmode/menu.php: add first version of GIS maps.
+	
+2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/OpenLayers/*: include the OpenLayers library into the
 	Pandora file system for GIS use.
 	

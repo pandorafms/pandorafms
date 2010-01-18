@@ -60,6 +60,31 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$menu["estado"]["sub"] = $sub;
 	//End of view agents
 	
+	//INI GIS Maps
+	$menu["gismaps"]["text"] = __('GIS Maps');
+	$menu["gismaps"]["sec2"] = "operation/gis_maps/index";
+	$menu["gismaps"]["refr"] = 60;
+	$menu["gismaps"]["id"] = "oper-gismaps";
+	
+	$sub = array ();
+	
+	$gisMaps = get_db_all_rows_in_table ('tgis_map', 'map_name');
+	if ($gisMaps === false) {
+		$gisMaps = array ();
+	}
+	$id = (int) get_parameter ('id', -1);
+	
+	foreach ($gisMaps as $gisMap) {
+		if (! give_acl ($config["id_user"], $gisMap["group_id"], "AR")) {
+			continue;
+		}
+		$sub["operation/gis_maps/render_view&amp;id=".$gisMap["id_tgis_map"]]["text"] = mb_substr ($gisMap["map_name"], 0, 15);
+		$sub["operation/gis_maps/render_view&amp;id=".$gisMap["id_tgis_map"]]["refr"] = 0;
+	}
+	
+	$menu["gismaps"]["sub"] = $sub;
+	//END GIS Maps
+	
 	//Visual console
 	$menu["visualc"]["text"] = __('Visual console');
 	$menu["visualc"]["sec2"] = "operation/visual_console/index";

@@ -1,3 +1,10 @@
+2010-01-18	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Modified distance_moved function to calculate
+	the distance using Havesine formula to take in account the earths curvature
+	Modified update_agent_position to update also number_of_packages on 
+	tgis_data
+
 2010-01-15	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Fixed a bug with

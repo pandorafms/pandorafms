@@ -757,7 +757,7 @@ sub pandora_update_agent_gis ($$$$$$$$$$$) {
 	logger($pa_config, "Old Agent data: last-longitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
 
 	# If the agent has moved outside the range stablised as 
-	if (distance_moved($last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > 10 ){
+	if (distance_moved($pa_config, $last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > 10 ){
 		# Save the agent data in the agent table
 		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $agent_id, $dbh);
 	}	
@@ -765,24 +765,47 @@ sub pandora_update_agent_gis ($$$$$$$$$$$) {
 		# Update the end timestamp for the agent
 		update_agent_position($pa_config, $timestamp, $agent_id, $dbh);
 	}
-
+	
+	# Update the table tagente with all the new data
     db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
 		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
 		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $longitude, $latitude, $altitude, $agent_id);
 }
 
+##########################################################################
+# Measures the distance taking in acount the earth curvature
+# The distance is based on Havesine formula
+# Refferences:
+# * http://franchu.net/2007/11/16/gis-calculo-de-distancias-sobre-la-tierra/
+# * http://en.wikipedia.org/wiki/Haversine_formula
+##########################################################################
+sub distance_moved ($$$$$$$) {
+	my ($pa_config, $last_longitude, $last_latitude, $last_altitude, $longitude, $latitude, $altitude) = @_;
 
-sub distance_moved ($$$$$$) {
-	my ($last_longitude, $last_latitude, $last_altiude, $longitude, $latitude, $altitude) = @_;
+	my $pi =  4*atan2(1,1);
+	my $earth_radius_in_meters = 6372797.560856;
 
-	# Quick and dirty function to check if the point has moved.
-	# $prec_factor = 1000000;
-	# if (int ($last_latitude * $prec_factor) == int ($latitude * $prec_factor) &&
-	#	 int ($last_longitude * $prec_factor) == int ($longitude * $prec_factor) &&
-	#	 int ($last_altitude * $prec_factor) == int ($altitude * $prec_factor) ) { return false } else { return true}
+	my $long_difference = $last_longitude - $longitude;
+	my $lat_difference = $last_latitude - $latitude;
+	my $alt_difference = $last_altitude - $altitude;
+   
+ 	my $to_radians= $pi/180;
+ 	my $to_half_radians= $pi/360;
 
-	# TODO: Replace with a valid calculation of the distance
-	return rand(12);
+	my $long_aux = sin ($long_difference*$to_half_radians);
+	my $lat_aux = sin ($lat_difference*$to_half_radians);
+	$long_aux *= $long_aux;
+	$lat_aux *= $lat_aux;
+	# Temporary value to make sorter the asin formula.
+	my $asinaux = ($lat_aux + cos($last_latitude*$to_radians) * cos($latitude*$to_radians) * $long_aux );
+	# Assure the aux value is not greater than 1 
+	if ($asinaux > 1) { $asinaux = 1; }
+	my $dist_in_rad = 2 * atan2($asinaux, sqrt (1 - $asinaux * $asinaux));
+	my $dist_in_meters = $earth_radius_in_meters * $dist_in_rad;
+		
+	logger($pa_config, "Distance moved:" . $dist_in_meters ." meters", 10);
+
+	return $dist_in_meters;
 }
 
 
@@ -1352,7 +1375,7 @@ sub pandora_inhibit_alerts ($$$) {
 }
 
 ##########################################################################
-# Updates the end_timestamp of an agent in the tgis_data table
+# Updates agent's end_timestamp and number_of_packages in tgis_data table
 ##########################################################################
 sub update_agent_position($$$$) {
 	my ($pa_config, $timestamp, $agent_id, $dbh) = @_;
@@ -1364,7 +1387,7 @@ sub update_agent_position($$$$) {
  	return unless (defined ($agent_position));
 
 	# Upadate the timestap of the received agent
-	db_do ($dbh, 'UPDATE tgis_data SET end_timestamp = ? WHERE id_tgis_data = ?', $timestamp, $agent_position->{'id_tgis_data'});
+	db_do ($dbh, 'UPDATE tgis_data SET end_timestamp = ?, number_of_packages = number_of_packages +1 WHERE id_tgis_data = ?', $timestamp, $agent_position->{'id_tgis_data'});
 
 }
 

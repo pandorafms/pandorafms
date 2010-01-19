@@ -1,5 +1,15 @@
 2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php, operation/gis_maps/ajax.php: code for GIS maps,
+	now show correctly the path points and start to show the popup for this
+	points.
+	* include/javascript/OpenLayers/lib/Gears/gears_init.js,
+	include/javascript/OpenLayers/lib/OpenLayers/Format/ArcXML/Features.js:
+	some files of OpenLayers that I erased in the previous clean.
+	* images/spinner.gif: image for ajax loading.
+
+2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/visual_console/render_view.php: fix style, add a white space.
 	
 	* include/styles/menu.css, include/styles/pandora.css: add styles for

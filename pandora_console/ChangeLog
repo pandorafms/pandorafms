@@ -1,3 +1,7 @@
+2010-01-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_fsgraph.php: Merged from trunk.
+
 2010-01-13  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* pandoradb.sql: Changed comment to show this is the official

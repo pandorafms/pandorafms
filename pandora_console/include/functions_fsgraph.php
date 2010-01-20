@@ -33,7 +33,7 @@ function get_chart_code ($chart, $width, $height, $swf) {
     $output .= '<script type="text/javascript">
     			<!--
         			$(document).ready(function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $config['homeurl'] . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+        				var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 						myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");
@@ -182,17 +182,13 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
     $output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
-   
-	if ($config["homeurl"] == "/")
-		$pre_url = "";
-	else
-		$pre_url = $config["homeurl"];
+	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
 
 	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
     $output .= '<script type="text/javascript">
     			<!--
         			function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $config['homeurl'] . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+        				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
         				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 						myChart.addParam("WMode", "Transparent");
         				myChart.render("' . $div_id . '");

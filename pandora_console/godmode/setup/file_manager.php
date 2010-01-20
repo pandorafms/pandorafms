@@ -51,13 +51,12 @@ if ($upload_file) {
 
 if ($delete_file) {
 	echo "<h1>".__('Deleting file')."</h1>";
-	$file = (string) get_parameter ('filename');
-	$directory = (string) get_parameter ('directory');
-
-	$full_filename = $directory.'/'.$file;
-	if (!is_dir ($full_filename)){
-		echo "<h3>".__('Deleting')." ".$full_filename."</h3>";
-		unlink ($full_filename);
+	$filename = (string) get_parameter ('filename');
+	echo "<h3>".__('Deleting')." ".$filename."</h3>";
+	if (is_dir ($filename)) {		
+		rmdir ($filename);
+	} else {
+		unlink ($filename);
 	}
 }
 
@@ -146,7 +145,7 @@ $table->head[0] = '';
 $table->head[1] = __('Name');
 $table->head[2] = __('Last modification');
 $table->head[3] = __('Size');
-$table->head[4] = '';
+$table->head[4] = __('Delete');
 
 $prev_dir = split ("/", $directory);
 $prev_dir_str = "";
@@ -208,6 +207,18 @@ foreach ($files as $fileinfo) {
 		$data[3] = format_filesize ($fileinfo['size']);
 	}
 	
+	# Delete button
+	if (is_writable ($fileinfo['realpath'])  &&
+		(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
+		$data[4] = '<form method="post" action="index.php?sec=gsetup&amp;sec2=godmode/setup/file_manager">';
+		$data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		$data[4] .= print_input_hidden ('filename', $fileinfo['realpath'], true);
+		$data[4] .= print_input_hidden ('delete_file', 1, true);
+		$data[4] .= '</form>';
+	} else {
+		$data[4] = '';
+	}
+
 	array_push ($table->data, $data);
 }
 

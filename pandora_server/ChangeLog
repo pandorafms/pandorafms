@@ -1,3 +1,7 @@
+2010-01-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_xml_stress.pl: Fixed the script. Was not working.
+
 2010-01-18	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Modified distance_moved function to calculate

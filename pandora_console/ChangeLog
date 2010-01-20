@@ -1,3 +1,7 @@
+2010-01-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_fsgraph.php: Fixed paths for Fusion Charts.
+
 2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php, operation/gis_maps/ajax.php: code for GIS maps,

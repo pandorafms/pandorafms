@@ -166,17 +166,11 @@ sub process_xml_data ($$$$$) {
 	if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
 		$timezone_offset = 0; # Default value
 	}
-	# Longitude must be a real number
-	if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
-		$longitude = 0.0; # Default value
-	}
-	# Latitude must be a real number
-	if ($latitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
-		$latitude = 0.0; # Default value
-	}
-	# Altitude must be a real number
-	if ($altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
-		$altitude = 0.0; # Default value
+
+	my $valid_position_data = 1; 	
+	# If position data are not valid should be ignored
+	if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+		$valid_position_data = 0;	
 	}
 			
 	logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude", 10);
@@ -191,7 +185,18 @@ sub process_xml_data ($$$$$) {
 	if ( $data->{'timestamp'} =~ /AUTO/ ){
 		$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
 	}
+	else {
+		# Modify the timestamp with the timezone_offset
+		logger($pa_config, "Unmodified timestamp = $timestamp", 5);
+		$timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/;
+        #my $last_fired = ($1 > 0) ? 
+		my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) + ($timezone_offset * 3600); 
+		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
+        $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+		logger($pa_config, "Modified timestamp = $timestamp with timezone_offset = $timezone_offset", 5);
+	}
 
+	
   	# Check some variables
    	$interval = 300 if (! defined ($interval) || $interval eq '');
    	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
@@ -215,9 +220,16 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 
 		# Create the agent
-		logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-		$agent_id = pandora_create_agent_gis ($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, $description, $interval, $timezone_offset, 
-					$longitude, $latitude, $altitude, $dbh);
+		if ($valid_position_data  == 1) {
+			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, 
+												  $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);
+		}
+		else { # Ignore agent positional data
+			logger($pa_config, "Creating agent $agent_name", 5);
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os,
+												  $description, $interval, $dbh, $timezone_offset);
+		}
 		if (! defined ($agent_id)) {
 			$AgentSem->up ();
 			return;
@@ -225,10 +237,16 @@ sub process_xml_data ($$$$$) {
 	}
   	$AgentSem->up ();
 
-    logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-	# Update agent information including position information
-	pandora_update_agent_gis ($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $timezone_offset, $longitude, $latitude, $altitude, $dbh);
-
+	if ($valid_position_data  == 1) {
+    	logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+		# Update agent information including position information
+		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);
+	}
+	else {
+    	logger($pa_config, "Updating agent $agent_name", 5);
+		# Update agent information without position information
+		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset);
+	}	
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 
 	# Process modules

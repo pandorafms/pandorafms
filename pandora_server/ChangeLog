@@ -1,3 +1,12 @@
+2010-01-21	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Modified to unify create and update functions
+	using optinal parameters as Ramon sugested. 
+
+	* lib/PandoraFMS/DataServer.pm: Modified to ignore invalid positional data,
+	use the unified functions from Core.pm, and store the agent_timestamp 
+	modified by the agent_timezone.	
+
 2010-01-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_xml_stress.pl: Fixed the script. Was not working.

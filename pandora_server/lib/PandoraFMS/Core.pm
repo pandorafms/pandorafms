@@ -38,7 +38,6 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
 	pandora_audit
 	pandora_create_agent
-	pandora_create_agent_gis
 	pandora_create_incident
 	pandora_create_module
 	pandora_evaluate_alert
@@ -60,7 +59,6 @@ our @EXPORT = qw(
 	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_update_agent
-	pandora_update_agent_gis
 	pandora_update_module_on_error
 	pandora_update_server
 
@@ -710,34 +708,12 @@ sub pandora_update_server ($$$$$;$$) {
 }
 
 ##########################################################################
-# Update last contact field in agent table
-##########################################################################
-sub pandora_update_agent ($$$$$$$) {
-	my ($pa_config, $agent_timestamp, $agent_id, $os_version,
-		$agent_version, $agent_interval, $dbh) = @_;
-
-	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-	
-	pandora_access_update ($pa_config, $agent_id, $dbh);
-
-	# No update for interval field (some old agents don't support it)
-	if ($agent_interval == -1){
-		db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
-		$agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-		return;
-	}
-	
-	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
-		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
-}
-
-##########################################################################
 # Update last contact, timezone and position fields in agent table
 ##########################################################################
-sub pandora_update_agent_gis ($$$$$$$$$$$) {
+sub pandora_update_agent ($$$$$$$;$$$$) {
     my ($pa_config, $agent_timestamp, $agent_id, $os_version,
-        $agent_version, $agent_interval, $timezone_offset,
-		$longitude, $latitude, $altitude, $dbh) = @_;
+        $agent_version, $agent_interval, $dbh, $timezone_offset,
+		$longitude, $latitude, $altitude) = @_;
 
     my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
@@ -749,10 +725,34 @@ sub pandora_update_agent_gis ($$$$$$$$$$$) {
         $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
         return;
     }
-
+	
+	#Test if we have received the optional position parameters
+	if (!defined ($longitude) || !defined ($latitude ) || !defined ($altitude)){
+		if ( defined ($timezone_offset)) {
+		# Update the table tagente with all the new data
+		db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
+			   timezone_offset = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
+		}
+		else {
+		# Update the table tagente with all the new data
+		db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
+			   $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
+		}
+		return;
+	}
+		
+	# If there is positional data
 	logger($pa_config, "Agent id $agent_id",10);
 	# Get the last position to see if it has moved.
 	my $last_agent_info= get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
+
+	# if the the flag update_gis_data is 0 the positional data is ignored.
+	if ($last_agent_info->{'update_gis_data'} == 0){
+		logger($pa_config, "Agent id $agent_id positional data ignored",10);
+        db_do($dbh, 'UPDATE tagente SET  intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
+        $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
+        return;
+    }
 
 	logger($pa_config, "Old Agent data: last-longitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
 
@@ -880,39 +880,32 @@ sub pandora_create_module ($$$$$$$$$$) {
 }
 
 ##########################################################################
-# Create a new entry in tagente.
-##########################################################################
-sub pandora_create_agent ($$$$$$$$$$$) {
-	my ($pa_config, $server_name, $agent_name, $address,
-		$address_id, $group_id, $parent_id, $os_id,
-		$description, $interval, $dbh) = @_;
-
-	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
-
-	$description = "Created by $server_name" unless ($description ne '');
-
-	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
-
-	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
-	return $agent_id;
-}
-##########################################################################
 # Create a new entry in tagente with position information
 ##########################################################################
-sub pandora_create_agent_gis ($$$$$$$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$address_id, $group_id, $parent_id, $os_id,
-		$description, $interval, $timezone_offset,
-		$longitude, $latitude, $altitude, $dbh) = @_;
+		$description, $interval, $dbh, $timezone_offset,
+		$longitude, $latitude, $altitude) = @_;
 
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 
 	$description = "Created by $server_name" unless ($description ne '');
-
-	my $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
+	my $agent_id;
+	# Test if the optional positional parameters are defined
+	if (!defined ($timezone_offset) || !defined ($longitude) || !defined ($latitude ) || !defined ($altitude)){
+		$agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
+	}
+	else {
+		 $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
 				`timezone_offset`, `last_longitude`, `last_latitude`, `last_altitude`,`modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, 
 				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset, $longitude, $latitude, $altitude);
+		# Save the first position
+		my $utimestamp = time ();
+  	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+		save_agent_position($pa_config, $timestamp, $longitude, $latitude, $altitude,  $agent_id, $dbh);
+	}
 
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);

@@ -1,4 +1,8 @@
-2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: fix mistake with dates, sorry.
+
+2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/styles/menu.css, godmode/gis_maps, godmode/menu.php,
 	godmode/gis_maps/configure_gis_map.php, godmode/gis_maps/index.php: add the
@@ -9,7 +13,7 @@
 	* include/functions_gis.php: add code for respond to events, add function
 	"saveMap" to save a map.
 
-2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/OpenLayers/*: commit lost files of OpenLayer library.
 

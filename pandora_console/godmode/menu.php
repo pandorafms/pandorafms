@@ -121,6 +121,11 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 	$menu["gmap"]["text"] = __('Map builder');
 	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
 	$menu["gmap"]["id"] = "god-map";
+	
+	$menu["godgismaps"]["text"] = __('GIS Maps');
+	$menu["godgismaps"]["sec2"] = "godmode/gis_maps/index";
+	$menu["godgismaps"]["refr"] = 60;
+	$menu["godgismaps"]["id"] = "god-gismaps";
 }
 
 if (give_acl ($config['id_user'], 0, "PM")) {

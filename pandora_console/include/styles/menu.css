@@ -128,6 +128,9 @@
 }
 
 /* Godmode images */
+#icon_god-gismaps {
+	background-image: url(../../images/server_web.png);
+}
 #icon_god-agents {
 	background-image: url(../../images/god1.png);
 }

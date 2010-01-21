@@ -62,6 +62,9 @@ if ($layers != false) {
 			$idAgent = get_agent_id($agentName);
 			$coords = get_agent_last_coords($idAgent);
 			
+			if ($coords['last_latitude'] == null)
+				continue;
+			
 			switch (get_agent_status($idAgent)) {
 				case 1:
 				case 4:
@@ -86,6 +89,7 @@ if ($layers != false) {
 			addPoint($layer['layer_name'], $agentName, $coords['last_latitude'], $coords['last_longitude'], $icon);
 		}
 	}
+	activateSelectControl();
 }
 
 ?>

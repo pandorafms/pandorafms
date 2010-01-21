@@ -1,5 +1,16 @@
 2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/styles/menu.css, godmode/gis_maps, godmode/menu.php,
+	godmode/gis_maps/configure_gis_map.php, godmode/gis_maps/index.php: add the
+	page to manipulate the GIS maps and add the page to create (and edit not at
+	the moment) the GIS maps.
+	* operation/gis_maps/render_view.php: small changes in the develop of
+	render, add events and popups.
+	* include/functions_gis.php: add code for respond to events, add function
+	"saveMap" to save a map.
+
+2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/OpenLayers/*: commit lost files of OpenLayer library.
 
 2010-01-20  Ramon Novoa  <rnovoa@artica.es>

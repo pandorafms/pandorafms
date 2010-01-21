@@ -43,6 +43,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $url
 								break;
 						}
 					}
+					echo ", new OpenLayers.Control.LayerSwitcher()";
 					echo "],";
 					?>
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
@@ -104,13 +105,13 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $url
 			if (manual) {
 				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id,
 					lanlot: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
-					{fillColor: "#ffffff", pointRadius: pointRadiusManual, stroke: 1, strokeColor: color, strokeWidth: strokeWidth}
+					{fillColor: "#ffffff", pointRadius: pointRadiusManual, stroke: 1, strokeColor: color, strokeWidth: strokeWidth, cursor: "pointer"}
 				);
 			}
 			else {
 				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id,
 					lanlot: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
-						{fillColor: color, pointRadius: pointRadiusNormal}
+						{fillColor: color, pointRadius: pointRadiusNormal, cursor: "pointer"}
 				);
 			}
 
@@ -139,7 +140,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $url
 	<?php
 }
 
-function makeLayer($name, $visible = true, $dot = null) {
+function makeLayer($name, $visible = true, $dot = null) { static $i = 0;
 	if ($dot == null) {
 		$dot['url'] = 'images/dot_green.png';
 		$dot['width'] = 20; //11;
@@ -167,10 +168,6 @@ function makeLayer($name, $visible = true, $dot = null) {
 
             layer.setVisibility(<?php echo $visible; ?>);
 			map.addLayer(layer);
-
-			var select = new OpenLayers.Control.SelectFeature(layer);
-            map.addControl(select);
-            select.activate();
 
             layer.events.on({
                 "featureselected": function(e) {
@@ -209,6 +206,22 @@ function makeLayer($name, $visible = true, $dot = null) {
                 	}
                 }
             });
+		}
+	);
+	</script>
+	<?php
+}
+
+function activateSelectControl($layers=null) {
+?>
+	<script type="text/javascript">
+	$(document).ready (
+		function () {
+            var layers = map.getLayersByClass("OpenLayers.Layer.Vector");
+            
+            var select = new OpenLayers.Control.SelectFeature(layers);
+            map.addControl(select);
+            select.activate();
 		}
 	);
 	</script>
@@ -289,7 +302,7 @@ function get_agent_icon_map($idAgent, $state = false) {
 	$row = get_db_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
 	
 	if ($row['icon_path'] === null) {
-		$iconGroup = "images/" . get_group_icon($row['id_grupo']) . ".png";
+		$iconGroup = "images/groups_small/" . get_group_icon($row['id_grupo']) . ".png";
 		return $iconGroup;
 	}
 	else {
@@ -302,8 +315,10 @@ function get_agent_icon_map($idAgent, $state = false) {
 }
 
 function addPath($layerName, $idAgent) {
+	
 	$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
 	
+	if ($idAgent == 1) {
 	$listPoints = array(
 		array('id_tgis_data' => 0, 'longitude' => -3.709, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 1),
 		array('id_tgis_data' => 1, 'longitude' => -3.710, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 0),
@@ -311,10 +326,29 @@ function addPath($layerName, $idAgent) {
 		array('id_tgis_data' => 3, 'longitude' => -3.712, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
 		array('id_tgis_data' => 4, 'longitude' => -3.708187, 'latitude' => 40.42056, 'altitude' => 0, 'manual_placemen' => 0)
 	);
+	}
+	
+	if ($idAgent == 2) {
+	$listPoints = array(
+		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.704, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.706, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0)
+	);
+	}
+	
+	if ($idAgent == 3) {
+		$listPoints = array(
+		array('id_tgis_data' => 0, 'longitude' => -3.701, 'latitude' => 40.425, 'altitude' => 0, 'manual_placemen' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.708, 'latitude' => 40.424, 'altitude' => 0, 'manual_placemen' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.705, 'latitude' => 40.421, 'altitude' => 0, 'manual_placemen' => 0)
+	);
+	}
 	
 	$avaliableColors = array("#ff0000", "#00ff00", "#0000ff", "#000000");
 	
-	$color = $avaliableColors[array_rand($avaliableColors)];
+	$randomIndex = array_rand($avaliableColors);
+	$color = $avaliableColors[$randomIndex];
 	?>
 	<script type="text/javascript">
 		$(document).ready (
@@ -345,5 +379,82 @@ function addPath($layerName, $idAgent) {
 				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placemen'], $point['id_tgis_data']);
 		}
 	} 
+}
+
+function saveMap($conf, $baselayers, $layers) {
+	$return = false;
+	
+	//TODO validation data
+	
+	//BY DEFAULT TODO need code and change db
+	$articaLongitude = -3.708187;
+	$articaLatitude = 40.42056;
+	$articaAltitude = 0;
+	$defaultControl = array ('type' => 'controls',
+		'content' => array('Navigation', 'PanZoomBar', 'ScaleLine')
+	);
+	//BY DEFAULT TODO need code and change db
+	
+	$idMap = process_sql_insert('tgis_map',
+		array(
+			'map_name' => $conf['name'],   
+			'initial_longitude' => $articaLongitude,
+			'initial_latitude' => $articaLatitude,
+			'initial_altitude' => $articaAltitude,
+			'zoom_level' => $conf['initial_zoom'],
+			'group_id' => $conf['group']
+			
+		)
+	);
+	$zoom = array("type" => "numLevelsZoom","content" => $conf['numLevelsZoom']);
+	
+	process_sql_insert('tgis_map_connection',
+		array(
+			'conection_data' => json_encode($defaultControl),    
+			'tgis_map_id_tgis_map' => $idMap	
+		)
+	);
+	
+	process_sql_insert('tgis_map_connection',
+		array(
+			'conection_data' => json_encode($zoom),    
+			'tgis_map_id_tgis_map' => $idMap	
+		)
+	);
+	
+	foreach ($baselayers as $baselayer) {
+		switch ($baselayer['type']) {
+			case 'osm':
+				$temp = array(
+    				'type' => 'baselayer',
+					'content' => array(
+            			'typeBaseLayer' => 'OSM',
+						'url' => $baselayer['url'] //,
+						//'default' => $baselayer['default']
+        			)
+				);
+				
+				process_sql_insert('tgis_map_connection',
+					array(
+						'conection_data' => json_encode($temp),    
+						'tgis_map_id_tgis_map' => $idMap	
+					)
+				);
+				break;
+		}
+	}
+	
+	foreach($layers as $layer) {
+		process_sql_insert('tgis_map_layer',
+			array(
+				'layer_name' => $layer['name'],
+				'view_layer' => $layer['visible'],
+				'tgis_map_id_tgis_map' => $idMap,
+				'tgrupo_id_grupo' => $layer['group']
+			)
+		);			
+	}
+	
+	return $return;
 }
 ?>

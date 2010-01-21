@@ -1,3 +1,7 @@
+2010-01-18 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/OpenLayers/*: commit lost files of OpenLayer library.
+
 2010-01-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/file_manager.php: Added support for file and empty

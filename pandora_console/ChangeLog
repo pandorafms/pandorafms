@@ -1,4 +1,8 @@
 2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/config_process.php: use the flag "$develop_bypass" to change the
+	method to show the php messages for developing purposes. 
+
+2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
 	* godmode/setup/setup.php: fix bug that overwrite the row of "Attachment
 	store" field when put the row of field "IP list with API access".
 

@@ -81,8 +81,8 @@ fi
 exit 0
 
 %post
-chkconfig -s pandora_server on 
-chkconfig -s tentacle_serverd on 
+chkconfig pandora_server on 
+chkconfig tentacle_serverd on 
 
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_db
 chmod 750 /etc/cron.daily/pandora_db
@@ -107,8 +107,8 @@ echo "data using tentacle"
 %preun
 /etc/init.d/pandora_server stop &>/dev/null
 /etc/init.d/tentacle_serverd stop &>/dev/null
-chkconfig -d pandora_server
-chkconfig -d tentacle_serverd
+chkconfig --del pandora_server
+chkconfig --del tentacle_serverd
 
 %postun
 rm -Rf /etc/init.d/tentacle_serverd

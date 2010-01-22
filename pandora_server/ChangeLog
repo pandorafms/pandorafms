@@ -1,3 +1,12 @@
+2010-01-21  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec: Fixed spec to be more compatible with other
+	RPM distros.
+
+	* lib/PandoraFMS/NetworkServer.pm: Fixed ugly/noisy message "Use of
+	uninitialized value $output in string eq at /usr/local/share/perl
+	/5.10.0/PandoraFMS/NetworkServer.pm line 268".
+
 2010-01-21	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Modified to unify create and update functions

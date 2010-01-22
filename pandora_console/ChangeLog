@@ -1,5 +1,10 @@
 2010-01-22  Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* include/functions_config.php: Modified to handle activate_gis 
+	configuration parameter. And establish a default value.
+
+2010-01-22  Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql, 
 	pandoradb_data.sql: Modified the GIS related tables, to make a better
 	GIS Data model, also included the activate_gis config parameter on tconfig.

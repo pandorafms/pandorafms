@@ -169,6 +169,8 @@ function update_config () {
 	update_config_value ('history_db_step', (string) get_parameter ('history_db_step', $config['history_db_step']));
 	update_config_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
 
+	update_config_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
+
 }
 
 /**
@@ -350,6 +352,10 @@ function process_config () {
 
 	if (!isset ($config['history_db_delay'])) {
 		update_config_value ( 'history_db_delay', 0);
+	}
+
+	if (!isset ($config['activate_gis'])) {
+		update_config_value ( 'activate_gis', 0);
 	}
 
 	/* Finally, check if any value was overwritten in a form */

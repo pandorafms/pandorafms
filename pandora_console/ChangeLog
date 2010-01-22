@@ -1,4 +1,8 @@
 2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
+	* godmode/setup/setup.php: fix bug that overwrite the row of "Attachment
+	store" field when put the row of field "IP list with API access".
+
+2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: fix mistake with dates, sorry.
 

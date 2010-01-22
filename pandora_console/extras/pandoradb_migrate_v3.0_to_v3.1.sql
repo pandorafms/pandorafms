@@ -7,7 +7,13 @@ ALTER TABLE tagente ADD `last_altitude` DOUBLE NULL COMMENT 'last altitude of th
 
 ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0;
 
--- GIS extension Tables
+ALTER TABLE `tserver_export` ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Nuber of hours of diference with the server timezone';
+
+
+-- GIS extension Tables and DATA
+
+-- GIS is disabled by default
+INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
 
 -- -----------------------------------------------------
 -- Table `tgis_data`
@@ -44,7 +50,9 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
   `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
   `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
   `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
-  PRIMARY KEY (`id_tgis_map`) )
+  PRIMARY KEY (`id_tgis_map`),
+  INDEX `map_name_index` (`map_name` ASC)
+)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
 
@@ -53,17 +61,44 @@ COMMENT = 'Table containing information about a gis map';
 -- -----------------------------------------------------
 CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
   `id_tmap_connection` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
+  `conection_name` VARCHAR(45) NULL COMMENT 'Name of the connection (name of the base layer)' ,
+  `connection_type` VARCHAR(45) NULL COMMENT 'Type of map server to connect' ,
   `conection_data` TEXT NULL COMMENT 'connection information (this can probably change to fit better the possible connection parameters)' ,
-  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map that uses this connection' ,
-  PRIMARY KEY (`id_tmap_connection`) ,
-  INDEX `fk_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-  CONSTRAINT `fk_tgis_map_connection_tgis_map1`
+  `num_zoom_levels` TINYINT(2) NULL COMMENT 'Number of zoom levels available' ,
+  `default_zoom_level` TINYINT(2) NOT NULL DEFAULT 16 COMMENT 'Default Zoom Level for the connection' ,
+  `default_longitude` DOUBLE NULL COMMENT 'default longitude for the agents placed on the map' ,
+  `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
+  `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
+  `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
+  `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
+  `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  PRIMARY KEY (`id_tmap_connection`) )
+ENGINE = InnoDB
+COMMENT = 'Table to store the map connection information';
+
+-- -----------------------------------------------------
+-- Table `tgis_map_has_tgis_map_connection`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
+  `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map' ,
+  `tgis_map_connection_id_tmap_connection` INT NOT NULL COMMENT 'reference to tgis_map_connection' ,
+  `modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection' ,
+  `default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map' ,
+  PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_connection_id_tmap_connection`) ,
+  INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
+  INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_connection_id_tmap_connection` ASC) ,
+  CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map1`
     FOREIGN KEY (`tgis_map_id_tgis_map` )
     REFERENCES `tgis_map` (`id_tgis_map` )
     ON DELETE CASCADE
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1`
+    FOREIGN KEY (`tgis_map_connection_id_tmap_connection` )
+    REFERENCES `tgis_map_connection` (`id_tmap_connection` )
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-COMMENT = 'Table to store the map connection information';
+COMMENT = 'Table to asociate a connection to a gis map';
 
 -- -----------------------------------------------------
 -- Table `tgis_map_layer`
@@ -72,9 +107,10 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
   `id_tmap_layer` INT NOT NULL AUTO_INCREMENT COMMENT 'table id' ,
   `layer_name` VARCHAR(45) NOT NULL COMMENT 'Name of the layer ' ,
   `view_layer` TINYINT(1) NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
+  `layer_stack_order` TINYINT(3) NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.\n' ,
   `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
   `tgrupo_id_grupo` MEDIUMINT(4) UNSIGNED NOT NULL COMMENT 'reference to the group shown in the layer' ,
-  PRIMARY KEY (`id_tmap_layer`, `tgis_map_id_tgis_map`) ,
+  PRIMARY KEY (`id_tmap_layer`) ,
   INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
   INDEX `fk_tmap_layer_tgrupo1` (`tgrupo_id_grupo` ASC) ,
   CONSTRAINT `fk_tmap_layer_tgis_map1`
@@ -89,3 +125,26 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';
+
+-- -----------------------------------------------------
+-- Table `tgis_map_layer_has_tagente`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
+  `tgis_map_layer_id_tmap_layer` INT NOT NULL ,
+  `tagente_id_agente` INT(10) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`tgis_map_layer_id_tmap_layer`, `tagente_id_agente`) ,
+  INDEX `fk_tgis_map_layer_has_tagente_tgis_map_layer1` (`tgis_map_layer_id_tmap_layer` ASC) ,
+  INDEX `fk_tgis_map_layer_has_tagente_tagente1` (`tagente_id_agente` ASC) ,
+  CONSTRAINT `fk_tgis_map_layer_has_tagente_tgis_map_layer1`
+    FOREIGN KEY (`tgis_map_layer_id_tmap_layer` )
+    REFERENCES `tgis_map_layer` (`id_tmap_layer` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tgis_map_layer_has_tagente_tagente1`
+    FOREIGN KEY (`tagente_id_agente` )
+    REFERENCES `tagente` (`id_agente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+COMMENT = 'Table to define wich agents are shown in a layer';
+

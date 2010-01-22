@@ -1,3 +1,11 @@
+2010-01-22  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql, 
+	pandoradb_data.sql: Modified the GIS related tables, to make a better
+	GIS Data model, also included the activate_gis config parameter on tconfig.
+	Added column timezone_offset to table tserver_export so the export server
+	can send timezone information
+
 2010-01-21 Miguel de Dios  <miguel.dedios@artica.es>
 	* include/config_process.php: use the flag "$develop_bypass" to change the
 	method to show the php messages for developing purposes. 

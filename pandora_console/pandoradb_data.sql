@@ -63,6 +63,7 @@ INSERT INTO `tconfig` VALUES
 (25, 'trap2agent', 0),
 (26, 'prominent_time', 0),
 (27, 'timesource', 'system');
+INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
 
 UNLOCK TABLES;
 

@@ -1,3 +1,8 @@
+2010-01-22 Sancho Lerena <slerena@artica.es>
+
+	* include/help/es/help_alert_macros.php: Update spanish help for alet
+	macros.
+
 2010-01-22  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/functions_config.php: Modified to handle activate_gis 

@@ -119,6 +119,10 @@ $table->data[15][0] = __('IP list with API access') .
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
 $table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 10, 15, $list_ACL_IPs_for_API, null, true);
 
+$table->data[16][0] = __('Enable GIS features in Pandora Console');
+$table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
+$table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
+
 enterprise_hook ('setup');
 
 echo '<form id="form_setup" method="post">';

@@ -1,5 +1,15 @@
 2010-01-25 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb.sql: add the group column for SLA purposes.
+	* operation/agentes/gis_view.php: page for GIS data in agents view.
+	* operation/agentes/ver_agente.php: add the tab for GIS data.
+	* operation/menu.php, godmode/menu.php: change the lines for show the
+	entries in menu, now show the entries gis when it's set on.
+	* godmode/setup/setup.php: add the field to set on or off the GIS features
+	in the Pandora Console.
+
+2010-01-25 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/config_process.php: small fix for to erase a alert message in php
 	when call a ajax.php. 
 

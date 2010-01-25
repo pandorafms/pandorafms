@@ -253,36 +253,50 @@ echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Grou
 // Inventory
 enterprise_hook ('inventory_tab');
 
+// GIS tab
+if ($config['activate_gis']) {
+	if ($tab == "gis") {
+		echo "<li class='nomn_high'>";
+	} else {
+		echo "<li class='nomn'>";
+	}
+	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente=$id_agente'><img src='images/world.png' class='top' border=0 title='".__('GIS data')."'>&nbsp;</a>";
+	echo "</li>";
+}
+
 echo "</ul>";
 echo "</div>";
 echo "</div>";
 echo "<div style='height: 25px'> </div>";
 
 switch ($tab) {
-case "sla":
-	require ("sla_view.php");
-	break;
-case "manage":	
-	require ("estado_generalagente.php");
-	break;
-case "main":	
-	require ("estado_generalagente.php");
-	require ("estado_monitores.php");
-	require ("alerts_status.php");
-	require ("status_events.php");
-	break;
-case "data_view":
-	require ("datos_agente.php");
-	break;
-case "data":
-	require ("estado_ultimopaquete.php");
-	break;
-case "alert":
-	require ("alerts_status.php");
-	break;
-case "inventory":
-	enterprise_include ('operation/agentes/agent_inventory.php');
-	break;
+	case "gis":
+		require ("gis_view.php");
+		break;
+	case "sla":
+		require ("sla_view.php");
+		break;
+	case "manage":	
+		require ("estado_generalagente.php");
+		break;
+	case "main":	
+		require ("estado_generalagente.php");
+		require ("estado_monitores.php");
+		require ("alerts_status.php");
+		require ("status_events.php");
+		break;
+	case "data_view":
+		require ("datos_agente.php");
+		break;
+	case "data":
+		require ("estado_ultimopaquete.php");
+		break;
+	case "alert":
+		require ("alerts_status.php");
+		break;
+	case "inventory":
+		enterprise_include ('operation/agentes/agent_inventory.php');
+		break;
 }
 
 ?>

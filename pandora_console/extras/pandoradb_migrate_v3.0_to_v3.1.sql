@@ -72,6 +72,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
   `initial_longitude` DOUBLE NULL COMMENT 'longitude of the center of the map when it\'s loaded' ,
   `initial_latitude` DOUBLE NULL COMMENT 'latitude of the center of the map when it\'s loaded' ,
   `initial_altitude` DOUBLE NULL COMMENT 'altitude of the center of the map when it\'s loaded' ,
+  `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map',
   PRIMARY KEY (`id_tmap_connection`) )
 ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';

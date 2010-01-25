@@ -1,3 +1,8 @@
+2010-01-25  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added group column to control
+	ACLs as it was done in pandoradb.sql.
+
 2010-01-25 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql: add the group column for SLA purposes.

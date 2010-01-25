@@ -1,3 +1,10 @@
+2010-01-25	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm,
+	lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Added activate_gis
+	configuration parameter, and modified Core.pm and Dataserver.pm to skip
+	positional data processing when activate_gis is not activated
+
 2010-01-21  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.spec: Fixed spec to be more compatible with other

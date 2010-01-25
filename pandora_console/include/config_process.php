@@ -26,6 +26,7 @@ $build_version = 'PC091231';
 $pandora_version = 'v3.1-dev';
 
 /* Help to debug problems. Override global PHP configuration */
+if (!isset($develop_bypass)) $develop_bypass = 0;
 
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);

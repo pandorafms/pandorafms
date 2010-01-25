@@ -122,10 +122,12 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
 	$menu["gmap"]["id"] = "god-map";
 	
-	$menu["godgismaps"]["text"] = __('GIS Maps');
-	$menu["godgismaps"]["sec2"] = "godmode/gis_maps/index";
-	$menu["godgismaps"]["refr"] = 60;
-	$menu["godgismaps"]["id"] = "god-gismaps";
+	if ($config['activate_gis']) {
+		$menu["godgismaps"]["text"] = __('GIS Maps');
+		$menu["godgismaps"]["sec2"] = "godmode/gis_maps/index";
+		$menu["godgismaps"]["refr"] = 60;
+		$menu["godgismaps"]["id"] = "god-gismaps";
+	}
 }
 
 if (give_acl ($config['id_user'], 0, "PM")) {
@@ -166,7 +168,8 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 	$sub = array ();
 
-	$sub["godmode/setup/gis"]["text"] = __('Map GIS');
+	if ($config['activate_gis'])
+		$sub["godmode/setup/gis"]["text"] = __('Map GIS');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/links"]["text"] = __('Links');

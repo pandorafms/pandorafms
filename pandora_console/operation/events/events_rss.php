@@ -13,16 +13,23 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-
 ini_set ('display_errors', 0); //Don't display other errors, messes up XML
-header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
-
-
 
 require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
+require_once "../../include/functions_api.php";
+
+$ipOrigin = $_SERVER['REMOTE_ADDR'];
+
+// Uncoment this to activate ACL on RSS Events
+/*
+if (!isInACL($ipOrigin)) {
+    exit;
+}
+*/
+
+header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
 
 function rss_error_handler ($errno, $errstr, $errfile, $errline) {
 	global $config;

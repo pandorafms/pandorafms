@@ -153,28 +153,31 @@ sub data_consumer ($$) {
 sub process_xml_data ($$$$$) {
 	my ($pa_config, $file_name, $data, $server_id, $dbh) = @_;
 
-	my ($agent_name, $agent_version, $timestamp, $interval, $os_version) =
+	my ($agent_name, $agent_version, $timestamp, $interval, $os_version, $timezone_offset) =
 	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
-	    $data->{'interval'}, $data->{'os_version'});
-
-	# Get GIS information
-	my ($timezone_offset, $longitude, $latitude, $altitude) = ($data->{'timezone_offset'},
-	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'});
-
-	# Validate the GIS informtation
-	# Timezone offset must be an integer beween -12 and +12
-	if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
-		$timezone_offset = 0; # Default value
-	}
+	    $data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
 
 	my $valid_position_data = 1; 	
-	# If position data are not valid should be ignored
-	if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
-		$valid_position_data = 0;	
-	}
-			
-	logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
+	# Get GIS information
+	my ($longitude, $latitude, $altitude) = (
+	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'});
+
+	if ($pa_config->{'activate_gis'}) {
+
+		# Validate the GIS informtation
+		# Timezone offset must be an integer beween -12 and +12
+		if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
+			$timezone_offset = 0; # Default value
+		}
+
+		# If position data are not valid should be ignored
+		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+			$valid_position_data = 0;	
+		}
+			
+		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude", 10);
+	}
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
 		logger($pa_config, "$file_name has data from an unnamed agent", 3);
@@ -220,7 +223,7 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 
 		# Create the agent
-		if ($valid_position_data  == 1) {
+		if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, 
 												  $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);
@@ -237,7 +240,7 @@ sub process_xml_data ($$$$$) {
 	}
   	$AgentSem->up ();
 
-	if ($valid_position_data  == 1) {
+	if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0) {
     	logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 		# Update agent information including position information
 		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);

@@ -727,7 +727,7 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
     }
 	
 	#Test if we have received the optional position parameters
-	if (!defined ($longitude) || !defined ($latitude ) || !defined ($altitude)){
+	if (!defined ($longitude) || !defined ($latitude ) || !defined ($altitude) || $pa_config->{'activate_gis'} == 0 ){
 		if ( defined ($timezone_offset)) {
 		# Update the table tagente with all the new data
 		db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
@@ -738,6 +738,7 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 		db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
 			   $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
 		}
+		# Without valid positional paremeters or desactivated gis system there is nothing more to do here
 		return;
 	}
 		
@@ -892,8 +893,8 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 
 	$description = "Created by $server_name" unless ($description ne '');
 	my $agent_id;
-	# Test if the optional positional parameters are defined
-	if (!defined ($timezone_offset) || !defined ($longitude) || !defined ($latitude ) || !defined ($altitude)){
+	# Test if the optional positional parameters are defined or GIS is disabled
+	if (!defined ($timezone_offset) || !defined ($longitude) || !defined ($latitude ) || !defined ($altitude) || $pa_config->{'activate_gis'} == 0){
 		$agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 	}

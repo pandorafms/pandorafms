@@ -1,3 +1,17 @@
+2010-01-25  Sancho Lerena <slerena@artica.es>
+
+	Merged from trunk:
+
+	* include/functions.php: Fixed problem in show_event_type() function
+	who mades events.php to do a invalid filtering by event status.
+
+	* operation/events/events_rss.php: Added optional (commented code)
+	support for filtering RSS request by the API ACL. need to implement a switch
+	in the config array to use here ACLs or not.
+
+	* operation/events/events.php: Fixed problem filterings events by status 
+	(warning, critical, normal and not-normal).
+
 2010-01-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_fsgraph.php: Merged from trunk.

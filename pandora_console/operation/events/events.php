@@ -174,8 +174,20 @@ if ($status == 1) {
 
 if ($search != "")
 	$sql_post .= " AND evento LIKE '%".$search."%'";
-if ($event_type != "")
-	$sql_post .= " AND event_type = '".$event_type."'";
+
+if ($event_type != ""){
+	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+	// for the user so for him is presented only "warning, critical and normal"
+	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal"){
+                $sql_post .= " AND event_type LIKE '%$event_type%' ";
+        }
+        elseif ($event_type == "not_normal"){
+                $sql_post .= " AND event_type LIKE '%warning%' OR LIKE '%critical%' ";
+        }
+        else
+                $sql_post .= " AND event_type = '".$event_type."'";
+
+}
 if ($severity != -1)
 	$sql_post .= " AND criticity >= ".$severity;
 if ($id_agent != -1)
@@ -238,6 +250,9 @@ echo "</td>";
 // Event type
 echo "<td>".__('Event type')."</td><td>";
 print_select (get_event_types (), 'event_type', $event_type, '', __('All'), '');
+// Expand standard array to add not_normal (not exist in the array, used only for searches)
+$event_type["not_normal"] = __("Not normal");
+
 echo "</td></tr><tr>";
 
 // Severity

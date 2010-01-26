@@ -1,3 +1,11 @@
+2010-01-26 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add functions "saveMapConnection" and
+	"deleteMapConnection".
+
+	* godmode/setup/gis_step_2.php, godmode/setup/gis.php: add the forms to
+	make, edit and delete map connections.
+
 2010-01-25  Sancho Lerena <slerena@artica.es>
 
 	* include/functions.php: Fixed problem in show_event_type() function

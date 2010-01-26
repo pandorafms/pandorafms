@@ -1,3 +1,8 @@
+2010-01-26   Sancho Lerena <slerena@artica.es>
+
+	* Core.pm: Fixed bug #2932694 (extra ',' in a SQL sentence). Reported by
+	Joe Horn.
+
 2010-01-25	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm,

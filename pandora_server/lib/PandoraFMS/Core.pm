@@ -721,7 +721,7 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 
     # No update for interval, timezone and position fields (some old agents don't support it)
     if ($agent_interval == -1){
-        db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
+        db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
         $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
         return;
     }

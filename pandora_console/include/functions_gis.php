@@ -12,7 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $urlMap, $controls = null) {
+function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	$controls = (array)$controls;
 	
 	//require_javascript_file('OpenLayers/OpenLayers');
@@ -54,9 +54,20 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $url
 					displayProjection: new OpenLayers.Projection("EPSG:4326")
 				});
 
-				//Define the map layer
-				var baseLayer = new OpenLayers.Layer.OSM("BaseLayer OSM", "<?php echo $urlMap['OSM']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>});
-				map.addLayer(baseLayer);
+				//Define the maps layer
+				<?php
+				$i = 0;
+				foreach ($baselayers as $baselayer) {
+					switch ($baselayer['typeBaseLayer']) {
+						case 'OSM':
+							?>
+							var baseLayer = new OpenLayers.Layer.OSM("<?php echo $baselayer['name']; ?>", "<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>});
+							map.addLayer(baseLayer);
+							<?php
+							break;
+					}
+				}
+				?>
 
 				if( ! map.getCenter() ){
 					var lonLat = new OpenLayers.LonLat(<?php echo $lonCenter; ?>, <?php echo $latCenter; ?>)
@@ -378,7 +389,62 @@ function addPath($layerName, $idAgent) {
 			if (end($listPoints) != $point)
 				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placemen'], $point['id_tgis_data']);
 		}
-	} 
+	}
+}
+
+function deleteMapConnection($idConectionMap) {
+	
+	process_sql_delete ('tgis_map_connection', array('id_tmap_connection' => $idConectionMap));
+	
+	//TODO DELETE IN OTHER TABLES
+}
+
+function saveMapConnection($mapConnection_name, $mapConnection_group,
+			$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
+			$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
+			$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
+			$mapConnection_centerLongitude, $mapConnection_centerAltitude,
+			$mapConnectionData, $idConnectionMap = null) {
+
+	if ($idConnectionMap !== null) {
+		$returnQuery = process_sql_update('tgis_map_connection',
+			array(
+				'conection_name' => $mapConnection_name, 
+				'connection_type' => $mapConnectionData['type'], 
+				'conection_data' => json_encode($mapConnectionData),
+				'num_zoom_levels' => $mapConnection_numLevelsZoom,
+				'default_zoom_level' => $mapConnection_defaultZoom,
+				'default_longitude' => $mapConnection_defaultLongitude,
+				'default_latitude' => $mapConnection_defaultLatitude,
+				'default_altitude' => $mapConnection_defaultAltitude,
+				'initial_longitude' => $mapConnection_centerLongitude,
+				'initial_latitude' => $mapConnection_centerLatitude,
+				'initial_altitude' => $mapConnection_centerAltitude,
+				'group_id' => $mapConnection_group
+			),
+			array('id_tmap_connection' => $idConnectionMap)
+		);
+	}
+	else {
+		$returnQuery = process_sql_insert('tgis_map_connection',
+			array(
+				'conection_name' => $mapConnection_name, 
+				'connection_type' => $mapConnectionData['type'], 
+				'conection_data' => json_encode($mapConnectionData),
+				'num_zoom_levels' => $mapConnection_numLevelsZoom,
+				'default_zoom_level' => $mapConnection_defaultZoom,
+				'default_longitude' => $mapConnection_defaultLongitude,
+				'default_latitude' => $mapConnection_defaultLatitude,
+				'default_altitude' => $mapConnection_defaultAltitude,
+				'initial_longitude' => $mapConnection_centerLongitude,
+				'initial_latitude' => $mapConnection_centerLatitude,
+				'initial_altitude' => $mapConnection_centerAltitude,
+				'group_id' => $mapConnection_group
+			)
+		);
+	}
+	
+	return $returnQuery;
 }
 
 function saveMap($conf, $baselayers, $layers) {
@@ -429,8 +495,8 @@ function saveMap($conf, $baselayers, $layers) {
     				'type' => 'baselayer',
 					'content' => array(
             			'typeBaseLayer' => 'OSM',
-						'url' => $baselayer['url'] //,
-						//'default' => $baselayer['default']
+						'url' => $baselayer['url'],
+						'default' => $baselayer['default']
         			)
 				);
 				

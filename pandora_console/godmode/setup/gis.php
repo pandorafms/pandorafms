@@ -26,22 +26,48 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 
 require_once ('include/functions_gis.php');
 
-//printMap('map', 16, 19, 40.42056, -3.708187, array('OSM' => 'http://192.168.50.65/tiles/${z}/${x}/${y}.png'));
-printMap('map', 16, 19, 40.42056, -3.708187, array('OSM' => 'http://tile.openstreetmap.org/${z}/${x}/${y}.png', array('Navigation','PanZoomBar','ScaleLine')));
-makeLayer("layer");
-addPoint('layer', __("center"), 40.42056, -3.708187);
-
 echo "<h2>".__('Pandora Setup')." &raquo; ";
-echo __('Map GIS')."</h2>";
+echo __('Map conections GIS')."</h2>";
 
-$table->width = '90%';
-$table->data = array ();
+$action = get_parameter('action');
 
-$table->style[0] = 'vertical-align: top;';
+if ($action == 'delete_connection') {
+	$idConnectionMap = get_parameter('id_connection_map');
+	
+	deleteMapConnection($idConnectionMap);
+}
 
-$table->data[1][0] = __('Coordenades and zoom by default:');
-$table->data[1][1] = "<div id='map' style='width: 300px; height: 300px; border: 1px solid black;' ></div>";
+$table->width = '500px';
+$table->head[0] = __('Map connection name');
+$table->head[1] = __('Group');
+$table->head[3] = __('Delete');
 
-print_table ($table);
+$table->align[1] = 'center';
+$table->align[2] = 'center';
+$table->align[3] = 'center';
+
+$mapsConnections = get_db_all_rows_in_table ('tgis_map_connection','conection_name');
+
+$table->data = array();
+
+if ($mapsConnections !== false) {
+	foreach ($mapsConnections as $mapsConnection) {
+	$table->data[] = array('<a href="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2&amp;action=edit_connection_map&amp;id_connection_map=' . 
+				$mapsConnection['id_tmap_connection'] .'">'
+				. $mapsConnection['conection_name'] . '</a>',
+			print_group_icon ($mapsConnection['group_id'], true),
+			'<a href="index.php?sec=gsetup&sec2=godmode/setup/gis&amp;id_connection_map=' . 
+				$mapsConnection['id_tmap_connection'].'&amp;action=delete_connection"
+				onClick="javascript: if (!confirm(\'' . __('Do you wan delete this connection?') . '\')) return false;">' . print_image ("images/cross.png", true).'</a>'); 
+	}
+}
+
+print_table($table);
+
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="post">';
+print_input_hidden ('action','create_connection_map');
+print_submit_button (__('Create'), '', false, 'class="sub next"');
+echo '</form>';
+echo '</div>';
 ?>
-<a href="javascript: addPoint('layer', 'Pepito', -3.709, 40.423);">prueba punto</a>

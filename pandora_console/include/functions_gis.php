@@ -292,21 +292,18 @@ function addPointPath($layerName, $lat, $lon, $color, $manual = 1, $id) {
 function getMaps() {
 	return get_db_all_rows_in_table ('tgis_map', 'map_name');
 }
-
+/**
+ * Gets the configuration of all the base layers of a map
+ * 
+ * @param $idMap: Map identifier of the map to get the configuration
+ *
+ * @return An array of arrays of configuration parameters
+ */
 function getMapConf($idMap) {
-	$confsEncode = get_db_all_rows_sql('SELECT * FROM tgis_map_connection WHERE tgis_map_id_tgis_map = ' . $idMap);
-	
-	$confsDecode = array();
-	
-	if ($confsEncode !== false) {
-		foreach ($confsEncode as $confEncode) {
-			$temp = json_decode($confEncode['conection_data'], true);
-			
-			$confsDecode[$temp['type']][] = $temp['content'];
-		}
-	}
-	
-	return $confsDecode;
+	$mapConfs= get_db_all_rows_sql('SELECT tconn.* FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
+			 WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection AND trel.tgis_map_id_tgis_map = ' . $idMap);
+	print_r($mapConfs);
+	return $mapConfs;
 }
 
 function getLayers($idMap) {
@@ -541,7 +538,6 @@ function saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_group_id, $map_connection_list, $arrayLayers) {
 }
-?>
 
 /**
  * Get the configuration parameters of a map connection
@@ -589,4 +585,3 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon);
 }
 ?>
-

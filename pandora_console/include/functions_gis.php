@@ -302,7 +302,7 @@ function getMaps() {
 function getMapConf($idMap) {
 	$mapConfs= get_db_all_rows_sql('SELECT tconn.* FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
 			 WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection AND trel.tgis_map_id_tgis_map = ' . $idMap);
-	print_r($mapConfs);
+
 	return $mapConfs;
 }
 
@@ -533,10 +533,77 @@ function saveMap($conf, $baselayers, $layers) {
 	return $return;
 }
 
+/**
+ * Save the map into DB, tgis_map and with id_map save the connetions in 
+ * tgis_map_has_tgis_map_connection, and with id_map save the layers in 
+ * tgis_map_layer and witch each id_layer save the agent in this layer in
+ * table tgis_map_layer_has_tagente.
+ * 
+ * @param unknown_type $map_name
+ * @param unknown_type $map_initial_longitude
+ * @param unknown_type $map_initial_latitude
+ * @param unknown_type $map_initial_altitude
+ * @param unknown_type $map_zoom_level
+ * @param unknown_type $map_background
+ * @param unknown_type $map_default_longitude
+ * @param unknown_type $map_default_latitude
+ * @param unknown_type $map_default_altitude
+ * @param unknown_type $map_group_id
+ * @param unknown_type $map_connection_list
+ * @param unknown_type $arrayLayers
+ * @return unknown_type
+ */
 function saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_initial_altitude, $map_zoom_level, $map_background,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_group_id, $map_connection_list, $arrayLayers) {
+	
+	$idMap = process_sql_insert('tgis_map',
+		array('map_name' => $map_name,
+			'initial_longitude' => $map_initial_longitude,
+			'initial_latitude' => $map_initial_latitude,
+			'initial_altitude' => $map_initial_altitude,
+			'zoom_level' => $map_zoom_level,
+			'map_background' => $map_background,
+			'default_longitude' => $map_default_longitude,
+			'default_latitude' => $map_default_latitude,
+			'default_altitude' => $map_default_altitude,
+			'group_id' => $map_group_id
+		)
+	);
+	
+	foreach ($map_connection_list as $map_connection) {
+		process_sql_insert('tgis_map_has_tgis_map_connection',
+			array(
+				'tgis_map_id_tgis_map' => $idMap,
+				'tgis_map_connection_id_tmap_connection' => $map_connection,                       
+				'default_map_connection' => false //TODO SET DEFAULT
+			)
+		);
+	}
+	
+	foreach ($arrayLayers as $index => $layer) {
+		$idLayer = process_sql_insert('tgis_map_layer',
+			array(
+				'layer_name' => $layer['layer_name'],
+				'view_layer' => $layer['layer_visible'],
+				'layer_stack_order' => $index,
+				'tgis_map_id_tgis_map' => $idMap,
+				'tgrupo_id_grupo' => $layer['layer_group']
+			)
+		);
+		
+		if (count($layer['layer_agent_list']) > 0) {
+			foreach ($layer['layer_agent_list'] as $agent_name) {
+				process_sql_insert('tgis_map_layer_has_tagente',
+					array(
+						'tgis_map_layer_id_tmap_layer' => $idLayer,
+						'tagente_id_agente' => get_agent_id($agent_name)
+					)
+				);
+			}
+		}
+	}
 }
 
 /**

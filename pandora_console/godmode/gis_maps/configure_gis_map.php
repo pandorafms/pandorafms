@@ -26,369 +26,576 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 }
 //debugPrint($_POST);
 
-$action = get_parameter('action');
+$action = get_parameter('action', 'new_map');
+
+echo '<form id="form_setup" method="post" onSubmit="fillOrderField();">';
 
 switch ($action) {
 	case 'save_new':
-		$conf['name'] = get_parameter('name');
-		$conf['group'] = get_parameter('group');
-		$conf['numLevelsZoom'] = get_parameter('num_levels_zoom');
-		$conf['initial_zoom'] = get_parameter('initial_zoom');
+		$map_name = get_parameter('map_name');
+		$map_initial_longitude = get_parameter('map_initial_longitude');
+		$map_initial_latitude = get_parameter('map_initial_latitude');
+		$map_initial_altitude = get_parameter('map_initial_altitude');
+		$map_zoom_level = get_parameter('map_zoom_level');
+		$map_background = ''; //TODO
+		$map_default_longitude = get_parameter('map_default_longitude');
+		$map_default_latitude = get_parameter('map_default_latitude');
+		$map_default_altitude = get_parameter('map_default_altitude');
+		$map_group_id = get_parameter('map_group_id');
 		
-		$baselayersID = get_parameter('order_baselayer');
-		$baselayersID = explode(',', $baselayersID);
+		$map_connection_list = explode(",",get_parameter('map_connection_list'));
+		$layer_list = explode(",",get_parameter('layer_list'));
 		
-		$defaultMap = get_parameter('default_map');
-		$baselayers = array();
-		foreach ($baselayersID as $id) {
-			if (strlen($id) == 0)
-				continue;
-			$temp = array();
-			
-			$temp['type'] = $_POST['type_' . $id];
-			
-			if ($defaultMap == $id)
-				$temp['default'] = true;
-			else
-				$temp['default'] = false;
-			
-			switch ($temp['type']) {
-				case 'osm':
-					$temp['url'] = $_POST['url_' . $temp['type'] . '_' . $id];
-					break;
-			}
-			$baselayers[] = $temp;
+		foreach ($map_connection_list as $mapConnection) {
+			//TODO extract the default
 		}
 		
-		$layersID = get_parameter('order_layer');
-		$layersID = explode(',', $layersID);
-		$layers = array();
-		foreach ($layersID as $index => $id) {
-			if (strlen($id) == 0)
-				continue;
-			
-			$temp = array();
-			$temp['group'] = $_POST['layer_group_id_' . $id];
-			$temp['name'] = $_POST['layer_name_' . $id];
-			$temp['visible'] = $_POST['layer_visible_' . $id];
-			
-			$layers[$index] = $temp;
+		//debugPrint($map_connection_list);
+		
+		$arrayLayers = array();
+		
+		foreach ($layer_list as $layerID) {
+			$arrayLayers[] = JSON_decode($_POST['layer_values_' . $layerID], true);
 		}
 		
-		saveMap($conf, $baselayers, $layers);
+		saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
+			$map_initial_altitude, $map_zoom_level, $map_background,
+			$map_default_longitude, $map_default_latitude, $map_default_altitude,
+			$map_group_id, $map_connection_list, $arrayLayers);
 		
-		return;
+		//debugPrint($arrayLayers);
+		break;
+	case 'new_map':
+		print_input_hidden('action', 'save_new');
+		
+		echo "<h2>" . __('GIS Maps') . " &raquo; " . __('Builder') . "</h2>";
+		$map_name = '';
+		$map_initial_longitude = '';
+		$map_initial_latitude = '';
+		$map_initial_altitude = '';
+		$map_zoom_level = '';
+		$map_background = '';
+		$map_default_longitude = '';
+		$map_default_latitude = '';
+		$map_default_altitude = '';
+		$map_group_id = '';
 		break;
 }
-
-echo "<h2>" . __('GIS Maps') . " &raquo; " . __('Builder') . "</h2>";
-
-$map_config = array();
-$map_config["name"] = '';
-$map_config["group"] = '';
-$map_config["type"] = '';
-$map_config["url"] = '';
-$map_config["num_levels_zoom"] = '';
-$map_config["initial_zoom"] = '';
 
 $table->width = '90%';
 $table->data = array ();
 
-echo '<form id="form_setup" method="post" onSubmit="fillOrderField();">';
-print_input_hidden('action', 'save_new');
-echo "<h3>" . __('Basic configuration') . "</h3>";
+$table->data[0][0] = __('Name') . ':';
+$table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
+$table->rowspan[0][2] = 9;
+$table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
+	<tr>
+		<td colspan='3'><div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div></td>
+	</tr>
+	<tr>
+		<td colspan='3'><a href=''>" . __("Refresh map view") . "</a></td>
+	</tr>
+	<tr>
+		<td>" . __("Add Map connection") . ":</td>
+		<td>
+			" . print_select_from_sql('SELECT id_tmap_connection, conection_name FROM tgis_map_connection', 'map_connection', '', '', '', '0', true) ."
+		</td>
+		<td>
+			<a href='javascript: addConnectionMap();'>" . print_image ("images/add.png", true) . "</a>
+			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
+			<input type='hidden' name='layer_list' value='' id='layer_list' />
+		</td>
+	</tr>
+</table>";
 
-$table->data = array();
-$table->data[0][0] = __('Name') . ":";
-$table->data[0][1] = print_input_text ('name', $map_config["name"], '', 30, 60, true);
+$table->data[1][0] = __('Group') . ':';
+$table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
 
-$table->data[1][0] = __("Group") . ":";
-$table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'group', $map_config["group"], '', '', '0', true);
-$table->data[2][0] = __('Num levels zoom') . ":";
-$table->data[2][1] = print_input_text ('num_levels_zoom', $map_config["num_levels_zoom"], '', 2, 10, true);
-$table->data[3][0] = __('Initial zoom level') . ":";
-$table->data[3][1] = print_input_text ('initial_zoom', $map_config["initial_zoom"], '', 2, 10, true);
+$table->data[2][0] = __('Zoom level') . ':';
+$table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true);
 
-print_table ($table);
+$table->data[3][0] = __('Initial Longitude') . ':';
+$table->data[3][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
 
-$table->width = '80%';
-echo "<h3>" . __('Maps') . "</h3>";
-$table->data = array();
-$table->id = "maps";
-$types["OSM"] = __('Open Street Maps');
-$table->data[0][0] = __('Type') . ":";
-$table->data[0][1] = print_select ($types, 'sel_type', $map_config["type"], '', '', __('Select your type map'), true);
-$table->data[0][2] = '<a href="javascript: addMap();">' . print_image ("images/add.png", true) . '</a>';
+$table->data[4][0] = __('Initial Latitude') . ':';
+$table->data[4][1] = print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
 
-print_table ($table);
+$table->data[5][0] = __('Initial Altitude') . ':';
+$table->data[5][1] = print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
 
-echo "<input type='hidden' id='order_baselayer' name='order_baselayer' value='' />";
+$table->data[6][0] = __('Default Longitude') . ':';
+$table->data[6][1] = print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
 
-echo "<h3>" . __('Layers') . "</h3>";
-$table->width = '50%';
-$table->data = array();
-$table->id = "layers";
-$table->data[0][0] = _('Group') . ':';
-$table->data[0][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'group', $map_config["group"], '', '', '0', true);
-$table->data[0][2] = '<a href="javascript: addLayer();">' . print_image ("images/add.png", true) . '</a>';
+$table->data[7][0] = __('Default Latitude') . ':';
+$table->data[7][1] = print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
+
+$table->data[8][0] = __('Default Altitude') . ':';
+$table->data[8][1] = print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
+
 print_table($table);
 
-echo "<input type='hidden' id='order_layer' name='order_layer' value='' />";
+echo "<h3>" . __('Layers') . "</h3>";
 
-echo "<h3>" . __('Center') . "</h3>";
-echo "<div id='center_map'><p style='font-style: italic;'>" . __('Please create a map before selecting the center.') . "<b>TODO</b></p></div>";
+$table->width = '90%';
+$table->data = array ();
+$table->valign[0] = 'top';
+$table->valign[1] = 'top';
+
+$table->data[0][0] = print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub new"', true);
+$table->data[0][1] = "<h4>List of layers</h4>";
+
+$table->data[1][0] = '<div id="form_layer">
+		<table id="form_layer_table" class="databox" border="0" cellpadding="4" cellspacing="4" style="visibility: hidden;">
+			<tr>
+				<td>' . __('Layer name') . ':</td>
+				<td>' . print_input_text ('layer_name_form', '', '', 20, 40, true) . '</td>
+				<td>' . __('Visible') . ':</td>
+				<td>' . print_checkbox('layer_visible_form', 1, true, true) . '</td>
+			</tr>
+			<tr>
+				<td>' . __('Group') . ':</td>
+				<td colspan="3">' . print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'layer_group_form', '', '', __('None'), '0', true) . '</td>
+			</tr>
+			<tr>
+				<td>' . __('Agent') . ':</td>
+				<td colspan="3">
+					' . print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
+					array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
+					. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp;' . 
+					print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub"', true) .'
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<h4>' . __('List of Agents') . '</h4>
+					<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_agents">
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="right" colspan="4">' . 
+					print_button(__('Save Layer'), 'save_layer', false, 'saveLayer();', 'class="sub"', true) . '
+					' . print_input_hidden('layer_edit_id_form', '', true) . '
+				</td>
+			</tr>
+		</table>
+	</div>';
+$table->data[1][1] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">
+	</table>';
+
+print_table($table);
 
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Create'), 'create_button', false, 'class="sub upd"');
+print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
 echo '</div>';
-echo '</form>';
 
-//Chunks of table maps for when add maps to form
-//-------------------------INI OSM---------------------------------------
-$table->width = '80%';
-$table->data = array();
-$table->rowclass[0] = 'OSM';
-$table->rowclass[1] = 'OSM';
-$table->rowclass[2] = 'OSM';
-$table->rowclass[3] = 'OSM';
-$table->rowstyle[0] = 'visibility: hidden;';
-$table->rowstyle[1] = 'visibility: hidden;';
-$table->rowstyle[2] = 'visibility: hidden;';
-$table->rowstyle[3] = 'visibility: hidden;';
-$table->colspan[0][0] = 3;
-$table->data[0][0] = '<div style="border: 1px solid #CACFD1;"></div>';
-$table->data[1][0] = "<b>" . __('OSM') . "</b><input id='type' type='hidden' name='type' value='osm' />";
-$table->data[1][1] = '';
-$table->data[1][2] = '<a id="delete_row" href="none">' . print_image ("images/cross.png", true) . '</a>';
-$table->data[2][0] = __('URL_OSM') . ":";
-$table->data[2][1] = print_input_text ('url_osm', $map_config["url"], '', 50, 100, true);
-$table->data[2][2] = '';
-$table->data[3][0] = __('Default') . ':';
-$table->data[3][1] = print_radio_button ('default_map', '2', '', true, true);
-$table->data[3][2] = '';
+echo "</form>";
 
-print_table($table);
-unset($table->rowclass);
-unset($table->rowstyle);
-unset($table->colspan);
-//-------------------------INI OSM---------------------------------------
 
-//Chunks of table layer for when add layers to form
-//-------------------------INI LAYERS---------------------------------------
+//-------------------------INI CHUNKS---------------------------------------
 ?>
 
-<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%" style="visibility: hidden;">
-	<tbody id="chunk_layer">
+<table style="visibility: hidden;">
+	<tbody id="chunk_map_connection">
 		<tr class="row_0">
-			<td colspan="3" class="layer"><div style="border: 1px solid rgb(202, 207, 209);"></div></td>
-		</tr>
-		<tr class="row_1">
-			<td>Group:</td>
-			<td>
-				<input id="layer_group_id" name="layer_group_id" value="" type="hidden">
-				<input id="layer_group_text" name="layer_group_text" value="" disabled="disabled" type="text">
-			</td>
-			<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><img src="images/up.png" alt=""></a></td>
-		</tr>
-		<tr class="row_2">
-			<td>Name:</td>
-			<td><input name="layer_name" id="text-layer_name" size="30" maxlength="60" type="text"></td>
+			<td><?php print_input_text ('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
+			<td><?php print_radio_button ('map_connection_default', '', '', true);?></td>
 			<td><a id="delete_row" href="none"><img src="images/cross.png" alt=""></a></td>
-		</tr>
-		<tr class="row_3">
-			<td>Visible:</td>
-			<td><input name="layer_visible" value="1" id="checkbox-layer_visible" type="checkbox" checked="checked"></td>
-			<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><img src="images/down.png" alt=""></a></td>
 		</tr>
 	</tbody>
 </table>
 
+<table style="visibility: hidden;">
+	<tbody id="chuck_agent">
+		<tr>
+			<td class="col1">XXXX</td>
+			<td class="col2">
+				<input type="hidden" id="name_agent" name="name_agent" value="" />
+				<a id="delete_row" href="none"><img src="images/cross.png" alt=""></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
 
+<table style="visibility: hidden;">
+		<tbody id="chuck_layer_item">
+			<tr>
+				<td class="col1"><a href='javascript: editLayer(none);'>XXXXXXXXXXXXXXXXXX</a></td>
+				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><img src="images/up.png" alt=""></a></td>
+				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><img src="images/down.png" alt=""></a></td>
+				<td class="col3">
+					<input type="hidden" name="layer_values" id="layer_values" />
+					<a id="delete_row" href="none"><img src="images/cross.png" alt=""></a>
+				</td>
+			</tr>
+		</tbody>
+</table>
 <?php
-//-------------------------END LAYERS---------------------------------------
+//-------------------------END CHUNKS---------------------------------------
+
+require_css_file ('cluetip');
+require_jquery_file ('cluetip');
+require_jquery_file ('pandora.controls');
+require_jquery_file ('bgiframe');
+require_jquery_file ('autocomplete');
+require_jquery_file ('json');
 ?>
 <script type="text/javascript">
-	var numRowMap = 0;
-	var numRowLayer = 0;
-	var posLayers = new Array(); //array content idLayer
-	var posMaps = new Array();
+var connectionMaps = Array();
+var agentList = Array();
+var countAgentList = 0;
+var countLayer = 0;
+var layerList = Array();
 
-	function isInt(x) {
-		var y=parseInt(x);
-		if (isNaN(y)) return false;
-		return x==y && x.toString()==y.toString();
+
+$("#text_id_agent").autocomplete(
+	"ajax.php",
+	{
+		minChars: 2,
+		scroll:true,
+		extraParams: {
+			page: "operation/agentes/exportdata",
+			search_agents: 1,
+			id_group: function() { return $("#id_group").val(); }
+		},
+		formatItem: function (data, i, total) {
+			if (total == 0)
+				$("#text_id_agent").css ('background-color', '#cc0000');
+			else
+				$("#text_id_agent").css ('background-color', '');
+			if (data == "")
+				return false;
+			
+			return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
+		},
+		delay: 200
 	}
+);
 
-	function fillOrderField() {
-		$('#order_layer').val(posLayers.toString());
-		$('#order_baselayer').val(posMaps.toString());
+$("#text_id_agent").result (
+	function () {
+		$("#button-add_agent").attr('disabled', false);
 	}
+);
 
-	function addMap() {
-		tableRows = $("tr." + $("#sel_type :selected").val()).clone();
+function isInt(x) {
+	var y=parseInt(x);
+	if (isNaN(y)) return false;
+	return x==y && x.toString()==y.toString();
+}
 
-		tableRows.attr("class", "map_" + numRowMap);
-		$("#delete_row", tableRows).attr("href", "javascript: deleteMap(" + numRowMap + ")");
-		$("#type", tableRows).attr("name", "type_" + numRowMap);
-		$("#text-url_osm", tableRows).attr("name", $("#text-url_osm", tableRows).attr("name") + "_" + numRowMap);
-		$("#radiobtn0001", tableRows).attr("value", numRowMap);
-		if (numRowMap != 0) $("#radiobtn0001", tableRows).removeAttr("checked");
-		tableRows.css("visibility", "visible");
-		
-		$("#maps").append(tableRows);
-
-		posMaps.push(numRowMap);
-		
-		numRowMap++;
-	}
-
-	function deleteMap(subId) {
-		$("tr.map_" + subId).remove();
-
-		for (var index in posMaps) {
-
-			//int because in the object array there are method as string
+function loadAgents(agent_list) {
+	if (agent_list != null) {
+		for (index in agent_list) {
 			if (isInt(index)) {
-				if (posMaps[index] == subId) {
-					posMaps(index);
-				}
+				addAgentLayer(agent_list[index]);
+			}
+		}
+	}
+}
+
+function setFieldsFormLayer(layer_name,layer_group, layer_visible_form, agent_list) {
+	$("#text-layer_name_form").val(layer_name);
+	$("#layer_group_form [value="+layer_group+"]").attr("selected",true);
+	$("#text_id_agent").val('<?php echo __('Select'); ?>');
+	$("#checkbox-layer_visible_form").attr("checked", layer_visible_form);
+	$("#list_agents").empty(); //Clean list agents
+	
+	loadAgents(agent_list);
+}
+
+function deleteLayer(idRow) {
+	$("#layer_item_" + idRow).remove();
+	$("#hidden-layer_edit_id_form").val('');
+	
+	for (var index in layerList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			if (layerList[index] == idRow) {
+				layerList.splice(index, 1);
 			}
 		}
 	}
 
-	function updateArrowLayers() {
-		var count = 0;
-		var lastIndex = null;
+	updateArrowLayers();
+}
+
+function newLayer() {
+	agentList = Array();
+	countAgentList = 0;
+	
+	setFieldsFormLayer('', 0, true, null);
+	$("#form_layer_table").css('visibility', 'visible');
+	$("#hidden-layer_edit_id_form").val('');
+}
+
+function serializeForm() {
+	layer = {};
+	layer.layer_name = $("#text-layer_name_form").val();
+	layer.layer_group = $("#layer_group_form :selected").val();
+	if ($("#checkbox-layer_visible_form:checked").val() == 1)
+		layer.layer_visible = 1;
+	else
+		layer.layer_visible = 0;
+	layer.layer_agent_list = Array();
+	
+	for (var index2 in agentList) {
+		if (isInt(index2)) {
+			layer.layer_agent_list[index2] = $("#name_agent_" + index2).val();
+		}
+	}
+
+	return $.toJSON(layer);
+}
+
+function editLayer(indexLayer) {
+	agentList = Array();
+	countAgentList = 0;
+
+	stringValuesLayer = $("#layer_values_" + indexLayer).val();
+	layer = $.evalJSON(stringValuesLayer);
+	
+	setFieldsFormLayer(layer.layer_name, layer.layer_group, layer.layer_visible, layer.layer_agent_list);
+	$("#hidden-layer_edit_id_form").val(indexLayer);
+	$("#form_layer_table").css('visibility', 'visible');
+}
+
+function saveLayer() {
+	layer_id = $("#hidden-layer_edit_id_form").val();
+
+	if (layer_id == '') {
+		id = countLayer;
+		tableRow = $("#chuck_layer_item").clone();
+		tableRow.attr('id', "layer_item_" + id);
+		$("#layer_values", tableRow).attr("name", "layer_values_" + id);
+		$("#layer_values", tableRow).attr("id", "layer_values_" + id);
+	}
+	else {
+		id = layer_id;
+		tableRow = $("#layer_item_" + id);
+	}
+	
+	$(".col1", tableRow).html("<a href='javascript: editLayer(" + id + ");'>" + $("#text-layer_name_form").val() + "</a>");
+	$("#delete_row", tableRow).attr("href", "javascript: deleteLayer(" + id + ")");
+	$("#up_arrow", tableRow).attr("href", "javascript: upLayer(" + id + ")");
+	$("#down_arrow", tableRow).attr("href", "javascript: downLayer(" + id + ")");
+
+	
+	$("#layer_values_" + id, tableRow).val(serializeForm());
+
+	if (layer_id == '') {
+		$("#list_layers").append(tableRow);
+		layerList.push(countLayer);
 		
-		for (var index in posLayers) {
+		countLayer++;
+	}
+
+	updateArrowLayers();
+	$("#form_layer_table").css('visibility', 'hidden');
+}
+
+function deleteAgentLayer(idRow) {
+	$("#agent_" + idRow).remove();
+	
+	for (var index in agentList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			if (agentList[index] == idRow) {
+				agentList.splice(index, 1);
+			}
+		}
+	}
+}
+
+function addAgentLayer(agent_name) {
+	agent_name = typeof(agent_name) != 'undefined' ? agent_name : null; //default value
+	
+	tableRow = $("#chuck_agent").clone();
+
+	tableRow.attr('id','agent_' + countAgentList);
+	agentList.push(countAgentList);
+
+	if (agent_name == null)
+		$(".col1", tableRow).html($("#text_id_agent").val());
+	else
+		$(".col1", tableRow).html(agent_name);
+	
+	$("#delete_row", tableRow).attr("href", 'javascript: deleteAgentLayer(' + countAgentList + ')');
+	$("#name_agent", tableRow).val($("#text_id_agent").val());
+	$("#name_agent", tableRow).attr("name", "name_agent_" + countAgentList);
+	$("#name_agent", tableRow).attr("id", "name_agent_" + countAgentList);
+	
+	countAgentList++;
+	
+	$("#list_agents").append(tableRow);
+}
+
+function deleteConnectionMap(idConnectionMap) {
+	for (var index in connectionMaps) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			if (connectionMaps[index] == idConnectionMap) {
+				connectionMaps.splice(index, 1);
+			}
+		}
+	}
+
+	checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked')
+	$("#map_connection_" + idConnectionMap).remove();
+
+	if (checked) {
+		//Checked first, but not is index = 0 maybe.
+		
+		for (var index in connectionMaps) {
 
 			//int because in the object array there are method as string
 			if (isInt(index)) {
-				numLayer = posLayers[index];
-				layerObj = $("#layer_" + numLayer);
+				$("#radiobtn0001", $("#map_connection_" + connectionMaps[index])).attr('checked', 'checked');
+				break;
+			}
+		}
+	}
+}
+
+function addConnectionMap() {
+	idConnectionMap = $("#map_connection :selected").val();
+	connectionMapName = $("#map_connection :selected").text();
+
+	//Test if before just added
+	for (var index in connectionMaps) {
+		if (isInt(index)) {
+			if (connectionMaps[index] == idConnectionMap) {
+				alert('<?php echo __("The connection"); ?> "' + connectionMapName + '" <?php echo __("just added previously."); ?>');
 				
-				//First element
-				if (count == 0) {
-					$('.up_arrow', layerObj).html('');
-				}
-				else {
-					$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php print_image ("images/up.png"); ?></a>');
-				}
-
-				$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php print_image ("images/down.png"); ?></a>');
-
-				
-				count++;
-				lastIndex = index;
+				return;
 			}
 		}
+	}
+	
+	tableRows = $("#chunk_map_connection").clone();
+	tableRows.attr('id','map_connection_' + idConnectionMap);
+	
+	if (connectionMaps.length == 0) {
+		//The first is checked
+		$("#radiobtn0001", tableRows).attr('checked', 'checked');
+	}
 
-		//Last element
-		if (lastIndex != null) {
-			numLayer = posLayers[lastIndex];
-			layerObj = $("#layer_" + numLayer);
+	connectionMaps.push(idConnectionMap);
+	
+	$("#text-map_connection_name", tableRows).val(connectionMapName);
+	$("#text-map_connection_name", tableRows).attr('name', 'map_connection_name_' + idConnectionMap);
+	$("#delete_row", tableRows).attr('href', "javascript: deleteConnectionMap(" + idConnectionMap + ")");
+	
+	
+	$("#map_connection").append(tableRows);
+}
+
+function fillOrderField() {
+	$('#map_connection_list').val(connectionMaps.toString());
+	$('#layer_list').val(layerList.toString());
+}
+
+function updateArrowLayers() {
+	var count = 0;
+	var lastIndex = null;
+	
+	for (var index in layerList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			numLayer = layerList[index];
+			layerObj = $("#layer_item_" + numLayer);
 			
-			$('.down_arrow', layerObj).html('');
-		}
-	}
-
-	function upLayer(idLayer) {
-		var toUpIndex = null
-		var toDownIndex = null;
-		
-		for (var index in posLayers) {
-
-			//int because in the object array there are method as string
-			if (isInt(index)) {
-				toUpIndex = index;
-				if (posLayers[index] == idLayer)
-					break;
-				toDownIndex = index;
+			//First element
+			if (count == 0) {
+				$('.up_arrow', layerObj).html('');
 			}
-		}
-		
-		if (toDownIndex != null) {
-			layerToUp = "#layer_" + posLayers[toUpIndex];
-			layerToDown = "#layer_" + posLayers[toDownIndex];
-			//alert(layerToDown + " : " + layerToUp);
-			$(layerToDown).insertAfter(layerToUp);
+			else {
+				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php print_image ("images/up.png"); ?></a>');
+			}
+
+			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php print_image ("images/down.png"); ?></a>');
+
 			
-			temp = posLayers[toUpIndex];
-			posLayers[toUpIndex] = posLayers[toDownIndex];
-			posLayers[toDownIndex] = temp;
-
-			updateArrowLayers();
+			count++;
+			lastIndex = index;
 		}
 	}
 
-	function downLayer(idLayer) {
-		var toUpIndex = null
-		var toDownIndex = null;
-		var found = false
-
-		for (var index in posLayers) {
-
-			//int because in the object array there are method as string
-			if (isInt(index)) {
-				if (posLayers[index] == idLayer) {
-					toDownIndex = index;
-					found = true;
-				}
-				else {
-					if (found) {
-						toUpIndex = index;
-						break;
-					}
-				}
-			}
-		}
-
-		if (toUpIndex != null) {
-			layerToUp = "#layer_" + posLayers[toUpIndex];
-			layerToDown = "#layer_" + posLayers[toDownIndex];
-			$(layerToDown).insertAfter(layerToUp);
-			
-			temp = posLayers[toUpIndex];
-			posLayers[toUpIndex] = posLayers[toDownIndex];
-			posLayers[toDownIndex] = temp;
-
-			updateArrowLayers();
-		}
-	}
-
-	function deleteLayer(idLayer) {
-		$( "#layer_" + idLayer).remove();
+	//Last element
+	if (lastIndex != null) {
+		numLayer = layerList[lastIndex];
+		layerObj = $("#layer_item_" + numLayer);
 		
-		for (var index in posLayers) {
+		$('.down_arrow', layerObj).html('');
+	}
+}
 
-			//int because in the object array there are method as string
-			if (isInt(index)) {
-				if (posLayers[index] == idLayer) {
-					posLayers.splice(index);
-				}
-			}
+
+function upLayer(idLayer) {
+	var toUpIndex = null
+	var toDownIndex = null;
+	
+	for (var index in layerList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			toUpIndex = index;
+			if (layerList[index] == idLayer)
+				break;
+			toDownIndex = index;
 		}
 	}
-
-	function addLayer() {
-		tableRows = $("#chunk_layer").clone();
+	
+	if (toDownIndex != null) {
+		layerToUp = "#layer_item_" + layerList[toUpIndex];
+		layerToDown = "#layer_item_" + layerList[toDownIndex];
+		$(layerToDown).insertAfter(layerToUp);
 		
-		tableRows.attr("id", "layer_" + numRowLayer);
-		$("#layer_group_text", tableRows).attr('value', $("#group1 :selected").text());
-		$("#layer_group_id", tableRows).attr('value', $("#group1 :selected").val());
-		$("#layer_group_text", tableRows).attr('name', 'layer_group_text_' + numRowLayer);
-		$("#layer_group_id", tableRows).attr('name', 'layer_group_id_' + numRowLayer);
-		$("#text-layer_name", tableRows).attr('name', 'layer_name_' + numRowLayer);
-		$("#checkbox-layer_visible", tableRows).attr('name', 'layer_visible_' + numRowLayer);
-		$("#delete_row", tableRows).attr("href", "javascript: deleteLayer(" + numRowLayer + ");");
-
-		posLayers.push(numRowLayer);
-
-		$("#layers").append(tableRows);
+		temp = layerList[toUpIndex];
+		layerList[toUpIndex] = layerList[toDownIndex];
+		layerList[toDownIndex] = temp;
 
 		updateArrowLayers();
-
-		numRowLayer++;
 	}
+}
+
+function downLayer(idLayer) {
+	var toUpIndex = null
+	var toDownIndex = null;
+	var found = false
+
+	for (var index in layerList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			if (layerList[index] == idLayer) {
+				toDownIndex = index;
+				found = true;
+			}
+			else {
+				if (found) {
+					toUpIndex = index;
+					break;
+				}
+			}
+		}
+	}
+
+	if (toUpIndex != null) {
+		layerToUp = "#layer_item_" + layerList[toUpIndex];
+		layerToDown = "#layer_item_" + layerList[toDownIndex];
+		$(layerToDown).insertAfter(layerToUp);
+		
+		temp = layerList[toUpIndex];
+		layerList[toUpIndex] = layerList[toDownIndex];
+		layerList[toDownIndex] = temp;
+
+		updateArrowLayers();
+	}
+}
 </script>

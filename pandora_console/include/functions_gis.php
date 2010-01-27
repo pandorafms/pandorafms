@@ -536,6 +536,13 @@ function saveMap($conf, $baselayers, $layers) {
 	return $return;
 }
 
+function saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
+	$map_initial_altitude, $map_zoom_level, $map_background,
+	$map_default_longitude, $map_default_latitude, $map_default_altitude,
+	$map_group_id, $map_connection_list, $arrayLayers) {
+}
+?>
+
 /**
  * Get the configuration parameters of a map connection
  * 

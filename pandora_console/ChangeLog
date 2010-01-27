@@ -1,3 +1,11 @@
+2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_gis.php: add the prototipe of function "saveMap2" at
+	the moment for to develop in next hours or days.
+	* include/javascript/jquery.json.js: add json plugin for jquery.
+	* godmode/gis_maps/configure_gis_map.php: rewrite all source code, change
+	the form and adapt to new gis tables.
+	* godmode/gis_maps/index.php: few changes for more correct source code.
+
 2010-01-27  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/functions_gis.php: Added more Openlayers Controls to the case

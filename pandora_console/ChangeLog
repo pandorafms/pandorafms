@@ -1,3 +1,9 @@
+2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: fix a typing "print_r" in function "getMapConf"
+	and fill with code the function saveMap2 and add the commment in format
+	phpdoc.
+
 2010-01-27  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/functions_gis.php: Updated getMapConf to work with the new 

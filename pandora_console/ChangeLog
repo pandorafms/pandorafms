@@ -1,3 +1,20 @@
+2010-01-27  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* include/functions_gis.php: Added more Openlayers Controls to the case
+	on the printMap function, fixed typo manual_placemen -> manual_placement,
+	added gectConectionConf and getAgentMap functions (last one still with 
+	some hardcoded values). Function get_agent_last_coords now also returns the
+	agent name.
+
+	* operation/agentes/estado_generalagente.php: Added last position 
+	information, and timezone offset if is not 0
+
+	* operation/agentes/gis_view.php: Added map with the last position of the
+	agent and table with the previous positions of the agent.
+
+	* operation/agentes/ver_agente.php: Used agent icon to show status 
+	 if icon_path is defined.
+
 2010-01-26 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add functions "saveMapConnection" and

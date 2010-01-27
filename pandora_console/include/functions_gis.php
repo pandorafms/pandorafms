@@ -35,11 +35,23 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 							case 'Navigation':
 								echo "new OpenLayers.Control.Navigation()";
 								break;
+							case 'MousePosition':
+								echo "new OpenLayers.Control.MousePosition()";
+								break;
+							case 'OverviewMap':
+								echo "new OpenLayers.Control.OverviewMap()";
+								break;
+							case 'PanZoom':
+								echo "new OpenLayers.Control.PanZoom()";
+								break;
 							case 'PanZoomBar':
 								echo "new OpenLayers.Control.PanZoomBar()";
 								break;
 							case 'ScaleLine':
 								echo "new OpenLayers.Control.ScaleLine()";
+								break;
+							case 'Scale':
+								echo "new OpenLayers.Control.Scale()";
 								break;
 						}
 					}
@@ -304,9 +316,9 @@ function getLayers($idMap) {
 }
 
 function get_agent_last_coords($idAgent) {
-	$coords = get_db_row_sql("SELECT last_latitude, last_longitude, last_altitude FROM tagente WHERE id_agente = " . $idAgent);
-	
-	return $coords;
+		$coords = get_db_row_sql("SELECT last_latitude, last_longitude, last_altitude, nombre FROM tagente WHERE id_agente = " . $idAgent);
+
+		return $coords;
 }
 
 function get_agent_icon_map($idAgent, $state = false) {
@@ -331,28 +343,28 @@ function addPath($layerName, $idAgent) {
 	
 	if ($idAgent == 1) {
 	$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.709, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 1),
-		array('id_tgis_data' => 1, 'longitude' => -3.710, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 2, 'longitude' => -3.711, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 1),
-		array('id_tgis_data' => 3, 'longitude' => -3.712, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 4, 'longitude' => -3.708187, 'latitude' => 40.42056, 'altitude' => 0, 'manual_placemen' => 0)
+		array('id_tgis_data' => 0, 'longitude' => -3.709, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 1),
+		array('id_tgis_data' => 1, 'longitude' => -3.710, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 2, 'longitude' => -3.711, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 1),
+		array('id_tgis_data' => 3, 'longitude' => -3.712, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 4, 'longitude' => -3.708187, 'latitude' => 40.42056, 'altitude' => 0, 'manual_placement' => 0)
 	);
 	}
 	
 	if ($idAgent == 2) {
 	$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.704, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.706, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0)
+		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.704, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.706, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0)
 	);
 	}
 	
 	if ($idAgent == 3) {
 		$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.701, 'latitude' => 40.425, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.708, 'latitude' => 40.424, 'altitude' => 0, 'manual_placemen' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.705, 'latitude' => 40.421, 'altitude' => 0, 'manual_placemen' => 0)
+		array('id_tgis_data' => 0, 'longitude' => -3.701, 'latitude' => 40.425, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.708, 'latitude' => 40.424, 'altitude' => 0, 'manual_placement' => 0),
+		array('id_tgis_data' => 0, 'longitude' => -3.705, 'latitude' => 40.421, 'altitude' => 0, 'manual_placement' => 0)
 	);
 	}
 	
@@ -387,7 +399,7 @@ function addPath($layerName, $idAgent) {
 	if ($listPoints != false) {
 		foreach($listPoints as $point) {
 			if (end($listPoints) != $point)
-				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placemen'], $point['id_tgis_data']);
+				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placement'], $point['id_tgis_data']);
 		}
 	}
 }
@@ -523,4 +535,51 @@ function saveMap($conf, $baselayers, $layers) {
 	
 	return $return;
 }
+
+/**
+ * Get the configuration parameters of a map connection
+ * 
+ * @param idConnection: connection identifier for the map
+ *
+ * @result: An array with all the configuration parameters
+ */
+ function getConectionConf($idConnection) {
+    $confParameters = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
+	return $confParameters;
+}
+
+/**
+ * Shows the map of an agent in a div with the width and heigth given and the history if asked
+ *
+ * @param $agent_id: id of the agent as in the table tagente;
+ * @param $height: heigth in a string in css format
+ * @param $width: width in a string in css format
+ * @param $show_history: by default or when this parameter is false in the map the path with the 
+ * @param $history_time: Number of seconds in the past to show from where to start the history path.
+ *
+ * @return A div tag with the map and the agent and the history path if asked.
+ */
+function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history_time = 86400) {
+	
+	//$default_map_conf = getConectionConf($config['default_map']);
+	$default_map_conf = getConectionConf(1);
+	$baselayers[0]['url']= 'http://tile.openstreetmap.org/${z}/${x}/${y}.png';
+	$baselayers[0]['name'] = "OSM";
+	$baselayers[0]['typeBaseLayer'] = "OSM";
+	$agent_position = get_agent_last_coords($agent_id);
+	$agent_name = $agent_position['nombre'];
+	printMap($agent_name."_agent_map", $default_map_conf['default_zoom_level'] , $default_map_conf['num_zoom_levels'],$agent_position['last_latitude'], $agent_position['last_longitude'], $baselayers, $controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap') );
+	//printMap($agent_id."_agent_map", 16 , 19, 40.42056, -3.70818 -3.708187, $baselayers, $controls = null) {
+
+	makeLayer("layer_for_agent_".$agent_name);
+
+	$agent_icon = get_agent_icon_map($agent_id);
+		/* If show_history is true, show the path of the agent */
+	if ($show_history) {
+		/* TODO: only show the last history_time part of the path */
+		addPath("layer_for_agent_".$agent_name,$agent_id);
+	}
+	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon);
+}
 ?>
+

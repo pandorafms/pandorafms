@@ -167,8 +167,9 @@ if (empty ($id_agente)) {
 	return;
 }
 
+$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
-$id_grupo = get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agente);
+$id_grupo = $agent['id_grupo'];
 if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access (read) to agent ".get_agent_name($id_agente));
@@ -192,8 +193,23 @@ if (isset($_GET["flag_agent"])){
 }
 
 echo "<div id='menu_tab_frame_view'>";
+if ($agent["icon_path"]) {
+    $icon = "images/gis_map/icons/" . $agent['icon_path'];
+    $state = get_agent_status($id_agente);
+    if (!$state) {
+        $icon .= ".png";
+    }
+    else {
+        $icon .= "_" . $state . ".png";
+    }
+
+    echo '<img src="'.$icon.'" alt="'.__('Agent Icon').'" style="float:right;"/>';
+}
+else {
+	$icon = 'images/bricks.png';
+}
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".mb_substr(get_agent_name($id_agente),0,21)."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='$icon' class='top' border=0>&nbsp; ".mb_substr(get_agent_name($id_agente),0,21)."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");

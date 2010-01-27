@@ -19,25 +19,63 @@ require_once ("include/config.php");
 check_login ();
 
 require_once ('include/functions_gis.php');
+require_once ('include/functions_ui.php');
 
 $opt = get_parameter('opt');
 
 switch ($opt) {
-	case 'point_info':
+	case 'point_path_info':
 		$id = get_parameter('id');
 		$row = get_db_row_sql('SELECT * FROM tgis_data WHERE id_tgis_data = ' . $id);
 		
-		$row = array('id_tgis_data' => 0, 'longitude' => -3.709,
-			'latitude' => 40.422, 'altitude' => 0, 'end_timestamp' => '2010-01-14 17:19:45', 'start_timestamp' => '2010-01-12 17:19:45', 'manual_placemen' => 1, 'tagente_id_agente' => 1);
+		$returnJSON = array();
+		$returnJSON['correct'] = 1;
+		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">'.get_agent_name($row['tagente_id_agente']).'</a><br />';
+		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';		
+		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
+		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
+		$returnJSON['content'] .= __('Num reports') . ': '.$row['number_of_packages'].'<br />'; 
+		if ($row['manual_placemen']) $returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />'; 
+		
+		echo json_encode($returnJSON);
+		
+		break;
+	case 'point_agent_info':
+		$id = get_parameter('id');
+		$row = get_db_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
-		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['tagente_id_agente'] . '">pepito</a><br />';
-		$returnJSON['content'] .= __('Position') . ': (' . $row['longitude'] . ', ' . $row['latitude'] . ', ' . $row['altitude'] . ') <br />';		
-		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
-		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
-		$returnJSON['content'] .= __('Num reports') . ': 666<br />'; //$row['num_packages']; //TODO
-		if ($row['manual_placemen']) $returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />'; 
+		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['id_agente'] . '">'.$row['nombre'].'</a><br />';
+		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['last_longitude'] . ', ' . $row['last_latitude'] . ', ' . $row['last_altitude'] . ') <br />';		
+		$agent_ip_address = get_agent_address ($id_agente);
+		if ($agent_ip_address || $agent_ip_address != '') {
+			$returnJSON['content'] .= __('IP Address').': '.get_agent_address ($id_agente).'<br />';
+		}
+		$returnJSON['content'] .= __('OS').': '.print_os_icon($row['id_os'], true, true);
+
+		$osversion_offset = strlen($row["os_version"]);
+		if ($osversion_offset > 15) {
+    		$osversion_offset = $osversion_offset - 15;
+		}
+		else {
+		    $osversion_offset = 0;
+		}
+		$returnJSON['content'] .= '&nbsp;( <i><span title="'.$row["os_version"].'">'.substr($row["os_version"],$osversion_offset,15).'</span></i>)<br />';
+		$agent_description = $row['comentarios'];
+		if ($agent_description || $agent_description != '') {
+			$returnJSON['content'] .= __('Description').': '.$agent_description.'<br />';
+		}
+		$returnJSON['content'] .= __('Group').': '.print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.get_group_name ($row["id_grupo"]).'</strong>)<br />';
+		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
+		$returnJSON['content'] .= __('Last contact')." / ".__('Remote').': '. $row["ultimo_contacto"]. " / ";
+		if ($row["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
+    		$returnJSON['content'] .=__('Never');
+		} else {
+ 			$returnJSON['content'] .= $row["ultimo_contacto_remoto"];
+		}
+
+
 		
 		echo json_encode($returnJSON);
 		

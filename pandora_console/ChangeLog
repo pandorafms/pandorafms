@@ -1,3 +1,20 @@
+2010-01-27  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* include/functions_gis.php: Modiffied addPoint and addPointExtent to 
+	receive more parmeters so it's possible to use any kind of point.
+	Modified comments on saveMap2
+
+	* operation/gis_maps/render_view.php: Used map_id instead if id when 
+	the parameter passed in the url is a map id.
+	Fixed to work with the new function getMapConf.
+	Improved "pure" view. Still some things are hardcoded and needs improvement
+
+	* operation/gis_maps/ajax.php: Modified to suppor calls to get info of 
+	different kind of points. Removed hardcoded data.
+
+	* operation/gis_maps/index.php:  Used map_id instead if id when
+	the parameter passed in the url is a map id.
+
 2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: fix a typing "print_r" in function "getMapConf"

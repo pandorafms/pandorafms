@@ -50,7 +50,7 @@ if ($maps !== false) {
 		}
 		$data = array ();
 		
-		$data[0] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;id='.
+		$data[0] = '<a href="index.php?sec=gismaps&amp;sec2=operation/gis_maps/render_view&amp;map_id='.
 		$map['id_tgis_map'] . '">' . $map['map_name'].'</a> ';
 		$data[1] = print_group_icon ($map["group_id"], true);
 		

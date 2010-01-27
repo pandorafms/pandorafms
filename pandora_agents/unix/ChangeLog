@@ -1,3 +1,8 @@
+2010-01-27  Sancho Lerena <slerena@artica,es>
+
+	* plugins/files_indir: New agent to detect if files in a specficied
+	directory are less than in previous run. Return two modules.
+
 2009-12-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Removed debugging code.

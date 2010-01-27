@@ -95,23 +95,23 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 			layer[0].setVisibility(action);
 		}
 
-		function addPoint(layerName, pointName, lon, lat) {
+		function addPoint(layerName, pointName, lon, lat, id, type_string) {
 			var point = new OpenLayers.Geometry.Point(lon, lat)
 				.transform(map.displayProjection, map.getProjectionObject());
 
 			var layer = map.getLayersByName(layerName);
 			layer = layer[0];
 
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{nombre: pointName, estado: "ok"}));
+			layer.addFeatures(new OpenLayers.Feature.Vector(point,{nombre: pointName, estado: "ok", id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }));
 		}
 
-		function addPointExtent(layerName, pointName, lon, lat, icon, width, height) {
+		function addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string) {
 			var point = new OpenLayers.Geometry.Point(lon, lat)
 			.transform(map.displayProjection, map.getProjectionObject());
 
 			var layer = map.getLayersByName(layerName);
 			layer = layer[0];
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{estado: "ok"}, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName}));
+			layer.addFeatures(new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName}));
 		}
 
 		function addPointPath(layerName, lon, lat, color, manual, id) {
@@ -126,14 +126,14 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 			var pointRadiusManual = pointRadiusNormal - (strokeWidth / 2); 
 			
 			if (manual) {
-				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id,
-					lanlot: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
+				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: "point_path_info", 
+					long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
 					{fillColor: "#ffffff", pointRadius: pointRadiusManual, stroke: 1, strokeColor: color, strokeWidth: strokeWidth, cursor: "pointer"}
 				);
 			}
 			else {
-				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id,
-					lanlot: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
+				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: "point_path_info",
+					long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
 						{fillColor: color, pointRadius: pointRadiusNormal, cursor: "pointer"}
 				);
 			}
@@ -195,15 +195,14 @@ function makeLayer($name, $visible = true, $dot = null) { static $i = 0;
             layer.events.on({
                 "featureselected": function(e) {
                 	if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
-
                     	var feature = e.feature;
                 		var featureData = feature.data;
-                		var lanlot = featureData.lanlot;
+                		var long_lat = featureData.long_lat;
 
 						var popup;
 						
         	            popup = new OpenLayers.Popup.FramedCloud('cloud00',
-            	            	lanlot,
+            	            	long_lat,
 								null,
 								'<div class="cloudContent' + featureData.id + '" style="text-align: center;"><img src="images/spinner.gif" /></div>',
 								null,
@@ -213,7 +212,8 @@ function makeLayer($name, $visible = true, $dot = null) { static $i = 0;
 								map.addPopup(popup);
 
                 		jQuery.ajax ({
-                    		data: "page=operation/gis_maps/ajax&opt=point_info&id="  + featureData.id,
+                    		data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id="  + featureData.id,
+                    		//data: "page=operation/gis_maps/ajax&opt=point_path_info&id="  + featureData.id,
                     		type: "GET",
                     		dataType: 'json',
                     		url: "ajax.php",
@@ -251,7 +251,7 @@ function activateSelectControl($layers=null) {
 	<?php
 }
 
-function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20) {
+function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20, $point_id  = '', $type_string = '') {
 	?>
 	<script type="text/javascript">
 	$(document).ready (
@@ -261,13 +261,13 @@ function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 			?>
 				addPointExtent('<?php echo $layerName; ?>',
 					'<?php echo $pointName; ?>', <?php echo $lon; ?>,
-					<?php echo $lat; ?>, '<?php echo $icon; ?>', <?php echo $width; ?>, <?php echo $height?>);
+					<?php echo $lat; ?>, '<?php echo $icon; ?>', <?php echo $width; ?>, <?php echo $height?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
 			<?php
 			}
 			else { 
 			?>
 			addPoint('<?php echo $layerName; ?>',
-					'<?php echo $pointName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>);
+					'<?php echo $pointName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
 			<?php
 			} 
 			?>
@@ -300,9 +300,8 @@ function getMaps() {
  * @return An array of arrays of configuration parameters
  */
 function getMapConf($idMap) {
-	$mapConfs= get_db_all_rows_sql('SELECT tconn.* FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
+	$mapConfs= get_db_all_rows_sql('SELECT tconn.*, trel.default_map_connection FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
 			 WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection AND trel.tgis_map_id_tgis_map = ' . $idMap);
-
 	return $mapConfs;
 }
 
@@ -539,19 +538,18 @@ function saveMap($conf, $baselayers, $layers) {
  * tgis_map_layer and witch each id_layer save the agent in this layer in
  * table tgis_map_layer_has_tagente.
  * 
- * @param unknown_type $map_name
- * @param unknown_type $map_initial_longitude
- * @param unknown_type $map_initial_latitude
- * @param unknown_type $map_initial_altitude
- * @param unknown_type $map_zoom_level
- * @param unknown_type $map_background
- * @param unknown_type $map_default_longitude
- * @param unknown_type $map_default_latitude
- * @param unknown_type $map_default_altitude
- * @param unknown_type $map_group_id
- * @param unknown_type $map_connection_list
- * @param unknown_type $arrayLayers
- * @return unknown_type
+ * @param $map_name
+ * @param $map_initial_longitude
+ * @param $map_initial_latitude
+ * @param $map_initial_altitude
+ * @param $map_zoom_level
+ * @param $map_background
+ * @param $map_default_longitude
+ * @param $map_default_latitude
+ * @param $map_default_altitude
+ * @param $map_group_id
+ * @param $map_connection_list
+ * @param $arrayLayers
  */
 function saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_initial_altitude, $map_zoom_level, $map_background,

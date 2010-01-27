@@ -117,6 +117,11 @@ echo '</b>)</td></tr>';
 echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
 echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
 
+// Position Information
+if ($config['activate_gis']) {
+	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
+    echo '<td class="datos2" colspan="2"> <a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.$agent["last_longitude"].', '.$agent["last_latitude"].'</a></td></tr>';
+}
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
 print_timestamp ($agent["ultimo_contacto"]);
@@ -130,6 +135,11 @@ if ($agent["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
 }
 echo '</td></tr>';
 
+// Timezone Offset
+if ($agent['timezone_offset'] != 0) {
+	echo '<tr><td class="datos2"><b>'.__('Timezone Offset'). '</b></td>';
+	echo '<td class="datos2" colspan="2">'.$agent["timezone_offset"].'</td></tr>';
+}
 // Next contact (agent)
 $progress = getNextAgentContact($id_agente);
 

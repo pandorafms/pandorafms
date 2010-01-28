@@ -1,5 +1,15 @@
 2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: add function "deleteMap" for to delete the map
+	and other rows in tables related.
+	
+	* godmode/gis_maps/index.php: use the "deleteMap" in link of delete map.
+	
+	* include/functions_db.php: add function "clean_cache" for clean the
+	problematic (sometimes) cache.
+
+2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/gis_maps/ajax.php: clean source code, erased comment lines.
 	
 	* include/functions_gis.php, godmode/gis_maps/configure_gis_map.php: clean

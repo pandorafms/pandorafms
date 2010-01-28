@@ -456,6 +456,27 @@ function saveMapConnection($mapConnection_name, $mapConnection_group,
 }
 
 /**
+ * Delete the map in the all tables are related.
+ * 
+ * @param $idMap integer The id of map.
+ * @return None
+ */
+function deleteMap($idMap) {
+	$listIdLayers = get_db_all_rows_sql("SELECT id_tmap_layer FROM tgis_map_layer WHERE tgis_map_id_tgis_map = " . $idMap);
+	
+	if ($listIdLayers !== false) {
+		foreach ($listIdLayers as $idLayer) {
+			process_sql_delete('tgis_map_layer_has_tagente', array('tgis_map_layer_id_tmap_layer' => $idLayer));
+		}
+	}
+	process_sql_delete('tgis_map_layer', array('tgis_map_id_tgis_map' => $idMap));
+	process_sql_delete('tgis_map_has_tgis_map_connection', array('tgis_map_id_tgis_map' => $idMap));
+	process_sql_delete('tgis_map', array('id_tgis_map' => $idMap));
+	
+	clean_cache();
+}
+
+/**
  * Save the map into DB, tgis_map and with id_map save the connetions in 
  * tgis_map_has_tgis_map_connection, and with id_map save the layers in 
  * tgis_map_layer and witch each id_layer save the agent in this layer in

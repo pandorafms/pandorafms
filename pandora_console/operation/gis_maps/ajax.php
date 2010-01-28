@@ -81,23 +81,4 @@ switch ($opt) {
 		
 		break;
 }
-//		$returnJSON = array();
-//		
-//		$returnJSON['correct'] = 1;
-//		$returnJSON['content'] = '';
-//		
-//		//echo json_encode($returnJSON);
-//		break;
-//}
-//
-//$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
-//
-//$listPoints = array(
-//	array('id_tgis_data' => 0, 'longitude' => -3.709, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 1),
-//	array('id_tgis_data' => 1, 'longitude' => -3.710, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 0),
-//	array('id_tgis_data' => 2, 'longitude' => -3.711, 'latitude' => 40.420, 'altitude' => 0, 'manual_placemen' => 1),
-//	array('id_tgis_data' => 3, 'longitude' => -3.712, 'latitude' => 40.422, 'altitude' => 0, 'manual_placemen' => 0),
-//	array('id_tgis_data' => 4, 'longitude' => -3.708187, 'latitude' => 40.42056, 'altitude' => 0, 'manual_placemen' => 0)
-//);
-
 ?>

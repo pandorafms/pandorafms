@@ -25,6 +25,15 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
+$action = get_parameter('action');
+
+switch ($action) {
+	case 'delete_map':
+		$idMap = get_parameter('id_map');
+		deleteMap($idMap);
+		break;
+}
+
 echo "<h2>" . __('GIS Maps') . " &raquo; " . __('Builder') . "</h2>";
 
 $table->width = '500px';

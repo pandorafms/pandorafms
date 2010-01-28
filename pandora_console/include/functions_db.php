@@ -19,6 +19,12 @@
  * @subpackage DataBase
  */
 
+/**
+ * When you delete (with the function "process_sql_delete" or other) any row in
+ * any table, some times the cache save the data just deleted, because you
+ * must use "clean_cache". 
+ */
+
 /** 
  * Check if login session variables are set.
  *
@@ -1983,6 +1989,18 @@ function add_database_debug_trace ($sql, $result = false, $affected = false, $ex
 	$var['extra'] = $extra;
 	
 	$config['db_debug'][$sql] = $var;
+}
+
+/**
+ * Clean the cache for to have errors and ghost rows when you do "select <table>",
+ * "delete <table>" and "select <table>".
+ * 
+ * @return None
+ */
+function clean_cache() {
+	global $sql_cache;
+	
+	$sql_cache = array ('saved' => 0);
 }
 
 /**

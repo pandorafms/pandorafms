@@ -1,3 +1,10 @@
+2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/gis_maps/ajax.php: clean source code, erased comment lines.
+	
+	* include/functions_gis.php, godmode/gis_maps/configure_gis_map.php: clean
+	source, change the name of saveMap2 to saveMap.
+
 2010-01-27  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/functions_gis.php: Modiffied addPoint and addPointExtent to 

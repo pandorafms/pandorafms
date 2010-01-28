@@ -455,83 +455,6 @@ function saveMapConnection($mapConnection_name, $mapConnection_group,
 	return $returnQuery;
 }
 
-function saveMap($conf, $baselayers, $layers) {
-	$return = false;
-	
-	//TODO validation data
-	
-	//BY DEFAULT TODO need code and change db
-	$articaLongitude = -3.708187;
-	$articaLatitude = 40.42056;
-	$articaAltitude = 0;
-	$defaultControl = array ('type' => 'controls',
-		'content' => array('Navigation', 'PanZoomBar', 'ScaleLine')
-	);
-	//BY DEFAULT TODO need code and change db
-	
-	$idMap = process_sql_insert('tgis_map',
-		array(
-			'map_name' => $conf['name'],   
-			'initial_longitude' => $articaLongitude,
-			'initial_latitude' => $articaLatitude,
-			'initial_altitude' => $articaAltitude,
-			'zoom_level' => $conf['initial_zoom'],
-			'group_id' => $conf['group']
-			
-		)
-	);
-	$zoom = array("type" => "numLevelsZoom","content" => $conf['numLevelsZoom']);
-	
-	process_sql_insert('tgis_map_connection',
-		array(
-			'conection_data' => json_encode($defaultControl),    
-			'tgis_map_id_tgis_map' => $idMap	
-		)
-	);
-	
-	process_sql_insert('tgis_map_connection',
-		array(
-			'conection_data' => json_encode($zoom),    
-			'tgis_map_id_tgis_map' => $idMap	
-		)
-	);
-	
-	foreach ($baselayers as $baselayer) {
-		switch ($baselayer['type']) {
-			case 'osm':
-				$temp = array(
-    				'type' => 'baselayer',
-					'content' => array(
-            			'typeBaseLayer' => 'OSM',
-						'url' => $baselayer['url'],
-						'default' => $baselayer['default']
-        			)
-				);
-				
-				process_sql_insert('tgis_map_connection',
-					array(
-						'conection_data' => json_encode($temp),    
-						'tgis_map_id_tgis_map' => $idMap	
-					)
-				);
-				break;
-		}
-	}
-	
-	foreach($layers as $layer) {
-		process_sql_insert('tgis_map_layer',
-			array(
-				'layer_name' => $layer['name'],
-				'view_layer' => $layer['visible'],
-				'tgis_map_id_tgis_map' => $idMap,
-				'tgrupo_id_grupo' => $layer['group']
-			)
-		);			
-	}
-	
-	return $return;
-}
-
 /**
  * Save the map into DB, tgis_map and with id_map save the connetions in 
  * tgis_map_has_tgis_map_connection, and with id_map save the layers in 
@@ -551,7 +474,7 @@ function saveMap($conf, $baselayers, $layers) {
  * @param $map_connection_list
  * @param $arrayLayers
  */
-function saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
+function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 	$map_initial_altitude, $map_zoom_level, $map_background,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
 	$map_group_id, $map_connection_list, $arrayLayers) {

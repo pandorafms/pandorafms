@@ -58,7 +58,7 @@ switch ($action) {
 			$arrayLayers[] = JSON_decode($_POST['layer_values_' . $layerID], true);
 		}
 		
-		saveMap2($map_name, $map_initial_longitude, $map_initial_latitude,
+		saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 			$map_initial_altitude, $map_zoom_level, $map_background,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_group_id, $map_connection_list, $arrayLayers);

@@ -27,15 +27,17 @@ $map = get_db_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = getMapConf($idMap);
 
 $num_baselayer=0;
-foreach ($confMap as $mapC) {
 
-	$baselayers[$num_baselayer]['typeBaseLayer'] = $mapC['connection_type'];
-	$baselayers[$num_baselayer]['name'] = $mapC['conection_name'];
-	$decodeJSON = json_decode($mapC['conection_data'], true);
-	$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
-	$num_baselayer++;
-	if ($mapC['default_map_connection'] == 1) {
-		$numZoomLevels = $mapC['num_zoom_levels'];
+if ($confMap !== false) {
+	foreach ($confMap as $mapC) {
+		$baselayers[$num_baselayer]['typeBaseLayer'] = $mapC['connection_type'];
+		$baselayers[$num_baselayer]['name'] = $mapC['conection_name'];
+		$decodeJSON = json_decode($mapC['conection_data'], true);
+		$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+		$num_baselayer++;
+		if ($mapC['default_map_connection'] == 1) {
+			$numZoomLevels = $mapC['num_zoom_levels'];
+		}
 	}
 }
 

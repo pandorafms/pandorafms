@@ -79,8 +79,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 			if (! give_acl ($config["id_user"], $gisMap["group_id"], "AR")) {
 				continue;
 			}
-			$sub["operation/gis_maps/render_view&amp;id=".$gisMap["id_tgis_map"]]["text"] = mb_substr ($gisMap["map_name"], 0, 15);
-			$sub["operation/gis_maps/render_view&amp;id=".$gisMap["id_tgis_map"]]["refr"] = 0;
+			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr ($gisMap["map_name"], 0, 15);
+			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
 		}
 		
 		$menu["gismaps"]["sub"] = $sub;

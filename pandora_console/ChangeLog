@@ -1,3 +1,13 @@
+2010-01-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged from trunk:
+	
+	* godmode/reporting/map_builder.php: use "clean_cache" in the deleting of
+	visual map.
+	
+	* include/functions_db.php: add function "clean_cache" for clean the
+	problematic (sometimes) cache.
+
 2010-01-25  Sancho Lerena <slerena@artica.es>
 
 	Merged from trunk:

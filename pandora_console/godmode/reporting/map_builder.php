@@ -102,6 +102,7 @@ if ($delete_layout) {
 	$result = process_sql_delete ('tlayout', array ('id' => $id_layout));
 	if ($result) {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		clean_cache();
 	} else {
 		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	}

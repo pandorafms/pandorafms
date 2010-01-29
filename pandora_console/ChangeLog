@@ -1,11 +1,16 @@
-2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+2010-01-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/map_builder.php: use "clean_cache" in the deleting of
+	visual map.
+
+2010-01-28 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/gis_maps/render_view.php: add the check if there aren't any
 	connection to map.
 	
 	* operation/menu.php: change parameter "id" to "id_map". 
 
-2010-01-27 Miguel de Dios  <miguel.dedios@artica.es>
+2010-01-28 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add function "deleteMap" for to delete the map
 	and other rows in tables related.

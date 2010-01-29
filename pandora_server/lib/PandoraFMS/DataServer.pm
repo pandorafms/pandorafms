@@ -157,19 +157,21 @@ sub process_xml_data ($$$$$) {
 	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
 	    $data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
 
+	# Timezone offset must be an integer beween -12 and +12
+	if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
+		$timezone_offset = 0; # Default value
+	}
+
 	my $valid_position_data = 1; 	
 
 	# Get GIS information
 	my ($longitude, $latitude, $altitude) = (
 	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'});
+	# TODO: validate that the positional parameters and timezone are defined.
 
 	if ($pa_config->{'activate_gis'}) {
 
 		# Validate the GIS informtation
-		# Timezone offset must be an integer beween -12 and +12
-		if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
-			$timezone_offset = 0; # Default value
-		}
 
 		# If position data are not valid should be ignored
 		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
@@ -189,13 +191,15 @@ sub process_xml_data ($$$$$) {
 		$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
 	}
 	else {
+		if ($timezone_offset != 0) {
 		# Modify the timestamp with the timezone_offset
 		logger($pa_config, "Unmodified timestamp = $timestamp", 5);
-		$timestamp =~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/;
-        #my $last_fired = ($1 > 0) ? 
-		my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900) + ($timezone_offset * 3600); 
+			$timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/;
+			logger($pa_config, "Unmodified timestamp = $1/$2/$3 $4:$5:$6", 5);
+			my $utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900) + ($timezone_offset * 3600); 
 		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
         $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+		}
 		logger($pa_config, "Modified timestamp = $timestamp with timezone_offset = $timezone_offset", 5);
 	}
 

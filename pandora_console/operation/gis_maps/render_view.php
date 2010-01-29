@@ -72,7 +72,8 @@ if ($layers != false) {
 	foreach ($layers as $layer) {
 		makeLayer($layer['layer_name'], $layer['view_layer']);
 		
-		$agentNames = get_group_agents($layer['tgrupo_id_grupo']);
+		// calling get_group_agents with none to obtain the names in the same case as they are in the DB.	
+		$agentNames = get_group_agents($layer['tgrupo_id_grupo'],false,'none');
 		foreach ($agentNames as $agentName) {
 			$idAgent = get_agent_id($agentName);
 			$coords = get_agent_last_coords($idAgent);

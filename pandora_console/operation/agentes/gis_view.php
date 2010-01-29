@@ -36,7 +36,7 @@ echo "<h2>".__('Received data from')." ". $agent_name . " </h2>";
 echo "<h3>" . __("Map with the last position/s") . " " . human_time_description ($period) ."</h3>";
 
 /* Map with the current position */
-echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width: 250px; height: 250px;\"></div>";
+echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 echo getAgentMap($agentId, "500px", "98%", true);
 
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description ($period) ."</h3>";

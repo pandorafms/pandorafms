@@ -591,6 +591,6 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history
 		/* TODO: only show the last history_time part of the path */
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
-	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon);
+	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon, 20, 20, $agent_id, 'point_agent_info');
 }
 ?>

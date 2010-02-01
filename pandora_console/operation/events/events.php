@@ -430,11 +430,11 @@ foreach ($result as $event) {
 	// Colored box
 	if ($event["estado"] == 0) {
 		$img = "images/tick_off.png";
-		$title = __('Event validated');
+		$title = __('Event not validated');
 	}
 	else {
 		$img = "images/tick.png";
-		$title = __('Event not validated');
+		$title = __('Event validated');
 	}
 	$data[0] = print_image ($img, true, 
 		array ("class" => "image_status",
@@ -504,7 +504,7 @@ foreach ($result as $event) {
 			array ("title" => __('Go to alert overview')));
 		$data[5] .= '</a>';
 	}
-	
+
 	$data[6] = print_group_icon ($event["id_grupo"], true);
 
 	if ($group_rep == 1) {
@@ -512,8 +512,8 @@ foreach ($result as $event) {
 	}
 	else {
 		if (!empty ($event["estado"])) {
-			if ($event["id_usuario"] != '0' && $event["id_usuario"] != ''){
-				$data[7] = '<a href="index.php?sec=usuario&amp;sec2=operation/user/user_edit&amp;ver='.$event["id_usuario"].'" title="'.dame_nombre_real ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
+			if ($event["id_usuario"] != '0' && $event["id_usuario"] != '' && $event["id_usuario"] != 'system' && $event["id_usuario"] != "System"){
+				$data[7] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&id='.$event["id_usuario"].'" title="'.dame_nombre_real ($event["id_usuario"]).'">'.mb_substr ($event["id_usuario"],0,8).'</a>';
 			}
 			else {
 				$data[7] = __('System');

@@ -1,3 +1,30 @@
+2010-02-01  Sancho Lerena <slerena@artica.es>
+
+	Changes ported from 3.0 branch.
+
+	* include/javascript/pandora_visual_console.js: Thiner lines in maps.
+
+	* include/functions_visual_map.php: Fixed several issues in visual maps
+	(bad hierarchy status color, limited depth for recursion, get unknown
+	for agents and modules, and line color is now always associated to
+	parent status) and non-status elements like labels, graphs or progress
+	bars now doesnt propagate module status to parents.
+
+	* include/functions_db.php: Added parameter to get_db_all_rows_sql() to
+	avoid use of cache. Function process_sql() was not properly checking if
+	cache usage was disabled and was always using cache. Added support for
+	checking unknown status in get_agentmodule_status() function.
+
+	* extensions/dbmanager/dbmanager.css,
+	  extensions/dbmanager.php: Fixed width of textarea.
+
+	* operation/events/events.php: Fixed bug #2943907.
+
+	* operation/agentes/exportdata.php: Fixed problem exporting CSV
+	when data to export is TOO big, using an internal cache to read 
+	data.
+
+
 2010-02-01  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_agente.php: Changed colour order for 

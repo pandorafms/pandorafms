@@ -1,3 +1,24 @@
+2010-02-02  Sancho Lerena <slerena@artica.es>
+
+	* include/javascript/pandora_visual_console.js: Thiner lines in maps.
+
+	* include/functions_visual_map.php: Fixed several issues in visual maps
+	(bad hierarchy status color, limited depth for recursion, get unknown
+	for agents and modules, and line color is now always associated to
+	parent status) and non-status elements like labels, graphs or progress
+	bars now doesnt propagate module status to parents.
+
+	* include/functions_db.php:
+
+	* extensions/dbmanager/dbmanager.css,
+	  extensions/dbmanager.php: Fixed width of textarea.
+
+	* operation/events/events.php: Fixed bug #2943907.
+
+	* operation/agentes/exportdata.php: Fixed problem exporting CSV
+	when data to export is TOO big, using an internal cache to read 
+	data.
+
 2010-01-29 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged from trunk:

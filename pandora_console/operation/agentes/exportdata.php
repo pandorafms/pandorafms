@@ -81,6 +81,12 @@ $export_type = get_parameter_post ('export_type', 'data');
 $export_btn = get_parameter_post ('export_btn', 0);
 
 if (!empty ($export_btn) && !empty ($module)) {
+
+	// Disable SQL cache
+	global $sql_cache;
+	$sql_cache = array ('saved' => 0);
+
+
 	//Convert start time and end time to unix timestamps
 	$start = strtotime ($start_date." ".$start_time);
 	$end = strtotime ($end_date." ".$end_time);
@@ -92,47 +98,17 @@ if (!empty ($export_btn) && !empty ($module)) {
 		print_error_message (__('Invalid time specified'));
 		return;
 	}
-	
-	// Data
-	$data = array ();
-	switch ($export_type) {
-		case "data":
-		case "excel":
-		case "csv":
-			foreach ($module as $selected) {
-				$data_single = get_agentmodule_data ($selected, $period, $end);
-				if (!empty ($data_single)) {
-					$data = array_merge ($data, $data_single);
-				}
-			}
-		break;
-		case "avg":
-			foreach ($module as $selected) {
-				$arr = array ();
-				$arr["data"] = get_agentmodule_data_average ($selected, $period, $end);
-				if ($arr["data"] === false) {
-					continue;
-				}	
-				$arr["module_name"] = get_agentmodule_name ($selected);
-				$arr["agent_name"] = get_agentmodule_agent_name ($selected);
-				$arr["agent_id"] = get_agentmodule_agent ($selected);
-				$arr["utimestamp"] = $end;				
-				array_push ($data, $arr);
-			}
-		break;
-		default:
-			print_error_message (__('Invalid method supplied'));
-			return;
-		break;
-	}
-	
+
+	// ***************************************************
 	// Starts, ends and dividers
+	// ***************************************************
+
 	switch ($export_type) {
 		case "data":
 		case "avg":
 		default:
 			//HTML output - don't style or use XHTML just in case somebody needs to copy/paste it. (Office doesn't handle <thead> and <tbody>)
-			$datastart = '<table style="width:700px;"><tr><td>'.__('Agent').'</td><td>'.__('Module').'</td><td>'.__('Data').'</td><td>'.__('Timestamp').'</td></tr>';
+			$datastart = '<table style="width:700px;"><tr><th>'.__('Agent').'</th><th>'.__('Module').'</th><th>'.__('Data').'</th><th>'.__('Timestamp').'</th></tr>';
 			$rowstart = '<tr><td>';
 			$divider = '</td><td>';
 			$rowend = '</td></tr>';
@@ -158,42 +134,124 @@ if (!empty ($export_btn) && !empty ($module)) {
 		break;
 	}
 
-	$output = $datastart;
-	foreach ($data as $key => $module) {
-		$output .= $rowstart;
-		$output .= $module['agent_name'];
-		$output .= $divider;
-		$output .= $module['module_name'];
-		$output .= $divider;
-		$output .= $module['data'];
-		$output .= $divider;
-		$output .= date ($config["date_format"], $module['utimestamp']);
-		$output .= $rowend;
-	}
-	$output .= $dataend;
-	
+	// ***************************************************
+	// Header output
+	// ***************************************************
+
+
+
 	switch ($export_type) {
-		default:
-		case "data":
-		case "avg":
-			echo $output;
-			return;
-		break;
 		case "excel":
 		case "csv":
-			//Encase into a file and offer download
-			//Flush buffers - we don't need them.
 			$config['ignore_callback'] = true;
 			while (@ob_end_clean ());
+			
 			header("Content-type: application/octet-stream");
 			header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
 			header("Pragma: no-cache");
 			header("Expires: 0");
-			echo $output;
-			exit;
-			//Exit necessary so it doesn't continue processing and give erroneous downloads
+	}
+
+	// ***************************************************
+	// Data processing
+	// ***************************************************
+
+	$data = array ();
+	switch ($export_type) {
+		case "data":
+		case "excel":
+		case "csv":
+
+			// Show header
+			echo $datastart;
+
+			foreach ($module as $selected) {
+
+				$output = "";
+				$work_period = 120000; 
+
+				$work_end = $end - $period + $work_period;
+				//Buffer to get data, anyway this will report a memory exhaustin
+
+				while ( $work_end < $end) {
+					$work_end = $work_end + $work_period;
+
+					$data = array (); // Reinitialize array for each module chunk
+					$data_single = get_agentmodule_data ($selected, $work_period, $work_end);
+					if (!empty ($data_single)) {
+						$data = array_merge ($data, $data_single);
+					}
+
+/*
+					if ($work_end > $end) {
+						$work_period = $work_end - $end;
+						$work_end = $end;
+					}
+*/
+					foreach ($data as $key => $module) {
+						$output .= $rowstart;
+						$output .= $module['agent_name'];
+						$output .= $divider;
+						$output .= $module['module_name'];
+						$output .= $divider;
+						$output .= $module['data'];
+						$output .= $divider;
+						$output .= date ("Y-m-d g:i:s", $module['utimestamp']);
+						$output .= $rowend;
+					}
+
+					switch ($export_type) {
+						default:
+						case "data":
+						case "avg":
+							echo $output;
+							break;
+						case "excel":
+						case "csv":
+							echo $output;
+						break;
+					}
+					unset($output);
+					$output = "";
+					unset($data);
+					unset($data_single);
+				}
+			unset ($output);
+			$output = "";
+			} // main foreach
+			echo $dataend;
+		break;
+
+		case "avg":
+			foreach ($module as $selected) {
+				$arr = array ();
+				$arr["data"] = get_agentmodule_data_average ($selected, $period, $end);
+				if ($arr["data"] === false) {
+					continue;
+				}	
+				$arr["module_name"] = get_agentmodule_name ($selected);
+				$arr["agent_name"] = get_agentmodule_agent_name ($selected);
+				$arr["agent_id"] = get_agentmodule_agent ($selected);
+				$arr["utimestamp"] = $end;				
+				array_push ($data, $arr);
+			}
+		break;
+		default:
+			print_error_message (__('Invalid method supplied'));
+			return;
 		break;
 	}
+
+switch ($export_type) {
+		case "excel":
+		case "csv":
+			exit; // Necesary for CSV export, if not give problems
+			break;
+		default: 
+			return;
+}
+
+	
 } elseif (!empty ($export_btn) && empty ($module)) {
 	print_error_message (__('No modules specified'));
 }
@@ -252,14 +310,14 @@ if ($agent > 0) {
 $table->data[2][1] = print_select ($modules, "module_arr[]", array_keys ($modules), '', '', 0, true, true, true, 'w130', false);
 
 //Start date selector
-$table->data[3][0] = '<b>'.__('Begin date (*)').'</b>';
+$table->data[3][0] = '<b>'.__('Begin date').'</b>';
 
 $table->data[3][1] = print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
 $table->data[3][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => 'scwShow(scwID("text-start_date"),this);'));
 $table->data[3][1] .= print_input_text ('start_time', date ("H:m", get_system_time () - 86400), false, 10, 5, true);
 	
 //End date selector
-$table->data[4][0] = '<b>'.__('End date (*)').'</b>';
+$table->data[4][0] = '<b>'.__('End date').'</b>';
 $table->data[4][1] = print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
 $table->data[4][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => 'scwShow(scwID("text-end_date"),this);'));
 $table->data[4][1] .= print_input_text ('end_time', date ("H:m", get_system_time ()), false, 10, 5, true);

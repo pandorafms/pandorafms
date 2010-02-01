@@ -585,7 +585,7 @@ sub pandora_process_module ($$$$$$$$$) {
 					($agent_status->{'status_changes'} + 1, $agent_status->{'last_status'});
 
 	# Generate events
-	if ($status_changes == $module->{'min_ff_event'} + 1) {
+	if ($status_changes == $module->{'min_ff_event'}) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $status, $last_status, $dbh);
 	}
 	

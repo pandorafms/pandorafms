@@ -1,3 +1,10 @@
+2010-02-01  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_agente.php: Changed colour order for 
+	module status.
+
+	* include/help/en/help_agent_status.php: Improved help.
+
 2010-01-29  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* operation/gis_maps/render_view.php: Fixed call to get_agent_names to

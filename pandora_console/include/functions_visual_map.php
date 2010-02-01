@@ -59,34 +59,73 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	
 	if ($layout_datas !== false) {
 		foreach ($layout_datas as $layout_data) {
+
+			// ****************************************************************
+			// Get parent status (Could be an agent, module, map, others doesnt have parent info)
+			// ****************************************************************
+
+			if ($layout_data["parent_item"] != 0){
+				$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
+				$id_agent_parent = get_db_value ("id_agent", "tlayout_data", "id", $layout_data["parent_item"]);
+				$id_layout_linked = get_db_value ("id_layout_linked", "tlayout_data", "id", $layout_data["parent_item"]); 
+				
+				// Module
+				if ($id_agent_module_parent != 0) {
+					$status_parent = get_agentmodule_status ($id_agent_module_parent);
+				// Agent
+				} 
+				elseif ($id_agent_parent  != 0) {
+					$status_parent = get_agent_status ($id_agent_parent);
+				}
+				// Another layout/map
+				elseif ($id_layout_linked != 0) {
+					$status_parent = get_layout_status ($id_layout_linked);
+				}
+
+				else { 
+					$status_parent = 3;
+				}
+				
+			} else {
+				$id_agent_module_parent = 0;
+				$status_parent = 3;
+			}
+
+
+			// ****************************************************************	
+			// Get STATUS of current object
+			// ****************************************************************
+
 			// Linked to other layout ?? - Only if not module defined
 			if ($layout_data['id_layout_linked'] != 0) {
 				$status = get_layout_status ($layout_data['id_layout_linked']);
-				$status_parent = 3;
-			} else {
+
+			// Single object
+			} elseif ($layout_data["type"] == 0) {
 				// Status for a simple module
 				if ($layout_data['id_agente_modulo'] != 0) {
-					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
-					$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
-					// Item value
 					$status = get_agentmodule_status ($layout_data['id_agente_modulo']);
-					if ($layout_data['no_link_color'] == 1)
-						$status_parent = 3;
-					else
-						$status_parent = get_agentmodule_status ($id_agent_module_parent);
-				// Status for a whole agent
+					$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $layout_data['id_agente_modulo']);
+
+				// Status for a whole agent, if agente_modulo was == 0
 				} elseif ($layout_data['id_agent'] != 0) {
 					$status = get_agent_status ($layout_data["id_agent"]);
-					$status_parent = $status;
+					if ($status == -1) // get_agent_status return -1 for unknown!
+						$status = 3; 
 					$id_agent = $layout_data["id_agent"];
 				} else {
 					$status = 3;
-					$status_parent = 3;
 					$id_agent = 0;
 				}
+			} else {
+				// If it's a graph, a progress bar or a data tag, ALWAYS report
+				// status OK (=0) to avoid confussions here.
+				$status = 0;
 			}
-			
+
+			// ****************************************************************
 			// STATIC IMAGE (type = 0)
+			// ****************************************************************
 			if ($layout_data['type'] == 0) {
 				// Link image
 				//index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1
@@ -110,11 +149,14 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					
 				if ($show_links) {
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+
 						// Link to an agent
 						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
 					} elseif ($layout_data['id_layout_linked'] > 0) {
+
 						// Link to a map
 						echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+
 					} else {
 						// A void object
 						echo '<a href="#">';
@@ -184,7 +226,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo "</div>";
 			}
 
+			// ****************************************************************
 			// SIMPLE DATA VALUE (type = 2)
+			// ****************************************************************
 			switch ($layout_data['type']) {
 			case 2:
 				if ($resizedMap)
@@ -195,6 +239,10 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
 				echo '</strong></div>';
 				break;
+
+			// ****************************************************************
+			// Progress bar
+			// ****************************************************************		
 			case 3:
 				
 					// Percentile bar (type = 3)
@@ -220,6 +268,10 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					echo '</div>';
 				//}
 				break;
+
+			// ****************************************************************
+			// Single module graph
+			// ****************************************************************
 			case 1;
 					// SINGLE GRAPH (type = 1)
 					if ($resizedMap)
@@ -263,12 +315,25 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			}
 			*/
 			
+			// ****************************************************************
+			// Lines joining objects
+			// ****************************************************************
 			// Get parent relationship - Create line data
 			if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
 				$line['id'] = $layout_data['id'];
 				$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
 				$line['node_end'] = 'layout-data-'.$layout_data["id"];
-				$line['color'] = $status_parent ? '#00dd00' : '#dd0000';
+				switch ($status_parent) {
+				case 3:		$line["color"] = "#ccc"; // Gray
+							break;
+				case 2: 	$line["color"] = "#20f6f6"; // Yellow
+							break;
+				case 0: 	$line["color"] = "#00ff00"; // Green
+							break;
+				case 4:
+				case 1:    $line["color"] = "#ff0000"; // Red
+							break;
+				}
 				array_push ($lines, $line);
 			}
 		}
@@ -350,12 +415,19 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false) {
  * are OK. If any of them is down, then result is down (0)
  * 
  * @param int Id of the layout
+ * @param int Depth (for recursion control)
  * 
  * @return bool The status of the given layout. True if it's OK, false if not.
  */
-function get_layout_status ($id_layout = 0) {
+function get_layout_status ($id_layout = 0, $depth = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
+	$depth++; // For recursion depth checking
+
+	// TODO: Implement this limit as a configurable item in setup
+	if ($depth > 10){
+		return 3; // No status data if we need to exit by a excesive recursion
+	}
 
 	$id_layout = (int) $id_layout;
 	
@@ -371,7 +443,7 @@ function get_layout_status ($id_layout = 0) {
 			continue;
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
-			$status = get_layout_status ($data["id_layout_linked"]);
+			$status = get_layout_status ($data["id_layout_linked"], $depth);
 		// Module
 		} elseif ($data["id_agente_modulo"] != 0) {
 			$status = get_agentmodule_status ($data["id_agente_modulo"]);

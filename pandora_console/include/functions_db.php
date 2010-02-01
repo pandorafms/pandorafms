@@ -1816,13 +1816,14 @@ function get_db_sql ($sql, $field = 0, $search_history_db = false) {
  * Get all the result rows using an SQL statement.
  * 
  * @param string SQL statement to execute.
+ * @param bool If want to search in history database also
+ * @param bool If want to use cache (true by default)
  *
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function get_db_all_rows_sql ($sql, $search_history_db = false) {
+function get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
 	global $config;
-	$cache = true;
 	$history = array ();
 
 	// Read from the history DB if necessary
@@ -2072,7 +2073,9 @@ function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cac
 			while ($row = mysql_fetch_array ($result)) {
 				array_push ($retval, $row);
 			}
-			$sql_cache[$sql] = $retval;
+
+			if ($cache === true)
+				$sql_cache[$sql] = $retval;
 			mysql_free_result ($result);
 		}
 	}
@@ -2348,12 +2351,28 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
  * module were fired.
  */
 function get_agentmodule_status ($id_agentmodule = 0) {
+	$current_timestamp = get_system_time ();
+
 	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 	if ($times_fired > 0) {
 		return 4; // Alert
 	}
 	
-	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
+
+
+	$status_row = get_db_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+
+	// Not init or current_interval == 0: Return current status and avoid problems here !
+	if ($status_row["current_interval"] == 0)
+		return $status_row["estado"];
+
+	// Unknown status
+	if ( ($status_row["current_interval"] * 2) + $status_row["utimestamp"] < $current_timestamp){
+		$status = 3;
+	}
+	else {
+		$status = $status_row['estado'];
+	}
 	
 	return $status;
 }
@@ -2470,7 +2489,7 @@ function get_agentmodule_data ($id_agent_module, $period, $date = 0) {
 					AND utimestamp > %d AND utimestamp <= %d ORDER BY utimestamp ASC",
 					$id_agent_module, $datelimit, $date);
 	
-	$values = get_db_all_rows_sql ($sql, true);
+	$values = get_db_all_rows_sql ($sql, true, false);
 		
 	if ($values === false) {
 		return array ();

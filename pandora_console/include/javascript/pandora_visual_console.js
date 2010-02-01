@@ -18,7 +18,7 @@
 function draw_line (line, id_div) {
 	div = document.getElementById (id_div);
 	brush = new jsGraphics (div);
-	brush.setStroke (2);
+	brush.setStroke (1);
 	brush.setColor (line['color']);
 	if (line['x1']) {
 		x1 = line['x'];

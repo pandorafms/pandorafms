@@ -63,12 +63,11 @@ function dbmgr_extension_main () {
 	echo "<br />";
 	echo "Some samples of usage: <blockquote><em>SHOW STATUS;<br />DESCRIBE tagente<br />SELECT * FROM tserver<br />UPDATE tagente SET id_grupo = 15 WHERE nombre LIKE '%194.179%'</em></blockquote>";
 
-
 	echo "<br /><br />";
 	echo "<form method='post' action=''>";
-	print_textarea ('sql', 5, 50, html_entity_decode($sql, ENT_QUOTES));
+	print_textarea ('sql', 5, 40, html_entity_decode($sql, ENT_QUOTES));
 	echo '<br />';
-	echo '<div class="action-buttons" style="width: 100%">';
+	echo '<div class="action-buttons" style="width: 96%">';
 	print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
 	echo '</div>';
 	echo "</form>";

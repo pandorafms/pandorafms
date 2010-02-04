@@ -81,32 +81,19 @@ if ($layers != false) {
 			if ($coords['last_latitude'] == null)
 				continue;
 			
-			switch (get_agent_status($idAgent)) {
-				case 1:
-				case 4:
-					//Critical (BAD or ALERT)
-					$status = "bad";
-					break;
-				case 0:
-					//Normal (OK)
-					$status = "ok";
-					break;
-				case 2:
-					//Warning
-					$status = "warning";
-					break;
-				default:
-					// Default is Grey (Other)
-					$status = false;
-			}
-			$icon = get_agent_icon_map($idAgent, $status);
-			if ($show_history=='y'){ 	
-			addPath($layer['layer_name'], $idAgent);
+			$icon = get_agent_icon_map($idAgent, true);
+			
+			if ($show_history == 'y') { 	
+				addPath($layer['layer_name'], $idAgent);
 			}
 			addPoint($layer['layer_name'], $agentName, $coords['last_latitude'], $coords['last_longitude'], $icon, 20, 20, $idAgent, 'point_agent_info');
 		}
 	}
+	
+	$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
+	
 	activateSelectControl();
+	activateAjaxRefresh($layers, $timestampLastOperation);
 }
 
 ?>

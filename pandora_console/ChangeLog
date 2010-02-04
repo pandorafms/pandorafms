@@ -1,5 +1,18 @@
 2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: add javascript function "isInt" for test int
+	values, rename some javascript functions for to avoid typing mistakes with
+	similar name functions in PHP. Add the function "activateAjaxRefresh" and
+	"getArrayListIcons".
+	
+	* operation/gis_maps/ajax.php: add new operation "get_new_positions" for
+	ajax refresh the points.
+	
+	* operation/gis_maps/render_view.php: change the source code for to use new
+	functions as "activateAjaxRefresh" for example.
+
+2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/ver_agente.php: fix the show icon agent view.
 	* images/gis_map/icons/dot_bad.png, images/gis_map/icons/dot_ok.png,
 	images/gis_map/icons/dot.png, images/gis_map/icons/dot_warning.png: add one

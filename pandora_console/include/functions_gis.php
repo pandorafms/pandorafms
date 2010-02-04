@@ -20,6 +20,12 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 	<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>
 	<script type="text/javascript">
 		var map;
+
+		function isInt(x) {
+			var y=parseInt(x);
+			if (isNaN(y)) return false;
+			return x==y && x.toString()==y.toString();
+		}
 		
 		$(document).ready (
 			function () {
@@ -95,26 +101,26 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 			layer[0].setVisibility(action);
 		}
 
-		function addPoint(layerName, pointName, lon, lat, id, type_string) {
+		function js_addPoint(layerName, pointName, lon, lat, id, type_string) {
 			var point = new OpenLayers.Geometry.Point(lon, lat)
 				.transform(map.displayProjection, map.getProjectionObject());
 
 			var layer = map.getLayersByName(layerName);
 			layer = layer[0];
 
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{nombre: pointName, estado: "ok", id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }));
+			layer.addFeatures(new OpenLayers.Feature.Vector(point,{nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }));
 		}
 
-		function addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string) {
+		function js_addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string) {
 			var point = new OpenLayers.Geometry.Point(lon, lat)
 			.transform(map.displayProjection, map.getProjectionObject());
 
 			var layer = map.getLayersByName(layerName);
 			layer = layer[0];
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName}));
+			layer.addFeatures(new OpenLayers.Feature.Vector(point,{id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName}));
 		}
 
-		function addPointPath(layerName, lon, lat, color, manual, id) {
+		function js_addPointPath(layerName, lon, lat, color, manual, id) {
 			var point = new OpenLayers.Geometry.Point(lon, lat)
 				.transform(map.displayProjection, map.getProjectionObject());
 			
@@ -141,7 +147,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 			layer.addFeatures(point);
 		}  
 
-		function addLineString(layerName, points, color) {
+		function js_addLineString(layerName, points, color) {
 			var mapPoints = new Array(points.length);
 			var layer = map.getLayersByName(layerName);
 
@@ -213,7 +219,6 @@ function makeLayer($name, $visible = true, $dot = null) { static $i = 0;
 
                 		jQuery.ajax ({
                     		data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id="  + featureData.id,
-                    		//data: "page=operation/gis_maps/ajax&opt=point_path_info&id="  + featureData.id,
                     		type: "GET",
                     		dataType: 'json',
                     		url: "ajax.php",
@@ -251,6 +256,123 @@ function activateSelectControl($layers=null) {
 	<?php
 }
 
+/**
+ * Activate the feature refresh  by ajax.
+ * 
+ * @param Array $layers Its a rows of table "tgis_map_layer" or None is all.
+ * @param integer $lastTimeOfData The time in unix timestamp of last query of data GIS in DB.
+ * 
+ * @return None
+ */
+function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
+	if ($lastTimeOfData === null) $lastTimeOfData = time();
+	
+	require_jquery_file ('json');
+	?>
+	<script type="text/javascript">
+		var last_time_of_data = <?php echo $lastTimeOfData; ?>; //This time use in the ajax query to next recent points.
+		var refreshAjaxIntervalSeconds = 1000;
+		var idIntervalAjax = null;
+
+		function searchPointAgentById(id) {console.log(id);
+			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
+				layer = map.layers[layerIndex];
+
+				if (layer.features != undefined) {
+					for (featureIndex = 0; featureIndex < layer.features.length; featureIndex++) {
+						feature = layer.features[featureIndex];
+						if (feature.data.id == id) {
+							return feature;
+						}
+					}
+				}
+			}
+
+			return null;
+		}
+
+		function refreshAjaxLayer(layer) {
+			var featureIdArray = Array();
+			
+			for (featureIndex = 0; featureIndex < layer.features.length; featureIndex++) {
+				feature = layer.features[featureIndex];
+
+				if (feature.data.type != 'point_path_info') {
+					featureIdArray.push(feature.data.id);
+				}
+			}
+
+			if (featureIdArray.length > 0) {
+	    		jQuery.ajax ({
+	        		data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features="  + featureIdArray.toString()
+	        			+ "&last_time_of_data=" + last_time_of_data,
+	        		type: "GET",
+	        		dataType: 'json',
+	        		url: "ajax.php",
+	        		timeout: 10000,
+	        		success: function (data) {
+	        			if (data.correct) {
+		        			if (data.content != "null") {
+		        				listAgentsPoints = $.evalJSON(data.content);
+		        				
+		        				for (var idAgent in listAgentsPoints) {
+		        					if (isInt(idAgent)) {
+				        				listPoints = listAgentsPoints[idAgent];
+		
+				        				for (var pointIndex in listPoints) {
+				        					if (isInt(pointIndex)) {
+					        					feature = searchPointAgentById(idAgent);
+
+					        					console.log(listPoints[pointIndex]);
+	
+					        					var point = new OpenLayers.LonLat(listPoints[pointIndex].longitude, listPoints[pointIndex].latitude)
+					        					.transform(map.displayProjection, map.getProjectionObject());
+	
+					        					feature.data.long_lat = point;
+					        					feature.move(point);
+				        					}
+				        				}
+		        					}
+		        				}
+		        			}
+	        			}
+	    			}
+	    		});
+			}
+		}
+	
+		function clock_ajax_refresh() {			
+			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
+				layer = map.layers[layerIndex];
+				<?php
+				if ($layers === null) {
+					refreshAjaxLayer(layer);
+				}
+				else {
+					foreach ($layers as $layer) {
+						?>
+						if (layer.name == '<?php echo $layer['layer_name']; ?>') {
+							refreshAjaxLayer(layer);
+						}
+						<?php
+					} 
+				}
+				?>
+			}
+			//last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
+
+			//clearInterval(idIntervalAjax);
+		}
+	
+		$(document).ready (
+			function () {
+				idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
+			}
+		);
+	</script>
+	<?php
+}
+
 function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20, $point_id  = '', $type_string = '') {
 	?>
 	<script type="text/javascript">
@@ -259,15 +381,17 @@ function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 			<?php
 			if ($icon != null) { 
 			?>
-				addPointExtent('<?php echo $layerName; ?>',
+				js_addPointExtent('<?php echo $layerName; ?>',
 					'<?php echo $pointName; ?>', <?php echo $lon; ?>,
-					<?php echo $lat; ?>, '<?php echo $icon; ?>', <?php echo $width; ?>, <?php echo $height?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
+					<?php echo $lat; ?>, '<?php echo $icon; ?>', <?php echo $width; ?>,
+					<?php echo $height?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
 			<?php
 			}
 			else { 
 			?>
-			addPoint('<?php echo $layerName; ?>',
-					'<?php echo $pointName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
+				js_addPoint('<?php echo $layerName; ?>',
+					'<?php echo $pointName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, <?php echo $point_id; ?>,
+					'<?php echo $type_string; ?>');
 			<?php
 			} 
 			?>
@@ -282,7 +406,7 @@ function addPointPath($layerName, $lat, $lon, $color, $manual = 1, $id) {
 	<script type="text/javascript">
 	$(document).ready (
 		function () {
-			addPointPath('<?php echo $layerName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, '<?php echo $color; ?>', <?php echo $manual; ?>, <?php echo $id; ?>);
+			js_addPointPath('<?php echo $layerName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, '<?php echo $color; ?>', <?php echo $manual; ?>, <?php echo $id; ?>);
 		}
 	);
 	</script>
@@ -328,41 +452,34 @@ function get_agent_icon_map($idAgent, $state = false) {
 		$icon = "images/gis_map/icons/" . $row['icon_path'];
 		if (!$state)
 			return $icon . ".png";
-		else
-			return $icon . "_" . $state . ".png";
+		else {
+			switch (get_agent_status($idAgent)) {
+				case 1:
+				case 4:
+					//Critical (BAD or ALERT)
+					$state = "_bad";
+					break;
+				case 0:
+					//Normal (OK)
+					$state = "_ok";
+					break;
+				case 2:
+					//Warning
+					$state = "_warning";
+					break;
+				default:
+					// Default is Grey (Other)
+					$state = '';
+			}
+			
+			return $icon . $state . ".png";
+		}
 	}
 }
 
 function addPath($layerName, $idAgent) {
 	
 	$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
-	
-	if ($idAgent == 1) {
-	$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.709, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 1),
-		array('id_tgis_data' => 1, 'longitude' => -3.710, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 2, 'longitude' => -3.711, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 1),
-		array('id_tgis_data' => 3, 'longitude' => -3.712, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 4, 'longitude' => -3.708187, 'latitude' => 40.42056, 'altitude' => 0, 'manual_placement' => 0)
-	);
-	}
-	
-	if ($idAgent == 2) {
-	$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.420, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.704, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.706, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0)
-	);
-	}
-	
-	if ($idAgent == 3) {
-		$listPoints = array(
-		array('id_tgis_data' => 0, 'longitude' => -3.701, 'latitude' => 40.425, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.703, 'latitude' => 40.422, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.708, 'latitude' => 40.424, 'altitude' => 0, 'manual_placement' => 0),
-		array('id_tgis_data' => 0, 'longitude' => -3.705, 'latitude' => 40.421, 'altitude' => 0, 'manual_placement' => 0)
-	);
-	}
 	
 	$avaliableColors = array("#ff0000", "#00ff00", "#0000ff", "#000000");
 	
@@ -387,7 +504,7 @@ function addPath($layerName, $idAgent) {
 				} 
 				?>
 				
-				addLineString('<?php echo $layerName; ?>', points, '<?php echo $color; ?>');
+				js_addLineString('<?php echo $layerName; ?>', points, '<?php echo $color; ?>');
 			}
 		);
 	</script>
@@ -592,5 +709,66 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon, 20, 20, $agent_id, 'point_agent_info');
+}
+
+/**
+ * Return a array of images as icons in the /pandora_console/images/gis_map/icons.
+ * 
+ * @param boolean $fullpath Return as image.png or full path.
+ * 
+ * @return Array The array is [N][3], where the N index is name base of icon and [N]['ok'] ok image, [N]['bad'] bad image, [N]['warning'] warning image and [N]['default] default image 
+ */
+function getArrayListIcons($fullpath = true) {
+	$return = array();
+	$validExtensions = array('jpg', 'jpeg', 'gif', 'png');
+	
+	$path = '';
+	if ($fullpath)
+		$path = 'images/gis_map/icons/';
+	
+	$dir = scandir('images/gis_map/icons/');
+	
+	foreach ($dir as $index => $item) {
+		$chunks = explode('.', $item);
+		
+		$extension = end($chunks);
+		
+		if (!in_array($extension, $validExtensions))
+			unset($dir[$index]);
+	}
+	
+	$baseImages = array();
+	$stateImages = array();
+	foreach ($dir as $item) {
+		if (strstr($item, "_") !== false)
+			$stateImages[] = $item;
+		else
+			$baseImages[] = $item;
+	}
+	
+	foreach ($baseImages as $item) {
+		$chunks = explode('.', $item);
+		$extension = end($chunks);
+		
+		$nameWithoutExtension = str_replace("." . $extension, "", $item);
+		
+		$return[$nameWithoutExtension]['ok'] = null;
+		$return[$nameWithoutExtension]['bad'] = null;
+		$return[$nameWithoutExtension]['warning'] = null;
+		$return[$nameWithoutExtension]['default'] = $path . $item;
+		
+		if (in_array($nameWithoutExtension.'_bad.' . $extension, $stateImages))
+			$return[$nameWithoutExtension]['bad'] = $path . $nameWithoutExtension.'_bad.' . $extension;
+		
+		if (in_array($nameWithoutExtension.'_ok.' . $extension, $stateImages))
+			$return[$nameWithoutExtension]['ok'] = $path . $nameWithoutExtension.'_ok.' . $extension;
+			$return[$nameWithoutExtension]['bad'] = $path . $nameWithoutExtension.'_bad.' . $extension;
+		
+		if (in_array($nameWithoutExtension.'_warning.' . $extension, $stateImages))
+			$return[$nameWithoutExtension]['warning'] = $path . $nameWithoutExtension.'_warning.' . $extension;
+		
+	}
+	
+	return $return;
 }
 ?>

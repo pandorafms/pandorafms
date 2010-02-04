@@ -1,5 +1,10 @@
 2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/menu.php: small stetical change in menu entry that I forget to
+	commit in previus upload.
+
+2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: add javascript function "isInt" for test int
 	values, rename some javascript functions for to avoid typing mistakes with
 	similar name functions in PHP. Add the function "activateAjaxRefresh" and

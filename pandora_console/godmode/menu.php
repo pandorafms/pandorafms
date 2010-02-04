@@ -169,7 +169,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 
 	if ($config['activate_gis'])
-		$sub["godmode/setup/gis"]["text"] = __('Map GIS');
+		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/links"]["text"] = __('Links');

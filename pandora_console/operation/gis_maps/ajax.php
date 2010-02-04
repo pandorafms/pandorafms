@@ -24,6 +24,31 @@ require_once ('include/functions_ui.php');
 $opt = get_parameter('opt');
 
 switch ($opt) {
+	case 'get_new_positions':
+		$id_features = get_parameter('id_features', '');
+		$last_time_of_data = get_parameter('last_time_of_data');
+		
+		$returnJSON = array();
+		$returnJSON['correct'] = 1;
+		
+		$rows = get_db_all_rows_sql('SELECT *
+			FROM tgis_data 
+			WHERE tagente_id_agente IN (' . $id_features . ') AND start_timestamp > from_unixtime(' . $last_time_of_data . ')');
+		
+		$listCoords = array();
+		foreach ($rows as $row) {
+			$coords['latitude'] = $row['latitude'];
+			$coords['longitude'] = $row['longitude'];
+			$coords['start_timestamp'] = $row['start_timestamp'];
+			$coords['id_tgis_data'] = $row['id_tgis_data'];
+			
+			$listcoords[$row['tagente_id_agente']][] = $coords;
+		}
+		
+		$returnJSON['content'] = json_encode($listcoords);
+		
+		echo json_encode($returnJSON);
+		break;
 	case 'point_path_info':
 		$id = get_parameter('id');
 		$row = get_db_row_sql('SELECT * FROM tgis_data WHERE id_tgis_data = ' . $id);

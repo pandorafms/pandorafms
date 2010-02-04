@@ -104,6 +104,8 @@ $grupo = 0;
 $id_os = 9; // Windows
 $custom_id = "";
 $cascade_protection = 0;
+$icon_path = '';
+$update_gis_data = 0;
 
 $create_agent = (bool) get_parameter ('create_agent');
 
@@ -122,6 +124,8 @@ if ($create_agent) {
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id",'');
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$icon_path = (string) get_parameter_post ("icon_path",'');
+	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
@@ -139,7 +143,9 @@ if ($create_agent) {
 				'id_os' => $id_os, 'disabled' => $disabled,
 				'cascade_protection' => $cascade_protection,
 				'server_name' => $server_name,
-				'id_parent' => $id_parent, 'custom_id' => $custom_id));
+				'id_parent' => $id_parent, 'custom_id' => $custom_id,
+				'icon_path' => $icon_path,
+				'update_gis_data' => $update_gis_data));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
 			// Create address for this agent in taddress
@@ -306,6 +312,8 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_parent = (int) get_agent_id ($id_parent);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$icon_path = (string) get_parameter_post ("icon_path",'');
+	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 
@@ -336,7 +344,9 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 				'comentarios' => $comentarios,
 				'cascade_protection' => $cascade_protection,
 				'server_name' => $server_name,
-				'custom_id' => $custom_id),
+				'custom_id' => $custom_id,
+				'icon_path' => $icon_path,
+				'update_gis_data' => $update_gis_data),
 			array ('id_agente' => $id_agente));
 			
 		if ($result === false) {
@@ -382,7 +392,8 @@ if ($id_agente) {
 	$id_parent = $agent["id_parent"];
 	$custom_id = $agent["custom_id"];
 	$cascade_protection = $agent["cascade_protection"];
-
+	$icon_path = $agent["icon_path"];
+	$update_gis_data = $agent["update_gis_data"];
 }
 
 $update_module = (bool) get_parameter ('update_module');

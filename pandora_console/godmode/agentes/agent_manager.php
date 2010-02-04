@@ -43,6 +43,7 @@ if (is_ajax ()) {
 enterprise_include ('godmode/agentes/agent_manager.php');
 
 require_once ('include/functions_servers.php');
+require_once ('include/functions_gis.php');
 
 $new_agent = (bool) get_parameter ('new_agent');
 
@@ -207,6 +208,26 @@ if (!$new_agent) {
 }
 else
 	$table->data[11][1] = '<em>'.__('Not available').'</em>';
+	
+$listIcons = getArrayListIcons();
+
+$arraySelectIcon = array();
+foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
+
+$path = 'images/gis_map/icons/'; //TODO set better method the path
+
+$table->data[12][0] = __('Icon agent');
+$table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.png" />' .
+	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . '_ok.png" />' .
+	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . '_bad.png" />' .
+	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . '_warning.png" />';
+
+if ($config['activate_gis']) {
+	$table->data[13][0] = __('Ignore new GIS data:');
+	$table->data[13][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[13][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+}
 
 print_table ($table);
 
@@ -228,6 +249,32 @@ require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
+
+//Use this function for change 3 icons when change the selectbox
+function changeIcons() {
+	icon = $("#icon_path :selected").val();
+
+	$("#icon_default").attr("src", "images/spinner.png");
+	$("#icon_ok").attr("src", "images/spinner.png");
+	$("#icon_bad").attr("src", "images/spinner.png");
+	$("#icon_warning").attr("src", "images/spinner.png");
+	
+	if (icon.length == 0) {
+		$("#icon_default").attr("src", "");
+		$("#icon_ok").attr("src", "");
+		$("#icon_bad").attr("src", "");
+		$("#icon_warning").attr("src", "");
+	}
+	else {
+		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".png");
+		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + "_ok.png");
+		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + "_bad.png");
+		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + "_warning.png");
+	}
+	
+	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
+}
+             
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
 	$("#text-id_parent").autocomplete ("ajax.php",

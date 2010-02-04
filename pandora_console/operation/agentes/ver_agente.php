@@ -17,6 +17,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/functions_gis.php");
 
 enterprise_include ('operation/agentes/ver_agente.php');
 
@@ -194,16 +195,7 @@ if (isset($_GET["flag_agent"])){
 
 echo "<div id='menu_tab_frame_view'>";
 if ($agent["icon_path"]) {
-    $icon = "images/gis_map/icons/" . $agent['icon_path'];
-    $state = get_agent_status($id_agente);
-    if (!$state) {
-        $icon .= ".png";
-    }
-    else {
-        $icon .= "_" . $state . ".png";
-    }
-
-    echo '<img src="'.$icon.'" alt="'.__('Agent Icon').'" style="float:right;"/>';
+    $icon = get_agent_icon_map($agent["id_agente"], true);
 }
 else {
 	$icon = 'images/bricks.png';

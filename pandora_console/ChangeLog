@@ -1,5 +1,12 @@
 2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/ver_agente.php: fix the show icon agent view.
+	* images/gis_map/icons/dot_bad.png, images/gis_map/icons/dot_ok.png,
+	images/gis_map/icons/dot.png, images/gis_map/icons/dot_warning.png: add one
+	more icons for agent in GIS system.
+
+2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/configurar_agente.php, godmode/agentes/agent_manager.php:
 	add in the agent config form the fields Icon agent select and Ignore new
 	GIS data.

@@ -186,6 +186,7 @@ sub pandora_load_config {
 	$pa_config->{"export_threads"} = 1; # 3.0
 	$pa_config->{"web_threads"} = 1; # 3.0
 	$pa_config->{"activate_gis"} = 0; # 3.1
+	$pa_config->{"location_error"} = 50; # 3.1
 
 	$pa_config->{"max_queue_files"} = 250; 
 
@@ -513,6 +514,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^activate_gis\s+([0-1])/i) {
 			$pa_config->{'activate_gis'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^location_error\s+(\d+)/i) {
+			$pa_config->{'location_error'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

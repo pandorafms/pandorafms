@@ -58,6 +58,11 @@ startup_delay 2
 # Timezone offset: Difference with the server timezone
 timezone_offset 0
 
+# Timezone offset range (to set a randomnuber of hours of difference with the
+# server so timezone_offset can go from timezone_offset-timezone_offset_range
+# to timezone_offset+timezone_offset_range
+timezone_offset_range 0
+
 # Agent position paramters
 # Those parameters define the center and the zone where the agents will be 
 # randomly located.

@@ -1,5 +1,19 @@
 2010-01-29	Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm: Added 
+	location_error parameter
+	
+	* lib/PandoraFMS/Core.pm: Fixed bugs in the creation and update of 
+	the agent that where messing with the locations. Fixed distance on the
+	earth formula. Use of the location_error parameter to decide if an 
+	agent has moved or not.
+
+	* util/pandora_xml_stress.pl, util/pandora_xml_stress.README: added
+	parameter timezone_offset_range to let the timezone be random in the
+	range given, and added the code to use it.
+	
+2010-01-29	Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* lib/PandoraFMS/DataServer.pm: Improved timezone_offset management.
 
 2010-01-26   Sancho Lerena <slerena@artica.es>

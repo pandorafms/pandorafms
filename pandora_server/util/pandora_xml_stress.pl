@@ -91,6 +91,7 @@ sub generate_xml_files ($$$$$) {
 	my $temporal = get_conf_token ($conf, 'temporal', '/tmp');
 	my $startup_delay = get_conf_token ($conf, 'startup_delay', '5');
 	my $ag_timezone_offset = get_conf_token ($conf, 'timezone_offset', '0');
+	my $ag_timezone_offset_range = get_conf_token ($conf, 'timezone_offset_range', '0');
 	my $latitude_base = get_conf_token ($conf, 'latitude_base', '40.42056');
 	my $longitude_base = get_conf_token ($conf, 'longitude_base', '-3.708187');
 	my $altitude_base = get_conf_token ($conf, 'altitude_base', '0');
@@ -123,6 +124,8 @@ sub generate_xml_files ($$$$$) {
 			# XML header
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
+			my $sign = int rand(2);
+			$ag_timezone_offset += ($sign*(-1)+(1-$sign)) * int rand($ag_timezone_offset_range);
 			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' version='$os_version' timestamp='$timestamp' agent_name='$agent_name' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude'>\n";
 			foreach my $module (@{$modules}) {
 

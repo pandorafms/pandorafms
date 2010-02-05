@@ -757,28 +757,33 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 
 	logger($pa_config, "Old Agent data: last-longitude = ". $last_agent_info->{'last_longitude'}. " ID: $agent_id ", 10);
 
-	# If the agent has moved outside the range stablised as 
-	if (distance_moved($pa_config, $last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > 10 ){
+	# If the agent has moved outside the range stablised as location error
+	if (distance_moved($pa_config, $last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}){
 		# Save the agent data in the agent table
 		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $agent_id, $dbh);
+		# Update the table tagente with all the new data
+    	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
+		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $longitude, $latitude, $altitude, $agent_id);
 	}	
 	else {
 		# Update the end timestamp for the agent
 		update_agent_position($pa_config, $timestamp, $agent_id, $dbh);
+		# Update the table tagente with all the new data but the location
+    	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ? WHERE id_agente = ?',
+		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $agent_id);
 	}
 	
-	# Update the table tagente with all the new data
-    db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
-		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
-		$agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $timezone_offset, $longitude, $latitude, $altitude, $agent_id);
 }
 
 ##########################################################################
 # Measures the distance taking in acount the earth curvature
 # The distance is based on Havesine formula
-# Refferences:
+# Refferences (Theory):
 # * http://franchu.net/2007/11/16/gis-calculo-de-distancias-sobre-la-tierra/
 # * http://en.wikipedia.org/wiki/Haversine_formula
+# References (C implementation):
+# * http://blog.julien.cayzac.name/2008/10/arc-and-distance-between-two-points-on.html
 ##########################################################################
 sub distance_moved ($$$$$$$) {
 	my ($pa_config, $last_longitude, $last_latitude, $last_altitude, $longitude, $latitude, $altitude) = @_;
@@ -788,7 +793,7 @@ sub distance_moved ($$$$$$$) {
 
 	my $long_difference = $last_longitude - $longitude;
 	my $lat_difference = $last_latitude - $latitude;
-	my $alt_difference = $last_altitude - $altitude;
+	#my $alt_difference = $last_altitude - $altitude;
    
  	my $to_radians= $pi/180;
  	my $to_half_radians= $pi/360;
@@ -798,10 +803,11 @@ sub distance_moved ($$$$$$$) {
 	$long_aux *= $long_aux;
 	$lat_aux *= $lat_aux;
 	# Temporary value to make sorter the asin formula.
-	my $asinaux = ($lat_aux + cos($last_latitude*$to_radians) * cos($latitude*$to_radians) * $long_aux );
+	my $asinaux = sqrt($lat_aux + cos($last_latitude*$to_radians) * cos($latitude*$to_radians) * $long_aux );
 	# Assure the aux value is not greater than 1 
 	if ($asinaux > 1) { $asinaux = 1; }
-	my $dist_in_rad = 2 * atan2($asinaux, sqrt (1 - $asinaux * $asinaux));
+	# We use: asin(x)  = atan2(x, sqrt(1-x*x))
+	my $dist_in_rad = 2.0 * atan2($asinaux, sqrt (1 - $asinaux * $asinaux));
 	my $dist_in_meters = $earth_radius_in_meters * $dist_in_rad;
 		
 	logger($pa_config, "Distance moved:" . $dist_in_meters ." meters", 10);
@@ -909,6 +915,7 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 	}
 
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
+	# FIXME: use $group_id instead of $pa_config->{'autocreate_group'} ????
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
 	return $agent_id;
 }

@@ -1,3 +1,8 @@
+2010-02-08  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Script upgrade to purge data in several steps
+	avoiding timeout and deadlocks() in high capacity enviroments.
+
 2010-01-29	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm: Added 

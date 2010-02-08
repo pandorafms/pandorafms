@@ -26,10 +26,12 @@ use PandoraFMS::DB;
 use POSIX qw(strftime);
 
 # version: define current version
-my $version = "3.0 PS091214";
+my $version = "3.0 PS100203";
 
 # Pandora server configuration
 my %conf;
+
+my $BIG_OPERATION_STEP = 100; # Long operations are divided in XX steps for performance
 
 # FLUSH in each IO
 $| = 0;
@@ -77,28 +79,44 @@ sub pandora_purgedb ($$) {
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
+	my $first_mark;
+	my $total_time;
+	my $purge_steps;
+
 	print "[PURGE] Deleting old event data (More than " . $conf->{'_days_purge'} . " days)... \n";
 	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
-	print "[PURGE] Deleting old data... \n";
-	$dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp'");
-
-	print "[PURGE] Delete old data (string) ... \n";
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < '$ulimit_timestamp'");
 
 	print "[PURGE] Delete pending deleted modules (data table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+        $dbh->do ("DELETE FROM tagente_datos WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 
 	print "[PURGE] Delete pending deleted modules (data string table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	
-	print "[PURGE] Delete pending deleted modules (data inc table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	
+        $dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+
+        print "[PURGE] Delete pending deleted modules (data inc table)...\n";
+        $dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
-	$dbh->do ("DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	$dbh->do ("DELETE FROM tagente_modulo WHERE delete_pending = 1");
-	
+        $dbh->do ("DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+        $dbh->do ("DELETE FROM tagente_modulo WHERE delete_pending = 1");
+
+	print "[PURGE] Deleting old data... \n";
+
+	# This could be very timing consuming, so make this operation in $BIG_OPERATION_STEP steps (50 fixed by default)
+	# Starting from the oldest record on the table
+
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
+	$total_time = $ulimit_timestamp - $first_mark;
+	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+
+		$dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+		$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+		
+		print "[PURGE] Data deletion Progress %$ax .. \n";
+	}
+
 	print "[PURGE] Delete old session data \n";
 	$dbh->do ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp");
 
@@ -106,7 +124,17 @@ sub pandora_purgedb ($$) {
 	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
 
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
-	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
+	#$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
+
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC LIMIT 1');
+        $total_time = $ulimit_access_timestamp - $first_mark;
+        $purge_steps = int( $total_time / $BIG_OPERATION_STEP);
+       
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
+                $dbh->do ("DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
+                print "[PURGE] Agent access deletion progress %$ax .. \n";
+        }
+
 }
 
 ###############################################################################
@@ -342,7 +370,7 @@ sub is_policy_module ($$) {
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	print "\n\nUsage: $0 <path to pandora_server.conf> [options]\n\n";
+	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
 	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
 	print "\t\t-v   Verbose output.\n";
 	print "\t\t-q   Quiet output.\n";

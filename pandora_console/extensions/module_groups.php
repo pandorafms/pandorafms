@@ -140,6 +140,6 @@ function mainModuleGroups() {
 	"</p>";
 }
  
-add_operation_menu_option("Modules groups", 'estado', 'module_groups/icon_menu.png');
+add_operation_menu_option(__("Modules groups"), 'estado', 'module_groups/icon_menu.png');
 add_extension_main_function('mainModuleGroups');
 ?>

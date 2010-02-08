@@ -1,3 +1,8 @@
+2010-02-08  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* general/header.php, extensions/module_groups.php: Applied patch from 
+	Junichi Satoh to fix Bug #2946318 
+
 2010-02-04 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/menu.php: small stetical change in menu entry that I forget to

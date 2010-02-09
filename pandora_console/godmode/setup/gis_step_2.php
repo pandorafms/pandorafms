@@ -115,29 +115,19 @@ switch ($action) {
 
 $table->width = '90%';
 
-//$table->colspan[0][1] = 3;
-//$table->colspan[1][2] = 2;
-
 $table->data = array();
 $table->data[0][0] = __('Name') . ":";
 $table->data[0][1] = print_input_text ('name', $mapConnection_name, '', 30, 60, true);
-$table->data[0][2] = __("Default position for not GIS data element");
 
 $table->data[1][0] = __("Group") . ":";
 $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'group', $mapConnection_group, '', '', '0', true);
-$table->data[1][2] = __('Latitude') . ":";
-$table->data[1][3] = print_input_text ('default_latitude', $mapConnection_defaultLatitude, '', 4, 10, true);
 
 $table->data[2][0] = __('Num levels zoom') . ":";
 $table->data[2][1] = print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
-$table->data[2][2] = __('Longitude') . ":";
-$table->data[2][3] = print_input_text ('default_longitude', $mapConnection_defaultLongitude, '', 4, 10, true);
 
 
 $table->data[3][0] = __('Default zoom level') . ":";
 $table->data[3][1] = print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
-$table->data[3][2] = __('Altitude') . ":";
-$table->data[3][3] = print_input_text ('default_altitude', $mapConnection_defaultAltitude, '', 4, 10, true);
 
 echo "<h3>" . __('Basic configuration') . "</h3>";
 print_table($table);
@@ -180,42 +170,147 @@ if ($mapConnectionData != null) {
 
 echo "<div id='form_map_connection_type'>" . $optionsConnectionTypeTable . "</div>";
 
-echo "<h3>" . __('Preview and Select the center') . "</h3>";
-echo "<p>" . __("For test the conf and set the center of map.") . "</p>";
-echo "<a href='javascript: refreshMapView();'>" . __("Refresh the map view") . "</a>";
-echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div>";
+echo "<h3>" . __('Preview and Select the center of the map and the default position of an agent without gis data') . "</h3>";
+echo "<a id='link_save_refresh' href='javascript: refreshMapView();'>" . __("Load the map view") . "</a>";
+echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black; float: left'></div>";
 
-$table->width = '30%';
+$table->width = '60%';
 $table->data = array();
 
-$table->colspan[0][0] = 2;
-$table->data[0][0] = __('Center map connection');
+//$table->colspan[0][3] = 3;
+$table->data[0][0] = '';
+$table->data[0][1] = __('Center map connection');
+$table->data[0][2] = __("Default position for agents without GIS data");
 
-$table->data[1][2] = __('Latitude') . ":";
-$table->data[1][3] = print_input_text ('center_latitude', $mapConnection_centerLatitude, '', 4, 10, true);
+$table->data[1][0] = __('Modify in map');
+$table->data[1][1] = print_radio_button_extended('radio_button', 1, '', 1, false, "changeSetManualPosition(true, false)", '', true);
+$table->data[1][2] = print_radio_button_extended('radio_button', 2, '', 0, false, "changeSetManualPosition(false, true)", '', true);
 
-$table->data[2][2] = __('Longitude') . ":";
-$table->data[2][3] = print_input_text ('center_longitude', $mapConnection_centerLongitude, '', 4, 10, true);
+$table->data[2][0] = __('Latitude') . ":";
+$table->data[2][1] = print_input_text ('center_latitude', $mapConnection_centerLatitude, '', 10, 10, true);
+$table->data[2][2] = print_input_text ('default_latitude', $mapConnection_defaultLatitude, '', 10, 10, true);
 
-$table->data[3][2] = __('Altitude') . ":";
-$table->data[3][3] = print_input_text ('center_altitude', $mapConnection_centerAltitude, '', 4, 10, true);
+$table->data[3][0] = __('Longitude') . ":";
+$table->data[3][1] = print_input_text ('center_longitude', $mapConnection_centerLongitude, '', 10, 10, true);
+$table->data[3][2] = print_input_text ('default_longitude', $mapConnection_defaultLongitude, '', 10, 10, true);
+
+$table->data[4][0] = __('Altitude') . ":";
+$table->data[4][1] = print_input_text ('center_altitude', $mapConnection_centerAltitude, '', 10, 10, true);
+$table->data[4][2] = print_input_text ('default_altitude', $mapConnection_defaultAltitude, '', 10, 10, true);
 print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'; float: left;">';
+echo '<div class="action-buttons" style="clear: left; width: 90%; float: left;">';
 print_submit_button (__('Save'), '', false, 'class="sub save"');
 echo '</div>';
 echo "</form>";
 ?>
+<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>
+<?php 
+require_javascript_file('openlayers.pandora');
+?>
 <script type="text/javascript">
-var mapConfig = false;
+var setCenter = true;
+var centerPoint = null;
+var setGISDefaultPosition = false;
+var GISDefaultPositionPoint = null;
 
-function refreshMapView() {
-	if (mapConfig) {
-	}
-	else
-		alert('<?php echo __('Please conf '); ?>');
+/**
+ * Set the item to change, the center point or the center default.
+ *
+ * @param boolean stCenter Set center point for changing.
+ * @param boolean stGISDefault Set GISDefault point for changing.
+ *
+ * @return None
+ */
+function changeSetManualPosition(stCenter, stGISDefault) {
+	setCenter = stCenter;
+	setGISDefaultPosition = stGISDefault;
 }
 
+/**
+ * The callback function when click the map. And make or move the points.
+ *
+ * @param object e The object of openlayer, that it has the parammeters of click.
+ *
+ * @return None
+ */
+function changePoints(e) {
+	var lonlat = map.getLonLatFromViewPortPx(e.xy);
+	lonlat.transform(map.getProjectionObject(), map.displayProjection); //transform the lonlat in object proyection to "standar proyection"
+
+	if (setCenter) {
+		//Change the fields
+		center_latitude = $('input[name=center_latitude]').val(lonlat.lat);
+		center_longitude = $('input[name=center_longitude]').val(lonlat.lon);
+		
+		if (centerPoint == null) {
+			centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', lonlat.lon, lonlat.lat, 'images/dot_green.png', 20, 20, 'center', '');
+		}
+		else  {
+			//return to no-standar the proyection for to move
+			centerPoint.move(lonlat.transform(map.displayProjection, map.getProjectionObject()));
+		}
+	}
+
+	if (setGISDefaultPosition) {
+		//Change the fields
+		center_latitude = $('input[name=default_latitude]').val(lonlat.lat);
+		center_longitude = $('input[name=default_longitude]').val(lonlat.lon);
+		
+		if (GISDefaultPositionPoint == null) {
+			GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', lonlat.lon, lonlat.lat, 'images/dot_red.png', 20, 20, 'default', '');
+		}
+		else  {
+			//return to no-standar the proyection for to move
+			GISDefaultPositionPoint.move(lonlat.transform(map.displayProjection, map.getProjectionObject()));
+		}
+	}
+}
+
+/**
+ * Function to show and refresh the map. The function give the params for map of
+ * fields. And make two points, center and default.
+ */
+function refreshMapView() {
+	//Clear the previous map.
+	map = null;
+	$("#map").html('');
+	//Clear the points.
+	centerPoint = null;
+	GISDefaultPositionPoint = null;
+
+	//Change the text.
+	$("#link_save_refresh").html('<?php echo __("Refresh the map view");?>');
+
+	//Obtain data of map of fields.
+	inital_zoom = $('input[name=initial_zoom]').val();
+	num_levels_zoom =$('input[name=num_levels_zoom').val();
+	center_latitude = $('input[name=center_latitude]').val();
+	center_longitude = $('input[name=center_longitude]').val();
+	center_altitude = $('input[name=center_altitude]').val();
+
+	var objBaseLayers = Array();
+	objBaseLayers[0] = Array();
+	objBaseLayers[0]['type'] = $('select[name=sel_type] :selected').val();
+	objBaseLayers[0]['name'] = $('input[name=name]').val();
+	objBaseLayers[0]['url'] = $('input[name=url]').val();
+
+	arrayControls = null;
+	arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
+	
+	js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
+	
+	layer = js_makeLayer('temp_layer', true, null);
+
+	centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 20, 20, 'center', '');
+	GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 20, 20, 'default', '');
+	
+	js_activateEvents(changePoints);
+}
+
+/**
+ * Dinamic write the fields in form when select a type of connection.
+ */
 function selMapConnectionType() {
 	switch ($('#sel_type :selected').val()) {
 		case 'OSM':

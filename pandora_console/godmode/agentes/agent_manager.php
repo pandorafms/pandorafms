@@ -45,6 +45,8 @@ enterprise_include ('godmode/agentes/agent_manager.php');
 require_once ('include/functions_servers.php');
 require_once ('include/functions_gis.php');
 
+require_javascript_file('openlayers.pandora');
+
 $new_agent = (bool) get_parameter ('new_agent');
 
 if (! isset ($id_agente) && ! $new_agent) {

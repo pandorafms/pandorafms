@@ -21,6 +21,8 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 
+require_javascript_file('openlayers.pandora');
+
 echo "<h2>".__('GIS Maps')." &raquo; ".__('Summary')."</h2>";
 
 $maps = getMaps();

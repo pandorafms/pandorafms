@@ -26,6 +26,8 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 
 require_once ('include/functions_gis.php');
 
+require_javascript_file('openlayers.pandora');
+
 echo "<h2>".__('Pandora Setup')." &raquo; ";
 echo __('Map conections GIS')."</h2>";
 

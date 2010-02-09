@@ -20,6 +20,8 @@ check_login ();
 
 require_once ('include/functions_gis.php');
 
+require_javascript_file('openlayers.pandora');
+
 $idMap = (int) get_parameter ('map_id');
 $show_history = get_parameter ('show_history', 'n');
 

@@ -19,14 +19,6 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 	?>
 	<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>
 	<script type="text/javascript">
-		var map;
-
-		function isInt(x) {
-			var y=parseInt(x);
-			if (isNaN(y)) return false;
-			return x==y && x.toString()==y.toString();
-		}
-		
 		$(document).ready (
 			function () {
 				map = new OpenLayers.Map ("<?php echo $idDiv; ?>", {
@@ -94,82 +86,11 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 				}
 			}
 		);
-
-		function showHideLayer(name, action) {
-			var layer = map.getLayersByName(name);
-
-			layer[0].setVisibility(action);
-		}
-
-		function js_addPoint(layerName, pointName, lon, lat, id, type_string) {
-			var point = new OpenLayers.Geometry.Point(lon, lat)
-				.transform(map.displayProjection, map.getProjectionObject());
-
-			var layer = map.getLayersByName(layerName);
-			layer = layer[0];
-
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }));
-		}
-
-		function js_addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string) {
-			var point = new OpenLayers.Geometry.Point(lon, lat)
-			.transform(map.displayProjection, map.getProjectionObject());
-
-			var layer = map.getLayersByName(layerName);
-			layer = layer[0];
-			layer.addFeatures(new OpenLayers.Feature.Vector(point,{id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName}));
-		}
-
-		function js_addPointPath(layerName, lon, lat, color, manual, id) {
-			var point = new OpenLayers.Geometry.Point(lon, lat)
-				.transform(map.displayProjection, map.getProjectionObject());
-			
-			var layer = map.getLayersByName(layerName);
-			layer = layer[0];
-
-			var pointRadiusNormal = 4;
-			var strokeWidth = 2;
-			var pointRadiusManual = pointRadiusNormal - (strokeWidth / 2); 
-			
-			if (manual) {
-				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: "point_path_info", 
-					long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
-					{fillColor: "#ffffff", pointRadius: pointRadiusManual, stroke: 1, strokeColor: color, strokeWidth: strokeWidth, cursor: "pointer"}
-				);
-			}
-			else {
-				point = new OpenLayers.Feature.Vector(point,{estado: "ok", id: id, type: "point_path_info",
-					long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject())},
-						{fillColor: color, pointRadius: pointRadiusNormal, cursor: "pointer"}
-				);
-			}
-
-			layer.addFeatures(point);
-		}  
-
-		function js_addLineString(layerName, points, color) {
-			var mapPoints = new Array(points.length);
-			var layer = map.getLayersByName(layerName);
-
-			layer = layer[0];
-			
-			for (var i = 0; i < points.length; i++) {
-				mapPoints[i] = points[i].transform(map.displayProjection, map.getProjectionObject());
-			}
-			
-			var lineString = new OpenLayers.Feature.Vector(
-				new OpenLayers.Geometry.LineString(mapPoints),
-				null,
-				{ strokeWidth: 2, fillOpacity: 0.2, fillColor: color, strokeColor: color}
-			);
-
-			layer.addFeatures(lineString);
-		}
 	</script>
 	<?php
 }
 
-function makeLayer($name, $visible = true, $dot = null) { static $i = 0;
+function makeLayer($name, $visible = true, $dot = null) {
 	if ($dot == null) {
 		$dot['url'] = 'images/dot_green.png';
 		$dot['width'] = 20; //11;

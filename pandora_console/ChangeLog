@@ -1,3 +1,21 @@
+2010-02-09 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: clean source code, and extract the javascript
+	code to openlayers.pandora.js.
+	
+	* include/javascript/openlayers.pandora.js: new file, have a source code of
+	gis in javascript.
+	
+	* operation/gis_maps/render_view.php, operation/gis_maps/index.php,
+	operation/agentes/gis_view.php, godmode/agentes/agent_manager.php,
+	godmode/setup/gis.php, godmode/gis_maps/configure_gis_map.php,
+	godmode/gis_maps/index.php: add the require javascript to 
+	"openlayers.pandora.js".
+
+	* godmode/setup/gis_step_2.php: add the source code to improve usability,
+	now can set with the mouse points of center and default position for agents
+	without gis data.
+
 2010-02-08  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* general/header.php, extensions/module_groups.php: Applied patch from 

@@ -27,6 +27,8 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 require_once ('include/functions_gis.php');
 require_once ('include/functions_html.php');
 
+require_javascript_file('openlayers.pandora');
+
 /* Get the parameters */
 $period = get_parameter ("period", 86400);
 $agentId = get_parameter('id_agente');

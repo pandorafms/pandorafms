@@ -256,6 +256,7 @@ function process_config () {
 		update_config_value ('status_images_set', 'default');
 	}
 	
+	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
 

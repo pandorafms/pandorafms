@@ -1,3 +1,11 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* operation/reporting/reporting_viewer_pdf.php
+	include/functions_reporting_pdf.php: Small fixes for PDF reporting. 
+	Decode entities to show texts correctly in description of each element.
+
+	* pandoradb.sql: new enterprise structures.
+
 2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: in function "saveMap" now save the default

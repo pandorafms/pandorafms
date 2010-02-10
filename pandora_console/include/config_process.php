@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC100202';
+$build_version = 'PC100209';
 $pandora_version = 'v3.1-dev';
 
 /* Help to debug problems. Override global PHP configuration */
@@ -47,13 +47,6 @@ else {
 	error_reporting(E_ALL);
 	ini_set("display_errors", 1);
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
-}
-
-// Set a default timezone default if not configured
-// to avoid warnings and bad timestamp calculation in PHP > 5.1 
-
-if (ini_get('date.timezone') == ""){
-	date_default_timezone_set("Europe/Berlin");
 }
 
 $config['start_time'] = microtime (true);
@@ -82,12 +75,21 @@ global $REMOTE_ADDR;
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 $config['user_language'] = $config["language"];
 
+// Set a the system timezone default 
+date_default_timezone_set($config["timezone"]);
+
 // Set user language if provided, overriding System language
 if (isset ($config['id_user'])){
 	$userinfo = get_user_info ($config['id_user']);
 	if ($userinfo["language"] != ""){
 		$config['user_language'] = $userinfo["language"];
 	}
+
+	// Each user could have it's own timezone)
+	if ($userinfo["timezone"] != ""){
+		date_default_timezone_set($userinfo["timezone"]);
+	}
+
 } 
 
 $l10n = NULL; 
@@ -106,6 +108,15 @@ if (! defined ('ENTERPRISE_DIR'))
 require_once ('functions_extensions.php');
 
 $config['extensions'] = get_extensions ();
+
+// Detect if enterprise extension is installed
+// NOTICE: This variable (config[enterprise_installed] is used in several
+// sections. Faking or forcing to 1 will make pandora fails.
+
+if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php'))
+	$config['enterprise_installed'] = 1;
+else
+	$config['enterprise_installed'] = 0;
 
 // Connect to the history DB
 if (isset($config['history_db_enabled'])) {

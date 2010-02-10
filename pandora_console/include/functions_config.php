@@ -169,7 +169,13 @@ function update_config () {
 	update_config_value ('history_db_step', (string) get_parameter ('history_db_step', $config['history_db_step']));
 	update_config_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
 
+	update_config_value ('timezone', (string) get_parameter ('timezone', $config['timezone']));
 	update_config_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
+
+	update_config_value ('stats_interval',  get_parameter ('stats_interval', $config['stats_interval']));
+
+	update_config_value ('realtimestats',  get_parameter ('realtimestats', $config['realtimestats']));
+
 
 }
 
@@ -261,6 +267,18 @@ function process_config () {
 		update_config_value ('agentaccess', true);
 	}
 	
+	if (!isset ($config["timezone"])){
+		update_config_value ('timezone', "Europe/Berlin");
+	}
+
+	if (!isset ($config["stats_interval"])){
+		update_config_value ('stats_interval', 300);
+	}
+
+	if (!isset ($config["realtimestats"])){
+		update_config_value ('realtimestats', 1);
+	}
+
 	/* 
 	 *Parse the ACL IP list for access API that it's save in chunks as
 	 *list_ACL_IPs_for_API_<num>, because the value has a limit of 100

@@ -123,6 +123,16 @@ $table->data[16][0] = __('Enable GIS features in Pandora Console');
 $table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
 $table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
 
+$table->data[17][0] = __('Use realtime statistics');
+$table->data[17][1] = __('Yes').'&nbsp;'.print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
+$table->data[17][1] .= __('No').'&nbsp;'.print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
+
+$table->data[18][0] = __('Batch statistics period (secs)');
+$table->data[18][1] = print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
+
+$table->data[19][0] = __('Timezone setup');
+$table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 15, 15, true);
+
 enterprise_hook ('setup');
 
 echo '<form id="form_setup" method="post">';

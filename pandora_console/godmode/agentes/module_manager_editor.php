@@ -115,6 +115,22 @@ if ($id_agent_module) {
 	$tcp_rcv = $module['tcp_rcv'];
 	$snmp_community = $module['snmp_community'];
 	$snmp_oid = $module['snmp_oid'];
+
+	// New support for snmp v3
+	$snmp_version = $module['tcp_send'];
+	$snmp3_auth_user = $module["plugin_user"];
+	$snmp3_auth_pass = $module["plugin_pass"];
+
+	// Auth method could be MD5 or SHA
+	$snmp3_auth_method = $module["plugin_parameter"];
+
+	// Privacy method could be DES or AES
+	$snmp3_privacy_method = $module["custom_string_1"];
+	$snmp3_privacy_pass = $module["custom_string_2"];
+
+	// Security level Could be noAuthNoPriv | authNoPriv | authPriv
+	$snmp3_security_level = $module["custom_string_3"];
+	
 	$ip_target = $module['ip_target'];
 	if (empty ($ip_target)) {
 		$ip_target = get_agent_address ($id_agente);
@@ -173,6 +189,15 @@ if ($id_agent_module) {
 		$min_critical = 0;
 		$max_critical = 0;
 		$ff_event = 0;
+
+		// New support for snmp v3
+		$snmp_version = 1;
+		$snmp3_auth_user = "";
+		$snmp3_auth_pass = "";
+		$snmp3_auth_method = "";
+		$snmp3_privacy_method = "";
+		$snmp3_privacy_pass = "";
+		$snmp3_security_level = "";
 	}
 }
 
@@ -253,6 +278,7 @@ if ($id_agent_module) {
 	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	print_input_hidden ('update_module', 1);
 	print_input_hidden ('id_agent_module', $id_agent_module);
+	print_input_hidden ('id_module_type', $id_module_type);
 } else {
 	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	print_input_hidden ('id_module', $moduletype);

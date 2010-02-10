@@ -34,6 +34,10 @@
 
 <?php
 
+$version = "3.1-dev";
+$build = "100209";
+$banner = "v$version Build $build";
+
 error_reporting(0);
 
 function check_extension ( $ext, $label ){
@@ -152,9 +156,9 @@ function parse_mysql_dump($url){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
-							// echo "DEBUG $query <br>"; //Uncomment for debug
 					if (!$result = mysql_query($query)) {
-					// echo mysql_errno() . ": " . mysql_error(); //Uncomment for debug
+					 	echo mysql_error(); //Uncomment for debug
+						echo "<i><br>$query<br></i>";
 						return 0;
 					}
 					$query = "";
@@ -175,13 +179,28 @@ function random_name ($size){
 	return $temp;
 }
 
+function print_logo_status ($step, $step_total){
+	global $banner;
+
+	echo "
+		<div id='logo_img'>
+			<img src='images/pandora_logo.png' border='0'><br>
+			<span style='font-size: 8px;'>$banner</span>
+			<br><br>
+			<b>Install step $step of $step_total</b>
+		</div>";
+}
+
+
 function install_step1() {
+	global $banner;
+
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
+	<h1>Pandora FMS installation wizard. Step #1 of 5</h1>
 	<div id='wizard' style='height: 490px;'>
 		<div id='install_box'>
-			<h2>Welcome to Pandora FMS 3.0 installation Wizard</h2>
+			<h2>Welcome to Pandora FMS installation Wizard</h2>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
 			<p>In four steps checks all dependencies and make your configuration 
 			for a quick installation.</p>
@@ -208,16 +227,15 @@ function install_step1() {
 		please download the migration tool from our website at 
 		<a href='http://www.pandorafms.com'>PandoraFMS.com web site</a>.</div>";
 		
-		echo "
-		</div>
-		<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0'><br>
-			<img src='images/step0.png' border='0'>
-		</div>
-		<div id='install_img'>";
+		echo "</div>";
+
+		print_logo_status (1, 5);
+
+		echo "<div id='install_img'>";
 		if ($writable == 0) {
 			echo "
-			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border='0'></a>";
+			<br><br>
+			<a href='install.php?step=11'><img align='right' src='images/arrow_next.png' border='0'></a>";
 		}
 		else
 			echo "<div class='warn'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
@@ -231,11 +249,49 @@ function install_step1() {
 	</div>";
 }
 
-
-function install_step2() {
+function install_step1_licence() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Step #2 of 4</h1>
+	<h1>Pandora FMS installation wizard. Step #2 of 5</h1>
+	<div id='wizard' style='height: 520px;'>
+		<div id='install_box'>
+			<h2>GPL2 Licence terms agreement</h2>
+			<p>Pandora FMS is an OpenSource software project licensed under the GPL2 licence. Pandora FMS includes, as well, another software also licensed under LGPL and BSD licenses. Before continue, <i>you must accept the licence terms.</i>.
+			<p>For more information, please refer to our website at http://pandorafms.org and contact us if you have any kind of question about the usage of Pandora FMS</p>
+<p>If you dont accept the licence terms, please, close your browser and delete Pandora FMS files.</p>
+		";
+
+	if (!file_exists("COPYING")){
+		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.";
+		echo "</div>";
+	} else {
+
+		echo "<form method=post action='install.php?step=2'>";
+		echo "<textarea name='gpl2' cols=50 rows=20>";
+		echo file_get_contents ("COPYING");
+		echo "</textarea>";
+		echo "<p>";
+		echo "<input type=submit value='I understand and accept the licence terms'>";
+
+		}
+	echo "</div>";
+
+	print_logo_status (2, 5);
+
+	echo "</div>
+	<div style='clear: both;height: 1px;'><!-- --></div>
+	<div id='foot_install'>
+			<i>Pandora FMS is an OpenSource Software project registered at 
+		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
+	</div>
+	</div>";
+}
+
+function install_step2() {
+
+	echo "
+	<div id='install_container'>
+	<h1>Pandora FMS console installation wizard. Step #3 of 5</h1>
 	<div id='wizard' style='min-height: 390px;'>
 		<div id='install_box'>";
 		echo "<h2>Checking software dependencies</h2>";
@@ -253,23 +309,21 @@ function install_step2() {
 			$res += check_include("XML/RPC.php","PEAR::XML_RPC PHP Library");
 			$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
 
-			echo "</table>
-		</div>
-		<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0'' alt=''><br>
-			<img src='images/step1.png' border='0' alt=''>
-		</div>
-		<div id='install_img'>";
+			echo "</table>";
+		echo "</div>";
+		print_logo_status (3,5);
+
+		echo "<div id='install_img'>";
 			if ($res > 0) {
 				echo "
 				<div class='warn'>You have some incomplete 
 				dependencies. Please correct them or this installer 
 				will not be able to finish your installation.
 				</div>
-				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>";
+				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #4</a>";
 			}
 			else {
-				echo "<a href='install.php?step=3'>
+				echo "<a href='install.php?step=3'><br>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			}
 			echo "
@@ -287,7 +341,7 @@ function install_step2() {
 function install_step3() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Step #3 of 4 </h1>
+	<h1>Pandora FMS console installation wizard. Step #4 of 5 </h1>
 	<div id='wizard' style='height: 640px;'>
 		<div id='install_box'>
 			<h2>Environment and database setup</h2>
@@ -338,16 +392,15 @@ function install_step3() {
 				<input class='login' type='text' name='url' style='width: 250px;' 
 				value='".dirname ($_SERVER["SCRIPT_NAME"])."'>
 				
-				<div align='right'>
+				<div align='right'><br>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>
 				</div>
 			</form>
-			</div>
-			<div id='logo_img'>
-				<img src='images/pandora_logo.png' border='0' alt=''><br>
-				<img src='images/step2.png' border='0' alt=''>
-			</div>
-		</div>
+			</div>";
+
+		print_logo_status (4,5);
+
+		echo "</div>
 		<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 
 			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
@@ -392,8 +445,8 @@ function install_step4() {
 
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
-	<div id='wizard' style='height: 400px;'>
+	<h1>Pandora FMS Console installation wizard. Step #5 of 5</h1>
+	<div id='wizard' style='height: 480px;'>
 		<div id='install_box'>
 			<h2>Creating database and default configuration file</h2>
 			<table>";
@@ -458,13 +511,11 @@ function install_step4() {
 			if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
 				$everything_ok = 1;
 			}
-		echo "</table></div>
-		<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0' alt=''><br>
-			<img src='images/step3.png' border='0' alt=''>
-		</div>
+		echo "</table></div>";
+
+		print_logo_status (4,5);
 		
-		<div id='install_img'>";
+		echo "<div id='install_img'>";
 			if ($everything_ok == 1) {
 				echo "<br><br><a href='install.php?step=5'>
 				<img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
@@ -473,8 +524,7 @@ function install_step4() {
 				echo "<div class='warn'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
-				All database schemes created in this step have been dropped. 
-				Try to reload this page if you have a present Pandora FMS configuration.</p>
+				All database schemes created in this step have been dropped. </p>
 				</div>";
 
 				if (mysql_error() != "")
@@ -509,12 +559,9 @@ function install_step5() {
 			for updates.
 			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
 			</p>
-		</div>
-		<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0'><br>
-			<img src='images/step4.png' border='0'><br>
-		</div>
-	</div>
+		</div>";
+		print_logo_status (5,5);
+	echo "</div>
 	<div id='foot_install'>
 			<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
@@ -532,6 +579,8 @@ if (! isset($_GET["step"])){
 } else {
 	$step = $_GET["step"];
 	switch ($step) {
+	case 11: install_step1_licence();
+		break;
 	case 2: install_step2();
 		break;
 	case 3: install_step3();

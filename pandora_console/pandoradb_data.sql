@@ -46,8 +46,8 @@ INSERT INTO `tconfig` VALUES
 (5,'days_compact','15'),
 (6,'graph_res','5'),
 (7,'step_compact','1'),
-(8,'db_scheme_version','3.0'),
-(9,'db_scheme_build','PD91218'),
+(8,'db_scheme_version','3.1-dev'),
+(9,'db_scheme_build','PD100209'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -62,7 +62,10 @@ INSERT INTO `tconfig` VALUES
 (24, 'loginhash_pwd', ''),
 (25, 'trap2agent', 0),
 (26, 'prominent_time', 0),
-(27, 'timesource', 'system');
+(27, 'timesource', 'system'),
+(28, 'realtimestats', '1'),
+(29, 'stats_interval', '300');
+
 INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
 
 UNLOCK TABLES;

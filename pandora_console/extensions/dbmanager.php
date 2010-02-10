@@ -30,11 +30,6 @@ function dbmanager_query ($sql, &$error) {
 	}
 	
 	if ($result === true) {
-		if ($rettype == "insert_id") {
-			return mysql_insert_id ();
-		} elseif ($rettype == "info") {
-			return mysql_info ();
-		}
 		return mysql_affected_rows ();
 	}
 	

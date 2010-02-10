@@ -1,3 +1,34 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb.sql: Changes in several tables and new tgroup_stat table.
+	Added several index and dropped some fields in tagente_datos and 
+	tagente_datos_string tagent_access.
+	
+	* godmode/setup/setup.php, 
+	* include/functions_config.php: Management of new timezone settings and
+	realtime stats parameters.
+
+	* include/config_process.php: New timezone management. Updated build.
+
+	* pandoradb_data.sql: Build update. Added new tokens realtimestats and
+	stats_interval.
+
+	* install.php: Several changes: Now display GPL licence, better SQL error
+	management, and steps are shown now as text instead a progress bar. Also 
+	show version and build of the installer.
+
+	* extensions/dbmanager.php: Removed some warnings
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Updated with latest changs.
+
+	* godmode/agentes/module_manager_editor_network.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor.php: Implemented partial support for
+	SNMP v3. Miguel will finish the work :-)
+
+	* index.php: Session close function deprecated, replaced by a more standard
+	method with unset.
+
 2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add in the function "getAgentMap" a new

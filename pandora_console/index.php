@@ -197,7 +197,9 @@ if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
 	logoff_db ($iduser, $REMOTE_ADDR);
-	session_unregister ("id_usuario");
+	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
+	unset($_SESSION['id_usuario']);
+	unset($iduser);
 	while (@ob_end_flush ());
 	exit ("</html>");
 }

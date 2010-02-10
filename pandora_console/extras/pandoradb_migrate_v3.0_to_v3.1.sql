@@ -9,11 +9,45 @@ ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NUL
 
 ALTER TABLE `tserver_export` ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Nuber of hours of diference with the server timezone';
 
+ALTER TABLE `tserver` ADD `lag_time` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `lag_modules` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `total_modules_running` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `my_modules` int(11) NOT NULL default 0;
+
+ALTER TABLE `tagente_modulo` ADD `custom_string_1` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_string_2` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_string_3` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_integer_1` int(10) default 0;
+ALTER TABLE `tagente_modulo` ADD `custom_integer_2` int(10) default 0;
+
+ALTER TABLE tagente_datos_string DROP id_tagente_datos_string;
+CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos_string(utimestamp);
+
+ALTER TABLE tagente_datos DROP id_agente_datos;
+CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos(utimestamp);
+
+CREATE INDEX idx_agente USING BTREE ON tagente_estado(id_agente);
+CREATE INDEX idx_template_action USING BTREE ON talert_templates(id_alert_action);
+CREATE INDEX idx_template_module USING BTREE ON talert_template_modules(id_agent_module);
+CREATE INDEX idx_agentmodule USING BTREE ON tevento(id_agentmodule);
+
+DROP INDEX `status_index_2` on tagente_estado;
+CREATE INDEX idx_status USING BTREE ON tagente_estado (estado);
+
+ALTER TABLE tagent_access DROP id_ac;
+CREATE INDEX idx_utimestamp USING BTREE ON tagent_access(utimestamp);
+
+ALTER TABLE tusuario ADD `timezone` varchar(50) default '';
 
 -- GIS extension Tables and DATA
 
 -- GIS is disabled by default
 INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
+
+-- Realtime statistics on/off and interval
+INSERT INTO tconfig (`token`, `value`) VALUES ('realtimestats', '1');
+INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
+
 
 -- -----------------------------------------------------
 -- Table `tgis_data`
@@ -148,4 +182,26 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';
+
+-- -----------------------------------------------------
+-- Table `tgroup_stat`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tgroup_stat` (
+  `id_group` int(10) unsigned NOT NULL default '0',
+  `modules` int(10) unsigned NOT NULL default '0',
+  `normal` int(10) unsigned NOT NULL default '0',
+  `critical` int(10) unsigned NOT NULL default '0',
+  `warning` int(10) unsigned NOT NULL default '0',
+  `unknown` int(10) unsigned NOT NULL default '0',
+  `non-init` int(10) unsigned NOT NULL default '0',
+  `alerts` int(10) unsigned NOT NULL default '0',
+  `alerts_fired` int(10) unsigned NOT NULL default '0',
+  `agents` int(10) unsigned NOT NULL default '0',
+  `agents_uknown` int(10) unsigned NOT NULL default '0',
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  PRIMARY KEY  (`id_group`)
+) ENGINE=InnoDB 
+COMMENT = 'Table to store global system stats per group';
+DEFAULT CHARSET=utf8
 

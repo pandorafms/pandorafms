@@ -1,3 +1,8 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agents/linux/pandora_agent.spec: Fixed incompatibility
+	with centos.
+
 2009-12-29  Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent_daemon: Some ugly warnings are fixed.

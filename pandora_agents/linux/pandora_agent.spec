@@ -92,7 +92,7 @@ if [ ! -d /var/spool/pandora/data_out ] ; then
 	mkdir -p /var/spool/pandora/data_out
 fi
 
-chkconfig -s pandora_agent_daemon on
+chkconfig --set pandora_agent_daemon on
 
 %preun
 

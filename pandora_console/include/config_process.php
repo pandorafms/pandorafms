@@ -22,24 +22,30 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC091228';
+$build_version = 'PC090202';
 $pandora_version = 'v3.0';
 
 /* Help to debug problems. Override global PHP configuration */
+if (!isset($develop_bypass)) $develop_bypass = 0;
 
-// error_reporting(E_ALL);
-
-if (strnatcmp(phpversion(),'5.2.11') >= 0) 
+if ($develop_bypass != 1) {	
+	if (strnatcmp(phpversion(),'5.2.11') >= 0) 
 	{ 
-	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+		error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 	}
-else 
+	else 
 	{ 
-	error_reporting(E_ALL & ~E_NOTICE);
+		error_reporting(E_ALL & ~E_NOTICE);
 	}
-
-ini_set("display_errors", 0);
-ini_set("error_log", $config["homedir"]."/pandora_console.log");
+	
+	ini_set("display_errors", 0);
+	ini_set("error_log", $config["homedir"]."/pandora_console.log");
+}
+else {
+	error_reporting(E_ALL);
+	ini_set("display_errors", 1);
+	ini_set("error_log", $config["homedir"]."/pandora_console.log");
+}
 
 // Set a default timezone default if not configured
 // to avoid warnings and bad timestamp calculation in PHP > 5.1 

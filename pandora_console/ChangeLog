@@ -1,3 +1,18 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* include/help/es/help_alert_macros.php: Updated.macro help.
+
+	* nclude/config_process.php: Updated build better  Better log management.
+
+	* include/functions_fsgraph.php: removed a few blank lines.
+
+	* godmode/setup/file_manager.php: Added support to delete files.
+
+	* godmode/db/db_main.php: Added new metrics about DB usage. Added
+	last time pandora_db.pl was running in the system.
+
+	* godmode/db/db_info.php: Added graphic from db_main.
+
 2010-02-01  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_agente.php: Changed colour order for 
@@ -17,7 +32,10 @@
 	parent status) and non-status elements like labels, graphs or progress
 	bars now doesnt propagate module status to parents.
 
-	* include/functions_db.php:
+	* include/functions_db.php: Added parameter to get_db_all_rows_sql() to
+	avoid use of cache. Function process_sql() was not properly checking if
+	cache usage was disabled and was always using cache. Added support for
+	checking unknown status in get_agentmodule_status() function.
 
 	* extensions/dbmanager/dbmanager.css,
 	  extensions/dbmanager.php: Fixed width of textarea.

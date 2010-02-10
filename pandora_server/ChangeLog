@@ -1,3 +1,8 @@
+2010-02-10	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Validation of positiona parameters, check
+	if the parameters are defined and if they have valid values.
+
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
 	* bin/pandora_server: Better error management, avoiding to show Enterprise

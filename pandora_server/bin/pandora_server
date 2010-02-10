@@ -128,9 +128,8 @@ sub pandora_crash () {
 
 	# Avoid show messages about enterprise library loading failurem, VERY 
 	# confussing.
-
 	foreach my $error_line (@_) {
-		if ($error_line !~ m/Enterprise/i){
+		if ($error_line !~ m/Enterprise/i && $error_line !~ m/ConfigLocal/i){
 			logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
 		} else {
 			$show_error = 1;
@@ -145,7 +144,7 @@ sub pandora_crash () {
 	# It's interesting show by console problems, not only in logs. This helps
 	# to solve stupid problems like Database credential problems for example
 
-	if ($full_error !~ m/Enterprise/i) {
+	if ($full_error !~ m/Enterprise/i && $full_error !~ m/ConfigLocal/i) {
 		print_message (\%Config, ' [E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
 		print_message (\%Config, " Error description:\n", 0);
 		print_message (\%Config, $full_error, 0);

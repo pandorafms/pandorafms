@@ -228,6 +228,18 @@ if ($id_agente) {
 	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
 	echo "<img src='images/agents_group.png' class='top' title='".__('Group')."'>&nbsp;</a></li>";
 
+	// GIS tab
+	if ($config['activate_gis']) {
+		if ($tab == "gis") {
+			echo "<li class='nomn_high'>";
+		}
+		else {
+			echo "<li class='nomn'>";
+		}
+		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente=$id_agente'><img src='images/world.png' class='top' border=0 title='".__('GIS data')."'>&nbsp;</a>";
+		echo "</li>";
+	}
+
 	echo "</ul></div></div>";
 	
 	// Make some space between tabs and title
@@ -618,6 +630,34 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	}
 }
 
+// UPDATE GIS
+// ==========
+$updateGIS = get_parameter('update_gis', 0);
+if ($updateGIS) {
+	$updateGisData = get_parameter("update_gis");
+	$lastLatitude = get_parameter("latitude");
+	$lastLongitude = get_parameter("longitude");
+	$lastAltitude = get_parameter("altitude");
+	$idAgente = get_parameter("id_agente");
+	
+	process_sql_begin();
+	
+		process_sql_update('tagente', array('update_gis_data' => $updateGisData,
+			'last_latitude' => $lastLatitude, 'last_longitude' => $lastLongitude,
+			'last_altitude' => $lastAltitude), array('id_agente' => $idAgente));
+		
+		process_sql_insert('tgis_data', array('longitude' => $lastLongitude,  
+			'latitude' => $lastLatitude,         
+			'altitude' => $lastAltitude,
+			'description' => __('Added by user in Pandora Console'),
+			'manual_placement' => 1,
+			'number_of_packages' => 1,
+			'tagente_id_agente' => $idAgente
+		));
+	
+	process_sql_commit();
+}
+
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
@@ -638,6 +678,9 @@ switch ($tab) {
 		break;
 	case "template":
 		require ("agent_template.php");
+		break;
+	case "gis":
+		require("agent_conf_gis.php");
 		break;
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab)))

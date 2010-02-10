@@ -1,5 +1,19 @@
 2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: add in the function "getAgentMap" a new
+	parameter "centerInAgent" (default true) for center the map in the last
+	position of agent.
+	
+	* operation/agentes/ver_agente.php: clean source code.
+	
+	* godmode/agentes/agent_conf_gis.php: add page that you can change the
+	position of agent.
+	
+	* godmode/agentes/configurar_agente.php: add the code to update the changed
+	coords of agent, and show the tab to access the agent_conf_gis.php.
+
+2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/styles/pandora.css: add lost style for disable button.
 	
 	* include/functions_gis.php: fix the function "getAgentMap" now back run.

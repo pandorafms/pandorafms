@@ -267,7 +267,8 @@ enterprise_hook ('inventory_tab');
 if ($config['activate_gis']) {
 	if ($tab == "gis") {
 		echo "<li class='nomn_high'>";
-	} else {
+	}
+	else {
 		echo "<li class='nomn'>";
 	}
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente=$id_agente'><img src='images/world.png' class='top' border=0 title='".__('GIS data')."'>&nbsp;</a>";

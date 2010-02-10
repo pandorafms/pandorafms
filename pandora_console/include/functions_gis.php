@@ -605,11 +605,12 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
  * @param $height: heigth in a string in css format
  * @param $width: width in a string in css format
  * @param $show_history: by default or when this parameter is false in the map the path with the 
+ * @param $centerInAgent boolean Default is true, set the map center in the icon agent. 
  * @param $history_time: Number of seconds in the past to show from where to start the history path.
  *
  * @return A div tag with the map and the agent and the history path if asked.
  */
-function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history_time = 86400) {
+function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
 	$defaultMap = get_db_all_rows_sql("
 		SELECT t1.*, t3.conection_name, t3.connection_type, t3.conection_data, t3.num_zoom_levels
 		FROM tgis_map AS t1, 
@@ -642,7 +643,19 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon, 20, 20, $agent_id, 'point_agent_info');
-		
+	
+	if ($centerInAgent) {
+		?>
+		<script type="text/javascript">
+		$(document).ready (
+			function () { 
+				var lonlat = new OpenLayers.LonLat(<?php echo $agent_position['last_longitude']; ?>, <?php echo $agent_position['last_latitude']; ?>)
+					.transform(map.displayProjection, map.getProjectionObject());
+				map.setCenter(lonlat, <?php echo $defaultMap['zoom_level']; ?>, false, false);
+			});
+		</script>
+		<?php
+	}
 }
 
 /**

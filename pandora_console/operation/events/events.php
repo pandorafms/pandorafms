@@ -471,7 +471,7 @@ foreach ($result as $event) {
 	
 	// Event description
 	$data[3] = '<span title="'.$event["evento"].'" class="f9">';
-	$data[3] .= '<a href="'.$url.'&amp;group_rep=0&amp;id_agent='.$event["id_agente"].'&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
+	$data[3] .= '<a href="'.$url.'&amp;group_rep=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
 	if (strlen ($event["evento"]) > 50) {
 		$data[3] .= mb_substr ($event["evento"], 0, 50)."...";
 	}

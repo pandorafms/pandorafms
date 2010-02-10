@@ -1,5 +1,7 @@
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
+	* events.php: Fixed a bad link with an invalid id_agent.
+
 	* pandoradb.sql: Changes in several tables and new tgroup_stat table.
 	Added several index and dropped some fields in tagente_datos and 
 	tagente_datos_string tagent_access.

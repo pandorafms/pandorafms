@@ -1,3 +1,14 @@
+2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: in function "saveMap" now save the default
+	connection.
+	
+	* operation/gis_maps/ajax.php: add option "get_data_conexion" for get by
+	ajax the data connection when pass id_connection.
+	
+	* godmode/gis_maps/configure_gis_map.php: now you can set the default
+	connection and too load the data by default for each connection.
+
 2010-02-10  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/gis_maps/index.php: Fixed regresion, standarized using map_id

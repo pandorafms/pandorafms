@@ -45,14 +45,19 @@ switch ($action) {
 		$map_default_altitude = get_parameter('map_default_altitude');
 		$map_group_id = get_parameter('map_group_id');
 		
-		$map_connection_list = explode(",",get_parameter('map_connection_list'));
+		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
 		$layer_list = explode(",",get_parameter('layer_list'));
 		
-		foreach ($map_connection_list as $mapConnection) {
-			//TODO extract the default
-		}
+		$map_connection_default = get_parameter('map_connection_default');
 		
-		//debugPrint($map_connection_list);
+		$map_connection_list = array();
+		foreach ($map_connection_list_temp as $idMapConnection) {
+			$default = false;
+			if ($map_connection_default == $idMapConnection)
+				$default = true;
+			
+			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
+		}
 		
 		$arrayLayers = array();
 		
@@ -64,8 +69,6 @@ switch ($action) {
 			$map_initial_altitude, $map_zoom_level, $map_background,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_group_id, $map_connection_list, $arrayLayers);
-		
-		//debugPrint($arrayLayers);
 		break;
 	case 'new_map':
 		print_input_hidden('action', 'save_new');
@@ -202,7 +205,7 @@ echo "</form>";
 	<tbody id="chunk_map_connection">
 		<tr class="row_0">
 			<td><?php print_input_text ('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
-			<td><?php print_radio_button ('map_connection_default', '', '', true);?></td>
+			<td><?php print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', '');?></td>
 			<td><a id="delete_row" href="none"><img src="images/cross.png" alt=""></a></td>
 		</tr>
 	</tbody>
@@ -463,6 +466,33 @@ function deleteConnectionMap(idConnectionMap) {
 	}
 }
 
+function setFieldsRequestAjax(id_conexion) {
+	if (confirm('<?php echo __('Do you want to set default data of conexion in fields?');?>')) {
+		jQuery.ajax ({
+			data: "page=operation/gis_maps/ajax&opt=get_data_conexion&id_conection="  + idConnectionMap,
+			type: "GET",
+			dataType: 'json',
+			url: "ajax.php",
+			timeout: 10000,
+			success: function (data) {                 		
+				if (data.correct) {
+					$("input[name=map_initial_longitude]").val(data.content.initial_longitude);
+					$("input[name=map_initial_latitude]").val(data.content.initial_latitude);
+					$("input[name=map_initial_altitude]").val(data.content.initial_altitude);
+					$("input[name=map_default_longitude]").val(data.content.default_longitude);
+					$("input[name=map_default_latitude]").val(data.content.default_latitude);
+					$("input[name=map_default_altitude]").val(data.content.default_altitude);
+				}
+			}
+		});
+	}
+}
+
+function changeDefaultConection(id) {
+	
+	setFieldsRequestAjax(id);
+}
+
 function addConnectionMap() {
 	idConnectionMap = $("#map_connection :selected").val();
 	connectionMapName = $("#map_connection :selected").text();
@@ -480,10 +510,14 @@ function addConnectionMap() {
 	
 	tableRows = $("#chunk_map_connection").clone();
 	tableRows.attr('id','map_connection_' + idConnectionMap);
+	$("input[name=map_connection_default]",tableRows).val(idConnectionMap);
 	
 	if (connectionMaps.length == 0) {
 		//The first is checked
 		$("#radiobtn0001", tableRows).attr('checked', 'checked');
+
+		//Set the fields with conexion data (in ajax)
+		setFieldsRequestAjax(idConnectionMap);
 	}
 
 	connectionMaps.push(idConnectionMap);
@@ -491,7 +525,6 @@ function addConnectionMap() {
 	$("#text-map_connection_name", tableRows).val(connectionMapName);
 	$("#text-map_connection_name", tableRows).attr('name', 'map_connection_name_' + idConnectionMap);
 	$("#delete_row", tableRows).attr('href', "javascript: deleteConnectionMap(" + idConnectionMap + ")");
-	
 	
 	$("#map_connection").append(tableRows);
 }

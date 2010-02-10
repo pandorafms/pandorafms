@@ -556,8 +556,8 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 		process_sql_insert('tgis_map_has_tgis_map_connection',
 			array(
 				'tgis_map_id_tgis_map' => $idMap,
-				'tgis_map_connection_id_tmap_connection' => $map_connection,                       
-				'default_map_connection' => false //TODO SET DEFAULT
+				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],                       
+				'default_map_connection' => $map_connection['default']
 			)
 		);
 	}

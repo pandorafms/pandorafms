@@ -84,6 +84,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
   `default_latitude` DOUBLE NULL COMMENT 'default latitude for the agents placed on the map' ,
   `default_altitude` DOUBLE NULL COMMENT 'default altitude for the agents placed on the map' ,
   `group_id` INT(10) NOT NULL DEFAULT 0 COMMENT 'Group that owns the map' ,
+  `default_map` TINYINT(1) NULL DEFAULT 0 COMMENT '1 if this is the default map, 0 in other case',
   PRIMARY KEY (`id_tgis_map`),
   INDEX `map_name_index` (`map_name` ASC)
 )

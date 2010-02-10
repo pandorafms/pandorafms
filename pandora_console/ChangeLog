@@ -1,3 +1,11 @@
+2010-02-10  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* godmode/gis_maps/index.php: Fixed regresion, standarized using map_id
+	as parameter.
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added column
+	default_map to table tgis_map to mark the default map
+
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
 	* events.php: Fixed a bad link with an invalid id_agent.

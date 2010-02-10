@@ -177,7 +177,7 @@ sub data_consumer ($$) {
 
 		# Generate an event
         pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
-                       $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', $dbh);
+                       $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 	}
 
 	# Create an incident

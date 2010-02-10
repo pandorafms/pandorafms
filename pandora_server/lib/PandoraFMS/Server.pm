@@ -219,7 +219,7 @@ sub upEvent ($) {
 	return unless defined ($self->{'_dbh'});
 	pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} .
 	               $ServerTypes[$self->{'_server_type'}] . ' going UP',
-	               0, 0, 3, 0, 0, 'system', $self->{'_dbh'});
+	               0, 0, 3, 0, 0, 'system', 0, $self->{'_dbh'});
 }
 
 ########################################################################################
@@ -231,7 +231,7 @@ sub downEvent ($) {
 	return unless defined ($self->{'_dbh'});
 	pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} .
 	               $ServerTypes[$self->{'_server_type'}] . ' going DOWN',
-	               0, 0, 4, 0, 0, 'system', $self->{'_dbh'});
+	               0, 0, 4, 0, 0, 'system', 0, $self->{'_dbh'});
 }
 
 ########################################################################################
@@ -244,7 +244,7 @@ sub restartEvent ($$) {
 	eval {
 		pandora_event ($self->{'_pa_config'}, $self->{'_pa_config'}->{'servername'} .
 				       $ServerTypes[$self->{'_server_type'}] . " RESTARTING" . (defined ($msg) ? " ($msg)" : ''),
-	                   0, 0, 4, 0, 0, 'system', $self->{'_dbh'});
+	                   0, 0, 4, 0, 0, 'system', 0, $self->{'_dbh'});
 	};
 }
 

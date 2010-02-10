@@ -1,3 +1,36 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_server: Better error management, avoiding to show Enterprise
+	loading errors, and showing in console critical errors, helping to identify
+	silly errors like DB credentials, etc.
+	Added usage of pandora_get_sharedconfig() to get configuration from DB.
+
+	* Config.pm: Updated build. Added pandora_get_sharedconfig(). Force three
+	config tokens to be readed from DB, using default values if cannot be readen
+	from database (agentaccess, realtimestat and stats_interval).
+
+	* Core.pm: Added new parameter to pandora_event() to pass status of the 
+	event (validated, not validated). Implemented auto-validation of low 
+	priority events: normal/ok events will be always shown as autovalidated, and
+	warning and normal events will be validated with critical events, and when
+	a module is restored (normal/ok), all it's warning/critical pending events
+	will be validated. 
+
+	Fixed also bug with FF Threshold who doesnt' trigger events until FF + 1 
+	instead FF value.
+
+	* Server.pm,
+	NetworkServer.pm,
+	Dataserver.pm,
+	ReconServer.pm: Raise event with status 0 (non validated) by default.
+
+	* NetworkServer.pm: Implemented support for SNMP v3.
+
+	* util/pandora_db.pm: Very important upgrade to this script. Now will
+	delete all huge tables (tagente_datos, tagente_datos_string and 
+	tagent_acccess) using several independent blocks (by default 100) avoiding
+	mysql locks which happen in the past. 
+
 2010-02-08  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: Script upgrade to purge data in several steps

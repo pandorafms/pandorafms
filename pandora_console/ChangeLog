@@ -1,5 +1,10 @@
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
+ 	* godmode/db/db_main.php: Added new metrics about DB usage. Added
+	last time pandora_db.pl was running in the system.
+
+	* godmode/db/db_info.php: Added graphic from db_main
+
 	* operation/reporting/reporting_viewer_pdf.php
 	include/functions_reporting_pdf.php: Small fixes for PDF reporting. 
 	Decode entities to show texts correctly in description of each element.

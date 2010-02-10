@@ -41,6 +41,16 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 
 echo "<h2>".__('Database maintenance')." &raquo; ";
 echo __('Database information')."</h2>";
+
+if ($config['flash_charts']) {
+	$width=600;
+	$height=400;
+	echo grafico_db_agentes_purge ($id_agente, $width, $height);
+} else {
+	echo '<img src="include/fgraph.php?tipo=db_agente_purge&id=-1&height=400&width=600">';
+}
+
+
 echo '<div id="db_info_graph">';
 echo '<table border=0>';
 echo '<tr><td>';

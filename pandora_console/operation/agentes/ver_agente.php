@@ -19,6 +19,8 @@
 require_once ("include/config.php");
 require_once ("include/functions_gis.php");
 
+require_javascript_file('openlayers.pandora');
+
 enterprise_include ('operation/agentes/ver_agente.php');
 
 check_login ();

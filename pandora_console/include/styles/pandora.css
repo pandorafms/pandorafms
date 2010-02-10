@@ -273,6 +273,11 @@ input.sub {
 	background-color: #e5e5e5;
 	color: #000;
 }
+
+input.sub[disabled] {
+	color: #aaa;
+}
+
 input.next, input.upd, input.ok, input.wand, input.delete, input.search,
 input.copy, input.add {
 	padding-right: 21px;

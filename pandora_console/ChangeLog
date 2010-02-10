@@ -1,3 +1,14 @@
+2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/styles/pandora.css: add lost style for disable button.
+	
+	* include/functions_gis.php: fix the function "getAgentMap" now back run.
+
+	* include/functions_ui.php: clean source code.
+	
+	* operation/agentes/ver_agente.php: add require javascript
+	openlayers.pandora.js.
+
 2010-02-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: clean source code, and extract the javascript

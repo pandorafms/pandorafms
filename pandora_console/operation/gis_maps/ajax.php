@@ -24,6 +24,16 @@ require_once ('include/functions_ui.php');
 $opt = get_parameter('opt');
 
 switch ($opt) {
+	case 'get_data_conexion':
+		$returnJSON['correct'] = 1;
+		$idConection = get_parameter('id_conection');
+		
+		$row = get_db_row_filter('tgis_map_connection', array('id_tmap_connection' => $idConection));
+		
+		$returnJSON['content'] = $row;
+		
+		echo json_encode($returnJSON);
+		break;
 	case 'get_new_positions':
 		$id_features = get_parameter('id_features', '');
 		$last_time_of_data = get_parameter('last_time_of_data');

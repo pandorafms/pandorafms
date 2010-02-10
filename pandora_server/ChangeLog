@@ -1,3 +1,10 @@
+2010-02-10  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_db.pl: Very important upgrade to this script. Now will
+	delete all huge tables (tagente_datos, tagente_datos_string and 
+	tagent_acccess) using several independent blocks (by default 100) avoiding
+	mysql locks which happen in the past. 
+
 2010-02-02  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server/lib/PandoraFMS/Core.pm: Fixed bug #2940411

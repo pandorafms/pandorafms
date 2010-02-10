@@ -19,17 +19,19 @@
 
 # Includes list
 use strict;
-use Time::Local;			# DateTime basic manipulation
+use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use POSIX qw(strftime);
 
 # version: define current version
-my $version = "3.0 PS091214";
+my $version = "3.1 PS100209";
 
 # Pandora server configuration
 my %conf;
+
+my $BIG_OPERATION_STEP = 100; # Long operations are divided in XX steps for performance
 
 # FLUSH in each IO
 $| = 0;
@@ -77,36 +79,64 @@ sub pandora_purgedb ($$) {
 	my $ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});
 	my $limit_timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($ulimit_timestamp));
 
-	print "[PURGE] Deleting old event data (More than " . $conf->{'_days_purge'} . " days)... \n";
-	$dbh->do("DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
+	my $first_mark;
+	my $total_time;
+	my $purge_steps;
 
 	print "[PURGE] Deleting old data... \n";
-	$dbh->do ("DELETE FROM tagente_datos WHERE utimestamp < '$ulimit_timestamp'");
 
-	print "[PURGE] Delete old data (string) ... \n";
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < '$ulimit_timestamp'");
+	# This could be very timing consuming, so make this operation in $BIG_OPERATION_STEP 
+	# steps (100 fixed by default)
+	# Starting from the oldest record on the table
+
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
+	$total_time = $ulimit_timestamp - $first_mark;
+	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+
+		db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+
+		print "[PURGE] Data deletion Progress %$ax .. \n";
+	}
+
+	print "[PURGE] Deleting old event data (More than " . $conf->{'_days_purge'} . " days)... \n";
+	db_do($dbh, "DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
 
 	print "[PURGE] Delete pending deleted modules (data table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 
-	print "[PURGE] Delete pending deleted modules (data string table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	
-	print "[PURGE] Delete pending deleted modules (data inc table)...\n";
-	$dbh->do ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	
+	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
+
+	foreach my $module (@deleted_modules) {
+		print " Deleting data for module " . $module->{'id_agente_modulo'} . "\n";
+		db_do ($dbh, "DELETE FROM tagente_datos WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
+		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
+		db_do ($dbh, "DELETE FROM tagente_datos_inc WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
+
+	}
+
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
-	$dbh->do ("DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
-	$dbh->do ("DELETE FROM tagente_modulo WHERE delete_pending = 1");
-	
+	db_do ($dbh, "DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
+	db_do ($dbh, "DELETE FROM tagente_modulo WHERE delete_pending = 1");
+
 	print "[PURGE] Delete old session data \n";
-	$dbh->do ("DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp");
+	db_do ($dbh, "DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp");
 
 	print "[PURGE] Delete old data from SNMP Traps \n"; 
-	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
+	db_do ($dbh, "DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
 
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
-	$dbh->do("DELETE FROM tagent_access WHERE utimestamp < '$ulimit_access_timestamp'");
+
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC LIMIT 1');
+	$total_time = $ulimit_access_timestamp - $first_mark;
+	$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
+
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
+		db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
+		print "[PURGE] Agent access deletion progress %$ax .. \n";
+	}
+
 }
 
 ###############################################################################
@@ -342,7 +372,7 @@ sub is_policy_module ($$) {
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	print "\n\nUsage: $0 <path to pandora_server.conf> [options]\n\n";
+	print "Usage: $0 <path to pandora_server.conf> [options]\n\n";
 	print "\n\tAvailable options:\n\t\t-d  Debug output (very verbose).\n";
 	print "\t\t-v   Verbose output.\n";
 	print "\t\t-q   Quiet output.\n";
@@ -358,19 +388,19 @@ sub pandoradb_main ($$$) {
 
 	print "Starting at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";	
 
-	# Move old data to the history DB
-	if (defined ($history_dbh)) {
-		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
-	}
-
 	# Purge
 	pandora_purgedb ($conf, $dbh);
 
 	# Consistency check
 	pandora_checkdb_consistency ($dbh);
 
-	# Compact
-	if ($conf->{'_onlypurge'} == 0) {
+	# Move old data to the history DB
+	if (defined ($history_dbh)) {
+		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
+	}
+
+	# Compact on if enable and DaysCompact are below DaysPurge 
+	if (($conf->{'_onlypurge'} == 0) && ($conf->{'_days_compact'} < $conf->{'_days_purge'})) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);
 	}
 

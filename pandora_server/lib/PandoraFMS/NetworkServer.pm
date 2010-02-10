@@ -240,37 +240,75 @@ next_pair:
 }
 
 ##########################################################################
-# SUB pandora_query_snmp (pa_config, oid, community, target, version, error, dbh)
+# SUB pandora_query_snmp (pa_config, module)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
-sub pandora_query_snmp (%$$$$$) {
-	my $pa_config = $_[0];
-	my $snmp_oid = $_[1];
-	my $snmp_community =$_[2];
-	my $snmp_target = $_[3];
-	my $snmp_version = $_[4];
-	# $_[5] contains error var.
 
+sub pandora_query_snmp (%$) {
+	my $pa_config = $_[0];
+	my $module = $_[1];
+
+	my $snmp_version = $module->{"tcp_send"}; # (1, 2, 2c or 3)
+	my $snmp3_privacy_method = $module->{"custom_string_1"}; # DES/AES
+	my $snmp3_privacy_pass = $module->{"custom_string_2"};
+	my $snmp3_security_level = $module->{"custom_string_3"}; # noAuthNoPriv|authNoPriv|authPriv
+	my $snmp3_auth_user = $module->{"plugin_user"};
+	my $snmp3_auth_pass = $module->{"plugin_pass"};
+	my $snmp3_auth_method = $module->{"plugin_parameter"}; #MD5/SHA1
+	my $snmp_community = $module->{"snmp_community"};
+	my $snmp_target = $module->{"ip_target"};
+	my $snmp_oid = $module->{"snmp_oid"};
+
+	my $snmp_timeout = $pa_config->{"snmp_timeout"};
+	my $snmp_retries = $pa_config->{'snmp_checks'};
+
+	my $module_result = 1; # by default error
+	my $module_data = 0; 
+	my $output; # Command output
+
+	# If not defined, always snmp v1 (standard)
 	if ($snmp_version ne '1' && $snmp_version ne '2' 
 		&& $snmp_version ne '2c' && $snmp_version ne '3') {
 		$snmp_version = '1';
 	}
 
-	my $snmp_timeout = $pa_config->{"snmp_timeout"};
-	my $snmp_retries = $pa_config->{'snmp_checks'};
-
-	# TODO: Alternative version if command is not available or user select a new switch
-	# with "use internal SNMP" option. At this moment, due to locks() external snmp is much faster
-
-	$_[5] = 0;
 	my $snmpget_cmd = $pa_config->{"snmpget"};
-	my $output = "";
-	$output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2>/dev/null`;
-	if ($output eq ""){
-		$_[5] = 1;
+
+	# SNMP v1, v2 and v2c call
+	if ($snmp_version ne '3'){
+
+		$output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2>/dev/null`;
+		if ($output ne ""){
+			$module_result = 0;
+			$module_data = $output;
+		}
+	} else {
+
+		# SNMP v3 has a very different command syntax
+
+		my $snmp3_extra = "";
+		my $snmp3_execution;
+
+		# SNMP v3 authentication only
+		if ($snmp3_security_level eq "authNoPriv"){
+			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass ";
+		}
+
+		# SNMP v3 privacy AND authentication
+		if ($snmp3_security_level eq "authPriv"){
+			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
+		}
+
+		$snmp3_execution = "$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null";
+
+		$output = `$snmp3_execution`;
+		if ($output ne ""){
+			$module_result = 0;
+			$module_data = $output;
+		}
 	}
 
-	return $output;
+	return ($module_data, $module_result);
 }
 
 ##########################################################################
@@ -308,43 +346,45 @@ sub exec_network_module ($$$$) {
 	
 	if ((defined($ip_target)) && ($ip_target)) {
 
+	    # -------------------------------------------------------
 	    # ICMP Modules
-	    # ------------
-	    if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
-		    $module_data = pandora_ping ($pa_config, $ip_target);
-		    $module_result = 0; # Successful
-	    } elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
-		    $module_data = pandora_ping_latency ($pa_config, $ip_target);
+	    # -------------------------------------------------------
+
+		if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
+			$module_data = pandora_ping ($pa_config, $ip_target);
 			$module_result = 0; # Successful
-	    # SNMP Modules (Proc=18, inc, data, string)
-	    # ------------
-	    } elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
-            if ((defined($snmp_oid)) && ($snmp_oid ne "") && (defined($snmp_community)) && ($snmp_community ne "")) { # Port check
-		    	    $temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $tcp_send, $error);
-		    } else {
-			    $error = 1
-		    }
-		    if ($error == 0) { # A correct SNMP Query
-			    $module_result = 0;
+		}
+		elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
+			$module_data = pandora_ping_latency ($pa_config, $ip_target);
+			$module_result = 0; # Successful
+		}
+
+		# -------------------------------------------------------
+		# SNMP Modules (Proc=18, inc, data, string)
+		# -------------------------------------------------------
+
+		elsif (($id_tipo_modulo == 15) || 
+				($id_tipo_modulo == 18) || 
+				($id_tipo_modulo == 16) || 
+				($id_tipo_modulo == 17)) {
+
+			($module_data, $module_result) = pandora_query_snmp ($pa_config, $module);
+
+		    if ($module_result == 0) { # A correct SNMP Query
 			    # SNMP_DATA_PROC
 			    if ($id_tipo_modulo == 18){ #snmp_data_proc
                             # RFC1213-MIB where it says that: SYNTAX INTEGER { up(1), down(2), testing(3),
                             # unknown(4), dormant(5), notPresent(6), lowerLayerDown(7) } 
-				    if ($temp2 != 1){ # up state is 1, down state in SNMP is 2 ....
-					    $temp2 = 0;
+				    if ($module_data != 1){ # up state is 1, down state in SNMP is 2 ....
+					    $module_data = 0;
 				    }
-				    $module_data = $temp2;
 			    }
 			    # SNMP_DATA and SNMP_DATA_INC
 			    elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
-				    if (!is_numeric($temp2)){		   
+				    if (!is_numeric($module_data)){		   
 					    $module_result = 1; 
-				    } else {
-					    $module_data = $temp2;
 				    } 
-			    } else { # String SNMP
-				    $module_data = $temp2;
-			    }
+			    } 
 		    } else { # Failed SNMP-GET
 			    $module_data = 0;
 			    if ($id_tipo_modulo == 18){ # snmp_proc
@@ -352,16 +392,19 @@ sub exec_network_module ($$$$) {
 				    # this is a fail monitor
 				    if ($pa_config->{"snmp_proc_deadresponse"} eq "1"){
 				            $module_result = 0;
-				    } else {
-					    $module_result = 1;
-				    }
-			    } else {
-			            $module_result = 1; # No data, cannot connect
-			    }
+						    $module_data = 0;
+				    } 
+				}
 		    }
+		}
+
+		# -------------------------------------------------------
 	    # TCP Module
-	    # ----------
-	    } elsif (($id_tipo_modulo == 8) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 11)) { # TCP Module
+	    # -------------------------------------------------------
+	    elsif (($id_tipo_modulo == 8) || 
+				($id_tipo_modulo == 9) || 
+				($id_tipo_modulo == 10) || 
+				($id_tipo_modulo == 11)) { # TCP Module
             if ((defined($tcp_port)) && ($tcp_port < 65536) && ($tcp_port > 0)) { # Port check
 			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo);
 		    } else { 

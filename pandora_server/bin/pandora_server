@@ -68,6 +68,10 @@ sub pandora_startup () {
 	$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
 					   $Config{'dbuser'}, $Config{'dbpass'});
 
+	# Grab config tokens shared with the console and not in the .conf
+
+	pandora_get_sharedconfig (\%Config, $DBH);
+
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 
 	# Load servers
@@ -119,12 +123,32 @@ sub pandora_restart () {
 ########################################################################################
 sub pandora_crash () {
 
-	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
-	#print_message (\%Config, '[E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
-	
+	my $full_error = "";
+	my $show_error = 0;
+
+	# Avoid show messages about enterprise library loading failurem, VERY 
+	# confussing.
+
 	foreach my $error_line (@_) {
-		logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
-		#print_message (\%Config, "[E] $error_line \n", 0);
+		if ($error_line !~ m/Enterprise/i){
+			logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
+		} else {
+			$show_error = 1;
+		}
+		$full_error .= $error_line;
+	}
+
+	if ($show_error == 1){
+		logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' unhandled error.', 1);
+	}
+
+	# It's interesting show by console problems, not only in logs. This helps
+	# to solve stupid problems like Database credential problems for example
+
+	if ($full_error !~ m/Enterprise/i) {
+		print_message (\%Config, ' [E] Unhandled error in "' . $Config{'servername'} . "\". See more information in logfiles at '/var/log/pandora' \n", 0);
+		print_message (\%Config, " Error description:\n", 0);
+		print_message (\%Config, $full_error, 0);
 	}
 }
 

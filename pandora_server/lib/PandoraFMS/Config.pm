@@ -33,11 +33,12 @@ our @EXPORT = qw(
 	pandora_init
 	pandora_load_config
 	pandora_start_log
+	pandora_get_sharedconfig
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "3.0";
-my $pandora_build = "091216";
+my $pandora_version = "3.1-dev";
+my $pandora_build = "100209";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -121,6 +122,41 @@ sub pandora_init {
 }
 
 ##########################################################################
+# Read some config tokens from database set by the console
+##########################################################################
+
+sub pandora_get_sharedconfig ($$) {
+	my $pa_config = $_[0];
+	my $dbh = $_[1];
+
+	my $temp;
+
+	# Agentaccess option
+
+	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'agentaccess'");
+	if (defined($temp)) {
+		$pa_config->{"agentaccess"} = $temp;
+	}
+
+	# Realtimestats 0 disabled, 1 enabled.
+	# Master servers will generate all the information (global tactical stats).
+	# and each server will generate it's own server stats (lag, etc).
+
+	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'realtimestats'");
+	if (defined($temp)) {
+		$pa_config->{"realtimestats"} = $temp;
+	}
+
+	# Stats_interval option
+
+	$temp = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'stats_interval'");
+	if (defined($temp)) {
+		$pa_config->{"stats_interval"} = $temp;
+	}
+
+}
+
+##########################################################################
 # Read external configuration file
 ##########################################################################
 
@@ -187,7 +223,6 @@ sub pandora_load_config {
 	$pa_config->{"web_threads"} = 1; # 3.0
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
-
 	$pa_config->{"max_queue_files"} = 250; 
 
 	# Internal MTA for alerts, each server need its own config.
@@ -223,9 +258,6 @@ sub pandora_load_config {
 	$pa_config->{'mcast_change_group'} = '';
 	$pa_config->{'mcast_change_port'} = '';
 
-	# Update tagent_access
-	$pa_config->{"agentaccess"} = 1; 
-
 	# Ignore the timestamp in the XML and use the file timestamp instead
 	$pa_config->{'use_xml_timestamp'} = 0; 
 
@@ -237,6 +269,17 @@ sub pandora_load_config {
 
 	# Restart server on error
 	$pa_config->{'restart'} = 0; 
+
+
+	# -------------------------------------------------------------------------
+	# This values are not stored in .conf files. 
+	# This values should be stored in database, not in .conf files!
+	# Default values are set here because if they are not present in config DB
+	# don't get an error later.
+	$pa_config->{"realtimestats"} = 0;
+	$pa_config->{"stats_interval"} = 300;
+	$pa_config->{"agentaccess"} = 1; 
+	# -------------------------------------------------------------------------
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -496,9 +539,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^max_queue_files\s([0-9]*)/i) {
 			$pa_config->{'max_queue_files'}= clean_blank($1);
-		}
-		elsif ($parametro =~ m/^agentaccess\s([0-1])/i) {
-			$pa_config->{'agentaccess'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^use_xml_timestamp\s([0-1])/i) {
 			$pa_config->{'use_xml_timestamp'} = clean_blank($1);

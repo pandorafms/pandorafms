@@ -219,7 +219,7 @@ sub pandora_process_alert ($$$$$$$) {
 		pandora_event ($pa_config, "Alert ceased (" .
 					$alert->{'name'} . ")", $agent->{'id_grupo'},
 					$agent->{'id_agente'}, $alert->{'priority'}, $id, $alert->{'id_agent_module'}, 
-					"alert_ceased", $dbh);
+					"alert_ceased", 0, $dbh);
 
 		return;
 	}
@@ -416,7 +416,7 @@ sub pandora_execute_alert ($$$$$$$) {
 
 	pandora_event ($pa_config, "Alert $text (" . $alert->{'name'} . ") assigned to (". $module->{'nombre'} .")",
 			$agent->{'id_grupo'}, $agent->{'id_agente'}, $alert->{'priority'}, (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : 0,
-			$alert->{'id_agent_module'}, $event, $dbh);
+			$alert->{'id_agent_module'}, $event, 0, $dbh);
 }
 
 ##########################################################################
@@ -585,7 +585,7 @@ sub pandora_process_module ($$$$$$$$$) {
 					($agent_status->{'status_changes'} + 1, $agent_status->{'last_status'});
 
 	# Generate events
-	if ($status_changes == $module->{'min_ff_event'} + 1) {
+	if ($status_changes == $module->{'min_ff_event'}) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $status, $last_status, $dbh);
 	}
 	
@@ -629,7 +629,7 @@ sub pandora_planned_downtime ($$) {
 		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 1 WHERE id = ?', 	$downtime->{'id'});
-		pandora_event ($pa_config, "Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
+		pandora_event ($pa_config, "Server ".$pa_config->{'servername'}." started planned downtime: ".$downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 		
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 		
@@ -646,7 +646,7 @@ sub pandora_planned_downtime ($$) {
 
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 0 WHERE id = ?', $downtime->{'id'});
 
-		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'description'}, 0, 0, 1, 0, 0, 'system', $dbh);
+		pandora_event ($pa_config, 'Server ' . $pa_config->{'servername'} . ' stopped planned downtime: ' . $downtime->{'description'}, 0, 0, 1, 0, 0, 'system', 0, $dbh);
 
 		my @downtime_agents = get_db_rows($dbh, 'SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ' . $downtime->{'id'});
 
@@ -916,7 +916,7 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	# FIXME: use $group_id instead of $pa_config->{'autocreate_group'} ????
-	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', $dbh);
+	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
 }
 
@@ -925,7 +925,7 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 ##########################################################################
 sub pandora_event (%$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
-		$id_alert_am, $id_agentmodule, $event_type, $dbh) = @_;
+		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh) = @_;
 
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
 
@@ -934,7 +934,7 @@ sub pandora_event (%$$$$$$$$) {
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 
 	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
-		VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
 }
 
 ##########################################################################
@@ -1094,7 +1094,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 
 			# Generate an event
 			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
-					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', $dbh);
+					0, 0, $alert->{'priority'}, 0, 0, 'alert_fired', 0, $dbh);
 
 			# Update alert status
 			db_do ($dbh, 'UPDATE talert_snmp SET times_fired = ?, last_fired = ?, internal_counter = ? WHERE id_as = ?',
@@ -1279,12 +1279,29 @@ sub get_module_status ($$) {
 }
 
 ##########################################################################
+# Validate event.
+# This validates all events pending to ACK for the same id_agent_module
+##########################################################################
+sub pandora_validate_event (%$$) {
+	my ($pa_config, $id_agentmodule, $dbh) = @_;
+	if (!defined($id_agentmodule)){
+		return;
+	}
+
+	logger($pa_config, "Validating events for id_agentmodule #$id_agentmodule", 10);
+	db_do ($dbh, 'UPDATE tevento SET estado = 1 WHERE estado = 0 AND id_agentmodule = '.$id_agentmodule);
+}
+
+##########################################################################
 # Generates an event according to the change of status of a module.
 ##########################################################################
 sub generate_status_event ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $status, $last_status, $dbh) = @_;
 	my ($event_type, $severity);
 	my $description = "Module " . $module->{'nombre'} . " ($data) is ";
+
+	# Mark as "validated" any previous event for this module
+	pandora_validate_event ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 
 	# Normal
 	if ($status == 0) {
@@ -1320,8 +1337,15 @@ sub generate_status_event ($$$$$$$) {
 	}
 
 	# Generate the event
-	pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, $dbh);
+	if ($status != 0){
+		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh);
+	} else { 
+		# Self validate this event if has "normal" status
+		pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+	               $severity, 0, $module->{'id_agente_modulo'}, $event_type, 1, $dbh);
+	}
+
 }
 
 ##########################################################################

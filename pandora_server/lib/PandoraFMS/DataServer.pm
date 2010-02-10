@@ -144,7 +144,7 @@ sub data_consumer ($$) {
 	}
 
 	rename($file_name, $file_name . '_BADXML');
-    pandora_event ($pa_config, "Unable to process XML data file ($file_name)", 0, 0, 0, 0, 0, 'error', $dbh);
+    pandora_event ($pa_config, "Unable to process XML data file ($file_name)", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 }
 
 ###############################################################################

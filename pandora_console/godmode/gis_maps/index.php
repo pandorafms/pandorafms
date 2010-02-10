@@ -78,11 +78,11 @@ if ($maps !== false) {
 		if ($map['default_map'])
 			$checked = true;
 		
-		$table->data[] = array('<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
+		$table->data[] = array('<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
 			print_group_icon ($map['group_id'], true),
-			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>',
+			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>',
 			print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true),
-			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;id_map='.$map['id_tgis_map'].'&amp;action=delete_map">' . print_image ("images/cross.png", true).'</a>'); 
+			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map">' . print_image ("images/cross.png", true).'</a>'); 
 	}
 }
 

@@ -49,12 +49,14 @@ push_table_simple ($data, 'target_ip');
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
+$snmp_versions['3'] = 'v. 3';
+
 $data = array ();
 $data[0] = __('SNMP community');
 $data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
 
 $data[2] = _('SNMP version');
-$snmp_version = 1;
+
 if ($id_module_type >= 15 && $id_module_type <= 18) {
 	$data[3] = print_select ($snmp_versions, 'snmp_version', $snmp_version,
 		'', '', '', true, false, false, '', $disabledBecauseInPolicy);

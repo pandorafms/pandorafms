@@ -444,18 +444,40 @@ if ($update_module || $create_module) {
 	$tcp_send = (string) get_parameter ('tcp_send');
 	$tcp_rcv = (string) get_parameter ('tcp_rcv');
 	$tcp_port = (int) get_parameter ('tcp_port');
+
+	$custom_string_1 = "";
+	$custom_string_2 = "";
+	$custom_string_3 = "";
+	$custom_integer_1 = "";
+	$custom_integer_2 = "";
+
 	$snmp_community = (string) get_parameter ('snmp_community');
 	$snmp_oid = (string) get_parameter ('snmp_oid');
+
 	if (empty ($snmp_oid)) {
 		/* The user did not set any OID manually but did a SNMP walk */
 		$snmp_oid = (string) get_parameter ('select_snmp_oid');
 	}
+
+	if ($id_module_type >= 15 && $id_module_type <= 18){
+		// New support for snmp v3
+		$tcp_send = (string) get_parameter ('snmp_version');
+		$plugin_user = (string) get_parameter ('snmp3_auth_user');
+		$plugin_pass = (string) get_parameter ('snmp3_auth_pass');
+		$plugin_parameter = (string) get_parameter ('snmp3_auth_method');
+
+		$custom_string_1  = (string) get_parameter ('snmp3_privacy_method');
+		$custom_string_2 = (string) get_parameter ('snmp3_privacy_pass');
+		$custom_string_3 = (string) get_parameter ('snmp3_security_level');
+	}
+
 	$ip_target = (string) get_parameter ('ip_target');
 	$plugin_user = (string) get_parameter ('plugin_user');
 	if (get_parameter('id_module_component_type') == 7)
 		$plugin_pass = (int) get_parameter ('plugin_pass');
 	else
 		$plugin_pass = (string) get_parameter ('plugin_pass');
+
 	$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
@@ -499,6 +521,11 @@ if ($update_module) {
 			'max_warning' => $max_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'custom_string_1' => $custom_string_1,
+			'custom_string_2' => $custom_string_2,
+			'custom_string_3' => $custom_string_3,
+			'custom_integer_1' => $custom_integer_1,
+			'custom_integer_2' => $custom_integer_2,
 			'min_ff_event' => $ff_event));
 	
 	if ($result === false) {
@@ -556,6 +583,11 @@ if ($create_module) {
 			'max_warning' => $max_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
+			'custom_string_1' => $custom_string_1,
+			'custom_string_2' => $custom_string_2,
+			'custom_string_3' => $custom_string_3,
+			'custom_integer_1' => $custom_integer_1,
+			'custom_integer_2' => $custom_integer_2,
 			'min_ff_event' => $ff_event
 		));
 	

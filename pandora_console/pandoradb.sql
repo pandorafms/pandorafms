@@ -70,12 +70,11 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
-  `id_agente_datos` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
   `utimestamp` bigint(20) default '0',
-  PRIMARY KEY  (`id_agente_datos`),
-  KEY `data_index1` (`id_agente_modulo`)
+  KEY `data_index1` (`id_agente_modulo`),
+  KEY `idx_utimestamp` (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
@@ -89,12 +88,11 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
-  `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` text NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
-  PRIMARY KEY  (`id_tagente_datos_string`),
-  KEY `data_string_index_1` (`id_agente_modulo`)
+  KEY `data_string_index_1` (`id_agente_modulo`),
+  KEY `idx_utimestamp` (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- delete "cambio" not used anymore
@@ -114,7 +112,8 @@ CREATE TABLE `tagente_estado` (
   `last_status` tinyint(4) default 0,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
-  KEY `status_index_2` (`id_agente_modulo`,`estado`),
+  KEY `idx_agente` (`id_agente`),
+  KEY `idx_status` (`estado`),
   KEY `current_interval` (`current_interval`),
   KEY `running_by` (`running_by`),
   KEY `last_execution_try` (`last_execution_try`)
@@ -166,6 +165,11 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `max_critical` double(18,2) default 0,
   `min_ff_event` int(4) unsigned default '0',
   `delete_pending` int(1) unsigned default 0,
+  `custom_string_1` text default '',
+  `custom_string_2` text default '',
+  `custom_string_3` text default '',
+  `custom_integer_1` int(10) default 0,
+  `custom_integer_2` int(10) default 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -176,11 +180,10 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- snmp_oid is also used for WMI query
 
 CREATE TABLE IF NOT EXISTS `tagent_access` (
-  `id_ac` bigint(20) unsigned NOT NULL auto_increment,
   `id_agent` int(10) unsigned NOT NULL default '0',
   `utimestamp` bigint(20) NOT NULL default '0',
-  PRIMARY KEY  (`id_ac`),
-  KEY `agent_index` (`id_agent`)
+  KEY `agent_index` (`id_agent`),
+  KEY `idx_utimestamp` (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -257,6 +260,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `priority` tinyint(4) default '0',
   `id_group` mediumint(8) unsigned NULL default 0,
   PRIMARY KEY  (`id`),
+  KEY `idx_template_action` (`id_alert_action`),
   FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -273,6 +277,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `priority` tinyint(4) default '0',
   `force_execution` tinyint(1) default '0',
   PRIMARY KEY (`id`),
+  KEY `idx_template_module` (`id_agent_module`),
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
@@ -398,7 +403,8 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `user_comment` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
-  KEY `indice_2` (`utimestamp`,`id_evento`)
+  KEY `indice_2` (`utimestamp`,`id_evento`),
+  KEY `idx_agentmodule` (`id_agentmodule`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Criticity: 0 - Maintance (grey)
@@ -598,6 +604,10 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `server_type` tinyint(3) unsigned NOT NULL default '0',
   `queued_modules` int(5) unsigned NOT NULL default '0',
   `threads` int(5) unsigned NOT NULL default '0',
+  `lag_time` int(11) NOT NULL default 0,
+  `lag_modules` int(11) NOT NULL default 0,
+  `total_modules_running` int(11) NOT NULL default 0,
+  `my_modules` int(11) NOT NULL default 0,
   PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
@@ -670,6 +680,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `phone` varchar(100) default NULL,
   `is_admin` tinyint(1) unsigned NOT NULL default '0',
   `language` varchar(10) default NULL,
+  `timezone` varchar(50) default '',
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -993,4 +1004,27 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';
+
+-- -----------------------------------------------------
+-- Table `tgroup_stat`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tgroup_stat` (
+  `id_group` int(10) unsigned NOT NULL default '0',
+  `modules` int(10) unsigned NOT NULL default '0',
+  `normal` int(10) unsigned NOT NULL default '0',
+  `critical` int(10) unsigned NOT NULL default '0',
+  `warning` int(10) unsigned NOT NULL default '0',
+  `unknown` int(10) unsigned NOT NULL default '0',
+  `non-init` int(10) unsigned NOT NULL default '0',
+  `alerts` int(10) unsigned NOT NULL default '0',
+  `alerts_fired` int(10) unsigned NOT NULL default '0',
+  `agents` int(10) unsigned NOT NULL default '0',
+  `agents_uknown` int(10) unsigned NOT NULL default '0',
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  PRIMARY KEY  (`id_group`)
+) ENGINE=InnoDB 
+COMMENT = 'Table to store global system stats per group' 
+DEFAULT CHARSET=utf8;
+
 

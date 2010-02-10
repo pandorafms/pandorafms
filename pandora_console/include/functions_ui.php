@@ -603,7 +603,9 @@ function require_javascript_file ($name, $path = 'include/javascript/') {
 	/* We checks two paths because it may fails on enterprise */
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;
+	
 	$config['js'][$name] = $filename;
+	
 	return true;
 }
 

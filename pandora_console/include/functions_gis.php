@@ -610,19 +610,31 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
  * @return A div tag with the map and the agent and the history path if asked.
  */
 function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history_time = 86400) {
+	$defaultMap = get_db_all_rows_sql("
+		SELECT t1.*, t3.conection_name, t3.connection_type, t3.conection_data, t3.num_zoom_levels
+		FROM tgis_map AS t1, 
+			tgis_map_has_tgis_map_connection AS t2, 
+			tgis_map_connection AS t3
+		WHERE t1.default_map = 1 AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
+			AND t2.default_map_connection = 1
+			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
+	$defaultMap = $defaultMap[0];
 	
-	//$default_map_conf = getConectionConf($config['default_map']);
-	$default_map_conf = getConectionConf(1);
-	$baselayers[0]['url']= 'http://tile.openstreetmap.org/${z}/${x}/${y}.png';
-	$baselayers[0]['name'] = "OSM";
-	$baselayers[0]['typeBaseLayer'] = "OSM";
 	$agent_position = get_agent_last_coords($agent_id);
 	$agent_name = $agent_position['nombre'];
-	printMap($agent_name."_agent_map", $default_map_conf['default_zoom_level'] , $default_map_conf['num_zoom_levels'],$agent_position['last_latitude'], $agent_position['last_longitude'], $baselayers, $controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap') );
-	//printMap($agent_id."_agent_map", 16 , 19, 40.42056, -3.70818 -3.708187, $baselayers, $controls = null) {
-
+	
+	$conectionData = json_decode($defaultMap['conection_data'], true);
+	$baselayers[0]['url'] = $conectionData['url'];
+	$baselayers[0]['name'] = $defaultMap['conection_name'];
+	$baselayers[0]['typeBaseLayer'] = $conectionData['type'];
+	$controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap');
+	
+	printMap($agent_name."_agent_map", $defaultMap['zoom_level'],
+		$defaultMap['num_zoom_levels'], $defaultMap['initial_latitude'],
+		$defaultMap['initial_longitude'], $baselayers, $controls);
+		
 	makeLayer("layer_for_agent_".$agent_name);
-
+	
 	$agent_icon = get_agent_icon_map($agent_id);
 		/* If show_history is true, show the path of the agent */
 	if ($show_history) {
@@ -630,6 +642,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $history
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon, 20, 20, $agent_id, 'point_agent_info');
+		
 }
 
 /**

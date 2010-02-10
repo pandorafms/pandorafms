@@ -158,7 +158,7 @@ sub process_xml_data ($$$$$) {
 	    $data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
 
 	# Timezone offset must be an integer beween -12 and +12
-	if ($timezone_offset !~ /[-+]?[0-9,11,12]/) {
+	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
 		$timezone_offset = 0; # Default value
 	}
 
@@ -167,15 +167,20 @@ sub process_xml_data ($$$$$) {
 	# Get GIS information
 	my ($longitude, $latitude, $altitude) = (
 	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'});
-	# TODO: validate that the positional parameters and timezone are defined.
 
 	if ($pa_config->{'activate_gis'}) {
 
 		# Validate the GIS informtation
+		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
+			$altitude = 0; # Default value
+		}
 
-		# If position data are not valid should be ignored
-		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $altitude !~ /[-+]?[0-9]*\.?[0-9]+/) {
+		# If position data (at least longitude and latitde)  are not valid should be ignored
+		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || !defined($longitude) || !defined($latitude)) {
 			$valid_position_data = 0;	
+			$longitude = '';
+			$latitude = '';
+			$altitude='';
 		}
 			
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude", 10);

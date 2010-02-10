@@ -1,3 +1,12 @@
+
+2010-02-09  Sancho Lerena <slerena@artica.es>
+
+	* unix/pandora_agent_daemon
+	* unix/pandora_agent.spec
+	* linux/pandora_agent_daemon
+	* linux/pandora_agent.spec: Fixed some compatibility issues with
+	CentOS LSB and RPM package.
+
 2010-01-12	Pablo de la Concepcipón <pablo.concepcion@artica.es>
 	
 	* unix/Linux/pandora_agent.conf, unix/AIX/pandora_agent.conf,

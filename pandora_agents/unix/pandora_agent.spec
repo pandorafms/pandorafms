@@ -84,11 +84,11 @@ if [ ! -e /etc/pandora/plugins ]; then
 fi
 
 mkdir -p /var/spool/pandora/data_out
-chkconfig -s pandora_agent_daemon on
+chkconfig pandora_agent_daemon on
 
 %preun
 
-chkconfig -d pandora_agent_daemon 
+chkconfig --del pandora_agent_daemon 
 /etc/init.d/pandora_agent_daemon stop
 rm /etc/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora

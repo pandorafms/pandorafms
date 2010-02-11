@@ -79,7 +79,14 @@ fi
 uninstall () {
 	echo "Removing Pandora FMS Agent..."
 	rm -Rf $PANDORA_BIN
-	rm -Rf $PANDORA_TEMP
+	
+	#Test if exist Pandora Server in this machine
+	if [ -d $PANDORA_TEMP/data_in ]
+	then
+		echo "You have a Pandora Server in this machine. Then don't delete "$PANDORA_TEMP
+	else
+		rm -Rf $PANDORA_TEMP
+	fi
 	rm -Rf $PANDORA_CFG/pandora_agent.conf
 	
 	rm -Rf /etc/init.d/pandora_agent_daemon 2> /dev/null

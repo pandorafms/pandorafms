@@ -470,15 +470,17 @@ if ($update_module || $create_module) {
 		$custom_string_2 = (string) get_parameter ('snmp3_privacy_pass');
 		$custom_string_3 = (string) get_parameter ('snmp3_security_level');
 	}
-
+	else {
+		$plugin_user = (string) get_parameter ('plugin_user');
+		if (get_parameter('id_module_component_type') == 7)
+			$plugin_pass = (int) get_parameter ('plugin_pass');
+		else
+			$plugin_pass = (string) get_parameter ('plugin_pass');
+			
+		$plugin_parameter = (string) get_parameter ('plugin_parameter');
+	}
+		
 	$ip_target = (string) get_parameter ('ip_target');
-	$plugin_user = (string) get_parameter ('plugin_user');
-	if (get_parameter('id_module_component_type') == 7)
-		$plugin_pass = (int) get_parameter ('plugin_pass');
-	else
-		$plugin_pass = (string) get_parameter ('plugin_pass');
-
-	$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
 	$min_warning = (float) get_parameter ('min_warning');
@@ -486,6 +488,11 @@ if ($update_module || $create_module) {
 	$min_critical = (float) get_parameter ('min_critical');
 	$max_critical = (float) get_parameter ('max_critical');
 	$ff_event = (int) get_parameter ('ff_event');
+	
+	$active_snmp_v3 = get_parameter('active_snmp_v3');
+	if ($active_snmp_v3) {
+	//
+	}
 }
 
 // MODULE UPDATE

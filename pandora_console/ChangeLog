@@ -1,4 +1,4 @@
-2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+2010-02-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: clean source code, delete javascript debug
 	info messages for firebug.

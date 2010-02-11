@@ -1,8 +1,14 @@
+2010-02-12  Raúl Mateos <raulofpandora@gmail.com>
+
+	* include/config_process.php: Fix date. Updated build.
+
+	* Changelog: Small fixes.
+
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
-	* include/help/es/help_alert_macros.php: Updated.macro help.
+	* include/help/es/help_alert_macros.php: Updated macro help.
 
-	* nclude/config_process.php: Updated build better  Better log management.
+	* include/config_process.php: Updated build. Better log management.
 
 	* include/functions_fsgraph.php: removed a few blank lines.
 

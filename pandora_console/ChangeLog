@@ -1,3 +1,12 @@
+2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: clean source code, delete javascript debug
+	info messages for firebug.
+
+	* godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/configurar_agente.php: add support for SMNP ver3 in the
+	forms to add or edit "Network module".
+
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
  	* godmode/db/db_main.php: Added new metrics about DB usage. Added

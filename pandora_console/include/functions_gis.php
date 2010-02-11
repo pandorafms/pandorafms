@@ -195,7 +195,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 		var refreshAjaxIntervalSeconds = 1000;
 		var idIntervalAjax = null;
 
-		function searchPointAgentById(id) {console.log(id);
+		function searchPointAgentById(id) {
 			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
 				layer = map.layers[layerIndex];
 
@@ -243,8 +243,6 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 				        				for (var pointIndex in listPoints) {
 				        					if (isInt(pointIndex)) {
 					        					feature = searchPointAgentById(idAgent);
-
-					        					console.log(listPoints[pointIndex]);
 	
 					        					var point = new OpenLayers.LonLat(listPoints[pointIndex].longitude, listPoints[pointIndex].latitude)
 					        					.transform(map.displayProjection, map.getProjectionObject());

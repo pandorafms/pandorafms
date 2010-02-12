@@ -1,5 +1,16 @@
 2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb.sql: add new fields to tnetwork_component for support the
+	snmp ver 3.
+	
+	* godmode/modules/manage_network_components_form.php,
+	godmode/modules/manage_network_components_form_network.php
+	godmode/modules/manage_network_components.php: add support to snmp ver 3,
+	add the fields for this use, and now can create and edit network
+	component with snmp ver 3.
+
+2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/modules/manage_network_components_form.php: clean source code and
 	set correct ident.
 

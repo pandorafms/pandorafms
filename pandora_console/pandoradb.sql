@@ -505,6 +505,11 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `min_critical` double(18,2) default 0,
   `max_critical` double(18,2) default 0,
   `min_ff_event` int(4) unsigned default '0',
+  `custom_string_1` text default '',
+  `custom_string_2` text default '',
+  `custom_string_3` text default '',
+  `custom_integer_1` int(10) default 0,
+  `custom_integer_2` int(10) default 0,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

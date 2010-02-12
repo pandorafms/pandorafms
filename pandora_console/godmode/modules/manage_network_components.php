@@ -54,6 +54,14 @@ $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
 $id = (int) get_parameter ('id');
 
+$snmp_version = (string) get_parameter('snmp_version');
+$snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
+$snmp3_auth_pass = (string) get_parameter('snmp3_auth_pass');
+$snmp3_auth_method  = (string) get_parameter('snmp3_auth_method');
+$snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');
+$snmp3_privacy_pass = (string) get_parameter('snmp3_privacy_pass');
+$snmp3_security_level = (string) get_parameter('snmp3_security_level');
+
 $create_component = (bool) get_parameter ('create_component');
 $update_component = (bool) get_parameter ('update_component');
 $delete_component = (bool) get_parameter ('delete_component');
@@ -78,6 +86,20 @@ if ($duplicate_network_component) {
 }
 
 if ($create_component) {
+	$custom_string_1 = '';
+	$custom_string_2 = '';
+	$custom_string_3 = '';
+	if ($type >= 15 && $type <= 18) {
+		// New support for snmp v3
+		$tcp_send = $snmp_version;
+		$plugin_user = $snmp3_auth_user;
+		$plugin_pass = $snmp3_auth_pass;
+		$plugin_parameter = $snmp3_auth_method;
+		$custom_string_1 = $snmp3_privacy_method;
+		$custom_string_2 = $snmp3_privacy_pass;
+		$custom_string_3 = $snmp3_security_level;
+	}
+	
 	$id = create_network_component ($name, $type, $id_group, 
 		array ('description' => $description,
 			'module_interval' => $module_interval,
@@ -100,7 +122,10 @@ if ($create_component) {
 			'max_warning' => $max_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
-			'min_ff_event' => $ff_event));
+			'min_ff_event' => $ff_event,
+			'custom_string_1' => $custom_string_1,
+			'custom_string_2' => $custom_string_2,
+			'custom_string_3' => $custom_string_3));
 	if ($id === false) {
 		print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
@@ -112,6 +137,20 @@ if ($create_component) {
 
 if ($update_component) {
 	$id = (int) get_parameter ('id');
+	
+	$custom_string_1 = '';
+	$custom_string_2 = '';
+	$custom_string_3 = '';
+	if ($type >= 15 && $type <= 18) {
+		// New support for snmp v3
+		$tcp_send = $snmp_version;
+		$plugin_user = $snmp3_auth_user;
+		$plugin_pass = $snmp3_auth_pass;
+		$plugin_parameter = $snmp3_auth_method;
+		$custom_string_1 = $snmp3_privacy_method;
+		$custom_string_2 = $snmp3_privacy_pass;
+		$custom_string_3 = $snmp3_security_level;
+	}
 	
 	$result = update_network_component ($id,
 		array ('type' => $type,
@@ -138,7 +177,10 @@ if ($update_component) {
 			'max_warning' => $max_warning,
 			'min_critical' => $min_critical,
 			'max_critical' => $max_critical,
-			'min_ff_event' => $ff_event));
+			'min_ff_event' => $ff_event,
+			'custom_string_1' => $custom_string_1,
+			'custom_string_2' => $custom_string_2,
+			'custom_string_3' => $custom_string_3));
 	if ($result === false) {
 		print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');

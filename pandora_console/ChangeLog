@@ -1,3 +1,11 @@
+2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/modules/manage_network_components_form.php: clean source code and
+	set correct ident.
+
+	*godmode/modules/manage_network_components_form_network.php: remove the end
+	of source code that it's unused.
+
 2010-02-11 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: clean source code, delete javascript debug

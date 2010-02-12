@@ -94,15 +94,18 @@ if ($id_component_type == 6) {
 	$categories = array (0, 1, 2);
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_wmi.php");
-} else if ($id_component_type == 4) {
+}
+else if ($id_component_type == 4) {
 	$categories = array (0, 1, 2);
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_plugin.php");
-} else if ($id_component_type == 2) {
+}
+else if ($id_component_type == 2) {
 	$categories = array (3, 4, 5);
 	require ("godmode/modules/manage_network_components_form_common.php");
 	require ("godmode/modules/manage_network_components_form_network.php");
-} else {
+}
+else {
 	return;
 }
 

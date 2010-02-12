@@ -155,6 +155,23 @@ function configure_modules_form () {
 				$("#text-ff_threshold").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#component_loading").hide ();
 				$("#id_module_type").change ();
+				
+				if (data["type"] >= 15 && data["type"] <= 18) {
+					$("#snmp_version option[value="+data["tcp_send"]+"]").select(1);
+					$("#text-snmp3_auth_user").val(data["plugin_user"]);
+					$("#text-snmp3_auth_pass").val(data["plugin_pass"]);
+					$("#snmp3_auth_method option[value="+data["plugin_parameter"]+"]").select(1);
+					$("#snmp3_privacy_method option[value="+data["custom_string_1"]+"]").select(1);
+					$("#text-snmp3_privacy_pass").val(data["custom_string_2"]);
+					$("#snmp3_security_level option[value="+data["custom_string_3"]+"]").select(1);
+					
+					if (data["tcp_send"] == "3") {
+						$("#simple-field_snmpv3_row1").attr("style", "");
+						$("#simple-field_snmpv3_row2").attr("style", "");
+						$("#simple-field_snmpv3_row3").attr("style", "");
+						$("input[name=active_snmp_v3]").val(1);
+					}
+				}
 			},
 			"json"
 		);

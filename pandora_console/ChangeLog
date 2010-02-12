@@ -1,5 +1,10 @@
 2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora_modules.js: add support to snmp ver3 in the
+	load network component.
+
+2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.sql: add new fields to tnetwork_component for support the
 	snmp ver 3.
 	

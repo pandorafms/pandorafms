@@ -4,7 +4,7 @@
 # See http://www.openideas.info/wiki for protocol description.
 # Tentacle have IANA assigned port tpc/41121 as official port.
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,8 +17,39 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
-
 package tentacle::server;
+=head1 NAME
+
+tentacle_server - Tentacle Server
+
+=head1 VERSION
+
+Version 0.2.1
+
+=head1 USAGE
+
+tentacle_server B<< -s F<storage_directory> >> [I<options>]
+
+=head1 DESCRIPTION
+
+B<tentacle_server(1)> is a B<client/server> file transfer protocol that aims to be:
+
+=over
+
+=item    * Secure by design.
+
+=item    * Easy to use.
+
+=item    * Versatile and cross-platform. 
+
+=back 
+
+Tentacle was created to replace more complex tools like SCP and FTP for simple file transfer/retrieval, and switch from authentication mechanisms like .netrc, interactive logins and SSH keys to X.509 certificates. Simple password authentication over a SSL secured connection is supported too.
+
+The client and server (B<TCP port 41121>) are designed to be run from the command line or called from a shell script, and B<no configuration files are needed>. 
+
+=cut
+
 
 use strict;
 use warnings;
@@ -940,3 +971,88 @@ while (1) {
 	accept_connection ();
 }
 
+__END__
+
+=head1 REQUIRED ARGUMENTES
+
+=over 
+
+=item B<< -s F<storage_directory> >>	Root directory to store the files received by the server
+
+=back 
+
+=head1 OPTIONS
+
+=over
+
+=item 	I<-a> 			ip_address	Address to listen on (default 0.0.0.0).
+
+=item	I<-c> number		Maximum number of simultaneous connections (default 10).
+
+=item	I<-d>			Run as daemon.
+
+=item	I<-e> cert		OpenSSL certificate file. Enables SSL.
+
+=item	I<-f> ca_cert	Verify that the peer certificate is signed by a ca.
+
+=item	I<-h>			Show help.
+
+=item	I<-i>			Filters.
+
+=item	I<-k> key		OpenSSL private key file.
+
+=item	I<-m> size		Maximum file size in bytes (default 2000000b).
+
+=item	I<-o>			Enable file overwrite.
+
+=item	I<-p> port		Port to listen on (default 41121).
+
+=item	I<-q>			Quiet. Do now print error messages.
+
+=item	I<-r> number		Number of retries for network opertions (default 3).
+
+=item	I<-t> time		Time-out for network operations in seconds (default 1s).
+
+=item	I<-v>			Be verbose.
+
+=item	I<-w>			Prompt for OpenSSL private key password.
+
+=item	I<-x> pwd		Server password.
+
+=back
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+Tentacle doesn't use any configurationf files, all the configuration is done by the options passed when it's started.
+
+=head1 DEPENDENCIES
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<Thread::Semaphore>, L<POSIX> 
+
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<Thread::Semaphore>, L<POSIX> 
+
+Protocol description and more info at: L<< http://openideas.info/wiki/index.php?title=Tentacle >>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut
+ 

@@ -1,3 +1,11 @@
+2010-02-14	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* bin/tentacle_server: Added first version of POD documentation, there
+	are still room for improvement (TODO: add the example section) 
+
+	* man/man1/tentacle_server.1: ManPage generated from bin/tentacle_server
+	using pod2man.
+
 2010-02-10	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Validation of positiona parameters, check

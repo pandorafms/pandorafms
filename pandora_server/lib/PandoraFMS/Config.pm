@@ -223,6 +223,10 @@ sub pandora_load_config {
 	$pa_config->{"web_threads"} = 1; # 3.0
 	$pa_config->{"activate_gis"} = 0; # 3.1
 	$pa_config->{"location_error"} = 50; # 3.1
+	$pa_config->{"recon_reverse_geolocation_mode"} = 'disabled'; # 3.1
+	$pa_config->{"recon_reverse_geolocation_file"} = '/usr/local/share/GeoIP/GeoIPCity.dat'; # 3.1
+	$pa_config->{"recon_location_scatter_radius"} = 50; # 3.1
+
 	$pa_config->{"max_queue_files"} = 250; 
 
 	# Internal MTA for alerts, each server need its own config.
@@ -557,6 +561,15 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^location_error\s+(\d+)/i) {
 			$pa_config->{'location_error'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^recon_reverse_geolocation_mode\s+(\w+)/i) {
+			$pa_config->{'recon_reverse_geolocation_mode'} = clean_blank($1);
+		} #FIXME: Find a better regexp to validate the path
+		elsif ($parametro =~ m/^recon_reverse_geolocation_file\s+(.*)/i) {
+			$pa_config->{'recon_reverse_geolocation_file'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^recon_location_scatter_radius\s+(\d+)/i) {
+			$pa_config->{'recon_location_scatter_radius'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

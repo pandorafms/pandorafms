@@ -1,3 +1,16 @@
+2010-02-15 Eric Ross <eric.ross.c@gmail.com>
+	First batch of changes to implement the new log4x data type.
+
+	Modified files to show the new data type:
+
+	* include/functions_html.php
+	* operation/agentes/estado_ultimopaquete.php
+	* operation/agentes/datos_agente.php
+	* operation/agentes/estado_monitores.php
+
+	* pandoradb.sql: New table
+	* pandoradb_data.sql: New data for new module type
+
 2010-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: in the function "saveMap" set the first map

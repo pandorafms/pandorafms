@@ -33,6 +33,7 @@ our @EXPORT = qw(
 		db_insert
 		get_agent_id
 		get_agent_name
+		get_module_name
 		get_db_rows
 		get_db_single_row
 		get_db_value
@@ -103,6 +104,16 @@ sub get_agent_name ($$) {
 	my ($dbh, $agent_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT nombre FROM tagente WHERE id_agente = ?", $agent_id);
+}
+
+##########################################################################
+## SUB get_module_name(module_id)
+## Return the module name, given "module_id"
+##########################################################################
+sub get_module_name ($$) {
+	my ($dbh, $module_id) = @_;
+	
+	return get_db_value ($dbh, "SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?", $module_id);
 }
 
 ##########################################################################
@@ -222,6 +233,8 @@ sub db_insert ($$;@) {
 ##########################################################################
 sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
+
+	#DBI->trace( 3, '/tmp/dbitrace.log' );
 
 	$dbh->do($query, undef, @values);
 }

@@ -73,8 +73,8 @@ our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not exe
 ##########################################################################
 # Generate alerts for a given module.
 ##########################################################################
-sub pandora_generate_alerts ($$$$$$$) {
-	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh) = @_;
+sub pandora_generate_alerts ($$$$$$$;$) {
+	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros) = @_;
 
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
@@ -93,7 +93,7 @@ sub pandora_generate_alerts ($$$$$$$) {
 				$utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
-					$alert, $rc, $dbh);
+		                       $alert, $rc, $dbh, $extraMacros);
 
 		# Evaluate compound alerts even if the alert status did not change in
 		# case the compound alert does not recover
@@ -196,8 +196,8 @@ sub pandora_evaluate_alert ($$$$$$$) {
 ##########################################################################
 # Process an alert given the status returned by pandora_evaluate_alert.
 ##########################################################################
-sub pandora_process_alert ($$$$$$$) {
-	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh) = @_;
+sub pandora_process_alert ($$$$$$$;$) {
+	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $extraMacros) = @_;
 	
 	logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 
@@ -231,7 +231,7 @@ sub pandora_process_alert ($$$$$$$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $extraMacros);
 		return;
 	}
 
@@ -272,7 +272,7 @@ sub pandora_process_alert ($$$$$$$) {
 		db_do($dbh, 'UPDATE  ' . $table . '  SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $extraMacros);
 		return;
 	}
 }
@@ -362,9 +362,9 @@ sub pandora_generate_compound_alerts ($$$$$$$$) {
 ##########################################################################
 # Execute the given alert.
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$) {
+sub pandora_execute_alert ($$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
-		$alert, $alert_mode, $dbh) = @_;
+	    $alert, $alert_mode, $dbh, $extraMacros) = @_;
 	
 	logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
 
@@ -408,7 +408,7 @@ sub pandora_execute_alert ($$$$$$$) {
 
 	# Execute actions
 	foreach my $action (@actions) {
-		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh);
+		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $extraMacros);
 	}
 
 	# Generate an event
@@ -422,9 +422,9 @@ sub pandora_execute_alert ($$$$$$$) {
 ##########################################################################
 # Execute the given action.
 ##########################################################################
-sub pandora_execute_action ($$$$$$$$) {
+sub pandora_execute_action ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $alert,
-		$alert_mode, $action, $module, $dbh) = @_;
+	    $alert_mode, $action, $module, $dbh, $extraMacros) = @_;
 
 	logger($pa_config, "Executing action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 10);
 
@@ -465,7 +465,12 @@ sub pandora_execute_action ($$$$$$$$) {
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
 				_id_alert_ => $alert->{'id'}
 				 );
-
+	
+	if (defined ($extraMacros)){
+		while ((my $macro, my $value) = each (%{$extraMacros})) {
+			$macros{$macro} = $value;
+		}
+	}
 
 	# User defined alerts
 	if ($action->{'internal'} == 0) {
@@ -523,10 +528,10 @@ sub pandora_access_update ($$$) {
 ##########################################################################
 # Process Pandora module.
 ##########################################################################
-sub pandora_process_module ($$$$$$$$$) {
-	my ($pa_config, $data, $agent, $module, $module_type,
-		$timestamp, $utimestamp, $server_id, $dbh) = @_;
-
+sub pandora_process_module ($$$$$$$$$;$) {
+	my ($pa_config, $dataObject, $agent, $module, $module_type,
+	    $timestamp, $utimestamp, $server_id, $dbh, $extraMacros) = @_;
+	
 	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 
 	# Get module type
@@ -550,9 +555,9 @@ sub pandora_process_module ($$$$$$$$$) {
 	}
 
 	# Process data
- 	my $processed_data = process_data ($data, $module, $module_type, $utimestamp, $dbh);
+ 	my $processed_data = process_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($processed_data)) {
-		logger($pa_config, "Received invalid data '" . $data . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		logger($pa_config, "Received invalid data '" . $dataObject . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
@@ -575,7 +580,7 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
-		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh);
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros);
 	}
 
 	#Update module status
@@ -609,8 +614,8 @@ sub pandora_process_module ($$$$$$$$$) {
 		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
 
 	# Save module data
-	if ($save == 1) {
-		save_module_data ($processed_data, $module, $module_type, $utimestamp, $dbh);
+	if ($module_type eq "log4x" || $save == 1) {
+		save_module_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
 	}
 }
 
@@ -750,7 +755,7 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 	# if the the flag update_gis_data is 0 the positional data is ignored.
 	if ($last_agent_info->{'update_gis_data'} == 0){
 		logger($pa_config, "Agent id $agent_id positional data ignored",10);
-        db_do($dbh, 'UPDATE tagente SET  intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, WHERE id_agente = ?',
+        db_do($dbh, 'UPDATE tagente SET  intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
         $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, $agent_id);
         return;
     }
@@ -828,7 +833,8 @@ sub pandora_module_keep_alive ($$$$$) {
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = 100', $id_agent);
 	return unless defined ($module);
 
-	pandora_process_module ($pa_config, 1, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
+	my %data = ('data' => 1);
+	pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time(), $server_id, $dbh);
 }
 
 ##########################################################################
@@ -923,7 +929,7 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 ##########################################################################
 # Generate an event.
 ##########################################################################
-sub pandora_event (%$$$$$$$$) {
+sub pandora_event ($$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh) = @_;
 
@@ -1000,9 +1006,10 @@ sub pandora_module_keep_alive_nd {
 					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 					AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP())');
 
+	my %data = ('data' => 0);
 	foreach my $module (@modules) {
 		logger($pa_config, "Updating keep_alive module for module '" . $module->{'nombre'} . "' agent ID " . $module->{'id_agente'} . " (agent without data).", 10);
-		pandora_process_module ($pa_config, 0, '', $module, 'keep_alive', '', time (), 0, $dbh);
+		pandora_process_module ($pa_config, \%data, '', $module, 'keep_alive', '', time (), 0, $dbh);
 	}
 }
 
@@ -1167,8 +1174,14 @@ sub subst_alert_macros ($$) {
 # Process module data.
 ##########################################################################
 sub process_data ($$$$$) {
-	my ($data, $module, $module_type, $utimestamp, $dbh) = @_;
+	my ($dataObject, $module, $module_type, $utimestamp, $dbh) = @_;
 
+	if ($module_type eq "log4x") {
+		return log4x_get_severity_num($dataObject);
+	}
+	
+	my $data = $dataObject->{'data'};
+	
 	# String data
 	if ($module_type =~ m/_string$/) {
 
@@ -1195,7 +1208,11 @@ sub process_data ($$$$$) {
 		$data = process_inc_data ($data, $module, $utimestamp, $dbh);
 		
 		# Not an error, no previous data
-		return 0 unless defined ($data);
+		if (!defined($data)){
+			$dataObject->{'data'} = 0;
+			return 0;
+		}
+		#return 0 unless defined ($data);
 	}
 
 	# Post process
@@ -1208,6 +1225,7 @@ sub process_data ($$$$$) {
 	# Format data
 	$data = sprintf("%.2f", $data);
 
+	$dataObject->{'data'} = $data;
 	return $data;
 }
 
@@ -1245,6 +1263,30 @@ sub process_inc_data ($$$$) {
 	return ($data - $data_inc->{'datos'}) / ($utimestamp - $data_inc->{'utimestamp'});
 }
 
+sub log4x_get_severity_num($) {
+	my ($dataObject) = @_;
+	my $data = $dataObject->{'severity'};
+		
+	# The severity is a word, so we need to translate to numbers
+		
+	if ($data =~ m/^trace$/i) {
+		$data = 10;
+	} elsif ($data =~ m/^debug$/i) {
+		$data = 20;
+	} elsif ($data =~ m/^info$/i) {
+		$data = 30;
+	} elsif ($data =~ m/^warn$/i) {
+		$data = 40;
+	} elsif ($data =~ m/^error$/i) {
+		$data = 50;
+	} elsif ($data =~ m/^fatal$/i) {
+		$data = 60;
+	} else {
+		$data = 10;
+	}
+	return $data;
+}
+
 ##########################################################################
 # Returns the status of the module: 0 (NORMAL), 1 (CRITICAL), 2 (WARNING).
 ##########################################################################
@@ -1262,6 +1304,15 @@ sub get_module_status ($$) {
 		($critical_min, $critical_max) = (0, 1);
 	}
 
+	if ($module_type eq "log4x") {
+		if ($critical_min eq $critical_max) {
+			($critical_min, $critical_max) = (50, 61); # ERROR - FATAL
+		}
+		if ($warning_min eq $warning_max) {
+			($warning_min, $warning_max) = (40, 41); # WARN - WARN
+		}
+	}
+	
 	# Critical
 	if ($critical_min ne $critical_max) {
 		return 1 if ($data >= $critical_min && $data < $critical_max);
@@ -1352,12 +1403,36 @@ sub generate_status_event ($$$$$$$) {
 # Saves module data to the DB.
 ##########################################################################
 sub save_module_data ($$$$$) {
-	my ($data, $module, $module_type, $utimestamp, $dbh) = @_;
+	my ($dataObject, $module, $module_type, $utimestamp, $dbh) = @_;
 
-	my $table = ($module_type =~ m/_string/) ? 'tagente_datos_string' : 'tagente_datos';
+	if ($module_type eq "log4x") {
+		#<module>
+		#	<name></name>
+		#	<type>log4x</type>
+		#
+		#	<severity></severity>
+		#	<message></message>
+		#	
+		#	<stacktrace></stacktrace>
+		#</module>
 
-	db_do($dbh, 'INSERT INTO ' . $table . ' (id_agente_modulo, datos, utimestamp)
-	             VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);	
+		print "saving log4x data: " . $dataObject->{'message'} . "\n";
+
+		my $sql = "INSERT INTO tagente_datos_log4x(id_agente_modulo, utimestamp, severity, message, stacktrace) values (?, ?, ?, ?, ?)";
+
+		db_do($dbh, $sql, 
+			$module->{'id_agente_modulo'}, $utimestamp,
+			$dataObject->{'severity'},
+			$dataObject->{'message'},
+			$dataObject->{'stacktrace'}
+		);
+	} else {
+		my $data = $dataObject->{'data'};
+		my $table = ($module_type =~ m/_string/) ? 'tagente_datos_string' : 'tagente_datos';
+
+		db_do($dbh, 'INSERT INTO ' . $table . ' (id_agente_modulo, datos, utimestamp)
+					 VALUES (?, ?, ?)', $module->{'id_agente_modulo'}, $data, $utimestamp);	
+	}
 }
 
 ##########################################################################
@@ -1366,6 +1441,9 @@ sub save_module_data ($$$$$) {
 sub export_module_data ($$$$$$$) {
 	my ($pa_config, $data, $agent, $module, $module_type, $timestamp, $dbh) = @_;
 
+	# TODO: If module is log4x we hope for the best :P
+	#return if ($module_type == "log4x");
+	
 	# Data export is disabled
  	return if ($module->{'id_export'} < 1);
 

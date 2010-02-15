@@ -277,7 +277,7 @@ sub pandora_query_snmp (%$) {
 	# SNMP v1, v2 and v2c call
 	if ($snmp_version ne '3'){
 
-		$output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2>/dev/null`;
+		$output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
 		if ($output ne ""){
 			$module_result = 0;
 			$module_data = $output;
@@ -420,7 +420,8 @@ sub exec_network_module ($$$$) {
 
     # Is everything goes ok
 	if ($module_result == 0) {
-		pandora_process_module ($pa_config, $module_data, undef, $module, undef, $timestamp, $utimestamp, $server_id, $dbh);
+		my %data = ("data" => $module_data);
+		pandora_process_module ($pa_config, \%data, '', $module, '', $timestamp, $utimestamp, $server_id, $dbh);
 
 		# Update agent last contact using Pandora version as agent version
 		pandora_update_agent ($pa_config, $timestamp, $id_agente, $pa_config->{'servername'}.'_Net', $pa_config->{'version'}, -1, $dbh);

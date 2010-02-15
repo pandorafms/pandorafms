@@ -3,7 +3,7 @@ package PandoraFMS::Core;
 # Core Pandora FMS functions.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -17,6 +17,84 @@ package PandoraFMS::Core;
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
 
+=head1 NAME 
+
+PandoraFMS::Core - Core functions of Pandora FMS
+
+=head1 VERSION
+
+Version 3.1
+
+=head1 SYNOPSIS
+
+ use PandoraFMS::Core;
+
+=head1 DESCRIPTION
+
+This module contains all the base functions of B<Pandora FMS>, the most basic operations of the system are done here.
+
+=head2 Interface
+Exported Functions:
+
+=over
+
+=item * C<pandora_audit>
+
+=item * C<pandora_create_agent>
+
+=item * C<pandora_create_incident>
+
+=item * C<pandora_create_module>
+
+=item * C<pandora_evaluate_alert>
+
+=item * C<pandora_evaluate_compound_alert>
+
+=item * C<pandora_evaluate_snmp_alerts>
+
+=item * C<pandora_event>
+
+=item * C<pandora_execute_alert>
+
+=item * C<pandora_execute_action>
+
+=item * C<pandora_exec_forced_alerts>
+
+=item * C<pandora_generate_alerts>
+
+=item * C<pandora_generate_compound_alerts>
+
+=item * C<pandora_module_keep_alive>
+
+=item * C<pandora_module_keep_alive_nd>
+
+=item * C<pandora_ping>
+
+=item * C<pandora_ping_latency>
+
+=item * C<pandora_planned_downtime>
+
+=item * C<pandora_process_alert>
+
+=item * C<pandora_process_module>
+
+=item * C<pandora_reset_server>
+
+=item * C<pandora_server_keep_alive>
+
+=item * C<pandora_update_agent>
+
+=item * C<pandora_update_module_on_error>
+
+=item * C<pandora_update_server>
+
+=back
+
+=head1 METHODS
+
+
+=cut
+
 use strict;
 use warnings;
 
@@ -29,6 +107,7 @@ use POSIX qw(strftime);
 use PandoraFMS::DB;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
+use PandoraFMS::GIS qw(distance_moved);
 
 require Exporter;
 
@@ -61,7 +140,6 @@ our @EXPORT = qw(
 	pandora_update_agent
 	pandora_update_module_on_error
 	pandora_update_server
-
 	@ServerTypes
 	);
 
@@ -71,7 +149,11 @@ our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginse
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
-# Generate alerts for a given module.
+=head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh>) >>
+
+Generate alerts for a given I<$module>.
+
+=cut
 ##########################################################################
 sub pandora_generate_alerts ($$$$$$$;$) {
 	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros) = @_;
@@ -103,13 +185,19 @@ sub pandora_generate_alerts ($$$$$$$;$) {
 }
 
 ##########################################################################
-# Evaluate trigger conditions for a given alert. Returns:
-# 0 Execute the alert.
-# 1 Do not execute the alert.
-# 2 Do not execute the alert, but increment its internal counter.
-# 3 Cease the alert.
-# 4 Recover the alert.
-# 5 Reset internal counter (alert not fired, interval elapsed).
+=head2 C<< pandora_evaluate_alert (I<$pa_config>, I<$agent>, I<$data>, I<$last_status>, I<$alert>, I<$utimestamp>, I<$dbh>) >>
+
+Evaluate trigger conditions for a given alert.
+
+B<Returns>:
+ 0 Execute the alert.
+ 1 Do not execute the alert.
+ 2 Do not execute the alert, but increment its internal counter.
+ 3 Cease the alert.
+ 4 Recover the alert.
+ 5 Reset internal counter (alert not fired, interval elapsed).
+
+=cut
 ##########################################################################
 sub pandora_evaluate_alert ($$$$$$$) {
 	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh) = @_;
@@ -194,7 +282,11 @@ sub pandora_evaluate_alert ($$$$$$$) {
 }
 
 ##########################################################################
-# Process an alert given the status returned by pandora_evaluate_alert.
+=head2 C<< pandora_process_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$rc>, I<$dbh>) >> 
+
+Process an alert given the status returned by pandora_evaluate_alert.
+
+=cut
 ##########################################################################
 sub pandora_process_alert ($$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $extraMacros) = @_;
@@ -278,8 +370,12 @@ sub pandora_process_alert ($$$$$$$;$) {
 }
 
 ##########################################################################
-# Evaluate the given compound alert. Returns 1 if the alert should be
-# fired, 0 if not.
+=head2 C<< pandora_evaluate_compound_alert (I<$pa_config>, I<$id>, I<$name>, I<$dbh>) >> 
+
+Evaluate the given compound alert. Returns 1 if the alert should be
+fired, 0 if not.
+
+=cut
 ##########################################################################
 sub pandora_evaluate_compound_alert ($$$$) {
 	my ($pa_config, $id, $name, $dbh) = @_;
@@ -334,7 +430,11 @@ sub pandora_evaluate_compound_alert ($$$$) {
 }
 
 ##########################################################################
-# Generate compound alerts that depend on a given alert.
+=head2 C<< pandora_generate_compound_alerts (I<$pa_config>, I<$data>, I<$status>, I<$agent>, I<$module>, I<$alert>, I<$utimestamp>, I<$dbh>) >> 
+
+Generate compound alerts that depend on a given alert.
+
+=cut
 ##########################################################################
 sub pandora_generate_compound_alerts ($$$$$$$$) {
 	my ($pa_config, $data, $status, $agent, $module, $alert, $utimestamp, $dbh) = @_;
@@ -360,7 +460,11 @@ sub pandora_generate_compound_alerts ($$$$$$$$) {
 }
 
 ##########################################################################
-# Execute the given alert.
+=head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>) >> 
+
+Execute the given alert.
+
+=cut
 ##########################################################################
 sub pandora_execute_alert ($$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
@@ -420,7 +524,11 @@ sub pandora_execute_alert ($$$$$$$;$) {
 }
 
 ##########################################################################
-# Execute the given action.
+=head2 C<< pandora_execute_action (I<$pa_config>, I<$data>, I<$agent>, I<$alert>, I<$alert_mode>, I<$action>, I<$module>, I<$dbh>) >> 
+
+Execute the given action.
+
+=cut
 ##########################################################################
 sub pandora_execute_action ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $alert,
@@ -512,7 +620,11 @@ sub pandora_execute_action ($$$$$$$$;$) {
 }
 
 ##########################################################################
-# Update agent access table.
+=head2 C<< pandora_access_update (I<$pa_config>, I<$agent_id>, I<$dbh>) >> 
+
+Update agent access table.
+
+=cut
 ##########################################################################
 sub pandora_access_update ($$$) {
 	my ($pa_config, $agent_id, $dbh) = @_;
@@ -526,7 +638,11 @@ sub pandora_access_update ($$$) {
 }
 
 ##########################################################################
-# Process Pandora module.
+=head2 C<< pandora_process_module (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$module_type>, I<$timestamp>, I<$utimestamp>, I<$server_id>, I<$dbh>) >> 
+
+Process Pandora module.
+
+=cut
 ##########################################################################
 sub pandora_process_module ($$$$$$$$$;$) {
 	my ($pa_config, $dataObject, $agent, $module, $module_type,
@@ -620,7 +736,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 }
 
 ##########################################################################
-# Update planned downtimes.
+=head2 C<< pandora_planned_downtime (I<$pa_config>, I<$dbh>) >> 
+
+Update planned downtimes.
+
+=cut
 ##########################################################################
 sub pandora_planned_downtime ($$) {
 	my ($pa_config, $dbh) = @_;
@@ -662,7 +782,11 @@ sub pandora_planned_downtime ($$) {
 }
 
 ##########################################################################
-# Reset the status of all server types for the current server.
+=head2 C<< pandora_reset_server (I<$pa_config>, I<$dbh>) >> 
+
+Reset the status of all server types for the current server.
+
+=cut
 ##########################################################################
 sub pandora_reset_server ($$) {
 	my ($pa_config, $dbh) = @_;
@@ -671,8 +795,18 @@ sub pandora_reset_server ($$) {
 }
 
 ##########################################################################
-# Update server status: 0 dataserver, 1 network server, 2 snmp console, 
-# 3 recon, 4 plugin, 5 prediction, 6 wmi.
+=head2 C<< pandora_update_server (I<$pa_config>, I<$dbh>, I<$server_name>, I<$status>, I<$server_type>, I<$num_threads>, I<$queue_size>) >> 
+
+Update server status: 
+ 0 dataserver
+ 1 network server
+ 2 snmp console, 
+ 3 recon
+ 4 plugin
+ 5 prediction
+ 6 wmi.
+
+=cut
 ##########################################################################
 sub pandora_update_server ($$$$$;$$) {
 	my ($pa_config, $dbh, $server_name, $status,
@@ -713,12 +847,16 @@ sub pandora_update_server ($$$$$;$$) {
 }
 
 ##########################################################################
-# Update last contact, timezone and position fields in agent table
+=head2 C<< pandora_update_agent (I<$pa_config>, I<$agent_timestamp>, I<$agent_id>, I<$os_version>, I<$agent_version>, I<$agent_interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) >>
+
+Update last contact, timezone and position fields in B<tagente>
+
+=cut
 ##########################################################################
-sub pandora_update_agent ($$$$$$$;$$$$) {
+sub pandora_update_agent ($$$$$$$;$$$$$) {
     my ($pa_config, $agent_timestamp, $agent_id, $os_version,
         $agent_version, $agent_interval, $dbh, $timezone_offset,
-		$longitude, $latitude, $altitude) = @_;
+		$longitude, $latitude, $altitude, $position_description) = @_;
 
     my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
@@ -764,8 +902,14 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 
 	# If the agent has moved outside the range stablised as location error
 	if (distance_moved($pa_config, $last_agent_info->{'last_longitude'}, $last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}){
-		# Save the agent data in the agent table
-		save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $agent_id, $dbh);
+		if (defined($position_description)) {
+			# Save the agent data in the agent table
+			save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'}, $position_description, $agent_id, $dbh);
+		}
+		else {
+			# Save the agent data in the agent table
+			save_agent_position($pa_config, $timestamp, $last_agent_info->{'last_longitude'},$last_agent_info->{'last_latitude'}, $last_agent_info->{'last_altitude'},'' , $agent_id, $dbh);
+		}
 		# Update the table tagente with all the new data
     	db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, timezone_offset = ?,
 		    last_longitude = ?, last_latitude =?, last_altitude = ? WHERE id_agente = ?',
@@ -782,47 +926,11 @@ sub pandora_update_agent ($$$$$$$;$$$$) {
 }
 
 ##########################################################################
-# Measures the distance taking in acount the earth curvature
-# The distance is based on Havesine formula
-# Refferences (Theory):
-# * http://franchu.net/2007/11/16/gis-calculo-de-distancias-sobre-la-tierra/
-# * http://en.wikipedia.org/wiki/Haversine_formula
-# References (C implementation):
-# * http://blog.julien.cayzac.name/2008/10/arc-and-distance-between-two-points-on.html
-##########################################################################
-sub distance_moved ($$$$$$$) {
-	my ($pa_config, $last_longitude, $last_latitude, $last_altitude, $longitude, $latitude, $altitude) = @_;
+=head2 C<< pandora_module_keep_alive (I<$pa_config>, I<$id_agent>, I<$agent_name>, I<$server_id>, I<$dbh>) >> 
 
-	my $pi =  4*atan2(1,1);
-	my $earth_radius_in_meters = 6372797.560856;
+Updates the keep_alive module for the given agent.
 
-	my $long_difference = $last_longitude - $longitude;
-	my $lat_difference = $last_latitude - $latitude;
-	#my $alt_difference = $last_altitude - $altitude;
-   
- 	my $to_radians= $pi/180;
- 	my $to_half_radians= $pi/360;
-
-	my $long_aux = sin ($long_difference*$to_half_radians);
-	my $lat_aux = sin ($lat_difference*$to_half_radians);
-	$long_aux *= $long_aux;
-	$lat_aux *= $lat_aux;
-	# Temporary value to make sorter the asin formula.
-	my $asinaux = sqrt($lat_aux + cos($last_latitude*$to_radians) * cos($latitude*$to_radians) * $long_aux );
-	# Assure the aux value is not greater than 1 
-	if ($asinaux > 1) { $asinaux = 1; }
-	# We use: asin(x)  = atan2(x, sqrt(1-x*x))
-	my $dist_in_rad = 2.0 * atan2($asinaux, sqrt (1 - $asinaux * $asinaux));
-	my $dist_in_meters = $earth_radius_in_meters * $dist_in_rad;
-		
-	logger($pa_config, "Distance moved:" . $dist_in_meters ." meters", 10);
-
-	return $dist_in_meters;
-}
-
-
-##########################################################################
-# Updates the keep_alive module for the given agent.
+=cut
 ##########################################################################
 sub pandora_module_keep_alive ($$$$$) {
 	my ($pa_config, $id_agent, $agent_name, $server_id, $dbh) = @_;
@@ -838,7 +946,11 @@ sub pandora_module_keep_alive ($$$$$) {
 }
 
 ##########################################################################
-# Create an internal Pandora incident.
+=head2 C<< pandora_create_incident (I<$pa_config>, I<$dbh>, I<$title>, I<$text>, I<$priority>, I<$status>, I<$origin>, I<$id_group>) >> 
+
+Create an internal Pandora incident.
+
+=cut
 ##########################################################################
 sub pandora_create_incident ($$$$$$$$) {
 	my ($pa_config, $dbh, $title, $text,
@@ -852,7 +964,11 @@ sub pandora_create_incident ($$$$$$$$) {
 
 
 ##########################################################################
-# Create an internal audit entry.
+=head2 C<< pandora_audit (I<$pa_config>, I<$description>, I<$name>, I<$action>, I<$dbh>) >> 
+
+Create an internal audit entry.
+
+=cut
 ##########################################################################
 sub pandora_audit ($$$$$) {
 	my ($pa_config, $description, $name, $action, $dbh) = @_;
@@ -871,8 +987,11 @@ sub pandora_audit ($$$$$) {
 }
 
 ##########################################################################
-# Create a new entry in tagente_modulo and the corresponding entry in
-# tagente_estado.
+=head2 C<< pandora_create_module (I<$pa_config>, I<$agent_id>, I<$module_type_id>, I<$module_name>, I<$max>, I<$min>, I<$post_process>, I<$description>, I<$interval>, I<$dbh>) >> 
+
+Create a new entry in tagente_modulo and the corresponding entry in B<tagente_estado>.
+
+=cut
 ##########################################################################
 sub pandora_create_module ($$$$$$$$$$) {
 	my ($pa_config, $agent_id, $module_type_id, $module_name, $max,
@@ -893,14 +1012,22 @@ sub pandora_create_module ($$$$$$$$$$) {
 }
 
 ##########################################################################
-# Create a new entry in tagente with position information
+=head2 C<< pandora_create_agent (I<$pa_config>, I<$server_name>, I<$agent_name>, I<$address>, I<$address_id>, I<$group_id>, I<$parent_id>, I<$os_id>, I<$description>, I<$interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) >>
+
+Create a new entry in B<tagente> optionaly with position information
+
+=cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
+sub pandora_create_agent ($$$$$$$$$$$;$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$address_id, $group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
-		$longitude, $latitude, $altitude) = @_;
+		$longitude, $latitude, $altitude, $position_description) = @_;
 
+
+	if (!defined($group_id)) {
+		$group_id = $pa_config->{'autocreate_group'};
+	}
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 
 	$description = "Created by $server_name" unless ($description ne '');
@@ -917,19 +1044,27 @@ sub pandora_create_agent ($$$$$$$$$$$;$$$$) {
 		# Save the first position
 		my $utimestamp = time ();
   	 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
-		save_agent_position($pa_config, $timestamp, $longitude, $latitude, $altitude,  $agent_id, $dbh);
+		if (defined($position_description)) {
+			save_agent_position($pa_config, $timestamp, $longitude, $latitude, $altitude, $position_description, $agent_id, $dbh);
+		}
+		else {
+			save_agent_position($pa_config, $timestamp, $longitude, $latitude, $altitude, '', $agent_id, $dbh);
+		}
 	}
 
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
-	# FIXME: use $group_id instead of $pa_config->{'autocreate_group'} ????
-	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $pa_config->{'autocreate_group'}, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
+	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
 }
 
 ##########################################################################
-# Generate an event.
+=head2 C<< pandora_event (I<$pa_config>, I<$evento>, I<$id_grupo>, I<$id_agente>, I<$severity>, I<$id_alert_am>, I<$id_agentmodule>, I<$event_type>, I<$event_status>, I<$dbh>) >> 
+
+Generate an event.
+
+=cut
 ##########################################################################
-sub pandora_event ($$$$$$$$$) {
+sub pandora_event ($$$$$$$$$$) {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh) = @_;
 
@@ -938,13 +1073,16 @@ sub pandora_event ($$$$$$$$$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
-
 	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
 }
 
 ##########################################################################
-# Update module status on error.
+=head2 C<< pandora_update_module_on_error (I<$pa_config>, I<$id_agent_module>, I<$dbh>) >> 
+
+Update module status on error.
+
+=cut
 ##########################################################################
 sub pandora_update_module_on_error ($$$) {
 	my ($pa_config, $id_agent_module, $dbh) = @_;
@@ -957,7 +1095,11 @@ sub pandora_update_module_on_error ($$$) {
 }
 
 ##########################################################################
-# Execute forced alerts.
+=head2 C<< pandora_exec_forced_alerts (I<$pa_config>, I<$dbh>) >>
+
+Execute forced alerts.
+
+=cut
 ##########################################################################
 sub pandora_exec_forced_alerts {
 	my ($pa_config, $dbh) = @_;
@@ -990,7 +1132,11 @@ sub pandora_exec_forced_alerts {
 }
 
 ##########################################################################
-# Update keep_alive modules for agents without data.
+=head2 C<< pandora_module_keep_alive_nd (I<$pa_config>, I<$dbh>) >> 
+
+Update keep_alive modules for agents without data.
+
+=cut
 ##########################################################################
 sub pandora_module_keep_alive_nd {
 	my ($pa_config, $dbh) = @_;
@@ -1014,7 +1160,11 @@ sub pandora_module_keep_alive_nd {
 }
 
 ##########################################################################
-# Execute alerts that apply to the given SNMP trap.
+=head2 C<< pandora_evaluate_snmp_alerts (I<$pa_config>, I<$trap_id>, I<$trap_agent>, I<$trap_oid>, I<$trap_oid_text>, I<$trap_custom_oid>, I<$trap_custom_value>, I<$dbh>) >> 
+
+Execute alerts that apply to the given SNMP trap.
+
+=cut
 ##########################################################################
 sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
@@ -1124,7 +1274,14 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 }
 
 ##############################################################################
-# Ping the given host. Returns 1 if the host is alive, 0 otherwise.
+=head2 C<< pandora_ping (I<$pa_config>, I<$host>) >> 
+
+Ping the given host. 
+Returns:
+ 1 if the host is alive
+ 0 otherwise.
+
+=cut
 ##############################################################################
 sub pandora_ping ($$) { 
 	my ($pa_config, $host) = @_;
@@ -1136,7 +1293,11 @@ sub pandora_ping ($$) {
 }
 
 ##############################################################################
-# Ping the given host. Returns the average round-trip time.
+=head2 C<< pandora_ping_latency (I<$pa_config>, I<$host>) >> 
+
+Ping the given host. Returns the average round-trip time.
+
+=cut
 ##############################################################################
 sub pandora_ping_latency ($$) {
 	my ($pa_config, $host) = @_;
@@ -1478,7 +1639,11 @@ sub pandora_inhibit_alerts ($$$) {
 }
 
 ##########################################################################
-# Updates agent's end_timestamp and number_of_packages in tgis_data table
+=head2 C<< update_agent_position (I<$pa_config>, I<$timestamp>, I<$agent_id>, I<$dbh>) >>
+
+# Updates agent's I<end_timestamp> and I<number_of_packages> in B<tgis_data> table
+
+=cut
 ##########################################################################
 sub update_agent_position($$$$) {
 	my ($pa_config, $timestamp, $agent_id, $dbh) = @_;
@@ -1495,15 +1660,19 @@ sub update_agent_position($$$$) {
 }
 
 ##########################################################################
-# Saves the last position of an agent in the tgis_data table
+=head2 C<< save_agent_position (I<$pa_config>, I<$timestamp>, I<$longitude>, I<$latitude>, I<$altitude>, I<$description>, I<$agent_id>, I<$dbh>) >>
+ 
+Saves the last position of an agent in the B<tgis_data> table
+
+=cut
 ##########################################################################
-sub save_agent_position($$$$$$$) {
-    my ($pa_config, $timestamp, $longitude,$latitude, $altitude, $agent_id, $dbh) = @_;
+sub save_agent_position($$$$$$$$) {
+    my ($pa_config, $timestamp, $longitude, $latitude, $altitude, $description, $agent_id, $dbh) = @_;
 
     logger($pa_config, "Saving new agent position: timestamp=$timestamp longitude=$longitude latitude=$latitude altitude=$altitude", 10);
 
-	db_insert($dbh, 'INSERT INTO tgis_data (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`, `end_timestamp`) VALUES (?, ?, ?, ?, ?, ?)', 
-		  $longitude, $latitude, $altitude, $agent_id, $timestamp, $timestamp);
+	db_insert($dbh, 'INSERT INTO tgis_data (`longitude`, `latitude`, `altitude`, `tagente_id_agente`, `start_timestamp`, `end_timestamp`, `description`) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+		  $longitude, $latitude, $altitude, $agent_id, $timestamp, $timestamp, $description);
 
 }
 
@@ -1512,3 +1681,22 @@ sub save_agent_position($$$$$$$) {
 
 1;
 __END__
+
+=head1 DEPENDENCIES
+
+L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+
+=cut

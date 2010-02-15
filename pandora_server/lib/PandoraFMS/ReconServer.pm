@@ -32,6 +32,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::ProducerConsumerServer;
+use PandoraFMS::GIS qw(get_reverse_geoip_sql get_reverse_geoip_file get_random_close_point);
 
 # Inherits from PandoraFMS::ProducerConsumerServer
 our @ISA = qw(PandoraFMS::ProducerConsumerServer);
@@ -164,17 +165,66 @@ sub data_consumer ($$) {
 			next;
 		}
 
-		# Crate a new agent
-		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
+		my $agent_id;	
+		logger($pa_config, "GIS Status = ".$pa_config->{'activate_gis'}, 10);
+
+		# If GIS is activated try to geolocate the ip address of the agent and store also it's position.
+
+		if($pa_config->{'activate_gis'} == 1 && $pa_config->{'recon_reverse_geolocation_mode'} !~ m/^disabled$/i) {
+			# Try to get aproximated positional information for the Agent.
+			my $region_info = undef;
+			if ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^sql$/i) {
+				logger($pa_config, "Trying to get gis data of $addr from the SQL database", 8);
+				$region_info = get_reverse_geoip_sql($pa_config, $addr, $dbh);	
+			}
+			elsif ($pa_config->{'recon_reverse_geolocation_mode'} =~ m/^file$/i) {
+				logger($pa_config, "Trying to get gis data of $addr from the file database", 8);
+				$region_info = get_reverse_geoip_file($pa_config, $addr);	
+			}
+			else {
+				logger($pa_config, "ERROR:Trying to get gis data of $addr. Unknown source", 5);
+			}
+			if (defined($region_info))  {
+				my $location_description = '';
+				if (defined($region_info->{'region'})) {
+					$location_description .= "$region_info->{'region'}, ";
+				}
+				if (defined($region_info->{'city'})) {
+					$location_description .= "$region_info->{'city'}, ";
+				}
+				if (defined($region_info->{'country_name'})) {
+					$location_description .= "($region_info->{'country_name'})";
+				}
+				# We store a random offset in the coordinates to avoid all the agents apear on the same place.
+				my ($longitude, $latitude) = get_random_close_point ($pa_config, $region_info->{'longitude'}, $region_info->{'latitude'});
+				
+				logger($pa_config, "Placing agent on random position (Lon,Lat)  =  ($longitude, $latitude)", 8);
+				# Crate a new agent adding the positional info (as is unknown we set 0 time_offset, and 0 altitude)
+				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
+					                                  $host_name, $addr, $addr_id,
+					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh, 0, $longitude, $latitude, 0, $location_description);
+			}
+			else {
+				logger($pa_config,"Id location of '$addr' for host '$host_name' NOT found", 3);
+				# Crate a new agent
+				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $addr_id,
 					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh);
+			}
+		}		
+		else {	
+			# Crate a new agent
+			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
+					                                  $host_name, $addr, $addr_id,
+					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh);
+		}
+
 		# Assign the new address to the agent
 		db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
 		                  VALUES (?, ?)', $addr_id, $agent_id);
 
 		# Crate network profile modules for the agent
 		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr);
-
 		# Generate an event
         pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
                        $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
@@ -238,7 +288,7 @@ sub guess_os {
 }
 
 ##########################################################################
-# Return the ID of the given address, 0 if it does not exist.
+# Return the ID of the given address, -1 if it does not exist.
 ##########################################################################
 sub get_addr_id ($$) {
 	my ($dbh, $addr) = @_;

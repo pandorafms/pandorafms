@@ -1,5 +1,29 @@
 2010-02-15	Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm: New configuration 
+	parameters: recon_reverse_geolocation_mode, recon_reverse_geolocation_file,
+	recon_location_scatter_radius. As now the Recon Server can try to geolocate
+	an agent when it's found by revers geoip location. 
+
+	* lib/PandoraFMS/Core.pm: Added first version of POD documentation to 
+	create the manpage and to have most of the subrutines documented. Also
+	it's possible to add the description of the location to the GIS information
+	on the pandora_update_agent and pandora_create_agent subroutines. And 
+	finaly moved away the GIS related functions (distance_moved) to their own
+	new module PandoraFMS::GIS
+
+	* lib/PandoraFMS/GIS.pm: New module to keep all the GIS related functions 
+	of Pandora FMS. Now it exports distance_moved, get_reverse_geoip_sql,
+	get_reverse_geoip_file and  get_random_close_point.
+
+	* lib/PandoraFMS/ReconServer.pm: Updated to get GIS information by doing
+	reverse IP geolocation using GIS module.
+
+	* man/man3/PandoraFMS::Core.pm.3, man/man3/PandoraFMS::GIS.pm.3: New
+	manpages for Core and GIS modules.
+
+2010-02-15	Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* bin/tentacle_server:  Updated tentacle server and synchronized with the
 	version from tentacle proyect.
 

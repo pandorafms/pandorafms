@@ -206,3 +206,21 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
 COMMENT = 'Table to store global system stats per group';
 DEFAULT CHARSET=utf8
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_log4x`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
+  `id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+
+  `severity` text NOT NULL,
+  `message` text NOT NULL,
+  `stacktrace` text NOT NULL,
+
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  PRIMARY KEY  (`id_tagente_datos_log4x`),
+  KEY `data_log4x_index_1` (`id_agente_modulo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

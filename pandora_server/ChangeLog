@@ -1,3 +1,17 @@
+2010-02-15	Eric Ross <eric.ross.c@gmail.com>
+	Comit first batch of changes to implement the new log4x data type: Basicaly
+	I modified the XML parser and changed how the "data" is handled and passed
+	internally.
+
+	* lib/PandoraFMS/DB.pm
+	* lib/PandoraFMS/PluginServer.pm
+	* lib/PandoraFMS/PredictionServer.pm
+	* lib/PandoraFMS/Core.pm
+	* lib/PandoraFMS/DataServer.pm
+	* lib/PandoraFMS/NetworkServer.pm
+	* lib/PandoraFMS/Tools.pm
+	* lib/PandoraFMS/WMIServer.pm
+
 2010-02-14	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* bin/tentacle_server: Added first version of POD documentation, there

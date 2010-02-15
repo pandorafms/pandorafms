@@ -4,11 +4,16 @@
 # See http://www.openideas.info/wiki for protocol description.
 # Tentacle have IANA assigned port tpc/41121 as official port.
 ##########################################################################
+# Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
 # Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; version 2
+# tentacle_server.pl	Tentacle Server. See http://www.openideas.info/wiki for
+#                       protocol description.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,6 +22,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
+
 package tentacle::server;
 =head1 NAME
 
@@ -32,7 +38,7 @@ tentacle_server B<< -s F<storage_directory> >> [I<options>]
 
 =head1 DESCRIPTION
 
-B<tentacle_server(1)> is a B<client/server> file transfer protocol that aims to be:
+B<tentacle_server(1)> is a server for B<tentacle>, a B<client/server> file transfer protocol that aims to be:
 
 =over
 
@@ -985,39 +991,39 @@ __END__
 
 =over
 
-=item 	I<-a> 			ip_address	Address to listen on (default 0.0.0.0).
+=item 	I<-a ip_address>	Address to B<listen> on (default I<0.0.0.0>).
 
-=item	I<-c> number		Maximum number of simultaneous connections (default 10).
+=item	I<-c number>		B<Maximum> number of simultaneous B<connections> (default I<10>).
 
-=item	I<-d>			Run as daemon.
+=item	I<-d>			Run as B<daemon>.
 
-=item	I<-e> cert		OpenSSL certificate file. Enables SSL.
+=item	I<-e cert>		B<OpenSSL certificate> file. Enables SSL.
 
-=item	I<-f> ca_cert	Verify that the peer certificate is signed by a ca.
+=item	I<-f ca_cert>	Verify that the peer certificate is signed by a B<CA>.
 
-=item	I<-h>			Show help.
+=item	I<-h>			Show B<help>.
 
-=item	I<-i>			Filters.
+=item	I<-i>			B<Filters>.
 
-=item	I<-k> key		OpenSSL private key file.
+=item	I<-k key>		B<OpenSSL private key> file.
 
-=item	I<-m> size		Maximum file size in bytes (default 2000000b).
+=item	I<-m size>		B<Maximum file size> in bytes (default I<2000000b>).
 
-=item	I<-o>			Enable file overwrite.
+=item	I<-o>			Enable file B<overwrite>.
 
-=item	I<-p> port		Port to listen on (default 41121).
+=item	I<-p port>		B<Port to listen> on (default I<41121>).
 
-=item	I<-q>			Quiet. Do now print error messages.
+=item	I<-q>			B<Quiet>. Do now print error messages.
 
-=item	I<-r> number		Number of retries for network opertions (default 3).
+=item	I<-r number>		B<Number of retries> for network opertions (default I<3>).
 
-=item	I<-t> time		Time-out for network operations in seconds (default 1s).
+=item	I<-t time>		B<Time-out> for network operations in B<seconds> (default I<1s>).
 
-=item	I<-v>			Be verbose.
+=item	I<-v>			Be B<verbose>.
 
-=item	I<-w>			Prompt for OpenSSL private key password.
+=item	I<-w>			Prompt for B<OpenSSL private key password>.
 
-=item	I<-x> pwd		Server password.
+=item	I<-x> pwd		B<Server password>.
 
 =back
 

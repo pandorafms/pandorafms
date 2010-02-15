@@ -1,3 +1,11 @@
+2010-02-15	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* bin/tentacle_server:  Updated tentacle server and synchronized with the
+	version from tentacle proyect.
+
+	* man/man1/tentacle_server.1: Updated manpage from the updated pod 
+	documentation on bin/tentacle_server
+
 2010-02-15	Eric Ross <eric.ross.c@gmail.com>
 	Comit first batch of changes to implement the new log4x data type: Basicaly
 	I modified the XML parser and changed how the "data" is handled and passed

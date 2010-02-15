@@ -20,6 +20,12 @@ ALTER TABLE `tagente_modulo` ADD `custom_string_3` text default '';
 ALTER TABLE `tagente_modulo` ADD `custom_integer_1` int(10) default 0;
 ALTER TABLE `tagente_modulo` ADD `custom_integer_2` int(10) default 0;
 
+ALTER TABLE `tnetwork_component` ADD `custom_string_1` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_string_2` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_string_3` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_integer_1` int(10) default 0;
+ALTER TABLE `tnetwork_component` ADD `custom_integer_2` int(10) default 0;
+
 ALTER TABLE tagente_datos_string DROP id_tagente_datos_string;
 CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos_string(utimestamp);
 
@@ -39,15 +45,19 @@ CREATE INDEX idx_utimestamp USING BTREE ON tagent_access(utimestamp);
 
 ALTER TABLE tusuario ADD `timezone` varchar(50) default '';
 
--- GIS extension Tables and DATA
-
--- GIS is disabled by default
-INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
-
 -- Realtime statistics on/off and interval
 INSERT INTO tconfig (`token`, `value`) VALUES ('realtimestats', '1');
 INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
 
+-- Log4x Module
+
+INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon`) VALUES (30, 'log4x', 0, 'Log4x', 'mod_log4x.png');
+
+
+-- GIS extension Tables and DATA
+
+-- GIS is disabled by default
+INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
 
 -- -----------------------------------------------------
 -- Table `tgis_data`
@@ -203,8 +213,8 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
   `utimestamp` int(20) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_group`)
 ) ENGINE=InnoDB 
-COMMENT = 'Table to store global system stats per group';
-DEFAULT CHARSET=utf8
+COMMENT = 'Table to store global system stats per group'
+DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `tagente_datos_log4x`

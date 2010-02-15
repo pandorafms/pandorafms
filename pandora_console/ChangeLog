@@ -1,3 +1,10 @@
+2010-02-15  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added cusstom colums (
+	custom_string_1, custom_string_2, custom_string_3, custom_integer_1 and
+	custom_integer_2) to tnetwork_component, added also some configuration 
+	parameters that were missing. Reordering a bit. And fixed a missplaced ';'
+
 2010-02-15 Eric Ross <eric.ross.c@gmail.com>
 	First batch of changes to implement the new log4x data type.
 

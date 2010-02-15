@@ -143,7 +143,11 @@ foreach ($modules as $module) {
 		}
 		echo "</td>";
 	} 
-	if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
+	
+	if ($module["id_tipo_modulo"] == 30) {
+		echo "<td class='".$tdcolor."f9' colspan='2'>&nbsp;</td>";
+
+	} else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
 		echo substr(safe_output($module["datos"]),0,12);
 	} else {

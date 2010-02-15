@@ -95,6 +95,19 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
   KEY `idx_utimestamp` (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
+  `id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+
+  `severity` text NOT NULL,
+  `message` text NOT NULL,
+  `stacktrace` text NOT NULL,
+
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  PRIMARY KEY  (`id_tagente_datos_log4x`),
+  KEY `data_log4x_index_1` (`id_agente_modulo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- delete "cambio" not used anymore
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,

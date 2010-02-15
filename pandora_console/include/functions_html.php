@@ -808,6 +808,8 @@ function print_table (&$table, $return = false) {
 	echo $output;
 }
 
+
+
 /**
  * Render a radio button input. Extended version, use print_radio_button() to simplify.
  *

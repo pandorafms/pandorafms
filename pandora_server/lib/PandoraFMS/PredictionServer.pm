@@ -235,7 +235,8 @@ sub exec_prediction_module ($$$$) {
         $module_data = $average;
     }
 
-	pandora_process_module ($pa_config, $module_data, undef, $agent_module, undef, $timestamp, $utimestamp, $server_id, $dbh);
+	my %data = ("data" => $module_data);
+	pandora_process_module ($pa_config, \%data, '', $agent_module, '', $timestamp, $utimestamp, $server_id, $dbh);
 	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $pa_config->{'servername'}.'_Prediction', $pa_config->{'version'}, -1, $dbh);
 }
 

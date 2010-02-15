@@ -321,7 +321,6 @@ sub process_module_data ($$$$$$$$$) {
 	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 	if (! defined ($module)) {
-		
 		# Do not auto create modules
 		if ($pa_config->{'autocreate'} ne '1') {
 			logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
@@ -335,7 +334,7 @@ sub process_module_data ($$$$$$$$$) {
 			$ModuleSem->up ();
 			return;
 		}
-		
+
 		# Get the module type
 		my $module_id = get_module_id ($dbh, $module_type);
 		if ($module_id <= 0) {
@@ -379,8 +378,46 @@ sub process_module_data ($$$$$$$$$) {
 	}
 
 	my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-	my $value = get_tag_value ($data, 'data', '');
-	pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
+	
+	#my $value = get_tag_value ($data, 'data', '');		
+	my $dataObject = get_module_data($data, $agent_name, $module_name, $module_type);
+	my $extraMacros = get_macros_for_data($data, $agent_name, $module_name, $module_type);
+	
+	pandora_process_module ($pa_config, $dataObject, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh, $extraMacros);
+}
+
+sub get_module_data($$){
+	my ($data, $agent_name, $module_name, $module_type) = @_;
+	
+	my %dataObject;
+	
+	if ($module_type eq "log4x") {
+		foreach my $attr ('severity','message', 'stacktrace'){
+			$dataObject{$attr} = get_tag_value ($data, $attr, '');
+		}
+	} else {
+		# Default case
+		my $value = get_tag_value ($data, 'data', '');
+		$dataObject{'data'} = $value;
+	}
+	#return $value;
+	return \%dataObject;
+}
+
+sub get_macros_for_data($$){
+	my ($data, $agent_name, $module_name, $module_type) = @_;
+	
+	my %macros;
+	
+	if ($module_type eq "log4x") {
+		foreach my $attr ('severity','message', 'stacktrace'){
+			my $macro = "_" . $attr . "_";
+			$macros{$macro} = get_tag_value ($data, $attr, '');
+		}
+	} else {
+	}
+	
+	return \%macros;
 }
 
 1;

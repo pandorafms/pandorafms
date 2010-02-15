@@ -48,7 +48,7 @@ $action = get_parameter('action');
 
 switch ($action) {
 	case 'delete_map':
-		$idMap = get_parameter('id_map');
+		$idMap = get_parameter('map_id');
 		deleteMap($idMap);
 		break;
 }
@@ -71,18 +71,22 @@ $maps = get_db_all_rows_in_table ('tgis_map','map_name');
 
 $table->data = array();
 
+$defaultMapId = null;
+
 if ($maps !== false) {
 	foreach ($maps as $map) {
 		
 		$checked = false;
-		if ($map['default_map'])
+		if ($map['default_map']) {
 			$checked = true;
+			$defaultMapId = $map['id_tgis_map'];
+		}
 		
 		$table->data[] = array('<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
 			print_group_icon ($map['group_id'], true),
 			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>',
 			print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true),
-			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map">' . print_image ("images/cross.png", true).'</a>'); 
+			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . print_image ("images/cross.png", true).'</a>'); 
 	}
 }
 
@@ -96,18 +100,39 @@ echo '</form>';
 echo '</div>';
 ?>
 <script type="text/javascript">
+var defaultMapId = "<?php echo $defaultMapId; ?>";
+
+function confirmDelete() {
+	if (confirm('<?php echo __('Caution: Do you want delete the map?');?>'))
+		return true;
+	
+	return false;
+}
+
 function setDefault(id_tgis_map) {
-	jQuery.ajax ({
-		data: "page=godmode/gis_maps/index&action=set_default&id_map="  + id_tgis_map,
-		type: "POST",
-		dataType: 'json',
-		url: "ajax.php",
-		timeout: 10000,
-		success: function (data) {
-			if (data.correct == 0) {
-				alert('<?php echo __('There was error on setup the default map.');?>');
+	if (confirm('<?php echo __('Do you want to set default the map?');?>')) {
+		jQuery.ajax ({
+			data: "page=godmode/gis_maps/index&action=set_default&id_map="  + id_tgis_map,
+			type: "POST",
+			dataType: 'json',
+			url: "ajax.php",
+			timeout: 10000,
+			success: function (data) {
+				if (data.correct == 0) {
+					alert('<?php echo __('There was error on setup the default map.');?>');
+				}
 			}
-		}
-	});
+		});
+	}
+	else {
+		jQuery.each($("input[name=default_map]"), function() {
+			if ($(this).val() == defaultMapId) {
+				$(this).attr("checked", "checked");
+			}
+			else {
+				$(this).removeAttr("checked");
+			}
+		});
+	}
 }
 </script>

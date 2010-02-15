@@ -1,3 +1,14 @@
+2010-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: in the function "saveMap" set the first map
+	as default.
+	
+	* godmode/setup/gis_step_2.php: minor stetic change the link of refresh by
+	button.
+
+	* godmode/gis_maps/index.php: add many alerts in the change the default map
+	and delete any map. And fix the delete map parameter.
+
 2010-02-12 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora_modules.js: add support to snmp ver3 in the

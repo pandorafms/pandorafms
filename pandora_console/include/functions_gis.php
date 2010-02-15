@@ -509,6 +509,8 @@ function deleteMap($idMap) {
 	process_sql_delete('tgis_map_has_tgis_map_connection', array('tgis_map_id_tgis_map' => $idMap));
 	process_sql_delete('tgis_map', array('id_tgis_map' => $idMap));
 	
+	$numMaps = get_db_num_rows('SELECT * FROM tgis_map');
+	
 	clean_cache();
 }
 
@@ -549,6 +551,11 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 			'group_id' => $map_group_id
 		)
 	);
+	
+	$numMaps = get_db_num_rows('SELECT * FROM tgis_map');
+	
+	if ($numMaps == 1)
+		process_sql_update('tgis_map', array('default_map' => 1), array('id_tgis_map' => $idMap));
 	
 	foreach ($map_connection_list as $map_connection) {
 		process_sql_insert('tgis_map_has_tgis_map_connection',

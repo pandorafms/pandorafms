@@ -171,7 +171,8 @@ if ($mapConnectionData != null) {
 echo "<div id='form_map_connection_type'>" . $optionsConnectionTypeTable . "</div>";
 
 echo "<h3>" . __('Preview and Select the center of the map and the default position of an agent without gis data') . "</h3>";
-echo "<a id='link_save_refresh' href='javascript: refreshMapView();'>" . __("Load the map view") . "</a>";
+print_button('Load the map view','button_refresh', false, 'refreshMapView();', 'class="sub"');
+echo "<br /><br />";
 echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black; float: left'></div>";
 
 $table->width = '60%';
@@ -279,8 +280,8 @@ function refreshMapView() {
 	centerPoint = null;
 	GISDefaultPositionPoint = null;
 
-	//Change the text.
-	$("#link_save_refresh").html('<?php echo __("Refresh the map view");?>');
+	//Change the text to button.
+	$("input[name=button_refresh]").val('<?php echo __("Refresh the map view");?>');
 
 	//Obtain data of map of fields.
 	inital_zoom = $('input[name=initial_zoom]').val();

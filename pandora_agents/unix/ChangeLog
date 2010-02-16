@@ -1,3 +1,13 @@
+2010-02-16  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	Updated tentacle from the tentacle repository and generated
+	manpage. TODO:Make the installer install the manpages
+
+	* unix/tentacle_client: Added pod documentation to generate manpages.
+
+	*  man/man1/tentacle_client.1: First version of the manpages for
+	tentacle_client
+
 2010-02-10 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandora_agent_installer: fix bug when uninstall the agent in the same

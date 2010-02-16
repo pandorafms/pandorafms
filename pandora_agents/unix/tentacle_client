@@ -3,7 +3,7 @@
 ################################################################################
 #
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2007-2008  Artica Soluciones Tecnologicas S.L.
+# Copyright (c) 2007-2010  Artica Soluciones Tecnologicas S.L.
 #
 # tentacle_client.pl	Tentacle Client. See http://www.openideas.info/wiki for
 # 			protocol description.
@@ -20,6 +20,38 @@
 ################################################################################
 
 package tentacle::client;
+
+=head1 NAME
+
+tentacle_client - Tentacle Client
+
+=head1 VERSION
+
+Version 0.2.0
+
+=head1 USAGE
+
+tentacle_client [options] [file] [file] ...
+
+=head1 DESCRIPTION
+
+B<tentacle_client(1)> is a client for B<tentacle>, a B<client/server> file transfer protocol that aims to be:
+
+=over
+
+=item    * Secure by design.
+
+=item    * Easy to use.
+
+=item    * Versatile and cross-platform. 
+
+=back 
+
+Tentacle was created to replace more complex tools like SCP and FTP for simple file transfer/retrieval, and switch from authentication mechanisms like .netrc, interactive logins and SSH keys to X.509 certificates. Simple password authentication over a SSL secured connection is supported too.
+
+The client and server (B<TCP port 41121>) are designed to be run from the command line or called from a shell script, and B<no configuration files are needed>. 
+
+=cut
 
 use strict;
 use File::Basename;
@@ -678,3 +710,75 @@ send_data ("QUIT\n");
 stop_client ();
 
 exit 0;
+
+
+__END__
+
+=head1 OPTIONS
+
+=over
+
+=item	I<-a address>	B<Server address> (default 127.0.0.1).
+
+=item	I<-c>			Enable B<SSL> without a client certificate.
+
+=item	I<-e cert>		B<OpenSSL certificate> file. Enables SSL.
+
+=item	I<-f ca>		Verify that the peer certificate is signed by a B<CA> (Certificate Authority).
+
+=item	I<-g>			B<Get> files from the server.
+
+=item	I<-h>			Show B<help>.
+
+=item	I<-k key>		B<OpenSSL private key> file.
+
+=item	I<-p port>		B<Server port> (default I<41121>).
+
+=item	I<-q>			B<Quiet>. Do now print error messages.
+
+=item	I<-r number>		B<Number of retries> for network operations (default I<3>).
+
+=item	I<-t time>		B<Time-out> for network operations in seconds (default I<1s>).
+
+=item	I<-v>			Be B<verbose>.
+
+=item	I<-w>			Prompt for B<OpenSSL private key password>.
+
+=item	I<-x pwd>		B<Server password>.
+
+=back
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+Tentacle doesn't use any configurationf files, all the configuration is done by the options passed when it's started.
+
+=head1 DEPENDENCIES
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<Getopt::Std>, L<IO::Select>, L<IO::Socket::INET>, L<File::Basename>
+
+Protocol description and more info at: L<< http://openideas.info/wiki/index.php?title=Tentacle >>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut
+

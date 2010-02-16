@@ -1,3 +1,22 @@
+2010-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add the function "getMapConnection" get the row
+	of connection for id connection, "updateMap" function update the all data in
+	the DB, "validateMapData" function validate the map data previous update or
+	save in the database and if it's invalid, write the css code for set colors
+	and other styles, "getMapData" return all data about map for id map,
+	"addConectionMapsInForm" tranlate the map connection array to html code and
+	javascript for to write in the form when edit, "addLayerList" translate the
+	layer array to html code and javascript for write in the form when edit.  
+	
+	* operation/gis_maps/render_view.php: fix the link to edit map.
+	
+	* godmode/gis_maps/configure_gis_map.php: change many parts of the source
+	code for add the method the edit in the form and add more usability
+	to form.
+	
+	* godmode/gis_maps/index.php: fix the links to edit and view map.
+
 2010-02-15  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added cusstom colums (
@@ -6,6 +25,7 @@
 	parameters that were missing. Reordering a bit. And fixed a missplaced ';'
 
 2010-02-15 Eric Ross <eric.ross.c@gmail.com>
+	
 	First batch of changes to implement the new log4x data type.
 
 	Modified files to show the new data type:

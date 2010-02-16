@@ -348,6 +348,10 @@ function getMapConf($idMap) {
 	return $mapConfs;
 }
 
+function getMapConnection($idMapConnection) {
+	return get_db_row('tgis_map_connection', 'id_tmap_connection', $idMapConnection);
+}
+
 function getLayers($idMap) {
 	$layers = get_db_all_rows_sql('SELECT * FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
 	
@@ -591,6 +595,72 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 	}
 }
 
+function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
+	$map_initial_altitude, $map_zoom_level, $map_background,
+	$map_default_longitude, $map_default_latitude, $map_default_altitude,
+	$map_group_id, $map_connection_list, $arrayLayers) {
+		
+	process_sql_update('tgis_map',
+		array('map_name' => $map_name,
+			'initial_longitude' => $map_initial_longitude,
+			'initial_latitude' => $map_initial_latitude,
+			'initial_altitude' => $map_initial_altitude,
+			'zoom_level' => $map_zoom_level,
+			'map_background' => $map_background,
+			'default_longitude' => $map_default_longitude,
+			'default_latitude' => $map_default_latitude,
+			'default_altitude' => $map_default_altitude,
+			'group_id' => $map_group_id
+		),
+		array('id_tgis_map' => $idMap));
+		
+	process_sql_delete('tgis_map_has_tgis_map_connection', array('tgis_map_id_tgis_map' => $idMap));
+	
+	foreach ($map_connection_list as $map_connection) {
+		process_sql_insert('tgis_map_has_tgis_map_connection',
+			array(
+				'tgis_map_id_tgis_map' => $idMap,
+				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],                       
+				'default_map_connection' => $map_connection['default']
+			)
+		);
+	}
+	
+	$listOldIdLayers = get_db_all_rows_sql('SELECT id_tmap_layer FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
+	if ($listOldIdLayers == false)
+		$listOldIdLayers = array();
+	foreach($listOldIdLayers as $idLayer) {
+		process_sql_delete('tgis_map_layer_has_tagente', array('tgis_map_layer_id_tmap_layer' => $idLayer['id_tmap_layer']));
+	}
+	
+	process_sql_delete('tgis_map_layer', array('tgis_map_id_tgis_map' => $idMap));
+	
+	foreach ($arrayLayers as $index => $layer) {
+		$idLayer = process_sql_insert('tgis_map_layer',
+			array(
+				'layer_name' => $layer['layer_name'],
+				'view_layer' => $layer['layer_visible'],
+				'layer_stack_order' => $index,
+				'tgis_map_id_tgis_map' => $idMap,
+				'tgrupo_id_grupo' => $layer['layer_group']
+			)
+		);
+		
+		if (array_key_exists('layer_agent_list', $layer)) {
+			if (count($layer['layer_agent_list']) > 0) {
+				foreach ($layer['layer_agent_list'] as $agent_name) {
+					process_sql_insert('tgis_map_layer_has_tagente',
+						array(
+							'tgis_map_layer_id_tmap_layer' => $idLayer,
+							'tagente_id_agente' => get_agent_id($agent_name)
+						)
+					);
+				}
+			}
+		}
+	}
+}
+
 /**
  * Get the configuration parameters of a map connection
  * 
@@ -722,5 +792,197 @@ function getArrayListIcons($fullpath = true) {
 	}
 	
 	return $return;
+}
+
+function validateMapData($map_name, $map_zoom_level,
+	$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
+	$map_default_longitude, $map_default_latitude, $map_default_altitude,
+	$map_connection_list) {
+	$invalidFields = array();
+	
+	echo "<style type='text/css'>";
+	
+	//validateMap
+	if ($map_name == '') {
+		echo "input[name=map_name] {background: #FF5050;}";
+		$invalidFields['map_name'] = true;
+	}
+	
+	//validate zoom level
+	if ($map_zoom_level == '') {
+		echo "input[name=map_zoom_level] {background: #FF5050;}";
+		$invalidFields['map_zoom_level'] = true;
+	}
+	
+	//validate map_initial_longitude
+	if ($map_initial_longitude == '') {
+		echo "input[name=map_initial_longitude] {background: #FF5050;}";
+		$invalidFields['map_initial_longitude'] = true;
+	}
+	
+	//validate map_initial_latitude
+	if ($map_initial_latitude == '') {
+		echo "input[name=map_initial_latitude] {background: #FF5050;}";
+		$invalidFields['map_initial_latitude'] = true;
+	}
+	
+	//validate map_initial_altitude
+	if ($map_initial_altitude == '') {
+		echo "input[name=map_initial_altitude] {background: #FF5050;}";
+		$invalidFields['map_initial_altitude'] = true;
+	}
+	
+	//validate map_default_longitude
+	if ($map_default_longitude == '') {
+		echo "input[name=map_default_longitude] {background: #FF5050;}";
+		$invalidFields['map_default_longitude'] = true;
+	}
+	
+	//validate map_default_latitude
+	if ($map_default_latitude == '') {
+		echo "input[name=map_default_latitude] {background: #FF5050;}";
+		$invalidFields['map_default_latitude'] = true;
+	}
+	
+	//validate map_default_altitude
+	if ($map_default_altitude == '') {
+		echo "input[name=map_default_altitude] {background: #FF5050;}";
+		$invalidFields['map_default_altitude'] = true;
+	}
+	
+	//validate map_default_altitude
+	if ($map_connection_list == '') {
+		$invalidFields['map_connection_list'] = true;
+	}
+
+	echo "</style>";
+	
+	return $invalidFields;
+}
+
+/**
+ * Get all data (connections, layers with agents) of a map passed as id.
+ * 
+ * @param integer $idMap The id of map in database.
+ * 
+ * @return Array Return a asociative array whith the items 'map', 'connections' and 'layers'. And in 'layers' has data and item 'agents'.
+ */
+function getMapData($idMap) {
+	$returnVar = array();
+	
+	$map = get_db_row('tgis_map', 'id_tgis_map', $idMap);
+	$connections = get_db_all_rows_sql('SELECT tgis_map_connection_id_tmap_connection AS id_conection,
+			default_map_connection AS `default`
+		FROM tgis_map_has_tgis_map_connection WHERE tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+	$layers = get_db_all_rows_sql('SELECT id_tmap_layer, layer_name, tgrupo_id_grupo AS layer_group, view_layer AS layer_visible FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
+	if ($layers === false) $layers = array();
+	
+	foreach ($layers as $index => $layer) {
+		$agents = get_db_all_rows_sql('SELECT nombre
+			FROM tagente
+			WHERE id_agente IN (SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layer['id_tmap_layer'] . ')');
+		if ($agents !== false)
+			$layers[$index]['layer_agent_list'] = $agents;
+		else
+			$layers[$index]['layer_agent_list'] = array();
+	}
+	
+	$returnVar['map'] = $map;
+	$returnVar['connections'] = $connections;
+	$returnVar['layers'] = $layers;
+	
+	return $returnVar;
+}
+
+/**
+ * This function use in form the "pandora_console/godmode/gis_maps/configure_gis_map.php"
+ * in the case of edit a map or when there are any error in save new map. Because this function
+ * return a html code that it has the rows of connections.
+ * 
+ * @param Array $map_connection_list The list of map connections for convert a html.
+ * 
+ * @return String The html source code.
+ */
+function addConectionMapsInForm($map_connection_list) {
+	$returnVar = '';
+	
+	foreach ($map_connection_list as $mapConnection) {
+		$mapConnectionRowDB = getMapConnection($mapConnection['id_conection']);
+		
+		if ($mapConnection['default']) {
+			$radioButton = print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', $mapConnection['id_conection'], false, 'changeDefaultConection(this.value)', '', true);
+		}
+		else
+			$radioButton = print_radio_button_extended('map_connection_default', $mapConnection['id_conection'], '', null, false, 'changeDefaultConection(this.value)', '', true);
+		
+		$returnVar .= '
+			<tbody id="map_connection_' . $mapConnection['id_conection'] . '">
+				<tr class="row_0">
+					<td>' . print_input_text ('map_connection_name_' . $mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true) . '</td>
+					<td>' . $radioButton . '</td>
+					<td><a id="delete_row" href="javascript: deleteConnectionMap(\'' . $mapConnection['id_conection'] . '\')"><img src="images/cross.png" alt=""></a></td>
+				</tr>
+			</tbody>
+			<script type="text/javascript">
+			connectionMaps.push(' . $mapConnection['id_conection'] . ');
+			</script>
+			';
+	}
+	
+	return $returnVar;
+}
+
+/**
+ * This function use in form the "pandora_console/godmode/gis_maps/configure_gis_map.php"
+ * in the case of edit a map or when there are any error in save new map. Because this function
+ * return a html code that it has the rows of layers of map.
+ * 
+ * @param Array $layer_list The list of layers for convert a html.
+ * 
+ * @return String The html source code.
+ */
+function addLayerList($layer_list) {
+	$returnVar = '';
+	
+	$count = 0;
+	foreach ($layer_list as $layer) {
+		//Create the layer temp form as it was in the form
+		$layerTempForm = array();
+		$layerTempForm['layer_name'] = $layer['layer_name'];
+		$layerTempForm['layer_group'] = $layer['layer_group'];
+		$layerTempForm['layer_visible'] = $layer['layer_visible'];
+		if (array_key_exists('layer_agent_list', $layer)) {
+			foreach($layer['layer_agent_list'] as $agent) {
+				$layerTempForm['layer_agent_list'][] = $agent;
+			}
+		}
+		
+		$layerDataJSON = json_encode($layerTempForm);
+		
+		$returnVar .= '
+			<tbody id="layer_item_' . $count . '">
+				<tr>
+					<td class="col1">' . $layer['layer_name'] . '</td>
+					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');"><img src="images/up.png" alt=""></a></td>
+					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');"><img src="images/down.png" alt=""></a></td>
+					<td class="col3">
+						<a id="edit_layer" href="javascript: editLayer(' . $count . ');"><img src="images/config.png" alt="" /></a>
+					</td>
+					<td class="col4">
+						<input type="hidden" name="layer_values_' . $count . '" value=\'' . $layerDataJSON . '\' id="layer_values_' . $count . '" />
+						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')"><img src="images/cross.png" alt=""></a>
+					</td>
+				</tr>
+			</tbody>
+			<script type="text/javascript">
+				layerList.push(countLayer);
+				countLayer++;
+				updateArrowLayers();
+			</script>';
+		
+		$count ++;
+	}
+	
+	return $returnVar;
 }
 ?>

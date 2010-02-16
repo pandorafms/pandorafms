@@ -1,3 +1,12 @@
+2010-02-16	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	Updated tentacle from the tentacle repository and generated 
+	manpage. TODO:Make the installer install the manpages
+
+	* unix/tentacle_client: Added pod documentation to generate manpages.
+
+	*  man/man1/tentacle_client.1: First version of the manpages for
+	 tentacle_client
 
 2010-02-09  Sancho Lerena <slerena@artica.es>
 
@@ -7,7 +16,7 @@
 	* linux/pandora_agent.spec: Fixed some compatibility issues with
 	CentOS LSB and RPM package.
 
-2010-01-12	Pablo de la Concepcipón <pablo.concepcion@artica.es>
+2010-01-12	Pablo de la Concepción <pablo.concepcion@artica.es>
 	
 	* unix/Linux/pandora_agent.conf, unix/AIX/pandora_agent.conf,
 	unix/HP-UX/pandora_agent.conf, unix/pandora_agent,

@@ -84,6 +84,7 @@ function mainModuleGroups() {
 			}
 			
 			$color = 'transparent'; //Defaut color for cell
+			$font_color = '#ffffff'; //Default font color for cell
 			if ($count == 0) {
 				$color = '#babdb6'; //Grey when the cell for this model group and agent group hasn't modules.
 				$alinkStart = '';
@@ -91,14 +92,16 @@ function mainModuleGroups() {
 			}
 			else {
 				$alinkStart = '<a href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
-					'&modulegroup=' . $idModelGroup . '">';
+					'&modulegroup=' . $idModelGroup . '".
+					style="color: ' . $font_color . '";>';
 				$alinkEnd = '</a>';
 				
 				if (array_key_exists(0,$states) && (count($states) == 1))
 					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
 				else {
-					if (array_key_exists(1,$states))
+					if (array_key_exists(1,$states)) {
 						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+					}
 					else
 						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 				}
@@ -106,10 +109,10 @@ function mainModuleGroups() {
 			
 			array_push($row,
 				'<div
-					style="background: ' . $color . ' ;
-						height: 15px;
-						margin-left: auto; margin-right: auto;
-						text-align: center; padding-top: 5px;">
+					style="background: ' . $color . ';
+					height: 15px;
+					margin-left: auto; margin-right: auto;
+					text-align: center; padding-top: 5px;">
 					' . $alinkStart . $count . ' modules' . $alinkEnd . '</div>');
 		}
 		array_push($tableData,$row);
@@ -122,19 +125,19 @@ function mainModuleGroups() {
 		"<ul style='float: left;'>" .
 		'<li style="clear: both;">
 			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Red when the cell for this model group and agent has at least one module in critical state and the others in any state.") .
+			__("Red cell when the module group and agent have at least one module in critical state and the others in any state.") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Yellow when the cell for this model group and agent has at least one in warning state and the others in green state.") .
+			__("Yellow cell when the module group and agent have at least one in warning state and the others in green state.") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Green when the cell for this model group and agent has OK state all modules.") .
+			__("Green cell when the module group and agent have all modules in OK state.") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey when the cell for this model group and agent group haven't modules.") .
+			__("Grey cell when the module group and agent don't have any modules.") .
 		'</li>' .
 		"</ul>" .
 	"</p>";

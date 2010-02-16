@@ -20,12 +20,66 @@ check_login ();
 require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');
+//Global vars for javascript and scripts.
+?>
+<script type="text/javascript">
+var connectionMaps = Array();
+var agentList = Array();
+var countAgentList = 0;
+var countLayer = 0;
+var layerList = Array();
+
+function isInt(x) {
+	var y=parseInt(x);
+	if (isNaN(y)) return false;
+	return x==y && x.toString()==y.toString();
+}
+
+function updateArrowLayers() {
+	var count = 0;
+	var lastIndex = null;
+	
+	for (var index in layerList) {
+
+		//int because in the object array there are method as string
+		if (isInt(index)) {
+			numLayer = layerList[index];
+			layerObj = $("#layer_item_" + numLayer);
+			
+			//First element
+			if (count == 0) {
+				$('.up_arrow', layerObj).html('');
+			}
+			else {
+				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php print_image ("images/up.png"); ?></a>');
+			}
+
+			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php print_image ("images/down.png"); ?></a>');
+
+			
+			count++;
+			lastIndex = index;
+		}
+	}
+
+	//Last element
+	if (lastIndex != null) {
+		numLayer = layerList[lastIndex];
+		layerObj = $("#layer_item_" + numLayer);
+		
+		$('.down_arrow', layerObj).html('');
+	}
+}
+</script>
+<?php
 
 if (! give_acl ($config['id_user'], 0, "IW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }
+
+
 //debugPrint($_POST);
 
 $action = get_parameter('action', 'new_map');
@@ -46,29 +100,56 @@ switch ($action) {
 		$map_group_id = get_parameter('map_group_id');
 		
 		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
+		foreach ($map_connection_list_temp as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($map_connection_list_temp[$index]);
+			}
+		}
 		$layer_list = explode(",",get_parameter('layer_list'));
+		foreach ($layer_list as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($layer_list[$index]);
+			}
+		}
 		
 		$map_connection_default = get_parameter('map_connection_default');
 		
 		$map_connection_list = array();
 		foreach ($map_connection_list_temp as $idMapConnection) {
-			$default = false;
+			$default = 0;
 			if ($map_connection_default == $idMapConnection)
-				$default = true;
+				$default = 1;
 			
 			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
 		}
 		
 		$arrayLayers = array();
-		
 		foreach ($layer_list as $layerID) {
 			$arrayLayers[] = JSON_decode($_POST['layer_values_' . $layerID], true);
 		}
 		
-		saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
-			$map_initial_altitude, $map_zoom_level, $map_background,
+		$invalidFields = validateMapData($map_name, $map_zoom_level,
+			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
-			$map_group_id, $map_connection_list, $arrayLayers);
+			$map_connection_list);
+		
+		if (empty($invalidFields)) {
+			saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
+				$map_initial_altitude, $map_zoom_level, $map_background,
+				$map_default_longitude, $map_default_latitude, $map_default_altitude,
+				$map_group_id, $map_connection_list, $arrayLayers);
+			$mapCreatedOk = true;
+		}
+		else {
+			print_input_hidden('action', 'save_new');
+			$mapCreatedOk = false;
+		}
+		$layer_list = $arrayLayers;
+		
+		print_result_message ($mapCreatedOk, __('Successfully created'),
+			__('Could not be created'));
 		break;
 	case 'new_map':
 		print_input_hidden('action', 'save_new');
@@ -84,6 +165,114 @@ switch ($action) {
 		$map_default_latitude = '';
 		$map_default_altitude = '';
 		$map_group_id = '';
+		$map_connection_list = Array();
+		$layer_list = Array();
+		break;
+	case 'edit_map':
+		$idMap = get_parameter('map_id');
+		
+		print_input_hidden('action', 'update_saved');
+		print_input_hidden('map_id', $idMap);
+		
+		$mapData = getMapData($idMap);
+
+		$map_name = $mapData['map']['map_name'];
+		$map_group_id = $mapData['map']['group_id'];
+		$map_zoom_level = $mapData['map']['zoom_level'];
+		$map_background = $mapData['map']['map_background'];
+		$map_initial_longitude = $mapData['map']['initial_longitude'];
+		$map_initial_latitude = $mapData['map']['initial_latitude'];
+		$map_initial_altitude = $mapData['map']['initial_altitude'];
+		$map_default_longitude = $mapData['map']['default_longitude'];
+		$map_default_latitude = $mapData['map']['default_latitude'];
+		$map_default_altitude = $mapData['map']['default_altitude'];
+		
+		$map_connection_list = $mapData['connections'];
+		
+		$layer_list = array();
+		foreach ($mapData['layers'] as $layer) {
+			$layerAgentList = array();
+			foreach($layer['layer_agent_list'] as $layerAgent) {
+				$layerAgentList[] = $layerAgent['nombre'];
+			}
+			$layer_list[] = array(
+				'layer_name' => $layer['layer_name'],
+				'layer_group' => $layer['layer_group'],
+				'layer_visible' => $layer['layer_visible'],
+				'layer_agent_list' => $layerAgentList
+				);
+		}
+		break;
+	case 'update_saved':
+		$idMap = get_parameter('map_id');
+		
+		$map_name = get_parameter('map_name');
+		$map_initial_longitude = get_parameter('map_initial_longitude');
+		$map_initial_latitude = get_parameter('map_initial_latitude');
+		$map_initial_altitude = get_parameter('map_initial_altitude');
+		$map_zoom_level = get_parameter('map_zoom_level');
+		$map_background = ''; //TODO
+		$map_default_longitude = get_parameter('map_default_longitude');
+		$map_default_latitude = get_parameter('map_default_latitude');
+		$map_default_altitude = get_parameter('map_default_altitude');
+		$map_group_id = get_parameter('map_group_id');
+		
+		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
+		foreach ($map_connection_list_temp as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($map_connection_list_temp[$index]);
+			}
+		}
+		$layer_list = explode(",",get_parameter('layer_list'));
+		foreach ($layer_list as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($layer_list[$index]);
+			}
+		}
+		
+		$map_connection_default = get_parameter('map_connection_default');
+		
+		$map_connection_list = array();
+		foreach ($map_connection_list_temp as $idMapConnection) {
+			$default = 0;
+			if ($map_connection_default == $idMapConnection)
+				$default = 1;
+			
+			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
+		}
+		
+		$arrayLayers = array();
+		foreach ($layer_list as $layerID) {
+			$arrayLayers[] = JSON_decode($_POST['layer_values_' . $layerID], true);
+		}
+		
+		$invalidFields = validateMapData($map_name, $map_zoom_level,
+			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
+			$map_default_longitude, $map_default_latitude, $map_default_altitude,
+			$map_connection_list);
+			
+		if (empty($invalidFields)) {
+			//TODO
+			updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
+				$map_initial_altitude, $map_zoom_level, $map_background,
+				$map_default_longitude, $map_default_latitude, $map_default_altitude,
+				$map_group_id, $map_connection_list, $arrayLayers);
+			$mapCreatedOk = true;
+		}
+		else {
+			
+			print_input_hidden('action', 'update_saved');
+			$mapCreatedOk = false;
+		}
+		$layer_list = $arrayLayers;
+		
+		print_result_message ($mapCreatedOk, __('Successfully update'),
+			__('Could not be update'));
+		
+		print_input_hidden('action', 'update_saved');
+		print_input_hidden('map_id', $idMap);
 		break;
 }
 
@@ -93,6 +282,14 @@ $table->data = array ();
 $table->data[0][0] = __('Name') . ':';
 $table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
+
+$iconError = '';
+if (isset($invalidFields['map_connection_list'])) {
+	if ($invalidFields['map_connection_list']) {
+		$iconError = '<img src="images/dot_red.png" />';
+	}
+}
+
 $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td colspan='3'><div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div></td>
@@ -101,7 +298,7 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 		<td colspan='3'><a href=''>" . __("Refresh map view") . "</a></td>
 	</tr>
 	<tr>
-		<td>" . __("Add Map connection") . ":</td>
+		<td>" . __("Add Map connection") . ": " . $iconError . "</td>
 		<td>
 			" . print_select_from_sql('SELECT id_tmap_connection, conection_name FROM tgis_map_connection', 'map_connection', '', '', '', '0', true) ."
 		</td>
@@ -110,7 +307,7 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
 		</td>
-	</tr>
+	</tr> " . addConectionMapsInForm($map_connection_list) . "
 </table>";
 
 $table->data[1][0] = __('Group') . ':';
@@ -119,13 +316,13 @@ $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo'
 $table->data[2][0] = __('Zoom level') . ':';
 $table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true);
 
-$table->data[3][0] = __('Initial Longitude') . ':';
+$table->data[3][0] = __('Center Longitude') . ':';
 $table->data[3][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
 
-$table->data[4][0] = __('Initial Latitude') . ':';
+$table->data[4][0] = __('Center Latitude') . ':';
 $table->data[4][1] = print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
 
-$table->data[5][0] = __('Initial Altitude') . ':';
+$table->data[5][0] = __('Center Altitude') . ':';
 $table->data[5][1] = print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
 
 $table->data[6][0] = __('Default Longitude') . ':';
@@ -146,10 +343,13 @@ $table->data = array ();
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
-$table->data[0][0] = print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub new"', true);
-$table->data[0][1] = "<h4>List of layers</h4>";
+$table->data[0][0] = "<h4>List of layers</h4>";
+$table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub new"', true) . '</div>';
 
-$table->data[1][0] = '<div id="form_layer">
+$table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .
+	addLayerList($layer_list) . 
+	'</table>';
+$table->data[1][1] = '<div id="form_layer">
 		<table id="form_layer_table" class="databox" border="0" cellpadding="4" cellspacing="4" style="visibility: hidden;">
 			<tr>
 				<td>' . __('Layer name') . ':</td>
@@ -158,8 +358,11 @@ $table->data[1][0] = '<div id="form_layer">
 				<td>' . print_checkbox('layer_visible_form', 1, true, true) . '</td>
 			</tr>
 			<tr>
-				<td>' . __('Group') . ':</td>
+				<td>' . __('Show agents from group') . ':</td>
 				<td colspan="3">' . print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'layer_group_form', '', '', __('None'), '0', true) . '</td>
+			</tr>
+			<tr>
+				<td colspan="4"><hr /></td>
 			</tr>
 			<tr>
 				<td>' . __('Agent') . ':</td>
@@ -185,14 +388,26 @@ $table->data[1][0] = '<div id="form_layer">
 			</tr>
 		</table>
 	</div>';
-$table->data[1][1] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">
-	</table>';
 
 print_table($table);
 
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
+switch ($action) {
+	case 'save_new':
+	case 'edit_map':
+	case 'update_saved':
+		if (!empty($invalidFields)) {
+			print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
+		}
+		else {
+			print_submit_button(_('Update map'), 'update_button', false, 'class="sub update"');
+		}
+		break;
+	case 'new_map':
+		print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
+		break;
+}
 echo '</div>';
 
 echo "</form>";
@@ -226,10 +441,13 @@ echo "</form>";
 <table style="visibility: hidden;">
 		<tbody id="chuck_layer_item">
 			<tr>
-				<td class="col1"><a href='javascript: editLayer(none);'>XXXXXXXXXXXXXXXXXX</a></td>
+				<td class="col1">XXXXXXXXXXXXXXXXXX</td>
 				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><img src="images/up.png" alt=""></a></td>
 				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><img src="images/down.png" alt=""></a></td>
 				<td class="col3">
+					<a id="edit_layer" href="javascript: editLayer(none);"><img src="images/config.png" alt="" /></a>
+				</td>
+				<td class="col4">
 					<input type="hidden" name="layer_values" id="layer_values" />
 					<a id="delete_row" href="none"><img src="images/cross.png" alt=""></a>
 				</td>
@@ -247,13 +465,6 @@ require_jquery_file ('autocomplete');
 require_jquery_file ('json');
 ?>
 <script type="text/javascript">
-var connectionMaps = Array();
-var agentList = Array();
-var countAgentList = 0;
-var countLayer = 0;
-var layerList = Array();
-
-
 $("#text_id_agent").autocomplete(
 	"ajax.php",
 	{
@@ -283,12 +494,6 @@ $("#text_id_agent").result (
 		$("#button-add_agent").attr('disabled', false);
 	}
 );
-
-function isInt(x) {
-	var y=parseInt(x);
-	if (isNaN(y)) return false;
-	return x==y && x.toString()==y.toString();
-}
 
 function loadAgents(agent_list) {
 	if (agent_list != null) {
@@ -325,6 +530,17 @@ function deleteLayer(idRow) {
 	}
 
 	updateArrowLayers();
+
+	//If delete the layer in edit progress, must clean the form.
+	if ($("#hidden-layer_edit_id_form").val() == idRow) {
+		$("#form_layer_table").css('visibility', 'hidden');
+		agentList = Array();
+		countAgentList = 0;
+		
+		setFieldsFormLayer('', 0, true, null);
+		$("#hidden-layer_edit_id_form").val('');
+		$("input[name=save_layer]").val('<?php echo __("Save Layer"); ?>');
+	}
 }
 
 function newLayer() {
@@ -334,6 +550,7 @@ function newLayer() {
 	setFieldsFormLayer('', 0, true, null);
 	$("#form_layer_table").css('visibility', 'visible');
 	$("#hidden-layer_edit_id_form").val('');
+	$("input[name=save_layer]").val('<?php echo __("Save Layer"); ?>');
 }
 
 function serializeForm() {
@@ -345,13 +562,13 @@ function serializeForm() {
 	else
 		layer.layer_visible = 0;
 	layer.layer_agent_list = Array();
-	
+
 	for (var index2 in agentList) {
 		if (isInt(index2)) {
-			layer.layer_agent_list[index2] = $("#name_agent_" + index2).val();
+			layer.layer_agent_list[index2] = $("#name_agent_" + agentList[index2]).val();
 		}
 	}
-
+	
 	return $.toJSON(layer);
 }
 
@@ -364,7 +581,27 @@ function editLayer(indexLayer) {
 	
 	setFieldsFormLayer(layer.layer_name, layer.layer_group, layer.layer_visible, layer.layer_agent_list);
 	$("#hidden-layer_edit_id_form").val(indexLayer);
+
+	$("input[name=save_layer]").val('<?php echo __("Edit Layer"); ?>');
+
 	$("#form_layer_table").css('visibility', 'visible');
+	
+	hightlightRow(indexLayer);
+}
+
+function hightlightRow(idLayer) {
+	row = $("#layer_item_" + idLayer);
+	
+	$(".col1").css('background', '');
+	$(".up_arrow").css('background', '');
+	$(".down_arrow").css('background', '');
+	$(".col3").css('background', '');
+	$(".col4").css('background', '');
+	$(".col1", row).css('background', '#E9F3D2');
+	$(".up_arrow", row).css('background', '#E9F3D2');
+	$(".down_arrow", row).css('background', '#E9F3D2');
+	$(".col3", row).css('background', '#E9F3D2');
+	$(".col4", row).css('background', '#E9F3D2');
 }
 
 function saveLayer() {
@@ -381,12 +618,12 @@ function saveLayer() {
 		id = layer_id;
 		tableRow = $("#layer_item_" + id);
 	}
-	
-	$(".col1", tableRow).html("<a href='javascript: editLayer(" + id + ");'>" + $("#text-layer_name_form").val() + "</a>");
+
+	$(".col1", tableRow).html($("#text-layer_name_form").val());
+	$("#edit_layer", tableRow).attr("href", "javascript: editLayer(" + id + ");");
 	$("#delete_row", tableRow).attr("href", "javascript: deleteLayer(" + id + ")");
 	$("#up_arrow", tableRow).attr("href", "javascript: upLayer(" + id + ")");
 	$("#down_arrow", tableRow).attr("href", "javascript: downLayer(" + id + ")");
-
 	
 	$("#layer_values_" + id, tableRow).val(serializeForm());
 
@@ -398,14 +635,16 @@ function saveLayer() {
 	}
 
 	updateArrowLayers();
-	$("#form_layer_table").css('visibility', 'hidden');
+	hightlightRow(id);
+
+	editLayer(id);
+	$("input[name=save_layer]").val('<?php echo __("Edit Layer"); ?>');
 }
 
 function deleteAgentLayer(idRow) {
 	$("#agent_" + idRow).remove();
 	
 	for (var index in agentList) {
-
 		//int because in the object array there are method as string
 		if (isInt(index)) {
 			if (agentList[index] == idRow) {
@@ -416,26 +655,24 @@ function deleteAgentLayer(idRow) {
 }
 
 function addAgentLayer(agent_name) {
-	agent_name = typeof(agent_name) != 'undefined' ? agent_name : null; //default value
+	if (typeof(agent_name) == 'undefined')
+		agent_name = $("#text_id_agent").val(); //default value
 	
 	tableRow = $("#chuck_agent").clone();
 
 	tableRow.attr('id','agent_' + countAgentList);
 	agentList.push(countAgentList);
 
-	if (agent_name == null)
-		$(".col1", tableRow).html($("#text_id_agent").val());
-	else
-		$(".col1", tableRow).html(agent_name);
-	
+	$(".col1", tableRow).html(agent_name);
 	$("#delete_row", tableRow).attr("href", 'javascript: deleteAgentLayer(' + countAgentList + ')');
-	$("#name_agent", tableRow).val($("#text_id_agent").val());
+	$("#name_agent", tableRow).val(agent_name);
 	$("#name_agent", tableRow).attr("name", "name_agent_" + countAgentList);
 	$("#name_agent", tableRow).attr("id", "name_agent_" + countAgentList);
 	
 	countAgentList++;
 	
 	$("#list_agents").append(tableRow);
+	$("#button-add_agent").attr('disabled', true);
 }
 
 function deleteConnectionMap(idConnectionMap) {
@@ -533,43 +770,6 @@ function fillOrderField() {
 	$('#map_connection_list').val(connectionMaps.toString());
 	$('#layer_list').val(layerList.toString());
 }
-
-function updateArrowLayers() {
-	var count = 0;
-	var lastIndex = null;
-	
-	for (var index in layerList) {
-
-		//int because in the object array there are method as string
-		if (isInt(index)) {
-			numLayer = layerList[index];
-			layerObj = $("#layer_item_" + numLayer);
-			
-			//First element
-			if (count == 0) {
-				$('.up_arrow', layerObj).html('');
-			}
-			else {
-				$('.up_arrow', layerObj).html('<a class="up_arrow" href="javascript: upLayer(' + numLayer + ');"><?php print_image ("images/up.png"); ?></a>');
-			}
-
-			$('.down_arrow', layerObj).html('<a class="down_arrow" href="javascript: downLayer(' + numLayer + ');"><?php print_image ("images/down.png"); ?></a>');
-
-			
-			count++;
-			lastIndex = index;
-		}
-	}
-
-	//Last element
-	if (lastIndex != null) {
-		numLayer = layerList[lastIndex];
-		layerObj = $("#layer_item_" + numLayer);
-		
-		$('.down_arrow', layerObj).html('');
-	}
-}
-
 
 function upLayer(idLayer) {
 	var toUpIndex = null

@@ -64,7 +64,7 @@ if ($config["pure"] == 0) {
 echo "&nbsp;";
 
 if (give_acl ($config["id_user"], $map['group_id'], "AW"))
-	echo '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;map_id='.$idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	echo '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='. $idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 echo "</h2>";
 
 printMap('map', $map['zoom_level'], $numZoomLevels, $map['initial_latitude'],

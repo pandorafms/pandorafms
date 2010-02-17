@@ -1,3 +1,9 @@
+2010-02-18   Sancho Lerena <slerena@artica.es>
+
+	* unix/Linux/pandora_agent.conf,
+	linux/pandora_agent.conf: Modified way to get loadaverage, taken from
+	Enriquegm from the forums.
+
 2010-02-16	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	Updated tentacle from the tentacle repository and generated 

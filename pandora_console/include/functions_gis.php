@@ -90,7 +90,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 	<?php
 }
 
-function makeLayer($name, $visible = true, $dot = null) {
+function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
 	if ($dot == null) {
 		$dot['url'] = 'images/dot_green.png';
 		$dot['width'] = 20; //11;
@@ -115,6 +115,9 @@ function makeLayer($name, $visible = true, $dot = null) {
 			var layer = new OpenLayers.Layer.Vector(
 	                '<?php echo $name; ?>', {styleMap: style}
 	            );
+
+            layer.data = {};
+            layer.data.id = '<?php echo $idLayer; ?>';
 
             layer.setVisibility(<?php echo $visible; ?>);
 			map.addLayer(layer);
@@ -192,7 +195,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	?>
 	<script type="text/javascript">
 		var last_time_of_data = <?php echo $lastTimeOfData; ?>; //This time use in the ajax query to next recent points.
-		var refreshAjaxIntervalSeconds = 1000;
+		var refreshAjaxIntervalSeconds = 6000;
 		var idIntervalAjax = null;
 
 		function searchPointAgentById(id) {
@@ -226,15 +229,17 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			if (featureIdArray.length > 0) {
 	    		jQuery.ajax ({
 	        		data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features="  + featureIdArray.toString()
-	        			+ "&last_time_of_data=" + last_time_of_data,
+	        			+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id,
 	        		type: "GET",
 	        		dataType: 'json',
 	        		url: "ajax.php",
 	        		timeout: 10000,
 	        		success: function (data) {
 	        			if (data.correct) {
-		        			if (data.content != "null") {
-		        				listAgentsPoints = $.evalJSON(data.content);
+		        			content = $.evalJSON(data.content);
+							
+		        			if (content.coords != null) {
+		        				listAgentsPoints = content.coords;
 		        				
 		        				for (var idAgent in listAgentsPoints) {
 		        					if (isInt(idAgent)) {
@@ -251,6 +256,30 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 					        					feature.move(point);
 				        					}
 				        				}
+		        					}
+		        				}
+		        			}
+							
+		        			if (content.new_coords != null) {
+		        				listNewAgentsPoints = content.new_coords;
+
+		        				for (var idAgent in listNewAgentsPoints) {
+		        					if (isInt(idAgent)) {
+				        				point = listNewAgentsPoints[idAgent];
+
+		        						var geometryPoint = new OpenLayers.Geometry.Point(point.longitude, point.latitude)
+		        							.transform(map.displayProjection, map.getProjectionObject());
+		        						
+		        						feature = new OpenLayers.Feature.Vector(geometryPoint,
+				        						{id: idAgent, 
+			        							type: 'point_agent_info', 
+			        							long_lat: new OpenLayers.LonLat(point.longitude, point.latitude).transform(map.displayProjection, map.getProjectionObject()) },
+			        							{fontWeight: "bolder",
+				        						fontColor: "#00014F",
+				        						labelYOffset: -point.icon_height,
+				        						graphicHeight: point.icon_width, graphicWidth: point.icon_height, externalGraphic: point.icon_path, label: point.name});
+		        						
+		        						layer.addFeatures(feature);
 		        					}
 		        				}
 		        			}
@@ -278,7 +307,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 				}
 				?>
 			}
-			//last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
+			last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
 
 			//clearInterval(idIntervalAjax);
 		}

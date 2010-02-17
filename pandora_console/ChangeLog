@@ -1,3 +1,16 @@
+2010-02-17 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add the parameter id layer in the function
+	"makeLayer" for add the id layer (id of db) in the layer. Fill in the
+	sourcecode  in the function "activateAjaxRefresh" that now show new
+	agents in the map in real time and add make changes in this function.
+	 
+	* operation/gis_maps/render_view.php: use the new parameter in the call
+	of function "makeLayer".
+
+	* operation/gis_maps/ajax.php: add code to return new positions (and name
+	and icon) when the ask the positions in "activateAjaxRefresh".
+
 2010-02-16  Raúl Mateos <raulofpandora@gmail.com>
 
 	* extensions/module_groups.php: Better description text. Changed font

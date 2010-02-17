@@ -993,11 +993,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
     FOREIGN KEY (`tgis_map_id_tgis_map` )
     REFERENCES `tgis_map` (`id_tgis_map` )
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_tmap_layer_tgrupo1`
-    FOREIGN KEY (`tgrupo_id_grupo` )
-    REFERENCES `tgrupo` (`id_grupo` )
-    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';

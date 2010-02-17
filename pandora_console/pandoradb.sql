@@ -59,9 +59,6 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ,
   `icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ,
   `update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it' ,
-  `last_latitude` DOUBLE NULL COMMENT 'last latitude of the agent' ,
-  `last_longitude` DOUBLE NULL COMMENT 'last longitude of the agent' ,
-  `last_altitude` DOUBLE NULL COMMENT 'last altitude of the agent' ,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`),
   KEY `direccion` (`direccion`),
@@ -74,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
   `datos` double(18,2) default NULL,
   `utimestamp` bigint(20) default '0',
   KEY `data_index1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` (`utimestamp`)
+  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
@@ -92,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
   `datos` text NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
   KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` (`utimestamp`)
+  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
@@ -196,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `tagent_access` (
   `id_agent` int(10) unsigned NOT NULL default '0',
   `utimestamp` bigint(20) NOT NULL default '0',
   KEY `agent_index` (`id_agent`),
-  KEY `idx_utimestamp` (`utimestamp`)
+  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -890,9 +887,9 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
 -- GIS extension Tables
 
 -- -----------------------------------------------------
--- Table `tgis_data`
+-- Table `tgis_data_history`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `tgis_data` (
+CREATE  TABLE IF NOT EXISTS `tgis_data_history` (
   `id_tgis_data` INT NOT NULL AUTO_INCREMENT COMMENT 'key of the table' ,
   `longitude` DOUBLE NOT NULL ,
   `latitude` DOUBLE NOT NULL ,
@@ -902,12 +899,39 @@ CREATE  TABLE IF NOT EXISTS `tgis_data` (
   `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
   `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
   `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position from the start_timestampa to the_end_timestamp' ,
-  `tagente_id_agente` INT(10) NOT NULL COMMENT 'reference to the agent' ,
+  `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'reference to the agent' ,
   PRIMARY KEY (`id_tgis_data`) ,
-  INDEX `start_timestamp_index` (`start_timestamp` ASC) ,
-  INDEX `end_timestamp_index` (`end_timestamp` ASC) )
+  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
+  INDEX `end_timestamp_index` (`end_timestamp` ASC) USING BTREE )
 ENGINE = InnoDB
-COMMENT = 'Table to store GIS information of the agents';
+COMMENT = 'Table to store historical GIS information of the agents';
+
+
+-- -----------------------------------------------------
+-- Table `tgis_data_status`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `tgis_data_status` (
+  `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'Reference to the agent' ,
+  `current_longitude` DOUBLE NOT NULL COMMENT 'Last received longitude',
+  `current_latitude` DOUBLE NOT NULL COMMENT 'Last received latitude',
+  `current_altitude` DOUBLE NULL COMMENT 'Last received altitude',
+  `stored_longitude` DOUBLE NOT NULL COMMENT 'Reference longitude to see if the agent has moved',
+  `stored_latitude` DOUBLE NOT NULL COMMENT 'Reference latitude to see if the agent has moved',
+  `stored_altitude` DOUBLE NULL COMMENT 'Reference altitude to see if the agent has moved',
+  `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position since start_timestampa' ,
+  `start_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp on wich the agente started to be in this position' ,
+  `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
+  `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
+  PRIMARY KEY (`tagente_id_agente`) ,
+  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
+  INDEX `fk_tgisdata_tagente1` (`tagente_id_agente` ASC) ,
+  CONSTRAINT `fk_tgisdata_tagente1`
+    FOREIGN KEY (`tagente_id_agente` )
+    REFERENCES `tagente` (`id_agente` )
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+COMMENT = 'Table to store last GIS information of the agents';
 
 -- -----------------------------------------------------
 -- Table `tgis_map`
@@ -988,7 +1012,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
   `tgrupo_id_grupo` MEDIUMINT(4) UNSIGNED NOT NULL COMMENT 'reference to the group shown in the layer' ,
   PRIMARY KEY (`id_tmap_layer`) ,
   INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-  INDEX `fk_tmap_layer_tgrupo1` (`tgrupo_id_grupo` ASC) ,
   CONSTRAINT `fk_tmap_layer_tgis_map1`
     FOREIGN KEY (`tgis_map_id_tgis_map` )
     REFERENCES `tgis_map` (`id_tgis_map` )
@@ -1009,12 +1032,12 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer_has_tagente` (
   CONSTRAINT `fk_tgis_map_layer_has_tagente_tgis_map_layer1`
     FOREIGN KEY (`tgis_map_layer_id_tmap_layer` )
     REFERENCES `tgis_map_layer` (`id_tmap_layer` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_tgis_map_layer_has_tagente_tagente1`
     FOREIGN KEY (`tagente_id_agente` )
     REFERENCES `tagente` (`id_agente` )
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table to define wich agents are shown in a layer';

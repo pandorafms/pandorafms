@@ -1,3 +1,13 @@
+2010-02-17  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: Modified data
+	model using a new table tgis_data_status to save the current GIS data and
+	the table tgis_data_history to store the historical GIS data. That also
+	means that the GIS related fields from the table tagente are now in the
+	table tgis_data_status. The foreign key in the table tgis_map_layer to
+	tgrupo has been droped because now it's possible to have layers without
+	group, just agents.
+
 2010-02-17 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add the parameter id layer in the function

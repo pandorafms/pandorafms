@@ -693,7 +693,7 @@ if ($updateGIS) {
 			"latitude" => $previusAgentGISData['stored_latitude'],         
 			"altitude" => $previusAgentGISData['stored_altitude'],  
 			"start_timestamp" => $previusAgentGISData['start_timestamp'],  
-			"end_timestamp" => time(),
+			"end_timestamp" =>  date( 'Y-m-d H:i:s'),
 			"description" => "Save by Pandora Console",
 			"manual_placement" => $previusAgentGISData['manual_placement'],
 			"number_of_packages" => $previusAgentGISData['number_of_packages'],
@@ -707,7 +707,7 @@ if ($updateGIS) {
 			"stored_longitude" => $lastLongitude,
 			"stored_latitude" => $lastLatitude,
 			"stored_altitude" => $lastAltitude,
-			"start_timestamp" => time(),
+			"start_timestamp" =>  date( 'Y-m-d H:i:s'),
 			"manual_placement" => 1,
 			"description" => "Update by Pandora Console"),
 			array("tagente_id_agente" => $idAgente));

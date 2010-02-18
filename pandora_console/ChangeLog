@@ -1,5 +1,9 @@
 2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/configurar_agente.php:  fix the date to save into DB.
+
+2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/gis_maps/render_view.php: change to use new tables.
 
 2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>

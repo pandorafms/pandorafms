@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "PandoraFMS::Core 3"
-.TH PandoraFMS::Core 3 "2010-02-15" "perl v5.10.0" "User Contributed Perl Documentation"
+.TH PandoraFMS::Core 3 "2010-02-18" "perl v5.10.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -315,23 +315,15 @@ Returns:
 .el .SS "\f(CWpandora_ping_latency (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$host\fP\f(CW)\fP"
 .IX Subsection "pandora_ping_latency ($pa_config, $host)"
 Ping the given host. Returns the average round-trip time.
-.ie n .SS """update_agent_position (\fI$pa_config\fP, \fI$timestamp\fP, \fI$agent_id\fP, \fI$dbh\fP)"""
-.el .SS "\f(CWupdate_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$timestamp\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
-.IX Subsection "update_agent_position ($pa_config, $timestamp, $agent_id, $dbh)"
-# Updates agent's \fIend_timestamp\fR and \fInumber_of_packages\fR in \fBtgis_data\fR table
-.ie n .SS """save_agent_position (\fI$pa_config\fP, \fI$timestamp\fP, \fI$longitude\fP, \fI$latitude\fP, \fI$altitude\fP, \fI$description\fP, \fI$agent_id\fP, \fI$dbh\fP)"""
-.el .SS "\f(CWsave_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$timestamp\fP\f(CW, \fP\f(CI$longitude\fP\f(CW, \fP\f(CI$latitude\fP\f(CW, \fP\f(CI$altitude\fP\f(CW, \fP\f(CI$description\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
-.IX Subsection "save_agent_position ($pa_config, $timestamp, $longitude, $latitude, $altitude, $description, $agent_id, $dbh)"
-Saves the last position of an agent in the \fBtgis_data\fR table
-.SH "DEPENDENCIES"
-.IX Header "DEPENDENCIES"
-\&\s-1DBI\s0, XML::Simple, HTML::Entities, Time::Local, \s-1POSIX\s0, PandoraFMS::DB, PandoraFMS::Config, PandoraFMS::Tools, PandoraFMS::GIS
-.SH "LICENSE"
-.IX Header "LICENSE"
-This is released under the \s-1GNU\s0 Lesser General Public License.
-.SH "SEE ALSO"
-.IX Header "SEE ALSO"
-\&\s-1DBI\s0, XML::Simple, HTML::Entities, Time::Local, \s-1POSIX\s0, PandoraFMS::DB, PandoraFMS::Config, PandoraFMS::Tools, PandoraFMS::GIS
-.SH "COPYRIGHT"
-.IX Header "COPYRIGHT"
-Copyright (c) 2005\-2010 Artica Soluciones Tecnologicas S.L
+.ie n .SS """save_agent_position (\fI$pa_config\fP, \fI$current_longitude\fP, \fI$current_latitude\fP, \fI$current_altitude\fP, \fI$agent_id\fP, \fI$dbh\fP, [\fI$start_timestamp\fP], [\fI$description\fP])"""
+.el .SS "\f(CWsave_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$current_longitude\fP\f(CW, \fP\f(CI$current_latitude\fP\f(CW, \fP\f(CI$current_altitude\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW, [\fP\f(CI$start_timestamp\fP\f(CW], [\fP\f(CI$description\fP\f(CW])\fP"
+.IX Subsection "save_agent_position ($pa_config, $current_longitude, $current_latitude, $current_altitude, $agent_id, $dbh, [$start_timestamp], [$description])"
+Saves a new agent \s-1GIS\s0 information record in \fBtgis_data_status\fR table.
+.ie n .SS """update_agent_position (\fI$pa_config\fP, \fI$current_longitude\fP, \fI$current_latitude\fP, \fI$current_altitude\fP, \fI$agent_id\fP, \fI$dbh\fP, [\fI$stored_longitude\fP], [\fI$stored_latitude\fP], [\fI$stored_altitude\fP], [\fI$start_timestamp\fP], [\fI$description\fP])"""
+.el .SS "\f(CWupdate_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$current_longitude\fP\f(CW, \fP\f(CI$current_latitude\fP\f(CW, \fP\f(CI$current_altitude\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW, [\fP\f(CI$stored_longitude\fP\f(CW], [\fP\f(CI$stored_latitude\fP\f(CW], [\fP\f(CI$stored_altitude\fP\f(CW], [\fP\f(CI$start_timestamp\fP\f(CW], [\fP\f(CI$description\fP\f(CW])\fP"
+.IX Subsection "update_agent_position ($pa_config, $current_longitude, $current_latitude, $current_altitude, $agent_id, $dbh, [$stored_longitude], [$stored_latitude], [$stored_altitude], [$start_timestamp], [$description])"
+Updates agent \s-1GIS\s0 information in \fBtgis_data_status\fR table.
+.ie n .SS """archive_agent_position (\fI$pa_config\fP, \fI$start_timestamp\fP, \fI$end_timestamp\fP, \fI$longitude\fP, \fI$latitude\fP, \fI$altitude\fP, \fI$description\fP, \fI$number_packages\fP, \fI$agent_id\fP, \fI$dbh\fP)"""
+.el .SS "\f(CWarchive_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$start_timestamp\fP\f(CW, \fP\f(CI$end_timestamp\fP\f(CW, \fP\f(CI$longitude\fP\f(CW, \fP\f(CI$latitude\fP\f(CW, \fP\f(CI$altitude\fP\f(CW, \fP\f(CI$description\fP\f(CW, \fP\f(CI$number_packages\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
+.IX Subsection "archive_agent_position ($pa_config, $start_timestamp, $end_timestamp, $longitude, $latitude, $altitude, $description, $number_packages, $agent_id, $dbh)"
+Archives the last position of an agent in the \fBtgis_data_history\fR table

@@ -1957,3 +1957,23 @@ sub pandora_self_monitoring ($$) {
 
 1;
 __END__
+
+=head1 DEPENDENCIES
+
+L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+
+=cut
+

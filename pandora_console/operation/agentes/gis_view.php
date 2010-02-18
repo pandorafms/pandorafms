@@ -33,6 +33,7 @@ require_javascript_file('openlayers.pandora');
 $period = get_parameter ("period", 86400);
 $agentId = get_parameter('id_agente');
 $agent_name = get_agent_name($agentId); 
+$agentData = getDataLastPositionAgent($id_agente);
 
 echo "<h2>".__('Received data from')." ". $agent_name . " </h2>";
 echo "<h3>" . __("Map with the last position/s") . " " . human_time_description ($period) ."</h3>";
@@ -41,13 +42,17 @@ echo "<h3>" . __("Map with the last position/s") . " " . human_time_description 
 echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 echo getAgentMap($agentId, "500px", "98%", true);
 
+if ($agentData === false) {
+	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
+}
+
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description ($period) ."</h3>";
 /* Get the total number of Elements for the pagination */ 
-$sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data WHERE tagente_id_agente = %d AND end_timestamp > %d ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
+$sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > %d ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
 $countData = get_db_value_sql($sqlCount);
 /* Get the elements to present in this page */
 $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
-        FROM tgis_data
+        FROM tgis_data_history
         WHERE tagente_id_agente = %d AND end_timestamp > %d 
         ORDER BY end_timestamp DESC
         LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
@@ -55,7 +60,7 @@ $result = get_db_all_rows_sql ($sql, true);
 
 if ($result === false) {
 
-    echo '<h3 class="error">'.__('There was a problem locating the positional data').'</h3>';
+    echo '<h3 class="error">'.__('There was a problem locating the positional data or empty history.').'</h3>';
 }
 else {
     pagination ($countData, false) ;

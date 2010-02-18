@@ -448,7 +448,12 @@ function get_agent_icon_map($idAgent, $state = false) {
 
 function addPath($layerName, $idAgent) {
 	
-	$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
+	$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data_history WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
+	
+	//If the agent is empty the history
+	if ($listPoints === false) {
+		return;
+	}
 	
 	$avaliableColors = array("#ff0000", "#00ff00", "#0000ff", "#000000");
 	
@@ -769,11 +774,13 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	makeLayer("layer_for_agent_".$agent_name);
 	
 	$agent_icon = get_agent_icon_map($agent_id);
-		/* If show_history is true, show the path of the agent */
+		
+	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
 		/* TODO: only show the last history_time part of the path */
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
+	
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, 'point_agent_info');
 	
 	if ($centerInAgent) {

@@ -1,5 +1,16 @@
 2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: check in the function "addPath" if the agent
+	haven't history data. And clean source code.
+	
+	* operation/agentes/gis_view.php: change to use new tables, and show
+	messages when the agent haven't data GIS.
+	
+	* godmode/agentes/agent_conf_gis.php: change the message for agent without
+	data GIS.
+
+2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: hightlight that the parameter $script in
 	function print_input_text_extended isn't in use.
 	

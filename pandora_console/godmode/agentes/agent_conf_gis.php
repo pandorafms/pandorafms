@@ -36,7 +36,7 @@ echo getAgentMap($id_agente, "500px", "98%", false);
 
 
 if ($agentData === false) {
-	echo "<p>" . __("There aren't any GIS data of agent, then it's positioned in default position of map.") . "</p>";
+	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }
 
 echo "<h4>" . __("Warning: When you change the position the agent automatily enabled ignore GIS Data") . "</h4>";

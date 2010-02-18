@@ -1,5 +1,15 @@
 2010-02-18	Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Restored documentation lost in one of the
+	last commits.
+
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the restored 
+	documentatrestored 
+	documentation
+
+2010-02-18	Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Modified to use the new tables 
 	(tgis_data_history and tgis_data_status).
 

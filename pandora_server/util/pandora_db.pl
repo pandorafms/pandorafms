@@ -404,5 +404,10 @@ sub pandoradb_main ($$$) {
 		pandora_compactdb ($conf, defined ($history_dbh) ? $history_dbh : $dbh);
 	}
 
+	# Update tconfig with last time of database maintance time (now)
+
+	db_do ($dbh, "DELETE FROM tconfig WHERE token = 'db_maintance'");
+	db_do ($dbh, "INSERT INTO tconfig (token, value) VALUES ('db_maintance', '".time()."')");
+
 	print "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n";
 }

@@ -1,3 +1,25 @@
+2010-02-18  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: New option, self_monitoring.
+
+	* lib/PandoraFMS/Config.pm: Support for new option self_monitoring.
+
+	* lib/PandoraFMS/Core.pm: 	Access update is not refreshed by network 
+	modules anymore (gaining a lot of performance here). Added new functions
+	for internal statistics and automonitoring.
+
+	* lib/PandoraFMS/Tools.pm: New funtions for self_monitoring.
+
+	* bin/pandora_server: Modified error handler to avoid show info about bad
+	load of some optional libraries. 
+	Modified general loop of maintance tasks in three
+	blocks: high, medium and low latency. Placed here in fixed steps (5, 30 and
+	one minute) all tasks pending before by server_threshold. Added 
+	self_monitoring and internal statistic mode (for group and servers).
+
+	* util/pandora_db.pl: Update tconfig with last time of database maintance 
+	time 
+
 2010-02-15	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm: New configuration 
@@ -85,7 +107,7 @@
 
 	* NetworkServer.pm: Implemented support for SNMP v3.
 
-	* util/pandora_db.pm: Very important upgrade to this script. Now will
+	* util/pandora_db.pl: Very important upgrade to this script. Now will
 	delete all huge tables (tagente_datos, tagente_datos_string and 
 	tagent_acccess) using several independent blocks (by default 100) avoiding
 	mysql locks which happen in the past. 

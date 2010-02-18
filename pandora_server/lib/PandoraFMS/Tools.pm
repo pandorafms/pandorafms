@@ -44,6 +44,9 @@ our @EXPORT = qw(
 	enterprise_load
 	print_message
 	get_tag_value
+	disk_free
+	load_average
+	free_mem
 );
 
 ##########################################################################
@@ -394,6 +397,30 @@ sub get_tag_value ($$$) {
 	}
 
 	return $def_value;
+}
+
+##############################################################################
+# Below some "internal" functions for automonitoring feature
+# TODO: Implement the same for other systems like Solaris or BSD
+##############################################################################
+
+sub disk_free ($) {
+	my $target = $_[0];
+
+	# Try to use df command with Posix parameters... 
+	my $command = "df -k -P ".$target." | tail -1 | awk '{ print \$4/1024}'";
+	my $output = `$command`;
+	return $output;
+}
+
+sub load_average {
+	my $load_average = `cat /proc/loadavg | awk '{ print \$1 }'`;
+	return $load_average;
+}
+
+sub free_mem {
+	my $free_mem = `free | grep Mem | awk '{ print \$4 }'`;
+	return $free_mem;
 }
 
 # End of function declaration

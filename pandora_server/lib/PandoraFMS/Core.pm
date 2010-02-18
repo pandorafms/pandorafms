@@ -140,6 +140,9 @@ our @EXPORT = qw(
 	pandora_update_agent
 	pandora_update_module_on_error
 	pandora_update_server
+	pandora_group_statistics
+	pandora_server_statistics
+	pandora_self_monitoring
 	@ServerTypes
 	);
 
@@ -860,7 +863,13 @@ sub pandora_update_agent ($$$$$$$;$$$$$) {
 
     my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
-    pandora_access_update ($pa_config, $agent_id, $dbh);
+
+	# No access update for data without interval.
+	# Single modules from network server, for example. This could be very
+	# Heavy for Pandora FMS
+	if ($agent_interval != -1){
+	    pandora_access_update ($pa_config, $agent_id, $dbh);
+	}
 
     # No update for interval, timezone and position fields (some old agents don't support it)
     if ($agent_interval == -1){
@@ -1073,6 +1082,7 @@ sub pandora_event ($$$$$$$$$$) {
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
+
 	db_do ($dbh, 'INSERT INTO tevento (`id_agente`, `id_grupo`, `evento`, `timestamp`, `estado`, `utimestamp`, `event_type`, `id_agentmodule`, `id_alert_am`, `criticity`)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, $evento, $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity);
 }
@@ -1676,27 +1686,237 @@ sub save_agent_position($$$$$$$$) {
 
 }
 
+
+
+##########################################################################
+# Process server statistics for statistics table
+##########################################################################
+sub pandora_server_statistics ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $lag_time= 0;
+	my $lag_modules = 0;
+	my $total_modules_running = 0;
+	my $my_modules = 0;
+	my $stat_utimestamp  = 0;
+	my $lag_row;
+
+	# Get all servers with my name (each server only refresh it's own stats)
+	my @servers = get_db_rows ($dbh, 'SELECT * FROM tserver WHERE name = "'.$pa_config->{'servername'}.'"');
+
+	# For each server, update stats: Simple.
+	foreach my $server (@servers) {
+		if ($server->{"server_type"} !=3) {
+
+			# Get LAG
+			$server->{"modules"} = get_db_value ($dbh, "SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ".$server->{"id_server"});
+
+			$server->{"modules_total"} = get_db_value ($dbh,"SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server->{"server_type"});
+
+			if ($server->{"server_type"} != 0){
+				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+						WHERE utimestamp > 0
+						AND tagente_modulo.disabled = 0
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+						AND current_interval > 0
+						AND running_by = ".$server->{"id_server"}."
+						AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+						AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
+			} else {
+				# Local/Dataserver server LAG calculation:
+				$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+						WHERE utimestamp > 0
+						AND tagente_modulo.disabled = 0
+						AND tagente_modulo.id_tipo_modulo < 5 
+						AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+						AND current_interval > 0
+						AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+						AND running_by = ".$server->{"id_server"}."
+						AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
+			}
+
+			$server->{"module_lag"} = $lag_row->{'module_lag'};
+			$server->{"lag"} = $lag_row->{'lag'};
+	
+		} else {
+			# Recon server only
+
+				# Total jobs running on this recon server
+				$server->{"modules"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server->{"id_server"});
+		
+				# Total recon jobs (all servers)
+				$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(status) FROM trecon_task");
+		
+				# Lag (take average active time of all active tasks)			
+
+				$server->{"lag"} = get_db_value ($dbh, "SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
+
+				$server->{"module_lag"} = get_db_value ($dbh, "SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server->{"id_server"});
+
+		}
+
+		# Check that all values are defined and set to 0 if not
+
+		if (!defined($server->{"lag"})){
+			$server->{"lag"} = 0;
+		}
+
+		if (!defined($server->{"module_lag"})){
+			$server->{"module_lag"} = 0;
+		}
+
+		if (!defined($server->{"modules_total"})){
+			$server->{"modules_total"} = 0;
+		}
+
+		if (!defined($server->{"modules"})){
+			$server->{"modules"} = 0;
+		}
+
+		# Update server record
+		db_do ($dbh, "UPDATE tserver SET lag_time = '".$server->{"lag"}."', lag_modules = '".$server->{"module_lag"}."', total_modules_running = '".$server->{"modules_total"}."', my_modules = '".$server->{"modules"}."' , stat_utimestamp =  UNIX_TIMESTAMP() WHERE id_server = " . $server->{"id_server"} );
+	}
+}
+
+
+##########################################################################
+# Process system statistics for statistics table
+##########################################################################
+sub pandora_group_statistics ($$) {
+	my ($pa_config, $dbh) = @_;
+	
+	# Variable init
+	my $modules = 0;
+	my $normal = 0;
+	my $critical = 0;
+	my $warning = 0;
+	my $unknown = 0;
+	my $non_init = 0;
+	my $alerts = 0;
+	my $alerts_fired = 0;
+	my $agents = 0;
+	my $agents_unknown = 0;
+	my $utimestamp = 0;
+	my $group = 0;
+
+	# Get all groups
+	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo WHERE disabled = 0 AND id_grupo > 1');
+
+	# For each valid group get the stats:  Simple uh?
+	foreach my $group_row (@groups) {
+
+		$group = $group_row->{'id_grupo'};
+
+		$agents_unknown = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0 AND ultimo_contacto < NOW() - (intervalo *2)");
+
+		$agents = get_db_value ($dbh, "SELECT COUNT(*) FROM tagente WHERE id_grupo = $group AND disabled = 0");
+
+		$modules = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0");
+
+		# Following threelines gets critical/warning modules, skipping the unknown. By default
+		# we consider status (ok, warning, critical) as a separate status from unknown.
+
+#		$normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND ((tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp > ( UNIX_TIMESTAMP() - (current_interval * 2))) OR (tagente_modulo.id_tipo_modulo IN (21,22,23,100)))");
+
+#		$critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND((tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp > ( UNIX_TIMESTAMP() - (current_interval * 2))) OR (tagente_modulo.id_tipo_modulo IN (21,22,23,100)))");
+
+#		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND ((tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp > ( UNIX_TIMESTAMP() - (current_interval * 2))) OR (tagente_modulo.id_tipo_modulo IN (21,22,23,100)))");
+
+		$normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0");
+
+		$critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1");
+
+		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 ");
+
+		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente  AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2))");
+
+		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
+ AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND tagente_estado.utimestamp = 0");
+
+		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
+
+		$alerts_fired = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo AND times_fired > 0");
+
+		# Update the record.
+
+		db_do ($dbh, "DELETE FROM tgroup_stat WHERE id_group = $group");
+
+		db_do ($dbh, "INSERT INTO tgroup_stat (id_group, modules, normal, critical, warning, unknown, `non-init`, alerts, alerts_fired, agents, agents_unknown, utimestamp) VALUES ($group, $modules, $normal, $critical, $warning, $unknown, $non_init, $alerts, $alerts_fired, $agents, $agents_unknown, UNIX_TIMESTAMP())");
+
+	}
+
+}
+
+
+##########################################################################
+# Pandora self monitoring process
+##########################################################################
+sub pandora_self_monitoring ($$) {
+	my ($pa_config, $dbh) = @_;
+	my $timezone_offset = 0; # PENDING (TODO) !
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+
+    my $xml_output = "";
+	
+	$xml_output = "<agent_data os_name='Linux' os_version='".$pa_config->{'version'}."' agent_name='".$pa_config->{'servername'}."' interval='".$pa_config->{"stats_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Status</name>";
+	$xml_output .=" <type>generic_proc</type>";
+	$xml_output .=" <data>1</data>";
+	$xml_output .=" </module>";
+
+	my $load_average = load_average();
+	my $free_mem = free_mem();;
+	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
+	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = 0 AND name = '".$pa_config->{"servername"}."'");
+
+	my $agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
+
+	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Queued_Modules</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$queued_modules</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Agents_Unknown</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$agents_unknown</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>System_Load_AVG</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$load_average</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Free_RAM</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$free_mem</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>FreeDisk_SpoolDir</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$free_disk_spool</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .= "</agent_data>";
+
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".".$utimestamp.".data";
+
+	open (XMLFILE, ">> $filename") or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
+	print XMLFILE $xml_output;
+	close (XMLFILE);
+}
+
+
 # End of function declaration
 # End of defined Code
 
 1;
 __END__
-
-=head1 DEPENDENCIES
-
-L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
-
-=head1 LICENSE
-
-This is released under the GNU Lesser General Public License.
-
-=head1 SEE ALSO
-
-L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFMS::DB>, L<PandoraFMS::Config>, L<PandoraFMS::Tools>, L<PandoraFMS::GIS>
-
-=head1 COPYRIGHT
-
-Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
-
-
-=cut

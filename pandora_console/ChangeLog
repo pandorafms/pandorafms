@@ -1,3 +1,16 @@
+2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: hightlight that the parameter $script in
+	function print_input_text_extended isn't in use.
+	
+	* include/functions_gis.php: create function "getDataLastPositionAgent"
+	that return row of position and other data for id agent.
+	
+	* godmode/agentes/agent_conf_gis.php: add the validate fields and adapt
+	to new tables.
+	
+	* godmode/agentes/configurar_agente.php: adapt to new tables.
+
 2010-02-17  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: Modified data

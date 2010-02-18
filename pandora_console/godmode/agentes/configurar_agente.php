@@ -673,27 +673,58 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 // ==========
 $updateGIS = get_parameter('update_gis', 0);
 if ($updateGIS) {
-	$updateGisData = get_parameter("update_gis");
+	$updateGisData = get_parameter("update_gis_data");
 	$lastLatitude = get_parameter("latitude");
 	$lastLongitude = get_parameter("longitude");
 	$lastAltitude = get_parameter("altitude");
 	$idAgente = get_parameter("id_agente");
 	
+	$previusAgentGISData = get_db_row_sql("SELECT *
+		FROM tgis_data_status WHERE tagente_id_agente = " . $idAgente);
+	
 	process_sql_begin();
 	
-		process_sql_update('tagente', array('update_gis_data' => $updateGisData,
-			'last_latitude' => $lastLatitude, 'last_longitude' => $lastLongitude,
-			'last_altitude' => $lastAltitude), array('id_agente' => $idAgente));
+	process_sql_update('tagente', array('update_gis_data' => $updateGisData),
+		array('id_agente' => $idAgente));
 		
-		process_sql_insert('tgis_data', array('longitude' => $lastLongitude,  
-			'latitude' => $lastLatitude,         
-			'altitude' => $lastAltitude,
-			'description' => __('Added by user in Pandora Console'),
-			'manual_placement' => 1,
-			'number_of_packages' => 1,
-			'tagente_id_agente' => $idAgente
+	if ($previusAgentGISData !== false) {
+		process_sql_insert('tgis_data_history', array(
+			"longitude" => $previusAgentGISData['stored_longitude'],
+			"latitude" => $previusAgentGISData['stored_latitude'],         
+			"altitude" => $previusAgentGISData['stored_altitude'],  
+			"start_timestamp" => $previusAgentGISData['start_timestamp'],  
+			"end_timestamp" => time(),
+			"description" => "Save by Pandora Console",
+			"manual_placement" => $previusAgentGISData['manual_placement'],
+			"number_of_packages" => $previusAgentGISData['number_of_packages'],
+			"tagente_id_agente" => $previusAgentGISData['tagente_id_agente']
 		));
-	
+		process_sql_update('tgis_data_status', array(
+			"tagente_id_agente" => $idAgente,
+			"current_longitude" => $lastLongitude,
+			"current_latitude" => $lastLatitude,
+			"current_altitude" => $lastAltitude,
+			"stored_longitude" => $lastLongitude,
+			"stored_latitude" => $lastLatitude,
+			"stored_altitude" => $lastAltitude,
+			"start_timestamp" => time(),
+			"manual_placement" => 1,
+			"description" => "Update by Pandora Console"),
+			array("tagente_id_agente" => $idAgente));
+	}
+	else {
+		process_sql_insert('tgis_data_status', array(
+			"tagente_id_agente" => $idAgente,
+			"current_longitude" => $lastLongitude,
+			"current_latitude" => $lastLatitude,
+			"current_altitude" => $lastAltitude,
+			"stored_longitude" => $lastLongitude,
+			"stored_latitude" => $lastLatitude,
+			"stored_altitude" => $lastAltitude,
+			"manual_placement" => 1,
+			"description" => "Insert by Pandora Console"
+		));
+	}
 	process_sql_commit();
 }
 

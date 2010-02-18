@@ -38,7 +38,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "3.1-dev";
-my $pandora_build = "100209";
+my $pandora_build = "100218";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -274,6 +274,8 @@ sub pandora_load_config {
 	# Restart server on error
 	$pa_config->{'restart'} = 0; 
 
+	# Self monitoring
+	$pa_config->{'self_monitoring'} = 0; 
 
 	# -------------------------------------------------------------------------
 	# This values are not stored in .conf files. 
@@ -570,6 +572,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^recon_location_scatter_radius\s+(\d+)/i) {
 			$pa_config->{'recon_location_scatter_radius'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^self_monitoring\s([0-1])/i) {
+			$pa_config->{'self_monitoring'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

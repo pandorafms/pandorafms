@@ -279,8 +279,9 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
  */
 function get_fired_alerts_reporting_table ($alerts_fired) {
 	$agents = array ();
-	
-	require_once ('include/functions_alerts.php');
+	global $config;
+
+	require_once ($config["homedir"].'/include/functions_alerts.php');
 	
 	foreach (array_keys ($alerts_fired) as $id_alert) {
 		$alert_module = get_alert_agent_module ($id_alert);

@@ -1,3 +1,8 @@
+2010-02-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console/include/functions_reporting.php: Fixed a problem
+	in enterprise PDF reports.
+
 2010-02-12  Raúl Mateos <raulofpandora@gmail.com>
 
 	* include/config_process.php: Fix date. Updated build.

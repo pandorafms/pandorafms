@@ -1,5 +1,9 @@
 2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/gis_maps/render_view.php: change to use new tables.
+
+2010-02-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: check in the function "addPath" if the agent
 	haven't history data. And clean source code.
 	

@@ -78,9 +78,9 @@ if ($layers != false) {
 		$agentNames = get_group_agents($layer['tgrupo_id_grupo'],false,'none');
 		foreach ($agentNames as $agentName) {
 			$idAgent = get_agent_id($agentName);
-			$coords = get_agent_last_coords($idAgent);
+			$coords = getDataLastPositionAgent($idAgent);
 			
-			if ($coords['last_latitude'] == null)
+			if ($coords === false)
 				continue;
 			
 			$icon = get_agent_icon_map($idAgent, true);
@@ -88,7 +88,7 @@ if ($layers != false) {
 			if ($show_history == 'y') { 	
 				addPath($layer['layer_name'], $idAgent);
 			}
-			addPoint($layer['layer_name'], $agentName, $coords['last_latitude'], $coords['last_longitude'], $icon, 20, 20, $idAgent, 'point_agent_info');
+			addPoint($layer['layer_name'], $agentName, $coords['stored_latitude'], $coords['stored_longitude'], $icon, 20, 20, $idAgent, 'point_agent_info');
 		}
 	}
 	

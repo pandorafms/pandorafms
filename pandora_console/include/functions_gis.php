@@ -12,6 +12,23 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/**
+ * Return the data of last position of agent from tgis_data_status.
+ * 
+ * @param integer $idAgent The id of agent.
+ * @param boolean $returnEmptyArrayInFail The set return a empty array when fail and true.
+ * @return Array The row of agent in tgis_data_status, and it's a associative array.
+ */
+function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
+	$returnVar = get_db_row('tgis_data_status', 'tagente_id_agente', $idAgent);
+	
+	if (($returnVar === false) && ($returnEmptyArrayInFail)) {
+		return array();
+	}
+	
+	return $returnVar;
+}
+
 function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	$controls = (array)$controls;
 	
@@ -725,8 +742,19 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
 	$defaultMap = $defaultMap[0];
 	
-	$agent_position = get_agent_last_coords($agent_id);
-	$agent_name = $agent_position['nombre'];
+	$agent_position = getDataLastPositionAgent($agent_id);
+	if ($agent_position === false) {
+		$agentPositionLongitude = $defaultMap['default_longitude'];
+		$agentPositionLatitude = $defaultMap['default_latitude'];
+		$agentPositionAltitude = $defaultMap['default_altitude'];
+	}
+	else {
+		$agentPositionLongitude = $agent_position['stored_longitude'];
+		$agentPositionLatitude = $agent_position['stored_latitude'];
+		$agentPositionAltitude = $agent_position['stored_altitude'];
+	}
+	
+	$agent_name = get_agent_name($agent_id);
 	
 	$conectionData = json_decode($defaultMap['conection_data'], true);
 	$baselayers[0]['url'] = $conectionData['url'];
@@ -746,14 +774,14 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		/* TODO: only show the last history_time part of the path */
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
-	addPoint("layer_for_agent_".$agent_name, $agent_name, $agent_position['last_latitude'], $agent_position['last_longitude'], $agent_icon, 20, 20, $agent_id, 'point_agent_info');
+	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, 'point_agent_info');
 	
 	if ($centerInAgent) {
 		?>
 		<script type="text/javascript">
 		$(document).ready (
 			function () { 
-				var lonlat = new OpenLayers.LonLat(<?php echo $agent_position['last_longitude']; ?>, <?php echo $agent_position['last_latitude']; ?>)
+				var lonlat = new OpenLayers.LonLat(<?php echo $agentPositionLongitude; ?>, <?php echo $agentPositionLatitude; ?>)
 					.transform(map.displayProjection, map.getProjectionObject());
 				map.setCenter(lonlat, <?php echo $defaultMap['zoom_level']; ?>, false, false);
 			});

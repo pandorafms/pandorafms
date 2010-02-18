@@ -25,11 +25,21 @@ require_javascript_file('openlayers.pandora');
 
 echo "<h2>" . __('Agent configuration') . " &raquo; " . __('Configure GIS data') . "</h2>";
 
-$agentData = get_db_row_sql('SELECT * FROM tagente WHERE id_agente = 8');
+$agentData = getDataLastPositionAgent($id_agente);
+$updateGisData = get_db_value('update_gis_data','tagente', 'id_agente', $id_agente);
+$agent_name = get_agent_name($id_agente);
 
 /* Map with the current position */
-echo "<div id=\"".$agentData['nombre']."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 echo getAgentMap($id_agente, "500px", "98%", false);
+
+
+
+if ($agentData === false) {
+	echo "<p>" . __("There aren't any GIS data of agent, then it's positioned in default position of map.") . "</p>";
+}
+
+echo "<h4>" . __("Warning: When you change the position the agent automatily enabled ignore GIS Data") . "</h4>";
 
 $table->width = '60%';
 $table->data = array();
@@ -39,20 +49,23 @@ $table->colspan[0][0] = 2;
 $table->data[0][0] = __('Agent coords:');
 
 $table->data[1][0] = __('Longitude: ');
-$table->data[1][1] = print_input_text ('longitude', $agentData['last_longitude'], '', 10, 10, true);
+$table->data[1][1] = print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',
+	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[2][0] = __('Latitude: ');
-$table->data[2][1] = print_input_text ('latitude', $agentData['last_latitude'], '', 10, 10, true);
+$table->data[2][1] = print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 10, 10, false, '',
+	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[3][0] = __('Altitude: ');
-$table->data[3][1] = print_input_text ('altitude', $agentData['last_altitude'], '', 10, 10, true);
+$table->data[3][1] = print_input_text_extended ('altitude', $agentData['stored_altitude'], 'text-altitude', '', 10, 10, false, '',
+	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
 $table->data[4][0] = __('Ignore new GIS data:');
-$table->data[4][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $agentData['update_gis_data'], false, '', 'style="margin-right: 40px;"', true);
-$table->data[4][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $agentData['update_gis_data'], false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[4][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
-echo "<form method='post' action='" . $url . "'>";
+echo "<form method='post' action='" . $url . "' onsubmit ='return validateFormFields();'>";
 print_input_hidden('update_gis', 1);
 print_table($table);
 
@@ -62,11 +75,54 @@ echo '</div>';
 echo "</form>";
 ?>
 <script type="text/javascript">
+function setIgnoreGISDataEnabled() {
+	$("#radiobtn0001").removeAttr("checked");
+	$("#radiobtn0002").attr("checked","checked");
+}
+
+function validateFormFields() {
+	longitude = $('input[name=longitude]').val();
+	latitude = $('input[name=latitude]').val();
+	altitude = $('input[name=altitude]').val();
+	valid = true;
+
+	$('input[name=longitude]').css('background', '#ffffff');
+	$('input[name=latitude]').css('background', '#ffffff');
+	$('input[name=altitude]').css('background', '#ffffff');
+ 
+	//Validate longitude
+	if ((jQuery.trim(longitude).length == 0) ||
+		isNaN(parseFloat(longitude))) {
+		$('input[name=longitude]').css('background', '#cc0000');
+
+		valid = false;
+	}
+
+	//Validate latitude
+	if ((jQuery.trim(latitude).length == 0) ||
+		isNaN(parseFloat(latitude))) {
+		$('input[name=latitude]').css('background', '#cc0000');
+
+		valid = false;
+	}
+
+	//Validate altitude
+	if ((jQuery.trim(altitude).length == 0) ||
+		isNaN(parseFloat(altitude))) {
+		$('input[name=altitude]').css('background', '#cc0000');
+
+		valid = false;
+	}
+
+	if (valid) return true;
+	else return false;
+}
+
 $(document).ready (
 		function () { 
 			function changePositionAgent(e) {
 				var lonlat = map.getLonLatFromViewPortPx(e.xy);
-				var layer = map.getLayersByName("layer_for_agent_<?php echo $agentData['nombre']; ?>");
+				var layer = map.getLayersByName("layer_for_agent_<?php echo $agent_name ?>");
 
 				layer = layer[0];
 				feature = layer.features[0];
@@ -76,8 +132,10 @@ $(document).ready (
 				$('input[name=latitude]').val(lonlat.lat);
 				$('input[name=longitude]').val(lonlat.lon);
 
-				$("#radiobtn0001").attr("checked","checked");
-				$("#radiobtn0002").removeAttr("checked");
+				if ($('input[name=altitude]').val().length == 0)
+					$('input[name=altitude]').val(0)
+
+				setIgnoreGISDataEnabled();
 				
 				//return to no-standar the proyection for to move
 				feature.move(lonlat.transform(map.displayProjection, map.getProjectionObject()));

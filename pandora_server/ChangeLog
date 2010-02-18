@@ -1,3 +1,11 @@
+2010-02-18	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Modified to use the new tables 
+	(tgis_data_history and tgis_data_status).
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the new 
+	documentation
+
 2010-02-18  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: New option, self_monitoring.

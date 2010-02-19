@@ -1,3 +1,8 @@
+2010-02-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Enabled FF protection for module states
+	  (not just events).
+
 2010-02-19  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added comments to new statistical functions.

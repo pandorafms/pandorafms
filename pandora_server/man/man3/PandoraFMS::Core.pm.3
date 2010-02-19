@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "PandoraFMS::Core 3"
-.TH PandoraFMS::Core 3 "2010-02-18" "perl v5.10.0" "User Contributed Perl Documentation"
+.TH PandoraFMS::Core 3 "2010-02-19" "perl v5.10.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -194,6 +194,12 @@ This module contains all the base functions of \fBPandora \s-1FMS\s0\fR, the mos
 \&\f(CW\*(C`pandora_update_module_on_error\*(C'\fR
 .IP "\(bu" 4
 \&\f(CW\*(C`pandora_update_server\*(C'\fR
+.IP "\(bu" 4
+\&\f(CW\*(C`pandora_group_statistics\*(C'\fR
+.IP "\(bu" 4
+\&\f(CW\*(C`pandora_server_statistics\*(C'\fR
+.IP "\(bu" 4
+\&\f(CW\*(C`pandora_self_monitoring\*(C'\fR
 .SH "METHODS"
 .IX Header "METHODS"
 .ie n .SS """pandora_generate_alerts (\fI$pa_config\fP \fI$data\fP \fI$status\fP \fI$agent\fP \fI$module\fP \fI$utimestamp\fP \fI$dbh\fP)"""
@@ -327,6 +333,18 @@ Updates agent \s-1GIS\s0 information in \fBtgis_data_status\fR table.
 .el .SS "\f(CWarchive_agent_position (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$start_timestamp\fP\f(CW, \fP\f(CI$end_timestamp\fP\f(CW, \fP\f(CI$longitude\fP\f(CW, \fP\f(CI$latitude\fP\f(CW, \fP\f(CI$altitude\fP\f(CW, \fP\f(CI$description\fP\f(CW, \fP\f(CI$number_packages\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
 .IX Subsection "archive_agent_position ($pa_config, $start_timestamp, $end_timestamp, $longitude, $latitude, $altitude, $description, $number_packages, $agent_id, $dbh)"
 Archives the last position of an agent in the \fBtgis_data_history\fR table
+.ie n .SS """pandora_server_statistics (\fI$pa_config\fP, \fI$dbh\fP)"""
+.el .SS "\f(CWpandora_server_statistics (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
+.IX Subsection "pandora_server_statistics ($pa_config, $dbh)"
+Process server statistics for statistics table
+.ie n .SS """pandora_group_statistics (\fI$pa_config\fP, \fI$dbh\fP)"""
+.el .SS "\f(CWpandora_group_statistics (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
+.IX Subsection "pandora_group_statistics ($pa_config, $dbh)"
+Process groups statistics for statistics table
+.ie n .SS """pandora_self_monitoring (\fI$pa_config\fP, \fI$dbh\fP)"""
+.el .SS "\f(CWpandora_self_monitoring (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
+.IX Subsection "pandora_self_monitoring ($pa_config, $dbh)"
+Pandora self monitoring process
 .SH "DEPENDENCIES"
 .IX Header "DEPENDENCIES"
 \&\s-1DBI\s0, XML::Simple, HTML::Entities, Time::Local, \s-1POSIX\s0, PandoraFMS::DB, PandoraFMS::Config, PandoraFMS::Tools, PandoraFMS::GIS

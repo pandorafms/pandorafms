@@ -1,3 +1,11 @@
+2010-02-19	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+
+	* lib/PandoraFMS/Core.pm: Updated docuemtation of the interface.
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the new
+	documentation of the interface
+
 2010-02-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Enabled FF protection for module states
@@ -13,9 +21,7 @@
 	* lib/PandoraFMS/Core.pm: Restored documentation lost in one of the
 	last commits.
 
-
 	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the restored 
-	documentatrestored 
 	documentation
 
 2010-02-18	Pablo de la Concepción <pablo.concepcion@artica.es>

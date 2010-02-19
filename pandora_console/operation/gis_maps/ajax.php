@@ -42,78 +42,41 @@ switch ($opt) {
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		
-		$rows = get_db_all_rows_sql('SELECT *
-			FROM tgis_data 
-			WHERE tagente_id_agente IN (' . $id_features . ') AND start_timestamp > from_unixtime(' . $last_time_of_data . ') ORDER BY start_timestamp DESC');
+		$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 1;'); //group 1 = all groups
 		
-		$listCoords = null;
-		foreach ($rows as $row) {
-			if (empty($listCoords[$row['tagente_id_agente']])) {
-				$coords['latitude'] = $row['latitude'];
-				$coords['longitude'] = $row['longitude'];
-				$coords['start_timestamp'] = $row['start_timestamp'];
-				$coords['id_tgis_data'] = $row['id_tgis_data'];
-				
-				$listCoords[$row['tagente_id_agente']][] = $coords;
-			}
-		}
+		if ($flagGroupAll === false) {
+			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
+				FROM tgis_data_status
+				WHERE tagente_id_agente IN
+					(SELECT id_agente FROM tagente WHERE id_grupo IN
+						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . '))
+					OR tagente_id_agente IN
+						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
 		
-		//Extract the data of tgis_data the new agents that it aren't in list
-		//of features.
-		$idGroup = get_db_value('tgrupo_id_grupo', 'tgis_map_layer', 'id_tmap_layer', $layerId);
-		//If id group = 1 is the all groups.
-		if ($idGroup != 1) {
-			$whereGroup = 'id_grupo = ' . $idGroup;
 		}
 		else {
-			$whereGroup = '1 = 1';
-		}
-			
-		$idAgents = get_db_all_rows_sql('SELECT id_agente 
-			FROM tagente 
-			WHERE id_agente IN (SELECT tagente_id_agente
-					FROM tgis_map_layer_has_tagente
-					WHERE tgis_map_layer_id_tmap_layer = ' . $layerId .') OR ' . $whereGroup);
-		
-		$temp = array();
-		foreach($idAgents as $idAgent) {
-			$temp[] = $idAgent['id_agente'];
+			//All groups, all agents
+			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
+				FROM tgis_data_status
+				WHERE tagente_id_agente');
 		}
 		
-		$rows = get_db_all_rows_sql('SELECT * FROM tgis_data
-			WHERE tagente_id_agente NOT IN (' . $id_features . ') AND tagente_id_agente IN (' . implode(',',$temp) . ')
-				AND start_timestamp > from_unixtime(' . $last_time_of_data . ') ORDER BY start_timestamp DESC;');
-		
-		$agents = get_db_all_rows_sql('SELECT id_agente, nombre FROM tagente WHERE 
-				id_agente NOT IN (' . $id_features . ') AND id_agente IN (' . implode(',',$temp) . ')');
-		
-		$listNewCoords = null;
-		foreach ($rows as $row) {
-			if (empty($listNewCoords[$row['tagente_id_agente']])) {
-				foreach ($agents as $agent) {
-					if ($agent['id_agente'] == $row['tagente_id_agente']) {
-						$name = $agent['nombre'];
-						$icon_path = get_agent_icon_map($row['tagente_id_agente'], true);
-					}
-				}
-				
-				$listNewCoords[$row['tagente_id_agente']] = array (
-					'latitude' => $row['latitude'],
-					'longitude' => $row['longitude'],
-					'start_timestamp' => $row['start_timestamp'],
-					'id_tgis_data' => $row['id_tgis_data'],
-					'name' => $name,
-					'icon_path' => $icon_path,
-					'icon_width' => 20, //TODO SET CORRECT WIDTH
-					'icon_height' => 20, //TODO SET CORRECT HEIGHT
-					);
-			}
+		if ($agentsGISStatus === false) {
+			$agentsGISStatus = array();
 		}
 		
-		$content = array('coords' => $listCoords, 'new_coords' => $listNewCoords);
+		$agents = null;
+		foreach ($agentsGISStatus as $row) {
+			$agents[$row['tagente_id_agente']] = array(
+				'icon_path' => get_agent_icon_map($row['tagente_id_agente'], true),
+				'name' => get_agent_name($row['tagente_id_agente']),
+				'status' => get_agent_status($idAgent),
+				'stored_longitude' => $row['stored_longitude'],
+				'stored_latitude' => $row['stored_latitude']
+			);
+		}
 		
-		$returnJSON['content'] = json_encode($content); json_encode($listcoords);
-		
+		$returnJSON['content'] = json_encode($agents);
 		echo json_encode($returnJSON);
 		break;
 	case 'point_path_info':

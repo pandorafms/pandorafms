@@ -1,3 +1,8 @@
+2010-02-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server/lib/PandoraFMS/Core.pm: Enabled FF protection for
+	  module status (not just events). Needs testing.
+
 2010-02-10  Sancho Lerena <slerena@artica.es>
 
 	* util/pandora_db.pl: Very important upgrade to this script. Now will

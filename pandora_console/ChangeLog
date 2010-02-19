@@ -1,3 +1,7 @@
+2010-02-18  Raul Mateos <raulofpandora@gmail.com>
+	* extensions/module_groups.php: Better description text. Changed font
+        colour.
+
 2010-02-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console/include/functions_reporting.php: Fixed a problem

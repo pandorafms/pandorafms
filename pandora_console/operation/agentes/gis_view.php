@@ -56,6 +56,7 @@ $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_time
         WHERE tagente_id_agente = %d AND end_timestamp > %d 
         ORDER BY end_timestamp DESC
         LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+
 $result = get_db_all_rows_sql ($sql, true);
 
 if ($result === false) {

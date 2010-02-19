@@ -215,23 +215,6 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 		var refreshAjaxIntervalSeconds = 6000;
 		var idIntervalAjax = null;
 
-		function searchPointAgentById(id) {
-			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
-				layer = map.layers[layerIndex];
-
-				if (layer.features != undefined) {
-					for (featureIndex = 0; featureIndex < layer.features.length; featureIndex++) {
-						feature = layer.features[featureIndex];
-						if (feature.data.id == id) {
-							return feature;
-						}
-					}
-				}
-			}
-
-			return null;
-		}
-
 		function refreshAjaxLayer(layer) {
 			var featureIdArray = Array();
 			
@@ -254,49 +237,20 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	        		success: function (data) {
 	        			if (data.correct) {
 		        			content = $.evalJSON(data.content);
-							
-		        			if (content.coords != null) {
-		        				listAgentsPoints = content.coords;
-		        				
-		        				for (var idAgent in listAgentsPoints) {
-		        					if (isInt(idAgent)) {
-				        				listPoints = listAgentsPoints[idAgent];
-		
-				        				for (var pointIndex in listPoints) {
-				        					if (isInt(pointIndex)) {
-					        					feature = searchPointAgentById(idAgent);
-	
-					        					var point = new OpenLayers.LonLat(listPoints[pointIndex].longitude, listPoints[pointIndex].latitude)
-					        					.transform(map.displayProjection, map.getProjectionObject());
-	
-					        					feature.data.long_lat = point;
-					        					feature.move(point);
-				        					}
-				        				}
-		        					}
-		        				}
-		        			}
-							
-		        			if (content.new_coords != null) {
-		        				listNewAgentsPoints = content.new_coords;
 
-		        				for (var idAgent in listNewAgentsPoints) {
+		        			if (content != null) {
+		        				for (var idAgent in content) {
 		        					if (isInt(idAgent)) {
-				        				point = listNewAgentsPoints[idAgent];
+			        					agentDataGIS = content[idAgent];
 
-		        						var geometryPoint = new OpenLayers.Geometry.Point(point.longitude, point.latitude)
-		        							.transform(map.displayProjection, map.getProjectionObject());
-		        						
-		        						feature = new OpenLayers.Feature.Vector(geometryPoint,
-				        						{id: idAgent, 
-			        							type: 'point_agent_info', 
-			        							long_lat: new OpenLayers.LonLat(point.longitude, point.latitude).transform(map.displayProjection, map.getProjectionObject()) },
-			        							{fontWeight: "bolder",
-				        						fontColor: "#00014F",
-				        						labelYOffset: -point.icon_height,
-				        						graphicHeight: point.icon_width, graphicWidth: point.icon_height, externalGraphic: point.icon_path, label: point.name});
-		        						
-		        						layer.addFeatures(feature);
+			        					feature = searchPointAgentById(idAgent);
+			        					layer.removeFeatures(feature);
+			        					console.log(feature);
+			        					delete feature;
+										
+			        					js_addPointExtent(layer.name, agentDataGIS['name'],
+			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
+			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info');
 		        					}
 		        				}
 		        			}
@@ -338,7 +292,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	<?php
 }
 
-function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20, $point_id  = '', $type_string = '') {
+function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20, $point_id  = '', $status = -1, $type_string = '') {
 	?>
 	<script type="text/javascript">
 	$(document).ready (

@@ -358,3 +358,26 @@ function js_addLineString(layerName, points, color) {
 
 	layer.addFeatures(lineString);
 }
+
+/**
+ * Return feature object for a id agent passed.
+ * 
+ * @param interger id The agent id.
+ * @return mixed Return the feature object, if it didn't found then return null.
+ */
+function searchPointAgentById(id) {
+	for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
+		layer = map.layers[layerIndex];
+
+		if (layer.features != undefined) {
+			for (featureIndex = 0; featureIndex < layer.features.length; featureIndex++) {
+				feature = layer.features[featureIndex];
+				if (feature.data.id == id) {
+					return feature;
+				}
+			}
+		}
+	}
+
+	return null;
+}

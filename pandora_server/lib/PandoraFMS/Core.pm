@@ -593,7 +593,7 @@ sub pandora_process_module ($$$$$$$$$) {
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
-		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros);
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh);
 	}
 	
 	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'

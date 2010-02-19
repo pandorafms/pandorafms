@@ -1,3 +1,11 @@
+2010-02-19  SAncho Lernea <slerena@artica.es>
+
+	* pandora_server.spec: Updated revision.
+	
+	* lib/PandoraFMS/Config.pm: Updated build
+
+	* lib/PandoraFMS/Core.pm: Fixed problem due the merge with 3.1 repo.
+
 2010-02-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server/lib/PandoraFMS/Core.pm: Enabled FF protection for

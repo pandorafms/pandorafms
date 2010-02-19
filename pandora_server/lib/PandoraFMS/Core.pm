@@ -693,24 +693,31 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
 		return;
 	}
+	my $last_status = $agent_status->{'last_status'};
+	my $status = $agent_status->{'estado'};
+	my $status_changes = $agent_status->{'status_changes'};
 
-	# Get current status
-	my $status = get_module_status ($processed_data, $module, $module_type);
+	# Get new status
+	my $new_status = get_module_status ($processed_data, $module, $module_type);
+
+	#Update module status
+	my $current_utimestamp = time ();
+	if ($last_status == $new_status) {
+		$status_changes++;
+	} else {
+		$status_changes = 0;
+	}
+
+	if ($status_changes == $module->{'min_ff_event'}) {
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $dbh);
+		$status = $new_status;
+	}
+
+	$last_status = $new_status;
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
 		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros);
-	}
-
-	#Update module status
-	my $current_utimestamp = time ();
-	my ($status_changes, $last_status) = ($status != $agent_status->{'estado'}) ?
-					(0, $agent_status->{'estado'}) :
-					($agent_status->{'status_changes'} + 1, $agent_status->{'last_status'});
-
-	# Generate events
-	if ($status_changes == $module->{'min_ff_event'}) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $status, $last_status, $dbh);
 	}
 	
 	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'

@@ -41,11 +41,6 @@ if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	require_once ("general/noaccess.php");
 	return;
 }
-
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Agent general information')."</h2>";
-
-// Blank space below title
-echo '<div style="height: 10px">&nbsp;</div>';	
 	
 //Floating div
 echo '<div style="float:right; width:320px; padding-top:11px;">';

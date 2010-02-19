@@ -623,6 +623,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `lag_modules` int(11) NOT NULL default 0,
   `total_modules_running` int(11) NOT NULL default 0,
   `my_modules` int(11) NOT NULL default 0,
+  `stat_utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
@@ -650,7 +651,9 @@ CREATE TABLE IF NOT EXISTS `tsesion` (
   `descripcion` varchar(200) NOT NULL default '',
   `fecha` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`ID_sesion`)
+  PRIMARY KEY  (`ID_sesion`),
+  KEY `idx_utimestamp` (`utimestamp`),
+  KEY `idx_user` (`ID_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1057,7 +1060,7 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
   `alerts` int(10) unsigned NOT NULL default '0',
   `alerts_fired` int(10) unsigned NOT NULL default '0',
   `agents` int(10) unsigned NOT NULL default '0',
-  `agents_uknown` int(10) unsigned NOT NULL default '0',
+  `agents_unknown` int(10) unsigned NOT NULL default '0',
   `utimestamp` int(20) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_group`)
 ) ENGINE=InnoDB 

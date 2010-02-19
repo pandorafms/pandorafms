@@ -16,7 +16,7 @@
 function render_info ($table) {
 	global $console_mode;
 	$info = get_db_sql  ("SELECT COUNT(*) FROM $table");
-	render_row ($info, $table);
+	render_row ($info,"DB Table $table");
 }
 
 function render_info_data ($query, $label) {
@@ -47,7 +47,7 @@ if (!isset($argc))
 	$console_mode = 0;
 
 if ($console_mode == 1) {
-	echo "\nPandora FMS PHP diagnostic tool v1.0 (c) Artica ST 2009 \n";
+	echo "\nPandora FMS PHP diagnostic tool v3.1 (c) Artica ST 2009-2010 \n";
 
 	if ($argc == 1 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 		echo "\nThis command line script gives information about Pandora FMS database. 
@@ -67,7 +67,9 @@ full path to Pandora FMS 'config.php' file.
 } else {
 
 	session_start ();
-	include "../include/config.php";
+	if (file_exists("../include/config.php"))
+		include "../include/config.php";
+
 	global $config;
 		
 	// Not from console, this is a web session
@@ -77,17 +79,17 @@ full path to Pandora FMS 'config.php' file.
 		exit;
 	}
 
-	echo "<h3>Pandora FMS Diag tool v3.0.0</h3>";
-	echo "<hr height=1>";
-	echo "<table with=500 cellpadding=4 cellspacing=4>";
-	echo "<tr><th align=left>Table/Item</th>";
-	echo "<th>Data items</th></tr>";
+	echo "<h3>Pandora FMS Diagnostic tool v$pandora_version </h3>";
+	echo "<table with=600 cellpadding=4 cellspacing=4>";
+	echo "<tr><th align=left>".__("Item")."</th>";
+	echo "<th>".__("Data value")."</th></tr>";
 }
 
 render_row ($build_version, "Pandora FMS Build");
 render_row ($pandora_version, "Pandora FMS Version");
 render_row ($config["homedir"], "Homedir");
 render_row ($config["homeurl"], "HomeUrl");
+render_row (phpversion(), "PHP Version");
 
 render_info ("tagente");
 render_info ("tagent_access");
@@ -98,17 +100,20 @@ render_info ("tagente_modulo");
 render_info ("talert_actions");
 render_info ("talert_commands");
 render_info ("talert_template_modules");
-render_info ("talert_snmp");
 render_info ("tevento");
 render_info ("tlayout");
 render_info ("tlocal_component");
-render_info ("tplanned_downtime");
-render_info ("tplugin");
-render_info ("trecon_task");
 render_info ("tserver");
 render_info ("treport");
 render_info ("ttrap");
 render_info ("tusuario");
+render_info ("tsesion");
+
+
+render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_version'", "DB Schema Version");
+render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'db_scheme_build'", "DB Schema Build");
+render_info_data ("SELECT `value` FROM tconfig WHERE `token` = 'enterprise_installed'", "Enterprise installed");
+render_row ( date ("Y/m/d H:i:s",get_db_sql ("SELECT `value` FROM tconfig WHERE `token` = 'db_maintance'")), "PandoraDB Last run");
 
 render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'customer_key';", "Update Key");
 render_info_data ("SELECT value FROM tupdate_settings WHERE `key` = 'updating_code_path'", "Updating code path");

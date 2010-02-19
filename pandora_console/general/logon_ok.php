@@ -25,15 +25,12 @@ extensions_call_login_function ();
 
 require_once ("include/functions_reporting.php");
 
-echo '<div class="msg" style="width:700px;">';
-echo "<h1>" . __('Welcome to Pandora FMS Web Console') . "</h1>";
-echo "<p>";
-echo __('This is the Web Management System for Pandora FMS. From here you can manage its agents, alerts and incidents. Session is open while activity exists.');
-echo "</p>";
-echo '</div>';
+print_page_header (__('Welcome to Pandora FMS Web Console'));
 
+// ---------------------------------------------------------------------------
 // Site news !
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ---------------------------------------------------------------------------
+
 echo '<div style="width:350px; float:left; padding-right: 30px;" id="leftcolumn">';
 echo '<h2>' . __('Site news') . '</h2>';
 $sql = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
@@ -53,7 +50,10 @@ if ($news !== false) {
 }
 echo '</div>';
 
-// Site stats
+
+// ---------------------------------------------------------------------------
+// Site stats (global!)
+// ---------------------------------------------------------------------------
 echo '<div style="width:300px; float:left; padding-left: 30px;" id="rightcolumn">';
 $data = get_group_stats ();
 
@@ -136,6 +136,7 @@ echo '</tbody></table>';
 echo "</div>";
 echo '<div id="activity" style="width:700px;">';
 echo "<br><br>";
+
 // Show last activity from this user
 echo "<h2>" . __('This is your last activity in Pandora FMS console') . "</h2>";
 
@@ -154,7 +155,7 @@ $table->head[4] = __('Comments');
 $sql = sprintf ("SELECT id_usuario,accion,fecha,ip_origen,descripcion
 				FROM tsesion
 				WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - 604800) 
-				AND `id_usuario` = '%s' ORDER BY `fecha` DESC LIMIT 5", $config["id_user"]);
+				AND `id_usuario` = '%s' ORDER BY `utimestamp` DESC LIMIT 10", $config["id_user"]);
 $sessions = get_db_all_rows_sql ($sql);
 
 if ($sessions === false)

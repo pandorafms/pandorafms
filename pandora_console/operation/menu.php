@@ -40,8 +40,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
 	$sub["operation/agentes/tactical"]["refr"] = 60;
 	
-	$sub["operation/agentes/estado_grupo"]["text"] = __('Group view');
-	$sub["operation/agentes/estado_grupo"]["refr"] = 60;
+	$sub["operation/agentes/group_view"]["text"] = __('Group view');
+	$sub["operation/agentes/group_view"]["refr"] = 60;
 	
 	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
 	
@@ -115,7 +115,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	// Server view
 	$menu["estado_server"]["text"] = __('Pandora servers');
 	$menu["estado_server"]["sec2"] = "operation/servers/view_server";
-	$menu["estado_server"]["refr"] = 60;
 	$menu["estado_server"]["id"] = "oper-servers";
 	//End of server view
 }

@@ -22,7 +22,7 @@ require_once ("include/fgraph.php");
 
 check_login ();
 
-echo "<h2>".__('Users defined in Pandora')." &raquo; ".__('User activity statistics')."</h2>";
+print_page_header (__('User activity statistics'), "images/group.png", false, "", false, "");
 
 if ($config['flash_charts']) {
 	echo graphic_user_activity ();

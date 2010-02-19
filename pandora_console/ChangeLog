@@ -1,3 +1,103 @@
+2010-02-19  Sancho Lerena  <slerena@artica.es>
+
+	* functions_events.php: Fixed typo (switched meaning) in two labels.
+
+	* include/styles/pandora.css: Changed background color of th default style.
+
+	* include/functions_reporting.php: Improved function get_group_stats(). Now
+	supports stats from batch-mode and get realtime stats in a more efficient
+	way. Fixed get_fired_alerts_reporting_table() to avoid problems in external 
+	reporting (PDF & XML).
+
+	* include/functions_servers.php: get_server_performance() now uses batch mode
+	stats reporting, and improved also the realtime stats generation. Same with
+	function get_server_info().
+
+	* include/functions_config.php: Added new config tokens (not fully 
+	implemented yet) for event, trap, strings and audit automatic purge.
+
+	* include/functions_ui.php: Added new print_page_header() function to set
+	the new standard header in all pages, using the "tabbed" format to show
+	the title, subtitle and other options like help, or custom-tabs for the page
+
+	* pandoradb.sql: Added tserver.stat_utimestamp field. Added indexes to 
+	tsession table. Fixed typo in field name in tgroup_stat: agents_uknown to
+	agents_unknown.
+
+	* extensions/ext_backup: New directory to place "deleted" extensions.
+
+	* extensions/dbmanager/dbmanager.css: Table names now are in it's original
+	lowercase/uppercase format.
+
+	* extensions/dbmanager.php: Updated headers, and now return "empty" when
+	a search is empty, instead "error" as before.
+
+	* extensions/users_connected.php
+	extensions/module_groups.php
+	extensions/plugin_registration.php
+	extensions/pandora_logs.php
+	operation/incidents/incident.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user.php
+	operation/users/user_edit.php
+	godmode/agentes/planned_downtime.php
+	operation/events/events.php
+	operation/visual_console/index.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/exportdata.php
+	operation/agentes/ver_agente.php
+	operation/agentes/status_monitor.php
+	operation/agentes/alerts_status.php
+	operation/users/user_statistics.php: Added new header format.
+
+	* operation/agentes/estado_grupo.php: Removed old group view.
+
+	* operation/agentes/tactical.php: Adapted to use new realtime/batch 
+	statistical system. Placed events above server info. Showing only pending
+	events and other minor changes.
+
+	* operation/agentes/group_view.php: NEW screen, replacing old one. Probably
+	most ugly, but much more useful than before.
+
+	* operation/agentes/networkmap.php: Added title.
+
+	* operation/messages/message.php: Added title and adding some exists in 	
+	code was missing before.
+
+	* operation/reporting/reporting_viewer.php: Added title.
+
+	* operation/reporting/graph_viewer.php: Added title.
+
+	* operation/reporting/custom_reporting.php: Added title.
+
+	* operation/servers/view_server.php: 
+
+	* operation/menu.php: Replaced old group view with new (this has english
+	name). Removed autorefresh "by default" in server view.
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Fixed typo.
+
+	* extras/pandora_diag.php: Minor changes, removed some info and added other.
+
+	* general/logon_ok.php: Minor aesthetic changes.
+
+	* general/header.php: Fixed missing ";"
+
+	* operation/extensions.php,
+	godmode/extensions.php: Added support for delete extensions.
+
+	* godmode/menu.php: New setup items.
+
+	* godmode/setup/setup.php,
+	godmode/setup/performance.php,
+	godmode/setup/setup_visuals.php: Reordered setup options, new setup section	
+	"Performance", added new performance options to set  "realtime" statistics
+	or "batchmode" with it's own interval. Some setup info is now shared with
+	the servers (but it it's any change in setup, servers should be restarted 
+	anyway).
+
+
 2010-02-19  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: adapt to new tables.

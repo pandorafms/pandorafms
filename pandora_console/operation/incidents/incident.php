@@ -171,9 +171,12 @@ if (empty ($result)) {
 	$count = count ($result);
 }
 
-echo '<h2>'.__('Incident management').' &raquo; '.__('Manage incidents').'</h2>
-<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">
-<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
+// Header
+print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, "");
+
+echo '<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">';
+
+echo '<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
 <td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = get_incidents_status ();
@@ -205,11 +208,11 @@ echo '</td></tr><tr><td>';
 
 print_select (get_users_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
 
-echo '</td></tr><tr><td>';
+echo '</td></tr><tr><td colspan=3>';
 	
 print_select ($groups, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
-echo '</td></tr><tr><td>';
+echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 print_input_text ('texto', $texto, '', 45);	
 echo '&nbsp;';

@@ -112,20 +112,17 @@ if ($tab != '') {
 }
 
 
-if ($inside_main == 1 && $tab != 'alert') {
+if ($inside_main == 1 || $tab == 'alert') {
 	echo "<h3>";
 	echo __('Alerts');
 	echo "</h3>";
 
 } else {
-	echo "<h2>";
-	echo __('Pandora agents'). " &raquo; ".__('Alerts');
-	echo print_help_icon ('alert_validation', true);
-	echo "</h2>";
+	print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
 }
 
+// Filter form
 echo '<form method="post" action="'.$url.'">';
-
 if ($print_agent) {
 	$table->width = '90%';
 	$table->data = array ();

@@ -18,7 +18,8 @@
 // Login check
 check_login ();
 
-echo "<h2>".__('Visual console')." &raquo; ".__('Summary')."</h2>";
+// Header
+print_page_header (__("Visual console"), "images/monitor.png");
 
 require_once ('include/functions_visual_map.php');
 $layouts = get_user_layouts ();

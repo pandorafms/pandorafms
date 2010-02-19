@@ -28,7 +28,8 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	return;
 }
 
-echo '<h2>'.__('Pandora agents').' &raquo; '.__('Full list of monitors').'</h2>';
+print_page_header ("Monitor detail", "images/bricks.png", false);
+
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');

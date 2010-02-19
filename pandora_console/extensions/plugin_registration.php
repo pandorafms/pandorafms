@@ -16,7 +16,7 @@
 function pluginreg_extension_main () {
 	global $config;
 
-	echo "<h2>".__('Extensions'). " &raquo; ".__('Plugin registration')."</h2>";
+	print_page_header (__('Plugin registration'));
 
 	echo "<div class=notify>";
 	echo __("This extension makes registration of server plugins more easy. Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.<br><br>You can get more plugins in our <a href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>Public Resource Library</A>");

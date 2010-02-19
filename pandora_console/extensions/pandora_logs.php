@@ -36,7 +36,8 @@ function view_logfile ($file_name) {
 function pandoralogs_extension_main () {
 	global $config;
 
-	echo "<h2>".__('Extensions'). " &raquo; ".__("System logfile viewer"). "</h2>";
+	print_page_header (__("System logfile viewer"));
+
 	echo "<p>This tool is used just to view your Pandora FMS system logfiles directly from console</p>";
 
 	view_logfile ($config["homedir"]."/pandora_console.log");

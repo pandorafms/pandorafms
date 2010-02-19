@@ -90,8 +90,9 @@ if ($view_graph) {
 			exit;
 		}
 		
-		echo "<h2>".__('Reporting')." &raquo; ";
-		echo __('Combined image render')."</h2>";
+		// Header
+		print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, "" );
+
 		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
 		print_custom_graph ($id, $height, $width, $period, $stacked);
@@ -126,11 +127,14 @@ if ($view_graph) {
 		echo "<td class='datos'>";
 		echo "<input type=submit value='".__('Update')."' class='sub upd'>";
 		echo "</table>";
-		echo "</form>";		
+		echo "</form>";	
+		return;
 	}
 }
-echo "<h2>" . __('Reporting') . " &raquo; ";
-echo __('Custom graph viewer') . "</h2>";
+
+// Header
+print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "images/reporting.png", false, "", false, "" );
+
 
 $graphs = get_user_custom_graphs ();
 if (! empty ($graphs)) {

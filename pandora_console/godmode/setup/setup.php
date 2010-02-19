@@ -69,23 +69,8 @@ $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlang
 $table->data[1][0] = __('Remote config directory');
 $table->data[1][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
 
-$table->data[2][0] = __('SLA period (seconds)');
-$table->data[2][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
-
-$table->data[3][0] = __('Max. days before compact data');
-$table->data[3][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
-
-$table->data[4][0] = __('Max. days before purge');
-$table->data[4][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
-
-$table->data[5][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table->data[5][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
-
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"], '', 15, 15, true);
-
-$table->data[7][0] = __('Default hours for event view');
-$table->data[7][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
 $table->data[8][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
 $table->data[8][1] = __('Comparation in rollover').' ';
@@ -106,10 +91,6 @@ $table->data[11][0] = __('Enforce https');
 $table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('https', 1, '', $config["https"], true).'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
 
-$table->data[12][0] = __('Compact CSS and JS into header');
-$table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
-$table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
-
 
 $table->data[14][0] = __('Attachment store');
 $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
@@ -117,18 +98,11 @@ $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_
 $table->data[15][0] = __('IP list with API access') . 
 	print_help_tip (__("The list of IPs separate with carriage return."), true);
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
-$table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 10, 15, $list_ACL_IPs_for_API, null, true);
+$table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 5, 15, $list_ACL_IPs_for_API, null, true);
 
 $table->data[16][0] = __('Enable GIS features in Pandora Console');
 $table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
 $table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
-
-$table->data[17][0] = __('Use realtime statistics');
-$table->data[17][1] = __('Yes').'&nbsp;'.print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
-$table->data[17][1] .= __('No').'&nbsp;'.print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
-
-$table->data[18][0] = __('Batch statistics period (secs)');
-$table->data[18][1] = print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
 
 $table->data[19][0] = __('Timezone setup');
 $table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 15, 15, true);

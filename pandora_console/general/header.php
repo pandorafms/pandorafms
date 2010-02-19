@@ -130,7 +130,7 @@ require_once ("include/functions_messages.php");
 				</form>				
 				<td>
 				 <?php
-                   echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot">&nbsp;'.__('Events').'</a>'
+                   echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot">&nbsp;'.__('Events').'</a>';
                  ?>
 				</td>
 	</tr>

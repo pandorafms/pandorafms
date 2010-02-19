@@ -69,7 +69,11 @@ function get_server_performance () {
 	// For remote modules:
 	// Get total modules running
 
-	$data["total_remote_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_modulo != 1 AND disabled = 0 AND utimestamp > 0");
+	if ($config["realtimestats"] == 1){
+		$data["total_remote_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.id_modulo != 1 AND disabled = 0 AND utimestamp > 0");
+	} else {
+		$data["total_remote_modules"] = get_db_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type != 0");
+	}
 
 	$data["avg_interval_remote_modules"] = get_db_sql ("SELECT AVG(module_interval) FROM tagente_modulo, tagente_estado where tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND disabled = 0 AND id_modulo != 1 AND module_interval > 0 AND utimestamp > 0");
 
@@ -79,8 +83,11 @@ function get_server_performance () {
 		$data["remote_modules_rate"] =  $data["total_remote_modules"] / $data["avg_interval_remote_modules"];
 
 	// For local modules (ignoring local modules with custom invervals for simplicity).
-
-	$data["total_local_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND id_modulo = 1 AND disabled = 0 AND utimestamp > 0");
+	if ($config["realtimestats"] == 1){
+		$data["total_local_modules"] =  get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND id_modulo = 1 AND disabled = 0 AND utimestamp > 0");
+	} else {
+		$data["total_local_modules"] = get_db_sql ("SELECT SUM(my_modules) FROM tserver WHERE server_type = 0");
+	}
 
 	$data["avg_interval_local_modules"] = get_db_sql ("SELECT AVG(tagente.intervalo) FROM tagente WHERE  disabled = 0 AND intervalo > 0");
 
@@ -105,6 +112,9 @@ function get_server_performance () {
  * @return mixed False in case the server doesn't exist or an array with info.
  */
 function get_server_info ($id_server = -1) {
+
+	global $config;
+
 	if (is_array ($id_server)) {
 		$select_id = " WHERE id_server IN (".implode (",", $id_server).")";
 	} elseif ($id_server > 0) {
@@ -112,29 +122,6 @@ function get_server_info ($id_server = -1) {
 	} else {
 		$select_id = "";
 	}
-	
-	$modules_info = array ();
-	$modules_total = array ();
-	$result = get_db_all_rows_sql ("SELECT DISTINCT(tagente_estado.running_by), 
-		COUNT(tagente_estado.id_agente_modulo) AS modules, id_modulo 
-		FROM tagente_estado, tagente_modulo 
-		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-		AND tagente_modulo.disabled = 0 AND utimestamp > 0
-		GROUP BY running_by");
-	if (empty ($result)) {
-		$result = array ();
-	}
-	
-	foreach ($result as $row) {
-		$modules_info[$row["running_by"]] = $row["modules"];
-		if (!isset ($modules_total[$row["id_modulo"]])) {
-			$modules_total[$row["id_modulo"]] = $row["modules"];
-		} else {
-			$modules_total[$row["id_modulo"]] += $row["modules"];
-		}
-	}
-	
-	$recon_total = get_db_sql ("SELECT COUNT(*) FROM trecon_task");
 	
 	$sql = "SELECT * FROM tserver".$select_id . " ORDER BY server_type";
 	$result = get_db_all_rows_sql ($sql);
@@ -146,6 +133,7 @@ function get_server_info ($id_server = -1) {
 	
 	$return = array ();
 	foreach ($result as $server) {
+
 		switch ($server['server_type']) {
 		case 0:
 			$server["img"] = print_image ("images/data.png", true, array ("title" => __('Data server')));
@@ -203,103 +191,109 @@ function get_server_info ($id_server = -1) {
 			$id_modulo = 0;
 			break;
 		}
-		
-		if (empty ($modules_info[$server["id_server"]])) {
-			$server["modules"] = 0;
-		} else {
-			$server["modules"] = $modules_info[$server["id_server"]];
-		}
-		$server["module_lag"] = 0;
-		$server["lag"] = 0;
-		$server["load"] = 0;
-		
-		if (!isset ($modules_total[$id_modulo])) {
-			$server["modules_total"] = 0;
-		} else {
-			$server["modules_total"] = $modules_total[$id_modulo];	
-		}
-		
-		if ($id_modulo > 0 && $server["modules"] > 0) {
-			//If the server doesn't have modules, it doesn't have lag so nothing to calculate. 
-			// If it's not a module server, don't go here either
 
-			// Remote servers LAG Calculation:
-			if ($id_modulo != 1){
-				$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
-				WHERE utimestamp > 0
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND current_interval > 0
-				AND running_by = ".$server["id_server"]."
-				AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-				AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
-			} else {
+		if ($config["realtimestats"] == 0){
+			// ---------------------------------------------------------------
+			// Take data from database if not realtime stats
+			// ---------------------------------------------------------------
 
-			// Local/Dataserver server LAG calculation:
-				$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
-				WHERE utimestamp > 0
-				AND tagente_modulo.disabled = 0
-				AND tagente_modulo.id_tipo_modulo < 5 
-				AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND current_interval > 0
-				AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
-				AND running_by = ".$server["id_server"]."
-				AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
-			}
-			
-			// Lag over current_interval * 2 is not lag, it's a timed out module
-			// And we can't check current_interval = 0 (data modules) because they come as they want
-			
-			if (!empty ($result["lag"])) {
-				$server["lag"] = $result["lag"];
-			}
-			if (!empty ($result["module_lag"])) {
-				$server["module_lag"] = $result["module_lag"];
-			}
+			$server["lag"] = get_db_sql ("SELECT lag_time FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modulelag"] = get_db_sql ("SELECT lag_modules FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modules"] = get_db_sql ("SELECT my_modules FROM tserver WHERE id_server = ".$server["id_server"]);
+			$server["modules_total"] = get_db_sql ("SELECT total_modules_running FROM tserver WHERE id_server = ".$server["id_server"]);
+
 		} else {
-			switch ($server["type"]) {
-			case "recon":
-				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+
+			// ---------------------------------------------------------------
+			// Take data in realtime
+			// ---------------------------------------------------------------
+
+			
+
+			$server["module_lag"] = 0;
+			$server["lag"] = 0;
+
+			
+			if ($server["server_type"] != 3) {
+
+				// ---------------------------------------------------------------
+				// Data, Plugin, WMI, Network and Others
+
+				$server["modules"] = get_db_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = ".$server["id_server"]);
+
+				$server["modules_total"] = get_db_sql ("SELECT count(tagente_estado.id_agente_modulo) FROM tserver, tagente_estado, tagente_modulo, tagente WHERE tagente.disabled=0 AND tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_estado.running_by = tserver.id_server AND tserver.server_type = ".$server["server_type"]);
 				
-				//Get recon taks info
-				$tasks = get_db_all_rows_sql ("SELECT status, utimestamp FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
-				if (empty ($tasks)) {
-					$tasks = array ();
+				// Remote servers LAG Calculation (server_type != 0)
+				if ($server["server_type"] != 0){
+					$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+					WHERE utimestamp > 0
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND current_interval > 0
+					AND running_by = ".$server["id_server"]."
+					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > current_interval");
+				} else {
+
+				// Local/Dataserver server LAG calculation:
+					$result = get_db_row_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - current_interval) AS lag FROM tagente_estado, tagente_modulo
+					WHERE utimestamp > 0
+					AND tagente_modulo.disabled = 0
+					AND tagente_modulo.id_tipo_modulo < 5 
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+					AND current_interval > 0
+					AND (UNIX_TIMESTAMP() - utimestamp) < ( current_interval * 10)
+					AND running_by = ".$server["id_server"]."
+					AND (UNIX_TIMESTAMP() - utimestamp) > (current_interval * 1.1)");
 				}
+
+				// Lag over current_interval * 2 is not lag, it's a timed out module
+		
+				if (!empty ($result["lag"])) {
+					$server["lag"] = $result["lag"];
+				} 
+					
+				if (!empty ($result["module_lag"])) {
+					$server["module_lag"] = $result["module_lag"];
+				} 
+
+			// ---------------------------------------------------------------
+			// Recon server only
+			// ---------------------------------------------------------------
+
+			} elseif ($server["server_type"] == 3) {
+
+				$server["name"] = '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$server["id_server"].'">'.$server["name"].'</a>';
+			
 				//Total jobs running on this recon server
-				$server["modules"] = count ($tasks);
-				
+				$server["modules"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_recon_server = ".$server["id_server"]);
+		
 				//Total recon jobs (all servers)
-				$server["modules_total"] = $recon_total;
-				
+				$server["modules_total"] = get_db_sql ("SELECT COUNT(status) FROM trecon_task");
+		
 				//Lag (take average active time of all active tasks)
 				$server["module_lag"] = 0;
-				$lags = array ();
-				foreach ($tasks as $task) {
-					if ($task["status"] > 0 && $task["status"] <= 100) {
-						$lags[] = $time - $task["utimestamp"];
-						//Module lag is actually the number of jobs that is currently running
-						$server["module_lag"]++;
-					}
-				}
-				if (count ($lags) > 0) {
-					$server["lag"] = (int) array_sum ($lags) / count ($lags);
-				}
-				break;
-			default:
-				break;
-			}	
-		}
+
+				$server["lag"] = get_db_sql ("SELECT UNIX_TIMESTAMP() - utimestamp from trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+
+				$server["module_lag"] = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task WHERE UNIX_TIMESTAMP()  > (utimestamp + interval_sweep) AND id_recon_server = ".$server["id_server"]);
+
+			} // recon
+		} // Take data for realtime mode
+
 		$server["lag_txt"] = ($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"];
+
 		if ($server["modules_total"] > 0) {
 			$server["load"] = round ($server["modules"] / $server["modules_total"] * 100); 
+		} else {
+			$server["load"] = 0;
 		}
-		
+
 		//Push the raw data on the return stack
 		$return[$server["id_server"]] = $server;
-	}
+	} // Main foreach
+
 	return $return;
 }
-
 
 ?>

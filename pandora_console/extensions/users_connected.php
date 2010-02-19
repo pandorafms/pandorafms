@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 
 function users_extension_main () {
-	echo "<h2>".__('Extensions'). " &raquo; ".__("Users connected"). "</h2>";
+	print_page_header (__("Users connected"));
 
 	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 

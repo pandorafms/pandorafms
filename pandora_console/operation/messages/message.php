@@ -63,7 +63,10 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 }
 
 if (isset ($_GET["new_msg"])) { //create message
-	echo "<h2>".__('Messages')." &raquo; ".__('New message').'</h2>';
+
+// Header
+	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
+
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
 	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
@@ -94,8 +97,9 @@ if (isset ($_GET["new_msg"])) { //create message
 	echo '</td></tr></table></form>';
 
 } elseif (isset ($_GET["read_message"])) {
-	echo "<h2>".__('Messages')." &raquo; ".__('Read message').'</h2>';
-	
+
+	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
+
 	$message_id = (int) get_parameter ("read_message");
 	$message = get_message ($message_id);
 	
@@ -142,11 +146,12 @@ if (isset ($_GET["new_msg"])) { //create message
 	echo '<div style="text-align:right; width:600px;">';
 	print_submit_button (__('Reply'), "reply_btn", false, 'class="sub next"'); 
 	echo '</div></form>';
+	return;
 } 
 
 if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {	
 	if (empty ($config["pure"]) && !is_ajax ()) {
-		echo "<h2>".__('Messages')." &raquo; ".__('Message overview').'</h2>';
+		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 	}
 
 	//Get number of messages

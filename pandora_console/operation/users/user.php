@@ -20,7 +20,8 @@ require_once ("include/config.php");
 
 check_login ();
 
-echo '<h2>'.__('Pandora users').' &raquo; '.__('Users defined in Pandora').'</h2>';
+// Header
+print_page_header (__('Pandora users'), "images/group.png", false, "", false, "");
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

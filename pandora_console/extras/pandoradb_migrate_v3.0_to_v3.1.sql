@@ -10,6 +10,7 @@ ALTER TABLE `tserver` ADD `lag_time` int(11) NOT NULL default 0;
 ALTER TABLE `tserver` ADD `lag_modules` int(11) NOT NULL default 0;
 ALTER TABLE `tserver` ADD `total_modules_running` int(11) NOT NULL default 0;
 ALTER TABLE `tserver` ADD `my_modules` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD  `stat_utimestamp` bigint(20) NOT NULL default '0';
 
 ALTER TABLE `tagente_modulo` ADD `custom_string_1` text default '';
 ALTER TABLE `tagente_modulo` ADD `custom_string_2` text default '';
@@ -33,6 +34,9 @@ CREATE INDEX idx_agente USING BTREE ON tagente_estado(id_agente);
 CREATE INDEX idx_template_action USING BTREE ON talert_templates(id_alert_action);
 CREATE INDEX idx_template_module USING BTREE ON talert_template_modules(id_agent_module);
 CREATE INDEX idx_agentmodule USING BTREE ON tevento(id_agentmodule);
+
+CREATE INDEX idx_utimestamp USING BTREE ON tacess(utimestamp);
+CREATE INDEX idx_user USING BTREE ON tsesion (ID_usuario);
 
 DROP INDEX `status_index_2` on tagente_estado;
 CREATE INDEX idx_status USING BTREE ON tagente_estado (estado);
@@ -227,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
   `alerts` int(10) unsigned NOT NULL default '0',
   `alerts_fired` int(10) unsigned NOT NULL default '0',
   `agents` int(10) unsigned NOT NULL default '0',
-  `agents_uknown` int(10) unsigned NOT NULL default '0',
+  `agents_unknown` int(10) unsigned NOT NULL default '0',
   `utimestamp` int(20) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_group`)
 ) ENGINE=InnoDB 

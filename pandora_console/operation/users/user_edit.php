@@ -77,7 +77,8 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$user_info = $upd_info;
 }
 
-echo "<h2>".__('Pandora users')." &raquo; ".__('User detail editor')."</h2>";
+// Header
+print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
 
 echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 

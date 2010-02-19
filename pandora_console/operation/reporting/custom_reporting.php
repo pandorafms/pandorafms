@@ -23,8 +23,8 @@ require_once ('include/functions_reports.php');
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');
 
-echo "<h2>".__('Reporting')." &raquo; ";
-echo __('Custom reporting')."</h2>";
+// Header
+print_page_header (__('Reporting'). " &raquo;  ".__('Custom reporting'), "images/reporting.png", false, "", false, "" );
 
 $reports = get_reports ();
 

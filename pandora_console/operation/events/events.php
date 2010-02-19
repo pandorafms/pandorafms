@@ -212,25 +212,22 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
 
-echo '<h3 id="result" style="display:none">&nbsp;</h3>';
-
-echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
 
 
-echo print_help_icon ("eventview", true);
-echo "&nbsp;";
-
-if ($config["pure"] == 1) {
-	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-	print_image ("images/normalscreen.png", false, array ("title" => __('Normal screen')));
-	echo '</a>';
-} else {
+// Header
+if ($config["pure"] == 0)
+	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, '<a target="_top" href="'.$url.'&amp;pure=1"><img src="images/fullscreen.png"></a>');
+else {
 	// Fullscreen
-	echo '<a target="_top" href="'.$url.'&amp;pure=1">';
+	echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
+	echo print_help_icon ("eventview", true);
+	echo "&nbsp;";
+
+	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
 	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen')));
 	echo '</a>';
+	echo "</h2>";
 }
-echo "</h2>";
 
 //Link to toggle filter
 echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';

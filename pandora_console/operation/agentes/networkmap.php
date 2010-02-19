@@ -42,7 +42,8 @@ $center = (int) get_parameter ('center', 0);
 
 /* Main code */
 
-echo '<h2>'.__('Pandora agents').' &raquo; '.__('Network map').'&nbsp;';
+print_page_header (__('Network map'));
+
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
 	print_image ("images/normalscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));

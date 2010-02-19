@@ -40,8 +40,9 @@ function dbmanager_query ($sql, &$error) {
 	
 	if (! empty ($retval))
 		return $retval;
+
 	//Return false, check with === or !==
-	return false;
+	return "Empty";
 }
 
 
@@ -50,7 +51,8 @@ function dbmgr_extension_main () {
 
 	$sql = (string) get_parameter ('sql');
 
-	echo "<h2>".__('Extensions'). " &raquo; ".__('Database interface')."</h2>";
+	print_page_header (__('Database interface'), "", false, false, true);
+
 	echo '<div class="notify">';
 	echo "This is an advanced extension to interface with Pandora FMS database directly from WEB console using native SQL sentences. Please note that <b>you can damage</b> your Pandora FMS installation if you don't know </b>exactly</b> what are you doing, this means that you can severily damage your setup using this extension. This extension is intended to be used <b>only by experienced users</b> with a depth knowledgue of Pandora FMS internals.";
 	echo '</div>';

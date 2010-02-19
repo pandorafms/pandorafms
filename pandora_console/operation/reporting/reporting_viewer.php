@@ -46,9 +46,8 @@ if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! is_user
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
 
-echo "<h2>".__('Reporting')." &raquo; ";
-echo __('Custom reporting')." - ";
-echo $report['name']."</h2>";
+// Header
+print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"], "images/reporting.png", false, "", false, "" );
 
 $table->width = '99%';
 $table->class = 'databox';

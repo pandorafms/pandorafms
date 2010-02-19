@@ -80,9 +80,6 @@ $table->data[9][1] = print_select ($iconsets, 'status_images_set', $config["stat
 $table->data[10][0] = __('Font path');
 $table->data[10][1] = print_input_text ('fontpath', $config["fontpath"], '', 50, 255, true);
 
-$table->data[11][0] = __('Use agent access graph'). print_help_icon("agent_access", true);
-$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 
 $table->data[12][0] = __('Flash charts');
 $table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('flash_charts', 1, '', $config["flash_charts"], true).'&nbsp;&nbsp;';

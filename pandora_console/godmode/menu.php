@@ -170,11 +170,15 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 	if ($config['activate_gis'])
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
+	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	enterprise_hook ('historydb_submenu');
+
+
+	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
 	$menu["gsetup"]["sub"] = $sub;
 }
 

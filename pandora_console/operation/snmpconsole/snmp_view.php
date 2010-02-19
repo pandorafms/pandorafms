@@ -99,15 +99,16 @@ if (isset ($_POST["updatebt"])) {
 	}
 }
 
-echo "<h2>" . __('SNMP console');
-
 if ($config["pure"]) {
-	echo '&nbsp;<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
+	$link =  '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
 } else {
 	// Fullscreen
-	echo '&nbsp;<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'" /></a>';
+	$link =  '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
 }
-echo "</h2>";
+
+// Header
+print_page_header (__("SNMP console"), "images/computer_error.png", false, "", false,  $link);
+
 
 $sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
 $traps = get_db_all_rows_sql ($sql);

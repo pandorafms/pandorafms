@@ -1347,4 +1347,58 @@ function get_full_url ($url = false) {
 	
 	return $fullurl.$url;
 }
+
+
+/**
+ * Return a standard page header (Pandora FMS 3.1 version)
+ *
+ * @param string Title
+ * @param string Icon path
+ * @param boolean Return (false will print using a echo)
+ * @param boolean help (Help ID to print the Help link)
+ * @param boolean Godmode (false = operation mode).
+ * @param string Options (HTML code for make tabs or just a brief info string 
+ * @return string Header HTML
+ */
+
+function print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
+
+	if (($icon == "") && ($godmode == true)){
+		$icon = "images/setup.png";
+	}
+
+	if ($godmode == true){
+		$type = "nomn";
+		$type2 = "menu_tab_frame";
+	} 
+	else {
+		$type = "view";
+		$type2 = "menu_tab_frame_view";
+	}
+
+	
+	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
+
+
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;<img src="'.$icon.'" style="margin-bottom: -3px;" class="bottom" border="0">&nbsp; ';
+	$buffer .= $title;
+	if ($help != "")
+		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);
+	$buffer .= '</ul></div>';
+
+	if ($options != ""){
+		$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+		$buffer .= $options;
+		$buffer .= '</li></ul></div>';
+	}
+
+	$buffer .=  '</div><br><br><br>';
+
+	if (!$return)
+		echo $buffer;
+
+	return $buffer;
+}
+
+
 ?>

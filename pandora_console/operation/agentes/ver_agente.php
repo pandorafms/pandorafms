@@ -203,7 +203,7 @@ else {
 	$icon = 'images/bricks.png';
 }
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='$icon' class='top' border=0>&nbsp; ".mb_substr(get_agent_name($id_agente),0,21)."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='$icon' class='top' border=0>&nbsp; ".__("Agent")."&nbsp;-&nbsp;".mb_substr(get_agent_name($id_agente),0,25)."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");

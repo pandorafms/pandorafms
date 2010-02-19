@@ -117,8 +117,10 @@ if ($create_downtime || $update_downtime) {
 		}
 	}
 }
-echo '<h2>'.__('Agent configuration').' &raquo; ';
-echo __('Planned Downtime').'</h2>';
+
+// Header
+print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
+
 // Show create / update form
 	
 	if (($first_create != 0) OR ($first_update != 0)){

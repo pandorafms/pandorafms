@@ -64,6 +64,11 @@ if (!give_acl ($config['id_user'], 0, "AR")) {
 
 require_javascript_file ('calendar');
 
+
+// Header
+print_page_header (__("Export data"), "images/bricks.png");
+
+
 echo "<h2>".__('Pandora agents')." &raquo; ".__('Export data')."</h2>";
 
 $group = get_parameter_post ('group', 1);

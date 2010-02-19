@@ -308,11 +308,11 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 			// Colored box
 			if ($event["estado"] == 0) {
 				$img = "images/tick_off.png";
-				$title = __('Event validate');
+				$title = __('Event not validated');
 			}
 			else {
 				$img = "images/tick.png";
-				$title = __('Event not validate');
+				$title = __('Event validated (ACK)');
 			}
 			$data[0] = print_image ($img, true, 
 				array ("class" => "image_status",

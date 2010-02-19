@@ -38,8 +38,7 @@ function mainModuleGroups() {
 				WHERE id_module_group = %d AND disabled IS FALSE AND delete_pending IS FALSE)
 		GROUP BY estado";
 	
-	echo "<h2>".__('Extensions'). " &raquo; ";
-	echo __("Combined table of agent group and module group") . "</h2>";
+	print_page_header (__("Combined table of agent group and module group"));
 	
 	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
 	

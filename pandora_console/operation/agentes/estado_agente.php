@@ -70,9 +70,7 @@ if (is_ajax ()) {
 $group_id = get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Summary').
-print_help_icon ("agent_status", true);
-echo "</h2>";
+print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
 if ($group_id > 1) {
 	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id)).'">';

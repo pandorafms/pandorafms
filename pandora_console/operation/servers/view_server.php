@@ -28,13 +28,10 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	return;
 }
 
-$modules_server = 0;
-$total_modules_network = 0;
-$total_modules_data = 0;
 
-echo "<h2>".__('Pandora servers')." &raquo; ".__('Configuration detail')."</h2>";
+// Header
+print_page_header (__("Pandora servers"), "images/server.png");
 
-$total_modules = (int) get_db_value ('COUNT(*)', 'tagente_modulo', 'disabled', 0);
 $servers = get_server_info ();
 if ($servers === false) {
 	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";

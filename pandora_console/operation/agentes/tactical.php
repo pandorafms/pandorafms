@@ -14,11 +14,11 @@
 // GNU General Public License for more details.
 
 
-
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_events.php");
 require_once ("include/functions_servers.php");
+require_once ("include/functions_reporting.php");
 
 check_login ();
 
@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 
-require_once ("include/functions_reporting.php");
+
 
 //This is an intermediary function to print out a set of cells
 //Cells is an array with the explanation, value, link and color
@@ -45,8 +45,15 @@ function print_cells_temp ($cells) {
 	}	
 }
 
+if ($config["realtimestats"] == 0){
+	$updated_time = __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+} else {
+	$updated_time = __("Updated at realtime");
+}
 
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Tactical view')."</h2>";
+
+// Header
+print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );
 
 $data = get_group_stats ();
 
@@ -64,23 +71,30 @@ $table->style = array ();
 
 $img = "include/fgraph.php?tipo=progress&height=20&width=140&mode=0&percent=";
 
+
 $table->style[0] = "padding-top:4px; padding-bottom:4px;";
-$table->data[0][0] ='<b>'.__('Monitor health').'</b>';
+$table->data[0][0] ='<b>'.__('Global health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["monitor_health"].'% '.__('of monitors up')));
+$table->data[1][0] = print_image ($img.$data["global_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["global_health"].'% '.__('of monitors OK')));
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
-$table->data[2][0] = '<b>'.__('Module sanity').'</b>';
+$table->data[2][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = print_image ($img.$data["module_sanity"], true, array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
+$table->data[3][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
-$table->data[4][0] = '<b>'.__('Alert level').'</b>';
+$table->data[4][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = print_image ($img.$data["alert_level"], true, array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
+$table->data[5][0] = print_image ($img.$data["module_sanity"], true, array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
+
+$table->style[6] = "padding-top:4px; padding-bottom:4px;";
+$table->data[6][0] = '<b>'.__('Alert level').'</b>';
+
+$table->style[7] = "padding-top:4px; padding-bottom:4px;";
+$table->data[7][0] = print_image ($img.$data["alert_level"], true, array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
 	
 print_table ($table);
 unset ($table);
@@ -131,7 +145,12 @@ $cells[7]["color"] = "#c00";
 
 print_cells_temp ($cells);
 
+// --------------------------------------------------------------------------
+// Server performance 
+// --------------------------------------------------------------------------
+
 $server_performance = get_server_performance();
+
 echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
 $cells = array ();
 
@@ -160,7 +179,6 @@ $cells[4][1] = format_numeric($server_performance ["total_modules"]);
 $cells[4]["color"] = "#000";
 $cells[4]["href"] = "";
 
-
 print_cells_temp ($cells);
 
 echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
@@ -183,7 +201,17 @@ echo '</div>'; //Left column
 
 echo '<div style="width: 75%; float:left;" id="rightcolumn">';
 
+
+// --------------------------------------------------------------------------
+// Last events information
+// --------------------------------------------------------------------------
+
+print_events_table ("WHERE estado=0 ", 10, "100%");
+
+
+// --------------------------------------------------------------------------
 // Server information
+// --------------------------------------------------------------------------
 
 $serverinfo = get_server_info ();
 $cells = array ();
@@ -248,7 +276,7 @@ if (!empty ($table->data)) {
 }
 unset ($table);
 
-print_events_table ("", 10, "100%");
+
 
 echo '</div>';
 ?>

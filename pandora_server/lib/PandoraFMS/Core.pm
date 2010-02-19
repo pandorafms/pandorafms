@@ -1726,7 +1726,11 @@ sub archive_agent_position($$$$$$$$$$) {
 
 
 ##########################################################################
-# Process server statistics for statistics table
+=head2 C<< pandora_server_statistics (I<$pa_config>, I<$dbh>) >>
+
+Process server statistics for statistics table
+
+=cut
 ##########################################################################
 sub pandora_server_statistics ($$) {
 	my ($pa_config, $dbh) = @_;
@@ -1817,7 +1821,11 @@ sub pandora_server_statistics ($$) {
 
 
 ##########################################################################
-# Process system statistics for statistics table
+=head2 C<< pandora_group_statistics (I<$pa_config>, I<$dbh>) >>
+
+Process groups statistics for statistics table
+
+=cut
 ##########################################################################
 sub pandora_group_statistics ($$) {
 	my ($pa_config, $dbh) = @_;
@@ -1865,10 +1873,10 @@ sub pandora_group_statistics ($$) {
 
 		$warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 ");
 
-		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente  AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2))");
+		$unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente  AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,30,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2))");
 
 		$non_init = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_grupo = $group AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0
- AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND tagente_estado.utimestamp = 0");
+ AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,30,100) AND tagente_estado.utimestamp = 0");
 
 		$alerts = get_db_value ($dbh, "SELECT COUNT(talert_template_modules.id) FROM talert_template_modules, tagente_modulo, tagente_estado, tagente WHERE tagente.id_grupo = $group AND tagente_modulo.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo");
 
@@ -1886,8 +1894,13 @@ sub pandora_group_statistics ($$) {
 
 
 ##########################################################################
-# Pandora self monitoring process
+=head2 C<< pandora_self_monitoring (I<$pa_config>, I<$dbh>) >>
+
+Pandora self monitoring process
+
+=cut
 ##########################################################################
+
 sub pandora_self_monitoring ($$) {
 	my ($pa_config, $dbh) = @_;
 	my $timezone_offset = 0; # PENDING (TODO) !

@@ -88,10 +88,15 @@ Exported Functions:
 
 =item * C<pandora_update_server>
 
+=item * C<pandora_group_statistics>
+
+=item * C<pandora_server_statistics>
+
+=item * C<pandora_self_monitoring>
+
 =back
 
 =head1 METHODS
-
 
 =cut
 
@@ -1994,6 +1999,4 @@ L<DBI>, L<XML::Simple>, L<HTML::Entities>, L<Time::Local>, L<POSIX>, L<PandoraFM
 
 Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 
-
 =cut
-

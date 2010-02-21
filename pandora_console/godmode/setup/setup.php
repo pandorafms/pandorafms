@@ -89,9 +89,9 @@ $table->data[7][1] = print_input_text ('event_view_hr', $config["event_view_hr"]
 
 $table->data[8][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
 $table->data[8][1] = __('Comparation in rollover').' ';
-$table->data[8][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
+$table->data[8][1] .=  print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 $table->data[8][1] .= '<br />'.__('Timestamp in rollover').' ';
-$table->data[8][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
+$table->data[8][1] .= print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 
 $table->data[9][0] = __('Time source') . print_help_icon ("timesource", true);
 $sources["system"] = __('System');

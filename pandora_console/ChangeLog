@@ -1,5 +1,8 @@
 2010-02-20  Sancho Lerena <slerena@artica.es>
 
+	* godmode/setup/setup.php: Fixed bug #2952636, thanks Junichi for the 
+	patch.
+
         * include/gettext.php: Applied patch to solve problem in 64bit
         systems. Thanks Junichi!.  
 

@@ -114,11 +114,14 @@ class gettext_reader {
     // $MAGIC2 = (int)0xde120495; //bug
     $MAGIC2 = (int) - 569244523;
 
+    // Applied patch for 64bit systems
+    // http://source.ibiblio.org/trac/lyceum/attachment/ticket/652/gettext-64bit-fix.diff
+
     $this->STREAM = $Reader;
     $magic = $this->readint();
-    if ($magic == $MAGIC1) {
-      $this->BYTEORDER = 0;
-    } elseif ($magic == $MAGIC2) {
+    if ($magic == ($MAGIC1 & 0xFFFFFFFF)) {
+        $this->BYTEORDER = 0;
+    } elseif ($magic == ($MAGIC2 & 0xFFFFFFFF)) {
       $this->BYTEORDER = 1;
     } else {
       $this->error = 1; // not MO file

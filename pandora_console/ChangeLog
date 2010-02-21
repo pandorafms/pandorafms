@@ -1,3 +1,8 @@
+2010-02-20  Sancho Lerena <slerena@artica.es>
+
+        * include/gettext.php: Applied patch to solve problem in 64bit
+        systems. Thanks Junichi!.  
+
 2010-02-19  Sancho Lerena  <slerena@artica.es>
 
 	* functions_events.php: Fixed typo (switched meaning) in two labels.

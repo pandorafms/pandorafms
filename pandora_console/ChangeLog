@@ -1,5 +1,10 @@
 2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/gis_maps/ajax.php: fix bug that pass wrong var to search
+	status in function "get_agent_status".
+
+2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_alerts.php: fix when try delete only the alerts from
 	alert policies form. 
 

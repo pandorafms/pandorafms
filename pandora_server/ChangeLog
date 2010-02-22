@@ -1,5 +1,10 @@
 2010-02-22	Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* lib/PandoraFMS/DataServer.pm: Fixed bug #2926077 there were one 
+	more place where the timestamp should be checked.
+
+2010-02-22	Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Updated documentation, fixed wrong parameters
 	in the call to distance_moved.
 

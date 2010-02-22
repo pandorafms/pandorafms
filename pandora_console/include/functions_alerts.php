@@ -410,13 +410,15 @@ function delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 	if ($id_alert_agent_module)
 		$filter['id'] = $id_alert_agent_module;
 	
-	$idAlertCompunds =  get_db_all_rows_sql('SELECT id_alert_compound
-		FROM talert_compound_elements
-		WHERE id_alert_template_module = ' . $id_alert_agent_module);
-	
-	if ($idAlertCompunds !== false) {
-		foreach($idAlertCompunds as $id)
-			delete_alert_compound($id);
+	if ($id_alert_agent_module !== false) {
+		$idAlertCompunds =  get_db_all_rows_sql('SELECT id_alert_compound
+			FROM talert_compound_elements
+			WHERE id_alert_template_module = ' . $id_alert_agent_module);
+		
+		if ($idAlertCompunds !== false) {
+			foreach($idAlertCompunds as $id)
+				delete_alert_compound($id);
+		}
 	}
 	
 	return (@process_sql_delete ('talert_template_modules',

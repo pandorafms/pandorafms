@@ -38,8 +38,10 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 
 require_once ('include/functions_themes.php');
 
-echo "<h2>".__('Pandora Setup')." &raquo; ";
-echo __('Visual configuration')."</h2>";
+// Header
+print_page_header (__('Visual configuration'), "", false, "", true);
+
+
 
 $table->width = '90%';
 $table->data = array ();

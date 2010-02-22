@@ -176,7 +176,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	enterprise_hook ('historydb_submenu');
-
+	enterprise_hook ('enterprise_acl_submenu');
 
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
 	$menu["gsetup"]["sub"] = $sub;

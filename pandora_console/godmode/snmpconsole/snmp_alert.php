@@ -15,7 +15,6 @@
 
 
 // Load global vars
-require ("include/config.php");
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -40,6 +39,9 @@ if (isset ($_GET["delete_alert"])) { // Delete alert
 // Form submitted
 // =============
 if (isset ($_GET["submit"])) {
+
+	print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "", true);
+
 	$id_as = (int) get_parameter_get ("submit", -1);
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
@@ -90,7 +92,9 @@ if (isset ($_GET["submit"])) {
 			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		}
 	}
-}
+} else
+
+	print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'), "images/computer_error.png", false, "", true);
 
 // From variable init
 // ==================
@@ -127,14 +131,13 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$priority = 0;
 }
 
+// Header
+
+
+
 // Alert form
 if (isset ($_GET["update_alert"])) {
 	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
-	if ($id_as) {
-		echo "<h2>".__('SNMP Console')." &raquo; ".__('Update alert')."</h2>";
-	} else {
-		echo "<h2>".__('SNMP Console')." &raquo; ".__('Create alert')."</h2>";
-	}
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
 	

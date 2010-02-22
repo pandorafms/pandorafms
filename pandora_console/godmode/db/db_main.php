@@ -46,7 +46,7 @@ $stat_noninit = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE utimestam
 $max_access = 1000000;
 $max_data = 12000000;
 
-echo '<h2>'.__('Database maintenance').' &raquo; '.__('Current database maintenance setup').'</h2>';
+print_page_header (__('Current database maintenance setup'), "", false, "", true);
 
 echo '<table class=databox width="550" cellspacing="4" cellpadding="4" border="0">';
 

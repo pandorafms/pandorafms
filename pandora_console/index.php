@@ -100,11 +100,11 @@ echo '<head>';
 //This starts the page head. In the call back function, things from $page['head'] array will be processed into the head
 ob_start ('process_page_head');
 
-
-
+// Enterprise main 
 enterprise_include ('index.php');
 
-//This tag is included in the buffer passed to process_page_head so technically it can be stripped
+// This tag is included in the buffer passed to process_page_head so 
+// technically it can be stripped
 echo '</head>'."\n";
 
 ob_start ('process_page_body');
@@ -234,13 +234,17 @@ if (!is_writable ("attachment")){
 if ($searchPage) {
 	require ('operation/search_results.php');
 }
-else
-{
+else {
 	if ($page != "") {
 		$page .= '.php';
-		if (file_exists ($page)) {
-			if (! is_extension ($page))
+		// Enterprise ACL check
+		if (enterprise_hook ('acl_enterprise', array ($config['id_user'], $sec, $sec2)) == false){
+			require ("general/noaccess.php");
+		} 
+		elseif (file_exists ($page)) {
+			if (! is_extension ($page)){
 				require ($page);
+			}
 			else {
 				if ($sec[0] == 'g')
 					extension_call_godmode_function (basename ($page));

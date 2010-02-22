@@ -176,6 +176,9 @@ function update_config () {
 	update_config_value ('trap_purge', get_parameter ('trap_purge', $config['trap_purge']));
 	update_config_value ('string_purge', get_parameter ('string_purge', $config['string_purge']));
 	update_config_value ('audit_purge', get_parameter ('audit_purge', $config['audit_purge']));
+	update_config_value ('acl_enterprise', get_parameter ('acl_enterprise', $config['acl_enterprise']));
+
+
 }
 
 /**
@@ -295,6 +298,9 @@ function process_config () {
 		update_config_value ('audit_purge', 30);
 	}
 
+	if (!isset ($config["acl_enterprise"])){
+		update_config_value ('acl_enterprise', 0);
+	}
 
 	/* 
 	 *Parse the ACL IP list for access API that it's save in chunks as

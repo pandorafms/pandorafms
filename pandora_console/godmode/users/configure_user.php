@@ -31,6 +31,10 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	return;
 }
 
+// Header
+print_page_header (__('User detail editor'), "images/god3.png", false, "", true);
+
+
 if ($config['user_can_update_info']) {
 	$view_mode = false;
 } else {
@@ -171,8 +175,6 @@ if ($delete_profile) {
 		__('Successfully deleted'),
 		__('Could not be deleted'));
 }
-
-echo "<h2>".__('Pandora users')." &raquo; ".__('User detail editor')."</h2>";
 
 $table->width = '80%';
 $table->data = array ();

@@ -25,6 +25,7 @@
  * @param array Menu structure to print.
  */
 function print_menu (&$menu) {
+	global $config;
 	static $idcounter = 0;
 	
 	echo '<div class="menu">';
@@ -82,6 +83,13 @@ function print_menu (&$menu) {
 		$visible = false;
 		
 		foreach ($main["sub"] as $subsec2 => $sub) {
+
+			// Choose valid suboptions (sec2)
+			if (enterprise_hook ('acl_enterprise', array ($config['id_user'], $mainsec, $subsec2)) == false){
+				continue;
+			}
+
+
 			//Set class
 			if (($sec2 == $subsec2 && isset ($sub[$subsec2]["options"]))
 				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
@@ -150,6 +158,12 @@ function print_menu (&$menu) {
 			}
 		}
 		
+		// Choose valid section (sec)
+
+		if (enterprise_hook ('acl_enterprise', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
+			continue;
+		} 
+
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
 		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a><img class="toggle" src="include/styles/images/toggle.png" alt="toggle" />';

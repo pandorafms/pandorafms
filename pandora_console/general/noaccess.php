@@ -12,21 +12,17 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+print_page_header (__('You don\'t have access to this page'), "", false, "", true);
+
 ?>
 
 <div id="noaccess">
 	<div align='center'>
-		<h2><?php echo __('You don\'t have access to this page') ?></h2>
-		<div>&nbsp;</div>
 		<img src='images/noaccess.png' alt='No access'>
 		<div>&nbsp;</div>
 		<div class="msg"><?php echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database');?></div>
 	</div>
 </div>
 
-</div>
-<?PHP
-	include "general/footer.php";
-?>
 
 <!-- Container div. ENDS HERE -->

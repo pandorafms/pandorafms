@@ -113,10 +113,12 @@ $config['extensions'] = get_extensions ();
 // NOTICE: This variable (config[enterprise_installed] is used in several
 // sections. Faking or forcing to 1 will make pandora fails.
 
-if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php'))
+if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php')) {
 	$config['enterprise_installed'] = 1;
-else
+	enterprise_include ('include/functions_enterprise.php');
+} else {
 	$config['enterprise_installed'] = 0;
+}
 
 // Connect to the history DB
 if (isset($config['history_db_enabled'])) {

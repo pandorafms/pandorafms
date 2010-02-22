@@ -68,6 +68,9 @@ $width = 0;
 $height = 0;
 $background = '';
 
+// Header
+print_page_header (__('Map builder'), "images/god9.png", false, "map_builder", true);
+
 if ($create_layout) {
 	$name = (string) get_parameter ('name');
 	$id_group = (int) get_parameter ('id_group');
@@ -299,10 +302,6 @@ if ($id_layout) {
 	$width = $layout['width'];
 	$height = $layout['height'];
 }
-
-echo "<h2>".__('Maps')." &raquo; ".__('Map builder');
-print_help_icon ("map_builder");
-echo "</h2>";
 
 if (! $edit_layout && ! $id_layout) {
 	$table->width = '500px';

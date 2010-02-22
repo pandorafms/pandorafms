@@ -1,3 +1,8 @@
+2010-02-22      Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Fixed bug #2926077 using code
+	from previous comit in trunk
+
 2010-02-19  SAncho Lernea <slerena@artica.es>
 
 	* pandora_server.spec: Updated revision.

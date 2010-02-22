@@ -318,10 +318,17 @@ sub process_module_data ($$$$$$$$$) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
 		return;
 	}
-
-	my $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-	my $value = get_tag_value ($data, 'data', '');
-	pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
+	my $utimestamp;
+  	eval {
+		$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+    	};
+    	if ($@) {
+		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
+		return;
+	}
+		my $value = get_tag_value ($data, 'data', '');
+		pandora_process_module ($pa_config, $value, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh);
+	
 }
 
 1;

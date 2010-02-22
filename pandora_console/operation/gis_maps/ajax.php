@@ -98,7 +98,7 @@ switch ($opt) {
 			$agents[$row['tagente_id_agente']] = array(
 				'icon_path' => get_agent_icon_map($row['tagente_id_agente'], true),
 				'name' => get_agent_name($row['tagente_id_agente']),
-				'status' => get_agent_status($idAgent),
+				'status' => get_agent_status($row['tagente_id_agente']),
 				'stored_longitude' => $row['stored_longitude'],
 				'stored_latitude' => $row['stored_latitude']
 			);

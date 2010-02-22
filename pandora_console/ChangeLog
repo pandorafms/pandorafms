@@ -1,5 +1,29 @@
 2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* images/groups_small/*.ok.png, images/groups_small/*.default.png,
+	images/groups_small/*.bad.png, images/groups_small/*.warning.png: add the
+	group images for diferent status, it's used in the GIS map.
+	
+	* godmode/agentes/agent_manager.php: change for new form to name the icons
+	with status.
+	
+	* include/functions_gis.php: clean source code in function "addPoint",
+	rewrite the function "get_agent_icon_map" for used icons with state for
+	group, change some parts of source code in the function "getArrayListIcons"
+	for new form to name the icons.
+	
+	* images/gis_map/icons/*.png: change some icons.
+	
+	* operation/agentes/estado_generalagente.php: show message when there isn't
+	the GIS data.
+	
+	* operation/gis_maps/ajax.php: change the source code and db query to
+	return the GIS data for return default position for agent without GIS data.
+	
+	* operation/gis_maps/render_view.php: show agents without GIS data.
+
+2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/estado_generalagente.php: fix, use the new tables.
 
 2010-02-20  Sancho Lerena <slerena@artica.es>

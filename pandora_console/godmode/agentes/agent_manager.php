@@ -220,10 +220,10 @@ $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[12][0] = __('Icon agent');
 $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.png" />' .
-	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . '_ok.png" />' .
-	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . '_bad.png" />' .
-	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . '_warning.png" />';
+	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.default.png" />' .
+	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . '.ok.png" />' .
+	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . '.bad.png" />' .
+	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . '.warning.png" />';
 
 if ($config['activate_gis']) {
 	$table->data[13][0] = __('Ignore new GIS data:');

@@ -44,7 +44,17 @@ switch ($opt) {
 		
 		$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 1;'); //group 1 = all groups
 		
+		$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
+			FROM tgis_map
+			WHERE id_tgis_map IN (SELECT tgis_map_id_tgis_map FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')');
+		
 		if ($flagGroupAll === false) {
+			$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN
+					(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
+					OR id_agente IN
+					(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
+			
+			
 			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
 				FROM tgis_data_status
 				WHERE tagente_id_agente IN
@@ -56,10 +66,28 @@ switch ($opt) {
 		}
 		else {
 			//All groups, all agents
+			$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT tagente_id_agente AS id_agente
+				FROM tgis_data_status
+				WHERE tagente_id_agente');
+			
+			
 			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
 				FROM tgis_data_status
 				WHERE tagente_id_agente');
 		}
+		
+		foreach ($idAgentsWithGISTemp as $idAgent) {
+			$idAgentsWithGIS[] = $idAgent['id_agente'];
+		}
+		
+		$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
+				FROM tgis_data_status
+				WHERE tagente_id_agente IN (' . implode(',', $idAgentsWithGIS) . ')
+				UNION
+				SELECT id_agente AS tagente_id_agente,
+					' . $defaultCoords['default_longitude'] . ' AS stored_longitude, ' . $defaultCoords['default_latitude'] . ' AS stored_latitude
+				FROM tagente
+				WHERE id_agente NOT IN (' . implode(',', $idAgentsWithGIS) . ')');
 		
 		if ($agentsGISStatus === false) {
 			$agentsGISStatus = array();

@@ -80,16 +80,20 @@ if ($layers != false) {
 			$idAgent = get_agent_id($agentName);
 			$coords = getDataLastPositionAgent($idAgent);
 			
-			if ($coords === false)
-				continue;
-			
+			if ($coords === false) {
+				$coords['stored_latitude'] = $map['default_latitude'];
+				$coords['stored_longitude'] = $map['default_longitude'];
+			}
+			else {
+				if ($show_history == 'y') { 	
+					addPath($layer['layer_name'], $idAgent);
+				}
+			}
 			$icon = get_agent_icon_map($idAgent, true);
 			$status = get_agent_status($idAgent);
 			
-			if ($show_history == 'y') { 	
-				addPath($layer['layer_name'], $idAgent);
-			}
-			addPoint($layer['layer_name'], $agentName, $coords['stored_latitude'], $coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info');
+			addPoint($layer['layer_name'], $agentName, $coords['stored_latitude'],
+				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info');
 		}
 	}
 	

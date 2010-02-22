@@ -292,26 +292,18 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	<?php
 }
 
-function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20, $height = 20, $point_id  = '', $status = -1, $type_string = '') {
+function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
+	$height = 20, $point_id  = '', $status = -1, $type_string = '') {
 	?>
 	<script type="text/javascript">
 	$(document).ready (
 		function () {
 			<?php
-			if ($icon != null) { 
-			?>
-				js_addPointExtent('<?php echo $layerName; ?>',
-					'<?php echo $pointName; ?>', <?php echo $lon; ?>,
-					<?php echo $lat; ?>, '<?php echo $icon; ?>', <?php echo $width; ?>,
-					<?php echo $height?>, <?php echo $point_id; ?>, '<?php echo $type_string; ?>');
-			<?php
+			if ($icon != null) {
+				echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string');";
 			}
-			else { 
-			?>
-				js_addPoint('<?php echo $layerName; ?>',
-					'<?php echo $pointName; ?>', <?php echo $lon; ?>, <?php echo $lat; ?>, <?php echo $point_id; ?>,
-					'<?php echo $type_string; ?>');
-			<?php
+			else {
+				echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string');";
 			} 
 			?>
 		}
@@ -367,36 +359,37 @@ function get_agent_last_coords($idAgent) {
 function get_agent_icon_map($idAgent, $state = false) {
 	$row = get_db_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
 	
-	if ($row['icon_path'] === null) {
-		$iconGroup = "images/groups_small/" . get_group_icon($row['id_grupo']) . ".png";
-		return $iconGroup;
+	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
+		$icon = "images/groups_small/" . get_group_icon($row['id_grupo']);
 	}
 	else {
 		$icon = "images/gis_map/icons/" . $row['icon_path'];
-		if (!$state)
-			return $icon . ".png";
-		else {
-			switch (get_agent_status($idAgent)) {
-				case 1:
-				case 4:
-					//Critical (BAD or ALERT)
-					$state = "_bad";
-					break;
-				case 0:
-					//Normal (OK)
-					$state = "_ok";
-					break;
-				case 2:
-					//Warning
-					$state = "_warning";
-					break;
-				default:
-					// Default is Grey (Other)
-					$state = '';
-			}
-			
-			return $icon . $state . ".png";
+	}
+	
+	if (!$state) {
+		return $icon . ".png";
+	}
+	else {
+		switch (get_agent_status($idAgent)) {
+			case 1:
+			case 4:
+				//Critical (BAD or ALERT)
+				$state = ".bad";
+				break;
+			case 0:
+				//Normal (OK)
+				$state = ".ok";
+				break;
+			case 2:
+				//Warning
+				$state = ".warning";
+				break;
+			default:
+				// Default is Grey (Other)
+				$state = '.default';
+				break;
 		}
+		return $icon . $state . ".png";
 	}
 }
 
@@ -777,36 +770,17 @@ function getArrayListIcons($fullpath = true) {
 			unset($dir[$index]);
 	}
 	
-	$baseImages = array();
-	$stateImages = array();
 	foreach ($dir as $item) {
-		if (strstr($item, "_") !== false)
-			$stateImages[] = $item;
-		else
-			$baseImages[] = $item;
-	}
-	
-	foreach ($baseImages as $item) {
 		$chunks = explode('.', $item);
 		$extension = end($chunks);
 		
 		$nameWithoutExtension = str_replace("." . $extension, "", $item);
+		$nameClean = str_replace(array('.bad', '.ok', '.warning', '.default'), "", $nameWithoutExtension);
 		
-		$return[$nameWithoutExtension]['ok'] = null;
-		$return[$nameWithoutExtension]['bad'] = null;
-		$return[$nameWithoutExtension]['warning'] = null;
-		$return[$nameWithoutExtension]['default'] = $path . $item;
-		
-		if (in_array($nameWithoutExtension.'_bad.' . $extension, $stateImages))
-			$return[$nameWithoutExtension]['bad'] = $path . $nameWithoutExtension.'_bad.' . $extension;
-		
-		if (in_array($nameWithoutExtension.'_ok.' . $extension, $stateImages))
-			$return[$nameWithoutExtension]['ok'] = $path . $nameWithoutExtension.'_ok.' . $extension;
-			$return[$nameWithoutExtension]['bad'] = $path . $nameWithoutExtension.'_bad.' . $extension;
-		
-		if (in_array($nameWithoutExtension.'_warning.' . $extension, $stateImages))
-			$return[$nameWithoutExtension]['warning'] = $path . $nameWithoutExtension.'_warning.' . $extension;
-		
+		$return[$nameClean]['ok'] = $path . $nameClean . '.ok.png';
+		$return[$nameClean]['bad'] = $path . $nameClean . '.bad.png';
+		$return[$nameClean]['warning'] = $path . $nameClean . '.warning.png';
+		$return[$nameClean]['default'] = $path . $nameClean . '.default.png';
 	}
 	
 	return $return;

@@ -114,8 +114,11 @@ echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
 
 // Position Information
 if ($config['activate_gis']) {
+	$dataPositionAgent = getDataLastPositionAgent($agent['id_agente']);
+	
 	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
-    echo '<td class="datos2" colspan="2"> <a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.$agent["last_longitude"].', '.$agent["last_latitude"].'</a></td></tr>';
+    echo '<td class="datos2" colspan="2">
+    	<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.$dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'].'</a></td></tr>';
 }
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';

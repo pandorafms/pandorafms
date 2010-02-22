@@ -1,5 +1,10 @@
 2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_alerts.php: fix when try delete only the alerts from
+	alert policies form. 
+
+2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* images/groups_small/*.ok.png, images/groups_small/*.default.png,
 	images/groups_small/*.bad.png, images/groups_small/*.warning.png: add the
 	group images for diferent status, it's used in the GIS map.

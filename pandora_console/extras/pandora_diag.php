@@ -79,7 +79,9 @@ full path to Pandora FMS 'config.php' file.
 		exit;
 	}
 
-	echo "<h3>Pandora FMS Diagnostic tool v$pandora_version </h3>";
+	// Header
+	print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
+
 	echo "<table with=600 cellpadding=4 cellspacing=4>";
 	echo "<tr><th align=left>".__("Item")."</th>";
 	echo "<th>".__("Data value")."</th></tr>";

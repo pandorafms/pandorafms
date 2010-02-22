@@ -48,8 +48,9 @@ enterprise_include ('godmode/setup/setup.php');
  to add it there.
 */
 
-echo "<h2>".__('Pandora Setup')." &raquo; ";
-echo __('General configuration')."</h2>";
+// Header
+print_page_header (__('General configuration'), "", false, "", true);
+
 
 $table->width = '90%';
 $table->data = array ();

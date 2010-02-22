@@ -24,6 +24,11 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
+// Header
+print_page_header (__('Site news management'), "", false, "", true);
+
+
+
 if (isset ($_POST["create"])) { // If create
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
@@ -84,8 +89,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	}
 
 	// Create news
-	echo "<h2>".__('Pandora Setup')." &raquo; ";
-	echo __('Site news management')."</h2>";
+
 	echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';   
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/news">';
 	if ($creation_mode == 1)
@@ -112,10 +116,11 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	echo "<tr><td align='right'>
 	<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 	echo '</form></td></tr></table>';
-} else {  // Main list view for Links editor
-	echo "<h2>".__('Pandora Setup')." &raquo; ";
-	echo  __('Site news management')."</h3>";
-	echo "<table cellpadding='4' cellspacing='4' class='databox' width=600>";
+} 
+else {
+
+	// Main list view for Links editor
+	echo "<table cellpadding='4' cellspacing='4' class='databox' width=90%>";
 	echo "<th>".__('Subject')."</th>";
 	echo "<th>".__('Author')."</th>";
 	echo "<th>".__('Timestamp')."</th>";
@@ -140,7 +145,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border=0 src="images/cross.png"></a></td></tr>';
 	}
 	echo "</table>";
-	echo "<table width='600'>";
+	echo "<table width='90%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/news&form_add=1'>";
 	echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";

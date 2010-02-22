@@ -1,3 +1,29 @@
+2010-02-22  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_menu.php: Add calls for new enterprise ACL system.
+
+	* include/config_process.php
+	include/functions_config.php: Added new setup token for ACL enterprise.
+
+	* index.php: Implemented new Enterprise ACL on page load.
+
+	* extras/pandora_diag.php: Added new header style.
+
+	* general/noaccess.php: Ending <div> was breaking layout. Fixed.
+
+	* godmode/db/db_main.php: Added new header style.
+
+	* godmode/menu.php: Added new Setup option for Enterprise ACL system.
+
+	* godmode/snmpconsole/snmp_alert.php,
+	godmode/setup/news.php
+	godmode/users/configure_user.php
+	godmode/reporting/map_builder.php: Added new header style.
+
+	* godmode/setup/setup.php: Added new Setup option for Enterprise ACL system.
+
+	* godmode/setup/setup_visuals.php: Added new header style.
+
 2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/gis_maps/ajax.php: fix bug that pass wrong var to search

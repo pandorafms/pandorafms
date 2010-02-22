@@ -1,10 +1,14 @@
+2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_generalagente.php: fix, use the new tables.
+
 2010-02-20  Sancho Lerena <slerena@artica.es>
 
 	* godmode/setup/setup.php: Fixed bug #2952636, thanks Junichi for the 
 	patch.
 
-        * include/gettext.php: Applied patch to solve problem in 64bit
-        systems. Thanks Junichi!.  
+	* include/gettext.php: Applied patch to solve problem in 64bit
+	systems. Thanks Junichi!.  
 
 2010-02-19  Sancho Lerena  <slerena@artica.es>
 

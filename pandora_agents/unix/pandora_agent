@@ -1,10 +1,25 @@
 #!/usr/bin/perl
 # **********************************************************************
 # Pandora FMS Generic Linux Agent
-# (c) 2009 Artica Soluciones Tecnológicas
+# (c) 2010 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
+
+=head1 NAME
+
+pandora_agent - Pandora FMS Agent
+
+=head1 VERSION
+
+Version 3.1
+
+=head1 USAGE
+
+C<< pandora_agent F<pandora home> >>
+
+=cut
+
 
 use strict;
 use warnings;
@@ -14,8 +29,8 @@ use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 
-use constant AGENT_VERSION => '3.0';
-use constant AGENT_BUILD => '091118';
+use constant AGENT_VERSION => '3.1';
+use constant AGENT_BUILD => '100222';
 
 # OS and OS version
 my $OS = $^O;
@@ -48,7 +63,7 @@ my %Conf = (
 	'server_ssl' => 'no',
 	'server_opts' => '',
 	'delayed_startup' => 0,
-	'pandora_nice' => 0,
+	'pandora_nice' => 0, # FIXME: ¿DEPRECATED?
 	'cron_mode' => 0,
 	'remote_config' => 0,
 	'secondary_mode' => 'never',
@@ -60,10 +75,7 @@ my %Conf = (
 	'secondary_server_ssl' => 'no',
 	'secondary_server_opts' => '',
 	'autotime' => 0,
-	'timezone_offset' => 0,
-	'latitude' => 0,
-	'longitude' => 0,
-	'altitude' => 0
+	'timezone_offset' => 0
 # Missing: group, 
 );
 
@@ -540,8 +552,21 @@ while (1) {
 	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
 			  "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 			  "' version='" . AGENT_VERSION . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-			  "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}. "' longitude='" .$Conf{'longitude'} .
-			  "' latitude='" .$Conf{'latitude'} ."' altitude='" .$Conf{'altitude'}."'>\n";
+			  "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+	
+	if (defined ($Conf{'parent_agent_name'})) {
+		$xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
+	}
+	if (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
+		$xml .= "' longitude='" .$Conf{'longitude'} .  "' latitude='" .$Conf{'latitude'};
+		if (defined ($Conf{'altitude'})) {
+			$xml .= "' altitude='" .$Conf{'altitude'};
+		}
+		if (defined ($Conf{'position_description'})) {
+			$xml .= "' position_description='" .$Conf{'position_description'};
+		}
+	}
+	$xml .= "'>\n";
 
 	# Execute modules
 	foreach my $module (@Modules) {
@@ -615,3 +640,36 @@ while (1) {
 	# Go to sleep
 	sleep ($Conf{'interval'});
 }
+
+
+__END__
+
+=head1 EXIT STATUS
+
+=over 
+
+=item 0 on Success
+
+=item 1 on Error
+
+=back 
+
+=head1 CONFIGURATION
+
+By default pandora_agent uses F</etc/pandora> as B<home configuration directory>. There is the F<pandora_agent.conf> file with all the configuration of the agent.
+
+=head1 DEPENDENCIES
+
+
+=head1 LICENSE
+
+This is released under the GNU Lesser General Public License.
+
+=head1 SEE ALSO
+
+
+=head1 COPYRIGHT
+
+Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
+
+=cut

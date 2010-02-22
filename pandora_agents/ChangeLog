@@ -1,4 +1,18 @@
-2010-02-18   Sancho Lerena <slerena@artica.es>
+2010-02-22 Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* unix/Linux/pandora_agent.conf: Added parameters position_description
+	and parent_agent_name, and updated loadaverage with a more efficient 
+	version.
+
+	* unix/pandora_agent: Added POD documentation, modified to only add 
+	to the XML the minimum parameters (positional parameters, 
+	parent_agent_name,...) are not sent with default values if not
+	deffined in the config file. Updated verion and build.
+	
+	* man/man1/pandora_agent.1: ManPage generated from unix/pandora_agent
+	first version of the manpage.
+
+2010-02-17   Sancho Lerena <slerena@artica.es>
 
 	* unix/Linux/pandora_agent.conf,
 	linux/pandora_agent.conf: Modified way to get loadaverage, taken from

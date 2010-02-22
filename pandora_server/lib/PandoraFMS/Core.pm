@@ -864,7 +864,8 @@ sub pandora_update_server ($$$$$;$$) {
 ##########################################################################
 =head2 C<< pandora_update_agent (I<$pa_config>, I<$agent_timestamp>, I<$agent_id>, I<$os_version>, I<$agent_version>, I<$agent_interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) >>
 
-Update last contact, timezone and position fields in B<tagente>
+Update last contact, timezon fields in B<tagente> and current position (this
+can affect B<tgis_data_status> and B<tgis_data_history>).
 
 =cut
 ##########################################################################
@@ -912,8 +913,8 @@ sub pandora_update_agent ($$$$$$$;$$$$$) {
 			   .$last_agent_position->{'current_latitude'}. " current_altitude=". $last_agent_position->{'current_altitude'}. " ID: $agent_id ", 10);
 
 			# If the agent has moved outside the range stablised as location error
-	    	if (distance_moved($pa_config, $last_agent_position->{'current_longitude'}, $last_agent_position->{'current_latitude'}, 
-						   $last_agent_position->{'current_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
+	    	if (distance_moved($pa_config, $last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
+						   $last_agent_position->{'stored_altitude'}, $longitude, $latitude, $altitude) > $pa_config->{'location_error'}) {
 				#Archive the old position and save new one as status
 				archive_agent_position($pa_config, $last_agent_position->{'start_timestamp'},$timestamp,$last_agent_position->{'stored_longitude'}, $last_agent_position->{'stored_latitude'}, 
                           		    $last_agent_position->{'stored_altitude'},$last_agent_position->{'description'}, $last_agent_position->{'number_of_packages'},$agent_id, $dbh);

@@ -1,3 +1,15 @@
+2010-02-22	Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Updated documentation, fixed wrong parameters
+	in the call to distance_moved.
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage.
+
+	* lib/PandoraFMS/DataServer.pm: Added the process of position_description,
+	parent_agent_name now is readed (TODO: process it). Fixed bug #2926077
+	by handling the error returned by timelocal and ignoring the received
+	timestamp to use the server one.
+
 2010-02-19	Pablo de la Concepción <pablo.concepcion@artica.es>
 
 

@@ -161,19 +161,19 @@ sub process_xml_data ($$$$$) {
 	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
 		$timezone_offset = 0; # Default value
 	}
+	
+	# Parent Agent Name
+	my $parent_agent_name = $data->{'parent_agent_name'};
 
 	my $valid_position_data = 1; 	
 
 	# Get GIS information
-	my ($longitude, $latitude, $altitude) = (
-	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'});
+	my ($longitude, $latitude, $altitude, $position_description) = (
+	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'}, $data->{'position_description'});
 
 	if ($pa_config->{'activate_gis'}) {
 
 		# Validate the GIS informtation
-		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
-			$altitude = 0; # Default value
-		}
 
 		# If position data (at least longitude and latitde)  are not valid should be ignored
 		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || !defined($longitude) || !defined($latitude)) {
@@ -182,8 +182,16 @@ sub process_xml_data ($$$$$) {
 			$latitude = '';
 			$altitude='';
 		}
+
+		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
+			$altitude = 0; # Default value
+		}
+
+		if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
+			$position_description = ''; # Default value
+		}
 			
-		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude", 10);
+		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
@@ -201,7 +209,14 @@ sub process_xml_data ($$$$$) {
 		logger($pa_config, "Unmodified timestamp = $timestamp", 5);
 			$timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/;
 			logger($pa_config, "Unmodified timestamp = $1/$2/$3 $4:$5:$6", 5);
-			my $utimestamp = timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900) + ($timezone_offset * 3600); 
+			my $utimestamp = ($timezone_offset * 3600); 
+			eval {
+				$utimestamp += timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
+			};
+		    if ($@) {
+				logger($pa_config,"WARNING: Invalid timestamp ($@) using server timestamp.", 4);
+				$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
+			}	
 		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
         $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 		}
@@ -235,7 +250,7 @@ sub process_xml_data ($$$$$) {
 		if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, 
-												  $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);
+												  $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 		}
 		else { # Ignore agent positional data
 			logger($pa_config, "Creating agent $agent_name", 5);
@@ -252,7 +267,7 @@ sub process_xml_data ($$$$$) {
 	if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0) {
     	logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 		# Update agent information including position information
-		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude);
+		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 	}
 	else {
     	logger($pa_config, "Updating agent $agent_name", 5);

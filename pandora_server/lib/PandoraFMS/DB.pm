@@ -3,7 +3,7 @@ package PandoraFMS::DB;
 # Database Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -91,8 +91,8 @@ sub get_server_id ($$$) {
 	my ($dbh, $server_name, $server_type) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id_server FROM tserver
-	                              WHERE name = ? AND server_type = ?",
-	                              $server_name, $server_type);
+					WHERE name = ? AND server_type = ?",
+					$server_name, $server_type);
 	return defined ($rc) ? $rc : -1;
 }
 

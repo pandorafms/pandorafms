@@ -1,9 +1,14 @@
-2010-02-22	Pablo de la Concepción <pablo.concepcion@artica.es>
+2010-02-23  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* lib/PandoraFMS/*.pm, DEBIAN/make_deb_package.sh, pandora_server_*: 
+	Updated year / build. Some spaces to tabs.
+
+2010-02-22  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fixed bug #2926077 there were one 
 	more place where the timestamp should be checked.
 
-2010-02-22	Pablo de la Concepción <pablo.concepcion@artica.es>
+2010-02-22  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Updated documentation, fixed wrong parameters
 	in the call to distance_moved.
@@ -15,7 +20,7 @@
 	by handling the error returned by timelocal and ignoring the received
 	timestamp to use the server one.
 
-2010-02-19	Pablo de la Concepción <pablo.concepcion@artica.es>
+2010-02-19  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 
 	* lib/PandoraFMS/Core.pm: Updated docuemtation of the interface.
@@ -55,7 +60,7 @@
 
 	* lib/PandoraFMS/Config.pm: Support for new option self_monitoring.
 
-	* lib/PandoraFMS/Core.pm: 	Access update is not refreshed by network 
+	* lib/PandoraFMS/Core.pm: Access update is not refreshed by network 
 	modules anymore (gaining a lot of performance here). Added new functions
 	for internal statistics and automonitoring.
 

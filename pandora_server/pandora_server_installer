@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Pandora FMS Server Installer (c) 2008-2009 Artica ST
+# Pandora FMS Server Installer (c) 2008-2010 Artica ST
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.0.1 Build 091207
+# v3.1 Build 100223
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -263,7 +263,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 				fi
 			fi
 		fi
-		 	
+
 		echo "Creating Pandora FMS distribution directory in /usr/share/pandora_server"
 		mkdir $PANDORA_HOME 2> /dev/null
 		cp -R util $PANDORA_HOME
@@ -304,7 +304,7 @@ uninstall () {
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "	userdel pandora"
 	echo "	rm -Rf /home/pandora/"
-	
+
 	## Just to clarify here. Some people (like me) are using the pandora user 
 	## for other purposes and/or using an LDAP-based user management
 	## I would hate to have a script clear out this users' information without any notification
@@ -339,7 +339,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 3.0 Server Installer (c) 2008-2009 Artica ST"
+echo "Pandora FMS 3.1 Server Installer (c) 2008-2010 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

@@ -48,24 +48,39 @@ $controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'Overvi
 $layers = getLayers($idMap);
 
 // Render map
-echo "<h2>".__('Visual console')." &raquo; ".__('Map');
-echo "&nbsp;" . $map['map_name'] . "&nbsp;&nbsp;";
+
+$buttons = array();
 
 if ($config["pure"] == 0) {
-	echo '<a href="index.php?sec=visualc&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'&amp;pure=1">';
-	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen mode')));
-	echo "</a>";
-} else {
-	echo '<a href="index.php?sec=visualc&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'">';
-	print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
-	echo "</a>";
+	$buttons[] = '<a href="index.php?sec=visualc&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'&amp;pure=1">' .
+		print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode'))) . "</a>";
+}
+else {
+	$buttons[] = '<a href="index.php?sec=visualc&amp;sec2=operation/gis_maps/render_view&amp;map_id='.$idMap.'&amp;refr='.$config["refr"].'">' . 
+		print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode'))) . "</a>";
 }
 
-echo "&nbsp;";
-
 if (give_acl ($config["id_user"], $map['group_id'], "AW"))
-	echo '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='. $idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
-echo "</h2>";
+	$buttons [] = '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='. $idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	
+$buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3"><img src="images/bricks.png" class="top" border="0">&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3"><img src="images/setup.png" class="top" title="Manage" border="0" width="16">&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3"><img src="images/monitor.png" class="top" title="Main" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data"><img src="images/lightbulb.png" class="top" title="Data" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert"><img src="images/bell.png" class="top" title="Alerts" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3"><img src="images/images.png" class="top" title="S.L.A." border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2"><img src="images/agents_group.png" class="top" title="Group" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3"><img src="images/page_white_text.png" class="top" title="Inventory" border="0" width="16">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3"><img src="images/world.png" class="top" title="GIS data" border="0">&nbsp;</a>';
+
+$times = array(
+	5 => 5 . ' ' . __('seconds'),
+	10 => 10 . ' ' . __('seconds'),
+	30 => 30 . ' ' . __('seconds'),
+	60 => 1 . ' ' . __('minute'),
+	120 => 2 . ' ' . __('minutes'),
+	300 => 5 . ' ' . __('minutes'),
+	600 => 10 . ' ' . __('minutes'),
+	3600 => 1 . ' ' . __('hour'),
+	7200 => 2 . ' ' . __('hours')
+	);
+
+$buttons[] = __('Refresh: ') . print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false);
+
+
+print_page_header(__('Visual console') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
 
 printMap('map', $map['zoom_level'], $numZoomLevels, $map['initial_latitude'],
 	$map['initial_longitude'], $baselayers, $controls);

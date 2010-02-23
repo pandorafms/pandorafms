@@ -1386,10 +1386,21 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);
 	$buffer .= '</ul></div>';
 
-	if ($options != ""){
-		$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
-		$buffer .= $options;
-		$buffer .= '</li></ul></div>';
+	if (is_array($options)) {
+		$buffer .= '<div id="menu_tab"><ul class="mn">';
+		foreach ($options as $option) {
+			$buffer .= '<li class="nomn">';
+			$buffer .= $option;
+			$buffer .= '</li>';
+		}
+		$buffer .= '</ul></div>';
+	}
+	else {
+		if ($options != ""){
+			$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+			$buffer .= $options;
+			$buffer .= '</li></ul></div>';
+		}
 	}
 
 	$buffer .=  '</div><br><br><br>';

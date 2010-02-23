@@ -1,3 +1,17 @@
+2010-02-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: in function "activateAjaxRefresh" add the
+	posibility to change refresh time in execution time.
+	
+	* include/functions_ui.php: add in the "print_page_header" the feature to
+	pass a array of buttons/items.
+
+	* include/javascript/openlayers.pandora.js: add the function
+	"changeRefreshTime" for change the refresh time.
+
+	* operation/gis_maps/render_view.php: change the top of page for to
+	adapt the new header, and add refresh control.
+
 2010-02-23  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/setup/gis_step_2.php, godmode/gis_maps/configure_gis_map.php: 

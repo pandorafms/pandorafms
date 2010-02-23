@@ -94,6 +94,16 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 }
 
 /**
+ * Change the refresh time for the map.
+ * 
+ * @param int time seconds
+ * @return none
+ */
+function changeRefreshTime(time) {
+	refreshAjaxIntervalSeconds = time * 1000;
+}
+
+/**
  * Make the layer in the map.
  * 
  * @param string name The name of layer, it's show in the toolbar of layer.

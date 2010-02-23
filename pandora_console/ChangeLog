@@ -1,5 +1,16 @@
 2010-02-22  Sancho Lerena <slerena@artica.es>
 
+	* include/functions_gis.php: change the function "activateAjaxRefresh" for
+	refresh also the agent maps, and in the function "getAgentMap" show icon
+	with status the agent maps.
+	* operation/gis_maps/ajax.php: in the switch option "get_new_positions"
+	return GIS data for agent maps, in the "point_agent_info" and
+	"point_path_info" option change for new tables.
+	* operation/agentes/gis_view.php: add the ajax moving agent and click
+	bubble info.
+
+2010-02-22  Sancho Lerena <slerena@artica.es>
+
 	* include/functions_menu.php: Add calls for new enterprise ACL system.
 
 	* include/config_process.php

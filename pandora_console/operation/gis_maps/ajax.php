@@ -38,56 +38,65 @@ switch ($opt) {
 		$id_features = get_parameter('id_features', '');
 		$last_time_of_data = get_parameter('last_time_of_data');
 		$layerId = get_parameter('layer_id');
+		$agentView = get_parameter('agent_view');
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		
-		$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 1;'); //group 1 = all groups
-		
-		$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
-			FROM tgis_map
-			WHERE id_tgis_map IN (SELECT tgis_map_id_tgis_map FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')');
-		
-		if ($flagGroupAll === false) {
-			$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN
-					(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
-					OR id_agente IN
-					(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
+		if ($agentView == 0) {
+			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 1;'); //group 1 = all groups
 			
+			$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
+				FROM tgis_map
+				WHERE id_tgis_map IN (SELECT tgis_map_id_tgis_map FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')');
+			
+			if ($flagGroupAll === false) {
+				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN
+						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
+						OR id_agente IN
+						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
+				
+				
+				$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
+					FROM tgis_data_status
+					WHERE tagente_id_agente IN
+						(SELECT id_agente FROM tagente WHERE id_grupo IN
+							(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . '))
+						OR tagente_id_agente IN
+							(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
+			
+			}
+			else {
+				//All groups, all agents
+				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT tagente_id_agente AS id_agente
+					FROM tgis_data_status
+					WHERE tagente_id_agente');
+				
+				
+				$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
+					FROM tgis_data_status
+					WHERE tagente_id_agente');
+			}
+			
+			foreach ($idAgentsWithGISTemp as $idAgent) {
+				$idAgentsWithGIS[] = $idAgent['id_agente'];
+			}
 			
 			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-				FROM tgis_data_status
-				WHERE tagente_id_agente IN
-					(SELECT id_agente FROM tagente WHERE id_grupo IN
-						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . '))
-					OR tagente_id_agente IN
-						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
-		
+					FROM tgis_data_status
+					WHERE tagente_id_agente IN (' . implode(',', $idAgentsWithGIS) . ')
+					UNION
+					SELECT id_agente AS tagente_id_agente,
+						' . $defaultCoords['default_longitude'] . ' AS stored_longitude, ' . $defaultCoords['default_latitude'] . ' AS stored_latitude
+					FROM tagente
+					WHERE id_agente NOT IN (' . implode(',', $idAgentsWithGIS) . ')');
 		}
 		else {
-			//All groups, all agents
-			$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT tagente_id_agente AS id_agente
-				FROM tgis_data_status
-				WHERE tagente_id_agente');
-			
-			
+			//agentView equal 1
 			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-				FROM tgis_data_status
-				WHERE tagente_id_agente');
+					FROM tgis_data_status
+					WHERE tagente_id_agente = ' . $id_features);
 		}
-		
-		foreach ($idAgentsWithGISTemp as $idAgent) {
-			$idAgentsWithGIS[] = $idAgent['id_agente'];
-		}
-		
-		$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-				FROM tgis_data_status
-				WHERE tagente_id_agente IN (' . implode(',', $idAgentsWithGIS) . ')
-				UNION
-				SELECT id_agente AS tagente_id_agente,
-					' . $defaultCoords['default_longitude'] . ' AS stored_longitude, ' . $defaultCoords['default_latitude'] . ' AS stored_latitude
-				FROM tagente
-				WHERE id_agente NOT IN (' . implode(',', $idAgentsWithGIS) . ')');
 		
 		if ($agentsGISStatus === false) {
 			$agentsGISStatus = array();
@@ -109,7 +118,7 @@ switch ($opt) {
 		break;
 	case 'point_path_info':
 		$id = get_parameter('id');
-		$row = get_db_row_sql('SELECT * FROM tgis_data WHERE id_tgis_data = ' . $id);
+		$row = get_db_row_sql('SELECT * FROM tgis_data_history WHERE id_tgis_data = ' . $id);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
@@ -126,11 +135,12 @@ switch ($opt) {
 	case 'point_agent_info':
 		$id = get_parameter('id');
 		$row = get_db_row_sql('SELECT * FROM tagente WHERE id_agente = ' . $id);
+		$agentDataGIS =  getDataLastPositionAgent($row['id_agente']);
 		
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['id_agente'] . '">'.$row['nombre'].'</a><br />';
-		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $row['last_longitude'] . ', ' . $row['last_latitude'] . ', ' . $row['last_altitude'] . ') <br />';		
+		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';		
 		$agent_ip_address = get_agent_address ($id_agente);
 		if ($agent_ip_address || $agent_ip_address != '') {
 			$returnJSON['content'] .= __('IP Address').': '.get_agent_address ($id_agente).'<br />';

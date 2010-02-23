@@ -214,6 +214,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 		var last_time_of_data = <?php echo $lastTimeOfData; ?>; //This time use in the ajax query to next recent points.
 		var refreshAjaxIntervalSeconds = 6000;
 		var idIntervalAjax = null;
+		var oldRefreshAjaxIntervalSeconds = 6000;
 
 		<?php
 		if ($layers === null) {
@@ -296,7 +297,12 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			}
 			last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
 
-			//clearInterval(idIntervalAjax);
+			//Test if the user change the refresh time.
+			if (oldRefreshAjaxIntervalSeconds != refreshAjaxIntervalSeconds) {
+				clearInterval(idIntervalAjax);
+				idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
+				oldRefreshAjaxIntervalSeconds = refreshAjaxIntervalSeconds;
+			}
 		}
 	
 		$(document).ready (

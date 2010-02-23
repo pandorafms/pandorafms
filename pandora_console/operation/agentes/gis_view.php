@@ -42,6 +42,11 @@ echo "<h3>" . __("Map with the last position/s") . " " . human_time_description 
 echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 echo getAgentMap($agentId, "500px", "98%", true);
 
+$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
+
+activateAjaxRefresh(null, $timestampLastOperation);
+activateSelectControl();
+
 if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }

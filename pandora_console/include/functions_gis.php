@@ -215,6 +215,15 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 		var refreshAjaxIntervalSeconds = 6000;
 		var idIntervalAjax = null;
 
+		<?php
+		if ($layers === null) {
+			echo "var agentView = 1;";
+		}
+		else {
+			echo "var agentView = 0;";
+		}
+		?>
+
 		function refreshAjaxLayer(layer) {
 			var featureIdArray = Array();
 			
@@ -222,14 +231,16 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 				feature = layer.features[featureIndex];
 
 				if (feature.data.type != 'point_path_info') {
-					featureIdArray.push(feature.data.id);
+					if (feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+						featureIdArray.push(feature.data.id);
+					}
 				}
 			}
 
 			if (featureIdArray.length > 0) {
 	    		jQuery.ajax ({
 	        		data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features="  + featureIdArray.toString()
-	        			+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id,
+	        			+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id + "&agent_view=" + agentView,
 	        		type: "GET",
 	        		dataType: 'json',
 	        		url: "ajax.php",
@@ -245,8 +256,9 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 
 			        					feature = searchPointAgentById(idAgent);
 			        					layer.removeFeatures(feature);
-			        					console.log(feature);
+			        					
 			        					delete feature;
+			        					feature = null
 										
 			        					js_addPointExtent(layer.name, agentDataGIS['name'],
 			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
@@ -260,12 +272,16 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			}
 		}
 	
-		function clock_ajax_refresh() {			
+		function clock_ajax_refresh() {		
 			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
 				layer = map.layers[layerIndex];
 				<?php
 				if ($layers === null) {
-					refreshAjaxLayer(layer);
+					?>
+					if (layer.isVector) {
+						refreshAjaxLayer(layer);
+					}
+					<?php
 				}
 				else {
 					foreach ($layers as $layer) {
@@ -720,7 +736,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		
 	makeLayer("layer_for_agent_".$agent_name);
 	
-	$agent_icon = get_agent_icon_map($agent_id);
+	$agent_icon = get_agent_icon_map($agent_id, true);
 		
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {

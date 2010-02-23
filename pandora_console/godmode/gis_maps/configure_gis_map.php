@@ -148,8 +148,8 @@ switch ($action) {
 		}
 		$layer_list = $arrayLayers;
 		
-		print_result_message ($mapCreatedOk, __('Successfully created'),
-			__('Could not be created'));
+		print_result_message ($mapCreatedOk, __('Map successfully created'),
+			__('Map could not be created'));
 		break;
 	case 'new_map':
 		print_input_hidden('action', 'save_new');
@@ -268,8 +268,8 @@ switch ($action) {
 		}
 		$layer_list = $arrayLayers;
 		
-		print_result_message ($mapCreatedOk, __('Successfully update'),
-			__('Could not be update'));
+		print_result_message ($mapCreatedOk, __('Map successfully update'),
+			__('Map could not be update'));
 		
 		print_input_hidden('action', 'update_saved');
 		print_input_hidden('map_id', $idMap);
@@ -279,7 +279,7 @@ switch ($action) {
 $table->width = '90%';
 $table->data = array ();
 
-$table->data[0][0] = __('Name') . ':';
+$table->data[0][0] = __('Map Name') . print_help_tip (__('Descriptive name for the map'), true). ':';
 $table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
 $table->rowspan[0][2] = 9;
 
@@ -295,10 +295,10 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 		<td colspan='3'><div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div></td>
 	</tr>
 	<tr>
-		<td colspan='3'><a href=''>" . __("Refresh map view") . "</a></td>
+		<td colspan='3'><a href=''>" . __("Refresh map preview") . "</a></td>
 	</tr>
 	<tr>
-		<td>" . __("Add Map connection") . ": " . $iconError . "</td>
+		<td>" . __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError . "</td>
 		<td>
 			" . print_select_from_sql('SELECT id_tmap_connection, conection_name FROM tgis_map_connection', 'map_connection', '', '', '', '0', true) ."
 		</td>
@@ -310,10 +310,10 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 	</tr> " . addConectionMapsInForm($map_connection_list) . "
 </table>";
 
-$table->data[1][0] = __('Group') . ':';
+$table->data[1][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
 $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
 
-$table->data[2][0] = __('Zoom level') . ':';
+$table->data[2][0] = __('Zoom level') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
 $table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true);
 
 $table->data[3][0] = __('Center Longitude') . ':';
@@ -336,14 +336,14 @@ $table->data[8][1] = print_input_text ('map_default_altitude', $map_default_alti
 
 print_table($table);
 
-echo "<h3>" . __('Layers') . "</h3>";
+echo "<h3>" . __('Layers') . print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
 
 $table->width = '90%';
 $table->data = array ();
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
-$table->data[0][0] = "<h4>List of layers</h4>";
+$table->data[0][0] = "<h4>List of layers</h4>". print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true);
 $table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub new"', true) . '</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .
@@ -375,7 +375,7 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td colspan="4">
-					<h4>' . __('List of Agents') . '</h4>
+					<h4>' . __('List of Agents to be shwon in the layer') . '</h4>
 					<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_agents">
 					</table>
 				</td>
@@ -704,7 +704,7 @@ function deleteConnectionMap(idConnectionMap) {
 }
 
 function setFieldsRequestAjax(id_conexion) {
-	if (confirm('<?php echo __('Do you want to set default data of conexion in fields?');?>')) {
+	if (confirm('<?php echo __('Do you want to use the default data from the connection?');?>')) {
 		jQuery.ajax ({
 			data: "page=operation/gis_maps/ajax&opt=get_data_conexion&id_conection="  + idConnectionMap,
 			type: "GET",

@@ -97,6 +97,11 @@ switch ($action) {
 				$mapConnectionData = array('type' => 'OSM',
 					'url' => $mapConnection_OSM_url);
 				break;
+			case 'YAHOO':
+				$mapConnection_YAHOO_url= get_parameter('url');
+				$mapConnectionData = array('type' => 'YAHOO',
+					'url' => $mapConnection_YAHOO_url);
+				break;
 		}
 		
 		//TODO VALIDATE PARAMETERS
@@ -116,17 +121,17 @@ switch ($action) {
 $table->width = '90%';
 
 $table->data = array();
-$table->data[0][0] = __('Name') . ":";
+$table->data[0][0] = __('Connection Name') .print_help_tip (__('Descriptive name for the connection'), true). ":";
 $table->data[0][1] = print_input_text ('name', $mapConnection_name, '', 30, 60, true);
 
-$table->data[1][0] = __("Group") . ":";
+$table->data[1][0] = __("Group") .print_help_tip (__('Group that owns the connection'), true) . ":";
 $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'group', $mapConnection_group, '', '', '0', true);
 
-$table->data[2][0] = __('Num levels zoom') . ":";
+$table->data[2][0] = __('Number of zoom levels') . ":";
 $table->data[2][1] = print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);
 
 
-$table->data[3][0] = __('Default zoom level') . ":";
+$table->data[3][0] = __('Default zoom level') .print_help_tip (__('Zoom level used when the map is opened'), true). ":";
 $table->data[3][1] = print_input_text ('initial_zoom', $mapConnection_defaultZoom, '', 4, 10, true);
 
 echo "<h3>" . __('Basic configuration') . "</h3>";
@@ -134,12 +139,13 @@ print_table($table);
 
 $table->width = '60%';
 $table->data = array();
-$types[0] = __('Please select the type');
+$types[0] = __('Please select the connection type');
 $types["OSM"] = __('Open Street Maps');
+$types["YAHOO"] = __('Yahoo Maps');
 $table->data[0][0] = __('Type') . ":";
 $table->data[0][1] = print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", '', 0, true);
 
-echo "<h3>" . __('Maps connection type') . "</h3>";
+echo "<h3>" . __('Map connection type') . "</h3>";
 print_table ($table);
 
 $optionsConnectionTypeTable = '';
@@ -150,9 +156,12 @@ if ($mapConnectionData != null) {
 		case 'OSM':
 			$mapConnectionDataUrl = $mapConnectionData['url'];
 			break;
+		case 'YAHOO':
+			$mapConnectionDataUrl = $mapConnectionData['url'];
+			break;
 	}
 }
-
+// Open Street Map Connection
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
 			'<td>'  . __("URL") . ':</td>' .
@@ -160,18 +169,28 @@ $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" 
 		'</tr>' . 
 	'</table>';
 
+// Yahoo Map Connection
+$optionsConnectionYAHOOTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
+		'<tr class="row_0">' .
+			'<td>'  . __("URL") . ':</td>' .
+			'<td><input id="type" type="hidden" name="type" value="YAHOO" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
+		'</tr>' . 
+	'</table>';
 if ($mapConnectionData != null) {
 	switch ($mapConnection_type) {
 		case 'OSM':
 			$optionsConnectionTypeTable = $optionsConnectionOSMTable;
+			break;
+		case 'YAHOO':
+			$optionsConnectionTypeTable = $optionsConnectionYAHOOTable;
 			break;
 	}
 }
 
 echo "<div id='form_map_connection_type'>" . $optionsConnectionTypeTable . "</div>";
 
-echo "<h3>" . __('Preview and Select the center of the map and the default position of an agent without gis data') . "</h3>";
-print_button('Load the map view','button_refresh', false, 'refreshMapView();', 'class="sub"');
+echo "<h3>" . __('Preview to select the center of the map and the default position of an agent without gis data') . "</h3>";
+print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"');
 echo "<br /><br />";
 echo "<div id='map' style='width: 300px; height: 300px; border: 1px solid black; float: left'></div>";
 
@@ -180,10 +199,10 @@ $table->data = array();
 
 //$table->colspan[0][3] = 3;
 $table->data[0][0] = '';
-$table->data[0][1] = __('Center map connection');
+$table->data[0][1] = __('Map Center').print_help_tip (__('Position to center the map when the map is opened'), true) ;
 $table->data[0][2] = __("Default position for agents without GIS data");
 
-$table->data[1][0] = __('Modify in map');
+$table->data[1][0] = __('Change in the map'). print_help_tip (__('This selects what to change by clicking on the map'), true);
 $table->data[1][1] = print_radio_button_extended('radio_button', 1, '', 1, false, "changeSetManualPosition(true, false)", '', true);
 $table->data[1][2] = print_radio_button_extended('radio_button', 2, '', 0, false, "changeSetManualPosition(false, true)", '', true);
 
@@ -281,7 +300,7 @@ function refreshMapView() {
 	GISDefaultPositionPoint = null;
 
 	//Change the text to button.
-	$("input[name=button_refresh]").val('<?php echo __("Refresh the map view");?>');
+	$("input[name=button_refresh]").val('<?php echo __("Refresh preview map");?>');
 
 	//Obtain data of map of fields.
 	inital_zoom = $('input[name=initial_zoom]').val();
@@ -317,6 +336,9 @@ function selMapConnectionType() {
 		case 'OSM':
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>');
 			break; 
+		case 'YAHOO':
+			$('#form_map_connection_type').html('<?php echo $optionsConnectionYAHOOTable; ?>');
+
 		default:
 			$('#form_map_connection_type').html('');
 			break;

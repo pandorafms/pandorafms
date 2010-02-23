@@ -3,7 +3,7 @@ package PandoraFMS::DataServer;
 # Pandora FMS Data Server.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -127,24 +127,24 @@ sub data_consumer ($$) {
 		eval {
 			threads->yield;
 			$xml_data = XMLin ($file_name, forcearray => 'module');
-    	};
-    	
-    	# Invalid XML
-    	if ($@) {
-    		sleep (10);
-    		next;
-    	}
-    	
-	# Ignore the timestamp in the XML and use the file timestamp instead
-    	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+	};
+	
+	# Invalid XML
+	if ($@) {
+		sleep (10);
+		next;
+	}
 
-    	unlink ($file_name);
+	# Ignore the timestamp in the XML and use the file timestamp instead
+	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+
+	unlink ($file_name);
 		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		return;	
 	}
 
 	rename($file_name, $file_name . '_BADXML');
-    pandora_event ($pa_config, "Unable to process XML data file ($file_name)", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	pandora_event ($pa_config, "Unable to process XML data file ($file_name)", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 }
 
 ###############################################################################
@@ -154,8 +154,8 @@ sub process_xml_data ($$$$$) {
 	my ($pa_config, $file_name, $data, $server_id, $dbh) = @_;
 
 	my ($agent_name, $agent_version, $timestamp, $interval, $os_version, $timezone_offset) =
-	    ($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
-	    $data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
+		($data->{'agent_name'}, $data->{'version'}, $data->{'timestamp'},
+		$data->{'interval'}, $data->{'os_version'}, $data->{'timezone_offset'});
 
 	# Timezone offset must be an integer beween -12 and +12
 	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
@@ -169,13 +169,14 @@ sub process_xml_data ($$$$$) {
 
 	# Get GIS information
 	my ($longitude, $latitude, $altitude, $position_description) = (
-	    $data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'}, $data->{'position_description'});
+		$data->{'longitude'}, $data->{'latitude'}, $data->{'altitude'}, 
+		$data->{'position_description'});
 
 	if ($pa_config->{'activate_gis'}) {
 
 		# Validate the GIS informtation
 
-		# If position data (at least longitude and latitde)  are not valid should be ignored
+		# If position data (at least longitude and latitde) are not valid should be ignored
 		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || !defined($longitude) || !defined($latitude)) {
 			$valid_position_data = 0;	
 			$longitude = '';
@@ -190,7 +191,7 @@ sub process_xml_data ($$$$$) {
 		if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
 			$position_description = ''; # Default value
 		}
-			
+	
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}
 	# Unknown agent!
@@ -198,7 +199,7 @@ sub process_xml_data ($$$$$) {
 		logger($pa_config, "$file_name has data from an unnamed agent", 3);
 		return;
 	}
-  
+
 	# Get current datetime from system if value AUTO is coming in the XML
 	if ( $data->{'timestamp'} =~ /AUTO/ ){
 		$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
@@ -213,23 +214,23 @@ sub process_xml_data ($$$$$) {
 			eval {
 				$utimestamp += timelocal($6, $5, $4, $3, $2 -1 , $1 - 1900);
 			};
-		    if ($@) {
+			if ($@) {
 				logger($pa_config,"WARNING: Invalid timestamp ($@) using server timestamp.", 4);
 				$timestamp = strftime ("%Y/%m/%d %H:%M:%S", localtime());
 			}	
 		logger($pa_config, "Seconds timestamp = $timestamp modified timestamp in seconds $utimestamp with timezone_offset = $timezone_offset", 5);
-        $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
+	$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp));
 		}
 		logger($pa_config, "Modified timestamp = $timestamp with timezone_offset = $timezone_offset", 5);
 	}
 
 	
-  	# Check some variables
-   	$interval = 300 if (! defined ($interval) || $interval eq '');
-   	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
-  
-  	# Get agent id
-  	$AgentSem->down ();
+	# Check some variables
+	$interval = 300 if (! defined ($interval) || $interval eq '');
+	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
+
+	# Get agent id
+	$AgentSem->down ();
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {
@@ -247,30 +248,30 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 
 		# Create the agent
-		if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0 ) {
+		if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os, 
-												  $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
+												 $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 		}
 		else { # Ignore agent positional data
 			logger($pa_config, "Creating agent $agent_name", 5);
 			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, 0, $os,
-												  $description, $interval, $dbh, $timezone_offset);
+												 $description, $interval, $dbh, $timezone_offset);
 		}
 		if (! defined ($agent_id)) {
 			$AgentSem->up ();
 			return;
 		}
 	}
-  	$AgentSem->up ();
+	$AgentSem->up ();
 
-	if ($valid_position_data  == 1 && $pa_config->{'activate_gis'} != 0) {
-    	logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
+		logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
 		# Update agent information including position information
 		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 	}
 	else {
-    	logger($pa_config, "Updating agent $agent_name", 5);
+		logger($pa_config, "Updating agent $agent_name", 5);
 		# Update agent information without position information
 		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset);
 	}	
@@ -286,8 +287,8 @@ sub process_xml_data ($$$$$) {
 
 		my $module_type = get_tag_value ($module_data, 'type', 'generic_data');
 
-	    # Single data
-	    if (! defined ($module_data->{'datalist'})) {
+		# Single data
+		if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
 			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
 			next;
@@ -314,7 +315,7 @@ sub process_xml_data ($$$$$) {
 
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
-	                                           $interval, $timestamp, $dbh]);
+							 $interval, $timestamp, $dbh]);
 }
 
 ##########################################################################
@@ -322,8 +323,8 @@ sub process_xml_data ($$$$$) {
 ##########################################################################
 sub process_module_data ($$$$$$$$$) {
 	my ($pa_config, $data, $server_id, $agent_name,
-	    $module_name, $module_type, $interval, $timestamp,
-	    $dbh) = @_;
+		$module_name, $module_type, $interval, $timestamp,
+		$dbh) = @_;
 
 	# Get agent data
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', $agent_name);
@@ -369,7 +370,7 @@ sub process_module_data ($$$$$$$$$) {
 
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
-	                          $max, $min, $post_process, $description, $interval, $dbh);
+			$max, $min, $post_process, $description, $interval, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
@@ -387,18 +388,18 @@ sub process_module_data ($$$$$$$$$) {
 
 	# Parse the timestamp and process the module
 	if ($timestamp !~ /(\d+)\/(\d+)\/(\d+) +(\d+):(\d+):(\d+)/ &&
-	    $timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+		$timestamp !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
 		return;
 	}
 	my $utimestamp;
-    eval {
-        $utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-    };
-    if ($@) {
-        logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
-        return;
-    }
+	eval {
+ 		$utimestamp = timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
+	};
+	if ($@) {
+		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
+	return;
+	}
 	#my $value = get_tag_value ($data, 'data', '');		
 	my $dataObject = get_module_data($data, $agent_name, $module_name, $module_type);
 	my $extraMacros = get_macros_for_data($data, $agent_name, $module_name, $module_type);
@@ -436,7 +437,7 @@ sub get_macros_for_data($$){
 		}
 	} else {
 	}
-	
+
 	return \%macros;
 }
 

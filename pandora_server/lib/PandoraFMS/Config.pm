@@ -3,7 +3,7 @@ package PandoraFMS::Config;
 # Configuration Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License 
@@ -36,8 +36,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "3.0";
-my $pandora_build = "090219";
+my $pandora_version = "3.0.1";
+my $pandora_build = "100219";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -102,7 +102,7 @@ sub pandora_init {
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}
+		}u094596 staff
 		elsif ($parametro =~ m/-q\z/) {
 			$pa_config->{"quiet"}=1;
 		}

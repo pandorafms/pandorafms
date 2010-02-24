@@ -97,10 +97,28 @@ switch ($action) {
 				$mapConnectionData = array('type' => 'OSM',
 					'url' => $mapConnection_OSM_url);
 				break;
-			case 'YAHOO':
-				$mapConnection_YAHOO_url= get_parameter('url');
-				$mapConnectionData = array('type' => 'YAHOO',
-					'url' => $mapConnection_YAHOO_url);
+			case 'Gmap':
+				$mapConnection_Gmap_url= get_parameter('url');
+				$gmap_type= get_parameter('gmap_type');
+				$mapConnectionData = array('type' => 'Gmap', 'gmap_type' => $gmap_type);
+				break;
+			case 'Static_Image':
+				$mapConnection_Image_url= get_parameter('url');
+				$bb_left= get_parameter('bb_left');
+				$bb_right= get_parameter('bb_right');
+				$bb_bottom= get_parameter('bb_bottom');
+				$bb_top= get_parameter('bb_top');
+				$image_height= get_parameter('image_height');
+				$image_width= get_parameter('image_width');
+				$mapConnectionData = array('type' => 'Static_Image',
+					'url' => $mapConnection_Image_url,
+					'bb_left' => $bb_left,
+					'bb_right' => $bb_right,
+					'bb_top' => $bb_top,
+					'bb_bottom' => $bb_bottom,
+					'image_width' => $image_width,
+					'image_height' => $image_height
+					);
 				break;
 		}
 		
@@ -141,7 +159,8 @@ $table->width = '60%';
 $table->data = array();
 $types[0] = __('Please select the connection type');
 $types["OSM"] = __('Open Street Maps');
-$types["YAHOO"] = __('Yahoo Maps');
+$types["Gmap"] = __('Google Maps');
+$types["Static_Image"] = __('Static Image');
 $table->data[0][0] = __('Type') . ":";
 $table->data[0][1] = print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", '', 0, true);
 
@@ -150,30 +169,73 @@ print_table ($table);
 
 $optionsConnectionTypeTable = '';
 $mapConnectionDataUrl = '';
-
 if ($mapConnectionData != null) {
 	switch ($mapConnection_type) {
 		case 'OSM':
 			$mapConnectionDataUrl = $mapConnectionData['url'];
 			break;
-		case 'YAHOO':
+		case 'Gmap':
+			$gmap_type = $mapConnectionData['gmap_type'];
+			break;
+		case 'Static_Image':
 			$mapConnectionDataUrl = $mapConnectionData['url'];
+			$bb_left= $mapConnectionData['bb_left'];
+			$bb_right= $mapConnectionData['bb_right'];
+			$bb_bottom= $mapConnectionData['bb_bottom'];
+			$bb_top= $mapConnectionData['bb_top'];
+			$image_width= $mapConnectionData['image_width'];
+			$image_height= $mapConnectionData['image_height'];
 			break;
 	}
 }
 // Open Street Map Connection
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
-			'<td>'  . __("URL") . ':</td>' .
+			'<td>'  . __("Tile Server URL") . ':</td>' .
 			'<td><input id="type" type="hidden" name="type" value="OSM" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 
-// Yahoo Map Connection
-$optionsConnectionYAHOOTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
+// Google Maps Connection
+$gmaps_types["G_PHYSICAL_MAP"] = __('Goolge Physical');
+$gmaps_types["G_HYBRID_MAP"] = __('Goolge Hybrid');
+$gmaps_types["G_SATELITE_MAP"] = __('Goolge Satelite');
+// TODO: Add imput field for the key 
+$optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
-			'<td>'  . __("URL") . ':</td>' .
-			'<td><input id="type" type="hidden" name="type" value="YAHOO" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
+			'<td>'  . __("Google Map Type") . ':</td>' .
+			'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(print_select($gmaps_types,'gmap_type', $gmap_type, "", '', 0, true)) . '</td>' .
+		'</tr>' . 
+	'</table>';
+// Image Map Connection
+$optionsConnectionImageTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
+		'<tr class="row_0">' .
+			'<td>'  . __("Image URL") . ':</td>' .
+			'<td colspan="3"><input id="type" type="hidden" name="type" value="Static_Image" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
+		'</tr>' . 
+		'<tr class="row_1">' .
+			'<td colspan="4"><strong>'  . __("Corners of the area of the image") . ':</strong></td>' .
+		'</tr>' . 
+		'<tr class="row_2">' .
+			'<td>'  . __("Left") . ':</td>' .
+			'<td>'. print_input_text ('bb_left', $bb_left, '', 25, 25, true) . '</td>' .
+			'<td>'  . __("Bottom") . ':</td>' .
+			'<td>'. print_input_text ('bb_bottom', $bb_bottom, '',25 , 25, true) . '</td>' .
+		'</tr>' . 
+		'<tr class="row_3">' .
+			'<td>'  . __("Right") . ':</td>' .
+			'<td>'. print_input_text ('bb_right', $bb_right, '', 25, 25, true) . '</td>' .
+			'<td>'  . __("Top") . ':</td>' .
+			'<td>'. print_input_text ('bb_top', $bb_top, '', 25, 25, true) . '</td>' .
+		'</tr>' . 
+		'<tr class="row_4">' .
+			'<td colspan="4"><strong>'  . __("Image Size") . ':</strong></td>' .
+		'</tr>' . 
+		'<tr class="row_5">' .
+			'<td>'  . __("Width") . ':</td>' .
+			'<td>'. print_input_text ('image_width', $image_width, '', 25, 25, true) . '</td>' .
+			'<td>'  . __("Height") . ':</td>' .
+			'<td>'. print_input_text ('image_height', $image_height, '', 25, 25, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 if ($mapConnectionData != null) {
@@ -181,8 +243,11 @@ if ($mapConnectionData != null) {
 		case 'OSM':
 			$optionsConnectionTypeTable = $optionsConnectionOSMTable;
 			break;
-		case 'YAHOO':
-			$optionsConnectionTypeTable = $optionsConnectionYAHOOTable;
+		case 'Gmap':
+			$optionsConnectionTypeTable = $optionsConnectionGmapTable;
+			break;
+		case 'Static_Image':
+			$optionsConnectionTypeTable = $optionsConnectionImageTable;
 			break;
 	}
 }
@@ -264,7 +329,7 @@ function changePoints(e) {
 		center_longitude = $('input[name=center_longitude]').val(lonlat.lon);
 		
 		if (centerPoint == null) {
-			centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', lonlat.lon, lonlat.lat, 'images/dot_green.png', 20, 20, 'center', '');
+			centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', lonlat.lon, lonlat.lat, 'images/dot_green.png', 11, 11, 'center', '');
 		}
 		else  {
 			//return to no-standar the proyection for to move
@@ -278,7 +343,7 @@ function changePoints(e) {
 		center_longitude = $('input[name=default_longitude]').val(lonlat.lon);
 		
 		if (GISDefaultPositionPoint == null) {
-			GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', lonlat.lon, lonlat.lat, 'images/dot_red.png', 20, 20, 'default', '');
+			GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', lonlat.lon, lonlat.lat, 'images/dot_red.png', 11, 11, 'default', '');
 		}
 		else  {
 			//return to no-standar the proyection for to move
@@ -322,8 +387,8 @@ function refreshMapView() {
 	
 	layer = js_makeLayer('temp_layer', true, null);
 
-	centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 20, 20, 'center', '');
-	GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 20, 20, 'default', '');
+	centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 11, 11, 'center', '');
+	GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 11, 11, 'default', '');
 	
 	js_activateEvents(changePoints);
 }
@@ -332,16 +397,28 @@ function refreshMapView() {
  * Dinamic write the fields in form when select a type of connection.
  */
 function selMapConnectionType() {
+	$('#form_map_connection_type').fadeOut("normal");
 	switch ($('#sel_type :selected').val()) {
 		case 'OSM':
-			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>');
+			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();
 			break; 
-		case 'YAHOO':
-			$('#form_map_connection_type').html('<?php echo $optionsConnectionYAHOOTable; ?>');
-
+		case 'Gmap':
+			/*
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ';
+			script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg';
+			document.body.appendChild(script);
+			*/
+			$('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
+			break; 
+		case 'Static_Image':
+			$('#form_map_connection_type').html('<?php echo $optionsConnectionImageTable; ?>').hide();
+			break; 
 		default:
-			$('#form_map_connection_type').html('');
+			$('#form_map_connection_type').html('').hide();
 			break;
 	}
+	$('#form_map_connection_type').fadeIn("normal");
 }
 </script>

@@ -169,6 +169,13 @@ print_table ($table);
 
 $optionsConnectionTypeTable = '';
 $mapConnectionDataUrl = '';
+$gmap_type = '';
+$bb_left = '';
+$bb_right = '';
+$bb_bottom = '';
+$bb_top = '';
+$image_width = '';
+$image_height = '';
 if ($mapConnectionData != null) {
 	switch ($mapConnection_type) {
 		case 'OSM':
@@ -379,6 +386,14 @@ function refreshMapView() {
 	objBaseLayers[0]['type'] = $('select[name=sel_type] :selected').val();
 	objBaseLayers[0]['name'] = $('input[name=name]').val();
 	objBaseLayers[0]['url'] = $('input[name=url]').val();
+
+	//objBaseLayers[0]['gmap_type = '';
+	objBaseLayers[0]['bb_left'] = $('input[name=bb_left]').val();
+	objBaseLayers[0]['bb_right'] = $('input[name=bb_right]').val();
+	objBaseLayers[0]['bb_bottom'] = $('input[name=bb_bottom]').val();
+	objBaseLayers[0]['bb_top'] = $('input[name=bb_top]').val();
+	objBaseLayers[0]['image_width'] = $('input[name=image_width]').val();
+	objBaseLayers[0]['image_height'] = $('input[name=image_height]').val();
 
 	arrayControls = null;
 	arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');

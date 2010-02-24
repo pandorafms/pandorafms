@@ -81,6 +81,20 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 									objBaseLayers[baselayerIndex]['url'], {numZoomLevels: num_levels_zoom});
 							map.addLayer(baseLayer);
 							break;
+						case 'Static_Image':
+							console.log(objBaseLayers);
+							
+				            var baseLayer = new OpenLayers.Layer.Image(
+				            		objBaseLayers[baselayerIndex]['name'],
+				            		objBaseLayers[baselayerIndex]['url'],
+				                    new OpenLayers.Bounds(objBaseLayers[baselayerIndex]['bb_left'],
+				                    		objBaseLayers[baselayerIndex]['bb_bottom'],
+				                    		objBaseLayers[baselayerIndex]['bb_right'],
+				                    		objBaseLayers[baselayerIndex]['bb_top']),
+				                    new OpenLayers.Size(objBaseLayers[baselayerIndex]['image_width'], objBaseLayers[baselayerIndex]['image_height']),
+				                    {numZoomLevels: num_levels_zoom});
+				            map.addLayer(baseLayer);
+							break;
 					}
 				}
 			}

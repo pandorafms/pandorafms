@@ -35,6 +35,21 @@ if ($confMap !== false) {
 		$baselayers[$num_baselayer]['typeBaseLayer'] = $mapC['connection_type'];
 		$baselayers[$num_baselayer]['name'] = $mapC['conection_name'];
 		$decodeJSON = json_decode($mapC['conection_data'], true);
+		
+		switch ($mapC['connection_type']) {
+			case 'OSM':
+				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				break;
+			case 'Static_Image':
+				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				$baselayers[$num_baselayer]['bb_left'] = $decodeJSON['bb_left'];
+				$baselayers[$num_baselayer]['bb_right'] = $decodeJSON['bb_right'];
+				$baselayers[$num_baselayer]['bb_bottom'] = $decodeJSON['bb_bottom'];
+				$baselayers[$num_baselayer]['bb_top'] = $decodeJSON['bb_top'];
+				$baselayers[$num_baselayer]['image_width'] = $decodeJSON['image_width'];
+				$baselayers[$num_baselayer]['image_height'] = $decodeJSON['image_height'];
+				break;
+		}
 		$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
 		$num_baselayer++;
 		if ($mapC['default_map_connection'] == 1) {

@@ -88,8 +88,23 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 					switch ($baselayer['typeBaseLayer']) {
 						case 'OSM':
 							?>
-							var baseLayer = new OpenLayers.Layer.OSM("<?php echo $baselayer['name']; ?>", "<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>});
+							var baseLayer = new OpenLayers.Layer.OSM("<?php echo $baselayer['name']; ?>", 
+									"<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>});
 							map.addLayer(baseLayer);
+							<?php
+							break;
+						case 'Static_Image':
+							?>
+				            var baseLayer = new OpenLayers.Layer.Image(
+				            		"<?php echo $baselayer['name']; ?>",
+				            		"<?php echo $baselayer['url']; ?>",
+				                    new OpenLayers.Bounds(<?php echo $baselayer['bb_left']; ?>,
+				                    		<?php echo $baselayer['bb_bottom']; ?>,
+				                    		<?php echo $baselayer['bb_right']; ?>,
+				                    		<?php echo $baselayer['bb_top']; ?>),
+				                    new OpenLayers.Size(<?php echo $baselayer['image_width']; ?>, <?php echo $baselayer['image_height']; ?>),
+				                    {numZoomLevels: <?php echo $numLevelZooms; ?>});
+				            map.addLayer(baseLayer);
 							<?php
 							break;
 					}
@@ -744,6 +759,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	makeLayer("layer_for_agent_".$agent_name);
 	
 	$agent_icon = get_agent_icon_map($agent_id, true);
+	$status = get_agent_status($agent_id);
 		
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
@@ -751,7 +767,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		addPath("layer_for_agent_".$agent_name,$agent_id);
 	}
 	
-	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, 'point_agent_info');
+	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
 	
 	if ($centerInAgent) {
 		?>

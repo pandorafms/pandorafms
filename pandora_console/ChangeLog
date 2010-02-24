@@ -1,3 +1,18 @@
+2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: in function "printMap" add the posibility to
+	show the Static_Image base layer (WIP because it'snt show the icons), in
+	function "getAgentMap" pass the status in the feature.
+	
+	* include/javascript/openlayers.pandora.js: in the function "js_printMap"
+	add the posibility to show the Static_Image base layer (WIP).
+	
+	* operation/gis_maps/render_view.php: clean source code for the part of
+	baselayers and add the code for Static Image baselayer.
+	
+	* godmode/setup/gis_step_2.php: clean source code uninitialize vars, add
+	the preview static image var (WIP because it'snt show the icons).
+
 2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/setup/gis_step_2.php: Modified to be able to manage also 

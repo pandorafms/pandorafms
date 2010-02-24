@@ -1,3 +1,13 @@
+2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/Dataserver.pm: Modified to
+	update the parent of an agent if in learning mode.
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the new
+	parameter and improved documentation for pandora_update_agent
+
+	* lib/PandoraFMS/Config.pm: Updated build
+
 2010-02-23  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* lib/PandoraFMS/*.pm, DEBIAN/make_deb_package.sh, pandora_server_*: 

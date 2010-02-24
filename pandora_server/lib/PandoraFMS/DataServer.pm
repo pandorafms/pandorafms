@@ -263,17 +263,41 @@ sub process_xml_data ($$$$$) {
 			return;
 		}
 	}
+	else { # The agent was already created
+		my $mode = get_db_value($dbh, 'SELECT modo FROM tagente WHERE id_agente = ?', $agent_id);
+		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
+	  	if ($mode == 0) { #The agent is not learning so ignore the parent.
+			$parent_agent_name = '';
+		}
+		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
+	}
 	$AgentSem->up ();
 
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
-		logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-		# Update agent information including position information
-		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
+		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
+		if (defined($parent_agent_name) && $parent_agent_name ne '') {
+		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
+			logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude parent: $parent_agent_name", 5);
+			# Update agent information including position information and the paret
+			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, 
+								$longitude, $latitude, $altitude, $position_description, $parent_agent_name);
+		}
+		else {
+			logger($pa_config, "Updating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
+			# Update agent information including position information
+		}		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 	}
 	else {
-		logger($pa_config, "Updating agent $agent_name", 5);
-		# Update agent information without position information
-		pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset);
+		if (defined($parent_agent_name) && $parent_agent_name ne '') {
+			logger($pa_config, "Updating agent $agent_name", 5);
+			# Update agent information including the parent  without position information
+			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $parent_agent_name);
+		}
+		else {
+			logger($pa_config, "Updating agent $agent_name", 5);
+			# Update agent information without position information ignoring the parent
+			pandora_update_agent($pa_config, $timestamp, $agent_id, $os_version, $agent_version, $interval, $dbh, $timezone_offset);
+		}
 	}	
 	pandora_module_keep_alive ($pa_config, $agent_id, $agent_name, $server_id, $dbh);
 

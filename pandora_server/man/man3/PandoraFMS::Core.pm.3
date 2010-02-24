@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "PandoraFMS::Core 3"
-.TH PandoraFMS::Core 3 "2010-02-22" "perl v5.10.0" "User Contributed Perl Documentation"
+.TH PandoraFMS::Core 3 "2010-02-24" "perl v5.10.0" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -266,11 +266,12 @@ Update server status:
  4 plugin
  5 prediction
  6 wmi.
-.ie n .SS """pandora_update_agent (\fI$pa_config\fP, \fI$agent_timestamp\fP, \fI$agent_id\fP, \fI$os_version\fP, \fI$agent_version\fP, \fI$agent_interval\fP, \fI$dbh\fP, [\fI$timezone_offset\fP], [\fI$longitude\fP], [\fI$latitude\fP], [\fI$altitude\fP], [\fI$position_description\fP])"""
-.el .SS "\f(CWpandora_update_agent (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$agent_timestamp\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$os_version\fP\f(CW, \fP\f(CI$agent_version\fP\f(CW, \fP\f(CI$agent_interval\fP\f(CW, \fP\f(CI$dbh\fP\f(CW, [\fP\f(CI$timezone_offset\fP\f(CW], [\fP\f(CI$longitude\fP\f(CW], [\fP\f(CI$latitude\fP\f(CW], [\fP\f(CI$altitude\fP\f(CW], [\fP\f(CI$position_description\fP\f(CW])\fP"
-.IX Subsection "pandora_update_agent ($pa_config, $agent_timestamp, $agent_id, $os_version, $agent_version, $agent_interval, $dbh, [$timezone_offset], [$longitude], [$latitude], [$altitude], [$position_description])"
-Update last contact, timezon fields in \fBtagente\fR and current position (this
-can affect \fBtgis_data_status\fR and \fBtgis_data_history\fR).
+.ie n .SS """pandora_update_agent (\fI$pa_config\fP, \fI$agent_timestamp\fP, \fI$agent_id\fP, \fI$os_version\fP, \fI$agent_version\fP, \fI$agent_interval\fP, \fI$dbh\fP, [\fI$timezone_offset\fP], [\fI$longitude\fP], [\fI$latitude\fP], [\fI$altitude\fP], [\fI$position_description\fP]) [\fI$parent_agent_name\fP])"""
+.el .SS "\f(CWpandora_update_agent (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$agent_timestamp\fP\f(CW, \fP\f(CI$agent_id\fP\f(CW, \fP\f(CI$os_version\fP\f(CW, \fP\f(CI$agent_version\fP\f(CW, \fP\f(CI$agent_interval\fP\f(CW, \fP\f(CI$dbh\fP\f(CW, [\fP\f(CI$timezone_offset\fP\f(CW], [\fP\f(CI$longitude\fP\f(CW], [\fP\f(CI$latitude\fP\f(CW], [\fP\f(CI$altitude\fP\f(CW], [\fP\f(CI$position_description\fP\f(CW]) [\fP\f(CI$parent_agent_name\fP\f(CW])\fP"
+.IX Subsection "pandora_update_agent ($pa_config, $agent_timestamp, $agent_id, $os_version, $agent_version, $agent_interval, $dbh, [$timezone_offset], [$longitude], [$latitude], [$altitude], [$position_description]) [$parent_agent_name])"
+Update last contact, timezone fields in \fBtagente\fR and current position (this
+can affect \fBtgis_data_status\fR and \fBtgis_data_history\fR). If the \fI\f(CI$parent_agent_name\fI\fR is 
+defined and there is an agent with that name, also the parent is updated.
 .ie n .SS """pandora_module_keep_alive (\fI$pa_config\fP, \fI$id_agent\fP, \fI$agent_name\fP, \fI$server_id\fP, \fI$dbh\fP)"""
 .el .SS "\f(CWpandora_module_keep_alive (\fP\f(CI$pa_config\fP\f(CW, \fP\f(CI$id_agent\fP\f(CW, \fP\f(CI$agent_name\fP\f(CW, \fP\f(CI$server_id\fP\f(CW, \fP\f(CI$dbh\fP\f(CW)\fP"
 .IX Subsection "pandora_module_keep_alive ($pa_config, $id_agent, $agent_name, $server_id, $dbh)"

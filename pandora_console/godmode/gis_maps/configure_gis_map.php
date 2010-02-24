@@ -375,7 +375,7 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td colspan="4">
-					<h4>' . __('List of Agents to be shwon in the layer') . '</h4>
+					<h4>' . __('List of Agents to be shown in the layer') . '</h4>
 					<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_agents">
 					</table>
 				</td>

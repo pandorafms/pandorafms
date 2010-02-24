@@ -77,9 +77,11 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 					maxResolution: 156543.0399,
 					numZoomLevels: <?php echo $numLevelZooms; ?>,
 					units: 'm', //metros
-					projection: new OpenLayers.Projection("EPSG:900913"),
+					//Disabled projection because with Image map not run fine...I don't know
+//					projection: new OpenLayers.Projection("EPSG:900913"),
 					displayProjection: new OpenLayers.Projection("EPSG:4326")
 				});
+
 
 				//Define the maps layer
 				<?php

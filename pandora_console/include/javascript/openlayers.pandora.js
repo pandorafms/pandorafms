@@ -68,7 +68,8 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 				maxResolution: 156543.0399,
 				numZoomLevels: num_levels_zoom,
 				units: 'm', //metros
-				projection: new OpenLayers.Projection("EPSG:900913"),
+				//Disabled projection because with Image map not run fine...I don't know
+//				projection: new OpenLayers.Projection("EPSG:900913"),
 				displayProjection: new OpenLayers.Projection("EPSG:4326")
 			});
 

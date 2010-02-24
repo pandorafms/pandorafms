@@ -1,5 +1,16 @@
 2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: fix map to show correct position the agent
+	icons in the function "printMap".
+	
+	* include/javascript/openlayers.pandora.js: fix map to show correct position
+	the agent icons in the function "js_printMap".
+
+	* godmode/gis_maps/configure_gis_map.php: fix a mechanographic mistake in a
+	text.
+
+2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: in function "printMap" add the posibility to
 	show the Static_Image base layer (WIP because it'snt show the icons), in
 	function "getAgentMap" pass the status in the feature.

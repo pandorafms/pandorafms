@@ -77,7 +77,14 @@ $times = array(
 	7200 => 2 . ' ' . __('hours')
 	);
 
-$buttons[] = __('Refresh: ') . print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false);
+$buttons[] = '&nbsp;' . __('Refresh: ') . print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
+
+$buttons[] = '<a id="button_status_all" href="javascript: changeShowStatus(\'all\');" style="border: 1px black solid;">' . __('All') . '</a>';
+$buttons[] = '<a id="button_status_bad" href="javascript: changeShowStatus(\'bad\');"><img src="images/status_sets/default/agent_critical_ball.png" /> ' . __('Critical') . '</a>';
+$buttons[] = '<a id="button_status_warning" href="javascript: changeShowStatus(\'warning\');"><img src="images/status_sets/default/agent_warning_ball.png" /> ' . __('Warning') . '</a>';
+$buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\');"><img src="images/status_sets/default/agent_ok_ball.png" /> ' . __('Ok') . '</a>';
+$buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><img src="images/status_sets/default/agent_no_monitors_ball.png" /> ' . __('Other') . '</a>';
+$buttons[] = __('Show agents in state: ');
 
 
 print_page_header(__('Visual console') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
@@ -100,7 +107,7 @@ if ($layers != false) {
 				$coords['stored_longitude'] = $map['default_longitude'];
 			}
 			else {
-				if ($show_history == 'y') { 	
+				if ($show_history == 'y') {
 					addPath($layer['layer_name'], $idAgent);
 				}
 			}
@@ -119,10 +126,9 @@ if ($layers != false) {
 }
 
 ?>
-<br /><br />
 <?php 
 if ($config["pure"] == 0) {
-	echo "<div id='map' style='width: 99%; height: 400px; border: 1px solid black;' ></div>";
+	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
 }
 else {
 	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; border: 1px solid black;' ></div>";

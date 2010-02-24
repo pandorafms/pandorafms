@@ -295,7 +295,7 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 		<td colspan='3'><div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div></td>
 	</tr>
 	<tr>
-		<td colspan='3'><a href=''>" . __("Refresh map preview") . "</a></td>
+		<td colspan='3'>" . print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"', true) . "</td>
 	</tr>
 	<tr>
 		<td>" . __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError . "</td>
@@ -465,6 +465,48 @@ require_jquery_file ('autocomplete');
 require_jquery_file ('json');
 ?>
 <script type="text/javascript">
+function refreshMapView() {
+	map = null;
+	$("#map").html('');
+	
+	id_connection_default = $("input[name=map_connection_default]:checked").val();
+
+	jQuery.ajax ({
+		data: "page=operation/gis_maps/ajax&opt=get_map_connection_data&id_connection=" + id_connection_default,
+		type: "GET",
+		dataType: 'json',
+		url: "ajax.php",
+		timeout: 10000,
+		success: function (data) {
+			if (data.correct) {
+				mapConnection = data.content;
+				
+				arrayControls = null;
+				arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
+
+
+				//TODO read too from field forms user.
+				inital_zoom = mapConnection['default_zoom_level'];
+				num_levels_zoom = mapConnection['num_zoom_levels'];
+				center_latitude = mapConnection['initial_latitude'];
+				center_longitude = mapConnection['initial_longitude'];
+				center_altitude = mapConnection['initial_altitude'];
+
+				baseLayer = jQuery.evalJSON(mapConnection['conection_data']);
+				
+				var objBaseLayers = Array();
+				objBaseLayers[0] = Array();
+				objBaseLayers[0]['type'] = baseLayer['type'];
+				objBaseLayers[0]['name'] = mapConnection['conection_name'];
+				objBaseLayers[0]['url'] = baseLayer['url'];
+
+				js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
+			}
+		}
+	});
+	
+}
+
 $("#text_id_agent").autocomplete(
 	"ajax.php",
 	{

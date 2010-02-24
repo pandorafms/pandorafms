@@ -1,6 +1,26 @@
+2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: fix the refresh time in function
+	"activateAjaxRefresh", in functions "activateAjaxRefresh" and "addPoint"
+	 add status agent.
+	 
+	* include/javascript/openlayers.pandora.js: add function "changeShowStatus"
+	for change show icons by status, in function "changeRefreshTime" add reset
+	timer, in function "js_addPoint" and "js_addPointExtent" add the state and
+	hide if it's necesary.
+	
+	* operation/gis_maps/render_view.php: change the style of page, and add
+	controls for hide agent icons by state.
+
+	* operation/gis_maps/ajax.php: add the option "get_map_connection_data" in
+	switch for get map connection data.
+
+	* godmode/gis_maps/configure_gis_map.php: start to develop the preview map
+	in editor.
+
 2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
 
-	* pandora_console/operation/gis_maps/render_view.php: Changed PanZoom
+	* operation/gis_maps/render_view.php: Changed PanZoom
 	to PanZoomBar in the map.
 
 2010-02-23  Miguel de Dios  <miguel.dedios@artica.es>

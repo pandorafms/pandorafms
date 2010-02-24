@@ -13,6 +13,7 @@
 // GNU General Public License for more details.
 
 var map; // Map global var object is use in multiple places.
+var statusShow = 'all';
 
 /**
  * Inicialize the map in the browser and the object map.
@@ -94,6 +95,111 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 }
 
 /**
+ * Change the style of state button, and call the function "hideAgentsStatus"
+ * whith new state for agents icons to show.
+ * 
+ * @param string newShowStatus State to show.
+ * @return none
+ */
+function changeShowStatus(newShowStatus) {
+	
+	$("#button_status_" + statusShow).attr('style', '');
+	statusShow = newShowStatus;
+	$("#button_status_" + statusShow).attr('style', 'border: 1px black solid;');
+	
+	hideAgentsStatus();
+}
+
+/**
+ * Function that change the visibility of feature by status and state var
+ * statusShow
+ * 
+ * @param object feature The feature to change the visibility
+ * @param int status The status code, it can be (1,4) for bad, (2) for warning, (0) for ok and the rest
+ * @return
+ */
+function hideFeatureByStatus(feature, status) {
+	feature.style.display = 'none';
+	
+	switch (statusShow) {
+		case 'bad':
+			if ((status == 1) || (status == 4))
+				feature.style.display = '';
+			break;
+		case 'warning':
+			if (status == 2)
+				feature.style.display = '';
+			break;
+		case 'ok':
+			if (status == 0)
+				feature.style.display = '';
+			break;
+		case 'default':
+			if ((status != 1) && (status != 4) && (status != 2) && (status != 0))
+				feature.style.display = '';
+			break;
+		case 'all':
+			feature.style.display = '';
+			break;
+	}
+}
+
+/**
+ * Test if the feature is hidden.
+ * 
+ * @param integer status The integer status. 
+ * @return boolean The true or false.
+ */
+function isHideFeatureByStatus(status) {
+	returnVar = true;
+	
+	switch (statusShow) {
+		case 'bad':
+			if ((status == 1) || (status == 4))
+				returnVar = false;
+			break;
+		case 'warning':
+			if (status == 2)
+				returnVar = false;
+			break;
+		case 'ok':
+			if (status == 0)
+				returnVar = false;
+			break;
+		case 'default':
+			if ((status != 1) && (status != 4) && (status != 2) && (status != 0))
+				returnVar = false;
+			break;
+		case 'all':
+			returnVar = false;
+			break;
+	}
+	
+	return returnVar;
+}
+
+/**
+ * Hide the agents icons that not is of current state var statusShow.
+ * 
+ * @return none
+ */
+function hideAgentsStatus() {
+	layers = map.getLayersByClass("OpenLayers.Layer.Vector");
+	
+	jQuery.each(layers, function (i, layer) {
+		features = layer.features;
+		
+		jQuery.each(features, function (j, feature) {
+			status = feature.data.status;
+			
+			hideFeatureByStatus(feature, status);
+		});
+		
+		layer.redraw();
+	});
+}
+
+/**
  * Change the refresh time for the map.
  * 
  * @param int time seconds
@@ -101,6 +207,10 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
  */
 function changeRefreshTime(time) {
 	refreshAjaxIntervalSeconds = time * 1000;
+	
+	clearInterval(idIntervalAjax);
+	idIntervalAjax = setInterval("clock_ajax_refresh()", refreshAjaxIntervalSeconds);
+	oldRefreshAjaxIntervalSeconds = refreshAjaxIntervalSeconds;
 }
 
 /**
@@ -257,17 +367,22 @@ function showHideLayer(name, action) {
  * @param float lat The coord of longitude for point.
  * @param string id The id of point.
  * @param string type_string The type of point, it's use for ajax request.
+ * @param integer statusAgent The status of point.
  * 
  * @return Object The point.
  */
-function js_addPoint(layerName, pointName, lon, lat, id, type_string) {
+function js_addPoint(layerName, pointName, lon, lat, id, type_string, statusAgent) {
 	var point = new OpenLayers.Geometry.Point(lon, lat)
 		.transform(map.displayProjection, map.getProjectionObject());
 
 	var layer = map.getLayersByName(layerName);
 	layer = layer[0];
 
-	feature = new OpenLayers.Feature.Vector(point,{nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) });
+	feature = new OpenLayers.Feature.Vector(point,{status: statusAgent, nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) });
+	
+	if (isHideFeatureByStatus(statusAgent)) {
+		feature.style.display = 'none';
+	}
 	
 	layer.addFeatures(feature);
 	
@@ -286,17 +401,27 @@ function js_addPoint(layerName, pointName, lon, lat, id, type_string) {
  * @param integer height The height of icon.
  * @param string id The id of point.
  * @param string type_string The type of point, it's use for ajax request.
+ * @param integer statusAgent The status of point.
  * 
  * @return Object The point.
  */
-function js_addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string) {
+function js_addPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string, statusAgent) {
 	var point = new OpenLayers.Geometry.Point(lon, lat)
 	.transform(map.displayProjection, map.getProjectionObject());
 
 	var layer = map.getLayersByName(layerName);
 	layer = layer[0];
 	
-	feature = new OpenLayers.Feature.Vector(point,{id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName});
+	if (typeof(statusAgent) == 'string')
+		statusA = parseInt(statusAgent);
+	else
+		statusA = statusAgent;
+	
+	feature = new OpenLayers.Feature.Vector(point,{status: statusA, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName});
+	
+	if (isHideFeatureByStatus(statusAgent)) {
+		feature.style.display = 'none';
+	}
 	
 	layer.addFeatures(feature);
 	

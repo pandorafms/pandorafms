@@ -1,3 +1,8 @@
+2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* pandora_console/operation/gis_maps/render_view.php: Changed PanZoom
+	to PanZoomBar in the map.
+
 2010-02-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: in function "activateAjaxRefresh" add the

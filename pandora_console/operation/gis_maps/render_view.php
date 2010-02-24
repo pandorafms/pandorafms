@@ -43,7 +43,7 @@ if ($confMap !== false) {
 	}
 }
 
-$controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap');
+$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap');
 
 $layers = getLayers($idMap);
 

@@ -212,9 +212,9 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	?>
 	<script type="text/javascript">
 		var last_time_of_data = <?php echo $lastTimeOfData; ?>; //This time use in the ajax query to next recent points.
-		var refreshAjaxIntervalSeconds = 6000;
+		var refreshAjaxIntervalSeconds = 60000;
 		var idIntervalAjax = null;
-		var oldRefreshAjaxIntervalSeconds = 6000;
+		var oldRefreshAjaxIntervalSeconds = 60000;
 
 		<?php
 		if ($layers === null) {
@@ -260,10 +260,11 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			        					
 			        					delete feature;
 			        					feature = null
+										status = parseInt(agentDataGIS['status']);
 										
 			        					js_addPointExtent(layer.name, agentDataGIS['name'],
 			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
-			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info');
+			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status);
 		        					}
 		        				}
 		        			}
@@ -322,10 +323,10 @@ function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 		function () {
 			<?php
 			if ($icon != null) {
-				echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string');";
+				echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
 			}
 			else {
-				echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string');";
+				echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
 			} 
 			?>
 		}

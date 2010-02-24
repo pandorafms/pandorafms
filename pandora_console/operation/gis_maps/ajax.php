@@ -173,5 +173,16 @@ switch ($opt) {
 		echo json_encode($returnJSON);
 		
 		break;
+	case 'get_map_connection_data':
+		$idConnection = get_parameter('id_connection');
+		
+		$returnJSON = array();
+
+		$returnJSON['correct'] = 1;
+		
+		$returnJSON['content'] = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
+		
+		echo json_encode($returnJSON);
+		break;
 }
 ?>

@@ -1,3 +1,9 @@
+2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* godmode/setup/gis_step_2.php: Modified to be able to manage also 
+	Goolge Maps (TODO:preview and KEY management) and Static Images (TODO:
+	preview).
+
 2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: fix the refresh time in function
@@ -20,8 +26,8 @@
 
 2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
 
-	* operation/gis_maps/render_view.php: Changed PanZoom
-	to PanZoomBar in the map.
+	* operation/gis_maps/render_view.php: Changed PanZoom to PanZoomBar in 
+	the map.
 
 2010-02-23  Miguel de Dios  <miguel.dedios@artica.es>
 

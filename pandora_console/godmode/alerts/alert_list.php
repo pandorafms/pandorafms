@@ -412,7 +412,10 @@ foreach ($simple_alerts as $alert) {
 	$data[3] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">
 		<img id="template-details-'.$alert['id_alert_template'].'" class="img_help" src="images/zoom.png"/></a> ';
+
+	$data[3] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[3] .= get_alert_template_name ($alert['id_alert_template']);
+	$data[3] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$policyInfo = isAlertInPolicy($alert['id_agent_module'], $alert['id_alert_template'], false);
@@ -428,41 +431,53 @@ foreach ($simple_alerts as $alert) {
 	}
 	
 	$actions = get_alert_agent_module_actions ($alert['id']);
-	$data[5] = '<ul class="action_list">';
-	foreach ($actions as $action_id => $action) {
-		$data[5] .= '<li><div>';
-		if ($alert['disabled'])
-			$data[5] .= '<span class="action_name" style="font-style: italic; color: #aaaaaa;">';
-		else
-			$data[5] .= '<span class="action_name">';
-		$data[5] .= $action['name'];
-		$data[5] .= ' <em>(';
-		if ($action['fires_min'] == $action['fires_max']) {
-			if ($action['fires_min'] == 0)
-				$data[5] .= __('Always');
-			else
-				$data[5] .= __('On').' '.$action['fires_min'];
-		} else {
-			if ($action['fires_min'] == 0)
-				$data[5] .= __('Until').' '.$action['fires_max'];
-			else
-				$data[5] .= __('From').' '.$action['fires_min'].
-					' '.__('to').' '.$action['fires_max'];
+
+
+	if (empty($actions)){
+		// Get and show default actions for this alert
+		$default_action = get_db_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);
+		if ($default_action != ""){
+			$data[5] = __("Default"). " : ".get_db_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
 		}
+
+	} else {
+		$data[5] = '<ul class="action_list">';
+		foreach ($actions as $action_id => $action) {
+			$data[5] .= '<li><div>';
+			if ($alert['disabled'])
+				$data[5] .= '<span class="action_name" style="font-style: italic; color: #aaaaaa;">';
+			else
+				$data[5] .= '<span class="action_name">';
+			$data[5] .= $action['name'];
+			$data[5] .= ' <em>(';
+			if ($action['fires_min'] == $action['fires_max']) {
+				if ($action['fires_min'] == 0)
+					$data[5] .= __('Always');
+				else
+					$data[5] .= __('On').' '.$action['fires_min'];
+			} else {
+				if ($action['fires_min'] == 0)
+					$data[5] .= __('Until').' '.$action['fires_max'];
+				else
+					$data[5] .= __('From').' '.$action['fires_min'].
+						' '.__('to').' '.$action['fires_max'];
+			}
 		
-		$data[5] .= ')</em>';
-		$data[5] .= '</span>';
-		$data[5] .= ' <span class="delete" style="clear:right">';
-		$data[5] .= '<form method="post" class="delete_link">';
-		$data[5] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
-		$data[5] .= print_input_hidden ('delete_action', 1, true);
-		$data[5] .= print_input_hidden ('id_alert', $alert['id'], true);
-		$data[5] .= print_input_hidden ('id_action', $action_id, true);
-		$data[5] .= '</form>';
-		$data[5] .= '</span>';
-		$data[5] .= '</div></li>';
+			$data[5] .= ')</em>';
+			$data[5] .= '</span>';
+			$data[5] .= ' <span class="delete" style="clear:right">';
+			$data[5] .= '<form method="post" class="delete_link">';
+			$data[5] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+			$data[5] .= print_input_hidden ('delete_action', 1, true);
+			$data[5] .= print_input_hidden ('id_alert', $alert['id'], true);
+			$data[5] .= print_input_hidden ('id_action', $action_id, true);
+			$data[5] .= '</form>';
+			$data[5] .= '</span>';
+			$data[5] .= '</div></li>';
+		}
+		$data[5] .= '</ul>';
 	}
-	$data[5] .= '</ul>';
+
 	
 	$data[5] .= '<a class="add_action" id="add-action-'.$alert['id'].'" href="#">';
 	$data[5] .= print_image ('images/add.png', true);

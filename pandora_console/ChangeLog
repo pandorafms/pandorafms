@@ -1,3 +1,18 @@
+2010-02-25  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_ui.php: Alert information now show the default
+	actions properly,and the action conditions (max/min).
+
+	* include/functions_alerts.php: Added support on get_alert_templates_types
+	for new alert type "onchange".
+
+	* pandoradb.sql
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Added new support for alert
+	type "onchange".
+
+	* godmode/alerts/alert_list.php: Alert information now shows the default
+	action (if exist) and have a link to edit the template directly from here.
+
 2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/agent_manager.php: fix dinamic show icon when change

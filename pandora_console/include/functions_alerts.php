@@ -199,7 +199,8 @@ function get_alert_templates_types () {
 	$types['not_equal'] = __('Not equal to');
 	$types['warning'] = __('Warning status');
 	$types['critical'] = __('Critical status');
-	
+	$types['onchange'] = __('On Change');	
+
 	return $types;
 }
 
@@ -834,4 +835,6 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 	return get_db_all_rows_filter ('tagente, tagente_modulo, talert_template_modules',
 		$filter, $fields);
 }
+
+
 ?>

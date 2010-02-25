@@ -375,18 +375,23 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
-	$actionText = '<ul>';
-	foreach ($actions as $action) {
-		$defaultTagIni = $defaultTagEnd = '';
-		if ($action['id'] == $actionDefault) {
-			$defaultTagIni = '<i>';
-			$defaultTagEnd = ' (' . __('default') . ') </i>';
+
+	if (!empty($actions)){
+		$actionText = '<ul class="action_list">';
+		foreach ($actions as $action) {
+			$actionText .= '<li><div><span class="action_name">' . $action['name'];
+			if ($action["fires_min"] != $action["fires_max"]){
+				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
+			}
+			$actionText .= '</li></span><br></div>';
 		}
-		$actionText .= '<li>' . $defaultTagIni . $action['name'] .
-			$defaultTagEnd . '</li>';
+		$actionText .= '</div></ul>';
 	}
-	$actionText .= '</ul>';
-		
+	else {
+		if ($actionDefault != "")
+		$actionText = get_db_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
+	}
+
 	$data[$index['action']] = $actionText;
 	
 	$data[$index['last_fired']] = $disabledHtmlStart . print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;

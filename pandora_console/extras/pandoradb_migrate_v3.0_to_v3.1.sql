@@ -256,3 +256,5 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+
+ALTER TABLE talert_templates MODIFY `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange');

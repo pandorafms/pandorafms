@@ -1,3 +1,17 @@
+2010-02-25  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* conf/pandora_server.conf: New option, update_parent to let the 
+	agent update it's parent by sending the parent name on the XML.
+
+	* lib/PandoraFMS/Config.pm: Support for new option update_parent.
+
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/Dataserver.pm: Modified to
+	update the parent of an agent at creation time and on update if 
+	the update_parent parameter is set to 1
+
+	* man/man3/PandoraFMS::Core.pm.3: Updated manpage with the new
+	documentation of the interface
+
 2010-02-24  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/Dataserver.pm: Modified to

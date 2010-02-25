@@ -1,5 +1,31 @@
 2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: I did'nt upload in previous commit the changelog.
+
+	* include/functions_gis.php: refactor the name of function "addPoint"
+	to "addAgentPoint". In function "get_agent_icon_map" add new parameter
+	$status for pass the status.
+	
+	* include/javascript/openlayers.pandora.js: add function "js_addAgentPoint"
+	is same more or less "js_addPoint" and too for "js_addAgentPointExtent" and
+	"js_addPointExtent".
+
+	* operation/gis_maps/render_view.php: add the id_parent in the call of
+	"addAgentPoint".
+	
+	* operation/gis_maps/ajax.php: clean source code and add the id_parent to
+	return json for each agent.
+
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: in function "addPath" fix the query to extract
+	the path from a time.
+	
+	* operation/agentes/gis_view.php: add no-ajax control for filter the time
+	to show path.
+
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: in function "addPath" add the parameter
 	$history_time for to set limit in seconds to past where to start path.
 	Use new parameter in function "getAgentMap".

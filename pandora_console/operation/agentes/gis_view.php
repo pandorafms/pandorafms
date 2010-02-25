@@ -65,8 +65,7 @@ $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_time
 $result = get_db_all_rows_sql ($sql, true);
 
 if ($result === false) {
-
-    echo '<h3 class="error">'.__('There was a problem locating the positional data or empty history.').'</h3>';
+	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";
 }
 else {
     pagination ($countData, false) ;

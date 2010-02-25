@@ -313,7 +313,7 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 $table->data[1][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
 $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
 
-$table->data[2][0] = __('Zoom level') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
+$table->data[2][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
 $table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true);
 
 $table->data[3][0] = __('Center Longitude') . ':';
@@ -624,7 +624,7 @@ function editLayer(indexLayer) {
 	setFieldsFormLayer(layer.layer_name, layer.layer_group, layer.layer_visible, layer.layer_agent_list);
 	$("#hidden-layer_edit_id_form").val(indexLayer);
 
-	$("input[name=save_layer]").val('<?php echo __("Edit Layer"); ?>');
+	$("input[name=save_layer]").val('<?php echo __("Update Layer"); ?>');
 
 	$("#form_layer_table").css('visibility', 'visible');
 	

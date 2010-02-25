@@ -69,7 +69,7 @@ $height = 0;
 $background = '';
 
 // Header
-print_page_header (__('Map builder'), "images/god9.png", false, "map_builder", true);
+print_page_header (__('Visual console builder'), "images/god9.png", false, "map_builder", true);
 
 if ($create_layout) {
 	$name = (string) get_parameter ('name');

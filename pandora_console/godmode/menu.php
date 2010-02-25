@@ -118,12 +118,12 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 }
 if (give_acl ($config['id_user'], 0, "IW")) {
 	// Custom map builder
-	$menu["gmap"]["text"] = __('Map builder');
+	$menu["gmap"]["text"] = __('Visual console builder');
 	$menu["gmap"]["sec2"] = "godmode/reporting/map_builder";
 	$menu["gmap"]["id"] = "god-map";
 	
 	if ($config['activate_gis']) {
-		$menu["godgismaps"]["text"] = __('GIS Maps');
+		$menu["godgismaps"]["text"] = __('GIS Maps builder');
 		$menu["godgismaps"]["sec2"] = "godmode/gis_maps/index";
 		$menu["godgismaps"]["refr"] = 60;
 		$menu["godgismaps"]["id"] = "god-gismaps";
@@ -168,11 +168,11 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 	$sub = array ();
 
-	if ($config['activate_gis'])
-		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
+	if ($config['activate_gis'])
+		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	enterprise_hook ('historydb_submenu');

@@ -461,9 +461,30 @@ function get_agent_icon_map($idAgent, $state = false) {
 	}
 }
 
-function addPath($layerName, $idAgent) {
+/**
+ * Print the path of agent.
+ * 
+ * @param string $layerName String of layer.
+ * @param integer $idAgent The id of agent
+ * @param $history_time: Number of seconds in the past to show from where to start the history path.
+ * 
+ * @return None
+ */
+function addPath($layerName, $idAgent, $history_time = null) {
 	
-	$listPoints = get_db_all_rows_sql('SELECT * FROM tgis_data_history WHERE tagente_id_agente = ' . $idAgent . ' ORDER BY end_timestamp ASC');
+	if ($history_time === null) {
+		$where = '1 = 1';
+	}
+	else {
+		$where = 'start_timestamp = FROM_UNIXTIME(UNIX_TIMESTAMP() - ' . $history_time . ')';
+	}
+	
+	$listPoints = get_db_all_rows_sql('SELECT *
+		FROM tgis_data_history
+		WHERE
+			tagente_id_agente = ' . $idAgent . ' AND
+			' . $where . '
+		ORDER BY end_timestamp ASC');
 	
 	//If the agent is empty the history
 	if ($listPoints === false) {
@@ -794,7 +815,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
 		/* TODO: only show the last history_time part of the path */
-		addPath("layer_for_agent_".$agent_name,$agent_id);
+		addPath("layer_for_agent_".$agent_name,$agent_id, $history_time);
 	}
 	
 	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');

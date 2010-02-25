@@ -1,5 +1,11 @@
 2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: in function "addPath" add the parameter
+	$history_time for to set limit in seconds to past where to start path.
+	Use new parameter in function "getAgentMap".
+
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/gis_view.php: change the empty message to standar.
 	
 	* godmode/menu.php: change the text of visual console builder and GIS map

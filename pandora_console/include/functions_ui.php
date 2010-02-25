@@ -375,18 +375,23 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	$data[$index['description']] .= $disabledHtmlStart . mb_substr (safe_input ($description), 0, 35) . $disabledHtmlEnd;
 	
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
-	$actionText = '<ul>';
-	foreach ($actions as $action) {
-		$defaultTagIni = $defaultTagEnd = '';
-		if ($action['id'] == $actionDefault) {
-			$defaultTagIni = '<i>';
-			$defaultTagEnd = ' (' . __('default') . ') </i>';
+
+	if (!empty($actions)){
+		$actionText = '<ul class="action_list">';
+		foreach ($actions as $action) {
+			$actionText .= '<li><div><span class="action_name">' . $action['name'];
+			if ($action["fires_min"] != $action["fires_max"]){
+				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
+			}
+			$actionText .= '</li></span><br></div>';
 		}
-		$actionText .= '<li>' . $defaultTagIni . $action['name'] .
-			$defaultTagEnd . '</li>';
+		$actionText .= '</div></ul>';
 	}
-	$actionText .= '</ul>';
-		
+	else {
+		if ($actionDefault != "")
+		$actionText = get_db_sql ("SELECT name FROM talert_actions WHERE id = $actionDefault"). " <i>(".__("Default") . ")</i>";
+	}
+
 	$data[$index['action']] = $actionText;
 	
 	$data[$index['last_fired']] = $disabledHtmlStart . print_timestamp ($alert["last_fired"], true) . $disabledHtmlEnd;
@@ -603,7 +608,9 @@ function require_javascript_file ($name, $path = 'include/javascript/') {
 	/* We checks two paths because it may fails on enterprise */
 	if (! file_exists ($filename) && ! file_exists ($config['homedir'].'/'.$filename))
 		return false;
+	
 	$config['js'][$name] = $filename;
+	
 	return true;
 }
 
@@ -1345,4 +1352,69 @@ function get_full_url ($url = false) {
 	
 	return $fullurl.$url;
 }
+
+
+/**
+ * Return a standard page header (Pandora FMS 3.1 version)
+ *
+ * @param string Title
+ * @param string Icon path
+ * @param boolean Return (false will print using a echo)
+ * @param boolean help (Help ID to print the Help link)
+ * @param boolean Godmode (false = operation mode).
+ * @param string Options (HTML code for make tabs or just a brief info string 
+ * @return string Header HTML
+ */
+
+function print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
+
+	if (($icon == "") && ($godmode == true)){
+		$icon = "images/setup.png";
+	}
+
+	if ($godmode == true){
+		$type = "nomn";
+		$type2 = "menu_tab_frame";
+	} 
+	else {
+		$type = "view";
+		$type2 = "menu_tab_frame_view";
+	}
+
+	
+	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
+
+
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;<img src="'.$icon.'" style="margin-bottom: -3px;" class="bottom" border="0">&nbsp; ';
+	$buffer .= $title;
+	if ($help != "")
+		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);
+	$buffer .= '</ul></div>';
+
+	if (is_array($options)) {
+		$buffer .= '<div id="menu_tab"><ul class="mn">';
+		foreach ($options as $option) {
+			$buffer .= '<li class="nomn">';
+			$buffer .= $option;
+			$buffer .= '</li>';
+		}
+		$buffer .= '</ul></div>';
+	}
+	else {
+		if ($options != ""){
+			$buffer .= '<div id="menu_tab"><ul class="mn"><li class="nomn">';
+			$buffer .= $options;
+			$buffer .= '</li></ul></div>';
+		}
+	}
+
+	$buffer .=  '</div><br><br><br>';
+
+	if (!$return)
+		echo $buffer;
+
+	return $buffer;
+}
+
+
 ?>

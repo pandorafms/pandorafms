@@ -1,5 +1,9 @@
 2010-02-25  Sancho Lerena <slerena@artica.es>
 
+	* include/functions_ui.php: Show default actions in alerts.
+
+	* godmode/alerts/alert_list.php: Show default actions in alerts.
+
 	* include/functions_reporting.php: Fixed bad count of Unknown modules.
 
 	* godmode/alerts/configure_alert_template.php,

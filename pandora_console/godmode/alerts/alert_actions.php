@@ -51,11 +51,13 @@ if ($create_action) {
 	$field1 = (string) get_parameter ('field1');
 	$field2 = (string) get_parameter ('field2');
 	$field3 = (string) get_parameter ('field3');
-	
+	$group = (string) get_parameter ('group');
+
 	$result = create_alert_action ($name, $id_alert_command,
 		array ('field1' => $field1,
 			'field2' => $field2,
-			'field3' => $field3));
+			'field3' => $field3,
+			'id_group' => $group));
 	
 	print_result_message ($result,
 		__('Successfully created'),
@@ -69,13 +71,16 @@ if ($update_action) {
 	$field1 = (string) get_parameter ('field1');
 	$field2 = (string) get_parameter ('field2');
 	$field3 = (string) get_parameter ('field3');
-	
+	$group = get_parameter ('group');
+
 	$values = array ();
 	$values['name'] = $name;
 	$values['id_alert_command'] = $id_alert_command;
 	$values['field1'] = $field1;
 	$values['field2'] = $field2;
 	$values['field3'] = $field3;
+	$values['id_group'] = $group;
+
 	$result = update_alert_action ($id, $values);
 	
 	print_result_message ($result,
@@ -97,13 +102,14 @@ $table->width = '90%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Delete');
+$table->head[1] = __('Group');
+$table->head[2] = __('Delete');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[1] = '40px';
+$table->size[2] = '40px';
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[2] = 'center';
 
 $actions = get_db_all_rows_in_table ('talert_actions');
 if ($actions === false)
@@ -123,7 +129,8 @@ foreach ($actions as $action) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
-	$data[1] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
+	$data[1] = print_group_icon ($action["id_group"], true) .'&nbsp;'. get_group_name ($action["id_group"]);
+	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 		'<img src="images/cross.png"></a>';
 	

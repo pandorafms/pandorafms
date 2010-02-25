@@ -1,3 +1,12 @@
+2010-02-25  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: Fixed bad count of Unknown modules.
+
+	* godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/alert_actions.php: Show/Edit group for templates and actions.
+
 2010-02-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged from trunk:

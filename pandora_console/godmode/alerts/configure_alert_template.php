@@ -117,7 +117,8 @@ function update_template ($step) {
 		$min = (float) get_parameter ('min');
 		$matches = (bool) get_parameter ('matches_value');
 		$priority = (int) get_parameter ('priority');
-		
+		$id_group = get_parameter ("id_group");
+
 		$result = update_alert_template ($id,
 			array ('name' => $name,
 				'type' => $type,
@@ -125,8 +126,10 @@ function update_template ($step) {
 				'value' => $value,
 				'max_value' => $max,
 				'min_value' => $min,
+				'id_group' => $id_group,
 				'matches_value' => $matches,
 				'priority' => $priority));
+
 	} elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
@@ -222,6 +225,7 @@ $recovery_notify = false;
 $field2_recovery = '';
 $field3_recovery = '';
 $matches = true;
+$id_group = 0;
 
 if ($create_template) {
 	$name = (string) get_parameter ('name');
@@ -232,12 +236,14 @@ if ($create_template) {
 	$min = (float) get_parameter ('min');
 	$matches = (bool) get_parameter ('matches_value');
 	$priority = (int) get_parameter ('priority');
-	
+	$id_group = get_parameter ("id_group");
+
 	$result = create_alert_template ($name, $type,
 		array ('description' => $description,
 			'value' => $value,
 			'max_value' => $max,
 			'min_value' => $min,
+			'id_group' => $id_group,
 			'matches_value' => $matches,
 			'priority' => $priority));
 	
@@ -292,6 +298,7 @@ if ($id && ! $create_template) {
 	$field2 = $template['field2'];
 	$field3 = $template['field3'];
 	$priority = $template['priority'];
+	$id_group = $template["id_group"];
 }
 
 echo '<h2>'.__('Alerts').' &raquo; '.__('Configure alert template').'</h2>';
@@ -428,6 +435,10 @@ if ($step == 2) {
 
 	$table->data[0][0] = __('Name');
 	$table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
+
+	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
+	$groups = get_user_groups ();
+	$table->data[0][1] .= "&nbsp;".print_select ($groups, 'id_group', $id_group, '', '', 0, true);
 
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  print_textarea ('description', 10, 30,

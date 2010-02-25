@@ -145,7 +145,10 @@ function get_group_stats ($id_group = 0) {
 	if (empty ($alerts))
 		$alerts = array ();
 	
-	$disabledQuery = "tagente_estado.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE disabled = 0) AND ";
+	$disabledQuery = "tagente_estado.id_agente IN (SELECT id_agente FROM
+tagente WHERE disabled=0) AND tagente_estado.id_agente_modulo IN (SELECT
+id_agente_modulo FROM tagente_modulo WHERE disabled = 0) AND ";
+
 	
 	$data["monitor_checks"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter);
 	$data["monitor_not_init"] = (int) get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE " . $disabledQuery . $filter."AND utimestamp = 0");

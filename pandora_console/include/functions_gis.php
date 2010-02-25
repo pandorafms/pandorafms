@@ -278,9 +278,9 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			        					feature = null
 										status = parseInt(agentDataGIS['status']);
 										
-			        					js_addPointExtent(layer.name, agentDataGIS['name'],
+			        					js_addAgentPointExtent(layer.name, agentDataGIS['name'],
 			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
-			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status);
+			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status, agentDataGIS['id_parent']);
 		        					}
 		        				}
 		        			}
@@ -332,18 +332,20 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 	<?php
 }
 
-function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
-	$height = 20, $point_id  = '', $status = -1, $type_string = '') {
+function addAgentPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
+	$height = 20, $point_id  = '', $status = -1, $type_string = '', $idParent = 0) {
 	?>
 	<script type="text/javascript">
 	$(document).ready (
 		function () {
 			<?php
 			if ($icon != null) {
-				echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
+				//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
+				echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
 			}
 			else {
-				echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
+				//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
+				echo "js_addAgentPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status, $idParent);";
 			} 
 			?>
 		}
@@ -424,7 +426,7 @@ function get_agent_last_coords($idAgent) {
 		return $coords;
 }
 
-function get_agent_icon_map($idAgent, $state = false) {
+function get_agent_icon_map($idAgent, $state = false, $status = null) {
 	$row = get_db_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
 	
 	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
@@ -434,11 +436,14 @@ function get_agent_icon_map($idAgent, $state = false) {
 		$icon = "images/gis_map/icons/" . $row['icon_path'];
 	}
 	
-	if (!$state) {
+	if ($state === false) {
 		return $icon . ".png";
 	}
 	else {
-		switch (get_agent_status($idAgent)) {
+		if ($status === null) {
+			$status = get_agent_status($idAgent);
+		}
+		switch ($status) {
 			case 1:
 			case 4:
 				//Critical (BAD or ALERT)
@@ -818,7 +823,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		addPath("layer_for_agent_".$agent_name,$agent_id, $history_time);
 	}
 	
-	addPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
+	addAgentPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');
 	
 	if ($centerInAgent) {
 		?>

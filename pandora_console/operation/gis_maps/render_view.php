@@ -132,9 +132,10 @@ if ($layers != false) {
 			}
 			$icon = get_agent_icon_map($idAgent, true);
 			$status = get_agent_status($idAgent);
+			$parent = get_db_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
-			addPoint($layer['layer_name'], $agentName, $coords['stored_latitude'],
-				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info');
+			addAgentPoint($layer['layer_name'], $agentName, $coords['stored_latitude'],
+				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
 		}
 	}
 	

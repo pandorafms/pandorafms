@@ -66,20 +66,18 @@ switch ($opt) {
 			foreach ($idAgentsWithGISTemp as $idAgent) {
 				$idAgentsWithGIS[] = $idAgent['id_agente'];
 			}
-			
-			$agentsGISStatus = get_db_all_rows_sql('SELECT t1.id_agente AS tagente_id_agente,
-					IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
-					IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-				FROM tagente AS t1
-				LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
-					WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 		}
 		else {
 			//Extract the agent GIS status for one agent.
-			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-					FROM tgis_data_status
-					WHERE tagente_id_agente = ' . $id_features);
+			$idAgentsWithGIS[] = $id_features;
 		}
+		
+		$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_parent1.id_agente AS tagente_id_agente,
+				IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+				IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+			FROM tagente AS t1
+			LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+				WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 		
 		if ($agentsGISStatus === false) {
 			$agentsGISStatus = array();
@@ -87,12 +85,15 @@ switch ($opt) {
 		
 		$agents = null;
 		foreach ($agentsGISStatus as $row) {
+			$status = get_agent_status($row['tagente_id_agente']);
+			
 			$agents[$row['tagente_id_agente']] = array(
-				'icon_path' => get_agent_icon_map($row['tagente_id_agente'], true),
-				'name' => get_agent_name($row['tagente_id_agente']),
-				'status' => get_agent_status($row['tagente_id_agente']),
+				'icon_path' => get_agent_icon_map($row['tagente_id_agente'], true, $status),
+				'name' => $row['nombre'],
+				'status' => $status,
 				'stored_longitude' => $row['stored_longitude'],
-				'stored_latitude' => $row['stored_latitude']
+				'stored_latitude' => $row['stored_latitude'],
+				'id_parent' => $row['id_parent'] 
 			);
 		}
 		

@@ -383,6 +383,38 @@ function showHideLayer(name, action) {
  * @param string id The id of point.
  * @param string type_string The type of point, it's use for ajax request.
  * @param integer statusAgent The status of point.
+ * @param integer idParent Id Parent of agent.
+ * 
+ * @return Object The point.
+ */
+function js_addAgentPoint(layerName, pointName, lon, lat, id, type_string, statusAgent, idParent) {
+	var point = new OpenLayers.Geometry.Point(lon, lat)
+		.transform(map.displayProjection, map.getProjectionObject());
+
+	var layer = map.getLayersByName(layerName);
+	layer = layer[0];
+
+	feature = new OpenLayers.Feature.Vector(point,{id_parent: idParent, status: statusAgent, nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) });
+	
+	if (isHideFeatureByStatus(statusAgent)) {
+		feature.style.display = 'none';
+	}
+	
+	layer.addFeatures(feature);
+	
+	return feature;
+}
+
+/**
+ * Add a point with the default icon in the map.
+ * 
+ * @param string layerName The name of layer to put the point.
+ * @param string pointName The name to show in the point.
+ * @param float lon The coord of latitude for point.
+ * @param float lat The coord of longitude for point.
+ * @param string id The id of point.
+ * @param string type_string The type of point, it's use for ajax request.
+ * @param integer statusAgent The status of point.
  * 
  * @return Object The point.
  */
@@ -394,6 +426,46 @@ function js_addPoint(layerName, pointName, lon, lat, id, type_string, statusAgen
 	layer = layer[0];
 
 	feature = new OpenLayers.Feature.Vector(point,{status: statusAgent, nombre: pointName, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) });
+	
+	if (isHideFeatureByStatus(statusAgent)) {
+		feature.style.display = 'none';
+	}
+	
+	layer.addFeatures(feature);
+	
+	return feature;
+}
+
+/**
+ * Add a agent point and set the icon in the map.
+ * 
+ * @param string layerName The name of layer to put the point.
+ * @param string pointName The name to show in the point.
+ * @param float lon The coord of latitude for point.
+ * @param float lat The coord of longitude for point.
+ * @param string icon Url of icon image. 
+ * @param integer width The width of icon.
+ * @param integer height The height of icon.
+ * @param string id The id of point.
+ * @param string type_string The type of point, it's use for ajax request.
+ * @param integer statusAgent The status of point.
+ * @param integer idParent Id Parent of agent.
+ * 
+ * @return Object The point.
+ */
+function js_addAgentPointExtent(layerName, pointName, lon, lat, icon, width, height, id, type_string, statusAgent, idParent) {
+	var point = new OpenLayers.Geometry.Point(lon, lat)
+	.transform(map.displayProjection, map.getProjectionObject());
+
+	var layer = map.getLayersByName(layerName);
+	layer = layer[0];
+	
+	if (typeof(statusAgent) == 'string')
+		statusA = parseInt(statusAgent);
+	else
+		statusA = statusAgent;
+	
+	feature = new OpenLayers.Feature.Vector(point,{id_parent: idParent, status: statusA, id: id, type: type_string, long_lat: new OpenLayers.LonLat(lon, lat).transform(map.displayProjection, map.getProjectionObject()) }, {fontWeight: "bolder", fontColor: "#00014F", labelYOffset: -height, graphicHeight: width, graphicWidth: height, externalGraphic: icon, label: pointName});
 	
 	if (isHideFeatureByStatus(statusAgent)) {
 		feature.style.display = 'none';

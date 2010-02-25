@@ -73,12 +73,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 					echo ", new OpenLayers.Control.LayerSwitcher()";
 					echo "],";
 					?>
-					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution: 156543.0399,
-					numZoomLevels: <?php echo $numLevelZooms; ?>,
 					units: 'm', //metros
-					//Disabled projection because with Image map not run fine...I don't know
-//					projection: new OpenLayers.Projection("EPSG:900913"),
 					displayProjection: new OpenLayers.Projection("EPSG:4326")
 				});
 
@@ -91,7 +86,11 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 						case 'OSM':
 							?>
 							var baseLayer = new OpenLayers.Layer.OSM("<?php echo $baselayer['name']; ?>", 
-									"<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>});
+									"<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>,
+									maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+									maxResolution: 156543.0399,
+									projection: new OpenLayers.Projection("EPSG:900913")
+									});
 							map.addLayer(baseLayer);
 							<?php
 							break;
@@ -291,7 +290,8 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			}
 		}
 	
-		function clock_ajax_refresh() {		
+		function clock_ajax_refresh() {
+			//console.log(new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds());
 			for (layerIndex = 0; layerIndex < map.getNumLayers(); layerIndex++) {
 				layer = map.layers[layerIndex];
 				<?php
@@ -350,6 +350,34 @@ function addPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
 	);
 	</script>
 	<?php
+}
+
+/**
+ * Get the agents in layer but not by group in layer.
+ * 
+ * @param integer $idLayer Layer ID.
+ * @param array $fields Fields of row tagente to return.
+ * 
+ * @return array The array rows of tagente of agents in the layer.
+ */
+function getAgentsLayer($idLayer, $fields = null) {
+	
+	if ($fields === null) {
+		$select = '*';
+	}
+	else {
+		$select = implode(',',$fields);
+	}
+	
+	$agents = get_db_all_rows_sql('SELECT ' . $select . ' FROM tagente WHERE id_agente IN (
+SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
+	
+	foreach ($agents as $index => $agent) {
+		$agents[$index] = $agent['nombre'];
+	}
+	
+	
+	return $agents;
 }
 
 function addPointPath($layerName, $lat, $lon, $color, $manual = 1, $id) {

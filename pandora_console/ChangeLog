@@ -1,3 +1,15 @@
+2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: change the setup params "maxExtent",
+	"maxResolution", "numZoomLevels" from map to baselayer. Add new function
+	"getAgentsLayer" to get agent info of agents in layer, but only agents not
+	in group in layer. 
+	
+	* operation/gis_maps/render_view.php: use new function "getAgentsLayer".
+
+	* operation/gis_maps/ajax.php: fix the extract agent gis info, and clean
+	source code.
+
 2010-02-25  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/setup/gis_step_2.php: Modified to get the KEY to load the Google

@@ -55,25 +55,10 @@ switch ($opt) {
 						(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ')
 						OR id_agente IN
 						(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
-				
-				
-				$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-					FROM tgis_data_status
-					WHERE tagente_id_agente IN
-						(SELECT id_agente FROM tagente WHERE id_grupo IN
-							(SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . '))
-						OR tagente_id_agente IN
-							(SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $layerId . ');');
-			
 			}
 			else {
 				//All groups, all agents
 				$idAgentsWithGISTemp = get_db_all_rows_sql('SELECT tagente_id_agente AS id_agente
-					FROM tgis_data_status
-					WHERE tagente_id_agente');
-				
-				
-				$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
 					FROM tgis_data_status
 					WHERE tagente_id_agente');
 			}
@@ -82,17 +67,15 @@ switch ($opt) {
 				$idAgentsWithGIS[] = $idAgent['id_agente'];
 			}
 			
-			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
-					FROM tgis_data_status
-					WHERE tagente_id_agente IN (' . implode(',', $idAgentsWithGIS) . ')
-					UNION
-					SELECT id_agente AS tagente_id_agente,
-						' . $defaultCoords['default_longitude'] . ' AS stored_longitude, ' . $defaultCoords['default_latitude'] . ' AS stored_latitude
-					FROM tagente
-					WHERE id_agente NOT IN (' . implode(',', $idAgentsWithGIS) . ')');
+			$agentsGISStatus = get_db_all_rows_sql('SELECT t1.id_agente AS tagente_id_agente,
+					IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
+					IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
+				FROM tagente AS t1
+				LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+					WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 		}
 		else {
-			//agentView equal 1
+			//Extract the agent GIS status for one agent.
 			$agentsGISStatus = get_db_all_rows_sql('SELECT tagente_id_agente, stored_longitude, stored_latitude
 					FROM tgis_data_status
 					WHERE tagente_id_agente = ' . $id_features);

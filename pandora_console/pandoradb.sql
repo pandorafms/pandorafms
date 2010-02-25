@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field1` varchar(255) default '',
   `field2` varchar(255) default '',
   `field3` mediumtext NOT NULL,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical'),
+  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange'),
   `value` varchar(255) default '',
   `matches_value` tinyint(1) default 0,
   `max_value` double(18,2) default NULL,
@@ -628,7 +628,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
 	KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- server types:
 -- 0 data

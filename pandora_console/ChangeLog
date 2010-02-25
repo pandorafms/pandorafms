@@ -1,3 +1,9 @@
+2010-02-25  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* godmode/setup/gis_step_2.php: Modified to get the KEY to load the Google
+	Maps Javascript for the used domain. Now it stores the key, but still it
+	doesn't load dinamicaly the javascript to show the preview.
+
 2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: fix map to show correct position the agent

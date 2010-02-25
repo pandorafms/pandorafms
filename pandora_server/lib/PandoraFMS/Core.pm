@@ -157,14 +157,14 @@ our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginse
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
-=head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh>) >>
+=head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh> I<$extraMacros> I<$last_data_value>) >>
 
 Generate alerts for a given I<$module>.
 
 =cut
 ##########################################################################
-sub pandora_generate_alerts ($$$$$$$;$) {
-	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros) = @_;
+sub pandora_generate_alerts ($$$$$$$;$$) {
+	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros, $last_data_value) = @_;
 
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
@@ -180,7 +180,7 @@ sub pandora_generate_alerts ($$$$$$$;$) {
 
 	foreach my $alert (@alerts) {
 		my $rc = pandora_evaluate_alert($pa_config, $agent, $data, $status, $alert,
-				$utimestamp, $dbh);
+				$utimestamp, $dbh,  $last_data_value);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
 		                       $alert, $rc, $dbh, $extraMacros);
@@ -208,7 +208,7 @@ B<Returns>:
 =cut
 ##########################################################################
 sub pandora_evaluate_alert ($$$$$$$) {
-	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh) = @_;
+	my ($pa_config, $agent, $data, $last_status, $alert, $utimestamp, $dbh, $last_data_value) = @_;
 
 	logger ($pa_config, "Evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "'.", 10);
 
@@ -261,6 +261,19 @@ sub pandora_evaluate_alert ($$$$$$$) {
 			} else {
 				return $status if ($data >= $alert->{'min_value'} &&
 						$data <= $alert->{'max_value'});
+			}
+		}
+
+		if ($alert->{'type'} eq "onchange") {
+
+			if (is_numeric($last_data_value)){
+				if ($last_data_value == $data){
+					return $status;
+				}
+			} else {
+				if ($last_data_value eq $data){
+					return $status;
+				}
 			}
 		}
 		
@@ -701,6 +714,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_status = $agent_status->{'last_status'};
 	my $status = $agent_status->{'estado'};
 	my $status_changes = $agent_status->{'status_changes'};
+	my $last_data_value = $agent_status->{'datos'};
 
 	# Get new status
 	my $new_status = get_module_status ($processed_data, $module, $module_type);
@@ -722,7 +736,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
-		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros);
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros, $last_data_value);
 	}
 	
 	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'

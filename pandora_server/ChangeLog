@@ -1,3 +1,7 @@
+2010-02-25  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Implemented new alert type "onChange".
+
 2010-02-25  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* conf/pandora_server.conf: New option, update_parent to let the 

@@ -1,5 +1,10 @@
 2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/agent_manager.php: fix dinamic show icon when change
+	the select and show other icon the icon with "without status".
+
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* ChangeLog: I did'nt upload in previous commit the changelog.
 
 	* include/functions_gis.php: refactor the name of function "addPoint"

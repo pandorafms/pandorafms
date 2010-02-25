@@ -33,6 +33,8 @@ $id_command = '';
 $field1 = '';
 $field2 = '';
 $field3 = '';
+$group = 1;
+
 if ($id) {
 	$action = get_alert_action ($id);
 	$name = $action['name'];
@@ -40,6 +42,7 @@ if ($id) {
 	$field1 = $action['field1'];
 	$field2 = $action['field2'];
 	$field3 = $action['field3'];
+	$group = $action ['group'];
 }
 
 echo "<h2>".__('Alerts')." &raquo; ".__('Configure alert action')."</h2>";
@@ -53,18 +56,23 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 
-$table->data[1][0] = __('Command');
-$table->data[1][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',
+$table->data[1][0] = __('Group');
+
+$groups = get_user_groups ();
+$table->data[1][1] = print_select ($groups, 'group', $group, '', '', 0, true);
+
+$table->data[2][0] = __('Command');
+$table->data[2][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 
-$table->data[2][0] = __('Field 1');
-$table->data[2][1] = print_input_text ('field1', $field1, '', 35, 255, true);
+$table->data[3][0] = __('Field 1');
+$table->data[3][1] = print_input_text ('field1', $field1, '', 35, 255, true);
 
-$table->data[3][0] = __('Field 2');
-$table->data[3][1] = print_input_text ('field2', $field2, '', 80, 255, true);
+$table->data[4][0] = __('Field 2');
+$table->data[4][1] = print_input_text ('field2', $field2, '', 80, 255, true);
 
-$table->data[4][0] = __('Field 3');
-$table->data[4][1] = print_textarea ('field3', 10, 30, $field3, '', true);
+$table->data[5][0] = __('Field 3');
+$table->data[5][1] = print_textarea ('field3', 10, 30, $field3, '', true);
 
 $table->data[6][0] = __('Command preview');
 $table->data[6][1] = print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true);

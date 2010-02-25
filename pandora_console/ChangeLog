@@ -1,5 +1,10 @@
 2010-02-25  Sancho Lerena  <slerena@artica.es>
 
+	* godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/alert_actions.php: Show/Edit group for templates and actions.
+
 	* include/functions_ui.php: Alert information now show the default
 	actions properly,and the action conditions (max/min).
 

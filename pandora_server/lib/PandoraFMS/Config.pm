@@ -226,6 +226,7 @@ sub pandora_load_config {
 	$pa_config->{"recon_reverse_geolocation_mode"} = 'disabled'; # 3.1
 	$pa_config->{"recon_reverse_geolocation_file"} = '/usr/local/share/GeoIP/GeoIPCity.dat'; # 3.1
 	$pa_config->{"recon_location_scatter_radius"} = 50; # 3.1
+	$pa_config->{"update_parent"} = 0; # 3.1
 
 	$pa_config->{"max_queue_files"} = 250; 
 
@@ -575,6 +576,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring\s([0-1])/i) {
 			$pa_config->{'self_monitoring'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^update_parent\s([0-1])/i) {
+			$pa_config->{'update_parent'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

@@ -865,15 +865,15 @@ sub pandora_update_server ($$$$$;$$) {
 =head2 C<< pandora_update_agent (I<$pa_config>, I<$agent_timestamp>, I<$agent_id>, I<$os_version>, I<$agent_version>, I<$agent_interval>, I<$dbh>, [I<$timezone_offset>], [I<$longitude>], [I<$latitude>], [I<$altitude>], [I<$position_description>]) [I<$parent_agent_name>]) >>
 
 Update last contact, timezone fields in B<tagente> and current position (this
-can affect B<tgis_data_status> and B<tgis_data_history>). If the I<$parent_agent_name> is 
-defined and there is an agent with that name, also the parent is updated.
+can affect B<tgis_data_status> and B<tgis_data_history>). If the I<$parent_agent_id> is 
+defined also the parent is updated.
 
 =cut
 ##########################################################################
 sub pandora_update_agent ($$$$$$$;$$$$$$) {
     my ($pa_config, $agent_timestamp, $agent_id, $os_version,
         $agent_version, $agent_interval, $dbh, $timezone_offset,
-		$longitude, $latitude, $altitude, $position_description, $parent_agent_name) = @_;
+		$longitude, $latitude, $altitude, $position_description, $parent_agent_id) = @_;
 
     my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
@@ -885,17 +885,6 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 	    pandora_access_update ($pa_config, $agent_id, $dbh);
 	}
 	
-	# Check if the parent is defined and exist.
-	my $parent_id = '';
-	if (defined ($parent_agent_name)) {
-		$parent_id = get_agent_id ($dbh, $parent_agent_name);
-		if ($parent_id < 1) {
-			logger($pa_config, "Can't set parent: Parent with name '$parent_agent_name' not found",8);
-			$parent_id = '';
-		}
-	}	
-
-
     # No update for interval, timezone and position fields (some old agents don't support it)
     if ($agent_interval == -1){
         db_do($dbh, 'UPDATE tagente SET agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ? WHERE id_agente = ?',
@@ -904,11 +893,11 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
     }
 	
 	if ( defined ($timezone_offset)) {
-		if ($parent_id != '') {
+		if (defined($parent_agent_id)) {
 			# Update the table tagente with all the new data and set the new parent
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, 
 			   	  timezone_offset = ?, id_parent = ? WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version, 
-				  $timezone_offset, $parent_id, $agent_id);
+				  $timezone_offset, $parent_agent_id, $agent_id);
 		}
 		else {
 			# Update the table tagente with all the new data
@@ -917,10 +906,10 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		}
 	}
 	else {
-		if ($parent_id != '') {
+		if (defined($parent_agent_id)) {
 			# Update the table tagente with all the new data and set the new parent
 			db_do ($dbh, 'UPDATE tagente SET intervalo = ?, agent_version = ?, ultimo_contacto_remoto = ?, ultimo_contacto = ?, os_version = ?, id_parent = ?
-						  WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version,  $parent_id, $agent_id);
+						  WHERE id_agente = ?', $agent_interval, $agent_version, $agent_timestamp, $timestamp, $os_version,  $parent_agent_id, $agent_id);
 		}
 		else {
 			# Update the table tagente with all the new data

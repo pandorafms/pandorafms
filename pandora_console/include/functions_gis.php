@@ -476,7 +476,7 @@ function addPath($layerName, $idAgent, $history_time = null) {
 		$where = '1 = 1';
 	}
 	else {
-		$where = 'start_timestamp = FROM_UNIXTIME(UNIX_TIMESTAMP() - ' . $history_time . ')';
+		$where = 'start_timestamp >= FROM_UNIXTIME(UNIX_TIMESTAMP() - ' . $history_time . ')';
 	}
 	
 	$listPoints = get_db_all_rows_sql('SELECT *

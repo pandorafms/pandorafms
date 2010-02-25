@@ -220,6 +220,7 @@ $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[12][0] = __('Icon agent');
 $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . '.png" />' .
 	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.default.png" />' .
 	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . '.ok.png" />' .
 	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . '.bad.png" />' .
@@ -256,22 +257,25 @@ require_jquery_file ('autocomplete');
 function changeIcons() {
 	icon = $("#icon_path :selected").val();
 
+	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
 	$("#icon_ok").attr("src", "images/spinner.png");
 	$("#icon_bad").attr("src", "images/spinner.png");
 	$("#icon_warning").attr("src", "images/spinner.png");
 	
 	if (icon.length == 0) {
+		$("#icon_without_status").attr("src", "");
 		$("#icon_default").attr("src", "");
 		$("#icon_ok").attr("src", "");
 		$("#icon_bad").attr("src", "");
 		$("#icon_warning").attr("src", "");
 	}
 	else {
-		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".png");
-		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + "_ok.png");
-		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + "_bad.png");
-		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + "_warning.png");
+		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".png");
+		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
+		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
+		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
+		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
 	}
 	
 	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +

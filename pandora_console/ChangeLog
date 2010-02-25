@@ -1,4 +1,17 @@
-2010-02-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/gis_view.php: change the empty message to standar.
+	
+	* godmode/menu.php: change the text of visual console builder and GIS map
+	builder, and move to down the Conection GIS editor.
+	
+	* godmode/gis_maps/configure_gis_map.php: change some text.
+	
+	* godmode/gis_maps/index.php: use new header.
+	
+	* godmode/reporting/map_builder.php: change some text.
+
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: change the setup params "maxExtent",
 	"maxResolution", "numZoomLevels" from map to baselayer. Add new function

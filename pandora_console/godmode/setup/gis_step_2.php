@@ -100,7 +100,10 @@ switch ($action) {
 			case 'Gmap':
 				$mapConnection_Gmap_url= get_parameter('url');
 				$gmap_type= get_parameter('gmap_type');
-				$mapConnectionData = array('type' => 'Gmap', 'gmap_type' => $gmap_type);
+				$gmap_key= get_parameter('gmap_key');
+				$mapConnectionData = array('type' => 'Gmap', 
+										   'gmap_type' => $gmap_type,
+										   'gmap_key' => $gmap_key);
 				break;
 			case 'Static_Image':
 				$mapConnection_Image_url= get_parameter('url');
@@ -183,6 +186,7 @@ if ($mapConnectionData != null) {
 			break;
 		case 'Gmap':
 			$gmap_type = $mapConnectionData['gmap_type'];
+			$gmap_key = $mapConnectionData['gmap_key'];
 			break;
 		case 'Static_Image':
 			$mapConnectionDataUrl = $mapConnectionData['url'];
@@ -207,11 +211,17 @@ $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" 
 $gmaps_types["G_PHYSICAL_MAP"] = __('Goolge Physical');
 $gmaps_types["G_HYBRID_MAP"] = __('Goolge Hybrid');
 $gmaps_types["G_SATELITE_MAP"] = __('Goolge Satelite');
-// TODO: Add imput field for the key 
-$optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
+// TODO: Use label tags for the forms.
+$optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%">' .
 		'<tr class="row_0">' .
 			'<td>'  . __("Google Map Type") . ':</td>' .
 			'<td><input id="type" type="hidden" name="type" value="Gmap" />'.trim(print_select($gmaps_types,'gmap_type', $gmap_type, "", '', 0, true)) . '</td>' .
+		'</tr>' . 
+		'<tr class="row_2">' .
+			'<td>'  . __("Google Maps Key") . ':</td>' .
+		'</tr>' . 
+		'<tr class="row_3">' .
+			'<td colspan="2">' . print_input_text ('gmap_key', $gmap_key, '', 90, 128, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
 // Image Map Connection
@@ -418,12 +428,14 @@ function selMapConnectionType() {
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();
 			break; 
 		case 'Gmap':
-			/*
+			/* TODO: still testing this part... still need to use the provided key
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ';
-			script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg';
-			document.body.appendChild(script);
+			//script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg';
+			//document.body.appendChild(script);
+			//document.getElementsByTagName("head")[0].appendChild(script);
+			$('head').append(script);
 			*/
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
 			break; 

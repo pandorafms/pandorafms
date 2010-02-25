@@ -176,7 +176,7 @@ $total_templates = $total_templates[0]['total'];
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
 $templates = get_alert_templates ($filter,
-	array ('id', 'name', 'description', 'type'));
+	array ('id', 'name', 'description', 'type', 'id_group'));
 if ($templates === false)
 	$templates = array ();
 
@@ -184,16 +184,16 @@ $table->width = '90%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
-$table->head[1] = __('Description');
-$table->head[2] = __('Type');
-$table->head[3] = __('Op.');
+$table->head[1] = __('Group');
+//$table->head[2] = __('Description');
+$table->head[3] = __('Type');
+$table->head[4] = __('Op.');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[2] = '10%';
-$table->size[3] = '50px';
+$table->size[4] = '50px';
 $table->align = array ();
-$table->align[3] = 'center';
+$table->align[4] = 'center';
 
 $rowPair = true;
 $iterator = 0;
@@ -209,20 +209,21 @@ foreach ($templates as $template) {
 	
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
+
+	$data[1] = print_group_icon ($template["id_group"], true) .'&nbsp;'. get_group_name ($template['id_group']);
+	$data[3] = get_alert_templates_type_name ($template['type']);
+
+	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
+	$data[4] .= print_input_hidden ('duplicate_template', 1, true);
+	$data[4] .= print_input_hidden ('source_id', $template['id'], true);
+	$data[4] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
+	$data[4] .= '</form> ';
 	
-	$data[1] = $template['description'];
-	$data[2] = get_alert_templates_type_name ($template['type']);
-	$data[3] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';
-	$data[3] .= print_input_hidden ('duplicate_template', 1, true);
-	$data[3] .= print_input_hidden ('source_id', $template['id'], true);
-	$data[3] .= print_input_image ('dup', 'images/copy.png', 1, '', true, array ('title' => __('Duplicate')));
-	$data[3] .= '</form> ';
-	
-	$data[3] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-	$data[3] .= print_input_hidden ('delete_template', 1, true);
-	$data[3] .= print_input_hidden ('id', $template['id'], true);
-	$data[3] .= print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
-	$data[3] .= '</form> ';
+	$data[4] .= '<form method="post" style="display: inline; float: right" onsubmit="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+	$data[4] .= print_input_hidden ('delete_template', 1, true);
+	$data[4] .= print_input_hidden ('id', $template['id'], true);
+	$data[4] .= print_input_image ('del', 'images/cross.png', 1, '', true, array ('title' => __('Delete')));
+	$data[4] .= '</form> ';
 	
 	array_push ($table->data, $data);
 }

@@ -98,6 +98,7 @@ switch ($action) {
 		$map_default_latitude = get_parameter('map_default_latitude');
 		$map_default_altitude = get_parameter('map_default_altitude');
 		$map_group_id = get_parameter('map_group_id');
+		$map_levels_zoom = get_parameter('map_levels_zoom');
 		
 		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
 		foreach ($map_connection_list_temp as $index => $value) {
@@ -133,7 +134,7 @@ switch ($action) {
 		$invalidFields = validateMapData($map_name, $map_zoom_level,
 			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
-			$map_connection_list);
+			$map_connection_list, $map_levels_zoom);
 		
 		if (empty($invalidFields)) {
 			saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
@@ -167,6 +168,7 @@ switch ($action) {
 		$map_group_id = '';
 		$map_connection_list = Array();
 		$layer_list = Array();
+		$map_levels_zoom = 0;
 		break;
 	case 'edit_map':
 		$idMap = get_parameter('map_id');
@@ -188,6 +190,9 @@ switch ($action) {
 		$map_default_altitude = $mapData['map']['default_altitude'];
 		
 		$map_connection_list = $mapData['connections'];
+		$map_levels_zoom = getNumZoomLevelsOfConnectionDefault($map_connection_list);
+		
+		//$map_levels_zoom = get_parameter('map_levels_zoom');
 		
 		$layer_list = array();
 		foreach ($mapData['layers'] as $layer) {
@@ -216,6 +221,7 @@ switch ($action) {
 		$map_default_latitude = get_parameter('map_default_latitude');
 		$map_default_altitude = get_parameter('map_default_altitude');
 		$map_group_id = get_parameter('map_group_id');
+		$map_levels_zoom = get_parameter('map_levels_zoom');
 		
 		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
 		foreach ($map_connection_list_temp as $index => $value) {
@@ -251,7 +257,7 @@ switch ($action) {
 		$invalidFields = validateMapData($map_name, $map_zoom_level,
 			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
-			$map_connection_list);
+			$map_connection_list, $map_levels_zoom);
 			
 		if (empty($invalidFields)) {
 			//TODO
@@ -314,7 +320,7 @@ $table->data[1][0] = __('Group') . print_help_tip (__('Group that owns the map')
 $table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
 
 $table->data[2][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
-$table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true);
+$table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
 $table->data[3][0] = __('Center Longitude') . ':';
 $table->data[3][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
@@ -755,12 +761,14 @@ function setFieldsRequestAjax(id_conexion) {
 			timeout: 10000,
 			success: function (data) {                 		
 				if (data.correct) {
+					console.log(data.content);
 					$("input[name=map_initial_longitude]").val(data.content.initial_longitude);
 					$("input[name=map_initial_latitude]").val(data.content.initial_latitude);
 					$("input[name=map_initial_altitude]").val(data.content.initial_altitude);
 					$("input[name=map_default_longitude]").val(data.content.default_longitude);
 					$("input[name=map_default_latitude]").val(data.content.default_latitude);
 					$("input[name=map_default_altitude]").val(data.content.default_altitude);
+					$("input[name=map_zoom_level]").val(data.content.default_zoom_level);
 				}
 			}
 		});

@@ -884,7 +884,7 @@ function getArrayListIcons($fullpath = true) {
 function validateMapData($map_name, $map_zoom_level,
 	$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
 	$map_default_longitude, $map_default_latitude, $map_default_altitude,
-	$map_connection_list) {
+	$map_connection_list, $map_levels_zoom) {
 	$invalidFields = array();
 	
 	echo "<style type='text/css'>";
@@ -896,7 +896,7 @@ function validateMapData($map_name, $map_zoom_level,
 	}
 	
 	//validate zoom level
-	if ($map_zoom_level == '') {
+	if (($map_zoom_level == '') || ($map_zoom_level > $map_levels_zoom)) {
 		echo "input[name=map_zoom_level] {background: #FF5050;}";
 		$invalidFields['map_zoom_level'] = true;
 	}
@@ -958,9 +958,11 @@ function getMapData($idMap) {
 	$returnVar = array();
 	
 	$map = get_db_row('tgis_map', 'id_tgis_map', $idMap);
-	$connections = get_db_all_rows_sql('SELECT tgis_map_connection_id_tmap_connection AS id_conection,
-			default_map_connection AS `default`
-		FROM tgis_map_has_tgis_map_connection WHERE tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+	$connections = get_db_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
+			t1.default_map_connection AS `default`,
+			(SELECT t2.num_zoom_levels
+				FROM tgis_map_connection AS t2 WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
+		FROM tgis_map_has_tgis_map_connection AS t1 WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 	$layers = get_db_all_rows_sql('SELECT id_tmap_layer, layer_name, tgrupo_id_grupo AS layer_group, view_layer AS layer_visible FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map']);
 	if ($layers === false) $layers = array();
 	
@@ -1017,6 +1019,21 @@ function addConectionMapsInForm($map_connection_list) {
 	}
 	
 	return $returnVar;
+}
+
+/**
+ * From a list of connection maps, extract the num levels zooom
+ * 
+ * @param array $map_connection_list The list of connections maps.
+ * 
+ * @return integer The num zoom levels.
+ */
+function getNumZoomLevelsOfConnectionDefault($map_connection_list) {
+	foreach ($map_connection_list as $connection) {
+		if ($connection['default']) {
+			return $connection['num_zoom_levels'];
+		}
+	}
 }
 
 /**

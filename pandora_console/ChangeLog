@@ -1,3 +1,11 @@
+2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: use zoom level.
+	
+	* godmode/gis_maps/configure_gis_map.php: include the things about
+	default zoom level in function "validateMapData", "getMapData" and add
+	the function "getNumZoomLevelsOfConnectionDefault".
+
 2010-02-25  Sancho Lerena  <slerena@artica.es>
 
 	* godmode/alerts/configure_alert_template.php,

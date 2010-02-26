@@ -26,9 +26,9 @@ then
         rc_reset
 else
         # Define rc functions for non-suse systems, "void" functions.
-        function rc_status () (VOID=1;)
-        function rc_exit () (exit;)
-        function rc_failed () (VOID=1;)
+        function rc_status () { VOID=1; }
+        function rc_exit () { exit; }
+        function rc_failed () { VOID=1; }
 
 fi
 

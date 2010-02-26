@@ -1,3 +1,10 @@
+2010-02-27  Sancho Lerena <slerena@artica.es>
+
+        * util/tentacle_serverd,
+        util/pandora_server: Fixed "stop" problem in debian/ubuntu, which was
+        due a problem in redefinition of several LSB functions, stop function
+        was not working fine and exit condition was ignored.
+
 2010-02-25  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Implemented new alert type "onChange".

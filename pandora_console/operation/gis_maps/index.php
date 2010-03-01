@@ -23,7 +23,7 @@ require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');
 
-echo "<h2>".__('GIS Maps')." &raquo; ".__('Summary')."</h2>";
+print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "gis_map_summary");
 
 $maps = getMaps();
 

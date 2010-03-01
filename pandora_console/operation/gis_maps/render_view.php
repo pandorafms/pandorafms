@@ -76,7 +76,7 @@ else {
 }
 
 if (give_acl ($config["id_user"], $map['group_id'], "AW"))
-	$buttons [] = '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='. $idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+	$buttons [] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	
 $buttonsString = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3"><img src="images/bricks.png" class="top" border="0">&nbsp; Agent&nbsp;-&nbsp;test_gis1</a></li></ul></div><div id="menu_tab"><ul class="mn"><li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=3"><img src="images/setup.png" class="top" title="Manage" border="0" width="16">&nbsp;</a></li><li class="nomn_high"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3"><img src="images/monitor.png" class="top" title="Main" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=data"><img src="images/lightbulb.png" class="top" title="Data" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=3&amp;tab=alert"><img src="images/bell.png" class="top" title="Alerts" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=sla&amp;id_agente=3"><img src="images/images.png" class="top" title="S.L.A." border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;group_id=2"><img src="images/agents_group.png" class="top" title="Group" border="0">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=inventory&amp;id_agente=3"><img src="images/page_white_text.png" class="top" title="Inventory" border="0" width="16">&nbsp;</a></li><li class="nomn"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente=3"><img src="images/world.png" class="top" title="GIS data" border="0">&nbsp;</a>';
 
@@ -102,7 +102,7 @@ $buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\
 $buttons[] = __('Show agents in state: ');
 
 
-print_page_header(__('Visual console') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
+print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
 
 printMap('map', $map['zoom_level'], $numZoomLevels, $map['initial_latitude'],
 	$map['initial_longitude'], $baselayers, $controls);

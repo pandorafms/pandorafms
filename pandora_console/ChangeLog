@@ -1,5 +1,15 @@
 2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: in fuction "getAgentsLayer" fix when none data
+	for agents in this layer.
+	
+	* operation/gis_maps/render_view.php: fix link to edit map and fix the text
+	of header.
+	
+	operation/gis_maps/index.php: use function "print_page_header".
+
+2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: now function "getAgentMap" return true or false
 	if there is default map or not.
 

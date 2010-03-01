@@ -374,8 +374,13 @@ function getAgentsLayer($idLayer, $fields = null) {
 	$agents = get_db_all_rows_sql('SELECT ' . $select . ' FROM tagente WHERE id_agente IN (
 SELECT tagente_id_agente FROM tgis_map_layer_has_tagente WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
 	
-	foreach ($agents as $index => $agent) {
-		$agents[$index] = $agent['nombre'];
+	if ($agents !== false) {
+		foreach ($agents as $index => $agent) {
+			$agents[$index] = $agent['nombre'];
+		}
+	}
+	else {
+		return array();
 	}
 	
 	

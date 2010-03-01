@@ -775,7 +775,7 @@ function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latit
  * @param $centerInAgent boolean Default is true, set the map center in the icon agent. 
  * @param $history_time: Number of seconds in the past to show from where to start the history path.
  *
- * @return A div tag with the map and the agent and the history path if asked.
+ * @return boolean True ok and false fail. 
  */
 function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = 86400) {
 	$defaultMap = get_db_all_rows_sql("
@@ -786,6 +786,10 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		WHERE t1.default_map = 1 AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
 			AND t2.default_map_connection = 1
 			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
+	
+	if ($defaultMap === false)
+		return false;
+	
 	$defaultMap = $defaultMap[0];
 	
 	$agent_position = getDataLastPositionAgent($agent_id);
@@ -837,6 +841,8 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 		</script>
 		<?php
 	}
+	
+	return true;
 }
 
 /**

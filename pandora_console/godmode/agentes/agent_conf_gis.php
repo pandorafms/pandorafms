@@ -31,7 +31,10 @@ $agent_name = get_agent_name($id_agente);
 
 /* Map with the current position */
 echo "<div id=\"" . $agent_name . "_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
-echo getAgentMap($id_agente, "500px", "98%", false);
+
+if (!getAgentMap($id_agente, "500px", "98%", false)) {
+	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
+} 
 
 
 

@@ -1,5 +1,13 @@
 2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: now function "getAgentMap" return true or false
+	if there is default map or not.
+
+	* operation/agentes/gis_view.php, godmode/agentes/agent_conf_gis.php: show
+	message of error when there isn't a default map
+
+2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: update with the new data in
 	the sql data file of pandora.
 	

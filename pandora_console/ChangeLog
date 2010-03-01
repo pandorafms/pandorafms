@@ -1,3 +1,13 @@
+2010-03-01  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* include/javascript/openlayers.pandora.js: Modified js_printMap to support
+	Gmap type of maps.
+
+	* include/functions_gis.php: Modified printMap to support Gmap type of maps
+
+	* godmode/setup/gis_step_2.php: Modified to load on demand the Gmaps api
+	TODO: Use the key from the gmap_key input box.
+
 2010-03-01  Sancho Lerena <slerena@artica.es>
 
 	* include/styles/menu.css,

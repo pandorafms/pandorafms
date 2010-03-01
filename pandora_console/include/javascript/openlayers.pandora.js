@@ -82,8 +82,40 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 									objBaseLayers[baselayerIndex]['url'], {numZoomLevels: num_levels_zoom});
 							map.addLayer(baseLayer);
 							break;
+						case 'Gmap':
+                            tipito = objBaseLayers[baselayerIndex]['gmap_type'];
+                            switch (tipito) {
+                                case 'G_PHYSICAL_MAP':
+                                    //var baseLayer = new OpenLayers.Layer.Google();
+                                    var gphy = new OpenLayers.Layer.Google(
+                                    "Google Physical",
+                                    {type: G_PHYSICAL_MAP,  maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)});
+                                    map.addLayer(gphy);
+                                    break;
+                                case 'G_HYBRID_MAP':
+                                    var ghyb = new OpenLayers.Layer.Google(
+                                    "Google Hybrid",
+                                    {type: G_HYBRID_MAP, numZoomLevels: 20}
+                                    );
+                                    map.addLayer(ghyb);
+                                    break;
+                                case 'G_SATELLITE_MAP':
+                                    var gsat = new OpenLayers.Layer.Google(
+                                    "Google Satellite",
+                                        {type: G_SATELLITE_MAP, numZoomLevels: 22}
+                                    );
+                                    map.addLayer(gsat);
+                                    break;
+                                default:
+                                    var gmap = new OpenLayers.Layer.Google(
+                                        "Google Streets", // the default
+                                        {numZoomLevels: 20}
+                                    );
+                                    map.addLayer(gmap);
+                                    break;
+                            }
+							break;
 						case 'Static_Image':
-							console.log(objBaseLayers);
 							
 				            var baseLayer = new OpenLayers.Layer.Image(
 				            		objBaseLayers[baselayerIndex]['name'],
@@ -96,6 +128,8 @@ function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, cen
 				                    {numZoomLevels: num_levels_zoom});
 				            map.addLayer(baseLayer);
 							break;
+						default: 
+							alert('connection type invalid');
 					}
 				}
 			}

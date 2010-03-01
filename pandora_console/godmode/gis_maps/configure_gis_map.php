@@ -761,7 +761,6 @@ function setFieldsRequestAjax(id_conexion) {
 			timeout: 10000,
 			success: function (data) {                 		
 				if (data.correct) {
-					console.log(data.content);
 					$("input[name=map_initial_longitude]").val(data.content.initial_longitude);
 					$("input[name=map_initial_latitude]").val(data.content.initial_latitude);
 					$("input[name=map_initial_altitude]").val(data.content.initial_altitude);
@@ -769,6 +768,7 @@ function setFieldsRequestAjax(id_conexion) {
 					$("input[name=map_default_latitude]").val(data.content.default_latitude);
 					$("input[name=map_default_altitude]").val(data.content.default_altitude);
 					$("input[name=map_zoom_level]").val(data.content.default_zoom_level);
+					$("input[name=map_levels_zoom]").val(data.content.num_zoom_levels);
 				}
 			}
 		});

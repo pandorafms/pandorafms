@@ -58,7 +58,7 @@ INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon
 -- GIS extension Tables and DATA
 
 -- GIS is disabled by default
-INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
+INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '1');
 
 -- -----------------------------------------------------
 -- Table `tgis_data_history`
@@ -129,6 +129,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
 
+INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,1,1);
+
 -- -----------------------------------------------------
 -- Table `tgis_map_connection`
 -- -----------------------------------------------------
@@ -149,6 +151,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
   PRIMARY KEY (`id_tmap_connection`) )
 ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
+
+INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,1);
 
 -- -----------------------------------------------------
 -- Table `tgis_map_has_tgis_map_connection`
@@ -174,6 +178,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
 ENGINE = InnoDB
 COMMENT = 'Table to asociate a connection to a gis map';
 
+INSERT INTO `tgis_map_has_tgis_map_connection` VALUES (1,1,'2010-03-01 09:46:48',1);
+
 -- -----------------------------------------------------
 -- Table `tgis_map_layer`
 -- -----------------------------------------------------
@@ -193,6 +199,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';
+
+INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,1);
 
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_has_tagente`

@@ -98,7 +98,6 @@ switch ($action) {
 					'url' => $mapConnection_OSM_url);
 				break;
 			case 'Gmap':
-				$mapConnection_Gmap_url= get_parameter('url');
 				$gmap_type= get_parameter('gmap_type');
 				$gmap_key= get_parameter('gmap_key');
 				$mapConnectionData = array('type' => 'Gmap', 
@@ -173,6 +172,7 @@ print_table ($table);
 $optionsConnectionTypeTable = '';
 $mapConnectionDataUrl = '';
 $gmap_type = '';
+$gmap_key= '';
 $bb_left = '';
 $bb_right = '';
 $bb_bottom = '';
@@ -392,12 +392,14 @@ function refreshMapView() {
 	center_altitude = $('input[name=center_altitude]').val();
 
 	var objBaseLayers = Array();
-	objBaseLayers[0] = Array();
+	objBaseLayers[0] = {};
 	objBaseLayers[0]['type'] = $('select[name=sel_type] :selected').val();
 	objBaseLayers[0]['name'] = $('input[name=name]').val();
 	objBaseLayers[0]['url'] = $('input[name=url]').val();
-
-	//objBaseLayers[0]['gmap_type = '';
+	// type Gmap
+	objBaseLayers[0]['gmap_type'] = $('select[name=gmap_type] option:selected').val();
+	objBaseLayers[0]['gmap_key'] = $('input[name=gmap_key]').val();
+	// type Static Image
 	objBaseLayers[0]['bb_left'] = $('input[name=bb_left]').val();
 	objBaseLayers[0]['bb_right'] = $('input[name=bb_right]').val();
 	objBaseLayers[0]['bb_bottom'] = $('input[name=bb_bottom]').val();
@@ -417,6 +419,15 @@ function refreshMapView() {
 	
 	js_activateEvents(changePoints);
 }
+function validateGmapsParamtres () {
+	gmap_key = $('input[name=gmap_key]').val();
+	if (gmap_key == "") {
+		$('input[name=gmap_key]').css('background-color:red;');
+	}	
+}
+function loadGoogleMap() {
+	google.load("maps", "2", {"callback" : validateGmapsParamtres});
+}
 
 /**
  * Dinamic write the fields in form when select a type of connection.
@@ -428,15 +439,12 @@ function selMapConnectionType() {
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();
 			break; 
 		case 'Gmap':
-			/* TODO: still testing this part... still need to use the provided key
-			var script = document.createElement("script");
-			script.type = "text/javascript";
-			script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ';
-			//script.src = 'http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg';
-			//document.body.appendChild(script);
-			//document.getElementsByTagName("head")[0].appendChild(script);
-			$('head').append(script);
-			*/
+			// TODO: Validate there is a key, and use it
+				var script = document.createElement("script");
+				script.type = "text/javascript";
+				//script.src = 'http://www.google.com/jsapi?key='+gmap_key+'&callback=loadGoogleMap';
+				script.src = 'http://www.google.com/jsapi?key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg&callback=loadGoogleMap';
+				document.getElementsByTagName("head")[0].appendChild(script);
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
 			break; 
 		case 'Static_Image':

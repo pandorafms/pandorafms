@@ -90,6 +90,9 @@
 #icon_oper-dashboard {
  	background-image: url(../../images/house.png);
 }
+#icon_oper-metaconsole {
+ 	background-image: url(../../images/application_double.png);
+}
 
 #icon_oper-agents {
 	background-image: url(../../images/bricks.png);

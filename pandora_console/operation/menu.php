@@ -28,6 +28,8 @@ $menu['class'] = 'operation';
 // Agent read, Server read
 if (give_acl ($config['id_user'], 0, "AR")) {
 
+	enterprise_hook ('metaconsole_menu');
+
 	enterprise_hook ('dashboard_menu');
 
 	//View agents

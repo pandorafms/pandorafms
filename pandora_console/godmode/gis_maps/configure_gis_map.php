@@ -557,7 +557,12 @@ function setFieldsFormLayer(layer_name,layer_group, layer_visible_form, agent_li
 	$("#text-layer_name_form").val(layer_name);
 	$("#layer_group_form [value="+layer_group+"]").attr("selected",true);
 	$("#text_id_agent").val('<?php echo __('Select'); ?>');
-	$("#checkbox-layer_visible_form").attr("checked", layer_visible_form);
+	if (layer_visible_form == '0') {
+		$("#checkbox-layer_visible_form").removeAttr("checked");
+	}
+	else {
+		$("#checkbox-layer_visible_form").attr("checked", 'checked');
+	}
 	$("#list_agents").empty(); //Clean list agents
 	
 	loadAgents(agent_list);

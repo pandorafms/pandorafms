@@ -1,3 +1,10 @@
+2010-03-01  Sancho Lerena <slerena@artica.es>
+
+	* include/styles/menu.css,
+	include/functions_db.php,
+	operation/menu.php: New code for give support for Metaconsole. Added nocache
+	settings in some SQL main functions to avoid globally usage of SQL cache.
+
 2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: fix in javascript function

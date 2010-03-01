@@ -1826,6 +1826,11 @@ function get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
 	global $config;
 	$history = array ();
 
+	// To disable globally SQL cache depending on global variable.
+	// Used in several critical places like Metaconsole trans-server queries
+	if (isset($config["dbcache"]))
+		$cache = $config["dbcache"];
+
 	// Read from the history DB if necessary
 	if ($search_history_db) {
 		$cache = false;

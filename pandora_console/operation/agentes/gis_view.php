@@ -40,7 +40,9 @@ echo "<h3>" . __("Map with the last position/s") . " " . human_time_description 
 
 /* Map with the current position */
 echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
-echo getAgentMap($agentId, "500px", "98%", true, true, $period);
+if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
+	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
+} 
 
 $timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
 

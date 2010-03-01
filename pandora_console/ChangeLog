@@ -1,3 +1,11 @@
+2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb_data.sql: add the default map from Open street map, and set
+	active by default the GIS.
+	
+	* godmode/setup/gis_step_2.php: fix tiny bugs in the form that the default
+	values for zooms were exchangeds.
+
 2010-02-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: use zoom level.

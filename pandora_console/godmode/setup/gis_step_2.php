@@ -39,8 +39,8 @@ switch ($action) {
 		echo __('Create new map connection')."</h2>";
 		$mapConnection_name = '';
 		$mapConnection_group = '';
-		$mapConnection_numLevelsZoom = '16';
-		$mapConnection_defaultZoom = '19';
+		$mapConnection_numLevelsZoom = '19';
+		$mapConnection_defaultZoom = '16';
 		$mapConnection_type = 0;
 		$mapConnection_defaultLatitude = '40.42056';
 		$mapConnection_defaultLongitude = '-3.708187';

@@ -64,9 +64,8 @@ INSERT INTO `tconfig` VALUES
 (26, 'prominent_time', 0),
 (27, 'timesource', 'system'),
 (28, 'realtimestats', '1'),
-(29, 'stats_interval', '300');
-
-INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '0');
+(29, 'stats_interval', '300'),
+(30, 'activate_gis', '1');
 
 UNLOCK TABLES;
 
@@ -372,3 +371,8 @@ INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (201,6);
 INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (202,6);
 
 
+-- GIS Data
+INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,1,1);
+INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,1);
+INSERT INTO `tgis_map_has_tgis_map_connection` VALUES (1,1,'2010-03-01 09:46:48',1);
+INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,1);

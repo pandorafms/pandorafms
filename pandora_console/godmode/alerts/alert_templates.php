@@ -14,7 +14,8 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require_once ('include/config.php');
+global $config;
+
 require_once ('include/functions_alerts.php');
 
 check_login ();
@@ -105,8 +106,9 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
-echo "<h2>".__('Alerts')." &raquo; ";
-echo __('Alert templates')."</h2>";
+// Header
+print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "", false, "", true);
+
 $update_template = (bool) get_parameter ('update_template');
 $delete_template = (bool) get_parameter ('delete_template');
 

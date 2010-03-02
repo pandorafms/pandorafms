@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require ("include/config.php");
+global $config;
 
 check_login ();
 
@@ -24,6 +24,10 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Header
+print_page_header (__('Module management')." &raquo; ". __('Module component management'), "", false, "", true);
+
 
 require_once ('include/functions_network_components.php');
 
@@ -242,8 +246,6 @@ $url = get_url_refresh (array ('offset' => false,
 	'ff_event' => false,
 	'id_component_type' => false));
 
-echo "<h2>".__('Module management')." &raquo; ";
-echo __('Module component management')."</h2>";
 
 $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');

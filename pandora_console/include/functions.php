@@ -836,7 +836,7 @@ function enterprise_include_once ($filename) {
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
 	if (file_exists ($filepath)) {
-		include_once ($filepath);
+		require_once ($filepath);
 		return true;
 	}
 	return ENTERPRISE_NOT_HOOK;

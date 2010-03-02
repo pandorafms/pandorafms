@@ -15,7 +15,7 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
 
 check_login ();
 
@@ -25,6 +25,10 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	return;
 }
+
+// Header
+print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
+
 
 require_once ('include/functions_network_profiles.php');
 
@@ -99,8 +103,6 @@ if ($export_profile) {
 	//We're done here. The original page will still be there
 	exit;
 }
-
-echo "<h2>".__('Module management')." &raquo; ".__('Module template management')."</h2>";
 
 $result = get_db_all_rows_in_table ("tnetwork_profile", "name");
 

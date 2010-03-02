@@ -20,7 +20,8 @@ if (function_exists ('mb_internal_encoding')) {
 }
 
 // Set to 1 to do not check for installer or config file (for development!).
-$develop_bypass = 0;
+// Activate gives more error information, not useful for production sites
+$develop_bypass = 1;
 
 if ($develop_bypass != 1) {
 	// If no config file, automatically try to install
@@ -58,7 +59,7 @@ require_once ("include/config.php");
 
 /* Enterprise support */
 if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
-	include (ENTERPRISE_DIR."/load_enterprise.php");
+	include_once (ENTERPRISE_DIR."/load_enterprise.php");
 }
 
 /**

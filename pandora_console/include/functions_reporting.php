@@ -106,11 +106,15 @@ function get_group_stats ($id_group = 0) {
 	$data["total_agents"] = 0;
 	$data["total_alerts"] = 0;
 	$data["total_checks"] = 0;
+	$data["alerts"] = 0;
 	$data["agents_unknown"] = 0;
 	$data["monitor_health"] = 100;
 	$data["alert_level"] = 100;
 	$data["module_sanity"] = 100;
 	$data["server_sanity"] = 100;
+	$data["total_not_init"] = 0;
+	$data["monitor_non_init"] = 0;
+
 	$cur_time = get_system_time ();
 
 	//Check for access credentials using give_acl. More overhead, much safer
@@ -211,10 +215,16 @@ function get_group_stats ($id_group = 0) {
 		$data["module_sanity"] = 100;
 	}
 
-	if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
-		$data["alert_level"] = format_numeric (100 - ($data["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
-	} else {
+	if (isset($data["alerts"])){
+		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
+			$data["alert_level"] = format_numeric (100 - ($data	["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
+		} else {
+			$data["alert_level"] = 100;
+		}
+	} 
+ 	else {
 		$data["alert_level"] = 100;
+		$data["alerts"] = 0;
 	}
 
 	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];

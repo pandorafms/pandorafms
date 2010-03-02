@@ -1,3 +1,37 @@
+2010-03-02  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting.php: Solved issue with several undefined
+	vars.
+
+	* include/functions_servers.php: Solved issue with several undefined
+	vars. 
+
+	* include/functions_config.php: Added metaconsola witch to readconfig.
+
+	* include/config_process.php: Update build.. is YYMMDD !
+
+	* include/functions_ui.php: Removed deprecated call to split and replaced
+	by preg_split.
+
+	* index.php: Activated developer mode.
+
+	* operation/agentes/estado_monitores.php: Solved small problem with modules
+	without history, filling missing column in table. Added headers
+
+	* godmode/alerts/configure_alert_compound.php,
+	operation/agentes/status_monitor.php
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/configure_alert_command.php,
+	godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_commands.php,
+	godmode/modules/manage_network_templates.php,
+	godmode/modules/module_list.php,
+	godmode/modules/manage_network_components.php,
+	godmode/modules/manage_nc_groups.php: Removed deprecated call to include
+	config.php and in some cases, added new header style.
+
 2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/setup/gis_step_2.php: fix a mechanographic mistake.

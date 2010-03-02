@@ -1,3 +1,18 @@
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: disabled the use of night version of
+	Openlayers. Change the "refreshMapView" javascript to load the library of
+	google maps with the api, and add function "refreshMapViewSecondStep"
+	for asincrone call in "refreshMapView" when load map google.
+	
+	* include/javascript/openlayers.pandora.js: clean source code of
+	"js_refreshParentLines" and add the test if the parent agent is in the
+	map.
+	
+	* godmode/setup/gis_step_2.php: disabled the use of night version of
+	Openlayers in function "printMap" and change the text of hierachy layer for
+	better english text.
+
 2010-03-02  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting.php: Solved issue with several undefined

@@ -20,7 +20,7 @@
  * @return None
  */
 function addParentLines() {
-	makeLayer(__('Agent hierarchy'));
+	makeLayer(__('Hierarchy agent'));
 	
 	echo "<script type='text/javascript'>";
 	echo "$(document).ready (function () {
@@ -55,9 +55,8 @@ function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
 function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	$controls = (array)$controls;
 	
-	//require_javascript_file('OpenLayers/OpenLayers');
+	require_javascript_file('OpenLayers/OpenLayers');
 	?>
-	<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>
 	<script type="text/javascript">
 		$(document).ready (
 			function () {

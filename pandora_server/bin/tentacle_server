@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 ##########################################################################
 # Tentacle Server
-# See http://www.openideas.info/wiki for protocol description.
-# Tentacle have IANA assigned port tpc/41121 as official port.
+# See http://www.openideas.info/wiki/index.php?title=Tentacle for protocol 
+# description.
+# Tentacle has IANA assigned port tpc/41121 as official port.
 ##########################################################################
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
 # Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
-# tentacle_server.pl	Tentacle Server. See http://www.openideas.info/wiki for
-#                       protocol description.
+# tentacle_server.pl	Tentacle Server. See
+#			http://www.openideas.info/wiki/index.php?title=Tentacle 
+#			for protocol description.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -147,7 +149,7 @@ my $t_timeout = 1;
 sub print_help {
 
 	print ("Usage: $0 -s <storage directory> [options]\n\n");
-	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
+	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki/index.php?title=Tentacle for protocol description.\n\n");
 	print ("Options:\n");
 	print ("\t-a ip_address\tAddress to listen on (default $t_address).\n");
 	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");

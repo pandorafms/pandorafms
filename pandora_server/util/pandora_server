@@ -1,7 +1,7 @@
 #!/bin/bash
-# Copyright (c) 2005-2009 Artica ST
+# Copyright (c) 2005-2010 Artica ST
 #
-# Author: Sancho Lerena <slerena@artica.es> 2006-2009
+# Author: Sancho Lerena <slerena@artica.es> 2006-2010
 #
 # /etc/init.d/pandora_server
 #
@@ -101,23 +101,23 @@ case "$1" in
 			kill $PANDORA_PID > /dev/null 2>&1
 			COUNTER=0
 
-	                while [  $COUNTER -lt $MAXWAIT ]
-             		do
-                        	PANDORA_PID=`pidof_pandora`
-                        	if [ -z "$PANDORA_PID" ]
- 		                then
-                                	COUNTER=$MAXWAIT
-                        	fi
-                        	COUNTER=`expr $COUNTER + 1`
-                        	sleep 1
-                	done
+		while [ $COUNTER -lt $MAXWAIT ]
+	 		do
+ 				PANDORA_PID=`pidof_pandora`
+				if [ -z "$PANDORA_PID" ]
+ 				then
+					COUNTER=$MAXWAIT
+				fi
+				COUNTER=`expr $COUNTER + 1`
+				sleep 1
+			done
 		
 			# Send a KILL -9 signal to process, if it's alive after 60secs, we need
 			# to be sure is really dead, and not pretending...
 			if [ ! -z "$PANDORA_PID" ]
-                        then
-                                kill -9 $PANDORA_PID   > /dev/null 2>&1
-                        fi
+			then
+				kill -9 $PANDORA_PID   > /dev/null 2>&1
+			fi
 			rc_status -v
 		fi
 	;;
@@ -131,12 +131,12 @@ case "$1" in
 			echo "Pandora FMS Server is running with PID $PANDORA_PID."
 			rc_status
 		fi
-        ;;
-  force-reload|restart)
+	;;
+	force-reload|restart)
 		$0 stop
 		$0 start
 		;;
-  *)
+	*)
 		echo "Usage: pandora_server { start | stop | restart | status }"
 		exit 1
 esac

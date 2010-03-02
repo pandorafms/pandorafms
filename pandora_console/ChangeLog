@@ -1,5 +1,9 @@
 2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/setup/gis_step_2.php: fix a mechanographic mistake.
+
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: add function "addParentLines", in ths function
 	make a hierachy layer and call "js_refreshParentLines" for paint hierachy
 	lines. In function "activateAjaxRefresh" use the function

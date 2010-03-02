@@ -208,9 +208,9 @@ $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" 
 	'</table>';
 
 // Google Maps Connection
-$gmaps_types["G_PHYSICAL_MAP"] = __('Goolge Physical');
-$gmaps_types["G_HYBRID_MAP"] = __('Goolge Hybrid');
-$gmaps_types["G_SATELITE_MAP"] = __('Goolge Satelite');
+$gmaps_types["G_PHYSICAL_MAP"] = __('Google Physical');
+$gmaps_types["G_HYBRID_MAP"] = __('Google Hybrid');
+$gmaps_types["G_SATELITE_MAP"] = __('Google Satelite');
 // TODO: Use label tags for the forms.
 $optionsConnectionGmapTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="90%">' .
 		'<tr class="row_0">' .

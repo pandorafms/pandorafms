@@ -29,7 +29,8 @@ $map = get_db_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = getMapConf($idMap);
 
 $num_baselayer=0;
-
+// Initialy there is no Gmap base layer.
+$gmap_layer = false;
 if ($confMap !== false) {
 	foreach ($confMap as $mapC) {
 		$baselayers[$num_baselayer]['typeBaseLayer'] = $mapC['connection_type'];
@@ -39,6 +40,13 @@ if ($confMap !== false) {
 		switch ($mapC['connection_type']) {
 			case 'OSM':
 				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
+				break;
+			case 'Gmap':
+				$baselayers[$num_baselayer]['gmap_type'] = $decodeJSON['gmap_type'];
+				$baselayers[$num_baselayer]['gmap_key'] = $decodeJSON['gmap_key'];
+				$gmap_key = $decodeJSON['gmap_key'];
+				// Onece a Gmap base layer is found we mark it to import the API
+				$gmap_layer = true;
 				break;
 			case 'Static_Image':
 				$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
@@ -50,12 +58,18 @@ if ($confMap !== false) {
 				$baselayers[$num_baselayer]['image_height'] = $decodeJSON['image_height'];
 				break;
 		}
-		$baselayers[$num_baselayer]['url'] = $decodeJSON['url'];
 		$num_baselayer++;
 		if ($mapC['default_map_connection'] == 1) {
 			$numZoomLevels = $mapC['num_zoom_levels'];
 		}
 	}
+}
+//debugPrint($gmap_layer);
+//debugPrint($gmap_key);
+if ($gmap_layer === true) {
+?>
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=falsei&key=<?php echo $gmap_key ?>" ></script>
+<?php
 }
 
 $controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap');

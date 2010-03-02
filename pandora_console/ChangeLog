@@ -1,3 +1,11 @@
+2010-03-02  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* include/functions_gis.php: Added a missing break and remove debugging 
+	code.
+
+	* operation/gis_maps/render_view.php: Added code to render Gmap type of 
+	maps.
+
 2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: disabled the use of night version of

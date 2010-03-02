@@ -1,5 +1,14 @@
 2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/OpenLayers/lib/*, 
+	include/javascript/OpenLayers/news.txt, 
+	include/javascript/OpenLayers/readme.txt,
+	include/javascript/OpenLayers/repository-license.txt,
+	include/javascript/OpenLayers/release-license.txt: delete unused files of
+	OpenLayers lib.
+
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/gis_maps/render_view.php: clean source code.
 
 2010-03-02  Pablo de la Concepción <pablo.concepcion@artica.es>

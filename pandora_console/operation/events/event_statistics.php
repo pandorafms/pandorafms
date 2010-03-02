@@ -17,7 +17,8 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
+
 require_once ("include/fgraph.php");
 
 check_login ();

@@ -16,7 +16,7 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
 
 check_login ();
 

@@ -15,7 +15,7 @@
 
 
 // Load global vars
-require ("include/config.php");
+global $config;
 
 check_login();
 
@@ -117,6 +117,10 @@ if ($delete_group) {
 	$result = mysql_query ($sql);
 	$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
 	$result = mysql_query ($sql);
+
+	$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
+	$result = mysql_query ($sql);
+
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
 	else

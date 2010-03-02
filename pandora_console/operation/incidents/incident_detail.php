@@ -13,12 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-
-
 // Load global vars
 
-require_once ("include/config.php");
+global $config;
 require_once ("include/functions_incidents.php");
 require_once ("include/functions_events.php"); //To get events group information
 

@@ -29,7 +29,10 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 
-
+$force_refresh = get_parameter ("force_refresh", "");
+if ($force_refresh == 1){
+	process_sql ("UPDATE tgroup_stat SET utimestamp = 0");
+}
 
 //This is an intermediary function to print out a set of cells
 //Cells is an array with the explanation, value, link and color
@@ -46,11 +49,12 @@ function print_cells_temp ($cells) {
 }
 
 if ($config["realtimestats"] == 0){
-	$updated_time = __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
+	$updated_time .= __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
+	$updated_time .= "</A>"; 
 } else {
 	$updated_time = __("Updated at realtime");
 }
-
 
 // Header
 print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $updated_time );

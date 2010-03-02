@@ -60,13 +60,6 @@ if ($new_agent) {
 		$nombre_agente = $direccion_agente;
 }
 
-// Header
-
-if ($id_agente) {
-	print_page_header (__('Agent configuration')." &raquo; ".__('Update agent'), "", false, "", true);
-} else {
-	print_page_header (__('Agent configuration')." &raquo; ".__('Create agent'), "", false, "", true);
-}
 echo '<div style="height: 5px">&nbsp;</div>';
 
 if (!$new_agent) {

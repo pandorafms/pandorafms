@@ -16,7 +16,7 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
 enterprise_include ("operation/snmpconsole/snmp_view.php");
 
 check_login ();

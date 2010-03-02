@@ -1372,6 +1372,10 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 		$icon = "images/setup.png";
 	}
 
+	if (($icon == "") && ($godmode == false)){
+		$icon = "images/comments.png";
+	}
+
 	if ($godmode == true){
 		$type = "nomn";
 		$type2 = "menu_tab_frame";

@@ -13,9 +13,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
-
-require_once ("include/config.php");
+global $config;
 require_once ("include/functions_incidents.php");
 
 check_login ();

@@ -14,6 +14,8 @@
 
 require_once ("include/functions_messages.php");
 
+$msg_cnt = 0;
+
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
 	<tr>
@@ -33,17 +35,20 @@ require_once ("include/functions_messages.php");
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
 			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
-			$msg_cnt = get_message_count ($config["id_user"]);
-			if ($msg_cnt > 0) {
-				echo '<div id="dialog_messages" style="display: none"></div>';
 
-				require_css_file ('dialog');
-				require_jquery_file ('ui.core');
-				require_jquery_file ('ui.dialog');
-				echo '<a href="ajax.php?page=operation/messages/message" id="show_messages_dialog">';
-				print_image ("images/email.png", false,
-				array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
-				echo '</a>';
+			if ($config["metaconsole"] == 0){
+				$msg_cnt = get_message_count ($config["id_user"]);
+				if ($msg_cnt > 0) {
+					echo '<div id="dialog_messages" style="display: none"></div>';
+
+					require_css_file ('dialog');
+					require_jquery_file ('ui.core');
+					require_jquery_file ('ui.dialog');
+					echo '<a href="ajax.php?page=operation/messages/message" id="show_messages_dialog">';
+					print_image ("images/email.png", false,
+					array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot"));
+					echo '</a>';
+				}
 			}
 			?>
 			&nbsp;
@@ -51,8 +56,11 @@ require_once ("include/functions_messages.php");
 		</td>
 		
 		<td width="20%">
-			<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">
-			<?php
+
+<?php
+		if ($config["metaconsole"] == 0){
+			echo '<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">';
+
 			$servers["all"] = (int) get_db_value ('COUNT(id_server)','tserver');
 			$servers["up"] = (int) check_server_status ();
 			$servers["down"] = $servers["all"] - $servers["up"];
@@ -69,8 +77,13 @@ require_once ("include/functions_messages.php");
 				echo '<img src="images/ok.png" alt="ok" class="bot" />&nbsp;'.__('All systems').': '.__('Ready');
 			}
 			unset ($servers); // Since this is the header, we don't like to trickle down variables.
-			?> 
-			</a>
+			echo '</a>';
+		} else {
+			// TODO: Put here to remark this is a metaconsole
+			echo "";
+
+		}
+?>
 		</td>
 		<td width="20%">
 			<?php
@@ -111,6 +124,10 @@ require_once ("include/functions_messages.php");
 	</tr>
 	<tr>
 	<td colspan=2>
+
+<?php
+if ($config["metaconsole"] == 0){
+?>
 	<form method="get" style="" valign="middle" name="quicksearch">
 				<script type="text/javascript" language="javascript">
 				var fieldKeyWordEmpty = true;
@@ -128,9 +145,14 @@ require_once ("include/functions_messages.php");
 				<!-- onClick="javascript: document.quicksearch.submit()" -->					
 				<input type='hidden' name='head_search_keywords' value='abc'>
 				</form>				
+<?php
+}
+?>
 				<td>
 				 <?php
+if ($config["metaconsole"] == 0){
                    echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot">&nbsp;'.__('Events').'</a>';
+}
                  ?>
 				</td>
 	</tr>

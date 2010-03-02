@@ -108,7 +108,7 @@ foreach ($groups as $id_group => $group_name) {
 	echo $group_name;
 	echo "</a>";
 
-	if (give_acl ($config['id_user'], $group_info["id_group"], "AW")) {
+	if (give_acl ($config['id_user'], $id_group, "AW")) {
 			echo '&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" align="right"></a>';
 			echo "&nbsp;";
 	}

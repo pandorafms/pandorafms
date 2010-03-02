@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -39,8 +39,8 @@ if (is_ajax ()) {
 	return;
 }
 
-echo "<h2>".__('Alerts')." &raquo; ";
-echo __('Alert actions').'</h2>';
+// Header
+print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
 
 $update_action = (bool) get_parameter ('update_action');
 $create_action = (bool) get_parameter ('create_action');

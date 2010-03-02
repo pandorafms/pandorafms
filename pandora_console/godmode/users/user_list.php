@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -25,6 +25,10 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	exit;
 }
 
+// Header
+print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
+
+
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
@@ -42,8 +46,6 @@ if (isset ($_GET["user_del"])) { //delete user
 		__('Successfully deleted'),
 		__('There was a problem deleting the profile'));
 }
-
-echo '<h2>'.__('User management').' &raquo; '.__('Users defined in Pandora').'</h2>';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;

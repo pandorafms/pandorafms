@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -46,6 +46,10 @@ $delete_alert = (int) get_parameter ('delete_alert');
 $enable_alert = (int) get_parameter ('enable_alert');
 $disable_alert = (int) get_parameter ('disable_alert');
 
+// Header
+print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "", true);
+
+
 if ($delete_alert) {
 	$id = (int) get_parameter ('id');
 	$result = delete_alert_compound ($id);
@@ -75,9 +79,6 @@ if ($disable_alert) {
 	if (is_ajax ())
 		return;
 }
-
-echo "<h2>".__('Alerts')." &raquo; ";
-echo __('Correlated alerts').'</h2>';
 
 $table->id = 'filter_compound_table';
 $table->width = '90%';

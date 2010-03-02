@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require_once ('include/config.php');
+global $config;
 require_once ('include/functions_alerts.php');
 
 check_login ();
@@ -25,6 +25,10 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Header
+print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+
 
 $duplicate_template = (bool) get_parameter ('duplicate_template');
 $id = (int) get_parameter ('id');
@@ -300,8 +304,6 @@ if ($id && ! $create_template) {
 	$priority = $template['priority'];
 	$id_group = $template["id_group"];
 }
-
-echo '<h2>'.__('Alerts').' &raquo; '.__('Configure alert template').'</h2>';
 
 print_alert_template_steps ($step, $id);
 

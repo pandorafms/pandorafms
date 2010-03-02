@@ -177,7 +177,7 @@ function update_config () {
 	update_config_value ('string_purge', get_parameter ('string_purge', $config['string_purge']));
 	update_config_value ('audit_purge', get_parameter ('audit_purge', $config['audit_purge']));
 	update_config_value ('acl_enterprise', get_parameter ('acl_enterprise', $config['acl_enterprise']));
-
+	update_config_value ('metaconsole', get_parameter ('metaconsole', $config['metaconsole']));
 
 }
 
@@ -300,6 +300,10 @@ function process_config () {
 
 	if (!isset ($config["acl_enterprise"])){
 		update_config_value ('acl_enterprise', 0);
+	}
+
+	if (!isset ($config["metaconsole"])){
+		update_config_value ('metaconsole', 0);
 	}
 
 	/* 

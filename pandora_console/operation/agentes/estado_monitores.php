@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load globar vars
-require_once ("include/config.php");
+global $config;
 
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
@@ -127,6 +127,8 @@ foreach ($modules as $module) {
 
 	$data[5] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
+
+	$data[6] = " ";
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];

@@ -1104,11 +1104,11 @@ function get_status_images_path () {
 
 	if (strpos ($imageset, ",") === false) 
 		$imageset .= ",40x18";
-	list ($imageset, $sizes) = split (",", $imageset, 2);
+	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
 
 	if (strpos ($sizes, "x") === false)
 		$sizes .= "x18";
-	list ($imagewidth, $imageheight) = split ("x", $sizes, 2);
+	list ($imagewidth, $imageheight) = preg_split ("/x/", $sizes);
 
 	$imagespath = 'images/status_sets/'.$imageset;
 

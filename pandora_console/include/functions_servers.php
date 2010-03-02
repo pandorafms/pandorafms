@@ -281,7 +281,10 @@ function get_server_info ($id_server = -1) {
 			} // recon
 		} // Take data for realtime mode
 
-		$server["lag_txt"] = ($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"];
+		if (isset($server["module_lag"]))
+			$server["lag_txt"] = ($server["lag"] == 0 ? '-' : human_time_description_raw ($server["lag"])) . " / ". $server["module_lag"];
+		else
+			$server["lag_txt"] = "";
 
 		if ($server["modules_total"] > 0) {
 			$server["load"] = round ($server["modules"] / $server["modules_total"] * 100); 

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require("include/config.php");
+global $config;
 
 check_login ();
 
@@ -23,6 +23,9 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Header
+print_page_header (__('Module management')." &raquo; ". __('Defined modules'), "", false, "", true);
 
 $update_module = (bool) get_parameter_post ('update_module');
 
@@ -45,8 +48,6 @@ if ($update_module) {
 		echo "<h3 class='suc'>".__('Module updated successfully')."</h3>";
 }
 
-echo "<h2>".__('Module management')." &raquo; ";
-echo __('Defined modules')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 echo "<th>".__('Icon')."</th>";

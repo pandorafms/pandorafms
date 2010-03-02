@@ -1,4 +1,22 @@
-2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add function "addParentLines", in ths function
+	make a hierachy layer and call "js_refreshParentLines" for paint hierachy
+	lines. In function "activateAjaxRefresh" use the function
+	"js_refreshParentLines" for repaint the lines.
+	
+	*include/javascript/openlayers.pandora.js: add the global var
+	"storeLayerNameHierachy" for save the text localiced name of Hierachy lines
+	layer. Add the function "js_refreshParentLines" for paint the lines from
+	parent to sons. In function "changeShowStatus" add the
+	"js_refreshParentLines"
+
+	* operation/gis_maps/render_view.php: use the function "addParentLines" for
+	start the parent lines.
+
+	* operation/agentes/gis_view.php: clean sourcecode.
+
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/gis_maps/ajax.php: fix the query to extract the GIS data for
 	agent, in any moment in the past I dirty the query, but now it's clean, and

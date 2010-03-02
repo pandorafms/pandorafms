@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -106,6 +106,16 @@ $delete_alert = (bool) get_parameter ('delete_alert');
 $disable_alert = (bool) get_parameter ('disable_alert');
 $enable_alert = (bool) get_parameter ('enable_alert');
 
+// Header
+if ($id_agente) {
+	print_page_header (__('Agent configuration').' &raquo; '.__('Alerts'), "images/god2.png", false, "", true);
+	$agents = array ($id_agente => get_agent_name ($id_agente));
+} else {
+	print_page_header (__('Alerts').' &raquo; '.__('Manage alerts'), "images/god2.png", false, "", true);
+	$groups = get_user_groups ();
+	$agents = get_group_agents (array_keys ($groups), false, "none");
+}
+
 if ($create_alert) {
 	$id_alert_template = (int) get_parameter ('template');
 	$id_agent_module = (int) get_parameter ('id_agent_module');
@@ -207,15 +217,6 @@ if ($disable_alert) {
 	print_result_message ($result,
 		__('Successfully disabled'),
 		__('Could not be disabled'));
-}
-
-if ($id_agente) {
-	echo '<h2>'.__('Agent configuration').' &raquo; '.__('Alerts').'</h2>';
-	$agents = array ($id_agente => get_agent_name ($id_agente));
-} else {
-	echo '<h2>'.__('Alerts').' &raquo; '.__('Manage alerts').'</h2>';
-	$groups = get_user_groups ();
-	$agents = get_group_agents (array_keys ($groups), false, "none");
 }
 
 echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';

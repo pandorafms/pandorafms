@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Login check
-require ("include/config.php");
+global $config;
 
 check_login();
 

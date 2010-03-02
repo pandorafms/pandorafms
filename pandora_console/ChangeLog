@@ -1,3 +1,43 @@
+2010-03-02  Sancho Leren <slerena@artica.es>
+
+	* include/functions_ui.php: Fixes default icon for operation
+	mode in the title.
+
+	* operation/incidents/incident.php
+	operation/incidents/incident_detail.php
+	operation/incidents/incident_statistics.php
+	operation/snmpconsole/snmp_view.php
+	operation/users/user.php
+	operation/users/user_edit.php
+	operation/users/user_statistics.php
+	operation/events/event_statistics.php
+	operation/events/export_csv.php
+	operation/events/events_marquee.php
+	operation/events/events.php
+	operation/agentes/export_csv.php
+	operation/agentes/datos_agente.php
+	operation/agentes/estado_ultimopaquete.php
+	operation/agentes/estado_generalagente.php
+	operation/agentes/estado_agente.php
+	operation/agentes/sla_view.php
+	operation/agentes/gis_view.php
+	operation/agentes/ver_agente.php
+	operation/agentes/tactical.php
+	operation/agentes/group_view.php
+	operation/agentes/networkmap.php
+	operation/messages/message.php
+	operation/reporting/reporting_viewer.php
+	operation/servers/view_server.php
+	operation/servers/view_server_detail.php
+	operation/search_results.php
+	godmode/groups/configure_group.php
+	godmode/groups/group_list.php
+	godmode/agentes/agent_manager.php
+	godmode/alerts/alert_list.php: Fixes with include(Config.php) in
+	enterprise mode.:
+
+	* general/header.php: Detection of Metaconsole to show less options.
+
 2010-03-02  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/agentes/*.php, godmode/group/*.php, godmode/modules/*.php:

@@ -108,7 +108,6 @@ $enable_alert = (bool) get_parameter ('enable_alert');
 
 // Header
 if ($id_agente) {
-	print_page_header (__('Agent configuration').' &raquo; '.__('Alerts'), "images/god2.png", false, "", true);
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 } else {
 	print_page_header (__('Alerts').' &raquo; '.__('Manage alerts'), "images/god2.png", false, "", true);

@@ -16,7 +16,7 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
 require_once ("include/functions_messages.php");
 
 //First Queries - also inits the variables so it can be passed along

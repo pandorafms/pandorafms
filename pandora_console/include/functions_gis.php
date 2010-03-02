@@ -121,7 +121,6 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 							switch ($baselayer['gmap_type']) {
 								case 'G_PHYSICAL_MAP':
 							?>
-				            //var baseLayer = new OpenLayers.Layer.Google();
            					var gphy = new OpenLayers.Layer.Google(
 								"Google Physical",
 								{type: G_PHYSICAL_MAP}
@@ -131,7 +130,6 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 									break;
 								case 'G_HYBRID_MAP':
 									?>
-									alert("hibrid");
 							var ghyb = new OpenLayers.Layer.Google(
 								"Google Hybrid",
 								{type: G_HYBRID_MAP, numZoomLevels: 20}
@@ -141,7 +139,6 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 									break;
 								case 'G_SATELLITE_MAP':
 									?>
-									alert("satelite");
 							var gsat = new OpenLayers.Layer.Google(
 							"Google Satellite",
                 				{type: G_SATELLITE_MAP, numZoomLevels: 22}
@@ -151,7 +148,6 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 							break;
 								default:
 									?>
-									alert("default");
 									var gmap = new OpenLayers.Layer.Google(
 										"Google Streets", // the default
 										{numZoomLevels: 20}
@@ -160,7 +156,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 									<?php
 									break;
 							}
-
+							break;
 						case 'Static_Image':
 							?>
 				            var baseLayer = new OpenLayers.Layer.Image(

@@ -305,9 +305,8 @@ echo '<div class="action-buttons" style="clear: left; width: 90%; float: left;">
 print_submit_button (__('Save'), '', false, 'class="sub save"');
 echo '</div>';
 echo "</form>";
-?>
-<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>
-<?php 
+
+require_javascript_file('OpenLayers/OpenLayers');
 require_javascript_file('openlayers.pandora');
 ?>
 <script type="text/javascript">
@@ -374,57 +373,86 @@ function changePoints(e) {
  * fields. And make two points, center and default.
  */
 function refreshMapView() {
-	//Clear the previous map.
-	map = null;
-	$("#map").html('');
-	//Clear the points.
-	centerPoint = null;
-	GISDefaultPositionPoint = null;
+	 switch ($('#sel_type :selected').val()) {
+		case 'Gmap':
+			//TODO: Validate there is a key, and use it
+			gmap_key = $('input[name=gmap_key]').val();
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = 'http://www.google.com/jsapi?key='+gmap_key+'&callback=loadGoogleMap';
+				//script.src = 'http://www.google.com/jsapi?key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg&callback=loadGoogleMap';
+			document.getElementsByTagName("head")[0].appendChild(script);
 
-	//Change the text to button.
-	$("input[name=button_refresh]").val('<?php echo __("Refresh preview map");?>');
+			//TODO: paint the gif clock for waiting the request.
+			break;
+		default:
+			refreshMapViewSecondStep();
+			break;
+	 }
 
-	//Obtain data of map of fields.
-	inital_zoom = $('input[name=initial_zoom]').val();
-	num_levels_zoom =$('input[name=num_levels_zoom').val();
-	center_latitude = $('input[name=center_latitude]').val();
-	center_longitude = $('input[name=center_longitude]').val();
-	center_altitude = $('input[name=center_altitude]').val();
-
-	var objBaseLayers = Array();
-	objBaseLayers[0] = {};
-	objBaseLayers[0]['type'] = $('select[name=sel_type] :selected').val();
-	objBaseLayers[0]['name'] = $('input[name=name]').val();
-	objBaseLayers[0]['url'] = $('input[name=url]').val();
-	// type Gmap
-	objBaseLayers[0]['gmap_type'] = $('select[name=gmap_type] option:selected').val();
-	objBaseLayers[0]['gmap_key'] = $('input[name=gmap_key]').val();
-	// type Static Image
-	objBaseLayers[0]['bb_left'] = $('input[name=bb_left]').val();
-	objBaseLayers[0]['bb_right'] = $('input[name=bb_right]').val();
-	objBaseLayers[0]['bb_bottom'] = $('input[name=bb_bottom]').val();
-	objBaseLayers[0]['bb_top'] = $('input[name=bb_top]').val();
-	objBaseLayers[0]['image_width'] = $('input[name=image_width]').val();
-	objBaseLayers[0]['image_height'] = $('input[name=image_height]').val();
-
-	arrayControls = null;
-	arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
-	
-	js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
-	
-	layer = js_makeLayer('temp_layer', true, null);
-
-	centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 11, 11, 'center', '');
-	GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 11, 11, 'default', '');
-	
-	js_activateEvents(changePoints);
 }
+
+/**
+ * Function to show and refresh the map. The function give the params for map of
+ * fields. And make two points, center and default.
+ */
+function refreshMapViewSecondStep() {
+		//Clear the previous map.
+		map = null;
+		$("#map").html('');
+		//Clear the points.
+		centerPoint = null;
+		GISDefaultPositionPoint = null;
+
+		//Change the text to button.
+		$("input[name=button_refresh]").val('<?php echo __("Refresh preview map");?>');
+
+		//Obtain data of map of fields.
+		inital_zoom = $('input[name=initial_zoom]').val();
+		num_levels_zoom =$('input[name=num_levels_zoom').val();
+		center_latitude = $('input[name=center_latitude]').val();
+		center_longitude = $('input[name=center_longitude]').val();
+		center_altitude = $('input[name=center_altitude]').val();
+
+		var objBaseLayers = Array();
+		objBaseLayers[0] = {};
+		objBaseLayers[0]['type'] = $('select[name=sel_type] :selected').val();
+		objBaseLayers[0]['name'] = $('input[name=name]').val();
+		objBaseLayers[0]['url'] = $('input[name=url]').val();
+		// type Gmap
+		objBaseLayers[0]['gmap_type'] = $('select[name=gmap_type] option:selected').val();
+		objBaseLayers[0]['gmap_key'] = $('input[name=gmap_key]').val();
+		// type Static Image
+		objBaseLayers[0]['bb_left'] = $('input[name=bb_left]').val();
+		objBaseLayers[0]['bb_right'] = $('input[name=bb_right]').val();
+		objBaseLayers[0]['bb_bottom'] = $('input[name=bb_bottom]').val();
+		objBaseLayers[0]['bb_top'] = $('input[name=bb_top]').val();
+		objBaseLayers[0]['image_width'] = $('input[name=image_width]').val();
+		objBaseLayers[0]['image_height'] = $('input[name=image_height]').val();
+
+		arrayControls = null;
+		arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
+		
+		js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
+		
+		layer = js_makeLayer('temp_layer', true, null);
+
+		centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 11, 11, 'center', '');
+		GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 11, 11, 'default', '');
+		
+		js_activateEvents(changePoints);
+}
+
 function validateGmapsParamtres () {
 	gmap_key = $('input[name=gmap_key]').val();
 	if (gmap_key == "") {
-		$('input[name=gmap_key]').css('background-color:red;');
-	}	
+		$('input[name=gmap_key]').css('background-color', 'red');
+	}
+	else {
+		refreshMapViewSecondStep();
+	}
 }
+
 function loadGoogleMap() {
 	google.load("maps", "2", {"callback" : validateGmapsParamtres});
 }
@@ -440,11 +468,6 @@ function selMapConnectionType() {
 			break; 
 		case 'Gmap':
 			// TODO: Validate there is a key, and use it
-				var script = document.createElement("script");
-				script.type = "text/javascript";
-				//script.src = 'http://www.google.com/jsapi?key='+gmap_key+'&callback=loadGoogleMap';
-				script.src = 'http://www.google.com/jsapi?key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTS6gjckBmeABOGXIUiOiZObZESPg&callback=loadGoogleMap';
-				document.getElementsByTagName("head")[0].appendChild(script);
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
 			break; 
 		case 'Static_Image':

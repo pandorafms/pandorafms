@@ -48,12 +48,15 @@ function js_refreshParentLines(layerName) {
 	layer.destroyFeatures();
 	
 	jQuery.each(listFeaturesWithParents, function (i, feature) {
+		//INI "break" of foreach posibilites
 		if (typeof(feature) == 'undefined') return;
 		if (feature.id_parent == 0) return;
+		if (typeof(listFeaturesWithParents[feature.id_parent]) == 'undefined') return; //The agent have parent but this parent is not in the map.
 		if ((!feature.visible)
 			|| (!listFeaturesWithParents[feature.id_parent].visible)) return;
 		if ((isHideFeatureByStatus(feature.status))
 			|| (isHideFeatureByStatus(listFeaturesWithParents[feature.id_parent].status))) return;
+		//END "break" of foreach posibilites
 		
 		points = new Array();
 		

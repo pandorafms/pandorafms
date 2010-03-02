@@ -1,3 +1,9 @@
+2010-03-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/gis_maps/ajax.php: fix the query to extract the GIS data for
+	agent, in any moment in the past I dirty the query, but now it's clean, and
+	now run fine the agent movement.
+
 2010-03-01  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/javascript/openlayers.pandora.js: Modified js_printMap to support

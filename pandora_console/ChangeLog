@@ -1,3 +1,7 @@
+2010-03-02  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/gis_maps/render_view.php: clean source code.
+
 2010-03-02  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* include/functions_gis.php: Added a missing break and remove debugging 

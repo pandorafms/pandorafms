@@ -1,3 +1,10 @@
+2010-03-02  Raúl Mateos  <raulofpandora@gmail.com>
+
+        * util/tentacle_serverd, util/pandora_server: Updated year. Changed
+	spaces to tabs.
+
+	* bin/tentacle_server: Updated year. Updated URL for documentation.
+
 2010-02-27  Sancho Lerena <slerena@artica.es>
 
         * util/tentacle_serverd,

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2005-2009 Artica ST
+# Copyright (c) 2005-2010 Artica ST
 #
 # Author: Sancho Lerena <slerena@artica.es> 2006-2009
 #
@@ -22,23 +22,23 @@
 # Check for SUSE status scripts
 if [ -f /etc/rc.status ]
 then
-        . /etc/rc.status
-        rc_reset
+	. /etc/rc.status
+	rc_reset
 else
-        # Define rc functions for non-suse systems, "void" functions.
-        function rc_status () { VOID=1; }
-        function rc_exit () { exit; }
-        function rc_failed () { VOID=1; }
+	# Define rc functions for non-suse systems, "void" functions.
+	function rc_status () { VOID=1; }
+	function rc_exit () { exit; }
+	function rc_failed () { VOID=1; }
 
 fi
 
 function get_pid {
 	# This sets COLUMNS to XXX chars, because if command is run 
-        # in a "strech" term, ps aux don't report more than COLUMNS
-        # characters and this will not work. 
-        COLUMNS=300
-        TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
-        echo $TENTACLE_PID
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	TENTACLE_PID=`ps -Af | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
+	echo $TENTACLE_PID
 }
 
 # Pandora server settings
@@ -94,6 +94,7 @@ case "$1" in
 			rc_status -v
 		else
 			echo "Tentacle server could not be started."
+			echo "Verify that port $TENTACLE_PORT is not used."
 			rc_status -v
 		fi
 

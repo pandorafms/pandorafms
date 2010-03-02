@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -50,13 +50,12 @@ if ($id_group) {
 	}
 }
 
-echo "<h2>".__('Group management')." &raquo; ";
+// Header
 if ($id_group) {
-	echo __('Update group');
+	print_page_header (__("Update group"), "images/god1.png", false, "", true, "");
 } else {
-	echo __('Create group');
+	print_page_header (__("Create group"), "images/god1.png", false, "", true, "");
 }
-echo "</h2>";
 
 $table->width = '450px';
 $table->data = array ();

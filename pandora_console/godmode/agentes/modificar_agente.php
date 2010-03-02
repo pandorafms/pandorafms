@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -50,7 +50,9 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 		exit;
 	}
 }
-echo "<h2>".__('Agent configuration')." &raquo; ".__('Agents defined in Pandora')."</h2>";
+
+// Header
+print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
 
 // Show group selector
 if (isset($_POST["ag_group"])){

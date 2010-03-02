@@ -36,7 +36,9 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 	// DATA COPY
 	// ---------
 	if (isset($_POST["copy"])) {
-		echo "<h2>".__('Data Copy')."</h2>";
+		// Header
+		print_page_header (__("Data Copy"), "images/god1.png", false, "", true, "");
+
 		// Initial checkings
 
 		// if selected more than 0 agents
@@ -91,7 +93,8 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 	} else { 
 		
 		// title
-		echo '<h2>'.__('Agent configuration'). ' &raquo; '. __('Remote configuration management').'</h2>';
+		// Header
+		print_page_header (__("Remote configuration management"), "images/god1.png", false, "", true, "");
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		

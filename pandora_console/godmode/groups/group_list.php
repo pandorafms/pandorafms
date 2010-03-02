@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -63,6 +63,9 @@ if (is_ajax ()) {
 	return;
 }
 
+// Header
+print_page_header (__("Groups defined in Pandora"), "images/god1.png", false, "", true, "");
+
 $create_group = (bool) get_parameter ('create_group');
 $update_group = (bool) get_parameter ('update_group');
 $delete_group = (bool) get_parameter ('delete_group');
@@ -120,8 +123,6 @@ if ($delete_group) {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-echo "<h2>".__('Group management')." &raquo; ";	
-echo __('Groups defined in Pandora')."</h2>";
 
 $table->width = '65%';
 $table->head = array ();

@@ -28,6 +28,8 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_network_components.php');
 
+print_page_header (__('Module management')." &raquo; ".__('Module template management'), "", false, "", true);
+
 $id_np = get_parameter ("id_np", -1); //Network Profile
 $ncgroup = get_parameter ("ncgroup", -1); //Network component group
 $id_nc = get_parameter ("components", array ());
@@ -97,7 +99,6 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	$name = "";
 }
 
-echo "<h2>".__('Module management')." &raquo; ".__('Module template management')."</h2>";
 
 if ($id_np < 1) {
 	echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -29,8 +29,6 @@ if (! $id) {
 	$snmp_community = "public";
 }
 
-echo "<h2>".__('Module management')." &raquo; ";
-echo __('Module component management')."</h2>";
 echo "<h3>".__('Network component')."</h3>";
 
 $snmp_versions['1'] = 'v. 1';
@@ -55,9 +53,6 @@ $data[2] = __('SNMP community');
 $data[3] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);
 
 push_table_row ($data, 'snmp_2');
-
-
-
 
 
 $data = array();

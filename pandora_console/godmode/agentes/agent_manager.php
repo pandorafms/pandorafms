@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -60,14 +60,13 @@ if ($new_agent) {
 		$nombre_agente = $direccion_agente;
 }
 
-echo "<h2>".__('Agent configuration')." &raquo; ";
+// Header
 
 if ($id_agente) {
-	echo __('Update agent');
+	print_page_header (__('Agent configuration')." &raquo; ".__('Update agent'), "", false, "", true);
 } else {
-	echo __('Create agent');
+	print_page_header (__('Agent configuration')." &raquo; ".__('Create agent'), "", false, "", true);
 }
-echo "</h2>";
 echo '<div style="height: 5px">&nbsp;</div>';
 
 if (!$new_agent) {

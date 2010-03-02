@@ -72,7 +72,7 @@ switch ($opt) {
 			$idAgentsWithGIS[] = $id_features;
 		}
 		
-		$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_parent1.id_agente AS tagente_id_agente,
+		$agentsGISStatus = get_db_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 				IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 				IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
 			FROM tagente AS t1

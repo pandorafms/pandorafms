@@ -67,7 +67,6 @@ $intervals[172800] = human_time_description_raw (172800);
 $intervals[604800] = human_time_description_raw (604800);
 
 echo "<br />";
-//debugPrint($_SERVER);
 echo "<form action='index.php?" . $_SERVER['QUERY_STRING'] . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
 print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);

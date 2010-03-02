@@ -13,6 +13,29 @@
 // GNU General Public License for more details.
 
 /**
+ * Print javascript to add parent lines between the agents.
+ * 
+ * @param inteer $idMap The id of map.
+ * 
+ * @return None
+ */
+function addParentLines() {
+	makeLayer(__('Agent hierarchy'));
+	
+	echo "<script type='text/javascript'>";
+	echo "$(document).ready (function () {
+		var layer = map.getLayersByName('" . __('Hierarchy agent') . "');
+		layer = layer[0];
+		
+		map.setLayerIndex(layer, 0);
+		
+		js_refreshParentLines('" . __('Hierarchy agent') . "');
+	});";
+	echo "</script>";
+	
+}
+
+/**
  * Return the data of last position of agent from tgis_data_status.
  * 
  * @param integer $idAgent The id of agent.
@@ -326,6 +349,9 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			        					js_addAgentPointExtent(layer.name, agentDataGIS['name'],
 			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
 			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status, agentDataGIS['id_parent']);
+
+			        					//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
+					        			js_refreshParentLines();
 		        					}
 		        				}
 		        			}
@@ -358,6 +384,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 				}
 				?>
 			}
+			
 			last_time_of_data = Math.round(new Date().getTime() / 1000); //Unixtimestamp
 
 			//Test if the user change the refresh time.

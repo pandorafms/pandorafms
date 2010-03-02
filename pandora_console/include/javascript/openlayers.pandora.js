@@ -14,6 +14,60 @@
 
 var map; // Map global var object is use in multiple places.
 var statusShow = 'all';
+//The name of layer hierachy because in PHP change the text name into language of user.
+var storeLayerNameHierachy = '';
+
+function js_refreshParentLines(layerName) {
+	if (typeof(layerName) == 'undefined') {
+		layerName = storeLayerNameHierachy;
+	}
+	else {
+		storeLayerNameHierachy = layerName;
+	}
+	
+	listFeaturesWithParents = Array();
+	
+	jQuery.each(map.getLayersByClass("OpenLayers.Layer.Vector"), function (i, layer) {
+		visible = layer.visibility;
+		
+		jQuery.each(layer.features, function (i, feature) {
+			if (feature.data.type == "point_agent_info") {
+				id_parent = feature.data.id_parent;
+				long_lat = feature.data.long_lat;
+				id = feature.data.id;
+				status = feature.data.status;
+				
+				listFeaturesWithParents[id] = {'id': id, 'id_parent': id_parent, 'long_lat': long_lat, 'status': status, 'visible': visible};
+			}
+		});
+	});
+	
+	var layer = map.getLayersByName(layerName);
+	layer = layer[0];
+	
+	layer.destroyFeatures();
+	
+	jQuery.each(listFeaturesWithParents, function (i, feature) {
+		if (typeof(feature) == 'undefined') return;
+		if (feature.id_parent == 0) return;
+		if ((!feature.visible)
+			|| (!listFeaturesWithParents[feature.id_parent].visible)) return;
+		if ((isHideFeatureByStatus(feature.status))
+			|| (isHideFeatureByStatus(listFeaturesWithParents[feature.id_parent].status))) return;
+		
+		points = new Array();
+		
+		points[0] = new OpenLayers.Geometry.Point(feature.long_lat.lon, feature.long_lat.lat);
+		points[1] =  new OpenLayers.Geometry.Point(listFeaturesWithParents[feature.id_parent].long_lat.lon, listFeaturesWithParents[feature.id_parent].long_lat.lat);
+		
+		var line = new OpenLayers.Feature.Vector(
+			new OpenLayers.Geometry.LineString(points),
+			null,
+			{ strokeWidth: 2, fillOpacity: 0.2, fillColor: 'red',  strokeDashstyle: "dash", strokeColor: 'red'});
+		
+		layer.addFeatures(line);
+	});
+}
 
 /**
  * Inicialize the map in the browser and the object map.
@@ -157,6 +211,7 @@ function changeShowStatus(newShowStatus) {
 	$("#button_status_" + statusShow).attr('style', 'border: 1px black solid;');
 	
 	hideAgentsStatus();
+	js_refreshParentLines();
 }
 
 /**

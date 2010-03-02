@@ -138,6 +138,7 @@ if ($layers != false) {
 				$coords['stored_longitude'], $icon, 20, 20, $idAgent, $status, 'point_agent_info', $parent);
 		}
 	}
+	addParentLines();
 	
 	$timestampLastOperation = get_db_value_sql("SELECT UNIX_TIMESTAMP()");
 	

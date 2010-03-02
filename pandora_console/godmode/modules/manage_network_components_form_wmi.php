@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -26,8 +26,6 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-echo "<h2>".__('Module management')." &raquo; ";
-echo __('Module component management')."</h2>";
 echo "<h3>".__('WMI component management').'</h3>';
 
 $data = array ();

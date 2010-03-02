@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -48,6 +48,9 @@ $insert_downtime_agent = (int) get_parameter ("insert_downtime_agent", 0);
 $delete_downtime_agent = (int) get_parameter ("delete_downtime_agent", 0);
 
 $groups = get_user_groups ();
+
+// Header
+print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent == 1){
@@ -117,9 +120,6 @@ if ($create_downtime || $update_downtime) {
 		}
 	}
 }
-
-// Header
-print_page_header (__("Planned Downtime"), "images/god1.png", false, "", true, "");
 
 // Show create / update form
 	

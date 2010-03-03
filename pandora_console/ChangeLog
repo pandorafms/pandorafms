@@ -1,3 +1,16 @@
+2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add in the last time a function "printMap2"
+	that it is a clean function. Change the function "printMap" to call
+	"printMap2".
+	
+	* include/javascript/openlayers.pandora.js: in function "js_printMap" set
+	the spherical Mercator for google maps. 
+	
+	* operation/gis_maps/render_view.php: add to list of $baselayers the name
+	of baselayer. Change order of div for map because now the script don't
+	call when document ready. 
+
 2010-03-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_db.php: Use mysql_fetch_assoc instead of

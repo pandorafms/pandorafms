@@ -35,6 +35,7 @@ if ($confMap !== false) {
 	foreach ($confMap as $mapC) {
 		$baselayers[$num_baselayer]['typeBaseLayer'] = $mapC['connection_type'];
 		$baselayers[$num_baselayer]['name'] = $mapC['conection_name'];
+		$baselayers[$num_baselayer]['num_zoom_levels'] = $mapC['num_zoom_levels'];
 		$decodeJSON = json_decode($mapC['conection_data'], true);
 		
 		switch ($mapC['connection_type']) {
@@ -121,6 +122,13 @@ $buttons[] = __('Show agents in state: ');
 
 print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);
 
+if ($config["pure"] == 0) {
+	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
+}
+else {
+	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; border: 1px solid black;' ></div>";
+}
+
 printMap('map', $map['zoom_level'], $numZoomLevels, $map['initial_latitude'],
 	$map['initial_longitude'], $baselayers, $controls);
 	
@@ -162,12 +170,5 @@ if ($layers != false) {
 	
 	activateSelectControl();
 	activateAjaxRefresh($layers, $timestampLastOperation);
-}
-
-if ($config["pure"] == 0) {
-	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
-}
-else {
-	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; border: 1px solid black;' ></div>";
 }
 ?>

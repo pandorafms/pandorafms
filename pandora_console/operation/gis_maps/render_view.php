@@ -158,11 +158,10 @@ if ($layers != false) {
 	activateAjaxRefresh($layers, $timestampLastOperation);
 }
 
-?>
-<?php 
 if ($config["pure"] == 0) {
 	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
 }
 else {
 	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; border: 1px solid black;' ></div>";
 }
+?>

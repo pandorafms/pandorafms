@@ -1,3 +1,11 @@
+2010-03-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_db.php: Use mysql_fetch_assoc instead of
+	  mysql_fetch_array to avoid duplicate results (hash and array).
+
+	* godmode/alerts/configure_alert_template.php: Added 'matches_value'
+	  support to 'onchange' alerts.
+
 2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add new parameter to function "addPath" the

@@ -433,6 +433,9 @@ if ($step == 2) {
 	case "min":
 		$table->rowstyle['min'] = '';
 		break;
+	case "onchange":
+		$show_matches = true;
+		break;
 	}
 
 	$table->data[0][0] = __('Name');
@@ -525,6 +528,8 @@ var under = "<?php echo __('The alert would fire when the value is below <span i
 var over = "<?php echo __('The alert would fire when the value is above <span id=\"max\"></span>');?>";
 var warning = "<?php echo __('The alert would fire when the module is in warning status');?>";
 var critical = "<?php echo __('The alert would fire when the module is in critical status');?>";
+var onchange = "<?php echo __('The alert would fire when the module value changes');?>";
+var onchange_not = "<?php echo __('The alert would fire when the module value does not change');?>";
 
 function check_regex () {
 	if ($("#type").attr ('value') != 'regex') {
@@ -641,6 +646,16 @@ $(document).ready (function () {
 			/* Show example */
 			$("span#example").empty ().append (critical);
 			break;
+		case "onchange":
+			$("#template-value, #template-max, #template-min").hide ();
+			$("#template-example, span#matches_value").show ();
+
+			/* Show example */
+			if ($("#checkbox-matches_value")[0].checked)
+				$("span#example").empty ().append (onchange);
+			else
+				$("span#example").empty ().append (onchange_not);
+			break;
 		default:
 			$("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();
 			break;
@@ -664,7 +679,13 @@ $(document).ready (function () {
 			} else {
 				$("span#example").empty ().append (between_not);
 			}
-		}
+		} else if (type == "onchange") {
+			if (enabled) {
+				$("span#example").empty ().append (onchange);
+			} else {
+				$("span#example").empty ().append (onchange_not);
+			}
+		} 
 		render_example ();
 	});
 	

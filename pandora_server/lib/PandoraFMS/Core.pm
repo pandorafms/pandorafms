@@ -265,14 +265,17 @@ sub pandora_evaluate_alert ($$$$$$$) {
 		}
 
 		if ($alert->{'type'} eq "onchange") {
-
-			if (is_numeric($last_data_value)){
-				if ($last_data_value == $data){
-					return $status;
+			if ($alert->{'matches_value'} == 1) {
+				if (is_numeric($last_data_value)){
+					return $status if ($last_data_value == $data);
+				} else {
+					return $status if ($last_data_value eq $data);
 				}
 			} else {
-				if ($last_data_value eq $data){
-					return $status;
+				if (is_numeric($last_data_value)){
+					return $status if ($last_data_value != $data);
+				} else {
+					return $status if ($last_data_value ne $data);
 				}
 			}
 		}

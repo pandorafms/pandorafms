@@ -1,5 +1,9 @@
 2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/gis_maps/render_view.php: close in the end a unclose php tag.
+
+2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/gis_view.php: fix "Call-time pass-by-reference" for
 	function "print_table".
 

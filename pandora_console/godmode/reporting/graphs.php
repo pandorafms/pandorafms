@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 
 // Load global variables
-require ("include/config.php");
+global $config;
 
 require_once ('include/functions_custom_graphs.php');
 

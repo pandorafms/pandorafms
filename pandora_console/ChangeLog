@@ -1,3 +1,11 @@
+2010-03-03  Sancho Lerena <slerena@artica.es>
+	
+	* (A lot of files): Updated include("config.php") and replaced by
+	global $config.
+
+	* functions_db.php, functions_html.php: Fixed way to get data from the hash
+	instead from the array. 
+
 2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_gis.php: add in the last time a function "printMap2"

@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load global variables
-require_once ('include/config.php');
+global $config;
 
 check_login ();
 

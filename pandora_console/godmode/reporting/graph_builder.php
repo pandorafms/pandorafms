@@ -13,6 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
 	
@@ -42,8 +44,6 @@ if (is_ajax ()) {
  	return;
 }
 
-// Login check
-require_once ("include/config.php");
 if ($config['flash_charts']) {
 	require_once ('include/fgraph.php');
 }

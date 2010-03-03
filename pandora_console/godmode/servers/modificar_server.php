@@ -14,7 +14,8 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require("include/config.php");
+global $config;
+
 require_once ("include/functions_servers.php");
 
 check_login();

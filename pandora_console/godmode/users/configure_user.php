@@ -14,7 +14,7 @@
 // GNU General Public License for more details.
 
 // Load global vars
-require_once ('include/config.php');
+global $config;
 
 check_login ();
 $id = get_parameter ('id', $config['id_user']); // ID given as parameter

@@ -1688,8 +1688,9 @@ function get_db_value_sql ($sql) {
 	
 	if($result === false) 
 		return false;
-	
-	return $result[0][0];
+
+	foreach ($result[0] as $f)
+		return $f;
 }
 
 /** 
@@ -1804,12 +1805,17 @@ function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND
  *
  * @return mixed The selected field of the first row in a select statement.
  */
-function get_db_sql ($sql, $field = 0, $search_history_db = false) {
-	$result = get_db_all_rows_sql ($sql, $search_history_db);
-	if($result === false)
-		return false;
 
-	return $result[0][$field];
+function get_db_sql ($sql, $field = 0, $search_history_db = false) {
+        $result = get_db_all_rows_sql ($sql, $search_history_db);
+        if($result === false)
+                return false;
+        $ax = 0;
+        foreach ($result[0] as $f){
+                if ($field == $ax)
+                        return $f;
+                $ax++;
+        }
 }
 
 /**

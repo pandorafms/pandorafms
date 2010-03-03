@@ -15,7 +15,8 @@
 
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
+
 enterprise_include ('godmode/agentes/configurar_agente.php');
 
 check_login ();

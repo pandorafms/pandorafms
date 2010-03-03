@@ -52,10 +52,165 @@ function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
 	return $returnVar;
 }
 
+function printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
+		?>
+	<script type="text/javascript">
+		//$(document).ready (function () {
+
+			var controlVar = [
+				<?php
+				foreach ($controls as $control) {					
+					switch ($control) {
+						case 'Navigation':
+							echo "new OpenLayers.Control.Navigation(),";
+							break;
+						case 'MousePosition':
+							echo "new OpenLayers.Control.MousePosition(),";
+							break;
+						case 'OverviewMap':
+							echo "new OpenLayers.Control.OverviewMap(),";
+							break;
+						case 'PanZoom':
+							echo "new OpenLayers.Control.PanZoom(),";
+							break;
+						case 'PanZoomBar':
+							echo "new OpenLayers.Control.PanZoomBar(),";
+							break;
+						case 'ScaleLine':
+							echo "new OpenLayers.Control.ScaleLine(),";
+							break;
+						case 'Scale':
+							echo "new OpenLayers.Control.Scale(),";
+							break;
+					}
+				}
+				?>
+				new OpenLayers.Control.LayerSwitcher()];
+				
+
+			var option = {
+				controls: controlVar,
+				projection: new OpenLayers.Projection("EPSG:900913"),
+                displayProjection: new OpenLayers.Projection("EPSG:4326"),
+                units: "m",
+                numZoomLevels: 18,
+                maxResolution: 156543.0339,
+				maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)
+			};
+
+			map = new OpenLayers.Map ("<?php echo $idDiv; ?>", option);
+
+			//BASELAYER
+			var baseLayer = null;
+			<?php
+			foreach ($baselayers as $baselayer) {
+				switch ($baselayer['typeBaseLayer']) {
+					case 'OSM':
+						?>
+						baseLayer = null;
+						baseLayer = new OpenLayers.Layer.OSM(
+							"<?php echo $baselayer['name']; ?>", 
+							"<?php echo $baselayer['url']; ?>",
+							{numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
+								'sphericalMercator': true
+							}
+						);
+						map.addLayer(baseLayer);
+						<?php
+						break;
+					case 'Gmap':
+						?>
+						baseLayer = null;
+						<?php
+						switch ($baselayer['gmap_type']) {
+							case 'G_PHYSICAL_MAP':
+								?>
+								baseLayer = new OpenLayers.Layer.Google(
+									"<?php echo $baselayer['name']; ?>",
+									{type: G_PHYSICAL_MAP,
+										numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
+										'sphericalMercator': true
+									}
+								);
+								map.addLayer(baseLayer);
+								<?php
+								break;
+							case 'G_HYBRID_MAP':
+								?>
+								baseLayer = new OpenLayers.Layer.Google(
+									"<?php echo $baselayer['name']; ?>",
+									{type: G_HYBRID_MAP,
+										numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
+										'sphericalMercator': true
+									}
+								);
+								map.addLayer(baseLayer);
+								<?php
+								break;
+							case 'G_SATELLITE_MAP':
+								?>
+								baseLayer = new OpenLayers.Layer.Google(
+									"<?php echo $baselayer['name']; ?>",
+                					{type: G_SATELLITE_MAP,
+                						numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
+                						'sphericalMercator': true
+                					}
+            					);
+								map.addLayer(baseLayer);
+								<?php
+								break;
+							default:
+								?>
+								baseLayer = new OpenLayers.Layer.Google(
+									"<?php echo $baselayer['name']; ?>",
+									{numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
+	                					'sphericalMercator': true}
+								);
+								map.addLayer(baseLayer);								
+								<?php
+								break;
+						}
+						break;
+					case 'Static_Image':
+						?>
+						baseLayer = null;
+			            baseLayer = new OpenLayers.Layer.Image(
+			            	"<?php echo $baselayer['name']; ?>",
+			            	"<?php echo $baselayer['url']; ?>",
+							new OpenLayers.Bounds(<?php echo $baselayer['bb_left']; ?>,
+								<?php echo $baselayer['bb_bottom']; ?>,
+								<?php echo $baselayer['bb_right']; ?>,
+								<?php echo $baselayer['bb_top']; ?>
+							),
+							new OpenLayers.Size(<?php echo $baselayer['image_width']; ?>, <?php echo $baselayer['image_height']; ?>),
+							{projection: new OpenLayers.Projection("EPSG:4326"),
+			            		numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>
+							}
+						);
+			            map.addLayer(baseLayer);
+						<?php
+						break;
+				}
+			}
+			?>
+
+			var lonLat = new OpenLayers.LonLat(<?php echo $lonCenter; ?>, <?php echo $latCenter; ?>)
+				.transform(map.displayProjection, map.getProjectionObject());
+
+			map.setCenter (lonLat, <?php echo $iniZoom; ?>);
+		//});
+	</script>
+	<?php
+}
+
+
 function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	$controls = (array)$controls;
 	
 	require_javascript_file('OpenLayers/OpenLayers');
+	
+	printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls);
+	return;
 	?>
 	<script type="text/javascript">
 		$(document).ready (

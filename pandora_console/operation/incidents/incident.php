@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -23,6 +23,9 @@ if (! give_acl ($config['id_user'], 0, "IR")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Header
+print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, "");
 
 // Take input parameters
 
@@ -169,8 +172,6 @@ if (empty ($result)) {
 	$count = count ($result);
 }
 
-// Header
-print_page_header (__('Incident management'), "images/book_edit.png", false, "", false, "");
 
 echo '<form name="visualizacion" method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident">';
 

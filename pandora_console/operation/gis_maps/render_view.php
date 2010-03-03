@@ -66,7 +66,7 @@ if ($confMap !== false) {
 }
 if ($gmap_layer === true) {
 ?>
-	<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=falsei&key=<?php echo $gmap_key ?>" ></script>
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
 <?php
 }
 
@@ -106,11 +106,16 @@ $times = array(
 
 $buttons[] = '&nbsp;' . __('Refresh: ') . print_select($times, 'refresh_time', 60, 'changeRefreshTime(this.value);', '', 0, true, false, false) . "&nbsp;";
 
-$buttons[] = '<a id="button_status_all" href="javascript: changeShowStatus(\'all\');" style="border: 1px black solid;">' . __('All') . '</a>';
-$buttons[] = '<a id="button_status_bad" href="javascript: changeShowStatus(\'bad\');"><img src="images/status_sets/default/agent_critical_ball.png" /> ' . __('Critical') . '</a>';
-$buttons[] = '<a id="button_status_warning" href="javascript: changeShowStatus(\'warning\');"><img src="images/status_sets/default/agent_warning_ball.png" /> ' . __('Warning') . '</a>';
-$buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\');"><img src="images/status_sets/default/agent_ok_ball.png" /> ' . __('Ok') . '</a>';
-$buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><img src="images/status_sets/default/agent_no_monitors_ball.png" /> ' . __('Other') . '</a>';
+$buttons[] = '<a id="button_status_all" href="javascript: changeShowStatus(\'all\');" style="border: 1px black solid;">' .
+	__('All') . '</a>';
+$buttons[] = '<a id="button_status_bad" href="javascript: changeShowStatus(\'bad\');"><div style="height: 18px;">' . 
+	'<img src="images/status_sets/default/agent_critical_ball.png" title="' . __('Critical') . '"/></div></a>';
+$buttons[] = '<a id="button_status_warning" href="javascript: changeShowStatus(\'warning\');"><div style="height: 18px;">' .
+	'<img src="images/status_sets/default/agent_warning_ball.png" title="' . __('Warning') . '"/></div></a>';
+$buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\');"><div style="height: 18px;">' .
+	'<img src="images/status_sets/default/agent_ok_ball.png" title="' . __('Ok') . '"/></div></a>';
+$buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><div style="height: 18px;">' .
+	'<img src="images/status_sets/default/agent_no_monitors_ball.png" title="' . __('Other') . '"/></div></a>';
 $buttons[] = __('Show agents in state: ');
 
 
@@ -139,7 +144,8 @@ if ($layers != false) {
 			}
 			else {
 				if ($show_history == 'y') {
-					addPath($layer['layer_name'], $idAgent);
+					$lastPosition = array('longitude' => $coords['stored_longitude'], 'latitude' => $coords['stored_latitude']);
+					addPath($layer['layer_name'], $idAgent, $lastPosition);
 				}
 			}
 			$icon = get_agent_icon_map($idAgent, true);

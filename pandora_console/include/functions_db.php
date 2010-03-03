@@ -2075,7 +2075,7 @@ function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cac
 		else {
 			add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
 				array ('time' => $time));
-			while ($row = mysql_fetch_array ($result)) {
+			while ($row = mysql_fetch_assoc ($result)) {
 				array_push ($retval, $row);
 			}
 

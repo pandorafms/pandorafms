@@ -1,3 +1,8 @@
+2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/gis_view.php: fix "Call-time pass-by-reference" for
+	function "print_table".
+
 2010-03-02  Sancho Leren <slerena@artica.es>
 
 	* include/functions_ui.php: Fixes default icon for operation

@@ -101,7 +101,7 @@ else {
 	$table->class = 'position_data_table';
 	$table->id = $agent_name.'_position_data_table';
 	$table->title = $agent_name." ". __("positional data");
-	print_table(&$table); unset($table);
+	print_table($table); unset($table);
 
 	pagination ($countData, false) ;
 	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";

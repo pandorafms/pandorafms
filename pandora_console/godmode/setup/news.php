@@ -13,7 +13,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // Load global vars
-require_once ("include/config.php");
+global $config;
 
 check_login ();
 

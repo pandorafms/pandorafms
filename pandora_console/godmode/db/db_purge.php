@@ -16,7 +16,8 @@
 
 
 // Load global vars
-require("include/config.php");
+global $config;
+
 if ($config['flash_charts']) {
 	require('include/fgraph.php');
 }

@@ -261,7 +261,9 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$result = array ();
 	
 	foreach ($result as $row) {
-		$fields[$row[0]] = $row[1];
+		$id = array_shift($row);
+		$value = array_shift($row);
+		$fields[$id] = $value;
 	}
 	
 	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled);

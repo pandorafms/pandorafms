@@ -14,6 +14,8 @@
 // GNU General Public License for more details.
 // Load global vars
 
+global $config;
+
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AW")) {

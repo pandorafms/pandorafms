@@ -13,6 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+global $config;
+
 if (is_ajax ()) {
 	$search_agents = (bool) get_parameter ('search_agents');
 	
@@ -37,8 +39,6 @@ if (is_ajax ()) {
 		return;
  	}
 }
-
-require_once ("include/config.php");
 
 check_login ();
 

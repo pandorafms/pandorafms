@@ -543,11 +543,12 @@ function get_agent_icon_map($idAgent, $state = false, $status = null) {
  * 
  * @param string $layerName String of layer.
  * @param integer $idAgent The id of agent
- * @param $history_time: Number of seconds in the past to show from where to start the history path.
+ * @param integer $history_time Number of seconds in the past to show from where to start the history path.
+ * @param array $lastPosition The last position of agent that is not in history table. 
  * 
  * @return None
  */
-function addPath($layerName, $idAgent, $history_time = null) {
+function addPath($layerName, $idAgent, $lastPosition = null, $history_time = null) {
 	
 	if ($history_time === null) {
 		$where = '1 = 1';
@@ -587,6 +588,10 @@ function addPath($layerName, $idAgent, $history_time = null) {
 						$first =false;
 						echo "new OpenLayers.Geometry.Point(" . $point['longitude'] . ", " . $point['latitude'] . ")";
 					}
+					
+					if ($lastPosition !== null) {
+						echo ", new OpenLayers.Geometry.Point(" . $lastPosition['longitude'] . ", " . $lastPosition['latitude'] . ")";
+					}
 					echo "];";
 				} 
 				?>
@@ -598,7 +603,7 @@ function addPath($layerName, $idAgent, $history_time = null) {
 	<?php
 	if ($listPoints != false) {
 		foreach($listPoints as $point) {
-			if (end($listPoints) != $point)
+			if ((end($listPoints) != $point) || (($lastPosition !== null)))
 				addPointPath($layerName, $point['latitude'], $point['longitude'], $color, (int)$point['manual_placement'], $point['id_tgis_data']);
 		}
 	}
@@ -892,11 +897,11 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	
 	$agent_icon = get_agent_icon_map($agent_id, true);
 	$status = get_agent_status($agent_id);
-		
+	
 	/* If show_history is true, show the path of the agent */
 	if ($show_history) {
-		/* TODO: only show the last history_time part of the path */
-		addPath("layer_for_agent_".$agent_name,$agent_id, $history_time);
+		$lastPosition = array('longitude' => $agentPositionLongitude, 'latitude' => $agentPositionLatitude);
+		addPath("layer_for_agent_".$agent_name,$agent_id, $lastPosition, $history_time);
 	}
 	
 	addAgentPoint("layer_for_agent_".$agent_name, $agent_name, $agentPositionLatitude, $agentPositionLongitude, $agent_icon, 20, 20, $agent_id, $status, 'point_agent_info');

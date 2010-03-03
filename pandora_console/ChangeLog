@@ -1,5 +1,16 @@
 2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: add new parameter to function "addPath" the
+	$lastPosition for paint the line to last position that this position is not
+	in the table tgis_data_history. In function "getAgentMap" use the new
+	parameter in the function "addPath".
+	 
+	* operation/gis_maps/render_view.php: tiny fix in the include javascript
+	of google. And few stetic changes in the top menu. And add the new parameter
+	to "addPath".
+
+2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/gis_maps/render_view.php: close in the end a unclose php tag.
 
 2010-03-03  Miguel de Dios  <miguel.dedios@artica.es>

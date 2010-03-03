@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -201,12 +201,12 @@ echo "<script type=\"text/javascript\">
 
       
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
+	print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
 	echo '<input type="hidden" name="id_inc" value="'.$id_inc.'">';
-	echo '<h2>'.__('Incident management').' &raquo; '.__('Incident details').' #'.$id_inc.'</h2>';
 } else {
+	print_page_header (__('Create incident'), "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert">';
-	echo '<h2>'.__('Incident management').' &raquo; '.__('Create incident').'</h2>';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="650px">';

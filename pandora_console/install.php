@@ -267,11 +267,11 @@ function install_step1_licence() {
 	} else {
 
 		echo "<form method=post action='install.php?step=2'>";
-		echo "<textarea name='gpl2' cols=50 rows=20>";
+		echo "<textarea name='gpl2' cols=45 rows=15>";
 		echo file_get_contents ("COPYING");
 		echo "</textarea>";
 		echo "<p>";
-		echo "<input type=submit value='I understand and accept the licence terms'>";
+		echo "<input type=submit value='Yes, I accept licence terms'>";
 
 		}
 	echo "</div>";

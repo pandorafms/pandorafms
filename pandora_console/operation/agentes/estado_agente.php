@@ -130,6 +130,7 @@ if (! empty ($agent_names)) {
 		array ('id_agente',
 			'id_grupo',
 			'id_os',
+            'ultimo_contacto',
 			'intervalo'));}
 
 if (empty ($agents)) {
@@ -218,9 +219,22 @@ foreach ($agents as $agent) {
 	$data[5] = $agent_info["status_img"];
 	
 	$data[6] = $agent_info["alert_img"];
-	
-	$data[7] = print_timestamp ($agent_info["last_contact"], true);
-	
+
+
+    $last_time = strtotime ($agent["ultimo_contacto"]);
+	$now = time ();
+	$diferencia = $now - $last_time;
+	$time = print_timestamp ($last_time, true);
+	$style = '';
+	if ($diferencia > ($agent["intervalo"] * 2))
+        $data[7] = '<b><span style="color: #ff0000">'.$time.'</span></b>';
+    else
+        $data[7] = $time;
+
+    // This old code was returning "never" on agents without modules, BAD !!
+    // And does not print outdated agents in red. WRONG !!!!
+    // $data[7] = print_timestamp ($agent_info["last_contact"], true);
+
 	array_push ($table->data, $data);
 }
 

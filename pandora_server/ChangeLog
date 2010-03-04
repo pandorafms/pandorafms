@@ -1,5 +1,9 @@
 2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* conf/pandora_server.conf: Corrected typo 
+	
+2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* lib/PandoraFMS/Server.pm: Added spaces between server name and server
 	type on the event generation string.
 

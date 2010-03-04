@@ -53,7 +53,7 @@ switch ($action) {
 		break;
 }
 
-print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "", true);
+print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "gis_map_builder", true);
 
 $table->width = '500px';
 $table->head[0] = __('Map name');

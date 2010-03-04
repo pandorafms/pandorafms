@@ -170,8 +170,8 @@ sub process_xml_data ($$$$$) {
 		if ($parent_id < 1)	{ # Unknown parent
 			$parent_id = 0;
 		}
-	}
 	logger($pa_config,"Parent_agent_name: $parent_agent_name parent_id: $parent_id",10);
+	}
 
 	my $valid_position_data = 1; 	
 

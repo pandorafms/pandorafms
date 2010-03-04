@@ -18,6 +18,8 @@ global $config;
 
 check_login (); 
 
+print_page_header (__('Event database cleanup'), "", false, "", true);
+
 if (! give_acl ($config['id_user'], 0, "DM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Database Management Event");
 	require ("general/noaccess.php");
@@ -38,8 +40,6 @@ if (isset ($_POST["date_purge"])){
 	}
 }
 # End of get parameters block
-
-echo "<h2>".__('Database maintenance')." &raquo; ".__('Event database cleanup')."</h2>";
 
 $row = get_db_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
 

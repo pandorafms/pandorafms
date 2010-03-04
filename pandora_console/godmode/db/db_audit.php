@@ -16,6 +16,8 @@
 // Load global vars
 global $config;
 
+print_page_header (__('Database audit purge'), "", false, "", true);
+
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "DM")) {
@@ -65,9 +67,6 @@ if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	(int) $deleted = process_sql($query);
 }
 # End of get parameters block
-
-echo "<h2>".__('Database maintenance')." &raquo; ";
-echo  __('Database audit purge')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td class='datos'>";

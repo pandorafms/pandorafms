@@ -22,6 +22,8 @@ if ($config['flash_charts']) {
 	require('include/fgraph.php');
 }
 
+print_page_header (__('Database information'), "", false, "", true);
+
 check_login ();
 	
 if (! give_acl ($config['id_user'], 0, "DM")) {
@@ -40,8 +42,6 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
  */
 
-echo "<h2>".__('Database maintenance')." &raquo; ";
-echo __('Database information')."</h2>";
 
 if ($config['flash_charts']) {
 	$width=600;

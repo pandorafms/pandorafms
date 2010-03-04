@@ -17,6 +17,9 @@ global $config;
 
 check_login ();
 
+print_page_header (__('GIS Maps builder'), "images/server_web.png", false, "gis_map_builder", true);
+
+
 require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');

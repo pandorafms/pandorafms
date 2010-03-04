@@ -35,11 +35,10 @@ $agentId = get_parameter('id_agente');
 $agent_name = get_agent_name($agentId); 
 $agentData = getDataLastPositionAgent($id_agente);
 
-echo "<h2>".__('Received data from')." ". $agent_name . " </h2>";
 echo "<h3>" . __("Map with the last position/s") . " " . human_time_description ($period) ."</h3>";
 
 /* Map with the current position */
-echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
 if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 

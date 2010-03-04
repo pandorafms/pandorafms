@@ -1,3 +1,25 @@
+2010-03-04  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql: Added news, default timezone and other
+	minor changes. GIS is disabled by default now.
+
+	* include/config_process.php: Force a timezone if not defined.
+
+	* operation/gis_maps/index.php,
+        operation/agentes/gis_view.php: Config.php and header stuff
+
+	* operation/servers/view_server_detail.php
+	operation/menu.php: Recon operation detail is now shown in the left
+	menu.
+
+	* admin_access_logs.php,
+	db/db_audit.php
+	db/db_info.php
+        db/db_event.php
+        agentes/configurar_agente.php
+        gis_maps/configure_gis_map.php
+        gis_maps/index.php: More headers and config.php include stuff.
+
 2010-03-04  Raúl Mateos <raulofpandora@gmail.com>
 
 	* (lot of files): Updated year and headers.

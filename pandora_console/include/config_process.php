@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC100301'; // Remember is YYMMDD
+$build_version = 'PC100303'; // Remember is YYMMDD
 $pandora_version = 'v3.1-dev';
 
 /* Help to debug problems. Override global PHP configuration */
@@ -76,6 +76,10 @@ $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 $config['user_language'] = $config["language"];
 
 // Set a the system timezone default 
+if ((!isset($config["timezone"])) OR ($config["timezone"] == "")){
+	$config["timezone"] = "Europe/Berlin";
+}
+
 date_default_timezone_set($config["timezone"]);
 
 // Set user language if provided, overriding System language

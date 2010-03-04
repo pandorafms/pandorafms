@@ -118,6 +118,22 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$menu["estado_server"]["text"] = __('Pandora servers');
 	$menu["estado_server"]["sec2"] = "operation/servers/view_server";
 	$menu["estado_server"]["id"] = "oper-servers";
+
+	$sub = array ();		
+	// Show all recon servers, and generate menu for details
+
+	$servers = get_db_all_rows_sql ('SELECT * FROM tserver WHERE server_type = 3');
+	if ($servers === false) {
+		$servers = array ();
+	}
+
+	foreach ($servers as $serverItem) {
+		$sub["operation/servers/view_server_detail&server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
+	}
+
+	$menu["estado_server"]["sub"] = $sub;
+	//End of server view
+
 	//End of server view
 }
 

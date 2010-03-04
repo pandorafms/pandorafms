@@ -14,7 +14,7 @@
  */
 
 // Load global vars
-require_once ("include/config.php");
+global $config;
 
 // Login check
 check_login ();
@@ -23,7 +23,7 @@ require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');
 
-print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "gis_map_summary");
+print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/server_web.png", false, "");
 
 $maps = getMaps();
 

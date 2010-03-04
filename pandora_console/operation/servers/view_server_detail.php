@@ -19,6 +19,13 @@ global $config;
 
 check_login ();
 
+$id_server = (int) get_parameter ("server_id", -1);
+
+$options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'><img src='images/refresh.png'></a></li>";
+
+print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
+
+
 if (! give_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access recon task viewer");
@@ -42,20 +49,8 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	}
 }
 
-$id_server = (int) get_parameter ("server_id", -1);
 $server_name = get_server_name ($id_server);
 $recon_tasks = get_db_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
-
-echo "<h2>".__('Pandora servers')." &raquo; ";
-echo __('Configuration detail') . " - ".safe_input ($server_name);
-echo '&nbsp;<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server_detail&amp;server_id='.$id_server.'">';
-print_image ("images/refresh.png");
-echo "</a>&nbsp;";
-if (check_acl ($config["id_user"],0,"PW")){
-	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask'><img src='images/setup.png'></a>";
-}
-echo "</h2>";
-
 
 // Show network tasks for Recon Server
 if ($recon_tasks === false) {

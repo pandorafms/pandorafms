@@ -47,7 +47,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','3.1-dev'),
-(9,'db_scheme_build','PD100209'),
+(9,'db_scheme_build','PD100302'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -64,8 +64,10 @@ INSERT INTO `tconfig` VALUES
 (26, 'prominent_time', 0),
 (27, 'timesource', 'system'),
 (28, 'realtimestats', '1'),
-(29, 'stats_interval', '300'),
-(30, 'activate_gis', '1');
+(29, 'stats_interval', '60'),
+(30, 'activate_gis', '0'),
+(31, 'timezone', 'Europe/Berlin');
+
 
 UNLOCK TABLES;
 
@@ -160,11 +162,10 @@ UNLOCK TABLES;
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
 (1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora_3.x:Documentation'),
-(2,'ArticaST','http://www.artica.es'),
-(3,'Pandora FMS','http://pandora.sourceforge.net'),
-(4,'Babel Enterprise','http://babel.sourceforge.net'),
-(5,'Openideas','http://www.openideas.info'),
-(6,'Google','http://www.google.com');
+(2,'Pandora FMS','http://pandorafms.org'),
+(3,'Report a bug','https://sourceforge.net/tracker/?func=add&group_id=155200&atid=794852'),
+(4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&atid=794855'),
+(5,'Module library','http://pandorafms.org/?sec=community&sec2=repository&lng=es');
 UNLOCK TABLES;
 
 --
@@ -218,19 +219,14 @@ INSERT INTO `ttipo_modulo` VALUES
 (16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
 (17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
 (18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
-
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-
 (30,'log4x',0,'Log4x','mod_log4x.png'),
-
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
--- Not yet implemented
--- (19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
--- (20,'image_png',9,'Image PNG data', 'mod_image_png.png');
 
--- Categoria field is used to segregate several types (plugin, agents, network) on their data
+-- Categoria field is used to segregate several types
+-- (plugin, agents, network) on their data
 -- types, could be used or could be avoided and use directly primary key (id_tipo) 
 
 --
@@ -251,7 +247,8 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
 
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 3.0!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW());
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 3.1!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+(2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent module');
 INSERT INTO tmodule VALUES (2,'Network module');

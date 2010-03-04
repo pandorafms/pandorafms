@@ -29,13 +29,14 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-echo "<h2>" . __('Pandora audit') . " &raquo; " .__('Review Logs') . "</h2>";
+print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "", false, "", true );
+
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');
 
 echo '<table width=100% border=0>';
 echo "<tr><td colspan=2>";
-echo '<h3>'.__('Filter').'</h3>';
+echo '<b>'.__('Filter').'</b>';
 echo "<td rowspan=2>";
 if ($config['flash_charts']) {
 	echo graphic_user_activity (300, 140);

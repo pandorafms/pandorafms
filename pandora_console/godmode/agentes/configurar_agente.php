@@ -247,6 +247,12 @@ if ($id_agente) {
 	// IE might not always show an empty div, added space
 	echo '<div style="height: 25px;">&nbsp;</div>';
 }
+// Create agent 
+else {
+
+	print_page_header (__('Agent manager'), "images/bricks.png", false, "", true);
+
+}
 
 $delete_conf_file = (bool) get_parameter('delete_conf_file');
 

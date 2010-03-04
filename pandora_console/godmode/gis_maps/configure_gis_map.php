@@ -284,6 +284,7 @@ switch ($action) {
 
 $table->width = '90%';
 $table->data = array ();
+$table->valign[0] = 'top';
 
 $table->data[0][0] = __('Map Name') . print_help_tip (__('Descriptive name for the map'), true). ':';
 $table->data[0][1] = print_input_text ('map_name', $map_name, '', 30, 60, true);
@@ -296,15 +297,9 @@ if (isset($invalidFields['map_connection_list'])) {
 	}
 }
 
-$table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
+$table->data[1][0] =  __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError;
+$table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
-		<td colspan='3'><div id='map' style='width: 300px; height: 300px; border: 1px solid black;'></div></td>
-	</tr>
-	<tr>
-		<td colspan='3'>" . print_button(__("Load preview map"),'button_refresh', false, 'refreshMapView();', 'class="sub"', true) . "</td>
-	</tr>
-	<tr>
-		<td>" . __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError . "</td>
 		<td>
 			" . print_select_from_sql('SELECT id_tmap_connection, conection_name FROM tgis_map_connection', 'map_connection', '', '', '', '0', true) ."
 		</td>
@@ -316,29 +311,29 @@ $table->data[0][2] = "<table class='databox' border='0' id='map_connection'>
 	</tr> " . addConectionMapsInForm($map_connection_list) . "
 </table>";
 
-$table->data[1][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
-$table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
+$table->data[2][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
+$table->data[2][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', '', '0', true);
 
-$table->data[2][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
-$table->data[2][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
+$table->data[3][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
+$table->data[3][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
 
-$table->data[3][0] = __('Center Longitude') . ':';
-$table->data[3][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
+$table->data[4][0] = __('Center Longitude') . ':';
+$table->data[4][1] = print_input_text ('map_initial_longitude', $map_initial_longitude, '', 4, 8, true);
 
-$table->data[4][0] = __('Center Latitude') . ':';
-$table->data[4][1] = print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
+$table->data[5][0] = __('Center Latitude') . ':';
+$table->data[5][1] = print_input_text ('map_initial_latitude', $map_initial_latitude, '', 4, 8, true);
 
-$table->data[5][0] = __('Center Altitude') . ':';
-$table->data[5][1] = print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
+$table->data[6][0] = __('Center Altitude') . ':';
+$table->data[6][1] = print_input_text ('map_initial_altitude', $map_initial_altitude, '', 4, 8, true);
 
-$table->data[6][0] = __('Default Longitude') . ':';
-$table->data[6][1] = print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
+$table->data[7][0] = __('Default Longitude') . ':';
+$table->data[7][1] = print_input_text ('map_default_longitude', $map_default_longitude, '', 4, 8, true);
 
-$table->data[7][0] = __('Default Latitude') . ':';
-$table->data[7][1] = print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
+$table->data[8][0] = __('Default Latitude') . ':';
+$table->data[8][1] = print_input_text ('map_default_latitude', $map_default_latitude, '', 4, 8, true);
 
-$table->data[8][0] = __('Default Altitude') . ':';
-$table->data[8][1] = print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
+$table->data[9][0] = __('Default Altitude') . ':';
+$table->data[9][1] = print_input_text ('map_default_altitude', $map_default_altitude, '', 4, 8, true);
 
 print_table($table);
 

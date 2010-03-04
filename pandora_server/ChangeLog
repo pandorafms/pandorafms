@@ -1,3 +1,19 @@
+2010-03-04  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: Several typos and better formating.
+
+	* util/change_remoteconfig.pl: Tool to massive edit the server IP 
+	in remote configuration files. Could be modified to alter any other
+	fixed field.
+
+	* util/gpx2pandora_agent_data.pl: Transform a standard GPX GIS data
+	file in several Pandora FMS XML data server compatible files with GIS
+	data.
+
+	* util/gis.README: Small "documentation" on how to start to using GIS
+	in the Server.
+
+
 2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* conf/pandora_server.conf: Corrected typo 

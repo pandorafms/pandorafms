@@ -59,7 +59,7 @@ use PandoraFMS::DB;
 use PandoraFMS::Tools;
 # TODO:Test if is instaled 
 
-my $geoIPPurePerlavilable= (eval 'use  Geo::IP::PurePerl; 1') ? 1 : 0;
+my $geoIPPurePerlavilable= (eval 'use  PandoraFMS::GeoIP; 1') ? 1 : 0;
 
 
 require Exporter;
@@ -180,8 +180,11 @@ sub get_reverse_geoip_file($$) {
 		my $geoipdb = Geo::IP::PurePerl->open( $pa_config->{'recon_reverse_geolocation_file'}); 
 		if (defined($geoipdb)) {
     		my $region_info = $geoipdb->get_city_record_as_hash($ip_addr);	
-    		logger($pa_config, "Region info found for IP '$ip_addr' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'longitude'}, 8);
+    		logger($pa_config, "Region info found for IP '$ip_addr' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'latitude'}, 8);
 			return $region_info;
+		}
+		else {
+    		logger($pa_config, "WARNING: Can't open reverse geolocation file ($pa_config->{'recon_reverse_geolocation_file'}) :$!",8);
 		}
 	}
 

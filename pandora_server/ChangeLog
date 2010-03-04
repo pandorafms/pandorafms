@@ -1,3 +1,16 @@
+2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/Server.pm: Added spaces between server name and server
+	type on the event generation string.
+
+	* lib/PandoraFMS/GeoIP.pm: MaxMind GeoIP PurePerl GPL library to access
+	reverse geoip data.
+
+	* lib/PandoraFMS/GIS.pm: Modified to use GeoIP.pm
+
+	* lib/PandoraFMS/DataServer.pm: Moved log line in case parent_agent_name
+	is not defined
+
 2010-03-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Added 'matches_value' support to 'onchange'

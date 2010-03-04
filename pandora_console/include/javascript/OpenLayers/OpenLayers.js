@@ -277,7 +277,24 @@ if(origTL.y<this.map.paddingForPopups.top){newTL.y=this.map.paddingForPopups.top
 if((origTL.y+this.size.h)>(mapSize.h-this.map.paddingForPopups.bottom)){newTL.y=mapSize.h-this.map.paddingForPopups.bottom-this.size.h;}
 var dx=origTL.x-newTL.x;var dy=origTL.y-newTL.y;this.map.pan(dx,dy);},registerEvents:function(){this.events=new OpenLayers.Events(this,this.div,null,true);this.events.on({"mousedown":this.onmousedown,"mousemove":this.onmousemove,"mouseup":this.onmouseup,"click":this.onclick,"mouseout":this.onmouseout,"dblclick":this.ondblclick,scope:this});},onmousedown:function(evt){this.mousedown=true;OpenLayers.Event.stop(evt,true);},onmousemove:function(evt){if(this.mousedown){OpenLayers.Event.stop(evt,true);}},onmouseup:function(evt){if(this.mousedown){this.mousedown=false;OpenLayers.Event.stop(evt,true);}},onclick:function(evt){OpenLayers.Event.stop(evt,true);},onmouseout:function(evt){this.mousedown=false;},ondblclick:function(evt){OpenLayers.Event.stop(evt,true);},CLASS_NAME:"OpenLayers.Popup"});OpenLayers.Popup.WIDTH=200;OpenLayers.Popup.HEIGHT=200;OpenLayers.Popup.COLOR="white";OpenLayers.Popup.OPACITY=1;OpenLayers.Popup.BORDER="0px";OpenLayers.Protocol=OpenLayers.Class({format:null,options:null,autoDestroy:true,initialize:function(options){options=options||{};OpenLayers.Util.extend(this,options);this.options=options;},destroy:function(){this.options=null;this.format=null;},read:function(){},create:function(){},update:function(){},"delete":function(){},commit:function(){},abort:function(response){},CLASS_NAME:"OpenLayers.Protocol"});OpenLayers.Protocol.Response=OpenLayers.Class({code:null,requestType:null,last:true,features:null,reqFeatures:null,priv:null,initialize:function(options){OpenLayers.Util.extend(this,options);},success:function(){return this.code>0;},CLASS_NAME:"OpenLayers.Protocol.Response"});OpenLayers.Protocol.Response.SUCCESS=1;OpenLayers.Protocol.Response.FAILURE=0;OpenLayers.Renderer=OpenLayers.Class({container:null,root:null,extent:null,locked:false,size:null,resolution:null,map:null,initialize:function(containerID,options){this.container=OpenLayers.Util.getElement(containerID);},destroy:function(){this.container=null;this.extent=null;this.size=null;this.resolution=null;this.map=null;},supported:function(){return false;},setExtent:function(extent,resolutionChanged){this.extent=extent.clone();if(resolutionChanged){this.resolution=null;}},setSize:function(size){this.size=size.clone();this.resolution=null;},getResolution:function(){this.resolution=this.resolution||this.map.getResolution();return this.resolution;},drawFeature:function(feature,style){if(style==null){style=feature.style;}
 if(feature.geometry){var bounds=feature.geometry.getBounds();if(bounds){if(!bounds.intersectsBounds(this.extent)){style={display:"none"};}
-var rendered=this.drawGeometry(feature.geometry,style,feature.id);if(style.display!="none"&&style.label&&rendered!==false){this.drawText(feature.id,style,feature.geometry.getCentroid());}else{this.removeText(feature.id);}
+var rendered=this.drawGeometry(feature.geometry,style,feature.id);if(style.display!="none"&&style.label&&rendered!==false){
+	
+	//DISABLE CODE OF STABLE RELEASE
+	//this.drawText(feature.id,style,feature.geometry.getCentroid());
+	
+	//BACKPORT
+	//INI PART OF CODE FROM THE SVN TRUNK R10086
+	var location = feature.geometry.getCentroid(); 
+    if(style.labelXOffset || style.labelYOffset) {
+        xOffset = isNaN(style.labelXOffset) ? 0 : style.labelXOffset;
+        yOffset = isNaN(style.labelYOffset) ? 0 : style.labelYOffset;
+        var res = this.getResolution();
+        location.move(xOffset*res, yOffset*res);
+    }
+    this.drawText(feature.id, style, location);
+  //END PART OF CODE FROM THE SVN TRUNK R10086
+
+}else{this.removeText(feature.id);}
 return rendered;}}},drawGeometry:function(geometry,style,featureId){},drawText:function(featureId,style,location){},removeText:function(featureId){},clear:function(){},getFeatureIdFromEvent:function(evt){},eraseFeatures:function(features){if(!(features instanceof Array)){features=[features];}
 for(var i=0,len=features.length;i<len;++i){this.eraseGeometry(features[i].geometry);this.removeText(features[i].id);}},eraseGeometry:function(geometry){},moveRoot:function(renderer){},getRenderLayerId:function(){return this.container.id;},CLASS_NAME:"OpenLayers.Renderer"});OpenLayers.Strategy=OpenLayers.Class({layer:null,options:null,active:null,autoActivate:true,autoDestroy:true,initialize:function(options){OpenLayers.Util.extend(this,options);this.options=options;this.active=false;},destroy:function(){this.deactivate();this.layer=null;this.options=null;},setLayer:function(layer){this.layer=layer;},activate:function(){if(!this.active){this.active=true;return true;}
 return false;},deactivate:function(){if(this.active){this.active=false;return true;}

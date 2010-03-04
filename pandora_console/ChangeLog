@@ -1,3 +1,12 @@
+2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: add comment include for javascript include
+	for more to easy change version openlayers for test.
+	
+	* include/javascript/OpenLayers/OpenLayers.js: warning the source code is
+	compress. In the method "drawFeature" for the class "Renderer" backport some
+	part of code for to extend the style attributes (labelYOffset in this case).
+
 2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* images/gis_map/icons/circle.bad.png ,

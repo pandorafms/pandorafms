@@ -208,6 +208,7 @@ function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $bas
 	$controls = (array)$controls;
 	
 	require_javascript_file('OpenLayers/OpenLayers');
+	//echo '<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>';
 	
 	printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls);
 	return;

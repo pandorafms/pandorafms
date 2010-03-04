@@ -59,33 +59,41 @@ function printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $ba
 
 			var controlVar = [
 				<?php
-				foreach ($controls as $control) {					
+				$first = true;
+				foreach ($controls as $control) {
+					if (!$first)
+						echo ',';
+					$first = false;
+							
 					switch ($control) {
 						case 'Navigation':
-							echo "new OpenLayers.Control.Navigation(),";
+							echo "new OpenLayers.Control.Navigation()";
 							break;
 						case 'MousePosition':
-							echo "new OpenLayers.Control.MousePosition(),";
+							echo "new OpenLayers.Control.MousePosition()";
 							break;
 						case 'OverviewMap':
-							echo "new OpenLayers.Control.OverviewMap(),";
+							echo "new OpenLayers.Control.OverviewMap()";
 							break;
 						case 'PanZoom':
-							echo "new OpenLayers.Control.PanZoom(),";
+							echo "new OpenLayers.Control.PanZoom()";
 							break;
 						case 'PanZoomBar':
-							echo "new OpenLayers.Control.PanZoomBar(),";
+							echo "new OpenLayers.Control.PanZoomBar()";
 							break;
 						case 'ScaleLine':
-							echo "new OpenLayers.Control.ScaleLine(),";
+							echo "new OpenLayers.Control.ScaleLine()";
 							break;
 						case 'Scale':
-							echo "new OpenLayers.Control.Scale(),";
+							echo "new OpenLayers.Control.Scale()";
+							break;
+						case 'layerSwitcher':
+							echo "new OpenLayers.Control.LayerSwitcher()";
 							break;
 					}
 				}
 				?>
-				new OpenLayers.Control.LayerSwitcher()];
+				];
 				
 
 			var option = {

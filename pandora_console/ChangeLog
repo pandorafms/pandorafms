@@ -1,3 +1,8 @@
+2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	*  include/functions_gis.php: added missing num_zoom_levels value to 
+	the baselayers hash when printing the Agent Map
+
 2010-03-03  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/incidents/*.php: Updated year and headers.

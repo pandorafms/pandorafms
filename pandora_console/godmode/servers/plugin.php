@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -25,76 +25,6 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 		"Trying to access Plugin Management");
 	require ("general/noaccess.php");
 	return;
-}
-
-
-// Update plugin
-if (isset($_GET["update_plugin"])){ // if modified any parameter
-	$plugin_id = get_parameter ("update_plugin", 0);
-	$plugin_name = get_parameter ("form_name", "");
-	$plugin_description = get_parameter ("form_description", "");
-	$plugin_max_timeout = get_parameter ("form_max_timeout", "");
-	$plugin_execute = get_parameter ("form_execute", "");
-	$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
-	$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
-	$plugin_user_opt = get_parameter ("form_user_opt", "");
-	$plugin_pass_opt = get_parameter ("form_pass_opt", "");
-	$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
-	
-	$sql_update ="UPDATE tplugin SET 
-	name = '$plugin_name',  
-	description = '$plugin_description', 
-	max_timeout = '$plugin_max_timeout', 
-	execute = '$plugin_execute', 
-	net_dst_opt = '$plugin_net_dst_opt', 
-	net_port_opt = '$plugin_net_port_opt', 
-	user_opt = '$plugin_user_opt', 
-	plugin_type = '$plugin_plugin_type',
-	pass_opt = '$plugin_pass_opt' 
-	WHERE id = $plugin_id";
-	$result=mysql_query($sql_update);	
-	if (! $result) {
-		echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
-	} else {
-		echo "<h3 class='suc'>".__('Plugin updated successfully')."</h3>";
-	}
-}
-
-// Create plugin
-if (isset($_GET["create_plugin"])){	 
-	$plugin_name = get_parameter ("form_name", "");
-	$plugin_description = get_parameter ("form_description", "");
-	$plugin_max_timeout = get_parameter ("form_max_timeout", "");
-	$plugin_execute = get_parameter ("form_execute", "");
-	$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
-	$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
-	$plugin_user_opt = get_parameter ("form_user_opt", "");
-	$plugin_pass_opt = get_parameter ("form_pass_opt", "");
-	$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
-	
-	$sql_insert ="INSERT tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES ('$plugin_name', '$plugin_description', '$plugin_max_timeout', '$plugin_execute', '$plugin_net_dst_opt', '$plugin_net_port_opt', '$plugin_user_opt', '$plugin_pass_opt', $plugin_plugin_type)";
-	$result=mysql_query($sql_insert);
-	if (! $result){
-		echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
-		echo $sql_insert;
-	} else {
-		echo "<h3 class='suc'>".__('Plugin created successfully')."</h3>";
-	}
-}
-
-if (isset($_GET["kill_plugin"])){ // if delete alert
-	$plugin_id = get_parameter ("kill_plugin", 0);
-	$sql_delete= "DELETE FROM tplugin WHERE id= ".$plugin_id;
-	$result=mysql_query($sql_delete);		
-	if (! $result){
-		echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
-	} else {
-		echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
-	}
-	if ($plugin_id != 0){
-		$sql_delete2 ="DELETE FROM tagente_modulo WHERE id_plugin = ".$plugin_id; 
-		$result=mysql_query($sql_delete2);
-	}
 }
 
 $view = get_parameter ("view", "");
@@ -130,16 +60,14 @@ if ($create != ""){
 
 if (($create != "") OR ($view != "")){
 	
-	echo "<h2>";
 	if ($create != "")
-		echo __('Pandora servers')." &raquo; ". __('Plugin creation');
+		print_page_header (__('Plugin creation'), "", false, "", true);
 	else {
-		echo __('Pandora servers')." &raquo; ". __('Plugin update');
+		print_page_header (__('Plugin update'), "", false, "", true);
 		$plugin_id = get_parameter ("view","");
 	}
 	print_help_icon("plugin_definition");
-	echo "</h2>";
-	
+
 	if ($create == "") 
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
 	else
@@ -200,18 +128,86 @@ if (($create != "") OR ($view != "")){
 }
 
 else {
-	echo "<h2>";
- 	echo __('Pandora servers')." &raquo; ".__('Plugins registered in Pandora FMS');
-	echo "</h2>";
+	print_page_header (__('Plugins registered in Pandora FMS'), "", false, "", true);
+
+	// Update plugin
+	if (isset($_GET["update_plugin"])){ // if modified any parameter
+		$plugin_id = get_parameter ("update_plugin", 0);
+		$plugin_name = get_parameter ("form_name", "");
+		$plugin_description = get_parameter ("form_description", "");
+		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
+		$plugin_execute = get_parameter ("form_execute", "");
+		$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
+		$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
+		$plugin_user_opt = get_parameter ("form_user_opt", "");
+		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
+		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
+	
+		$sql_update ="UPDATE tplugin SET 
+		name = '$plugin_name',  
+		description = '$plugin_description', 
+		max_timeout = '$plugin_max_timeout', 
+		execute = '$plugin_execute', 
+		net_dst_opt = '$plugin_net_dst_opt', 
+		net_port_opt = '$plugin_net_port_opt', 
+		user_opt = '$plugin_user_opt', 
+		plugin_type = '$plugin_plugin_type',
+		pass_opt = '$plugin_pass_opt' 
+		WHERE id = $plugin_id";
+		$result=mysql_query($sql_update);	
+		if (! $result) {
+			echo "<h3 class='error'>".__('Problem updating plugin')."</h3>";
+		} else {
+			echo "<h3 class='suc'>".__('Plugin updated successfully')."</h3>";
+		}
+	}
+
+	// Create plugin
+	if (isset($_GET["create_plugin"])){	 
+		$plugin_name = get_parameter ("form_name", "");
+		$plugin_description = get_parameter ("form_description", "");
+		$plugin_max_timeout = get_parameter ("form_max_timeout", "");
+		$plugin_execute = get_parameter ("form_execute", "");
+		$plugin_net_dst_opt = get_parameter ("form_net_dst_opt", "");
+		$plugin_net_port_opt = get_parameter ("form_net_port_opt", "");
+		$plugin_user_opt = get_parameter ("form_user_opt", "");
+		$plugin_pass_opt = get_parameter ("form_pass_opt", "");
+		$plugin_plugin_type = get_parameter ("form_plugin_type", "0");
+	
+		$sql_insert ="INSERT tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES ('$plugin_name', '$plugin_description', '$plugin_max_timeout', '$plugin_execute', '$plugin_net_dst_opt', '$plugin_net_port_opt', '$plugin_user_opt', '$plugin_pass_opt', $plugin_plugin_type)";
+		$result=mysql_query($sql_insert);
+		if (! $result){
+			echo "<h3 class='error'>".__('Problem creating plugin')."</h3>";
+			echo $sql_insert;
+		} else {
+			echo "<h3 class='suc'>".__('Plugin created successfully')."</h3>";
+		}
+	}
+
+	if (isset($_GET["kill_plugin"])){ // if delete alert
+		$plugin_id = get_parameter ("kill_plugin", 0);
+		$sql_delete= "DELETE FROM tplugin WHERE id= ".$plugin_id;
+		$result=mysql_query($sql_delete);		
+		if (! $result){
+			echo "<h3 class='error'>".__('Problem deleting plugin')."</h3>";
+		} else {
+			echo "<h3 class='suc'>".__('Plugin deleted successfully')."</h3>";
+		}
+		if ($plugin_id != 0){
+			$sql_delete2 ="DELETE FROM tagente_modulo WHERE id_plugin = ".$plugin_id; 
+			$result=mysql_query($sql_delete2);
+		}
+	}
+
 	// If not edition or insert, then list available plugins
 	$sql1='SELECT * FROM tplugin ORDER BY name';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result) > 0){
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
-		echo "<th>".__('Name');
-		echo "<th>".__('Type');
-		echo "<th>".__('Command');
-		echo "<th>".__('Delete');
+		echo "<th>".__('Name')."</th>";
+		echo "<th>".__('Type')."</th>";
+		echo "<th>".__('Command')."</th>";
+		echo "<th>".__('Delete')."</th>";
 		$color = 0;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -226,16 +222,17 @@ else {
 			echo "<td class=$tdcolor>";
 			echo "<b><a href='index.php?sec=gservers&sec2=godmode/servers/plugin&view=".$row["id"]."'>";
 			echo $row["name"];
-			echo "</a></b>";
+			echo "</a></b></td>";
 			echo "<td class=$tdcolor>";
 			if ($row["plugin_type"] == 0)
 				echo __('Standard');
 			else
 				echo __('Nagios');
-			echo "<td class=$tdcolor>";
+			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
-			echo "<td class=$tdcolor>";
+			echo "</td><td class=$tdcolor>";
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'><img src='images/cross.png' border=0></a>";
+			echo "</td></tr>";
 		}
 		echo "</table>";
 	} else {
@@ -246,7 +243,7 @@ else {
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
-	echo "</table>";
+	echo "</td></tr></table>";
 }
 
 ?>

@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,8 +28,8 @@ require_once ('include/functions_gis.php');
 
 require_javascript_file('openlayers.pandora');
 
-echo "<h2>".__('Pandora Setup')." &raquo; ";
-echo __('Map conections GIS')."</h2>";
+// Header
+print_page_header (__('Map conections GIS'), "", false, "", true);
 
 $action = get_parameter('action');
 

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -33,6 +33,9 @@ $create_profile = (bool) get_parameter ('create_profile');
 $delete_profile = (bool) get_parameter ('delete_profile');
 $update_profile = (bool) get_parameter ('update_profile');
 $id_profile = (int) get_parameter ('id');
+
+// Header
+print_page_header ($page_title, "", false, "", true);
 
 // Profile deletion
 if ($delete_profile) {
@@ -115,8 +118,6 @@ if ($create_profile) {
 	}
 	$id_profile = 0;
 }
-
-echo '<h2>'.__('Profile management').' &raquo; '.$page_title.'</h2>';
 
 // Edit profile
 if ($id_profile || $new_profile) {

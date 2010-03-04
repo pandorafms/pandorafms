@@ -1,7 +1,7 @@
 <?php
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@ $db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 
 $update_settings = (bool) get_parameter_post ('update_settings');
 
+print_page_header (__('Update manager').' - '. __('Settings'), "images/extensions.png", false, "", true, "" );
+
 if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {
 		um_db_update_setting ($key, $value);
@@ -36,7 +38,6 @@ if ($update_settings) {
 
 $settings = um_db_load_settings ();
 
-echo '<h2>'.__('Extensions'). " &raquo; ". __('Update manager').' - '. __('Settings').'</h2>';
 echo '<form method="post">';
 
 $table->width = '95%';

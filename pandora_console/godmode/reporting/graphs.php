@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -31,6 +31,9 @@ $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
 
+// Header
+print_page_header (__('Graphs management'), "", false, "", true);
+
 // Delete module SQL code
 if ($delete_graph) {
 	if (give_acl ($config['id_user'], 0, "AW")) {
@@ -52,8 +55,6 @@ if ($delete_graph) {
 		exit;
 	}
 }
-
-echo "<h2>".__('Reporting')." &raquo; " . __('Graphs management').'</h2>';
 
 $graphs = get_user_custom_graphs ();
 

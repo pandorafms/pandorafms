@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,7 +13,9 @@
 // GNU General Public License for more details.
 
 function users_extension_main () {
-	print_page_header (__("Users connected"));
+
+	// Header
+	print_page_header (__("Users connected"), "images/extensions.png", false, "", false);
 
 	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 
@@ -57,8 +59,9 @@ function users_extension_main () {
 
 }
 function users_extension_main_god () {
-	echo "<h2>".__('Extensions'). " &raquo; ".__("Users connected"). "</h2>";
-
+	// Header
+	print_page_header (__("Users connected"), "images/extensions.png", false, "", true);
+	
 	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 
 	$rows = get_db_all_rows_sql ($sql);

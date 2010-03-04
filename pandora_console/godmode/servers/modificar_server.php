@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -27,32 +27,10 @@ if (! give_acl ($config["id_user"], 0, "PM")) {
 	exit;
 }
 
-if (isset ($_GET["delete"])) {
-	$id_server = get_parameter_get ("server_del");
-	$sql = sprintf ("DELETE FROM tserver WHERE id_server='%d'",$id_server);
-	$result = process_sql ($sql);
-	if ($result !== false) {
-		 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
-	} else { 
-		echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
-	}
-} elseif (isset($_GET["update"])) {
-	$name = get_parameter_post ("name");
-	$address = get_parameter_post ("address");
-	$description = get_parameter_post ("description");
-	$id_server = get_parameter_post ("server");
-	$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d", $name, $address, $description, $id_server);
-	$result = process_sql ($sql);
-	if ($result !== false) {
-		echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
-	} else { 
-		echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
-	}
-}
-
 if (isset($_GET["server"])) {
 	$id_server= get_parameter_get ("server");
-	echo "<h2>".__('Pandora servers')." &raquo; ".__('Update Server')."</h2>";
+	// Headers
+	print_page_header (__('Update Server'), "", false, "", true);
 	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
 	$row = get_db_row_sql ($sql);
 	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
@@ -75,7 +53,30 @@ if (isset($_GET["server"])) {
 
 } else {
 	$servers = get_server_info ();
-	echo "<h2>".__('Pandora servers')." &raquo; ".__('Manage servers')."</h2>";
+	print_page_header (__('Manage servers'), "", false, "", true);
+
+	if (isset ($_GET["delete"])) {
+		$id_server = get_parameter_get ("server_del");
+		$sql = sprintf ("DELETE FROM tserver WHERE id_server='%d'",$id_server);
+		$result = process_sql ($sql);
+		if ($result !== false) {
+			 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
+		} else { 
+			echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
+		}
+	} elseif (isset($_GET["update"])) {
+		$name = get_parameter_post ("name");
+		$address = get_parameter_post ("address");
+		$description = get_parameter_post ("description");
+		$id_server = get_parameter_post ("server");
+		$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d", $name, $address, $description, $id_server);
+		$result = process_sql ($sql);
+		if ($result !== false) {
+			echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
+		} else { 
+			echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
+		}
+	}
 
 	if ($servers !== false) {
 		$table->width = "90%";

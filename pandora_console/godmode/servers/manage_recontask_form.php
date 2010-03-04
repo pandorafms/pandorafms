@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -53,9 +53,10 @@ if (isset ($_GET["update"])) { // Edit mode
 	$recon_ports = ""; // Any
 }
 
-echo '<h2>'.__('Pandora servers').' &raquo; '.__('Manage recontask');
+// Headers
+print_page_header (__('Manage recontask'), "", false, "", true);
+
 print_help_icon ("recontask");
-echo '</h2>';
 
 $table->width=600;
 $table->cellspacing=4;

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -40,8 +40,6 @@ require_once ('include/functions_themes.php');
 
 // Header
 print_page_header (__('Visual configuration'), "", false, "", true);
-
-
 
 $table->width = '90%';
 $table->data = array ();

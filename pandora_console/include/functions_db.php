@@ -397,10 +397,15 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		}
 	}
 	
-	if (is_array($id_group))
+	if (is_array($id_group)) {
 		$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
-	else
+	}
+	else if (($id_group == 1) || ($id_group == 0)) { //All group
+		$search_sql = 'WHERE 1 = 1';
+	}
+	else {
 		$search_sql = sprintf ('WHERE id_grupo = %d', $id_group);
+	}
 
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
@@ -1351,10 +1356,11 @@ function get_all_model_groups () {
  * 
  * @param string User id
  * @param string The privilege to evaluate
+ * @param boolean $returnAllGroup Flag the return group, by default true.
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = false, $privilege = "AR") {
+function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true) {
 	if (empty ($id_user)) {
 		global $config;
 		$id_user = $config['id_user'];
@@ -1369,6 +1375,8 @@ function get_user_groups ($id_user = false, $privilege = "AR") {
 	foreach ($groups as $group) {
 		if (! give_acl ($id_user, $group["id_grupo"], $privilege))
 			continue;
+		if ((!$returnAllGroup) && ($group["id_grupo"] == 1)) //All group
+			continue;		
 		$user_groups[$group['id_grupo']] = $group['nombre'];
 	}
 	

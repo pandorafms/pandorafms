@@ -1,3 +1,13 @@
+2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: in function "get_user_groups" add third
+	parameter $returnAllGroup by true for default. Fix in the function
+	"get_group_agents" now if pass the id_group as 0 or 1 (all group) search
+	for all groups.
+	
+	* godmode/agentes/agent_manager.php: use the new parameter for function
+	"get_user_groups" for don't show the all group.
+
 2010-03-04  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql: Added news, default timezone and other

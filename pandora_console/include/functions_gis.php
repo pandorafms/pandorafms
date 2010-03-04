@@ -1044,7 +1044,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	$baselayers[0]['name'] = $defaultMap['conection_name'];
 	$baselayers[0]['typeBaseLayer'] = $conectionData['type'];
 	$baselayers[0]['num_zoom_levels'] = $defaultMap['num_zoom_levels'];
-	$controls = array('PanZoom', 'ScaleLine', 'Navigation', 'MousePosition', 'OverviewMap');
+	$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition');
 	
 	printMap($agent_name."_agent_map", $defaultMap['zoom_level'],
 		$defaultMap['num_zoom_levels'], $defaultMap['initial_latitude'],

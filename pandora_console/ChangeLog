@@ -1,5 +1,14 @@
 2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: in function "getAgentMap" change the controls
+	delete overview and change PanZoom for PanZoomBar because the overview
+	fail with google map, and PanZoomBar now the map view is more tall.
+	
+	* operation/gis_maps/render_view.php: delete overview because the overview
+	fail with google.
+
+2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: in function "get_user_groups" add third
 	parameter $returnAllGroup by true for default. Fix in the function
 	"get_group_agents" now if pass the id_group as 0 or 1 (all group) search

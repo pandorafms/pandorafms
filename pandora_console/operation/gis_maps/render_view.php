@@ -71,7 +71,7 @@ if ($gmap_layer === true) {
 <?php
 }
 
-$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition');
+$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition', 'layerSwitcher');
 
 $layers = getLayers($idMap);
 

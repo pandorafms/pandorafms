@@ -1,5 +1,13 @@
 2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_gis.php: in function "printMap2" disable by default
+	to add the control "layerSwitcher".
+
+	* operation/gis_maps/render_view.php: add the "layerSwitcher" to controls to
+	show.
+
+2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: in function "getAgentMap" change the controls
 	delete overview and change PanZoom for PanZoomBar because the overview
 	fail with google map, and PanZoomBar now the map view is more tall.

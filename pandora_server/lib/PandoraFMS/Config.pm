@@ -102,7 +102,7 @@ sub pandora_init {
 		}
 		elsif ($parametro =~ m/-d\z/) {
 			$pa_config->{"verbosity"}=10;
-		}u094596 staff
+		}
 		elsif ($parametro =~ m/-q\z/) {
 			$pa_config->{"quiet"}=1;
 		}

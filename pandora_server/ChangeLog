@@ -1,3 +1,7 @@
+2010-03-04  Sancho Lerena <slernea#artica.es>
+
+	* lib/PandoraFMS/Config.pm: Fixed a typo.
+
 2010-02-27  Sancho Lerena <slerena@artica.es>
 
 	* util/tentacle_serverd,

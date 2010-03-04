@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -55,9 +55,8 @@ else {
 	$options = '';
 }
 
-echo '<h2>'.__('Pandora servers').' &raquo; '.__('Export targets');
-//print_help_icon ("exportserver");
-echo '</h2>';
+// Headers
+print_page_header (__('Export targets'), "", false, "", true);
 
 $table->width=700;
 $table->cellspacing=4;

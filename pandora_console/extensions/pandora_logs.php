@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ function view_logfile ($file_name) {
 function pandoralogs_extension_main () {
 	global $config;
 
-	print_page_header (__("System logfile viewer"));
+	print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
 
 	echo "<p>This tool is used just to view your Pandora FMS system logfiles directly from console</p>";
 

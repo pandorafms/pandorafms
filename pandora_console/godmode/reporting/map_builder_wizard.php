@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -26,6 +26,9 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 
 $layout_id = (int) get_parameter ('id_layout');
 $layout = get_db_row ('tlayout', 'id', $layout_id);
+
+// Header
+print_page_header (__('Visual map wizard').' - '.$layout["name"], "", false, "map_builder", true);
 
 if (empty ($layout)) {
 	print_error_message (__('No layout with this id found'));
@@ -114,9 +117,6 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 	
 	print_success_message (__('Modules successfully added to layout'));
 }
-
-echo "<h2>".__('Maps')." &raquo; ";
-echo __('Visual map wizard').' - '.$layout["name"].'</h2>';
 
 $id_agents = get_parameter ('id_agents', array ());
 $id_modules = get_parameter ('module', array ());

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -41,6 +41,9 @@ $options = (string) get_parameter ("options");
 $create = (int) get_parameter ("create");
 $delete = (int) get_parameter ("delete");
 $update = (int) get_parameter ("update");
+
+// Headers
+print_page_header (__('Export targets'), "", false, "", true);
 
 // Update
 if ($update) {
@@ -82,9 +85,6 @@ if ($create) {
 		echo '<h3 class="suc">'.__('Successfully created export target').'</h3>';
 	}
 }
-
-// List export servers
-echo "<h2>".__('Pandora servers')." &raquo; ".__('Export targets')."</h2>";
 
 $result = get_db_all_rows_in_table ("tserver_export");
 if (!$result) {

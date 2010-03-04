@@ -312,9 +312,9 @@ if ($editGraph) {
 	$chunkdata = implode('|', $tempChunkdata);
 }
 
-echo "<h2>".__('Reporting')." &raquo; ";
 if (isset ($chunk1)) {
-	echo __('Graph builder module list')."</h2>";
+	// Header
+	print_page_header (__('Graph builder module list'), "", false, "", true);
 	if ($editGraph) {
 		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&delete_module=1&id=" . $id . "'>";
 	}
@@ -388,7 +388,8 @@ if (($render == 1) && (isset($modules))) {
 // SOURCE AGENT TABLE/FORM
 // -----------------------
 
-echo __('Graph builder')."</h2>";
+// Header
+print_page_header (__('Graph builder'), "", false, "", true);
 echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>";
 if ($editGraph) {
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&add_module=1&id=" . $id . "'>";

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -25,6 +25,9 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Headers
+print_page_header (__('Manage recontask'), "", false, "", true);
 
 // --------------------------------
 // DELETE A RECON TASKs
@@ -90,9 +93,7 @@ if (isset($_GET["create"])) {
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>";
-echo __('Pandora servers')." &raquo; ".__('Manage recontask');
-echo "</h2>";
+
 
 $result = get_db_all_rows_in_table ("trecon_task");
 $color=1;

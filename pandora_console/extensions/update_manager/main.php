@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ $db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 
 $settings = um_db_load_settings ();
 
-echo '<h2>'.__('Extensions'). " &raquo; ". __('Update manager').'</h2>';
+print_page_header (__('Update manager'), "images/extensions.png", false, "", false, "" );
 
 if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';

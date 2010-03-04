@@ -1,3 +1,7 @@
+2010-03-04  Raúl Mateos <raulofpandora@gmail.com>
+
+	* (lot of files): Updated year and headers.
+
 2010-03-04  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: clean the form, now don't show
@@ -139,7 +143,8 @@
 
 2010-03-02  Raúl Mateos <raulofpandora@gmail.com>
 
-	* godmode/agentes/*.php, godmode/group/*.php, godmode/modules/*.php:
+	* godmode/agentes/*.php, godmode/group/*.php, godmode/modules/*.php
+	* godmode/alerts/*.php, godmode/users/*.php, extensions/users_connected.php:
 	Updated year and headers in several files. Little by little I'll change
 	the rest...
 

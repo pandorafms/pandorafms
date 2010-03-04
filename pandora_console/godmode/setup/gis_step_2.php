@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,8 +35,9 @@ echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="
 
 switch ($action) {
 	case 'create_connection_map':
-		echo "<h2>".__('Pandora Setup')." &raquo; ";
-		echo __('Create new map connection')."</h2>";
+		// Header
+		print_page_header (__('Create new map connection'), "", false, "", true);
+
 		$mapConnection_name = '';
 		$mapConnection_group = '';
 		$mapConnection_numLevelsZoom = '19';
@@ -53,8 +54,8 @@ switch ($action) {
 		print_input_hidden('action', 'save_map_connection');
 		break;
 	case 'edit_connection_map':
-		echo "<h2>".__('Pandora Setup')." &raquo; ";
-		echo __('Edit map connection')."</h2>";
+		// Header
+		print_page_header (__('Edit map connection'), "", false, "", true);
 		
 		$idConnectionMap = get_parameter('id_connection_map');
 		$mapConnection = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnectionMap);
@@ -101,8 +102,8 @@ switch ($action) {
 				$gmap_type= get_parameter('gmap_type');
 				$gmap_key= get_parameter('gmap_key');
 				$mapConnectionData = array('type' => 'Gmap', 
-										   'gmap_type' => $gmap_type,
-										   'gmap_key' => $gmap_key);
+					'gmap_type' => $gmap_type,
+					'gmap_key' => $gmap_key);
 				break;
 			case 'Static_Image':
 				$mapConnection_Image_url= get_parameter('url');
@@ -302,7 +303,7 @@ $table->data[4][2] = print_input_text ('default_altitude', $mapConnection_defaul
 print_table($table);
 
 echo '<div class="action-buttons" style="clear: left; width: 90%; float: left;">';
-print_submit_button (__('Save'), '', false, 'class="sub save"');
+print_submit_button (__('Save'), '', false, 'class="sub save wand"');
 echo '</div>';
 echo "</form>";
 

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -30,6 +30,9 @@ $delete_file = (bool) get_parameter ('delete_file');
 $upload_file = (bool) get_parameter ('upload_file');
 $create_dir = (bool) get_parameter ('create_dir');
 
+// Header
+print_page_header (__('File manager'), "", false, "", true);
+
 // Upload file
 if ($upload_file) {
 	if (isset ($_FILES['file']) && $_FILES['file']['name'] != "") {
@@ -50,7 +53,6 @@ if ($upload_file) {
 }
 
 if ($delete_file) {
-	echo "<h1>".__('Deleting file')."</h1>";
 	$filename = (string) get_parameter ('filename');
 	echo "<h3>".__('Deleting')." ".$filename."</h3>";
 	if (is_dir ($filename)) {		
@@ -60,7 +62,6 @@ if ($delete_file) {
 	}
 }
 
-echo "<h2>".__('Pandora Setup')." &raquo; ".__('File manager')."</h2>";
 
 $directory = (string) get_parameter ('directory', "/");
 

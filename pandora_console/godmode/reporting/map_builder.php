@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -69,7 +69,7 @@ $height = 0;
 $background = '';
 
 // Header
-print_page_header (__('Visual console builder'), "images/god9.png", false, "map_builder", true);
+print_page_header (__('Visual console builder'), "", false, "map_builder", true);
 
 if ($create_layout) {
 	$name = (string) get_parameter ('name');

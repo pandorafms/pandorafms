@@ -1,3 +1,11 @@
+2010-03-04  Sancho Lerena  <slerena@artica.es>
+
+	* install.php: Fixed a bad render in IE.
+
+	* operation/agentes/estado_agente.php: Fixed general view of agents.
+	When show agents without modules, never display it's date because was
+	taking from the most recept module, instead of data from agent itself.
+:
 2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: Change help link.

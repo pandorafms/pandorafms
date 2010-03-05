@@ -1,3 +1,23 @@
+2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: clean source code delete obsolete unused
+	function "get_agent_last_coords". Fixed the function "get_agent_icon_map"
+	now show default icon for agent without modules.
+	
+	* operation/gis_maps/ajax.php: improve the style of bubble info agent and
+	fixed the position for agent without data GIS.
+	
+	* operation/agentes/gis_view.php: clean the style delete the header. Change
+	the text of refresh button. Show the last coords for the agent.
+	
+	* images/gis_map/icons/cross.pink.png, images/gis_map/icons/circle.pink.png:
+	add this image icons for to use in the preview map of config connection map.
+	
+	* godmode/agentes/agent_conf_gis.php: clean the style delete the header.
+
+	* godmode/setup/gis_step_2.php: use the pink icons for the center and
+	default position in the preview map.
+
 2010-03-04  Sancho Lerena  <slerena@artica.es>
 
 	* install.php: Fixed a bad render in IE.

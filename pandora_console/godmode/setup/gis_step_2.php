@@ -438,8 +438,8 @@ function refreshMapViewSecondStep() {
 		
 		layer = js_makeLayer('temp_layer', true, null);
 
-		centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/dot_green.png', 11, 11, 'center', '');
-		GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/dot_red.png', 11, 11, 'default', '');
+		centerPoint = js_addPointExtent('temp_layer', '<?php echo __('Center'); ?>', $('input[name=center_longitude]').val(), $('input[name=center_latitude]').val(), 'images/gis_map/icons/circle.pink.png', 11, 11, 'center', '');
+		GISDefaultPositionPoint = js_addPointExtent('temp_layer', '<?php echo __('Default'); ?>', $('input[name=default_longitude]').val(), $('input[name=default_latitude]').val(), 'images/gis_map/icons/cross.pink.png', 11, 11, 'default', '');
 		
 		js_activateEvents(changePoints);
 }

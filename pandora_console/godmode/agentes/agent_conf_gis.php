@@ -23,7 +23,7 @@ require_once ('include/functions_html.php');
 
 require_javascript_file('openlayers.pandora');
 
-echo "<h2>" . __('Agent configuration') . " &raquo; " . __('Configure GIS data') . "</h2>";
+echo "<div style='margin-bottom: 10px;'></div>";
 
 $agentData = getDataLastPositionAgent($id_agente);
 $updateGisData = get_db_value('update_gis_data','tagente', 'id_agente', $id_agente);

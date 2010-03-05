@@ -124,7 +124,15 @@ switch ($opt) {
 		$returnJSON = array();
 		$returnJSON['correct'] = 1;
 		$returnJSON['content'] = __('Agent') . ': <a style="font-weight: bolder;" href="?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $row['id_agente'] . '">'.$row['nombre'].'</a><br />';
-		$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';		
+		
+		//it's positioned in default position of map.
+		if ($agentDataGIS === false) {
+			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': ' . __("Default position of map.") . '<br />';
+		}
+		else 
+		{
+			$returnJSON['content'] .= __('Position (Long, Lat, Alt)') . ': (' . $agentDataGIS['stored_longitude'] . ', ' . $agentDataGIS['stored_latitude'] . ', ' . $agentDataGIS['stored_altitude'] . ') <br />';
+		}		
 		$agent_ip_address = get_agent_address ($id_agente);
 		if ($agent_ip_address || $agent_ip_address != '') {
 			$returnJSON['content'] .= __('IP Address').': '.get_agent_address ($id_agente).'<br />';
@@ -145,14 +153,14 @@ switch ($opt) {
 		}
 		$returnJSON['content'] .= __('Group').': '.print_group_icon ($row["id_grupo"], true).'&nbsp;(<strong>'.get_group_name ($row["id_grupo"]).'</strong>)<br />';
 		$returnJSON['content'] .= __('Agent Version').': '.$row["agent_version"].'<br />';
-		$returnJSON['content'] .= __('Last contact')." / ".__('Remote').': '. $row["ultimo_contacto"]. " / ";
+		$returnJSON['content'] .= __('Last contact') . ": ";
 		if ($row["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
-    		$returnJSON['content'] .=__('Never');
-		} else {
- 			$returnJSON['content'] .= $row["ultimo_contacto_remoto"];
+    		$returnJSON['content'] .=__('Never') ." <br />";
 		}
-
-
+		else {
+ 			$returnJSON['content'] .= $row["ultimo_contacto_remoto"] ." <br />";
+		}
+		$returnJSON['content'] .= __('Remote').': '. $row["ultimo_contacto"];
 		
 		echo json_encode($returnJSON);
 		

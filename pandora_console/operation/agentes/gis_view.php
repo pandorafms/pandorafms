@@ -35,7 +35,7 @@ $agentId = get_parameter('id_agente');
 $agent_name = get_agent_name($agentId); 
 $agentData = getDataLastPositionAgent($id_agente);
 
-echo "<h3>" . __("Map with the last position/s") . " " . human_time_description ($period) ."</h3>";
+echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
 echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
@@ -66,11 +66,17 @@ $intervals[172800] = human_time_description_raw (172800);
 $intervals[604800] = human_time_description_raw (604800);
 
 echo "<br />";
+$dataLastPosition = getDataLastPositionAgent($agentId);
+if ($dataLastPosition !== false) {
+	echo "<b>" . __("Last position in ") . $dataLastPosition['start_timestamp'] . ":</b> " .
+		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
+}
+echo "<br />";
 echo "<form action='index.php?" . $_SERVER['QUERY_STRING'] . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
 print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
-echo  __(" seconds.");
-print_submit_button(__('Refresh'), 'refresh', false, 'class = "sub upd"');
+echo  __(" seconds.") . "&nbsp;";
+print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
 echo "</form>";
 
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description ($period) ."</h3>";

@@ -656,12 +656,6 @@ function getLayers($idMap) {
 	return $layers;
 }
 
-function get_agent_last_coords($idAgent) {
-		$coords = get_db_row_sql("SELECT last_latitude, last_longitude, last_altitude, nombre FROM tagente WHERE id_agente = " . $idAgent);
-
-		return $coords;
-}
-
 function get_agent_icon_map($idAgent, $state = false, $status = null) {
 	$row = get_db_row_sql('SELECT id_grupo, icon_path FROM tagente WHERE id_agente = ' . $idAgent);
 	
@@ -678,6 +672,9 @@ function get_agent_icon_map($idAgent, $state = false, $status = null) {
 	else {
 		if ($status === null) {
 			$status = get_agent_status($idAgent);
+			if ($status === null) {
+				$status = -1;
+			}
 		}
 		switch ($status) {
 			case 1:
@@ -698,7 +695,9 @@ function get_agent_icon_map($idAgent, $state = false, $status = null) {
 				$state = '.default';
 				break;
 		}
-		return $icon . $state . ".png";
+		$returnIcon = $icon . $state . ".png";
+		
+		return $returnIcon;
 	}
 }
 

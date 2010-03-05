@@ -1,5 +1,10 @@
 2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb_data.sql: changed some the descriptions text of table
+	type modules. 
+
+2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: fix the type for when
 	ajax load by form editor in modules policies.
 

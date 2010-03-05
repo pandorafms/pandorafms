@@ -204,10 +204,10 @@ INSERT INTO `torigen` VALUES
 --
 
 INSERT INTO `ttipo_modulo` VALUES 
-(1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),
-(2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),
-(3,'generic_data_string',2,'Generic module to adquire alphanumeric data','mod_string.png'),
-(4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),
+(1,'generic_data',0,'Generic numeric','mod_data.png'),
+(2,'generic_proc',1,'Generic boolean','mod_proc.png'),
+(3,'generic_data_string',2,'Generic string','mod_string.png'),
+(4,'generic_data_inc',0,'Generic numeric incremental','mod_data_inc.png'),
 
 (6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
 (7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png'),

@@ -1,3 +1,10 @@
+2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged from trunk:
+	
+	* godmode/agentes/module_manager_editor_common.php: fix the type for when
+	ajax load by form editor in modules policies.
+	
 2010-02-25  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_ui.php: Show default actions in alerts.

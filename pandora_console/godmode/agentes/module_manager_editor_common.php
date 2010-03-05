@@ -129,13 +129,20 @@ if ($id_agent_module) {
 	$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
 }
 else {
+	if (isset($id_module_type)) {
+		$idModuleType = $id_module_type;
+	}
+	else {
+		$idModuleType = '';
+	}
+	
 	$sql = sprintf ('SELECT id_tipo, descripcion
 		FROM ttipo_modulo
 		WHERE categoria IN (%s)
 		ORDER BY descripcion',
 		implode (',', $categories));
 	$table_simple->data[1][1] = print_select_from_sql ($sql, 'id_module_type',
-		'', '', '', '', true, false, false, $disabledBecauseInPolicy);
+		$idModuleType, '', '', '', true, false, false, $disabledBecauseInPolicy);
 }
 
 $table_simple->data[1][2] = __('Module group');

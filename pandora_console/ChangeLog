@@ -1,5 +1,10 @@
 2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager_editor_common.php: fix the type for when
+	ajax load by form editor in modules policies.
+
+2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: clean source code delete obsolete unused
 	function "get_agent_last_coords". Fixed the function "get_agent_icon_map"
 	now show default icon for agent without modules.

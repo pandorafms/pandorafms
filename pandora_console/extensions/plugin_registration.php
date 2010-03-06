@@ -14,7 +14,13 @@
 
 
 function pluginreg_extension_main () {
-	global $config;
+    global $config;
+    if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	    audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
+	    require ("general/noaccess.php");
+	    return;
+    }
+
 
 	echo "<h2>".__('Extensions'). " &raquo; ".__('Plugin registration')."</h2>";
 

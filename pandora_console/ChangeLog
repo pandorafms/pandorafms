@@ -1,3 +1,12 @@
+2010-03-06  SAncho Lerena  <slerena@artica.es>
+
+	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Missing SQL for migration
+	which affets incident system
+
+        * extensions/dbmanager.php,
+        extensions/plugin_registration.php
+        extensions/pandora_logs.php: Added missing ACL checks.
+
 2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb_data.sql: changed some the descriptions text of table

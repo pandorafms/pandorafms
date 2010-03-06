@@ -305,3 +305,8 @@ ALTER TABLE `pandora`.`tagente` MODIFY COLUMN `nombre` VARCHAR(100) BINARY CHARA
 
 UPDATE tupdate_settings SET `value` = "/pandoraupdate3/server.php" WHERE `key` = "update_server_path";
 
+ALTER TABLE tincidencia ADD `id_lastupdate` varchar(60) default NULL; 
+ALTER TABLE tincidencia ADD `id_agente_modulo` bigint(100) NOT NULL;
+ALTER TABLE tnota ADD `id_incident` bigint(6) unsigned zerofill NOT NULL;
+
+

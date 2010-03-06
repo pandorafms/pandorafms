@@ -1,3 +1,11 @@
+2010-03-06  SAncho Lerena  <slerena@artica.es>
+
+	* install.php: Fixed width of textarea, too small.
+
+	* extensions/dbmanager.php,
+	extensions/plugin_registration.php
+	extensions/pandora_logs.php: Added missing ACL checks. 
+
 2010-03-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb_data.sql: changed some the descriptions text of table

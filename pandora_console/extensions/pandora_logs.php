@@ -36,6 +36,14 @@ function view_logfile ($file_name) {
 function pandoralogs_extension_main () {
 	global $config;
 
+    global $config;
+    if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	    audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
+	    require ("general/noaccess.php");
+	    return;
+    }
+
+
 	print_page_header (__("System logfile viewer"), "images/extensions.png", false, "", true, "" );
 
 	echo "<p>This tool is used just to view your Pandora FMS system logfiles directly from console</p>";

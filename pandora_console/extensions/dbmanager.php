@@ -49,6 +49,14 @@ function dbmanager_query ($sql, &$error) {
 function dbmgr_extension_main () {
 	require_css_file ('dbmanager', 'extensions/dbmanager/');
 
+    global $config;
+    if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	    audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
+	    require ("general/noaccess.php");
+	    return;
+    }
+
+
 	$sql = (string) get_parameter ('sql');
 
 	print_page_header (__('Database interface'), "", false, false, true);

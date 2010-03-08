@@ -42,14 +42,14 @@ if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }
 
-echo "<h4>" . __("Warning: When you change the position the agent automatily enabled ignore GIS Data") . "</h4>";
+echo "<h4>" . __("Warning: When you change the position the agent automatily enables Ignore GIS Data") . "</h4>";
 
 $table->width = '60%';
 $table->data = array();
 
 $table->colspan[0][0] = 2;
 
-$table->data[0][0] = __('Agent coords:');
+$table->data[0][0] = __('Agent position:');
 
 $table->data[1][0] = __('Longitude: ');
 $table->data[1][1] = print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',

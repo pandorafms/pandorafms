@@ -1,5 +1,10 @@
 2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* godmode/agentes/agent_manager.php: Changed some english phrases to make
+	 it more clear.
+
+2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* include/functions_gis.php, operation/gis_maps/render_view.php : Changed
 	 some english phrases to make it more clear.
 

@@ -52,302 +52,77 @@ function getDataLastPositionAgent($idAgent, $returnEmptyArrayInFail = false) {
 	return $returnVar;
 }
 
-function printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
-		?>
-	<script type="text/javascript">
-		//$(document).ready (function () {
-
-			var controlVar = [
-				<?php
-				$first = true;
-				foreach ($controls as $control) {
-					if (!$first)
-						echo ',';
-					$first = false;
-							
-					switch ($control) {
-						case 'Navigation':
-							echo "new OpenLayers.Control.Navigation()";
-							break;
-						case 'MousePosition':
-							echo "new OpenLayers.Control.MousePosition()";
-							break;
-						case 'OverviewMap':
-							echo "new OpenLayers.Control.OverviewMap()";
-							break;
-						case 'PanZoom':
-							echo "new OpenLayers.Control.PanZoom()";
-							break;
-						case 'PanZoomBar':
-							echo "new OpenLayers.Control.PanZoomBar()";
-							break;
-						case 'ScaleLine':
-							echo "new OpenLayers.Control.ScaleLine()";
-							break;
-						case 'Scale':
-							echo "new OpenLayers.Control.Scale()";
-							break;
-						case 'layerSwitcher':
-							echo "new OpenLayers.Control.LayerSwitcher()";
-							break;
-					}
-				}
-				?>
-				];
-				
-
-			var option = {
-				controls: controlVar,
-				projection: new OpenLayers.Projection("EPSG:900913"),
-                displayProjection: new OpenLayers.Projection("EPSG:4326"),
-                units: "m",
-                numZoomLevels: 18,
-                maxResolution: 156543.0339,
-				maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)
-			};
-
-			map = new OpenLayers.Map ("<?php echo $idDiv; ?>", option);
-
-			//BASELAYER
-			var baseLayer = null;
-			<?php
-			foreach ($baselayers as $baselayer) {
-				switch ($baselayer['typeBaseLayer']) {
-					case 'OSM':
-						?>
-						baseLayer = null;
-						baseLayer = new OpenLayers.Layer.OSM(
-							"<?php echo $baselayer['name']; ?>", 
-							"<?php echo $baselayer['url']; ?>",
-							{numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
-								'sphericalMercator': true
-							}
-						);
-						map.addLayer(baseLayer);
-						<?php
-						break;
-					case 'Gmap':
-						?>
-						baseLayer = null;
-						<?php
-						switch ($baselayer['gmap_type']) {
-							case 'G_PHYSICAL_MAP':
-								?>
-								baseLayer = new OpenLayers.Layer.Google(
-									"<?php echo $baselayer['name']; ?>",
-									{type: G_PHYSICAL_MAP,
-										numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
-										'sphericalMercator': true
-									}
-								);
-								map.addLayer(baseLayer);
-								<?php
-								break;
-							case 'G_HYBRID_MAP':
-								?>
-								baseLayer = new OpenLayers.Layer.Google(
-									"<?php echo $baselayer['name']; ?>",
-									{type: G_HYBRID_MAP,
-										numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
-										'sphericalMercator': true
-									}
-								);
-								map.addLayer(baseLayer);
-								<?php
-								break;
-							case 'G_SATELLITE_MAP':
-								?>
-								baseLayer = new OpenLayers.Layer.Google(
-									"<?php echo $baselayer['name']; ?>",
-                					{type: G_SATELLITE_MAP,
-                						numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
-                						'sphericalMercator': true
-                					}
-            					);
-								map.addLayer(baseLayer);
-								<?php
-								break;
-							default:
-								?>
-								baseLayer = new OpenLayers.Layer.Google(
-									"<?php echo $baselayer['name']; ?>",
-									{numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>,
-	                					'sphericalMercator': true}
-								);
-								map.addLayer(baseLayer);								
-								<?php
-								break;
-						}
-						break;
-					case 'Static_Image':
-						?>
-						baseLayer = null;
-			            baseLayer = new OpenLayers.Layer.Image(
-			            	"<?php echo $baselayer['name']; ?>",
-			            	"<?php echo $baselayer['url']; ?>",
-							new OpenLayers.Bounds(<?php echo $baselayer['bb_left']; ?>,
-								<?php echo $baselayer['bb_bottom']; ?>,
-								<?php echo $baselayer['bb_right']; ?>,
-								<?php echo $baselayer['bb_top']; ?>
-							),
-							new OpenLayers.Size(<?php echo $baselayer['image_width']; ?>, <?php echo $baselayer['image_height']; ?>),
-							{projection: new OpenLayers.Projection("EPSG:4326"),
-			            		numZoomLevels: <?php echo $baselayer['num_zoom_levels']; ?>
-							}
-						);
-			            map.addLayer(baseLayer);
-						<?php
-						break;
-				}
-			}
-			?>
-
-			var lonLat = new OpenLayers.LonLat(<?php echo $lonCenter; ?>, <?php echo $latCenter; ?>)
-				.transform(map.displayProjection, map.getProjectionObject());
-
-			map.setCenter (lonLat, <?php echo $iniZoom; ?>);
-		//});
-	</script>
-	<?php
-}
-
-
-function printMap($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls = null) {
-	$controls = (array)$controls;
-	
+/**
+ * Write a javascript vars for to call the js_printMap.
+ * 
+ * @param string $idDiv The id of div to paint the map.
+ * @param integer $iniZoom The zoom to init the map.
+ * @param float $latCenter The latitude center to init the map.
+ * @param float $lonCenter The longitude center to init the map.
+ * @param array $baselayers The list of baselayer with the connection data.
+ * @param array $controls The string list of controls.
+ * 
+ * @return None
+ */
+function printMap($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $controls = null) {
 	require_javascript_file('OpenLayers/OpenLayers');
-	//echo '<script type="text/javascript" src="http://dev.openlayers.org/nightly/OpenLayers.js"></script>';
 	
-	printMap2($idDiv, $iniZoom, $numLevelZooms, $latCenter, $lonCenter, $baselayers, $controls);
-	return;
-	?>
-	<script type="text/javascript">
-		$(document).ready (
-			function () {
-				map = new OpenLayers.Map ("<?php echo $idDiv; ?>", {
-					<?php
-					echo "controls: [";
-					$first = true;
-					foreach ($controls as $control) {
-						if (!$first) echo ",";
-						$first = false;
-						
-						switch ($control) {
-							case 'Navigation':
-								echo "new OpenLayers.Control.Navigation()";
-								break;
-							case 'MousePosition':
-								echo "new OpenLayers.Control.MousePosition()";
-								break;
-							case 'OverviewMap':
-								echo "new OpenLayers.Control.OverviewMap()";
-								break;
-							case 'PanZoom':
-								echo "new OpenLayers.Control.PanZoom()";
-								break;
-							case 'PanZoomBar':
-								echo "new OpenLayers.Control.PanZoomBar()";
-								break;
-							case 'ScaleLine':
-								echo "new OpenLayers.Control.ScaleLine()";
-								break;
-							case 'Scale':
-								echo "new OpenLayers.Control.Scale()";
-								break;
-						}
-					}
-					echo ", new OpenLayers.Control.LayerSwitcher()";
-					echo "],";
-					?>
-					units: 'm', //metros
-					displayProjection: new OpenLayers.Projection("EPSG:4326")
-				});
-
-
-				//Define the maps layer
-				<?php
-				$i = 0;
-				foreach ($baselayers as $baselayer) {
-					switch ($baselayer['typeBaseLayer']) {
-						case 'OSM':
-							?>
-							var baseLayer = new OpenLayers.Layer.OSM("<?php echo $baselayer['name']; ?>", 
-									"<?php echo $baselayer['url']; ?>", {numZoomLevels: <?php echo $numLevelZooms; ?>,
-									maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-									maxResolution: 156543.0399,
-									projection: new OpenLayers.Projection("EPSG:900913")
-									});
-							map.addLayer(baseLayer);
-							<?php
-							break;
-						
-						case 'Gmap':
-							switch ($baselayer['gmap_type']) {
-								case 'G_PHYSICAL_MAP':
-							?>
-           					var gphy = new OpenLayers.Layer.Google(
-								"Google Physical",
-								{type: G_PHYSICAL_MAP}
-							);
-							map.addLayer(gphy);
-									<?php
-									break;
-								case 'G_HYBRID_MAP':
-									?>
-							var ghyb = new OpenLayers.Layer.Google(
-								"Google Hybrid",
-								{type: G_HYBRID_MAP, numZoomLevels: 20}
-							);
-							map.addLayer(ghyb);
-									<?php
-									break;
-								case 'G_SATELLITE_MAP':
-									?>
-							var gsat = new OpenLayers.Layer.Google(
-							"Google Satellite",
-                				{type: G_SATELLITE_MAP, numZoomLevels: 22}
-            				);
-							map.addLayer(gsat);
-							<?php
-							break;
-								default:
-									?>
-									var gmap = new OpenLayers.Layer.Google(
-										"Google Streets", // the default
-										{numZoomLevels: 20}
-									);
-									map.addLayer(gmap);
-									<?php
-									break;
-							}
-							break;
-						case 'Static_Image':
-							?>
-				            var baseLayer = new OpenLayers.Layer.Image(
-				            		"<?php echo $baselayer['name']; ?>",
-				            		"<?php echo $baselayer['url']; ?>",
-				                    new OpenLayers.Bounds(<?php echo $baselayer['bb_left']; ?>,
-				                    		<?php echo $baselayer['bb_bottom']; ?>,
-				                    		<?php echo $baselayer['bb_right']; ?>,
-				                    		<?php echo $baselayer['bb_top']; ?>),
-				                    new OpenLayers.Size(<?php echo $baselayer['image_width']; ?>, <?php echo $baselayer['image_height']; ?>),
-				                    {numZoomLevels: <?php echo $numLevelZooms; ?>});
-				            map.addLayer(baseLayer);
-							<?php
-							break;
-					}
-				}
-				?>
-
-				if( ! map.getCenter() ){
-					var lonLat = new OpenLayers.LonLat(<?php echo $lonCenter; ?>, <?php echo $latCenter; ?>)
-						.transform(map.displayProjection, map.getProjectionObject());
-					map.setCenter (lonLat, <?php echo $iniZoom; ?>);
-				}
-			}
-		);
-	</script>
-	<?php
+	echo "<script type='text/javascript'>";
+	echo "var controlsList = [];";
+	foreach ($controls as $control) {
+		echo "controlsList.push('" . $control . "');";
+	}
+	echo "var idDiv = '" . $idDiv . "';";
+	echo "var initialZoom = " . $iniZoom . ";";
+	echo "var centerLatitude = " . $latCenter . ";";
+	echo "var centerLongitude = " . $lonCenter . ";";
+	
+	echo "var baselayerList = [];";
+	echo "var baselayer = null;";
+	
+	foreach ($baselayers as $baselayer) {
+		echo "baselayer = {
+			bb_bottom: null,
+			bb_left: null,
+			bb_right: null,
+			bb_top: null,
+			gmap_type: null,
+			image_height: null,
+			image_width: null,
+			num_zoom_levels: null,
+			name: null,
+			type: null,
+			url: null
+		};";
+		
+		echo "baselayer['type'] = '" . $baselayer['typeBaseLayer'] . "';";
+		echo "baselayer['name'] = '" . $baselayer['name'] . "';";
+		echo "baselayer['num_zoom_levels'] = '" . $baselayer['num_zoom_levels'] . "';";
+		
+		switch ($baselayer['typeBaseLayer']) {
+			case 'OSM':
+				echo "baselayer['url'] = '" . $baselayer['url'] . "';";
+				break;
+			case 'Static_Image':
+				echo "baselayer['bb_left'] = '" . $baselayer['bb_left'] . "';";
+				echo "baselayer['bb_bottom'] = '" . $baselayer['bb_bottom'] . "';";
+				echo "baselayer['bb_right'] = '" . $baselayer['bb_right'] . "';";
+				echo "baselayer['bb_top'] = '" . $baselayer['bb_top'] . "';";
+				echo "baselayer['image_width'] = '" . $baselayer['image_width'] . "';";
+				echo "baselayer['image_height'] = '" . $baselayer['image_height'] . "';";
+				echo "baselayer['url'] = '" . $baselayer['url'] . "';";
+				break;
+			case 'Gmap':
+				echo "baselayer['gmap_type'] = '" . $baselayer['gmap_type'] . "';";
+				break;
+		}
+		
+		echo "baselayerList.push(baselayer);";
+	}
+	
+	echo "js_printMap(idDiv, initialZoom, centerLatitude, centerLongitude,
+		baselayerList, controlsList)";
+	echo "</script>";
 }
 
 function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
@@ -1054,7 +829,7 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition');
 	
 	printMap($agent_name."_agent_map", $defaultMap['zoom_level'],
-		$defaultMap['num_zoom_levels'], $defaultMap['initial_latitude'],
+		$defaultMap['initial_latitude'],
 		$defaultMap['initial_longitude'], $baselayers, $controls);
 		
 	makeLayer("layer_for_agent_".$agent_name);

@@ -1,3 +1,17 @@
+2010-03-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_gis.php: cleaned source code of "printMap", now it is
+	more clean the code because it call the js_printMap only and it haven't the
+	num zoom levels.
+	
+	* include/javascript/openlayers.pandora.js: cleaned source code of
+	"js_printMap", now it is more clean the code and it haven't the num zoom
+	levels.
+
+	* operation/gis_maps/render_view.php, godmode/setup/gis_step_2.php,
+	godmode/gis_maps/configure_gis_map.php: use new form of "printMap" and
+	"js_printMap".
+
 2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	New theme for the maps: New images and background color for the Openlayers

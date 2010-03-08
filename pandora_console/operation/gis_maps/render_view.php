@@ -117,7 +117,7 @@ $buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\'
 	'<img src="images/status_sets/default/agent_ok_ball.png" title="' . __('Ok') . '"/></div></a>';
 $buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><div style="height: 18px;">' .
 	'<img src="images/status_sets/default/agent_no_monitors_ball.png" title="' . __('Other') . '"/></div></a>';
-$buttons[] = __('Show agents in state: ');
+$buttons[] = __('Show agents by state: ');
 
 
 print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_name'], "", false, "", false, $buttons);

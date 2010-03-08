@@ -20,16 +20,16 @@
  * @return None
  */
 function addParentLines() {
-	makeLayer(__('Hierarchy agent'));
+	makeLayer(__('Hierarchy of agents'));
 	
 	echo "<script type='text/javascript'>";
 	echo "$(document).ready (function () {
-		var layer = map.getLayersByName('" . __('Hierarchy agent') . "');
+		var layer = map.getLayersByName('" . __('Hierarchy of agents') . "');
 		layer = layer[0];
 		
 		map.setLayerIndex(layer, 0);
 		
-		js_refreshParentLines('" . __('Hierarchy agent') . "');
+		js_refreshParentLines('" . __('Hierarchy of agents') . "');
 	});";
 	echo "</script>";
 	

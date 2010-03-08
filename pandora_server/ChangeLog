@@ -1,3 +1,8 @@
+2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* lib/PandoraFMS/GIS.pm, lib/PandoraFMS/GeoIP.pm: Modified to put
+	MaxMind GeoIP PurePerl GPL library into PandoraFMS package.
+
 2010-03-04  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: Several typos and better formating.

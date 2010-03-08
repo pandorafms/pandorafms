@@ -177,7 +177,7 @@ B<Returns>: I<undef> if there is not information available or a B<hash> with:
 sub get_reverse_geoip_file($$) {
 	my ($pa_config,$ip_addr) = @_;
 	if ($geoIPPurePerlavilable == 1) {
-		my $geoipdb = Geo::IP::PurePerl->open( $pa_config->{'recon_reverse_geolocation_file'}); 
+		my $geoipdb = PandoraFMS::GeoIP->open( $pa_config->{'recon_reverse_geolocation_file'}); 
 		if (defined($geoipdb)) {
     		my $region_info = $geoipdb->get_city_record_as_hash($ip_addr);	
     		logger($pa_config, "Region info found for IP '$ip_addr' is: country:".$region_info->{'country_name'}." region:".$region_info->{'region'}." city:".$region_info->{'city'}." longitude:".$region_info->{'longitude'}." latitude:".$region_info->{'latitude'}, 8);

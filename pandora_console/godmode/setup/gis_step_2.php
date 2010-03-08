@@ -434,7 +434,7 @@ function refreshMapViewSecondStep() {
 		arrayControls = null;
 		arrayControls = Array('Navigation', 'PanZoom', 'MousePosition');
 		
-		js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
+		js_printMap('map', inital_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
 		
 		layer = js_makeLayer('temp_layer', true, null);
 

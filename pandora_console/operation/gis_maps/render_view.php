@@ -129,9 +129,9 @@ else {
 	echo "<div id='map' style='position:absolute;top:40px; z-index:100; width: 98%; height:94%; border: 1px solid black;' ></div>";
 }
 
-printMap('map', $map['zoom_level'], $numZoomLevels, $map['initial_latitude'],
+printMap('map', $map['zoom_level'], $map['initial_latitude'],
 	$map['initial_longitude'], $baselayers, $controls);
-	
+
 if ($layers != false) {
 	foreach ($layers as $layer) {
 		makeLayer($layer['layer_name'], $layer['view_layer'], null, $layer['id_tmap_layer']);

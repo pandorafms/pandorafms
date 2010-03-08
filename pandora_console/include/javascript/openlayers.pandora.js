@@ -77,7 +77,6 @@ function js_refreshParentLines(layerName) {
  * 
  * @param string id_div The id of div to draw the map.
  * @param integer initial_zoom The initial zoom to show the map.
- * @param integer num_levels_zoom The numbers of zoom levels.
  * @param float center_latitude The coord of latitude for center.
  * @param float center_longitude The coord of longitude for center.
  * @param array objBaseLayers The array of baselayers with number index, and the baselayer is another asociative array that content 'type', 'name' and 'url'.
@@ -85,119 +84,138 @@ function js_refreshParentLines(layerName) {
  * 
  * @return None
  */
-function js_printMap(id_div, initial_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls) {
-	$(document).ready (
-		function () {
-			
-			controlsList = [];
-				
-			for (var controlIndex in arrayControls) {
-				if (isInt(controlIndex)) {
-					switch (arrayControls[controlIndex]) {
-						case 'Navigation':
-							controlsList.push(new OpenLayers.Control.Navigation());
-							break;
-						case 'MousePosition':
-							controlsList.push(new OpenLayers.Control.MousePosition());
-							break;
-						case 'OverviewMap':
-							controlsList.push(new OpenLayers.Control.OverviewMap());
-							break;
-						case 'PanZoom':
-							controlsList.push(new OpenLayers.Control.PanZoom());
-							break;
-						case 'PanZoomBar':
-							controlsList.push(new OpenLayers.Control.PanZoomBar());
-							break;
-						case 'ScaleLine':
-							controlsList.push(new OpenLayers.Control.ScaleLine());
-							break;
-						case 'Scale':
-							controlsList.push(new OpenLayers.Control.Scale());
-							break;
-					}
-				}
-			}
-				
-			map = new OpenLayers.Map (id_div, {
-				controls: controlsList,
-				maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-				maxResolution: 156543.0399,
-				numZoomLevels: num_levels_zoom,
-				units: 'm', //metros
-				//Disabled projection because with Image map not run fine...I don't know
-//				projection: new OpenLayers.Projection("EPSG:900913"),
-				displayProjection: new OpenLayers.Projection("EPSG:4326")
-			});
-
-			//Define the maps layer
-			for (var baselayerIndex in objBaseLayers) {
-				if (isInt(baselayerIndex)) {
-					switch (objBaseLayers[baselayerIndex]['type']) {
-						case 'OSM':
-							var baseLayer = new OpenLayers.Layer.OSM(objBaseLayers[baselayerIndex]['name'], 
-									objBaseLayers[baselayerIndex]['url'], {numZoomLevels: num_levels_zoom});
-							map.addLayer(baseLayer);
-							break;
-						case 'Gmap':
-                            tipito = objBaseLayers[baselayerIndex]['gmap_type'];
-                            switch (tipito) {
-                                case 'G_PHYSICAL_MAP':
-                                    //var baseLayer = new OpenLayers.Layer.Google();
-                                    var gphy = new OpenLayers.Layer.Google(
-                                    "Google Physical",
-                                    {type: G_PHYSICAL_MAP,  'sphericalMercator': true, maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)});
-                                    map.addLayer(gphy);
-                                    break;
-                                case 'G_HYBRID_MAP':
-                                    var ghyb = new OpenLayers.Layer.Google(
-                                    "Google Hybrid",
-                                    {type: G_HYBRID_MAP, 'sphericalMercator': true, numZoomLevels: 20}
-                                    );
-                                    map.addLayer(ghyb);
-                                    break;
-                                case 'G_SATELLITE_MAP':
-                                    var gsat = new OpenLayers.Layer.Google(
-                                    "Google Satellite",
-                                        {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
-                                    );
-                                    map.addLayer(gsat);
-                                    break;
-                                default:
-                                    var gmap = new OpenLayers.Layer.Google(
-                                        "Google Streets", // the default
-                                        {'sphericalMercator': true, numZoomLevels: 20}
-                                    );
-                                    map.addLayer(gmap);
-                                    break;
-                            }
-							break;
-						case 'Static_Image':
-							
-				            var baseLayer = new OpenLayers.Layer.Image(
-				            		objBaseLayers[baselayerIndex]['name'],
-				            		objBaseLayers[baselayerIndex]['url'],
-				                    new OpenLayers.Bounds(objBaseLayers[baselayerIndex]['bb_left'],
-				                    		objBaseLayers[baselayerIndex]['bb_bottom'],
-				                    		objBaseLayers[baselayerIndex]['bb_right'],
-				                    		objBaseLayers[baselayerIndex]['bb_top']),
-				                    new OpenLayers.Size(objBaseLayers[baselayerIndex]['image_width'], objBaseLayers[baselayerIndex]['image_height']),
-				                    {'sphericalMercator': true, numZoomLevels: num_levels_zoom});
-				            map.addLayer(baseLayer);
-							break;
-						default: 
-							alert('connection type invalid');
-					}
-				}
-			}
-
-			if( ! map.getCenter() ){
-				var lonLat = new OpenLayers.LonLat(center_longitude, center_latitude)
-					.transform(map.displayProjection, map.getProjectionObject());
-				map.setCenter (lonLat, initial_zoom);
+function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls) {
+	controlsList = [];
+	
+	for (var controlIndex in arrayControls) {
+		if (isInt(controlIndex)) {
+			switch (arrayControls[controlIndex]) {
+				case 'Navigation':
+					controlsList.push(new OpenLayers.Control.Navigation());
+					break;
+				case 'MousePosition':
+					controlsList.push(new OpenLayers.Control.MousePosition());
+					break;
+				case 'OverviewMap':
+					controlsList.push(new OpenLayers.Control.OverviewMap());
+					break;
+				case 'PanZoom':
+					controlsList.push(new OpenLayers.Control.PanZoom());
+					break;
+				case 'PanZoomBar':
+					controlsList.push(new OpenLayers.Control.PanZoomBar());
+					break;
+				case 'ScaleLine':
+					controlsList.push(new OpenLayers.Control.ScaleLine());
+					break;
+				case 'Scale':
+					controlsList.push(new OpenLayers.Control.Scale());
+					break;
+				case 'layerSwitcher':
+					controlsList.push(new OpenLayers.Control.LayerSwitcher());
+					break;
 			}
 		}
-	);
+	}
+	
+	
+	var option = {
+			controls: controlsList,
+			projection: new OpenLayers.Projection("EPSG:900913"),
+            displayProjection: new OpenLayers.Projection("EPSG:4326"),
+            units: "m",
+            numZoomLevels: 18,
+            maxResolution: 156543.0339,
+			maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508.34)
+		};
+
+	map = new OpenLayers.Map(id_div, option);
+	
+	var baseLayer = null;
+	
+	//Define the maps layer
+	for (var baselayerIndex in objBaseLayers) {
+		if (isInt(baselayerIndex)) {
+			switch (objBaseLayers[baselayerIndex]['type']) {
+				case 'OSM':
+					baseLayer = null;
+					baseLayer = new OpenLayers.Layer.OSM(
+						objBaseLayers[baselayerIndex]['name'], 
+						objBaseLayers[baselayerIndex]['url'],
+						{numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+							'sphericalMercator': true
+						}
+					);
+					map.addLayer(baseLayer);
+					break;
+				case 'Gmap':
+					switch (objBaseLayers[baselayerIndex]['gmap_type']) {
+						case 'G_PHYSICAL_MAP':
+							baseLayer = new OpenLayers.Layer.Google(
+								objBaseLayers[baselayerIndex]['name'],
+								{type: G_PHYSICAL_MAP,
+									numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+									'sphericalMercator': true
+								}
+							);
+							map.addLayer(baseLayer);
+							break;
+						case 'G_HYBRID_MAP':
+							baseLayer = new OpenLayers.Layer.Google(
+								objBaseLayers[baselayerIndex]['name'],
+								{type: G_HYBRID_MAP,
+									numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+									'sphericalMercator': true
+								}
+							);
+							map.addLayer(baseLayer);
+							break;
+						case 'G_SATELLITE_MAP':
+							baseLayer = new OpenLayers.Layer.Google(
+								objBaseLayers[baselayerIndex]['name'],
+								{type: G_SATELLITE_MAP,
+									numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+									'sphericalMercator': true
+								}
+							);
+							map.addLayer(baseLayer);
+							break;
+						default:
+							baseLayer = new OpenLayers.Layer.Google(
+								objBaseLayers[baselayerIndex]['name'],
+								{numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels'],
+									'sphericalMercator': true
+								}
+							);
+							map.addLayer(baseLayer);
+							break;
+					}
+					break;
+				case 'Static_Image':
+					baseLayer = null;
+					baseLayer = new OpenLayers.Layer.Image(
+						objBaseLayers[baselayerIndex]['name'],
+						objBaseLayers[baselayerIndex]['url'],
+						new OpenLayers.Bounds(objBaseLayers[baselayerIndex]['bb_left'],
+							objBaseLayers[baselayerIndex]['bb_bottom'],
+							objBaseLayers[baselayerIndex]['bb_right'],
+							objBaseLayers[baselayerIndex]['bb_top']
+						),
+						new OpenLayers.Size(objBaseLayers[baselayerIndex]['image_width'], objBaseLayers[baselayerIndex]['image_height']),
+						{projection: new OpenLayers.Projection("EPSG:4326"),
+		            		numZoomLevels: objBaseLayers[baselayerIndex]['num_zoom_levels']
+						}
+					);
+		            map.addLayer(baseLayer);
+					break;
+			}
+		}
+	}
+	console.log(map);
+	var lonLat = new OpenLayers.LonLat(center_longitude, center_latitude)
+		.transform(map.displayProjection, map.getProjectionObject());
+
+	map.setCenter (lonLat, initial_zoom);
 }
 
 /**

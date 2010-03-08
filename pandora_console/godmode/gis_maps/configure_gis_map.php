@@ -504,7 +504,7 @@ function refreshMapView() {
 				objBaseLayers[0]['name'] = mapConnection['conection_name'];
 				objBaseLayers[0]['url'] = baseLayer['url'];
 
-				js_printMap('map', inital_zoom, num_levels_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
+				js_printMap('map', inital_zoom, center_latitude, center_longitude, objBaseLayers, arrayControls);
 			}
 		}
 	});

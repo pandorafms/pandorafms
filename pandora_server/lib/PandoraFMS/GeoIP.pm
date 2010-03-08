@@ -1,4 +1,4 @@
-package Geo::IP::PurePerl;
+package PandoraFMS::GeoIP;
 
 use strict;
 use FileHandle;

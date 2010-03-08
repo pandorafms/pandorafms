@@ -97,7 +97,7 @@
 									config.callbackPre ();
 									option = $("<option></option>")
 										.attr ("value", value['id_agente_modulo'])
-										.html (html_entity_decode (value['nombre']));
+										.html (js_html_entity_decode (value['nombre']));
 									config.callbackPost (i, value, option);
 									$(config.moduleSelect).append (option);
 								});
@@ -151,8 +151,8 @@
 									config.callbackPre ();
 									option = $("<option></option>")
 										.attr ("value", value['id'])
-										.html (html_entity_decode (value['template']['name']))
-										.append (" ("+html_entity_decode (value['module_name'])+")");
+										.html (js_html_entity_decode (value['template']['name']))
+										.append (" ("+js_html_entity_decode (value['module_name'])+")");
 									config.callbackPost (i, value, option);
 									$(config.alertSelect).append (option);
 								});

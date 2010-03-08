@@ -605,7 +605,7 @@ function refresh_table () {
 //			success: function (data) {
 //				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
 //				jQuery.each (data, function (i, val) {
-//					s = html_entity_decode (val['nombre']);
+//					s = js_html_entity_decode (val['nombre']);
 //					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
 //				});
 //				$('#id_module').fadeIn ('normal');
@@ -705,7 +705,7 @@ $(document).ready (function () {
 							success: function (data) {
 								$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
 								jQuery.each (data, function (i, val) {
-									s = html_entity_decode (val['nombre']);
+									s = js_html_entity_decode (val['nombre']);
 									$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
 								});
 								$('#id_module').fadeIn ('normal');

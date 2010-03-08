@@ -1,3 +1,16 @@
+2010-03-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js: change the code into function
+	"html_entity_decode" for fix the decode in IE6 and rename the function to
+	"js_html_entity_decode" for clean source code.
+	
+	* include/javascript/jquery.pandora.controls.js,
+	include/javascript/pandora_modules.js, godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/reporting/reporting_builder.php, godmode/reporting/map_builder.php,
+	godmode/reporting/graph_builder.php: use the rewrite new function javascript
+	js_html_entity_decode.
+
 2010-03-06  SAncho Lerena  <slerena@artica.es>
 
 	* install.php: Fixed width of textarea, too small.

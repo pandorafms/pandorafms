@@ -68,10 +68,10 @@ function configure_modules_form () {
 			"id_module_component" : this.value
 			},
 			function (data, status) {
-				configuration_data = html_entity_decode (data['data']);
+				configuration_data = js_html_entity_decode (data['data']);
 				
-				$("#text-name").attr ("value", html_entity_decode (data["name"]));
-				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
+				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
+				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").attr ("value", configuration_data);
 				$("#component_loading").hide ();
 				
@@ -126,24 +126,24 @@ function configure_modules_form () {
 			"id_module_component" : this.value
 			},
 			function (data, status) {
-				$("#text-name").attr ("value", html_entity_decode (data["name"]));
-				$("#textarea_description").attr ("value", html_entity_decode (data["description"]));
+				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
+				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
 				$("#id_module_type option[value="+data["type"]+"]").select (1);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
 				$("#text-module_interval").attr ("value", data["module_interval"]);
 				$("#text-tcp_port").attr ("value", data["tcp_port"]);
-				$("#textarea_tcp_send").attr ("value", html_entity_decode (data["tcp_send"]));
-				$("#textarea_tcp_rcv").attr ("value", html_entity_decode (data["tcp_rcv"]));
-				$("#text-snmp_community").attr ("value", html_entity_decode (data["snmp_community"]));
-				$("#text-snmp_oid").attr ("value", html_entity_decode (data["snmp_oid"])).show ();
+				$("#textarea_tcp_send").attr ("value", js_html_entity_decode (data["tcp_send"]));
+				$("#textarea_tcp_rcv").attr ("value", js_html_entity_decode (data["tcp_rcv"]));
+				$("#text-snmp_community").attr ("value", js_html_entity_decode (data["snmp_community"]));
+				$("#text-snmp_oid").attr ("value", js_html_entity_decode (data["snmp_oid"])).show ();
 				$("#oid, img#edit_oid").hide ();
 				$("#id_module_group option["+data["id_group"]+"]").select (1);
 				$("#max_timeout").attr ("value", data["max_timeout"]);
 				$("#id_plugin option[value="+data["id_plugin"]+"]").select (1);
-				$("#text-plugin_user").attr ("value", html_entity_decode (data["plugin_user"]));
-				$("#password-plugin_pass").attr ("value", html_entity_decode (data["plugin_pass"]));
-				$("#text-plugin_parameter").attr ("value", html_entity_decode (data["plugin_parameter"]));
+				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
+				$("#password-plugin_pass").attr ("value", js_html_entity_decode (data["plugin_pass"]));
+				$("#text-plugin_parameter").attr ("value", js_html_entity_decode (data["plugin_parameter"]));
 				if (data["history_data"])
 					$("#checkbox-history_data").check ();
 				else

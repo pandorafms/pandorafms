@@ -26,16 +26,17 @@ function open_help (help_id) {
  *
  * @retval str with entities decoded
  */
-function html_entity_decode (str) {
+function js_html_entity_decode (str) {
 	if (! str)
 		return "";
-	var ta = document.createElement ("textarea");
-	ta.innerHTML = str.replace (/</g, "&lt;").
-		replace (/>/g,"&gt;").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-		.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
-		.replace(/&amp;/g,'&');
-
-	return ta.value;
+	
+	str2 = str.replace (/</g, "&lt;").
+	replace (/>/g,"&gt;").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+	.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
+	.replace(/&amp;/g,'&')
+	.replace(/&#13;/g, '\r').replace(/&#10;/g, '\n');
+	
+	return str2;
 }
 
 /**
@@ -77,7 +78,7 @@ function agent_changed (event, id_agent, selected) {
 				 $('#module').empty ();
 				 $('#module').append ($('<option></option>').html ("<?php echo __('Any')?>").attr ("value", 0));
 				 jQuery.each (data, function (i, val) {
-							  s = html_entity_decode (val['nombre']);
+							  s = js_html_entity_decode (val['nombre']);
 							  $('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
 							  $('#module').fadeIn ('normal');
 							  });

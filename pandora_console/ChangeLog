@@ -1,5 +1,10 @@
 2010-03-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/openlayers.pandora.js: deleted the console log debug
+	print.
+
+2010-03-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_gis.php: cleaned source code of "printMap", now it is
 	more clean the code because it call the js_printMap only and it haven't the
 	num zoom levels.

@@ -210,7 +210,7 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
-$table->data[12][0] = __('Icon agent');
+$table->data[12][0] = __('Agent icon');
 $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
 	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . '.png" />' .
 	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.default.png" />' .

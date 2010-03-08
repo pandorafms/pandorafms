@@ -1,3 +1,23 @@
+2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	New theme for the maps: New images and background color for the Openlayers
+	controls.
+
+	* include/javascript/OpenLayers/OpenLayers.js: Channged background color
+	on some components to fit the new theme.
+
+	* include/javascript/OpenLayers/img/south-mini.png, 
+	include/javascript/OpenLayers/img/zoom-plus-mini.png, 
+	include/javascript/OpenLayers/img/zoom-world-mini.png, 
+	include/javascript/OpenLayers/img/zoom-minus-mini.png, 
+	include/javascript/OpenLayers/img/zoombar.png, 
+	include/javascript/OpenLayers/img/west-mini.png, 
+	include/javascript/OpenLayers/img/slider.png, 
+	include/javascript/OpenLayers/img/layer-switcher-maximize.png, 
+	include/javascript/OpenLayers/img/north-mini.png, 
+	include/javascript/OpenLayers/img/east-mini.png: New images for the new
+	theme of the Openlayers controls.
+
 2010-03-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: change the code into function
@@ -11,7 +31,7 @@
 	godmode/reporting/graph_builder.php: use the rewrite new function javascript
 	js_html_entity_decode.
 
-2010-03-06  SAncho Lerena  <slerena@artica.es>
+2010-03-06  Sancho Lerena  <slerena@artica.es>
 
 	* install.php: Fixed width of textarea, too small.
 
@@ -56,7 +76,7 @@
 	* operation/agentes/estado_agente.php: Fixed general view of agents.
 	When show agents without modules, never display it's date because was
 	taking from the most recept module, instead of data from agent itself.
-:
+
 2010-03-04  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: Change help link.

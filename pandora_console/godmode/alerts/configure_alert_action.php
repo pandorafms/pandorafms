@@ -113,7 +113,7 @@ $(document).ready (function () {
 		jQuery.get ("ajax.php",
 			values,
 			function (data, status) {
-				original_command = html_entity_decode (data["command"]);
+				original_command = js_html_entity_decode (data["command"]);
 				render_command_preview (original_command);
 			},
 			"json"

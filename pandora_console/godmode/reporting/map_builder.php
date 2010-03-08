@@ -597,7 +597,7 @@ $(document).ready (function () {
 						success: function (data) {
 							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
 							jQuery.each (data, function (i, val) {
-								s = html_entity_decode (val['nombre']);
+								s = js_html_entity_decode (val['nombre']);
 								$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
 							});
 							$('#module').fadeIn ('normal');
@@ -724,7 +724,7 @@ $(document).ready (function () {
 							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
 							jQuery.each (data, function (i, val) {
 								var val_id_agente_modulo = parseInt(val['id_agente_modulo']);
-								s = html_entity_decode (val['nombre']);
+								s = js_html_entity_decode (val['nombre']);
 								
 								option = $("<option></option>");
 								option.attr ('value', val['id_agente_modulo']).text (s);

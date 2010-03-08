@@ -211,7 +211,7 @@ function js_printMap(id_div, initial_zoom, center_latitude, center_longitude, ob
 			}
 		}
 	}
-	console.log(map);
+	
 	var lonLat = new OpenLayers.LonLat(center_longitude, center_latitude)
 		.transform(map.displayProjection, map.getProjectionObject());
 

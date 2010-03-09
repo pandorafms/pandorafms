@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	exit;
@@ -33,7 +33,7 @@ if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
 
-	audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
 		"Deleted user ".safe_input($id_user));
 
 	print_result_message ($result,

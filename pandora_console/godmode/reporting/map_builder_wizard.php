@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder wizard");
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access map builder wizard");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -38,7 +38,7 @@ if (empty ($layout)) {
 $layout_group = $layout["id_group"];
 
 if (! give_acl ($config['id_user'], $layout_group, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder wizard (forget URL parameter)");
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access map builder wizard (forget URL parameter)");
 	require ("general/noaccess.php");
 	exit;
 }

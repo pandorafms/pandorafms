@@ -76,14 +76,14 @@ if ($multiple_delete) {
 		$id_grupo = (int) dame_id_grupo ($id_agente);
 		
 		if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
-			audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
+			audit_db($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation",
 			"Trying to delete a module without admin rights");
 			require ("general/noaccess.php");
 			exit;
 		}
 		
 		if ($id_agent_module_del < 1) {
-			audit_db ($config["id_user"],$REMOTE_ADDR, "HACK Attempt",
+			audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "HACK Attempt",
 			"Expected variable from form is not correct");
 			die ("Nice try buddy");
 			exit;

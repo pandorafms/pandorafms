@@ -21,7 +21,7 @@ check_login ();
 print_page_header (__('Event database cleanup'), "", false, "", true);
 
 if (! give_acl ($config['id_user'], 0, "DM")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Database Management Event");
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access Database Management Event");
 	require ("general/noaccess.php");
 	exit;
 }

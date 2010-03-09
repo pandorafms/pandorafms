@@ -21,7 +21,7 @@ check_login();
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "HACK Attempt",
 		"Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
 	return;
@@ -30,7 +30,7 @@ if (! $id_report) {
 $report = get_db_row ('treport', 'id_report', $id_report);
 
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph reader");
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }

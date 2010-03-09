@@ -29,7 +29,7 @@ if (is_ajax ()) {
 		$id_group = get_agent_group ($id_agent);
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
@@ -89,7 +89,7 @@ if (isset ($id_agente)) {
 }
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -134,7 +134,7 @@ if ($create_alert) {
 		$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 		$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
-		audit_db ($config["id_user"],$REMOTE_ADDR, "Alert management",
+		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
 		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 
 		print_result_message ($id,
@@ -164,7 +164,7 @@ if ($delete_alert) {
 	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
-	audit_db ($config["id_user"],$REMOTE_ADDR, "Alert management",
+	audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
 	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 
 	$result = delete_alert_agent_module ($id_alert_agent_module);

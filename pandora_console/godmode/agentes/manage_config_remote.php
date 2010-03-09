@@ -24,7 +24,7 @@ $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
 
 if (! give_acl ($config['id_user'], 0, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access remote config copy tool");
 	require ("general/noaccess.php");
 	exit;
@@ -55,7 +55,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 
 		// Security check here
 		if (!user_access_to_agent ($id_origen)) {
-			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to forge a source agent in remote config tool");
 			require ("general/noaccess.php");
 			exit;
 		}		
@@ -69,7 +69,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			
 			// Security check here
 			if (!user_access_to_agent ($id_agente)){
-				audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to forge a source agent in remote config tool");
+				audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to forge a source agent in remote config tool");
 				require ("general/noaccess.php");
 				exit;
 			}			

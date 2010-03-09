@@ -22,7 +22,7 @@ require_once ('include/functions_gis.php');
 require_javascript_file('openlayers.pandora');
 
 if (! give_acl ($config['id_user'], 0, "IW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }

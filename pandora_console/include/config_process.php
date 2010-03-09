@@ -69,9 +69,6 @@ process_config ();
 require_once ('streams.php');
 require_once ('gettext.php');
 
-// Set IP address of user connected to Pandora console and store it in session array
-global $REMOTE_ADDR;
-
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 $config['user_language'] = $config["language"];
 

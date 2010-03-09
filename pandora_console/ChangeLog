@@ -1,3 +1,7 @@
+2010-03-09  Junichi Satoh <junichi@rworks.jp>
+
+	* include/help/ja : Imported Japanese help files.
+
 2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/agentes/agent_conf_gis.php: Changed some english phrases to make

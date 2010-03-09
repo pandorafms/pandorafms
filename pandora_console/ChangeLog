@@ -1,3 +1,8 @@
+2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/gis_maps/configure_gis_map.php: fix the request var when it is
+	activate magic quotes.
+
 2010-03-09  Junichi Satoh <junichi@rworks.jp>
 
 	* include/help/ja : Imported Japanese help files.

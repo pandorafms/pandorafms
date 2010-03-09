@@ -175,7 +175,7 @@ $agent = get_db_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
 if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access (read) to agent ".get_agent_name($id_agente));
 	include ("general/noaccess.php");
 	return;

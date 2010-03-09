@@ -20,7 +20,7 @@ global $config;
 check_login();
 
 if (! give_acl($config['id_user'], 0, "PM")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
 	return;
@@ -34,7 +34,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
@@ -50,7 +50,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter ('id_group');
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;

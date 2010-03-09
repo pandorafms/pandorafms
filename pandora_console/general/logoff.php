@@ -29,5 +29,5 @@
 		</td></tr>
 		</table>
 	</div>
-	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
+	<div id="ip"><?php echo 'IP: <b class="f10">'.$_SERVER['REMOTE_ADDR'].'</b>'; ?></div>
 </div>

@@ -20,7 +20,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "IW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
 	exit;
@@ -91,7 +91,7 @@ if ($delete_report) {
 // Add module SQL code
 if ($add_content) {
 	if (! $id_report) {
-		audit_db ($config['id_user'], $REMOTE_ADDR, "Hack attempt", "Parameter trash in report builder");
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Hack attempt", "Parameter trash in report builder");
 		require ("general/noaccess.php");
 		exit ();
 	}

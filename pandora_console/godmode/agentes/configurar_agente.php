@@ -28,7 +28,7 @@ if ($id_agente)
 	$group = get_agent_group ($id_agente);
 
 if (! give_acl ($config["id_user"], $group, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
 	return;
@@ -154,7 +154,7 @@ if ($create_agent) {
 			
 			$agent_created_ok = true;
 
-			audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Created agent $nombre_agente");
 			
 			// Create special module agent_keepalive
@@ -373,7 +373,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		} else {
 			enterprise_hook ('update_agent', array ($id_agente));
 			print_success_message (__('Successfully updated'));
-			audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Updated agent $nombre_agente");
 
 		}
@@ -386,7 +386,7 @@ if ($id_agente) {
 	//This has been done in the beginning of the page, but if an agent was created, this id might change
 	$id_grupo = get_agent_group ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an agent without access");
+		audit_db($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -424,7 +424,7 @@ if ($update_module || $create_module) {
 	$id_grupo = get_agent_group ($id_agente);
 	
 	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
-		audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
+		audit_db ($config["id_user"], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 			"Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
@@ -552,7 +552,7 @@ if ($update_module) {
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 
-		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Updated module '$name' for agent ".$agent["nombre"]);
 	}
 }
@@ -615,7 +615,7 @@ if ($create_module) {
 		$edit_module = false;
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
-		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Added module '$name' for agent ".$agent["nombre"]);
 	}
 }
@@ -628,14 +628,14 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	$id_grupo = (int) dame_id_grupo ($id_agente);
 	
 	if (! give_acl ($config["id_user"], $id_grupo, "AW")) {
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
+		audit_db($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
 	
 	if ($id_borrar_modulo < 1) {
-		audit_db ($config["id_user"],$REMOTE_ADDR, "HACK Attempt",
+		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "HACK Attempt",
 		"Expected variable from form is not correct");
 		require ("general/noaccess.php");
 		exit;
@@ -671,7 +671,7 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 		print_success_message (__('Module deleted succesfully'));
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
-		audit_db ($config['id_user'], $REMOTE_ADDR, "Agent management",
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
 	}
 }

@@ -41,7 +41,7 @@ if ($delete_graph) {
 		echo $result;
 	}
 	else {
-		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
+		audit_db ($config['id_user'],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to delete a graph from access graph builder");
 		include ("general/noaccess.php");
 		exit;
 	}
@@ -85,7 +85,7 @@ if ($view_graph) {
 		
 		$name = $graph["name"];
 		if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
-			audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
+			audit_db($config['id_user'],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access to a custom graph not allowed");
 			include ("general/noaccess.php");
 			exit;
 		}

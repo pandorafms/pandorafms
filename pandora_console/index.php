@@ -110,7 +110,6 @@ echo '</head>'."\n";
 
 ob_start ('process_page_body');
 
-$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
 $sec2 = get_parameter_get ('sec2');
@@ -136,12 +135,12 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
 	if ($loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
-		logon_db ($loginhash_user, $REMOTE_ADDR);
+		logon_db ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
 	} else {
 		require_once ('general/login_page.php');
-		audit_db ("system", $REMOTE_ADDR, "Logon Failed (loginhash", "");
+		audit_db ("system", $_SERVER['REMOTE_ADDR'], "Logon Failed (loginhash", "");
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -161,7 +160,7 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	if ($nick !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
-		logon_db ($nick, $REMOTE_ADDR);
+		logon_db ($nick, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;
 		//Remove everything that might have to do with people's passwords or logins
@@ -182,7 +181,7 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		audit_db ($nick, $REMOTE_ADDR, "Logon Failed", "Invalid login: ".$nick);
+		audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed", "Invalid login: ".$nick);
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -197,7 +196,7 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
 	$iduser = $_SESSION["id_usuario"];
-	logoff_db ($iduser, $REMOTE_ADDR);
+	logoff_db ($iduser, $_SERVER['REMOTE_ADDR']);
 	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
 	unset($_SESSION['id_usuario']);
 	unset($iduser);

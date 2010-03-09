@@ -1,5 +1,14 @@
 2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* index.php: changed the deprecated var $REMOTE_ADDR for standar
+	$_SERVER['REMOTE_ADDR']. I forget in the last commit.
+
+	* operation/gis_maps/render_view.php, operation/gis_maps/index.php,
+	operation/menu.php, godmode/gis_maps/configure_gis_map.php: fix the ACL
+	and add in other sites of source code.
+
+2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/config_process.php, extensions/dbmanager.php,
 	extensions/update_manager/settings.php, extensions/pandora_logs.php,
 	extensions/plugin_registration.php, operation/snmpconsole/snmp_view.php,

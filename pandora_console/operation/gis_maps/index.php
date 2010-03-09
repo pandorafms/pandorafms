@@ -47,7 +47,7 @@ if ($maps !== false) {
 		$rowPair = !$rowPair;
 		$iterator++;
 		
-		if (!give_acl ($config["id_user"], $map["group_id"], "AR")) {
+		if (!check_acl ($config["id_user"], $map["group_id"], "IR")) {
 			continue;
 		}
 		$data = array ();

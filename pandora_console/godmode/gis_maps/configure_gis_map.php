@@ -308,11 +308,19 @@ if (isset($invalidFields['map_connection_list'])) {
 	}
 }
 
+$listConnectionTemp = get_db_all_rows_sql("SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection");
+$listConnection = array();
+foreach ($listConnectionTemp as $connectionTemp) {
+	if (check_acl ($config["id_user"], $connectionTemp['group_id'], "IW")) {
+		$listConnection[$connectionTemp['id_tmap_connection']] = $connectionTemp['conection_name'];
+	}
+}
+
 $table->data[1][0] =  __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError;
 $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td>
-			" . print_select_from_sql('SELECT id_tmap_connection, conection_name FROM tgis_map_connection', 'map_connection', '', '', '', '0', true) ."
+			" . print_select($listConnection, 'map_connection', '', '', '', '0', true) ."
 		</td>
 		<td>
 			<a href='javascript: addConnectionMap();'>" . print_image ("images/add.png", true) . "</a>

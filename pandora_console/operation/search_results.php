@@ -50,14 +50,15 @@ if ($searchTab == 'agents') {
 			LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 		$agents = process_sql($sql);
 		
-		$sql = "SELECT count(id_agente)
+		$sql = "SELECT count(id_agente) AS count
 			FROM tagente
 				INNER JOIN tgrupo
 					ON tgrupo.id_grupo = tagente.id_grupo
 			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
 				tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'";
 		$totalAgents = get_db_row_sql($sql);
-		$totalAgents = $totalAgents[0];
+		
+		$totalAgents = $totalAgents['count'];
 	}
 }
 

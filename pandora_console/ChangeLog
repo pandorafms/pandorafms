@@ -1,5 +1,10 @@
 2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/search_results.php: fixed the result when call a function db
+	with new method.
+
+2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/gis_maps/configure_gis_map.php: fix the request var when it is
 	activate magic quotes.
 

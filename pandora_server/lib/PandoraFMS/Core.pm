@@ -1970,7 +1970,15 @@ sub pandora_self_monitoring ($$) {
 
 	my $agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
 
-	my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+    my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+
+	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND `value` > UNIX_TIMESTAMP() - 86400");
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Database Maintance</name>";
+	$xml_output .=" <type>generic_proc</type>";
+	$xml_output .=" <data>$dbmaintance</data>";
+	$xml_output .=" </module>";
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Queued_Modules</name>";

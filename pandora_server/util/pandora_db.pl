@@ -26,7 +26,7 @@ use PandoraFMS::DB;
 use POSIX qw(strftime);
 
 # version: define current version
-my $version = "3.1 PS100209";
+my $version = "3.1 PS100310";
 
 # Pandora server configuration
 my %conf;
@@ -73,6 +73,7 @@ sub pandora_purgedb ($$) {
 	# 3) Insert last value in date_limit position
 
  	# Calculate limit for deletion, today - $conf->{'_days_purge'}
+
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
 	my $ulimit_access_timestamp = time() - 86400;
@@ -82,6 +83,8 @@ sub pandora_purgedb ($$) {
 	my $first_mark;
 	my $total_time;
 	my $purge_steps;
+
+    # Numeric data deletion
 
 	print "[PURGE] Deleting old data... \n";
 
@@ -96,16 +99,67 @@ sub pandora_purgedb ($$) {
 	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
 
 		db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
-		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
-
-		print "[PURGE] Data deletion Progress %$ax .. \n";
+		print "[PURGE] Data deletion Progress %$ax .. \r";
 	}
+    print "\n";
 
-	print "[PURGE] Deleting old event data (More than " . $conf->{'_days_purge'} . " days)... \n";
-	db_do($dbh, "DELETE FROM tevento WHERE utimestamp < '$ulimit_timestamp'");
+    # String data deletion
+    print "[PURGE] Deleting old string data... \n";
+    if (!defined($conf->{'_string_purge'})){
+        $conf->{'_string_purge'} = 7;
+    }
 
+    my $string_limit = time() - 86400 * $conf->{'_string_purge'};
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_string ORDER BY utimestamp ASC LIMIT 1');
+	$total_time = $string_limit - $first_mark;
+	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+		print "[PURGE] String deletion Progress %$ax .. \r";
+	}
+    print "\n";
+
+    # Delete event data
+    if (!defined($conf->{'_event_purge'})){
+        $conf->{'_event_purge'}= 10;
+    }
+
+	print "[PURGE] Deleting old event data (More than " . $conf->{'_event_purge'} . " days)... \n";
+
+    my $event_limit = time() - 86400 * $conf->{'_event_purge'};
+	db_do($dbh, "DELETE FROM tevento WHERE utimestamp < $event_limit");
+
+    # Delete audit data
+    if (!defined($conf->{'_audit_purge'})){
+        $conf->{'_audit_purge'}= 7;
+    }
+	print "[PURGE] Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days)... \n";
+
+    my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
+	db_do($dbh, "DELETE FROM tsesion WHERE utimestamp < $audit_limit");
+
+
+    # Delete SNMP trap data
+    if (!defined($conf->{'_trap_purge'})){
+        $conf->{'_trap_purge'}= 7;
+    }
+	
+    my $trap_limit = time() - 86400 * $conf->{'_trap_purge'};
+    $trap_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($trap_limit));
+	db_do($dbh, "DELETE FROM ttrap WHERE timestamp < '$trap_limit'");
+
+    # Delete GIS  data
+    if (!defined($conf->{'_gis_purge'})){
+        $conf->{'_gis_purge'}= 15;
+    }
+
+    my $gis_limit = time() - 86400 * $conf->{'_gis_purge'};
+    $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($gis_limit));
+	db_do($dbh, "DELETE FROM tgis_data WHERE end_timestamp < '$gis_limit'");
+
+    # Delete pending modules
 	print "[PURGE] Delete pending deleted modules (data table)...\n";
-
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
 
 	foreach my $module (@deleted_modules) {
@@ -113,18 +167,12 @@ sub pandora_purgedb ($$) {
 		db_do ($dbh, "DELETE FROM tagente_datos WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
 		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
 		db_do ($dbh, "DELETE FROM tagente_datos_inc WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
-
+        db_do ($dbh, "DELETE FROM tagente_estado  WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
 	}
 
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";
 	db_do ($dbh, "DELETE FROM tagente_estado WHERE id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1)");
 	db_do ($dbh, "DELETE FROM tagente_modulo WHERE delete_pending = 1");
-
-	print "[PURGE] Delete old session data \n";
-	db_do ($dbh, "DELETE FROM tsesion WHERE utimestamp < $ulimit_timestamp");
-
-	print "[PURGE] Delete old data from SNMP Traps \n"; 
-	db_do ($dbh, "DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
 
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
 
@@ -134,8 +182,9 @@ sub pandora_purgedb ($$) {
 
 	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
 		db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
-		print "[PURGE] Agent access deletion progress %$ax .. \n";
+		print "[PURGE] Agent access deletion progress %$ax .. \r";
 	}
+    print "\n";
 
 }
 
@@ -265,6 +314,13 @@ sub pandora_load_config ($) {
 
 	# Read additional tokens from the DB
 	my $dbh = db_connect ('mysql', $conf->{'dbname'}, $conf->{'dbhost'}, '3306', $conf->{'dbuser'}, $conf->{'dbpass'});
+
+	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
+	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");
+	$conf->{'_audit_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
+	$conf->{'_string_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'audit_purge'");
+	$conf->{'_gis_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'gis_purge'");
+
 	$conf->{'_days_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_purge'");
 	$conf->{'_days_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_compact'");
 	$conf->{'_step_compact'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'step_compact'");
@@ -282,7 +338,43 @@ sub pandora_load_config ($) {
 
 	printf "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") ... \n\n";
 }
-	
+
+
+###############################################################################
+# Check database integrity
+###############################################################################
+
+sub pandora_checkdb_integrity {
+	my $dbh = shift;
+
+    print "[INTEGRITY] Cleaning up group stats \n";
+
+    # Delete all records on tgroup_stats
+    db_do ($dbh, 'DELETE FROM tgroup_stat');
+
+    print "[INTEGRITY] Deleting non-used IP addresses \n";
+
+    # Delete all non-used IP addresses from taddress
+    db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
+
+    print "[INTEGRITY] Deleting orphan alerts \n";
+
+    # Delete alerts assigned to inexistant modules
+    db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
+
+    print "[INTEGRITY] Deleting orphan modules \n";
+
+    # Delete orphan modules in tagente_modulo
+    db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente NOT IN (select id_agente FROM tagente)');
+
+    # Delete orphan modules in tagente_estado
+    db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente NOT IN (select id_agente FROM tagente)');
+
+    # Delete orphan data_inc reference records
+    db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
+
+}
+
 ###############################################################################
 # Check database consistency.
 ###############################################################################
@@ -393,6 +485,9 @@ sub pandoradb_main ($$$) {
 
 	# Consistency check
 	pandora_checkdb_consistency ($dbh);
+
+	# Maintain Referential integrity and other stuff
+	pandora_checkdb_integrity ($dbh);
 
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {

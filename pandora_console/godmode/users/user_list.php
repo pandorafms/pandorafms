@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -14,12 +14,12 @@
 // GNU General Public License for more details.
 
 // Load globar vars
-require_once ("include/config.php");
+global $config;
 
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	exit;
@@ -29,7 +29,7 @@ if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
 
-	audit_db ($config['id_user'], $REMOTE_ADDR, "User management",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
 		"Deleted user ".safe_input($id_user));
 
 	print_result_message ($result,
@@ -113,8 +113,9 @@ foreach ($info as $user_id => $user_info) {
 	$data[3] .= "</span></a>";
 	
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
+
 	if ($config["admin_can_delete_user"]) {
-		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_id, 'border:0px;', true); //Delete user button
+		$data[5] = print_input_image ("delete_user", "images/cross.png", $row["id_usuario"], 'border:0px;', true); //Delete user button
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}

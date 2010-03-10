@@ -1,3 +1,13 @@
+2010-03-10  Sancho Lerena <slerena@artica.es>
+
+	Merged bugfix from trunk:
+
+	 * godmode/users/user_list.php: Fixed bug which doesn't allow to
+        delete users.
+        
+        * godmode/users/configure_user.php: Fixed bug with profile assigment
+        (Mixed the current user and selected user).
+
 2010-03-06  SAncho Lerena  <slerena@artica.es>
 
 	* extras/pandoradb_migrate_v2.x_to_v3.0.sql: Missing SQL for migration

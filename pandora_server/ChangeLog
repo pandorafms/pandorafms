@@ -1,3 +1,8 @@
+2010-03-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Set tagente_estado.current_interval to
+	  tagente.intervalo if tagente_modulo.module_interval is 0.
+
 2010-03-08  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* lib/PandoraFMS/GIS.pm, lib/PandoraFMS/GeoIP.pm: Modified to put

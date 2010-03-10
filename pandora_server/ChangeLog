@@ -1,6 +1,13 @@
-2010-03-04  Sancho Lerena <slernea#artica.es>
+2010-03-10  Sancho Lerena <slerena@artica.es>
 
-	* lib/PandoraFMS/Config.pm: Fixed a typo.
+	Ported from trunk:
+
+	* lib/PandoraFMS/Core.pm: Set tagente_estado.current_interval
+	to tagente.intervalo if tagente_modulo.module_interval is 0.
+
+2010-03-04  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Fixed small typhografic error.
 
 2010-02-27  Sancho Lerena <slerena@artica.es>
 

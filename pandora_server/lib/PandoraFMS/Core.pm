@@ -755,10 +755,11 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < (time() - 86400))) ? 1 : 0;
 		
+	my $current_interval = ($module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'});
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
 		id_agente = ?, current_interval = ?, running_by = ?, last_execution_try = ?, last_try = ?
 		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $status_changes,
-		$current_utimestamp, $timestamp, $module->{'id_agente'}, $module->{'module_interval'}, $server_id,
+		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
 
 	# Save module data

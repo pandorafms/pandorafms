@@ -184,22 +184,25 @@ sub process_xml_data ($$$$$) {
 
 		# Validate the GIS informtation
 
-		# If position data (at least longitude and latitde) are not valid should be ignored
-		if ($longitude !~ /[-+]?[0-9]*\.?[0-9]+/ || $latitude !~ /[-+]?[0-9]*\.?[0-9]+/ || !defined($longitude) || !defined($latitude)) {
-			$valid_position_data = 0;	
-			$longitude = '';
-			$latitude = '';
-			$altitude='';
-		}
-
 		if (!defined($altitude) || $altitude !~ /[-+]?[0-9,11,12]/) {
-			$altitude = 0; # Default value
-		}
-
-		if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
-			$position_description = ''; # Default value
-		}
+                        $altitude = ''; # Default value
+			# This could be a valid position data, not always will get altitude
+                }
 	
+		if (!defined($longitude) || $longitude !~ /[-+]?[0-9,11,12]/) {
+                        $longitude = ''; # Default value
+			$valid_position_data = 0;
+                }
+
+		if (!defined($latitude) || $latitude !~ /[-+]?[0-9,11,12]/) {
+                        $latitude = ''; # Default value
+			$valid_position_data = 0;
+                }
+
+                if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
+                        $position_description = ''; # Default value
+                }
+
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);
 	}
 	# Unknown agent!

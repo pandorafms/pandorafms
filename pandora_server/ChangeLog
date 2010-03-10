@@ -1,3 +1,14 @@
+2010-03-10  Sancho Lerena  <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Automonitoring includes now status of 
+	database maintance and warns if more than 24hrs without running 
+	database maintance script.
+
+	* util/pandora_db.pl: Added support to new purge parameters for
+	event, audits, snmp traps, string data and gis data. Added new 
+	section to clean orphaned information (using an application - 
+	implemented database referencial integrity model).
+
 2010-03-10  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* util/pandora_xml_stress.conf: deleted conf file, I upload by fail.

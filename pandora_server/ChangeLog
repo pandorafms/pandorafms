@@ -1,5 +1,8 @@
 2010-03-10  Sancho Lerena  <slerena@artica.es>
 
+	* lib/PandoraFMS/DataServer.pm: Fix for annoying notices from
+	Perl due reference to undefined variable (GIS).
+
 	* lib/PandoraFMS/Core.pm: Automonitoring includes now status of 
 	database maintance and warns if more than 24hrs without running 
 	database maintance script.

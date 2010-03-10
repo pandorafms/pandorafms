@@ -28,7 +28,6 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 // Header
 print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
 
-
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
 	$result = delete_user ($id_user);
@@ -115,8 +114,9 @@ foreach ($info as $user_id => $user_info) {
 	$data[3] .= "</span></a>";
 	
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
+
 	if ($config["admin_can_delete_user"]) {
-		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_id, 'border:0px;', true); //Delete user button
+		$data[5] = print_input_image ("delete_user", "images/cross.png", $row["id_usuario"], 'border:0px;', true); //Delete user button
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}

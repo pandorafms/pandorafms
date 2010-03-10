@@ -92,8 +92,10 @@ function update_config_value ($token, $value) {
 			
 			break;
 		default:
-			if (!isset ($config[$token]))
+			if (!isset ($config[$token])){
+    			$config[$token] = $value;
 				return (bool) create_config_value ($token, $value);
+            }
 			
 			/* If it has not changed */
 			if ($config[$token] == $value)
@@ -178,7 +180,7 @@ function update_config () {
 	update_config_value ('audit_purge', get_parameter ('audit_purge', $config['audit_purge']));
 	update_config_value ('acl_enterprise', get_parameter ('acl_enterprise', $config['acl_enterprise']));
 	update_config_value ('metaconsole', get_parameter ('metaconsole', $config['metaconsole']));
-
+	update_config_value ('gis_purge', get_parameter ('gis_purge', $config['gis_purge']));
 }
 
 /**
@@ -304,6 +306,10 @@ function process_config () {
 
 	if (!isset ($config["metaconsole"])){
 		update_config_value ('metaconsole', 0);
+	}
+
+	if (!isset ($config["gis_purge"])){
+		update_config_value ('gis_purge', 7);
 	}
 
 	/* 

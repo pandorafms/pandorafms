@@ -55,35 +55,38 @@ $table->data[3][1] = print_input_text ('audit_purge', $config["audit_purge"], ''
 $table->data[4][0] = __('Max. days before delete string data');
 $table->data[4][1] = print_input_text ('string_purge', $config["string_purge"], '', 5, 5, true);
 
-$table->data[5][0] = __('Max. days before purge');
-$table->data[5][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
+$table->data[5][0] = __('Max. days before delete GIS data');
+$table->data[5][1] = print_input_text ('gis_purge', $config["gis_purge"], '', 5, 5, true);
 
-$table->data[6][0] = __('Max. days before compact data');
-$table->data[6][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
+$table->data[6][0] = __('Max. days before purge');
+$table->data[6][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
 
-$table->data[7][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table->data[7][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+$table->data[7][0] = __('Max. days before compact data');
+$table->data[7][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
 
-$table->data[8][0] = __('SLA period (seconds)');
-$table->data[8][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
+$table->data[8][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table->data[8][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[9][0] = __('Default hours for event view');
-$table->data[9][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
+$table->data[9][0] = __('SLA period (seconds)');
+$table->data[9][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
 
-$table->data[10][0] = __('Compact CSS and JS into header');
-$table->data[10][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
-$table->data[10][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
+$table->data[10][0] = __('Default hours for event view');
+$table->data[10][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[11][0] = __('Use realtime statistics');
-$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
+$table->data[11][0] = __('Compact CSS and JS into header');
+$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
+$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
-$table->data[12][0] = __('Batch statistics period (secs)');
-$table->data[12][1] = print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
+$table->data[12][0] = __('Use realtime statistics');
+$table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;'.print_radio_button ('realtimestats', 0, '', $config["realtimestats"], true);
 
-$table->data[13][0] = __('Use agent access graph'). print_help_icon("agent_access", true);
-$table->data[13][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
-$table->data[13][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
+$table->data[13][0] = __('Batch statistics period (secs)');
+$table->data[13][1] = print_input_text ('stats_interval', $config["stats_interval"], '', 5, 5, true);
+
+$table->data[14][0] = __('Use agent access graph'). print_help_icon("agent_access", true);
+$table->data[14][1] = __('Yes').'&nbsp;'.print_radio_button ('agentaccess', 1, '', $config["agentaccess"], true).'&nbsp;&nbsp;';
+$table->data[14][1] .= __('No').'&nbsp;'.print_radio_button ('agentaccess', 0, '', $config["agentaccess"], true);
 
 echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);

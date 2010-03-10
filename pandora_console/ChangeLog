@@ -1,3 +1,7 @@
+2010-03-10  Junichi Satoh <junichi@rworks.jp>
+
+	* general/license/pandora_info_ja.html : Added the GPL in Japanese.
+
 2010-03-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* index.php: changed the deprecated var $REMOTE_ADDR for standar

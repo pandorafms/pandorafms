@@ -35,7 +35,7 @@
 <?php
 
 $version = "3.1-dev";
-$build = "100209";
+$build = "100310";
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -555,6 +555,7 @@ function install_step5() {
 			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
 			<p>You should also install Pandora FMS Servers before trying to monitor anything; 
 			please read documentation on how to install it.</p>
+            <p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, please change it both as soon as possible.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.
 			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>

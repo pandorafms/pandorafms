@@ -17,12 +17,16 @@
 global $config;
 
 check_login ();
+
+// This defines the working user. Beware with this, old code get confusses
+// and operates with current logged user (dangerous).
+
 $id = get_parameter ('id', $config['id_user']); // ID given as parameter
+
 $user_info = get_user_info ($id);
 if ($user_info["language"] == ""){
 	$user_info["language"] = $config["language"];
 }
-$id = $user_info['id_user'];
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
@@ -152,7 +156,7 @@ if ($update_user) {
 }
 
 if ($add_profile) {
-	$id2 = (string) get_parameter ('id_user');
+	$id2 = (string) get_parameter ('id');
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
@@ -164,13 +168,13 @@ if ($add_profile) {
 }
 
 if ($delete_profile) {
-	$id = (string) get_parameter ('id_user');
+	$id2 = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
 		
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
-		"Deleted profile for user ".safe_input($id));
+		"Deleted profile for user ".safe_input($id2));
 
-	$return = delete_user_profile ($id, $id_up);
+	$return = delete_user_profile ($id2, $id_up);
 	print_result_message ($return,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
@@ -305,7 +309,7 @@ $data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 $data[1] = print_select (get_user_groups ($config['id_user'], 'UM'),
 	'assign_group', 0, '', __('None'), 0, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
-$data[2] .= print_input_hidden ('id_user', $id, true);
+$data[2] .= print_input_hidden ('id', $id, true);
 $data[2] .= print_input_hidden ('add_profile', 1, true);
 $data[2] .= '</form>';
 

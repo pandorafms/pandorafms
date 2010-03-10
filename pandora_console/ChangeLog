@@ -1,3 +1,19 @@
+2010-03-10  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Added new default values for purge event,
+	string data, audit data, gis data, and snmp trap data.
+	
+	* include/functions_config.php: Support for new gis_purge config
+	token.
+
+	* godmode/setup/performance.php: Added gis_purge to setup.
+
+	* godmode/users/user_list.php: Fixed bug which doesn't allow to
+	delete users.
+	
+	* godmode/users/configure_user.php: Fixed bug with profile assigment
+	(Mixed the current user and selected user).
+
 2010-03-10  Junichi Satoh <junichi@rworks.jp>
 
 	* general/license/pandora_info_ja.html : Added the GPL in Japanese.

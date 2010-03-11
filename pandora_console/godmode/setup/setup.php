@@ -99,7 +99,7 @@ $table->data[14][1] = print_input_text ('attachment_store', $config["attachment_
 $table->data[15][0] = __('IP list with API access') . 
 	print_help_tip (__("The list of IPs separate with carriage return."), true);
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
-$table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 5, 15, $list_ACL_IPs_for_API, null, true);
+$table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
 $table->data[16][0] = __('Enable GIS features in Pandora Console');
 $table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';

@@ -1,3 +1,12 @@
+2010-03-11  Snacho Lerena <slerena@artica.es>
+
+	* include/help/en/check_other_languages.sh: Small script to show
+	help files not translated.
+
+	* include/functions_ui.php: Fixed call to undefined variable.
+
+	* godmode/setup/setup.php: Small box for textarea.
+
 2010-03-10  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Added new default values for purge event,

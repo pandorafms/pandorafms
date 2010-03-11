@@ -278,6 +278,8 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '')
  * @return array A formatted array with proper html for use in $table->data (6 columns)
  */
 function format_alert_row ($alert, $compound = false, $agent = true, $url = '') {
+
+    $actionText = "";
 	require_once ("include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 	

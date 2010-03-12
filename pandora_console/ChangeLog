@@ -1,5 +1,8 @@
 2010-03-12  Sancho Lerena <slerena@artica.es>
 
+	* include/help/es/: Added some missing help files in spanish,
+	translated by Julia. Thanks Julia!
+
 	* godmode/groups/modu_group_list.php, 
 	godmode/groups/configure_modu_group.php: New module group
 	editor/manager. Contributed by Antonio Dos Santos, thanks Antonio!

@@ -643,8 +643,7 @@ function remove_alert () {
 
 function add_alert () {
 	id = this.id.split ("-").pop ();
-	alert = alerts[id];
-	if (alert == null)
+	if (alerts[id] == null)
 		return;
 	input = $("<input type=\"hidden\"></input>")
 		.attr ("name", "conditions[]")

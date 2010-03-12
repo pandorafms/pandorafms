@@ -1,3 +1,11 @@
+2010-03-12  Sancho Lerena <slerena@artica.es>
+
+	* godmode/groups/modu_group_list.php, 
+	godmode/groups/configure_modu_group.php: New module group
+	editor/manager. Contributed by Antonio Dos Santos, thanks Antonio!
+
+	* godmode/menu.php: Added modulegroup to menu.
+
 2010-03-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/alerts/configure_alert_compound.php : Changed not to use

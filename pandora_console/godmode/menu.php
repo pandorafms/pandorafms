@@ -35,6 +35,8 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	
 	if (give_acl ($config["id_user"], 0, "PM")) {
 		$sub["godmode/groups/group_list"]["text"] = __('Manage groups');
+		$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
+
 		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
 	}
 	

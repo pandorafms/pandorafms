@@ -576,6 +576,7 @@ $table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);
 $table->data[2][1] .=  ' '.__('to').' ';
 $table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
 $table->data[2][1] .= ' '.__('matches of the alert');
+$table->data[2][1] .= print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
 

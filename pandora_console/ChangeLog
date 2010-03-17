@@ -1,3 +1,13 @@
+2010-03-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/config_process.php, install.php: change version number.
+	* include/functions_ui.php: add in the function "print_page_header" a
+	read boolean item "active" in array $buttons for paint disabled.
+	* include/functions.php: add function "get_parameterBetweenListValues" this
+	function get a parameter for a GET or POST but between a values.
+	* godmode/reporting/visual_console_builder.php: added new editors for visual
+	console, now it is developing, don't afray.
+
 2010-03-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* operation/messages/message.php : Changed strings.

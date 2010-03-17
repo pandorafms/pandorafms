@@ -1,3 +1,15 @@
+2010-03-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/messages/message.php : Changed strings.
+	"From" to "Message from", "To" to "Message to"
+
+	* godmode/reporting/reporting_builder.php : Changed strings.
+	"Down" to "Move down", "Up" to "Move up"
+
+	* godmode/alerts/alert_list.php: Changed sentence with some strings.
+	"From XX to YY matches of the alert" to "Number of alerts match	
+	from XX to YY"
+
 2010-03-15  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/alerts/alert_list.php : Added help link, "alert-matches".

@@ -70,10 +70,10 @@ if (isset ($_GET["new_msg"])) { //create message
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
 	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
 	<tr>
-		<td class="datos">'.__('From').':</td>
+		<td class="datos">'.__('Message from').':</td>
 		<td class="datos"><b>'.print_username ($config["id_user"], true).'</b></td>
 	</tr><tr>
-		<td class="datos2">'.__('To').':</td>
+		<td class="datos2">'.__('Message to').':</td>
 		<td class="datos2">';
 		
 	$users = get_users_info (); //Get a list of all users
@@ -112,7 +112,7 @@ if (isset ($_GET["new_msg"])) { //create message
 	
 	echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">
 			<table class="databox_color" width="650" cellpadding="4" cellspacing="4">
-			<tr><td class="datos">'.__('From').':</td>
+			<tr><td class="datos">'.__('Message from').':</td>
 			<td class="datos"><b>'.print_username ($message["sender"], true).' '.__('at').' '.print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp")).'</b></td></tr>';
 	
 	// Subject

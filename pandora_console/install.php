@@ -35,7 +35,7 @@
 <?php
 
 $version = "3.1-dev";
-$build = "100310";
+$build = "100317";
 $banner = "v$version Build $build";
 
 error_reporting(0);

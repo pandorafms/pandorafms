@@ -428,6 +428,36 @@ function render_time ($lapse) {
 }
 
 /** 
+ * Get a parameter from a request between values.
+ *
+ * It checks first on post request, if there were nothing defined, it
+ * would return get request
+ * 
+ * @param string $name key of the parameter in the $_POST or $_GET array
+ * @param array $values The list of values that parameter to be.
+ * @param mixed $default default value if the key wasn't found
+ * 
+ * @return mixed Whatever was in that parameter, cleaned however 
+ */
+function get_parameterBetweenListValues ($name, $values, $default) {
+	$parameter = $default;
+	// POST has precedence
+	if (isset($_POST[$name]))
+		$parameter = get_parameter_post ($name, $default);
+
+	if (isset($_GET[$name]))
+		$parameter = get_parameter_get ($name, $default);
+		
+	foreach($values as $value) {
+		if ($value == $parameter) {
+			return $value;
+		}
+	}
+
+	return $default;
+}
+
+/** 
  * Get a parameter from a request.
  *
  * It checks first on post request, if there were nothing defined, it

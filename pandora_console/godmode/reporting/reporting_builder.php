@@ -451,7 +451,7 @@ if ($edit_sla_report_content) {
 					$data[0] .= print_input_hidden ('content_up', 1, true);
 					$data[0] .= print_input_hidden ('id_report_content', $report_content['id_rc'], true);
 					$data[0] .= print_input_image ('up', 'images/up.png', 1, '',
-						true, array ('title' => __('Up')));
+						true, array ('title' => __('Move up')));
 					$data[0] .= '</form>';
 				}
 				if ($last_id != $report_content['id_rc']) {
@@ -461,7 +461,7 @@ if ($edit_sla_report_content) {
 					$data[0] .= print_input_hidden ('content_down', 1, true);
 					$data[0] .= print_input_hidden ('id_report_content', $report_content['id_rc'], true);
 					$data[0] .= print_input_image ('down', 'images/down.png', 1, '',
-						true, array ('title' => __('Down')));
+						true, array ('title' => __('Move down')));
 					$data[0] .= '</form>';
 				}
 

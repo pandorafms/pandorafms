@@ -119,10 +119,22 @@ foreach ($modules as $module) {
 
 	$data[4] = print_status_image($status, $title, true);
 
-	if (is_numeric($module["datos"])){
-		$salida = format_numeric($module["datos"]);
+	if ($module["id_tipo_modulo"] == 30) { // log4x
+		switch($module["datos"]) {
+		case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
+		case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
+		case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
+		case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
+		case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
+		case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
+		}
+		$salida = "<span style='$style'>$salida</span>";
 	} else {
-		$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
+		if (is_numeric($module["datos"])){
+			$salida = format_numeric($module["datos"]);
+		} else {
+			$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
+		}
 	}
 
 	$data[5] = $salida;

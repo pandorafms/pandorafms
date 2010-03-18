@@ -1,5 +1,10 @@
 2010-03-18  Eric Ross       <eric.ross.c@gmail.com>
 
+	* operation/agentes/estado_monitores.php: Now the monitors list display the last data
+		in a proper way (TRACE, DEBUG, ....)
+
+2010-03-18  Eric Ross       <eric.ross.c@gmail.com>
+
 	* godmode/setup/setup.php: Expanded time zone text box to 25 chars
 
 2010-03-18  Eric Ross       <eric.ross.c@gmail.com>

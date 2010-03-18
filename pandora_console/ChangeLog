@@ -1,3 +1,18 @@
+2010-03-18  Eric Ross       <eric.ross.c@gmail.com>
+
+	* godmode/setup/setup.php: Expanded time zone text box to 25 chars
+
+2010-03-18  Eric Ross       <eric.ross.c@gmail.com>
+
+	Ported old graphics for the log4x data.
+
+	* include/Image/Graph/Plot/Bubble.php: New chart type: bubble
+	* include/Image/Graph.php: Add the new bubble chart to the available charts
+	* include/functions.php: Refactoring way to get type of graph from module type
+	* operation/agentes/estado_ultimopaquete.php: Added links to access log4x graphics 
+	* include/fgraph.php: Add log4x graphics rutines.
+	* operation/agentes/stat_win.php: Add support to show log4x graphic.
+
 2010-03-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/config_process.php, install.php: change version number.

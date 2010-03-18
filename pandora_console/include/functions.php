@@ -979,20 +979,24 @@ function index_array ($array, $index = 'id', $value = 'name') {
  */
 
 function return_graphtype ($id_module_type){
-
-	if (($id_module_type == 3)
-	OR ($id_module_type == 10)
-	OR ($id_module_type == 17)
-	OR ($id_module_type == 23)){
+	switch($id_module_type){
+	case 3:
+	case 10:
+	case 17:
+	case 23:
 		return "string";
-	}
-	elseif (($id_module_type == 2)
-	OR ($id_module_type == 6)
-	OR ($id_module_type == 21)
-	OR ($id_module_type == 18)
-	OR ($id_module_type == 9)) {
+
+	case 2:
+	case 6:
+	case 21:
+	case 18:
+	case 9:
 		return "boolean";
+
+	case 30:
+		return "log4x";
 	}
+
 
 	return "sparse";
 }

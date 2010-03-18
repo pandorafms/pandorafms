@@ -1671,6 +1671,405 @@ function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
 	return;
 }
 
+function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
+	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
+	 $date = 0) 
+{
+
+        grafico_modulo_log4x_trace("<pre style='text-align:left;'>");
+
+        $now = time();
+        $fechatope = $now - $periodo; // limit date
+
+	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
+	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
+	$id_agente = get_agent_id ($nombre_agente);
+
+
+        $one_second = 1;
+        $one_minute = 60 * $one_second;
+        $one_hour = 60 * $one_minute;
+        $one_day = 24 * $one_hour;
+        $one_week = 7 * $one_day;
+
+        $adjust_time = $one_minute; // 60 secs
+
+        if ($periodo == 86400) // day
+                $adjust_time = $one_hour;
+        elseif ($periodo == 604800) // week
+                $adjust_time =$one_day;
+        elseif ($periodo == 3600) // hour
+                $adjust_time = 10 * $one_minute;
+        elseif ($periodo == 2419200) // month
+                $adjust_time = $one_week;
+        else
+                $adjust_time = $periodo / 12.0;
+
+        $num_slices = $periodo / $adjust_time;
+
+        $fechatope_index = grafico_modulo_log4x_index($fechatope, $adjust_time);
+
+        $sql1="SELECT utimestamp, SEVERITY " .
+                " FROM tagente_datos_log4x " .
+                " WHERE id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope and utimestamp < $now";
+
+        $valores = array();
+
+        $max_count = -1;
+        $min_count = 9999999;
+
+        grafico_modulo_log4x_trace("$sql1");
+
+        $rows = 0;
+        $result=mysql_query($sql1);
+        while ($row=mysql_fetch_array($result)){
+                $rows++;
+                $utimestamp = $row[0];
+                $severity = $row[1];
+                $severity_num = $row[2];
+
+                if (!isset($valores[$severity]))
+                        $valores[$severity] = array();
+
+                $dest = grafico_modulo_log4x_index($utimestamp, $adjust_time);
+
+                $index = (($dest - $fechatope_index) / $adjust_time) - 1;
+
+                if (!isset($valores[$severity][$index])) {
+                        $valores[$severity][$index] = array();
+                        $valores[$severity][$index]['pivot'] = $dest;
+                        $valores[$severity][$index]['count'] = 0;
+                        $valores[$severity][$index]['alerts'] = 0;
+                }
+
+                $valores[$severity][$index]['count']++;
+
+                $max_count = max($max_count, $valores[$severity][$index]['count']);
+                $min_count = min($min_count, $valores[$severity][$index]['count']);
+        }
+
+        grafico_modulo_log4x_trace("$rows rows");
+
+        // Create graph
+        // *************
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+	//set_error_handler("myErrorHandler");
+
+        grafico_modulo_log4x_trace(__LINE__);
+	set_include_path(get_include_path() . PATH_SEPARATOR . getcwd() . "/../../include");
+
+	require_once 'Image/Graph.php';
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        $Graph =& Image_Graph::factory('graph', array($width, $height));
+ 
+        grafico_modulo_log4x_trace(__LINE__);
+
+
+
+
+
+        // add a TrueType font
+        $Font =& $Graph->addNew('font', $config['fontpath']); // C:\WINNT\Fonts\ARIAL.TTF
+        $Font->setSize(7);
+
+        $Graph->setFont($Font);
+
+        if ($periodo == 86400)
+                $title_period = $lang_label["last_day"];
+        elseif ($periodo == 604800)
+                $title_period = $lang_label["last_week"];
+        elseif ($periodo == 3600)
+                $title_period = $lang_label["last_hour"];
+        elseif ($periodo == 2419200)
+                $title_period = $lang_label["last_month"];
+        else {
+                $suffix = $lang_label["days"];
+                $graph_extension = $periodo / (3600*24); // in days
+
+                if ($graph_extension < 1) {
+                        $graph_extension = $periodo / (3600); // in hours
+                        $suffix = $lang_label["hours"];
+                }
+                //$title_period = "Last ";
+                $title_period = format_numeric($graph_extension,2)." $suffix";
+        }
+
+        $title_period = html_entity_decode($title_period);
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        if ($pure == 0){
+                $Graph->add(
+                        Image_Graph::horizontal(
+                                Image_Graph::vertical(
+                                        Image_Graph::vertical(
+                                                $Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - " .$title_period, 10)),
+                                                $Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
+                                                90
+                                        ),
+                                        $Plotarea = Image_Graph::factory('plotarea', array('Image_Graph_Axis', 'Image_Graph_Axis')),
+                                        15 // If you change this, change the 0.85 below
+                                ),
+                                Image_Graph::vertical(
+                                        $Legend = Image_Graph::factory('legend'),
+                                        $PlotareaMinMax = Image_Graph::factory('plotarea'),
+                                        65
+                                ),
+                                85 // If you change this, change the 0.85 below
+                        )
+                );
+
+                $Legend->setPlotarea($Plotarea);
+                $Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+                $Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+        } else { // Pure, without title and legends
+                $Graph->add($Plotarea = Image_Graph::factory('plotarea', array('Image_Graph_Axis', 'Image_Graph_Axis')));
+        }
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        $dataset = array();
+
+        $severities = array("FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE");
+        $colors = array("black", "red", "orange", "yellow", "#3300ff", 'magenta');
+
+        $max_bubble_radius = $height * 0.6 / (count($severities) + 1); // this is the size for the max_count
+        $y = count($severities) - 1;
+        $i = 0;
+
+        foreach($severities as $severity) {
+                $dataset[$i] = Image_Graph::factory('dataset');
+                $dataset[$i]->setName($severity);
+
+                if (isset($valores[$severity])){
+                        $data =& $valores[$severity];
+                        while (list($index, $data2) = each($data)) {
+                                $count = $data2['count'];
+                                $pivot = $data2['pivot'];
+
+                                //$x = $scale * $index;
+                                $x = 100.0 * ($pivot - $fechatope) / ($now - $fechatope);
+                                if ($x > 100) $x = 100;
+
+                                $size = grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius);
+
+                                // pivot is the value in the X axis
+                                // y is the number of steps (from the bottom of the graphics) (zero based)
+                                // x is the position of the bubble, in % from the left (0% = full left, 100% = full right)
+                                // size is the radius of the bubble
+                                // value is the value associated with the bubble (needed to calculate the leyend)
+                                //
+                                $dataset[$i]->addPoint($pivot, $y, array("x" => $x, "size" => $size, "value" => $count));
+                        }
+                } else {
+                        // There's a problem when we have no data ...
+                        // This was the first try.. didnt work
+                        //$dataset[$i]->addPoint($now, -1, array("x" => 0, "size" => 0));
+                }
+
+                $y--;
+                $i++;
+        }
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        // create the 1st plot as smoothed area chart using the 1st dataset
+        $Plot =& $Plotarea->addNew('bubble', array(&$dataset));
+        $Plot->setFont($Font);
+
+        $AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
+        $AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_x_axis'));
+        $AxisX->forceMinimum($fechatope);
+        $AxisX->forceMaximum($now);
+
+        $minIntervalWidth = $Plot->getTextWidth("88/88/8888");
+        $interval_x = $adjust_time;
+
+        while (true) {
+                $intervalWidth = $width * 0.85 * $interval_x/ $periodo;
+                if ($intervalWidth >= $minIntervalWidth)
+                        break;
+
+                $interval_x *= 2;
+        }
+
+        $AxisX->setLabelInterval($interval_x);
+        $AxisX->setLabelOption("showtext",true);
+
+        //*
+        $GridY2 =& $Plotarea->addNew('line_grid');
+        $GridY2->setLineColor('gray');
+        $GridY2->setFillColor('lightgray@0.05');
+        $GridY2->_setPrimaryAxis($AxisX);
+        //$GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Dotted', array("white", "gray", "gray", "gray")));
+        $GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Formatted', array(array("transparent", "transparent", "transparent", "gray"))));
+        //*/
+        //grafico_modulo_log4x_trace(print_r($AxisX, true));
+
+        $AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+        $AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'grafico_modulo_log4x_format_y_axis'));
+        $AxisY->setLabelOption("showtext",true);
+        //$AxisY->setLabelInterval(0);
+        //$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
+
+        //*
+        $GridY2 =& $Plotarea->addNew('line_grid');
+        $GridY2->setLineColor('gray');
+        $GridY2->setFillColor('lightgray@0.05');
+        $GridY2->_setPrimaryAxis($AxisY);
+        $GridY2->setLineStyle(Image_Graph::factory('Image_Graph_Line_Formatted', array(array("transparent", "transparent", "transparent", "gray"))));
+        //*/
+
+        $AxisY->forceMinimum(0);
+        $AxisY->forceMaximum(count($severities) + 1) ;
+
+        // set line colors
+        $FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+
+        $Plot->setFillStyle($FillArray);
+        foreach($colors as $color)
+                $FillArray->addColor($color);
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        $FillArray->addColor('green@0.6');
+        //$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+
+        // Show events !
+        if ($show_event == 1){
+                $Plot =& $Plotarea->addNew('Plot_Impulse', array($dataset_event));
+                $Plot->setLineColor( 'red' );
+                $Marker_event =& Image_Graph::factory('Image_Graph_Marker_Cross');
+                $Plot->setMarker($Marker_event);
+                $Marker_event->setFillColor( 'red' );
+                $Marker_event->setLineColor( 'red' );
+                $Marker_event->setSize ( 5 );
+        }
+
+        $Axis =& $PlotareaMinMax->getAxis(IMAGE_GRAPH_AXIS_X);
+        $Axis->Hide();
+        $Axis =& $PlotareaMinMax->getAxis(IMAGE_GRAPH_AXIS_Y);
+        $Axis->Hide();
+
+        $plotMinMax =& $PlotareaMinMax->addNew('bubble', array(&$dataset, true));
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+        $Graph->done();
+
+        grafico_modulo_log4x_trace(__LINE__);
+
+
+	//$image = "../../include/fgraph.php?tipo=graphic_error";
+        //grafico_modulo_log4x_trace(__LINE__);
+	//print_image ($image, false, array ("border" => 0));
+        //grafico_modulo_log4x_trace(__LINE__);
+}
+
+function grafico_modulo_log4x_index($x, $interval)
+{
+        return $x + $interval - (($x - 1) % $interval) - 1;
+}
+
+function grafico_modulo_log4x_trace($str)
+{
+        //echo "$str\n";
+}
+
+function grafico_modulo_log4x_bubble_size($count, $max_count, $max_bubble_radius)
+{
+        //Superformula de ROA
+        $r0 = 1.5;
+        $r1 = $max_bubble_radius;
+        $v2 = pow($max_count,1/2.0);
+
+        return $r1*pow($count,1/2.0)/($v2)+$r0;
+
+
+         // Esta custion no sirve paaaaaaaaaaaa naaaaaaaaaaaaaaaadaaaaaaaaaaaaaa
+         //Cementerio de formulas ... QEPD
+        $a = pow(($r1 - $r0)/(pow($v2,1/4.0)-1),4);
+        $b = $r0 - pow($a,1/4.0);
+
+        return pow($a * $count, 1/4.0) + $b;
+
+        $r = pow($count / pow(3.1415, 3), 0.25);
+
+        $q = 0.9999;
+        $x = $count;
+        $x0 = $max_count;
+        $y0 = $max_size;
+
+        $y = 4 * $y0 * $x * (((1 - 2 * $q) / (2 * $x0))* $x + ((4 * $q - 1) / 4)) / $x0;
+
+        return $y;
+
+        return 3 * (0.3796434104 + pow($count * 0.2387394557, 0.333333333));
+
+        return sqrt($count / 3.1415);
+        return 5 + log($count);
+}
+
+function grafico_modulo_log4x_format_x_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+{
+        // $number is the unix time in the local timezone
+
+        //$dtZone = new DateTimeZone(date_default_timezone_get());
+        //$d = new DateTime("now", $dtZone);
+        //$offset = $dtZone->getOffset($d);
+        //$number -= $offset;
+
+        return date("d/m", $number) . "\n" . date("H:i", $number);
+}
+
+function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=".", $thousands_sep=",")
+{
+        $n = "";
+
+        switch($number) {
+        case 6: $n = "FATAL"; break;
+        case 5: $n = "ERROR"; break;
+        case 4: $n = "WARN"; break;
+        case 3: $n = "INFO"; break;
+        case 2: $n = "DEBUG"; break;
+        case 1: $n = "TRACE"; break;
+        }
+
+        return "$n";
+}
+
+function myErrorHandler($errno, $errstr, $errfile, $errline)
+{
+    switch ($errno) {
+    case E_USER_ERROR:
+        echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
+        echo "  Fatal error on line $errline in file $errfile";
+        echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
+        echo "Aborting...<br />\n";
+        exit(1);
+        break;
+
+    case E_USER_WARNING:
+        echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
+        break;
+
+    case E_USER_NOTICE:
+        echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
+        break;
+
+    default:
+        echo "[$errno] $errfile:$errline $errstr<br />\n";
+        break;
+    }
+
+    /* Don't execute PHP internal error handler */
+    return true;
+}
+
 // **************************************************************************
 // **************************************************************************
 //   MAIN Code - Parse get parameters
@@ -1811,6 +2210,10 @@ if ($graphic_type) {
 		break;
 	case 'string':
 		grafico_modulo_string ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		break;
+
+	case 'log4x':
+		grafico_modulo_log4x ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
 
 	case 'graphic_error':

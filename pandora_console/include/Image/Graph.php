@@ -397,6 +397,7 @@ class Image_Graph extends Image_Graph_Element
 
 			'line'           => 'Image_Graph_Plot_Line',
 			'area'           => 'Image_Graph_Plot_Area',
+            'bubble'         => 'Image_Graph_Plot_Bubble',
 			'bar'            => 'Image_Graph_Plot_Bar',
 			'smooth_line'    => 'Image_Graph_Plot_Smoothed_Line',
 			'smooth_area'    => 'Image_Graph_Plot_Smoothed_Area',

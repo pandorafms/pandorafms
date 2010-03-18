@@ -135,7 +135,9 @@ if ($start_date != $current)
 else
 	$date = $utime;
 
-if ($config['flash_charts']) {
+// log4x doesnt support flash yet
+//
+if ($config['flash_charts'] && $graph_type != "log4x") {
 	switch ($graph_type) {
 		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
 						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
@@ -147,6 +149,11 @@ if ($config['flash_charts']) {
 		case 'string': 	echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
 						                            $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
 						break;
+
+		case 'log4x':   echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
+						           $label, $unit_name, $draw_alerts, 1, $pure, $date, 1);
+						break;
+
 		default: 	echo fs_error_image ('../images');
 	}
 }

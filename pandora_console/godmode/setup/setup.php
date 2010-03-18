@@ -106,7 +106,7 @@ $table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, 
 $table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
 
 $table->data[19][0] = __('Timezone setup');
-$table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 15, 15, true);
+$table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
 
 enterprise_hook ('setup');
 

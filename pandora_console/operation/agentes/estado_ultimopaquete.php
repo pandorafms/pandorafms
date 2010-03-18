@@ -123,6 +123,7 @@ foreach ($modules as $module) {
 	
 	print_moduletype_icon ($module["id_tipo_modulo"]);
 	echo "</td><td class='".$tdcolor."'>";
+		
 	if ($module["module_interval"] != 0){
 		echo $module["module_interval"];
 		$real_interval = $module["module_interval"];
@@ -143,25 +144,37 @@ foreach ($modules as $module) {
 		echo "</td>";
 	} 
 	
-	if ($module["id_tipo_modulo"] == 30) {
-		echo "<td class='".$tdcolor."f9' colspan='2'>&nbsp;</td>";
+	if ($module["id_tipo_modulo"] == 30112) {
+		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;</td>";
+		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;x</td>";
 
 	} else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
 		echo substr(safe_output($module["datos"]),0,12);
 	} else {
 
-
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-		if (is_numeric($module["datos"])){
-			echo "<td class=".$tdcolor.">";
-			echo format_for_graph($module["datos"] );
-		}
-		else {
-			if (strlen($module["datos"]) > 0 ) $colspan = 2;
-			else $colspan= 1;
-			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
-			echo substr(safe_output($module["datos"]),0,42);
+
+		if ($module["id_tipo_modulo"] == 30) { // log4x
+			switch($module["datos"]){
+			case 10: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>TRACE</td>"; break;
+			case 20: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>DEBUG</td>"; break;
+			case 30: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>INFO</td>"; break;
+			case 40: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>WARN</td>"; break;
+			case 50: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>ERROR</td>"; break;
+			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>FATAL</td>"; break;
+			}
+		} else {
+			if (is_numeric($module["datos"])){
+				echo "<td class=".$tdcolor.">";
+				echo format_for_graph($module["datos"] );
+			}
+			else {
+				if (strlen($module["datos"]) > 0 ) $colspan = 2;
+				else $colspan= 1;
+				echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
+				echo substr(safe_output($module["datos"]),0,42);
+			}
 		}
 		
 			
@@ -181,6 +194,7 @@ foreach ($modules as $module) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=3600&id=".$module["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
 		echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.png" border=0></a>';
+
 	}
 	
 	

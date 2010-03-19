@@ -103,6 +103,22 @@ sub pandora_purgedb ($$) {
 	}
     print "\n";
 
+
+	#
+	# Now the log4x data
+	#
+	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC LIMIT 1');
+	$total_time = $ulimit_timestamp - $first_mark;
+	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+
+	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+
+		db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+		print "[PURGE] Log4x data deletion progress %$ax .. \r";
+	}
+	print "\n";
+
+
     # String data deletion
     print "[PURGE] Deleting old string data... \n";
     if (!defined($conf->{'_string_purge'})){
@@ -165,6 +181,7 @@ sub pandora_purgedb ($$) {
 	foreach my $module (@deleted_modules) {
 		print " Deleting data for module " . $module->{'id_agente_modulo'} . "\n";
 		db_do ($dbh, "DELETE FROM tagente_datos WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
+		db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
 		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
 		db_do ($dbh, "DELETE FROM tagente_datos_inc WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
         db_do ($dbh, "DELETE FROM tagente_estado  WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});

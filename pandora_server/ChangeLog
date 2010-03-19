@@ -1,3 +1,7 @@
+2010-03-19  Eric Ross <eric.ross.c@gmail.com>
+
+	* util/pandora_db.pl: Added log4x tables to purge
+
 2010-03-10  Sancho Lerena  <slerena@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fix for annoying notices from

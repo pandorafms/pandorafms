@@ -87,10 +87,11 @@ if (isset ($config['id_user'])){
 	}
 
 	// Each user could have it's own timezone)
-	if ($userinfo["timezone"] != ""){
-		date_default_timezone_set($userinfo["timezone"]);
+	if (isset($userinfo["timezone"])) {
+		if ($userinfo["timezone"] != ""){
+			date_default_timezone_set($userinfo["timezone"]);
+		}
 	}
-
 } 
 
 $l10n = NULL; 

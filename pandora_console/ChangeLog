@@ -1,4 +1,8 @@
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+	* operation/agentes/estado_ultimopaquete.php: Fixing color to show WARN messages in orange
+	* operation/agentes/stat_win.php: Now when showing a log4x chart, we don't show the max/min/avg information
+
+2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
 	* include/config_process.php: Fixing warning when no timezone is defined for the user
 
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>

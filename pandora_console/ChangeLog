@@ -1,4 +1,7 @@
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+	* include/config_process.php: Fixing warning when no timezone is defined for the user
+
+2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
 	Adding support to show and purge data from the log4x table	
 
 	* include/fgraph.php

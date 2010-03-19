@@ -1,3 +1,10 @@
+2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+	Adding support to show and purge data from the log4x table	
+
+	* include/fgraph.php
+	* godmode/db/db_main.php
+	* godmode/db/db_purge.php
+
 2010-03-18  Eric Ross       <eric.ross.c@gmail.com>
 
 	* operation/agentes/estado_monitores.php: Now the monitors list display the last data

@@ -35,6 +35,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 
 $stat_access = get_db_sql ("SELECT COUNT(*) FROM tagent_access WHERE id_agent != 0");
 $stat_data = get_db_sql ("SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo != 0");
+$stat_data_log4x = get_db_sql ("SELECT COUNT(*) FROM tagente_datos_log4x WHERE id_agente_modulo != 0");
 $stat_data_string = get_db_sql ("SELECT COUNT(*) FROM tagente_datos_string WHERE id_agente_modulo != 0");
 $stat_modules = get_db_sql ("SELECT COUNT(*) FROM tagente_estado WHERE id_agente_modulo != 0");
 $stat_event = get_db_sql (" SELECT COUNT(*) FROM tevento");
@@ -98,6 +99,19 @@ else
 	echo $stat_data;
 
 echo '</b></td></tr>';
+
+
+echo '<tr class="rowPair"><td>';
+echo __('Total log4x items (tagente_datos_log4x)');
+echo '<td><b>';
+
+if ($stat_data > $max_data)
+	echo "<font color='#ff0000'>$stat_data_log4x</font>";
+else
+	echo $stat_data_log4x;
+
+echo '</b></td></tr>';
+
 
 echo '<tr class="rowOdd"><td>';
 echo __('Total data string items (tagente_datos_string)');

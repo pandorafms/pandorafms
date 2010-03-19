@@ -160,7 +160,7 @@ foreach ($modules as $module) {
 			case 10: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>TRACE</td>"; break;
 			case 20: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>DEBUG</td>"; break;
 			case 30: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>INFO</td>"; break;
-			case 40: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>WARN</td>"; break;
+			case 40: echo "<td class=$tdcolor style='color:darkorange; font-weight:bold;'>WARN</td>"; break;
 			case 50: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>ERROR</td>"; break;
 			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>FATAL</td>"; break;
 			}

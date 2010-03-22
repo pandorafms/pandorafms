@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
 
 if (! give_acl ($config["id_user"], 0, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
 	exit;
@@ -44,7 +44,7 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 		$id_agentes[0] = $id_agente;
 		delete_agent ($id_agentes);
 	} else { // NO permissions.
-		audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation",
+		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation",
 			"Trying to delete agent \'$agent_name\'");
 		require ("general/noaccess.php");
 		exit;
@@ -128,21 +128,30 @@ if ($ag_group > 1) {
 		ORDER BY nombre LIMIT %d, %d',
 		$ag_group, $search_sql, $offset, $config["block_size"]);
 } else {
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo IN (%s)
-		%s',
-		implode (',', array_keys (get_user_groups ())),
-		$search_sql);
-	$total_agents = get_db_sql ($sql);
+
+    // Admin user get ANY group, even if they doesnt exist
+    if (check_acl ($config['id_user'], 0, "PM")){
+	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
+	    $total_agents = get_db_sql ($sql);
+	    $sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY nombre LIMIT %d, %d', $search_sql, $offset, $config["block_size"]);
+    } else {
+
+	    $sql = sprintf ('SELECT COUNT(*)
+		    FROM tagente
+		    WHERE id_grupo IN (%s)
+		    %s',
+		    implode (',', array_keys (get_user_groups ())),
+		    $search_sql);
+	    $total_agents = get_db_sql ($sql);
 	
-	$sql = sprintf ('SELECT *
-		FROM tagente
-		WHERE id_grupo IN (%s)
-		%s
-		ORDER BY nombre LIMIT %d, %d',
-		implode (',', array_keys (get_user_groups ())),
-		$search_sql, $offset, $config["block_size"]);
+	    $sql = sprintf ('SELECT *
+		    FROM tagente
+		    WHERE id_grupo IN (%s)
+		    %s
+		    ORDER BY nombre LIMIT %d, %d',
+		    implode (',', array_keys (get_user_groups ())),
+		    $search_sql, $offset, $config["block_size"]);
+   }
 }
 
 $agents = get_db_all_rows_sql ($sql);

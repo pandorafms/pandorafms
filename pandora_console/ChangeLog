@@ -1,3 +1,10 @@
+2010-03-21  Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Admin can see everything
+	even if agent has a invalid group (group which not exist).
+	This was important because agents with invalid group was
+	"Invisible" until now.
+
 2010-03-10  Sancho Lerena <slerena@artica.es>
 
 	Merged bugfix from trunk:

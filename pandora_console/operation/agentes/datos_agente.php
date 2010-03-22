@@ -31,20 +31,6 @@ if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	return;
 }
 
-if (isset ($_GET["delete"])) {
-	$delete = get_parameter_get ("delete", 0);
-	$sql = sprintf ("DELETE FROM tagente_datos WHERE id_agente_datos = %d", $delete);
-	process_sql ($sql);
-} elseif (isset($_GET["delete_log4x"])) {
-	$delete = get_parameter_get ("delete_log4x", 0);
-	$sql = sprintf ("DELETE FROM tagente_datos_log4x WHERE id_tagente_datos_log4x = %d", $delete);
-	process_sql ($sql);
-} elseif (isset($_GET["delete_string"])) {
-	$delete = get_parameter_get ("delete_string", 0);
-	$sql = sprintf ("DELETE FROM tagente_datos_string WHERE id_tagente_datos_string = %d", $delete);
-	process_sql ($sql);
-}
-
 $table->cellpadding = 3;
 $table->cellspacing = 3;
 $table->width = 600;
@@ -89,7 +75,6 @@ if ($moduletype_name == "log4x") {
 	$sql_body = sprintf (" FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	
 	$columns = array(
-		"Delete" 	=> array("id_agente_datos", 	"format_delete_string", 	"align" => "center"),
 		"Timestamp"	=> array("utimestamp", 			"format_timestamp", 		"align" => "center"),
 		"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
 		"Time" 		=> array("utimestamp", 			"format_time", 				"align" => "center")
@@ -98,7 +83,6 @@ if ($moduletype_name == "log4x") {
 	$sql_body = sprintf (" FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	
 	$columns = array(
-		"Delete" 	=> array("id_agente_datos", 	"format_delete", 		"align" => "center"),
 		"Timestamp"	=> array("utimestamp", 			"format_timestamp", 	"align" => "center"),
 		"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
 		"Time" 		=> array("utimestamp", 			"format_time", 			"align" => "center")

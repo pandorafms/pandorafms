@@ -1,11 +1,31 @@
+2010-03-21  Sancho Lerena  <slerena@gmail.com>
+
+	* include/help/en/check_other_languages.sh: Moved from include/help
+	and rewritten to be more usable. This is a script to check if there
+	are missing help files for each language (taken as parameter).
+
+	* operation/agentes/datos_agente.php: Cannot detete data from here.
+	Removed old support for individual data delete due the new table
+	schema.
+
+	* extras/check_other_languages.sh: Moved from include/help
+
+	* godmode/agentes/modificar_agente.php: Admin can see everything
+	even if agent has a invalid group (group which not exist). This
+	was important because agents with invalid group was "Invisible"
+	until now.
+
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+
 	* operation/agentes/estado_ultimopaquete.php: Fixing color to show WARN messages in orange
 	* operation/agentes/stat_win.php: Now when showing a log4x chart, we don't show the max/min/avg information
 
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+
 	* include/config_process.php: Fixing warning when no timezone is defined for the user
 
 2010-03-19  Eric Ross       <eric.ross.c@gmail.com>
+
 	Adding support to show and purge data from the log4x table	
 
 	* include/fgraph.php

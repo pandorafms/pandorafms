@@ -130,21 +130,30 @@ if ($ag_group > 1) {
 		ORDER BY nombre LIMIT %d, %d',
 		$ag_group, $search_sql, $offset, $config["block_size"]);
 } else {
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo IN (%s)
-		%s',
-		implode (',', array_keys (get_user_groups ())),
-		$search_sql);
-	$total_agents = get_db_sql ($sql);
+
+    // Admin user get ANY group, even if they doesnt exist
+    if (check_acl ($config['id_user'], 0, "PM")){
+	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
+	    $total_agents = get_db_sql ($sql);
+	    $sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY nombre LIMIT %d, %d', $search_sql, $offset, $config["block_size"]);
+    } else {
+
+	    $sql = sprintf ('SELECT COUNT(*)
+		    FROM tagente
+		    WHERE id_grupo IN (%s)
+		    %s',
+		    implode (',', array_keys (get_user_groups ())),
+		    $search_sql);
+	    $total_agents = get_db_sql ($sql);
 	
-	$sql = sprintf ('SELECT *
-		FROM tagente
-		WHERE id_grupo IN (%s)
-		%s
-		ORDER BY nombre LIMIT %d, %d',
-		implode (',', array_keys (get_user_groups ())),
-		$search_sql, $offset, $config["block_size"]);
+	    $sql = sprintf ('SELECT *
+		    FROM tagente
+		    WHERE id_grupo IN (%s)
+		    %s
+		    ORDER BY nombre LIMIT %d, %d',
+		    implode (',', array_keys (get_user_groups ())),
+		    $search_sql, $offset, $config["block_size"]);
+   }
 }
 
 $agents = get_db_all_rows_sql ($sql);

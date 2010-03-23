@@ -19,6 +19,61 @@
  * @subpackage Reporting
  */
 
+function getImageStatusElement($layoutData) {
+	$img = "images/console/icons/" . $layoutData["image"];
+	switch (getStatusElement($layoutData)) {
+	case 1:
+	case 4:
+		//Critical (BAD or ALERT)
+		$img .= "_bad.png";
+		break;
+	case 0:
+		//Normal (OK)
+		$img .= "_ok.png";
+		break;
+	case 2:
+		//Warning
+		$img .= "_warning.png";
+		break;
+	default:
+		$img .= ".png";
+		// Default is Grey (Other)
+	}
+	
+	return $img;
+}
+
+function getStatusElement($layoutData) {
+	//Linked to other layout ?? - Only if not module defined
+	if ($layoutData['id_layout_linked'] != 0) {
+		$status = get_layout_status ($layout_data['id_layout_linked']);
+	}
+	else if ($layoutData["type"] == 0) { //Single object
+		//Status for a simple module
+		if ($layoutData['id_agente_modulo'] != 0) {
+			$status = get_agentmodule_status ($layoutData['id_agente_modulo']);
+
+		//Status for a whole agent, if agente_modulo was == 0
+		}
+		else if ($layoutData['id_agent'] != 0) {
+			$status = get_agent_status ($layoutData["id_agent"]);
+			if ($status == -1) // get_agent_status return -1 for unknown!
+				$status = 3;
+		}
+		else {
+			$status = 3;
+			$id_agent = 0;
+		}
+	}
+	else {
+		//If it's a graph, a progress bar or a data tag, ALWAYS report status OK
+		//(=0) to avoid confussions here.
+		$status = 0;
+	}
+	
+	return $status;
+}
+
 /**
  * Prints visual map
  *

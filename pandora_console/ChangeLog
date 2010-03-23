@@ -1,3 +1,25 @@
+2010-03-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/jquery.ui.resizable.js: add library of jQuery.ui for
+	resizable elements.
+	
+	* include/functions_visual_map.php
+	
+	*include/ajax, include/ajax/visual_console_builder.ajax.php: add the
+	file for ajax request from visual console builder editor.
+	
+	* include/config_process.php: change $build_version.
+	
+	* include/functions.php: in function "safe_url_extraclean" fix to pages
+	with '.' character.
+	
+	* godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.data.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.elements.php: worked about the
+	new visual console builder editor, now it is developing, don't afray.
+
 2010-03-21  Sancho Lerena  <slerena@gmail.com>
 
 	* include/help/en/check_other_languages.sh: Moved from include/help

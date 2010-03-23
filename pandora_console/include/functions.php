@@ -103,7 +103,7 @@ function safe_url_extraclean ($string) {
 		$string = substr ($string, 0, 125);
 	}
 	/* Strip the string to 125 characters */
-	return preg_replace ('/[^a-z0-9_\/]/i', '', $string);
+	return preg_replace ('/[^a-z0-9_\/\.]/i', '', $string);
 }
 
 /** 
@@ -980,21 +980,22 @@ function index_array ($array, $index = 'id', $value = 'name') {
 
 function return_graphtype ($id_module_type){
 	switch($id_module_type){
-	case 3:
-	case 10:
-	case 17:
-	case 23:
-		return "string";
-
-	case 2:
-	case 6:
-	case 21:
-	case 18:
-	case 9:
-		return "boolean";
-
-	case 30:
-		return "log4x";
+		case 3:
+		case 10:
+		case 17:
+		case 23:
+			return "string";
+			break;
+		case 2:
+		case 6:
+		case 21:
+		case 18:
+		case 9:
+			return "boolean";
+			break;
+		case 30:
+			return "log4x";
+			break;
 	}
 
 

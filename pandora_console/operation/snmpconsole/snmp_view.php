@@ -384,7 +384,7 @@ if ($traps !== false) {
 		
 		// Timestamp
 		$data[6] = '<span title="'.$trap["timestamp"].'">';
-		$data[6] .= human_time_comparation ($trap["timestamp"]);
+		$data[6] .= print_timestamp ($trap["timestamp"], true);
 		$data[6] .= '</span>';
 		
 		// Use alert severity if fired

@@ -1,3 +1,9 @@
+2010-03-24  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/snmpconsole/snmp_view.php: To follow timestamp setting,
+	changed the function to use, from human_time_comparation() to
+	print_timestamp(). 
+
 2010-03-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/jquery.ui.resizable.js: add library of jQuery.ui for

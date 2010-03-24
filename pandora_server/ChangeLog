@@ -1,3 +1,10 @@
+2010-03-24  Sancho Lerena <slerena@artica.es>
+
+    * util/pandora_manage.pl: New tool to do things in Pandora (system wide)
+    from the command line. This pretends to unify small maintance tips on
+    Pandora, intead have a miriad of small tools. First features are to 
+    enable/disable alerts globally and to disable the enterprise ACL feature.
+
 2010-03-19  Eric Ross <eric.ross.c@gmail.com>
 
 	* util/pandora_db.pl: Added log4x tables to purge

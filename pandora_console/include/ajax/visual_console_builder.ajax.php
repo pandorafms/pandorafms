@@ -45,6 +45,13 @@ $map_linked = get_parameter('map_linked', null);
 $label_color = get_parameter('label_color', null);
 
 switch ($action) {
+	case 'get_color_line':
+		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
+		
+		$return = array();
+		$return['color_line'] = getColorLineStatus($layoutData);
+		echo json_encode($return);
+		break;
 	case 'get_image':
 		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
 		
@@ -78,10 +85,10 @@ switch ($action) {
 				if ($top !== null) { 
 					$values['pos_y'] = $top;
 				}
-				//TODO $agent -> $id_agent
-				$id_agent = 0;
-				//TODO
-				$values['id_agent'] = $id_agent;
+				if ($agent !== null) {
+					$id_agent = get_agent_id($agent);
+					$values['id_agent'] = $id_agent;
+				}
 				if ($module !== null) {
 					$values['id_agente_modulo'] = $module;
 				}
@@ -104,7 +111,7 @@ switch ($action) {
 					$values['label_color'] = $label_color;
 				}
 				
-				process_sql_update('tlayout_data', $values, array('id' => $id_element));
+				$result = process_sql_update('tlayout_data', $values, array('id' => $id_element));
 				break;
 		}
 		break;
@@ -116,6 +123,20 @@ switch ($action) {
 				break;
 			case 'static_graph':
 				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
+				$elementFields['agent_name'] = get_agent_name($elementFields['id_agent']);
+				
+				if ($elementFields['id_agent'] != 0) {
+					$modules = get_agent_modules ($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+					
+					$elementFields['modules_html'] = '<option value="0">--</option>';
+					foreach ($modules as $id => $name) {
+						$elementFields['modules_html'] .= '<option value="' . $id . '">' . $name . '</option>';
+					}
+				}
+				else  {
+					$elementFields['modules_html'] = '<option value="0">' . __('Any') . '</option>';
+				}
+				
 				echo json_encode($elementFields);
 				break;
 		}
@@ -135,6 +156,10 @@ switch ($action) {
 				else
 					$values['id_agent'] = 0;
 				$values['id_agente_modulo'] = $module;
+				$values['width'] = $width;
+				$values['height'] = $height;
+				$values['id_layout_linked'] = $map_linked;
+				$values['parent_item'] = $parent;
 				
 				$idData = process_sql_insert('tlayout_data', $values);
 				
@@ -145,6 +170,7 @@ switch ($action) {
 				else {
 					$return['correct'] = 1;
 					$return['id_data'] = $idData;
+					$return['text'] = $label;
 				}
 				echo json_encode($return);
 				break;

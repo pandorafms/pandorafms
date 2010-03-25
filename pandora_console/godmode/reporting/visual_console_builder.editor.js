@@ -2,6 +2,7 @@ var creationItem = null;
 var openPropertiesPanel = false;
 var idItem = 0;
 var selectedItem = null;
+var lines = Array();
 
 function showAdvanceOptions(close) {
 	if ($("#advance_options").css('display') == 'none') {
@@ -18,11 +19,79 @@ function showAdvanceOptions(close) {
 
 // Main function, execute in event documentReady
 function editorMain2() {
-	$("#background").resizable();
-
 	eventsBackground();
 	eventsButtonsToolbox();
 	eventsItems();
+	eventsTextAgent();
+	
+	draw_lines(lines, 'background');
+//	var lines = Array ();
+//	lines.push (eval ({"id":"116","node_begin":"layout-data-115","node_end":"layout-data-116","color":"#ccc"})); 
+	
+	//$("#background").append($('<div id="pepito"></div>'));
+//	draw_line({"node_begin":"112","node_end":"110","color":"#000"}, 'background');
+	//$(".map-line").css('z-index', '0');
+	
+	$(".item").css('z-index', '1'); //For paint the icons over lines
+}
+
+function eventsTextAgent() {
+	var idText = $("#ip_text").html();
+	
+	$("#text-agent").autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "operation/agentes/exportdata",
+					search_agents: 1,
+					id_group: function() { return $("#group").val(); }
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$("#text-agent").css ('background-color', '#cc0000');
+					else
+						$("#text-agent").css ('background-color', '');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field">' + idText + ': '+data[1]+'</span>';
+				},
+				delay: 200
+			}
+		);
+	
+	$("#text-agent").result (
+			function () {
+				selectAgent = true;
+				var agent_name = this.value;
+				$('#module').fadeOut ('normal', function () {
+					$('#module').empty ();
+					var inputs = [];
+					inputs.push ("filter=disabled = 0");
+					inputs.push ("agent_name=" + agent_name);
+					inputs.push ("get_agent_modules_json=1");
+					inputs.push ("page=operation/agentes/ver_agente");
+					jQuery.ajax ({
+						data: inputs.join ("&"),
+						type: 'GET',
+						url: action="ajax.php",
+						timeout: 10000,
+						dataType: 'json',
+						success: function (data) {
+							$('#module').append ($('<option></option>').attr ('value', 0).text ("--"));
+							jQuery.each (data, function (i, val) {
+								s = js_html_entity_decode (val['nombre']);
+								$('#module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+							});
+							$('#module').fadeIn ('normal');
+						}
+					});
+				});
+		
+				
+			}
+		);
 }
 
 function updateAction() { 
@@ -32,7 +101,7 @@ function updateAction() {
 	
 	// TODO VALIDATE DATA
 	
-	updateDB(selectedItem, idElement , values);
+	updateDB(selectedItem, idItem , values);
 	
 	switch (selectedItem) {
 		case 'background':
@@ -124,7 +193,7 @@ function actionClick() {
 		$("#button_create_div").css('display', 'none');
 		$("#button_update_div").css('display', 'block');
 		cleanFields();
-		console.log(item);
+		
 		loadFieldsFromDB(item);
 	}
 	
@@ -150,6 +219,8 @@ function loadFieldsFromDB(item) {
 		dataType: 'json',
 		success: function (data)
 			{
+				var moduleId = 0;
+				
 				jQuery.each(data, function(key, val) {
 					if (key == 'background') $("#background_image").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
@@ -161,16 +232,23 @@ function loadFieldsFromDB(item) {
 					}
 					if (key == 'pos_x') $("input[name=left]").val(val);
 					if (key == 'pos_y') $("input[name=top]").val(val);
-					if (key == 'agent') {
+					if (key == 'agent_name') {
 						$("input[name=agent]").val(val);
 						//Reload no-sincrone the select of modules
 					}
-					if (key == 'module') $("select[name=module]").val(val);
+					if (key == 'modules_html') {
+						$("select[name=module]").empty().html(val);
+						$("select[name=module]").val(moduleId);
+					}
+					if (key == 'id_agente_modulo') {
+						moduleId = val;
+						$("select[name=module]").val(val);
+					}
 					if (key == 'period') $("select[name=period]").val(val);
 					if (key == 'width') $("input[name=width]").val(val);
 					if (key == 'height') $("input[name=height]").val(val);
-					if (key == 'parent') $("select[name=parent]").val(val);
-					if (key == 'map_linked') $("select[name=map_linked]").val(val);
+					if (key == 'parent_item') $("select[name=parent]").val(val);
+					if (key == 'id_layout_linked') $("select[name=map_linked]").val(val);
 					if (key == 'label_color') $("input[name=label_color]").val(val);
 				});
 			}
@@ -227,6 +305,8 @@ function cleanFields() {
 	$("select[name=map_linked]").val('');
 	$("input[name=label_color]").val('#000000');
 	$("#preview").empty();
+	var anyText = $("#any_text").html();
+	$("#module").empty().append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
 }
 
 function getImageElement(id_data) {
@@ -249,23 +329,46 @@ function getImageElement(id_data) {
 			}
 	});
 	
-	console.log(img);
-	
 	return img;
+}
+
+function getColorLineStatus(id) {
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_color_line"});
+	parameter.push ({name: "id_element", value: id});
+	
+	var color = null;
+	
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+			{
+				color = data['color_line'];
+			}
+	});
+	
+	return color;
 }
 
 function createItem(type, values, id_data) {
 	if ((values['width'] == 0) && (values['height'] == 0)) {
 		var sizeStyle = '';
+		var imageSize = '';
 	}
 	else {
 		var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+		var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 	}
 	
 	switch (type) {
 		case 'static_graph':
 			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" /><br />' +
+				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div>'
 			);
@@ -273,6 +376,21 @@ function createItem(type, values, id_data) {
 	}
 	
 	$("#background").append(item);
+	$(".item").css('z-index', '1');
+	
+	if (values['parent'] != 0) {
+		var line = {"id": id_data,
+				"node_begin":  values['parent'],
+				"node_end": id_data,
+				"color": getColorLineStatus(id_data) };
+		lines.push(line);
+		
+		refresh_lines(lines, 'background');
+	}
+}
+
+function addItemSelectParents(id_data, text) {
+	$("#parent").append($('<option value="' + id_data + '" selected="selected">' + text + '</option></select>'));
 }
 
 function insertDB(type, values) {
@@ -295,6 +413,7 @@ function insertDB(type, values) {
 			{
 				if (data['correct']) {
 					createItem(type, values, data['id_data']);
+					addItemSelectParents(data['id_data'], data['text']);
 					eventsItems();
 				}
 				else {
@@ -316,6 +435,18 @@ function updateDB(type, idElement , values) {
 		parameter.push ({name: key, value: val});
 	});
 	
+	if ((typeof(values['mov_left']) != 'undefined') &&
+		(typeof(values['mov_top']) != 'undefined')) {
+		var top = parseInt($("#" + idElement).css('margin-top').replace('px', ''));
+		var left = parseInt($("#" + idElement).css('margin-left').replace('px', ''));
+		
+		top = top + parseInt(values['mov_top']);
+		left = left + parseInt(values['mov_left']);
+		
+		parameter.push ({name: 'top', value: top});
+		parameter.push ({name: 'left', value: left});
+	}
+	
 	jQuery.ajax({
 		url: "ajax.php",
 		data: parameter,
@@ -323,7 +454,12 @@ function updateDB(type, idElement , values) {
 		dataType: 'text',
 		success: function (data)
 			{
-				// TODO
+				if ((typeof(values['mov_left']) != 'undefined') &&
+						(typeof(values['mov_top']) != 'undefined')) {
+					$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+					$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+					refresh_lines(lines, 'background');
+				}
 			}
 		});
 }
@@ -344,6 +480,15 @@ function deleteDB(idElement) {
 		success: function (data)
 			{
 				if (data['correct']) {
+					$("#parent > option[value=" + idElement + "]").remove();
+					
+					jQuery.each(lines, function(i, line) {
+						if (line['id'] == idElement) {
+							lines.splice(i);
+						}
+					});
+					refresh_lines(lines, 'background');
+					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
 				}
@@ -366,7 +511,10 @@ function activeToolboxButton(id, active) {
 }
 
 function deleteItem() {
+	activeToolboxButton('edit_item', false);
 	deleteDB(idItem);
+	idItem = 0;
+	selectedItem = null;
 }
 
 function eventsItems() {
@@ -374,6 +522,8 @@ function eventsItems() {
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
 	$(".item").draggable('destroy');
+	
+	//$(".item").resizable(); //Disable but run in ff and in ie show ungly borders
 	
 	$('.item').bind('click', function(event, ui) {
 		event.stopPropagation();
@@ -416,14 +566,16 @@ function eventsItems() {
 		
 		var values = {};
 		
-		values['left'] = ui.position.left; 
-		values['top'] = ui.position.top; 
+		values['mov_left'] = ui.position.left; 
+		values['mov_top'] = ui.position.top; 
 		
 		updateDB(selectedItem, idItem, values);
 	});
 }
 
 function eventsBackground() {
+	$("#background").resizable();
+	
 	$('#background').bind('resizestart', function(event, ui) {
 		if (!openPropertiesPanel) {
 			$("#background").css('border', '2px red solid');
@@ -486,6 +638,7 @@ function eventsButtonsToolbox() {
 		if ($("#" + id).hasClass('disabled') == false) {				
 			$("#" + id).css('background', '#e5e5e5');
 		}
+		$("#" + id).css('border', '4px outset black');
 	});
 	
 	$('.button_toolbox').mousedown(function(event) {

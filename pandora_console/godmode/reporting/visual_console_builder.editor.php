@@ -43,8 +43,6 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
-debugPrint($_POST);
-
 echo '<div id="editor">';
 	echo '<div id="toolbox">';
 		printButtonEditorVisualConsole('static_graph', __('Static Graph'));
@@ -89,7 +87,7 @@ $intervals[4838400] = __('Last month');
 $intervals[9676800] = "2 ".__('months');
 $intervals[29030400] = "6 ".__('months');
 
-echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 1;">';
+echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 99;">';
 //----------------------------Hiden Form----------------------------------------
 echo '<div id="hidden_panel_properties"">';
 	echo '<div id="basic_options" style="width: 300px">';
@@ -166,14 +164,14 @@ echo '<div id="hidden_panel_properties"">';
 		
 		echo '<div id="parent_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
 			echo __('Parent') . ':';
-			print_select (array (), 'parent', '', '', __('None'), 0);
+			print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);
 			echo '<br />';
 		echo '</div>';
 		
 		echo '<div id="map_linked_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
 			echo __('Map linked') . ':';
 			print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
-				'map_linked', '', '', 'None', '');
+				'map_linked', '', '', 'None', '0');
 		echo '</div>';
 		
 		echo '<div id="label_color_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
@@ -181,7 +179,9 @@ echo '<div id="hidden_panel_properties"">';
 			print_input_text_extended ('label_color', '#000000', 'text-'.'label_color',
 				'', 7, 7, false, '', 'class="label_color"', false);
 		echo '</div>';
-	
+		//Trick for it have a traduct "any" text.
+		echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
+		echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 	echo '</div>';
 echo "</div>";
 //------------------------------------------------------------------------------
@@ -203,12 +203,14 @@ echo "</form>";
 
 require_css_file ('color-picker');
 
-require_jquery_file ('ui.core');
-require_jquery_file ('ui.resizable');
-require_jquery_file ('colorpicker');
-require_jquery_file ('ui.draggable');
-
+require_jquery_file('ui.core');
+require_jquery_file('ui.resizable');
+require_jquery_file('colorpicker');
+require_jquery_file('ui.draggable');
+require_javascript_file('wz_jsgraphics');
+require_javascript_file('pandora_visual_console');
 require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
+
 function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false) {
 	if (!$disabled) $disableClass = '';
 	else $disableClass = 'disabled';
@@ -249,17 +251,32 @@ function printItemInVisualConsole($layoutData) {
 	
 	if (($width == 0) && ($height == 0)) {
 		$sizeStyle = '';
+		$imageSize = '';
 	}
 	else {
 		$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+		$imageSize = 'width="' . $width . '" height="' . $height . '"';
 	}
 	
 	echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
-	echo '<img class="image" id="image_' . $id . '" src="' . $img . '" /><br />';
+	echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
 	echo '<span id="text_' . $id . '" class="text">' . $label . '</span>';
 	echo "</div>";
+	if ($layoutData['parent_item'] != 0) {
+		echo '<script type="text/javascript">';
+		echo '$(document).ready (function() {
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . getColorLineStatus($layoutData) . '"});
+		});';
+		echo '</script>';
+	}
 }
 ?>
+<style type="text/css">
+.ui-resizable-handle {
+	background: transparent !important;
+	border: transparent !important;
+}
+</style>
 <script type="text/javascript">
 	id_visual_console = <?php echo $visualConsole['id']; ?>;
 	$(document).ready (editorMain2);

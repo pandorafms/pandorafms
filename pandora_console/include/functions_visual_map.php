@@ -19,6 +19,26 @@
  * @subpackage Reporting
  */
 
+function getColorLineStatus($layoutData) {
+	switch (getStatusElement($layoutData)) {
+		case 3:
+			$color = "#ccc"; // Gray
+			break;
+		case 2:
+			$color = "#20f6f6"; // Yellow
+			break;
+		case 0:
+			$color = "#00ff00"; // Green
+			break;
+		case 4:
+		case 1:
+			$color = "#ff0000"; // Red
+			break;
+	}
+	
+	return $color;
+}
+
 function getImageStatusElement($layoutData) {
 	$img = "images/console/icons/" . $layoutData["image"];
 	switch (getStatusElement($layoutData)) {
@@ -46,7 +66,7 @@ function getImageStatusElement($layoutData) {
 function getStatusElement($layoutData) {
 	//Linked to other layout ?? - Only if not module defined
 	if ($layoutData['id_layout_linked'] != 0) {
-		$status = get_layout_status ($layout_data['id_layout_linked']);
+		$status = get_layout_status ($layoutData['id_layout_linked']);
 	}
 	else if ($layoutData["type"] == 0) { //Single object
 		//Status for a simple module

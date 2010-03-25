@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 require_once ('include/functions_visual_map.php');
 
 $action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update'), 'new');
-$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor'), 'data');
+$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor', 'preview'), 'data');
 $idVisualConsole = get_parameter('id_visual_console', 0);
 
 //Save/Update data in DB
@@ -112,6 +112,10 @@ switch ($activeTab) {
 				break;
 		}
 		break;
+	case 'preview':
+		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsoleName = $visualConsole['name'];
+		break;
 }
 
 $buttons = array(
@@ -126,7 +130,10 @@ $buttons = array(
 			print_image ("images/pill.png", true, array ("title" => __('Wizard'))) .'</a>'),
 	'editor' => array('active' => false,
 		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
-			print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'));
+			print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),
+	'preview' => array('active' => false,
+		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=preview&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
+			print_image ("images/eye.png", true, array ("title" => __('Preview'))) .'</a>'),);
 
 if ($action == 'new') $buttons = array('data' => $buttons['data']); //Show only the data tab
 $buttons[$activeTab]['active'] = true;
@@ -146,6 +153,9 @@ switch ($activeTab) {
 		break;
 	case 'editor':
 		require_once('godmode/reporting/visual_console_builder.editor.php');
+		break;
+	case 'preview':
+		require_once('godmode/reporting/visual_console_builder.preview.php');
 		break;
 }
 ?>

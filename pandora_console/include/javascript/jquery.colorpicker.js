@@ -19,7 +19,7 @@ else if(e.keyCode==40){$.colorPicker.showFor(this);}},_resetSample:function(e){v
 if($.colorPicker._colorpickerShowing){return;}
 var inst=$.colorPicker._getInst(input._colId);$.colorPicker.hideColorPicker();$.colorPicker._lastInput=input;if(!$.colorPicker._pos){$.colorPicker._pos=$.colorPicker._findPos(input);$.colorPicker._pos[1]+=input.offsetHeight;}
 var isFixed=false;$(input).parents().each(function(){isFixed|=$(this).css('position')=='fixed';});if(isFixed&&$.browser.opera){$.colorPicker._pos[0]-=document.documentElement.scrollLeft;$.colorPicker._pos[1]-=document.documentElement.scrollTop;}
-inst._colorPickerDiv.css('position',($.blockUI?'static':(isFixed?'fixed':'absolute'))).css('left',$.colorPicker._pos[0]+'px').css('top',$.colorPicker._pos[1]+1+'px');$.colorPicker._pos=null;$.colorPicker._showColorPicker(inst);return this;},_findPos:function(obj){while(obj&&(obj.type=='hidden'||obj.nodeType!=1)){obj=obj.nextSibling;}
+inst._colorPickerDiv.css('position',($.blockUI?'static':(isFixed?'fixed':'absolute'))).css('left',$.colorPicker._pos[0]+'px').css('top',$.colorPicker._pos[1]+1+'px').css('z-index', 99);$.colorPicker._pos=null;$.colorPicker._showColorPicker(inst);return this;},_findPos:function(obj){while(obj&&(obj.type=='hidden'||obj.nodeType!=1)){obj=obj.nextSibling;}
 var curleft=curtop=0;if(obj&&obj.offsetParent){curleft=obj.offsetLeft;curtop=obj.offsetTop;while(obj=obj.offsetParent){var origcurleft=curleft;curleft+=obj.offsetLeft;if(curleft<0){curleft=origcurleft;}
 curtop+=obj.offsetTop;}}
 return[curleft,curtop];},_checkExternalClick:function(event){if(!$.colorPicker._curInst)

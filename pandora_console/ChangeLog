@@ -1,5 +1,15 @@
 2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/config_process.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.editor.js: worked about the new
+	visual console builder editor, now it is developing, don't afray.
+	
+	* include/javascript/jquery.colorpicker.js: we used the old versión, and
+	patch with self code for z-index to upper position. 
+
+2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php,
 	godmode/reporting/visual_console_builder.preview.php,

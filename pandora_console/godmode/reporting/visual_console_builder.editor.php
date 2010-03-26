@@ -87,103 +87,111 @@ $intervals[4838400] = __('Last month');
 $intervals[9676800] = "2 ".__('months');
 $intervals[29030400] = "6 ".__('months');
 
-echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 99;">';
+//Trick for it have a traduct "any" text.
+echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
+echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
+
+echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 90;">';
 //----------------------------Hiden Form----------------------------------------
-echo '<div id="hidden_panel_properties"">';
-	echo '<div id="basic_options" style="width: 300px">';
-	
-		echo '<span id="tittle_panel_span_background" class="tittle_panel_span" style="display: none; font-weight: bolder;">' . __('Background') . '</span><br /><br />';
-		echo '<span id="tittle_panel_span_static_graph" class="tittle_panel_span" style="display: none; font-weight: bolder;">' . __('Static Graph') . '</span><br /><br />';
-		
-		echo '<div id="label_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Label') . ':';
-			print_input_text ('label', '', '', 20, 200);
-		echo '</div>';
-		
-		echo '<div id="image_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Image') . ':';
-			print_select ($images_list, 'image', '', 'showPreviewStaticGraph(this.value);', 'None', '');
-			echo '<div id="preview"></div>';
-		echo '</div>';
-		
-		echo '<div id="position_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-		echo __('Position') . ':';
-			echo '(';
-			print_input_text('left', '0', '', 3, 5);
-			echo ' , ';
-			print_input_text('top', '0', '', 3, 5);
-			echo ')';
-			echo '<br />';
-		echo '</div>';
-		
-		echo '<div id="agent_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>' . ':';
-			print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
-			array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);
-			echo '<br />';
-		echo '</div>';
-		
-		echo '<div id="module_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Module') . ':';
-			print_select (array (), 'module', '', '', __('Any'), 0);
-			echo '<br />';
-		echo '</div>';
-		
-		echo '<div id="background_div" class="background" style="display: block; margin-bottom: 5px;">';
-			echo __('Background') . ':';
-			print_select($backgrounds_list, 'background_image', $background, '', 'None', '');
-		echo '</div>';
-		
-		echo '<div id="button_update_div" style="text-align: right; margin-top: 20px;">';
+?>
+<table class="databox" border="0" cellpadding="4" cellspacing="4" width="300">
+	<caption>
+		<span id="tittle_panel_span_background" class="tittle_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Background');?></span><br /><br />
+		<span id="tittle_panel_span_static_graph" class="tittle_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span><br /><br />
+	</caption>
+	<tbody>
+		<tr id="label_row" style="" class="static_graph">
+			<td style=""><?php echo __('Label');?></td>
+			<td style=""><?php print_input_text ('label', '', '', 20, 200); ?></td>
+		</tr>
+		<tr id="image_row" style="" class="static_graph datos">
+			<td><?php echo __('Image');?></td>
+			<td><?php print_select ($images_list, 'image', '', 'showPreviewStaticGraph(this.value);', 'None', '');?></td>
+		</tr>
+		<tr id="preview_row" style="" class="static_graph datos2">
+			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
+		</tr>
+		<tr id="agent_row" class="static_graph datos2">
+			<td><?php echo __('Agent');?></td>
+			<td><?php print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
+				array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);?></td>
+		</tr>
+		<tr id="module_row" class="static_graph datos">
+			<td><?php echo __('Module');?></td>
+			<td><?php print_select (array (), 'module', '', '', __('Any'), 0);?></td>
+		</tr>
+		<tr id="background_row" class="background datos2">
+			<td><?php echo __('Background');?></td>
+			<td><?php print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
+		</tr>
+		<tr id="button_update_row" class="datos">
+			<td colspan="2" style="text-align: right;">
+			<?php
+			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub"');
 			print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub"');
-		echo '</div>';
-		
-		echo '<div id="button_create_div" style="text-align: right; margin-top: 20px;">';
+			?>
+			</td>
+		</tr>
+		<tr id="button_create_row" class="datos2">
+			<td colspan="2" style="text-align: right;">
+			<?php
+			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub"');
 			print_button(__('Create'), 'create_button', false, 'createAction();', 'class="create sub"');
-		echo '</div>';
-	
-	echo '</div>';
-	echo '<div id="line" style="width: 300px; border-bottom: 1px solid black; text-align: right; margin-top: 20px;">';
-		echo '<a href="javascript: showAdvanceOptions()">' . __('Advance options') . '</a>';
-	echo '</div>';
-	echo '<div id="advance_options" style="width: 300px; display: none;">';
-		echo '<div style="margin-top: 20px;"></div>';
-	
-		echo '<div id="period_div" class="" style="display: block; margin-bottom: 5px;">';
-			echo __('Period') . ':';
-			print_select ($intervals, 'period', '', '', '--', 0);
-		echo '</div>';
-	
-		echo '<div id="size_div" class="background static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Size') . ':';
-			print_input_text('width', 0, '', 3, 5);
-			echo ' X ';
-			print_input_text('height', 0, '', 3, 5);
-			echo '<br />';
-		echo '</div>';
-		
-		echo '<div id="parent_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Parent') . ':';
-			print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);
-			echo '<br />';
-		echo '</div>';
-		
-		echo '<div id="map_linked_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Map linked') . ':';
-			print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
-				'map_linked', '', '', 'None', '0');
-		echo '</div>';
-		
-		echo '<div id="label_color_div" class="static_graph" style="display: block; margin-bottom: 5px;">';
-			echo __('Label color') . ':';
-			print_input_text_extended ('label_color', '#000000', 'text-'.'label_color',
-				'', 7, 7, false, '', 'class="label_color"', false);
-		echo '</div>';
-		//Trick for it have a traduct "any" text.
-		echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
-		echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
-	echo '</div>';
-echo "</div>";
+			?>
+			</td>
+		</tr>
+		<tr id="advance_options_link" class="datos">
+			<td colspan="2" style="text-align: center;">
+				<a href="javascript: showAdvanceOptions()"><?php echo __('Advance options');?></a>
+			</td>
+		</tr>
+	</tbody>
+	<tbody id="advance_options" style="display: none;">
+		<tr id="period_row" class="module_graph datos2">
+			<td><?php echo __('Period');?></td>
+			<td><?php print_select ($intervals, 'period', '', '', '--', 0);?></td>
+		</tr>
+		<tr id="position_row" class="static_graph datos">
+			<td><?php echo __('Position');?></td>
+			<td>
+				<?php
+				echo '(';
+				print_input_text('left', '0', '', 3, 5);
+				echo ' , ';
+				print_input_text('top', '0', '', 3, 5);
+				echo ')';
+				?>
+			</td>
+		</tr>
+		<tr id="size_row" class="background static_graph datos">
+			<td><?php echo __('Size');?></td>
+			<td>
+				<?php
+				print_input_text('width', 0, '', 3, 5);
+				echo ' X ';
+				print_input_text('height', 0, '', 3, 5);
+				?>
+			</td>
+		</tr>
+		<tr id="parent_row" class="static_graph datos2">
+			<td><?php echo __('Parent');?></td>
+			<td><?php print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);?></td>
+		</tr>
+		<tr id="map_linked_row" class="static_graph datos">
+			<td><?php echo __('Map linked');?></td>
+			<td>
+				<?php
+				print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole, 'map_linked', '', '', 'None', '0');
+				?>
+			</td>
+		</tr>
+		<tr id="label_color_row" class="static_graph datos">
+			<td><?php echo __('Label color');?></td>
+			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
+		</tr>				
+	</tbody>
+</table>
+<?php
 //------------------------------------------------------------------------------
 echo '</div>';
 echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';

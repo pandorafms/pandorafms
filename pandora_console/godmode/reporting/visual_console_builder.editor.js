@@ -6,7 +6,7 @@ var lines = Array();
 
 function showAdvanceOptions(close) {
 	if ($("#advance_options").css('display') == 'none') {
-		$("#advance_options").css('display', 'inline');
+		$("#advance_options").css('display', '');
 	}
 	else {
 		$("#advance_options").css('display', 'none');
@@ -19,6 +19,8 @@ function showAdvanceOptions(close) {
 
 // Main function, execute in event documentReady
 function editorMain2() {
+	$(".label_color").attachColorPicker();
+	
 	eventsBackground();
 	eventsButtonsToolbox();
 	eventsItems();
@@ -92,6 +94,12 @@ function eventsTextAgent() {
 				
 			}
 		);
+}
+
+function cancelAction() {
+	 if (openPropertiesPanel) {
+		 actionClick();
+	 }
 }
 
 function updateAction() { 
@@ -183,15 +191,15 @@ function actionClick() {
 	if (creationItem != null) {
 		activeToolboxButton(creationItem, true);
 		item = creationItem;
-		$("#button_update_div").css('display', 'none');
-		$("#button_create_div").css('display', 'block');
+		$("#button_update_row").css('display', 'none');
+		$("#button_create_row").css('display', '');
 		cleanFields();
 		unselectAll();
 	}
 	else if (selectedItem != null) {
 		item = selectedItem;
-		$("#button_create_div").css('display', 'none');
-		$("#button_update_div").css('display', 'block');
+		$("#button_create_row").css('display', 'none');
+		$("#button_update_row").css('display', '');
 		cleanFields();
 		
 		loadFieldsFromDB(item);
@@ -259,35 +267,38 @@ function hiddenFields(item) {
 	$(".tittle_panel_span").css('display', 'none');
 	$("#tittle_panel_span_"  + item).css('display', 'inline'); 
 	
-	$("#label_div").css('display', 'none');
-	$("#label_div."  + item).css('display', 'block'); 
+	$("#label_row").css('display', 'none');
+	$("#label_row."  + item).css('display', '');
 	
-	$("#image_div").css('display', 'none');
-	$("#image_div."  + item).css('display', 'block'); 
+	$("#image_row").css('display', 'none');
+	$("#image_row."  + item).css('display', ''); 
 	
-	$("#position_div").css('display', 'none');
-	$("#position_div."  + item).css('display', 'block');
+	$("#position_row").css('display', 'none');
+	$("#position_row."  + item).css('display', '');
 	
-	$("#agent_div").css('display', 'none');
-	$("#agent_div."  + item).css('display', 'block');
+	$("#agent_row").css('display', 'none');
+	$("#agent_row."  + item).css('display', '');
 	
-	$("#module_div").css('display', 'none');
-	$("#module_div."  + item).css('display', 'block');
+	$("#module_row").css('display', 'none');
+	$("#module_row."  + item).css('display', '');
 	
-	$("#background_div").css('display', 'none');
-	$("#background_div."  + item).css('display', 'block');
+	$("#background_row").css('display', 'none');
+	$("#background_row."  + item).css('display', '');
 	
-	$("#period_div").css('display', 'none');
-	$("#period_div."  + item).css('display', 'block');
+	$("#period_row").css('display', 'none');
+	$("#period_row."  + item).css('display', '');
 	
-	$("#parent_div").css('display', 'none');
-	$("#parent_div."  + item).css('display', 'block');
+	$("#size_row").css('display', 'none');
+	$("#size_row."  + item).css('display', '');
 	
-	$("#map_linked_div").css('display', 'none');
-	$("#map_linked_div."  + item).css('display', 'block');
+	$("#parent_row").css('display', 'none');
+	$("#parent_row."  + item).css('display', '');
 	
-	$("#label_color_div").css('display', 'none');
-	$("#label_color_div."  + item).css('display', 'block');
+	$("#map_linked_row").css('display', 'none');
+	$("#map_linked_row."  + item).css('display', '');
+	
+	$("#label_color_row").css('display', 'none');
+	$("#label_color_row."  + item).css('display', '');
 }
 
 function cleanFields() {
@@ -454,11 +465,20 @@ function updateDB(type, idElement , values) {
 		dataType: 'text',
 		success: function (data)
 			{
-				if ((typeof(values['mov_left']) != 'undefined') &&
-						(typeof(values['mov_top']) != 'undefined')) {
-					$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-					$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
-					refresh_lines(lines, 'background');
+				switch (type) {
+					case 'static_graph':
+						if ((typeof(values['mov_left']) != 'undefined') &&
+								(typeof(values['mov_top']) != 'undefined')) {
+							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+							refresh_lines(lines, 'background');
+						}
+						$("#" + idElement).css('color', values['label_color']);
+						break;
+					case 'background':
+						$("#background").css('width', values['width'] + 'px');
+						$("#background").css('height', values['height'] + 'px');
+						break;
 				}
 			}
 		});
@@ -542,6 +562,13 @@ function eventsItems() {
 		}
 	});
 	
+	$('.item').bind('dblclick', function(event, ui) {
+		event.stopPropagation();
+		if (!openPropertiesPanel) {
+			actionClick();
+		}
+	});
+	
 	$(".item").draggable();
 	
 	$('.item').bind('dragstart', function(event, ui) {
@@ -606,6 +633,13 @@ function eventsBackground() {
 			idItem = 0;
 			creationItem = null;
 			selectedItem = 'background';
+		}
+	});
+	
+	$('#background').bind('dblclick', function(event, ui) {
+		event.stopPropagation();
+		if (!openPropertiesPanel) {
+			actionClick();
 		}
 	});
 }

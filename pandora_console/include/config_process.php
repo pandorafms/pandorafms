@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC10323'; // Remember is YYMMDD
+$build_version = 'PC10326'; // Remember is YYMMDD
 $pandora_version = 'v3.1-dev';
 
 /* Help to debug problems. Override global PHP configuration */

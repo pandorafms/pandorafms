@@ -323,7 +323,7 @@ if (! $edit_layout && ! $id_layout) {
 		foreach ($maps as $map) {			
 			if (give_acl ($config['id_user'], $map['id_group'], "AW")){
 				$data = array ();
-				$data[0] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'">'.$map['name'].'</a>';
+				$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 			
 				$data[1] = print_group_icon ($map['id_group'], true).'&nbsp;';
 				$data[1] .= get_group_name ($map['id_group']);

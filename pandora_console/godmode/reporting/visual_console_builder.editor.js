@@ -27,12 +27,6 @@ function editorMain2() {
 	eventsTextAgent();
 	
 	draw_lines(lines, 'background');
-//	var lines = Array ();
-//	lines.push (eval ({"id":"116","node_begin":"layout-data-115","node_end":"layout-data-116","color":"#ccc"})); 
-	
-	//$("#background").append($('<div id="pepito"></div>'));
-//	draw_line({"node_begin":"112","node_end":"110","color":"#000"}, 'background');
-	//$(".map-line").css('z-index', '0');
 	
 	$(".item").css('z-index', '1'); //For paint the icons over lines
 }
@@ -121,6 +115,22 @@ function updateAction() {
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr('src', getImageElement(idItem));
+			if ((values['width'] != 0) && (values['height'] != 0)) {
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#" + idItem).css('width', values['width'] + 'px');
+				$("#" + idItem).css('height', values['height'] + 'px');
+			}
+			else {
+				$("#image_" + idItem).removeAttr('width');
+				$("#image_" + idItem).removeAttr('height');
+				$("#" + idItem).css('width', '');
+				$("#" + idItem).css('height', '');
+			}
+			break;
+		case 'percentile_bar':
+			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr('src', getPercentileBar(idItem));
 			break;
 	}
 	
@@ -143,6 +153,8 @@ function readFields() {
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['label_color'] = $("input[name=label_color]").val();
+	values['width_percentile'] = $("input[name=width_percentile]").val();
+	values['max_percentile'] = $("input[name=max_percentile]").val();
 	
 	return values;
 }
@@ -258,14 +270,16 @@ function loadFieldsFromDB(item) {
 					if (key == 'parent_item') $("select[name=parent]").val(val);
 					if (key == 'id_layout_linked') $("select[name=map_linked]").val(val);
 					if (key == 'label_color') $("input[name=label_color]").val(val);
+					if (key == 'width_percentile') $("input[name=width_percentile]").val(val);
+					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
 				});
 			}
 		});	
 }
 
 function hiddenFields(item) {
-	$(".tittle_panel_span").css('display', 'none');
-	$("#tittle_panel_span_"  + item).css('display', 'inline'); 
+	$(".title_panel_span").css('display', 'none');
+	$("#title_panel_span_"  + item).css('display', 'inline'); 
 	
 	$("#label_row").css('display', 'none');
 	$("#label_row."  + item).css('display', '');
@@ -284,6 +298,12 @@ function hiddenFields(item) {
 	
 	$("#background_row").css('display', 'none');
 	$("#background_row."  + item).css('display', '');
+	
+	$("#percentile_bar_row_1").css('display', 'none');
+	$("#percentile_bar_row_1."  + item).css('display', '');
+
+	$("#percentile_bar_row_2").css('display', 'none');
+	$("#percentile_bar_row_2."  + item).css('display', '');
 	
 	$("#period_row").css('display', 'none');
 	$("#period_row."  + item).css('display', '');
@@ -309,6 +329,8 @@ function cleanFields() {
 	$("input[name=agent]").val('');
 	$("select[name=module]").val('');
 	$("select[name=background_image]").val('');
+	$("input[name=width_percentile]").val('');
+	$("input[name=max_percentile]").val('');
 	$("select[name=period]").val('');
 	$("input[name=width]").val(0);
 	$("input[name=height]").val(0);
@@ -316,8 +338,39 @@ function cleanFields() {
 	$("select[name=map_linked]").val('');
 	$("input[name=label_color]").val('#000000');
 	$("#preview").empty();
-	var anyText = $("#any_text").html();
+	
+	var anyText = $("#any_text").html(); //Trick for catch the translate text.
 	$("#module").empty().append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
+}
+
+function getPercentileBar(id_data) {
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+			{
+				module_value = data['value'];
+				max_percentile = data['max_percentile'];
+				width_percentile = data['width_percentile'];
+			}
+	});
+	
+	if ( max_percentile > 0)
+		var percentile = module_value / max_percentile * 100;
+	else
+		var percentile = 100;
+	
+	var img = 'include/fgraph.php?tipo=progress&height=15&width=' + width_percentile + '&mode=1&percent=' + percentile;
+	
+	console.log(img);
+	return img;
 }
 
 function getImageElement(id_data) {
@@ -367,21 +420,30 @@ function getColorLineStatus(id) {
 }
 
 function createItem(type, values, id_data) {
-	if ((values['width'] == 0) && (values['height'] == 0)) {
-		var sizeStyle = '';
-		var imageSize = '';
-	}
-	else {
-		var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-		var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
-	}
-	
 	switch (type) {
 		case 'static_graph':
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				var sizeStyle = '';
+				var imageSize = '';
+			}
+			else {
+				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+			}
 			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div>'
+			);
+			break;
+		case 'percentile_bar':
+			var sizeStyle = '';
+			var imageSize = '';
+			
+			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+					'<img class="image" id="image_' + id_data + '" src=' + getPercentileBar(id_data)  + '" />' +
+					'</div>'
 			);
 			break;
 	}
@@ -475,6 +537,15 @@ function updateDB(type, idElement , values) {
 						}
 						$("#" + idElement).css('color', values['label_color']);
 						break;
+					case 'percentile_bar':
+						if ((typeof(values['mov_left']) != 'undefined') &&
+								(typeof(values['mov_top']) != 'undefined')) {
+							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+							refresh_lines(lines, 'background');
+						}
+						$("#" + idElement).css('color', values['label_color']);
+						break;
 					case 'background':
 						$("#background").css('width', values['width'] + 'px');
 						$("#background").css('height', values['height'] + 'px');
@@ -559,6 +630,13 @@ function eventsItems() {
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
+			if ($(divParent).hasClass('percentile_bar')) {
+				creationItem = null;
+				selectedItem = 'percentile_bar';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
 		}
 	});
 	
@@ -581,6 +659,13 @@ function eventsItems() {
 			if ($(divParent).hasClass('static_graph')) {
 				creationItem = null;
 				selectedItem = 'static_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('percentile_bar')) {
+				creationItem = null;
+				selectedItem = 'percentile_bar';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
@@ -726,6 +811,8 @@ function eventsButtonsToolbox() {
 					actionClick();
 					break;
 				case 'percentile_bar':
+					creationItem = 'percentile_bar';
+					actionClick();
 					break;
 				case 'module_graph':
 					break;

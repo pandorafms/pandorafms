@@ -24,6 +24,7 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
+require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
 
 //Arrays for select box.
@@ -96,11 +97,12 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 ?>
 <table class="databox" border="0" cellpadding="4" cellspacing="4" width="300">
 	<caption>
-		<span id="tittle_panel_span_background" class="tittle_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Background');?></span><br /><br />
-		<span id="tittle_panel_span_static_graph" class="tittle_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span><br /><br />
+		<span id="title_panel_span_background" class="title_panel_span" style="display: none; visibility:hidden; font-weight: bolder;"><?php echo  __('Background');?></span>
+		<span id="title_panel_span_static_graph" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span>
+		<span id="title_panel_span_percentile_bar" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Percentile Bar');?></span>
 	</caption>
 	<tbody>
-		<tr id="label_row" style="" class="static_graph">
+		<tr id="label_row" style="" class="static_graph percentile_bar datos">
 			<td style=""><?php echo __('Label');?></td>
 			<td style=""><?php print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>
@@ -108,21 +110,37 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Image');?></td>
 			<td><?php print_select ($images_list, 'image', '', 'showPreviewStaticGraph(this.value);', 'None', '');?></td>
 		</tr>
-		<tr id="preview_row" style="" class="static_graph datos2">
+		<tr id="preview_row" style="" class="static_graph datos">
 			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
 		</tr>
-		<tr id="agent_row" class="static_graph datos2">
-			<td><?php echo __('Agent');?></td>
+		<tr id="agent_row" class="static_graph percentile_bar datos">
+			<td><?php echo __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>';?></td>
 			<td><?php print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
 				array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);?></td>
 		</tr>
-		<tr id="module_row" class="static_graph datos">
+		<tr id="module_row" class="static_graph percentile_bar datos">
 			<td><?php echo __('Module');?></td>
 			<td><?php print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
-		<tr id="background_row" class="background datos2">
+		<tr id="background_row" class="background datos">
 			<td><?php echo __('Background');?></td>
 			<td><?php print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
+		</tr>
+		<tr id="percentile_bar_row_1" class="percentile_bar datos">
+			<td><?php echo __('Width');?></td>
+			<td>
+				<?php
+				print_input_text('width_percentile', 0, '', 3, 5);
+				?>
+			</td>
+		</tr>
+		<tr id="percentile_bar_row_2" class="percentile_bar datos">
+			<td><?php echo __('Max value');?></td>
+			<td>
+				<?php
+				print_input_text('max_percentile', 0, '', 3, 5);
+				?>
+			</td>
 		</tr>
 		<tr id="button_update_row" class="datos">
 			<td colspan="2" style="text-align: right;">
@@ -132,7 +150,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			?>
 			</td>
 		</tr>
-		<tr id="button_create_row" class="datos2">
+		<tr id="button_create_row" class="datos">
 			<td colspan="2" style="text-align: right;">
 			<?php
 			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub"');
@@ -147,11 +165,11 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 	</tbody>
 	<tbody id="advance_options" style="display: none;">
-		<tr id="period_row" class="module_graph datos2">
+		<tr id="period_row" class="module_graph datos">
 			<td><?php echo __('Period');?></td>
 			<td><?php print_select ($intervals, 'period', '', '', '--', 0);?></td>
 		</tr>
-		<tr id="position_row" class="static_graph datos">
+		<tr id="position_row" class="static_graph percentile_bar datos">
 			<td><?php echo __('Position');?></td>
 			<td>
 				<?php
@@ -164,7 +182,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			</td>
 		</tr>
 		<tr id="size_row" class="background static_graph datos">
-			<td><?php echo __('Size');?></td>
+			<td><?php echo __('Size') . '<a href="#" class="tip">&nbsp;<span>' . __("For use the original image file size, set 0 width and 0 height.") . '</span></a>';?></td>
 			<td>
 				<?php
 				print_input_text('width', 0, '', 3, 5);
@@ -173,11 +191,11 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="parent_row" class="static_graph datos2">
+		<tr id="parent_row" class="static_graph percentile_bar datos">
 			<td><?php echo __('Parent');?></td>
 			<td><?php print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);?></td>
 		</tr>
-		<tr id="map_linked_row" class="static_graph datos">
+		<tr id="map_linked_row" class="static_graph percentile_bar datos">
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
@@ -185,7 +203,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="label_color_row" class="static_graph datos">
+		<tr id="label_color_row" class="static_graph percentile_bar datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				
@@ -246,30 +264,53 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 
 function printItemInVisualConsole($layoutData) {
 	$width = $layoutData['width'];
-	$height = $layoutData['height'];
+	$height = $max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
 	$left = $layoutData['pos_x'];
 	$id = $layoutData['id'];
 	$color = $layoutData['label_color'];
 	$label = $layoutData['label'];
+	$id_module = $layoutData['id_agente_modulo'];
+	$type = $layoutData['type'];
 	
-	$img = getImageStatusElement($layoutData);
-	$imgSizes = getimagesize($img);
-	//debugPrint($imgSizes);
-	
-	if (($width == 0) && ($height == 0)) {
-		$sizeStyle = '';
-		$imageSize = '';
+	switch ($type) {
+		case STATIC_GRAPH:
+			$img = getImageStatusElement($layoutData);
+			$imgSizes = getimagesize($img);
+			if (($width == 0) && ($height == 0)) {
+				$sizeStyle = '';
+				$imageSize = '';
+			}
+			else {
+				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+				$imageSize = 'width="' . $width . '" height="' . $height . '"';
+			}
+			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+			echo '<span id="text_' . $id . '" class="text">' . $label . '</span>';
+			echo "</div>";
+			break;
+		case PERCENTILE_BAR:
+			$sizeStyle = '';
+			$imageSize = '';
+			
+			$module_value = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			
+			if ( $max_percentile > 0)
+				$percentile = $module_value / $max_percentile * 100;
+			else
+				$percentile = 100;
+			
+			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=progress&height=15&width=' . $width . '&mode=1&percent=' . $percentile . '" />';
+			
+			echo '<div id="' . $id . '" class="item percentile_bar" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
+			echo $img;
+			echo '</div>';
+			
+			break;
 	}
-	else {
-		$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
-		$imageSize = 'width="' . $width . '" height="' . $height . '"';
-	}
 	
-	echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
-	echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
-	echo '<span id="text_' . $id . '" class="text">' . $label . '</span>';
-	echo "</div>";
 	if ($layoutData['parent_item'] != 0) {
 		echo '<script type="text/javascript">';
 		echo '$(document).ready (function() {

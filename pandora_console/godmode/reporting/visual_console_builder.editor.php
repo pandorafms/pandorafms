@@ -102,7 +102,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<span id="title_panel_span_percentile_bar" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Percentile Bar');?></span>
 	</caption>
 	<tbody>
-		<tr id="label_row" style="" class="static_graph percentile_bar datos">
+		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value datos">
 			<td style=""><?php echo __('Label');?></td>
 			<td style=""><?php print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>
@@ -113,12 +113,12 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="preview_row" style="" class="static_graph datos">
 			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
 		</tr>
-		<tr id="agent_row" class="static_graph percentile_bar datos">
+		<tr id="agent_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Agent') . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>';?></td>
 			<td><?php print_input_text_extended ('agent', '', 'text-agent', '', 25, 100, false, '',
 				array('style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), false);?></td>
 		</tr>
-		<tr id="module_row" class="static_graph percentile_bar datos">
+		<tr id="module_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Module');?></td>
 			<td><?php print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
@@ -139,6 +139,20 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td>
 				<?php
 				print_input_text('max_percentile', 0, '', 3, 5);
+				?>
+			</td>
+		</tr>
+		<tr id="period_row" class="module_graph datos">
+			<td><?php echo __('Period');?></td>
+			<td><?php print_select ($intervals, 'period', '', '', '--', 0);?></td>
+		</tr>
+		<tr id="module_graph_size_row" class="module_graph datos">
+			<td><?php echo __('Size');?></td>
+			<td>
+				<?php
+				print_input_text('width_module_graph', 0, '', 3, 5);
+				echo ' X ';
+				print_input_text('height_module_graph', 0, '', 3, 5);
 				?>
 			</td>
 		</tr>
@@ -165,11 +179,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 	</tbody>
 	<tbody id="advance_options" style="display: none;">
-		<tr id="period_row" class="module_graph datos">
-			<td><?php echo __('Period');?></td>
-			<td><?php print_select ($intervals, 'period', '', '', '--', 0);?></td>
-		</tr>
-		<tr id="position_row" class="static_graph percentile_bar datos">
+		<tr id="position_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Position');?></td>
 			<td>
 				<?php
@@ -191,11 +201,11 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="parent_row" class="static_graph percentile_bar datos">
+		<tr id="parent_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Parent');?></td>
 			<td><?php print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);?></td>
 		</tr>
-		<tr id="map_linked_row" class="static_graph percentile_bar datos">
+		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
@@ -203,7 +213,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="label_color_row" class="static_graph percentile_bar datos">
+		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				
@@ -272,6 +282,7 @@ function printItemInVisualConsole($layoutData) {
 	$label = $layoutData['label'];
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
+	$period = $layoutData['period'];
 	
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -308,6 +319,26 @@ function printItemInVisualConsole($layoutData) {
 			echo $img;
 			echo '</div>';
 			
+			break;
+		case MODULE_GRAPH:
+			$sizeStyle = '';
+			$imageSize = '';
+			
+			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . $label . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . '" />';
+			
+			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
+			echo $img;
+			echo '</div>';
+			break;
+		case SIMPLE_VALUE:
+			$sizeStyle = '';
+			$imageSize = '';
+			
+			echo '<div id="' . $id . '" class="item simple_value" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
+			echo '<strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+			echo '</div>';
 			break;
 	}
 	

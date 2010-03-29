@@ -132,6 +132,13 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			$("#image_" + idItem).attr('src', getPercentileBar(idItem));
 			break;
+		case 'module_graph':
+			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr('src', getModuleGraph(idItem));
+			break;
+		case 'simple_value':
+			$("#text_" + idItem).html(values['label']);
+			break;
 	}
 	
 	actionClick();
@@ -155,6 +162,8 @@ function readFields() {
 	values['label_color'] = $("input[name=label_color]").val();
 	values['width_percentile'] = $("input[name=width_percentile]").val();
 	values['max_percentile'] = $("input[name=max_percentile]").val();
+	values['width_module_graph'] = $("input[name=width_module_graph]").val();
+	values['height_module_graph'] = $("input[name=height_module_graph]").val();
 	
 	return values;
 }
@@ -272,6 +281,8 @@ function loadFieldsFromDB(item) {
 					if (key == 'label_color') $("input[name=label_color]").val(val);
 					if (key == 'width_percentile') $("input[name=width_percentile]").val(val);
 					if (key == 'max_percentile') $("input[name=max_percentile]").val(val);
+					if (key == 'width_module_graph') $("input[name=width_module_graph]").val(val);
+					if (key == 'height_module_graph') $("input[name=height_module_graph]").val(val);
 				});
 			}
 		});	
@@ -319,6 +330,9 @@ function hiddenFields(item) {
 	
 	$("#label_color_row").css('display', 'none');
 	$("#label_color_row."  + item).css('display', '');
+	
+	$("#module_graph_size_row").css('display', 'none');
+	$("#module_graph_size_row."  + item).css('display', '');
 }
 
 function cleanFields() {
@@ -337,10 +351,58 @@ function cleanFields() {
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
 	$("input[name=label_color]").val('#000000');
+	$("input[name=width_module_graph]").val(0);
+	$("input[name=height_module_graph]").val(0);
 	$("#preview").empty();
 	
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
 	$("#module").empty().append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
+}
+
+function getModuleGraph(id_data) {
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_layout_data"});
+	parameter.push ({name: "id_element", value: id_data});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			id_agente_modulo = data['id_agente_modulo'];
+			label = data['label'];
+			height = data['height'];
+			width = data['width'];
+			period = data['period'];
+		}
+	});
+	
+	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + '&label=' + label + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
+	
+	return img;
+}
+
+function getModuleValue(id_data) {
+	var parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_module_value"});
+	parameter.push ({name: "id_element", value: id_data});
+	jQuery.ajax({
+		async: false,
+		url: "ajax.php",
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			module_value = data['value'];
+		}
+	});
+	
+	return module_value;
 }
 
 function getPercentileBar(id_data) {
@@ -355,11 +417,11 @@ function getPercentileBar(id_data) {
 		type: "POST",
 		dataType: 'json',
 		success: function (data)
-			{
-				module_value = data['value'];
-				max_percentile = data['max_percentile'];
-				width_percentile = data['width_percentile'];
-			}
+		{
+			module_value = data['value'];
+			max_percentile = data['max_percentile'];
+			width_percentile = data['width_percentile'];
+		}
 	});
 	
 	if ( max_percentile > 0)
@@ -369,7 +431,6 @@ function getPercentileBar(id_data) {
 	
 	var img = 'include/fgraph.php?tipo=progress&height=15&width=' + width_percentile + '&mode=1&percent=' + percentile;
 	
-	console.log(img);
 	return img;
 }
 
@@ -442,8 +503,28 @@ function createItem(type, values, id_data) {
 			
 			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-					'<img class="image" id="image_' + id_data + '" src=' + getPercentileBar(id_data)  + '" />' +
+					'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data)  + '" />' +
 					'</div>'
+			);
+			break;
+		case 'module_graph':
+			var sizeStyle = '';
+			var imageSize = '';
+			
+			var item = $('<div id="' + id_data + '" class="item module_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
+					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" />' +
+				'</div>'
+			);
+			break;
+		case 'simple_value':
+			var sizeStyle = '';
+			var imageSize = '';
+			
+			var item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
+					'<strong>' + getModuleValue(id_data) + '</strong>' +
+				'</div>'
 			);
 			break;
 	}
@@ -528,23 +609,30 @@ function updateDB(type, idElement , values) {
 		success: function (data)
 			{
 				switch (type) {
+					case 'module_graph':
 					case 'static_graph':
-						if ((typeof(values['mov_left']) != 'undefined') &&
-								(typeof(values['mov_top']) != 'undefined')) {
-							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
-							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
-							refresh_lines(lines, 'background');
-						}
-						$("#" + idElement).css('color', values['label_color']);
-						break;
 					case 'percentile_bar':
+					case 'simple_value':
 						if ((typeof(values['mov_left']) != 'undefined') &&
 								(typeof(values['mov_top']) != 'undefined')) {
 							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
 							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
-							refresh_lines(lines, 'background');
 						}
 						$("#" + idElement).css('color', values['label_color']);
+						jQuery.each(lines, function(i, line) {
+							if (lines[i]['id'] == idElement) {
+								if (values['parent'] == 0) {
+									lines.splice(i);
+								}
+								else {
+									if ((typeof(values['mov_left']) == 'undefined') &&
+											(typeof(values['mov_top']) == 'undefined')) {
+										lines[i]['node_begin'] = values['parent'];
+									}
+								}
+							}
+						});
+						refresh_lines(lines, 'background');
 						break;
 					case 'background':
 						$("#background").css('width', values['width'] + 'px');
@@ -574,7 +662,7 @@ function deleteDB(idElement) {
 					$("#parent > option[value=" + idElement + "]").remove();
 					
 					jQuery.each(lines, function(i, line) {
-						if (line['id'] == idElement) {
+						if ((line['id'] == idElement) || (line['node_begin'] == idElement)) {
 							lines.splice(i);
 						}
 					});
@@ -637,6 +725,20 @@ function eventsItems() {
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
+			if ($(divParent).hasClass('module_graph')) {
+				creationItem = null;
+				selectedItem = 'module_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('simple_value')) {
+				creationItem = null;
+				selectedItem = 'simple_value';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
 		}
 	});
 	
@@ -666,6 +768,20 @@ function eventsItems() {
 			if ($(divParent).hasClass('percentile_bar')) {
 				creationItem = null;
 				selectedItem = 'percentile_bar';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('module_graph')) {
+				creationItem = null;
+				selectedItem = 'module_graph';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('simple_value')) {
+				creationItem = null;
+				selectedItem = 'simple_value';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
@@ -815,12 +931,12 @@ function eventsButtonsToolbox() {
 					actionClick();
 					break;
 				case 'module_graph':
+					creationItem = 'module_graph';
+					actionClick();
 					break;
 				case 'simple_value':
-					break;
-				case 'save_visual_console':
-					break;
-				case 'edit_item':
+					creationItem = 'simple_value';
+					actionClick();
 					break;
 				case 'delete_item':
 					deleteItem();

@@ -46,8 +46,15 @@ $map_linked = get_parameter('map_linked', null);
 $label_color = get_parameter('label_color', null);
 $width_percentile = get_parameter('width_percentile', null);
 $max_percentile = get_parameter('max_percentile', null);
+$height_module_graph = get_parameter('height_module_graph', null);
+$width_module_graph = get_parameter('width_module_graph', null);
 
 switch ($action) {
+	case 'get_layout_data':
+		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
+		
+		echo json_encode($layoutData);
+		break;
 	case 'get_module_value':
 		$layoutData = get_db_row_filter('tlayout_data', array('id' => $id_element));
 		$returnValue = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
@@ -85,13 +92,10 @@ switch ($action) {
 					$values['height'] = $height;
 				process_sql_update('tlayout', $values, array('id' => $id_visual_console));
 				break;
-			case 'module_graph':
-				if ($period !== null) {
-					$values['period'] = $period;
-				}
-				break;
+			case 'simple_value':
 			case 'percentile_bar':
 			case 'static_graph':
+			case 'module_graph':
 				$values = array();
 				if ($label !== null) {
 					$values['label'] = $label;
@@ -119,6 +123,17 @@ switch ($action) {
 					$values['label_color'] = $label_color;
 				}
 				switch($type) {
+					case 'module_graph':
+						if ($height_module_graph !== null) {
+							$values['height'] = $height_module_graph;
+						}
+						if ($width_module_graph !== null) {
+							$values['width'] = $width_module_graph;
+						}
+						if ($period !== null) {
+							$values['period'] = $period;
+						}
+						break;
 					case 'percentile_bar':
 						if ($width_percentile !== null) {
 							$values['width'] = $width_percentile;
@@ -188,6 +203,44 @@ switch ($action) {
 				
 				echo json_encode($elementFields);
 				break;
+			case 'module_graph':
+				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
+				$elementFields['agent_name'] = get_agent_name($elementFields['id_agent']);
+				$elementFields['width_module_graph'] = $elementFields['width'];
+				$elementFields['height_module_graph'] = $elementFields['height'];
+				
+				if ($elementFields['id_agent'] != 0) {
+					$modules = get_agent_modules ($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+					
+					$elementFields['modules_html'] = '<option value="0">--</option>';
+					foreach ($modules as $id => $name) {
+						$elementFields['modules_html'] .= '<option value="' . $id . '">' . $name . '</option>';
+					}
+				}
+				else  {
+					$elementFields['modules_html'] = '<option value="0">' . __('Any') . '</option>';
+				}
+				
+				echo json_encode($elementFields);
+				break;
+			case 'simple_value':
+				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
+				$elementFields['agent_name'] = get_agent_name($elementFields['id_agent']);
+				
+				if ($elementFields['id_agent'] != 0) {
+					$modules = get_agent_modules ($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+					
+					$elementFields['modules_html'] = '<option value="0">--</option>';
+					foreach ($modules as $id => $name) {
+						$elementFields['modules_html'] .= '<option value="' . $id . '">' . $name . '</option>';
+					}
+				}
+				else  {
+					$elementFields['modules_html'] = '<option value="0">' . __('Any') . '</option>';
+				}
+				
+				echo json_encode($elementFields);
+				break;
 		}
 		break;
 	case 'insert':
@@ -204,8 +257,15 @@ switch ($action) {
 		$values['id_layout_linked'] = $map_linked;
 		$values['label_color'] = $label_color;
 		$values['parent_item'] = $parent;
+		$values['no_link_color'] = 1;
 		
 		switch ($type) {
+			case 'module_graph':
+				$values['type'] = MODULE_GRAPH;
+				$values['height'] = $height_module_graph;
+				$values['width'] = $width_module_graph;
+				$values['period'] = $period;
+				break;
 			case 'percentile_bar':
 				$values['type'] = PERCENTILE_BAR;
 				$values['width'] = $width_percentile;
@@ -216,6 +276,9 @@ switch ($action) {
 				$values['image'] = $image;
 				$values['width'] = $width;
 				$values['height'] = $height;
+				break;
+			case 'simple_value':
+				$values['type'] = SIMPLE_VALUE;
 				break;
 		}
 		$idData = process_sql_insert('tlayout_data', $values);

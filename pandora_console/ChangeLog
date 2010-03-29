@@ -2,6 +2,14 @@
 
 	* include/ajax/visual_console_builder.ajax.php,
 	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.constans.php,
+	godmode/reporting/visual_console_builder.editor.js: worked about the new
+	visual console builder editor, now it is developing, don't afray.
+
+2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.php,
 	godmode/reporting/map_builder.php,
 	godmode/reporting/visual_console_builder.editor.js: worked about the new
 	visual console builder editor, now it is developing, don't afray.

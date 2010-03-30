@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
@@ -27,7 +26,7 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 
 require_once ('include/functions_visual_map.php');
 
-$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update'), 'new');
+$action = get_parameterBetweenListValues('action', array('new', 'save', 'edit', 'update', 'delete'), 'new');
 $activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'editor', 'preview'), 'data');
 $idVisualConsole = get_parameter('id_visual_console', 0);
 
@@ -81,34 +80,77 @@ switch ($activeTab) {
 		break;
 	case 'list_elements':
 		switch ($action) {
-			case 'edit':
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
-				$visualConsoleName = $visualConsole['name'];
+			case 'update':
+				//Update background
+				//debugPrint(get_db_row_filter('tlayout', array('id' => $idVisualConsole)));
+				$background = get_parameter('background');
+				$width = get_parameter('width');
+				$height = get_parameter('height');
+				process_sql_update('tlayout', array('background' => $background,
+					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
+				
+				//debugPrint(get_db_row_filter('tlayout', array('id' => $idVisualConsole)));
+				
+				//Update elements in visual map
+				$idsElements = get_db_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));
+				foreach ($idsElements as $idElement) {
+					$id = $idElement['id'];
+					$values = array();
+					$values['label'] = get_parameter('label_' . $id, '');
+					$values['image'] = get_parameter('image_' . $id, '');
+					$values['width'] = get_parameter('width_' . $id, 0);
+					$values['height'] = get_parameter('height_' . $id, 0);
+					$values['pos_x'] = get_parameter('left_' . $id, 0);
+					$values['pos_y'] = get_parameter('top_' . $id, 0);
+					$agentName = get_parameter('agent_' .  $id, '');
+					$values['id_agent'] = get_agent_id($agentName);
+					$values['id_agente_modulo'] = get_parameter('module_' . $id, 0);
+					$values['parent_item'] = get_parameter('parent_' . $id, 0);
+					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
+					$values['label_color'] = get_parameter('label_color_' . $id, '#000000');
+					process_sql_update('tlayout_data', $values, array('id' => $id));
+				}
+				break;
+			case 'delete':
+				$id_element = get_parameter('id_element');
+				$result = process_sql_delete('tlayout_data', array('id' => $id_element));
+				if ($result !== false) {
+					$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully delete.').'</h3>');
+				}
+				break;
+		}
+		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsoleName = $visualConsole['name'];
+		$action = 'edit';
+		break;
+	case 'wizard':
+		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+		$visualConsoleName = $visualConsole['name'];
+		switch ($action) {
+			case 'update':
+				$id_agents = get_parameter ('id_agents', array ());
+				$id_modules = get_parameter ('module', array ());
+				$image = get_parameter ('image');
+				$range = (int) get_parameter ("range", 50);
+				$width = (int) get_parameter ("width", 0);
+				$height = (int) get_parameter ("height", 0);
+				$message = '';
+				$message = process_wizard_add ($id_agents, $image, $layout["id"], $range, $width, $height);
+				if (!empty ($id_modules)) {
+					$message .= process_wizard_add_modules ($id_modules, $image, $layout["id"], $range, $width, $height);
+				}
+				$statusProcessInDB = array('flag' => true, 'message' => $message);
+				$action = 'edit';
 				break;
 		}
 		break;
 	case 'editor':
 		switch ($action) {
+			case 'update':
 			case 'edit':
 				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
 				$visualConsoleName = $visualConsole['name'];
-				break;
-			case 'update':
-				$values = array('background' => get_parameter('background_image'),
-					'height' => get_parameter('height_background'),
-					'width' => get_parameter('width_background'));
-				
-				$result = process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
-				if ($result !== false) {
-					$action = 'edit';
-					$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');
-				}
-				else {
-					$statusProcessInDB = array('flag' => false, 'message' => '<h3 class="error">'.__('Could not be update.').'</h3>');
-				}
-				
-				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
-				$visualConsoleName = $visualConsole['name'];
+				$action = 'edit';
 				break;
 		}
 		break;
@@ -137,7 +179,7 @@ $buttons = array(
 
 if ($action == 'new') $buttons = array('data' => $buttons['data']); //Show only the data tab
 $buttons[$activeTab]['active'] = true;
-print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", false, $buttons);
+print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
 
 //The source code for PAINT THE PAGE
 if ($statusProcessInDB !== null) {
@@ -145,6 +187,9 @@ if ($statusProcessInDB !== null) {
 }
 
 switch ($activeTab) {
+	case 'wizard':
+		require_once('godmode/reporting/visual_console_builder.wizard.php');
+		break;
 	case 'data':
 		require_once('godmode/reporting/visual_console_builder.data.php');
 		break;

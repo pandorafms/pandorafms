@@ -19,6 +19,84 @@
  * @subpackage Reporting
  */
 
+function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
+	if (empty ($id_agents)) {
+		print_error_message (__('No agents selected'));
+		return false;
+	}
+	
+	$id_agents = (array) $id_agents;
+	
+	$error = false;
+	$pos_y = 10;
+	$pos_x = 10;
+	foreach ($id_agents as $id_agent) {
+		if ($pos_x > 600) {
+			$pos_x = 10;
+			$pos_y = $pos_y + $range;
+		}
+		
+		process_sql_insert ('tlayout_data',
+							array ('id_layout' => $id_layout,
+								   'pos_x' => $pos_x,
+								   'pos_y' => $pos_y,
+								   'label' => get_agent_name ($id_agent),
+								   'image' => $image,
+								   'id_agent' => $id_agent,
+								   'width' => $width,
+								   'height' => $height,
+								   'label_color' => '#000000')
+							);
+		
+		$pos_x = $pos_x + $range;
+	}
+	
+	$return = print_success_message (__('Agent successfully added to layout'), '', true);
+	
+	return $return;
+}
+
+function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
+	if (empty ($id_modules)) {
+		print_error_message (__('No modules selected'));
+		return false;
+	}
+	
+	$id_modules = (array) $id_modules;
+	
+	$error = false;
+	$pos_y = 10;
+	$pos_x = 10;
+	
+	foreach ($id_modules as $id_module) {
+		if ($pos_x > 600) {
+			$pos_x = 10;
+			$pos_y = $pos_y + $range;
+		}
+		
+		$id_agent = get_agentmodule_agent ($id_module);
+		
+		process_sql_insert ('tlayout_data',
+							array ('id_layout' => $id_layout,
+								   'pos_x' => $pos_x,
+								   'pos_y' => $pos_y,
+								   'label' => get_agentmodule_name ($id_module),
+								   'image' => $image,
+								   'id_agent' => $id_agent,
+								   'id_agente_modulo' => $id_module,
+								   'width' => $width,
+								   'height' => $height,
+								   'label_color' => '#000000')
+							);
+		
+		$pos_x = $pos_x + $range;
+	}
+	
+	$return = print_success_message (__('Modules successfully added to layout'), '', true);
+	
+	return $return;
+}
+
 function getColorLineStatus($layoutData) {
 	switch (getStatusElement($layoutData)) {
 		case 3:

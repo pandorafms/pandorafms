@@ -88,7 +88,7 @@ $intervals[4838400] = __('Last month');
 $intervals[9676800] = "2 ".__('months');
 $intervals[29030400] = "6 ".__('months');
 
-//Trick for it have a traduct "any" text.
+//Trick for it have a traduct text for javascript.
 echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
 echo '<span id="ip_text" style="display: none;">' . __('IP') . '</span>';
 

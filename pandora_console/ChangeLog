@@ -1,4 +1,15 @@
-2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-03-29  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.elements.php: worked about the new
+	visual console builder editor, now it is finished but I will clean and
+	comment the source code.
+
+2010-03-29  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/ajax/visual_console_builder.ajax.php,
 	godmode/reporting/visual_console_builder.editor.php,
@@ -6,7 +17,7 @@
 	godmode/reporting/visual_console_builder.editor.js: worked about the new
 	visual console builder editor, now it is developing, don't afray.
 
-2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-03-29  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/ajax/visual_console_builder.ajax.php,
 	godmode/reporting/visual_console_builder.editor.php,
@@ -17,7 +28,7 @@
 	* godmode/reporting/visual_console_builder.constans.php: added the file that
 	it has the constans. 
 
-2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-03-26  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/config_process.php,
 	godmode/reporting/visual_console_builder.editor.php,
@@ -27,7 +38,7 @@
 	* include/javascript/jquery.colorpicker.js: we used the old versión, and
 	patch with self code for z-index to upper position. 
 
-2010-03-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-03-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php,
 	include/ajax/visual_console_builder.ajax.php,

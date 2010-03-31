@@ -155,11 +155,12 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
  * @param bool Whether to return an output string or echo now (optional, echo by default).
  * @param bool Set the input to allow multiple selections (optional, single selection by default).
  * @param bool Whether to sort the options or not (optional, unsorted by default).
+ * @param string $style The string of style.
  *
  * @return string HTML code if return parameter is true.
  */
 function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false) {
+	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false) {
 	
 	$output = "\n";
 	
@@ -187,8 +188,15 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	if (!empty ($disabled)) {
 		$attributes .= ' disabled="disabled"';
 	}
+	
+	if ($style === false) {
+		$styleText = '';
+	}
+	else {
+		$styleText = 'style="' . $style . '"';
+	}
 
-	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.'>';
+	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' ' . $styleText . '>';
 
 	if ($nothing != '' || empty ($fields)) {
 		if ($nothing == '') {
@@ -474,11 +482,19 @@ function print_input_image ($name, $src, $value, $style = '', $return = false, $
  * @param string $name Input name.
  * @param string $value Input value.
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string $class Set the class of input.
  *
  * @return string HTML code if return parameter is true.
  */
-function print_input_hidden ($name, $value, $return = false) {
-	$output = '<input id="hidden-'.$name.'" name="'.$name.'" type="hidden" value="'.$value.'" />';
+function print_input_hidden ($name, $value, $return = false, $class = false) {
+	if ($class !== false) {
+		$classText = 'class="' . $class . '"';
+	}
+	else {
+		$classText = '';
+	}
+	
+	$output = '<input id="hidden-' . $name . '" name="' . $name . '" type="hidden" ' . $classText . ' value="' . $value . '" />';
 	
 	if ($return)
 		return $output;

@@ -63,42 +63,26 @@ $intervals[29030400] = "6 ".__('months');
 
 $table->width = '100%';
 $table->head = array ();
-$table->head[0] = __('Label') . ' / ' . __('Type') . ' / ' . __('Parent');
-$table->head[1] = __('Image') . ' / ' . __('Agent') . ' / ' . __('Map linked');
-$table->head[2] = __('Height / Max value') . ' / ' . __('Module') . ' / ' . __('Label color');
-$table->head[3] = __('Width') . ' / ' . __('Period');
-$table->head[4] = __('Left');
-$table->head[5] = __('Top');
-$table->head[6] = __('Action');
+$table->head['icon'] = '';
+$table->head[0] = __('Label') . ' / ' . __('Agent');
+$table->head[1] = __('Image') . ' / ' . __('Module');
+$table->head[2] = __('Width x Height - Max value');
+$table->head[3] = __('Period') . ' / ' . __('Position');
+$table->head[4] = __('Parent') . ' / ' . __('Map linked');
+$table->head[5] = __('Action');
 
 $table->data = array();
 
 //Background
+$table->data[0]['icon'] = '';
 $table->data[0][0] = __('Background');
-$table->data[0][1] = print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true);
-$table->data[0][2] = print_input_text('width', $visualConsole['width'], '', 3, 5, true);
-$table->data[0][3] = print_input_text('height', $visualConsole['height'], '', 3, 5, true);
-$table->data[0][4] = '';
-$table->data[0][5] = '';
-$table->data[0][6] = '';
+$table->data[0][1] = print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 100px;');
+$table->data[0][2] = print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
+	'x' .
+	print_input_text('height', $visualConsole['height'], '', 3, 5, true);
+$table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
-$table->data[1][0] = __('Background');
-$table->data[1][1] = '';
-$table->data[1][2] = '';
-$table->data[1][3] = '';
-$table->data[1][4] = '';
-$table->data[1][5] = '';
-$table->data[1][6] = '';
-
-$table->data[2][0] = '';
-$table->data[2][1] = '';
-$table->data[2][2] = '';
-$table->data[2][3] = '';
-$table->data[2][4] = '';
-$table->data[2][5] = '';
-$table->data[2][6] = '';
-
-$i = 2;
+$i = 1;
 $layoutDatas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
@@ -107,55 +91,71 @@ $alternativeStyle = true;
 foreach ($layoutDatas as $layoutData) {
 	$idLayoutData = $layoutData['id'];
 	
-	$table->data[$i][0] = print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 20, 200, true);
+	//line between rows
+	$table->data[$i][0] = '<hr>';
+	$table->colspan[$i][0] = '8';
+	
+	switch ($layoutData['type']) {
+		case STATIC_GRAPH:
+			$table->data[$i + 1]['icon'] = print_image('images/camera.png', true);
+			break;
+		case PERCENTILE_BAR:
+			$table->data[$i + 1]['icon'] = print_image('images/chart_bar.png', true);
+			break;
+		case MODULE_GRAPH:
+			$table->data[$i + 1]['icon'] = print_image('images/chart_curve.png', true);
+			break;
+		case SIMPLE_VALUE:
+			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true);
+			break;
+		default:
+			$table->data[$i + 1]['icon'] = '';
+			break;
+	}
+	
+	$table->data[$i + 1][0] = '<span style="width: 130px; display: block;">' .
+		print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
+		print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
+		'</span>';
 	if ($layoutData['type'] == STATIC_GRAPH) {
-		$table->data[$i][1] = print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
+		$table->data[$i + 1][1] = print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
 	}
 	else {
-		$table->data[$i][1] = '';
+		$table->data[$i + 1][1] = '';
 	}
-	$table->data[$i][2] = print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true);
-	$table->data[$i][3] = print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
-	$table->data[$i][4] = print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true);
-	$table->data[$i][5] = print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true);
-	$table->data[$i][6] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
+	$table->data[$i + 1][2] = print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true) .
+		'x' .
+		print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
+	$table->data[$i + 1][3] = '(' . print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true) .
+		',' . print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true) .
+		')';
+	$table->data[$i + 1][4] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
+		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
+	$table->data[$i + 1][5] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
 		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;"><img src="images/cross.png" /></a>';
 	
-	$table->data[$i + 1][0] = $layoutDataTypes[$layoutData['type']];
-	$table->data[$i + 1][1] = print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 25, 100, false, '',
+	$table->data[$i + 2]['icon'] = '';
+	$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
 		array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
-	$table->data[$i + 1][2] = print_select_from_sql('SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente = ' . $layoutData['id_agent'],
+	$table->data[$i + 2][1] = print_select_from_sql('SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente = ' . $layoutData['id_agent'],
 		'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
+	$table->data[$i + 2][2] = '';	
 	if ($layoutData['type'] == MODULE_GRAPH) {
-		$table->data[$i + 1][3] = print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
+		$table->data[$i + 2][3] = print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
 	}
 	else {
-		$table->data[$i + 1][3] = '';
+		$table->data[$i + 2][3] = '';
 	}
-	$table->data[$i + 1][4] = '';
-	$table->data[$i + 1][5] = '';
-	$table->data[$i + 1][6] = '';
-	
-	$table->data[$i + 2][0] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
-		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
-	$table->data[$i + 2][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
+	$table->data[$i + 2][4] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
 					'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
-	//$table->data[$i + 2][2] = print_input_text ('label_color_' . $idLayoutData, '#000000', $layoutData['label_color'], 7, 7, true);
-	$table->data[$i + 2][2] = print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData
-		, '', 7, 7, false, '', 'class="label_color"', true);
-	$table->data[$i + 2][3] = '';
-	$table->data[$i + 2][4] = '';
 	$table->data[$i + 2][5] = '';
-	$table->data[$i + 2][6] = '';
 	
 	if ($alternativeStyle) {
-		$table->rowclass[$i] = 'rowOdd';
 		$table->rowclass[$i + 1] = 'rowOdd';
 		$table->rowclass[$i + 2] = 'rowOdd';
 	}
 	else {
-		$table->rowclass[$i] = 'rowPair';
 		$table->rowclass[$i + 1] = 'rowPair';
 		$table->rowclass[$i + 2] = 'rowPair';
 	}

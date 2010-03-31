@@ -1,3 +1,26 @@
+2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: added new parameter for function
+	"print_select" for style. In the function "print_input_hidden" added the
+	parameter $class for set the class of input.
+	
+	* godmode/reporting/map_builder.php: delete old code, now it have only
+	source code of paint list of visual consoles.
+	
+	* godmode/reporting/visual_console_builder.data.php: cleaned style the of
+	form.
+	
+	* godmode/reporting/visual_console_builder.elements.php: cleaned the rows of
+	table, delete label color field and change the text type for a icon.
+
+2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/styles/pandora.css, include/functions_visual_map.php,
+	include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.editor.js: cleaned source code and
+	changed the buttons.
+
 2010-03-30  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/ajax/visual_console_builder.ajax.php: some cleaned the source

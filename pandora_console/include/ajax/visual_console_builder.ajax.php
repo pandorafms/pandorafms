@@ -29,8 +29,11 @@ require_once('include/functions_visual_map.php');
 
 $action = get_parameter('action');
 $type = get_parameter('type');
+
 $id_visual_console = get_parameter('id_visual_console', null);
+
 $id_element = get_parameter('id_element', null);
+
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
 $label = get_parameter('label', null);

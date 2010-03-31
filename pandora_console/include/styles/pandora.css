@@ -279,7 +279,8 @@ input.sub[disabled] {
 }
 
 input.next, input.upd, input.ok, input.wand, input.delete, input.search,
-input.copy, input.add {
+input.copy, input.add, input.graph, input.percentile, input.binary,
+input.camera, input.config {
 	padding-right: 21px;
 }
 input.next {
@@ -305,6 +306,21 @@ input.ok {
 }
 input.add {
 	background: #e5e5e5 url(../../images/add.png) no-repeat right 3px;
+}
+input.graph {
+	background: #e5e5e5 url(../../images/chart_curve.png) no-repeat right 3px;
+}
+input.percentile {
+	background: #e5e5e5 url(../../images/chart_bar.png) no-repeat right 3px;
+}
+input.binary {
+	background: #e5e5e5 url(../../images/binary.png) no-repeat right 3px;
+}
+input.camera {
+	background: #e5e5e5 url(../../images/camera.png) no-repeat right 3px;
+}
+input.config {
+	background: #e5e5e5 url(../../images/config.png) no-repeat right 3px;
 }
 table, img {
 	border: 0px;

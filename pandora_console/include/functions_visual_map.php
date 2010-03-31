@@ -19,6 +19,119 @@
  * @subpackage Reporting
  */
 
+function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '') {
+	if ($float == 'left') {
+		$margin = 'margin-right';
+	}
+	else {
+		$margin = 'margin-left';
+	}
+	
+	print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . '; ' . $margin . ': 5px;"');
+	return;
+	
+	if (!$disabled) $disableClass = '';
+	else $disableClass = 'disabled';
+	
+	echo '<div class="button_toolbox ' . $disableClass . '" id="' . $idDiv . '"
+		style="font-weight: bolder; text-align: center; float: ' . $float . ';' .
+			'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
+	if ($disabled) {
+		echo '<span class="label" style="color: #aaaaaa;">';
+	}
+	else {
+		echo '<span class="label" style="color: #000000;">';
+	}
+	echo $label;
+	echo '</span>';
+	echo '</div>';
+	
+}
+
+function printItemInVisualConsole($layoutData) {
+	$width = $layoutData['width'];
+	$height = $max_percentile = $layoutData['height'];
+	$top = $layoutData['pos_y'];
+	$left = $layoutData['pos_x'];
+	$id = $layoutData['id'];
+	$color = $layoutData['label_color'];
+	$label = $layoutData['label'];
+	$id_module = $layoutData['id_agente_modulo'];
+	$type = $layoutData['type'];
+	$period = $layoutData['period'];
+	
+	$sizeStyle = '';
+	$imageSize = '';
+	
+	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
+	
+	switch ($type) {
+		case STATIC_GRAPH:
+			$img = getImageStatusElement($layoutData);
+			$imgSizes = getimagesize($img);
+			if (($width != 0) && ($height != 0)) {
+				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+				$imageSize = 'width="' . $width . '" height="' . $height . '"';
+			}
+			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+			echo $text;
+			echo "</div>";
+			break;
+		case PERCENTILE_BAR:
+			$module_value = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
+			
+			if ( $max_percentile > 0)
+				$percentile = $module_value / $max_percentile * 100;
+			else
+				$percentile = 100;
+			
+			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=progress&height=15&width=' . $width . '&mode=1&percent=' . $percentile . '" />';
+			
+			echo '<div id="' . $id . '" class="item percentile_bar" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo $text . '<br />'; 
+			echo $img;
+			echo '</div>';
+			
+			break;
+		case MODULE_GRAPH:
+			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . $label . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . '" />';
+			
+			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo $text . '<br />'; 
+			echo $img;
+			echo '</div>';
+			break;
+		case SIMPLE_VALUE:
+			echo '<div id="' . $id . '" class="item simple_value" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo $text . '<br />'; 
+			echo '<strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
+			echo '</div>';
+			break;
+	}
+	
+	//Add the line between elements.
+	if ($layoutData['parent_item'] != 0) {
+		echo '<script type="text/javascript">';
+		echo '$(document).ready (function() {
+			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . getColorLineStatus($layoutData) . '"});
+		});';
+		echo '</script>';
+	}
+}
+
+/**
+ * The function to save the new elements of agents make as wizard.
+ * 
+ * @param array $id_agents The list of id of agents.
+ * @param string $image The image to set the elements.
+ * @param integer $id_layout The id of visual console to insert the elements.
+ * @param integer $range The distance between elements.
+ * @param integer $width Width of image.
+ * @param integer $height Height of image.
+ * 
+ * @return string Return the message status to insert DB.
+ */
 function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_agents)) {
 		print_error_message (__('No agents selected'));
@@ -37,16 +150,16 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
 		}
 		
 		process_sql_insert ('tlayout_data',
-							array ('id_layout' => $id_layout,
-								   'pos_x' => $pos_x,
-								   'pos_y' => $pos_y,
-								   'label' => get_agent_name ($id_agent),
-								   'image' => $image,
-								   'id_agent' => $id_agent,
-								   'width' => $width,
-								   'height' => $height,
-								   'label_color' => '#000000')
-							);
+			array ('id_layout' => $id_layout,
+			   'pos_x' => $pos_x,
+			   'pos_y' => $pos_y,
+			   'label' => get_agent_name ($id_agent),
+			   'image' => $image,
+			   'id_agent' => $id_agent,
+			   'width' => $width,
+			   'height' => $height,
+			   'label_color' => '#000000')
+			);
 		
 		$pos_x = $pos_x + $range;
 	}
@@ -56,9 +169,21 @@ function process_wizard_add ($id_agents, $image, $id_layout, $range, $width = 0,
 	return $return;
 }
 
+/**
+ * The function to save the new elements of modules make as wizard.
+ * 
+ * @param array $id_modules The list of id of modules.
+ * @param string $image The image to set the elements.
+ * @param integer $id_layout The id of visual console to insert the elements.
+ * @param integer $range The distance between elements.
+ * @param integer $width Width of image.
+ * @param integer $height Height of image.
+ * 
+ * @return string Return the message status to insert DB.
+ */
 function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $width = 0, $height = 0) {
 	if (empty ($id_modules)) {
-		print_error_message (__('No modules selected'));
+		$return = print_error_message (__('No modules selected'), '', true);
 		return false;
 	}
 	
@@ -77,17 +202,17 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 		$id_agent = get_agentmodule_agent ($id_module);
 		
 		process_sql_insert ('tlayout_data',
-							array ('id_layout' => $id_layout,
-								   'pos_x' => $pos_x,
-								   'pos_y' => $pos_y,
-								   'label' => get_agentmodule_name ($id_module),
-								   'image' => $image,
-								   'id_agent' => $id_agent,
-								   'id_agente_modulo' => $id_module,
-								   'width' => $width,
-								   'height' => $height,
-								   'label_color' => '#000000')
-							);
+			array ('id_layout' => $id_layout,
+			   'pos_x' => $pos_x,
+			   'pos_y' => $pos_y,
+			   'label' => get_agentmodule_name ($id_module),
+			   'image' => $image,
+			   'id_agent' => $id_agent,
+			   'id_agente_modulo' => $id_module,
+			   'width' => $width,
+			   'height' => $height,
+			   'label_color' => '#000000')
+			);
 		
 		$pos_x = $pos_x + $range;
 	}
@@ -97,10 +222,17 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
 	return $return;
 }
 
+/**
+ * Get the color of line between elements in the visual map.
+ * 
+ * @param array $layoutData The row of element in DB.
+ * 
+ * @return string The color as hexadecimal color in html.
+ */
 function getColorLineStatus($layoutData) {
 	switch (getStatusElement($layoutData)) {
 		case 3:
-			$color = "#ccc"; // Gray
+			$color = "#cccccc"; // Gray
 			break;
 		case 2:
 			$color = "#20f6f6"; // Yellow
@@ -117,6 +249,13 @@ function getColorLineStatus($layoutData) {
 	return $color;
 }
 
+/**
+ * Get image of element in the visual console with status.
+ * 
+ * @param array $layoutData The row of element in DB.
+ * 
+ * @return string The image with the relative path to pandora console directory.
+ */
 function getImageStatusElement($layoutData) {
 	$img = "images/console/icons/" . $layoutData["image"];
 	switch (getStatusElement($layoutData)) {
@@ -141,6 +280,14 @@ function getImageStatusElement($layoutData) {
 	return $img;
 }
 
+/**
+ * Get the status of element in visual console. Check the agent state or
+ * module or layout linked.
+ * 
+ * @param array $layoutData The row of element in DB.
+ * 
+ * @return integer 
+ */
 function getStatusElement($layoutData) {
 	//Linked to other layout ?? - Only if not module defined
 	if ($layoutData['id_layout_linked'] != 0) {

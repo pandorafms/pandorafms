@@ -46,13 +46,13 @@ foreach ($all_images as $image_file) {
 
 echo '<div id="editor">';
 	echo '<div id="toolbox">';
-		printButtonEditorVisualConsole('static_graph', __('Static Graph'));
-		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'));
-		printButtonEditorVisualConsole('module_graph', __('Module Graph'));
-		printButtonEditorVisualConsole('simple_value', __('Simple Value'));
+		printButtonEditorVisualConsole('static_graph', __('Static Graph'), 'left', false, 'camera');
+		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile');
+		printButtonEditorVisualConsole('module_graph', __('Module Graph'), 'left', false, 'graph');
+		printButtonEditorVisualConsole('simple_value', __('Simple Value'), 'left', false, 'binary');
 		
-		printButtonEditorVisualConsole('edit_item', __('Edit item'), 'right', true);
-		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true);
+		printButtonEditorVisualConsole('edit_item', __('Edit item'), 'right', true, 'config');
+		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true, 'delete');
 	echo '</div>';
 echo '</div>';
 echo '<div style="clear:both;"></div>';
@@ -246,110 +246,6 @@ require_jquery_file('ui.draggable');
 require_javascript_file('wz_jsgraphics');
 require_javascript_file('pandora_visual_console');
 require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
-
-function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false) {
-	if (!$disabled) $disableClass = '';
-	else $disableClass = 'disabled';
-	
-	if ($float == 'left') {
-		$margin = 'margin-right';
-	}
-	else {
-		$margin = 'margin-left';
-	}
-	
-	echo '<div class="button_toolbox ' . $disableClass . '" id="' . $idDiv . '"
-		style="font-weight: bolder; text-align: center; float: ' . $float . ';' .
-			'width: 80px; height: 50px; background: #e5e5e5; border: 4px outset black; ' . $margin . ': 5px;">';
-	if ($disabled) {
-		echo '<span class="label" style="color: #aaaaaa;">';
-	}
-	else {
-		echo '<span class="label" style="color: #000000;">';
-	}
-	echo $label;
-	echo '</span>';
-	echo '</div>';
-}
-
-function printItemInVisualConsole($layoutData) {
-	$width = $layoutData['width'];
-	$height = $max_percentile = $layoutData['height'];
-	$top = $layoutData['pos_y'];
-	$left = $layoutData['pos_x'];
-	$id = $layoutData['id'];
-	$color = $layoutData['label_color'];
-	$label = $layoutData['label'];
-	$id_module = $layoutData['id_agente_modulo'];
-	$type = $layoutData['type'];
-	$period = $layoutData['period'];
-	
-	switch ($type) {
-		case STATIC_GRAPH:
-			$img = getImageStatusElement($layoutData);
-			$imgSizes = getimagesize($img);
-			if (($width == 0) && ($height == 0)) {
-				$sizeStyle = '';
-				$imageSize = '';
-			}
-			else {
-				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
-				$imageSize = 'width="' . $width . '" height="' . $height . '"';
-			}
-			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
-			echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
-			echo '<span id="text_' . $id . '" class="text">' . $label . '</span>';
-			echo "</div>";
-			break;
-		case PERCENTILE_BAR:
-			$sizeStyle = '';
-			$imageSize = '';
-			
-			$module_value = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = ' . $id_module);
-			
-			if ( $max_percentile > 0)
-				$percentile = $module_value / $max_percentile * 100;
-			else
-				$percentile = 100;
-			
-			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=progress&height=15&width=' . $width . '&mode=1&percent=' . $percentile . '" />';
-			
-			echo '<div id="' . $id . '" class="item percentile_bar" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
-			echo $img;
-			echo '</div>';
-			
-			break;
-		case MODULE_GRAPH:
-			$sizeStyle = '';
-			$imageSize = '';
-			
-			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . $label . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . '" />';
-			
-			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
-			echo $img;
-			echo '</div>';
-			break;
-		case SIMPLE_VALUE:
-			$sizeStyle = '';
-			$imageSize = '';
-			
-			echo '<div id="' . $id . '" class="item simple_value" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
-			echo '<span id="text_' . $id . '" class="text">' . $label . '</span><br />'; 
-			echo '<strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
-			echo '</div>';
-			break;
-	}
-	
-	if ($layoutData['parent_item'] != 0) {
-		echo '<script type="text/javascript">';
-		echo '$(document).ready (function() {
-			lines.push({"id": "' . $id . '" , "node_begin":"' . $layoutData['parent_item'] . '","node_end":"' . $id . '","color":"' . getColorLineStatus($layoutData) . '"});
-		});';
-		echo '</script>';
-	}
-}
 ?>
 <style type="text/css">
 .ui-resizable-handle {
@@ -359,5 +255,5 @@ function printItemInVisualConsole($layoutData) {
 </style>
 <script type="text/javascript">
 	id_visual_console = <?php echo $visualConsole['id']; ?>;
-	$(document).ready (editorMain2);
+	$(document).ready (initJavascript);
 </script>

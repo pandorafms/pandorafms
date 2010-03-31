@@ -31,7 +31,7 @@ function showAdvanceOptions(close) {
 }
 
 // Main function, execute in event documentReady
-function editorMain2() {
+function initJavascript() {
 	$(".label_color").attachColorPicker();
 	
 	eventsBackground();
@@ -198,7 +198,6 @@ function actionClick() {
 		activeToolboxButton('percentile_bar', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
-		activeToolboxButton('delete_item', true);
 		
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
@@ -220,6 +219,7 @@ function actionClick() {
 	activeToolboxButton('percentile_bar', false);
 	activeToolboxButton('module_graph', false);
 	activeToolboxButton('simple_value', false);
+	activeToolboxButton('edit_item', false);
 	activeToolboxButton('delete_item', false);
 	
 	if (creationItem != null) {
@@ -309,7 +309,10 @@ function hiddenFields(item) {
 	$("#label_row."  + item).css('display', '');
 	
 	$("#image_row").css('display', 'none');
-	$("#image_row."  + item).css('display', ''); 
+	$("#image_row."  + item).css('display', '');
+	
+	$("#preview_row").css('display', 'none');
+	$("#preview_row."  + item).css('display', '');
 	
 	$("#position_row").css('display', 'none');
 	$("#position_row."  + item).css('display', '');
@@ -693,12 +696,14 @@ function deleteDB(idElement) {
 
 function activeToolboxButton(id, active) {
 	if (active) {
-		$("#" + id).attr('class', 'button_toolbox');
-		$(".label", $("#" + id)).css('color','#000000');
+		$("input." + id + "[name=button_toolbox2]").removeAttr('disabled');
+//		$("#" + id).attr('class', 'button_toolbox');
+//		$(".label", $("#" + id)).css('color','#000000');
 	}
 	else {
-		$("#" + id).attr('class', 'button_toolbox disabled');
-		$(".label", $("#" + id)).css('color','#aaaaaa');
+		$("input." + id + "[name=button_toolbox2]").attr('disabled', 'disabled');
+//		$("#" + id).attr('class', 'button_toolbox disabled');
+//		$(".label", $("#" + id)).css('color','#aaaaaa');
 	}
 }
 
@@ -864,99 +869,126 @@ function unselectAll() {
 }
 
 function eventsButtonsToolbox() {
-	$('.button_toolbox').mouseover(function(event) {
-		event.stopPropagation();
+//	$('.button_toolbox').mouseover(function(event) {
+//		event.stopPropagation();
+//
+//		// over label
+//		if ($(event.target).is('span')) {
+//			id = $(event.target).parent().attr('id');
+//		}
+//		else {
+//			id = $(event.target).attr('id');
+//		}
+//
+//		if ($("#" + id).hasClass('disabled') == false) {
+//			$("#" + id).css('background', '#f5f5f5');
+//		}
+//	});
+//	
+//	$('.button_toolbox').mouseout(function(event) {
+//		event.stopPropagation();
+//		id = $(event.target).attr('id');
+//		if ($("#" + id).hasClass('disabled') == false) {				
+//			$("#" + id).css('background', '#e5e5e5');
+//		}
+//		$("#" + id).css('border', '4px outset black');
+//	});
+//	
+//	$('.button_toolbox').mousedown(function(event) {
+//		event.stopPropagation();
+//
+//		// over label
+//		if ($(event.target).is('span')) {
+//			id = $(event.target).parent().attr('id');
+//		}
+//		else {
+//			id = $(event.target).attr('id');
+//		}
+//		
+//		if ($("#" + id).hasClass('disabled') == false) {
+//			$("#" + id).css('border', '4px inset black');
+//		}
+//	});
+//	
+//	$('.button_toolbox').mouseup(function(event) {
+//		event.stopPropagation();
+//
+//		// over label
+//		if ($(event.target).is('span')) {
+//			id = $(event.target).parent().attr('id');
+//		}
+//		else {
+//			id = $(event.target).attr('id');
+//		}
+//		
+//		$("#" + id).css('border', '4px outset black');
+//	});
+//	
+//	$('.button_toolbox').click(function(event) {
+//		event.stopPropagation();
+//
+//		// over label
+//		if ($(event.target).is('span')) {
+//			id = $(event.target).parent().attr('id');
+//		}
+//		else {
+//			id = $(event.target).attr('id');
+//		}
+//
+//		if ($("#" + id).hasClass('disabled') == false) {
+//			switch (id) {
+//				case 'edit_item':
+//					actionClick();
+//					break;
+//				case 'static_graph':
+//					creationItem = 'static_graph';
+//					actionClick();
+//					break;
+//				case 'percentile_bar':
+//					creationItem = 'percentile_bar';
+//					actionClick();
+//					break;
+//				case 'module_graph':
+//					creationItem = 'module_graph';
+//					actionClick();
+//					break;
+//				case 'simple_value':
+//					creationItem = 'simple_value';
+//					actionClick();
+//					break;
+//				case 'delete_item':
+//					deleteItem();
+//					break;
+//			}
+//		}
+//	});
+}
 
-		// over label
-		if ($(event.target).is('span')) {
-			id = $(event.target).parent().attr('id');
-		}
-		else {
-			id = $(event.target).attr('id');
-		}
-
-		if ($("#" + id).hasClass('disabled') == false) {
-			$("#" + id).css('background', '#f5f5f5');
-		}
-	});
-	
-	$('.button_toolbox').mouseout(function(event) {
-		event.stopPropagation();
-		id = $(event.target).attr('id');
-		if ($("#" + id).hasClass('disabled') == false) {				
-			$("#" + id).css('background', '#e5e5e5');
-		}
-		$("#" + id).css('border', '4px outset black');
-	});
-	
-	$('.button_toolbox').mousedown(function(event) {
-		event.stopPropagation();
-
-		// over label
-		if ($(event.target).is('span')) {
-			id = $(event.target).parent().attr('id');
-		}
-		else {
-			id = $(event.target).attr('id');
-		}
-		
-		if ($("#" + id).hasClass('disabled') == false) {
-			$("#" + id).css('border', '4px inset black');
-		}
-	});
-	
-	$('.button_toolbox').mouseup(function(event) {
-		event.stopPropagation();
-
-		// over label
-		if ($(event.target).is('span')) {
-			id = $(event.target).parent().attr('id');
-		}
-		else {
-			id = $(event.target).attr('id');
-		}
-		
-		$("#" + id).css('border', '4px outset black');
-	});
-	
-	$('.button_toolbox').click(function(event) {
-		event.stopPropagation();
-
-		// over label
-		if ($(event.target).is('span')) {
-			id = $(event.target).parent().attr('id');
-		}
-		else {
-			id = $(event.target).attr('id');
-		}
-
-		if ($("#" + id).hasClass('disabled') == false) {
-			switch (id) {
-				case 'edit_item':
-					actionClick();
-					break;
-				case 'static_graph':
-					creationItem = 'static_graph';
-					actionClick();
-					break;
-				case 'percentile_bar':
-					creationItem = 'percentile_bar';
-					actionClick();
-					break;
-				case 'module_graph':
-					creationItem = 'module_graph';
-					actionClick();
-					break;
-				case 'simple_value':
-					creationItem = 'simple_value';
-					actionClick();
-					break;
-				case 'delete_item':
-					deleteItem();
-					break;
-			}
-		}
-	});
+function click2(id) {
+	switch (id) {
+		case 'edit_item':
+			actionClick();
+			break;
+		case 'static_graph':
+			creationItem = 'static_graph';
+			actionClick();
+			break;
+		case 'percentile_bar':
+			creationItem = 'percentile_bar';
+			actionClick();
+			break;
+		case 'module_graph':
+			creationItem = 'module_graph';
+			actionClick();
+			break;
+		case 'simple_value':
+			creationItem = 'simple_value';
+			actionClick();
+			break;
+		case 'delete_item':
+			deleteItem();
+			break;
+	}
 }
 
 function showPreviewStaticGraph(staticGraph) {

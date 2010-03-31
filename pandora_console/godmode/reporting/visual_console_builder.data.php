@@ -49,11 +49,10 @@ $table->data[0][1] = print_input_text ('name', $visualConsoleName, '', 15, 50, t
 $table->data[1][0] = __('Group:');
 $groups = get_user_groups ($config['id_user']);
 $table->data[1][1] = print_select ($groups, 'id_group', $idGroup, '', '', '', true);
-$table->data[2][0] = '';
 $backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
-$table->data[3][0] = __('Background');
-$table->data[3][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
+$table->data[2][0] = __('Background');
+$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';
@@ -62,10 +61,12 @@ else {
 	$textButtonSubmit = __('Update');
 	$classButtonSubmit = 'sub upd';
 }
-$table->rowstyle[4] = "text-align: right;";
-$table->data[4][0] = '';
-$table->data[4][1] = print_submit_button ($textButtonSubmit, 'update_layout', false, 'class="' . $classButtonSubmit . '"', true);
 
 print_table($table);
+
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+print_submit_button ($textButtonSubmit, 'update_layout', false, 'class="' . $classButtonSubmit . '"');
+echo '</div>';
+
 echo "</form>";
 ?>

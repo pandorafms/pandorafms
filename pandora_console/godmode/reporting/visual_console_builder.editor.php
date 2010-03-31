@@ -44,7 +44,7 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
-echo '<div id="editor">';
+echo '<div id="editor" style="margin-top: -10px;">';
 	echo '<div id="toolbox">';
 		printButtonEditorVisualConsole('static_graph', __('Static Graph'), 'left', false, 'camera');
 		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile');
@@ -55,7 +55,7 @@ echo '<div id="editor">';
 		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true, 'delete');
 	echo '</div>';
 echo '</div>';
-echo '<div style="clear:both;"></div>';
+echo '<div style="clear:both; margin-bottom: 10px;"></div>';
 
 echo "<form id='form_visual_map' method='post' action='index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab . "&id_visual_console=" . $idVisualConsole . "'>";
 print_input_hidden('action', 'update');
@@ -150,9 +150,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Size');?></td>
 			<td>
 				<?php
-				print_input_text('width_module_graph', 0, '', 3, 5);
+				print_input_text('width_module_graph', 300, '', 3, 5);
 				echo ' X ';
-				print_input_text('height_module_graph', 0, '', 3, 5);
+				print_input_text('height_module_graph', 180, '', 3, 5);
 				?>
 			</td>
 		</tr>
@@ -174,7 +174,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="advance_options_link" class="datos">
 			<td colspan="2" style="text-align: center;">
-				<a href="javascript: showAdvanceOptions()"><?php echo __('Advance options');?></a>
+				<a href="javascript: showAdvanceOptions()"><?php echo __('Advanced options');?></a>
 			</td>
 		</tr>
 	</tbody>

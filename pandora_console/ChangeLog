@@ -1,5 +1,23 @@
 2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_visual_map.php: in function "printItemInVisualConsole"
+	changed the text align of elements label to center.
+	
+	* operation/visual_console/render_view.php: changed the title to Pandora's
+	header.
+	
+	* godmode/reporting/visual_console_builder.php: fixed the id of visual
+	console in the update wizard action.
+	
+	* godmode/reporting/visual_console_builder.editor.php: small changes in the
+	style. Set the width and height for module graph.
+	
+	* godmode/reporting/visual_console_builder.editor.js: set the default value
+	for width and height for module graph in the function "cleanFields". And in
+	the function "createItem" deleted br tag the simple value.
+
+2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: added new parameter for function
 	"print_select" for style. In the function "print_input_hidden" added the
 	parameter $class for set the class of input.

@@ -367,8 +367,8 @@ function cleanFields() {
 	$("select[name=parent]").val('');
 	$("select[name=map_linked]").val('');
 	$("input[name=label_color]").val('#000000');
-	$("input[name=width_module_graph]").val(0);
-	$("input[name=height_module_graph]").val(0);
+	$("input[name=width_module_graph]").val(300);
+	$("input[name=height_module_graph]").val(180);
 	$("#preview").empty();
 	
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -538,7 +538,7 @@ function createItem(type, values, id_data) {
 			var imageSize = '';
 			
 			var item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
+					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span>' +
 					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);

@@ -1,3 +1,9 @@
+2010-04-03  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/events/event_statistics.php: Updated year and headers. There
+	is a black space after the headers that should be avoided. Same to the
+	events.php file.
+
 2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: in function "printItemInVisualConsole"
@@ -218,7 +224,7 @@
 	* godmode/alerts/configure_alert_compound.php : Changed not to use
 	variable "alert" on java script. IE8 can't handle it as a variable.
 
-2010-03-11  Snacho Lerena <slerena@artica.es>
+2010-03-11  Sancho Lerena <slerena@artica.es>
 
 	* include/help/en/check_other_languages.sh: Small script to show
 	help files not translated.

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }
-echo "<h2>".__('Events')." &raquo; ".__('Statistics'). "</h2>";
+//header
+print_page_header (__('Statistics'), "images/lightning_go.png",false, false);
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
 echo "<h3>".__('Event graph')."</h3>";

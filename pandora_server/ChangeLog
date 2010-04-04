@@ -1,3 +1,10 @@
+2010-04-04  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: Some "fixed" descriptions and sample
+	setup, I hope this help to clarify new users how to setup the MTA
+	(A LOTS of problems with this in forums), and some new inline 
+	documentation about some configuration tokens.
+
 2010-03-24  Sancho Lerena <slerena@artica.es>
 
     * util/pandora_manage.pl: New tool to do things in Pandora (system wide)

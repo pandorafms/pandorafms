@@ -12,9 +12,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Login check
 global $config;
 
+// Login check
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "IW")) {

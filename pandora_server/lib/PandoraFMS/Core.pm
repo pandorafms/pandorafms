@@ -730,7 +730,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$status_changes = 0;
 	}
 
-	if ($status_changes >= $module->{'min_ff_event'}) {
+	if ($status_changes == $module->{'min_ff_event'}) {
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $dbh);
 		$status = $new_status;
 	}

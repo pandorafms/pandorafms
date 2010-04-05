@@ -1,4 +1,7 @@
-2010-04-06  Sancho Lerena <slerena@artica.es>
+2010-04-05 Sancho Lerena  <slerena@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Trying to fix the problem
+	detected with recon and new modules from a network template.
 
 	* lib/PandoraFMS/Core.pm: Fallback to previous version, this fix
 	makes Pandora server to generate events constantly.

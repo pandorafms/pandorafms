@@ -1,5 +1,8 @@
 2010-04-06  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fallback to previous version, this fix
+	makes Pandora server to generate events constantly.
+
 	Ported bugfix from trunk by Junichi Satoh:
 
 	*  lib/PandoraFMS/Core.pm: Fixed the problem that agent status(estado)

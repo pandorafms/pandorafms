@@ -1,3 +1,8 @@
+2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/alerts_status.php, operation/agentes/estado_agente.php,
+	godmode/reporting/visual_console_builder.editor.php: cleaned source code.
+
 2010-04-03  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/events/event_statistics.php: Updated year and headers. There

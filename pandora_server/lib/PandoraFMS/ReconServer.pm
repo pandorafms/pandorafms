@@ -356,9 +356,8 @@ sub create_network_profile_modules {
 		                                             $component->{'snmp_oid'}, $addr, $component->{'id_module_group'}, $component->{'plugin_user'}, $component->{'plugin_pass'}, $component->{'plugin_parameter'}, $component->{'max_timeout'}, $component->{'id_modulo'});
 
 		# An entry in tagente_estado is necessary for the module to work
-		db_insert ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by)
-		                  VALUES (?, \'\', \'0000-00-00 00:00:00\', 1, ?, \'0000-00-00 00:00:00\', 0, ?, 0)', 
-		                   $module_id, $agent_id, $component->{'module_interval'});
+        db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`, current_interval) VALUES (?, ?, \'0000-00-00 00:00:00\', ?)', $module_id, $agent_id, $component->{'module_interval'});
+
 		logger($pa_config, 'Creating module ' . $component->{'name'} . " for agent $addr from network component '" . $component->{'name'} . "'.", 10);
 	}
 }

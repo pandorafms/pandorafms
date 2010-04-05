@@ -1,7 +1,12 @@
-2010-04-05  Junichi Satoh <junichi@rworks.jp>
+2010-04-05  Sancho Lerena <slerena@artica.es>
 
-        * lib/PandoraFMS/Core.pm: Fallback to previous version, this fix
+	* lib/PandoraFMS/ReconServer.pm: Trying to fix the problem detected 
+	with recon and new modules from a network template.
+
+	* lib/PandoraFMS/Core.pm: Fallback to previous version, this fix
         makes Pandora server to generate events constantly.
+
+2010-04-05  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Core.pm: Fixed the problem that agent status(estado)
 	is never updated to $new_status if initial state of new agent is

@@ -27,6 +27,7 @@ $filter = get_parameter ("filter", "all_enabled");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $offset_combined = (int) get_parameter_get("offset_combined", 0);
 $id_group = (int) get_parameter ("ag_group", 1); //1 is the All group (selects all groups)
+$free_search = get_parameter("free_search", '');
 
 $sec2 = get_parameter_get ('sec2');
 $sec2 = safe_url_extraclean ($sec2);
@@ -83,20 +84,39 @@ else {
 	print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
 }
 
+if ($free_search != '') {
+	$whereAlertSimple = 'AND (' .
+		'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%' . $free_search . '%") OR ' .
+		'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
+		'id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%")) OR ' .
+		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $free_search . '%") OR ' .
+		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $free_search . '%"))' .
+		')';
+	
+	$whereAlertCombined = 'AND (' .
+		'name LIKE  "%' . $free_search . '%" OR ' .
+		'id IN (SELECT id_alert_compound FROM talert_compound_elements WHERE id_alert_template_module IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $free_search . '%"))) ' .
+		')';
+}
+else {
+	$whereAlertSimple = '';
+	$whereAlertCombined = ''; 
+}
+
 $alerts = array();
-$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, false, '', false, false, array('block_size' => $config["block_size"], 'offset' => $offset_simple), $idGroup);
+$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, array('block_size' => $config["block_size"], 'offset' => $offset_simple), $idGroup);
 $countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, '', false, false, false, $idGroup, true);
-$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, false, $idGroup, array('block_size' => $config["block_size"], 'offset' => $offset_combined));
-$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, false, true);
+$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, false, $idGroup, array('block_size' => $config["block_size"], 'offset' => $offset_combined), false, $whereAlertCombined);
+$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, false, true, $whereAlertCombined);
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
 }
 // Filter form
 if ($print_agent) {
-	printFormFilterAlert($id_group, $filter, $url);
+	printFormFilterAlert($id_group, $filter, $free_search, $url);
 }
 
-$table->width = '90%';
+$table->width = '95%';
 $table->class = "databox";
 
 $table->size = array ();

@@ -199,7 +199,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $limit = false, $count = false) {
+function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $limit = false, $count = false, $where = '') {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -250,8 +250,8 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 	}
 	
 	$sql = sprintf ("SELECT %s FROM talert_compound
-		WHERE id_agent IN (%s) %s %s",
-		$selectText, $subQuery, $filter, $limitText);
+		WHERE id_agent IN (%s) %s %s %s",
+		$selectText, $subQuery, $where, $filter, $limitText);
 	
 	$alerts = get_db_all_rows_sql ($sql);//debugPrint($sql);
 	

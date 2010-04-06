@@ -1,0 +1,58 @@
+/* 
+
+Author: The Pandora FMS team
+Name: Forms 
+Description: Forms based on fieldset and labels to improve accesibility
+
+// Pandora FMS - the Flexible Monitoring System
+// Copyright (c) 2004-2010 Artica Soluciones Tecnológicas S.L
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+fieldset {
+	background-color:#fafafa;
+	border: 1px solid #f2f2f2;
+	padding:0.5em;
+	margin-top:0.5em;
+	margin-bottom:1em;
+	position:relative;
+}
+fieldset legend {
+	font-size:1.3em;
+	font-weight:bold;
+	color:#3f4e2f;
+	top:-2em;
+}
+fieldset label {
+	font-weight: bold;
+	display:block;
+	margin-right:1em;
+	margin-left:1em;
+	margin-bottom:1em;
+	width:25%;
+	float:left;
+}
+fieldset select, fieldset input {
+	position:relative;
+	right:1em;
+	margin-bottom:0.5em;
+}
+fieldset br {
+	clear:left;
+}
+
+.pandora_form input.sub {
+	position:relative;
+	left:80%;
+}

@@ -97,6 +97,9 @@
 #icon_oper-agents {
 	background-image: url(../../images/bricks.png);
 }
+#icon_oper-services {
+	background-image: url(../../images/box.png);
+}
 #icon_oper-servers {
 	background-image: url(../../images/server.png);
 }
@@ -136,6 +139,9 @@
 }
 #icon_god-agents {
 	background-image: url(../../images/god1.png);
+}
+#icon_god-services {
+	background-image: url(../../images/box.png);
 }
 #icon_god-modules {
 	background-image: url(../../images/brick.png);

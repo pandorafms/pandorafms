@@ -29,7 +29,7 @@ require_once ('include/functions_gis.php');
 require_javascript_file('openlayers.pandora');
 
 // Header
-print_page_header (__('Map conections GIS'), "", false, "", true);
+print_page_header (__('Map conections GIS'), "", false, "setup_gis_index", true);
 
 $action = get_parameter('action');
 

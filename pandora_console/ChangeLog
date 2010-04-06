@@ -1,3 +1,26 @@
+2010-04-06  Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* operation/menu.php, godmode/menu.php: Hooks to services pages (Enterprise)
+
+	* images/box.png: Icon for services (Enterprise)
+
+	* godmode/setup/gis_step_2.php, godmode/setup/gis.php: Links to help pages
+
+	* include/help/en/help_service_elements_management.php,
+	include/help/en/help_view_services_detail.php,
+	include/help/en/help_view_services.php,
+	include/help/en/help_services_management.php: first version of services
+	help pages.
+	
+	* include/help/en/help_setup_gis_index.php,
+	include/help/en/help_configure_gis_map.php,
+	include/help/en/help_gis_setup_map_connection.php: GIS help pages updated
+
+	* include/styles/pandora_forms.css, include/styles/menu.css: New styles for
+	forms and style for service menu entry icons.
+
+	* include/ajax/agent.php: New AJAX file to get info about agents.
+
 2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_agents.php: added parameter $where for SQL in function

@@ -43,6 +43,10 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	$menu["gagente"]["sub"] = $sub;
 }
 
+if (give_acl ($config['id_user'], 0, "AW")) {
+	enterprise_hook ('services_godmenu');
+}
+
 if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["gmodules"]["text"] = __('Manage modules');
 	$menu["gmodules"]["sec2"] = "godmode/modules/module_list";

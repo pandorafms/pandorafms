@@ -1,5 +1,17 @@
 2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_agents.php: added parameter $where for SQL in function
+	"get_agent_alerts_compound".
+
+	* operation/agentes/alerts_status.php: use the new free search for filter
+	the rows of alerts.
+
+	* operation/agentes/alerts_status.functions.php: added parameter in the
+	function "printFormFilterAlert", the parameter $free_search and add
+	input text control for free search.
+
+2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: changed some parts of source code in the
 	functions "format_alert_row" for show column modules in general view. In the
 	function "pagination" added the parameter $offset_name with default value

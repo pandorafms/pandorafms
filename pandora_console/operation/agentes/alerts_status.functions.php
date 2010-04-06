@@ -37,7 +37,7 @@ function validateAlert() {
 	}
 }
 
-function printFormFilterAlert($id_group, $filter, $url) {
+function printFormFilterAlert($id_group, $filter, $free_search, $url) {
 	$table->width = '90%';
 	$table->data = array ();
 	$table->style = array ();
@@ -55,6 +55,11 @@ function printFormFilterAlert($id_group, $filter, $url) {
 		
 	$table->data[0][2] = __('Status');
 	$table->data[0][3] = print_select ($alert_status_filter, "filter", $filter, 'javascript:this.form.submit();', '', '', true);
+	$table->data[1][0] = __('Free text for search')
+		. '<a href="#" class="tip">&nbsp;<span>' . __("Filter by agent name, module name, template name or action name") . '</span></a>';
+	$table->data[1][1] = print_input_text('free_search', $free_search, '', 20, 40, true);
+	$table->colspan[1][2] = 2;
+	$table->data[1][2] = print_submit_button(__('Filter'), 'filter_button', false, 'class="sub search"', true);
 	
 	echo '<form method="post" action="'.$url.'">';
 	print_table ($table);

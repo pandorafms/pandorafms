@@ -48,6 +48,9 @@ Once the selection of the connection (or connections) is done, there is a posibi
 <p>
 Each map has one or more layers<sup><span style="font-size:75%">1</span></sup> to show the agents. Each layer can have show the agents of a <strong>group</strong> and/or a <strong>list of agents</strong>. This way it's easy to set up the agents that will be shown on each Layer.
 </p>
+<p>
+The layers can be set as <strong>visible</strong> or <strong>hidden</strong>, and select the <strong>group</strong> with the selector or add <strong>agents</strong> with the box. Once the layer is defined (it will not be completely saved until the whole map is saved) it will be moved to the left column of defined layers, where it is possible to <strong>order</strong> (<img src="../images/up.png" alt="move up icon"/> and <img src="../images/down.png" alt="move down icon" />) them, <strong>delete</strong> (<img src="../images/cross.png" alt="delete icon"/>), or <strong>edited</strong> (<img src="../images/config.png" alt="edit icon" />) again.
+</p>
 <hr/>
 <sup><span style="font-size:75%;">1</span></sup> <span style="font-size:85%;">The default map can have 0 layers as is the one used in the agent GIS view and only uses one layer with the agent name.</span>
 

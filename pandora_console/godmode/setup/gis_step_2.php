@@ -36,7 +36,7 @@ echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/gis_step_2" method="
 switch ($action) {
 	case 'create_connection_map':
 		// Header
-		print_page_header (__('Create new map connection'), "", false, "", true);
+		print_page_header (__('Create new map connection'), "", false, "gis_setup_map_connection", true);
 
 		$mapConnection_name = '';
 		$mapConnection_group = '';
@@ -55,7 +55,7 @@ switch ($action) {
 		break;
 	case 'edit_connection_map':
 		// Header
-		print_page_header (__('Edit map connection'), "", false, "", true);
+		print_page_header (__('Edit map connection'), "", false, "gis_setup_map_connection", true);
 		
 		$idConnectionMap = get_parameter('id_connection_map');
 		$mapConnection = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnectionMap);

@@ -283,14 +283,30 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	require_once ("include/functions_alerts.php");
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 	
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-		$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
-			'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
-		'validate' => 7);
-	else
-		$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 1,
-			'description' => 2, 'template' => 2, 'action' => 3, 'last_fired' => 4, 'status' => 5,
-		'validate' => 6);
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if ($agent) {
+			$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 3,
+				'description' => 4, 'template' => 4, 'action' => 5, 'last_fired' => 6, 'status' => 7,
+				'validate' => 8);
+		}
+		else {
+			$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
+				'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
+				'validate' => 7);
+		}
+	}
+	else {
+		if ($agent) {
+			$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 2,
+				'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
+				'validate' => 6);
+		}
+		else {
+			$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 1,
+				'description' => 2, 'template' => 2, 'action' => 3, 'last_fired' => 4, 'status' => 5,
+				'validate' => 6);
+		}
+	}
 	
 	if ($alert['disabled']) {
 		$disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">'; 
@@ -360,6 +376,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	} 
 	else {
 		$data[$index['agent_name']] .= print_agent_name (get_agentmodule_agent ($alert["id_agent_module"]), true, 20, $styleDisabled);
+		$data[$index['module_name']] = mb_substr (get_agentmodule_name ($alert["id_agent_module"]), 0, 20);
 	}
 	$data[$index['agent_name']] .= $disabledHtmlEnd;
 	
@@ -844,14 +861,13 @@ function process_page_body ($string, $bitfield) {
  *
  * @return string The pagination div or nothing if no pagination needs to be done
  */
-function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false) {
+function pagination ($count, $url = false, $offset = 0, $pagination = 0, $return = false, $offset_name = 'offset') {
 	global $config;
 	
 	if (empty ($pagination)) {
 		$pagination = (int) $config["block_size"];
 	}
 	
-	$offset_name = 'offset';
 	if (is_string ($offset)) {
 		$offset_name = $offset;
 		$offset = (int) get_parameter ($offset_name);

@@ -19,10 +19,13 @@ global $config;
 check_login ();
 
 require_once ("include/functions_agents.php");
+require_once('operation/agentes/alerts_status.functions.php');
+
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
-$filter = get_parameter ("filter", "undefined");
-$offset = (int) get_parameter_get ("offset", 0);
+$filter = get_parameter ("filter", "all_enabled");
+$offset_simple = (int) get_parameter_get ("offset_simple", 0);
+$offset_combined = (int) get_parameter_get("offset_combined", 0);
 $id_group = (int) get_parameter ("ag_group", 1); //1 is the All group (selects all groups)
 
 $sec2 = get_parameter_get ('sec2');
@@ -31,40 +34,26 @@ $sec2 = safe_url_extraclean ($sec2);
 $sec = get_parameter_get ('sec');
 $sec = safe_url_extraclean ($sec);
 
+$flag_alert = (bool) get_parameter ('force_execution', 0);
+$alert_validate = (bool) get_parameter ('alert_validate', 0);
+$tab = get_parameter_get ("tab", null);
+
 $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&ag_group='.$id_group;
-
-// Force alert execution
-$flag_alert = (bool) get_parameter ('force_execution');
-$alert_validate = (bool) get_parameter ('alert_validate');
-
-if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_group, "AW")) {
-	require_once ("include/functions_alerts.php");
-	$id_alert = (int) get_parameter ('id_alert');
-	set_alerts_agent_module_force_execution ($id_alert);
-}
-
-if ($alert_validate) {
-	$ids = (array) get_parameter_post ("validate", array ());
-	$compound_ids = (array) get_parameter_post ("validate_compound", array ());
 	
-	if (! empty ($ids) || ! empty ($compound_ids)) {
-		require_once ("include/functions_alerts.php");
-		$result1 = validate_alert_agent_module ($ids);
-		$result2 = validate_alert_compound ($compound_ids);
-		$result == $result1 || $result2;
-		
-		print_result_message ($result,
-			__('Alert(s) validated'),
-			__('Error processing alert(s)'));
-	}
+if ($flag_alert == 1 && give_acl($config['id_user'], $id_group, "AW")) {
+	forceExecution($id_group);
 }
+if ($alert_validate) {
+	validateAlert();
+}
+
+$idAgent = get_parameter_get('id_agente', 0);
 
 // Show alerts for specific agent
-if (isset ($_GET["id_agente"])) {
-	$id_agent = (int) get_parameter_get ("id_agente", 0);
-	$url = $url.'&id_agente='.$id_agent;
+if ($idAgent != 0) {
+	$url = $url.'&id_agente='.$idAgent;
 	
-	$id_group = get_group_agents ($id_agent);
+	$id_group = get_group_agents ($idAgent);
 	
 	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
@@ -72,176 +61,159 @@ if (isset ($_GET["id_agente"])) {
 		exit;
 	}
 	
-	$alerts_simple = get_agent_alerts_simple ($id_agent, $filter, false, '', false, 'agent_module_name');
-	$alerts_combined = get_agent_alerts_compound ($id_agent, $filter);
-	$print_agent = false;
-	$inside_main = 1;
+	$agents = array($idAgent);
+	$idGroup = false;
 	
-	if ($filter == "undefined")
-		$filter = "all";
+	$print_agent = false;
+	
+	echo "<h3>" . __('Alerts') . "</h3>";
 } 
 else {
-	if ($filter == "undefined")
-		$filter = "all_enabled";
-	
 	if (!give_acl ($config["id_user"], 0, "AR")) {
 		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;
 	}
 	
-	$alerts_simple = array ();
-	$alerts_combined = array ();
-	
-	$agents = array_keys (get_group_agents ($id_group));
-	
-	foreach ($agents as $id_agent) {
-		$simple = get_agent_alerts_simple ($id_agent, $filter);
-		$combined = get_agent_alerts_compound ($id_agent, $filter);
-		
-		$alerts_simple = array_merge ($alerts_simple, $simple);
-		$alerts_combined = array_merge ($alerts_combined, $combined);
-	}
+	$agents = false;
+	$idGroup = $id_group;
 	
 	$print_agent = true;
-	$inside_main = 0;
-}
-
-
-$tab = get_parameter_get ("tab");
-if ($tab != '') {
-	$url = $url.'&tab='.$tab;
-}
-
-
-if ($inside_main == 1 || $tab == 'alert') {
-	echo "<h3>";
-	echo __('Alerts');
-	echo "</h3>";
-
-} else {
+	
 	print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
 }
 
-// Filter form
-echo '<form method="post" action="'.$url.'">';
-if ($print_agent) {
-	$table->width = '90%';
-	$table->data = array ();
-	$table->style = array ();
-	
-	$table->data[0][0] = __('Group');
-	$table->data[0][1] = print_select (get_user_groups (), "ag_group", $id_group,
-		'javascript:this.form.submit();', '', '', true);
-		
-	$alert_status_filter = array();
-	$alert_status_filter['all_enabled'] = __('All (Enabled)');
-	$alert_status_filter['all'] = __('All');
-	$alert_status_filter['fired'] = __('Fired');
-	$alert_status_filter['notfired'] = __('Not fired');
-	$alert_status_filter['disabled'] = __('Disabled');		
-		
-	$table->data[0][2] = __('Status');
-	$table->data[0][3] = print_select ($alert_status_filter, "filter", $filter, 'javascript:this.form.submit();', '', '', true);
-	print_table ($table);
+$alerts = array();
+$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, false, '', false, false, array('block_size' => $config["block_size"], 'offset' => $offset_simple), $idGroup);
+$countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, '', false, false, false, $idGroup, true);
+$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, false, $idGroup, array('block_size' => $config["block_size"], 'offset' => $offset_combined));
+$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, false, true);
+if ($tab != null) {
+	$url = $url.'&tab='.$tab;
 }
-echo '</form>';
+// Filter form
+if ($print_agent) {
+	printFormFilterAlert($id_group, $filter, $url);
+}
 
 $table->width = '90%';
 $table->class = "databox";
 
 $table->size = array ();
+$table->head = array ();
+$table->align = array ();
+
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->size[0] = '20px';
-	$table->size[1] = '20px';
-	$table->size[2] = '25%';
-	$table->size[3] = '50%';
-	$table->size[4] = '25%';
-	$table->size[5] = '20px';
-	$table->size[6] = '60px';
+	if ($print_agent) {
+		$table->size[0] = '20px';
+		$table->size[1] = '20px';
+		$table->size[2] = '25%';
+		$table->size[3] = '25%';
+		$table->size[4] = '50%';
+		$table->size[5] = '25%';
+		$table->size[6] = '20px';
+		$table->size[7] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[2] = __('Agent');
+		$table->head[3] = __('Module');
+		$table->head[4] = __('Template');
+		$table->head[5] = __('Action');
+		$table->head[6] = __('Last fired');
+		$table->head[7] = __('Status');
+		$table->head[8] = __('Validate');
+		
+		$table->align[7] = 'center';
+		$table->align[8] = 'center';
+	}
+	else {
+		$table->size[0] = '20px';
+		$table->size[1] = '20px';
+		$table->size[2] = '25%';
+		$table->size[3] = '50%';
+		$table->size[4] = '25%';
+		$table->size[5] = '20px';
+		$table->size[6] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[2] = __('Module');
+		$table->head[3] = __('Template');
+		$table->head[4] = __('Action');
+		$table->head[5] = __('Last fired');
+		$table->head[6] = __('Status');
+		$table->head[7] = __('Validate');
+		
+		$table->align[6] = 'center';
+		$table->align[7] = 'center';
+	}
 }
 else
 {
-	$table->size[0] = '20px';
-	$table->size[1] = '25%';
-	$table->size[2] = '50%';
-	$table->size[3] = '25%';
-	$table->size[4] = '20px';
-	$table->size[5] = '60px';
+	if ($print_agent) {
+		$table->size[0] = '20px';
+		$table->size[1] = '25%';
+		$table->size[2] = '25%';
+		$table->size[3] = '50%';
+		$table->size[4] = '25%';
+		$table->size[5] = '20px';
+		$table->size[6] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[1] = __('Agent');
+		$table->head[2] = __('Module');
+		$table->head[3] = __('Template');
+		$table->head[4] = __('Action');
+		$table->head[5] = __('Last fired');
+		$table->head[6] = __('Status');
+		$table->head[7] = __('Validate');
+		
+		$table->align[6] = 'center';
+		$table->align[7] = 'center';
+	}
+	else {
+		$table->size[0] = '20px';
+		$table->size[1] = '25%';
+		$table->size[2] = '50%';
+		$table->size[3] = '25%';
+		$table->size[4] = '20px';
+		$table->size[5] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[1] = __('Module');
+		$table->head[2] = __('Template');
+		$table->head[3] = __('Action');
+		$table->head[4] = __('Last fired');
+		$table->head[5] = __('Status');
+		$table->head[6] = __('Validate');
+		
+		$table->align[5] = 'center';
+		$table->align[6] = 'center';
+	}
 }
 
-$table->head = array ();
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
-	$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-	$table->head[2] = ''; //Placeholder for name
-	$table->head[3] = __('Template');
-	$table->head[4] = __('Action');
-	$table->head[5] = __('Last fired');
-	$table->head[6] = __('Status');
-	$table->head[7] = __('Validate');
-}
-else
-{
-	$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-	$table->head[1] = ''; //Placeholder for name
-	$table->head[2] = __('Template');
-	$table->head[3] = __('Action');
-	$table->head[4] = __('Last fired');
-	$table->head[5] = __('Status');
-	$table->head[6] = __('Validate');
-}
 $table->title = __('Single alerts');
 $table->titlestyle = "background-color:#799E48;";
 
-if ($print_agent == 0) {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-		$table->head[2] = __('Module');
-	else
-		$table->head[1] = __('Module');
-} 
-else {
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
-		$table->head[2] = __('Agent');
-	else
-		$table->head[1] = __('Agent');
-}
-$table->align = array ();
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->align[6] = 'center';
-	$table->align[7] = 'center';
-}
-else {
-	$table->align[5] = 'center';
-	$table->align[6] = 'center';
-}
 $table->data = array ();
-
-$total = 0;
-$printed = 0;
 
 $rowPair = true;
 $iterator = 0;
-foreach ($alerts_simple as $alert) {
+foreach ($alerts['alerts_simple'] as $alert) {
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
 		$table->rowclass[$iterator] = 'rowOdd';
 	$rowPair = !$rowPair;
-	$iterator++;
 	
-	$total++;
-	if (empty ($alert) || $printed >= $config["block_size"] || $total <= $offset) {
-		continue;
-	}
-	$printed++;
 	array_push ($table->data, format_alert_row ($alert, false, $print_agent, $url));
 }
 
 echo '<form method="post" action="'.$url.'">';
 
 if (!empty ($table->data)) {
-	pagination ($total, $url);
+	pagination ($countAlertsSimple, $url,  $offset_simple, 0, false, 'offset_simple');
 	print_table ($table);
 } else {
 	echo '<div class="nf">'.__('No simple alerts found').'</div>';
@@ -264,32 +236,26 @@ else
 }
 $table->data = array ();
 
-$combined_total = 0;
-$combined_printed = 0;
-foreach ($alerts_combined as $alert) {
-	$combined_total++;
-	if (empty ($alert) || $combined_printed >= $config["block_size"] || $combined_total <= $offset) {
-		continue;
-	}
-	$combined_printed++;
+foreach ($alerts['alerts_combined'] as $alert) {
 	array_push ($table->data, format_alert_row ($alert, true, $print_agent));
 }	
 
 if (!empty ($table->data)) {
-	pagination ($total, $url, $offset);
+	pagination ($countAlertsCombined, $url, $offset_combined, 0, false, 'offset_combined');
 	print_table ($table);
 }
 
-if ($printed > 0 || $combined_total > 0) {
+if (count($alerts['alerts_simple']) > 0 || count($alerts['alerts_combined']) > 0) {
 	echo '<div class="action-buttons" style="width: '.$table->width.';">';
 	print_submit_button (__('Validate'), 'alert_validate', false, 'class="sub upd"', false);
 	echo '</div>';
 }
 
 echo '</form>';
+
+require_css_file('cluetip');
+require_jquery_file('cluetip');
 ?>
-<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
 
 <script type="text/javascript">
 $(document).ready (function () {

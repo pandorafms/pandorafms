@@ -1,4 +1,25 @@
-2010-03-31  Miguel de Dios  <miguel.dedios@artica.es>
+2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_ui.php: changed some parts of source code in the
+	functions "format_alert_row" for show column modules in general view. In the
+	function "pagination" added the parameter $offset_name with default value
+	'offset' for to use several paginations in one page.
+
+	* include/functions_agents.php: added the parameters $limit, $idGroup,
+	$count in the function "get_agent_alerts_simple", and now you can limit the
+	rows, search by id group and return the count of rows (without limit). And
+	in the function "get_agent_alerts_compound" added the same parameters to
+	another function $idGroup, $limit, $count for similar uses.
+
+	* operation/agentes/alerts_status.php: cleaned more parts of source code,
+	fixed the mad array_merge of alerts, fixed SQL with the searchs IN
+	(large large list ids), fixed the pagination before loop all rows, now
+	only loop the block page rows.
+
+	* operation/agentes/alerts_status.functions.php: new file with the functions
+	"forceExecution", "validateAlert", and "printFormFilterAlert".
+
+2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/alerts_status.php, operation/agentes/estado_agente.php,
 	godmode/reporting/visual_console_builder.editor.php: cleaned source code.

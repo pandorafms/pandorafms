@@ -54,6 +54,7 @@ $actionID = get_parameter('action_id','');
 $fieldContent = get_parameter('field_content','');
 $searchType = get_parameter('search_type','');
 $priority = get_parameter('priority','');
+$searchFlag = get_parameter('search',0);
 
 $messageAction = '';
 

@@ -1,5 +1,26 @@
 2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/jquery.pandora.controls.js: changed the page to ajax in
+	the event "pandoraSelectAgentAlert".
+
+	* include/ajax/alert_list.ajax.php: new file with the source code of ajax
+	request.
+	
+	* godmode/agentes/massive_config.php: changed the page to ajax in the
+	event "source_id_agent" in the javascript source code.
+	
+	* godmode/alerts/alert_list.list.php: cleaned unused javascript source code
+	that is for use in alert_list.builder.php.
+
+	* godmode/alerts/alert_list.php: erase the php ajax source code and
+	copy to alert_list.ajax.php. And move the action messages (create, delete
+	...) bellow to header.
+	
+	* godmode/alerts/alert_list.builder.php: : cleaned unused javascript source
+	code that is for use in alert_list.list.php.
+
+2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.php: cleaned source code, added the tabs for to
 	use page alone (not in agent).
 
@@ -7,7 +28,7 @@
 	 
 	* godmode/alerts/alert_list.list.php: tab for the list of alerts. 
 
-2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
+2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_agents.php: changed the functions
 	"get_agent_alerts_simple" and "get_agent_alerts_compound" delete new

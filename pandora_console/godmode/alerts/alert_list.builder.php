@@ -163,33 +163,6 @@ $(document).ready (function () {
 			}
 		);
 
-//----------------------------
-	$("#text-agent_name").autocomplete ("ajax.php",
-		{
-			scroll: true,
-			minChars: 2,
-			extraParams: {
-				page: "godmode/agentes/agent_manager",
-				search_parents: 1,
-				id_group: function() { return $("#grupo").val(); },
-				id_agent: <?php echo $id_agente ?>
-			},
-			formatItem: function (data, i, total) {
-				if (total == 0)
-					$("#text-id_parent").css ('background-color', '#cc0000');
-				else
-					$("#text-id_parent").css ('background-color', 'none');
-				if (data == "")
-					return false;
-
-				return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[1]+'</span>';
-			},
-			delay: 200
-		}
-	);
-//----------------------------
-
-
 <?php if (! $id_agente) : ?>
 	$("#id_group").pandoraSelectGroupAgent ({
 		callbackBefore: function () {
@@ -199,70 +172,7 @@ $(document).ready (function () {
 			return true;
 		}
 	});
-	
-	//$("#id_agent").pandoraSelectAgentModule ();
 <?php endif; ?>
-	$("a.template_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	}).click (function () {
-		return false;
-	});
-	
-	$("#tgl_alert_control").click (function () {
-		$("#alert_control").toggle ();
-		return false;
-	});
-	
-	$("input[name=disable]").attr ("title", "<?php echo __('Disable')?>")
-		.hover (function () {
-				$(this).attr ("src", "images/lightbulb_off.png");
-			},
-			function () {
-				$(this).attr ("src", "images/lightbulb.png");
-			}
-		);
-	$("input[name=enable]").attr ("title", "<?php echo __('Enable')?>")
-		.hover (function () {
-				$(this).attr ("src", "images/lightbulb.png");
-			},
-			function () {
-				$(this).attr ("src", "images/lightbulb_off.png");
-			}
-		);
-	$("form.disable_alert_form").submit (function () {
-		return true;
-	});
-	
-	
-	$("a.add_action").click (function () {
-		id = this.id.split ("-").pop ();
-		
-		/* Replace link with a combo with the actions and a form */
-		$form = $('form#add_action_form:last').clone (true).show ();
-		$("input#hidden-id_alert_module", $form).attr ("value", id);
-		$(this).replaceWith ($form);
-		return false;
-	});
-	
-	$("form.delete_link, form.delete_alert_form").submit (function () {
-		if (! confirm ("<?php echo __('Are you sure?')?>"))
-			return false;
-		return true;
-	});
-	
-	$("a.show_advanced_actions").click (function () {
-		/* It can be done in two different sites, so it must use two different selectors */
-		actions = $(this).parents ("form").children ("span.advanced_actions");
-		if (actions.length == 0)
-			actions = $(this).parents ("div").children ("span.advanced_actions")
-		$("#text-fires_min", actions).attr ("value", 0);
-		$("#text-fires_max", actions).attr ("value", 0);
-		$(actions).show ();
-		$(this).remove ();
-		return false;
-	});
 	
 	$("select#template").change (function () {
 		id = this.value;

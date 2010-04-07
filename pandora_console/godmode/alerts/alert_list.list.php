@@ -25,9 +25,7 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	exit;
 }
 
-$id_group = 0;
 /* Check if this page is included from a agent edition */
-$id_agente = 0;
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
@@ -112,18 +110,29 @@ $table->width = '90%';
 $table->size = array ();
 $table->head = array ();
 $table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span>";
-
-$table->style = array ();
-$table->style[1] = 'font-weight: bold';
-$table->head[1] = __('Agent');
-$table->size[0] = '20px';
-$table->size[1] = '15%';
-$table->size[2] = '20%';
-$table->size[3] = '15%';
-if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-	$table->size[4] = '20px';
+if (! $id_agente) {
+	$table->style = array ();
+	$table->style[1] = 'font-weight: bold';
+	$table->head[1] = __('Agent');
+	$table->size[0] = '20px';
+	$table->size[1] = '15%';
+	$table->size[2] = '20%';
+	$table->size[3] = '15%';
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		$table->size[4] = '20px';
+	}
+	$table->size[5] = '50%';
 }
-$table->size[5] = '50%';
+else {
+	/* Different sizes or the layout screws up */
+	$table->size[0] = '20px';
+	$table->size[2] = '30%';
+	$table->size[3] = '20%';
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		$table->size[4] = '20px';
+	}
+	$table->size[5] = '50%';
+}
 
 $table->head[2] = __('Module');
 $table->head[3] = __('Template');
@@ -165,16 +174,16 @@ foreach ($simple_alerts as $alert) {
 	}
 	$data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
 	$data[0] .= '</form>';
-	
-	$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
-	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
-	if ($alert['disabled'])
-		$data[1] .= '<span style="font-style: italic; color: #aaaaaa;">';
-	$data[1] .= get_agent_name ($id_agent);
-	if ($alert['disabled'])
-		$data[1] .= '</span>';
-	$data[1] .= '</a>';
-
+	if (! $id_agente) {
+		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
+		$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
+		if ($alert['disabled'])
+			$data[1] .= '<span style="font-style: italic; color: #aaaaaa;">';
+		$data[1] .= get_agent_name ($id_agent);
+		if ($alert['disabled'])
+			$data[1] .= '</span>';
+		$data[1] .= '</a>';
+	}
 	$data[2] = get_agentmodule_name ($alert['id_agent_module']);
 	$data[3] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">

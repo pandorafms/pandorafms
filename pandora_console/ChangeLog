@@ -1,5 +1,12 @@
 2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/alerts/alert_list.php: added request the search parameter.
+	
+	* godmode/alerts/alert_list.list.php: fixed recove lost source code for
+	build $where var of old version of godmode/alerts/alert_list.php .
+
+2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.list.php: fixed the id of agent in source and
 	now hide the column agent in list when the edit alerts is in the agent
 	configuration. 

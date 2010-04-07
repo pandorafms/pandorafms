@@ -41,7 +41,7 @@ echo "<div id='alert_control' style='display:none'>\n";
 	// Table for filter controls
 	echo '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
 	echo "<input type='hidden' name='search' value='1' />\n";
-	echo '<table style="width: 550px;" cellpadding="4" cellspacing="4" class="databox">'."\n";
+	echo '<table style="width: 90%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
 	echo "<tr>\n";
 	echo "<td>".__('Template name')."</td><td>";
 	print_input_text ('template_name', $templateName, '', 15);
@@ -52,7 +52,7 @@ echo "<div id='alert_control' style='display:none'>\n";
 		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
 	}
 	echo "<td>".__('Agents')."</td><td>";
-	echo print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 25, 100, false, '',
+	echo print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 15, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 	echo "</td>\n";
@@ -96,6 +96,29 @@ $simple_alerts = array();
 
 $total = 0;
 $where = '';
+
+if ($searchFlag) {
+	if ($priority != -1 )
+		$where .= " AND priority = " . $priority;
+	if (strlen(trim($templateName)) > 0)
+		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%" . trim($templateName) . "%')";
+	if (strlen(trim($fieldContent)) > 0)
+		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates
+			WHERE field1 LIKE '%" . trim($fieldContent) . "%' OR field2 LIKE '%" . trim($fieldContent) . "%' OR
+				field3 LIKE '%" . trim($fieldContent) . "%' OR
+				field2_recovery LIKE '%" . trim($fieldContent) . "%' OR
+				field3_recovery LIKE '%" . trim($fieldContent) . "%')";
+	if (strlen(trim($moduleName)) > 0)
+		$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%" . trim($moduleName) . "%')";
+	//if ($agentID != -1)
+		//$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
+	if (strlen(trim($agentName)) > 0)
+		$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
+			FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
+			WHERE t1.nombre LIKE '" . trim($agentName) . "')";
+	if ($actionID != -1)
+		$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
+}
 
 $total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 	false, $where, false, false, false, true);

@@ -109,7 +109,7 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false, $limit = false, $idGroup = false, $count = false) {
+function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false, $idGroup = false, $count = false) {
 	
 	switch ($filter) {
 		case "notfired":
@@ -159,11 +159,6 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	if ($orderby !== false)
 		$orderbyText = sprintf("ORDER BY %s", $orderby);
 	
-	$limitText = '';
-	if ($limit !== false) {
-		$limitText = 'LIMIT ' . $limit['offset'] . ', ' . $limit['block_size'];
-	}
-	
 	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
@@ -173,8 +168,8 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	FROM talert_template_modules
 		INNER JOIN tagente_modulo AS t2
 			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
-	WHERE id_agent_module in (%s) %s %s %s %s",
-	$selectText, $subQuery, $where, $filter, $orderbyText, $limitText);
+	WHERE id_agent_module in (%s) %s %s %s",
+	$selectText, $subQuery, $where, $filter, $orderbyText);
 	
 	$alerts = get_db_all_rows_sql ($sql); //debugPrint($sql);
 	
@@ -199,7 +194,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
  *
  * @return array An array with all combined alerts defined for an agent.
  */
-function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $limit = false, $count = false, $where = '') {
+function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $count = false, $where = '') {
 	switch ($filter) {
 	case "notfired":
 		$filter = ' AND times_fired = 0 AND disabled = 0';
@@ -239,19 +234,14 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 		$subQuery = implode (',', $id_agent);
 	}
 	
-	$limitText = '';
-	if ($limit !== false) {
-		$limitText = 'LIMIT ' . $limit['offset'] . ', ' . $limit['block_size'];
-	}
-	
 	$selectText = '*';
 	if ($count !== false) {
 		$selectText = 'COUNT(id) AS count';
 	}
 	
 	$sql = sprintf ("SELECT %s FROM talert_compound
-		WHERE id_agent IN (%s) %s %s %s",
-		$selectText, $subQuery, $where, $filter, $limitText);
+		WHERE id_agent IN (%s) %s %s",
+		$selectText, $subQuery, $where, $filter);
 	
 	$alerts = get_db_all_rows_sql ($sql);//debugPrint($sql);
 	

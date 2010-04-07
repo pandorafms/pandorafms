@@ -104,10 +104,10 @@ else {
 }
 
 $alerts = array();
-$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, array('block_size' => $config["block_size"], 'offset' => $offset_simple), $idGroup);
-$countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, '', false, false, false, $idGroup, true);
-$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, false, $idGroup, array('block_size' => $config["block_size"], 'offset' => $offset_combined), false, $whereAlertCombined);
-$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, false, true, $whereAlertCombined);
+$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, array('offset' => $offset_simple, 'limit' => $config['block_size']), $whereAlertSimple, false, false, $idGroup);
+$countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
+$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, array('limit' => $config["block_size"], 'offset' => $offset_combined), $idGroup, false, $whereAlertCombined);
+$countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
 }

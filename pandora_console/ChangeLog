@@ -1,4 +1,8 @@
-2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
+2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: fixed date of last commit.
+
+2010-04-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/jquery.pandora.controls.js: changed the page to ajax in
 	the event "pandoraSelectAgentAlert".

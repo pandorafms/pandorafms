@@ -1,3 +1,13 @@
+2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: changed the functions
+	"get_agent_alerts_simple" and "get_agent_alerts_compound" delete new
+	parameter $limit because you can set the pagination limit in the parameter
+	$options.
+	
+	* operation/agentes/alerts_status.php: changed the calls to previus
+	functions.
+
 2010-04-06  Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* operation/menu.php, godmode/menu.php: Hooks to services pages (Enterprise)

@@ -25,249 +25,15 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	exit;
 }
 
-require_once ('include/functions_agents.php');
-require_once ('include/functions_alerts.php');
-$isFunctionPolicies = enterprise_include ('include/functions_policies.php');
-
-if (is_ajax ()) {
-	$get_agent_alerts_simple = (bool) get_parameter ('get_agent_alerts_simple');
-	$disable_alert = (bool) get_parameter ('disable_alert');
-	$enable_alert = (bool) get_parameter ('enable_alert');
-	
-	if ($get_agent_alerts_simple) {
-		$id_agent = (int) get_parameter ('id_agent');
-		if ($id_agent <= 0) {
-			echo json_encode (false);
-			return;
-		}
-		$id_group = get_agent_group ($id_agent);
-		
-		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
-				"Trying to access Alert Management");
-			echo json_encode (false);
-			return;
-		}
-		
-		require_once ('include/functions_agents.php');
-		require_once ('include/functions_alerts.php');
-		
-		$alerts = get_agent_alerts_simple ($id_agent);
-		if (empty ($alerts)) {
-			echo json_encode (false);
-			return;
-		}
-		
-		$retval = array ();
-		foreach ($alerts as $alert) {
-			$alert['template'] = get_alert_template ($alert['id_alert_template']);
-			$alert['module_name'] = get_agentmodule_name ($alert['id_agent_module']);
-			$alert['agent_name'] = get_agentmodule_agent_name ($alert['id_agent_module']);
-			$retval[$alert['id']] = $alert;
-		}
-		
-		echo json_encode ($retval);
-		return;
-	}
-	
-	if ($enable_alert) {
-		$id_alert = (int) get_parameter ('id_alert');
-	
-		$result = set_alerts_agent_module_disable ($id_alert, false);
-		if ($result)
-			echo __('Successfully enabled');
-		else
-			echo __('Could not be enabled');
-		return;
-	}
-
-	if ($disable_alert) {
-		$id_alert = (int) get_parameter ('id_alert');
-	
-		$result = set_alerts_agent_module_disable ($id_alert, true);
-		if ($result)
-			echo __('Successfully disabled');
-		else
-			echo __('Could not be disabled');
-		return;
-	}
-	return;
-}
-
 $id_group = 0;
 /* Check if this page is included from a agent edition */
-if (isset ($id_agente)) {
-	$id_group = get_agent_group ($id_agente);
-}
-else {
-	$id_agente = 0;
-}
+$id_agente = 0;
 
-$create_alert = (bool) get_parameter ('create_alert');
-$add_action = (bool) get_parameter ('add_action');
-$delete_action = (bool) get_parameter ('delete_action');
-$delete_alert = (bool) get_parameter ('delete_alert');
-$disable_alert = (bool) get_parameter ('disable_alert');
-$enable_alert = (bool) get_parameter ('enable_alert');
-$tab = get_parameter('tab', 'list');
-$group = get_parameter('group', 1); //1 is All group
-$templateName = get_parameter('template_name','');
-$moduleName = get_parameter('module_name','');
-$agentID = get_parameter('agent_id','');
-$agentName = get_parameter('agent_name','');
-$actionID = get_parameter('action_id','');
-$fieldContent = get_parameter('field_content','');
-$searchType = get_parameter('search_type','');
-$priority = get_parameter('priority','');
-
-if ($create_alert) {
-	$id_alert_template = (int) get_parameter ('template');
-	$id_agent_module = (int) get_parameter ('id_agent_module');
-	
-	if (get_db_value_sql("SELECT COUNT(id)
-		FROM talert_template_modules
-		WHERE id_agent_module = " . $id_agent_module . "
-			AND id_alert_template = " . $id_alert_template) > 0) {
-		print_result_message (false, '', __('Already added'));
-	}
-	else {
-		$id = create_alert_agent_module ($id_agent_module, $id_alert_template);
-
-		$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
-		$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-		$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
-
-		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
-		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
-
-		print_result_message ($id,
-			__('Successfully created'),
-			__('Could not be created'));
-		if ($id !== false) {
-			$action_select = get_parameter('action_select');
-			
-			if ($action_select != 0) {
-				$values = array();
-				$values['fires_min'] = get_parameter ('fires_min');
-				$values['fires_max'] = get_parameter ('fires_max');
-				
-				add_alert_agent_module_action ($id, $action_select, $values);
-			}
-		}
-	}
-}
-
-if ($delete_alert) {
-	$id_alert_agent_module = (int) get_parameter ('id_alert');
-	
-	$temp =  get_db_row ("talert_template_modules","id", $id_alert_agent_module);
-	$id_alert_template = $temp["id_alert_template"];
-	$id_agent_module = $temp["id_agent_module"];
-	$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
-	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
-
-	audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
-	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
-
-	$result = delete_alert_agent_module ($id_alert_agent_module);
-	print_result_message ($id,
-		__('Successfully deleted'),
-		__('Could not be deleted'));
-}
-
-if ($add_action) {
-	$id_action = (int) get_parameter ('action');
-	$id_alert_module = (int) get_parameter ('id_alert_module');
-	$fires_min = (int) get_parameter ('fires_min');
-	$fires_max = (int) get_parameter ('fires_max');
-	$values = array ();
-	if ($fires_min != -1)
-		$values['fires_min'] = $fires_min;
-	if ($fires_max != -1)
-		$values['fires_max'] = $fires_max;
-	
-	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
-	print_result_message ($id,
-		__('Successfully added'),
-		__('Could not be added'));
-}
-
-if ($delete_action) {
-	$id_action = (int) get_parameter ('id_action');
-	$id_alert = (int) get_parameter ('id_alert');
-	
-	$result = delete_alert_agent_module_action ($id_action);
-	print_result_message ($id,
-		__('Successfully deleted'),
-		__('Could not be deleted'));
-}
-
-if ($enable_alert) {
-	$id_alert = (int) get_parameter ('id_alert');
-	
-	$result = set_alerts_agent_module_disable ($id_alert, false);
-	print_result_message ($result,
-		__('Successfully enabled'),
-		__('Could not be enabled'));
-}
-
-if ($disable_alert) {
-	$id_alert = (int) get_parameter ('id_alert');
-	
-	$result = set_alerts_agent_module_disable ($id_alert, true);
-	print_result_message ($result,
-		__('Successfully disabled'),
-		__('Could not be disabled'));
-}
-
-// Header
-if ($id_agente) {
-	$agents = array ($id_agente => get_agent_name ($id_agente));
-}
-else {
-	$buttons = array(
-		'list' => array(
-			'active' => false,
-			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list">' . 
-				print_image ("images/god6.png", true, array ("title" => __('List alerts'))) .'</a>'),
-		'builder' => array(
-			'active' => false,
-			'text' => '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">' . 
-				print_image ("images/config.png", true, array ("title" => __('Builder alert'))) .'</a>'));
-	
-	$buttons[$tab]['active'] = true;
-				
-	print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);	
-	
-	switch ($tab) {
-		case 'list':
-			if ($group == 1) {
-				$groups = get_user_groups ();
-			}
-			else {
-				$groups = array(1 => __('All'));
-			}
-			$agents = get_group_agents (array_keys ($groups), false, "none");
-					
-			require_once('godmode/alerts/alert_list.list.php');
-			return;
-			break;
-		case 'builder':
-			if ($group == 1) {
-				$groups = get_user_groups ();
-			}
-			else {
-				$groups = array(1 => __('All'));
-			}
-			
-			require_once('godmode/alerts/alert_list.builder.php');
-			return;
-			break;
-	}
-//	print_page_header (__('Alerts').' &raquo; '.__('Manage alerts'), "images/god2.png", false, "", true);
-//	$groups = get_user_groups ();
-//	$agents = get_group_agents (array_keys ($groups), false, "none");
+if (! give_acl ($config['id_user'], 0, "LW")) {
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		"Trying to access Alert Management");
+	require ("general/noaccess.php");
+	exit;
 }
 
 echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
@@ -330,75 +96,35 @@ echo "</div>\n";
 
 $simple_alerts = array();
 
-if ($id_agente) {
-	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), '', false, '', false, 'agent_module_name');
-} else {
-	$total = 0;
-	$where = '';
-	if (!empty ($agents)) {
-		$sql = sprintf ('SELECT COUNT(*) FROM talert_template_modules
-			WHERE id_agent_module IN (SELECT id_agente_modulo
-				FROM tagente_modulo WHERE id_agente IN (%s))',
-			implode (',', array_keys ($agents)));
-		
-		if (get_parameter('search',0)) {
-			if ($priority != -1 )
-				$where .= " AND priority = " . $priority;
-			if (strlen(trim($templateName)) > 0)
-				$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%" . trim($templateName) . "%')";
-			if (strlen(trim($fieldContent)) > 0)
-				$where .= " AND id_alert_template IN (SELECT id FROM talert_templates
-					WHERE field1 LIKE '%" . trim($fieldContent) . "%' OR field2 LIKE '%" . trim($fieldContent) . "%' OR
-						field3 LIKE '%" . trim($fieldContent) . "%' OR
-						field2_recovery LIKE '%" . trim($fieldContent) . "%' OR
-						field3_recovery LIKE '%" . trim($fieldContent) . "%')";
-			if (strlen(trim($moduleName)) > 0)
-				$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE '%" . trim($moduleName) . "%')";
-			//if ($agentID != -1)
-				//$where .= " AND id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $agentID . ")";
-			if (strlen(trim($agentName)) > 0)
-				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
-					FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
-					WHERE t1.nombre LIKE '" . trim($agentName) . "')";
-			if ($actionID != -1)
-				$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
-		}
-		
-		$total = get_db_sql ($sql.$where);
-	}
-	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
-	$simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
-		array ('offset' => (int) get_parameter ('offset'),
-			'limit' => $config['block_size']), $where);
-}
+$total = 0;
+$where = '';
+
+$total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
+	false, $where, false, false, false, true);
+
+pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+$simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
+	array ('offset' => (int) get_parameter ('offset'),
+		'limit' => $config['block_size']), $where);
 
 $table->class = 'alert_list';
 $table->width = '90%';
 $table->size = array ();
 $table->head = array ();
 $table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span>";
-if (! $id_agente) {
-	$table->style = array ();
-	$table->style[1] = 'font-weight: bold';
-	$table->head[1] = __('Agent');
-	$table->size[0] = '20px';
-	$table->size[1] = '15%';
-	$table->size[2] = '20%';
-	$table->size[3] = '15%';
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$table->size[4] = '20px';
-	}
-	$table->size[5] = '50%';
-} else {
-	/* Different sizes or the layout screws up */
-	$table->size[0] = '20px';
-	$table->size[2] = '30%';
-	$table->size[3] = '20%';
-	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$table->size[4] = '20px';
-	}
-	$table->size[5] = '50%';
+
+$table->style = array ();
+$table->style[1] = 'font-weight: bold';
+$table->head[1] = __('Agent');
+$table->size[0] = '20px';
+$table->size[1] = '15%';
+$table->size[2] = '20%';
+$table->size[3] = '15%';
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->size[4] = '20px';
 }
+$table->size[5] = '50%';
+
 $table->head[2] = __('Module');
 $table->head[3] = __('Template');
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -440,17 +166,15 @@ foreach ($simple_alerts as $alert) {
 	$data[0] .= print_input_hidden ('id_alert', $alert['id'], true);
 	$data[0] .= '</form>';
 	
-	if (! $id_agente) {
-		$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
-		$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
-		if ($alert['disabled'])
-			$data[1] .= '<span style="font-style: italic; color: #aaaaaa;">';
-		$data[1] .= get_agent_name ($id_agent);
-		if ($alert['disabled'])
-			$data[1] .= '</span>';
-		$data[1] .= '</a>';
+	$id_agent = get_agentmodule_agent ($alert['id_agent_module']);
+	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agent.'">';
+	if ($alert['disabled'])
+		$data[1] .= '<span style="font-style: italic; color: #aaaaaa;">';
+	$data[1] .= get_agent_name ($id_agent);
+	if ($alert['disabled'])
+		$data[1] .= '</span>';
+	$data[1] .= '</a>';
 
-	}
 	$data[2] = get_agentmodule_name ($alert['id_agent_module']);
 	$data[3] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">
@@ -560,76 +284,6 @@ if (isset($data)){
 } else {
 	echo "<div class='nf'>".__('No alerts defined')."</div>";
 }
-
-echo '<h3>'.__('Add alert').'</h3>';
-
-$table->id = 'add_alert_table';
-$table->class = 'databox';
-$table->head = array ();
-$table->data = array ();
-$table->size = array ();
-$table->size = array ();
-$table->size[0] = '10%';
-$table->size[1] = '90%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
-
-/* Add an agent selector */
-if (! $id_agente) {
-	$table->data['group'][0] = __('Group');
-	$table->data['group'][1] = print_select ($groups, 'id_group', $id_group,
-		false, '', '', true);
-	
-	$table->data['agent'][0] = __('Agent');
-	
-	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-}
-
-$table->data[0][0] = __('Module');
-$modules = array ();
-if ($id_agente)
-	$modules = get_agent_modules ($id_agente, false, array("delete_pending" => 0));
-
-$table->data[0][1] = print_select ($modules, 'id_agent_module', 0, true,
-	__('Select'), 0, true, false, true, '', ($id_agente == 0));
-$table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
-$table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
-$table->data[0][1] .= ' <span id="module_loading" class="invisible">';
-$table->data[0][1] .= '<img src="images/spinner.png" /></span>';
-
-$table->data[1][0] = __('Template');
-$templates = get_alert_templates (false, array ('id', 'name'));
-$table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
-	'template', '', '', __('Select'), 0, true);
-$table->data[1][1] .= ' <a class="template_details invisible" href="#">
-	<img class="img_help" src="images/zoom.png" /></a>';
-
-$table->data[2][0] = __('Actions');
-
-$actions = array ('0' => __('None'));
-
-$table->data[2][1] = '<div class="actions_container">';
-$table->data[2][1] = print_select($actions,'action_select','','','','',true);
-$table->data[2][1] .= ' <span id="action_loading" class="invisible">';
-$table->data[2][1] .= '<img src="images/spinner.png" /></span>';
-$table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
-$table->data[2][1] .=  __('Number of alerts match from').' ';
-$table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);
-$table->data[2][1] .=  ' '.__('to').' ';
-$table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
-$table->data[2][1] .= print_help_icon ("alert-matches", true);
-$table->data[2][1] .= '</span>';
-$table->data[2][1] .= '</div>';
-
-echo '<form class="add_alert_form" method="post">';
-
-print_table ($table);
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Add'), 'add', false, 'class="sub next"');
-print_input_hidden ('create_alert', 1);
-echo '</div></form>';
 
 echo '<form id="add_action_form" method="post" class="invisible">';
 print_input_hidden ('add_action', 1);

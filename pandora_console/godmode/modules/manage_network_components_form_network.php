@@ -37,9 +37,9 @@ $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
 $data = array ();
-$data[0] = _('Port');
+$data[0] = __('Port');
 $data[1] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true);
-$data[2] = _('SNMP version');
+$data[2] = __('SNMP version');
 $data[3] = print_select ($snmp_versions, 'snmp_version', $snmp_version,
 		'', '', '', true, false, false, '');
 

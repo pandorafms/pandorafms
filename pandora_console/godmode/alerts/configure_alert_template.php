@@ -143,9 +143,9 @@ function update_template ($step) {
 		$saturday = (bool) get_parameter ('saturday');
 		$sunday = (bool) get_parameter ('sunday');
 		$time_from = (string) get_parameter ('time_from');
-		$time_from = date ("H:s:00", strtotime ($time_from));
+		$time_from = date ("H:i:00", strtotime ($time_from));
 		$time_to = (string) get_parameter ('time_to');
-		$time_to = date ("H:s:00", strtotime ($time_to));
+		$time_to = date ("H:i:00", strtotime ($time_to));
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');

@@ -17,15 +17,84 @@ global $config;
 
 print_page_header (__('Visual console builder'), "", false, "map_builder", true);
 
+$id_layout = (int) get_parameter ('id_layout');
+$copy_layout = (bool) get_parameter ('copy_layout');
+
+if ($copy_layout) {	
+	// Number of inserts
+	$ninsert = (int) 0;
+	
+	// Return from DB the source layout
+	$layout_src = get_db_all_rows_filter ("tlayout","id = " . $id_layout);
+	
+	// Name of dst
+	$name_dst = get_parameter ("name_dst", $layout_src[0]['name'] . " copy");
+	
+	// Create the new Console
+	$idGroup = $layout_src[0]['id_group'];
+	$background = $layout_src[0]['background'];
+	$visualConsoleName = $name_dst;
+	
+	$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
+	$result = process_sql_insert('tlayout', $values);
+	
+	$idNewVisualConsole = $result;
+	
+	if($result) {
+		$ninsert = 1;
+
+		// Return from DB the items of the source layout
+		$data_layout_src = get_db_all_rows_filter ("tlayout_data", "id_layout = " . $id_layout);
+		
+		if(!empty($data_layout_src)){
+			for ($a=0;$a < count($data_layout_src); $a++) { 
+				
+				// Changing the source id by the new visual console id
+				$data_layout_src[$a]['id_layout'] = $idNewVisualConsole;
+				
+				// Unsetting the source's id
+				unset($data_layout_src[$a]['id']);
+			
+				// Configure the cloned Console
+				$result = process_sql_insert('tlayout_data', $data_layout_src[$a]);
+				
+				if($result)
+					$ninsert++;
+			}// for each item of console
+				
+			$inserts = count($data_layout_src) + 1;
+				
+			// If the number of inserts is correct, the copy is completed
+			if ($ninsert == $inserts) {
+				echo '<h3 class="suc">'.__('Successfully copyed').'</h3>';
+				clean_cache();
+			} else {
+				echo '<h3 class="error">'.__('Not copyed. Error copying data').'</h3>';
+			}
+		}
+		else{
+			// If the array is empty the copy is completed
+			echo '<h3 class="suc">'.__('Successfully copyed').'</h3>';
+			clean_cache();
+		}
+	}
+	else {
+		echo '<h3 class="error">'.__('Not copyed. Error copying data').'</h3>';
+	}
+		
+}
+
 $table->width = '500px';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
-$table->head[3] = __('Delete');
+$table->head[3] = __('Copy');
+$table->head[4] = __('Delete');
 $table->align = array ();
 $table->align[3] = 'center';
+$table->align[4] = 'center';
 
 $maps = get_db_all_rows_in_table ('tlayout','name');
 if (!$maps) {
@@ -40,7 +109,8 @@ if (!$maps) {
 			$data[1] .= get_group_name ($map['id_group']);
 			$data[2] = get_db_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
-			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
+			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.print_image ("images/copy.png", true).'</a>';
+			$data[4] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.print_image ("images/cross.png", true).'</a>';
 			array_push ($table->data, $data);
 		}
 	}

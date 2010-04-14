@@ -1,3 +1,12 @@
+2010-04-14 Sergio Martin <sergio.martin@artica.es>
+
+	* ChangeLog: Updated the Changlog with the last forget commit 
+
+2010-04-13 Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/map_builder.php: Added Copy visual console
+          (map clonation) for Pending task 2726277 
+
 2010-04-12 Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.php: Added Create button for

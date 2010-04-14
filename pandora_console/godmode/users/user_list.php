@@ -116,7 +116,7 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
 
 	if ($config["admin_can_delete_user"]) {
-		$data[5] = print_input_image ("delete_user", "images/cross.png", $row["id_usuario"], 'border:0px;', true); //Delete user button
+		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_info["id_user"], 'border:0px;', true); //Delete user button
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}

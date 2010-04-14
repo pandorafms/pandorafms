@@ -149,7 +149,7 @@ function configure_modules_form () {
 				else
 					$("#checkbox-history_data").uncheck ();
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
-				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["min_warning"]);
+				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
 				$("#text-min_critical").attr ("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
 				$("#text-ff_threshold").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);

@@ -1,5 +1,10 @@
 2010-04-14 Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.php: Controled the sucessful of the
+	  create an alarm to audit it for bug 2987006
+
+2010-04-14 Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.php,
 	godmode/alerts/alert_list.list.php: Changed a button between the files 
 	  to clean source code 

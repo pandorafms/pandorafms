@@ -74,9 +74,12 @@ if ($create_alert) {
 		$alert_template_name = get_db_value ("name", "talert_templates","id", $id_alert_template);
 		$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 		$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
-
-		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
+		
+		// Audit the creation only when the alert creation is correct
+		if($id) {
+			audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
 		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+		}
 
 		$messageAction =  print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
 		if ($id !== false) {

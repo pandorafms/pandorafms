@@ -2196,6 +2196,9 @@ function format_array_to_update_sql ($values) {
 			array_push ($fields, $value);
 			continue;
 		}
+		else if ($field[0] == "`") {
+			$field = str_replace('`', '', $field);
+		}
 		
 		if ($value === NULL) {
 			$sql = sprintf ("`%s` = NULL", $field);

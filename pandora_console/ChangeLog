@@ -1,8 +1,13 @@
+2010-04-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: fixed bug in the function
+	"format_array_to_update_sql" when the field yet escaped.
+
 2010-04-14 Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/users/user_list.php: fixed bug 2987177. Wrong index was associated 
 	  with the delete icon in the users list.
-
+	
 2010-04-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: fixed bug in the function "get_db_value_filter"

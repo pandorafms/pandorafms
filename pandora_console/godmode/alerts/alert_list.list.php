@@ -90,6 +90,7 @@ echo "<div id='alert_control' style='display:none'>\n";
 	echo "</table>\n";
 	echo "</form>\n";
 echo "</div>\n";
+
 //END DIV OF FORM FILTER
 
 $simple_alerts = array();
@@ -335,6 +336,13 @@ echo '<div class="right">';
 print_submit_button (__('Add'), 'add_action', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
+
+// Create alert button
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
+print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
+echo '</form>';
+echo '</div>';
 
 require_css_file ('cluetip');
 require_jquery_file ('cluetip');

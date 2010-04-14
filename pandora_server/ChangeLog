@@ -1,3 +1,8 @@
+2010-04-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PredictionServer.pm: Added support for service
+	  modules (Enterprise).
+
 2010-04-05  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Trying to fix the problem detected 

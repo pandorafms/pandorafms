@@ -19,6 +19,19 @@ print_page_header (__('Visual console builder'), "", false, "map_builder", true)
 
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
+$delete_layout = (bool) get_parameter ('delete_layout');
+
+if ($delete_layout) {
+	process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));
+	$result = process_sql_delete ('tlayout', array ('id' => $id_layout));
+	if ($result) {
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		clean_cache();
+	} else {
+		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
+	}
+	$id_layout = 0;
+}
 
 if ($copy_layout) {	
 	// Number of inserts

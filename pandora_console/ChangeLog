@@ -1,5 +1,10 @@
 2010-04-14 Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/map_builder.php: Added Delete visual console
+          for Bug 2986523 
+
+2010-04-14 Sergio Martin <sergio.martin@artica.es>
+
 	* ChangeLog: Updated the Changlog with the last forget commit 
 
 2010-04-13 Sergio Martin <sergio.martin@artica.es>

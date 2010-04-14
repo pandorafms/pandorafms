@@ -1,3 +1,8 @@
+2010-04-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: fixed bug in the function "get_db_value_filter"
+	when the field's name is a reserve word of mysql crash.
+
 2010-04-14 Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora_modules.js: Typo fix for bug 2953348

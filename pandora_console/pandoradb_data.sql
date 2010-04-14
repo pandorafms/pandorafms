@@ -208,6 +208,7 @@ INSERT INTO `torigen` VALUES
 -- Dumping data for table `ttipo_modulo`
 --
 
+-- Identifiers 30 and 31 are reserved for Enterprise data types
 INSERT INTO `ttipo_modulo` VALUES 
 (1,'generic_data',0,'Generic numeric','mod_data.png'),
 (2,'generic_proc',1,'Generic boolean','mod_proc.png'),
@@ -227,7 +228,7 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(30,'log4x',0,'Log4x','mod_log4x.png'),
+(24,'log4x',0,'Log4x','mod_log4x.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 -- Categoria field is used to segregate several types

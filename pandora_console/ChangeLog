@@ -1,5 +1,11 @@
 2010-04-14 Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.php,
+	godmode/alerts/alert_list.list.php: Changed a button between the files 
+	  to clean source code 
+
+2010-04-14 Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/map_builder.php: Added Delete visual console
           for Bug 2986523 
 

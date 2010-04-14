@@ -192,12 +192,6 @@ else {
 			$agents = get_group_agents (array_keys ($groups), false, "none");
 			
 			require_once('godmode/alerts/alert_list.list.php');
-			
-			echo '<div class="action-buttons" style="width: '.$table->width.'">';
-			echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder">';
-			print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');
-			echo '</form>';
-			echo '</div>';
 
 			return;
 			break;

@@ -626,6 +626,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
  *	   $table->titlestyle - Title style
  *	   $table->titleclass - Title class
+ *     $table->styleTable - Table style
  * @param  bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
@@ -670,6 +671,10 @@ function print_table (&$table, $return = false) {
 				$style[$key] = '';
 			}
 		}
+	}
+	$styleTable = '';
+	if (isset ($table->styleTable)) {
+		$styleTable = $table->styleTable;
 	}
 	if (isset ($table->rowstyle)) {
 		foreach ($table->rowstyle as $key => $st) {
@@ -730,7 +735,7 @@ function print_table (&$table, $return = false) {
 	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 
-	$output .= '<table width="'.$table->width.'"'.$table->tablealign;
+	$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;

@@ -83,7 +83,14 @@ if ($create_user) {
 	$values['is_admin'] = get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', $config["language"]);
 	
-	if ($password_new == '') {
+	if ($id == '') {
+		print_error_message (__('User ID cannot be empty'));
+		$user_info = $values;
+		$password_new = '';
+		$password_confirm = '';
+		$new_user = true;
+	}
+	elseif ($password_new == '') {
 		print_error_message (__('Passwords cannot be empty'));
 		$user_info = $values;
 		$password_new = '';

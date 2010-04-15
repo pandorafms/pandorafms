@@ -1,3 +1,10 @@
+2010-04-15 Sergio Martin <sergio.martin@artica.es>
+
+	Merged bugfix from trunk
+
+        * godmode/users/user_list.php: fixed bug 2987177. Wrong index was 
+	  associated with the delete icon in the users list.
+
 2010-03-21  Sancho Lerena <slerena@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Admin can see everything

@@ -40,11 +40,26 @@ $table->head[4] = __('Description');
 $table->align[2] = "center";
 $table->align[3] = "center";
 
+
 $info = array ();
-if (give_acl ($config["id_user"], 0, "UM") == 1) {
-	$info = get_users ();
-} else {
-	$info[$config["id_user"]] = get_user_info ($config["id_user"]);
+$info = get_users ();
+
+//Only the users from the user groups are visible
+
+$user_groups = get_user_groups ($config["id_user"]);
+$user_groups_id = array_keys($user_groups);
+$users_id = array();
+
+foreach ($user_groups_id as $group) {
+	$user_group_users = get_group_users($group);
+	foreach ($user_group_users as $user_group_user)
+		array_push($users_id,get_user_id ($user_group_user));
+}
+
+$users_hidden = array_diff(array_keys($info),$users_id);
+
+foreach($users_hidden as $user_hidden){
+	unset($info[$user_hidden]);
 }
 
 $rowPair = true;

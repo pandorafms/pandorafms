@@ -1,3 +1,8 @@
+2010-04-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: fixed getOSVersion. Crashed in Windows 2008
+	  and Windows 7.
+
 2009-12-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: Fixed bug #2907481.

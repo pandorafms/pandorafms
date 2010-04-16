@@ -400,9 +400,10 @@ Pandora_Wmi::getOSVersion () {
 			dhGetValue (L"%s", &version, quickfix,
 				    L".CSDVersion");
 		
-			ret = version;
-			dhFreeString (version);
-		
+			if (version != NULL) {
+				ret = version;
+				dhFreeString (version);
+			}
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getOSVersion error. %s", errstr.c_str ());

@@ -1,3 +1,10 @@
+2010-04-16 Sergio Martin <sergio.martin@artica.es>
+
+    * operation/users/user.php: Modified the users that
+	are showed in the View users section. Now, the users
+	of the logged user group are listed.
+
+
 2010-04-16 Pablo de la Concepción <pablo.concepcion@artica.es>
 
     * include/ajax/agent.php: Modified to return the agent name at the i

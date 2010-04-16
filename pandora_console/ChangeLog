@@ -1,3 +1,11 @@
+2010-04-16 Pablo de la Concepción <pablo.concepcion@artica.es>
+
+    * include/ajax/agent.php: Modified to return the agent name at the i
+    begining of the serialized result.
+
+	* godmode/agentes/configurar_agente.php: Added help links and TODO tag
+	to remember to change the tabs to use the print_page_header function.
+
 2010-04-15 Sergio Martin <sergio.martin@artica.es>
 
         * godmode/users/configure_user.php: fixed bug 2987162. Validation 

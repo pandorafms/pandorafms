@@ -1,3 +1,8 @@
+2010-04-19 Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php: Added the parameter style 
+	to print_select_from_sql() function
+
 2010-04-19 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: rollback to the fixed (r2563) in the function

@@ -257,11 +257,12 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * @param bool $multiple Whether to allow multiple selections or not. Single by default
  * @param bool $sort Whether to sort the options or not. Sorted by default.
  * @param bool $disabled if it's true, disable the select.
+ * @param string $style The string of style.
  *
  * @return string HTML code if return parameter is true.
  */
 function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
-	$multiple = false, $sort = true, $disabled = false) {
+	$multiple = false, $sort = true, $disabled = false, $style = false) {
 	
 	$fields = array ();
 	$result = get_db_all_rows_sql ($sql);
@@ -274,7 +275,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$fields[$id] = $value;
 	}
 	
-	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled);
+	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style);
 }
 
 /**

@@ -232,7 +232,7 @@ foreach ($simple_alerts as $alert) {
 	
 	$actions = get_alert_agent_module_actions ($alert['id']);
 
-
+	$data[5] = '';
 	if (empty($actions)){
 		// Get and show default actions for this alert
 		$default_action = get_db_sql ("SELECT id_alert_action FROM talert_templates WHERE id = ".$alert["id_alert_template"]);

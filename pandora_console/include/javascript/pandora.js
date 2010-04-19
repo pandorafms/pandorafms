@@ -89,3 +89,66 @@ function agent_changed (event, id_agent, selected) {
 				 "json"
 				 );
 }
+
+
+/**
+ * Autocomplete Agent box and module selector functions.
+ * 
+ * This function has all the necesary javascript to use the box with to autocomplete
+ * an agent name, and store it's id on a hidden field and fill a selector with the 
+ * modules from that agent.
+ * 
+ * @param id_agent_name id of the agent name box
+ * @param id_agent_id id of the hidden field to store the agent id
+ * @param id_agent_module_selector id of the selector for the modules of the agent.
+ */
+function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_selector) {
+		$(id_agent_name).autocomplete(
+			"ajax.php",
+			{
+				minChars: 2,
+				scroll:true,
+				extraParams: {
+					page: "include/ajax/agent",
+					search_agents: 1,
+					id_group: 1
+				},
+				formatItem: function (data, i, total) {
+					if (total == 0)
+						$(id_agent_name).css ('background-color', '#cc0000');
+					else
+						$(id_agent_name).css ('background-color', '');
+					if (data == "")
+						return false;
+					return data[0]+'<br><span class="ac_extra_field"><?php echo __("IP") ?>: '+data[2]+'</span>';
+				},
+				delay: 200
+			}
+		);
+		// Callback from the autocomplete
+		$(id_agent_name).result (
+			function (e, data, formatted) {
+				$(id_agent_module_selector).attr('disabled', false);
+				agent_id = data[1];  
+				$(id_agent_id).val(agent_id);
+				jQuery.post ('ajax.php', 
+							{"page": "operation/agentes/ver_agente",
+									"get_agent_modules_json": 1,
+									"id_agent": agent_id,
+									"filter" : 'disabled=0 AND delete_pending=0',
+									"fields" : "id_agente_modulo,nombre"
+									},
+									function (data) {
+										$(id_agent_module_selector).empty();
+										jQuery.each (data, function (i, value) {
+											option = $("<option></option>")
+												.attr ("value", value['id_agente_modulo'])
+												.html (js_html_entity_decode (value['nombre']));
+											$(id_agent_module_selector).append (option);
+										});
+									},
+									"json"
+								);
+			}
+		);
+}

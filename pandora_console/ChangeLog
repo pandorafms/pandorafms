@@ -1,3 +1,9 @@
+2010-04-19 Pablo de la Concepción <pablo.concepcion@artica.es>
+
+	* include/javascript/pandora.js: Added function agent_module_autocomplete
+	to use with a text box, a hidden field and a selector to select an agent
+	and a module from the agent.
+
 2010-04-19  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/module_manager.php, 
@@ -9,6 +15,18 @@
 	* godmode/include/functions.php: Added wrapper mb_strimwidth().
 
 2010-04-16 Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Added process of services
+	paramters (Enterprise feature)
+
+	* godmode/agentes/module_manager_editor_prediction.php: Changed control
+	to select the agent and the module. 
+	Added code to create a module from a service (Enterprise fature).
+	
+	* include/javascript/pandora.js: Added function agent_module_autocomplete
+	to use with the agent autocomplete box and a module selector.
+
+2010-04-16 Pablo de la Concepción <pablo.concepcion@artica.es>
 
     * operation/users/user.php: Modified the users that
 	are showed in the View users section. Now, the users

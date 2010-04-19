@@ -1,3 +1,8 @@
+2010-04-19 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: rollback to the fixed (r2563) in the function
+	"get_db_value_filter".
+
 2010-04-19 Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* godmode/agentes/module_manager_editor_prediction.php: Make the services

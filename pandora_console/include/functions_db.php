@@ -1671,7 +1671,7 @@ function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	unset ($filter['limit']);
 	unset ($filter['offset']);
 	
-	$sql = sprintf ("SELECT `%s` FROM %s WHERE %s LIMIT 1",
+	$sql = sprintf ("SELECT %s FROM %s WHERE %s LIMIT 1",
 		$field, $table,
 		format_array_to_where_clause_sql ($filter, $where_join));
 	$result = get_db_all_rows_sql ($sql);

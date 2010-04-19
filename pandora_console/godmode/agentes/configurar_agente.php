@@ -201,7 +201,7 @@ if ($id_agente) {
 	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
 	print_image ("images/setup.png", false, $img_style);
 	echo '&nbsp; '.mb_substr(get_agent_name ($id_agente), 0, 21) .'</a>';
-	echo '&nbsp;<img src="images/help.png" class="img_help" title="'.__('Help').'" onclick="open_help(\'agent_manager\')" alt="'.__('Help').'">';
+	//echo '&nbsp;'. print_help_icon ('agent_manager', true);
 	echo "</li></ul></div>";
 
 	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
@@ -459,6 +459,10 @@ if ($update_module || $create_module) {
 	$custom_string_3 = "";
 	$custom_integer_1 = "";
 	$custom_integer_2 = "";
+	// Services are an enterprise feature, so we got the parameters using this function.
+	enterprise_hook ('get_service_parameters');
+	
+	$agent_name = (string) get_parameter('agent_name',get_agent_name ($id_agente));
 
 	$snmp_community = (string) get_parameter ('snmp_community');
 	$snmp_oid = (string) get_parameter ('snmp_oid');

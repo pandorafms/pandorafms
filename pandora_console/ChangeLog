@@ -1,5 +1,13 @@
 2010-04-19 Pablo de la Concepción <pablo.concepcion@artica.es>
 
+	* godmode/agentes/module_manager_editor_prediction.php: Make the services
+	part (Enterprise) work nicely.
+
+	* godmode/agentes/configurar_agente.php: Added enterprise hook for the 
+	services parameters.
+
+2010-04-19 Pablo de la Concepción <pablo.concepcion@artica.es>
+
 	* include/javascript/pandora.js: Added function agent_module_autocomplete
 	to use with a text box, a hidden field and a selector to select an agent
 	and a module from the agent.

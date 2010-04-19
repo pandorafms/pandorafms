@@ -1,5 +1,11 @@
 2010-04-19 Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/users/user_list.php: Fixed the delete the actual 
+	user feature hidding the red cross in this user and with 
+	internal control 
+
+2010-04-19 Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.list.php: Fixed a var definition 
 	error
 

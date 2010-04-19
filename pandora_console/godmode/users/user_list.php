@@ -30,14 +30,20 @@ print_page_header (__('User management').' &raquo; '.__('Users defined in Pandor
 
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter_post ("delete_user");
-	$result = delete_user ($id_user);
+	// Only allow delete user if is not the actual user
+	if($id_user != $config['id_user']){
+		$result = delete_user ($id_user);
 
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
-		"Deleted user ".safe_input($id_user));
+		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+			"Deleted user ".safe_input($id_user));
 
-	print_result_message ($result,
-		__('Successfully deleted'),
-		__('There was a problem deleting the user'));
+		print_result_message ($result,
+			__('Successfully deleted'),
+			__('There was a problem deleting the user'));
+	}
+	else
+		print_error_message (__('There was a problem deleting the user'));
+	
 } elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
 	$result = delete_profile ($id_profile);
@@ -115,7 +121,7 @@ foreach ($info as $user_id => $user_info) {
 	
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
 
-	if ($config["admin_can_delete_user"]) {
+	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_info["id_user"], 'border:0px;', true); //Delete user button
 	} else {
 		$data[5] = ''; //Delete button not in this mode

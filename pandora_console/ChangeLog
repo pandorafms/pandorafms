@@ -1,3 +1,13 @@
+2010-04-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/agentes/module_manager.php, 
+	godmode/modules/manage_network_components.php, 
+	godmode/modules/manage_network_templates_form.php: Changed the substr()
+	to mb_strimwidth(). Strings should be truncated with displayed length,
+	not number of characters.
+
+	* godmode/include/functions.php: Added wrapper mb_strimwidth().
+
 2010-04-16 Sergio Martin <sergio.martin@artica.es>
 
     * operation/users/user.php: Modified the users that

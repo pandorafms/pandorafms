@@ -313,7 +313,7 @@ foreach ($components as $component) {
 	$data[0] .= '</a>';
 	$data[1] = print_moduletype_icon ($component['type'], true);
 	$data[2] = $component['module_interval'] ? $component['module_interval'] : __('N/A	');
-	$data[3] = substr ($component['description'], 0, 30);
+	$data[3] = mb_strimwidth ($component['description'], 0, 30, "...");
 	$data[4] = get_network_component_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	

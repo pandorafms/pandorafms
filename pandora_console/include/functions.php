@@ -905,6 +905,13 @@ if (!function_exists ("mb_strtoupper")) {
 	function mb_strlen ($string, $encoding = false) {
 		return strlen ($string);
 	}
+
+	/**
+	 * @ignore
+	 */
+	function mb_strimwidth ($string, $start, $length, $trimmarker = false, $encoding = false) {
+		return substr ($string, $start, $length);
+	}
 }
 
 /**

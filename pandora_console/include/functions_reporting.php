@@ -26,6 +26,202 @@ require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
 require_once ($config["homedir"]."/include/functions_agents.php");
 
+
+/** 
+ * Get the average value of an agent module in a period of time.
+ * 
+ * @param int Agent module id
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The average module value in the interval.
+ */
+function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
+	if ($date < 1) {
+		$date = get_system_time ();
+	}
+	
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ("SELECT * FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+	
+	$values = get_db_all_rows_sql ($sql, true);
+	if ($values === false) {
+		$values = array ();
+	}
+
+	/* Get also the previous data before the selected interval. */
+	$sum = 0;
+	$total = 0;
+	$module_interval = get_module_interval ($id_agent_module);
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false) {
+		$values = array_merge (array ($previous_data), $values);
+	}
+
+	foreach ($values as $data) {
+		$interval_total = 1;
+		$interval_sum = $data['datos'];
+		if ($previous_data !== false && $data['utimestamp'] - $previous_data['utimestamp'] > $module_interval) {
+			$interval_total = round (($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval, 0);
+			$interval_sum *= $interval_total;
+			
+		}
+		$total += $interval_total;
+		$sum += $interval_sum;
+		$previous_data = $data;
+	}
+
+	if ($total == 0) {
+		return 0;
+	}
+
+	return $sum / $total;
+}
+
+/** 
+ * Get the maximum value of an agent module in a period of time.
+ * 
+ * @param int Agent module id to get the maximum value.
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The maximum module value in the interval.
+ */
+function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = get_system_time ();
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ("SELECT MAX(datos) FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d  AND utimestamp <= %d",
+			$id_agent_module, $datelimit, $date);
+	$max = (float) get_db_sql ($sql, 0, true);
+	
+	/* Get also the previous report before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data !== false)
+		return max ($previous_data['datos'], $max);
+	
+	return max ((float) $previous_data, $max);
+}
+
+/** 
+ * Get the minimum value of an agent module in a period of time.
+ * 
+ * @param int Agent module id to get the minimum value.
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values in Unix time. Default current time.
+ * 
+ * @return float The minimum module value of the module
+ */
+function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = get_system_time ();
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ("SELECT MIN(datos) FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d",
+			$id_agent_module, $datelimit, $date);
+	$min = (float) get_db_sql ($sql, 0, true);
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data)
+		return min ($previous_data['datos'], $min);
+	return $min;
+}
+
+/** 
+ * Get the sum of values of an agent module in a period of time.
+ * 
+ * @param int Agent module id to get the sumatory.
+ * @param int Period of time to check (in seconds)
+ * @param int Top date to check the values. Default current time.
+ * 
+ * @return float The sumatory of the module values in the interval.
+ */
+function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
+
+	if (! $date)
+		$date = get_system_time ();
+
+	$datelimit = $date - $period; // limit date
+	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
+	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
+
+	if (is_module_data_string ($module_name)) {
+		return 0;
+        // Wrong module type, we cannot sum alphanumerical data !
+	}
+
+	// Get the whole interval of data
+	$sql = sprintf ('SELECT utimestamp, datos FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC',
+			$id_agent_module, $datelimit, $date);
+	$datas = get_db_all_rows_sql ($sql, true);
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data) {
+		/* Add data to the beginning */
+		array_unshift ($datas, $previous_data);
+	}
+	if ($datas === false) {
+		return 0;
+	}
+
+	$last_data = "";
+	$total_badtime = 0;
+	$module_interval = get_module_interval ($id_agent_module);
+	$timestamp_begin = $datelimit + $module_interval;
+	$timestamp_end = 0;
+	$sum = 0;
+	$data_value = 0;
+    $elapsed = 1;
+	
+	foreach ($datas as $data) {
+		$timestamp_end = $data["utimestamp"];
+        if ($timestamp_begin < $timestamp_end)
+    		$elapsed = $timestamp_end - $timestamp_begin;
+		$times =  $elapsed / $module_interval;
+
+		if (is_module_inc ($module_name)) {
+			$data_value = $data['datos'] * $module_interval;
+		} else {
+			$data_value = $data['datos'];
+		}
+
+		$sum += $times * $data_value;
+		$timestamp_begin = $data["utimestamp"];
+	}
+
+	/* The last value must be get from tagente_estado, but
+	   it will count only if it's not older than date demanded
+	*/
+	$timestamp_end = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	if ($timestamp_end <= $datelimit) {
+		$elapsed = $timestamp_end - $timestamp_begin;
+		$times = intval ($elapsed / $module_interval);
+		if (is_module_inc ($module_name)) {
+			$data_value = $data['datos'] * $module_interval;
+		} else {
+			$data_value = $data['datos'];
+		}
+		$sum += $times * $data_value;
+	}
+	
+	return (float) $sum;
+}
+
 /** 
  * Get SLA of a module.
  * 
@@ -970,6 +1166,408 @@ function get_agent_module_info_with_filter ($id_agent,$filter = '') {
 	}
 	
 	return $return;
+}
+
+/** 
+ * This function is used once, in reporting_viewer.php, the HTML report render
+ * file. This function proccess each report item and write the render in the
+ * table record.
+ * 
+ * @param array $content Record of treport_content table for current item
+ * @param array $table HTML Table row
+ * @param array $report Report contents, with some added fields.
+ * 
+ */
+
+function render_report_html_item ($content, $table, $report){
+    global $config;
+
+	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
+	$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
+
+	switch ($content["type"]) {
+	case 1:
+	case 'simple_graph':
+		$table->colspan[1][0] = 4;
+		$data = array ();
+		$data[0] = '<h4>'.__('Simple graph').'</h4>';
+		$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
+		$data[2] = '<h4>'.human_time_description ($content['period']).'</h4>';
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[2][0] = 4;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=750&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
+		array_push ($table->data, $data);
+		
+		break;
+	case 2:
+	case 'custom_graph':
+		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
+		$data = array ();
+		$data[0] = '<h4>'.__('Custom graph').'</h4>';
+		$data[1] = "<h4>".$graph["name"]."</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$result = get_db_all_rows_field_filter ("tgraph_source", "id_graph", $content['id_gs']);
+		$modules = array ();
+		$weights = array ();
+		if ($result === false)
+			$result = array();
+		
+		foreach ($result as $content2) {
+			array_push ($modules, $content2['id_agent_module']);
+			array_push ($weights, $content2["weight"]);
+		}
+		
+		$graph_width = get_db_sql ("SELECT width FROM tgraph WHERE id_graph = ".$content["id_gs"]);
+		$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$content["id_gs"]);
+
+
+		$table->colspan[2][0] = 3;
+		$data = array ();
+		$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=235&width=750&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+		array_push ($table->data, $data);
+
+		break;
+	case 3:
+	case 'SLA':
+
+		$table->style[1] = 'text-align: right';
+		$data = array ();
+		$data[0] = '<h4>'.__('S.L.A.').'</h4>';
+		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
+		$n = array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
+							'id_report_content', $content['id_rc']);
+		if ($slas === false) {
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = __('There are no SLAs defined');
+			array_push ($table->data, $data);
+			$slas = array ();
+		}
+		
+		$sla_failed = false;
+		foreach ($slas as $sla) {
+			$data = array ();
+			
+			$data[0] = '<strong>'.__('Agent')."</strong> : ";
+			$data[0] .= get_agentmodule_agent_name ($sla['id_agent_module'])."<br />";
+			$data[0] .= '<strong>'.__('Module')."</strong> : ";
+			$data[0] .= get_agentmodule_name ($sla['id_agent_module'])."<br />";
+			$data[0] .= '<strong>'.__('SLA Max. (value)')."</strong> : ";
+			$data[0] .= $sla['sla_max']."<br />";
+			$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";
+			$data[0] .= $sla['sla_min']."<br />";
+			$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
+			$data[0] .= $sla['sla_limit'];
+			$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
+				$sla['sla_min'], $sla['sla_max'], $report["datetime"]);
+			if ($sla_value === false) {
+				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
+				$data[1] .= __('Unknown');
+			} else {
+				if ($sla_value >= $sla['sla_limit'])
+					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
+				else {
+					$sla_failed = true;
+					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+				}
+				$data[1] .= format_numeric ($sla_value). " %";
+			}
+			$data[1] .= "</span>";
+			
+			$n = array_push ($table->data, $data);
+		}
+		if (!empty ($slas)) {
+			$data = array ();
+			if ($sla_failed == false)
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+			else
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+			$n = array_push ($table->data, $data);
+			$table->colspan[$n - 1][0] = 3;
+			$table->rowstyle[$n - 1] = 'text-align: right';
+		}
+		
+		break;
+	case 4:
+	case 'event_report':
+		$id_agent = get_agent_id ($agent_name);
+		$data = array ();
+		$data[0] = "<h4>".__('Event report')."</h4>";
+		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$table->colspan[2][0] = 3;
+		$data = array ();
+		$table_report = event_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
+
+		$table_report->class = 'databox';
+		$table_report->width = '100%';
+		$data[0] = print_table ($table_report, true);
+		array_push ($table->data, $data);
+		
+		break;
+	case 5:
+	case 'alert_report':
+		$data = array ();
+		$data[0] = "<h4>".__('Alert report')."</h4>";
+		$data[1] = "<h4>".$report["group_name"]."</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[2][0] = 3;
+		$data[0] = alert_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
+		array_push ($table->data, $data);
+		
+		break;
+	case 6:
+	case 'monitor_report':
+		$data = array ();
+		$data[0] = "<h4>".__('Monitor report')."</h4>";
+		$data[1] = "<h4>$agent_name - $module_name</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]));
+		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
+		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
+		$monitor_value = format_numeric (100 - $monitor_value, 2) ;
+		$data[1] = '<p style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+		$data[1] .= $monitor_value.' % <img src="images/b_red.png" height="32" width="32" /></p>';
+		array_push ($table->data, $data);
+		
+		break;
+	case 7:
+	case 'avg_value':
+		$data = array ();
+		$data[0] = "<h4>".__('Avg. Value')."</h4>";
+		$data[1] = "<h4>$agent_name - $module_name</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[2][0] = 3;
+		$value = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]));
+		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+		array_push ($table->data, $data);
+		
+		break;
+	case 8:
+	case 'max_value':
+		$data = array ();
+		$data[0] = "<h4>".__('Max. Value')."</h4>";
+		$data[1] = "<h4>$agent_name - $module_name</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[2][0] = 3;
+		$value = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]));
+		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+		array_push ($table->data, $data);
+		
+		break;
+	case 9:
+	case 'min_value':
+		$data = array ();
+		$data[0] = "<h4>".__('Min. Value')."</h4>";
+		$data[1] = "<h4>$agent_name - $module_name</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]));
+		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+		array_push ($table->data, $data);
+		
+		break;
+	case 10:
+	case 'sumatory':
+		$data = array ();
+		$data[0] = "<h4>".__('Sumatory')."</h4>";
+		$data[1] = "<h4>$agent_name - $module_name</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]));
+		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+		array_push ($table->data, $data);
+		
+		break;
+	case 11:
+	case 'general_group_report':
+		$data = array ();
+		$data[0] = "<h4>".__('Group')."</h4>";
+		$data[1] = "<h4>".$report["group_name"]."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[1][0] = 2;
+		$data[0] = print_group_reporting ($report['id_group'], true);
+		array_push ($table->data, $data);
+		
+		break;
+	case 12:
+	case 'monitor_health':
+		$data = array ();
+		$data[0] = "<h4>".__('Monitor health')."</h4>";
+		$data[1] = "<h4>".$report["group_name"]."</h4>";
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 4;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[1][0] = 4;
+		$data[0] = monitor_health_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
+		array_push ($table->data, $data);
+		
+		break;
+	case 13:
+	case 'agents_detailed':
+		$data = array ();
+		$data[0] = "<h4>".__('Agents detailed view')."</h4>";
+		$data[1] = "<h4>".$report["group_name"]."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[0][0] = 2;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$table->colspan[0][0] = 2;
+		$data = array ();
+		$table->colspan[1][0] = 3;
+		$data[0] = get_group_agents_detailed_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
+		array_push ($table->data, $data);
+		break;
+
+	case 'agent_detailed_event':
+		$data = array ();
+		$data[0] = "<h4>".__('Agent detailed event')."</h4>";
+		$data[1] = "<h4>".get_agent_name($content['id_agent'])."</h4>";
+		array_push ($table->data, $data);
+		
+		// Put description at the end of the module (if exists)
+		if ($content["description"] != ""){
+			$table->colspan[1][0] = 3;
+			$data_desc = array();
+			$data_desc[0] = $content["description"];
+			array_push ($table->data, $data_desc);
+		}
+		
+		$data = array ();
+		$table->colspan[2][0] = 3;
+		$data[0] = get_agents_detailed_event_reporting ($content['id_agent'], $content['period'], $report["datetime"]);
+		array_push ($table->data, $data);
+		break;
+	}
 }
 
 ?>

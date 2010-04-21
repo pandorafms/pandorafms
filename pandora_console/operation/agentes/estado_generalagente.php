@@ -41,6 +41,10 @@ if (! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 	require_once ("general/noaccess.php");
 	return;
 }
+
+// Blank space below title, DONT remove this, this
+// Breaks the layout when Flash charts are enabled :-o
+echo '<div style="height: 10px">&nbsp;</div>';	
 	
 //Floating div
 echo '<div style="float:right; width:320px; padding-top:11px;">';

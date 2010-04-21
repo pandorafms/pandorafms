@@ -1,3 +1,29 @@
+2010-04-21  Sancho Lerena <slerena@artica.es>
+
+    * include/functions_reporting.php: Added function render_report_html_item()
+    to render a given report element in HTML format. Fixed a small problem in
+    SUM report type (int truncate invalidate most of SUM reports when not using
+    a _inc data type).
+
+    * include/functions.php: Updated all "is_module_xxx" from using ereg 
+    (deprecated) to use preg_match.
+
+    * include/functions_db.php: Moved reporting functions 
+    get_agentmodule_data_average(); get_agentmodule_data_max(), 
+    get_agentmodule_data_min() and  get_agentmodule_data_sum() from here
+    to functions_reporting.php.
+
+    * godmode/groups/group_list.php: Removing a group put all agents assigned
+    to that group in other available group (choosen in realtime).
+
+    * AUTHORS: Authors file update, was very outdated!.
+
+    * operation/agentes/estado_generalagente.php: Fixed bug #2990430.
+
+    * operation/reporting/reporting_viewer.php: Some changes for better 
+    structuration of the HTML reporting viewer. Removed big chunk of code
+    and put in function_reporting/render_report_html_item() function.
+
 2010-04-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: small improve, added new parameter into

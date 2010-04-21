@@ -37,6 +37,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->module_name     = name;
 	this->executions      = 0;
 	this->module_interval = 1;
+	this->module_timeout  = 15000;
 	this->max             = 0;
 	this->min             = 0;
 	this->has_limits      = false;
@@ -155,6 +156,8 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 		return MODULE_TCPCHECK;
 	} else if (kind == module_regexp_str) {
 		return MODULE_REGEXP;
+	} else if (kind == module_plugin_str) {
+		return MODULE_PLUGIN;
 	} else {
 		return MODULE_0;
 	}
@@ -353,103 +356,76 @@ Pandora_Module::run () {
  * @return A pointer to the TiXmlElement if successful which has to be
  *         freed by the caller. NULL if the XML could not be created.
  */
-TiXmlElement *
+string
 Pandora_Module::getXml () {
- 
-	TiXmlElement *root;
-	TiXmlElement *element;
-	TiXmlElement *data_list_element;
-	TiXmlElement *data_element;
-	TiXmlText    *text;
-	string        item_clean, data_clean, desc_clean;
+ 	string        module_xml, data_clean;
 	Pandora_Data *data;
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
+	/* No data */
 	if (!this->has_output || this->data_list == NULL) {
-		return NULL;
+		return "";
 	}
-	
-	root = new TiXmlElement ("module");
-	
-	element = new TiXmlElement ("name");
-	text = new TiXmlText (this->module_name);
-	element->InsertEndChild (*text);
-	root->InsertEndChild (*element);
-	delete element;
-	delete text;
-	
-	element = new TiXmlElement ("type");
-	text = new TiXmlText (this->module_type_str);
-	element->InsertEndChild (*text);
-	root->InsertEndChild (*element);
-	delete element;
-	delete text;
-	
+
+	/* Compose the module XML */
+    module_xml = "<module>\n\t<name><![CDATA[";
+    module_xml += this->module_name;
+    module_xml += "]]></name>\n\t<type><![CDATA[";
+    module_xml += this->module_type_str;
+    module_xml += "]]></type>\n";
+    if (this->module_description != "") {
+		module_xml += "\t<description><![CDATA[";
+		module_xml += this->module_description;
+		module_xml += "]]></description>\n";
+	}
+    
+    /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
 
-		data_list_element = new TiXmlElement ("datalist");
+		module_xml += "\t<datalist>\n";
 		
 		iter = this->data_list->begin ();
 		for (iter = this->data_list->begin ();
 		     iter != this->data_list->end ();
 		     iter++) {
 			data = *iter;
-			data_element = new TiXmlElement ("data");
-			element = new TiXmlElement ("value");
+			
 			try {
 				data_clean = strreplace (this->getDataOutput (data),
 							 "%", "%%" );
 			} catch (Output_Error e) {
-		 		delete element;
 				continue;
 			}
 			
-			text = new TiXmlText (data_clean);
-			text->SetCDATA (true);
-			element->InsertEndChild (*text);
-			data_element->InsertEndChild (*element);
-			delete text;
-			delete element;
-			
-			element = new TiXmlElement ("timestamp");
-			text = new TiXmlText (data->getTimestamp ());
-			element->InsertEndChild (*text);
-			data_element->InsertEndChild (*element);
-			delete text;
-			delete element;
-
-			data_list_element->InsertEndChild (*data_element);
-			delete data_element;
+			module_xml += "\t\t<data>\n\t\t\t<value><![CDATA[";
+			module_xml += data_clean;
+			module_xml += "]]></value>\n\t\t\t<timestamp><![CDATA[";
+			module_xml += data->getTimestamp ();
+			module_xml += "]]></timestamp>\n\t\t</data>\n";
 		}
-
-		root->InsertEndChild (*data_list_element);
-		delete data_list_element;
+		
+		module_xml += "\t</datalist>\n";
 	} else {
 		data = data_list->front ();
-		element = new TiXmlElement ("data");
 		try {
-		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-		text = new TiXmlText (data_clean);
-		element->InsertEndChild (*text);
-		root->InsertEndChild (*element);
-		delete text;
-	} catch (Output_Error e) {
-	}
-		delete element;
+			data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+			module_xml += "\t<data><![CDATA[";
+			module_xml += data_clean;
+			module_xml += "]]></data>\n";
+		} catch (Output_Error e) {
+		}
 	}
 		
-	element = new TiXmlElement ("description");
-	text = new TiXmlText (this->module_description);
-	element->InsertEndChild (*text);
-	root->InsertEndChild (*element);
-	delete text;
-	delete element;
-
+	/* Close the module tag */
+	module_xml += "</module>\n";
+	
+	/* Clean up */
 	this->cleanDataList ();
+	
 	pandoraDebug ("%s getXML end", module_name.c_str ());
-	return root;
+	return module_xml;
 }
 
 /** 
@@ -524,6 +500,22 @@ Pandora_Module::setInterval (int interval) {
 }
 
 /** 
+ * Set the execution timeout.
+ * 
+ * @param timeout Execution timeout.
+ */
+void
+Pandora_Module::setTimeout (int timeout) {
+
+	if (timeout < 0) {
+		return;
+	}
+	
+	/* WaitForSingleObject expects milliseconds */
+	this->module_timeout = timeout * 1000;
+}
+
+/** 
  * Get the execution interval.
  * 
  * @return The execution interval.
@@ -531,6 +523,16 @@ Pandora_Module::setInterval (int interval) {
 int
 Pandora_Module::getInterval () {
 	return this->module_interval;
+}
+
+/** 
+ * Get the execution timeout.
+ * 
+ * @return The execution timeout.
+ */
+int
+Pandora_Module::getTimeout () {
+	return this->module_timeout;
 }
 
 /** 

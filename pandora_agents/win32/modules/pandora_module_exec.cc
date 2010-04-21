@@ -122,8 +122,7 @@ Pandora_Module_Exec::run () {
 		ResumeThread (pi.hThread);
 	
 		/* Wait until process exits. */
-		/* TODO: The time should be an attribute*/
-		WaitForSingleObject (pi.hProcess, 15000);
+		WaitForSingleObject (pi.hProcess, this->getTimeout ());
 	
 		GetExitCodeProcess (pi.hProcess, &retval);
 		if (retval != 0) {
@@ -131,9 +130,15 @@ Pandora_Module_Exec::run () {
 				pandoraLog ("TerminateJobObject failed. (error %d)",
 					    GetLastError ());
 			}
-		
-			pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
-				    this->module_name.c_str (), retval);
+			
+			/* STILL_ACTIVE */
+			if (retval == 259) {
+				pandoraLog ("Pandora_Module_Exec: %s timed out (retcode: 259)",
+						this->module_name.c_str ());
+			} else {
+				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+						this->module_name.c_str (), retval);
+			}
 			this->has_output = false;
 		}
 	

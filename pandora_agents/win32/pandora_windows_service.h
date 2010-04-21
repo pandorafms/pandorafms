@@ -23,7 +23,6 @@
 
 #include <list>
 #include "windows_service.h"
-#include "tinyxml/tinyxml.h"
 #include "pandora_agent_conf.h"
 #include "modules/pandora_module_list.h"
 #include "ssh/pandora_ssh_client.h"
@@ -46,7 +45,7 @@ namespace Pandora {
 		bool                 started;
 		void                 *udp_server;
 
-		TiXmlElement  *getXmlHeader    ();
+		string        getXmlHeader    ();
 		int           copyDataFile    (string filename);
 		int           copyTentacleDataFile (string host,
 						     string filename,

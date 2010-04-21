@@ -35,6 +35,7 @@
 #include "pandora_module_perfcounter.h"
 #include "pandora_module_tcpcheck.h"
 #include "pandora_module_regexp.h"
+#include "pandora_module_plugin.h"
 #include <fstream>
 
 using namespace std;
@@ -65,6 +66,8 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 		
 		/* Ignore blank or commented lines */
 		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			
+			/* Module */
 			pos = buffer.find ("module_begin");  
 			if (pos != string::npos) {
 				string str_module = buffer + "\n";
@@ -80,8 +83,17 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 					str_module += buffer + "\n";
 				}
 				
-				this->parseModuleDefinition (str_module);				
+				this->parseModuleDefinition (str_module);
+				continue;
 			}
+			
+			/* Plugin */
+			pos = buffer.find ("module_plugin");  
+			if (pos != string::npos) {
+				this->parseModuleDefinition (buffer);
+				continue;
+			}
+
 		}
 	}
 	file.close ();
@@ -148,7 +160,8 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_WMIQuery   *module_wmiquery;	
 	Pandora_Module_Perfcounter *module_perfcounter;	
 	Pandora_Module_Tcpcheck   *module_tcpcheck;	
-    Pandora_Module_Regexp     *module_regexp;	
+    Pandora_Module_Regexp     *module_regexp;
+    Pandora_Module_Plugin     *module_plugin;
 
 	module = Pandora_Module_Factory::getModuleFromDefinition (definition);
 	
@@ -223,6 +236,10 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_REGEXP:
 			module_regexp = (Pandora_Module_Regexp *) module;
 			modules->push_back (module_regexp);
+			break;
+		case MODULE_PLUGIN:
+			module_plugin = (Pandora_Module_Plugin *) module;
+			modules->push_back (module_plugin);
 			break;
 		default:
 			break;

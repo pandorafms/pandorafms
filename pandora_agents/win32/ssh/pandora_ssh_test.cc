@@ -19,7 +19,6 @@
 */
 
 #include "pandora_ssh_test.h"
-#include "../tinyxml/tinyxml.h"
 #include "../misc/pandora_file.h"
 #include <iostream>
 
@@ -70,12 +69,12 @@ Pandora_SSH_Test::~Pandora_SSH_Test () {
  */
 void
 Pandora_SSH_Test::test () {
+	string            data_xml;
 	string            pubkey_file, privkey_file, tmp_filename;
 	string            remote_host, remote_filepath, tmp_filepath;
-	TiXmlDocument    *doc;
-	TiXmlDeclaration *decl;
 	bool              saved;
-	
+	FILE              *conf_fh = NULL;
+
 	pubkey_file  = Pandora::getPandoraInstallDir ();
 	pubkey_file += "key\\id_dsa.pub";
 	if (! Pandora_File::fileExists (pubkey_file)) {
@@ -138,17 +137,16 @@ Pandora_SSH_Test::test () {
 	}
 	tmp_filepath += tmp_filename;
 	
-	decl = new TiXmlDeclaration( "1.0", "ISO-8859-1", "" );
-	doc = new TiXmlDocument (tmp_filepath);
-	doc->InsertEndChild (*decl);
-	saved = doc->SaveFile();
-	delete doc;
-	if (!saved) {
+	data_xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n";
+	conf_fh = fopen (tmp_filepath.c_str (), "w");
+	if (conf_fh == NULL) {
 		Pandora::Pandora_Exception e;
 		cout << "Error when saving the XML in " << tmp_filepath << endl;
 		cout << "Check the configuration file" << endl;
 		throw e;
 	}
+	fprintf (conf_fh, "%s", data_xml.c_str ());
+	fclose (conf_fh);
 	
 	cout << "Created a blank XML file in " << tmp_filepath<< endl;
 	

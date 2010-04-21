@@ -3,7 +3,7 @@ AllowLanguageSelection
 {Yes}
 
 AppName
-{Pandora FMS Windows Agent v3.0}
+{Pandora FMS Windows Agent v3.1RC1}
 
 ApplicationID
 {17E3D2CF-CA02-406B-8A80-9D31C17BD08F}
@@ -36,7 +36,7 @@ CompressionMethod
 {zlib}
 
 Copyright
-{2004-2009}
+{2004-2010}
 
 DefaultDirectoryLocation
 {}
@@ -75,7 +75,7 @@ InstallPassword
 {}
 
 InstallVersion
-{3.0.3.999}
+{3.1.0.0}
 
 Language,ca
 {No}
@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{091218}
+{100421}
 
 ViewReadme
 {Yes}
@@ -1033,7 +1033,7 @@ array set Properties {
 {<%InstallDir%>}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-{9043742}
+{8990281}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}

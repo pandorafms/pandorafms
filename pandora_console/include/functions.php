@@ -695,10 +695,7 @@ function get_report_type_data_source ($type) {
  * @return bool True if the module is of type "data"
  */
 function is_module_data ($module_name) {
-	$result = ereg ("^(.*_data)$", $module_name);
-	if ($result === false)
-		return false;
-	return true;
+	return preg_match ('/\_data$/', $module_name);
 }
 
 /**
@@ -709,10 +706,7 @@ function is_module_data ($module_name) {
  * @return bool true if the module is of type "proc"
  */
 function is_module_proc ($module_name) {
-	$result = ereg ('^(.*_proc)$', $module_name);
-	if ($result === false)
-		return false;
-	return true;
+	return preg_match ('/\_proc$/', $module_name);
 }
 
 /**
@@ -723,10 +717,7 @@ function is_module_proc ($module_name) {
  * @return bool true if the module is of type "inc"
  */
 function is_module_inc ($module_name) {
-	$result = ereg ('^(.*_inc)$', $module_name);
-	if ($result === false)
-		return false;
-	return true;
+    return preg_match ('/\_inc$/', $module_name);
 }
 
 /**
@@ -737,10 +728,7 @@ function is_module_inc ($module_name) {
  * @return bool true if the module is of type "string"
  */
 function is_module_data_string ($module_name) {
-	$result = ereg ('^(.*string)$', $module_name);
-	if ($result === false)
-		return false;
-	return true;
+	return preg_match ('/\_string$/', $module_name);
 }
 
 /**

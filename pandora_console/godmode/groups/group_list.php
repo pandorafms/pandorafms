@@ -113,13 +113,17 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 	
-	$sql = sprintf ('UPDATE tagente set id_grupo = 1 WHERE id_grupo = %d', $id_group);
-	$result = mysql_query ($sql);
+    // First valid group for destination group in agents affected by this group delete
+    $valid_group = process_sql ("SELECT id_group FROM tgrupo WHERE id_grupo != $id_group AND id_grupo > 0 LIMIT 1");
+
+	$sql = sprintf ('UPDATE tagente set id_grupo = 1 WHERE id_grupo = %d', $valid_group);
+	$result = process_sql ($sql);
+
 	$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 
 	$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 
 	if (! $result)
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 

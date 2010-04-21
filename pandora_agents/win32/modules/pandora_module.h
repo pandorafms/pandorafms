@@ -23,7 +23,6 @@
 
 #include "../pandora.h"
 #include "pandora_data.h"
-#include "../tinyxml/tinyxml.h"
 #include <list>
 #include <string>
 
@@ -84,7 +83,8 @@ namespace Pandora_Modules {
 		MODULE_WMIQUERY,       /**< The module runs WQL queries */		
 		MODULE_PERFCOUNTER,    /**< The module reads performance counters */
 		MODULE_TCPCHECK,       /**< The module checks whether a tcp port is open */
-		MODULE_REGEXP          /**< The module searches a file for matches of a regular expression */
+		MODULE_REGEXP,         /**< The module searches a file for matches of a regular expression */
+		MODULE_PLUGIN          /**< Plugin */
 	} Module_Kind;
 	
 	const string module_exec_str       = "module_exec";
@@ -102,6 +102,7 @@ namespace Pandora_Modules {
 	const string module_perfcounter_str = "module_perfcounter";
 	const string module_tcpcheck_str   = "module_tcpcheck";	
 	const string module_regexp_str     = "module_regexp";	
+	const string module_plugin_str     = "module_plugin";	
 
 	/**
 	 * Pandora module super-class exception.
@@ -131,15 +132,18 @@ namespace Pandora_Modules {
 	class Pandora_Module {
 	private:
 		int                   module_interval;
+		int                   module_timeout;
 		int                   executions;
 		int                   max, min;
 		bool                  has_limits;
 		Module_Type           module_type;
 		string                module_kind_str;
 		Module_Kind           module_kind;
-		list<Pandora_Data *> *data_list;
 
 	protected:
+		
+		list<Pandora_Data *> *data_list;
+
 		/**
 		 * Indicates if the module generated output in
 		 * his last execution.
@@ -185,8 +189,10 @@ namespace Pandora_Modules {
 		
 		void         setInterval   (int interval);
 		int          getInterval   ();
+		void         setTimeout    (int timeout);
+		int          getTimeout    ();
 		
-		virtual TiXmlElement *getXml       ();
+		virtual string getXml      ();
 
 		
 		virtual void run           ();

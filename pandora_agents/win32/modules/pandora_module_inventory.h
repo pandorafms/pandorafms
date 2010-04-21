@@ -47,7 +47,7 @@ namespace Pandora_Modules {
 		Pandora_Module_Inventory (string name, string options);
 		
 		void   run                 ();
-		TiXmlElement *getXml       ();
+		string getXml              ();
 		void setOutput             (string output, string data_origin);
 		void setOutput             (string output);
 	};

@@ -1,3 +1,38 @@
+2010-04-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* main.cc: Updated headers after tinyxml removal.
+	
+	* modules/pandora_module_list.cc,
+	  modules/pandora_module_factory.cc: Added support for plugin modules.
+
+	* modules/pandora_module_exec.cc, modules/pandora_module.h,
+	  modules/pandora_module.cc: Added the module_timeout configuration
+	  token and replaced tinyxml related code.
+
+	* bin/pandora_agent.conf: Added a sample plugin module. Added the
+	  group configuration token (was missing).
+
+	* modules/pandora_module_plugin.cc,
+	  modules/pandora_module_plugin.h: Added to repository. Plugin module.
+
+	* bin/util/df.vbs, bin/util/ps.vbs: Added to repository. Sample
+	  VBScript plugins.
+
+	* pandora_windows_service.cc, pandora_windows_service.h,
+	  modules/pandora_module_inventory.cc, ssh/pandora_ssh_test.cc,
+	  ftp/pandora_ftp_test.cc, modules/pandora_module_inventory.h: Replaced
+	  tinyxml related code.
+
+	* tinyxml, tinyxml/tinyxmlerror.cpp, tinyxml/tinystr.h,
+	  tinyxml/tinyxmlparser.cpp, tinyxml/tinyxml.cpp,
+	  tinyxml/tinyxml.h, tinyxml/tinystr.cpp: Removed from repository. No
+	  longer used.
+
+	* installer/pandora.mpi, pandora.cc: Updated build to RC1.
+
+	* Makefile.am: Updated sources. Removed tinyxml and added the plugin
+	  module.
+
 2010-04-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: fixed getOSVersion. Crashed in Windows 2008

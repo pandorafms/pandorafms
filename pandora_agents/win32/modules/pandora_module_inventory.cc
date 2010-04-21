@@ -300,23 +300,18 @@ Pandora_Module_Inventory::setOutput (string output, string data_origin) {
  * @overrides TiXmlElement* Pandora_Module::getXml()
  */
 
-TiXmlElement *
+string
 Pandora_Module_Inventory::getXml() {
-	TiXmlElement *root;
-	TiXmlElement *element, *inventory_module;
-	TiXmlElement *inventory_list_element = NULL;
-	TiXmlElement *data_element;
-	TiXmlText    *text;
-	string        item_clean, data_clean, desc_clean, submodule;
+	string        module_xml, data_clean, current_module, prev_module;
 	Pandora_Data *data;
+	
 	pandoraDebug ("Pandora_Module_Inventory::getXML begin\n");
 	
 	if (!this->has_output || this->inventory_list == NULL) {
-		return NULL;
+		return "";
 	}
 	
-	root = new TiXmlElement ("inventory");
-	inventory_module = new TiXmlElement("inventory_module");
+	module_xml = "\t<inventory>\n";
   
 	if (this->inventory_list && this->inventory_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;		
@@ -325,82 +320,45 @@ Pandora_Module_Inventory::getXml() {
 		     iter != this->inventory_list->end ();
 		     iter++) {
 			data = *iter;
-			if (submodule != data->getDataOrigin()){
-                if (inventory_list_element != NULL)
-                {
-					inventory_module->InsertEndChild (*inventory_list_element);
-		 			delete inventory_list_element;
-		 			inventory_list_element = NULL;
-		 			root->InsertEndChild(*inventory_module);
-		 			delete inventory_module;
-		 			inventory_module = new TiXmlElement("inventory_module");
-		        }
-		        
-				submodule = data->getDataOrigin();
-		        element = new TiXmlElement ("name");
-				text = new TiXmlText (submodule);
-				element->InsertEndChild (*text);
-				inventory_module->InsertEndChild (*element);
-				delete element;
-				delete text;
+			
+			current_module = data->getDataOrigin();
+			
+			if (current_module != prev_module) {
 				
-				element = new TiXmlElement ("type");
-				text = new TiXmlText (this->module_type_str);
-				element->InsertEndChild (*text);
-				inventory_module->InsertEndChild (*element);
-				delete element;
-				delete text;
+				/* Close the previous datalist */
+				if (prev_module != "") {
+					module_xml += "\t\t\t</datalist>\n";
+				}
+				module_xml += "\t\t<inventory_module>\n\t\t\t<name><![CDATA[";
+				module_xml += data->getDataOrigin();
+				module_xml += "]]></name>\n";
+			
+				module_xml += "\t\t\t<type><![CDATA[";
+				module_xml += this->module_type_str;
+				module_xml +=  "]]></type>\n";
 		
-				inventory_list_element = new TiXmlElement ("datalist");
-		     }
-			data_element = new TiXmlElement ("data");
-			try {
-				data_clean = strreplace (this->getDataOutput (data),
-							 "%", "%%" );
-			} catch (Output_Error e) {
-		 		delete data_element;
-				continue;
+				module_xml += "\t\t\t<datalist>\n";
+		    } else {
+				try {
+					data_clean = strreplace (this->getDataOutput (data),
+					                         "%", "%%" );
+				} catch (Output_Error e) {
+					continue;
+				}
+
+				module_xml += "\t\t\t\t<data><![CDATA[";
+				module_xml += data_clean;
+				module_xml += "]]></data>\n";
 			}
 			
-			text = new TiXmlText (data_clean);
-			data_element->InsertEndChild (*text);
-			delete text;
-			
-			inventory_list_element->InsertEndChild (*data_element);
-			delete data_element;
+			prev_module = current_module;
 		}
-		if (inventory_list_element != NULL)
-        {
-			inventory_module->InsertEndChild (*inventory_list_element);
- 			delete inventory_list_element;
- 			inventory_list_element = NULL;
-        }
-	} else {
-		data = inventory_list->front ();
-		element = new TiXmlElement ("data");
-		try {
-		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-		text = new TiXmlText (data_clean);
-		element->InsertEndChild (*text);
-		inventory_module->InsertEndChild (*element);
-		delete text;
-	} catch (Output_Error e) {
 	}
-		delete element;
-	}
-		
-	element = new TiXmlElement ("description");
-	text = new TiXmlText (this->module_description);
-	element->InsertEndChild (*text);
-	inventory_module->InsertEndChild (*element);
-	delete text;
-	delete element;
-
-	root->InsertEndChild(*inventory_module);
-	delete inventory_module;
 	
+	/* Clean up */
 	this->cleanDataList ();
+	
 	pandoraDebug ("%s Pandora_Module_Inventory::getXML end", module_name.c_str ());
-	return root;
+	return module_xml;
 }
 

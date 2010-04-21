@@ -19,7 +19,6 @@
 */
 
 #include "pandora_ftp_test.h"
-#include "../tinyxml/tinyxml.h"
 #include "../misc/pandora_file.h"
 #include <iostream>
 #include <dir.h>
@@ -73,13 +72,13 @@ Pandora_FTP_Test::~Pandora_FTP_Test () {
  */
 void
 Pandora_FTP_Test::test () {
+	string            data_xml;
 	string            password, tmp_filename;
 	string            remote_host, remote_filepath, tmp_filepath;
-	TiXmlDocument    *doc;
-	TiXmlDeclaration *decl;
 	bool              saved;
 	char             *err;
 	DIR              *dir;
+	FILE             *conf_fh = NULL;
 
 	remote_host = this->conf->getValue ("server_ip");
 	cout << "Connecting with " << remote_host << "..." << endl;
@@ -115,24 +114,17 @@ Pandora_FTP_Test::test () {
 	}
 	tmp_filepath += tmp_filename;
 	
-	decl = new TiXmlDeclaration( "1.0", "ISO-8859-1", "" );
-	doc = new TiXmlDocument (tmp_filepath);
-	doc->InsertEndChild (*decl);
-	saved = doc->SaveFile();
-	if (!saved) {
-		Pandora_Exception e;
+	data_xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n";
+	conf_fh = fopen (tmp_filepath.c_str (), "w");
+	if (conf_fh == NULL) {
+		Pandora::Pandora_Exception e;
 		cout << "Error when saving the XML in " << tmp_filepath << endl;
-		if (doc->Error ()) {
-			cout << "Reason: " << doc->ErrorDesc () << endl;
-		}
 		cout << "Check the configuration file" << endl;
-		delete doc;
-		delete ftp_client;
-		
 		throw e;
 	}
-	delete doc;
-	
+	fprintf (conf_fh, "%s", data_xml.c_str ());
+	fclose (conf_fh);
+
 	cout << "Created a blank XML file in " << tmp_filepath<< endl;
 	
 	remote_filepath = conf->getValue ("server_path");

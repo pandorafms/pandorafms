@@ -180,53 +180,48 @@ Pandora_Windows_Service::pandora_init () {
 	}
 }
 
-TiXmlElement *
+string
 Pandora_Windows_Service::getXmlHeader () {
-	TiXmlElement *agent;
 	char          timestamp[20];
-	string        value;
+	string        agent_name, os_name, os_version, encoding, value;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
-	agent = new TiXmlElement ("agent_data");
-	
-	value = conf->getValue ("agent_name");
-	if (value == "") {
-		value = Pandora_Windows_Info::getSystemName ();
+	// Get agent name
+	agent_name = conf->getValue ("agent_name");
+	if (agent_name == "") {
+		agent_name = Pandora_Windows_Info::getSystemName ();
 	}
-	agent->SetAttribute ("agent_name", value);
 	
-	value = conf->getValue ("description");
-	agent->SetAttribute ("description", value);
-
-	agent->SetAttribute ("version", getPandoraAgentVersion ());
-	
-	// Get current time
+	// Get timestamp
 	ctime = time(0);
 	ctime_tm = localtime(&ctime);
-
 	value = conf->getValue ("autotime");
 	if (value != "1") {
 		sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
 			ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
 			ctime_tm->tm_min, ctime_tm->tm_sec);
-	
-		agent->SetAttribute ("timestamp", timestamp);
 	}
 	
-	value = conf->getValue ("interval");
-	agent->SetAttribute ("interval", value);
-	
-	value = Pandora_Windows_Info::getOSName ();
-	agent->SetAttribute ("os_name", value);
-	
-	value = value + Pandora_Windows_Info::getOSVersion ();
-	agent->SetAttribute ("os_version", value);
-	
-	value = conf->getValue ("group");
-	agent->SetAttribute ("group", value);
+	// Get OS name and version
+	os_name = Pandora_Windows_Info::getOSName ();
+	os_version = os_name + Pandora_Windows_Info::getOSVersion ();
 
-	return agent;
+	// Get encoding
+	encoding = conf->getValue ("encoding");
+	if (encoding == "") {
+		encoding = "ISO-8859-1";
+	}
+
+	return "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
+	       "<agent_data agent_name=\"" + agent_name +
+	       "\" description=\"" + conf->getValue ("description") +
+	       "\" version=\"" + getPandoraAgentVersion () +
+	       "\" timestamp=\"" + timestamp +
+	       "\" interval=\"" + conf->getValue ("interval") +
+	       "\" os_name=\"" + os_name +
+	       "\" os_version=\"" + os_version +
+	       "\" group=\"" + conf->getValue ("group") + "\">\n";
 }
 
 int
@@ -705,17 +700,15 @@ Pandora_Windows_Service::checkConfig () {
 int
 Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
     int rc = 0, xml_buffer;
-	TiXmlDeclaration *decl;
-	TiXmlDocument    *doc;
-	TiXmlElement     *local_xml, *agent;
+    string            data_xml;
 	string            xml_filename, random_integer;
 	string            tmp_filename, tmp_filepath;
 	string            encoding;
-	bool              saved;
 	static HANDLE     mutex = 0; 
     ULARGE_INTEGER    free_bytes;
     double            min_free_bytes = 0;
 	Pandora_Agent_Conf *conf = NULL;
+	FILE              *conf_fh = NULL;
 
 	conf = this->getConf ();
 	min_free_bytes = 1024 * atoi (conf->getValue ("temporal_min_size").c_str ());
@@ -728,25 +721,23 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	/* Wait for the mutex to be opened */
 	WaitForSingleObject (mutex, INFINITE);
 	
-	agent = getXmlHeader ();
+	data_xml = getXmlHeader ();
 	
+	/* Write module data */
 	if (modules != NULL) {
 		modules->goFirst ();
 	
 		while (! modules->isLast ()) {
 			Pandora_Module *module;
 			
-			module = modules->getCurrentValue ();
-			
-			local_xml = module->getXml ();
-			if (local_xml != NULL) {
-				agent->InsertEndChild (*local_xml);
-			
-				delete local_xml;
-			}
+			module = modules->getCurrentValue ();			
+			data_xml += module->getXml ();
 			modules->goNext ();
 		}
 	}
+	
+	/* Close the XML header */
+	data_xml += "</agent_data>";
 	
 	/* Generate temporal filename */
 	random_integer = inttostr (rand());
@@ -763,27 +754,16 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	tmp_filepath = xml_filename + tmp_filename;
 
 	/* Copy the XML to temporal file */
-	encoding = conf->getValue ("encoding");
-	if (encoding == "") {
-		encoding = "ISO-8859-1";
-	}
-
 	pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
-	decl = new TiXmlDeclaration ("1.0", encoding.c_str(), "");
-	doc = new TiXmlDocument (tmp_filepath);
-	doc->InsertEndChild (*decl);
-	doc->InsertEndChild (*agent);
-	saved = doc->SaveFile();
-	delete doc;
-	delete decl;
-	delete agent;
-
-	if (!saved) {
+	conf_fh = fopen (tmp_filepath.c_str (), "w");
+	if (conf_fh == NULL) {
 		pandoraLog ("Error when saving the XML in %s",
 			    tmp_filepath.c_str ());
 		ReleaseMutex (mutex);
 		return PANDORA_EXCEPTION;
 	}
+	fprintf (conf_fh, "%s", data_xml.c_str ());
+	fclose (conf_fh);
 
 	/* Only send if debug is not activated */
 	if (getPandoraDebug () == false) {

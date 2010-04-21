@@ -18,6 +18,7 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <iostream>
 #include "pandora.h"
 #include "pandora_windows_service.h"
 #include "ssh/pandora_ssh_test.h"

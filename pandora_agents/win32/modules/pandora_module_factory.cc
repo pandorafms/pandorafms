@@ -35,6 +35,7 @@
 #include "pandora_module_perfcounter.h"
 #include "pandora_module_tcpcheck.h"
 #include "pandora_module_regexp.h"
+#include "pandora_module_plugin.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -78,6 +79,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_PORT          ("module_port ")
 #define TOKEN_TIMEOUT       ("module_timeout ")
 #define TOKEN_REGEXP        ("module_regexp ")
+#define TOKEN_PLUGIN        ("module_plugin ")
 
 string
 parseLine (string line, string token) {
@@ -120,6 +122,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_retries, module_startdelay, module_retrydelay;
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
+	string                 module_plugin;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -155,6 +158,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_port          = "";
 	module_timeout       = "";
 	module_regexp        = "";
+	module_plugin        = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -273,6 +277,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_regexp == "") {
 			module_regexp = parseLine (line, TOKEN_REGEXP);
 		}
+		if (module_plugin == "") {
+			module_plugin = parseLine (line, TOKEN_PLUGIN);
+		}
 
 		iter++;
 	}
@@ -281,6 +288,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	if (module_exec != "") {
 		module = new Pandora_Module_Exec (module_name,
 						  module_exec);
+		if (module_timeout != "") {
+			module->setTimeout (atoi (module_timeout.c_str ()));
+		}
+		
 	} else if (module_proc != "") {
 		module = new Pandora_Module_Proc (module_name,
 						  module_proc);
@@ -358,6 +369,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Tcpcheck (module_name, module_tcpcheck, module_port, module_timeout);
 	} else if (module_regexp != "") {
 		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern);
+	} else if (module_plugin != "") {
+		module = new Pandora_Module_Plugin (module_name, module_plugin);
 	} else {
 		return NULL;
 	}
@@ -370,32 +383,38 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module->setAsync (true);
 	}
 	
-	type = Pandora_Module::parseModuleTypeFromString (module_type);
-	switch (type) {
-	case TYPE_GENERIC_DATA:
-	case TYPE_GENERIC_DATA_INC:
-	case TYPE_GENERIC_PROC:
-	case TYPE_ASYNC_DATA:
-	case TYPE_ASYNC_PROC:
-		module->setType (module_type);
-		numeric = true;
-		
-		break;
-	case TYPE_GENERIC_DATA_STRING:
-	case TYPE_ASYNC_STRING:
-		module->setType (module_type);
+	/* Plugins do not have a module type */
+	if (module_plugin == "") {
+		type = Pandora_Module::parseModuleTypeFromString (module_type);
+		switch (type) {
+		case TYPE_GENERIC_DATA:
+		case TYPE_GENERIC_DATA_INC:
+		case TYPE_GENERIC_PROC:
+		case TYPE_ASYNC_DATA:
+		case TYPE_ASYNC_PROC:
+			module->setType (module_type);
+			numeric = true;
+			
+			break;
+		case TYPE_GENERIC_DATA_STRING:
+		case TYPE_ASYNC_STRING:
+			module->setType (module_type);
+			numeric = false;
+			
+			break;
+		default:
+			pandoraDebug ("Bad module type \"%s\" while parsing %s module",
+				      module_type.c_str (), module_name.c_str ());
+			
+			delete module;
+			
+			return NULL;
+		}
+	} else {
+		module->setType	("generic_data_string");
 		numeric = false;
-		
-		break;
-	default:
-		pandoraDebug ("Bad module type \"%s\" while parsing %s module",
-			      module_type.c_str (), module_name.c_str ());
-		
-		delete module;
-		
-		return NULL;
 	}
-	
+
 	if (numeric) {
 		if (module_max != "") {
 			try {

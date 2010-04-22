@@ -1,5 +1,10 @@
 2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora.js: erased trace line in the source of function
+	"agent_changed", and force to select by default the none option.
+
+2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora.js: changed function "agent_changed" for take
 	the translate any or none texts from ajax or global var.
 	

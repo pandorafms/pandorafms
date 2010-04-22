@@ -1,3 +1,11 @@
+2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js: changed function "agent_changed" for take
+	the translate any or none texts from ajax or global var.
+	
+	* operation/agentes/ver_agente.php: added to package data the translate
+	text for any.
+
 2010-04-21  Sancho Lerena <slerena@artica.es>
 
     * include/functions_reporting.php: Added function render_report_html_item()

@@ -171,7 +171,7 @@ function give_acl ($id_user, $id_group, $access) {
 function safe_acl_group ($id_user, $id_groups, $access) {
 	if (!is_array ($id_groups) && check_acl ($id_user, $id_groups, $access)) {
 		/* Return all the user groups if it's the group All */
-		if ($id_groups == 1 || $id_groups == 0)
+		if ($id_groups == 0)
 			return array_keys (get_user_groups ($id_user, $access));
 		return array ($id_groups);
 	} elseif (!is_array ($id_groups)) {
@@ -288,9 +288,7 @@ function get_profiles () {
 function create_user_profile ($id_user, $id_profile = 1, $id_group = 1, $assignUser = false) {
 	global $config;
 	
-	if (empty ($id_profile))
-		return false;
-	if (empty ($id_group))
+	if (empty ($id_profile) || $id_group < 0)
 		return false;
 	
 	if (isset ($config["id_user"])) {
@@ -400,7 +398,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	if (is_array($id_group)) {
 		$search_sql = sprintf ('WHERE id_grupo IN (%s)', implode (",", $id_group));
 	}
-	else if (($id_group == 1) || ($id_group == 0)) { //All group
+	else if ($id_group == 0) { //All group
 		$search_sql = 'WHERE 1 = 1';
 	}
 	else {
@@ -1371,13 +1369,13 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 
 	if (!$groups)
 		return $user_groups;
+		
+	if ($returnAllGroup) //All group
+		$user_groups[0] = "All";
 
 	foreach ($groups as $group) {
-		if (! give_acl ($id_user, $group["id_grupo"], $privilege))
-			continue;
-		if ((!$returnAllGroup) && ($group["id_grupo"] == 1)) //All group
-			continue;		
-		$user_groups[$group['id_grupo']] = $group['nombre'];
+		if (give_acl ($id_user, $group["id_grupo"], $privilege))
+			$user_groups[$group['id_grupo']] = $group['nombre'];
 	}
 	
 	return $user_groups;
@@ -2873,11 +2871,15 @@ function get_agent_group ($id_agent) {
  * This function gets the group name for a given group id
  *
  * @param int The group id
+ * @param boolean $returnAllGroup Flag the return group, by default false.
  *
  * @return string The group name
  */
-function get_group_name ($id_group) {
-	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
+function get_group_name ($id_group, $returnAllGroup = false) {
+	if($id_group > 0)
+		return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
+	elseif($returnAllGroup)
+		return "All";
 }
 
 /**
@@ -3091,8 +3093,23 @@ function get_group_users ($id_group, $filter = false) {
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter['id_grupo'] = (int) $id_group;
-	$result = get_db_all_rows_filter ("tusuario_perfil", $filter);
+	$resulta = array();
+	$resulta = get_db_all_rows_filter ("tusuario_perfil", $filter);
 	
+	// The users of the group All (0) will be also returned
+	$filter['id_grupo'] = 0;
+	$resultb = array();
+	$resultb = get_db_all_rows_filter ("tusuario_perfil", $filter);
+	
+	if($resulta == false && $resultb == false)
+		$result = false;
+	elseif($resulta == false)
+		$result = $resultb;
+	elseif($resultb == false)
+		$result = $resulta;
+	else
+		$result = array_merge($resulta,$resultb);
+
 	if ($result === false)
 		return array ();
 	//This removes stale users from the list. This can happen if switched to another auth scheme

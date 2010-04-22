@@ -26,7 +26,7 @@ $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php')
 $filter = get_parameter ("filter", "all_enabled");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $offset_combined = (int) get_parameter_get("offset_combined", 0);
-$id_group = (int) get_parameter ("ag_group", 1); //1 is the All group (selects all groups)
+$id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
 $free_search = get_parameter("free_search", '');
 
 $sec2 = get_parameter_get ('sec2');

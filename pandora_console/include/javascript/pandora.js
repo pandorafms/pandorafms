@@ -75,16 +75,23 @@ function agent_changed (event, id_agent, selected) {
 				 "id_agent": id_agent
 				 },
 				 function (data) {
-				 $('#module').empty ();
-				 $('#module').append ($('<option></option>').html ("<?php echo __('Any')?>").attr ("value", 0));
-				 jQuery.each (data, function (i, val) {
-							  s = js_html_entity_decode (val['nombre']);
-							  $('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
-							  $('#module').fadeIn ('normal');
-							  });
-				 if (selected != undefined)
-				 $('#module').attr ('value', selected);
-				 $('#module').attr ('disabled', 0);
+					 console.log($(document).data('text_for_module'));
+					 $('#module').empty ();
+					 
+					 if (typeof($(document).data('text_for_module')) != 'undefined') {
+						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr ("value", 0));
+					 }
+					 else { 
+						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0));
+					 }
+					 jQuery.each (data, function (i, val) {
+								  s = js_html_entity_decode (val['nombre']);
+								  $('#module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
+								  $('#module').fadeIn ('normal');
+								  });
+					 if (selected != undefined)
+					 $('#module').attr ('value', selected);
+					 $('#module').attr ('disabled', 0);
 				 },
 				 "json"
 				 );

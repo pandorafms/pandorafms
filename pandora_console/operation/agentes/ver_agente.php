@@ -71,6 +71,9 @@ if (is_ajax ()) {
 		$agent_modules = get_agent_modules ($id_agent,
 			($fields != '' ? explode (',', $fields) : "*"),
 			($filter != '' ? $filter : false), $indexed);
+			
+		//Hack to translate text "any" in PHP to javascript
+		$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
 		return;

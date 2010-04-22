@@ -1,5 +1,12 @@
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 
+       * operation/users/user_edit.php
+       godmode/users/configure_user.php: Changed the
+        All group on combos from 1 to 0 and fix the
+	group all on tables
+
+2010-04-22  Sergio Martin <sergio.martin@artica.es>
+
        * operation/incidents/incident.php: Changed the
         All group on combos from 1 to 0
 

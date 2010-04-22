@@ -1,5 +1,10 @@
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 
+       * godmode/groups/group_list.php: Avoid to show
+	the All group on the table
+
+2010-04-22  Sergio Martin <sergio.martin@artica.es>
+
        * include/functions_ui.php
        include/functions_agents.php
        include/functions_db.php: Change the way of validate

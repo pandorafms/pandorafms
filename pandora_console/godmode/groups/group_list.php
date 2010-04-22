@@ -147,7 +147,7 @@ $table->align = array ();
 $table->align[4] = 'center';
 $table->data = array ();
 
-$groups = get_user_groups ($config['id_user'], "AR");
+$groups = get_user_groups ($config['id_user'], "AR", false);
 
 foreach ($groups as $id_group => $group_name) {
 	$data = array ();

@@ -113,22 +113,26 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 	
-    // First valid group for destination group in agents affected by this group delete
-    $valid_group = process_sql ("SELECT id_group FROM tgrupo WHERE id_grupo != $id_group AND id_grupo > 0 LIMIT 1");
+	$sql = sprintf ('SELECT * FROM tagente WHERE id_grupo = %d', $id_group);
+	$agent = process_sql ($sql);
+			
+	if(!$agent){
 
-	$sql = sprintf ('UPDATE tagente set id_grupo = 1 WHERE id_grupo = %d', $valid_group);
-	$result = process_sql ($sql);
+		$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
+		$result = process_sql ($sql);
+		
+		$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
+		$result = process_sql ($sql);
+	}
+	else
+		echo "<h3 class='error'>".__('The group is not empty.')."</h3>";
 
-	$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
-	$result = process_sql ($sql);
-
-	$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
-	$result = process_sql ($sql);
-
-	if (! $result)
+	
+	if (!$result || $agent )
 		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
 	else
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
+		 
 }
 
 
@@ -143,7 +147,7 @@ $table->align = array ();
 $table->align[4] = 'center';
 $table->data = array ();
 
-$groups = get_user_groups ($config['id_user']);
+$groups = get_user_groups ($config['id_user'], "AR");
 
 foreach ($groups as $id_group => $group_name) {
 	$data = array ();

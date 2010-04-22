@@ -1,3 +1,9 @@
+2010-04-22  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/groups/group_list.php: Added validation
+	when remove a group. Now, if the group is not empty
+	shows a message and dont allow to remove it
+
 2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: erased trace line in the source of function

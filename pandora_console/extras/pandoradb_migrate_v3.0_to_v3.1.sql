@@ -46,6 +46,21 @@ CREATE INDEX idx_utimestamp USING BTREE ON tagent_access(utimestamp);
 
 ALTER TABLE tusuario ADD `timezone` varchar(50) default '';
 
+-- New report data
+ALTER TABLE `treport` ADD `custom_logo` varchar(200)  default NULL;
+ALTER TABLE `treport` ADD `header` MEDIUMTEXT  default NULL;
+ALTER TABLE `treport` ADD `first_page` MEDIUMTEXT default NULL;
+ALTER TABLE `treport` ADD `footer` MEDIUMTEXT default NULL;
+ALTER TABLE `treport` ADD `custom_font` varchar(200) default NULL;
+
+-- New report content data
+ALTER TABLE `treport_content` ADD `text` TEXT  default NULL;
+ALTER TABLE `treport_content` ADD `external_source` TinyText default NULL;
+ALTER TABLE `treport_content` ADD `treport_custom_sql_id` INTEGER UNSIGNED default 0;
+ALTER TABLE `treport_content` ADD `header_definition` TinyText default NULL;
+ALTER TABLE `treport_content` ADD `row_separator` TinyText default NULL;
+ALTER TABLE `treport_content` ADD `line_separator` TinyText default NULL;
+
 -- Realtime statistics on/off and interval
 INSERT INTO tconfig (`token`, `value`) VALUES ('realtimestats', '1');
 INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
@@ -59,6 +74,16 @@ INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon
 
 -- GIS is disabled by default
 INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '1');
+
+-- -----------------------------------------------------
+-- Table `treport_custom_sql`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
+  `id` INTEGER UNSIGNED NOT NULL auto_increment,
+  `name` varchar(150) NOT NULL default '',
+  `sql` TEXT default NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 -- -----------------------------------------------------
 -- Table `tgis_data_history`

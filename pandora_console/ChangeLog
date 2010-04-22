@@ -1,5 +1,31 @@
 2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/ajax/reporting.ajax.php: added ajax respond to delete_sla_item and
+	add_sla actions.
+	
+	* include/functions.php: added in the function "get_report_types" new types
+	of items/contents for reporting.
+
+	* pandoradb.sql: added columns custom_logo, header, first_page, footer,
+	custom_font into the table treport. And in the table treport_content have
+	new columns text, external_source, treport_custom_sql_id, header_definition,
+	row_separator, line_separator. Added new table treport_custom_sql.
+	
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: added changes for DB that it
+	same to pandoradb.sql. 
+
+	* images/sort_none.png, images/sort_down.png, images/sort_up.png: added the
+	images for order list items for reports.
+
+	* godmode/reporting/reporting_builder.list_items.php,
+	godmode/reporting/reporting_builder.main.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php: made new forms to
+	manage the reporting, now Pandora have tabs and list of items. In the list
+	of items, you can order manually or automatically the items.
+
+2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora.js: added function
 	"agent_changed_by_multiple_agents" for query ajax with one or more agent
 	select.

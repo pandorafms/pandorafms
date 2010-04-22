@@ -1,0 +1,69 @@
+<?php
+
+//Pandora FMS- http://pandorafms.com
+// ==================================================
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Please see http://pandorafms.org for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the  GNU Lesser General Public License
+// as published by the Free Software Foundation; version 2
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+global $config;
+
+// Login check
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "IW")) {
+	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		"Trying to access report builder");
+	require ("general/noaccess.php");
+	exit;
+}
+
+$delete_sla_item = get_parameter('delete_sla_item', 0);
+$add_sla = get_parameter('add_sla', 0);
+$id = get_parameter('id', 0);
+
+if ($delete_sla_item) {
+	$result = process_sql_delete('treport_content_sla_combined', array('id' => (int)$id));
+	
+	$data['correct'] = 1;
+	if ($result === false) {
+		$data['correct'] = 0;
+	}
+	
+	echo json_encode($data);
+	return;
+}
+
+if ($add_sla) {
+	$id_module = get_parameter('id_module', 0);
+	$sla_limit = get_parameter('sla_limit', 0);
+	$sla_max = get_parameter('sla_max', 0);
+	$sla_min = get_parameter('sla_min', 0);
+	
+	$result = process_sql_insert('treport_content_sla_combined', array(
+		'id_report_content' => $id,
+		'id_agent_module' => $id_module,
+		'sla_max' => $sla_max,
+		'sla_min' => $sla_min,
+		'sla_limit' => $sla_limit));
+	
+	if ($result === false) {
+		$data['correct'] = 0;
+	}
+	else {
+		$data['correct'] = 1;
+		$data['id'] = $result;
+	}
+	
+	echo json_encode($data);
+	return;
+}
+?>

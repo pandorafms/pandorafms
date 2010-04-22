@@ -96,6 +96,51 @@ function agent_changed (event, id_agent, selected) {
 				 );
 }
 
+/**
+ * Fill up select box with id "module" with modules after agent has been selected, but this not empty the select box.s
+ *
+ * @param event that has been triggered
+ * @param id_agent Agent ID that has been selected
+ * @param selected Which module(s) have to be selected
+ */
+function agent_changed_by_multiple_agents (event, id_agent, selected) {
+	var idAgents = Array();
+	
+	jQuery.each ($("#id_agents option:selected"), function (i, val) {
+		//val() because the var is same <option val="NNN"></option>
+		idAgents.push($(val).val());
+	});
+	
+	$('#module').attr ('disabled', 1);
+	$('#module').empty ();
+	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+	jQuery.post ('ajax.php', 
+				 {"page": "operation/agentes/ver_agente",
+				 "get_agent_modules_json_for_multiple_agents": 1,
+				 "id_agent[]": idAgents
+				 },
+				 function (data) {
+					 $('#module').empty ();
+					 
+					 if (typeof($(document).data('text_for_module')) != 'undefined') {
+						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					 }
+					 else { 
+						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+					 }
+					 jQuery.each (data, function (i, val) {
+								  s = js_html_entity_decode(val);
+								  $('#module').append ($('<option></option>').html (s).attr ("value", val));
+								  $('#module').fadeIn ('normal');
+								  });
+					 if (selected != undefined)
+					 $('#module').attr ('value', selected);
+					 $('#module').attr ('disabled', 0);
+				 },
+				 "json"
+				 );
+}
+
 
 /**
  * Autocomplete Agent box and module selector functions.

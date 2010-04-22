@@ -751,6 +751,12 @@ CREATE TABLE IF NOT EXISTS `treport` (
   `description` TEXT NOT NULL,
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
   `id_group` mediumint(8) unsigned NULL default NULL,
+  `custom_logo` varchar(200)  default NULL,
+  `header` MEDIUMTEXT  default NULL,
+  `first_page` MEDIUMTEXT default NULL,
+  `footer` MEDIUMTEXT default NULL,
+  `custom_font` varchar(200) default NULL,
+
   PRIMARY KEY(`id_report`),
   FOREIGN KEY (`id_group`) REFERENCES tgrupo(`id_grupo`)
    ON UPDATE CASCADE ON DELETE CASCADE
@@ -766,6 +772,12 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `order` int (11) NOT NULL default 0,
   `description` mediumtext, 
   `id_agent` int(10) unsigned NOT NULL default 0,
+  `text` TEXT default NULL,
+  `external_source` TinyText default NULL,
+  `treport_custom_sql_id` INTEGER UNSIGNED default 0,
+  `header_definition` TinyText default NULL,
+  `row_separator` TinyText default NULL,
+  `line_separator` TinyText default NULL,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
      ON UPDATE CASCADE ON DELETE CASCADE
@@ -784,6 +796,13 @@ CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
      ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
+  `id` INTEGER UNSIGNED NOT NULL auto_increment,
+  `name` varchar(150) NOT NULL default '',
+  `sql` TEXT default NULL,
+  PRIMARY KEY(`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 CREATE TABLE IF NOT EXISTS `tlayout` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,

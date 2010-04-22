@@ -298,7 +298,7 @@ foreach ($result as $profile) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
-	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo']).'</a>';
+	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo'], True).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);
@@ -314,7 +314,7 @@ $data[0] = '<form method="post">';
 $data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 	0, true, false, false);
 $data[1] = print_select (get_user_groups ($config['id_user'], 'UM'),
-	'assign_group', 0, '', __('None'), 0, true, false, false);
+	'assign_group', -1, '', __('None'), -1, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
 $data[2] .= print_input_hidden ('id', $id, true);
 $data[2] .= print_input_hidden ('add_profile', 1, true);

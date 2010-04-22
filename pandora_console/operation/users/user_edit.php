@@ -162,7 +162,7 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
-	$data[1] = '<b>'.get_group_name ($profile["id_grupo"]).'</b>';
+	$data[1] = '<b>'.get_group_name ($profile["id_grupo"], true).'</b>';
 	array_push ($table->data, $data);
 }
 

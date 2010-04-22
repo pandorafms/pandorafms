@@ -75,14 +75,13 @@ function agent_changed (event, id_agent, selected) {
 				 "id_agent": id_agent
 				 },
 				 function (data) {
-					 console.log($(document).data('text_for_module'));
 					 $('#module').empty ();
 					 
 					 if (typeof($(document).data('text_for_module')) != 'undefined') {
-						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr ("value", 0));
+						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
 					 }
 					 else { 
-						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0));
+						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
 					 }
 					 jQuery.each (data, function (i, val) {
 								  s = js_html_entity_decode (val['nombre']);

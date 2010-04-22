@@ -1,3 +1,8 @@
+2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/tiny_mce/*: added js library (BSD) for the eyecandy
+	widget for textarea. 
+
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 
        * operation/users/user_edit.php

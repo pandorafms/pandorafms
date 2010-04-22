@@ -1,7 +1,7 @@
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 
-       * godmode/groups/group_list.php: Avoid to show
-	the All group on the table
+       * operation/incidents/incident.php: Changed the
+        All group on combos from 1 to 0
 
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 

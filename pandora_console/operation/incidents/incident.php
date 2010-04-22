@@ -141,8 +141,8 @@ $estado = (int) get_parameter ("estado", -1);
 if ($estado > 0) //-1 = All
 	$filter .= sprintf (" AND estado = %d", $estado);
 
-$grupo = (int) get_parameter ("grupo", 1);
-if ($grupo > 1) {
+$grupo = (int) get_parameter ("grupo", 0);
+if ($grupo > 0) {
 	$filter .= sprintf (" AND id_grupo = %d", $grupo);
 	if (give_acl ($config['id_user'], $grupo, "IM") == 0) {
 		audit_db ($config["id_user"],$config["remote_addr"],"ACL Forbidden","User tried to read incidents from group without access");

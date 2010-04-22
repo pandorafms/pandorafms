@@ -133,7 +133,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	}
 	
 	if (($id_agent === false) && ($idGroup !== false)) {
-		if ($idGroup != 1) { //All group
+		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND id_agente IN (SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup . ')';
 		}
 		else {
@@ -217,7 +217,7 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 	}
 	
 	if (($id_agent === false) && ($idGroup !== false)) {
-		if ($idGroup != 1) { //All group
+		if ($idGroup != 0) { //All group
 			$subQuery = 'SELECT id_agente FROM tagente WHERE id_grupo = ' . $idGroup;
 		}
 		else {
@@ -298,7 +298,7 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
 		}
 	}
 	
-	if (in_array (1, $filter['id_grupo'])) {
+	if (in_array (0, $filter['id_grupo'])) {
 		unset ($filter['id_grupo']);
 	}
 	

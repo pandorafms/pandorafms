@@ -102,7 +102,7 @@ if ($search != ""){
 }
 
 // Show only selected groups	
-if ($group_id > 1) {
+if ($group_id > 0) {
 	$groups = $group_id;
 	$agent_names = get_group_agents ($group_id, $filter, "upper");
 // Not selected any specific group

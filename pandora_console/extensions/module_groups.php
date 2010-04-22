@@ -43,7 +43,7 @@ function mainModuleGroups() {
 	echo "<p>" . __("This table shows in columns the modules group and in rows agents group. The cell shows all modules") . "</p>";
 	
 	
-	$agentGroups = get_user_groups ($config['id_user']);
+	$agentGroups = get_user_groups ($config['id_user'], "AR", false);
 	$modelGroups = get_all_model_groups();
 	array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 	
@@ -83,36 +83,37 @@ function mainModuleGroups() {
 			}
 			
 			$color = 'transparent'; //Defaut color for cell
-			$font_color = '#ffffff'; //Default font color for cell
+			$font_color = '#000000'; //Default font color for cell
 			if ($count == 0) {
 				$color = '#babdb6'; //Grey when the cell for this model group and agent group hasn't modules.
 				$alinkStart = '';
 				$alinkEnd = '';
 			}
-			else {
-				$alinkStart = '<a href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
-					'&modulegroup=' . $idModelGroup . '".
-					style="color: ' . $font_color . '";>';
-				$alinkEnd = '</a>';
-				
+			else {	
 				if (array_key_exists(0,$states) && (count($states) == 1))
 					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
 				else {
 					if (array_key_exists(1,$states)) {
 						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+						$font_color = '#ffffff';
 					}
 					else
 						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 				}
+				
+				$alinkStart = '<a href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
+					'&modulegroup=' . $idModelGroup . '".
+					style="color: ' . $font_color . '; font-size: 18px;";>';
+				$alinkEnd = '</a>';
 			}
 			
 			array_push($row,
 				'<div
 					style="background: ' . $color . ';
-					height: 15px;
+					height: 25px;
 					margin-left: auto; margin-right: auto;
-					text-align: center; padding-top: 5px;">
-					' . $alinkStart . $count . ' modules' . $alinkEnd . '</div>');
+					text-align: center; padding-top: 0px; font-size: 18px;">
+					' . $alinkStart . $count . $alinkEnd . '</div>');
 		}
 		array_push($tableData,$row);
 	}

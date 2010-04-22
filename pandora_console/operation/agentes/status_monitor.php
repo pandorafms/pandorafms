@@ -33,7 +33,7 @@ print_page_header ("Monitor detail", "images/bricks.png", false);
 
 $ag_freestring = get_parameter ('ag_freestring');
 $ag_modulename = (string) get_parameter ('ag_modulename');
-$ag_group = (int) get_parameter ('ag_group', 1);
+$ag_group = (int) get_parameter ('ag_group', 0);
 $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup');
@@ -51,11 +51,11 @@ echo "</td>";
 echo "<td>".__('Monitor status')."</td><td>";
 
 $fields = array ();
-$fields[0] = __('Normal'); //default
+$fields[0] = __('Normal'); 
 $fields[1] = __('Warning');
 $fields[2] = __('Critical');
 $fields[3] = __('Unknown');
-$fields[4] = __('Not normal');
+$fields[4] = __('Not normal'); //default
 $fields[5] = __('Not init');
 
 print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
@@ -92,7 +92,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
-if ($ag_group > 1 && give_acl ($config["id_user"], $ag_group, "AR")) {
+if ($ag_group > 0 && give_acl ($config["id_user"], $ag_group, "AR")) {
     $sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
 } else {
 	// User has explicit permission on group 1 ?

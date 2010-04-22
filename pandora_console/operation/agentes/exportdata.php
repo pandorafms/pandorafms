@@ -71,7 +71,7 @@ print_page_header (__("Export data"), "images/bricks.png");
 
 echo "<h2>".__('Pandora agents')." &raquo; ".__('Export data')."</h2>";
 
-$group = get_parameter_post ('group', 1);
+$group = get_parameter_post ('group', 0);
 //$agent = get_parameter_post ('agent', 0);
 $agentName = get_parameter_post ('agent', 0);
 $agents = get_agents (array('nombre LIKE "' . $agentName . '"'), array ('id_agente'));
@@ -302,7 +302,7 @@ if (!in_array ($agent, array_keys ($agents))) {
 $table->data[1][1] = print_input_text_extended ('agent', get_agent_name ($agent), 'text-agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-
+	
 //Module selector
 $table->data[2][0] = '<b>'.__('Modules').'</b>';
 

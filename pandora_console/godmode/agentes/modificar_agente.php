@@ -67,16 +67,9 @@ if (isset($_POST["ag_group"])){
 echo "<table cellpadding='4' cellspacing='4' class='databox' width=770><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
-echo "<select name='ag_group' onChange='javascript:this.form.submit();'
-class='w130'>";
 
-if ($ag_group > 1) {
-	echo "<option value='".$ag_group."'>".get_group_name ($ag_group).
-	"</option>";
-}
-//echo "<option value=1>".get_group_name (1)."</option>"; // Group all is always active
-$mis_grupos = list_group ($config["id_user"]); //Print combo for groups and set an array with all groups
-echo "</select>";
+print_select (get_user_groups(), "ag_group", $ag_group, 'this.form.submit();', '', 0);
+
 echo "<td valign='top'>
 <noscript>
 <input name='uptbutton' type='submit' class='sub upd' value='".__('Show')."'>
@@ -115,7 +108,7 @@ if ($search != ""){
 }
 
 // Show only selected groups    
-if ($ag_group > 1) {
+if ($ag_group > 0) {
 	$sql = sprintf ('SELECT COUNT(*)
 		FROM tagente
 		WHERE id_grupo = %d

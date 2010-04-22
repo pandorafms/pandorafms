@@ -1,5 +1,25 @@
 2010-04-22  Sergio Martin <sergio.martin@artica.es>
 
+       * include/functions_ui.php
+       include/functions_agents.php
+       include/functions_db.php: Change the way of validate
+	the All group. Now the group All has id_group = 0
+	and is not on the database
+
+       * extensions/module_groups.php: Remove the All 
+	group row from the table. Inprove the table style 
+	
+       * operation/agentes/status_monitor.php
+       operation/agentes/alerts_status.php
+       operation/agentes/estado_agente.php
+       operation/agentes/exportdata.php
+       operation/agentes/networkmap.php
+       godmode/agentes/modificar_agente.php
+       godmode/agentes/planned_downtime.php: Changed the
+	All group on combos from 1 to 0
+
+2010-04-22  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/groups/group_list.php: Added validation
 	when remove a group. Now, if the group is not empty
 	shows a message and dont allow to remove it

@@ -1,5 +1,11 @@
 2010-04-23  Sergio Martin <sergio.martin@artica.es>
 
+       * operation/visual_console/index.php
+       godmode/reporting/map_builder.php: Fixed the
+        group all on tables
+
+2010-04-23  Sergio Martin <sergio.martin@artica.es>
+
        * godmode/alerts/alert_compounds.php
        godmode/alerts/alert_list.php
        godmode/alerts/alert_templates.php

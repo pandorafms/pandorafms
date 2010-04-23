@@ -119,7 +119,7 @@ if (!$maps) {
 			$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 		
 			$data[1] = print_group_icon ($map['id_group'], true).'&nbsp;';
-			$data[1] .= get_group_name ($map['id_group']);
+			$data[1] .= get_group_name ($map['id_group'], true);
 			$data[2] = get_db_sql ("SELECT COUNT(*) FROM tlayout_data WHERE id_layout = ".$map['id']);
 		
 			$data[3] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.print_image ("images/copy.png", true).'</a>';

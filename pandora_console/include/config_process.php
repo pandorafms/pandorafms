@@ -117,7 +117,7 @@ $config['extensions'] = get_extensions ();
 
 if (file_exists ($config["homedir"].'/'.ENTERPRISE_DIR.'/index.php')) {
 	$config['enterprise_installed'] = 1;
-	enterprise_include ('include/functions_enterprise.php');
+	enterprise_include_once ('include/functions_enterprise.php');
 } else {
 	$config['enterprise_installed'] = 0;
 }

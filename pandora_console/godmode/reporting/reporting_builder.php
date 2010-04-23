@@ -88,7 +88,7 @@ switch ($action) {
 				else
 					$data[2] = __('No');
 					
-				$data[3] = get_group_name($report['id_group']);
+				$data[3] = get_group_name($report['id_group'], true);
 				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 				$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
 				$data[4] .= print_input_hidden ('action','delete_report', true);
@@ -115,7 +115,7 @@ switch ($action) {
 		switch ($activeTab) {
 			case 'main':
 				$reportName = '';
-				$idGroupReport = 1; //All groups
+				$idGroupReport = 0; //All groups
 				$description = '';
 				$resultOperationDB = null;
 				break;

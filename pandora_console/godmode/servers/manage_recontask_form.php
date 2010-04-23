@@ -46,7 +46,7 @@ if (isset ($_GET["update"])) { // Edit mode
 	$description = "";
 	$id_recon_server = 0;
 	$interval = 43200;
-	$id_group = 1;
+	$id_group = 0;
 	$create_incident = 1;
 	$id_network_profile = 1;
 	$id_os = -1; // Any
@@ -108,7 +108,9 @@ $table->data[6][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined l
 
 // Group
 $table->data[7][0] = "<b>".__('Group');
-$table->data[7][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', "id_group", $id_group, '', '', 0, true);
+$groups = get_user_groups ();
+$table->data[7][1] = print_select ($groups, 'id_group', $id_group, '', '', 0, true);
+//$table->data[7][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre', "id_group", $id_group, '', 'All', 0, true);
 
 
 // Incident

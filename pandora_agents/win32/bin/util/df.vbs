@@ -27,6 +27,7 @@ For Each objItem in colItems
 			Wscript.StdOut.WriteLine "    <description><![CDATA[Drive " & objItem.Name & " free space in MB]]></description>"
 			Wscript.StdOut.WriteLine "    <data><![CDATA[" & Int(objItem.FreeSpace /1048576) & "]]></data>"
 			Wscript.StdOut.WriteLine "</module>"
+            Wscript.StdOut.flush
 		End If
 	End If
 Next

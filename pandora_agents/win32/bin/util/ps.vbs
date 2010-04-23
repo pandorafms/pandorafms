@@ -30,4 +30,5 @@ For i = 0 To argc - 1
 		Wscript.StdOut.WriteLine "    <data><![CDATA[" & 0 & "]]></data>"
 	End If
 	Wscript.StdOut.WriteLine "</module>"
+    Wscript.StdOut.flush
 Next

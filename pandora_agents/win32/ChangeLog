@@ -1,3 +1,13 @@
+2010-04-23  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_agent.conf: Updated sample conf with some examples of
+	inventory usage, and agent plugins (commented).
+
+	* bin/util/df.vbs, bin/util/ps.vbs: Added flush in the end of each module
+
+	* bin/util/logevent_log4x.vbs: New agent plugin to parse eventlog and
+	generate a Log4x format.
+
 2010-04-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_inventory.cc: Fixed a couple of XML tags.
@@ -39,6 +49,7 @@
 	* Makefile.am: Updated sources. Removed tinyxml and added the plugin
 	  module.
 
+>>>>>>> .r2603
 2010-04-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: fixed getOSVersion. Crashed in Windows 2008

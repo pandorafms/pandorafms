@@ -1,5 +1,10 @@
 2010-04-23  Sergio Martin <sergio.martin@artica.es>
 
+       * godmode/servers/manage_recontask_form.php: 
+	Added the All group to combo
+
+2010-04-23  Sergio Martin <sergio.martin@artica.es>
+
        * operation/visual_console/index.php
        godmode/reporting/map_builder.php: Fixed the
         group all on tables

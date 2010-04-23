@@ -1627,8 +1627,6 @@ sub save_module_data ($$$$$) {
 		#	<stacktrace></stacktrace>
 		#</module>
 
-		print "saving log4x data: " . $dataObject->{'message'} . "\n";
-
 		my $sql = "INSERT INTO tagente_datos_log4x(id_agente_modulo, utimestamp, severity, message, stacktrace) values (?, ?, ?, ?, ?)";
 
 		db_do($dbh, $sql, 

@@ -757,9 +757,7 @@ CREATE TABLE IF NOT EXISTS `treport` (
   `footer` MEDIUMTEXT default NULL,
   `custom_font` varchar(200) default NULL,
 
-  PRIMARY KEY(`id_report`),
-  FOREIGN KEY (`id_group`) REFERENCES tgrupo(`id_grupo`)
-   ON UPDATE CASCADE ON DELETE CASCADE
+  PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `treport_content` (

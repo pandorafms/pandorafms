@@ -23,6 +23,8 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 	exit;
 }
 
+require_once ("include/functions_reports.php");
+
 $enterpriseEnable = false;
 if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NOT_HOOK) {
 	$enterpriseEnable = true;
@@ -30,18 +32,92 @@ if (enterprise_include_once('include/functions_reporting.php') !== ENTERPRISE_NO
 
 
 $activeTab = get_parameter('tab', 'main');
-$action = get_parameter('action', 'new');
+$action = get_parameter('action', 'list');
 $idReport = get_parameter('id_report', 0);
 $offset = get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 
 switch ($action) {
+	case 'delete_report':
+	case 'list':
+		// Report LIST
+		print_page_header (__('Reporting').' &raquo; '.__('Custom reporting'), "images/reporting_edit.png", false, "", true);
+		
+		if ($action == 'delete_report') {
+			$result = delete_report ($idReport);
+			print_result_message ($result,
+				__('Successfully deleted'),
+				__('Could not be deleted'));
+		}
+	
+		$reports = get_reports (array ('order' => 'name'),
+			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'));
+		$table->width = '0px';
+		if (sizeof ($reports)) {
+			$table->id = 'report_list';
+			$table->width = '720px';
+			$table->head = array ();
+			$table->align = array ();
+			$table->align[2] = 'center';
+			$table->align[4] = 'center';
+			$table->data = array ();
+			$table->head[0] = __('Report name');
+			$table->head[1] = __('Description');
+			$table->head[2] = __('Private');
+			$table->head[3] = __('Group');
+			$table->head[4] = '';
+			$table->size = array ();
+			$table->size[4] = '40px';
+			
+			foreach ($reports as $report) {
+			
+				if (!is_user_admin ($config["id_user"])){
+					if ($report["private"] && $report["id_user"] != $config['id_user'])
+						if (!give_acl ($config["id_user"], $report["id_group"], "AW"))
+							continue;
+					if (!give_acl ($config["id_user"], $report["id_group"], "AW"))
+						continue;
+				}
+	
+				$data = array ();
+				$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
+						$report['id_report'].'">'.$report['name'].'</a>';
+				$data[1] = $report['description'];
+				if ($report["private"] == 1)
+					$data[2] = __('Yes');
+				else
+					$data[2] = __('No');
+					
+				$data[3] = get_group_name($report['id_group']);
+				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+				$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
+				$data[4] .= print_input_hidden ('action','delete_report', true);
+				$data[4] .= print_input_image ('delete', 'images/cross.png', 1, '',
+					true, array ('title' => __('Delete')));
+					$data[4] .= '</form>';
+				
+				array_push ($table->data, $data);
+							
+			}
+			print_table ($table);
+		} else {
+			echo "<div class='nf'>".__('There are no defined reportings')."</div>";
+		}
+		
+		echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new">';
+		echo '<div class="action-buttons" style="width: 720px;">';
+		print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
+		echo "</div>";
+		echo "</form>";
+		return;
+		break;
 	case 'new':
 		switch ($activeTab) {
 			case 'main':
 				$reportName = '';
 				$idGroupReport = 1; //All groups
 				$description = '';
+				$resultOperationDB = null;
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
@@ -74,6 +150,7 @@ switch ($action) {
 						$idReport = $idOrResult;
 					}
 				}
+				$action = 'edit';
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;

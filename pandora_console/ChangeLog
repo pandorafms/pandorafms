@@ -1,3 +1,8 @@
+2010-04-23  Sergio Martin  <sergio.martin@artica.es>
+
+	* general/ui/agents_list.php: Changed the all group
+	condition from 1 to 0
+
 2010-04-23  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Changed the

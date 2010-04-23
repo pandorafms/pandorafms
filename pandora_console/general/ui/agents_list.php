@@ -24,7 +24,7 @@ if (is_ajax ()) {
 	$filter = str_replace  ("\\\"", "\"", $_POST['filter']);
 	$filter = json_decode ($filter, true);
 	$id_group = (int) get_parameter ('id_group');
-	if ($id_group > 1 && give_acl ($config['id_user'], $id_group, $access))
+	if ($id_group > 0 && give_acl ($config['id_user'], $id_group, $access))
 		$filter['id_grupo'] = $id_group;
 	else
 		$filter['id_grupo'] = array_keys (get_user_groups (false, $access));

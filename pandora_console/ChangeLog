@@ -1,3 +1,9 @@
+2010-04-23  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php: Fixed a doble include in the
+	functions_enterprise.php file (breaks the tab "inventory" in the
+	agent view).
+
 2010-04-23  Sergio Martin  <sergio.martin@artica.es>
 
 	* general/ui/agents_list.php: Changed the all group

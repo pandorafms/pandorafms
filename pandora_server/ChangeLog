@@ -1,3 +1,8 @@
+2010-04-23  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Removed a Log4x trace. Log4x feature 
+	has been tested at this level, and works fine.
+
 2010-04-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/PredictionServer.pm: Added support for service

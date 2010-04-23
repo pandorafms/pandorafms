@@ -4,6 +4,8 @@ ALTER TABLE tagente ADD `update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMEN
 
 ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0;
 
+ALTER TABLE treport DROP FOREIGN KEY treport_ibfk_1;
+
 ALTER TABLE `tserver_export` ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Nuber of hours of diference with the server timezone';
 
 ALTER TABLE `tserver` ADD `lag_time` int(11) NOT NULL default 0;

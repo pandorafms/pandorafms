@@ -1,3 +1,9 @@
+2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.php: re-added the list of reports,
+	re-added the delete reports. And fixed the notice PHP message and the
+	action edit in the main tab.
+
 2010-04-23  Sergio Martin <sergio.martin@artica.es>
 
        * pandoradb.sql

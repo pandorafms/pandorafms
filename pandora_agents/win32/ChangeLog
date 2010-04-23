@@ -1,3 +1,9 @@
+2010-04-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_inventory.cc: Fixed a couple of XML tags.
+
+	* installer/pandora.mpi: Added the vbs scripts to the installer.
+
 2010-04-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* main.cc: Updated headers after tinyxml removal.

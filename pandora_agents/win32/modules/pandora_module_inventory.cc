@@ -325,9 +325,9 @@ Pandora_Module_Inventory::getXml() {
 			
 			if (current_module != prev_module) {
 				
-				/* Close the previous datalist */
+				/* Close the previous datalist and inventory_module*/
 				if (prev_module != "") {
-					module_xml += "\t\t\t</datalist>\n";
+					module_xml += "\t\t\t</datalist>\n\t\t</inventory_module>\n";
 				}
 				module_xml += "\t\t<inventory_module>\n\t\t\t<name><![CDATA[";
 				module_xml += data->getDataOrigin();
@@ -353,6 +353,13 @@ Pandora_Module_Inventory::getXml() {
 			
 			prev_module = current_module;
 		}
+		
+		/* Close the last datalist and module_inventory */
+		module_xml += "\t\t\t</datalist>\n\t\t</inventory_module>\n";
+		
+		/* Close inventory */
+		module_xml += "\t</inventory>\n";
+
 	}
 	
 	/* Clean up */

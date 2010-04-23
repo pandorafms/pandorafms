@@ -37,7 +37,7 @@ if ($search != '');
 	$url .= '&search='.$search;
 
 $groups = get_user_groups (0, 'LM');
-if ($id_group != 1 && isset ($groups[$id_group]))
+if ($id_group > 0 && isset ($groups[$id_group]))
 	$agents = get_group_agents ($id_group, false, "none");
 else
 	$agents = get_group_agents (array_keys ($groups), false, "none");

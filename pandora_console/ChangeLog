@@ -1,3 +1,13 @@
+2010-04-23  Sergio Martin <sergio.martin@artica.es>
+
+       * godmode/alerts/alert_compounds.php
+       godmode/alerts/alert_list.php
+       godmode/alerts/alert_templates.php
+       godmode/alerts/configure_alert_action.php
+       godmode/alerts/alert_actions.php: Changed the
+        All group on combos from 1 to 0 and fix the
+        group all on tables
+
 2010-04-22 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/ajax/reporting.ajax.php: added ajax respond to delete_sla_item and

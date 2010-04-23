@@ -34,7 +34,7 @@ $id_command = '';
 $field1 = '';
 $field2 = '';
 $field3 = '';
-$group = 1;
+$group = 0; //All group is 0
 
 if ($id) {
 	$action = get_alert_action ($id);

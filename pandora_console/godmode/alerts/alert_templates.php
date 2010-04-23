@@ -212,7 +212,7 @@ foreach ($templates as $template) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id='.$template['id'].'">'.
 		$template['name'].'</a>';
 
-	$data[1] = print_group_icon ($template["id_group"], true) .'&nbsp;'. get_group_name ($template['id_group']);
+	$data[1] = print_group_icon ($template["id_group"], true) .'&nbsp;'. get_group_name ($template['id_group'], true);
 	$data[3] = get_alert_templates_type_name ($template['type']);
 
 	$data[4] = '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template" style="display: inline; float: left">';

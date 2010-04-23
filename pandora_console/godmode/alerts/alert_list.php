@@ -45,7 +45,7 @@ $delete_alert = (bool) get_parameter ('delete_alert');
 $disable_alert = (bool) get_parameter ('disable_alert');
 $enable_alert = (bool) get_parameter ('enable_alert');
 $tab = get_parameter('tab', 'list');
-$group = get_parameter('group', 1); //1 is All group
+$group = get_parameter('group', 0); //0 is All group
 $templateName = get_parameter('template_name','');
 $moduleName = get_parameter('module_name','');
 $agentID = get_parameter('agent_id','');
@@ -154,11 +154,11 @@ if ($disable_alert) {
 if ($id_agente) {
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 	
-	if ($group == 1) {
+	if ($group == 0) {
 		$groups = get_user_groups ();
 	}
 	else {
-		$groups = array(1 => __('All'));
+		$groups = array(0 => __('All'));
 	}
 	
 	echo $messageAction;
@@ -186,11 +186,11 @@ else {
 	
 	switch ($tab) {
 		case 'list':
-			if ($group == 1) {
+			if ($group == 0) {
 				$groups = get_user_groups ();
 			}
 			else {
-				$groups = array(1 => __('All'));
+				$groups = array(0 => __('All'));
 			}
 			$agents = get_group_agents (array_keys ($groups), false, "none");
 			
@@ -199,11 +199,11 @@ else {
 			return;
 			break;
 		case 'builder':
-			if ($group == 1) {
+			if ($group == 0) {
 				$groups = get_user_groups ();
 			}
 			else {
-				$groups = array(1 => __('All'));
+				$groups = array(0 => __('All'));
 			}
 			
 			require_once('godmode/alerts/alert_list.builder.php');

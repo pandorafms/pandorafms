@@ -1,3 +1,8 @@
+2010-04-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/javascript/pandora.js: The id_group filter in
+	  agent_module_autocomplete is no longer needed.
+
 2010-04-26 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: in the function

@@ -162,7 +162,6 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 				extraParams: {
 					page: "include/ajax/agent",
 					search_agents: 1,
-					id_group: 0
 				},
 				formatItem: function (data, i, total) {
 					if (total == 0)

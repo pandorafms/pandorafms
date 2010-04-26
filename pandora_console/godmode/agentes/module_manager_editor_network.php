@@ -41,7 +41,7 @@ $extra_title = __('Network server module');
 $data = array ();
 $data[0] = __('Target IP');
 $data[1] = print_input_text ('ip_target', $ip_target, '', 15, 60, true);
-$data[2] = _('Port');
+$data[2] = __('Port');
 $data[3] = print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy);
 
 push_table_simple ($data, 'target_ip');

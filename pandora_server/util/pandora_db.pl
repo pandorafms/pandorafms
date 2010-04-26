@@ -93,31 +93,35 @@ sub pandora_purgedb ($$) {
 	# Starting from the oldest record on the table
 
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos ORDER BY utimestamp ASC LIMIT 1');
-	$total_time = $ulimit_timestamp - $first_mark;
-	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-
-	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-
-		db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
-		print "[PURGE] Data deletion Progress %$ax .. \r";
+	if (defined ($first_mark)) {
+		$total_time = $ulimit_timestamp - $first_mark;
+		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+	
+		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+			db_do ($dbh, "DELETE FROM tagente_datos WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			print "[PURGE] Data deletion Progress %$ax .. \r";
+		}
+	    print "\n";
+	} else {
+		print "[PURGE] No data in tagente_datos\n";
 	}
-    print "\n";
-
 
 	#
 	# Now the log4x data
 	#
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC LIMIT 1');
-	$total_time = $ulimit_timestamp - $first_mark;
-	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+	if (defined ($first_mark)) {
+		$total_time = $ulimit_timestamp - $first_mark;
+		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
 
-	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-
-		db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
-		print "[PURGE] Log4x data deletion progress %$ax .. \r";
+		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+			db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			print "[PURGE] Log4x data deletion progress %$ax .. \r";
+		}
+		print "\n";
+	} else {
+		print "[PURGE] No data in tagente_datos_log4x\n";
 	}
-	print "\n";
-
 
     # String data deletion
     print "[PURGE] Deleting old string data... \n";
@@ -127,14 +131,18 @@ sub pandora_purgedb ($$) {
 
     my $string_limit = time() - 86400 * $conf->{'_string_purge'};
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_string ORDER BY utimestamp ASC LIMIT 1');
-	$total_time = $string_limit - $first_mark;
-	$purge_steps = int($total_time / $BIG_OPERATION_STEP);
-
-	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
-		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
-		print "[PURGE] String deletion Progress %$ax .. \r";
+	if (defined ($first_mark)) {
+		$total_time = $string_limit - $first_mark;
+		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
+	
+		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){
+			db_do ($dbh, "DELETE FROM tagente_datos_string WHERE utimestamp < ". ($first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark );
+			print "[PURGE] String deletion Progress %$ax .. \r";
+		}
+	    print "\n";
+	} else {
+		print "[PURGE] No data in tagente_datos_string\n";
 	}
-    print "\n";
 
     # Delete event data
     if (!defined($conf->{'_event_purge'})){
@@ -172,7 +180,7 @@ sub pandora_purgedb ($$) {
 
     my $gis_limit = time() - 86400 * $conf->{'_gis_purge'};
     $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime($gis_limit));
-	db_do($dbh, "DELETE FROM tgis_data WHERE end_timestamp < '$gis_limit'");
+	db_do($dbh, "DELETE FROM tgis_data_history WHERE end_timestamp < '$gis_limit'");
 
     # Delete pending modules
 	print "[PURGE] Delete pending deleted modules (data table)...\n";
@@ -194,15 +202,18 @@ sub pandora_purgedb ($$) {
 	print "[PURGE] Deleting old access data (More than 24hr) \n";
 
 	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC LIMIT 1');
-	$total_time = $ulimit_access_timestamp - $first_mark;
-	$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
-
-	for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
-		db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
-		print "[PURGE] Agent access deletion progress %$ax .. \r";
+	if (defined ($first_mark)) {
+		$total_time = $ulimit_access_timestamp - $first_mark;
+		$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
+	
+		for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
+			db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp > ". $first_mark);
+			print "[PURGE] Agent access deletion progress %$ax .. \r";
+		}
+	    print "\n";
+	} else {
+		print "[PURGE] No data in tagente_access\n";
 	}
-    print "\n";
-
 }
 
 ###############################################################################

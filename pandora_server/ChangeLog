@@ -1,3 +1,8 @@
+2010-04-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_db.pl: Fixed the purge script. Did not work if
+	  any of the data tables was empty.
+
 2010-04-23  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Removed a Log4x trace. Log4x feature 

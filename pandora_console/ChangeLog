@@ -1,3 +1,12 @@
+2010-04-26  Sancho Lerena <slerena@ærtica.es>
+
+	* operation/agentes/datos_agente.php: Fixed the data table render
+	for log4x data.
+
+	* operation/agentes/estado_monitores.php: Graph icon should be shown
+	when using  Log4x data, it has graphics (need to implement in Flash in
+	the future).
+
 2010-04-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/javascript/pandora.js: The id_group filter in

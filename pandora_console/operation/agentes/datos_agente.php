@@ -59,16 +59,16 @@ $block_size = (int) $config["block_size"];
 $columns = array ();
 
 if ($moduletype_name == "log4x") {
-	$table->width = 1100;
+	$table->width = "100%";
 
 	$sql_body = sprintf ("FROM tagente_datos_log4x WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $module_id, get_system_time () - $period);
 	
 	$columns = array(
-		"Delete" 	=> array("id_tagente_datos_log4x", 	"format_delete_log4x", 	"align" => "center", "width" => "10px"),
-		"Timestamp" => array("utimestamp",				"format_timestamp", 	"align" => "center", "width" => "200px"),
+		
+		"Timestamp" => array("utimestamp",				"format_timestamp", 	"align" => "center" ),
 		"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
-		"Message"	=> array("message", 				"format_verbatim",		"align" => "left", "width" => "400px"),
-		"ST" 		=> array("stacktrace",				"format_data", 			"align" => "left", "width" => "400px")
+		"Message"	=> array("message", 				"format_verbatim",		"align" => "left", "width" => "45%"),
+		"StackTrace" 		=> array("stacktrace",				"format_verbatim", 			"align" => "left", "width" => "50%")
 	);
 
 } else if (preg_match ("/string/", $moduletype_name)) {
@@ -101,9 +101,11 @@ if ($result === false) {
 	$result = array ();
 }
 
-echo "<h2>".__('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id)." </h2>";
-echo "<h3>".human_time_description ($period) ."</h3>";
+$header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id). " - " . human_time_description ($period); 
 
+echo "<h2>".$header_title. "</h2>";
+
+//
 $index = 0;
 foreach($columns as $col => $attr){
 	$table->head[$index] = $col;
@@ -155,9 +157,11 @@ function format_data($data)
 	return $data;
 }
 
-function format_verbatim($data)
-{
-	return "<pre style='font-size:8px;'>" . $data . "</pre>";
+function format_verbatim($data){
+	// We need to replace \n by <br> to create a "similar" output to
+	// information recolected in logs.
+	$data2 = preg_replace ("/\\n/", "<br>", $data);
+	return "<span style='font-size:10px;'>" . $data2 . "</span>";
 }
 
 function format_timestamp($ts)

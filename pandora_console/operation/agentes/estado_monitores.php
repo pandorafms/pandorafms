@@ -149,8 +149,7 @@ foreach ($modules as $module) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".$module["nombre"]."&refresh=600','day_".$win_handle."')";
 
-		$data[6] = "";
-		if ($nombre_tipo_modulo != "log4x")
+	//	if ($nombre_tipo_modulo != "log4x")
 			$data[6] .= '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
 	}

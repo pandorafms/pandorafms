@@ -49,7 +49,7 @@ push_table_simple ($data, 'target_ip');
 $data = array ();
 $data[0] = __('Username');
 $data[1] = print_input_text ('plugin_user', $plugin_user, '', 15, 60, true);
-$data[2] = _('Password');
+$data[2] = __('Password');
 $data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 15, 60, true);
 
 push_table_simple ($data, 'user_pass');

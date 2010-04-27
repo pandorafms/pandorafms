@@ -293,3 +293,20 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
 
 
 ALTER TABLE talert_templates MODIFY `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange');
+
+-- -----------------------------------------------------
+-- Modifications of data in order to group All issue fix
+-- -----------------------------------------------------
+
+DELETE FROM tgrupo WHERE id_grupo = 1;
+UPDATE tusuario_perfil SET id_grupo = 0 WHERE id_grupo = 1;
+UPDATE tgis_map SET group_id = 0 WHERE group_id = 1;
+UPDATE tgis_map_connection SET group_id = 0 WHERE group_id = 1;
+UPDATE tgis_map_layer SET tgrupo_id_grupo = 0 WHERE tgrupo_id_grupo = 1;
+UPDATE talert_actions SET id_group = 0 WHERE id_group = 1;
+UPDATE talert_templates SET id_group = 0 WHERE id_group = 1;
+UPDATE tevento SET id_grupo = 0 WHERE id_grupo = 1;
+UPDATE tgraph SET id_group = 0 WHERE id_group = 1;
+UPDATE tincidencia SET id_grupo = 0 WHERE id_grupo = 1;
+UPDATE tlayout SET id_group = 0 WHERE id_group = 1;
+UPDATE tplanned_downtime SET id_group = 0 WHERE id_group = 1;

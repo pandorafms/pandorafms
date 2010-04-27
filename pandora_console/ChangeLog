@@ -1,3 +1,9 @@
+2010-04-27  Sergio Martin  <sergio.martin@artica.es>
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Changed
+	the database values of group from 1 to 0 and 
+	remove the group with Id=1
+
 2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: cleaned source code of

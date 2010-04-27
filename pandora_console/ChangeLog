@@ -1,3 +1,12 @@
+2010-04-27  Sergio Martin  <sergio.martin@artica.es>
+
+	* include/functions_db.php
+	operation/gis_maps/ajax.php
+	godmode/agentes/planned_downtime.php
+	godmode/agentes/manage_config_remote.php: Fixed many all group
+	control from 1 to 0 value. Remove deprecated functions
+	list_group() and list_group2() from functions_db.php
+
 2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: added render html for "text" and "sql"

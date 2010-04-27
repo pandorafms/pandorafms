@@ -44,7 +44,7 @@ switch ($opt) {
 		$returnJSON['correct'] = 1;
 		
 		if ($agentView == 0) {
-			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 1;'); //group 1 = all groups
+			$flagGroupAll = get_db_all_rows_sql('SELECT tgrupo_id_grupo FROM tgis_map_layer WHERE id_tmap_layer = ' . $layerId . ' AND tgrupo_id_grupo = 0;'); //group 0 = all groups
 			
 			$defaultCoords = get_db_row_sql('SELECT default_longitude, default_latitude
 				FROM tgis_map

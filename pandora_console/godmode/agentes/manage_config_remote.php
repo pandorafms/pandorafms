@@ -115,7 +115,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		echo '<br><br>';
 
 		// Show combo with SOURCE agents
-		if ($id_group > 1)
+		if ($id_group > 0)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";
@@ -136,7 +136,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		echo '<tr><td class="datost">';
 		echo '<b>'.__('To agent(s):').'</b><br><br>';
 		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
-		if ($id_group > 1)
+		if ($id_group > 0)
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
 		else
 			$sql1 = "SELECT * FROM tagente WHERE id_grupo IN ($grouplist) ORDER BY nombre";

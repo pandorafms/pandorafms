@@ -1,3 +1,13 @@
+2010-04-26 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/ver_agente.php: removed hack for translate "any" text.
+	
+	* godmode/reporting/graph_builder.php: removed unused javascript function
+	"agent_changed"
+	
+	* godmode/reporting/reporting_builder.php: re-added parameter
+	$values['id_agent_module'].
+
 2010-04-26  Sancho Lerena <slerena@ærtica.es>
 
 	* operation/agentes/datos_agente.php: Fixed the data table render

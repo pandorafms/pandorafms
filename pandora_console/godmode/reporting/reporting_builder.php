@@ -168,6 +168,7 @@ switch ($action) {
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
+						$values['id_agent_module'] = get_parameter('id_agente_modulo');
 						
 						if ($values['type'] == 'sql') {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
@@ -194,6 +195,7 @@ switch ($action) {
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
+						$values['id_agent_module'] = get_parameter('id_agente_modulo');
 						
 						if ($values['type'] == 'sql') {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');

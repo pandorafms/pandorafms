@@ -1,9 +1,17 @@
+2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: cleaned source code of
+	"render_report_html_item" function for new types of report items.
+
+	* include/functions.php: cleaned source code of "get_report_types" function
+	and added new types of report items.
+
 2010-04-27  Sergio Martin  <sergio.martin@artica.es>
 
 	* pandoradb_data.sql: Changed the group All values
 	on tables with default group form 1 to 0
 
-2010-04-26 Miguel de Dios  <miguel.dedios@artica.es>
+2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/ver_agente.php: removed hack for translate "any" text.
 	

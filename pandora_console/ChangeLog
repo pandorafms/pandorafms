@@ -1,3 +1,8 @@
+2010-04-27  Sergio Martin  <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Changed the group All values
+	on tables with default group form 1 to 0
+
 2010-04-26 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/ver_agente.php: removed hack for translate "any" text.

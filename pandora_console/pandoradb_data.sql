@@ -103,7 +103,6 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` VALUES 
-(1,'All','world',0,0,''),
 (2,'Servers','server_database',0,0,''),
 (4,'Firewalls','firewall',0,0,''),
 (8,'Databases','database_gear',0,0,''),
@@ -245,7 +244,7 @@ INSERT INTO `tusuario` (`id_user`, `fullname`, `firstname`, `lastname`, `middlen
 -- Dumping data for table `tusuario_perfil`
 --
 
-INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
+INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,0,'admin');
 
 --
 -- Dumping data for table `tperfil`
@@ -375,7 +374,7 @@ INSERT INTO `tnetwork_profile_component` (`id_nc`, `id_np`) VALUES (202,6);
 
 
 -- GIS Data
-INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,1,1);
-INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,1);
+INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,0,1);
+INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
 INSERT INTO `tgis_map_has_tgis_map_connection` VALUES (1,1,'2010-03-01 09:46:48',1);
-INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,1);
+INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,0);

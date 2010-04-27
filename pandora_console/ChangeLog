@@ -1,3 +1,16 @@
+2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: added render html for "text" and "sql"
+	item.
+	
+	* include/ajax/reporting.ajax.php: added request for the custom SQL.
+
+	* include/functions_db.php: in function "get_db_value_filter" fixed the
+	field when the field is escape string.
+
+	* godmode/reporting/reporting_builder.item_editor.php: added the preview of
+	custom SQL.
+
 2010-04-27  Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Avoided

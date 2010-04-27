@@ -1576,6 +1576,72 @@ function render_report_html_item ($content, $table, $report) {
 			$data[0] = get_agents_detailed_event_reporting ($content['id_agent'], $content['period'], $report["datetime"]);
 			array_push ($table->data, $data);
 			break;
+		case 'text':
+			$data = array();
+			$data[0] = "<h4>" . __('Text') . "</h4>";
+			array_push ($table->data, $data);
+			$table->colspan[0][0] = 2;
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[0][0] = 2;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			$data[0] = html_entity_decode($content['text']);
+			array_push($table->data, $data);
+			$table->colspan[2][0] = 2;
+			break;
+		case 'sql':
+			$data = array();
+			$data[0] = "<h4>" . __('SQL') . "</h4>";
+			array_push ($table->data, $data);
+			$table->colspan[0][0] = 2;
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[0][0] = 2;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$table2->class = 'databox';
+			$table2->width = '100%';
+			
+			//Create the head
+			$table2->head = array();
+			if ($content['header_definition'] != '') {
+				$table2->head = explode('|', $content['header_definition']);
+			}
+			
+			if ($content['treport_custom_sql_id'] != 0) {
+				$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id']));
+			}
+			else {
+				$sql = $content['external_source'];
+			}
+			
+			$result = get_db_all_rows_sql($sql);
+			if ($result === false) {
+				$result = array();
+			}
+			
+			if (isset($result[0])) {
+				if (count($result[0]) > count($table2->head)) {
+					$table2->head = array_pad($table2->head, count($result[0]), '&nbsp;');
+				}
+			}
+			
+			$table2->data = array();
+			foreach ($result as $row) {
+				array_push($table2->data, $row);
+			}
+			
+			$cellContent = print_table($table2, true);
+			array_push($table->data, array($cellContent));
+			break;
 	}
 }
 

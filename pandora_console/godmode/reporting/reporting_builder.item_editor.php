@@ -288,7 +288,11 @@ echo '<form action="' . $urlForm . '" method="post">';
 		</tr>
 		<tr id="row_custom" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
-			<td style=""><?php print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, '', '--', '0'); ?></td>
+			<td style=""><?php print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
+		</tr>
+		<tr id="row_custom_example">
+			<td style="vertical-align: top;"><?php echo __('SQL preview'); ?></td>
+			<td style="" id="sql_example"></td> 
 		</tr>
 		<tr id="row_url" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
@@ -405,7 +409,36 @@ $(document).ready (function () {
 	agent_module_autocomplete('#text-agent', '#hidden-id_agent', '#id_agent_module');
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla');
 	chooseType();
+	chooseSQLquery();
 });
+
+function chooseSQLquery() {
+	var idCustom = $("#id_custom").val();
+
+	if (idCustom == 0) {
+		$("#sql_example").html('');
+	}
+	else {
+		$("#sql_example").html('<img src="images/spinner.gif" />');
+		
+		var params = [];
+		params.push("get_custom_sql=1");
+		params.push("id=" + idCustom);
+		params.push("page=include/ajax/reporting.ajax");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action="ajax.php",
+			timeout: 10000,
+			dataType: 'json',
+			success: function (data) {
+				if (data['correct']) {
+					$("#sql_example").html(data['sql']);
+				}
+			}
+		});
+	}
+}
 
 function deleteSLARow(id_row) {
 	//ajax to delete
@@ -501,6 +534,7 @@ function chooseType() {
 	$("#row_field_separator").css('display', 'none');
 	$("#row_line_separator").css('display', 'none');
 	$("#sla_list").css('display', 'none');
+	$("#row_custom_example").css('display', 'none');
 	
 	switch (type) {
 		case 'simple_graph':
@@ -569,6 +603,7 @@ function chooseType() {
 			$("#row_query").css('display', '');
 			$("#row_header").css('display', '');
 			$("#row_custom").css('display', '');
+			$("#row_custom_example").css('display', '');
 			break;
 		case 'url':
 			$("#row_description").css('display', '');

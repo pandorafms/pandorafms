@@ -619,11 +619,6 @@ function get_report_types () {
 	$types['min_value'] = __('Min. Value');
 	$types['sumatory'] = __('Sumatory');
 	$types['agent_detailed'] = __('Agent detailed view');
-//	$types['agent_detailed_event'] = __('Agent detailed event');
-//	$types['list_events_module'] = __('List events of module');
-//	$types['list_events_agent'] = __('List events of agent');
-//	$types['list_alerts_agent'] = __('List alerts of agent');
-//	$types['list_alerts_module'] = __('List alerts of module');
 	$types['text'] = __('Text');
 	$types['sql'] = __('SQL query');
 	$types['url'] = __('Import text from URL');
@@ -632,15 +627,20 @@ function get_report_types () {
 	$types['TTO'] = __('TTO');
 	$types['MTBF'] = __('MTBF');
 	$types['MTTR'] = __('MTTR');
+	$types['alert_report_module'] = __('Alert report module'); 
+	$types['alert_report_agent'] = __('Alert report agent');
+	$types['event_report_agent'] = __('Event report agent'); 
+	$types['event_report_module'] = __('Event report module'); 
+//	$types['agent_detailed_event'] = __('Agent detailed event');
+//	$types['list_events_module'] = __('List events of module');
+//	$types['list_events_agent'] = __('List events of agent');
+//	$types['list_alerts_agent'] = __('List alerts of agent');
+//	$types['list_alerts_module'] = __('List alerts of module');
 //	$types['agent_detailed_event_pie_char'] = __('Agent detailed pie chart events');
 //	$types['agent_detailed_event_last_hours'] = __('Agent detailed event in last hours');
 //	$types['agent_detailed_alert_last_hours'] = __('Agent detailed alerts in last hours');
 //	$types['agent_detailed_num_modules'] = __('Agent detailed num modules');
 //	$types['agent_detailed_num_alerts'] = __('Agent detailed num alerts');
-	$types['alert_report_module'] = __('Alert report module'); 
-	$types['alert_report_agent'] = __('Alert report agent');
-	$types['event_report_agent'] = __('Event report agent'); 
-	$types['event_report_module'] = __('Event report module'); 
 
 	return $types;
 }

@@ -1,3 +1,17 @@
+2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: in function
+	"get_agents_detailed_event_reporting" fixed param for $id_agents to array
+	type, fixed the loop to save events and fixed in the loop to make the table.
+	Added the function "get_module_detailed_event_reporting" for events of any
+	module. In function "render_report_html_item" remove trace function, added
+	the render option "event_report_module" for render list of events of any
+	module.
+
+	* include/functions_db.php: added function "get_module_events".
+	
+	* operation/gis_maps/ajax.php: cleaned source code.
+
 2010-04-27  Sergio Martin  <sergio.martin@artica.es>
 
 	* include/functions_db.php

@@ -930,7 +930,7 @@ function get_group_agents_detailed_reporting ($id_group, $period = 0, $date = 0,
  * @return A table object (XHTML)
  */
 function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0, $return = false) {
-	$id_agents = safe_int ($id_agents, 1);
+	$id_agents = (array)safe_int ($id_agents, 1);
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -942,7 +942,7 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 		global $config;
 		$period = $config["sla_period"];
 	}
-
+	
 	$table->width = '99%';
 	$table->data = array ();
 	$table->head = array ();
@@ -953,25 +953,89 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 	$table->head[4] = __('Timestamp');
 	
 	$events = array ();
-	if ($events)
+	
 	foreach ($id_agents as $id_agent) {
 		$event = get_agent_events ($id_agent, (int) $period, (int) $date);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
 	}
-
+	
 	if ($events)
-	foreach ($events as $event) {
-		$data = array ();
-		$data[0] = $event['evento'];
-		$data[1] = $event['event_type'];
-		$data[2] = get_priority_name ($event['criticity']);
-		$data[3] = $event['count_rep'];
-		$data[4] = $event['time2'];
-		array_push ($table->data, $data);
+	foreach ($events as $eventRow) {
+		foreach ($eventRow as $event) { 
+			$data = array ();
+			$data[0] = $event['evento'];
+			$data[1] = $event['event_type'];
+			$data[2] = get_priority_name ($event['criticity']);
+			$data[3] = $event['count_rep'];
+			$data[4] = $event['time2'];
+			array_push ($table->data, $data);
+		}
 	}
 
+	if ($events)	
+		return print_table ($table, $return);
+}
+
+/** 
+ * Get a detailed report of summarized events per agent
+ *
+ * It construct a table object with all the grouped events happened in an agent
+ * during a period of time.
+ * 
+ * @param mixed Module id to get the report from.
+ * @param int Period of time (in seconds) to get the report.
+ * @param int Beginning date (unixtime) of the report
+ * @param bool Flag to return or echo the report table (echo by default).
+ * 
+ * @return A table object (XHTML)
+ */
+function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 0, $return = false) {
+	$id_modules = (array)safe_int ($id_modules, 1);
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = __('Event name');
+	$table->head[1] = __('Event type');
+	$table->head[2] = __('Criticity');
+	$table->head[3] = __('Count');
+	$table->head[4] = __('Timestamp');
+	
+	$events = array ();
+	
+	foreach ($id_modules as $id_module) {
+		$event = get_agent_events ($id_module, (int) $period, (int) $date);
+		if (!empty ($event)) {
+			array_push ($events, $event);
+		}
+	}
+
+	if ($events)
+	foreach ($events as $eventRow) {
+		foreach ($eventRow as $event) {
+			$data = array ();
+			$data[0] = $event['evento'];
+			$data[1] = $event['event_type'];
+			$data[2] = get_priority_name ($event['criticity']);
+			$data[3] = $event['count_rep'];
+			$data[4] = $event['time2'];
+			array_push ($table->data, $data);
+		}
+	}
+	
 	if ($events)	
 		return print_table ($table, $return);
 }
@@ -1182,7 +1246,7 @@ function get_agent_module_info_with_filter ($id_agent,$filter = '') {
 function render_report_html_item ($content, $table, $report) {
     global $config;
 
-	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']); debugPrint($module_name);
+	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
 
 	switch ($content["type"]) {
@@ -1641,6 +1705,25 @@ function render_report_html_item ($content, $table, $report) {
 			
 			$cellContent = print_table($table2, true);
 			array_push($table->data, array($cellContent));
+			break;
+		case 'event_report_module':
+			$data = array ();
+			$data[0] = "<h4>" . __('Module detailed event') . "</h4>";
+			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = get_module_detailed_event_reporting($content['id_agent_module'], $content['period'], $report["datetime"]);
+			array_push ($table->data, $data);
 			break;
 	}
 }

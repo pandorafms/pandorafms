@@ -89,7 +89,7 @@ function check_acl ($id_user, $id_group, $access) {
 		//GroupID = 0, group id doesnt matter (use with caution!)
 	} else {
 		$query = sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo = 1)", $id_user, $id_group);
+						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo = 0)", $id_user, $id_group);
 	}
 	
 	$rowdup = get_db_all_rows_sql ($query);
@@ -285,7 +285,7 @@ function get_profiles () {
  *
  * @return bool True if succesful, false if not
  */
-function create_user_profile ($id_user, $id_profile = 1, $id_group = 1, $assignUser = false) {
+function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false) {
 	global $config;
 	
 	if (empty ($id_profile) || $id_group < 0)
@@ -807,8 +807,8 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  * @return array An array with all the monitors defined in the group (tagente_modulo).
  */
 function get_monitors_in_group ($id_group) {
-	if ($id_group <= 1) {
-		//We select all groups the user has access to if it's 0, -1 or 1
+	if ($id_group <= 0) {
+		//We select all groups the user has access to if it's 0 or -1
 		global $config;
 		$id_group = array_keys (get_user_groups ($config['id_user']));
 	}
@@ -1258,57 +1258,6 @@ function get_all_groups($groupWithAgents = false) {
 		$return[$row['id_grupo']] = $row['nombre'];
 		
 	return $return;
-}
-
-/** 
- * Prints a list of <options> HTML tags with the groups the user has
- * reading privileges.
- *
- * @deprecated Use get_user_groups () in combination with print_select ()
- * instead
- * 
- * @param string User id
- * @param bool Flag to show all the groups or not. True by default.
- * 
- * @return array An array with all the groups
- */
-function list_group ($id_user, $show_all = 1){
-	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql = 'SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
-	$result = get_db_all_rows_sql ($sql);
-	if (!$result)
-		return $mis_grupos;
-	foreach ($result as $row) {
-		if (($row["id_grupo"] != 1 || $show_all == 1) && $row["id_grupo"] != 0 && give_acl($id_user,$row["id_grupo"], "AR") == 1) {
-			//Put in an array all the groups the user belongs to
-			array_push ($mis_grupos, $row["id_grupo"]);
-			echo '<option value="'.$row["id_grupo"].'">'.$row["nombre"].'</option>';
-		}
-	}
-	return ($mis_grupos);
-}
-
-/** 
- * Get a list of the groups a user has reading privileges to.
- *
- * @deprecated Use get_user_groups () instead
- * 
- * @param int User id
- * 
- * @return array A list of the groupid => groups the user has reading privileges.
- */
-function list_group2 ($id_user) {
-	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$result = get_db_all_fields_in_table ('tgrupo', 'id_grupo');
-	if (!$result)
-		return $mis_grupos;
-	foreach ($result as $row) {
-		if (give_acl ($id_user, $row["id_grupo"], "AR") == 1) {
-			array_push ($mis_grupos, $row["id_grupo"]); //Put in array all the groups the user belongs to
-		}
-	}	
-	
-	return ($mis_grupos);
 }
 
 /**

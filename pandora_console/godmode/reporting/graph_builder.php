@@ -659,34 +659,6 @@ require_jquery_file ('autocomplete');
 
 ?>
 <script language="javascript" type="text/javascript">
-
-function agent_changed () {
-	var id_agent = this.value;
-	$('#id_module').fadeOut ('normal', function () {
-		$('#id_module').empty ();
-		var inputs = [];
-		inputs.push ("id_agent=" + id_agent);
-		inputs.push ('filter=delete_pending = 0');
-		inputs.push ("get_agent_modules_json=1");
-		inputs.push ("page=operation/agentes/ver_agente");
-		jQuery.ajax ({
-			data: inputs.join ("&"),
-			type: 'GET',
-			url: action="ajax.php",
-			timeout: 10000,
-			dataType: 'json',
-			success: function (data) {
-				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
-				jQuery.each (data, function (i, val) {
-					s = js_html_entity_decode (val['nombre']);
-					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
-				});
-				$('#id_module').fadeIn ('normal');
-			}
-		});
-	});
-}
-
 $(document).ready (function () {
 	//$('#id_agent').change (agent_changed);
 	

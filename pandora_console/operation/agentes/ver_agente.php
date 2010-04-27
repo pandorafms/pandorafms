@@ -88,7 +88,7 @@ if (is_ajax ()) {
 			($filter != '' ? $filter : false), $indexed);
 			
 		//Hack to translate text "any" in PHP to javascript
-		$agent_modules['any_text'] = __('Any');
+		//$agent_modules['any_text'] = __('Any');
 		
 		echo json_encode ($agent_modules);
 		return;

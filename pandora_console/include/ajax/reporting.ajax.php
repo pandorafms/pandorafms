@@ -27,6 +27,7 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 }
 
 $delete_sla_item = get_parameter('delete_sla_item', 0);
+$get_custom_sql = get_parameter('get_custom_sql', 0);
 $add_sla = get_parameter('add_sla', 0);
 $id = get_parameter('id', 0);
 
@@ -61,6 +62,21 @@ if ($add_sla) {
 	else {
 		$data['correct'] = 1;
 		$data['id'] = $result;
+	}
+	
+	echo json_encode($data);
+	return;
+}
+
+if ($get_custom_sql) {
+	$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
+	
+	if ($result === false) {
+		$data['correct'] = 0;
+	}
+	else {
+		$data['correct'] = 1;
+		$data['sql'] = $sql;
 	}
 	
 	echo json_encode($data);

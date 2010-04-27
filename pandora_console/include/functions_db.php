@@ -1677,7 +1677,9 @@ function get_db_value_filter ($field, $table, $filter, $where_join = 'AND') {
 	if ($result === false)
 		return false;
 	
-	return $result[0][$field];
+	$fieldClean = str_replace('`', '', $field);
+	
+	return $result[0][$fieldClean];
 }
 
 /** 

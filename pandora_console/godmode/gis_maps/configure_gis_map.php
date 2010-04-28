@@ -84,9 +84,6 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 	return;
 }
 
-
-//debugPrint($_POST);
-
 $action = get_parameter('action', 'new_map');
 
 echo '<form id="form_setup" method="post" onSubmit="fillOrderField();">';

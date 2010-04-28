@@ -42,7 +42,7 @@ switch ($action) {
 	default:
 		$actionParameter = 'update';
 		$item = get_db_row_filter('treport_content', array('id_rc' => $idItem));
-		//debugPrint($item);
+		
 		$type = $item['type'];
 		switch ($type) {
 			case 'avg_value':

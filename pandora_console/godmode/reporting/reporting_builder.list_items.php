@@ -156,7 +156,7 @@ if (((($offset == 0) && ($config["block_size"] > $countItems)) ||
 
 $count = 0;
 $rowPair = true;
-//debugPrint($items);
+
 foreach ($items as $item) {
 	if ($rowPair)
 		$table->rowclass[$count] = 'rowPair';

@@ -171,7 +171,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	WHERE id_agent_module in (%s) %s %s %s",
 	$selectText, $subQuery, $where, $filter, $orderbyText);
 	
-	$alerts = get_db_all_rows_sql ($sql); //debugPrint($sql);
+	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
 		return array ();
@@ -243,7 +243,7 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 		WHERE id_agent IN (%s) %s %s",
 		$selectText, $subQuery, $where, $filter);
 	
-	$alerts = get_db_all_rows_sql ($sql);//debugPrint($sql);
+	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
 		return array ();

@@ -330,6 +330,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
+	if(($layout["width"] == 0)){
+		print_error_message (__('The map has not elements'));
+		$layout["width"] = 1;
+	}
+	
 	$resizedMap = false;
 	$proportion = 1;
 	if (!is_null($width)) {

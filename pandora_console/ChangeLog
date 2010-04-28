@@ -1,8 +1,7 @@
 2010-04-28  Sancho Lerena <slerena@artica.es>
 
-    * include/pChart/pChart.class:
-
-    * include/pChart/pData.class
+    * include/pChart/pData.class,
+    include/pChart/pChart.class: Fixed some notices on undefined variables.
 
     * include/fgraph.php: Fixed bug with eventgraph in graph_event_module().
 

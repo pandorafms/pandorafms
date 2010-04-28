@@ -1,3 +1,9 @@
+2010-04-28  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed call to group stats and now
+	process all groups (included disabled) and group 1, because
+	with 3.1 group id 1 is not "all" anymore.
+
 2010-04-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Fixed the purge script. Did not work if

@@ -1005,7 +1005,7 @@ function return_graphtype ($id_module_type){
 		case 9:
 			return "boolean";
 			break;
-		case 30:
+		case 24:
 			return "log4x";
 			break;
 	}

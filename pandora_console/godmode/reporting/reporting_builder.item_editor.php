@@ -42,7 +42,6 @@ switch ($action) {
 	default:
 		$actionParameter = 'update';
 		$item = get_db_row_filter('treport_content', array('id_rc' => $idItem));
-		print_input_hidden('id_item', $idItem);
 		//debugPrint($item);
 		$type = $item['type'];
 		switch ($type) {
@@ -217,6 +216,7 @@ $intervals[7200] = human_time_description_raw (7200);
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
+print_input_hidden('id_item', $idItem);
 ?>
 <table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="90%">
 	<tbody>

@@ -1,5 +1,13 @@
 2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.php: fixed the lost type in the edit
+	item.
+
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the position of
+	hidden input for id item, after it was out form.
+
+2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/reporting/reporting_builder.item_editor.php: fixed a mistake
 	copy&paste, now you can edit correctly the items.
 

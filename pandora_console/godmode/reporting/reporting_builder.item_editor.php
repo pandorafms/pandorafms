@@ -124,14 +124,14 @@ switch ($action) {
 				break;
 			case 'url':
 				$description = $item['description'];
-				$url = $item['row_separator'];
+				$url = $item['column_separator'];
 				break;
 			case 'database_serialized':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
 				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$header = $item['header_definition'];
-				$field = $item['row_separator'];
+				$field = $item['column_separator'];
 				$line = $item['line_separator'];
 				break;
 			case 'TTRT':

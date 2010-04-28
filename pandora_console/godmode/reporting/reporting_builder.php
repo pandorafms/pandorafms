@@ -182,7 +182,7 @@ switch ($action) {
 						}
 						
 						$values['header_definition'] = get_parameter('header');
-						$values['row_separator'] = get_parameter('field');
+						$values['column_separator'] = get_parameter('field');
 						$values['line_separator'] = get_parameter('line');
 						
 						$resultOperationDB = process_sql_update('treport_content', $values, array('id_rc' => $idItem));
@@ -209,7 +209,7 @@ switch ($action) {
 						}
 						
 						$values['header_definition'] = get_parameter('header');
-						$values['row_separator'] = get_parameter('field');
+						$values['column_separator'] = get_parameter('field');
 						$values['line_separator'] = get_parameter('line');
 						
 						$result = process_sql_insert('treport_content', $values);

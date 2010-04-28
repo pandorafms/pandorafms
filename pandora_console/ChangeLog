@@ -1,3 +1,13 @@
+2010-04-28  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Updated version to 3.1
+
+	* pandoradb_migrate_v3.0_to_v3.1.sql: Fix, set log4x correct type id.
+	
+	* include/functions_gis.php: Fixed a notice by undefined value.
+
+	* images/gis_maps/icons: Deleted several non-useful icons.
+
 2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_agents.php, godmode/gis_maps/configure_gis_map.php,

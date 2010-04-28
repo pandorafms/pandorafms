@@ -1,3 +1,9 @@
+2010-04-28  Sergio Martin  <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php: fixed the 
+	error of divided by zero and now the widget
+	display an error message. Bug #2992370
+
 2010-04-28  Sancho Lerena <slerena@artica.es>
 
     * include/pChart/pData.class,

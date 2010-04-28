@@ -888,7 +888,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 	$data = array ();
 	$max_items = 6;
-	$sql = sprintf ('SELECT COUNT(id_evento),nombre
+	$sql = sprintf ('SELECT COUNT(id_evento) as count_number, nombre
 			FROM tevento, tagente_modulo
 			WHERE id_agentmodule = id_agente_modulo
 			AND disabled = 0 AND tevento.id_agente = %d
@@ -901,8 +901,10 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		graphic_error ();
 		return;
 	}
+
+
 	foreach ($events as $event) {
-		$data[$event['nombre'].' ('.$event[0].')'] = $event[0];
+		$data[$event['nombre'].' ('.$event['count_number'].')'] = $event["count_number"];
 	}
 	
 	/* System events */
@@ -1756,7 +1758,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 
                 $max_count = max($max_count, $valores[$severity][$index]['count']);
                 $min_count = min($min_count, $valores[$severity][$index]['count']);
-        }
+       }
 
         grafico_modulo_log4x_trace("$rows rows");
 

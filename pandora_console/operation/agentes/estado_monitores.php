@@ -119,7 +119,7 @@ foreach ($modules as $module) {
 
 	$data[4] = print_status_image($status, $title, true);
 
-	if ($module["id_tipo_modulo"] == 30) { // log4x
+	if ($module["id_tipo_modulo"] == 24) { // log4x
 		switch($module["datos"]) {
 		case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
 		case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;

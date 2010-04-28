@@ -2707,6 +2707,11 @@
 
      $SpliceDistanceRatio = $SpliceDistance;
      $SkewHeight          = ($Radius * $Skew) / 100;
+
+     // Avoid division by zero
+     if ($PieSum == 0)
+        $PieSum = 1;
+
      $SpliceRatio         = (360 - $SpliceDistanceRatio * count($iValues) ) / $PieSum;
      $SplicePercent       = 100 / $PieSum;
      $rSplicePercent      = 100 / $rPieSum;
@@ -2793,6 +2798,8 @@
      if ( $EnhanceColors ) { $ColorRatio = 30 / $SpliceHeight; } else { $ColorRatio = 25 / $SpliceHeight; }
      for($i=$SpliceHeight-1;$i>=1;$i--)
       {
+       if (!isset($iValues))
+        $iValues = array();
        foreach($iValues as $Key => $Value)
         {
          $C_GraphLo = $this->AllocateColor($this->Picture,$this->Palette[$Key]["R"],$this->Palette[$Key]["G"],$this->Palette[$Key]["B"],-10);

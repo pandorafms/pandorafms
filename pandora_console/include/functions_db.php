@@ -914,6 +914,66 @@ function get_module_events ($id_agent_module, $period, $date = 0) {
 }
 
 /** 
+ * Get all the fired of alerts happened in an Agent during a period of time.
+ *
+ * The returned alerts will be in the time interval ($date - $period, $date]
+ * 
+ * @param int $id_agent Agent id to get events.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ * 
+ * @return array An array with all the events happened.
+ */
+function get_agent_alert_fired ($id_agent, $id_alert, $period, $date = 0) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ('SELECT timestamp
+		FROM tevento
+		WHERE id_agente = %d AND utimestamp > %d AND utimestamp <= %d
+		AND id_alert_am = %d 
+		ORDER BY timestamp DESC', $id_agent, $datelimit, $date, $id_alert);
+
+	return get_db_all_rows_sql ($sql);
+}
+
+/** 
+ * Get all the fired of alerts happened in an Agent module during a period of time.
+ *
+ * The returned alerts will be in the time interval ($date - $period, $date]
+ * 
+ * @param int $id_agent_module Agent module id to get events.
+ * @param int $period Period of time in seconds to get events.
+ * @param int $date Beginning date to get events.
+ * 
+ * @return array An array with all the events happened.
+ */
+function get_module_alert_fired ($id_agent_module, $id_alert, $period, $date = 0) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ('SELECT timestamp
+		FROM tevento
+		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d
+		AND id_alert_am = %d 
+		ORDER BY timestamp DESC', $id_agent_module, $datelimit, $date, $id_alert);
+
+	return get_db_all_rows_sql ($sql);
+}
+
+/** 
  * Get all the monitors defined in an agent.
  * 
  * @param int $id_agent Agent id to get all the monitors.

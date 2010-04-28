@@ -1,5 +1,22 @@
 2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: added function "alert_reporting_agent"
+	for make the html list of agent alerts, added function
+	"alert_reporting_module" for same thing before function instead it is for
+	modules. In report item "event_report_agent" fixed the output. Added report
+	items "alert_report_module", "alert_report_agent", "url" and
+	"database_serialized".
+	
+	* include/functions_db.php: added function "get_agent_alert_fired" for
+	to extract the alerts fired of agent, and added "get_module_alert_fired"
+	for alerts fired of module.
+	
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php: fixed the renamed
+	column "row_separator" of previus commit.
+
+2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: renamed the
 	column "row_separator" to more exactly name "column_separator". Sorry.
 

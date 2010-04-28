@@ -540,6 +540,158 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 }
 
 /**
+ * Get a report for alerts of agent.
+ *
+ * It prints the numbers of alerts defined, fired and not fired of agent.
+ *
+ * @param int $id_agent Agent to get info of the alerts.
+ * @param int $period Period of time of the desired alert report.
+ * @param int $date Beggining date of the report (current date by default).
+ * @param bool $return Flag to return or echo the report (echo by default).
+ *
+ * @return string
+ */
+function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = true) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = __('Module');
+	$table->head[1] = __('Template');
+	$table->head[2] = __('Actions');
+	$table->head[3] = __('Fired');
+	
+	$alerts = get_agent_alerts ($id_agent);
+	
+	if (isset($alerts['simple'])) {
+		$i = 0;
+		foreach ($alerts['simple'] as $alert) {
+			$data = array();
+			$data[0] = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
+			$data[1] = get_db_value_filter('name', 'talert_templates', array('id' => $alert['id_alert_template']));
+			$actions = get_db_all_rows_sql('SELECT name 
+				FROM talert_actions 
+				WHERE id IN (SELECT id_alert_action 
+					FROM talert_template_module_actions 
+					WHERE id_alert_template_module = ' . $alert['id'] . ');');
+			$data[2] = '<ul class="action_list">';
+			if ($actions === false) {
+				$actions = array();
+			}
+			foreach ($actions as $action) {
+				$data[2] .= '<li>' . $action['name'] . '</li>';
+			}
+			$data[2] .= '</ul>';
+			
+			$data[3] = '<ul style="list-style-type: disc; margin-left: 10px;">';
+			$firedTimes = get_agent_alert_fired($id_agent, $alert['id'], (int) $period, (int) $date);
+			if ($firedTimes === false) {
+				$firedTimes = array();
+			}
+			foreach ($firedTimes as $fireTime) {
+				$data[3] .= '<li>' . $fireTime['timestamp'] . '</li>';
+			}
+			$data[3] .= '</ul>';
+			
+			if ($alert['disabled']) {
+				$table->rowstyle[$i] = 'color: grey; font-style: italic;';
+			}
+			$i++;
+			
+			array_push ($table->data, $data);
+		}
+	}
+	
+	return print_table ($table, $return);
+}
+
+/**
+ * Get a report for alerts of module.
+ *
+ * It prints the numbers of alerts defined, fired and not fired of agent.
+ *
+ * @param int $id_agent_module Module to get info of the alerts.
+ * @param int $period Period of time of the desired alert report.
+ * @param int $date Beggining date of the report (current date by default).
+ * @param bool $return Flag to return or echo the report (echo by default).
+ *
+ * @return string
+ */
+function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $return = true) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[1] = __('Template');
+	$table->head[2] = __('Actions');
+	$table->head[3] = __('Fired');
+	
+	
+	$alerts = get_db_all_rows_sql('SELECT *
+		FROM talert_template_modules AS t1
+			INNER JOIN talert_templates AS t2 ON t1.id = t2.id
+		WHERE id_agent_module = ' . $id_agent_module);
+	
+	$i = 0;
+	foreach ($alerts as $alert) {
+		$data = array();
+		$data[1] = get_db_value_filter('name', 'talert_templates', array('id' => $alert['id_alert_template']));
+		$actions = get_db_all_rows_sql('SELECT name 
+			FROM talert_actions 
+			WHERE id IN (SELECT id_alert_action 
+				FROM talert_template_module_actions 
+				WHERE id_alert_template_module = ' . $alert['id'] . ');');
+		$data[2] = '<ul class="action_list">';
+		if ($actions === false) {
+			$actions = array();
+		}
+		foreach ($actions as $action) {
+			$data[2] .= '<li>' . $action['name'] . '</li>';
+		}
+		$data[2] .= '</ul>';
+		
+		$data[3] = '<ul style="list-style-type: disc; margin-left: 10px;">';
+		$firedTimes = get_module_alert_fired($id_agent_module, $alert['id'], (int) $period, (int) $date);
+		if ($firedTimes === false) {
+			$firedTimes = array();
+		}
+		foreach ($firedTimes as $fireTime) {
+			$data[3] .= '<li>' . $fireTime['timestamp'] . '</li>';
+		}
+		$data[3] .= '</ul>';
+		
+		if ($alert['disabled']) {
+			$table->rowstyle[$i] = 'color: grey; font-style: italic;';
+		}
+		$i++;
+		
+		array_push ($table->data, $data);
+	}
+	
+	return print_table ($table, $return);
+}
+
+/**
  * Get a report for alerts in a group of agents.
  *
  * It prints the numbers of alerts defined, fired and not fired in a group.
@@ -1017,7 +1169,7 @@ function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 
 	$events = array ();
 	
 	foreach ($id_modules as $id_module) {
-		$event = get_agent_events ($id_module, (int) $period, (int) $date);
+		$event = get_module_events ($id_module, (int) $period, (int) $date);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
@@ -1637,7 +1789,7 @@ function render_report_html_item ($content, $table, $report) {
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$data[0] = get_agents_detailed_event_reporting ($content['id_agent'], $content['period'], $report["datetime"]);
+			$data[0] = get_agents_detailed_event_reporting ($content['id_agent'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
 		case 'text':
@@ -1724,6 +1876,118 @@ function render_report_html_item ($content, $table, $report) {
 			$table->colspan[2][0] = 3;
 			$data[0] = get_module_detailed_event_reporting($content['id_agent_module'], $content['period'], $report["datetime"]);
 			array_push ($table->data, $data);
+			break;
+		case 'alert_report_module':
+			$data = array ();
+			$data[0] = "<h4>" . __('Agent detailed event') . "</h4>";
+			$data[1] = "<h4>$agent_name</h4>";
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = alert_reporting_module ($content['id_agent_module'], $content['period'], $report["datetime"], true);
+			array_push ($table->data, $data);
+			break; 
+		case 'alert_report_agent':
+			$data = array ();
+			$data[0] = "<h4>" . __('Module detailed event') . "</h4>";
+			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = alert_reporting_agent ($content['id_agent'], $content['period'], $report["datetime"], true);
+			array_push ($table->data, $data);
+			break;
+		case 'url':
+			$table->colspan[1][0] = 2;
+			$data = array ();
+			$data[0] = "<h4>" . __('Import text from URL') . "</h4>";
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array();
+			$table->colspan[2][0] = 3;
+			$data[0] = '<iframe id="item_' . $content['id_rc'] . '" src ="' . $content["external_source"] . '" width="100%" height="100%"></iframe>';
+			$data[0] .= '<script>
+				$(document).ready (function () {
+					$("#item_' . $content['id_rc'] . '").height($(document.body).height() + 0);
+			});</script>';
+			
+			array_push ($table->data, $data);
+			break;
+		case 'database_serialized':
+			$data = array ();
+			$data[0] = "<h4>" . __('Serialize data') . "</h4>";
+			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$table2->class = 'databox';
+			$table2->width = '100%';
+			
+			//Create the head
+			$table2->head = array();
+			if ($content['header_definition'] != '') {
+				$table2->head = explode('|', $content['header_definition']);
+			}
+			array_unshift($table2->head, __('Date'));
+			
+			$datelimit = $report["datetime"] - $content['period'];
+			
+			$result = get_db_all_rows_sql('SELECT *
+				FROM tagente_datos_string
+				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+				AND utimestamp > ' . $datelimit . ' AND utimestamp <= ' . $report["datetime"]);
+			if ($result === false) {
+				$result = array();
+			}
+			
+			$table2->data = array();
+			foreach ($result as $row) {
+				$date = date ($config["date_format"], $row['utimestamp']);
+				$serialized = $row['datos'];
+				$rowsUnserialize = explode($content['line_separator'], $serialized);
+				foreach ($rowsUnserialize as $rowUnser) {
+					$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+					array_unshift($columnsUnserialize, $date);
+					array_push($table2->data, $columnsUnserialize);
+				} 
+			}
+			
+			$cellContent = print_table($table2, true);
+			array_push($table->data, array($cellContent));
+			$table->colspan[1][0] = 2;
 			break;
 	}
 }

@@ -956,8 +956,8 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
  *
  * @return string HTML code if return parameter is true.
  */
-function print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false) {
-	$output = print_checkbox_extended ($name, $value, (bool) $checked, $disabled, '', '', true);
+function print_checkbox ($name, $value, $checked = false, $return = false, $disabled = false, $script = '') {
+	$output = print_checkbox_extended ($name, $value, (bool) $checked, $disabled, $script, '', true);
 
 	if ($return === false)
 		echo $output;

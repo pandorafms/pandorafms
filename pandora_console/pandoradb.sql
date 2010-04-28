@@ -774,7 +774,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `external_source` TinyText default NULL,
   `treport_custom_sql_id` INTEGER UNSIGNED default 0,
   `header_definition` TinyText default NULL,
-  `row_separator` TinyText default NULL,
+  `column_separator` TinyText default NULL,
   `line_separator` TinyText default NULL,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)

@@ -1,3 +1,8 @@
+2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.0_to_v3.1.sql: renamed the
+	column "row_separator" to more exactly name "column_separator". Sorry.
+
 2010-04-28  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Updated version to 3.1

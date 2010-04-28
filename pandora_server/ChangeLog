@@ -1,5 +1,8 @@
 2010-04-28  Sancho Lerena <slerena@artica.es>
 
+	* util/gpx2pandora_agent_data.pl: Added support to process
+	gpx files with tracks, plus the RTE format.
+
 	* lib/PandoraFMS/Core.pm: Fixed call to group stats and now
 	process all groups (included disabled) and group 1, because
 	with 3.1 group id 1 is not "all" anymore.

@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+# (c) Artica ST 2010, for Pandora FMS monitoring system
+# See more at http://pandorafms.org
+# Licensed under GPL2 license.
+
 use strict;
 use warnings;
 
@@ -16,6 +20,8 @@ use constant AGENT_VERSION => '3.1';
 
 if ($#ARGV != 1) {
     print "Pandora FMS GIS tool to produce XML files from a standard GPX file\n";
+    print "This tool will not work with waypoints. To convert Waypoints to Tracks\n";
+    print "please use another software like GPSBabel \n";
     print "This will put all the XML files in /var/spool/pandora/data_in directory \n";
     print "\n";
 	print "Usage: $0 <filename.gpx> <agent_name>\n\n";
@@ -50,30 +56,37 @@ if ($@) {
 }
 
 # Debug, code commented
-print "Printing XML DATA\n";
+# print "Printing XML DATA\n";
 #print Dumper ($xml_data);
 #print "Finish Printing XML DATA\n";
-#          'rte' => [
-#                   {
-#                     'rtept' => [
-#                                {
-#                                  'ele' => [
-#                                           '728'
-#                                         ],
-#                                  'speed' => [
-#                                             '0'
-#                                           ],
-#                                  'time' => [
-#                                            '2010-02-19T10:45:08Z'
-#                                          ],
-#                                  'lat' => '40.4327545166',
-#                                  'lon' => '-3.7009150982'
-#                                },
-#
-my $posiciones = $xml_data->{'rte'}[0];
+
+# Detect if Rte or Track format
+
+my $gpx_format = "";
+
+if (defined($xml_data->{'rte'}[0])){
+    $gpx_format = "RTE";
+} else {
+    $gpx_format = "TRK";
+}
+
+print "Detecting GPX in $gpx_format format \n";
+
+my $posiciones;
+my $track_segment;
+my $foreach_pointer;
+
+if ($gpx_format eq "RTE"){
+    $posiciones = $xml_data->{'rte'}[0];
+    $foreach_pointer = $posiciones->{'rtept'}
+} else {
+    $posiciones = $xml_data->{'trk'}[0];
+    $track_segment = $posiciones->{"trkseg"}[0];
+    $foreach_pointer = $track_segment->{'trkpt'}
+}
 
 # Process positions
-foreach my $position (@{$posiciones->{'rtept'}}) {
+foreach my $position (@{$foreach_pointer}) {
     my $longitude= $position->{'lon'};
     my $latitude= $position->{'lat'};
     my $altitude= $position->{'ele'}[0];

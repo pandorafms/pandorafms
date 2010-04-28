@@ -1,3 +1,8 @@
+2010-04-28  Sergio Martin  <sergio.martin@artica.es>
+
+	* include/functions_html.php: Added at print_checkbox
+	function the 'script' parameter
+
 2010-04-27 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: in function

@@ -60,7 +60,7 @@ ALTER TABLE `treport_content` ADD `text` TEXT  default NULL;
 ALTER TABLE `treport_content` ADD `external_source` TinyText default NULL;
 ALTER TABLE `treport_content` ADD `treport_custom_sql_id` INTEGER UNSIGNED default 0;
 ALTER TABLE `treport_content` ADD `header_definition` TinyText default NULL;
-ALTER TABLE `treport_content` ADD `row_separator` TinyText default NULL;
+ALTER TABLE `treport_content` ADD `column_separator` TinyText default NULL;
 ALTER TABLE `treport_content` ADD `line_separator` TinyText default NULL;
 
 -- Realtime statistics on/off and interval

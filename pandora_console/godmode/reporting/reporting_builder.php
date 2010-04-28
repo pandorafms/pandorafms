@@ -169,6 +169,7 @@ switch ($action) {
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agente_modulo');
+						$values['type'] = get_parameter('type', null);
 						
 						if ($values['type'] == 'sql') {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');

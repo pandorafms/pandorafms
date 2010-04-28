@@ -82,14 +82,12 @@ switch ($activeTab) {
 		switch ($action) {
 			case 'update':
 				//Update background
-				//debugPrint(get_db_row_filter('tlayout', array('id' => $idVisualConsole)));
+				
 				$background = get_parameter('background');
 				$width = get_parameter('width');
 				$height = get_parameter('height');
 				process_sql_update('tlayout', array('background' => $background,
 					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
-				
-				//debugPrint(get_db_row_filter('tlayout', array('id' => $idVisualConsole)));
 				
 				//Update elements in visual map
 				$idsElements = get_db_all_rows_filter('tlayout_data', array('id_layout' => $idVisualConsole), array('id'));

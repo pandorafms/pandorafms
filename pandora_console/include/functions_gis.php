@@ -688,8 +688,7 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 				'tgrupo_id_grupo' => $layer['layer_group']
 			)
 		);
-		
-		if (count($layer['layer_agent_list']) > 0) {
+		if ((isset($layer['layer_agent_list'])) AND (count($layer['layer_agent_list']) > 0)) {
 			foreach ($layer['layer_agent_list'] as $agent_name) {
 				process_sql_insert('tgis_map_layer_has_tagente',
 					array(

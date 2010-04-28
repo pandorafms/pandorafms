@@ -69,7 +69,7 @@ INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
 
 -- Log4x Module
 
-INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon`) VALUES (30, 'log4x', 0, 'Log4x', 'mod_log4x.png');
+INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon`) VALUES (24, 'log4x', 0, 'Log4x', 'mod_log4x.png');
 
 
 -- GIS extension Tables and DATA

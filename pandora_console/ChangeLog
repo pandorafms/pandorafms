@@ -1,3 +1,8 @@
+2010-04-28 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.item_editor.php: fixed a mistake
+	copy&paste, now you can edit correctly the items.
+
 2010-04-28  Sergio Martin  <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php: fixed the 

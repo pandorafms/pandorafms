@@ -1890,7 +1890,7 @@ sub pandora_group_statistics ($$) {
 	my $group = 0;
 
 	# Get all groups
-	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo WHERE disabled = 0 AND id_grupo > 1');
+	my @groups = get_db_rows ($dbh, 'SELECT id_grupo FROM tgrupo');
 
 	# For each valid group get the stats:  Simple uh?
 	foreach my $group_row (@groups) {

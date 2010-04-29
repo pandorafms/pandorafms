@@ -126,13 +126,14 @@ switch ($action) {
 		}
 		
 		//TODO VALIDATE PARAMETERS
-		
-		saveMapConnection($mapConnection_name, $mapConnection_group,
-			$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
-			$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
-			$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
-			$mapConnection_centerLongitude, $mapConnection_centerAltitude,
-			$mapConnectionData, $idConnectionMap);
+		if ($mapConnection_name != "" && $mapConnection_type != 0) {
+			saveMapConnection($mapConnection_name, $mapConnection_group,
+				$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
+				$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
+				$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
+				$mapConnection_centerLongitude, $mapConnection_centerAltitude,
+				$mapConnectionData, $idConnectionMap);
+			}
 			
 		require_once('gis.php');
 		return;
@@ -160,12 +161,11 @@ print_table($table);
 
 $table->width = '60%';
 $table->data = array();
-$types[0] = __('Please select the connection type');
 $types["OSM"] = __('Open Street Maps');
 $types["Gmap"] = __('Google Maps');
 $types["Static_Image"] = __('Static Image');
 $table->data[0][0] = __('Type') . ":";
-$table->data[0][1] = print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", '', 0, true);
+$table->data[0][1] = print_select($types, 'sel_type', $mapConnection_type, "selMapConnectionType();", __('Please select the connection type'), 0, true);
 
 echo "<h3>" . __('Map connection type') . "</h3>";
 print_table ($table);

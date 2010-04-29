@@ -58,7 +58,11 @@ switch ($activeTab) {
 						}
 						break;
 					case 'save':
-						$idVisualConsole = process_sql_insert('tlayout', $values);
+						if($values['name'] != "" && $values['background'])
+							$idVisualConsole = process_sql_insert('tlayout', $values);
+						else
+							$idVisualConsole = false;
+							
 						if ($idVisualConsole !== false) {
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully created.').'</h3>');
@@ -175,8 +179,15 @@ $buttons = array(
 		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=preview&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			print_image ("images/eye.png", true, array ("title" => __('Preview'))) .'</a>'),);
 
-if ($action == 'new') $buttons = array('data' => $buttons['data']); //Show only the data tab
+if ($action == 'new' || $idVisualConsole === false){
+	$buttons = array('data' => $buttons['data']); //Show only the data tab
+	// If it is a fail try, reset the values
+	$action = 'new';
+	$visualConsoleName = "";
+}
+	
 $buttons[$activeTab]['active'] = true;
+
 print_page_header(__('Visual console builder') . "&nbsp;" . $visualConsoleName, "", false, "visual_console_editor_" . $activeTab . "_tab", true, $buttons);
 
 //The source code for PAINT THE PAGE

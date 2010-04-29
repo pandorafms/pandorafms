@@ -1,5 +1,11 @@
 2010-04-29  Sergio Martin  <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager_editor_prediction.php: 
+	Limited the source modules availables for the prediction
+	module at the modules with history_data = 1. bug:2922920
+
+2010-04-29  Sergio Martin  <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	extras/pandoradb_migrate_v3.0_to_v3.1.sql
 	godmode/setup/gis_step_2.php

@@ -64,7 +64,7 @@ $data[1] .= print_input_text_extended ('agent_name',$agent_name, 'text_agent_nam
 $data[1] .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp; <br/>';
 $data[1] .= print_label(__("Module"),'prediction_module',true);
 if($id_agente) {
-	$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE id_agente =  ".$id_agente;
+	$sql = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE history_data = 1 AND id_agente =  ".$id_agente;
     $data[1] .= print_select_from_sql($sql, 'prediction_module', $prediction_module, false, __('Select Module'), 0, true, false, true, $is_service);
 }
 else {

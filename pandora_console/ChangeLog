@@ -1,5 +1,10 @@
 2010-04-29 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.item_editor.php: fixed typo mistake in
+	the sla vars in javascript.
+
+2010-04-29 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_ui.php: added the function "printTruncateText" for
 	facilitate trunc texts, and add the eye candy the tooltip.
 

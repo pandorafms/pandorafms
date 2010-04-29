@@ -471,7 +471,7 @@ function addSLARow() {
 	var idModule = $("#id_agent_module_sla").val();
 	var nameModule = $("#id_agent_module_sla :selected").text();
 	var slaMin = $("input[name=sla_min]").val();
-	var slaMax = $("input[name=sla_min]").val();
+	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
 
 	if ((idAgent != '') && (slaMin != '') && (slaMax != '')

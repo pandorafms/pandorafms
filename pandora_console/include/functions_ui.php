@@ -19,6 +19,36 @@
  * @subpackage UI
  */
 
+/**
+ * Truncate a text to num chars (pass as parameter) and if flag show tooltip is
+ * true the html artifal to show the tooltip with rest of text.
+ * 
+ * @param string $text The text to truncate.
+ * @param integer $numChars Number chars (-1 for char "...") max the text. 
+ * @param boolean $showTextInAToopTip Flag to show the tooltip.
+ * @param boolean $return Flag to return as string or not.
+ */
+function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true) {
+	if (strlen($text) > ($numChars - 1)) {
+		if ($showTextInAToopTip) {			
+			$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;' . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
+		}
+		else {
+			$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;';
+		}
+	}
+	else {
+		$truncateText = $text;
+	}
+	
+	if ($return == true) {
+		return $truncateText;
+	}
+	else {
+		echo $truncateText;
+	}
+}
+
 /** 
  * Prints a generic message between tags.
  * 

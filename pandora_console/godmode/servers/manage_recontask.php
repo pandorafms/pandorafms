@@ -68,7 +68,12 @@ if (isset($_GET["update"])) {
 				description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, 
 				id_network_profile = %d, recon_ports = '%s' WHERE id_rt = %u",$id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$recon_ports, $id);
 	
-	if (process_sql ($sql) !== false) {
+	if($name != "" && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		$result = process_sql ($sql);
+	else 
+		$result = false;
+	
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
@@ -83,7 +88,13 @@ if (isset($_GET["create"])) {
 			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports) 
 			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports);
 	
-	if (process_sql ($sql) !== false) {
+	if($name != "" && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		$result = process_sql ($sql);
+	else 
+		$result = false;
+		
+	
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';

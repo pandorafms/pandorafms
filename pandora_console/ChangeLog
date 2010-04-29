@@ -1,3 +1,11 @@
+2010-04-29  Sergio Martin  <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	extras/pandoradb_migrate_v3.0_to_v3.1.sql
+	godmode/setup/gis_step_2.php
+	godmode/gis_maps/configure_gis_map.php: Added at the combos the
+	group All and asigned in creation layers -1 value to None value
+
 2010-04-29 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.php,

@@ -216,7 +216,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
   `view_layer` TINYINT(1) NOT NULL DEFAULT TRUE COMMENT 'True if the layer must be shown' ,
   `layer_stack_order` TINYINT(3) NULL DEFAULT 0 COMMENT 'Number of order of the layer in the layer stack, bigger means upper on the stack.\n' ,
   `tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to the map containing the layer' ,
-  `tgrupo_id_grupo` MEDIUMINT(4) UNSIGNED NOT NULL COMMENT 'reference to the group shown in the layer' ,
+  `tgrupo_id_grupo` MEDIUMINT(4) NOT NULL COMMENT 'reference to the group shown in the layer' ,
   PRIMARY KEY (`id_tmap_layer`) ,
   INDEX `fk_tmap_layer_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
   CONSTRAINT `fk_tmap_layer_tgis_map1`

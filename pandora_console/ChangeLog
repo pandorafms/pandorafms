@@ -1,3 +1,16 @@
+2010-04-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Added TTO, TTR, MTBF and MTTR
+	  reports.
+
+	* include/functions_db.php: Fixed get_previous_data and wrote
+	  get_next_data.
+
+2010-04-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php
+	  include/functions_db.php
+
 2010-04-29  Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/setup/gis_step_2.php: Fixed the creation 

@@ -330,11 +330,6 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
 	
-	if(($layout["width"] == 0)){
-		print_error_message (__('The map has not elements'));
-		$layout["width"] = 1;
-	}
-	
 	$resizedMap = false;
 	$proportion = 1;
 	if (!is_null($width)) {
@@ -739,12 +734,12 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent
 		FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
 	$result = get_db_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
-		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent'));
+		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent', 'type'));
 	if ($result === false)
 		return 0;
 	
 	foreach ($result as $rownum => $data) {
-		if ($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0)
+		if (($data["id_layout_linked"] == 0 && $data["id_agente_modulo"] == 0 && $data["id_agent"] == 0) || $data['type'] != 0)
 			continue;
 		// Other Layout (Recursive!)
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {

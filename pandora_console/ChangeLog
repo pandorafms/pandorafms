@@ -1,5 +1,11 @@
 2010-04-29  Sergio Martin  <sergio.martin@artica.es>
 
+	* include/functions_visual_map.php: Fixed the critical render
+	from an object that was not static graph when was heredated
+	from another layout. Bug 2940950
+
+2010-04-29  Sergio Martin  <sergio.martin@artica.es>
+
 	* godmode/agentes/module_manager_editor_prediction.php: 
 	Limited the source modules availables for the prediction
 	module at the modules with history_data = 1. bug:2922920

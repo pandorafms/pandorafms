@@ -1,3 +1,11 @@
+2010-04-29 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_ui.php: added the function "printTruncateText" for
+	facilitate trunc texts, and add the eye candy the tooltip.
+
+	* godmode/reporting/reporting_builder.list_items.php: used the new function
+	"printTruncateText".
+
 2010-04-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Added TTO, TTR, MTBF and MTTR

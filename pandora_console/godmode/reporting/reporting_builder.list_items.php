@@ -215,12 +215,7 @@ foreach ($items as $item) {
 		$row[5] = '-';
 	}
 	else {
-		if (strlen($item['description']) > 25) {
-			$row[5] = substr($item['description'], 0, 25) . '&hellip;' . '<a href="#" class="tip">&nbsp;<span>' . $item['description'] . '</span></a>';
-		}
-		else {
-			$row[5] = substr($item['description'], 0, 25);
-		}
+		$row[5] = printTruncateText($item['description'], 25, true, true);
 	}
 	
 //	if ($item['id_gs'] == null) {

@@ -263,7 +263,7 @@ print_input_hidden('id_item', $idItem);
 				}
 				else {	
 					?>
-					<select id="id_agent_module" name="id_agente_modulo" disabled="disabled">
+					<select id="id_agent_module" name="id_agent_module" disabled="disabled">
 						<option value="0"><?php echo __('Select an Agent first'); ?></option>
 					</select>
 					<?php

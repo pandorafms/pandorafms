@@ -1,5 +1,10 @@
 2010-04-30  Sergio Martin  <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Improved the printTruncateText
+	function adding the parameter showTextInTitle
+
+2010-04-30  Sergio Martin  <sergio.martin@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: Fixed the custom 
 	value column tooltip. Now, the tooltip shows the full
 	value instead of the custom OID. Bug: 2940432

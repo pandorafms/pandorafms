@@ -366,8 +366,9 @@ if ($traps !== false) {
 		}
 		
 		//Custom
-		$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
-	
+		//$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
+		$data[4] = substr ($trap["value_custom"], 0, 15);
+		
 		if (empty ($data[4])) {
 			$data[4] = __('N/A');
 		} elseif (strlen ($trap["value_custom"]) > 15) {

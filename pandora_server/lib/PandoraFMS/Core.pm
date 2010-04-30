@@ -1228,30 +1228,30 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 
 		logger($pa_config, "Evaluating SNMP alert ID " . $alert->{'id_as'} . ".", 10);
 
-		my ($fire_alert, $alert_data) = (0, '');		
+		my $alert_data = '';
 		my ($times_fired, $internal_counter, $alert_type) =
 			($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
 
 		# OID
 		my $oid = $alert->{'oid'};
-		if ($oid ne '' && $trap_oid =~ m/$oid/i || $trap_oid_text =~ m/$oid/i) {
-			$fire_alert = 1;
+		if ($oid ne '') {
+			next if ($trap_oid !~ m/$oid/i && $trap_oid_text !~ m/$oid/i);
 			$alert_data .= "OID: $oid ";
 		}
+
 		# Custom OID/value
 		my $custom_oid = $alert->{'custom_oid'};
-		if ($custom_oid ne '' && $trap_custom_value =~ m/$custom_oid/i || $trap_custom_oid =~ m/$custom_oid/i) {
-			$fire_alert = 1;
+		if ($custom_oid ne '') {
+			next if ($trap_custom_value !~ m/$custom_oid/i && $trap_custom_oid !~ m/$custom_oid/i);
 			$alert_data .= "CUSTOM OID: $custom_oid ";
 		}
+
 		# Agent IP
 		my $agent = $alert->{'agent'};
-		if ($agent ne '' && $trap_agent =~ m/$agent/i ) {
-			$fire_alert = 1;
+		if ($agent ne '') {
+			next if ($trap_agent !~ m/$agent/i );
 			$alert_data .= "AGENT: $agent";
 		}
-
-		next unless ($fire_alert == 1);
 		
 		# Check time threshold
 		$alert->{'last_fired'} = '0000-00-00 00:00:00' unless defined ($alert->{'last_fired'});

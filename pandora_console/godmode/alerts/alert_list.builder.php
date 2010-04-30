@@ -39,13 +39,10 @@ $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 /* Add an agent selector */
 if (! $id_agente) {
-	$table->data['group'][0] = __('Group');
-	$table->data['group'][1] = print_select ($groups, 'id_group', $id_group,
-		false, '', '', true);
 	
 	$table->data['agent'][0] = __('Agent');
 	
-	$table->data['agent'][1] = print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
+	$table->data['agent'][1] = print_input_text_extended ('id_agent', '', 'text_id_agent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 }

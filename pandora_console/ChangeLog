@@ -1,5 +1,10 @@
 2010-04-30  Sergio Martin  <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.builder.php: Removed an
+	useless combo of old version. Bug: 2993508
+
+2010-04-30  Sergio Martin  <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Fixed the access at the
 	groups without icon. bug: 2944540 
 

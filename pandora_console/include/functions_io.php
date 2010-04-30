@@ -43,11 +43,12 @@ function safe_input($value) {
  * who doesn't make the HTML render by itself.
  * 
  * @param mixed String or array of strings to be cleaned.
+ * @param boolean $utf8 Flag, set the output encoding in utf8, by default true.
  * 
  * @return unknown_type
  */
-function safe_output($value)
-{	
+function safe_output($value, $utf8 = true)
+{
 	if (is_numeric($value))
 		return $value;
 		
@@ -59,7 +60,12 @@ function safe_output($value)
 	if (! mb_check_encoding ($value, 'UTF-8'))
 		$value = utf8_encode ($value);
 	
-	$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
+	if ($utf8) {
+		$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES, "UTF-8");
+	}
+	else {
+		$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES);
+	}
 	
 	return $valueHtmlEncode;	
 }

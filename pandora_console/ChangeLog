@@ -1,3 +1,8 @@
+2010-04-30 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_io.php: added in the function "safe_output" the flag
+	$utf8 for set the encoding of output, by default true.
+
 2010-04-29 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.item_editor.php: fixed typo mistake in

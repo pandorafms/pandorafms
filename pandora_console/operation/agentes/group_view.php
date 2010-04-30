@@ -76,8 +76,8 @@ echo "<th width='10%'>".__("Alert fired");
 
 // For each valid group for this user, take data from agent and modules
 foreach ($groups as $id_group => $group_name) {
-	if ($id_group < 2) 
-		continue; // Skip group 0 and 1
+	if ($id_group < 1) 
+		continue; // Skip group 0
 
 	// Get stats for this group
 	$data = get_group_stats($id_group);

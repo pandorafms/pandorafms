@@ -238,14 +238,18 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
 	else
 		$icon = "world";
 	
-	if (empty ($icon)) {
-		return "-";
-	}
 	
 	$output = '';
-	if ($link) $output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
-	$output .= '<img style="' . $style . '" class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
-	if ($link) $output .= '</a>';
+	if ($link) 
+		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+	
+	if (empty ($icon))
+		$output .= '<span title="'.get_group_name ($id_group, true).'">&nbsp;-&nbsp</span>';
+	else
+		$output .= '<img style="' . $style . '" class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
+	
+	if ($link) 
+		$output .= '</a>';
 	
 	if (!$return)
 		echo $output;

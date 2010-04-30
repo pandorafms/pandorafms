@@ -356,24 +356,19 @@ if ($traps !== false) {
 			}
 		}
 	
-		//Value
-		$data[3] = substr ($trap["value"], 0, 15);
-		
-		if (empty ($data[3])) {
+		//Value		
+		if (empty ($trap["value"])) {
 			$data[3] = __('N/A');
-		} elseif (strlen ($trap["value"]) > 15) {
-			$data[3] = '<span title="'.$trap["value"].'">'.$data[3].'...</span>';
+		} else {
+			$data[3] = printTruncateText($trap["value"], 15, false);
 		}
 		
-		//Custom
-		//$data[4] = '<span title="' . $trap["oid_custom"] . '">' . $trap["value_custom"] . '</span>';
-		$data[4] = substr ($trap["value_custom"], 0, 15);
-		
-		if (empty ($data[4])) {
+		//Custom		
+		if (empty ($trap["value_custom"])) {
 			$data[4] = __('N/A');
-		} elseif (strlen ($trap["value_custom"]) > 15) {
-			$data[4] = '<span title="'.$trap["value_custom"].'">'.$data[4].'...</span>';
-		}	
+		} else {
+			$data[4] = printTruncateText($trap["value_custom"], 15, false);
+		}
 	
 		//User
 		if (!empty ($trap["status"])) {

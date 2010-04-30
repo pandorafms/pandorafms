@@ -1,5 +1,10 @@
 2010-04-30  Sergio Martin  <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Fixed the access at the
+	groups without icon. bug: 2944540 
+
+2010-04-30  Sergio Martin  <sergio.martin@artica.es>
+
 	* operation/agentes/group_view.php: Fixed the group
 	1 problem. It was not showed
 

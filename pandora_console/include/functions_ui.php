@@ -27,14 +27,17 @@
  * @param integer $numChars Number chars (-1 for char "...") max the text. 
  * @param boolean $showTextInAToopTip Flag to show the tooltip.
  * @param boolean $return Flag to return as string or not.
+ * @param boolean $showTextInTitle Flag to show the text on title.
  */
-function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true) {
+function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true) {
 	if (strlen($text) > ($numChars - 1)) {
-		if ($showTextInAToopTip) {			
-			$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;' . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
+		$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;';
+		
+		if ($showTextInTitle) {
+			$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';
 		}
-		else {
-			$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;';
+		if ($showTextInAToopTip) {			
+			$truncateText = $truncateText . '<a href="#" class="tip">&nbsp;<span>' . $text . '</span></a>';
 		}
 	}
 	else {

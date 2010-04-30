@@ -1,3 +1,13 @@
+2010-04-29 Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent_installer: Added darwin (snow leopard), and BSD to
+	installer OS detection.
+
+	* AIX/pandora_agent.conf: Fixed version & date.
+
+	* HP-UX/pandora_agent.conf: Replaced some default modules by 
+	better ones.
+
 2010-02-22 Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* Linux/pandora_agent.conf: Added parameters position_description

@@ -46,7 +46,7 @@ then
 fi
 
 UNIX_KIND=`uname -s`
-if [ -z "`echo Linux HP-UX SunOS AIX Solaris | grep \"$UNIX_KIND\"`" ]
+if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd | grep \"$UNIX_KIND\"`" ]
 then
 	echo "This system: '$UNIX_KIND' is not supported by this script"
 	echo "Please make the install yourself as it's described in documentation"

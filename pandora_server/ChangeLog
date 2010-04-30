@@ -1,3 +1,8 @@
+2010-04-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Changed the behaviour of SNMP alerts.
+	  Alert conditions are ANDed, not ORed.
+
 2010-04-28  Sancho Lerena <slerena@artica.es>
 
 	* util/gpx2pandora_agent_data.pl: Added support to process

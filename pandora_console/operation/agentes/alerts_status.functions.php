@@ -29,7 +29,7 @@ function validateAlert() {
 		require_once ("include/functions_alerts.php");
 		$result1 = validate_alert_agent_module ($ids);
 		$result2 = validate_alert_compound ($compound_ids);
-		$result == $result1 || $result2;
+		$result = $result1 || $result2;
 		
 		print_result_message ($result,
 			__('Alert(s) validated'),

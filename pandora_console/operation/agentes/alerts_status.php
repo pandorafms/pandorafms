@@ -44,9 +44,6 @@ $url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.
 if ($flag_alert == 1 && give_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
 }
-if ($alert_validate) {
-	validateAlert();
-}
 
 $idAgent = get_parameter_get('id_agente', 0);
 
@@ -82,6 +79,10 @@ else {
 	$print_agent = true;
 	
 	print_page_header (__('Alert detail'), "images/bricks.png", false, "alert_validation");
+}
+
+if ($alert_validate) {
+	validateAlert();
 }
 
 if ($free_search != '') {

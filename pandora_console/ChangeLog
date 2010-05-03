@@ -1,5 +1,11 @@
 2010-05-03  Sergio Martin  <sergio.martin@artica.es>
 
+	* operation/agentes/alerts_status.php
+	operation/agentes/alerts_status.functions.php: Fixed
+	typo fix for bug: 2989944
+
+2010-05-03  Sergio Martin  <sergio.martin@artica.es>
+
 	* operation/events/events.php: Fixed the successfully
 	message over the header for bug: 2989965
 

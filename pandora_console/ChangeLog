@@ -1,3 +1,8 @@
+2010-05-03  Sergio Martin  <sergio.martin@artica.es>
+
+	* operation/events/events.php: Fixed the successfully
+	message over the header for bug: 2989965
+
 2010-04-30  Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.builder.php: Removed an

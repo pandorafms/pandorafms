@@ -131,26 +131,6 @@ $groups[0] = __('System');
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
 
-//Process deletion (pass array or single value)
-if ($delete) {
-	$ids = (array) get_parameter ("eventid", -1);
-	
-	$return = delete_event ($ids, ($group_rep == 1));
-	print_result_message ($return,
-		__('Successfully deleted'),
-		__('Could not be deleted'));
-}
-
-//Process validation (pass array or single value)
-if ($validate) {
-	$ids = (array) get_parameter ("eventid", -1);
-	
-	$return = validate_event ($ids, ($group_rep == 1));
-	print_result_message ($return,
-		__('Successfully validated'),
-		__('Could not be validated'));
-}
-
 //Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
@@ -228,6 +208,30 @@ else {
 	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen')));
 	echo '</a>';
 	echo "</h2>";
+}
+
+//Process validation (pass array or single value)
+if ($validate) {
+	$ids = (array) get_parameter ("eventid", -1);
+	
+	if($ids[0] != -1){
+		$return = validate_event ($ids, ($group_rep == 1));
+		print_result_message ($return,
+			__('Successfully validated'),
+			__('Could not be validated'));
+	}
+}
+
+//Process deletion (pass array or single value)
+if ($delete) {
+	$ids = (array) get_parameter ("eventid", -1);
+		
+	if($ids[0] != -1){
+		$return = delete_event ($ids, ($group_rep == 1));
+		print_result_message ($return,
+			__('Successfully deleted'),
+			__('Could not be deleted'));
+	}
 }
 
 //Link to toggle filter

@@ -133,6 +133,7 @@ switch ($action) {
 				$header = $item['header_definition'];
 				$field = $item['column_separator'];
 				$line = $item['line_separator'];
+				$period = $item['period'];
 				break;
 			case 'TTRT':
 				$description = $item['description'];
@@ -621,6 +622,7 @@ function chooseType() {
 			$("#row_header").css('display', '');
 			$("#row_field_separator").css('display', '');
 			$("#row_line_separator").css('display', '');
+			$("#row_period").css('display', '');
 			break;
 		case 'TTRT':
 			$("#row_description").css('display', '');

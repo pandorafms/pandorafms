@@ -579,10 +579,11 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
  * @param int $period Period of time of the desired alert report.
  * @param int $date Beggining date of the report (current date by default).
  * @param bool $return Flag to return or echo the report (echo by default).
- *
- * @return string
+ * @param bool Flag to return the html or table object, by default html.
+ * 
+ * @return mixed A table object (XHTML) or object table is false the html.
  */
-function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = true) {
+function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = true, $html = true) {
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
@@ -643,7 +644,12 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 		}
 	}
 	
-	return print_table ($table, $return);
+	if ($html) {
+		return print_table ($table, $return);
+	}
+	else {
+		return $table;
+	}
 }
 
 /**
@@ -655,10 +661,11 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
  * @param int $period Period of time of the desired alert report.
  * @param int $date Beggining date of the report (current date by default).
  * @param bool $return Flag to return or echo the report (echo by default).
- *
- * @return string
+ * @param bool Flag to return the html or table object, by default html.
+ * 
+ * @return mixed A table object (XHTML) or object table is false the html.
  */
-function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $return = true) {
+function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $return = true, $html = true) {
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
@@ -719,7 +726,12 @@ function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $retu
 		array_push ($table->data, $data);
 	}
 	
-	return print_table ($table, $return);
+	if ($html) {
+		return print_table ($table, $return);
+	}
+	else {
+		return $table;
+	}
 }
 
 /**
@@ -1912,13 +1924,13 @@ function render_report_html_item ($content, $table, $report) {
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$data[0] = get_module_detailed_event_reporting($content['id_agent_module'], $content['period'], $report["datetime"]);
+			$data[0] = get_module_detailed_event_reporting($content['id_agent_module'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
 		case 'alert_report_module':
 			$data = array ();
-			$data[0] = "<h4>" . __('Agent detailed event') . "</h4>";
-			$data[1] = "<h4>$agent_name</h4>";
+			$data[0] = "<h4>" . __('Alert report module') . "</h4>";
+			$data[1] = "<h4>$agent_name - $module_name</h4>";
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1936,8 +1948,8 @@ function render_report_html_item ($content, $table, $report) {
 			break; 
 		case 'alert_report_agent':
 			$data = array ();
-			$data[0] = "<h4>" . __('Module detailed event') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = "<h4>" . __('Alert report agent') . "</h4>";
+			$data[1] = "<h4>$agent_name</h4>";
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)

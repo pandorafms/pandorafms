@@ -1,5 +1,13 @@
 2010-05-03 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/reporting/reporting_xml.php:  added default value "now" in
+	$report["datetime"]. Removed (as comment at the momment) obsolet report
+	items, and added the items: "event_report_agent", "text", "sql",
+	"event_report_module", "alert_report_module", "alert_report_agent",
+	"url", "database_serialized", "TTRT", "TTO", "MTBF" and "MTTR". 
+
+2010-05-03 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: added the parameter "$html" in the
 	function "alert_reporting_agent" and "alert_reporting_module", this flag is
 	for return the html table or object table, by default the html. And fixed

@@ -1171,10 +1171,11 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
  * @param int Period of time (in seconds) to get the report.
  * @param int Beginning date (unixtime) of the report
  * @param bool Flag to return or echo the report table (echo by default).
+ * @param bool Flag to return the html or table object, by default html.
  * 
- * @return A table object (XHTML)
+ * @return mixed A table object (XHTML) or object table is false the html.
  */
-function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 0, $return = false) {
+function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 0, $return = false, $html = true) {
 	$id_modules = (array)safe_int ($id_modules, 1);
 	
 	if (!is_numeric ($date)) {
@@ -1219,8 +1220,14 @@ function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 
 		}
 	}
 	
-	if ($events)	
-		return print_table ($table, $return);
+	if ($events) {
+		if ($html) {
+			return print_table ($table, $return);
+		}
+		else {
+			return $table;
+		}
+	}
 }
 
 /** 

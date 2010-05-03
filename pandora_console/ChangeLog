@@ -1,4 +1,15 @@
-2010-04-30 Miguel de Dios  <miguel.dedios@artica.es>
+2010-05-03 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: added the parameter "$html" in the
+	function "alert_reporting_agent" and "alert_reporting_module", this flag is
+	for return the html table or object table, by default the html. And fixed
+	the title of "alert_report_module" and "alert_report_agent", fixed return
+	of list "event_report_module" in the function "render_report_html_item".
+
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the lost field
+	"period" in the item "database_serialized".
+
+2010-05-03 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: added the parameter "$html" in the
 	function "get_module_detailed_event_reporting", this flag is for return

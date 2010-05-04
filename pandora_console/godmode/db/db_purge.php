@@ -34,7 +34,8 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 //id_agent = -1: None selected; id_agent = 0: All
 $id_agent = (int) get_parameter_post ("agent", -1);
 
-echo '<h2>'.__('Database maintenance').' &raquo; '.__('Database purge').'</h2>';
+print_page_header (__('Database maintenance').' &raquo; '.__('Database purge'), "images/god8.png", false, "", true);
+
 if ($config['flash_charts']) {
 	echo grafico_db_agentes_purge ($id_agent, $width, $height);
 } else {

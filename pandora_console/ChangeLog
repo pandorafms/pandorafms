@@ -1,3 +1,10 @@
+2010-05-04  Sergio Martin  <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php: 
+	Increased the max number of digits in text inputs 
+	for max_critical, min_critical, max_warning and
+	min_warning for bug:2931191
+
 2010-05-03 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/reporting/reporting_xml.php:  added default value "now" in

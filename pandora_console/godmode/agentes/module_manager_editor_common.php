@@ -153,17 +153,17 @@ $table_simple->data[1][3] = print_select_from_sql ('SELECT id_mg, name FROM tmod
 $table_simple->data[2][0] = __('Warning status');
 $table_simple->data[2][1] = '<em>'.__('Min.').'</em>';
 $table_simple->data[2][1] .= print_input_text ('min_warning', $min_warning,
-	'', 5, 15, true, $disabledBecauseInPolicy);
+	'', 5, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][1] .= print_input_text ('max_warning', $max_warning,
-	'', 5, 15, true, $disabledBecauseInPolicy);
+	'', 5, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][2] = __('Critical status');
 $table_simple->data[2][3] = '<em>'.__('Min.').'</em>';
 $table_simple->data[2][3] .= print_input_text ('min_critical', $min_critical,
-	'', 5, 15, true, $disabledBecauseInPolicy);
+	'', 5, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][3] .= print_input_text ('max_critical', $max_critical,
-	'', 5, 15, true, $disabledBecauseInPolicy);
+	'', 5, 255, true, $disabledBecauseInPolicy);
 
 /* FF stands for Flip-flop */
 $table_simple->data[3][0] = __('FF threshold').' '.print_help_icon ('ff_threshold', true);

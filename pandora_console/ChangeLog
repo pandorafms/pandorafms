@@ -1,5 +1,10 @@
 2010-05-04  Sergio Martin  <sergio.martin@artica.es>
 
+	* godmode/agentes/agent_template.php: Fixed the
+	link to edit module for bug: 2996521
+
+2010-05-04  Sergio Martin  <sergio.martin@artica.es>
+
 	* include/functions_reporting.php: Set style to
 	'mini' option.
 

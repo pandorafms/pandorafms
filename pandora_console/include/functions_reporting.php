@@ -294,12 +294,15 @@ function get_agentmodule_sla ($id_agentmodule, $period = 0, $min_value = 1, $max
 			$bad_period += $data['utimestamp'] - $previous_utimestamp;
 		}
 		
-		// Re-calculate previous status for the next data
-		if ((($max_value > $min_value AND ($data['datos'] > $max_value OR  $data['datos'] < $min_value))) OR
-		     ($max_value <= $min_value AND $data['datos'] < $min_value)) {
-			$previous_status = 1;
-		} else {
-			$previous_status = 0;
+		if (array_key_exists('datos', $data)) {
+			// Re-calculate previous status for the next data
+			if ((($max_value > $min_value AND ($data['datos'] > $max_value OR  $data['datos'] < $min_value))) OR
+			     ($max_value <= $min_value AND $data['datos'] < $min_value)) {
+				$previous_status = 1;
+			}
+			else {
+				$previous_status = 0;
+			}
 		}
 		
 		$previous_utimestamp = $data['utimestamp'];

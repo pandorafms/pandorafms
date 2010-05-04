@@ -2072,7 +2072,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			$ttr = get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($ttr != 0) $ttr = human_time_description_raw ($ttr);
-			$data[0] = $ttr;
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$ttr.'</p>';
 			array_push ($table->data, $data);
 			break;
 		case 'TTO':
@@ -2093,7 +2096,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			$tto = get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($tto != 0) $tto = human_time_description_raw ($tto);
-			$data[0] = $tto;
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$tto.'</p>';
 			array_push ($table->data, $data);
 			break;
 		case 'MTBF':
@@ -2114,7 +2120,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			$mtbf = get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mtbf != 0) $mtbf = human_time_description_raw ($mtbf);
-			$data[0] = $mtbf;
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mtbf.'</p>';
 			array_push ($table->data, $data);
 			break;
 		case 'MTTR':
@@ -2135,7 +2144,10 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$table->colspan[2][0] = 3;
 			$mttr = get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
 			if ($mttr != 0) $mttr = human_time_description_raw ($mttr);
-			$data[0] = $mttr;
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$mttr.'</p>';
 			array_push ($table->data, $data);
 			break;
 	}

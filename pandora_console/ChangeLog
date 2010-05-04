@@ -1,5 +1,10 @@
 2010-05-04 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: changed the style to show data in the
+	items "TTRT", "TTO", "MTBF" and "MTTR".
+
+2010-05-04 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: fixed in the function
 	"get_agentmodule_data_average" prevent to use the var without value.
 

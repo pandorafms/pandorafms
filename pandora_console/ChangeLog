@@ -1,3 +1,10 @@
+2010-05-04 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/reporting_builder.preview.php: added file to show the
+	html preview of report.
+
+	* godmode/reporting/reporting_builder.php: added the tab for the preview.
+
 2010-05-04  Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/db/db_audit.php

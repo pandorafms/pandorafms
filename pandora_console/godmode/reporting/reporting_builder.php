@@ -379,6 +379,10 @@ $buttons = array(
 if ($enterpriseEnable) {
 	$buttons = enterprise_addTabs($buttons, $idReport);
 }
+
+$buttons['preview'] = array('active' => false,
+	'text' => '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=preview&action=edit&id_report=' . $idReport . '">' . 
+			print_image("images/reporting.png", true, array ("title" => __('Preview'))) .'</a>');
 	
 $buttons[$activeTab]['active'] = true;
 
@@ -408,6 +412,9 @@ switch ($activeTab) {
 		break;
 	case 'item_editor':
 		require_once('godmode/reporting/reporting_builder.item_editor.php');
+		break;
+	case 'preview':
+		require_once('godmode/reporting/reporting_builder.preview.php');
 		break;
 	default:
 		enterprise_selectTab($activeTab);

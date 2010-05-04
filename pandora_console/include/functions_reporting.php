@@ -1442,12 +1442,25 @@ function get_agent_module_info_with_filter ($id_agent,$filter = '') {
  * @param array $content Record of treport_content table for current item
  * @param array $table HTML Table row
  * @param array $report Report contents, with some added fields.
+ * @param array $mini Mini flag for reduce the size.
  * 
  */
 
-function render_report_html_item ($content, $table, $report) {
+function render_report_html_item ($content, $table, $report, $mini = false) {
     global $config;
+		
+	if($mini){
+		$sizh = 'h6';
+		$sizem = '1.5';
+		$sizgraph_w = '350';
+	}
+	else{
+		$sizh = 'h4';
+		$sizem = '3';
+		$sizgraph_w = '350';
+	}
 
+		
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
 
@@ -1457,9 +1470,9 @@ function render_report_html_item ($content, $table, $report) {
 			//RUNNING
 			$table->colspan[1][0] = 4;
 			$data = array ();
-			$data[0] = '<h4>'.__('Simple graph').'</h4>';
-			$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
-			$data[2] = '<h4>'.human_time_description ($content['period']).'</h4>';
+			$data[0] = '<'.$sizh.'>'.__('Simple graph').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1471,7 +1484,7 @@ function render_report_html_item ($content, $table, $report) {
 			}
 			
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=750&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
+			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
 			array_push ($table->data, $data);
 			
 			break;
@@ -1481,9 +1494,9 @@ function render_report_html_item ($content, $table, $report) {
 			//RUNNING
 			$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 			$data = array ();
-			$data[0] = '<h4>'.__('Custom graph').'</h4>';
-			$data[1] = "<h4>".$graph["name"]."</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Custom graph').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$graph['name'].'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1511,7 +1524,7 @@ function render_report_html_item ($content, $table, $report) {
 	
 			$table->colspan[2][0] = 3;
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=235&width=750&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=235&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 			array_push ($table->data, $data);
 	
 			break;
@@ -1520,8 +1533,8 @@ function render_report_html_item ($content, $table, $report) {
 			//RUNNING
 			$table->style[1] = 'text-align: right';
 			$data = array ();
-			$data[0] = '<h4>'.__('S.L.A.').'</h4>';
-			$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
+			$data[0] = '<'.$sizh.'>'.__('S.L.A.').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';;
 			$n = array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1559,14 +1572,14 @@ function render_report_html_item ($content, $table, $report) {
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
 					$sla['sla_min'], $sla['sla_max'], $report["datetime"]);
 				if ($sla_value === false) {
-					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
+					$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
 					$data[1] .= __('Unknown');
 				} else {
 					if ($sla_value >= $sla['sla_limit'])
-						$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
+						$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 					else {
 						$sla_failed = true;
-						$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+						$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 					}
 					$data[1] .= format_numeric ($sla_value). " %";
 				}
@@ -1577,9 +1590,9 @@ function render_report_html_item ($content, $table, $report) {
 			if (!empty ($slas)) {
 				$data = array ();
 				if ($sla_failed == false)
-					$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
+					$data[0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.__('OK').'</span>';
 				else
-					$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
+					$data[0] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 				$n = array_push ($table->data, $data);
 				$table->colspan[$n - 1][0] = 3;
 				$table->rowstyle[$n - 1] = 'text-align: right';
@@ -1590,8 +1603,8 @@ function render_report_html_item ($content, $table, $report) {
 //		case 'event_report':
 //			$id_agent = get_agent_id ($agent_name);
 //			$data = array ();
-//			$data[0] = "<h4>".__('Event report')."</h4>";
-//			$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
+//			$data[0] = '<'.$sizh.'>'.__('Event report').'</'.$sizh.'>';
+//			$data[1] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 //			array_push ($table->data, $data);
 //			
 //			// Put description at the end of the module (if exists)
@@ -1615,9 +1628,9 @@ function render_report_html_item ($content, $table, $report) {
 //		case 5:
 //		case 'alert_report':
 //			$data = array ();
-//			$data[0] = "<h4>".__('Alert report')."</h4>";
-//			$data[1] = "<h4>".$report["group_name"]."</h4>";
-//			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+//			$data[0] = '<'.$sizh.'>'.__('Alert report').'</'.$sizh.'>';
+//			$data[1] = '<'.$sizh.'>'.$report['group_name'].'</'.$sizh.'>';
+//			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 //			array_push ($table->data, $data);
 //			
 //			// Put description at the end of the module (if exists)
@@ -1638,9 +1651,9 @@ function render_report_html_item ($content, $table, $report) {
 		case 'monitor_report':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Monitor report')."</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Monitor report').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1653,10 +1666,10 @@ function render_report_html_item ($content, $table, $report) {
 			
 			$data = array ();
 			$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]));
-			$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 			$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
 			$monitor_value = format_numeric (100 - $monitor_value, 2) ;
-			$data[1] = '<p style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 			$data[1] .= $monitor_value.' % <img src="images/b_red.png" height="32" width="32" /></p>';
 			array_push ($table->data, $data);
 			
@@ -1665,9 +1678,9 @@ function render_report_html_item ($content, $table, $report) {
 		case 'avg_value':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Avg. Value')."</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Avg. Value').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1681,7 +1694,7 @@ function render_report_html_item ($content, $table, $report) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$value = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]));
-			$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
 			break;
@@ -1689,9 +1702,9 @@ function render_report_html_item ($content, $table, $report) {
 		case 'max_value':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Max. Value')."</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Max. Value').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1705,7 +1718,7 @@ function render_report_html_item ($content, $table, $report) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$value = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $report["datetime"]));
-			$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
 			break;
@@ -1713,9 +1726,9 @@ function render_report_html_item ($content, $table, $report) {
 		case 'min_value':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Min. Value')."</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Min. Value').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1729,7 +1742,7 @@ function render_report_html_item ($content, $table, $report) {
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$value = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]));
-			$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
 			break;
@@ -1737,9 +1750,9 @@ function render_report_html_item ($content, $table, $report) {
 		case 'sumatory':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Sumatory')."</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
-			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Sumatory').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
+			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1753,15 +1766,15 @@ function render_report_html_item ($content, $table, $report) {
 			$data = array ();
 			$table->colspan[1][0] = 2;
 			$value = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]));
-			$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
+			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
 			break;
 //		case 11:
 //		case 'general_group_report':
 //			$data = array ();
-//			$data[0] = "<h4>".__('Group')."</h4>";
-//			$data[1] = "<h4>".$report["group_name"]."</h4>";
+//			$data[0] = '<'.$sizh.'>'.__('Group').'</'.$sizh.'>';
+//			$data[1] = '<'.$sizh.'>'.$report['group_name'].'</'.$sizh.'>';
 //			array_push ($table->data, $data);
 //			
 //			// Put description at the end of the module (if exists)
@@ -1781,9 +1794,9 @@ function render_report_html_item ($content, $table, $report) {
 //		case 12:
 //		case 'monitor_health':
 //			$data = array ();
-//			$data[0] = "<h4>".__('Monitor health')."</h4>";
-//			$data[1] = "<h4>".$report["group_name"]."</h4>";
-//			$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+//			$data[0] = '<'.$sizh.'>'.__('Monitor health').'</'.$sizh.'>';
+//			$data[1] = '<'.$sizh.'>'.$report["group_name"].'</'.$sizh.'>';
+//			$data[2] = '<'.$sizh.'>'.human_time_description ($content['period']).'</'.$sizh.'>';
 //			array_push ($table->data, $data);
 //			
 //			// Put description at the end of the module (if exists)
@@ -1803,8 +1816,8 @@ function render_report_html_item ($content, $table, $report) {
 //		case 13:
 //		case 'agents_detailed':
 //			$data = array ();
-//			$data[0] = "<h4>".__('Agents detailed view')."</h4>";
-//			$data[1] = "<h4>".$report["group_name"]."</h4>";
+//			$data[0] = '<'.$sizh.'>'.__('Agents detailed view').'</'.$sizh.'>';
+//			$data[1] = '<'.$sizh.'>'.$report["group_name"].'</'.$sizh.'>';
 //			array_push ($table->data, $data);
 //			
 //			// Put description at the end of the module (if exists)
@@ -1825,8 +1838,8 @@ function render_report_html_item ($content, $table, $report) {
 		case 'event_report_agent':
 			//RUNNING
 			$data = array ();
-			$data[0] = "<h4>".__('Agent detailed event')."</h4>";
-			$data[1] = "<h4>".get_agent_name($content['id_agent'])."</h4>";
+			$data[0] = '<'.$sizh.'>'.__('Agent detailed event').'</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.get_agent_name($content['id_agent']).'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1844,7 +1857,7 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'text':
 			$data = array();
-			$data[0] = "<h4>" . __('Text') . "</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Text') . '</'.$sizh.'>';
 			array_push ($table->data, $data);
 			$table->colspan[0][0] = 2;
 			
@@ -1861,7 +1874,7 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'sql':
 			$data = array();
-			$data[0] = "<h4>" . __('SQL') . "</h4>";
+			$data[0] = '<'.$sizh.'>' . __('SQL') . '</'.$sizh.'>';
 			array_push ($table->data, $data);
 			$table->colspan[0][0] = 2;
 			
@@ -1910,8 +1923,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'event_report_module':
 			$data = array ();
-			$data[0] = "<h4>" . __('Module detailed event') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Module detailed event') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1929,8 +1942,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'alert_report_module':
 			$data = array ();
-			$data[0] = "<h4>" . __('Alert report module') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Alert report module') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1948,8 +1961,8 @@ function render_report_html_item ($content, $table, $report) {
 			break; 
 		case 'alert_report_agent':
 			$data = array ();
-			$data[0] = "<h4>" . __('Alert report agent') . "</h4>";
-			$data[1] = "<h4>$agent_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Alert report agent') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1968,7 +1981,7 @@ function render_report_html_item ($content, $table, $report) {
 		case 'url':
 			$table->colspan[1][0] = 2;
 			$data = array ();
-			$data[0] = "<h4>" . __('Import text from URL') . "</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Import text from URL') . '</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -1991,8 +2004,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'database_serialized':
 			$data = array ();
-			$data[0] = "<h4>" . __('Serialize data') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('Serialize data') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2041,8 +2054,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'TTRT':
 			$data = array ();
-			$data[0] = "<h4>" . __('TTRT') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('TTRT') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2062,8 +2075,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'TTO':
 			$data = array ();
-			$data[0] = "<h4>" . __('TTO') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('TTO') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2083,8 +2096,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'MTBF':
 			$data = array ();
-			$data[0] = "<h4>" . __('MTBF') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('MTBF') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
@@ -2104,8 +2117,8 @@ function render_report_html_item ($content, $table, $report) {
 			break;
 		case 'MTTR':
 			$data = array ();
-			$data[0] = "<h4>" . __('MTTR') . "</h4>";
-			$data[1] = "<h4>$agent_name - $module_name</h4>";
+			$data[0] = '<'.$sizh.'>' . __('MTTR') . '</'.$sizh.'>';
+			$data[1] = '<'.$sizh.'>'.$agent_name.' - '.$module_name.'</'.$sizh.'>';
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)

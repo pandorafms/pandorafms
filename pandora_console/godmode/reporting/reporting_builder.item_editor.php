@@ -289,7 +289,7 @@ print_input_hidden('id_item', $idItem);
 			<td style=""><?php print_textarea('sql', 5, 25, $sql); ?></td>
 		</tr>
 		<tr id="row_header" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Serialized header'); ?></td>
+			<td style="vertical-align: top;"><?php echo __('Serialized header') . '<a href="#" class="tip">&nbsp;<span>' . __("The separator character is | .") . '</span></a>';?></td>
 			<td style=""><?php print_input_text('header', $header, '', 40, 90); ?></td>
 		</tr>
 		<tr id="row_custom" style="" class="datos">

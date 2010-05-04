@@ -145,7 +145,8 @@ foreach ($result as $row) {
 	$data[2] = mb_substr ($row["descripcion"], 0, 60);
 	
 	$data[3] = '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'&delete_module='.$row["id_agente_modulo"].'"><img src="images/cross.png" border="0" alt="'.__('Delete').'" onclick="if (!confirm(\''.__('Are you sure?').'\')) return false;" /></a>&nbsp;';
-	$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&update_module='.$row["id_agente_modulo"].'&moduletype='.$row["id_modulo"].'#modules"><img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
+	
+	$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$row["id_agente_modulo"].'"><img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
 	
 	array_push ($table->data, $data);
 }

@@ -16,7 +16,7 @@
 // Load global vars
 global $config;
 
-print_page_header (__('Database audit purge'), "", false, "", true);
+print_page_header (__('Database maintenance').' &raquo; '.__('Database audit purge'), "images/god8.png", false, "", true);
 
 check_login ();
 

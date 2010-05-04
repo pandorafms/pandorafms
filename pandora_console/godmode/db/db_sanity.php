@@ -26,8 +26,7 @@ if (! give_acl ($config["id_user"], 0, "DM")) {
 	return;
 }
 
-echo '<h2>'.__('Database maintenance').' &raquo; ';
-echo __('Database sanity tool')."</h2>";
+print_page_header (__('Database maintenance').' &raquo; '.__('Database sanity tool'), "images/god8.png", false, "", true);
 
 $sanity = get_parameter ("sanity", 0);
 

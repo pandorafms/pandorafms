@@ -59,7 +59,7 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	$total = 0;
 	$module_interval = get_module_interval ($id_agent_module);
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
+	if (($previous_data !== false) && (isset($interval_data))) {
 		array_unshift ($interval_data, $values);
 	}
 

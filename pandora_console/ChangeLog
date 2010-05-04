@@ -1,5 +1,11 @@
 2010-05-04  Sergio Martin  <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Added "mini"
+	parameter. Usefull for print the report with less
+	size
+
+2010-05-04  Sergio Martin  <sergio.martin@artica.es>
+
 	* godmode/agentes/module_manager_editor_common.php: 
 	Increased the max number of digits in text inputs 
 	for max_critical, min_critical, max_warning and

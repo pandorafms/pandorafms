@@ -1453,11 +1453,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 		$sizh = 'h6';
 		$sizem = '1.5';
 		$sizgraph_w = '350';
+		$sizgraph_h = '100';
 	}
 	else{
 		$sizh = 'h4';
 		$sizem = '3';
-		$sizgraph_w = '350';
+		$sizgraph_w = '750';
+		$sizgraph_h = '230';
 	}
 
 		
@@ -1484,7 +1486,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
+			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&pure=1" border="0" alt="">';
 			array_push ($table->data, $data);
 			
 			break;
@@ -1524,7 +1526,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 	
 			$table->colspan[2][0] = 3;
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=235&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 			array_push ($table->data, $data);
 	
 			break;

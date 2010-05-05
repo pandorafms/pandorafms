@@ -59,6 +59,10 @@ switch ($activeTab) {
 						}
 						break;
 					case 'save':
+						$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+						$values['width'] = $sizeBackground[0];
+						$values['height'] = $sizeBackground[1];
+						
 						if($values['name'] != "" && $values['background'])
 							$idVisualConsole = process_sql_insert('tlayout', $values);
 						else

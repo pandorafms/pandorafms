@@ -46,9 +46,11 @@ if ($copy_layout) {
 	// Create the new Console
 	$idGroup = $layout_src[0]['id_group'];
 	$background = $layout_src[0]['background'];
+	$height = $layout_src[0]['height'];
+	$width = $layout_src[0]['width'];
 	$visualConsoleName = $name_dst;
 	
-	$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
+	$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background, 'height' => $height, 'width' => $width);
 	$result = process_sql_insert('tlayout', $values);
 	
 	$idNewVisualConsole = $result;

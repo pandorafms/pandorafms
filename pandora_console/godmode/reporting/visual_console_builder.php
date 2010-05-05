@@ -45,6 +45,7 @@ switch ($activeTab) {
 				$idGroup = get_parameter('id_group');
 				$background = get_parameter('background');
 				$visualConsoleName = get_parameter('name');
+				
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
 				switch ($action) {
 					case 'update':
@@ -171,7 +172,7 @@ $buttons = array(
 			print_image ("images/god6.png", true, array ("title" => __('List elements'))) .'</a>'),
 	'wizard' => array('active' => false,
 		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=wizard&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
-			print_image ("images/pill.png", true, array ("title" => __('Wizard'))) .'</a>'),
+			print_image ("images/wand.png", true, array ("title" => __('Wizard'))) .'</a>'),
 	'editor' => array('active' => false,
 		'text' => '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=editor&action=' . $action . '&id_visual_console=' . $idVisualConsole . '">' .
 			print_image ("images/config.png", true, array ("title" => __('Editor'))) .'</a>'),

@@ -67,14 +67,18 @@ function printItemInVisualConsole($layoutData) {
 	
 	switch ($type) {
 		case STATIC_GRAPH:
-			$img = getImageStatusElement($layoutData);
-			$imgSizes = getimagesize($img);
+			if ($layoutData['image'] != null) {
+				$img = getImageStatusElement($layoutData);
+				$imgSizes = getimagesize($img);
+			}
 			if (($width != 0) && ($height != 0)) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
 			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
-			echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+			if ($layoutData['image'] != null) {
+				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+			}
 			echo $text;
 			echo "</div>";
 			break;

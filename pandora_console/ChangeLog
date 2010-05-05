@@ -1,5 +1,11 @@
 2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.php: added the extract size of
+	image and save.
+	Fixes: #2992401
+
+2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php: fixed notices php messages when the
 	visual map has the item label (item image without image and only text). 
 	

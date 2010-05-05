@@ -184,10 +184,21 @@ function readFields() {
 function createAction() {
 	var values = readFields();
 	
-	// TODO VALIDATE DATA
+	//VALIDATE DATA
+	var validate = true;
+	switch (creationItem) {
+		case 'static_graph':
+			if ((values['label'] == '') && (values['image'] == '')) {
+				alert($("#message_alert_no_label_no_image").html());
+				validate = false;
+			}
+			break;
+	}
 	
-	insertDB(creationItem, values);
-	actionClick();
+	if (validate) { 
+		insertDB(creationItem, values);
+		actionClick();
+	}
 }
 
 function actionClick() {

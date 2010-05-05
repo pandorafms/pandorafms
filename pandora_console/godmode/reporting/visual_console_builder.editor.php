@@ -237,6 +237,9 @@ print_input_hidden('background_width', $widthBackground);
 print_input_hidden('background_height', $heightBackground);
 echo "</form>";
 
+//Hack to translate messages in javascript
+echo '<span style="display: none" id="message_alert_no_label_no_image">' . __('No image or name defined.') .'</span>';
+
 require_css_file ('color-picker');
 
 require_jquery_file('ui.core');

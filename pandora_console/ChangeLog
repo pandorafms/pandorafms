@@ -1,3 +1,16 @@
+2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php: fixed notices php messages when the
+	visual map has the item label (item image without image and only text). 
+	
+	* godmode/reporting/visual_console_builder.php: changed the icon tab for
+	the wizard, before it was a pill, now it is a wand.
+	
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: fixed the validate
+	static graph item.
+	Fixes: #2994103
+
 2010-05-04 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: fixed the php notice message when the

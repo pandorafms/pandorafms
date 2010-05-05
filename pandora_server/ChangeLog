@@ -1,3 +1,9 @@
+2010-05-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Use the data timestamp instead of the
+	  current time in the compression algorithm. Fixed regexps in
+	  SNMP alerts.
+
 2010-04-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Changed the behaviour of SNMP alerts.

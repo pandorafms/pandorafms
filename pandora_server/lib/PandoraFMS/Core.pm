@@ -753,7 +753,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	my $last_try = ($1 == 0) ? 0 : timelocal($6, $5, $4, $3, $2 - 1, $1 - 1900);
-	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < (time() - 86400))) ? 1 : 0;
+	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 		
 	my $current_interval = ($module->{'module_interval'} == 0 ? $agent->{'intervalo'} : $module->{'module_interval'});
 	db_do ($dbh, 'UPDATE tagente_estado SET datos = ?, estado = ?, last_status = ?, status_changes = ?, utimestamp = ?, timestamp = ?,
@@ -1235,21 +1235,21 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 		# OID
 		my $oid = $alert->{'oid'};
 		if ($oid ne '') {
-			next if ($trap_oid !~ m/$oid/i && $trap_oid_text !~ m/$oid/i);
+			next if ($trap_oid !~ m/^$oid$/i && $trap_oid_text !~ m/^$oid$/i);
 			$alert_data .= "OID: $oid ";
 		}
 
 		# Custom OID/value
 		my $custom_oid = $alert->{'custom_oid'};
 		if ($custom_oid ne '') {
-			next if ($trap_custom_value !~ m/$custom_oid/i && $trap_custom_oid !~ m/$custom_oid/i);
+			next if ($trap_custom_value !~ m/^$custom_oid$/i && $trap_custom_oid !~ m/^$custom_oid$/i);
 			$alert_data .= "CUSTOM OID: $custom_oid ";
 		}
 
 		# Agent IP
 		my $agent = $alert->{'agent'};
 		if ($agent ne '') {
-			next if ($trap_agent !~ m/$agent/i );
+			next if ($trap_agent !~ m/^$agent$/i );
 			$alert_data .= "AGENT: $agent";
 		}
 		

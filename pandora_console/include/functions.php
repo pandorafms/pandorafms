@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -731,7 +731,7 @@ function is_module_proc ($module_name) {
  * @return bool true if the module is of type "inc"
  */
 function is_module_inc ($module_name) {
-    return preg_match ('/\_inc$/', $module_name);
+	return preg_match ('/\_inc$/', $module_name);
 }
 
 /**

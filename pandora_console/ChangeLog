@@ -1,3 +1,9 @@
+2010-05-06 Raúl Mateos <raulofpandora@gmail.com>
+
+	* include/config*.php: Updated year. Updated build.
+
+	* include/functions_*.php: Updated year. Clean Code.
+
 2010-05-06 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/config.inc.php: fixed the operation require when the php file to
@@ -859,7 +865,7 @@
 2010-04-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_ui.php: changed some parts of source code in the
-	functions "format_alert_row" for show column modules in general view. In the
+	functions "forma  Raúl Mateos <raulofpandora@gmail.com>t_alert_row" for show column modules in general view. In the
 	function "pagination" added the parameter $offset_name with default value
 	'offset' for to use several paginations in one page.
 

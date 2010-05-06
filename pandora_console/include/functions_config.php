@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -92,9 +92,9 @@ function update_config_value ($token, $value) {
 			break;
 		default:
 			if (!isset ($config[$token])){
-    			$config[$token] = $value;
+			$config[$token] = $value;
 				return (bool) create_config_value ($token, $value);
-            }
+			}
 			
 			/* If it has not changed */
 			if ($config[$token] == $value)
@@ -171,8 +171,8 @@ function update_config () {
 	update_config_value ('history_db_delay', (string) get_parameter ('history_db_delay', $config['history_db_delay']));
 	update_config_value ('timezone', (string) get_parameter ('timezone', $config['timezone']));
 	update_config_value ('activate_gis', (bool) get_parameter ('activate_gis', $config['activate_gis']));
-	update_config_value ('stats_interval',  get_parameter ('stats_interval', $config['stats_interval']));
-	update_config_value ('realtimestats',  get_parameter ('realtimestats', $config['realtimestats']));
+	update_config_value ('stats_interval', get_parameter ('stats_interval', $config['stats_interval']));
+	update_config_value ('realtimestats', get_parameter ('realtimestats', $config['realtimestats']));
 	update_config_value ('event_purge', get_parameter ('event_purge', $config['event_purge']));
 	update_config_value ('trap_purge', get_parameter ('trap_purge', $config['trap_purge']));
 	update_config_value ('string_purge', get_parameter ('string_purge', $config['string_purge']));
@@ -336,7 +336,7 @@ function process_config () {
 	
 	// if (!isset ($config["autoupdate"])){
 	// 	update_config_value ('autoupdate', true);
-        // }
+	// }
 
 	if (!isset ($config["auth"])) {
 		require_once ($config["homedir"]."/include/auth/mysql.php");

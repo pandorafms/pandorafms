@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -29,18 +29,18 @@ function get_chart_code ($chart, $width, $height, $swf) {
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
-    $output = '<div id="' . $div_id. '"></div>';
-    $output .= '<script type="text/javascript">
-    			<!--
-        			$(document).ready(function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
-        				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
-						myChart.addParam("WMode", "Transparent");
-        				myChart.render("' . $div_id . '");
-        			})
-        		-->
-    			</script>';
-    return $output;
+	$output = '<div id="' . $div_id. '"></div>';
+	$output .= '<script type="text/javascript">
+			<!--
+				$(document).ready(function pie_' . $chart_id . ' () {
+					var myChart = new FusionCharts("' . $swf . '", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+					myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
+					myChart.addParam("WMode", "Transparent");
+					myChart.render("' . $div_id . '");
+				})
+			-->
+			</script>';
+	return $output;
 }
 
 // Returns a 3D bar chart
@@ -62,7 +62,7 @@ function fs_3d_bar_chart ($data, $width, $height) {
 		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';color=95BB04');
 	}
 
-  	$chart->setChartParams('showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+	$chart->setChartParams('showNames=1;rotateNames=1;showValues=0;showPercentageValues=0;showLimits=0;baseFontSize=9;' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Column3D.swf');
@@ -78,7 +78,7 @@ function fs_3d_pie_chart ($data, $width, $height) {
 
 	// Generate the XML
 	$chart = new FusionCharts('Pie3D', $width, $height);
-  	$chart->setChartParams('showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9');
+	$chart->setChartParams('showNames=1;showValues=0;showPercentageValues=0;baseFontSize=9');
 
 	$empty = 1;
 	foreach ($data as $name => $value) {
@@ -124,7 +124,7 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 		$chart->addChartData($value, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=95BB04');
 	}
 
-  	$chart->setChartParams('numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : '') . $params);
+	$chart->setChartParams('numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : '') . $params);
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');
@@ -176,27 +176,27 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		}
 	}
 
-  	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+ 	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
 	$chart_id = 'chart_' . $random_number;
-    $output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
+	$output = '<div id="' . $div_id. '" style="z-index:1;"></div>'; 
 	$pre_url = ($config["homeurl"] == "/") ? '' : $config["homeurl"];
 
 	$output .= '<script language="JavaScript" src="' . $pre_url . '/include/FusionCharts/FusionCharts.js"></script>';
-    $output .= '<script type="text/javascript">
-    			<!--
-        			function pie_' . $chart_id . ' () {
-        				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
-        				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
-						myChart.addParam("WMode", "Transparent");
-        				myChart.render("' . $div_id . '");
-        			}
+	$output .= '<script type="text/javascript">
+			<!--
+			function pie_' . $chart_id . ' () {
+				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
+				myChart.addParam("WMode", "Transparent");
+				myChart.render("' . $div_id . '");
+			}
 					pie_' . $chart_id . ' ();
-        		-->
-    			</script>';
-    return $output;
+			-->
+		</script>';
+	return $output;
 }
 
 // Returns a Pandora FMS combined chart
@@ -246,7 +246,7 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 		}
 	}
 
-  	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_' . $chart_type . '.swf');
@@ -275,7 +275,7 @@ function fs_agent_event_chart ($data, $width, $height, $step = 1) {
 		$chart->addChartData(1, 'name=' . clean_flash_string($name) . ';showName=' . $show_name . ';color=' . $value);
 	}
 
-  	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
+	$chart->setChartParams('numDivLines=0;numVDivLines=0;showNames=1;rotateNames=0;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=0;areaBorderThickness=1;canvasBgColor=9ABD18');
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_Area2D.swf');

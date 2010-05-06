@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the  GNU Lesser General Public License
@@ -82,14 +82,14 @@
 // application. Do change according to your LDAP Schema
 //$config["auth"]["ldap_user_attr"] = array (
 //						 //Pandora attribute // LDAP attribute //Explanation
-//						 'id_user' =>		'uid',          //login
-//						 'lastname' =>      'sn',			//last (sur) name
-//						 'firstname' =>     'givenname',    //first (given) name
-//						 'fullname' =>		'cn',           //full (common) name
+//						 'id_user' =>		'uid',	//login
+//						 'lastname' =>	'sn',			//last (sur) name
+//						 'firstname' =	 'givenname',	//first (given) name
+//						 'fullname' =>		'cn',	 //full (common) name
 //						 'comments' =>		'description',	//comments - you can set this to anything
-//						 'last_contact' =>  'lastlogin',	//last login utimestamp or don't define
-//						 'email' =>			'mail',         //email - not necessary will default to empty
-//						 'phone'  =>		'phone',		//phone
+//						 'last_contact' =>	'lastlogin',	//last login utimestamp or don't define
+//						 'email' =>			'mail',	//email - not necessary will default to empty
+//						 'phone' =>		'phone',		//phone
 //						 'middlename' =>	'mn',			//not yet used except for representational purposes
 //						 'registered' =>	'created'		//created utimestamp or don't define
 //);

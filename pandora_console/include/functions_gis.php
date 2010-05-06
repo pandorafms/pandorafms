@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -148,51 +148,50 @@ function makeLayer($name, $visible = true, $dot = null, $idLayer = null) {
 			
 			//Creamos la capa de tipo vector
 			var layer = new OpenLayers.Layer.Vector(
-	                '<?php echo $name; ?>', {styleMap: style}
-	            );
+			'<?php echo $name; ?>', {styleMap: style}
+			);
 
-            layer.data = {};
-            layer.data.id = '<?php echo $idLayer; ?>';
+			layer.data = {};
+			layer.data.id = '<?php echo $idLayer; ?>';
 
-            layer.setVisibility(<?php echo $visible; ?>);
-			map.addLayer(layer);
+		 	layer.setVisibility(<?php echo $visible; ?>);
+					map.addLayer(layer);
 
-            layer.events.on({
-                "featureselected": function(e) {
-                	if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
-                    	var feature = e.feature;
-                		var featureData = feature.data;
-                		var long_lat = featureData.long_lat;
-
+			layer.events.on({
+		 		"featureselected": function(e) {
+					if (e.feature.geometry.CLASS_NAME == "OpenLayers.Geometry.Point") {
+						var feature = e.feature;
+						var featureData = feature.data;
+						var long_lat = featureData.long_lat;
 						var popup;
 						
-        	            popup = new OpenLayers.Popup.FramedCloud('cloud00',
-            	            	long_lat,
+						popup = new OpenLayers.Popup.FramedCloud('cloud00',
+								long_lat,
 								null,
 								'<div class="cloudContent' + featureData.id + '" style="text-align: center;"><img src="images/spinner.gif" /></div>',
 								null,
 								true,
 								function () { popup.destroy(); });
-								feature.popup = popup;
-								map.addPopup(popup);
+						feature.popup = popup;
+						map.addPopup(popup);
 
-                		jQuery.ajax ({
-                    		data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id="  + featureData.id,
-                    		type: "GET",
-                    		dataType: 'json',
-                    		url: "ajax.php",
-                    		timeout: 10000,
-                    		success: function (data) {                 		
-                    			if (data.correct) {
-                    				$('.cloudContent' + featureData.id).css('text-align', 'left');
-									$('.cloudContent' + featureData.id).html(data.content);
-									popup.updateSize();
-                    			}
-                			}
-                		});
-                	}
-                }
-            });
+						jQuery.ajax ({
+							data: "page=operation/gis_maps/ajax&opt="+featureData.type+"&id=" + featureData.id,
+							type: "GET",
+							dataType: 'json',
+							url: "ajax.php",
+							timeout: 10000,
+							success: function (data) {	
+								if (data.correct) {
+									$('.cloudContent' + featureData.id).css('text-align', 'left');
+											$('.cloudContent' + featureData.id).html(data.content);
+											popup.updateSize();
+								}
+							}
+						});
+					}
+				}
+			});
 		}
 	);
 	</script>
@@ -204,11 +203,10 @@ function activateSelectControl($layers=null) {
 	<script type="text/javascript">
 	$(document).ready (
 		function () {
-            var layers = map.getLayersByClass("OpenLayers.Layer.Vector");
-            
-            var select = new OpenLayers.Control.SelectFeature(layers);
-            map.addControl(select);
-            select.activate();
+			var layers = map.getLayersByClass("OpenLayers.Layer.Vector");
+			var select = new OpenLayers.Control.SelectFeature(layers);
+			map.addControl(select);
+			select.activate();
 		}
 	);
 	</script>
@@ -216,7 +214,7 @@ function activateSelectControl($layers=null) {
 }
 
 /**
- * Activate the feature refresh  by ajax.
+ * Activate the feature refresh by ajax.
  * 
  * @param Array $layers Its a rows of table "tgis_map_layer" or None is all.
  * @param integer $lastTimeOfData The time in unix timestamp of last query of data GIS in DB.
@@ -257,41 +255,40 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 			}
 
 			if (featureIdArray.length > 0) {
-	    		jQuery.ajax ({
-	        		data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features="  + featureIdArray.toString()
-	        			+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id + "&agent_view=" + agentView,
-	        		type: "GET",
-	        		dataType: 'json',
-	        		url: "ajax.php",
-	        		timeout: 10000,
-	        		success: function (data) {
-	        			if (data.correct) {
-		        			content = $.evalJSON(data.content);
+				jQuery.ajax ({
+				data: "page=operation/gis_maps/ajax&opt=get_new_positions&id_features=" + featureIdArray.toString()
+					+ "&last_time_of_data=" + last_time_of_data + "&layer_id=" + layer.data.id + "&agent_view=" + agentView,
+				type: "GET",
+				dataType: 'json',
+				url: "ajax.php",
+				timeout: 10000,
+				success: function (data) {
+					if (data.correct) {
+						content = $.evalJSON(data.content);
 
-		        			if (content != null) {
-		        				for (var idAgent in content) {
-		        					if (isInt(idAgent)) {
-			        					agentDataGIS = content[idAgent];
-
-			        					feature = searchPointAgentById(idAgent);
-			        					layer.removeFeatures(feature);
-			        					
-			        					delete feature;
-			        					feature = null
-										status = parseInt(agentDataGIS['status']);
+						if (content != null) {
+							for (var idAgent in content) {
+								if (isInt(idAgent)) {
+									agentDataGIS = content[idAgent];
+									feature = searchPointAgentById(idAgent);
+									layer.removeFeatures(feature);
+									
+									delete feature;
+									feature = null
+									status = parseInt(agentDataGIS['status']);
 										
-			        					js_addAgentPointExtent(layer.name, agentDataGIS['name'],
-			        						agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
-			        						agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status, agentDataGIS['id_parent']);
+									js_addAgentPointExtent(layer.name, agentDataGIS['name'],
+									agentDataGIS['stored_longitude'], agentDataGIS['stored_latitude'],
+									agentDataGIS['icon_path'], 20, 20, idAgent, 'point_agent_info', status, agentDataGIS['id_parent']);
 
-			        					//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
-					        			js_refreshParentLines();
-		        					}
-		        				}
-		        			}
-	        			}
-	    			}
-	    		});
+									//TODO: Optimize, search a new position to call for all agent in the layer and or optimice code into function.
+									js_refreshParentLines();
+								}
+							}
+						}
+					}
+				}
+				});
 			}
 		}
 	
@@ -339,7 +336,7 @@ function activateAjaxRefresh($layers = null, $lastTimeOfData = null) {
 }
 
 function addAgentPoint($layerName, $pointName, $lat, $lon, $icon = null, $width = 20,
-	$height = 20, $point_id  = '', $status = -1, $type_string = '', $idParent = 0) {
+	$height = 20, $point_id = '', $status = -1, $type_string = '', $idParent = 0) {
 	?>
 	<script type="text/javascript">
 	$(document).ready (
@@ -672,7 +669,7 @@ function saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 		process_sql_insert('tgis_map_has_tgis_map_connection',
 			array(
 				'tgis_map_id_tgis_map' => $idMap,
-				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],                       
+				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],
 				'default_map_connection' => $map_connection['default']
 			)
 		);
@@ -726,7 +723,7 @@ function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latit
 		process_sql_insert('tgis_map_has_tgis_map_connection',
 			array(
 				'tgis_map_id_tgis_map' => $idMap,
-				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],                       
+				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'], 
 				'default_map_connection' => $map_connection['default']
 			)
 		);
@@ -774,8 +771,8 @@ function updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latit
  *
  * @result: An array with all the configuration parameters
  */
- function getConectionConf($idConnection) {
-    $confParameters = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
+function getConectionConf($idConnection) {
+	$confParameters = get_db_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
 	return $confParameters;
 }
 

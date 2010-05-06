@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC10408'; // Remember is YYMMDD
+$build_version = 'PC100506'; // Remember is YYMMDD
 $pandora_version = 'v3.1-dev';
 
 /* Help to debug problems. Override global PHP configuration */

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -412,7 +412,7 @@ function delete_alert_agent_module ($id_alert_agent_module, $filter = false) {
 		$filter['id'] = $id_alert_agent_module;
 	
 	if ($id_alert_agent_module !== false) {
-		$idAlertCompunds =  get_db_all_rows_sql('SELECT id_alert_compound
+		$idAlertCompunds = get_db_all_rows_sql('SELECT id_alert_compound
 			FROM talert_compound_elements
 			WHERE id_alert_template_module = ' . $id_alert_agent_module);
 		
@@ -828,7 +828,7 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 	if (! is_array ($filter))
 		$filter = array ();
 	$filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
-	$filter[] = 'tagente_modulo.id_agente  = tagente.id_agente';
+	$filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
 	$filter['id_alert_template'] = $id_alert_template;
 	$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
 	

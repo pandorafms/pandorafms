@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -247,7 +247,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * The element will have an id like: "password-$value". Based on choose_from_menu() from Moodle.
  * 
  * @param string $sql SQL sentence, the first field will be the identifier of the option. 
- *      The second field will be the shown value in the dropdown.
+ * The second field will be the shown value in the dropdown.
  * @param string $name Select form name
  * @param string $selected Current selected value.
  * @param string $script Javascript onChange code.
@@ -604,31 +604,31 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  * Print a nicely formatted table. Code taken from moodle.
  *
  * @param object Object with several properties:
- *     $table->head - An array of heading names.
- *     $table->head_colspan - An array of colspans of each head column.
- *     $table->align - An array of column alignments
- *     $table->valign - An array of column alignments
- *     $table->size  - An array of column sizes
- *     $table->wrap - An array of "nowrap"s or nothing
- *     $table->style  - An array of personalized style for each column.
- *     $table->rowstyle  - An array of personalized style of each row.
- *     $table->rowclass  - An array of personalized classes of each row (odd-evens classes will be ignored).
- *     $table->colspan  - An array of colspans of each column.
- *     $table->rowspan  - An array of rowspans of each column.
- *     $table->data[] - An array of arrays containing the data.
- *     $table->width  - A percentage of the page
- *     $table->border  - Border of the table.
- *     $table->tablealign  - Align the whole table (float left or right)
- *     $table->cellpadding  - Padding on each cell
- *     $table->cellspacing  - Spacing between cells
- *     $table->class  - CSS table class
- *	   $table->id - Table ID (useful in JavaScript)
- *	   $table->headclass[] - An array of classes for each heading
- *     $table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
- *	   $table->titlestyle - Title style
- *	   $table->titleclass - Title class
- *     $table->styleTable - Table style
- * @param  bool Whether to return an output string or echo now
+ *	$table->head - An array of heading names.
+ *	$table->head_colspan - An array of colspans of each head column.
+ *	$table->align - An array of column alignments
+ *	$table->valign - An array of column alignments
+ *	$table->size - An array of column sizes
+ *	$table->wrap - An array of "nowrap"s or nothing
+ *	$table->style - An array of personalized style for each column.
+ *	$table->rowstyle - An array of personalized style of each row.
+ *	$table->rowclass - An array of personalized classes of each row (odd-evens classes will be ignored).
+ *	$table->colspan - An array of colspans of each column.
+ *	$table->rowspan - An array of rowspans of each column.
+ *	$table->data[] - An array of arrays containing the data.
+ *	$table->width - A percentage of the page
+ *	$table->border - Border of the table.
+ *	$table->tablealign - Align the whole table (float left or right)
+ *	$table->cellpadding - Padding on each cell
+ *	$table->cellspacing - Spacing between cells
+ *	$table->class - CSS table class
+ *	$table->id - Table ID (useful in JavaScript)
+ *	$table->headclass[] - An array of classes for each heading
+ *	$table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
+ *	$table->titlestyle - Title style
+ *	$table->titleclass - Title class
+ *	$table->styleTable - Table style
+ * @param bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
  */
@@ -819,7 +819,7 @@ function print_table (&$table, $return = false) {
 					$style[$key] = '';
 				}
 				
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].'  '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";
 		}
@@ -870,7 +870,7 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
 	$output .= ' />';
 	
 	if ($label != '') {
-		$output .= '<label for="'.$htmlid.'">'.  $label .'</label>' .  "\n";
+		$output .= '<label for="'.$htmlid.'">'. $label .'</label>' . "\n";
 	}
 	
 	if ($return)

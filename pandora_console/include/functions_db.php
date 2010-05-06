@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -302,9 +302,9 @@ function create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignU
 		$assign = $assignUser;
 	
 	$insert = array (
-		"id_usuario"  => $id_user,
-		"id_perfil"   => $id_profile,
-		"id_grupo"    => $id_group,
+		"id_usuario" => $id_user,
+		"id_perfil" => $id_profile,
+		"id_grupo" => $id_group,
 		"assigned_by" => $assign
 	);
 
@@ -442,8 +442,8 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	
 	////////////////LOG AJAX///////////////////////
 	///////////////////////////////////////////////
-	//$log = fopen  ( "/tmp/log_sql", "a");
-	//fwrite  ($log, $sql."\n\n");
+	//$log = fopen ( "/tmp/log_sql", "a");
+	//fwrite ($log, $sql."\n\n");
 	//fclose($log);
 	///////////////////////////////////////////////
 	
@@ -1798,7 +1798,7 @@ function get_db_row ($table, $field_search, $condition, $fields = false) {
  * Get the row of a table in the database using a complex filter.
  * 
  * @param string Table to retrieve the data (warning: not cleaned)
-  * @param mixed Filters elements. It can be an indexed array
+ * @param mixed Filters elements. It can be an indexed array
  * (keys would be the field name and value the expected value, and would be
  * joined with an AND operator) or a string, including any SQL clause (without
  * the WHERE keyword). Example:
@@ -1850,15 +1850,15 @@ function get_db_row_filter ($table, $filter, $fields = false, $where_join = 'AND
  */
 
 function get_db_sql ($sql, $field = 0, $search_history_db = false) {
-        $result = get_db_all_rows_sql ($sql, $search_history_db);
-        if($result === false)
-                return false;
-        $ax = 0;
-        foreach ($result[0] as $f){
-                if ($field == $ax)
-                        return $f;
-                $ax++;
-        }
+	$result = get_db_all_rows_sql ($sql, $search_history_db);
+	if($result === false)
+		return false;
+	$ax = 0;
+	foreach ($result[0] as $f){
+		if ($field == $ax)
+			return $f;
+		$ax++;
+	}
 }
 
 /**
@@ -2214,9 +2214,9 @@ function get_db_all_fields_in_table ($table, $field = '', $condition = '', $orde
  * echo $sql;
  * </code>
  * Will return:
- *  <code>
+ * <code>
  * UPDATE table SET `name` = "Name", `description` = "Long description" WHERE id=1
- *  </code>
+ * </code>
  *
  * @param array Values to be formatted in an array indexed by the field name.
  *
@@ -2437,7 +2437,7 @@ function get_agentmodule_status ($id_agentmodule = 0) {
 /** 
  * Get the worst status of all modules of a given agent.
  * 
- * @param int Id agent  to check.
+ * @param int Id agent to check.
  * 
  * @return int Worst status of an agent for all of its modules.
  * The value -1 is returned in case the agent has exceed its interval.

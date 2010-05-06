@@ -64,18 +64,17 @@ if (! $config['dbconnection']) {
 	exit;
 }
 
+$ownDir = dirname(__FILE__) . '/';
+
 mysql_select_db ($config["dbname"]);
-require_once ('functions.php');
-require_once ('functions_db.php');
-require_once ('functions_config.php');
+require_once ($ownDir . 'functions.php');
+require_once ($ownDir . 'functions_db.php');
+require_once ($ownDir. 'functions_config.php');
 
 process_config ();
 
-require_once ('streams.php');
-require_once ('gettext.php');
-
-// Set IP address of user connected to Pandora console and store it in session array
-global $REMOTE_ADDR;
+require_once ($ownDir . 'streams.php');
+require_once ($ownDir . 'gettext.php');
 
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 $config['user_language'] = $config["language"];
@@ -101,7 +100,7 @@ if (! defined ('EXTENSIONS_DIR'))
 if (! defined ('ENTERPRISE_DIR'))
 	define ('ENTERPRISE_DIR', 'enterprise');
 
-require_once ('functions_extensions.php');
+require_once ($ownDir . 'functions_extensions.php');
 
 $config['extensions'] = get_extensions ();
 

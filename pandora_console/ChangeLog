@@ -1,3 +1,16 @@
+2010-05-06 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/config.inc.php: fixed the operation require when the php file to
+	call config.php have a file with same name of "config_process.php" ...in
+	rare cases.
+	
+	* include/config_process.php: fixed the operation require when the php file
+	to call config.php have a file with same name of "functions.php",
+	"functions_db.php", "functions_config.php" ...in rare cases. 
+	
+	* include/functions.php, include/functions_config.php: cleaned the source
+	code.
+
 2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/map_builder.php: added the height and width to save in

@@ -113,5 +113,6 @@ error_reporting(E_ALL);
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir
 
-include ("config_process.php");
+$ownDir = dirname(__FILE__) . '/';
+include ($ownDir . "config_process.php");
 ?>

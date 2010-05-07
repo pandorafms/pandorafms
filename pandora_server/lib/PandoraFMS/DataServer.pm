@@ -277,6 +277,9 @@ sub process_xml_data ($$$$$) {
 	$AgentSem->up ();
 
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
+		if (!defined($parent_agent_name)){
+                        $parent_agent_name = "";
+                }
 		logger($pa_config,"Parent_agent_name $parent_agent_name",10);
 		if ($pa_config->{'update_parent'} == 1 && $parent_id != 0) {
 		logger($pa_config,"Parent_agent_name $parent_agent_name",10);

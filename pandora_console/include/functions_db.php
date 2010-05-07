@@ -2508,22 +2508,27 @@ function get_layoutdata_y ($id_layoutdata){
  *
  * @param int Agent module id
  * @param int The timestamp to look backwards from and get the data.
+ * @param int 1 if the module has a string type.
  *
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
-function get_previous_data ($id_agent_module, $utimestamp = 0) {
+function get_previous_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
 	
+	if ($string == 1) {
+		$table = 'tagente_datos_string';
+	} else {
+		$table = 'tagente_datos';
+	}
+
 	// 172800 = 60×60×24*2 Search up to 2 days before utimestamp 
-	$interval = get_module_interval ($id_agent_module);
-	$sql = sprintf ('SELECT * FROM tagente_datos 
-			WHERE id_agente_modulo = %d 
+	$sql = sprintf ('SELECT * FROM ' . $table . ' WHERE id_agente_modulo = %d 
 			AND utimestamp <= %d 
-			AND utimestamp >= %d
+			AND utimestamp >= %d 
 			ORDER BY utimestamp DESC',
 			$id_agent_module, $utimestamp, $utimestamp - 172800);
-	
+
 	return get_db_row_sql ($sql, true);
 }
 
@@ -2532,12 +2537,19 @@ function get_previous_data ($id_agent_module, $utimestamp = 0) {
  *
  * @param int Agent module id
  * @param int The timestamp to look backwards from and get the data.
- *
+ * @param int 1 if the module has a string type.
+ * 
  * @return mixed The row of tagente_datos of the last period. False if there were no data.
  */
-function get_next_data ($id_agent_module, $utimestamp = 0) {
+function get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) {
 	if (empty ($utimestamp))
 		$utimestamp = time ();
+
+	if ($string == 1) {
+		$table = 'tagente_datos_string';
+	} else {
+		$table = 'tagente_datos';
+	}
 	
 	$interval = get_module_interval ($id_agent_module);
 	$sql = sprintf ('SELECT * FROM tagente_datos 

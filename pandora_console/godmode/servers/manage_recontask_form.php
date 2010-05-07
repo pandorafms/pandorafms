@@ -54,9 +54,8 @@ if (isset ($_GET["update"])) { // Edit mode
 }
 
 // Headers
-print_page_header (__('Manage recontask'), "", false, "", true);
+print_page_header (__('Manage recontask')." ".print_help_icon ("recontask", true), "", false, "", true);
 
-print_help_icon ("recontask");
 
 $table->width=600;
 $table->cellspacing=4;

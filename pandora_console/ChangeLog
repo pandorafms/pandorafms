@@ -1,3 +1,8 @@
+2010-05-07  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_prediction_source_module.php: Added a missing
+	help file.
+
 2010-05-06 Raúl Mateos <raulofpandora@gmail.com>
 
 	* include/config*.php: Updated year. Updated build.

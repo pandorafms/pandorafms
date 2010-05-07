@@ -1,3 +1,8 @@
+2010-05-07 Sergio Martin  <sergio.martin@artica.es>
+
+	* godmode/servers/manage_recontask_form.php: Included
+	the help icon into the header for bug: 2997559
+
 2010-05-07  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_prediction_source_module.php: Added a missing

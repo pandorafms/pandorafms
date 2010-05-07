@@ -108,156 +108,177 @@ function dame_fecha_grafico_timestamp ($timestamp) {
  * @return Mixed 
  */
 function graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
-				$title, $unit_name, $show_event = 0, $show_alert = 0, $pure = 0, $stacked = 0, $date = 0) {
-
+				$title, $unit_name, $show_events = 0, $show_alerts = 0, $pure = 0, $stacked = 0, $date = 0) {
 	global $config;
 	global $graphic_type;
-	
-	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
-	
-	if (! $date)
-		$date = get_system_time ();
-	
-	$datelimit = $date - $period; // limit date
-	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
+
+	// Set variables
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	$interval = (int) ($period / $resolution);
 	$module_number = count ($module_list);
 
 	// interval - This is the number of "rows" we are divided the time to fill data.
 	//	     more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
 	
-	// Init tables
+	// Init weights
 	for ($i = 0; $i < $module_number; $i++) {
-		$real_data[$i] = array();
-		$mod_data[$i] = 1; // Data multiplier to get the same scale on all modules
-		if ($show_event == 1)
-			$real_event[$i] = array ();
-		if (isset ($weight_list[$i])) {
-			if ($weight_list[$i] == 0)
-				$weight_list[$i] = 1;
-		} else
+		if (! isset ($weight_list[$i])) {
 			$weight_list[$i] = 1;
+		} else if ($weight_list[$i] == 0) {
+				$weight_list[$i] = 1;
+		}
 	}
 
-	$max_value = 0;
-	$min_value = 0;
-	// FOR EACH MODULE IN module_list....
+	// Set data containers
+	for ($iterator = 0; $iterator < $resolution; $iterator++) {
+			$timestamp = $datelimit + ($interval * $iterator);
+			
+			$graph[$timestamp]['count'] = 0;
+			$graph[$timestamp]['timestamp_bottom'] = $timestamp;
+			$graph[$timestamp]['timestamp_top'] = $timestamp + $interval;
+			$graph[$timestamp]['min'] = 0;
+			$graph[$timestamp]['max'] = 0;
+			$graph[$timestamp]['last'] = 1;
+			$graph[$timestamp]['event'] = 0;
+			$graph[$timestamp]['alert'] = 0;
+	}
+
+	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
-		$id_agente_modulo = $module_list[$i];
-		$agent_name = get_agentmodule_agent_name ($id_agente_modulo);
-		$module_name = get_agentmodule_name ($id_agente_modulo);
-		$module_list_name[$i] = $agent_name." / ".substr ($module_name, 0, 20);
-		for ($j = 0; $j <= $resolution; $j++) {
-			$data[$j]['sum'] = 0; // SUM of all values for this interval
-			$data[$j]['count'] = 0; // counter
-			$data[$j]['timestamp_bottom'] = $datelimit + ($interval * $j); // [2] Top limit for this range
-			$data[$j]['timestamp_top'] = $datelimit + ($interval*($j+1)); // [3] Botom limit
-			$data[$j]['min'] = 0; // MIN
-			$data[$j]['max'] = 0; // MAX
-			$data[$j]['events'] = 0; // Event
-		}
-		
-		// Init other general variables
-		if ($show_event == 1) {
-			// If we want to show events in graphs
-			$sql = "SELECT utimestamp FROM tevento WHERE id_agentmodule = $id_agente_modulo AND utimestamp > $datelimit";
-			$result = get_db_all_rows_sql ($sql);
-			if ($result === false)
-				$result = array ();
-			foreach ($result as $row) {
-				$utimestamp = $row['utimestamp'];
-				for ($i = 0; $i <= $resolution; $i++) {
-					if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
-						$real_event[$i] = 1;
-					}
-				}
+
+		$agent_module_id = $module_list[$i];
+		$agent_name = get_agentmodule_agent_name ($agent_module_id);
+		$agent_id = get_agent_id ($agent_name);
+		$module_name = get_agentmodule_name ($agent_module_id);
+		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 20);
+
+		// Get event data (contains alert data too)
+		if ($show_events == 1 || $show_alerts == 1) {
+			$events = get_db_all_rows_filter ('tevento',
+				array ('id_agentmodule' => $agent_module_id,
+					"utimestamp > $datelimit",
+					"utimestamp < $date",
+					'order' => 'utimestamp ASC'),
+				array ('evento', 'utimestamp'));
+			if ($events === false) {
+				$events = array ();
 			}
 		}
-		
-		if ($show_alert == 1) {
-			$alert_high = false;
-			$alert_low = false;
-			// If we want to show alerts limits
-		
-			$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-			$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		
-			// if no valid alert defined to render limits, disable it
-			if (($alert_low === false || $alert_low === NULL) &&
-				($alert_high === false || $alert_high === NULL)) {
-				$show_alert = 0;
-			}
-		}
-		
-		// Get the first data outsite (to the left---more old) of the interval given
-		$previous = (float) get_previous_data ($id_agente_modulo, $datelimit);
-		
-		$result = get_db_all_rows_filter ('tagente_datos',
-			array ('id_agente_modulo' => $id_agente_modulo,
+	
+		// Get module data
+		$data = get_db_all_rows_filter ('tagente_datos',
+			array ('id_agente_modulo' => $agent_module_id,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('datos', 'utimestamp'), 'AND', true);
-		
-		if ($result === false) {
-			if (! $graphic_type) {
+			array ('datos', 'utimestamp'));
+		if ($data === false) {
+			$data = array ();
+		}
+	
+		// Get previous data
+		$previous_data = get_previous_data ($agent_module_id, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($data, $previous_data);
+		}
+	
+		// Get next data
+		$nextData = get_next_data ($agent_module_id, $date);
+		if ($nextData !== false) {
+			array_push ($data, $nextData);
+		} else if (count ($data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$nextData = array_pop ($data);
+			array_push ($data, $nextData);
+			$nextData['utimestamp'] = $date;
+			array_push ($data, $nextData);
+		}
+	
+		// Check available data
+		if (count ($data) < 2) {
+			if (!$graphic_type) {
 				return fs_error_image ();
 			}
 			graphic_error ();
 		}
-		
-		foreach ($result as $row) {
-			$datos = $row["datos"];
-			$utimestamp = $row["utimestamp"];
-			for ($j = 0; $j <= $resolution; $j++) {
-				if ($utimestamp <= $data[$j]['timestamp_top'] && $utimestamp > $data[$j]['timestamp_bottom']) {
-					$data[$j]['sum']=$data[$j]['sum']+$datos;
-					$data[$j]['count']++;
-					// Init min value
-					if ($data[$j]['min'] == 0)
-						$data[$j]['min'] = $datos;
-					else {
-						// Check min value
-						if ($datos < $data[$j]['min'])
-						$data[$j]['min'] = $datos;
-					}
-					// Check max value
-					if ($datos > $data[$j]['max'])
-						$data[$j]['max'] = $datos;
-					break;
-				}
-			}
+	
+		// Calculate chart data
+		$graph_values[$i] = array();
+		$module_data = array_shift ($data);
+		$event_data = array_shift ($events);
+		if ($module_data['utimestamp'] == $datelimit) {
+			$previous_data = $module_data['datos'];
+			$min_value = $module_data['datos'];
+			$max_value = $module_data['datos'];
+		} else {
+			$previous_data = 0;
+			$min_value = 0;
+			$max_value = 0;
 		}
-		
-		// Calculate Average value for $data[][0]
-		for ($j = 0; $j <= $resolution; $j++) {
-			if ($data[$j]['count'] > 0){
-				$real_data[$i][$j] =  $weight_list[$i] * ($data[$j]['sum']/$data[$j]['count']);
-				$data[$j]['sum'] = $data[$j]['sum']/$data[$j]['count'];
+
+		for ($iterator = 0; $iterator < $resolution; $iterator++) {
+			$timestamp = $datelimit + ($interval * $iterator);
+	
+			$total = 0;
+			$count = 0;
+			
+			// Read data that falls in the current interval
+			$interval_min = $previous_data;
+			$interval_max = $previous_data;
+			while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] < ($timestamp + $interval)) {
+				if ($module_data['datos'] > $interval_max) {
+					$interval_max = $module_data['datos'];
+				} else if ($module_data['datos'] < $interval_max) {
+					$interval_min = $module_data['datos'];
+				}
+				$total += $module_data['datos'];
+				$count++;
+				$module_data = array_shift ($data);
+			}
+	
+			// Average
+			if ($count > 0) {
+				$total /= $count;
+			}
+	
+			// Min and max
+			if ($interval_max > $max_value) {
+				$max_value = $interval_max;
+			} else if ($interval_min < $min_value) {
+				$min_value = $interval_min;
+			}
+	
+			// Read events and alerts that fall in the current interval
+			$event_value = 0;
+			$alert_value = 0;
+			while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+				if ($show_events == 1) {
+					$event_value++;
+				}
+				if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+					$alert_value++;
+				}
+				$event_data = array_shift ($events);
+			}
+
+			// Data
+			if ($count > 0) {
+				$graph_values[$i][$timestamp] = $total * $weight_list[$i];
+				$previous_data = $total;
+			// Compressed data
 			} else {
-				$data[$j]['sum'] = $previous;
-				$real_data[$i][$j] = $previous * $weight_list[$i];
-				$data[$j]['min'] = $previous;
-				$data[$j]['max'] = $previous;
+				$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
 			}
-			// Get max value for all graph
-			if ($data[$j]['max'] > $max_value) {
-				$max_value = $data[$j]['max'];
-			}
-			// This stores in mod_data max values for each module
-			if ($mod_data[$i] < $data[$j]['max']) {
-				$mod_data[$i] = $data[$j]['max'];
-			}
-			// Take prev. value
-			// TODO: CHeck if there are more than 24hours between
-			// data, if there are > 24h, module down.
-			$previous = $data[$j]['sum'];
 		}
 	}
 
 	for ($i = 0; $i < $module_number; $i++) {
 		if ($weight_list[$i] != 1)
-			$module_list_name[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
+			$module_name_list[$i] .= " (x". format_numeric ($weight_list[$i], 1).")";
 	}
 	
 	if ($period <= 3600) {
@@ -285,24 +306,24 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 	
 	if (! $graphic_type) {
-		return fs_combined_chart ($real_data, $data, $module_list_name, $width, $height, $stacked, $resolution / 10, $time_format);
+		return fs_combined_chart ($graph_values, $graph, $module_name_list, $width, $height, $stacked, $resolution / 10, $time_format);
 	}
 
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
 	$engine->height = $height;
-	$engine->data = &$real_data;
-	$engine->legend = $module_list_name;
+	$engine->data = &$graph_values;
+	$engine->legend = $module_name_list;
 	$engine->fontpath = $config['fontpath'];
 	$engine->title = "";
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
 	$engine->show_title = !$pure;
 	$engine->stacked = $stacked;
 	$engine->xaxis_interval = $resolution;
-	$events = $show_event ? $real_event : false;
-	$alerts = $show_alert ? array ('low' => $alert_low, 'high' => $alert_high) : false;
-	$engine->combined_graph ($data, $events, $alerts, $unit_name, $max_value, $stacked);
+	$events = false;
+	$alerts = false;
+	$engine->combined_graph ($graph, $events, $alerts, $unit_name, $max_value, $stacked);
 }
 
 function grafico_modulo_sparseOLD ($id_agente_modulo, $period, $show_event,
@@ -535,7 +556,7 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0) {
 	$engine->width = $width;
 	$engine->height = $height;
 	$engine->data = $data;
-	$engine->max_value = $engine->max_value = max ($data);
+	$engine->max_value = max ($data);
 	$engine->show_title = false;
 	$engine->fontpath = $config['fontpath'];
 	$engine->xaxis_interval = floor ($width / 72);
@@ -1236,258 +1257,152 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 	$engine->progress_bar ($progress, $color);
 }
 
-function grafico_modulo_sparse ($id_agente_modulo, $period, $show_event,
+function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$width, $height , $title, $unit_name,
-				$show_alert, $avg_only = 0, $pure = false,
+				$show_alerts, $avg_only = 0, $pure = false,
 				$date = 0) {
 	global $config;
 	global $graphic_type;
 	
-	if (empty ($date))
-		$date = get_system_time ();
-	
-	$resolution = $config["graph_res"] * 50; // Number of "slices" we want in graph
-	$datelimit = $date - $period;
-	$real_event = array ();
-	
-	$interval = (int) ($period / $resolution); // Each interval is $interval seconds length
-	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$id_agente = get_agent_id ($nombre_agente);
-	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
-	
-	// Init tables
-	for ($i = 0; $i <= $resolution; $i++) {
-		$data[$i]['sum'] = 0;
-		$data[$i]['count'] = 0;
-		$data[$i]['timestamp_bottom'] = $datelimit + ($interval * $i);
-		$data[$i]['timestamp_top'] = $datelimit + ($interval * ($i + 1));
-		$data[$i]['min'] = 0;
-		$data[$i]['max'] = 0;
-		$data[$i]['last'] = 0;
-		$data[$i]['events'] = 0;
-	}
-	
-	$all_data = get_db_all_rows_filter ('tagente_datos',
-		array ('id_agente_modulo' => (int) $id_agente_modulo,
-			"utimestamp > $datelimit",
-			"utimestamp < $date",
-			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'), 'AND', true);
-	
-	if ($all_data === false) {
-		if (! $graphic_type) {
-			return fs_error_image ();
-		}
-		graphic_error ();
-	}
-	$max_value = 0;
-	$min_value = 0;
-	$start = 0;
-	
-	foreach ($all_data as $module_data) {
-		$utimestamp = $module_data['utimestamp'];
-		$real_data = $module_data['datos'];
-		for ($i = $start; $i <= $resolution; $i++) {
-			if ($utimestamp <= $data[$i]['timestamp_top'] && $utimestamp >= $data[$i]['timestamp_bottom']) {
-				$start = $i;
-				$data[$i]['sum'] += $real_data;
-				$data[$i]['count']++;
-				$data[$i]['last'] = $real_data; //The last value to insert in any of several iteration of maze of for
-				
-				// Init min value
-				if ($data[$i]['min'] == 0 || $real_data < $data[$i]['min'])
-					$data[$i]['min'] = $real_data;
-				
-				// Check max value
-				if ($real_data > $data[$i]['max'])
-					$data[$i]['max'] = $real_data;
-				
-				// Get max value for all graph
-				if ($data[$i]['max'] > $max_value)
-					$max_value = $data[$i]['max'];
-				
-				// Get min value for all graph
-				$max_value = max ($max_value, $data[$i]['max']);
-				$min_value = min ($min_value, $data[$i]['min']);
-				
-				if ($show_alert == 1) {
-					$alert_high = false;
-					$alert_low = false;
-					// If we want to show alerts limits
-		
-					$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-					$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo);
-		
-					// if no valid alert defined to render limits, disable it
-					if (($alert_low === false || $alert_low === NULL) &&
-						($alert_high === false || $alert_high === NULL)) {
-						$show_alert = 0;
-					}
-				}
-			}
-			
-			if ($show_event) {
-				// If we want to show events in graphs
-				$events = get_db_value_filter ('COUNT(*)', 'tevento',
-					array ('id_agentmodule' => $id_agente_modulo,
-						'utimestamp >= '.$data[$i]['timestamp_bottom'],
-						'utimestamp < '.$data[$i]['timestamp_top']));
-				
-				if ($events)
-					$data[$i]['events']++;
-			}
-		}
-	}
-	
-	// Get the first data outsite (to the left---more old) of the interval given
-	$previous = (float) get_previous_data ($id_agente_modulo, $datelimit);
-	for ($i = 0; $i <= $resolution; $i++) {
-		if ($data[$i]['count']) {
-			/*
-			 * This division is for clean the value
-			 *  $data[$i]['sum'] += $real_data;
-			 *  $data[$i]['count']++;
-			 * because ['sum'] contents $real_data multiplied iterations in for
-			 */
-			$data[$i]['sum'] = $data[$i]['sum'] / $data[$i]['count'];
-			
-			$previous = $data[$i]['last'];
-		}
-		else {
-			$data[$i]['sum'] = $previous;
-			$data[$i]['min'] = $previous;
-			$data[$i]['max'] = $previous;
-			/* Previous does not change here*/
-		}
-	}
-	
-	if ($period <= 3600) {
-		$title_period = __('Last hour');
-		$time_format = 'G:i:s';
-	} elseif ($period <= 86400) {
-		$title_period = __('Last day');
-		$time_format = 'G:i';
-	} elseif ($period <= 604800) {
-		$title_period = __('Last week');
-		$time_format = 'M j';
-	} elseif ($period <= 2419200) {
-		$title_period = __('Last month');
-		$time_format = 'M j';
-	} else {
-		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
-		$time_format = 'M j';
-	}
-
-	if (! $graphic_type) {
-		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
-	}
-	
-	$engine = get_graph_engine ($period);
-	$engine->width = $width;
-	$engine->height = $height;
-	$engine->data = &$data;
-	$engine->xaxis_interval = $resolution;
-	if ($title == '')
-		$title = get_agentmodule_name ($id_agente_modulo);
-	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
-	$engine->subtitle = '     '.__('Period').': '.$title_period;
-	$engine->show_title = !$pure;
-	$engine->max_value = $max_value;
-	$engine->min_value = $min_value;
-	$engine->events = (bool) $show_event;
-	$engine->alert_top = $show_alert ? $alert_high : false;
-	$engine->alert_bottom = $show_alert ? $alert_low : false;;
-	if (! $pure) {
-		$engine->legend = &$legend;
-	}
-	$engine->fontpath = $config['fontpath'];
-	
-	$engine->sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name);
-}
-
-function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
-	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
-	 $date = 0 ) {
-	global $config;
-	global $graphic_type;
-	
-	$nameAgent = get_agentmodule_agent_name ($idModuleAgent);
-	$idAgent = get_agent_id ($nameAgent);
-	$nameModule = get_agentmodule_name ($idModuleAgent);
-	
-	$resolution = $config['graph_res'] * 50; //Number of points of the graph
-	
+	// Set variables
 	if ($date == 0) $date = get_system_time();
 	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
-	
-	
-	if ($show_event == 1)
-		$real_event = array ();
+	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_id = get_agent_id ($agent_name);
+	$module_name = get_agentmodule_name ($agent_module_id);
 
-	if ($show_alert == 1) {
-		$alert_high = false;
-		$alert_low = false;
-		// If we want to show alerts limits
-		
-		$alert_high = get_db_value ('MAX(max_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
-		$alert_low = get_db_value ('MIN(min_value)', 'talert_template_modules', 'id_agent_module', (int) $id_agente_modulo, true);
-		
-		// if no valid alert defined to render limits, disable it
-		if (($alert_low === false || $alert_low === NULL) &&
-			($alert_high === false || $alert_high === NULL)) {
-			$show_alert = 0;
+	// Get event data (contains alert data too)
+	if ($show_events == 1 || $show_alerts == 1) {
+		$events = get_db_all_rows_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp'));
+		if ($events === false) {
+			$events = array ();
 		}
 	}
-	
+
+	// Get module data
 	$data = get_db_all_rows_filter ('tagente_datos',
-		array ('id_agente_modulo' => $idModuleAgent,
+		array ('id_agente_modulo' => $agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'));
-	
-	$previousData = get_db_value_sql("SELECT datos FROM tagente_datos 
-		WHERE id_agente_modulo = " . $idModuleAgent . "
-			AND utimestamp < " . $datelimit . " 
-		ORDER BY utimestamp
-		DESC");
-	
-	if (($data === false) && ($previousData === false)) {
+	if ($data === false) {
+		$data = array ();
+	}
+
+	// Get previous data
+	$previous_data = get_previous_data ($agent_module_id, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($data, $previous_data);
+	}
+
+	// Get next data
+	$nextData = get_next_data ($agent_module_id, $date);
+	if ($nextData !== false) {
+		array_push ($data, $nextData);
+	} else if (count ($data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$nextData = array_pop ($data);
+		array_push ($data, $nextData);
+		$nextData['utimestamp'] = $date;
+		array_push ($data, $nextData);
+	}
+
+	// Check available data
+	if (count ($data) < 2) {
 		if (!$graphic_type) {
 			return fs_error_image ();
 		}
 		graphic_error ();
 	}
-	
-	$moduleData = array_shift($data);
-	
-	$graphPoints = array();
-	
-	//Fill all data in graph point
+
+	// Calculate chart data
+	$chart = array();
+	$module_data = array_shift ($data);
+	$event_data = array_shift ($events);
+	if ($module_data['utimestamp'] == $datelimit) {
+		$previous_data = $module_data['datos'];
+		$min_value = $module_data['datos'];
+		$max_value = $module_data['datos'];
+	} else {
+		$previous_data = 0;
+		$min_value = 0;
+		$max_value = 0;
+	}
+
 	for ($iterator = 0; $iterator < $resolution; $iterator++) {
 		$timestamp = $datelimit + ($interval * $iterator);
+
+		$total = 0;
+		$count = 0;
 		
-		if (($timestamp <= $moduleData['utimestamp']) && (($timestamp + $interval) > $moduleData['utimestamp'])) {
-			if ($moduleData["datos"] > 0) $value = 1;
-			else $value = 0;
-			
-			$graphPoints[$timestamp] = $value;
-			$graphPoints[$timestamp + 1] = (int)(!$value);
-			
-			$moduleData = array_shift($data);
-			if ($moduleData !== null)
-				$previousData = $moduleData['datos'];
+		// Read data that falls in the current interval
+		$interval_min = $previous_data;
+		$interval_max = $previous_data;
+		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] < ($timestamp + $interval)) {
+			if ($module_data['datos'] > $interval_max) {
+				$interval_max = $module_data['datos'];
+			} else if ($module_data['datos'] < $interval_max) {
+				$interval_min = $module_data['datos'];
+			}
+			$total += $module_data['datos'];
+			$count++;
+			$module_data = array_shift ($data);
 		}
-		else {
-			if ($previousData > 0) $value = 1;
-			else $value = 0;
-				
-			$graphPoints[$timestamp] = $value;
+
+		// Average
+		if ($count > 0) {
+			$total /= $count;
 		}
+
+		// Min and max
+		if ($interval_max > $max_value) {
+			$max_value = $interval_max;
+		} else if ($interval_min < $min_value) {
+			$min_value = $interval_min;
+		}
+
+		// Read events and alerts that fall in the current interval
+		$event_value = 0;
+		$alert_value = 0;
+		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+			if ($show_events == 1) {
+				$event_value++;
+			}
+			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+				$alert_value++;
+			}
+			$event_data = array_shift ($events);
+		}
+
+		// Data
+		if ($count > 0) {
+			$chart[$timestamp]['sum'] = $total;
+			$previous_data = $total;
+		// Compressed data
+		} else {
+			$chart[$timestamp]['sum'] = $previous_data;
+		}
+
+		$chart[$timestamp]['count'] = 0;
+		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
+		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
+		$chart[$timestamp]['min'] = $interval_min;
+		$chart[$timestamp]['max'] = $interval_max;
+		$chart[$timestamp]['last'] = 1;
+		$chart[$timestamp]['event'] = $event_value;
+		$chart[$timestamp]['alert'] = $alert_value;
 	}
 	
-	//And the last make the graph
+	// Set the title and time format
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
 		$time_format = 'G:i:s';
@@ -1509,40 +1424,230 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
 		$time_format = 'M j';
 	}
 
-	$max_value = 1;
-	
-    //if flash graph
-	if (! $graphic_type) {
-		$graphPoints2 = array();
-	    foreach($graphPoints as $time => $value) {
-			$graphPoints2[] = array(
-				'sum' => $value,
-				'count' => 0,
-				'timestamp_bottom' => $time,
-				'timestamp_top' => ($time + $interval),
-				'min' => 1,
-				'max' => 1,
-				'last' => 1,
-				'events' => 0);
-	    }
-		
-		return fs_module_chart ($graphPoints2, $width, $height, $avg_only, $resolution / 10, $time_format);
+    // Flash chart
+	if (! $graphic_type) {	
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
 	}
 	
+	$engine = get_graph_engine ($period);
+	$engine->width = $width;
+	$engine->height = $height;
+	$engine->data = &$chart;
+	$engine->xaxis_interval = $resolution;
+	if ($title == '')
+		$title = get_agentmodule_name ($id_agente_modulo);
+	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
+	$engine->subtitle = '     '.__('Period').': '.$title_period;
+	$engine->show_title = !$pure;
+	$engine->max_value = $max_value;
+	$engine->min_value = $min_value;
+	$engine->events = (bool) $show_event;
+	$engine->alert_top = false;
+	$engine->alert_bottom = false;;
+	if (! $pure) {
+		$engine->legend = &$legend;
+	}
+	$engine->fontpath = $config['fontpath'];
+	
+	$engine->sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name);
+}
+
+function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
+	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
+	 $date = 0 ) {
+	global $config;
+	global $graphic_type;
+
+	// Set variables
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	$interval = (int) ($period / $resolution);
+	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_id = get_agent_id ($agent_name);
+	$module_name = get_agentmodule_name ($agent_module_id);
+	
+	// Get event data (contains alert data too)
+	if ($show_events == 1 || $show_alerts == 1) {
+		$events = get_db_all_rows_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp'));
+		if ($events === false) {
+			$events = array ();
+		}
+	}
+
+	// Get module data
+	$data = get_db_all_rows_filter ('tagente_datos',
+		array ('id_agente_modulo' => $agent_module_id,
+			"utimestamp > $datelimit",
+			"utimestamp < $date",
+			'order' => 'utimestamp ASC'),
+		array ('datos', 'utimestamp'));
+	if ($data === false) {
+		$data = array ();
+	}
+
+	// Get previous data
+	$previous_data = get_previous_data ($agent_module_id, $datelimit);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($data, $previous_data);
+	}
+
+	// Get next data
+	$nextData = get_next_data ($agent_module_id, $date);
+	if ($nextData !== false) {
+		array_push ($data, $nextData);
+	} else if (count ($data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$nextData = array_pop ($data);
+		array_push ($data, $nextData);
+		$nextData['utimestamp'] = $date;
+		array_push ($data, $nextData);
+	}
+
+	// Check available data
+	if (count ($data) < 2) {
+		if (!$graphic_type) {
+			return fs_error_image ();
+		}
+		graphic_error ();
+	}
+
+	// Calculate chart data
+	$chart = array();
+	$module_data = array_shift ($data);
+	$event_data = array_shift ($events);
+	if ($module_data['utimestamp'] == $datelimit) {
+		$previous_data = $module_data['datos'];
+	} else {
+		$previous_data = 0;
+	}
+
+	for ($iterator = 0; $iterator < $resolution; $iterator++) {
+		$timestamp = $datelimit + ($interval * $iterator);
+
+		$zero = 0;
+		$total = 0;
+		$count = 0;
+		
+		// Read data that falls in the current interval
+		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] <= ($timestamp + $interval)) {
+			if ($module_data['datos'] == 0) {
+				$zero = 1;
+			} else {
+				$total += $module_data['datos'];
+				$count++;
+			}
+
+			$module_data = array_shift ($data);
+		}
+
+		// Average
+		if ($count > 0) {
+			$total /= $count;
+		}
+
+		// Read events and alerts that fall in the current interval
+		$event_value = 0;
+		$alert_value = 0;
+		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] < ($timestamp + $interval)) {
+			if ($show_events == 1) {
+				$event_value++;
+			}
+			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+				$alert_value++;
+			}
+			$event_data = array_shift ($events);
+		}
+
+		// Data and zeroes (draw a step)
+		if ($zero == 1 && $count > 0) {
+			$chart[$timestamp]['sum'] = $total;
+			$chart[$timestamp + 1] = array ('sum' => $value,
+			                                'count' => 0,
+			                                'timestamp_bottom' => $timestamp,
+			                                'timestamp_top' => $timestamp + $interval,
+			                                'min' => 0,
+			                                'max' => 0,
+			                                'last' => 1,
+			                                'event' => $event_value,
+			                                'alert' => $alert_value);
+			$previous_data = 0;
+		// Just zeros
+		} else if ($zero == 1) {
+			$chart[$timestamp]['sum'] = 0;
+			$previous_data = 0;
+		// No zeros
+		} else if ($count > 0) {
+			$chart[$timestamp]['sum'] = $total;
+			$previous_data = $total;
+		// Compressed data
+		} else {
+			$chart[$timestamp]['sum'] = $previous_data;
+		}
+
+		$chart[$timestamp]['count'] = 0;
+		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
+		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
+		$chart[$timestamp]['min'] = 0;
+		$chart[$timestamp]['max'] = 0;
+		$chart[$timestamp]['last'] = 1;
+		$chart[$timestamp]['event'] = $event_value;
+		$chart[$timestamp]['alert'] = $alert_value;
+	}
+	
+	// Set the title and time format
+	if ($period <= 3600) {
+		$title_period = __('Last hour');
+		$time_format = 'G:i:s';
+	}
+	elseif ($period <= 86400) {
+		$title_period = __('Last day');
+		$time_format = 'G:i';
+	}
+	elseif ($period <= 604800) {
+		$title_period = __('Last week');
+		$time_format = 'M j';
+	}
+	elseif ($period <= 2419200) {
+		$title_period = __('Last month');
+		$time_format = 'M j';
+	} 
+	else {
+		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
+		$time_format = 'M j';
+	}
+
+    // Flash chart
+	if (! $graphic_type) {	
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
+	}
+
+	$chart_data = array ();
+	foreach ($chart as $chart_element) {
+		$chart_data[$chart_element['timestamp_bottom']] = $chart_element['sum'];
+	}
+
+	// Image chart
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
 	$engine->height = $height;
-	$engine->data = &$graphPoints;
-	$engine->max_value = $max_value;
-	$engine->legend = array ($nameModule);
-	$engine->title = '   '.strtoupper ($nameAgent)." - ".__('Module').' '.$title;
+	$engine->data = &$chart_data;
+	$engine->max_value = 1;
+	$engine->legend = array ($module_name);
+	$engine->title = '   '.strtoupper ($agent_name)." - ".__('Module').' '.$title;
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
 	$engine->show_title = !$pure;
-	$engine->events = $show_event ? $real_event : false;
+	$engine->events = false;
 	$engine->fontpath = $config['fontpath'];
-	$engine->alert_top = $show_alert ? $alert_high : false;
-	$engine->alert_bottom = $show_alert ? $alert_low : false;;
+	$engine->alert_top = false;
+	$engine->alert_bottom = false;;
 
 	$engine->xaxis_interval = $resolution / 10; // Fixed to 10 ticks
 	$engine->xaxis_format = 'date';
@@ -1566,110 +1671,167 @@ function grafico_modulo_boolean ($idModuleAgent, $period, $show_event,
  * @param integer pure Fullscreen (1 or 0)
  * @param integer date date
  */
-function grafico_modulo_string ($id_agente_modulo, $period, $show_event,
-	 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0,
+function grafico_modulo_string ($agent_module_id, $period, $show_events,
+	 $width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure=0,
 	 $date = 0) {
 	global $config;
 	global $graphic_type;
 
-	// This code has been rewritten, taking code from 2.x and adjusted to work
-	// with new code for flash and new pchart functions. (slerena/ago09)
-
-	if ($date == "")
-		$date = time ();
-	$resolution = $config["graph_res"] * 5; // Number of "slices" we want in graph
-	$fechatope = $date - $period;
-	$horasint = $period / $resolution; // Each intervalo is $horasint seconds length
-
-	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
-	for ($i = 0; $i <$resolution; $i++) {
-		$valores[$i][0] = 0; // [0] Valor (contador)
-		$valores[$i][1] = $fechatope + ($horasint * $i);
-		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Top limit for this range
-		$valores[$i][3] = $fechatope + ($horasint * ($i + 1)); // [3] Botom limit
+	// Set variables
+	if ($date == 0) $date = get_system_time();
+	$datelimit = $date - $period;
+	$resolution = $config['graph_res'] * 50; //Number of points of the graph
+	$interval = (int) ($period / $resolution);
+	$agent_name = get_agentmodule_agent_name ($agent_module_id);
+	$agent_id = get_agent_id ($agent_name);
+	$module_name = get_agentmodule_name ($agent_module_id);
+	
+	// Get event data (contains alert data too)
+	if ($show_events == 1 || $show_alerts == 1) {
+		$events = get_db_all_rows_filter ('tevento',
+			array ('id_agentmodule' => $agent_module_id,
+				"utimestamp > $datelimit",
+				"utimestamp < $date",
+				'order' => 'utimestamp ASC'),
+			array ('evento', 'utimestamp'));
+		if ($events === false) {
+			$events = array ();
+		}
 	}
-	
-	
-	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." and utimestamp > '".$fechatope."'";
-	$result = get_db_all_rows_sql ($sql1, true);
-	if ($result === false)
-		$result = array ();
 
-	foreach ($result as $row){
-		for ($i = 0; $i < $resolution; $i++){
-			if (($row['utimestamp'] < $valores[$i][3]) and ($row['utimestamp'] >= $valores[$i][2]) ){ 
-				// entra en esta fila
-				$valores[$i][0]++;
+	// Get module data
+	$data = get_db_all_rows_filter ('tagente_datos_string',
+		array ('id_agente_modulo' => $agent_module_id,
+			"utimestamp > $datelimit",
+			"utimestamp < $date",
+			'order' => 'utimestamp ASC'),
+		array ('datos', 'utimestamp'));
+	if ($data === false) {
+		$data = array ();
+	}
+
+	// Get previous data
+	$previous_data = get_previous_data ($agent_module_id, $datelimit, 1);
+	if ($previous_data !== false) {
+		$previous_data['utimestamp'] = $datelimit;
+		array_unshift ($data, $previous_data);
+	}
+
+	// Get next data
+	$nextData = get_next_data ($agent_module_id, $date, 1);
+	if ($nextData !== false) {
+		array_push ($data, $nextData);
+	} else if (count ($data) > 0) {
+		// Propagate the last known data to the end of the interval
+		$nextData = array_pop ($data);
+		array_push ($data, $nextData);
+		$nextData['utimestamp'] = $date;
+		array_push ($data, $nextData);
+	}
+
+	// Check available data
+	if (count ($data) < 2) {
+		if (!$graphic_type) {
+			return fs_error_image ();
+		}
+		graphic_error ();
+	}
+
+	// Calculate chart data
+	$chart = array();
+	$module_data = array_shift ($data);
+	$event_data = array_shift ($events);
+	$previous_data = 0;
+	for ($iterator = 0; $iterator < $resolution; $iterator++) {
+		$timestamp = $datelimit + ($interval * $iterator);
+
+		$count = 0;		
+		// Read data that falls in the current interval
+		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] <= ($timestamp + $interval)) {
+			$count++;
+			$module_data = array_shift ($data);
+		}
+
+		// Read events and alerts that fall in the current interval
+		$event_value = 0;
+		$alert_value = 0;
+		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+			if ($show_events == 1) {
+				$event_value++;
 			}
-		} 
-		
-	}
-	$valor_maximo = 0;
-	for ($i = 0; $i < $resolution; $i++) { // 30 entries in graph, one by day
-		$grafica[$valores[$i][1]]=$valores[$i][0];
-		if ($valores[$i][0] > $valor_maximo)
-			$valor_maximo = $valores[$i][0];
-	}
+			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+				$alert_value++;
+			}
+			$event_data = array_shift ($events);
+		}
 
-	// Rewrite data in format understable by flash charts
+		// Data in the interval
+		if ($count > 0) {
+			$chart[$timestamp]['sum'] = $count;
+			$previous_data = $total;
+		// Compressed data
+		} else {
+			$chart[$timestamp]['sum'] = $previous_data;
+		}
+
+		$chart[$timestamp]['count'] = 0;
+		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
+		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
+		$chart[$timestamp]['min'] = 0;
+		$chart[$timestamp]['max'] = 0;
+		$chart[$timestamp]['last'] = 1;
+		$chart[$timestamp]['event'] = $event_value;
+		$chart[$timestamp]['alert'] = $alert_value;
+	}
 	
-	for ($i = 0; $i < $resolution; $i++) { // 30 entries in graph, one by day
-		$data[$i]['sum'] = $valores[$i][0];
-		$data[$i]['count'] = $valores[$i][0];
-		$data[$i]['timestamp_bottom'] = $valores[$i][2];
-		$data[$i]['timestamp_top'] = $valores[$i][3];
-		$data[$i]['min'] = 0; // MIN
-		$data[$i]['max'] = $valores[$i][0];
-		$data[$i]['events'] = 0; // Event
-	}
-
-	if ($valor_maximo <= 0) {
-		$image = "../../include/fgraph.php?tipo=graphic_error";
-		print_image ($image, false, array ("border" => 0));
-		
-		return;
-	}
-		
+	// Set the title and time format
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
 		$time_format = 'G:i:s';
-	} elseif ($period <= 86400) {
+	}
+	elseif ($period <= 86400) {
 		$title_period = __('Last day');
 		$time_format = 'G:i';
-	} elseif ($period <= 604800) {
+	}
+	elseif ($period <= 604800) {
 		$title_period = __('Last week');
 		$time_format = 'M j';
-	} elseif ($period <= 2419200) {
+	}
+	elseif ($period <= 2419200) {
 		$title_period = __('Last month');
 		$time_format = 'M j';
-	} else {
+	} 
+	else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
 
-	if (! $graphic_type) {
-		return fs_module_chart ($data, $width, $height, $avg_only, $resolution / 10, $time_format);
+    // Flash chart
+	if (! $graphic_type) {	
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
 	}
 	
+
+	$chart_data = array ();
+	foreach ($chart as $chart_element) {
+		$chart_data[$chart_element['timestamp_bottom']] = $chart_element['sum'];
+	}
+
 	$engine = get_graph_engine ($period);
 	
 	$engine->width = $width;
 	$engine->height = $height;
-	$engine->data = &$grafica;
-	$engine->max_value = $valor_maximo;
+	$engine->data = &$chart_data;
+	$engine->max_value = max ($chart_data);
 	
-	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
-	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
-	$id_agente = get_agent_id ($nombre_agente);
-
-	$engine->legend = array ($nombre_modulo);
-	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
+	$engine->legend = array ($module_name);
+	$engine->title = '   '.strtoupper ($agent_name)." - ".__('Module').' '.$title;
 	$engine->subtitle = '     '.__('Period').': '.$title_period;
 	$engine->show_title = !$pure;
-	$engine->events = $show_event ? $real_event : false;
+	$engine->events = false;
 	$engine->fontpath = $config['fontpath'];
-	$engine->alert_top = $show_alert ? $alert_high : false;
-	$engine->alert_bottom = $show_alert ? $alert_low : false;;
+	$engine->alert_top = false;
+	$engine->alert_bottom = false;;
 	
 	$engine->xaxis_interval = $resolution/5;		
 	$engine->yaxis_interval = 1;

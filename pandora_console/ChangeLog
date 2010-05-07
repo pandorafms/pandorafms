@@ -1,3 +1,10 @@
+2010-05-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php, include/fgraph.php,
+          include/functions_db.php, include/functions_fsgraph.php: Fixed
+          a lot of chart and report code related to Pandora FMS's data
+          compression algorithm.
+
 2010-05-07 Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/servers/manage_recontask_form.php: Included

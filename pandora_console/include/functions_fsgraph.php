@@ -131,7 +131,7 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 }
 
 // Returns a Pandora FMS module chart
-function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i') {
+function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0) {
 	global $config;
 
 	// Generate the XML
@@ -150,9 +150,25 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $value['timestamp_bottom']) . ';showName=' . $show_name);
 	}
 
+	// Event chart
+	if ($show_events == 1) {
+		$chart->addDataSet(__('Events'), 'alpha=50;showAreaBorder=1;areaBorderColor=#ff7f00;color=#ff7f00');
+		foreach ($data as $value) {
+			$chart->addChartData($value['event']);
+		}
+	}
+
+	// Alert chart
+	if ($show_alerts == 1) {
+		$chart->addDataSet(__('Alerts'), 'alpha=50;showAreaBorder=1;areaBorderColor=#ff0000;color=#ff0000');
+		foreach ($data as $value) {
+			$chart->addChartData($value['alert']);
+		}
+	}
+
 	// Max chart
 	if ($avg_only == 0) {
-		$chart->addDataSet('Max', 'color=' . $config['graph_color3']);
+		$chart->addDataSet(__('Max'), 'color=' . $config['graph_color3']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['max']);
 		}
@@ -160,7 +176,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Avg chart
 	$empty = 1;
-	$chart->addDataSet('Avg', 'color=' . $config['graph_color2']);
+	$chart->addDataSet(__('Avg'), 'color=' . $config['graph_color2']);
 	foreach ($data as $value) {
 		if ($value['sum'] > 0) {
 			$empty = 0;
@@ -170,7 +186,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Min chart
 	if ($avg_only == 0) {
-		$chart->addDataSet('Min', 'color=' . $config['graph_color1']);
+		$chart->addDataSet(__('Min'), 'color=' . $config['graph_color1']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['min']);
 		}

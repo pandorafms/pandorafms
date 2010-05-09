@@ -299,6 +299,7 @@ $table->head[5] = __('Max/Min');
 $table->head[6] = __('Action');
 $table->size = array ();
 $table->size[6] = '50px';
+$table->align[6] = 'center';
 $table->data = array ();
 
 foreach ($components as $component) {

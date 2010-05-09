@@ -139,6 +139,7 @@ $table->colspan = array ();
 $table->data = array ();
 $table->head = array ();
 $table->size = array ();
+$table->align[4] = 'center';
 
 $table->size[0] = '24px';
 
@@ -148,7 +149,7 @@ $table->head[2] = __('Last modification');
 $table->head[3] = __('Size');
 $table->head[4] = __('Delete');
 
-$prev_dir = split ("/", $directory);
+$prev_dir = explode ("/", $directory);
 $prev_dir_str = "";
 for ($i = 0; $i < (count ($prev_dir) - 1); $i++) {
 	$prev_dir_str .= $prev_dir[$i];

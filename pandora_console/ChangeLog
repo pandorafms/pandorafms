@@ -1,3 +1,10 @@
+2010-05-09 Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/setup/file_manager.php: Changed deprecated split() function to
+	explode(). Center delete image.
+
+	* modules/manage_network_components.php: Center delete image.
+
 2010-05-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php, include/fgraph.php,

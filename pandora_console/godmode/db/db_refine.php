@@ -73,7 +73,7 @@ echo '<br /><br />';
 echo '<b>'.__('Modules').'</b><br /><br />';
 
 $module_selected = get_parameter_post ("origen", array ());
-$modules = get_agent_modules ($module_selected);
+$modules = get_agent_modules ($module_selected, false, 'delete_pending != 1');
 
 print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false, true, false, 'w130');
 

@@ -1,3 +1,8 @@
+2010-05-10 Sergio Martin  <sergio.martin@artica.es>
+
+	* godmode/db/db_refine.php: Fixed the pendingdelete
+	word showed in database purge for bug: 2922769
+
 2010-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Fixed a typo in grafico_modulo_boolean.

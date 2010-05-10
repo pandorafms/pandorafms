@@ -25,6 +25,14 @@ $dest_group = get_parameter ("dest_group");
 $subject = get_parameter ("subject");
 $message = get_parameter ("mensaje");
 
+if (isset ($_GET["new_msg"])) 
+	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
+elseif (isset ($_GET["read_message"]))
+	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
+if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]))
+	if (empty ($config["pure"]) && !is_ajax ())
+		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
+	
 if (isset ($_POST["delete_message"])) {
 	$id = (int) get_parameter_post ("delete_message");
 	$result = delete_message ($id); //Delete message function will actually check the credentials
@@ -65,7 +73,7 @@ if (isset ($_GET["mark_read"]) || isset ($_GET["mark_unread"])) {
 if (isset ($_GET["new_msg"])) { //create message
 
 // Header
-	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
+//	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 
 	echo '<form method="POST" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;send_message=1">
 	<table width="85%" class="databox_color" cellpadding="4" cellspacing="4">
@@ -98,7 +106,7 @@ if (isset ($_GET["new_msg"])) { //create message
 
 } elseif (isset ($_GET["read_message"])) {
 
-	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
+//	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
 
 	$message_id = (int) get_parameter ("read_message");
 	$message = get_message ($message_id);
@@ -150,9 +158,9 @@ if (isset ($_GET["new_msg"])) { //create message
 } 
 
 if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {	
-	if (empty ($config["pure"]) && !is_ajax ()) {
-		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
-	}
+//	if (empty ($config["pure"]) && !is_ajax ()) {
+//		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
+//	}
 
 	//Get number of messages
 	$num_messages = get_message_count ($config["id_user"]);

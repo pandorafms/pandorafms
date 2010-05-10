@@ -1,5 +1,10 @@
 2010-05-10 Sergio Martin  <sergio.martin@artica.es>
 
+	* operation/messages/message.php: Fixed the messages
+	over the header for bug: 2993495
+
+2010-05-10 Sergio Martin  <sergio.martin@artica.es>
+
 	* godmode/agentes/massive_edit_modules.php: Fixed the
 	massive change of user and password. Also the change of
 	the export target and historical data was disable. Now

@@ -264,8 +264,8 @@ sub logger ($$;$) {
 	if (-e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
 		rename ($file, $file.'.old');
 	}
-		
-	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$fichero'";
+			
+	open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 	print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
 	close (FILE);
 }

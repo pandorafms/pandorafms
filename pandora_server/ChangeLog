@@ -1,3 +1,7 @@
+2010-05-10  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Typo fix in error message
+
 2010-05-07  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Fixed call to undefined variable

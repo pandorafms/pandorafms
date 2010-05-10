@@ -8,7 +8,7 @@ Esta opción se designa para evitar una "tormenta" de alertas que entren porque 
 
 <br><br>
 
-Cuando habilite  <i>cascade protection</i> en un agente, esto significa que si su padre tiene una alerta CRÍTICA disparada, entonces las alertas del agente NO SERÁN disparadas. Si el padre del agente tiene un módulo en CRITICAL o varias alertas con menor criticidad que CRITICAL, las alertas del agente serán disparadas si deben hacerlo. La protección en cascada comprueba las alertas padre con criticidad CRITICAL, incluyendo las alertas de correlación asignadas al padre.
+Cuando habilite  <i>cascade protection</i> en un agente, esto significa que si cualquiera de sus padres tiene una alerta CRÍTICA disparada, entonces las alertas del agente NO SERÁN disparadas. Si el padre del agente tiene un módulo en CRITICAL o varias alertas con menor criticidad que CRITICAL, las alertas del agente serán disparadas si deben hacerlo. La protección en cascada comprueba las alertas padre con criticidad CRITICAL, incluyendo las alertas de correlación asignadas al padre.
 
 <br><br>
 

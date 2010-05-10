@@ -1,3 +1,10 @@
+2010-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_cascade_protection.php,
+	  include/help/es/help_cascade_protection.php,
+	  images/help/cascade_protection_ilustration.png: Updated
+	  help files to reflect recursive cascade protection.
+
 2010-05-10 Sergio Martin  <sergio.martin@artica.es>
 
 	* godmode/db/db_refine.php: Fixed the pendingdelete

@@ -740,6 +740,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh) == 0) {
 		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extraMacros, $last_data_value);
+	} else {
+		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 	}
 	
 	# tagente_estado.last_try defaults to NULL, should default to '0000-00-00 00:00:00'
@@ -1665,10 +1667,11 @@ sub export_module_data ($$$$$$$) {
 ##########################################################################
 # Returns 1 if alerts for the given agent should be inhibited, 0 otherwise.
 ##########################################################################
-sub pandora_inhibit_alerts ($$$) {
-	my ($pa_config, $agent, $dbh) = @_;
+#sub pandora_inhibit_alerts ($$$$) {
+sub pandora_inhibit_alerts {
+	my ($pa_config, $agent, $dbh, $depth) = @_;
 
-	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0');
+	return 0 if ($agent->{'cascade_protection'} ne '1' || $agent->{'id_parent'} eq '0' || $depth > 1024);
 
 	# Are any of the parent's critical alerts fired?	
 	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
@@ -1683,8 +1686,13 @@ sub pandora_inhibit_alerts ($$$) {
 	$count = get_db_value ($dbh, 'SELECT COUNT(*) FROM talert_compound WHERE id_agent = ? AND times_fired > 0 AND priority = 4', $agent->{'id_parent'});
 	return 1 if ($count > 0);
 
-	return 0;
+	# Check the parent's parent next
+	$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent->{'id_parent'});
+	return 0 unless defined ($agent);
+
+	return pandora_inhibit_alerts ($pa_config, $agent, $dbh, $depth + 1);
 }
+
 ##########################################################################
 =head2 C<< save_agent_position (I<$pa_config>, I<$current_longitude>, I<$current_latitude>, 
 		  I<$current_altitude>, I<$agent_id>, I<$dbh>, [I<$start_timestamp>], [I<$description>]) >>

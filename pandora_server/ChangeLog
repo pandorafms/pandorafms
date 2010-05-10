@@ -1,3 +1,8 @@
+2010-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Made cascade protection recursive to
+          check any of the agent's parents in the tree.
+
 2010-05-10  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Typo fix in error message

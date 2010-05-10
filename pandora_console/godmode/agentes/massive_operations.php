@@ -29,47 +29,57 @@ require_once ('include/functions_modules.php');
 
 $tab = (string) get_parameter ('tab', 'copy_modules');
 
-$img_style = array ("class" => "top", "width" => 16);
+/* Copy modules */
+$copymoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=copy_modules">'
+		. print_image ("images/copy.png", true, array ("title" => __('Copy modules')))
+		. "</a>";
+if($tab == 'copy_modules')
+	$copymoduletab['active'] = true;
+else
+	$copymoduletab['active'] = false;
+	
+/* Edit Modules */
+$editmoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">'
+		. print_image ("images/edit.png", true, array ("title" => __('Edit modules')))
+		. "</a>";
+if($tab == 'edit_modules')
+	$editmoduletab['active'] = true;
+else
+	$editmoduletab['active'] = false;
+	
+/* Delete Modules */
+$deletemoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_modules">'
+		. print_image ("images/delete_modules.png", true, array ("title" => __('Delete modules')))
+		. "</a>";
+if($tab == 'delete_modules')
+	$deletemoduletab['active'] = true;
+else
+	$deletemoduletab['active'] = false;
 
-echo '<div id="menu_tab_frame">';
-echo '<div id="menu_tab">';
-echo '<ul class="mn">';
+/* Delete Agents */
+$deleteagenttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_agents">'
+		. print_image ("images/delete_agents.png", true, array ("title" => __('Delete agents')))
+		. "</a>";
+if($tab == 'delete_agents')
+	$deleteagenttab['active'] = true;
+else
+	$deleteagenttab['active'] = false;
+	
+/* Delete Alerts */
+$deletealerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_alerts">'
+		. print_image ("images/delete_alerts.png", true, array ("title" => __('Delete alerts')))
+		. "</a>";
+if($tab == 'delete_alerts')
+	$deletealerttab['active'] = true;
+else
+	$deletealerttab['active'] = false;
+		
 
-echo '<li class="'.($tab == 'copy_modules' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=copy_modules">';
-print_image ("images/copy.png", false, $img_style);
-echo '&nbsp;'.__('Copy').'</a>';
-echo '</li>';
+$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab, 'delete_alerts' => $deletealerttab);
 
-echo '<li class="'.($tab == 'edit_modules' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">';
-print_image ("images/edit.png", false, $img_style);
-echo '&nbsp; '.__('Edit modules').'</a>';
-echo '</li>';
+print_page_header (__('Agent configuration'). ' &raquo; '. __('Massive operations'), "images/god1.png", false, "", true, $onheader);
 
-echo '<li class="'.($tab == 'delete_agents' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_agents">';
-print_image ("images/delete_agents.png", false, $img_style);
-echo '&nbsp; '.__('Delete agents').'</a>';
-echo '</li>';
 
-echo '<li class="'.($tab == 'delete_modules' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_modules">';
-print_image ("images/delete_modules.png", false, $img_style);
-echo '&nbsp; '.__('Delete modules').'</a>';
-echo '</li>';
-
-echo '<li class="'.($tab == 'delete_alerts' ? 'nomn_high' : 'nomn').'">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_alerts">';
-print_image ("images/delete_alerts.png", false, $img_style);
-echo '&nbsp; '.__('Delete alerts').'</a>';
-echo '</li>';
-
-echo "</ul></div></div>";
-
-echo '<div style="height: 25px;">&nbsp;</div>';
-
-echo '<h2>'.__('Agent configuration'). ' &raquo; '. __('Massive operations').'</h2>';
 switch ($tab) {
 case 'delete_alerts':
 	require_once ('godmode/agentes/massive_delete_alerts.php');

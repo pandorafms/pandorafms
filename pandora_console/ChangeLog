@@ -1,3 +1,9 @@
+2010-05-10 Sergio Martin  <sergio.martin@artica.es>
+
+	* godmode/agentes/massive_operations.php: Fixed the
+	header using now the print_header function for
+	bug: 2999269
+
 2010-05-09 Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/setup/file_manager.php: Changed deprecated split() function to

@@ -1,3 +1,9 @@
+2010-05-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Fixed a typo in grafico_modulo_boolean.
+          Fixed the alert and event scale. Removed the 'last' element
+          from the chart data array (does not seem to be used anywhere).
+
 2010-05-10 Sergio Martin  <sergio.martin@artica.es>
 
 	* operation/messages/message.php: Fixed the messages

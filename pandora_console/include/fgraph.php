@@ -141,7 +141,6 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$graph[$timestamp]['timestamp_top'] = $timestamp + $interval;
 			$graph[$timestamp]['min'] = 0;
 			$graph[$timestamp]['max'] = 0;
-			$graph[$timestamp]['last'] = 1;
 			$graph[$timestamp]['event'] = 0;
 			$graph[$timestamp]['alert'] = 0;
 	}
@@ -1397,9 +1396,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		$chart[$timestamp]['min'] = $interval_min;
 		$chart[$timestamp]['max'] = $interval_max;
-		$chart[$timestamp]['last'] = 1;
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
+	}
+	
+	// Fix event and alert scale
+	$event_max = $max_value * 1.25;
+	foreach ($chart as $timestamp => $chart_data) {
+		if ($chart_data['event'] > 0) {
+			$chart[$timestamp]['event'] = $event_max;
+		}
+		if ($chart_data['alert'] > 0) {
+			$chart[$timestamp]['alert'] = $event_max;
+		}
 	}
 	
 	// Set the title and time format
@@ -1524,8 +1533,10 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$event_data = array_shift ($events);
 	if ($module_data['utimestamp'] == $datelimit) {
 		$previous_data = $module_data['datos'];
+		$max_value = $module_data['datos'];
 	} else {
 		$previous_data = 0;
+		$max_value = 0;
 	}
 
 	for ($iterator = 0; $iterator < $resolution; $iterator++) {
@@ -1552,6 +1563,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$total /= $count;
 		}
 
+		// Max
+		if ($total > $max_value) {
+			$max_value = $total;
+		}
+
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
@@ -1568,13 +1584,12 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Data and zeroes (draw a step)
 		if ($zero == 1 && $count > 0) {
 			$chart[$timestamp]['sum'] = $total;
-			$chart[$timestamp + 1] = array ('sum' => $value,
+			$chart[$timestamp + 1] = array ('sum' => 0,
 			                                'count' => 0,
 			                                'timestamp_bottom' => $timestamp,
 			                                'timestamp_top' => $timestamp + $interval,
 			                                'min' => 0,
 			                                'max' => 0,
-			                                'last' => 1,
 			                                'event' => $event_value,
 			                                'alert' => $alert_value);
 			$previous_data = 0;
@@ -1596,11 +1611,21 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		$chart[$timestamp]['min'] = 0;
 		$chart[$timestamp]['max'] = 0;
-		$chart[$timestamp]['last'] = 1;
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
 	
+	// Fix event and alert scale
+	$event_max = $max_value * 1.25;
+	foreach ($chart as $timestamp => $chart_data) {
+		if ($chart_data['event'] > 0) {
+			$chart[$timestamp]['event'] = $event_max;
+		}
+		if ($chart_data['alert'] > 0) {
+			$chart[$timestamp]['alert'] = $event_max;
+		}
+	}
+
 	// Set the title and time format
 	if ($period <= 3600) {
 		$title_period = __('Last hour');
@@ -1741,7 +1766,14 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$chart = array();
 	$module_data = array_shift ($data);
 	$event_data = array_shift ($events);
-	$previous_data = 0;
+	if ($module_data['utimestamp'] == $datelimit) {
+		$previous_data = 1;
+		$max_value = 1;
+	} else {
+		$previous_data = 0;
+		$max_value = 0;
+	}
+
 	for ($iterator = 0; $iterator < $resolution; $iterator++) {
 		$timestamp = $datelimit + ($interval * $iterator);
 
@@ -1750,6 +1782,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] <= ($timestamp + $interval)) {
 			$count++;
 			$module_data = array_shift ($data);
+		}
+
+		// Max
+		if ($count > $max_value) {
+			$max_value = $count;
 		}
 
 		// Read events and alerts that fall in the current interval
@@ -1779,9 +1816,19 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		$chart[$timestamp]['min'] = 0;
 		$chart[$timestamp]['max'] = 0;
-		$chart[$timestamp]['last'] = 1;
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
+	}
+
+	// Fix event and alert scale
+	$event_max = $max_value * 1.25;
+	foreach ($chart as $timestamp => $chart_data) {
+		if ($chart_data['event'] > 0) {
+			$chart[$timestamp]['event'] = $event_max;
+		}
+		if ($chart_data['alert'] > 0) {
+			$chart[$timestamp]['alert'] = $event_max;
+		}
 	}
 	
 	// Set the title and time format

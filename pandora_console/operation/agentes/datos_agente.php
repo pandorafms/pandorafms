@@ -36,7 +36,7 @@ if (isset ($_GET["delete"])) {
 	$delete = get_parameter_get ("delete", 0);
 	$sql = sprintf ("DELETE FROM tagente_datos WHERE id_agente_datos = %d", $delete);
 	process_sql ($sql);
-} elseif (isset($_GET["delete_text"])) {
+} elseif (isset($_GET["delete_string"])) {
 	$delete = get_parameter_get ("delete_string", 0);
 	$sql = sprintf ("DELETE FROM tagente_datos_string WHERE id_tagente_datos_string = %d", $delete);
 	process_sql ($sql);

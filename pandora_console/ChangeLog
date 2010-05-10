@@ -1,3 +1,8 @@
+2010-05-10  Sergio Martin  <sergio.martin@artica.es>
+	
+	* operation/agentes/datos_agente.php: Fixed the
+	deletion of text modules raw data for bug: 2980086
+ 
 2010-05-06 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

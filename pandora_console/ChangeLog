@@ -1,5 +1,12 @@
 2010-05-10 Sergio Martin  <sergio.martin@artica.es>
 
+	* godmode/agentes/massive_edit_modules.php: Fixed the
+	massive change of user and password. Also the change of
+	the export target and historical data was disable. Now
+	are fixed too. Bug: 2997083
+
+2010-05-10 Sergio Martin  <sergio.martin@artica.es>
+
 	* godmode/agentes/massive_operations.php: Fixed the
 	header using now the print_header function for
 	bug: 2999269

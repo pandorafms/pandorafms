@@ -47,7 +47,7 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 	
 	/* List of fields which can be updated */
 	$fields = array ('min_warning', 'max_warning', 'min_critical', 'max_critical', 'min_ff_event','module_interval',
-		'disabled','post_process','snmp_community','min','max','id_module_group');
+		'disabled','post_process','snmp_community','min','max','id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
 	foreach ($fields as $field) {
 		$value = get_parameter ($field);

@@ -1,3 +1,11 @@
+2010-05-11  Sergio Martin <sergio.martin@artica.es>
+
+	* linux/pandora_agent_installer
+	man/man1/pandora_agent.1.gz
+	man/man1/tentacle.1.gz: Added the man pages of
+	tentacle and pandora agent and modified the
+	agent installer script to install them
+
 2010-02-22 Pablo de la Concepción <pablo.concepcion@artica.es>
 
 	* unix/Linux/pandora_agent.conf: Added parameters position_description

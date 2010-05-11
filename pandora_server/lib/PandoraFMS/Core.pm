@@ -679,7 +679,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});
 		if (! defined ($module_type)) {
 			logger($pa_config, "Invalid module type ID " . $module->{'id_tipo_modulo'} . " module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
 			return;
 		}
 	}
@@ -689,7 +689,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 		if (! defined ($agent)) {
 			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while processing module '" . $module->{'nombre'} . "'.", 3);
-			pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
 			return;
 		}
 	}
@@ -698,7 +698,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
  	my $processed_data = process_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($processed_data)) {
 		logger($pa_config, "Received invalid data '" . $dataObject . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
-		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 
@@ -711,7 +711,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $agent_status = get_db_single_row ($dbh, 'SELECT * FROM tagente_estado WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
 	if (! defined ($agent_status)) {
 		logger($pa_config, "Status for agent '" . $agent->{'nombre'} . "' not found while processing module " . $module->{'nombre'} . ".", 3);
-		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 	my $last_status = $agent_status->{'last_status'};
@@ -750,7 +750,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Do we have to save module data?
 	if ($agent_status->{'last_try'} !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
 		logger($pa_config, "Invalid last try timestamp '" . $agent_status->{'last_try'} . "' for agent '" . $agent->{'nombre'} . "' not found while processing module '" . $module->{'nombre'} . "'.", 3);
-		pandora_update_module_on_error ($pa_config, $module->{'id_agente_modulo'}, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 
@@ -1137,13 +1137,16 @@ Update module status on error.
 =cut
 ##########################################################################
 sub pandora_update_module_on_error ($$$) {
-	my ($pa_config, $id_agent_module, $dbh) = @_;
+	my ($pa_config, $module, $dbh) = @_;
 
-	logger($pa_config, "Updating module ID $id_agent_module on error.", 10);
+	# Set tagente_estado.current_interval to make sure it is not 0
+	my $current_interval = ($module->{'module_interval'} == 0 ? 300 : $module->{'module_interval'});
+
+	logger($pa_config, "Updating module " . $module->{'nombre'} . " (ID " . $module->{'id_agente_modulo'} . ") on error.", 10);
 
 	# Update last_execution_try
-	db_do ($dbh, 'UPDATE tagente_estado SET last_execution_try = ?
-		WHERE id_agente_modulo = ?', time (), $id_agent_module);
+	db_do ($dbh, 'UPDATE tagente_estado SET last_execution_try = ?, current_interval = ?
+		WHERE id_agente_modulo = ?', time (), $current_interval, $module->{'id_agente_modulo'});
 }
 
 ##########################################################################

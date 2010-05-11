@@ -1,3 +1,7 @@
+2010-05-11 Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/gis_maps/configure_gis_map.php: Updated year. Clean code.
+
 2010-05-11  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/setup/gis_step_2.php: Fixed the creation

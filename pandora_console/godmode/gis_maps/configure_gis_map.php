@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -163,7 +163,6 @@ switch ($action) {
 	case 'new_map':
 		print_input_hidden('action', 'save_new');
 		
-		echo "<h2>" . __('GIS Maps') . " &raquo; " . __('Builder') . "</h2>";
 		$map_name = '';
 		$map_initial_longitude = '';
 		$map_initial_latitude = '';
@@ -313,7 +312,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 	}
 }
 
-$table->data[1][0] =  __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError;
+$table->data[1][0] = __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change betwwen the connections in the map'), true). ": " . $iconError;
 $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td>
@@ -770,12 +769,12 @@ function deleteConnectionMap(idConnectionMap) {
 function setFieldsRequestAjax(id_conexion) {
 	if (confirm('<?php echo __('Do you want to use the default data from the connection?');?>')) {
 		jQuery.ajax ({
-			data: "page=operation/gis_maps/ajax&opt=get_data_conexion&id_conection="  + idConnectionMap,
+			data: "page=operation/gis_maps/ajax&opt=get_data_conexion&id_conection=" + idConnectionMap,
 			type: "GET",
 			dataType: 'json',
 			url: "ajax.php",
 			timeout: 10000,
-			success: function (data) {                 		
+			success: function (data) {
 				if (data.correct) {
 					$("input[name=map_initial_longitude]").val(data.content.initial_longitude);
 					$("input[name=map_initial_latitude]").val(data.content.initial_latitude);

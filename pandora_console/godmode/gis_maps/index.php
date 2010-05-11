@@ -31,6 +31,10 @@ if (is_ajax ()) {
 	$action = get_parameter('action');
 	$id_map = get_parameter('id_map');
 	
+	// Set to not default the actual default map
+	$returnOperationDB =  process_sql_update('tgis_map', array('default_map' => 0), array('default_map' => 1));
+
+	// Set default the new default map
 	$returnOperationDB =  process_sql_update('tgis_map', array('default_map' => 1), array('id_tgis_map' => $id_map));
 	
 	if ($returnOperationDB === false)

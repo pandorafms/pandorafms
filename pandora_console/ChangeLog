@@ -1,3 +1,8 @@
+2010-05-11  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/gis_maps/index.php: Fixed the change
+	of default map for bug: 2993745
+
 2010-05-11  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/help/ja/help_cascade_protection.php: Fixed a typo.

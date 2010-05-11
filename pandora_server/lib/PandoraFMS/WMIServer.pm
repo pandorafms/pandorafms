@@ -153,7 +153,7 @@ sub data_consumer ($$) {
 	# Execute command
 	my $module_data = `$wmi_command`;
 	if (! defined ($module_data)) {
-		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 
@@ -163,13 +163,13 @@ sub data_consumer ($$) {
 	# CPU0|2
 	my @output = split("\n", $module_data);
 	if ($#output < 2) {
-		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 
 	# Check for errors
 	if ($output[0] =~ m/ERROR/) {
-		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	} 
 
@@ -179,7 +179,7 @@ sub data_consumer ($$) {
 	# Get the specified column
 	$module_data = $row[$module->{'tcp_port'}] if defined ($row[$module->{'tcp_port'}]);
 	if ($module_data =~ m/^ERROR/) {
-		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	} 
 		

@@ -1,3 +1,8 @@
+2010-05-11  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_cascade_protection.php: Updated a help file
+	to reflect recursive cascade protection.
+
 2010-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_cascade_protection.php,

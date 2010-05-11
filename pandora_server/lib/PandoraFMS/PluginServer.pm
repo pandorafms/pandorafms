@@ -201,7 +201,7 @@ sub data_consumer ($$) {
 	}
 
 	if (! defined $module_data || $module_data eq '') {
-		pandora_update_module_on_error ($pa_config, $module_id, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
 

@@ -428,7 +428,7 @@ sub exec_network_module ($$$$) {
 	
     } else {
 		# Modules who cannot connect or something go bad, update last_execution_try field
-		pandora_update_module_on_error ($pa_config, $id_agente_modulo, $dbh);
+		pandora_update_module_on_error ($pa_config, $module, $dbh);
 	}
 }
 

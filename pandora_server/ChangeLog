@@ -1,3 +1,10 @@
+2010-05-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/Core.pm,
+          lib/PandoraFMS/NetworkServer.pm, lib/PandoraFMS/WMIServer.pm: Fixed
+          bug #2941736. Made pandora_update_module_on_error set
+          tagente_estado.current_interval.
+
 2010-05-11  Sancho Lerena <slerena@artica.es>
 
 	* util/plugin/bgp_plugin.pl: New plugin: Connect the device via SNMP

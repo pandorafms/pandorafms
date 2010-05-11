@@ -126,7 +126,7 @@ switch ($action) {
 		}
 		
 		//TODO VALIDATE PARAMETERS
-		if ($mapConnection_name != "" && $mapConnection_type != 0) {
+		if ($mapConnection_name != "" && $mapConnection_type != ""){
 			saveMapConnection($mapConnection_name, $mapConnection_group,
 				$mapConnection_numLevelsZoom, $mapConnection_defaultZoom,
 				$mapConnection_defaultLatitude, $mapConnection_defaultLongitude,
@@ -134,11 +134,10 @@ switch ($action) {
 				$mapConnection_centerLongitude, $mapConnection_centerAltitude,
 				$mapConnectionData, $idConnectionMap);
 			}
-			
+
 		require_once('gis.php');
 		return;
-		break;
-}
+		}
 
 $table->width = '90%';
 

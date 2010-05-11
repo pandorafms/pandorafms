@@ -152,6 +152,9 @@ install () {
 	echo "Copying tentacle client to $TENTACLE"
 	cp tentacle_client $TENTACLE
 
+	echo "Installing Tentacle manual"
+	cp ../man/man1/tentacle.1.gz /usr/share/man/man1
+
 	echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
 	rm $PANDORA_CFG/plugins 2> /dev/null
 	ln -s $PANDORA_HOME/plugins $PANDORA_CFG 2> /dev/null
@@ -168,6 +171,9 @@ install () {
 
 	echo "Linking start-up daemon script at $PANDORA_STARTUP";
 	cp pandora_agent_daemon $PANDORA_STARTUP
+
+	echo "Installing Pandora Agent manual"
+	cp ../man/man1/pandora_agent.1.gz /usr/share/man/man1
 
 	if [ "$DISTRO" == "UBUNTU" ]
 		then

@@ -1,3 +1,9 @@
+2010-05-11  Sancho Lerena <slerena@artica.es>
+
+	* util/dns_plugin.sh: New DNS plugin for the Plugin Server. It
+	checks a Domain/IP pair and also get time to get response from
+	a given DNS server (ms).
+
 2010-05-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Made cascade protection recursive to

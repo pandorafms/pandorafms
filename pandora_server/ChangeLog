@@ -1,5 +1,11 @@
 2010-05-11  Sancho Lerena <slerena@artica.es>
 
+	* util/plugin/bgp_plugin.pl: New plugin: Connect the device via SNMP
+	and performs a check of each BGP connection to verify its active
+	status. If cannot connect or BGP has no connection or a single
+	connection its down, returns a CRITICAL state. It uses password to
+	provide SNMP community for device. It should work with SNMP v1 and v2c
+
 	* util/dns_plugin.sh: New DNS plugin for the Plugin Server. It
 	checks a Domain/IP pair and also get time to get response from
 	a given DNS server (ms).

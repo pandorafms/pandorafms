@@ -1,3 +1,10 @@
+2010-05-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/stat_win.php: Pass the start date to min, max and
+          avg functions.
+
+        * godmode/alerts/configure_alert_action.php: Fixed a typo.
+
 2010-05-11 Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/gis_maps/configure_gis_map.php: Updated year. Clean code.

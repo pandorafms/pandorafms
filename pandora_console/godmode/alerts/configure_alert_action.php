@@ -43,7 +43,7 @@ if ($id) {
 	$field1 = $action['field1'];
 	$field2 = $action['field2'];
 	$field3 = $action['field3'];
-	$group = $action ['group'];
+	$group = $action ['id_group'];
 }
 // Header
 print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);

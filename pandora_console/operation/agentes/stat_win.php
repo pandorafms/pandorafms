@@ -168,9 +168,9 @@ else {
 
 if ($graph_type != "log4x") {
 	echo '<table width="450" cellspacing="1" cellpadding="1" class="databox" style="margin-left: 20px">';
-	echo '<tr><td><b>'.__('Max. Value').'</b>: '.format_for_graph (get_agentmodule_data_max ($id, $period));
-	echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_data_average ($id, $period));
-	echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period));
+	echo '<tr><td><b>'.__('Max. Value').'</b>: '.format_for_graph (get_agentmodule_data_max ($id, $period, $date));
+	echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_data_average ($id, $period, $date));
+	echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period, $date));
 	echo '</td></tr></table>';
 }
 

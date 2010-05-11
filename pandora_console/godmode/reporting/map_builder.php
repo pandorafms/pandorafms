@@ -81,20 +81,20 @@ if ($copy_layout) {
 				
 			// If the number of inserts is correct, the copy is completed
 			if ($ninsert == $inserts) {
-				echo '<h3 class="suc">'.__('Successfully copyed').'</h3>';
+				echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
 				clean_cache();
 			} else {
-				echo '<h3 class="error">'.__('Not copyed. Error copying data').'</h3>';
+				echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
 			}
 		}
 		else{
 			// If the array is empty the copy is completed
-			echo '<h3 class="suc">'.__('Successfully copyed').'</h3>';
+			echo '<h3 class="suc">'.__('Successfully copied').'</h3>';
 			clean_cache();
 		}
 	}
 	else {
-		echo '<h3 class="error">'.__('Not copyed. Error copying data').'</h3>';
+		echo '<h3 class="error">'.__('Not copied. Error copying data').'</h3>';
 	}
 		
 }

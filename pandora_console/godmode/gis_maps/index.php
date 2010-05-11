@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -77,7 +77,9 @@ $table->data = array();
 
 $defaultMapId = null;
 
-if ($maps !== false) {
+if (!$maps) {
+	echo '<div class="nf">'.('No maps defined').'</div>';
+} else {
 	foreach ($maps as $map) {
 		
 		$checked = false;
@@ -92,9 +94,8 @@ if ($maps !== false) {
 			print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true),
 			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . print_image ("images/cross.png", true).'</a>'); 
 	}
+	print_table($table);
 }
-
-print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form action="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/configure_gis_map" method="post">';

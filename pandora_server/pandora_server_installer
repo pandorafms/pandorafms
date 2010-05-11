@@ -199,6 +199,9 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
 		cp conf/pandora_server.conf $PANDORA_CFG_DIR
 		chmod 770 $PANDORA_CFG_FILE
+
+		echo "Installing Pandora Server manual"
+		cp man/man1/pandora_server.1.gz /usr/share/man/man1
 		
 		if [ "$LINUX" == "YES" ]
 		then
@@ -246,6 +249,8 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					cp bin/tentacle_server /usr/bin
 					cp util/tentacle_serverd $TENTACLE_SERVER
    				    update-rc.d tentacle_serverd defaults
+					echo "Installing tentacle manual"
+					cp man/man1/tentacle.1.gz /usr/share/man/man1
 				else
 					if [ "$DISTRO" == "SUSE" ]
 					then

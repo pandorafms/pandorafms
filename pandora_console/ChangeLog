@@ -1,5 +1,9 @@
 2010-05-11  Junichi Satoh  <junichi@rworks.jp>
 
+	* include/help/ja/help_cascade_protection.php: Fixed a typo.
+
+2010-05-11  Junichi Satoh  <junichi@rworks.jp>
+
 	* include/help/ja/help_cascade_protection.php: Updated a help file
 	to reflect recursive cascade protection.
 

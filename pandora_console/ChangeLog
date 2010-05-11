@@ -1,3 +1,8 @@
+2010-05-11  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/setup/gis_step_2.php: Fixed the creation
+	of connection map in GIS maps for bug 3000031
+
 2010-05-11 Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/reporting/map_builder.php: Fixed a typo.

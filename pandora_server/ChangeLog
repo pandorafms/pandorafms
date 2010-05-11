@@ -1,3 +1,11 @@
+2010-05-11  Sergio Martin <sergio.martin@artica.es>
+
+	* pandora_server_installer
+	man/man1/pandora_server.1.gz
+	man/man1/tentacle.1.gz: Added the man pages of
+	tentacle and pandora server and modified the
+	server installer script to install them
+
 2010-05-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/Core.pm,

@@ -1,3 +1,17 @@
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/pandora_agent_installer
+	linux/pandora_agent_installer
+	man/man1/tentacle_client.1.gz: Improved
+	man pages installer splitting tentacle
+	man page and write it on unix folder
+
+	*  unix/man
+	unix/man/man1
+	unix/man/man1/tentacle_client.1
+	man/man1/pandora_agent.1
+	man/man1/tentacle.1.gz: Deleted old man pages
+
 2010-05-11  Sergio Martin <sergio.martin@artica.es>
 
 	* linux/pandora_agent_installer

@@ -1,5 +1,16 @@
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
+	* pandora_server_installer
+	  man/man1/tentacle_server.1.gz: Improved the
+	  manpages installation splitting tentacle man
+	  page
+
+	* man/man1/tentacle_server.1
+	 man/man3: Old man pages removed
+
+
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Fixed unknown monitors
 	query for bug: 3000460
 

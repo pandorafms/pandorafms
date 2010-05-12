@@ -1,5 +1,9 @@
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
+	* man/man1/tentacle.1.gz: Deleted old man page
+
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
 	* pandora_server_installer
 	  man/man1/tentacle_server.1.gz: Improved the
 	  manpages installation splitting tentacle man

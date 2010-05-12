@@ -1,5 +1,11 @@
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Fixed unknown
+	and no init monitors queries for monitor checks. 
+	Bug: 3000460
+
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
 	* extras/pandora_diag.php: Fixed the SQL error
 	into diagnostic info section. Now the system
 	check the enterprise version before to show 

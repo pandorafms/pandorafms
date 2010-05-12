@@ -393,14 +393,19 @@ sub pandora_checkdb_integrity {
     print "[INTEGRITY] Deleting orphan modules \n";
 
     # Delete orphan modules in tagente_modulo
-    db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente NOT IN (select id_agente FROM tagente)');
+    db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente NOT IN (SELECT id_agente FROM tagente)');
 
     # Delete orphan modules in tagente_estado
-    db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente NOT IN (select id_agente FROM tagente)');
+    db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente NOT IN (SELECT id_agente FROM tagente)');
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-
+    
+    # Delete all non-used IP addresses from taddress
+    db_do ($dbh, 'DELETE FROM taddress WHERE id_a NOT IN (SELECT id_a FROM taddress_agent)');
+    
+    # Check enterprise tables
+    enterprise_hook ('pandora_checkdb_integrity_enterprise', [$dbh]);
 }
 
 ###############################################################################

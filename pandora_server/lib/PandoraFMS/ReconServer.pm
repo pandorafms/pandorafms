@@ -305,7 +305,10 @@ sub get_agent_from_addr ($$) {
 
 	return 0 if (! defined ($ip_address) || $ip_address eq '');
 
-	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent WHERE taddress_agent.id_a = taddress.id_a AND ip = ?', $ip_address);
+	my $agent_id = get_db_value ($dbh, 'SELECT id_agent FROM taddress, taddress_agent, tagente
+	                                    WHERE tagente.id_agente = taddress_agent.id_agent
+	                                    AND taddress_agent.id_a = taddress.id_a
+	                                    AND ip = ?', $ip_address);
 	return (defined ($agent_id)) ? $agent_id : -1;
 }
 

@@ -817,12 +817,41 @@ function getAgentMap($agent_id, $heigth, $width, $show_history = false, $centerI
 	
 	$agent_name = get_agent_name($agent_id);
 	
-	$conectionData = json_decode($defaultMap['conection_data'], true);
-	$baselayers[0]['url'] = $conectionData['url'];
 	$baselayers[0]['name'] = $defaultMap['conection_name'];
-	$baselayers[0]['typeBaseLayer'] = $conectionData['type'];
 	$baselayers[0]['num_zoom_levels'] = $defaultMap['num_zoom_levels'];
+
+	$conectionData = json_decode($defaultMap['conection_data'], true);
+	$baselayers[0]['typeBaseLayer'] = $conectionData['type'];
 	$controls = array('PanZoomBar', 'ScaleLine', 'Navigation', 'MousePosition');
+	$gmap_layer = false;
+
+	switch ($conectionData['type']) {
+		case 'OSM':
+			$baselayers[0]['url'] = $conectionData['url'];
+			break;
+		case 'Gmap':
+			$baselayers[0]['gmap_type'] = $conectionData['gmap_type'];
+			$baselayers[0]['gmap_key'] = $conectionData['gmap_key'];
+			$gmap_key = $conectionData['gmap_key'];
+			// Onece a Gmap base layer is found we mark it to import the API
+			$gmap_layer = true;
+			break;
+		case 'Static_Image':
+			$baselayers[0]['url'] = $conectionData['url'];
+			$baselayers[0]['bb_left'] = $conectionData['bb_left'];
+			$baselayers[0]['bb_right'] = $conectionData['bb_right'];
+			$baselayers[0]['bb_bottom'] = $conectionData['bb_bottom'];
+			$baselayers[0]['bb_top'] = $conectionData['bb_top'];
+			$baselayers[0]['image_width'] = $conectionData['image_width'];
+			$baselayers[0]['image_height'] = $conectionData['image_height'];
+			break;
+	}
+	
+	if ($gmap_layer === true) {
+		?>
+			<script type="text/javascript" src="http://maps.google.com/maps?file=api&v=2&sensor=false&key=<?php echo $gmap_key ?>" ></script>
+		<?php
+	}
 	
 	printMap($agent_name."_agent_map", $defaultMap['zoom_level'],
 		$defaultMap['initial_latitude'],

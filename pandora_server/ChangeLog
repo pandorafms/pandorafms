@@ -1,3 +1,8 @@
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed unknown monitors
+	query for bug: 3000460
+
 2010-05-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a log message in

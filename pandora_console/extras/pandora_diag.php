@@ -104,7 +104,8 @@ render_info ("talert_commands");
 render_info ("talert_template_modules");
 render_info ("tevento");
 render_info ("tlayout");
-render_info ("tlocal_component");
+if($config['enterprise_installed'])
+	render_info ("tlocal_component");
 render_info ("tserver");
 render_info ("treport");
 render_info ("ttrap");

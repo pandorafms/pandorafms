@@ -1,5 +1,12 @@
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
+	* extras/pandora_diag.php: Fixed the SQL error
+	into diagnostic info section. Now the system
+	check the enterprise version before to show 
+	tlocal_component info. Bug: 2998918
+
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_gis.php: Fixed the maps of
 	type Googlemaps in agent view for bug: 2993745
 

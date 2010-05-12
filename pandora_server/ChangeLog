@@ -1,3 +1,10 @@
+2010-05-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Make sure the agent exists
+	  when searching by IP address. Fixes bug #2957130.
+
+	* util/pandora_db.pl: Fixed bug #2957130.
+
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
 	* man/man1/tentacle.1.gz: Deleted old man page

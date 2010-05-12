@@ -192,6 +192,9 @@ install () {
 	cp tentacle_client $TENTACLE
 	chmod 755 $TENTACLE
 
+	echo "Installing Tentacle Client manual"
+	cp ../man/man1/tentacle_client.1.gz /usr/share/man/man1
+
 	if [ "$USE_LINKS" != 1 ]
 	then
 		echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
@@ -246,6 +249,9 @@ install () {
 			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
 		fi
 	fi
+
+	echo "Installing Pandora Agent manual"
+	cp ../man/man1/pandora_agent.1.gz /usr/share/man/man1
 
 	echo "Done."
 	echo " "

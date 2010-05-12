@@ -1,3 +1,8 @@
+2010-05-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_gis.php: Fixed the maps of
+	type Googlemaps in agent view for bug: 2993745
+
 2010-05-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/stat_win.php: Pass the start date to min, max and

@@ -232,7 +232,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 					       string pass,
 					       string opts)
 {
-	bool    rc = false;
+	DWORD    rc;
 	string  var, filepath;
 	string	tentacle_cmd, working_dir;
 	PROCESS_INFORMATION pi;
@@ -273,16 +273,19 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 
 	ZeroMemory (&si, sizeof (si));
 	ZeroMemory (&pi, sizeof (pi));
-	rc = CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE, CREATE_NO_WINDOW,
-				 NULL, NULL, &si, &pi);
-    WaitForSingleObject(pi.hProcess, INFINITE);
-	if (rc == true) {
-        return 0;
+	if (CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE,
+	    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+		return -1;
 	}
 
-    pandoraDebug ("Tentacle client was unable to copy %s",
-			      filename.c_str ());
-	return -1;
+	/* Get the return code of the tentacle client*/
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    GetExitCodeProcess (pi.hProcess, &rc);
+	if (rc != 0) {
+		return -1;
+	}
+
+	return 0;
 }
 
 int

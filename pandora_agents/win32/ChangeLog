@@ -1,3 +1,8 @@
+2010-05-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Check the return codee of the tentacle
+	  client. Fixes bug #2972399.
+
 2010-05-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* build.sh: Added to repository. Pandora Agent installer build script.

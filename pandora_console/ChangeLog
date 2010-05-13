@@ -1,5 +1,10 @@
 2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_reporting.php: fixed the empty cell.
+	Fixes: #2996522
+
+2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora.js: check if exist the "any" text translation.
 	* godmode/reporting/visual_console_builder.wizard.php: add the "any"
 	translation.

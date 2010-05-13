@@ -1,3 +1,10 @@
+2010-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/gis_maps/configure_gis_map.php: Fixed the 
+	Gis map without map connection. Now is impossible 
+	to create or update a GIS map without map connection
+	Bug: 3000014
+
 2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/gettext.php: fixed the bug of pseudo-gettext with diferent

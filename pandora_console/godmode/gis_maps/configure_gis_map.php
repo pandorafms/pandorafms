@@ -101,8 +101,10 @@ switch ($action) {
 		$map_default_altitude = get_parameter('map_default_altitude');
 		$map_group_id = get_parameter('map_group_id');
 		$map_levels_zoom = get_parameter('map_levels_zoom');
-		
+					
 		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
+		
+		
 		foreach ($map_connection_list_temp as $index => $value) {
 			$cleanValue = trim($value);
 			if ($cleanValue == '') {
@@ -144,7 +146,7 @@ switch ($action) {
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_connection_list, $map_levels_zoom);
 		
-		if (empty($invalidFields)) {
+		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
 			saveMap($map_name, $map_initial_longitude, $map_initial_latitude,
 				$map_initial_altitude, $map_zoom_level, $map_background,
 				$map_default_longitude, $map_default_latitude, $map_default_altitude,
@@ -266,7 +268,7 @@ switch ($action) {
 			$map_default_longitude, $map_default_latitude, $map_default_altitude,
 			$map_connection_list, $map_levels_zoom);
 			
-		if (empty($invalidFields)) {
+		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
 			//TODO
 			updateMap($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
 				$map_initial_altitude, $map_zoom_level, $map_background,

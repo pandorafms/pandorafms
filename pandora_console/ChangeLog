@@ -1,5 +1,11 @@
 2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/gettext.php: fixed the bug of pseudo-gettext with diferent
+	arquitectures. Now check the arquitecture before. 
+	Fixes: #2991545
+
+2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.sql: fixed the syntax of sql for compatibility of mysql 5.0 that
 	this versión is used in Debian Lenny for example. Now run in 5.0 and next
 	versións.

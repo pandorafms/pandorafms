@@ -605,8 +605,6 @@ while (1) {
 	# Execute plugins
 	foreach my $plugin (@Plugins) {
 
-		# Verify that the plugin exists and execute it
-		next unless (-x '$ConfDir/plugins/$plugin');
 		my $output = `$ConfDir/plugins/$plugin`;
 
 		# Do not save the output if there was an error

@@ -1,3 +1,7 @@
+2010-05-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Disabled the plugin command check. Was not working.
+
 2010-04-29 Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent_installer: Added darwin (snow leopard), and BSD to

@@ -1,3 +1,8 @@
+2010-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed some monitor
+	status queries.
+
 2010-05-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Make sure the agent exists

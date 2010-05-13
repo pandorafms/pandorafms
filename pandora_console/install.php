@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -11,7 +11,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -35,7 +34,7 @@
 <?php
 
 $version = "3.1-dev";
-$build = "100317";
+$build = "100513";
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -556,7 +555,8 @@ function install_step5() {
 			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
 			<p>You should also install Pandora FMS Servers before trying to monitor anything; 
 			please read documentation on how to install it.</p>
-            <p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, please change it both as soon as possible.</p>
+			<p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
+			please change it both as soon as possible.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.
 			<p><br><b><a href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
@@ -565,7 +565,7 @@ function install_step5() {
 		print_logo_status (5,5);
 	echo "</div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
+		<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";

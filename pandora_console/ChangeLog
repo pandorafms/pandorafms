@@ -1,3 +1,10 @@
+2010-05-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	operation/agentes/status_monitor.php: Fixed full monitor
+	checks in tactical view and monitor status filter 
+	on monitor detail
+
 2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: fixed the empty cell.

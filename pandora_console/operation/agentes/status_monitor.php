@@ -119,7 +119,7 @@ if ($ag_freestring != "") {
 if ($status == 0) { //Up
 	$sql .= " AND tagente_estado.estado = 0 
 	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) 
-	AND utimestamp > 0 ";
+	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23))) ";
 }
 elseif ($status == 2) { //Critical
 	$sql .= " AND tagente_estado.estado = 1 
@@ -138,7 +138,7 @@ elseif ($status == 4) { //not normal
 	$sql .= " AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,100) AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
 
 } elseif ($status == 5) {
-	$sql .= " AND tagente_estado.utimestamp = 0";	
+	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23)";	
 }
 
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";

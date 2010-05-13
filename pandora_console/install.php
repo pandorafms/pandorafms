@@ -304,6 +304,7 @@ function install_step2() {
 			$res += check_extension("snmp","PHP SNMP extension");
 			$res += check_extension("session","PHP session extension");
 			$res += check_extension("gettext","PHP gettext extension");
+			$res += check_extension("mbstring","PHP Multibyte String");
 			$res += check_include("PEAR.php","PEAR PHP Library");
 			$res += check_include("DB.php","PEAR:DB PHP Library");
 			$res += check_include("XML/RPC.php","PEAR::XML_RPC PHP Library");

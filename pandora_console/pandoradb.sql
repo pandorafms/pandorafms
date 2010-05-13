@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
   `datos` double(18,2) default NULL,
   `utimestamp` bigint(20) default '0',
   KEY `data_index1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
+  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
   `datos` text NOT NULL,
   `utimestamp` int(20) unsigned NOT NULL default 0,
   KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
+  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `tagent_access` (
   `id_agent` int(10) unsigned NOT NULL default '0',
   `utimestamp` bigint(20) NOT NULL default '0',
   KEY `agent_index` (`id_agent`),
-  KEY `idx_utimestamp` (`utimestamp`) USING BTREE
+  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -921,8 +921,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_data_history` (
   `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position from the start_timestampa to the_end_timestamp' ,
   `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'reference to the agent' ,
   PRIMARY KEY (`id_tgis_data`) ,
-  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
-  INDEX `end_timestamp_index` (`end_timestamp` ASC) USING BTREE )
+  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
+  INDEX `end_timestamp_index` USING BTREE (`end_timestamp` ASC) )
 ENGINE = InnoDB
 COMMENT = 'Table to store historical GIS information of the agents';
 
@@ -943,7 +943,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_data_status` (
   `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
   `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
   PRIMARY KEY (`tagente_id_agente`) ,
-  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
+  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
   INDEX `fk_tgisdata_tagente1` (`tagente_id_agente` ASC) ,
   CONSTRAINT `fk_tgisdata_tagente1`
     FOREIGN KEY (`tagente_id_agente` )

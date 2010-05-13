@@ -177,7 +177,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	}
 
 	//prominent_time is either timestamp or comparation
-	if ($unixtime == 0) {
+	if ($unixtime <= 0) {
 		$title = __('Unknown').'/'.__('Never');
 		$data = __('Unknown');
 	} elseif ($prominent == "timestamp") {

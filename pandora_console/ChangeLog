@@ -1,3 +1,8 @@
+2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* install.php: check the exit library "Multibyte String".
+	Fixes: #3001028
+
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fixed unknown

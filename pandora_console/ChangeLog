@@ -1,5 +1,12 @@
 2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora.js: check if exist the "any" text translation.
+	* godmode/reporting/visual_console_builder.wizard.php: add the "any"
+	translation.
+	Fixes: #3000496
+
+2010-05-13  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* install.php: check the exit library "Multibyte String".
 	Fixes: #3001028
 

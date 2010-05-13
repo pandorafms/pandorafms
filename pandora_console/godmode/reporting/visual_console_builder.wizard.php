@@ -75,6 +75,9 @@ print_input_hidden ('id_visual_console', $visualConsole["id"]);
 print_submit_button (__('Add'), 'go', false, 'class="sub wizard wand"');
 echo '</div>';
 echo '</form>';
+
+//Trick for it have a traduct text for javascript.
+echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
 ?>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {

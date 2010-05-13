@@ -75,13 +75,25 @@ function agent_changed (event, id_agent, selected) {
 				 "id_agent": id_agent
 				 },
 				 function (data) {
+					 
 					 $('#module').empty ();
 					 
 					 if (typeof($(document).data('text_for_module')) != 'undefined') {
 						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
 					 }
-					 else { 
-						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+					 else {
+						 if (typeof(data['any_text']) != 'undefined') {
+							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						 }
+						 else {
+							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							 
+							 if (anyText == null) {
+								 anyText = 'Any';
+							 }
+							 
+							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						 }
 					 }
 					 jQuery.each (data, function (i, val) {
 								  s = js_html_entity_decode (val['nombre']);
@@ -161,7 +173,7 @@ function agent_module_autocomplete (id_agent_name, id_agent_id, id_agent_module_
 				scroll:true,
 				extraParams: {
 					page: "include/ajax/agent",
-					search_agents: 1,
+					search_agents: 1
 				},
 				formatItem: function (data, i, total) {
 					if (total == 0)

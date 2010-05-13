@@ -1,4 +1,12 @@
-2010-05-11 Raúl Mateos <raulofpandora@gmail.com>
+2010-05-13 Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/group_view.php: Clean code. Close tags. Now, if 
+	there's no agent, it shows a text. Inefficient?
+
+	* godmode/agentes/agent_manager: Solved typo with .png files, but
+	those files doesn't exists in repository...
+
+2010-05-13 Raúl Mateos <raulofpandora@gmail.com>
 
 	* install.php: Updated year. Clean code.
 

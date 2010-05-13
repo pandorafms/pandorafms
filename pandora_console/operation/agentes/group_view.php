@@ -61,18 +61,30 @@ $counter = 1;
 // Old style table, we need a lot of special formatting,don't use table function
 // Prepare old-style table
 
+
+foreach ($groups as $id_group) {
+	$data = get_group_stats($id_group);
+
+	if ($data["total_agents"] == 0) {
+		$agents = 0;
+	} else {
+		$agents = 1;
+	}
+}
+if ($agents == 1) {
+
 echo '<table cellpadding="0" cellspacing="0" border="0" width="98%">';
 
 echo "<tr>";
-echo "<th width='20%''>".__("Group");
-echo "<th width='10%'>".__("Agents");
-echo "<th width='10%'>".__("Agent unknown");
-echo "<th width='10%'>".__("Unknown");
-echo "<th width='10%'>".__("Not Init");
-echo "<th width='10%'>".__("Normal");
-echo "<th width='10%'>".__("Warning");
-echo "<th width='10%'>".__("Critical");
-echo "<th width='10%'>".__("Alert fired");
+echo "<th width='20%'>".__("Group")."</th>";
+echo "<th width='10%'>".__("Agents")."</th>";
+echo "<th width='10%'>".__("Agent unknown")."</th>";
+echo "<th width='10%'>".__("Unknown")."</th>";
+echo "<th width='10%'>".__("Not Init")."</th>";
+echo "<th width='10%'>".__("Normal")."</th>";
+echo "<th width='10%'>".__("Warning")."</th>";
+echo "<th width='10%'>".__("Critical")."</th>";
+echo "<th width='10%'>".__("Alert fired")."</th>";
 
 // For each valid group for this user, take data from agent and modules
 foreach ($groups as $id_group => $group_name) {
@@ -109,10 +121,10 @@ foreach ($groups as $id_group => $group_name) {
 	echo "</a>";
 
 	if (give_acl ($config['id_user'], $id_group, "AW")) {
-			echo '&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" align="right"></a>';
-			echo "&nbsp;";
+		echo '&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" align="right"></a>';
+		echo "&nbsp;";
 	}
-
+	echo "</td>";
 
 	// Total agents
 	echo "<td style='font-weight: bold; font-size: 18px;'>";
@@ -124,6 +136,7 @@ foreach ($groups as $id_group => $group_name) {
 	if ($data["agents_unknown"] > 0) {
 		echo "<td style='font-weight: bold; font-size: 18px; color: #886666;'>";
 		echo $data["agents_unknown"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
@@ -132,6 +145,7 @@ foreach ($groups as $id_group => $group_name) {
 	if ($data["monitor_unknown"] > 0){
 		echo "<td style='font-weight: bold; font-size: 18px; color: #666;'>";
 		echo $data["monitor_unknown"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
@@ -141,6 +155,7 @@ foreach ($groups as $id_group => $group_name) {
 	if ($data["monitor_non_init"] > 0){
 		echo "<td style='font-weight: bold; font-size: 18px; color #666;'>";
 		echo $data["monitor_non_init"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
@@ -152,11 +167,13 @@ foreach ($groups as $id_group => $group_name) {
 		echo $data["monitor_ok"];
 	else
 		echo "&nbsp;";
+	echo "</td>";
 
 	// Monitors Warning
 	if ($data["monitor_warning"] > 0){
 		echo "<td style='font-weight: bold; font-size: 18px; color: #aba900;'>";
 		echo $data["monitor_warning"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
@@ -165,6 +182,7 @@ foreach ($groups as $id_group => $group_name) {
 	if ($data["monitor_critical"] > 0){
 		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000'>";
 		echo $data["monitor_critical"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
@@ -172,16 +190,21 @@ foreach ($groups as $id_group => $group_name) {
 	if ($data["monitor_alerts_fired"] > 0){
 		echo "<td style='font-weight: bold; font-size: 18px; color: #8b01ae;'>";
 		echo $data["monitor_alerts_fired"];
+		echo "</td>";
 	} else {
 		echo "<td></td>";
 	}
 
 
 	echo "</tr>";
-	echo "<tr style='height: 5px;'><td colspan=10> </td>";
+	echo "<tr style='height: 5px;'><td colspan=10> </td></tr>";
 }
 
 echo "</table>";
+
+} else {
+	echo "<div class='nf'>".__('There are no defined agents')."</div>";
+}
 
 ?>
 

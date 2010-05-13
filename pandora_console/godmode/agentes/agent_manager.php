@@ -212,11 +212,11 @@ $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[12][0] = __('Agent icon');
 $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . '.png" />' .
-	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . '.default.png" />' .
-	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . '.ok.png" />' .
-	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . '.bad.png" />' .
-	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . '.warning.png" />';
+	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . 'none.png" />' .
+	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . 'default.png" />' .
+	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . 'ok.png" />' .
+	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . 'bad.png" />' .
+	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . 'warning.png" />';
 
 if ($config['activate_gis']) {
 	$table->data[13][0] = __('Ignore new GIS data:');
@@ -272,7 +272,7 @@ function changeIcons() {
 	
 	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 }
-             
+
 $(document).ready (function () {
 	$("select#id_os").pandoraSelectOS ();
 	$("#text-id_parent").autocomplete ("ajax.php",

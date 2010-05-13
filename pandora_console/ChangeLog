@@ -1,5 +1,10 @@
 2010-05-13  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Fixed negative timestamp 
+	for bug: 2926876
+
+2010-05-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	operation/agentes/status_monitor.php: Fixed full monitor
 	checks in tactical view and monitor status filter 

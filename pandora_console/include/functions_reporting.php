@@ -1544,7 +1544,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 
 		
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-	$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
+	if ($content['id_agent_module'] != 0) {
+		$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
+	}
+	else {
+		$agent_name = get_agent_name($content['id_agent']);
+	}
 
 	switch ($content["type"]) {
 		case 1:

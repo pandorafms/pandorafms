@@ -126,13 +126,26 @@ class gettext_reader {
 
     $this->STREAM = $Reader;
     $magic = $this->readint();
-    if ($magic == ($MAGIC1 & 0xFFFFFFFF)) {
-        $this->BYTEORDER = 0;
-    } elseif ($magic == ($MAGIC2 & 0xFFFFFFFF)) {
-      $this->BYTEORDER = 1;
-    } else {
-      $this->error = 1; // not MO file
-      return false;
+    
+    if ($enabled64Bits) {
+	    if ($magic == ($MAGIC1 & 0xFFFFFFFF)) {
+	        $this->BYTEORDER = 0;
+	    } elseif ($magic == ($MAGIC2 & 0xFFFFFFFF)) {
+	      $this->BYTEORDER = 1;
+	    } else {
+	      $this->error = 1; // not MO file
+	      return false;
+	    }
+    }
+    else {
+    	if ($magic == $MAGIC1) {
+	        $this->BYTEORDER = 0;
+	    } elseif ($magic == $MAGIC2) {
+	      $this->BYTEORDER = 1;
+	    } else {
+	      $this->error = 1; // not MO file
+	      return false;
+	    }
     }
     
     // FIXME: Do we care about revision? We should.

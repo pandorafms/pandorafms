@@ -36,6 +36,7 @@ if (! give_acl ($config["id_user"], $group, "AW")) {
 
 require_once ('include/functions_modules.php');
 require_once ('include/functions_alerts.php');
+require_once ('include/functions_reporting.php');
 
 // Get passed variables
 $tab = get_parameter ('tab', 'main');

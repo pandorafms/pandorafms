@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ tyle="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
 if ($config["realtimestats"] == 0){
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
 	$updated_time .= __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
-	$updated_time .= "</A>"; 
+	$updated_time .= "</a>"; 
 } else {
 	$updated_time = __("Updated at realtime");
 }
@@ -67,7 +67,7 @@ print_page_header (__("Tactical view"), "images/bricks.png", false, "", false, $
 
 $data = get_group_stats ();
 
-echo '<div style="width:20%; float:left;  padding-right: 5%;" id="leftcolumn">';
+echo '<div style="width:20%; float:left; padding-right: 5%;" id="leftcolumn">';
 // Monitor checks
 
 $table->width = "100%";
@@ -86,13 +86,13 @@ $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Global health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = print_image ($img.$data["global_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["global_health"].'% '.__('of monitors OK')));
+$table->data[1][0] = print_image ($img.$data["global_health"], true, array ("width" => '100%', "height" => 20, "title" => $data["global_health"].'% '.__('of monitors OK')));
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20,  "title" => $data["monitor_health"].'% '.__('of monitors up')));
+$table->data[3][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20, "title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Module sanity').'</b>';

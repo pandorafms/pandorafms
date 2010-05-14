@@ -1,3 +1,7 @@
+2010-05-14 Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/gis_view.php, tactical.php: Clean code. Updated year.
+
 2010-05-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/groups/group_list.php: fixed the request of group data when get
@@ -9,7 +13,7 @@
 	* godmode/reporting/visual_console_builder.php: Fixed
 	the adding at visual map only the agent if module is 
 	no selected and only the module if is selected.
-	Bug: 2989339
+	Fixes: #2989339
 
 2010-05-14  Miguel de Dios  <miguel.dedios@artica.es>
 
@@ -41,7 +45,7 @@
 	there's no agent, it shows a text. Inefficient?
 
 	* godmode/agentes/agent_manager: Solved typo with .png files, but
-	those files doesn't exists in repository...
+	those files don't exist in repository...
 
 2010-05-13 Raúl Mateos <raulofpandora@gmail.com>
 

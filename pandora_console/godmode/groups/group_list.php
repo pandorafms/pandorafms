@@ -33,6 +33,18 @@ if (is_ajax ()) {
 	if ($get_group_json) {
 		$id_group = (int) get_parameter ('id_group');
 		
+		if ($id_group == 0) {
+			$group = array('id_grupo' => 0,
+				'nombre' => 'All', 
+				'icon' => 'world',
+				'parent' => 0,
+				'disabled' => 0,
+				'custom_id' => null);
+			
+			echo json_encode ($group);
+			return;
+		}
+		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
 			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 				"Trying to access Alert Management");

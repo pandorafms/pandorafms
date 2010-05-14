@@ -1,3 +1,9 @@
+2010-05-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/gis_maps/configure_gis_map.php: fixed the title of button to
+	"update layer", and now by default the group of new layer is none.
+	Fixes: #2990762
+
 2010-05-14  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php

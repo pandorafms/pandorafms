@@ -612,7 +612,7 @@ function newLayer() {
 	agentList = Array();
 	countAgentList = 0;
 	
-	setFieldsFormLayer('', 0, true, null);
+	setFieldsFormLayer('', -1, true, null);
 	$("#form_layer_table").css('visibility', 'visible');
 	$("#hidden-layer_edit_id_form").val('');
 	$("input[name=save_layer]").val('<?php echo __("Save Layer"); ?>');
@@ -703,7 +703,7 @@ function saveLayer() {
 	hightlightRow(id);
 
 	editLayer(id);
-	$("input[name=save_layer]").val('<?php echo __("Edit Layer"); ?>');
+	$("input[name=save_layer]").val('<?php echo __("Update Layer"); ?>');
 }
 
 function deleteAgentLayer(idRow) {

@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ $agentData = getDataLastPositionAgent($id_agente);
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
-echo "<div id=\"".$agent_name."_agent_map\"  style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
+echo "<div id=\"".$agent_name."_agent_map\" style=\"border:1px solid black; width:98%; height: 39em;\"></div>";
 if (!getAgentMap($agentId, "500px", "98%", true, true, $period)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 
@@ -75,7 +75,7 @@ echo "<br />";
 echo "<form action='index.php?" . $_SERVER['QUERY_STRING'] . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
 print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
-echo  __(" seconds.") . "&nbsp;";
+echo __(" seconds.") . "&nbsp;";
 print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
 echo "</form>";
 
@@ -85,10 +85,10 @@ $sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_ag
 $countData = get_db_value_sql($sqlCount);
 /* Get the elements to present in this page */
 $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
-        FROM tgis_data_history
-        WHERE tagente_id_agente = %d AND end_timestamp > %d 
-        ORDER BY end_timestamp DESC
-        LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
+	FROM tgis_data_history
+	WHERE tagente_id_agente = %d AND end_timestamp > %d 
+	ORDER BY end_timestamp DESC
+	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
 
 $result = get_db_all_rows_sql ($sql, true);
 
@@ -96,16 +96,17 @@ if ($result === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any GIS data')."</div>";
 }
 else {
-    pagination ($countData, false) ;
+	pagination ($countData, false) ;
 	$table->data = array();
 	foreach ($result as $row) {
 		$rowdata = array($row['longitude'], $row['latitude'], $row['altitude'], $row['start_timestamp'], $row['end_timestamp'], $row['description'], $row['number_of_packages'], $row['manual_placement']);
-    	array_push($table->data, $rowdata); 
+	array_push($table->data, $rowdata); 
 	}
 	$table->head = array(__("Longitude"), __("Latitude"), __("Altitude"), __("From"), __("To"), __("Description"), '# '.__("of Packages"), __("Manual placement"));
 	$table->class = 'position_data_table';
 	$table->id = $agent_name.'_position_data_table';
 	$table->title = $agent_name." ". __("positional data");
+	$table->titlestyle = "background-color:#799E48;";
 	print_table($table); unset($table);
 
 	pagination ($countData, false) ;

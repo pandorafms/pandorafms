@@ -36,8 +36,19 @@ if (is_ajax ()) {
 	if ($get_agents_group_json) {
 		$id_group = get_parameter('id_group');
 		
-		$agents = get_db_all_rows_sql("SELECT id_agente, nombre FROM tagente WHERE id_grupo = ". $id_group);
-		
+		if($id_group > 0)
+			$filter = " WHERE id_grupo = ". $id_group;
+		else {
+			$groups_orig = get_user_groups();
+
+			$a = 0;
+			$groups = array_keys($groups_orig);
+			
+			$filter = " WHERE id_grupo IN (". implode(',', $groups) .")";
+		}
+
+		$agents = get_db_all_rows_sql("SELECT id_agente, nombre FROM tagente". $filter);
+
 		echo json_encode($agents);
 		return;
 	}

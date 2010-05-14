@@ -1,3 +1,11 @@
+2010-05-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_db.php
+	operation/agentes/ver_agente.php
+	godmode/agentes/massive_edit_modules.php: Fixed the
+	ACL check into groups combo for bug 3001500 and 
+	All agents display for bug 2999431
+
 2010-05-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/gettext.php: Sorry I forget part of changes in "fixed the bug of

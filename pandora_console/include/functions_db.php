@@ -1334,14 +1334,20 @@ function give_agentmodule_flag ($id_agent_module) {
 function get_all_groups($groupWithAgents = false) {
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
 	
+	global $config;
+	
 	if ($groupWithAgents)
 		$sql .= ' WHERE id_grupo IN (SELECT id_grupo FROM tagente GROUP BY id_grupo)';
+	
+	$sql .= ' ORDER BY nombre DESC';
 	
 	$rows = get_db_all_rows_sql ($sql);
 	
 	$return = array();
-	foreach ($rows as $row)
-		$return[$row['id_grupo']] = $row['nombre'];
+	foreach ($rows as $row) {
+		if (give_acl ($config['id_user'], $row["id_grupo"], "AR"))
+			$return[$row['id_grupo']] = $row['nombre'];
+	}
 		
 	return $return;
 }

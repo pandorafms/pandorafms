@@ -142,10 +142,10 @@ switch ($activeTab) {
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
 				$message = '';
-				$message = process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
-				if (!empty ($id_modules)) {
+				if ($id_modules[0] == 0)
+					$message .= process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
+				else
 					$message .= process_wizard_add_modules ($id_modules, $image, $idVisualConsole, $range, $width, $height);
-				}
 				$statusProcessInDB = array('flag' => true, 'message' => $message);
 				$action = 'edit';
 				break;

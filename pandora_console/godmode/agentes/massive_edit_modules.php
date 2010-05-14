@@ -160,7 +160,6 @@ $names = get_agent_modules (array_keys ($agents),
 foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
-$agents = null;
 
 $table->data[0][2] = __('Module name');
 $table->data[0][3] = print_select ($modules, 'module_name',

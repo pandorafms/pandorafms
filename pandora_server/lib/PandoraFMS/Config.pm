@@ -38,7 +38,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "3.1-dev";
-my $pandora_build = "100224";
+my $pandora_build = "100516";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -47,11 +47,11 @@ my %pa_config;
 # Public functions
 ##########################################################################
 # SUB pandora_help_screen()
-#  Show a help screen an exits
+# Shows a help screen and exits
 ##########################################################################
 
 sub help_screen {
-	print "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
+	print "\nSyntax: \n\n pandora_server [ options ] < fullpathname to configuration file (pandora_server.conf) > \n\n";
 	print "Following options are optional : \n";
 	print "	-v        :  Verbose mode activated. Writes more information in the logfile \n";
 	print "	-d        :  Debug mode activated. Writes extensive information in the logfile \n";
@@ -71,7 +71,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2009 ArticaST\n";
+	print "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2010 ArticaST\n";
 	print "This program is OpenSource, licensed under the terms of GPL License version 2.\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org \n\n";
 
@@ -235,7 +235,7 @@ sub pandora_load_config {
 	$pa_config->{"mta_port"} = '25'; # Introduced on 2.0
 	$pa_config->{"mta_user"} = ''; # Introduced on 2.0
 	$pa_config->{"mta_pass"} = ''; # Introduced on 2.0
-	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
+	$pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0 (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
 	$pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0 
 
 	# nmap for recon OS fingerprinting and tcpscan (optional)

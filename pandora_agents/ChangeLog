@@ -1,3 +1,9 @@
+2010-05-16  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* linux/pandora_agent_installer, linux/DEBIAN/make_deb_package.sh,
+	linux/DEBIAN/control, linux/pandora_agent, linux/pandora_agent_daemon,
+	linux/pandora_agent.conf: Updated build. Updated year.
+
 2010-05-12  Sergio Martin <sergio.martin@artica.es>
 
 	* unix/pandora_agent_installer

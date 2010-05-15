@@ -1,3 +1,8 @@
+2010-05-16  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* bin/pandora_server, lib/PandoraFMS/Config.pm, conf/pandora_server.conf,
+	pandora_server_upgrade: Updated year. Clean code.
+
 2010-05-13  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed some monitor

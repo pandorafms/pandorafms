@@ -3,7 +3,7 @@
 # Pandora FMS Server
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ my @Servers;
 my $DBH;
 
 ########################################################################################
-# Server shutdown.  Handler to do a controlled shutdown.
+# Server shutdown. Handler to do a controlled shutdown.
 ########################################################################################
 sub pandora_shutdown () {
 	logger (\%Config, 'Pandora FMS Server \'' . $Config{'servername'} . '\' Shutdown by signal ', 1);
@@ -66,7 +66,7 @@ sub pandora_startup () {
 
 	# Connect to the DB
 	$DBH = db_connect ('mysql', $Config{'dbname'}, $Config{'dbhost'}, 3306,
-					   $Config{'dbuser'}, $Config{'dbpass'});
+					$Config{'dbuser'}, $Config{'dbpass'});
 
 	# Grab config tokens shared with the console and not in the .conf
 

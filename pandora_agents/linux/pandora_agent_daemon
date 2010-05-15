@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pandora FMS Linux Agent, startup script
-# Copyright (c) 2006-2009 Artica ST, <info@artica.es>
+# Copyright (c) 2006-2010 Artica ST, <info@artica.es>
 # Linux Version (generic), for SuSe and Debian/Ubuntu.
 # other Linux distros could not work properly without modifications
 # v3.0.1 Build 091104
@@ -11,7 +11,7 @@
 # Provides: pandora_agent
 # Required-Start: $network
 # Required-Stop: $network
-# Default-Start:  2 3 5
+# Default-Start: 2 3 5
 # Default-Stop: 0 1 6
 # Short-Description: Startup script daemon for Pandora FMS agent
 # Description: Startup script daemon for Pandora FMS agent (linux)
@@ -59,7 +59,7 @@ case "$1" in
 			exit 1
 		else
 			echo "Stopping Pandora FMS Agent."
-			kill $PANDORA_PID > /dev/null 2>&1        
+			kill $PANDORA_PID > /dev/null 2>&1
 		fi
 	;;
 
@@ -81,7 +81,7 @@ case "$1" in
 	;;
 	
 	*)
-        echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
-        exit 1
+	echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status|force-reload}"
+	exit 1
 esac
 

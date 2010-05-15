@@ -1,13 +1,13 @@
 #!/bin/bash
 # **********************************************************************
 # Pandora FMS Generic Linux Agent
-# (c) 2009 Artica Soluciones Tecnológicas
+# (c) 2010 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-AGENT_VERSION=3.0
-AGENT_BUILD=091216
+AGENT_VERSION=3.1
+AGENT_BUILD=100516
 
 # **********************************************************************
 # function configure_agent()
@@ -172,7 +172,7 @@ function configure_agent {
 	if [ "$CRON_MODE" == "0" ]
 	then
 		# Script banner at start
-		echo "Pandora FMS Agent $AGENT_VERSION (c) Artica ST 2003-2009"
+		echo "Pandora FMS Agent $AGENT_VERSION (c) Artica ST 2003-2010"
 		echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "
@@ -290,7 +290,7 @@ function recv_file {
 	then
 		WD=`pwd`
 		cd $TEMP
- 		eval tentacle_client -v -g -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $FILE > /dev/null 2>  $PANDORA_LOGFILE.err
+ 		eval tentacle_client -v -g -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $FILE > /dev/null 2> $PANDORA_LOGFILE.err
  		STATUS=$?
  		cd $WD
  		return $STATUS
@@ -298,7 +298,7 @@ function recv_file {
 
 	if [ "$TRANSFER_MODE" == "ssh" ]
 	then
- 		scp -P $SERVER_PORT pandora@$SERVER_IP:$SERVER_PATH/$FILE $TEMP > /dev/null 2>  $PANDORA_LOGFILE.err
+ 		scp -P $SERVER_PORT pandora@$SERVER_IP:$SERVER_PATH/$FILE $TEMP > /dev/null 2> $PANDORA_LOGFILE.err
  		return $?
 	fi
 

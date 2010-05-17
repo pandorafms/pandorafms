@@ -196,7 +196,14 @@ function configure_modules_form () {
 			{"page" : "godmode/agentes/module_manager_editor",
 			"snmp_walk" : 1,
 			"ip_target" : $("#text-ip_target").fieldValue (),
-			"snmp_community" : $("#text-snmp_community").fieldValue ()
+			"snmp_community" : $("#text-snmp_community").fieldValue (),
+			"snmp_version": $('#snmp_version').val(),
+			"snmp3_auth_user": $('input[name=snmp3_auth_user]').val(),
+			"snmp3_security_level": $('#snmp3_security_level').val(),
+			"snmp3_auth_method": $('snmp3_auth_method').val(),
+			"snmp3_auth_pass": $('input[name=snmp3_auth_pass]').val(),
+			"snmp3_privacy_method": $('snmp3_privacy_method').val(),
+			"snmp3_privacy_pass": $('input[name=snmp3_privacy_pass]').val()
 			},
 			function (data, status) {
 				if (data == false) {

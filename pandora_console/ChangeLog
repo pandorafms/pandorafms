@@ -1,5 +1,18 @@
 2010-05-17  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Fixed the
+	Warning monitor stauts in tactical view
+	for bug: 3002602
+
+2010-05-17  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/setup/gis_step_2.php
+	godmode/setup/gis.php: Created error and
+	successfuly messages when create, update or
+	delete a map connection for bug 2994197
+
+2010-05-17  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/extensions.php
 	godmode/extensions.php: Fixed the undefined
 	variable display on extensions sections

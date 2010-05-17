@@ -1,3 +1,9 @@
+2010-05-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js,
+	godmode/reporting/visual_console_builder.wizard.php: fixed the select box
+	modules for when select many agents.
+
 2010-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fixed the

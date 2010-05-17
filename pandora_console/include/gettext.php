@@ -103,7 +103,7 @@ class gettext_reader {
   	$machine = @shell_exec('uname -m');
   	
   	$enabled64Bits = false;
-  	if ($machine == 'x86_64') {
+	if (ereg('64', $machine)) {
   		$enabled64Bits = true;
   	}
   	

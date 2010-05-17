@@ -33,10 +33,29 @@ print_page_header (__('Map conections GIS'), "", false, "setup_gis_index", true)
 
 $action = get_parameter('action');
 
-if ($action == 'delete_connection') {
-	$idConnectionMap = get_parameter('id_connection_map');
+switch ($action) {
+	case 'save_edit_map_connection':
+		if(!$errorfill)
+			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
+		else
+			echo '<h3 class="error">'.__('Could not be updated').'</h3>';
+		break;
+	case 'save_map_connection':
+		if(!$errorfill)
+			echo '<h3 class="suc">'.__('Successfully created').'</h3>';
+		else
+			echo '<h3 class="error">'.__('Could not be created').'</h3>';
+		break;
+	case 'delete_connection':
+		$idConnectionMap = get_parameter('id_connection_map');
 	
-	deleteMapConnection($idConnectionMap);
+		$result = deleteMapConnection($idConnectionMap);
+		
+		if($result === false)
+			echo '<h3 class="error">'.__('Could not be deleted').'</h3>';
+		else
+			echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+		break;
 }
 
 $table->width = '500px';

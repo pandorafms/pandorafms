@@ -109,8 +109,8 @@ switch ($action) {
 				$mapConnection_Image_url= get_parameter('url');
 				$bb_left= get_parameter('bb_left');
 				$bb_right= get_parameter('bb_right');
-				$bb_bottom= get_parameter('bb_bottom');
 				$bb_top= get_parameter('bb_top');
+				$bb_bottom= get_parameter('bb_bottom');
 				$image_height= get_parameter('image_height');
 				$image_width= get_parameter('image_width');
 				$mapConnectionData = array('type' => 'Static_Image',
@@ -124,7 +124,7 @@ switch ($action) {
 					);
 				break;
 		}
-		
+				
 		//TODO VALIDATE PARAMETERS
 		if ($mapConnection_name != "" && $mapConnection_type != ""){
 			saveMapConnection($mapConnection_name, $mapConnection_group,
@@ -133,7 +133,11 @@ switch ($action) {
 				$mapConnection_defaultAltitude, $mapConnection_centerLatitude,
 				$mapConnection_centerLongitude, $mapConnection_centerAltitude,
 				$mapConnectionData, $idConnectionMap);
+			
+			$errorfill = false;
 			}
+		else
+			$errorfill = true;
 
 		require_once('gis.php');
 		return;

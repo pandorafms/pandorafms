@@ -29,7 +29,7 @@ if (sizeof ($config['extensions']) == 0) {
 }
 
 // Header
-print_page_header (__('Extensions'). " &raquo;  ". __('Defined extensions'). " - ".$report["name"], "images/extensions.png", false, "", true, "" );
+print_page_header (__('Extensions'). " &raquo;  ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
 
 $delete = get_parameter ("delete", "");
 $name = get_parameter ("name", "");

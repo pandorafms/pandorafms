@@ -1,3 +1,10 @@
+2010-05-17  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/extensions.php
+	godmode/extensions.php: Fixed the undefined
+	variable display on extensions sections
+	for bug 2989967
+
 2010-05-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* include/gettext.php: Changed the judgment method for 64bit systems.

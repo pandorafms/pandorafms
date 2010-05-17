@@ -137,8 +137,19 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 					 if (typeof($(document).data('text_for_module')) != 'undefined') {
 						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
 					 }
-					 else { 
-						 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+					 else {
+						 if (typeof(data['any_text']) != 'undefined') {
+							 $('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						 }
+						 else {
+							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							 
+							 if (anyText == null) {
+								 anyText = 'Any';
+							 }
+							 
+							 $('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						 }
 					 }
 					 jQuery.each (data, function (i, val) {
 								  s = js_html_entity_decode(val);

@@ -73,9 +73,32 @@ if (is_ajax ()) {
 	if ($snmp_walk) {
 		$ip_target = (string) get_parameter ('ip_target');
 		$snmp_community = (string) get_parameter ('snmp_community');
+		$snmp_version = get_parameter('snmp_version');
+		$snmp3_auth_user = get_parameter('snmp3_auth_user');
+		$snmp3_security_level = get_parameter('snmp3_security_level');
+		$snmp3_auth_method = get_parameter('snmp3_auth_method');
+		$snmp3_auth_pass = get_parameter('snmp3_auth_pass');
+		$snmp3_privacy_method = get_parameter('snmp3_privacy_method');
+		$snmp3_privacy_pass = get_parameter('snmp3_privacy_pass');
 		
 		snmp_set_quick_print (1);
-		$snmpwalk = @snmprealwalk ($ip_target, $snmp_community, NULL);
+		
+		switch ($snmp_version) {
+			case '3':
+				$snmpwalk = @snmp3_real_walk ($ip_target, $snmp3_auth_user,
+					$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
+					$snmp3_privacy_method, $snmp3_privacy_pass, null);
+				break;
+			case '2':
+			case '2c':
+				$snmpwalk = @snmp2_real_walk ($ip_target, $snmp_community, NULL);
+				break;
+			case '1':
+			default:
+				$snmpwalk = @snmprealwalk ($ip_target, $snmp_community, NULL);	
+				break;
+		}
+		
 		if ($snmpwalk === false) {
 			echo json_encode ($snmpwalk);
 			return;

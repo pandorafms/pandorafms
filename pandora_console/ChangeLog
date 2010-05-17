@@ -1,3 +1,8 @@
+2010-05-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/gettext.php: Changed the judgment method for 64bit systems.
+	'x86_64' is not acceptable by some systems.
+
 2010-05-14 Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/gis_view.php, tactical.php: Clean code. Updated year.

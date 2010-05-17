@@ -1,3 +1,8 @@
+2010-05-17  Sergio Martin <sergio.martin@artica.es>
+
+	* linux/pandora_agent.conf: Improved the default
+	modules memused and proctotal for bug 3002626
+
 2010-05-16  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* linux/pandora_agent_installer, linux/DEBIAN/make_deb_package.sh,

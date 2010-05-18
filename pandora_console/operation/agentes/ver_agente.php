@@ -32,6 +32,7 @@ if (is_ajax ()) {
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
+	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 
 	if ($get_agents_group_json) {
 		$id_group = get_parameter('id_group');
@@ -59,6 +60,15 @@ if (is_ajax ()) {
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
 		
 		echo json_encode ($agent);
+		return;
+	}
+	
+	if ($get_agent_modules_json_for_multiple_agents_id) {
+		$idAgents = get_parameter('id_agent');
+		
+		$nameModules = get_db_all_rows_sql('SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
+		
+		echo json_encode($nameModules);
 		return;
 	}
 	

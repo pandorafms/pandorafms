@@ -82,6 +82,6 @@ echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
 	//$("#id_agents").change (agent_changed);
-	$("#id_agents").change (agent_changed_by_multiple_agents);
+	$("#id_agents").change (agent_changed_by_multiple_agents_id);
 });
 </script>

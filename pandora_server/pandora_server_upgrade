@@ -46,7 +46,7 @@ install () {
 	cp util/pandora_server /etc/init.d
 	cp util/tentacle_serverd /etc/init.d
 
-	if [ ! -e /etc/cron.daily/pandora_purge_db ]
+	if [ ! -e /etc/cron.daily/pandora_db ]
 	then
 		echo "You don't have a /etc/cron.daily/pandora_purge_db file, you should consider"
 		echo "to setup the Pandora FMS daily Database Maintance script: "

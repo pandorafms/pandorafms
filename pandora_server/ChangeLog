@@ -1,3 +1,9 @@
+2010-05-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server_upgrade: Fixed a check on pandora_db.pl script in cron.
+
+	* lib/PandoraFMS/Config.pm: Version update to 3.1rc1 and build 100515
+
 2010-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed the Warning Monitor

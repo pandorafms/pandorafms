@@ -1,3 +1,11 @@
+2010-05-18  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/ver_agente.php
+	godmode/reporting/visual_console_builder.wizard.php
+	godmode/reporting/visual_console_builder.php: Fixed the
+	multiple agents selection on visual console wizard 
+	for bug 2997750
+
 2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: added function 

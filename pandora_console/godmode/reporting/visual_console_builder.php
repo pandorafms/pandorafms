@@ -136,16 +136,32 @@ switch ($activeTab) {
 		switch ($action) {
 			case 'update':
 				$id_agents = get_parameter ('id_agents', array ());
-				$id_modules = get_parameter ('module', array ());
+				$name_modules = get_parameter ('module', array ());
+				
 				$image = get_parameter ('image');
 				$range = (int) get_parameter ("range", 50);
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
 				$message = '';
-				if ($id_modules[0] == 0)
+				if ($name_modules[0] == '0')
 					$message .= process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);
-				else
+				else{
+					$id_modules = array();
+					$cont_dest = 1;
+					$cont_mod = 1;
+					foreach($name_modules as $mod){
+						$cont_ag = 1;
+						foreach($id_agents as $ag){
+							$sql = "SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = ".$ag." AND nombre = '".$mod."'";
+							$result = get_db_row_sql ($sql);
+							$id_modules[$cont_dest] = $result['id_agente_modulo'];
+							$cont_ag = $cont_ag + 1;
+							$cont_dest = $cont_dest + 1;
+						}
+						$cont_mod = $cont_mod + 1;
+					}
 					$message .= process_wizard_add_modules ($id_modules, $image, $idVisualConsole, $range, $width, $height);
+				}
 				$statusProcessInDB = array('flag' => true, 'message' => $message);
 				$action = 'edit';
 				break;

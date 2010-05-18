@@ -1,30 +1,6 @@
-ALTER TABLE tagente ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'nuber of hours of diference with the server timezone' ;
-ALTER TABLE tagente ADD `icon_path` VARCHAR(127) NULL DEFAULT NULL COMMENT 'path in the server to the image of the icon representing the agent' ;
-ALTER TABLE tagente ADD `update_gis_data` TINYINT(1) NOT NULL DEFAULT '1' COMMENT 'set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it' ;
-
-ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0;
-
-ALTER TABLE treport DROP FOREIGN KEY treport_ibfk_1;
-
-ALTER TABLE `tserver_export` ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Nuber of hours of diference with the server timezone';
-
-ALTER TABLE `tserver` ADD `lag_time` int(11) NOT NULL default 0;
-ALTER TABLE `tserver` ADD `lag_modules` int(11) NOT NULL default 0;
-ALTER TABLE `tserver` ADD `total_modules_running` int(11) NOT NULL default 0;
-ALTER TABLE `tserver` ADD `my_modules` int(11) NOT NULL default 0;
-ALTER TABLE `tserver` ADD  `stat_utimestamp` bigint(20) NOT NULL default '0';
-
-ALTER TABLE `tagente_modulo` ADD `custom_string_1` text default '';
-ALTER TABLE `tagente_modulo` ADD `custom_string_2` text default '';
-ALTER TABLE `tagente_modulo` ADD `custom_string_3` text default '';
-ALTER TABLE `tagente_modulo` ADD `custom_integer_1` int(10) default 0;
-ALTER TABLE `tagente_modulo` ADD `custom_integer_2` int(10) default 0;
-
-ALTER TABLE `tnetwork_component` ADD `custom_string_1` text default '';
-ALTER TABLE `tnetwork_component` ADD `custom_string_2` text default '';
-ALTER TABLE `tnetwork_component` ADD `custom_string_3` text default '';
-ALTER TABLE `tnetwork_component` ADD `custom_integer_1` int(10) default 0;
-ALTER TABLE `tnetwork_component` ADD `custom_integer_2` int(10) default 0;
+ALTER TABLE tagente ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0';
+ALTER TABLE tagente ADD `icon_path` VARCHAR(127) NULL DEFAULT NULL;
+ALTER TABLE tagente ADD `update_gis_data` TINYINT(1) NOT NULL DEFAULT '1';
 
 ALTER TABLE tagente_datos_string DROP id_tagente_datos_string;
 CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos_string(utimestamp);
@@ -32,21 +8,62 @@ CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos_string(utimestamp);
 ALTER TABLE tagente_datos DROP id_agente_datos;
 CREATE INDEX idx_utimestamp USING BTREE ON tagente_datos(utimestamp);
 
+-- -----------------------------------------------------
+-- Table `tagente_datos_log4x`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
+  `id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+  `severity` text NOT NULL,
+  `message` text NOT NULL,
+  `stacktrace` text NOT NULL,
+  `utimestamp` int(20) unsigned NOT NULL default 0,
+  PRIMARY KEY  (`id_tagente_datos_log4x`),
+  KEY `data_log4x_index_1` (`id_agente_modulo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE INDEX idx_agente USING BTREE ON tagente_estado(id_agente);
-CREATE INDEX idx_template_action USING BTREE ON talert_templates(id_alert_action);
-CREATE INDEX idx_template_module USING BTREE ON talert_template_modules(id_agent_module);
-CREATE INDEX idx_agentmodule USING BTREE ON tevento(id_agentmodule);
-
-CREATE INDEX idx_utimestamp USING BTREE ON tacess(utimestamp);
-CREATE INDEX idx_user USING BTREE ON tsesion (ID_usuario);
-
 DROP INDEX `status_index_2` on tagente_estado;
 CREATE INDEX idx_status USING BTREE ON tagente_estado (estado);
+
+ALTER TABLE `tagente_modulo` ADD `custom_string_1` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_string_2` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_string_3` text default '';
+ALTER TABLE `tagente_modulo` ADD `custom_integer_1` int(10) default 0;
+ALTER TABLE `tagente_modulo` ADD `custom_integer_2` int(10) default 0;
 
 ALTER TABLE tagent_access DROP id_ac;
 CREATE INDEX idx_utimestamp USING BTREE ON tagent_access(utimestamp);
 
+CREATE INDEX idx_template_action USING BTREE ON talert_templates(id_alert_action);
+CREATE INDEX idx_template_module USING BTREE ON talert_template_modules(id_agent_module);
+ALTER TABLE talert_templates MODIFY `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange');
+
+CREATE INDEX idx_agentmodule USING BTREE ON tevento(id_agentmodule);
+
+ALTER TABLE `tnetwork_component` ADD `custom_string_1` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_string_2` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_string_3` text default '';
+ALTER TABLE `tnetwork_component` ADD `custom_integer_1` int(10) default 0;
+ALTER TABLE `tnetwork_component` ADD `custom_integer_2` int(10) default 0;
+
+ALTER TABLE `tserver` ADD `lag_time` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `lag_modules` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `total_modules_running` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD `my_modules` int(11) NOT NULL default 0;
+ALTER TABLE `tserver` ADD  `stat_utimestamp` bigint(20) NOT NULL default '0';
+
+ALTER TABLE `tserver` engine=InnoDB;
+
+CREATE INDEX idx_user USING BTREE ON tsesion (`ID_usuario`);
+CREATE INDEX idx_utimestamp USING BTREE ON tsesion (`utimestamp`);
+
 ALTER TABLE tusuario ADD `timezone` varchar(50) default '';
+
+ALTER TABLE `tgraph_source` CHANGE `weight` `weight` float(5,3) UNSIGNED NOT NULL DEFAULT 0;
+
+ALTER TABLE treport DROP FOREIGN KEY `treport_ibfk_1`;
 
 -- New report data
 ALTER TABLE `treport` ADD `custom_logo` varchar(200)  default NULL;
@@ -63,29 +80,17 @@ ALTER TABLE `treport_content` ADD `header_definition` TinyText default NULL;
 ALTER TABLE `treport_content` ADD `column_separator` TinyText default NULL;
 ALTER TABLE `treport_content` ADD `line_separator` TinyText default NULL;
 
--- Realtime statistics on/off and interval
-INSERT INTO tconfig (`token`, `value`) VALUES ('realtimestats', '1');
-INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
-
--- Log4x Module
-
-INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon`) VALUES (24, 'log4x', 0, 'Log4x', 'mod_log4x.png');
-
-
--- GIS extension Tables and DATA
-
--- GIS is disabled by default
-INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '1');
-
--- -----------------------------------------------------
--- Table `treport_custom_sql`
--- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_custom_sql` (
   `id` INTEGER UNSIGNED NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
   `sql` TEXT default NULL,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
+ALTER TABLE `tserver_export` ADD `timezone_offset` TINYINT(2) NULL DEFAULT '0';
+
+
+-- GIS extension Tables
 
 -- -----------------------------------------------------
 -- Table `tgis_data_history`
@@ -102,8 +107,8 @@ CREATE  TABLE IF NOT EXISTS `tgis_data_history` (
   `number_of_packages` INT NOT NULL DEFAULT 1 COMMENT 'Number of data packages received with this position from the start_timestampa to the_end_timestamp' ,
   `tagente_id_agente` INT(10) UNSIGNED NOT NULL COMMENT 'reference to the agent' ,
   PRIMARY KEY (`id_tgis_data`) ,
-  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
-  INDEX `end_timestamp_index` (`end_timestamp` ASC) USING BTREE )
+  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
+  INDEX `end_timestamp_index` USING BTREE (`end_timestamp` ASC) )
 ENGINE = InnoDB
 COMMENT = 'Table to store historical GIS information of the agents';
 
@@ -124,7 +129,7 @@ CREATE  TABLE IF NOT EXISTS `tgis_data_status` (
   `manual_placement` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 to show that the position cames from the agent, 1 to show that the position was established manualy' ,
   `description` TEXT NULL COMMENT 'description of the region correoponding to this placemnt' ,
   PRIMARY KEY (`tagente_id_agente`) ,
-  INDEX `start_timestamp_index` (`start_timestamp` ASC) USING BTREE,
+  INDEX `start_timestamp_index` USING BTREE (`start_timestamp` ASC),
   INDEX `fk_tgisdata_tagente1` (`tagente_id_agente` ASC) ,
   CONSTRAINT `fk_tgisdata_tagente1`
     FOREIGN KEY (`tagente_id_agente` )
@@ -156,8 +161,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map` (
 ENGINE = InnoDB
 COMMENT = 'Table containing information about a gis map';
 
-INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,1,1);
-
 -- -----------------------------------------------------
 -- Table `tgis_map_connection`
 -- -----------------------------------------------------
@@ -178,8 +181,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_connection` (
   PRIMARY KEY (`id_tmap_connection`) )
 ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
-
-INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,1);
 
 -- -----------------------------------------------------
 -- Table `tgis_map_has_tgis_map_connection`
@@ -205,8 +206,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
 ENGINE = InnoDB
 COMMENT = 'Table to asociate a connection to a gis map';
 
-INSERT INTO `tgis_map_has_tgis_map_connection` VALUES (1,1,'2010-03-01 09:46:48',1);
-
 -- -----------------------------------------------------
 -- Table `tgis_map_layer`
 -- -----------------------------------------------------
@@ -226,8 +225,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_layer` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 COMMENT = 'Table containing information about the map layers';
-
-INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,1);
 
 -- -----------------------------------------------------
 -- Table `tgis_map_layer_has_tagente`
@@ -270,29 +267,32 @@ CREATE TABLE IF NOT EXISTS `tgroup_stat` (
   `utimestamp` int(20) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_group`)
 ) ENGINE=InnoDB 
-COMMENT = 'Table to store global system stats per group'
+COMMENT = 'Table to store global system stats per group' 
 DEFAULT CHARSET=utf8;
 
--- -----------------------------------------------------
--- Table `tagente_datos_log4x`
--- -----------------------------------------------------
+-- -----------------------------------------------------------------------
+-- Data insertion --
+-- -----------------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `tagente_datos_log4x` (
-  `id_tagente_datos_log4x` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+-- Realtime statistics on/off and interval
 
-  `severity` text NOT NULL,
-  `message` text NOT NULL,
-  `stacktrace` text NOT NULL,
+INSERT INTO tconfig (`token`, `value`) VALUES ('realtimestats', '1');
+INSERT INTO tconfig (`token`, `value`) VALUES ('stats_interval', '300');
 
-  `utimestamp` int(20) unsigned NOT NULL default 0,
-  PRIMARY KEY  (`id_tagente_datos_log4x`),
-  KEY `data_log4x_index_1` (`id_agente_modulo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- Log4x Module
 
+INSERT INTO ttipo_modulo (`id_tipo`, `nombre`, `categoria`, `descripcion`, `icon`) VALUES (24, 'log4x', 0, 'Log4x', 'mod_log4x.png');
 
+-- GIS is disabled by default
+INSERT INTO tconfig (`token`, `value`) VALUES ('activate_gis', '1');
 
-ALTER TABLE talert_templates MODIFY `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange');
+INSERT INTO `tgis_map` VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,1,1);
+
+INSERT INTO `tgis_map_connection` VALUES (1,'OpenStreetMap','OSM','{\"type\":\"OSM\",\"url\":\"http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,1);
+
+INSERT INTO `tgis_map_has_tgis_map_connection` VALUES (1,1,'2010-03-01 09:46:48',1);
+
+INSERT INTO `tgis_map_layer` VALUES (1,'Group All',1,0,1,1);
 
 -- -----------------------------------------------------
 -- Modifications of data in order to group All issue fix
@@ -310,3 +310,7 @@ UPDATE tgraph SET id_group = 0 WHERE id_group = 1;
 UPDATE tincidencia SET id_grupo = 0 WHERE id_grupo = 1;
 UPDATE tlayout SET id_group = 0 WHERE id_group = 1;
 UPDATE tplanned_downtime SET id_group = 0 WHERE id_group = 1;
+
+UPDATE tconfig SET `value` = '3.1rc1' WHERE `token` = 'db_scheme_version';
+UPDATE tconfig SET `value` = 'PD100515' WHERE `token` = 'db_scheme_build';
+

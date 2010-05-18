@@ -43,7 +43,7 @@ pandora_upgrade () {
 		DBPASS=`cat $PANDORAPATH/include/config.php | grep dbpass | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`	
 		DBHOST=`cat $PANDORAPATH/include/config.php | grep dbhost | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`
 		DBNAME=`cat $PANDORAPATH/include/config.php | grep dbname | grep -v "^\/" | grep -o "\=\"[a-zA-Z0-9]*\"" | grep -o "[A-Za-z0-9]*"`	
-		cat extras/pandoradb_migrate_v2.x_to_v3.0.sql | mysql -f -u $DBUSER -p$DBPASS -h $DBHOST -D $DBNAME 	
+		cat extras/pandoradb_migrate_v3.0_to_v3.1.sql | mysql -f -u $DBUSER -p$DBPASS -h $DBHOST -D $DBNAME 	
 	fi
 
 	WWWUSER=`ls -la $PANDORAPATH/index.php | awk '{ print $3 }'` 
@@ -106,7 +106,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 2.1 Console Upgrade (c) 2009 Artica ST"
+echo "Pandora FMS 3.1 Console Upgrade (c) 2009-2010 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 

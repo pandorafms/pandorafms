@@ -1,3 +1,18 @@
+2010-05-18  Sancho Lerena <slerena@artica.es>
+
+	* unix/pandora_agent_installer: New version of installer. Now allow
+	to install the agent and all its dependencies, configuration and logfiles 
+	inside a specific directory, for example: /opt/pandora. That directory
+	will contain all data, even the logs. Default configuration file and 
+	launcher daemon script are modified in realtime to have that custom
+	defined directory. Removed "with-links" method.
+
+	* *.conf: Minor modification to use the new method of install in a custom
+	directory.
+
+	* unix/pandora_agent_daemon: Build update and some small modifications
+	to use the custom directory.
+
 2010-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* linux/pandora_agent.conf: Improved the default

@@ -2,11 +2,11 @@
 
 # **********************************************************************
 # Pandora FMS Agent Daemon launcher for Unix (AIX, HP-UX, SunOS, Linux)
-# (c) 2008-2009 Artica ST
-# (c) 2008-2009 Sancho Lerena <slerena@gmail.com>
+# (c) 2008-2010 Artica ST
+# (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
 #
 # Please see http://www.pandorafms.org
-# v3.0 Build 091103
+# v3.1 Build 100515
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -23,12 +23,12 @@
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
-LOGFILE=/var/log/pandora_agent.log
+LOGFILE=/var/log/pandora/pandora_agent.log
 
 # This function replace pidof, not working in the same way in different linux distros
 
 pidof_pandora () {
-	COLUMNS=300
+	COLUMNS=400
 	OS_NAME=`uname -s`
 	if [ $OS_NAME = "HP-UX" ]
 	then

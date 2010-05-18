@@ -48,8 +48,11 @@ if (! isset ($config["id_user"])) {
 	$config["id_user"] = $_SESSION["id_usuario"];
 }
 
-// Session check
-check_login ();
+//Fixed the graph for cron (that it's login)
+if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
+	// Session check
+	check_login ();
+}
 
 /**
  * Show a brief error message in a PNG graph

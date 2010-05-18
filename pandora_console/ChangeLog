@@ -1,3 +1,16 @@
+2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js: added function 
+	"agent_changed_by_multiple_agents_id" for response to change agent in
+	wizard in visual console editor.
+
+	* operation/agentes/ver_agente.php: added response to
+	"get_agent_modules_json_for_multiple_agents_id" for the ajax previous
+	function.
+	
+	* godmode/reporting/visual_console_builder.wizard.php: used new javascript
+	function.
+
 2010-05-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/cs.po

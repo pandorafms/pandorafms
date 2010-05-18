@@ -1,3 +1,12 @@
+2010-05-18  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Update build/version to rc1.
+
+	* extras/pandoradb_migrate_v3.0_to_v3.1.sql: Revised upgrade script.
+	Tested with several 3.0 versions.
+
+	* pandora_console_upgrade: Updated script, tested to work with 3.1
+
 2010-05-18  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/ver_agente.php

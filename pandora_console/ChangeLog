@@ -1,3 +1,9 @@
+2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/fgraph.php: fixed the fgraph when cron get a report in PDF for to
+	send, and this situation the fgraph execute in localhost althought it'snt
+	login.
+
 2010-05-18  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Update build/version to rc1.

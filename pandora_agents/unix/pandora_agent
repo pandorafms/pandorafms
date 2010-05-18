@@ -32,6 +32,47 @@ use File::Copy;
 use constant AGENT_VERSION => '3.1';
 use constant AGENT_BUILD => '100222';
 
+# Commands to retrieve total memory information in kB
+use constant TOTALMEMORY_CMDS => {
+	# command
+	linux => ['cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\''],
+	hpux => ['swapinfo -t | grep memory | awk \'{print $2}\'']
+};
+
+# Commands to retrieve free memory information in kB
+use constant FREEMEMORY_CMDS => {
+	# command
+	linux => ['cat /proc/meminfo  | grep MemFree: | awk \'{ print $2 }\''],
+	solaris => ['vmstat 1 2 | tail -1 | awk \'{ print $5 }\''],
+	hpux => ['swapinfo -t | grep memory | awk \'{print $4}\'']
+};
+
+# Commands to retrieve cpu information
+use constant CPUUSAGE_CMDS => {
+	# command
+	linux => ['vmstat 1 2 | tail -1 | awk \'{ print $13 }\''],
+	solaris => ['vmstat 1 2 | tail -1 | awk \'{ print $21 }\''],
+	hpux => ['vmstat 1 2 | tail -1 | awk \'{ print $16 }\'']
+};
+
+# Commands to retrieve process information
+use constant PROC_CMDS => {
+	# command, command name index, cpu usage index, memory usage index
+	linux => ['ps aux', 10, 2, 5],
+	solaris => ['prstat 1 1 | awk -F/ \'{print $1}\' | sed \'s/% / /g\' | sed \'s/K / /g\'', 9, 8, 2],
+	hpux => ['ps -elf', 15, -1, 9],
+	aix => ['ps aux', 10, 2, 5],
+};
+
+# Commands to retrieve partition information in kB
+use constant PART_CMDS => {
+	# command, mount point index, total index, available index
+	linux => ['df', 5, 1, 3],
+	solaris => ['df -k', 5, 1, 3],
+	hpux => ['df -P', 5, 1, 3],
+	aix => ['df -k', 6, 1, 2]
+};
+	
 # OS and OS version
 my $OS = $^O;
 my $OS_VERSION;
@@ -76,7 +117,6 @@ my %Conf = (
 	'secondary_server_opts' => '',
 	'autotime' => 0,
 	'timezone_offset' => 0
-# Missing: group, 
 );
 
 # Modules
@@ -96,6 +136,16 @@ my $RemoteConfFile;
 
 # Remote md5 file name
 my $RemoteMD5File;
+
+# Process data
+my %Procs = (
+	'__utimestamp__' => 0
+);
+
+# Partition data
+my %Parts = (
+	'__utimestamp__' => 0
+);
 
 ################################################################################
 # Print usage information and exit.
@@ -176,7 +226,8 @@ sub read_config (;$) {
 				'name' => '',
 				'type' => 'generic_data',
 				'description' => '',
-				'exec' => '',
+				'func' => 0,
+				'params' => '',
 				'description' => '',
 				'interval' => 1,
 				'counter' => 0,
@@ -191,7 +242,32 @@ sub read_config (;$) {
 		} elsif ($line =~ /^\s*module_type\s+(\S+)\s*$/) {
 			$module->{'type'} = $1;
 		} elsif ($line =~ /^\s*module_exec\s+(.+)$/) {
-			$module->{'exec'} = $1;
+			$module->{'func'} = \&module_exec;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_cpuusage\s+(.*)$/) {
+			$module->{'func'} = \&module_cpuusage;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freememory\s+(.*)$/) {
+			$module->{'func'} = \&module_freememory;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freepercentmemory\s+(.*)$/) {
+			$module->{'func'} = \&module_freepercentmemory;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*(module_proc|module_service)\s+(.+)$/) {
+			$module->{'func'} = \&module_proc;
+			$module->{'params'} = $2;
+		} elsif ($line =~ /^\s*module_cpuproc\s+(.+)$/) {
+			$module->{'func'} = \&module_cpuproc;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_memproc\s+(.+)$/) {
+			$module->{'func'} = \&module_memproc;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freedisk\s+(.*)$/) {
+			$module->{'func'} = \&module_freedisk;
+			$module->{'params'} = $1;
+		} elsif ($line =~ /^\s*module_freepercentdisk\s+(.*)$/) {
+			$module->{'func'} = \&module_freepercentdisk;
+			$module->{'params'} = $1;
 		} elsif ($line =~ /^\s*module_max\s+(\d+)\s*$/) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(\d+)\s*$/) {
@@ -202,15 +278,17 @@ sub read_config (;$) {
 			# Make the module run the first time
 			$module->{'counter'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
-			next unless ($module->{'name'} ne '') and ($module->{'exec'} ne '');
+			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 			push (@Modules, $module);
 		# Plugin
 		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
 			push (@Plugins, $1);
 		# Configuration token
 		} elsif ($line =~ /^\s*(\S+)\s+(.*)$/) {
+			
 			log_message ('setup', "$1 is $2");
 			$Conf{$1} = $2;
+			
 			# Remove trailing spaces
 			$Conf{$1} =~ s/\s*$//;
 		}
@@ -512,6 +590,272 @@ sub guess_os_version ($) {
 }
 
 ################################################################################
+# Execute the given module.
+################################################################################
+sub exec_module ($) {
+	my $module = shift;
+
+	# Need something to execute
+	return () unless ($module->{'func'} != 0);
+	
+	# Check module interval
+	return undef unless (++($module->{'counter'}) >= $module->{'interval'});
+
+	# Reset module counter
+	$module->{'counter'} = 0;
+
+	# Temporarily disable strict refs
+	no strict 'refs';
+
+	# Run
+	return &{$module->{'func'}}($module);
+}
+
+################################################################################
+# Load process information.
+################################################################################
+sub load_procs () {
+	my $utimestamp = time ();
+
+	# Do we know hoy to get process information in this OS?
+	return unless defined (PROC_CMDS->{$OS});
+
+	# Update at most once every interval
+	return if ($Procs{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
+
+	# Get process information
+	my ($cmd, $cmd_idx, $cpu_idx, $mem_idx) = @{PROC_CMDS->{$OS}};
+	my @procs = `$cmd`;
+	return undef unless ($? eq 0);
+
+	# Discard the header
+	shift (@procs);
+
+	# Parse process information
+	foreach my $proc (@procs) {
+
+		chomp ($proc);		
+		my @proc_info = split (/\s+/, $proc);
+		next unless defined ($proc_info[$cmd_idx]);
+
+		# Process command
+		my $proc_cmd = join (' ', @proc_info[$cmd_idx..$#proc_info]);
+		$Procs{$proc_cmd} = ();
+		
+		# Process CPU usage
+		$Procs{$proc_cmd}{'cpu'} = $proc_info[$cpu_idx] if defined ($proc_info[$cpu_idx]);
+
+		# Process virtual size
+		$Procs{$proc_cmd}{'size'} = $proc_info[$mem_idx] if defined ($proc_info[$mem_idx]);
+	}
+
+	$Procs{'__utimestamp__'} = $utimestamp;
+}
+
+################################################################################
+# Load partition information.
+################################################################################
+sub load_parts () {
+	my $utimestamp = time ();
+
+	# Do we know hoy to get partition information in this OS?
+	return unless defined (PART_CMDS->{$OS});
+
+	# Update at most once every interval
+	return if ($Parts{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
+
+	# Get partition information
+	my ($cmd, $mount_idx, $total_idx, $avail_idx) = @{PART_CMDS->{$OS}};
+	my @parts = `$cmd`;
+	return undef unless ($? eq 0);
+
+	# Discard the header
+	shift (@parts);
+
+	# Parse partition information
+	foreach my $part (@parts) {
+
+		chomp ($part);		
+		my @part_info = split (/\s+/, $part);
+		next unless defined ($part_info[$mount_idx]);
+
+		# Mount point
+		$Parts{$part_info[$mount_idx]} = ();
+		
+		# Total space in kB
+		$Parts{$part_info[$mount_idx]}{'total'} = $part_info[$total_idx] if defined ($part_info[$total_idx]);
+
+		# Available space in kB
+		$Parts{$part_info[$mount_idx]}{'avail'} = $part_info[$avail_idx] if defined ($part_info[$avail_idx]);
+	}
+
+	$Parts{'__utimestamp__'} = $utimestamp;
+}
+
+################################################################################
+# Execute the given command.
+################################################################################
+sub module_exec ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Execute the command
+	my @data = `$module->{'params'} 2> /dev/null`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return @data;
+}
+
+################################################################################
+# Get the status of a process. 1 running, 0 not running.
+################################################################################
+sub module_proc ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_procs ();
+
+	return (1) if defined ($Procs{$module->{'params'}});
+	return (0);
+}
+
+################################################################################
+# Get the CPU usage of a process.
+################################################################################
+sub module_cpuproc ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	return () unless defined ($Procs{$module->{'params'}}) and defined ($Procs{$module->{'params'}}{'cpu'});
+	return ($Procs{$module->{'params'}}{'cpu'});
+}
+
+################################################################################
+# Get the memory usage of a process in Mbytes.
+################################################################################
+sub module_memproc ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_procs ();
+
+	return () unless defined ($Procs{$module->{'params'}}) and defined ($Procs{$module->{'params'}}{'size'});
+	return (sprintf ("%d", $Procs{$module->{'params'}}{'size'} / 1024));
+}
+
+################################################################################
+# Get the free space in a partition in Mbytes.
+################################################################################
+sub module_freedisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $avail = sprintf("%d", $Parts{$module->{'params'}}{'avail'} / 1024);
+	return ($avail);
+}
+
+################################################################################
+# Get the free space in a partition in %.
+################################################################################
+sub module_freepercentdisk ($) {
+	my $module = shift;
+
+	# Check module parameters
+	return () unless ($module->{'params'} ne '');
+
+	# Data collection layer
+	load_parts ();
+
+	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
+	
+	my $availp = sprintf("%d", $Parts{$module->{'params'}}{'avail'} * 100 / $Parts{$module->{'params'}}{'total'});
+	return ($availp);
+}
+
+################################################################################
+# Get the CPU usage %.
+################################################################################
+sub module_cpuusage ($) {
+	my $module = shift;
+
+	# Do we know hoy to get CPU usage in this OS?
+	return unless defined (CPUUSAGE_CMDS->{$OS});
+
+	# Get CPU usage
+	my ($cmd) = @{CPUUSAGE_CMDS->{$OS}};
+	my @data = `$cmd 2> /dev/null`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return ($data[0]);
+}
+
+################################################################################
+# Get the free space in a partition in Mbytes.
+################################################################################
+sub module_freememory ($) {
+	my $module = shift;
+
+	# Do we know hoy to get memory information in this OS?
+	return () unless defined (FREEMEMORY_CMDS->{$OS});
+
+	# Get available memory
+	my ($cmd) = @{FREEMEMORY_CMDS->{$OS}};
+	my @data = `$cmd 2> /dev/null`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	return (sprintf ("%d", $data[0] / 1024));
+}
+
+################################################################################
+# Get the free space in a partition in %.
+################################################################################
+sub module_freepercentmemory ($) {
+	my $module = shift;
+
+	# Do we know hoy to get memory information in this OS?
+	return unless defined (TOTALMEMORY_CMDS->{$OS});
+
+	# Get CPU usage
+	my ($cmd) = @{TOTALMEMORY_CMDS->{$OS}};
+	my @data = `$cmd 2> /dev/null`;
+
+	# Something went wrong or no data
+	return () unless ($? eq 0 && defined ($data[0]));
+
+	# Get total memory in MB
+	my $total = sprintf ("%d", $data[0] / 1024);
+	
+	# Get available memory in MB
+	my ($avail) = module_freememory ($module);
+	return () unless defined ($avail);
+	
+	return sprintf (("%d", $avail * 100 / $total));
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -571,15 +915,9 @@ while (1) {
 	# Execute modules
 	foreach my $module (@Modules) {
 
-		# Check module interval
-		next unless (++$module->{'counter'} >= $module->{'interval'});
-
-		# Reset module counter
-		$module->{'counter'} = 0;
-
 		# Execute the module and generate the XML
-		my @data = `$module->{'exec'} 2> /dev/null`;
-		next unless ($? eq 0 && defined ($data[0]));
+		my @data = exec_module ($module);
+		next unless (defined $data[0]);
 
 		$xml .= "  <module>\n" .
                 "    <name><![CDATA[$module->{'name'}]]></name>\n" .

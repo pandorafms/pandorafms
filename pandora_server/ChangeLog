@@ -1,3 +1,10 @@
+2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/make_deb_package.sh: added cpan parameter for to make module
+	packages or not.
+	
+	* pandora_server.spec: force the location of lib.
+
 2010-05-19  Sergio Martin <sergio.martin@artica.es>
 
 	* util/plugin/snmp_process.pl: Added the SNMP Server 

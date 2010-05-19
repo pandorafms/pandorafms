@@ -28,6 +28,9 @@ use Time::Local;
 use XML::Simple;
 use POSIX qw(setsid strftime);
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;

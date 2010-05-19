@@ -27,6 +27,9 @@ use Thread::Semaphore;
 use IO::Socket::INET;
 use POSIX qw(strftime);
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;

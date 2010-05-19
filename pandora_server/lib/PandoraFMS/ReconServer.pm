@@ -28,6 +28,9 @@ use IO::Socket::INET;
 use NetAddr::IP;
 use POSIX qw(strftime ceil);
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;

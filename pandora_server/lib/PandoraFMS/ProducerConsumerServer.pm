@@ -24,6 +24,9 @@ use threads;
 use threads::shared;
 use Thread::Semaphore;
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::Server;

@@ -8,10 +8,14 @@ use strict;
 use warnings;
 
 use XML::Simple;
-use PandoraFMS::Tools;
 use Data::Dumper;
 use Sys::Hostname;
 use POSIX qw(strftime);
+
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
+use PandoraFMS::Tools;
 
 use constant AGENT_VERSION => '3.1';
 

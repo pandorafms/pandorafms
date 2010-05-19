@@ -20,6 +20,10 @@ package PandoraFMS::Config;
 use warnings;
 use POSIX qw(strftime);
 use Time::Local;
+
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 use PandoraFMS::Core;
@@ -297,14 +301,19 @@ sub pandora_load_config {
 	}
 
 	# Check for file
-	if ( ! -e $archivo_cfg ) {
+	if ( ! -f $archivo_cfg ) {
 		printf "\n [ERROR] Cannot open configuration file at $archivo_cfg. \n";
 		printf "	Please specify a valid Pandora FMS configuration file in command line. \n";
 		print "	Standard configuration file is at /etc/pandora/pandora_server.conf \n";
 		exit 1;
 	}
+
 	# Collect items from config file and put in an array 
-	open (CFG, "< $archivo_cfg");
+	if (! open (CFG, "< $archivo_cfg")) {
+		print "[ERROR] Error opening configuration file $archivo_cfg: $!.\n";
+		exit 1;
+	}
+
 	while (<CFG>){
 		$buffer_line = $_;
 		if ($buffer_line =~ /^[a-zA-Z]/){ # begins with letters

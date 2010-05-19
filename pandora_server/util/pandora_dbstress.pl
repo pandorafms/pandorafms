@@ -33,6 +33,9 @@ use strict;
 use DBI;			# DB interface with MySQL
 use Math::Trig;			# Math functions
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 # Pandora Modules
 use PandoraFMS::Config;
 use PandoraFMS::Tools;

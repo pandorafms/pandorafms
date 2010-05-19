@@ -41,8 +41,8 @@ rm -rf $RPM_BUILD_ROOT
 #export perl_version=`rpm -q --queryformat='%{VERSION}' perl`
 
 # Temporal hack for For SLES 11 only, warning
-export perl_version=5.10.0
-%define perl_version 5.10.0
+#export perl_version=5.10.0
+#%define perl_version 5.10.0
 
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
@@ -54,7 +54,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
-mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
+mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 
 # All binaries go to /usr/bin
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/bin/
@@ -63,7 +63,7 @@ cp -aRf bin/tentacle_server $RPM_BUILD_ROOT/usr/bin/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
-cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/$perl_version/
+cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 cp -aRf AUTHORS COPYING ChangeLog README $RPM_BUILD_ROOT%{prefix}/pandora_server/
 
 cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
@@ -115,7 +115,7 @@ rm -Rf /etc/init.d/tentacle_serverd
 rm -Rf /etc/init.d/pandora_server
 rm -Rf %{prefix}pandora_server
 rm -Rf /var/log/pandora
-rm -Rf /usr/lib/perl5/site_perl/%{perl_version}/PandoraFMS/
+rm -Rf /usr/lib/perl5/PandoraFMS/
 rm -Rf /etc/pandora/pandora_server.conf
 rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
@@ -135,7 +135,7 @@ rm -Rf /etc/logrotate.d/pandora
 /usr/bin/tentacle_server
 
 %defattr(755,pandora,root)
-/usr/lib/perl5/site_perl/%{perl_version}/PandoraFMS/
+/usr/lib/perl5/PandoraFMS/
 %{prefix}/pandora_server
 /var/log/pandora
 

@@ -1,3 +1,8 @@
+2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN, DEBIAN/control, DEBIAN/conffiles, DEBIAN/make_deb_package.sh,
+	DEBIAN/md5sums: added the scripts and conf files for create package.
+
 2010-05-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added a data collection layer and native modules

@@ -21,6 +21,7 @@
 #define	__PANDORA__
 
 #include <list>
+#include <cstdio>
 #include <string>
 
 #undef WINVER

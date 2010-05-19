@@ -22,6 +22,7 @@
 #ifndef	__STRUTILS_H__
 #define	__STRUTILS_H__
 
+#include <cstdio>
 #include <string>
 #include <list>
 

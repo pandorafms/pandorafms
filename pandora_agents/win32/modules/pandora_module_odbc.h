@@ -23,6 +23,7 @@
 #define	__PANDORA_MODULE_ODBC_H__
 
 #include "pandora_module.h"
+#include <memory>
 #include <odbc++/connection.h>
 
 using namespace odbc;

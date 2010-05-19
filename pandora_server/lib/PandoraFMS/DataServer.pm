@@ -276,6 +276,14 @@ sub process_xml_data ($$$$$) {
 	}
 	$AgentSem->up ();
 
+	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
+	# in order to avoid not only events, also possible invalid data coming from agents.
+
+	my $agent_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente WHERE id_agente = ?', $agent_id);
+	if (defined ($agent_disabled) && $agent_disabled == 1){
+		return;
+	}
+
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {
 		if (!defined($parent_agent_name)){
                         $parent_agent_name = "";

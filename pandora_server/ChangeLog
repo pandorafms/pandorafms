@@ -1,3 +1,11 @@
+2010-05-19  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: XML data files coming from a disabled
+	agent are now discarded.
+
+	* util/pandora_manage.pl: Added CLI mode to disable/enable agents from	
+	a given group. This will help admins to implement recurrent downtime periods.
+
 2010-05-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server_upgrade: Fixed a check on pandora_db.pl script in cron.

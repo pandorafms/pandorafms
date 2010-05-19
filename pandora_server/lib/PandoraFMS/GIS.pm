@@ -55,6 +55,9 @@ Exported Functions:
 use strict;
 use warnings;
 
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::DB;
 use PandoraFMS::Tools;
 # TODO:Test if is instaled 

@@ -1,3 +1,15 @@
+2010-05-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm, lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/Server.pm, lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/GIS.pm, lib/PandoraFMS/WMIServer.pm,
+	  lib/PandoraFMS/PluginServer.pm, lib/PandoraFMS/ProducerConsumerServer.pm,
+	  lib/PandoraFMS/PredictionServer.pm, lib/PandoraFMS/Core.pm,
+	  lib/PandoraFMS/ReconServer.pm, lib/PandoraFMS/DataServer.pm,
+	  bin/pandora_server, util/pandora_db.pl, util/gpx2pandora_agent_data.pl,
+	  util/pandora_manage.pl, util/pandora_dbstress.pl: Added the default library path
+	  used by RPM and DEB packages.
+
 2010-05-19  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: XML data files coming from a disabled

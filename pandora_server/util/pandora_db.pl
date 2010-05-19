@@ -21,9 +21,13 @@
 use strict;
 use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
+use POSIX qw(strftime);
+
+# Default lib dir for RPM and DEB packages
+use lib '/usr/lib/perl5';
+
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-use POSIX qw(strftime);
 
 # version: define current version
 my $version = "3.1 PS100310";

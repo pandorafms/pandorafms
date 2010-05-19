@@ -62,6 +62,8 @@ cd ..
 echo "Make a \"temp_package\" temp dir for job."
 mkdir temp_package
 
+if [ $package_pandora -eq 1 ]
+then
 ############################################
 mkdir -p temp_package/usr/bin/
 mkdir -p temp_package/usr/sbin/
@@ -87,8 +89,7 @@ cp -aRf util/pandora_server temp_package/etc/init.d/
 cp -aRf util/tentacle_serverd temp_package/etc/init.d/
 ############################################
 
-if [ $package_pandora -eq 1 ]
-then
+
 	#~ echo "Make the fake tree system in \"temp_package\"."
 	#~ mkdir -p temp_package/var/spool/pandora/data_in/conf
 	#~ mkdir -p temp_package/var/spool/pandora/data_in/md5

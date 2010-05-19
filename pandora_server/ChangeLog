@@ -1,5 +1,9 @@
 2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/make_deb_package.sh: cleaned the source code.
+
+2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* DEBIAN/conffiles: added the conffiles to tell to package maker that its
 	the conf file.
 	

@@ -18,7 +18,7 @@ use PandoraFMS::DB;
 use POSIX qw(strftime);
 
 # version: define current version
-my $version = "3.1 PS100321";
+my $version = "3.1 PS100519";
 
 # Pandora server configuration
 my %conf;
@@ -97,6 +97,32 @@ sub pandora_disable_eacl ($$$) {
     exit;
 }
 
+# Disable a entire group
+###############################################################################
+sub pandora_disable_group ($$$$) {
+        my ($conf, $dbh, $mode, $group) = @_;
+
+	
+    if ($mode == 0){ # Disable
+        print "[INFO] Disabling group $group\n\n";
+	if ($group == 1){
+		db_do ($dbh, "UPDATE tagente SET disabled = 1");
+	}
+	else {
+		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
+	}
+    } else {
+        print "[INFO] Enabling group $group\n\n";
+        if ($group == 1){
+                db_do ($dbh, "UPDATE tagente SET disabled = 0");
+        }
+        else {  
+                db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+        }
+    }
+    exit;
+}
+
 
 ##############################################################################
 # Read external configuration file.
@@ -136,8 +162,8 @@ sub pandora_init ($) {
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
-    
-    $conf->{'_pandora_path'} = $ARGV[0];
+   
+        $conf->{'_pandora_path'} = $ARGV[0];
 
 	help_screen () if ($conf->{'_pandora_path'} eq '');
 }
@@ -147,13 +173,15 @@ sub pandora_init ($) {
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	print "Usage: $0 <path to pandora_server.conf> [options] \n";
+	print "Usage: $0 <path to pandora_server.conf> [options] \n\n";
 	print "Available options:\n\n";
 	print "\t--disable_alerts      Disable alerts in all groups.\n";
 	print "\t--enable_alerts       Enable alerts in all groups\n";
 	print "\t--disable_eacl        Disable enterprise ACL system\n";
 	print "\t--enable_eacl         Enable enterprise ACL system\n";
-    print "\n";
+        print "\t--disable_group <id>  Disable agents from an entire group (Use group 1 for all)\n";
+        print "\t--enable_group <id>   Enable agents from an entire group (1 for all) \n";
+        print "\n";
 	exit;
 }
 
@@ -163,24 +191,42 @@ sub help_screen{
 sub pandora_manage_main ($$$) {
 	my ($conf, $dbh, $history_dbh) = @_;
 
-	# If there are not valid parameters
-	foreach my $param (@ARGV) {
-		
+	my @args = @ARGV;
+ 	my $param;
+ 	my $ltotal=$#args; 
+	my $ax;
+
+ 	# Has read setup file ok ?
+ 	if ( $ltotal == 0 ) {
+		print "[ERROR] No valid arguments";
+		help_screen();
+		exit;
+ 	}
+ 
+ 	for ($ax=0;$ax<=$ltotal;$ax++){
+		$param = $args[$ax];
+
 		# help!
 		help_screen () if ($param =~ m/--*h\w*\z/i );
 
 		if ($param =~ m/--disable_alerts\z/i) {
-            pandora_disable_alerts ($conf, $dbh, 0);
-        }
+	            pandora_disable_alerts ($conf, $dbh, 0);
+	        }
 		elsif ($param =~ m/--enable_alerts\z/i) {
-            pandora_disable_alerts ($conf, $dbh, 1);
+	            pandora_disable_alerts ($conf, $dbh, 1);
 		} 
 		elsif ($param =~ m/--disable_eacl\z/i) {
-            pandora_disable_eacl ($conf, $dbh, 0);
+	            pandora_disable_eacl ($conf, $dbh, 0);
 		} 
 		elsif ($param =~ m/--enable_eacl\z/i) {
-            pandora_disable_eacl ($conf, $dbh, 1);
+                    pandora_disable_eacl ($conf, $dbh, 1);
 		} 
+                elsif ($param =~ m/--disable_group/i) {
+			pandora_disable_group ($conf, $dbh, 0, $args[$ax+1]);
+		}
+		elsif ($param =~ m/--enable_group/i) {
+                        pandora_disable_group ($conf, $dbh, 1, $args[$ax+1]);
+		}
 	}
 
      print "[W] Nothing to do. Exiting !\n\n";

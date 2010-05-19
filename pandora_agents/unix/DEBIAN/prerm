@@ -8,5 +8,5 @@ PANDORA_CFG=/etc/pandora
 rm -rf $PANDORA_CFG/plugins
 rm -rf $PANDORA_CFG/pandora_agent.conf
 
-INITLV=`cat /etc/inittab | grep "[0-9]\:initdefault" | cut -f 2 -d ":"`
-rm /etc/rc$INITLV.d/S90pandora_agent_daemon
+update-rc.d -f pandora_agent_daemon remove
+

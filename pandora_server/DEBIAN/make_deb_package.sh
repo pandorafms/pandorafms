@@ -62,48 +62,73 @@ cd ..
 echo "Make a \"temp_package\" temp dir for job."
 mkdir temp_package
 
+############################################
+mkdir -p temp_package/usr/bin/
+mkdir -p temp_package/usr/sbin/
+mkdir -p temp_package/etc/init.d/
+mkdir -p temp_package/etc/pandora/
+mkdir -p temp_package/var/spool/pandora/data_in
+mkdir -p temp_package/var/spool/pandora/data_in/conf
+mkdir -p temp_package/var/spool/pandora/data_in/md5
+mkdir -p temp_package/var/log/pandora/
+mkdir -p temp_package/usr/share/pandora_server/conf/
+mkdir -p temp_package/usr/lib/perl5/
+
+cp -aRf bin/pandora_server temp_package/usr/bin/
+cp -aRf bin/pandora_exec temp_package/usr/bin/
+cp -aRf bin/tentacle_server temp_package/usr/bin/
+
+cp -aRf conf/* temp_package/pandora_server/conf/
+cp -aRf util temp_package/usr/share/pandora_server/
+cp -aRf lib/* temp_package/usr/lib/perl5/
+cp -aRf AUTHORS COPYING ChangeLog README temp_package/usr/share/pandora_server/
+
+cp -aRf util/pandora_server temp_package/etc/init.d/
+cp -aRf util/tentacle_serverd temp_package/etc/init.d/
+############################################
+
 if [ $package_pandora -eq 1 ]
 then
-	echo "Make the fake tree system in \"temp_package\"."
-	mkdir -p temp_package/var/spool/pandora/data_in/conf
-	mkdir -p temp_package/var/spool/pandora/data_in/md5
-	mkdir -p temp_package/var/log/pandora
-	mkdir -p temp_package/etc/pandora
-	mkdir -p temp_package/etc/init.d/
-	mkdir -p temp_package/etc/logrotate.d
-	mkdir -p temp_package/usr/share/pandora_server
-	mkdir -p temp_package/usr/bin
-
-	echo "Make the perl of Pandora Server."
-	perl Makefile.PL
-	make
-
-	# Adjust Makefile to use our "fake" root dir to install libraries and also binaries"
-	cat Makefile | sed -e "s/PREFIX = \/usr/PREFIX = temp_package\/usr/" > Makefile.temp
-
-	# This is needed to create .DEB in OpenSUSE.
-
-	cat Makefile.temp | sed -e "s/INSTALLBIN = .*/INSTALLBIN = temp_package\/usr\/bin/" > Makefile
-	cat Makefile | sed -e "s/INSTALLSITEBIN = .*/INSTALLSITEBIN = temp_package\/usr\/bin/" > Makefile.temp
-	cat Makefile.temp | sed -e "s/INSTALLVENDORBIN = .*/INSTALLVENDORBIN = temp_package\/usr\/bin/" > Makefile
-	cat Makefile | sed -e "s/INSTALLSCRIPT = .*/INSTALLSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
-	cat Makefile.temp | sed -e "s/INSTALLSITESCRIPT = .*/INSTALLSITESCRIPT = temp_package\/usr\/bin/" > Makefile
-	cat Makefile | sed -e "s/INSTALLVENDORSCRIPT = .*/INSTALLVENDORSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
-
-	mv Makefile.temp Makefile
-	make install
-
-	echo "Copy other files in fake file."
-	cp util/pandora_logrotate temp_package/etc/logrotate.d/pandora
-
-	cp bin/tentacle_server temp_package/usr/bin
-	cp util/tentacle_serverd temp_package/etc/init.d/tentacle_serverd
-
-	cp conf/pandora_server.conf temp_package/etc/pandora/
-	cp util/pandora_server temp_package/etc/init.d/
-
-	cp -R util temp_package/usr/share/pandora_server
-	cp -R DEBIAN temp_package/
+	#~ echo "Make the fake tree system in \"temp_package\"."
+	#~ mkdir -p temp_package/var/spool/pandora/data_in/conf
+	#~ mkdir -p temp_package/var/spool/pandora/data_in/md5
+	#~ mkdir -p temp_package/var/log/pandora
+	#~ mkdir -p temp_package/etc/pandora
+	#~ mkdir -p temp_package/etc/init.d/
+	#~ mkdir -p temp_package/etc/logrotate.d
+	#~ mkdir -p temp_package/usr/share/pandora_server
+	#~ mkdir -p temp_package/usr/bin
+#~ 
+	#~ echo "Make the perl of Pandora Server."
+	#~ perl Makefile.PL
+	#~ make
+#~ 
+	#~ # Adjust Makefile to use our "fake" root dir to install libraries and also binaries"
+	#~ cat Makefile | sed -e "s/PREFIX = \/usr/PREFIX = temp_package\/usr/" > Makefile.temp
+#~ 
+	#~ # This is needed to create .DEB in OpenSUSE.
+#~ 
+	#~ cat Makefile.temp | sed -e "s/INSTALLBIN = .*/INSTALLBIN = temp_package\/usr\/bin/" > Makefile
+	#~ cat Makefile | sed -e "s/INSTALLSITEBIN = .*/INSTALLSITEBIN = temp_package\/usr\/bin/" > Makefile.temp
+	#~ cat Makefile.temp | sed -e "s/INSTALLVENDORBIN = .*/INSTALLVENDORBIN = temp_package\/usr\/bin/" > Makefile
+	#~ cat Makefile | sed -e "s/INSTALLSCRIPT = .*/INSTALLSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
+	#~ cat Makefile.temp | sed -e "s/INSTALLSITESCRIPT = .*/INSTALLSITESCRIPT = temp_package\/usr\/bin/" > Makefile
+	#~ cat Makefile | sed -e "s/INSTALLVENDORSCRIPT = .*/INSTALLVENDORSCRIPT = temp_package\/usr\/bin/" > Makefile.temp
+#~ 
+	#~ mv Makefile.temp Makefile
+	#~ make install
+#~ 
+	#~ echo "Copy other files in fake file."
+	#~ cp util/pandora_logrotate temp_package/etc/logrotate.d/pandora
+#~ 
+	#~ cp bin/tentacle_server temp_package/usr/bin
+	#~ cp util/tentacle_serverd temp_package/etc/init.d/tentacle_serverd
+#~ 
+	#~ cp conf/pandora_server.conf temp_package/etc/pandora/
+	#~ cp util/pandora_server temp_package/etc/init.d/
+#~ 
+	#~ cp -R util temp_package/usr/share/pandora_server
+	#~ cp -R DEBIAN temp_package/
 
 	echo "Remove the SVN files and other temp files."
 	for item in `find temp_package`

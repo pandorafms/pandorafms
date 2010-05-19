@@ -1,5 +1,10 @@
 2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/make_deb_package.sh: added parameter to make only packages of
+	pear modules or not.
+
+2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: fixed the fgraph when cron get a report in PDF for to
 	send, and this situation the fgraph execute in localhost althought it'snt
 	login.

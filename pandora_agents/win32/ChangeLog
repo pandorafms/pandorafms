@@ -1,3 +1,12 @@
+2010-05-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_strutils.h, modules/pandora_module_odbc.h,
+	  modules/pandora_data.h, build.sh, pandora.h,
+	  udp_server/udp_server.h, Makefile.am: Small fixes so the agent
+	  builds under newer versions of MinGW.
+	
+	* installer/pandora.mpi: Updated build.
+
 2010-05-13  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Check the return codee of the tentacle

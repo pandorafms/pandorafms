@@ -22,6 +22,7 @@
 #ifndef	__PANDORA_DATA_H__
 #define	__PANDORA_DATA_H__
 
+#include <cstdio>
 #include <string>
 #include <windows.h>
 

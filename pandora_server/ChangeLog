@@ -1,5 +1,13 @@
 2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/conffiles: added the conffiles to tell to package maker that its
+	the conf file.
+	
+	* DEBIAN/make_deb_package.sh: changed the script to try to be similar to
+	spec RPM (set the location of perl libs). 
+
+2010-05-19  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* DEBIAN/make_deb_package.sh: added cpan parameter for to make module
 	packages or not.
 	

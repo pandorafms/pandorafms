@@ -88,7 +88,7 @@ echo '<form class="add_alert_form" method="post">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Add'), 'add', false, 'class="sub next"');
+print_submit_button (__('Add'), 'add', false, 'class="sub wand"');
 print_input_hidden ('create_alert', 1);
 echo '</div></form>';
 

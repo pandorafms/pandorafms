@@ -1,3 +1,13 @@
+2010-05-20 Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/alerts/alert_list.php: Added code to show different
+	header depending on GET parameter.
+
+	* godmode/alerts/alert_list_builder.php: Changed final icon.
+
+	* godmode/agentes/planned_downtime.php: Center some icons. Now table
+	header is shown only if there are planned downtimes.
+
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control, DEBIAN/make_deb_package.sh,

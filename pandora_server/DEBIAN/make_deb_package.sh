@@ -69,6 +69,7 @@ mkdir -p temp_package/usr/bin/
 mkdir -p temp_package/usr/sbin/
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/etc/pandora/
+touch temp_package/etc/pandora/pandora_server.conf
 mkdir -p temp_package/var/spool/pandora/data_in
 mkdir -p temp_package/var/spool/pandora/data_in/conf
 mkdir -p temp_package/var/spool/pandora/data_in/md5
@@ -129,8 +130,9 @@ cp -aRf util/tentacle_serverd temp_package/etc/init.d/
 	#~ cp util/pandora_server temp_package/etc/init.d/
 #~ 
 	#~ cp -R util temp_package/usr/share/pandora_server
-	#~ cp -R DEBIAN temp_package/
-
+	cp -R DEBIAN temp_package/
+	chmod 777 -R temp_package/DEBIAN
+	
 	echo "Remove the SVN files and other temp files."
 	for item in `find temp_package`
 	do
@@ -150,6 +152,10 @@ cp -aRf util/tentacle_serverd temp_package/etc/init.d/
 		fi
 	done
 	echo "END"
+	
+	echo "  "
+	pwd
+	echo "  "
 
 	echo "Calcule md5sum for md5sums file control of package."
 	for item in `find temp_package`

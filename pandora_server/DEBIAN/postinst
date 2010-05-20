@@ -68,6 +68,7 @@ chown -R pandora /var/spool/pandora/
 echo "Creating setup directory in /etc/pandora"
 mkdir /etc/pandora 2> /dev/null
 
+ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/
 chmod 770 /etc/pandora/pandora_server.conf
 
 echo "Linking startup script to /etc/rc2.d"

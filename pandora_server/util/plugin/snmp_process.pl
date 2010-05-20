@@ -1,7 +1,8 @@
 #!/usr/bin/perl
 ##################################################################################
-# SNMP Plugin for Pandora FMS 2.0
+# SNMP Plugin for Pandora FMS
 # (c) Sergio Martin 2010, sergio.martin@artica.es
+# (c) 2010 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,9 +30,12 @@ use Getopt::Std;
 # This function show a brief doc.
 # ------------------------------------------------------------------------------------------
 sub help {
-    print "SNMP Plugin for Pandora FMS 2.0, (c) Sancho Lerena 2008 \n";
+    print "SNMP Plugin for Pandora FMS (c) Artica ST 2008-2010 \n";
     print "Syntax: \n\n";
-    print "\t -i <device_ip>\n\t -c <password/snmp_community>\n\t -p <process name>\n\t -t <query type: status/cpu/mem>\n\t -q\n";
+    print "\t -i <device_ip>\n\t -c <password/snmp_community>\n\t -p <process name>\n\t -t <query type: status/cpu/mem>\n\n";
+    print "\tCPU must be defined as generic_data_inc type \n";
+    print "\tMEM must be defined as generic_data type \n";
+    print "\tStatus must be defined as generic_proc type \n";
     print "\n";
 }
 
@@ -93,7 +97,9 @@ sub config {
     }
 
     if ($cfg_remote_host eq ""){
-        error ("You need to define remote host to use this plugin");
+        print "You need to define remote host to use this plugin";
+        help();
+        exit;
     }
     
 	my $snmpoid_execution = "snmpwalk -Os -c $cfg_password -v 1 $cfg_remote_host hrSWRunName | grep $cfg_process | awk '{print \$1}' | awk -F. '{print \$2}' | tail -1";
@@ -153,16 +159,13 @@ sub get_memory {
     eval { 
         my $snmpmemory_execution = "snmpwalk -Os -c $cfg_password -v 1 $cfg_remote_host hrSWRunPerfMem.$OID 2>/dev/null | awk '{print \$4}'";
 		
-		my $snmpunits_execution = "snmpwalk -Os -c $cfg_password -v 1 $cfg_remote_host hrSWRunPerfMem.$OID 2>/dev/null | awk '{print \$5}'";
-
 		my $mem = `$snmpmemory_execution`;
-		my $units = `$snmpunits_execution`;
 		
 		chomp($mem);
-		$output = $mem.' '.$units;
+		$output = $mem;
 		
 		if($output eq " ") {
-			$output = "0 KBytes\n";
+			$output = "0\n";
 		}
     };
     return $output;

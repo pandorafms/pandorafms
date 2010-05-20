@@ -36,6 +36,7 @@ use constant AGENT_BUILD => '100222';
 use constant TOTALMEMORY_CMDS => {
 	# command
 	linux => ['cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\''],
+	solaris => ['MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\''],
 	hpux => ['swapinfo -t | grep memory | awk \'{print $2}\'']
 };
 
@@ -59,7 +60,7 @@ use constant CPUUSAGE_CMDS => {
 use constant PROC_CMDS => {
 	# command, command name index, cpu usage index, memory usage index
 	linux => ['ps aux', 10, 2, 5],
-	solaris => ['prstat 1 1 | awk -F/ \'{print $1}\' | sed \'s/% / /g\' | sed \'s/K / /g\'', 9, 8, 2],
+	solaris => ['prstat 1 1 | awk -F/ \'{print $1}\' | sed \'s/% / /g\' | sed \'s/K / /g\'', 10, 9, 3],
 	hpux => ['ps -elf', 15, -1, 9],
 	aix => ['ps aux', 10, 2, 5],
 };
@@ -70,7 +71,7 @@ use constant PART_CMDS => {
 	linux => ['df', 5, 1, 3],
 	solaris => ['df -k', 5, 1, 3],
 	hpux => ['df -P', 5, 1, 3],
-	aix => ['df -k', 6, 1, 2]
+	aix => ['df -kP', 5, 1, 3]
 };
 	
 # OS and OS version

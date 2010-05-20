@@ -2,11 +2,11 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version	    3.0.0
+%define version     3.1rc1
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
 Version:            %{version}
-Release:            2
+Release:            1
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
@@ -43,7 +43,7 @@ mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
 
 # Checking old config file (if exists)
 if [ -f /etc/pandora/pandora_agent.conf ] ; then

@@ -188,7 +188,7 @@ install () {
 	chmod 755 $PANDORA_BASE$TENTACLE
 
 	echo "Installing Tentacle Client manual"
-    if [ -e ../man/man1/tentacle_client.1.gz ]
+    if [ -f ../man/man1/tentacle_client.1.gz ]
     then 
     	cp ../man/man1/tentacle_client.1.gz $PANDORA_BASE/usr/share/man/man1
     else

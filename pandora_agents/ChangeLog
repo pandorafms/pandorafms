@@ -1,5 +1,10 @@
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* unix/DEBIAN/control, unix/DEBIAN/make_deb_package.sh: Renamed
+	  deb package.
+
+2010-05-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* unix/pandora_agent: Updated agent version.
 
 2010-05-20  Sergio Martin <sergio.martin@artica.es>

@@ -1,4 +1,4 @@
-package: PandoraFMS-Agent
+package: PandoraFMS-Agent-Unix
 Version: 3.1rc1
 Architecture: all
 Priority: optional

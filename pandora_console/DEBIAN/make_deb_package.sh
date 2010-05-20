@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.1.0"
+pandora_version="3.1rc1"
 
 package_pear=1
 package_pandora=1
@@ -94,7 +94,7 @@ then
 	cp -R DEBIAN temp_package
 	find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
 	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
-	chmod 777 -R temp_package/DEBIAN
+	chmod 755 -R temp_package/DEBIAN
 
 	echo "Calculate md5sum for md5sums package control file."
 	for item in `find temp_package`
@@ -118,7 +118,7 @@ then
 
 	echo "Make the package \"Pandorafms console\"."
 	dpkg-deb --build temp_package
-	mv temp_package.deb pandorafms.console_$pandora_console_version.deb
+	mv temp_package.deb pandorafms.console_$pandora_version.deb
 fi
 
 if [ $package_pear -eq 1 ]
@@ -137,4 +137,4 @@ fi
 echo "Delete the \"temp_package\" temporary dir for job."
 rm -Rf temp_package
 
-echo "DONE: Package ready at: ../pandorafms.console_$pandora_console_version.deb"
+echo "DONE: Package ready at: ../pandorafms.console_$pandora_version.deb"

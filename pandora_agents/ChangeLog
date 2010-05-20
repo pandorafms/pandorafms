@@ -1,3 +1,8 @@
+2010-05-20  Sergio Martin <sergio.martin@artica.es>
+
+	* unix/Linux/pandora_agent.conf: Improved the
+	agent modules memused and proctotal
+
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/pandora_agent_installer, unix/DEBIAN/control,

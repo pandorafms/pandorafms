@@ -94,6 +94,7 @@ then
 	cp -R DEBIAN temp_package
 	find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
 	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
+	chmod 777 -R temp_package/DEBIAN
 
 	echo "Calculate md5sum for md5sums package control file."
 	for item in `find temp_package`

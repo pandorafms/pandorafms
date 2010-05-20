@@ -1,5 +1,5 @@
 package: PandoraFMS-Server
-Version: 3.0.0
+Version: 3.1rc1
 Architecture: all
 Priority: optional
 Section: admin

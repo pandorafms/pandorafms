@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_console_version="3.1.0"
+pandora_version="3.1rc1"
 
 package_cpan=1
 package_pandora=1
@@ -81,13 +81,17 @@ cp -aRf bin/pandora_server temp_package/usr/bin/
 cp -aRf bin/pandora_exec temp_package/usr/bin/
 cp -aRf bin/tentacle_server temp_package/usr/bin/
 
-cp -aRf conf/* temp_package/pandora_server/conf/
+cp -aRf conf/* temp_package/usr/share/pandora_server/conf/
 cp -aRf util temp_package/usr/share/pandora_server/
 cp -aRf lib/* temp_package/usr/lib/perl5/
 cp -aRf AUTHORS COPYING ChangeLog README temp_package/usr/share/pandora_server/
 
 cp -aRf util/pandora_server temp_package/etc/init.d/
 cp -aRf util/tentacle_serverd temp_package/etc/init.d/
+
+rm -f temp_package/usr/share/pandora_server/util/PandoraFMS
+rm -f temp_package/usr/share/pandora_server/bin/PandoraFMS
+
 ############################################
 
 
@@ -131,7 +135,7 @@ cp -aRf util/tentacle_serverd temp_package/etc/init.d/
 #~ 
 	#~ cp -R util temp_package/usr/share/pandora_server
 	cp -R DEBIAN temp_package/
-	chmod 777 -R temp_package/DEBIAN
+	chmod 755 -R temp_package/DEBIAN
 	
 	echo "Remove the SVN files and other temp files."
 	for item in `find temp_package`
@@ -180,8 +184,8 @@ cp -aRf util/tentacle_serverd temp_package/etc/init.d/
 
 	echo "Make the package \"Pandorafms server\"."
 	dpkg-deb --build temp_package
-	mv temp_package.deb pandorafms.server_$pandora_console_version.deb
-	chmod 777 pandorafms.server_$pandora_console_version.deb
+	mv temp_package.deb pandorafms.server_$pandora_version.deb
+	chmod 777 pandorafms.server_$pandora_version.deb
 fi
 
 if [ $package_cpan -eq 1 ]
@@ -202,4 +206,4 @@ then
 fi
 
 echo "Delete the \"temp_package\" temp dir for job."
-#rm -rf temp_package
+rm -rf temp_package

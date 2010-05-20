@@ -1,3 +1,7 @@
+2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/make_deb_package.sh: fixed the permissions to DEBIAN temp package. 
+	
 2010-05-20  Sancho Lerena <slerena@artica.es>
 
 	* util/plugins/snmp_process.pl: Some small modifications and fixes for 

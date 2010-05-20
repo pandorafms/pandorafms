@@ -219,26 +219,25 @@ if ($create_downtime || $update_downtime) {
 		
 		//Start Overview of existing planned downtime
 		echo '<h3>'.__('Agents planned for this downtime').':</h3>';
-		$table->class = 'databox';
-		$table->width = '80%';
-		$table->data = array ();
-		$table->head = array ();
-		$table->head[0] = __('Name');
-		$table->head[1] = __('Group');
-		$table->head[2] = __('OS');
-		$table->head[3] = __('Last contact');
-		$table->head[4] = __('Remove');
 		
 		$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id, tagente.id_os, tagente.id_agente, tagente.id_grupo, tagente.ultimo_contacto FROM tagente, tplanned_downtime_agents WHERE tplanned_downtime_agents.id_agent = tagente.id_agente AND tplanned_downtime_agents.id_downtime = %d ",$id_downtime);
 		
 		$downtimes = get_db_all_rows_sql ($sql);
 		if ($downtimes === false) {
-			$table->colspan[0][0] = 5;
-			$table->data[0][0] = __('There are no scheduled downtimes');
-			$downtimes = array();
-		}
+			echo '<div class="nf">'. __('There are no scheduled downtimes').'</div>';
+		} else {
+			$table->class = 'databox';
+			$table->width = '80%';
+			$table->data = array ();
+			$table->head = array ();
+			$table->head[0] = __('Name');
+			$table->head[1] = __('Group');
+			$table->head[2] = __('OS');
+			$table->head[3] = __('Last contact');
+			$table->head[4] = __('Remove');
+			$table->align[4] = "center";;
 		
-		foreach ($downtimes as $downtime) {
+			foreach ($downtimes as $downtime) {
 			$data = array ();
 			
 			$data[0] = $downtime['nombre'];
@@ -257,7 +256,8 @@ if ($create_downtime || $update_downtime) {
 			
 			array_push ($table->data, $data);
 		}
-		print_table ($table);
+			print_table ($table);
+		}
 	}
 } else {
 
@@ -275,6 +275,10 @@ if ($create_downtime || $update_downtime) {
 		$table->head[5] = __('Delete');
 		$table->head[6] = __('Update');
 		$table->head[7] = __('Running');
+		$table->align[2] = "center";		
+		$table->align[5] = "center";
+		$table->align[6] = "center";
+		$table->align[7] = "center";
 
 		$sql = "SELECT * FROM tplanned_downtime WHERE id_group IN (" . implode (",", array_keys ($groups)) . ")";
 		$downtimes = get_db_all_rows_sql ($sql);

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -148,10 +148,15 @@ echo '</div></form>';
 
 echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 
-$table->width = 500;
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->class = "databox";
+$table->width = '50%';
+$table->data = array ();
+$table->head = array ();
+$table->align = array ();
+$table->style = array ();
+$table->style[0] = 'font-weight: bold';
+$table->style[1] = 'font-weight: bold';
+$table->head[0] = __('Profile name');
+$table->head[1] = __('Group name');
 
 $table->data = array ();
 

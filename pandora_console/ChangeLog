@@ -1,3 +1,11 @@
+2010-05-20 Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/users/user_edit.php: Updated year. Use better table in group
+	list.
+
+	* godmode/snmp_console/snmp_alert.php: Updated year. Removed old header.
+	Added code to show different header depending on GET parameter.
+
 2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh: fixed the permissions to DEBIAN temp package. 

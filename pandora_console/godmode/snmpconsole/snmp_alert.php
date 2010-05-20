@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -23,25 +23,15 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	return;
 }
 
-// Alert Delete
-// =============
-if (isset ($_GET["delete_alert"])) { // Delete alert
-	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
-	$sql = sprintf ("DELETE FROM talert_snmp WHERE id_as = %d", $alert_delete);
-	$result = process_sql ($sql);
-	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
-	} else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-	}
-}
-
 // Form submitted
 // =============
-if (isset ($_GET["submit"])) {
 
+if (isset ($_GET["update_alert"]) && $_GET["update_alert"] == "-1") {
+	print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'), "images/computer_error.png", false, "", true);
+} else if (isset ($_GET["update_alert"]) && $_GET["update_alert"] != "-1") {
 	print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "", true);
-
+} else if (isset ($_GET["submit"])) {
+	print_page_header (__('SNMP Console')." &raquo; ".__('Update alert'), "images/computer_error.png", false, "", true);
 	$id_as = (int) get_parameter_get ("submit", -1);
 	$source_ip = (string) get_parameter_post ("source_ip");
 	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
@@ -92,9 +82,10 @@ if (isset ($_GET["submit"])) {
 			echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		}
 	}
-} else
 
-	print_page_header (__('SNMP Console')." &raquo; ".__('Create alert'), "images/computer_error.png", false, "", true);
+} else {
+	print_page_header (__('SNMP Console')." &raquo; ".__('Alert overview'), "images/computer_error.png", false, "", true);
+}
 
 // From variable init
 // ==================
@@ -133,7 +124,18 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 
 // Header
 
-
+// Alert Delete
+// =============
+if (isset ($_GET["delete_alert"])) { // Delete alert
+	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
+	$sql = sprintf ("DELETE FROM talert_snmp WHERE id_as = %d", $alert_delete);
+	$result = process_sql ($sql);
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+	}
+}
 
 // Alert form
 if (isset ($_GET["update_alert"])) {
@@ -237,7 +239,6 @@ if (isset ($_GET["update_alert"])) {
 	// End table
 	echo "</td></tr></table>";
 } else {
-	echo "<h2>".__('SNMP Console')." &raquo; ".__('Alert overview')."</h2>";
 	
 	require_once ('include/functions_alerts.php');
 	

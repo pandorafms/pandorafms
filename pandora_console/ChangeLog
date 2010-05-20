@@ -1,3 +1,7 @@
+2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/make_deb_package.sh: fixed the permissions to DEBIAN temp package. 
+	
 2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh: added parameter to make only packages of

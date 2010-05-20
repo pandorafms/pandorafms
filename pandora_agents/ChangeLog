@@ -1,3 +1,10 @@
+2010-05-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/pandora_agent_installer, unix/DEBIAN/control,
+	  unix/DEBIAN/make_deb_package.sh, unix/pandora_agent.spec,
+	  unix/pandora_agent, linux/DEBIAN/make_deb_package.sh,
+	  linux/pandora_agent.spec: Updated for the release of Pandora FMS 3.1 RC1.
+
 2010-05-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh: fixed the permissions to DEBIAN temp package. 

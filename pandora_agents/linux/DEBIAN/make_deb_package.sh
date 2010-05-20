@@ -38,7 +38,7 @@ mkdir -p temp_package/usr/bin
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
-chmod 777 -R temp_package/DEBIAN
+chmod 755 -R temp_package/DEBIAN
 
 PANDORA_LOG=temp_package/var/log/pandora/pandora_agent.log
 PANDORA_BIN=temp_package/usr/bin/pandora_agent

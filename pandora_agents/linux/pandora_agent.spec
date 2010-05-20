@@ -2,11 +2,11 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent
-%define version	    3.0.0
+%define version	    3.1rc1
 Summary:            Pandora FMS Linux agent
 Name:               %{name}
 Version:            %{version}
-Release:            4
+Release:            1
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz

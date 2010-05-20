@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_agent_version="3.1.0"
+pandora_version="3.1rc1"
 
 echo "Test if you has the tools for to make the packages."
 whereis dpkg-deb | cut -d":" -f2 | grep dpkg-deb > /dev/null
@@ -38,7 +38,7 @@ mkdir -p temp_package/usr/bin
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
-chmod 777 -R temp_package/DEBIAN
+chmod 755 -R temp_package/DEBIAN
 
 PANDORA_LOG=temp_package/var/log/pandora/pandora_agent.log
 PANDORA_BIN=temp_package/usr/bin/pandora_agent
@@ -119,7 +119,7 @@ echo "END"
 
 echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
-mv temp_package.deb pandorafms.agent_$pandora_agent_version.deb
+mv temp_package.deb pandorafms.agent_$pandora_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

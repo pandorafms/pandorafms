@@ -134,7 +134,7 @@ echo "END"
 
 echo "Make the package \"Pandorafms console\"."
 dpkg-deb --build temp_package
-mv temp_package.deb pandorafms.agent_$pandora_version.deb
+mv temp_package.deb pandorafms.agent_unix_$pandora_version.deb
 
 echo "Delete the \"temp_package\" temp dir for job."
 rm -rf temp_package

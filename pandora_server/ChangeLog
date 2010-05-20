@@ -1,5 +1,9 @@
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_server.spec: Removed unneeded symlinks.
+
+2010-05-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* DEBIAN/control, DEBIAN/make_deb_package.sh,
 	  pandora_server.spec: Updated for the release of Pandora FMS 3.1 RC1.
 

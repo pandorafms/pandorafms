@@ -69,6 +69,8 @@ cp -aRf AUTHORS COPYING ChangeLog README $RPM_BUILD_ROOT%{prefix}/pandora_server
 cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 
+rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
+
 %clean
 rm -fr $RPM_BUILD_ROOT
 

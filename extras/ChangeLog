@@ -1,3 +1,10 @@
+2010-05-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh, build_deb.sh, build_rpm.sh: Added to repository. 
+	  Sancho's newest build scripts.
+	
+	* build_rpm_packages.sh: Removed from repository. Old build script.
+
 2009-12-18 Sancho lerena <slerena@gmail.com>
 
 	* extras/aditional_rpmspec/xprobe2-0.3.spec: Updated to make it

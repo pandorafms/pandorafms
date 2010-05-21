@@ -1,3 +1,7 @@
+2010-05-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh: Get the right version for the keygen.
+
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_src.sh, build_deb.sh, build_rpm.sh: Added to repository. 

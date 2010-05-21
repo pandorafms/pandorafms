@@ -68,7 +68,13 @@ echo '<div width="450px">';
 echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
-echo '<td class="datos"><b>'.$agent["nombre"].'</b></td>';
+if ($agent['disabled']) {
+	$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, "upper") .print_help_tip(__('Disabled'), true) . "</em>";
+}
+else {
+	$cellName = print_agent_name ($agent["id_agente"], true, "upper");
+}
+echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" /></a>&nbsp;';
 echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'" /></a></td></tr>';
 

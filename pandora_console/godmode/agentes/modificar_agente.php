@@ -198,6 +198,7 @@ if ($agents !== false) {
 		sec2=godmode/agentes/configurar_agente&tab=main&
 		id_agente=".$agent["id_agente"]."'>".$agent["nombre"]."</a></strong>";
 		if ($agent["disabled"]) {
+			print_help_tip(__('Disabled'));
 			echo "</em>";
 		}
 		echo '</span><div class="left actions" style="visibility: hidden; clear: left">';

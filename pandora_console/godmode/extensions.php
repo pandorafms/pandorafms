@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ if (sizeof ($config['extensions']) == 0) {
 }
 
 // Header
-print_page_header (__('Extensions'). " &raquo;  ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
+print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
 
 $delete = get_parameter ("delete", "");
 $name = get_parameter ("name", "");
@@ -42,10 +42,11 @@ if ($delete != ""){
 }
 
 
-$table->width = '95%';
+$table->width = '500px';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Delete');
+$table->align[1] = "center";
 $table->data = array ();
 
 foreach ($config['extensions'] as $extension) {

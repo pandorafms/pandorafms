@@ -233,7 +233,7 @@ if (isset ($_GET["update_alert"])) {
 	if ($id_as > 0) {
 		print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
 	} else {
-		print_submit_button (__('Create'), "submit", false, 'class="sub next"', false);
+		print_submit_button (__('Create'), "submit", false, 'class="sub wand"', false);
 	}
 	
 	// End table

@@ -40,11 +40,13 @@ if ($delete != ""){
 	rename ($source, $config["homedir"]."/extensions/ext_backup/$name.php");
 }
 
-$table->width = '95%';
+
+$table->width = '500px';
 $table->head = array ();
 $table->head[0] = __('Name');
 if (give_acl ($config['id_user'], 0, "PM")){
 	$table->head[1] = __('Delete');
+	$table->align[1] = "center";
 }
 $table->data = array ();
 

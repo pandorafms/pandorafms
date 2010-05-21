@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -113,8 +113,13 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	echo '</tr>';	
 	echo "</table>";
 	echo "<table width='500px'>";
-	echo "<tr><td align='right'>
-	<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+	echo "<tr><td align='right'>";
+	if (isset($_GET["form_add"])) {
+		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+	}
+	else {
+		echo "<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+	}
 	echo '</form></td></tr></table>';
 } 
 else {

@@ -66,7 +66,7 @@ if ($id) {
 	print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
 } else {
 	print_input_hidden ('create_command', 1);
-	print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+	print_submit_button (__('Create'), 'create', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

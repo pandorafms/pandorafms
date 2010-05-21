@@ -27,7 +27,7 @@ $groups = get_user_groups ();
 
 switch ($action) {
 	case 'new':
-		$actionButtonHtml = print_submit_button(__('Add'), 'add', false, 'class="sub next"', true);
+		$actionButtonHtml = print_submit_button(__('Add'), 'add', false, 'class="sub wand"', true);
 		$hiddenFieldAction = 'save'; 
 		break;
 	case 'update':

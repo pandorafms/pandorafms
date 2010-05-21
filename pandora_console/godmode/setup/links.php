@@ -99,8 +99,13 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	echo '</tr>';	
 	echo "</table>";
 	echo "<table width='500px'>";
-	echo "<tr><td align='right'>
-	<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+	echo "<tr><td align='right'>";
+	if (isset($_GET["form_add"])) {
+		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
+	}
+	else {
+		echo "<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
+	}
 	echo '</form></td></tr></table>';
 }
 else {  // Main list view for Links editor

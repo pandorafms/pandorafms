@@ -41,7 +41,7 @@ if ((!$searchMaps) && ($searchTab == 'maps')) $searchTab = "users";
 $agents = false;
 if ($searchTab == 'agents') {
 	if ($searchAgents) {
-		$sql = "SELECT id_agente, tagente.nombre, tagente.id_os, tagente.intervalo, tagente.id_grupo
+		$sql = "SELECT id_agente, tagente.nombre, tagente.id_os, tagente.intervalo, tagente.id_grupo, tagente.disabled
 			FROM tagente
 				INNER JOIN tgrupo
 					ON tgrupo.id_grupo = tagente.id_grupo
@@ -300,8 +300,15 @@ else {
 			if ($agent_info["monitor_down"] > 0)
 				$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_down"].'</span>';
 			
+			if ($agent['disabled']) {
+				$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, "upper") .print_help_tip(__('Disabled'), true) . "</em>";
+			}
+			else {
+				$cellName = print_agent_name ($agent["id_agente"], true, "upper");
+			}
+				
 			array_push($table->data, array(
-				print_agent_name ($agent["id_agente"], true, "upper"),
+				$cellName,
 				print_os_icon ($agent["id_os"], false, true),
 				$agent['intervalo'],
 				print_group_icon ($agent["id_grupo"], true),

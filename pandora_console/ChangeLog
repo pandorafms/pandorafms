@@ -1,3 +1,13 @@
+2010-05-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_generalagente.php: added the style for disabled
+	agent and tooltip, in the name agent.
+	
+	* operation/search_results.php: added the style for disabled
+	agent and tooltip.
+	
+	* godmode/agentes/modificar_agente.php: added tooltip.
+
 2010-05-20 Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/alerts/alert_list.php: Added code to show different

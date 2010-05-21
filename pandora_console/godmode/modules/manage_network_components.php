@@ -60,7 +60,7 @@ $id = (int) get_parameter ('id');
 $snmp_version = (string) get_parameter('snmp_version');
 $snmp3_auth_user = (string) get_parameter('snmp3_auth_user');
 $snmp3_auth_pass = (string) get_parameter('snmp3_auth_pass');
-$snmp3_auth_method  = (string) get_parameter('snmp3_auth_method');
+$snmp3_auth_method = (string) get_parameter('snmp3_auth_method');
 $snmp3_privacy_method = (string) get_parameter('snmp3_privacy_method');
 $snmp3_privacy_pass = (string) get_parameter('snmp3_privacy_pass');
 $snmp3_security_level = (string) get_parameter('snmp3_security_level');
@@ -318,10 +318,10 @@ foreach ($components as $component) {
 	$data[4] = get_network_component_group_name ($component['id_group']);
 	$data[5] = $component['max']." / ".$component['min'];
 	
-	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group='  . $search_id_group .
+	$data[6] = '<a style="display: inline; float: left" href="' . $url . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . '&duplicate_network_component=1&source_id=' . $component['id_nc'] . '">' . 
 		print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>';
-	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group='  . $search_id_group .
+	$data[6] .= '<a href="' . $url . '&delete_component=1&id=' . $component['id_nc'] . '&search_id_group=' . $search_id_group .
 		'search_string=' . $search_string . 
 		'" onclick="if (! confirm (\''.__('Are you sure?').'\')) return false" >' . 
 		print_image('images/cross.png', true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>';

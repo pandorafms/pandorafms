@@ -318,7 +318,7 @@ print_input_hidden('id_item', $idItem);
 print_SLA_list('90%', $action, $idItem);
 echo '<div class="action-buttons" style="width: 90%">';
 if ($action == 'new') {
-	print_submit_button(__('Create item'), 'create_item', false, 'class="sub next"');
+	print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
 }
 else {
 	print_submit_button(__('Edit item'), 'edit_item', false, 'class="sub upd"');

@@ -150,7 +150,7 @@ if ($id) {
 	print_submit_button (__('Update'), 'upd', false, 'class="sub upd"');
 } else {
 	print_input_hidden ('create_component', 1);
-	print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
+	print_submit_button (__('Create'), 'crt', false, 'class="sub wand"');
 }
 echo '</div>';
 echo '</form>';

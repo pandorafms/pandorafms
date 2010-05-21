@@ -362,7 +362,7 @@ $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
 $table->data[0][0] = "<h4>List of layers</h4>". print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true);
-$table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub new"', true) . '</div>';
+$table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .
 	addLayerList($layer_list) . 
@@ -388,7 +388,7 @@ $table->data[1][1] = '<div id="form_layer">
 					' . print_input_text_extended ('id_agent', __('Select'), 'text_id_agent', '', 30, 100, false, '',
 					array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 					. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>&nbsp;' . 
-					print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub"', true) .'
+					print_button(__('Add agent'), 'add_agent', true, 'addAgentLayer();', 'class="sub add"', true) .'
 				</td>
 			</tr>
 			<tr>
@@ -400,7 +400,7 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td align="right" colspan="4">' . 
-					print_button(__('Save Layer'), 'save_layer', false, 'saveLayer();', 'class="sub"', true) . '
+					print_button(__('Save Layer'), 'save_layer', false, 'saveLayer();', 'class="sub wand"', true) . '
 					' . print_input_hidden('layer_edit_id_form', '', true) . '
 				</td>
 			</tr>
@@ -416,14 +416,14 @@ switch ($action) {
 	case 'edit_map':
 	case 'update_saved':
 		if (!empty($invalidFields)) {
-			print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
+			print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
 		}
 		else {
-			print_submit_button(_('Update map'), 'update_button', false, 'class="sub update"');
+			print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
 		}
 		break;
 	case 'new_map':
-		print_submit_button(_('Save map'), 'save_button', false, 'class="sub save"');
+		print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
 		break;
 }
 echo '</div>';

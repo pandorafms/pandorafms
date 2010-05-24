@@ -1,3 +1,9 @@
+2010-05-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Added to repository. Script to
+	  automatically update Pandora FMS version and build where
+	  necessary.
+
 2010-05-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_src.sh: Get the right version for the keygen.

@@ -1,3 +1,11 @@
+2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* include/fgraph.php: fixed again when execute fgraphs.php without login in
+	the case is execute in host machine (as when execute the cron).
+
+
 2010-05-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

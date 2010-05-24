@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -237,7 +237,7 @@ if (isset($_GET["flag_agent"])){
 
 echo "<div id='menu_tab_frame_view'>";
 if ($agent["icon_path"]) {
-    $icon = get_agent_icon_map($agent["id_agente"], true);
+	$icon = get_agent_icon_map($agent["id_agente"], true);
 }
 else {
 	$icon = 'images/bricks.png';

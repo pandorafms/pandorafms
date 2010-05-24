@@ -122,7 +122,7 @@ sub get_status {
 		
 		chomp($output);
 		
-		if($output eq '2') {
+		if($output eq '1') {
 			$output = "1\n";
 		}
 		else {

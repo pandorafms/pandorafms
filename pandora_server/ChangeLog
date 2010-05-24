@@ -1,3 +1,9 @@
+2010-05-24  Sergio Martin <sergio.martin@artica.es>
+
+	* util/plugin/snmp_process.pl: Changed the 
+	value that change the status of the process
+	from 2 to 1.
+
 2010-05-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server.spec: Changed release number.

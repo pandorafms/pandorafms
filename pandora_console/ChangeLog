@@ -1,5 +1,10 @@
 2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.php: fixed fall map in
+	the bottom of visual console editor.
+
+2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/setup/performance.php: hidden option perfomance
 	'Compact CSS and JS into header' because in more Pandora installations have
 	problems. 

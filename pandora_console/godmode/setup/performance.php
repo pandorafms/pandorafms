@@ -73,9 +73,9 @@ $table->data[9][1] = print_input_text ('sla_period', $config["sla_period"], '', 
 $table->data[10][0] = __('Default hours for event view');
 $table->data[10][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
-$table->data[11][0] = __('Compact CSS and JS into header');
-$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
-$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
+//$table->data[11][0] = __('Compact CSS and JS into header');
+//$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('compact_header', 1, '', $config["compact_header"], true).'&nbsp;&nbsp;';
+//$table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('compact_header', 0, '', $config["compact_header"], true);
 
 $table->data[12][0] = __('Use realtime statistics');
 $table->data[12][1] = __('Yes').'&nbsp;'.print_radio_button ('realtimestats', 1, '', $config["realtimestats"], true).'&nbsp;&nbsp;';

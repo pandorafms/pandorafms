@@ -1,5 +1,11 @@
 2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/setup/performance.php: hidden option perfomance
+	'Compact CSS and JS into header' because in more Pandora installations have
+	problems. 
+
+2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/config_process.php: fixed test php trace level constant
 	E_DEPRECATED, now it is correct test version (5.3.0) not 5.2.11.
 	Fixes: #3005558 

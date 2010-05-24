@@ -76,7 +76,9 @@ if ($agents == 1) {
 echo '<table cellpadding="0" cellspacing="0" border="0" width="98%">';
 
 echo "<tr>";
+echo "<th width=5%>";
 echo "<th width='20%'>".__("Group")."</th>";
+echo "<th>";
 echo "<th width='10%'>".__("Agents")."</th>";
 echo "<th width='10%'>".__("Agent unknown")."</th>";
 echo "<th width='10%'>".__("Unknown")."</th>";
@@ -113,16 +115,17 @@ foreach ($groups as $id_group => $group_name) {
 	}
 
 	// Group name
-	echo "<td style='font-weight: bold; font-size: 12px;'>";
+	echo "<td>";
 	echo print_group_icon ($id_group, true);
-	echo "&nbsp;";
+	echo "</td>";
+	echo "<td style='font-weight: bold; font-size: 12px;'>";
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
 	echo $group_name;
 	echo "</a>";
-
+	echo "</td>";
+	echo "<td>";
 	if (give_acl ($config['id_user'], $id_group, "AW")) {
 		echo '&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" align="right"></a>';
-		echo "&nbsp;";
 	}
 	echo "</td>";
 

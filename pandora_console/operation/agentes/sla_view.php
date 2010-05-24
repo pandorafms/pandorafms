@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -28,13 +28,13 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-echo "<h2>".__('Pandora agents'). " &raquo; ".__('SLA view')."</h2>";
+echo "<h3>".__('Pandora agents'). " &raquo; ".__('SLA view')."</h3>";
 $id_agent = get_parameter ("id_agente", 0);
 $interval = get_agent_interval ($id_agent);
 $modules = get_agent_modules ($id_agent, '*',
 	array ('disabled' => 0, 'history_data' => 1, 'delete_pending' => 0));
 if (empty ($modules)) {
-	print_error_message (__("There are no modules to evaluate the S.L.A. from"));
+	echo "<div class='nf'>".__("There are no modules to evaluate the S.L.A. from")."</div>";
 	return;
 }
 

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -35,8 +35,6 @@ echo "<div id=\"" . $agent_name . "_agent_map\"  style=\"border:1px solid black;
 if (!getAgentMap($id_agente, "500px", "98%", false)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
 } 
-
-
 
 if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";

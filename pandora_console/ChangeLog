@@ -1,3 +1,11 @@
+2010-05-24 Raúl Mateos <raulofpandora@gmail.com>
+
+	* include/config_process.php: Updated build to new RC2.
+
+	* operation/agentes/sla_view.php, operation/agentes/ver_agente.php,
+	godmode/agentes/agent_conf_gis.php, include/styles/menu.css,
+	include/styles/pandora.css: Clean code, updated year.
+
 2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.php: fixed fall map in

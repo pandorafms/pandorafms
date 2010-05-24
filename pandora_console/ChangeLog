@@ -1,5 +1,11 @@
 2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/config_process.php: fixed test php trace level constant
+	E_DEPRECATED, now it is correct test version (5.3.0) not 5.2.11.
+	Fixes: #3005558 
+
+2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/fgraph.php: fixed again when execute fgraphs.php without login in
 	the case is execute in host machine (as when execute the cron).
 

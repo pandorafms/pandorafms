@@ -31,7 +31,7 @@ if (!isset($develop_bypass)) $develop_bypass = 0;
 if ($develop_bypass != 1) {
 	// error_reporting(E_ALL);
 	
-	if (strnatcmp(phpversion(),'5.2.11') >= 0) 
+	if (version_compare(PHP_VERSION, '5.3.0') >= 0)
 	{ 
 		error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 	}

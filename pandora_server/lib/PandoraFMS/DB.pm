@@ -41,6 +41,8 @@ our @EXPORT = qw(
 		get_module_id
 		get_nc_profile_name
 		get_server_id
+		get_group_id
+		get_os_id
 		is_group_disabled
 	);
 
@@ -97,6 +99,26 @@ sub get_server_id ($$$) {
 }
 
 ##########################################################################
+## Return group ID given the group name.
+##########################################################################
+sub get_group_id ($$) {
+	my ($dbh, $group_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id_grupo FROM tgrupo WHERE nombre = ?", $group_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return OS ID given the OS name.
+##########################################################################
+sub get_os_id ($$) {
+	my ($dbh, $os_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id_os FROM tconfig_os WHERE name = ?", $os_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
 ## SUB dame_agente_nombre (id_agente)
 ## Return agent name, given "id_agente"
 ##########################################################################
@@ -114,6 +136,16 @@ sub get_module_name ($$) {
 	my ($dbh, $module_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ?", $module_id);
+}
+
+##########################################################################
+## Return module id given the module name and agent id.
+##########################################################################
+sub get_agent_module_id ($$$) {
+	my ($dbh, $module_name, $agent_id) = @_;
+	
+	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", $module_name, $agent_id);
+	return defined ($rc) ? $rc : -1;
 }
 
 ##########################################################################

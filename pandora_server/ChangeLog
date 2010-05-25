@@ -1,3 +1,11 @@
+2010-05-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added functions to get the id of an OS, a
+	  module and a group (needed by pandora_manage.pl).
+
+	* lib/PandoraFMS/Core.pm: Removed tagente_estado.status from the
+	  keep_alive_nd query.
+
 2010-05-24  Sergio Martin <sergio.martin@artica.es>
 
 	* util/plugin/snmp_process.pl: Changed the 

@@ -33,16 +33,17 @@ our @EXPORT = qw(
 		db_insert
 		get_agent_id
 		get_agent_name
-		get_module_name
+		get_agent_module_id
 		get_db_rows
 		get_db_single_row
 		get_db_value
+		get_group_id
 		get_group_name
 		get_module_id
+		get_module_name
 		get_nc_profile_name
-		get_server_id
-		get_group_id
 		get_os_id
+		get_server_id
 		get_template_id
 		get_template_module_id
 		is_group_disabled

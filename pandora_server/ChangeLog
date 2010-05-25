@@ -1,5 +1,9 @@
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DB.pm: Added get_agent_module_id to @EXPORT.
+
+2010-05-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Added functions to get alert data (needed by
 	  pandora_manage.pl).
 

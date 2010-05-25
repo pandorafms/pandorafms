@@ -31,6 +31,7 @@ our @EXPORT = qw(
 		db_disconnect
 		db_do
 		db_insert
+		get_action_id
 		get_agent_id
 		get_agent_name
 		get_agent_module_id
@@ -77,6 +78,16 @@ sub db_disconnect ($) {
 	my $dbh = shift;
 
 	$dbh->disconnect();
+}
+
+##########################################################################
+## Return action ID given the action name.
+##########################################################################
+sub get_action_id ($$) {
+	my ($dbh, $action_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_actions WHERE name = ?", $action_name);
+	return defined ($rc) ? $rc : -1;
 }
 
 ##########################################################################

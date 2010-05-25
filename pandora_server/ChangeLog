@@ -1,5 +1,10 @@
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DB.pm: Added a function to get the id of an action
+	  (needed by pandora_manage.pl).
+
+2010-05-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Tools.pm: Set a default verbosity level for logger().
 
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>

@@ -255,7 +255,8 @@ sub md5check {
 ##########################################################################
 sub logger ($$;$) {
 	my ($pa_config, $message, $level) = @_;
-
+	
+	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
 	
 	my $file = $pa_config->{'logfile'};

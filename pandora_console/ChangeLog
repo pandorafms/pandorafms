@@ -1,3 +1,9 @@
+2010-05-25 Raúl Mateos <raulofpandora@gmail.com>
+
+	* extensions/update_manager/lib/*.php: Updated year, clean code.
+
+	* extensions/update_manager/lib/libupdate_manager.php: Improved usability.
+
 2010-05-24  Sancho Lerena <slerena@gmail.com>
 
 	* group_view.php: Much nicer view of group view. Added

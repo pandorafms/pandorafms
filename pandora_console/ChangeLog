@@ -1,5 +1,10 @@
 2010-05-25 Raúl Mateos <raulofpandora@gmail.com>
 
+	* godmode/agentes/module_manager.php, modificar_agente.php: Added some
+	nice icons to buttons.
+
+2010-05-25 Raúl Mateos <raulofpandora@gmail.com>
+
 	* operation/menu.php, operation/snmpconsole/snmp_view: Updated year.
 	Clean Code.
 

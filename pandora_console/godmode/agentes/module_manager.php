@@ -274,7 +274,7 @@ echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/con
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_input_hidden ('multiple_delete', 1);
-print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub"');
+print_submit_button (__('Delete'), 'multiple_delete', false, 'class="sub delete"');
 echo '</div>';
 echo '</form>'
 ?>

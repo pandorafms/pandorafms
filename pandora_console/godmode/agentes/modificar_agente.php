@@ -64,7 +64,7 @@ if (isset($_POST["ag_group"])){
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width=770><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' width='770'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 
@@ -91,7 +91,7 @@ if (isset($_POST["ag_group"])){
 echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&refr=60$group_mod'>";
 echo "<input type=text name='search' size='15' value='$search' >";
 echo "</td><td valign='top'>";
-echo "<input name='srcbutton' type='submit' class='sub' value='".__('Search')."'>";
+echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
 echo "</form>";
 echo "<td>";
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';

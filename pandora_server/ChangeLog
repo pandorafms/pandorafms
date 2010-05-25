@@ -1,5 +1,9 @@
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Set a default verbosity level for logger().
+
+2010-05-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Added get_agent_module_id to @EXPORT.
 
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>

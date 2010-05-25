@@ -1,5 +1,10 @@
 2010-05-25  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DB.pm: Added functions to get alert data (needed by
+	  pandora_manage.pl).
+
+2010-05-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Added functions to get the id of an OS, a
 	  module and a group (needed by pandora_manage.pl).
 

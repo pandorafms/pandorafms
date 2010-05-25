@@ -43,6 +43,8 @@ our @EXPORT = qw(
 		get_server_id
 		get_group_id
 		get_os_id
+		get_template_id
+		get_template_module_id
 		is_group_disabled
 	);
 
@@ -145,6 +147,26 @@ sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
 	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", $module_name, $agent_id);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return template id given the template name.
+##########################################################################
+sub get_template_id ($$) {
+	my ($dbh, $template_name) = @_;
+	
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", $template_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return the module template id given the module id and the template id.
+##########################################################################
+sub get_template_module_id ($$$) {
+	my ($dbh, $module_id, $template_id) = @_;
+	
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_template_modules WHERE id_agent_module = ? AND id_alert_template = ?", $module_id, $template_id);
 	return defined ($rc) ? $rc : -1;
 }
 

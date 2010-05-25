@@ -30,7 +30,7 @@ $updateGisData = get_db_value('update_gis_data','tagente', 'id_agente', $id_agen
 $agent_name = get_agent_name($id_agente);
 
 /* Map with the current position */
-echo "<div id=\"" . $agent_name . "_agent_map\"  style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 
 if (!getAgentMap($id_agente, "500px", "98%", false)) {
 	echo "<br /><div class='nf'>" . __("There is no default map.") . "</div>";
@@ -45,9 +45,8 @@ echo "<h4>" . __("Warning: When you change the position the agent automatily ena
 $table->width = '60%';
 $table->data = array();
 
-$table->colspan[0][0] = 2;
-
-$table->data[0][0] = __('Agent position:');
+$table->head[0] =__('Agent position');
+$table->head_colspan[0] = 2;
 
 $table->data[1][0] = __('Longitude: ');
 $table->data[1][1] = print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 10, 10, false, '',
@@ -71,7 +70,7 @@ print_input_hidden('update_gis', 1);
 print_table($table);
 
 echo '<div class="action-buttons" style="clear: left; width: ' . $table->width . '; float: left;">';
-print_submit_button (__('Update'), '', false, 'class="sub update"');
+print_submit_button (__('Update'), '', false, 'class="sub upd"');
 echo '</div>';
 echo "</form>";
 ?>

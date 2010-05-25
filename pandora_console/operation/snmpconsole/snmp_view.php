@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -92,7 +92,7 @@ if (isset ($_POST["updatebt"])) {
 		foreach ($trap_ids as $id_trap) {
 			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
 			process_sql ($sql);
-                }
+		}
 	} else {
 		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
@@ -100,14 +100,14 @@ if (isset ($_POST["updatebt"])) {
 }
 
 if ($config["pure"]) {
-	$link =  '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
+	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
 } else {
 	// Fullscreen
-	$link =  '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
+	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
 }
 
 // Header
-print_page_header (__("SNMP console"), "images/computer_error.png", false, "", false,  $link);
+print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", false, $link);
 
 
 $sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
@@ -320,8 +320,8 @@ if ($traps !== false) {
 	//	}
 	//
 	//	if ($search_string != '' && ereg ($search_string, $trap["value"]) == 0 && 
-	//	    ereg ($search_string, $trap["value_custom"]) == 0) {
-	//	    continue;
+	//		ereg ($search_string, $trap["value_custom"]) == 0) {
+	//		continue;
 	//	}
 	
 		//Status
@@ -438,13 +438,13 @@ echo '<img src="images/pixel_red.png" width="20" height="20" /> - ' . __('Not va
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Alert') . '</h3>';
-echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - '  .__('Fired');
+echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - ' .__('Fired');
 echo '<br />';
 echo '<img src="images/pixel_gray.png" width="20" height="20" /> - ' . __('Not fired');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Action') . '</h3>';
-echo '<img src="images/ok.png" width="18" height="18" /> - '  .__('Validate');
+echo '<img src="images/ok.png" width="18" height="18" /> - ' .__('Validate');
 echo '<br />';
 echo '<img src="images/cross.png" width="18" height="18" /> - ' . __('Delete');
 echo '</div>';
@@ -461,11 +461,11 @@ echo '<div style="clear:both;">&nbsp;</div>';
 <script language="JavaScript" type="text/javascript">
 <!--
 function CheckAll() {
-        for (var i = 0; i < document.eventtable.elements.length; i++) {
-                var e = document.eventtable.elements[i];
-                if (e.type == 'checkbox' && e.name != 'allbox')
-                        e.checked = !e.checked;
-        }
+	for (var i = 0; i < document.eventtable.elements.length; i++) {
+		var e = document.eventtable.elements[i];
+		if (e.type == 'checkbox' && e.name != 'allbox')
+			e.checked = !e.checked;
+	}
 }
 
 function toggleDiv (divid){

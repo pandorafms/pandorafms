@@ -1,5 +1,11 @@
 2010-05-26 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/help/es/help_gis_map_builder.php,
+	general/license/pandora_info_pt_br.html: fixed close open tags, the eclipse
+	searched this bugs and advised me.
+
+2010-05-26 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/menu.php: added hook for the submenu enterprise in the reporting.
 
 2010-05-26  Junichi Satoh  <junichi@rworks.jp>

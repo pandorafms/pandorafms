@@ -1,3 +1,8 @@
+2010-05-26  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/gettext.php: Changed the function to use. ereg() is
+	deprecated by php 5.3.
+
 2010-05-25 Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/agentes/module_manager.php, modificar_agente.php: Added some

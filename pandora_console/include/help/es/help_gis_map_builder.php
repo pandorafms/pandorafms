@@ -31,4 +31,4 @@ Opciones:
 <dt>Crear botón </dt>
 <dd>Haga click en el Botón de Crear para <strong>crear</strong> un mapa nuevo</dd>
 </dl>
-</div
+</div>

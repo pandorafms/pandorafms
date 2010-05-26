@@ -120,6 +120,8 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 	// Custom graph builder
 	$sub["godmode/reporting/graphs"]["text"] = __('Graph builder');
 	
+	enterprise_hook ('reporting_godmenu');
+	
 	$menu["greporting"]["sub"] = $sub;
 }
 if (give_acl ($config['id_user'], 0, "IW")) {

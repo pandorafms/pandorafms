@@ -44,6 +44,7 @@ our @EXPORT = qw(
 		get_module_name
 		get_nc_profile_name
 		get_os_id
+		get_profile_id
 		get_server_id
 		get_template_id
 		get_template_module_id
@@ -208,6 +209,16 @@ sub get_nc_profile_name ($$) {
 	my ($dbh, $nc_id) = @_;
 	
 	return get_db_value ($dbh, "SELECT * FROM tnetwork_profile WHERE id_np = ?", $nc_id);
+}
+
+##########################################################################
+## Return profile ID given the profile name.
+##########################################################################
+sub get_profile_id ($$) {
+	my ($dbh, $profile_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id_perfil FROM tperfil WHERE name = ?", $profile_name);
+	return defined ($rc) ? $rc : -1;
 }
 
 ##########################################################################

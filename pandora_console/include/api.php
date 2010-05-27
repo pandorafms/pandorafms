@@ -1,5 +1,4 @@
 <?php
-
 //Pandora FMS- http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
@@ -14,20 +13,22 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-//Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
-
 require_once ("config.php");
 require_once("functions_api.php");
 enterprise_include_once ('include/functions_enterprise_api.php');
 
-//Get the parameters and parse if necesary.
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
+
+//Get the parameters and parse if necesary.
 $op = get_parameter('op');
 $op2 = get_parameter('op2');
 $id = get_parameter('id');
 $id2 = get_parameter('id2');
-$other = parseOtherParameter(get_parameter('other'), get_parameter('other_mode', 'url_encode'));
+$otherSerialize = get_parameter('other');
+$otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
+
+$other = parseOtherParameter($otherSerialize, $otherMode);
 
 if (isInACL($ipOrigin)) {
 	if (($op !== 'get') && ($op !== 'set') && ($op !== 'help'))

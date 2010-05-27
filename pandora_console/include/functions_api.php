@@ -35,7 +35,7 @@ function parseOtherParameter($other, $otherType) {
 		default:
 			if (strpos($otherType, 'url_encode_separator_') !== false) {
 				$separator = str_replace('url_encode_separator_', '', $otherType);
-				$returnVar = array('type' => 'array', 'data' => explode($separator,$other));
+				$returnVar = array('type' => 'array', 'data' => explode($separator, $other));
 				foreach ($returnVar['data'] as $index => $element)
 					$returnVar['data'][$index] = urldecode($element); 
 			}
@@ -79,7 +79,9 @@ function returnError($typeError, $returnType) {
  * 
  * @param $returnType
  * @param $data
- * @return unknown_type
+ * @param $separator
+ * 
+ * @return
  */
 function returnData($returnType, $data, $separator = ';') {
 	switch ($returnType) {
@@ -117,7 +119,7 @@ function returnData($returnType, $data, $separator = ';') {
 					}
 					else {
 						foreach($data['data'] as $dataContent) {
-								echo implode($separator, $dataContent) . "\n";
+							echo implode($separator, $dataContent) . "\n";
 						}
 					}
 					break;

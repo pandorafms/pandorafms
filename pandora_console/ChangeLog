@@ -1,3 +1,9 @@
+2010-05-27 Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/tactical.php: Give some colour to the data shown.
+
+	* godmode/menu.php: Updated year.	
+
 2010-05-26 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/help/es/help_gis_map_builder.php,

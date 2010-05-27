@@ -1,5 +1,13 @@
 2010-05-27 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_api.php: added new calls for api
+	"set_new_alert_template", "set_delete_module", "set_new_module", 
+	"set_alert_actions", "set_new_event", "set_event_validate_filter_pro",
+	"set_event_validate_filter" and "get_events". Added support function
+	"otherParameter2Filter".
+
+2010-05-27 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_api.php, include/api.php: cleaned and organice the
 	source code.
 

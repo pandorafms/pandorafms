@@ -40,6 +40,9 @@ if (($config["id_user"] == $id || give_acl ($config["id_user"], get_user_groups 
 	$view_mode = true;
 }
 
+// Header
+print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
+
 if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info = array ();
 	$upd_info["fullname"] = get_parameter_post ("fullname", $user_info["fullname"]);
@@ -76,9 +79,6 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 
 	$user_info = $upd_info;
 }
-
-// Header
-print_page_header (__('User detail editor'), "images/group.png", false, "", false, "");
 
 echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;modified=1&amp;id='.$id.'">';
 

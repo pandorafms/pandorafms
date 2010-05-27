@@ -137,8 +137,8 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	}
 
 	// Set data containers
-	for ($iterator = 0; $iterator < $resolution; $iterator++) {
-			$timestamp = $datelimit + ($interval * $iterator);
+	for ($i = 0; $i < $resolution; $i++) {
+			$timestamp = $datelimit + ($interval * $i);
 			
 			$graph[$timestamp]['count'] = 0;
 			$graph[$timestamp]['timestamp_bottom'] = $timestamp;
@@ -208,23 +208,29 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			}
 			graphic_error ();
 		}
+
+		// Data iterator
+		$j = 0;
+		
+		// Event iterator
+		$k = 0;
 	
-		// Calculate chart data
+		// Set initial conditions
 		$graph_values[$i] = array();
-		$module_data = array_shift ($data);
-		$event_data = array_shift ($events);
-		if ($module_data['utimestamp'] == $datelimit) {
-			$previous_data = $module_data['datos'];
-			$min_value = $module_data['datos'];
-			$max_value = $module_data['datos'];
+		if ($data[0]['utimestamp'] == $datelimit) {
+			$previous_data = $data[0]['datos'];
+			$min_value = $data[0]['datos'];
+			$max_value = $data[0]['datos'];
+			$j++;
 		} else {
 			$previous_data = 0;
 			$min_value = 0;
 			$max_value = 0;
 		}
 
-		for ($iterator = 0; $iterator < $resolution; $iterator++) {
-			$timestamp = $datelimit + ($interval * $iterator);
+		// Calculate chart data
+		for ($l = 0; $l < $resolution; $l++) {
+			$timestamp = $datelimit + ($interval * $l);
 	
 			$total = 0;
 			$count = 0;
@@ -232,15 +238,15 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			// Read data that falls in the current interval
 			$interval_min = $previous_data;
 			$interval_max = $previous_data;
-			while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] < ($timestamp + $interval)) {
-				if ($module_data['datos'] > $interval_max) {
-					$interval_max = $module_data['datos'];
-				} else if ($module_data['datos'] < $interval_max) {
-					$interval_min = $module_data['datos'];
+			while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
+				if ($data[$j]['datos'] > $interval_max) {
+					$interval_max = $data[$j]['datos'];
+				} else if ($data[$j]['datos'] < $interval_max) {
+					$interval_min = $data[$j]['datos'];
 				}
-				$total += $module_data['datos'];
+				$total += $data[$j]['datos'];
 				$count++;
-				$module_data = array_shift ($data);
+				$j++;
 			}
 	
 			// Average
@@ -258,14 +264,14 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			// Read events and alerts that fall in the current interval
 			$event_value = 0;
 			$alert_value = 0;
-			while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+			while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] <= ($timestamp + $interval)) {
 				if ($show_events == 1) {
 					$event_value++;
 				}
-				if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+				if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 					$alert_value++;
 				}
-				$event_data = array_shift ($events);
+				$k++;
 			}
 
 			// Data
@@ -299,13 +305,6 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	} else {
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
-	}
-	
-	if ($max_value <= 0) {
-		if (! $graphic_type) {
-			return fs_error_image ();
-		}
-		graphic_error ();
 	}
 	
 	if (! $graphic_type) {
@@ -1327,22 +1326,28 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		graphic_error ();
 	}
 
-	// Calculate chart data
+	// Data iterator
+	$j = 0;
+	
+	// Event iterator
+	$k = 0;
+
+	// Set initial conditions
 	$chart = array();
-	$module_data = array_shift ($data);
-	$event_data = array_shift ($events);
-	if ($module_data['utimestamp'] == $datelimit) {
-		$previous_data = $module_data['datos'];
-		$min_value = $module_data['datos'];
-		$max_value = $module_data['datos'];
+	if ($data[0]['utimestamp'] == $datelimit) {
+		$previous_data = $data[0]['datos'];
+		$min_value = $data[0]['datos'];
+		$max_value = $data[0]['datos'];
+		$j++;
 	} else {
 		$previous_data = 0;
 		$min_value = 0;
 		$max_value = 0;
 	}
 
-	for ($iterator = 0; $iterator < $resolution; $iterator++) {
-		$timestamp = $datelimit + ($interval * $iterator);
+	// Calculate chart data
+	for ($i = 0; $i < $resolution; $i++) {
+		$timestamp = $datelimit + ($interval * $i);
 
 		$total = 0;
 		$count = 0;
@@ -1350,15 +1355,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		// Read data that falls in the current interval
 		$interval_min = $previous_data;
 		$interval_max = $previous_data;
-		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] < ($timestamp + $interval)) {
-			if ($module_data['datos'] > $interval_max) {
-				$interval_max = $module_data['datos'];
-			} else if ($module_data['datos'] < $interval_max) {
-				$interval_min = $module_data['datos'];
+		while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
+			if ($data[$j]['datos'] > $interval_max) {
+				$interval_max = $data[$j]['datos'];
+			} else if ($data[$j]['datos'] < $interval_max) {
+				$interval_min = $data[$j]['datos'];
 			}
-			$total += $module_data['datos'];
+			$total += $data[$j]['datos'];
 			$count++;
-			$module_data = array_shift ($data);
+			$j++;
 		}
 
 		// Average
@@ -1376,14 +1381,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
-		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+		while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] <= ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
 			}
-			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 				$alert_value++;
 			}
-			$event_data = array_shift ($events);
+			$k++;
 		}
 
 		// Data
@@ -1531,35 +1536,41 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		graphic_error ();
 	}
 
-	// Calculate chart data
+	// Data iterator
+	$j = 0;
+	
+	// Event iterator
+	$k = 0;
+
+	// Set initial conditions
 	$chart = array();
-	$module_data = array_shift ($data);
-	$event_data = array_shift ($events);
-	if ($module_data['utimestamp'] == $datelimit) {
-		$previous_data = $module_data['datos'];
-		$max_value = $module_data['datos'];
+	if ($data[0]['utimestamp'] == $datelimit) {
+		$previous_data = $data[0]['datos'];
+		$max_value = $data[0]['datos'];
+		$j++;
 	} else {
 		$previous_data = 0;
 		$max_value = 0;
 	}
 
-	for ($iterator = 0; $iterator < $resolution; $iterator++) {
-		$timestamp = $datelimit + ($interval * $iterator);
+	// Calculate chart data
+	for ($i = 0; $i < $resolution; $i++) {
+		$timestamp = $datelimit + ($interval * $i);
 
 		$zero = 0;
 		$total = 0;
 		$count = 0;
 		
 		// Read data that falls in the current interval
-		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] <= ($timestamp + $interval)) {
-			if ($module_data['datos'] == 0) {
+		while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
+			if ($data[$j]['datos'] == 0) {
 				$zero = 1;
 			} else {
-				$total += $module_data['datos'];
+				$total += $data[$j]['datos'];
 				$count++;
 			}
 
-			$module_data = array_shift ($data);
+			$j++;
 		}
 
 		// Average
@@ -1575,14 +1586,14 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
-		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] < ($timestamp + $interval)) {
+		while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] < ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
 			}
-			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 				$alert_value++;
 			}
-			$event_data = array_shift ($events);
+			$k++;
 		}
 
 		// Data and zeroes (draw a step)
@@ -1766,26 +1777,32 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		graphic_error ();
 	}
 
-	// Calculate chart data
+	// Data iterator
+	$j = 0;
+	
+	// Event iterator
+	$k = 0;
+
+	// Set initial conditions
 	$chart = array();
-	$module_data = array_shift ($data);
-	$event_data = array_shift ($events);
-	if ($module_data['utimestamp'] == $datelimit) {
+	if ($data[0]['utimestamp'] == $datelimit) {
 		$previous_data = 1;
 		$max_value = 1;
+		$j++;
 	} else {
 		$previous_data = 0;
 		$max_value = 0;
 	}
 
-	for ($iterator = 0; $iterator < $resolution; $iterator++) {
-		$timestamp = $datelimit + ($interval * $iterator);
+	// Calculate chart data
+	for ($i = 0; $i < $resolution; $i++) {
+		$timestamp = $datelimit + ($interval * $i);
 
 		$count = 0;		
 		// Read data that falls in the current interval
-		while ($module_data !== null && $module_data ['utimestamp'] >= $timestamp && $module_data ['utimestamp'] <= ($timestamp + $interval)) {
+		while (isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
 			$count++;
-			$module_data = array_shift ($data);
+			$j++;
 		}
 
 		// Max
@@ -1796,14 +1813,14 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
-		while ($event_data !== null && $event_data ['utimestamp'] >= $timestamp && $event_data ['utimestamp'] <= ($timestamp + $interval)) {
+		while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] <= ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
 			}
-			if ($show_alerts == 1 && substr ($event_data['event_type'], 0, 5) == 'alert') {
+			if ($show_alerts == 1 && substr ($events[$k]['event_type'], 0, 5) == 'alert') {
 				$alert_value++;
 			}
-			$event_data = array_shift ($events);
+			$k++;
 		}
 
 		// Data in the interval

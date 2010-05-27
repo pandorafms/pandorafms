@@ -1,5 +1,10 @@
 2010-05-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* extensions/update_manager/main.php: Show an error instead of
+	  'updating...' if a non-enterprise user tries to update.
+
+2010-05-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/fgraph.php: Improved the speed of chart drawing algorithms.
 
 2010-05-27  Sergio Martin <sergio.martin@artica.es>

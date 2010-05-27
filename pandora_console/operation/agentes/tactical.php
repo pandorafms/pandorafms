@@ -166,22 +166,22 @@ $cells = array ();
 
 $cells[0][0] = __('Local modules rate');
 $cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
-$cells[0]["color"] = "#000";
+$cells[0]["color"] = "#729fcf";
 $cells[0]["href"] = "";
 
 $cells[1][0] = __('Remote modules rate');
 $cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
-$cells[1]["color"] = "#000";
+$cells[1]["color"] = "#729fcf";
 $cells[1]["href"] = "";
 
 $cells[2][0] = __('Local modules');
 $cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
-$cells[2]["color"] = "#000";
+$cells[2]["color"] = "#3465a4";
 $cells[2]["href"] = "";
 
 $cells[3][0] = __('Remote modules');
 $cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
-$cells[3]["color"] = "#000";
+$cells[3]["color"] = "#3465a4";
 $cells[3]["href"] = "";
 
 $cells[4][0] = __('Total running modules');
@@ -201,13 +201,13 @@ $cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&r
 
 $cells[1][0] = __('Uninitialized modules');
 $cells[1][1] = $data["server_sanity"] . "%";
-$cells[1]["color"] = "#000";
+$cells[1]["color"] = "#ef2929";
 $cells[1]["href"] = "index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60";
 
 $cells[2][0] = __('Agents unknown');
 $cells[2][1] = $data["agents_unknown"];
-$cells[2]["color"] = "#000";
-$cells[2]["url"] = "";
+$cells[2]["color"] = "#aaa";
+$cells[2]["href"] = "";
 
 
 print_cells_temp ($cells);

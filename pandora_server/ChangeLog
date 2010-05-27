@@ -1,3 +1,8 @@
+2010-05-27  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added the 15 new functionalities
+	to CLI
+
 2010-05-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Added a function to get the id of a user

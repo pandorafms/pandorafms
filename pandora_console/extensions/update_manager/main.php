@@ -40,13 +40,17 @@ $user_key = get_user_key ($settings);
 $update_package = (bool) get_parameter_post ('update_package');
 
 if ($update_package) {
-	echo '<h2>'.__('Updating').'...</h2>';
-	flush ();
-	$force = (bool) get_parameter_post ('force_update');
-	
-	um_client_upgrade_to_latest ($user_key, $force);
-	/* TODO: Add a new in tnews */
-	$settings = um_db_load_settings ();
+	if ($config['enterprise_installed'] == 1) {
+		echo '<h2>'.__('Updating').'...</h2>';
+		flush ();
+		$force = (bool) get_parameter_post ('force_update');
+		
+		um_client_upgrade_to_latest ($user_key, $force);
+		/* TODO: Add a new in tnews */
+		$settings = um_db_load_settings ();
+	} else {
+		echo '<h5 class="error">' . __('This is an Enterprise feature. Visit %s for more information.', '<a href="http://pandorafms.com">http://pandorafms.com</a>') . '</h5>';
+	}
 }
 
 $package = um_client_check_latest_update ($settings, $user_key);

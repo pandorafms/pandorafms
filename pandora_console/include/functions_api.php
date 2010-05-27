@@ -832,6 +832,575 @@ function set_new_user($id, $thrash2, $other, $thrash3) {
 		returnData('string', array('type' => 'string', 'data' => __('Create user.')));
 }
 
+function otherParameter2Filter($other) {
+	$filter = array();
+
+	if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
+		$filter['criticity'] = $other['data'][1];
+	}
+	
+	$idAgent = null;
+	if ($other['data'][2] != '') {
+		$idAgent = get_agent_id($other['data'][2]);
+		$filter['id_agente'] = $idAgent;
+	}
+	
+	$idAgentModulo = null;
+	if ($other['data'][3] != '') {
+		$filterModule = array('nombre' => $other['data'][2]);
+		if ($idAgent != null) {
+			$filter['id_agente'] = $idAgent;
+		}
+		$idAgentModulo = get_db_value_filter('id_agente_modulo', 'tagente_modulo', $filterModule);
+		if ($idAgentModulo !== false) {
+			$filter['id_agentmodule'] = $idAgentModule;
+		}
+	}
+	
+	if ($other['data'][4] != '') {
+		$idTemplate = get_db_value_filter('id', 'talert_templates', array('name' => $other['data'][4]));
+		if ($idTemplate !== false) {
+			if ($idAgentModulo != null) {
+				$idAlert = get_db_value_filter('id', 'talert_template_modules', array('id_agent_module' => $idAgentModulo,  'id_alert_template' => $idTemplate));
+				if ($idAlert !== false) {
+					$filter['id_alert_am'] = $idAlert;
+				}
+			}
+		}
+	}
+	
+	if ($other['data'][5] != '') {
+		$filter['id_usuario'] = $other['data'][5];
+	}
+	
+	$filterString = format_array_to_where_clause_sql ($filter);
+	if ($filterString == '') {
+		$filterString = '1 = 1';
+	}
+	
+	if (($other['data'][6] != null) && ($other['data'][6] != -1)) {
+		$filterString .= ' AND utimestamp => ' . $other['data'][6];
+	}
+	
+	if (($other['data'][7] != null) && ($other['data'][7] != -1)) {
+		$filterString .= 'AND utimestamp <= ' . $other['data'][7];
+	}
+	
+	return $filterString;
+}
+
+/**
+ * 
+ * @param $id
+ * @param $id2
+ * @param $other
+ * @param $trash1
+ */
+function set_new_alert_template($id, $id2, $other, $trash1) {
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+		$idAgent = get_agent_id($id);
+		
+		$row = get_db_row_filter('talert_templates', array('name' => $id2));
+		
+		if ($row === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		$idTemplate = $row['id'];
+		$idActionTemplate = $row['id_alert_action'];
+		
+		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
+		
+		if ($idAgentModule === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		$values = array(
+			'id_agent_module' => $idAgentModule,
+			'id_alert_template' => $idActionTemplate);
+		
+		$return = process_sql_insert('talert_template_modules', $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;
+	}
+}
+
+function set_delete_module($id, $id2, $other, $trash1) {
+	if ($other['type'] == 'string') {
+		$simulate = false;
+		if ($other['data'] == 'simulate') {
+			$simulate = true;
+		}
+		
+		$idAgent = get_agent_id($id);
+		
+		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $id2));
+		
+		if ($idAgentModule === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		if (!$simulate) {
+			$return = process_sql_delete('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+		}
+		else {
+			$return = true;
+		}
+
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;		
+	}
+	else {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+}
+
+function set_new_module($id, $id2, $other, $trash1) {
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+		$values = array();
+		$values['id_agente'] = get_agent_id($id);
+		$values['nombre'] = $id2;
+		
+		$values['id_tipo_modulo'] = get_db_value_filter('id_tipo', 'ttipo_modulo', array('nombre' => $other['data'][0]));
+		if ($values['id_tipo_modulo'] === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		if ($other['data'][1] == '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		$values['ip_target'] = $other['data'][1];
+		
+		if (strstr($other['data'][0], 'icmp') === false) {
+			if (($other['data'][2] == '') || ($other['data'][2] <= 0 || $other['data'][2] > 65535)) {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+			
+			$values['tcp_port'] = $other['data'][2];
+		}
+		
+		$values['descripcion'] = $other['data'][3];
+		
+		if ($other['data'][4] != '') {
+			$values['min'] = $other['data'][4];
+		}
+		
+		if ($other['data'][5] != '') {
+			$values['max'] = $other['data'][5];
+		}
+		
+		if ($other['data'][6] != '') {
+			$values['post_process'] = $other['data'][6];
+		}
+		
+		if ($other['data'][7] != '') {
+			$values['module_interval'] = $other['data'][7];
+		}
+		
+		if ($other['data'][8] != '') {
+			$values['min_warning'] = $other['data'][8];
+		}
+		
+		if ($other['data'][9] != '') {
+			$values['max_warning'] = $other['data'][9];
+		}
+		
+		if ($other['data'][10] != '') {
+			$values['min_critical'] = $other['data'][10];
+		}
+		
+		if ($other['data'][11] != '') {
+			$values['max_critical'] = $other['data'][11];
+		}
+		
+		if ($other['data'][12] != '') {
+			$values['history_data'] = $other['data'][12];
+		}
+		
+		$values['id_modulo'] = 2; 
+		
+		$return = process_sql_insert('tagente_modulo', $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;		
+	}
+}
+
+/**
+ * 
+ * @param unknown_type $id
+ * @param unknown_type $id2
+ * @param unknown_type $other
+ * @param unknown_type $trash1
+ */
+function set_alert_actions($id, $id2, $other, $trash1) {
+	if ($other['type'] == 'string') {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+	else if ($other['type'] == 'array') {
+		$idAgent = get_agent_id($id);
+		
+		$row = get_db_row_filter('talert_templates', array('name' => $id2));
+		if ($row === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}		
+		$idTemplate = $row['id'];
+		
+		$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo', array('id_agente' => $idAgent, 'nombre' => $other['data'][0]));
+		if ($idAgentModule === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		$idAlertTemplateModule = get_db_value_filter('id', 'talert_template_modules', array('id_alert_template' => $idTemplate, 'id_agent_module' => $idAgentModule));
+		if ($idAlertTemplateModule === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		if ($other['data'][1] != '') {
+			$idAction = get_db_value_filter('id', 'talert_actions', array('name' => $other['data'][1]));
+			if ($idAction === false) {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+		}
+		else {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		
+		$firesMin = $other['data'][2];
+		$firesMax = $other['data'][3];
+		
+		$values = array('id_alert_template_module' => $idAlertTemplateModule,
+			'id_alert_action' => $idAction, 'fires_min' => $firesMin, 'fires_max' => $firesMax);
+		
+		$return = process_sql_insert('talert_template_module_actions', $values);
+		
+		$data['type'] = 'string';
+		if ($return === false) {
+			$data['data'] = 0;
+		}
+		else {
+			$data['data'] = $return;
+		}
+		returnData('string', $data);
+		return;
+	}
+}
+
+function set_new_event($trash1, $trash2, $other, $trash3) {
+	$simulate = false;
+	$time = get_system_time();
+	
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$values = array();
+		
+		if (($other['data'][0] == null) && ($other['data'][0] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$values['evento'] = $other['data'][0];
+		}
+		
+		if (($other['data'][1] == null) && ($other['data'][1] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$valuesAvaliable = array('unknown', 'alert_fired', 'alert_recovered',
+				'alert_ceased', 'alert_manual_validation',
+				'recon_host_detected', 'system','error', 'new_agent',
+				'going_up_warning', 'going_up_critical', 'going_down_warning',
+				'going_down_normal', 'going_down_critical', 'going_up_normal');
+			
+			if (in_array($other['data'][1], $valuesAvaliable)) {
+				$values['event_type'] = $other['data'][1];
+			}
+			else {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+		}
+		
+		if (($other['data'][2] == null) && ($other['data'][2] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$values['estado'] = $other['data'][2];
+		}
+		
+		if (($other['data'][3] == null) && ($other['data'][3] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$values['id_agente'] = get_agent_id($other['data'][3]);
+		}
+		
+		if (($other['data'][4] == null) && ($other['data'][4] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$idAgentModule = get_db_value_filter('id_agente_modulo', 'tagente_modulo',
+				array('nombre' => $other['data'][4], 'id_agente' => $values['id_agente']));
+		}
+			
+		if ($idAgentModule === false) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			$values['id_agentmodule'] = $idAgentModule;
+		}
+		
+		if (($other['data'][5] == null) && ($other['data'][5] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			if ($other['data'][5] != 'all') {
+				$idGroup = get_db_value_filter('id_grupo', 'tgrupo', array('nombre' => $other['data'][5]));
+			}
+			else {
+				$idGroup = 0;
+			}
+			
+			if ($idGroup === false) {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+			else {
+				$values['id_grupo'] = $idGroup;
+			}
+		}
+		
+		if (($other['data'][6] == null) && ($other['data'][6] == '')) {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {
+			if (($other['data'][6] >= 0) && ($other['data'][6] <= 4)) {
+				$values['criticity'] = $other['data'][6];
+			}
+			else {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+		}
+		
+		if (($other['data'][7] == null) && ($other['data'][7] == '')) {
+			//its optional parameter
+		}
+		else {
+			$idAlert = get_db_value_sql("SELECT t1.id 
+				FROM talert_template_modules AS t1 
+					INNER JOIN talert_templates AS t2 
+						ON t1.id_alert_template = t2.id 
+				WHERE t1.id_agent_module = 1 AND t2.name LIKE '" . $other['data'][7] . "'");
+			
+			if ($idAlert === false) {
+				returnError('error_parameter', 'Error in the parameters.');
+				return;
+			}
+			else {
+				$values['id_alert_am'] = $idAlert;
+			}
+		}
+	}
+	
+	$values['timestamp'] = date("Y-m-d H:i:s", $time);
+	$values['utimestamp'] = $time;
+	
+	$return = process_sql_insert('tevento', $values);
+	
+	$data['type'] = 'string';
+	if ($return === false) {
+		$data['data'] = 0;
+	}
+	else {
+		$data['data'] = $return;
+	}
+	returnData('string', $data);
+	return;
+}
+
+function set_event_validate_filter_pro($trash1, $trash2, $other, $trash3) {
+	$simulate = false;
+	
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$filter = array();
+
+		if (($other['data'][1] != null) && ($other['data'][1] != -1) && ($other['data'][1] != '')) {
+			$filter['criticity'] = $other['data'][1];
+		}
+		
+		if (($other['data'][2] != null) && ($other['data'][2] != -1) && ($other['data'][2] != '')) {
+			$filter['id_agente'] = $other['data'][2];
+		}
+		
+		if (($other['data'][3] != null) && ($other['data'][3] != -1) && ($other['data'][3] != '')) {
+			$filter['id_agentmodule'] = $other['data'][3];
+		}
+		
+		if (($other['data'][4] != null) && ($other['data'][4] != -1) && ($other['data'][4] != '')) {
+			$filter['id_alert_am'] = $other['data'][4];
+		}
+		
+		if (($other['data'][5] != null) && ($other['data'][5] != '')) {
+			$filter['id_usuario'] = $other['data'][5];
+		}
+		
+		$filterString = format_array_to_where_clause_sql ($filter);
+		if ($filterString == '') {
+			$filterString = '1 = 1';
+		}
+		
+		if (($other['data'][6] != null) && ($other['data'][6] != -1)) {
+			$filterString .= ' AND utimestamp > ' . $other['data'][6];
+		}
+		
+		if (($other['data'][7] != null) && ($other['data'][7] != -1)) {
+			$filterString .= 'AND utimestamp < ' . $other['data'][7];
+		}
+	}
+	
+	if ($simulate) {
+		$rows = get_db_all_rows_filter('tevento', $filterString);
+		if ($rows !== false) {
+			returnData('string', count($rows));
+			return;
+		}
+	}
+	else {
+		returnData('string', process_sql_update('tevento', array('estado' => 1), $filterString));
+		return;
+	}
+}
+
+function set_event_validate_filter($trash1, $trash2, $other, $trash3) {
+	$simulate = false;
+	
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+		
+		if (($other['data'][8] != null) && ($other['data'][8] != '')) {
+			if ($other['data'][8] == 'simulate') {
+				$simulate = true;
+			}
+		}
+
+		$filterString = otherParameter2Filter($other);
+		
+	}
+	
+	if ($simulate) {
+		$rows = get_db_all_rows_filter('tevento', $filterString);
+		if ($rows !== false) {
+			returnData('string', count($rows));
+			return;
+		}
+	}
+	else {
+		returnData('string', process_sql_update('tevento', array('estado' => 1), $filterString));
+		return;
+	}
+}
+
+/**
+ * 
+ * @param $trash1
+ * @param $trah2
+ * @param $other
+ * @param $returnType
+ */
+function get_events($trash1, $trash2, $other, $returnType) {
+	if ($other['type'] == 'string') {
+		if ($other['data'] != '') {
+			returnError('error_parameter', 'Error in the parameters.');
+			return;
+		}
+		else {//Default values
+			$separator = ';';
+		}
+	}
+	else if ($other['type'] == 'array') {
+		$separator = $other['data'][0];
+
+		$filterString = otherParameter2Filter($other);
+	}
+	
+	$dataRows = get_db_all_rows_filter('tevento', $filterString);
+	
+	$data['type'] = 'array';
+	$data['data'] = $dataRows;
+	
+	returnData($returnType, $data, $separator);
+	return;
+}
+
 /**
  * Delete user.
  * 

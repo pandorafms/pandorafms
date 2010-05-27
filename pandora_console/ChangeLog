@@ -1,3 +1,7 @@
+2010-05-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Improved the speed of chart drawing algorithms.
+
 2010-05-27  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/users/user_edit.php: Fixed the message

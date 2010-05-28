@@ -205,14 +205,12 @@ switch ($action) {
 }
 
 $intervals = array ();
-$intervals[30] = human_time_description_raw (30);
-$intervals[60] = human_time_description_raw (60);
 $intervals[300] = human_time_description_raw (300);
 $intervals[600] = human_time_description_raw (600);
-$intervals[1200] = human_time_description_raw (1200);
-$intervals[1800] = human_time_description_raw (1800);
-$intervals[3600] = human_time_description_raw (3600);
-$intervals[7200] = human_time_description_raw (7200);
+$intervals[86400] = human_time_description_raw (86400);
+$intervals[432000] = human_time_description_raw (432000);
+$intervals[1296000] = human_time_description_raw (1296000);
+$intervals[2592000] = human_time_description_raw (2592000);
 
 $urlForm = 'index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 

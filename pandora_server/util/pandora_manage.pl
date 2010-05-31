@@ -75,30 +75,27 @@ exit;
 ###############################################################################
 
 ###############################################################################
-# Disable / Enable alert system globally
+# Disable alert system globally
 ###############################################################################
-sub pandora_disable_alerts ($$$) {
-	my ($conf, $dbh, $alert_mode) = @_;
-
-    # Alert_mode can be 0 (disable all) or 1 (enable all).
+sub pandora_disable_alerts ($$) {
+	my ($conf, $dbh) = @_;
 
 	# This works by disabling alerts in each defined group
     # If you have previously a group with alert disabled, and you disable 
     # alerts globally, when enabled it again, it will enabled also !
-    
-    if (!is_numeric($alert_mode)){
-        print "[ERROR] Invalid alert_mode syntax \n\n";
-        exit;
-    }
 
-    if ($alert_mode == 0){
-    	print "[INFO] Disabling all alerts \n\n";
-		db_do ($dbh, "UPDATE tgrupo SET disabled = 1");
-    }
-    else {
-    	print "[INFO] Enabling all alerts \n\n";
-		db_do ($dbh, "UPDATE tgrupo SET disabled = 0");
-    }
+	db_do ($dbh, "UPDATE tgrupo SET disabled = 1");
+
+    exit;
+}
+
+###############################################################################
+# Enable alert system globally
+###############################################################################
+sub pandora_enable_alerts ($$) {
+	my ($conf, $dbh) = @_;
+
+	db_do ($dbh, "UPDATE tgrupo SET disabled = 0");
 
     exit;
 }
@@ -106,43 +103,52 @@ sub pandora_disable_alerts ($$$) {
 ###############################################################################
 # Disable enterprise ACL
 ###############################################################################
-sub pandora_disable_eacl ($$$) {
-	my ($conf, $dbh, $mode) = @_;
+sub pandora_disable_eacl ($$) {
+	my ($conf, $dbh) = @_;
 
-    if ($mode == 0){
-       	print "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
-    	db_do ($dbh, "UPDATE tconfig SET `value` ='0' WHERE `token` = 'acl_enterprise'");
-    } else {
-       	print "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
-    	db_do ($dbh, "UPDATE tconfig SET `value` ='1' WHERE `token` = 'acl_enterprise'");
-    }
+	db_do ($dbh, "UPDATE tconfig SET `value` ='0' WHERE `token` = 'acl_enterprise'");
+
+    exit;
+}
+
+###############################################################################
+# Enable enterprise ACL
+###############################################################################
+sub pandora_enable_eacl ($$) {
+	my ($conf, $dbh) = @_;
+
+    db_do ($dbh, "UPDATE tconfig SET `value` ='1' WHERE `token` = 'acl_enterprise'");
+    	
     exit;
 }
 
 ###############################################################################
 # Disable a entire group
 ###############################################################################
-sub pandora_disable_group ($$$$) {
-        my ($conf, $dbh, $mode, $group) = @_;
+sub pandora_disable_group ($$$) {
+    my ($conf, $dbh, $group) = @_;
 
-	
-    if ($mode == 0){ # Disable
-        print "[INFO] Disabling group $group\n\n";
-	if ($group == 1){
+	if ($group == 0){
 		db_do ($dbh, "UPDATE tagente SET disabled = 1");
 	}
 	else {
 		db_do ($dbh, "UPDATE tagente SET disabled = 1 WHERE id_grupo = $group");
 	}
-    } else {
-        print "[INFO] Enabling group $group\n\n";
-        if ($group == 1){
-                db_do ($dbh, "UPDATE tagente SET disabled = 0");
-        }
-        else {  
-                db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
-        }
-    }
+    exit;
+}
+
+###############################################################################
+# Enable a entire group
+###############################################################################
+sub pandora_enable_group ($$$) {
+    my ($conf, $dbh, $group) = @_;
+
+	if ($group == 0){
+			db_do ($dbh, "UPDATE tagente SET disabled = 0");
+	}
+	else {  
+			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
+	}
     exit;
 }
 
@@ -461,8 +467,8 @@ sub help_screen{
 	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
-	help_screen_line('--disable_group', '<id>', 'Disable agents from an entire group (Use group 1 for all)');
-   	help_screen_line('--enable_group', '<id>', 'Enable agents from an entire group (1 for all)');
+	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
+   	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--create_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add module to agent');
@@ -639,27 +645,59 @@ sub pandora_manage_main ($$$) {
 		help_screen () if ($param =~ m/--*h\w*\z/i );
 
 		if ($param =~ m/--disable_alerts\z/i) {
-	        pandora_disable_alerts ($conf, $dbh, 0);
+			print "[INFO] Disabling all alerts \n\n";
+	        pandora_disable_alerts ($conf, $dbh);
 	    }
 		elsif ($param =~ m/--enable_alerts\z/i) {
-	        pandora_disable_alerts ($conf, $dbh, 1);
+			print "[INFO] Enabling all alerts \n\n";
+	        pandora_enable_alerts ($conf, $dbh);
 		} 
 		elsif ($param =~ m/--disable_eacl\z/i) {
-	        pandora_disable_eacl ($conf, $dbh, 0);
+			print "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
+	        pandora_disable_eacl ($conf, $dbh);
 		} 
 		elsif ($param =~ m/--enable_eacl\z/i) {
-            pandora_disable_eacl ($conf, $dbh, 1);
+			print "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
+            pandora_enable_eacl ($conf, $dbh);
 		} 
         elsif ($param =~ m/--disable_group/i) {
-			pandora_disable_group ($conf, $dbh, 0, $args[2]);
+			param_check($ltotal, 1);
+			my $group_name = @ARGV[2];
+			my $id_group;
+			
+			if($group_name eq "All") {
+				print "[INFO] Disabling All groups\n\n";
+				$id_group = 0;
+			}
+			else {
+				$id_group = get_group_id($dbh, $args[2]);
+				exist_check($id_group,'group',$group_name);
+				print "[INFO] Disabling group '$group_name'\n\n";
+			}
+			
+			pandora_disable_group ($conf, $dbh, $id_group);
 		}
 		elsif ($param =~ m/--enable_group/i) {
-            pandora_disable_group ($conf, $dbh, 1, $args[2]);
+			param_check($ltotal, 1);
+			my $group_name = @ARGV[2];
+			my $id_group;
+			
+			if($group_name eq "All") {
+				$id_group = 0;
+				print "[INFO] Enabling All groups\n\n";
+			}
+			else {
+				$id_group = get_group_id($dbh, $args[2]);
+				exist_check($id_group,'group',$group_name);
+				print "[INFO] Enabling group '$group_name'\n\n";
+			}
+			
+			pandora_enable_group ($conf, $dbh, $id_group);
 		}
 		elsif ($param =~ m/--create_agent/i) {
 			param_check($ltotal, 7, 3);
 			my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
-			print "CREATING AGENT... $agent_name \n\n";
+			print "[INFO] Creating agent '$agent_name'\n\n";
 			
 			$address = '' unless defined ($address);
 			$description = '' unless defined ($description);
@@ -674,7 +712,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_agent/i) {
 			param_check($ltotal, 1);
 			my $agent_name = @ARGV[2];
-			print "DELETING AGENT...$agent_name \n\n";
+			print "[INFO] Deleting agent '$agent_name'\n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -687,7 +725,7 @@ sub pandora_manage_main ($$$) {
 			$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 			$critical_max, $history_data) = @ARGV[2..9];
 			
-			print "ADDING MODULE... $module_name TO AGENT $agent_name\n\n";
+			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 				
 			# The get_module_id has wrong name. Change in future
 			my $module_type_id = get_module_id($dbh,$module_type);
@@ -726,7 +764,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_module/i) {
 			param_check($ltotal, 2);
 			my ($module_name,$agent_name) = @ARGV[2..3];
-			print "DELETING MODULE...$module_name FROM AGENT $agent_name \n\n";
+			print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -738,7 +776,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--create_template_module/i) {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
-			print "ADDING TEMPLATE... $template_name TO MODULE $module_name (AGENT: $agent_name) \n\n";
+			print "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -752,7 +790,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_template_module/i) {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
-			print "DELETE TEMPLATE... $template_name FROM MODULE $module_name (AGENT: $agent_name) \n\n";
+			print "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -769,7 +807,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--create_template_action/i) {
 			param_check($ltotal, 6, 2);
 			my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
-			print "ADDING ACTION... $action_name TO TEMPLATE $template_name IN MODULE $module_name (AGENT: $agent_name) WITH $fires_min MIN. FIRES AND $fires_max MAX. FIRES \n\n";
+			print "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -790,7 +828,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_template_action/i) {
 			param_check($ltotal, 4);
 			my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
-			print "DELETING ACTION... $action_name FROM TEMPLATE $template_name IN MODULE $module_name (AGENT: $agent_name)\n\n";
+			print "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
 		
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
@@ -812,7 +850,7 @@ sub pandora_manage_main ($$$) {
 			
 			if(defined($datetime)) {
 				if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9]):([0-5][0-9])/) {
-					print "Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
+					print "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 					$utimestamp = dateTimeToTimestamp($datetime);
 				}
@@ -838,7 +876,7 @@ sub pandora_manage_main ($$$) {
 			my %data = ('data' => 1);
 			pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
 			
-			print "INSERTING DATA... TO MODULE $module_name (AGENT: $agent_name) IN DATE: $datetime \n\n";
+			print "[INFO] Inserting data to module '$module_name'\n\n";
 		}
 		elsif ($param =~ m/--create_user/i) {
 			param_check($ltotal, 4, 1);
@@ -846,14 +884,14 @@ sub pandora_manage_main ($$$) {
 						
 			$comments = '' unless defined ($comments);
 			
-			print "CREATING USER... $user_name WITH PASSWORD $password ; ADMIN: $is_admin ; COMMENTS: $comments\n\n";
+			print "[INFO] Creating user '$user_name'\n\n";
 			
 			pandora_create_user ($dbh, $user_name, md5($password), $is_admin, $comments);
 		}
 		elsif ($param =~ m/--delete_user/i) {
 			param_check($ltotal, 1);
 			my $user_name = @ARGV[2];
-			print "DELETING USER...$user_name \n\n";
+			print "[INFO] Deleting user '$user_name' \n\n";
 			
 			my $result = pandora_delete_user($dbh,$user_name);
 			exist_check($result,'user',$user_name);
@@ -861,7 +899,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--create_profile/i) {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-			print "ADDING PROFILE... $profile_name TO GROUP $group_name FOR USER $user_name) \n\n";
+			print "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
 			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
@@ -881,7 +919,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_profile/i) {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-			print "DELETING PROFILE... $profile_name FROM GROUP $group_name FOR USER $user_name) \n\n";
+			print "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
 			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
@@ -932,7 +970,7 @@ sub pandora_manage_main ($$$) {
 				$id_alert_agent_module = 0;
 			}
 			
-			print "ADDING EVENT... $event FOR AGENT $agent_name \n\n";
+			print "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh);
@@ -957,7 +995,7 @@ sub pandora_manage_main ($$$) {
 
 			if(defined($datetime_min) && $datetime_min ne '') {
 				if ($datetime_min !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
-					print "Invalid datetime_min format. (Correct format: YYYY-MM-DD HH:mm)\n";
+					print "[ERROR] Invalid datetime_min format. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 				}
 				# Add the seconds
@@ -966,7 +1004,7 @@ sub pandora_manage_main ($$$) {
 			
 			if(defined($datetime_max) && $datetime_max ne '') {
 				if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9]):([0-5][0-9])/) {
-					print "Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
+					print "[ERROR] Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 				}
 				# Add the seconds
@@ -983,7 +1021,7 @@ sub pandora_manage_main ($$$) {
 			}
 						
 			pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
-			print "VALIDATING EVENT... FOR AGENT $agent_name FROM USER $user_name \n\n";
+			print "[INFO] Validating event for agent '$agent_name' from user '$user_name' \n\n";
 		}
 	}
 

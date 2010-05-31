@@ -1,5 +1,10 @@
 2010-05-31  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Fixed the help and the
+	error and successful messages
+
+2010-05-31  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Clean code and change
 	the enable/disable groups functionalities. Now 
 	the parameter is the name of the group.

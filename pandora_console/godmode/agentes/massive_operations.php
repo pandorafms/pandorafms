@@ -65,6 +65,33 @@ if($tab == 'delete_agents')
 else
 	$deleteagenttab['active'] = false;
 	
+/* Add alerts actions */
+$addactionalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=add_action_alerts">'
+		. print_image ("images/cog.png", true, array ("title" => __('Add Actions')))
+		. "</a>";
+if($tab == 'add_action_alerts')
+	$addactionalerttab['active'] = true;
+else
+	$addactionalerttab['active'] = false;
+	
+/* Delete alerts actions */
+$deleteactionalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_action_alerts">'
+		. print_image ("images/cog_del.png", true, array ("title" => __('Delete Actions')))
+		. "</a>";
+if($tab == 'delete_action_alerts')
+	$deleteactionalerttab['active'] = true;
+else
+	$deleteactionalerttab['active'] = false;
+	
+/* Add Alerts */
+$addalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=add_alerts">'
+		. print_image ("images/god2.png", true, array ("title" => __('Add alerts')))
+		. "</a>";
+if($tab == 'add_alerts')
+	$addalerttab['active'] = true;
+else
+	$addalerttab['active'] = false;
+	
 /* Delete Alerts */
 $deletealerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_alerts">'
 		. print_image ("images/delete_alerts.png", true, array ("title" => __('Delete alerts')))
@@ -75,7 +102,7 @@ else
 	$deletealerttab['active'] = false;
 		
 
-$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab, 'delete_alerts' => $deletealerttab);
+$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab, 'add_action_alerts' => $addactionalerttab, 'delete_action_alerts' => $deleteactionalerttab, 'add_alerts' => $addalerttab, 'delete_alerts' => $deletealerttab);
 
 print_page_header (__('Agent configuration'). ' &raquo; '. __('Massive operations'), "images/god1.png", false, "", true, $onheader);
 
@@ -83,6 +110,15 @@ print_page_header (__('Agent configuration'). ' &raquo; '. __('Massive operation
 switch ($tab) {
 case 'delete_alerts':
 	require_once ('godmode/agentes/massive_delete_alerts.php');
+	break;
+case 'add_alerts':
+	require_once ('godmode/agentes/massive_add_alerts.php');
+	break;
+case 'delete_action_alerts':
+	require_once ('godmode/agentes/massive_delete_action_alerts.php');
+	break;
+case 'add_action_alerts':
+	require_once ('godmode/agentes/massive_add_action_alerts.php');
 	break;
 case 'delete_agents':
 	require_once ('godmode/agentes/massive_delete_agents.php');

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -91,7 +91,7 @@ print_input_text ("search", $search, '', 15);
 
 echo '</td><td style="white-space:nowrap;">';
 
-print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub")); 
+print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
 
 echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
 
@@ -128,7 +128,7 @@ if (! empty ($agent_names)) {
 		array ('id_agente',
 			'id_grupo',
 			'id_os',
-            'ultimo_contacto',
+			'ultimo_contacto',
 			'intervalo'));}
 
 if (empty ($agents)) {
@@ -219,19 +219,19 @@ foreach ($agents as $agent) {
 	$data[6] = $agent_info["alert_img"];
 
 
-    $last_time = strtotime ($agent["ultimo_contacto"]);
+	$last_time = strtotime ($agent["ultimo_contacto"]);
 	$now = time ();
 	$diferencia = $now - $last_time;
 	$time = print_timestamp ($last_time, true);
 	$style = '';
 	if ($diferencia > ($agent["intervalo"] * 2))
-        $data[7] = '<b><span style="color: #ff0000">'.$time.'</span></b>';
-    else
-        $data[7] = $time;
+		$data[7] = '<b><span style="color: #ff0000">'.$time.'</span></b>';
+	else
+		$data[7] = $time;
 
-    // This old code was returning "never" on agents without modules, BAD !!
-    // And does not print outdated agents in red. WRONG !!!!
-    // $data[7] = print_timestamp ($agent_info["last_contact"], true);
+	// This old code was returning "never" on agents without modules, BAD !!
+	// And does not print outdated agents in red. WRONG !!!!
+	// $data[7] = print_timestamp ($agent_info["last_contact"], true);
 
 	array_push ($table->data, $data);
 }

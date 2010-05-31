@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -67,9 +67,6 @@ require_javascript_file ('calendar');
 
 // Header
 print_page_header (__("Export data"), "images/bricks.png");
-
-
-echo "<h2>".__('Pandora agents')." &raquo; ".__('Export data')."</h2>";
 
 $group = get_parameter_post ('group', 0);
 //$agent = get_parameter_post ('agent', 0);

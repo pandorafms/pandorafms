@@ -1,3 +1,7 @@
+2010-05-31  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Fixed typo error.
+
 2010-05-27  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added the 15 new functionalities

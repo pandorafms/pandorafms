@@ -1,3 +1,8 @@
+2010-05-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Fixed some min and max calculation issues related
+	  to data compression. Fixes bug #3008499.
+
 2010-05-31  Sergio Martin <sergio.martin@artica.es>
 
 	* images/cog_del.png

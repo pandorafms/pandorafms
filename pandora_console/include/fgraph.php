@@ -1353,9 +1353,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$count = 0;
 		
 		// Read data that falls in the current interval
-		$interval_min = $previous_data;
-		$interval_max = $previous_data;
+		$interval_min = false;
+		$interval_max = false;
 		while (isset ($data[$j]) && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] < ($timestamp + $interval)) {
+			if ($interval_min === false) {
+				$interval_min = $data[$j]['datos'];
+			}
+			if ($interval_max === false) {
+				$interval_max = $data[$j]['datos'];
+			}
+
 			if ($data[$j]['datos'] > $interval_max) {
 				$interval_max = $data[$j]['datos'];
 			} else if ($data[$j]['datos'] < $interval_max) {
@@ -1366,16 +1373,18 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$j++;
 		}
 
-		// Average
+		// Data in the interval
 		if ($count > 0) {
+			
+			// Avg
 			$total /= $count;
-		}
-
-		// Min and max
-		if ($interval_max > $max_value) {
-			$max_value = $interval_max;
-		} else if ($interval_min < $min_value) {
-			$min_value = $interval_min;
+			
+			// Min and max
+			if ($interval_max > $max_value) {
+				$max_value = $interval_max;
+			} else if ($interval_min < $min_value) {
+				$min_value = $interval_min;
+			}
 		}
 
 		// Read events and alerts that fall in the current interval
@@ -1394,17 +1403,19 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		// Data
 		if ($count > 0) {
 			$chart[$timestamp]['sum'] = $total;
+			$chart[$timestamp]['min'] = $interval_min;
+			$chart[$timestamp]['max'] = $interval_max;
 			$previous_data = $total;
 		// Compressed data
 		} else {
 			$chart[$timestamp]['sum'] = $previous_data;
+			$chart[$timestamp]['min'] = $previous_data;
+			$chart[$timestamp]['max'] = $previous_data;
 		}
 
 		$chart[$timestamp]['count'] = 0;
 		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		$chart[$timestamp]['min'] = $interval_min;
-		$chart[$timestamp]['max'] = $interval_max;
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}

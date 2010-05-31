@@ -70,7 +70,7 @@ exit;
 
 ###############################################################################
 ###############################################################################
-# ACTION FUNCTIONS
+# GENERAL FUNCTIONS
 ###############################################################################
 ###############################################################################
 
@@ -173,7 +173,7 @@ sub pandora_init ($) {
    
         $conf->{'pandora_path'} = $ARGV[0];
 
-	help_screen () if ($conf->{'pandora_path'} eq '');
+	help_screen () if ($conf->{'pandora_path'} =~ m/--*h\w*\z/i );
 }
 
 ##########################################################################
@@ -480,8 +480,8 @@ sub help_screen{
     help_screen_line('--data_module', '<server_name> <agent_name> <module_name> <module_type> [<datetime>]', 'Insert data to module');
     help_screen_line('--create_user', '<user_name> <user_password> <is_admin> [<comments>]', 'Create user');
     help_screen_line('--delete_user', '<user_name>', 'Delete user');
-    help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add group to user profile');
-    help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete group from user profile');
+    help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
+    help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
     help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
     print "\n";
@@ -642,9 +642,12 @@ sub pandora_manage_main ($$$) {
 		$param = $args[1];
 
 		# help!
-		help_screen () if ($param =~ m/--*h\w*\z/i );
-
-		if ($param =~ m/--disable_alerts\z/i) {
+		if ($param =~ m/--*h\w*\z/i ) {
+			$param = '';
+			help_screen () ;
+			exit;
+		}
+		elsif ($param =~ m/--disable_alerts\z/i) {
 			print "[INFO] Disabling all alerts \n\n";
 	        pandora_disable_alerts ($conf, $dbh);
 	    }
@@ -666,7 +669,7 @@ sub pandora_manage_main ($$$) {
 			my $id_group;
 			
 			if($group_name eq "All") {
-				print "[INFO] Disabling All groups\n\n";
+				print "[INFO] Disabling all groups\n\n";
 				$id_group = 0;
 			}
 			else {
@@ -684,7 +687,7 @@ sub pandora_manage_main ($$$) {
 			
 			if($group_name eq "All") {
 				$id_group = 0;
-				print "[INFO] Enabling All groups\n\n";
+				print "[INFO] Enabling all groups\n\n";
 			}
 			else {
 				$id_group = get_group_id($dbh, $args[2]);
@@ -849,17 +852,18 @@ sub pandora_manage_main ($$$) {
 			my $utimestamp;
 			
 			if(defined($datetime)) {
-				if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9]):([0-5][0-9])/) {
+				if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 					print "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
-					$utimestamp = dateTimeToTimestamp($datetime);
 				}
-
+				# Add the seconds
+				$datetime .= ":00";
+				$utimestamp = dateTimeToTimestamp($datetime);
 			}
 			else {
 				$utimestamp = time();
 			}
-			
+
 			# The get_module_id has wrong name. Change in future
 			my $module_type_id = get_module_id($dbh,$module_type);
 			exist_check($module_type_id,'module type',$module_type);
@@ -872,6 +876,11 @@ sub pandora_manage_main ($$$) {
 			exist_check($server_id,'data server',$server_name);
 			
 			my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = ?', $id_agent, $module_type_id);
+
+			if(not defined($module->{'module_interval'})) {
+				print "[ERROR] No module data finded. \n\n";
+				exit;
+			}
 
 			my %data = ('data' => 1);
 			pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
@@ -899,7 +908,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--create_profile/i) {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-			print "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
 			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
@@ -908,10 +916,12 @@ sub pandora_manage_main ($$$) {
 			
 			if($group_name eq "All") {
 				$id_group = 0;
+				print "[INFO] Adding profile '$profile_name' to all groups for user '$user_name') \n\n";
 			}
 			else {
 				$id_group = get_group_id($dbh,$group_name);
 				exist_check($id_group,'group',$group_name);
+				print "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
 			}
 			
 			pandora_create_user_profile ($dbh, $user_name, $id_profile, $id_group);
@@ -919,7 +929,6 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_profile/i) {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-			print "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
 			
 			my $id_profile = get_profile_id($dbh,$profile_name);
 			exist_check($id_profile,'profile',$profile_name);
@@ -928,10 +937,12 @@ sub pandora_manage_main ($$$) {
 			
 			if($group_name eq "All") {
 				$id_group = 0;
+				print "[INFO] Deleting profile '$profile_name' from all groups for user '$user_name') \n\n";
 			}
 			else {
 				$id_group = get_group_id($dbh,$group_name);
 				exist_check($id_group,'group',$group_name);
+				print "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
 			}
 			
 			pandora_delete_user_profile ($dbh, $user_name, $id_profile, $id_group);
@@ -994,7 +1005,7 @@ sub pandora_manage_main ($$$) {
 			}
 
 			if(defined($datetime_min) && $datetime_min ne '') {
-				if ($datetime_min !~ /(\d+)\-(\d+)\-(\d+) +(\d+):(\d+):(\d+)/) {
+				if ($datetime_min !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 					print "[ERROR] Invalid datetime_min format. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 				}
@@ -1003,7 +1014,7 @@ sub pandora_manage_main ($$$) {
 			}
 			
 			if(defined($datetime_max) && $datetime_max ne '') {
-				if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9]):([0-5][0-9])/) {
+				if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 					print "[ERROR] Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 				}
@@ -1021,7 +1032,7 @@ sub pandora_manage_main ($$$) {
 			}
 						
 			pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
-			print "[INFO] Validating event for agent '$agent_name' from user '$user_name' \n\n";
+			print "[INFO] Validating event for agent '$agent_name'\n\n";
 		}
 	}
 

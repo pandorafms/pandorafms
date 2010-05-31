@@ -1,3 +1,8 @@
+2010-05-31  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_agente.php, operation/agentes/exportdata.php,
+	operation/agentes/status_monitor.php: Added icon to search button.
+
 2010-05-31  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Fixed some min and max calculation issues related

@@ -3,7 +3,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ echo '<td valign="middle">';
 print_input_text ("ag_freestring", $ag_freestring, '', 15,30, false);
 
 echo '</td><td valign="middle">';
-print_submit_button (__('Show'), "uptbutton", false, 'class="sub"');
+print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
 
 echo "</form>";
 echo "</table>";
@@ -93,7 +93,7 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 
 // Agent group selector
 if ($ag_group > 0 && give_acl ($config["id_user"], $ag_group, "AR")) {
-    $sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
+	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
 } else {
 	// User has explicit permission on group 1 ?
 	$sql .= " AND tagente.id_grupo IN (".implode (",", array_keys (get_user_groups ())).")";
@@ -214,7 +214,7 @@ foreach ($result as $row) {
 	$data = array ();
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
-	$data[1] .=  substr ($row["agent_name"], 0, 25);
+	$data[1] .= substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
 	$data[2] = '<img src="images/'.show_icon_type ($row["module_type"]).'" border="0" />';

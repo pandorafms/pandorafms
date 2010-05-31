@@ -966,7 +966,7 @@ sub pandora_manage_main ($$$) {
 			
 			if(defined($datetime_max) && $datetime_max ne '') {
 				if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9]):([0-5][0-9])/) {
-¡					print "Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
+					print "Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
 					exit;
 				}
 				# Add the seconds

@@ -135,6 +135,8 @@ if ($create_downtime || $update_downtime) {
 			$description = $result["description"];
 			$date_from = strftime ('%Y-%m-%d', $result["date_from"]);
 			$date_to = strftime ('%Y-%m-%d', $result["date_to"]);
+			$time_from = strftime ('%I:%M%p', $result["date_from"]);
+			$time_to = strftime ('%I:%M%p', $result["date_to"]);
 			
 			if ($id_group == 0)
 				$id_group = $result['id_group'];

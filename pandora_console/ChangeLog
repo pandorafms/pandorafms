@@ -1,5 +1,11 @@
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/group_view.php: Fixed the
+	dislocated table of groups view for bug
+	3010017
+
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/status_monitor.php: Fixed the width
 	of the combos avoid displace objects.
 	For bug: 3008756

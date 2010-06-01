@@ -1,5 +1,11 @@
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_visual_map.php: Fixed a
+	undefined variable notice in visual console
+	for bug: 3007450
+
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Fixed the group
 	icon size to 16x16 pixels by default.
 	Bug: 3008508

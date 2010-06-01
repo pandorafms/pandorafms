@@ -1,3 +1,8 @@
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/groups/group_list.php: Change the way of 
+	get the group incons to function print_group_icon.
+
 2010-06-01  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/alerts/alert_list.list.php,

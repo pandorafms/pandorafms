@@ -238,7 +238,9 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
 	else
 		$icon = "world";
 	
-	
+	if($style == '')
+		$style = 'width: 16px; height: 16px;';
+		
 	$output = '';
 	if ($link) 
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';

@@ -1,3 +1,8 @@
+2010-06-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm: Set default values to avoid warnings.
+	  Fixes bug #3009858.
+
 2010-05-31  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Fixed the help and the

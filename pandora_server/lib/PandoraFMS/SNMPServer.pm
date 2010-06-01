@@ -129,8 +129,8 @@ sub pandora_snmptrapd {
 				next if ($line !~ m/\[\*\*\]/);
 
 				logger($pa_config, "Reading trap '$line'", 10);
-				my ($date, $time, $source, $oid,
-					$type, $type_desc, $value, $data) = split(/\[\*\*\]/, $line);
+				my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
+				($date, $time, $source, $oid, $type, $type_desc, $value, $data) = split(/\[\*\*\]/, $line);
 
 				my $timestamp = $date . ' ' . $time;
 				$value = limpia_cadena ($value);

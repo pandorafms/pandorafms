@@ -1,5 +1,10 @@
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/users/configure_user.php: Fixed the edition
+	of an user after create it. For bug: 3006988
+
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/estado_agente.php: Fixed the
 	pagination on agents view. Now the total agents not 
 	include the disabled ones.

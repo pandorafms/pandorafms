@@ -101,11 +101,11 @@ switch ($action) {
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
-			case 'agent_detailed':
-				$description = $item['description'];
-				$idAgent = $item['id_agent'];
-				$period = $item['period'];
-				break;
+//			case 'agent_detailed':
+//				$description = $item['description'];
+//				$idAgent = $item['id_agent'];
+//				$period = $item['period'];
+//				break;
 //			case 'agent_detailed_event':
 //				$description = $item['description'];
 //				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));

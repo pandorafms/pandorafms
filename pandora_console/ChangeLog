@@ -1,5 +1,11 @@
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions.php,
+	godmode/reporting/reporting_builder.item_editor.php: deleted item type
+	of agent_detailed.
+
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* DEBIAN/conffiles: added file config.php as conf file for package Debian.
 	 
 	* DEBIAN/make_deb_package.sh: changed the source to "touch" conf file.

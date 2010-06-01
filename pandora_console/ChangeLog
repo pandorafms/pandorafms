@@ -1,3 +1,10 @@
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_agente.php: Fixed the
+	pagination on agents view. Now the total agents not 
+	include the disabled ones.
+	Bug: 3008770
+
 2010-06-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/setup.php: Ask for confirmation before enabling

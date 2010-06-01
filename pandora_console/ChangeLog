@@ -1,3 +1,8 @@
+2010-06-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/setup/setup.php: Ask for confirmation before enabling
+	  'Enforce https' since access to Pandora FMS Console may be lost.
+
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/FusionCharts/FusionCharts_Gen.php: Fixed the

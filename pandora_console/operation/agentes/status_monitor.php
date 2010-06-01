@@ -45,7 +45,7 @@ echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
 print_select (get_user_groups (), "ag_group", $ag_group, 'this.form.submit();',
-	'', '0', false, false, false, 'w130');
+	'', '0', false, false, false, 'w130', false, 'width:150px;');
 
 echo "</td>";
 echo "<td>".__('Monitor status')."</td><td>";
@@ -58,20 +58,20 @@ $fields[3] = __('Unknown');
 $fields[4] = __('Not normal'); //default
 $fields[5] = __('Not init');
 
-print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
+print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1, false, false, true, '', false, 'width: 125px;');
 echo '</td>';
 
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
 print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-	'modulegroup', $modulegroup, '',__('All'), 0);
+	'modulegroup', $modulegroup, '',__('All'), 0, false, false, true, false, 'width: 100px;');
 
 echo '</tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $modules = get_db_all_rows_filter ('tagente_modulo', false, 'DISTINCT(nombre)');
 print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
-	$ag_modulename, 'this.form.submit();', __('All'), '');
+	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
 echo '</td><td valign="middle">'.__('Search').'</td>';
 

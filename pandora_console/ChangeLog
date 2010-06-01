@@ -1,3 +1,10 @@
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
+	* include/FusionCharts/FusionCharts_Gen.php: Fixed the
+	blank line over the first dashboard widget when the
+	wisget is a graph (enterprise).
+	Bug: 3006989  
+
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/stat_win.php, general/license/pandora_info_ast_es.html,

@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -82,7 +82,7 @@ if (isset ($_POST["template_id"])) {
 
 // Main header
 
-echo "<h2>".__('Agent configuration')." &raquo; ".__('Module templates')."</h2>";
+echo "<h2>".__('Module templates')."</h2>";
 
 // ==========================
 // TEMPLATE ASSIGMENT FORM

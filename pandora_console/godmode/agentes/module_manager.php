@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@
 /* You can redefine $url and unset $id_agente to reuse the form. Dirty (hope temporal) hack */
 if (isset ($id_agente)) {
 	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente;
-	echo "<h2>".__('Agent configuration')." &raquo; ".__('Modules')."</h2>";
+	echo "<h2>".__('Modules')."</h2>";
 }
 
 enterprise_include ('godmode/agentes/module_manager.php');
@@ -31,9 +31,9 @@ echo "<tr><td class='datos'>";
 // kind of modules. If not, do not show server type in combo
 
 $network_available = get_db_sql ("SELECT count(*) from tserver where server_type = 1");
-$wmi_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 6");
-$plugin_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 4");
-$prediction_available =  get_db_sql ("SELECT count(*) from tserver where server_type = 5");
+$wmi_available = get_db_sql ("SELECT count(*) from tserver where server_type = 6");
+$plugin_available = get_db_sql ("SELECT count(*) from tserver where server_type = 4");
+$prediction_available = get_db_sql ("SELECT count(*) from tserver where server_type = 5");
 
 // Development mode to use all servers
 if ($develop_bypass) {
@@ -174,7 +174,7 @@ foreach($tempRows as $row) {
 
 foreach ($modules as $module) {
 	$type = $module["id_tipo_modulo"];
-	$id_module  = $module["id_modulo"];
+	$id_module = $module["id_modulo"];
 	$nombre_modulo = $module["nombre"];
 	$descripcion = $module["descripcion"];
 	$module_max = $module["max"];
@@ -224,9 +224,9 @@ foreach ($modules as $module) {
 	}
 
 	// This module is initialized ? (has real data)
-        $module_init = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
-        if ($module_init == 0)
-                $data[2] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
+	$module_init = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $module['id_agente_modulo']);
+	if ($module_init == 0)
+		$data[2] .= print_image ('images/error.png', true, array ('title' => __('Non initialized module')));
 	
 	// Module type (by data type)
 	$data[3] = '';

@@ -1,3 +1,8 @@
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* general/license/pandora_info_pt_br.html: fixed the unclose tag in the
+	source code, the eclipse warm to me.
+
 2010-05-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

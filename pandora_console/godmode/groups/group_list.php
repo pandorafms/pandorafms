@@ -166,10 +166,8 @@ foreach ($groups as $id_group => $group_name) {
 	
 	$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
 	
-	if (!empty ($group["icon"]))
-		$data[0] = '<img src="images/groups_small/'.$group["icon"].'.png" border="0">';
-	else
-		$data[0] = '&nbsp;';
+	
+	$data[0] = print_group_icon($id_group, true);
 	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$id_group.'">'.$group_name.'</a></strong>';
 	$data[2] = get_group_name ($group["parent"]);
 	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');

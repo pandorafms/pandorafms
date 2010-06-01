@@ -201,7 +201,7 @@ if ($id_agente) {
 	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
 	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
 	print_image ("images/setup.png", false, $img_style);
-	echo '&nbsp; '.mb_substr(get_agent_name ($id_agente), 0, 21) .'</a>';
+	echo '&nbsp;'.__("Agent configuration").' -&nbsp;'.mb_substr(get_agent_name ($id_agente), 0, 21) .'</a>';
 	//echo '&nbsp;'. print_help_icon ('agent_manager', true);
 	echo "</li></ul></div>";
 
@@ -480,7 +480,7 @@ if ($update_module || $create_module) {
 		$plugin_pass = (string) get_parameter ('snmp3_auth_pass');
 		$plugin_parameter = (string) get_parameter ('snmp3_auth_method');
 
-		$custom_string_1  = (string) get_parameter ('snmp3_privacy_method');
+		$custom_string_1 = (string) get_parameter ('snmp3_privacy_method');
 		$custom_string_2 = (string) get_parameter ('snmp3_privacy_pass');
 		$custom_string_3 = (string) get_parameter ('snmp3_security_level');
 	}
@@ -704,10 +704,10 @@ if ($updateGIS) {
 	if ($previusAgentGISData !== false) {
 		process_sql_insert('tgis_data_history', array(
 			"longitude" => $previusAgentGISData['stored_longitude'],
-			"latitude" => $previusAgentGISData['stored_latitude'],         
-			"altitude" => $previusAgentGISData['stored_altitude'],  
-			"start_timestamp" => $previusAgentGISData['start_timestamp'],  
-			"end_timestamp" =>  date( 'Y-m-d H:i:s'),
+			"latitude" => $previusAgentGISData['stored_latitude'],
+			"altitude" => $previusAgentGISData['stored_altitude'],
+			"start_timestamp" => $previusAgentGISData['start_timestamp'],
+			"end_timestamp" => date( 'Y-m-d H:i:s'),
 			"description" => "Save by Pandora Console",
 			"manual_placement" => $previusAgentGISData['manual_placement'],
 			"number_of_packages" => $previusAgentGISData['number_of_packages'],
@@ -721,7 +721,7 @@ if ($updateGIS) {
 			"stored_longitude" => $lastLongitude,
 			"stored_latitude" => $lastLatitude,
 			"stored_altitude" => $lastAltitude,
-			"start_timestamp" =>  date( 'Y-m-d H:i:s'),
+			"start_timestamp" => date( 'Y-m-d H:i:s'),
 			"manual_placement" => 1,
 			"description" => "Update by Pandora Console"),
 			array("tagente_id_agente" => $idAgente));

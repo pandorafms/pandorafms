@@ -1,3 +1,11 @@
+2010-06-01  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/alerts/alert_list.list.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/agent_template.php: Updated headers.
+
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/planned_downtime.php: Fixed the

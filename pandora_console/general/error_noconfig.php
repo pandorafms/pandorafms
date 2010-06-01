@@ -36,7 +36,7 @@
 <div id='login_f'>
 	<h1 id="log_f" class="error">No configuration file found</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"></a>
+		<img src="images/pandora_logo.png" border="0">
 	</div>
 	<div class="msg">
 	<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid

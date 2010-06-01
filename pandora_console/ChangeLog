@@ -1,3 +1,15 @@
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* general/license/pandora_info_ast_es.html,
+	general/license/pandora_info_es_es.html,
+	general/license/pandora_info_ca.html,
+	general/license/pandora_info_pt_br.html,
+	general/license/pandora_info_ja.html, general/error_emptyconfig.php,
+	general/error_perms.php, general/error_authconfig.php,
+	general/error_noconfig.php, general/error_install.php,
+	general/error_dbconfig.php: fixed unclose html tags in source code, the
+	eclipse warm to me.
+
 2010-05-31  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_agente.php, operation/agentes/exportdata.php,

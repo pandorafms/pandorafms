@@ -35,7 +35,7 @@
 <div id='login_f'>
 	<h1 id="log_f" class="error">Bad permission for include/config.php</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"></a><br>
+		<img src="images/pandora_logo.png" border="0"><br>
 	</div>
 	<div class="msg"><br><br>
 	For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users 

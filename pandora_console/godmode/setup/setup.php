@@ -89,7 +89,7 @@ $table->data[10][1] = __('Yes').'&nbsp;'.print_radio_button ('autoupdate', 1, ''
 $table->data[10][1] .= __('No').'&nbsp;'.print_radio_button ('autoupdate', 0, '', $config["autoupdate"], true);
 
 $table->data[11][0] = __('Enforce https');
-$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button ('https', 1, '', $config["https"], true).'&nbsp;&nbsp;';
+$table->data[11][1] = __('Yes').'&nbsp;'.print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;'.print_radio_button ('https', 0, '', $config["https"], true);
 
 

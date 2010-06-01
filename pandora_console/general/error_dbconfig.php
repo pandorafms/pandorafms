@@ -36,7 +36,7 @@
 <div id='login_f'>
 	<h1 id="log_f" class="error">Problem with Pandora FMS database</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"></a>
+		<img src="images/pandora_logo.png" border="0">
 	</div>
 	<div class="msg">
 	Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file or read the documentation on how to setup Pandora FMS.<i><br /><br />

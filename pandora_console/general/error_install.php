@@ -37,7 +37,7 @@
 <div id='login_f'>
 	<h1 id="log_f" class="error">Installer active</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"></a><br><font size="1">
+		<img src="images/pandora_logo.png" border="0"><br><font size="1">
 		</font>
 	</div>
 	<div class="msg"><br><br>

@@ -55,7 +55,7 @@ get_distro () {
 	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
 }
 
-rm /etc/pandora/pandora_server.conf
+#rm /etc/pandora/pandora_server.conf
 
 GET_DISTRO="`get_distro`"
 DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`

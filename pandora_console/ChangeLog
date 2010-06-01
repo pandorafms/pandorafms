@@ -1,5 +1,11 @@
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Fixed the group
+	icon size to 16x16 pixels by default.
+	Bug: 3008508
+
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/users/configure_user.php: Fixed the edition
 	of an user after create it. For bug: 3006988
 

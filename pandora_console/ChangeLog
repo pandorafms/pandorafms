@@ -1,5 +1,13 @@
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* general/license/pandora_info_es_es.html,
+	general/license/pandora_info_en.html, general/license/pandora_info_ca.html,
+	general/license/pandora_info_es_la.html,
+	general/license/pandora_info_fr.html: fixed unclose html tags in source
+	code, the eclipse warm to me.
+
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php,
 	godmode/reporting/reporting_builder.item_editor.php: deleted item type
 	of agent_detailed.

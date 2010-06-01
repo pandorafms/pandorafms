@@ -615,7 +615,7 @@ function get_report_types () {
 	$types['max_value'] = __('Max. Value');
 	$types['min_value'] = __('Min. Value');
 	$types['sumatory'] = __('Sumatory');
-	$types['agent_detailed'] = __('Agent detailed view');
+	//$types['agent_detailed'] = __('Agent detailed view');
 	$types['text'] = __('Text');
 	$types['sql'] = __('SQL query');
 	$types['url'] = __('Import text from URL');

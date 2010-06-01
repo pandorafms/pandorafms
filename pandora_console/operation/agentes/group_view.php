@@ -130,14 +130,13 @@ foreach ($groups as $id_group => $group_name) {
 	echo "</td>";
 
 	// Total agents
-	echo "<td style='font-weight: bold; font-size: 18px;'>";
-	echo "&nbsp;&nbsp;";
+	echo "<td style='font-weight: bold; font-size: 18px; text-align: center;'>";
 	if ($data["total_agents"] > 0)
 		echo $data["total_agents"];
 
 	// Agents unknown
 	if ($data["agents_unknown"] > 0) {
-		echo "<td style='font-weight: bold; font-size: 18px; color: #886666;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #886666; text-align: center;'>";
 		echo $data["agents_unknown"];
 		echo "</td>";
 	} else {
@@ -146,7 +145,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors Unknown
 	if ($data["monitor_unknown"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #666;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #666; text-align: center;'>";
 		echo $data["monitor_unknown"];
 		echo "</td>";
 	} else {
@@ -156,7 +155,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors NonInit
 	if ($data["monitor_non_init"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color #666;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color #666; text-align: center;'>";
 		echo $data["monitor_non_init"];
 		echo "</td>";
 	} else {
@@ -165,7 +164,7 @@ foreach ($groups as $id_group => $group_name) {
 
 
 	// Monitors OK
-	echo "<td style='font-weight: bold; font-size: 18px; color: #6ec300;'>";
+	echo "<td style='font-weight: bold; font-size: 18px; color: #6ec300; text-align: center;'>";
 	if ($data["monitor_ok"] > 0)
 		echo $data["monitor_ok"];
 	else
@@ -174,7 +173,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors Warning
 	if ($data["monitor_warning"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #aba900;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #aba900; text-align: center;'>";
 		echo $data["monitor_warning"];
 		echo "</td>";
 	} else {
@@ -183,7 +182,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors Critical
 	if ($data["monitor_critical"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
 		echo $data["monitor_critical"];
 		echo "</td>";
 	} else {
@@ -191,7 +190,7 @@ foreach ($groups as $id_group => $group_name) {
 	}
 	// Alerts fired
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #8b01ae;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #8b01ae; text-align: center;'>";
 		echo $data["monitor_alerts_fired"];
 		echo "</td>";
 	} else {

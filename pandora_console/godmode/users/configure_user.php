@@ -21,7 +21,7 @@ check_login ();
 // This defines the working user. Beware with this, old code get confusses
 // and operates with current logged user (dangerous).
 
-$id = get_parameter ('id', $config['id_user']); // ID given as parameter
+$id = get_parameter ('id', get_parameter ('id_user', '')); // ID given as parameter
 
 $user_info = get_user_info ($id);
 if ($user_info["language"] == ""){
@@ -198,7 +198,7 @@ $table->style[0] = 'font-weight: bold; vertical-align: top';
 
 $table->data[0][0] = __('User ID');
 $table->data[0][1] = print_input_text_extended ('id_user', $id, '', '', 20, 60,
-	$view_mode, '', '', true);
+	!$new_user || $view_mode, '', '', true);
 
 $table->data[1][0] = __('Full (display) name');
 $table->data[1][1] = print_input_text_extended ('fullname', $user_info['fullname'],

@@ -1,5 +1,11 @@
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/status_monitor.php: Fixed the width
+	of the combos avoid displace objects.
+	For bug: 3008756
+
+2010-06-01  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/groups/group_list.php: Change the way of 
 	get the group incons to function print_group_icon.
 

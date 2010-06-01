@@ -1,5 +1,15 @@
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/stat_win.php, general/license/pandora_info_ast_es.html,
+	general/license/pandora_info_es_es.html,
+	general/license/pandora_info_en.html: fixed unclose html tags in source
+	code, the eclipse warm to me.
+
+	* godmode/db/db_audit.php: fixed lost semi colon in the source code, the
+	eclipse warm to me.
+
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* general/license/pandora_info_ast_es.html,
 	general/license/pandora_info_es_es.html,
 	general/license/pandora_info_ca.html,

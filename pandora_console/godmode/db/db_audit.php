@@ -89,15 +89,15 @@ echo "</tr></table>";
 <table width='300' cellpadding='4' cellspacing='4' class='databox'>
 <tr><td class='datos'>
 <select name="date_purge" width="255px">
-<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?>
-<option value="<?php echo $time["1month"] ?>"><?php echo __('Purge audit data over 30 days') ?>
-<option value="<?php echo $time["2week"] ?>"><?php echo __('Purge audit data over 14 days') ?>
-<option value="<?php echo $time["1week"] ?>"><?php echo __('Purge audit data over 7 days') ?>
-<option value="<?php echo $time["3day"] ?>"><?php echo __('Purge audit data over 3 days') ?>
-<option value="<?php echo $time["1day"] ?>"><?php echo __('Purge audit data over 1 day') ?>
-<option value="<?php echo $time["all"] ?>"><?php echo __('Purge all audit data') ?>
+<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?></option>
+<option value="<?php echo $time["1month"] ?>"><?php echo __('Purge audit data over 30 days') ?></option>
+<option value="<?php echo $time["2week"] ?>"><?php echo __('Purge audit data over 14 days') ?></option>
+<option value="<?php echo $time["1week"] ?>"><?php echo __('Purge audit data over 7 days') ?></option>
+<option value="<?php echo $time["3day"] ?>"><?php echo __('Purge audit data over 3 days') ?></option>
+<option value="<?php echo $time["1day"] ?>"><?php echo __('Purge audit data over 1 day') ?></option>
+<option value="<?php echo $time["all"] ?>"><?php echo __('Purge all audit data') ?></option>
 </select>
-
+</td>
 <td class="datos">
 <input class="sub wand" type="submit" name="purgedb" value="<?php echo __('Do it!') ?>" onClick="if (!confirm('<?php echo __('Are you sure?') ?>')) return false;">
 

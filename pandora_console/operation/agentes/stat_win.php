@@ -69,7 +69,7 @@ window.onload = function() {
 	xMoveTo(d, visibleMargin - menuW, 0);
 	xShow(d);
 	xAddEventListener(document, 'mousemove', docOnMousemove, false);
-}
+};
 
 function docOnMousemove(evt) {
 	var e = new xEvent(evt);

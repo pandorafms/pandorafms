@@ -1,3 +1,12 @@
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/conffiles: added file config.php as conf file for package Debian.
+	 
+	* DEBIAN/make_deb_package.sh: changed the source to "touch" conf file.
+
+	* index.php: fixed the tests for config.php, now check if empty file then
+	call installer.php. 
+
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php: Fixed a

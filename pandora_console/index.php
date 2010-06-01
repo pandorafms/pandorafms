@@ -34,6 +34,10 @@ if ($develop_bypass != 1) {
 			exit;
 		}
 	}
+	if (filesize("include/config.php") == 0) {
+		include ("install.php");
+		exit;
+	}
 	// Check for installer presence
 	if (file_exists ("install.php")) {
 		include "general/error_install.php";

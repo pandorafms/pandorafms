@@ -95,6 +95,7 @@ then
 	find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
 	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
 	chmod 755 -R temp_package/DEBIAN
+	touch temp_package/var/www/pandora_console/include/config.php
 
 	echo "Calculate md5sum for md5sums package control file."
 	for item in `find temp_package`

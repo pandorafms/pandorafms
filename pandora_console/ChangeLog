@@ -1,3 +1,12 @@
+2010-06-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	operation/agentes/status_monitor.php
+	operation/agentes/group_view.php: Fixed the group
+	view table values for bug 3010321 and added the log4x
+	type of module to asynchronous exception for bug
+	3008759
+
 2010-06-01  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/group_view.php: Fixed the

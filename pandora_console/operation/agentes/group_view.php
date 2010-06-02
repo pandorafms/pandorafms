@@ -123,9 +123,9 @@ foreach ($groups as $id_group => $group_name) {
 	echo $group_name;
 	echo "</a>";
 	echo "</td>";
-	echo "<td>";
+	echo "<td style='text-align: center; vertica-align: middle;'>";
 	if (give_acl ($config['id_user'], $id_group, "AW")) {
-		echo '&nbsp;<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" align="right"></a>';
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" border="0"></a>';
 	}
 	echo "</td>";
 
@@ -153,10 +153,10 @@ foreach ($groups as $id_group => $group_name) {
 	}
 
 
-	// Monitors NonInit
-	if ($data["monitor_non_init"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color #666; text-align: center;'>";
-		echo $data["monitor_non_init"];
+	// Monitors Not Init
+	if ($data["monitor_not_init"] > 0){
+		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
+		echo $data["monitor_not_init"];
 		echo "</td>";
 	} else {
 		echo "<td></td>";

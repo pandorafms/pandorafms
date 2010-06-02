@@ -88,14 +88,14 @@ echo "</tr></table>";
 <form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_audit">
 <table width='300' cellpadding='4' cellspacing='4' class='databox'>
 <tr><td class='datos'>
-<select name="date_purge" width="255px">
-<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?></option>
-<option value="<?php echo $time["1month"] ?>"><?php echo __('Purge audit data over 30 days') ?></option>
-<option value="<?php echo $time["2week"] ?>"><?php echo __('Purge audit data over 14 days') ?></option>
-<option value="<?php echo $time["1week"] ?>"><?php echo __('Purge audit data over 7 days') ?></option>
-<option value="<?php echo $time["3day"] ?>"><?php echo __('Purge audit data over 3 days') ?></option>
-<option value="<?php echo $time["1day"] ?>"><?php echo __('Purge audit data over 1 day') ?></option>
-<option value="<?php echo $time["all"] ?>"><?php echo __('Purge all audit data') ?></option>
+<select name="date_purge">
+	<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?></option>
+	<option value="<?php echo $time["1month"] ?>"><?php echo __('Purge audit data over 30 days') ?></option>
+	<option value="<?php echo $time["2week"] ?>"><?php echo __('Purge audit data over 14 days') ?></option>
+	<option value="<?php echo $time["1week"] ?>"><?php echo __('Purge audit data over 7 days') ?></option>
+	<option value="<?php echo $time["3day"] ?>"><?php echo __('Purge audit data over 3 days') ?></option>
+	<option value="<?php echo $time["1day"] ?>"><?php echo __('Purge audit data over 1 day') ?></option>
+	<option value="<?php echo $time["all"] ?>"><?php echo __('Purge all audit data') ?></option>
 </select>
 </td>
 <td class="datos">

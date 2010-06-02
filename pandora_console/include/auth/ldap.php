@@ -518,8 +518,8 @@ function get_users ($order = false) {
  * @return string userid
  */
 function stripdn ($dn) {
-	list ($uid, $trash) = split (',', $dn, 2);
-	list ($trash, $user) = split ('=', $uid);
+	list ($uid, $trash) = explode (',', $dn, 2);
+	list ($trash, $user) = explode ('=', $uid);
 	return ($user);
 }
 

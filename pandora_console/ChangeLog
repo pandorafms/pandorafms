@@ -1,3 +1,10 @@
+2010-06-02  Sergio Martin <sergio.martin@artica.es>
+
+	* include/auth/ldap.php
+	include/fgraph.php
+	godmode/reporting/graph_builder.php: Changed the deprecated
+	function split() by explode() function for bug: 2989970
+
 2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager_editor_plugin.php: fixed, now show the

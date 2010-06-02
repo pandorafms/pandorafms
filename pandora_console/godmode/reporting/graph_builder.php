@@ -149,7 +149,7 @@ if (isset ($_GET["delete_module"] )) {
 		$chunkdata = $_POST["chunk"];
 		if (isset($chunkdata)) {
 			$chunk1 = array();
-			$chunk1 = split ("\|", $chunkdata);
+			$chunk1 = explode ("\|", $chunkdata);
 			$modules="";$weights="";
 			for ($a = 0; $a < count ($chunk1); $a++) {
 				if (isset ($_POST["delete_$a"])) {
@@ -163,7 +163,7 @@ if (isset ($_GET["delete_module"] )) {
 			$agent_array = array ();
 			for ($a = 0; $a < count ($chunk1); $a++) {
 				$chunk2[$a] = array();
-				$chunk2[$a] = split (",", $chunk1[$a]);
+				$chunk2[$a] = explode (",", $chunk1[$a]);
 				$skip_module =0;
 				for ($b = 0; $b < count ($deleted_id); $b++) {
 					if ($deleted_id[$b] == $chunk2[$a][1]) {
@@ -250,11 +250,11 @@ if (! isset($_GET["delete_module"])) {
 		$weight_array = array();
 		$agent_array = array();
 		$chunk1 = array();
-		$chunk1 = split ("\|", $chunkdata);
+		$chunk1 = explode ("\|", $chunkdata);
 		$modules="";$weights="";
 		for ($a=0; $a < count($chunk1); $a++){
 			$chunk2[$a] = array();
-			$chunk2[$a] = split ( ",", $chunk1[$a]);
+			$chunk2[$a] = explode ( ",", $chunk1[$a]);
 			if (strpos($modules, $chunk2[$a][1]) == 0){  // Skip dupes
 				$module_array[] = $chunk2[$a][1];
 				$agent_array[] = $chunk2[$a][0];
@@ -375,7 +375,7 @@ if (($render == 1) && (isset($modules))) {
 	echo "<table class='databox'>";
 	echo "<tr><td>";
 	if ($config['flash_charts']) {
-		echo graphic_combined_module (split (',', $modules), split (',', $weights), $period, $width, $height,
+		echo graphic_combined_module (explode (',', $modules), explode (',', $weights), $period, $width, $height,
 				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked);
 	} else {
 		echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";

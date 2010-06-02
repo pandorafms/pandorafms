@@ -1,3 +1,10 @@
+2010-06-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/messages/message.php: Small fixes. Fixed bug #3008779.
+
+	* godmode/servers/modificar_server.php: Ask for confirmation before
+	  deleting a server.
+
 2010-06-02  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.list.php: Fixed the error

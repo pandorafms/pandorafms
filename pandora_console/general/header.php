@@ -128,7 +128,7 @@ $msg_cnt = 0;
 <?php
 if ($config["metaconsole"] == 0){
 ?>
-	<form method="get" style="" valign="middle" name="quicksearch">
+	<form method="get" style="" name="quicksearch">
 				<script type="text/javascript" language="javascript">
 				var fieldKeyWordEmpty = true;
 				</script>
@@ -148,6 +148,7 @@ if ($config["metaconsole"] == 0){
 <?php
 }
 ?>
+				</td>
 				<td>
 				 <?php
 if ($config["metaconsole"] == 0){

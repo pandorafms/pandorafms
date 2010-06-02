@@ -1,3 +1,9 @@
+2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* general/header.php, godmode/db/db_audit.php,
+	godmode/reporting/reporting_builder.item_editor.php:  cleaned html and fixed
+	unclose html tags in source code, the eclipse warm to me.
+
 2010-06-02  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/sla_view.php, operation/agentes/datos_agente.php,

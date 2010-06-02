@@ -399,7 +399,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 					</tbody>
 					<tbody>
 						<tr id="sla_form" style="" class="datos">
-							<td><input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden"><input class="ac_input" autocomplete="off" style="background: transparent url(images/lightning.png) no-repeat scroll right center; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;" name="agent_sla" id="text-agent_sla" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
+							<td>
+								<input id="hidden-id_agent_sla" name="id_agent_sla" value="" type="hidden">
+								<input style="background: transparent url(images/lightning.png) no-repeat right;" name="agent_sla" id="text-agent_sla" size="15" maxlength="20" type="text"><a href="#" class="tip">&nbsp;<span>Type at least two characters to search</span></a></td>
 							<td><select id="id_agent_module_sla" name="id_agente_modulo_sla" disabled="disabled"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>

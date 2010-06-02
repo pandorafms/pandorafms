@@ -2,7 +2,7 @@
 # Automatically update Pandora FMS version and build where necessary.
 
 # Check command line arguments
-if [ $# -lt 1 ] || [ $# -gt 3 ]; then
+if [ $# -lt 2 ] || [ $# -gt 3 ]; then
 	echo "Usage: $0 <final|nightly> <version string> [build string]"
 	exit 1
 fi
@@ -87,6 +87,8 @@ sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "
 echo "Updating Pandora Console version..."
 sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
 sed -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
+echo "Setting develop_bypass to 0..."
+sed -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
 
 # Pandora Agents
 echo "Updating Pandora Unix Agent version..."

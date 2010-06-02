@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -103,7 +103,7 @@ if ($result === false) {
 
 $header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id). " - " . human_time_description ($period); 
 
-echo "<h2>".$header_title. "</h2>";
+echo "<h3>".$header_title. "</h3>";
 
 //
 $index = 0;

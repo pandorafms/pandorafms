@@ -1,3 +1,8 @@
+2010-06-02  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/sla_view.php, operation/agentes/datos_agente.php,
+	operation/agentes/estado_ultimopaquete.php: Updated header.
+
 2010-06-02  Sergio Martin <sergio.martin@artica.es>
 
 	* include/auth/ldap.php

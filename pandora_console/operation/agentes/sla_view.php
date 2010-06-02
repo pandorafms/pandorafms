@@ -28,7 +28,6 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-echo "<h3>".__('Pandora agents'). " &raquo; ".__('SLA view')."</h3>";
 $id_agent = get_parameter ("id_agente", 0);
 $interval = get_agent_interval ($id_agent);
 $modules = get_agent_modules ($id_agent, '*',

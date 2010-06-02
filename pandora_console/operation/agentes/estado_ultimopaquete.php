@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -43,10 +43,9 @@ $label_group = 0;
 $last_label = "";
 
 // Title
-echo "<h2>".__('Pandora agents')." &raquo; ";
-echo __('Display of last data modules received by agent');
+echo "<h3>".__('Display of last data modules received by agent');
 echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/refresh.png'></A>";
-echo "</h2>";
+echo "</h3>";
 
 $modules = get_db_all_rows_filter ('tagente_modulo, tagente_estado',
 	array ('tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo',
@@ -85,7 +84,7 @@ foreach ($modules as $module) {
 	}
 
 	if ($module["id_module_group"] != $last_modulegroup ){
-		// Render module group names  (fixed code)
+		// Render module group names (fixed code)
 		$nombre_grupomodulo = get_modulegroup_name ($module["id_module_group"]);
 		$last_modulegroup = $module["id_module_group"];
 		echo "<tr><td class='datos3' align='center' colspan='9'>
@@ -175,8 +174,8 @@ foreach ($modules as $module) {
 				echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
 				echo substr(safe_output($module["datos"]),0,42);
 			}
+			echo "</td>";
 		}
-		
 			
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
@@ -199,15 +198,15 @@ foreach ($modules as $module) {
 	
 	
 	if ($module['history_data'] == 1){
-	  // RAW Table data
-	  echo "<td class=".$tdcolor." width=70>";
-	  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=2592000&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
-	  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=604800&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
-	  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
+	// RAW Table data
+		echo "<td class=".$tdcolor." width=70>";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=2592000&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=604800&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
 	} else {
 		echo "<td class=".$tdcolor."></td>";
 	}
-	  
+
 	echo "<td class='".$tdcolor."f9'>";
 	if ($module["utimestamp"] == 0){ 
 		echo __('Never');

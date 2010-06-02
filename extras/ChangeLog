@@ -1,3 +1,8 @@
+2010-06-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Fixed parameter check. Make sure
+	  develop_bypass is set to 1.
+
 2010-05-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Added to repository. Script to

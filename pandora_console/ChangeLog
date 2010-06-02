@@ -1,4 +1,14 @@
-2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/module_manager_editor_plugin.php: fixed, now show the
+	description of plugin selected.
+	
+	* godmode/servers/plugin.php: added the response to ajax for query the
+	report description.
+	
+	Fixes: #3008494
+
+2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php, include/functions.php,
 	godmode/reporting/reporting_builder.php,

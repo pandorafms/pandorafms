@@ -41,8 +41,9 @@ $extra_title = __('Plugin server module');
 $data = array ();
 $data[0] = __('Plugin');
 $data[1] = print_select_from_sql ('SELECT id, name FROM tplugin ORDER BY name',
-	'id_plugin', $id_plugin, '', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
-$table_simple->colspan['plugin_1'][1] = 3;
+	'id_plugin', $id_plugin, 'changePluginSelect();', __('None'), 0, true, false, false, $disabledBecauseInPolicy);
+$table_simple->colspan['plugin_1'][2] = 2;
+$data[2] = '<span style="font-weight: normal;" id="plugin_description"></span>';
 
 push_table_simple ($data, 'plugin_1');
 
@@ -70,3 +71,17 @@ $table_simple->colspan['plugin_3'][1] = 3;
 
 push_table_simple ($data, 'plugin_3');
 ?>
+<script type="text/javascript">
+function changePluginSelect() {
+//	alert($("#id_plugin").val());
+	jQuery.post ("ajax.php",
+		{"page" : "godmode/servers/plugin",
+		"get_plugin_description" : 1,
+		"id_plugin" : $("#id_plugin").val()
+		},
+		function (data, status) {
+			$("#plugin_description").html(data);
+		}
+	);
+}
+</script>

@@ -1,5 +1,11 @@
 2010-06-02  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.list.php: Fixed the error
+	showed in manage agents into alerts when the agent 
+	has not modules for bug 3010359
+
+2010-06-02  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/networkmap.php: Fixed the fullscreen
 	icon out of the header for bug: 3004025
 

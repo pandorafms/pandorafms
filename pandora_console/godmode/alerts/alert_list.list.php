@@ -126,6 +126,8 @@ if ($searchFlag) {
 $total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 	false, $where, false, false, false, true);
 
+if(empty($total)) $total = 0;
+
 pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 	array ('offset' => (int) get_parameter ('offset'),
@@ -173,7 +175,6 @@ $table->data = array ();
 
 $rowPair = true;
 $iterator = 0;
-
 foreach ($simple_alerts as $alert) {
 	if ($alert['disabled']) {
 		 $table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';

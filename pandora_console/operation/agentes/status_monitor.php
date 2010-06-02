@@ -118,27 +118,29 @@ if ($ag_freestring != "") {
 // Status selector
 if ($status == 0) { //Up
 	$sql .= " AND tagente_estado.estado = 0 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) 
-	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23))) ";
+	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
+	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24))) ";
 }
 elseif ($status == 2) { //Critical
 	$sql .= " AND tagente_estado.estado = 1 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) 
+	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
 	AND utimestamp > 0 ";
 }
-elseif ($status == 1) { //warning
+elseif ($status == 1) { //Warning
 	$sql .= " AND tagente_estado.estado = 2 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) 
+	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
 	AND utimestamp > 0 ";	
 }
-elseif ($status == 4) { //not normal
-	$sql .= " AND (((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) AND (tagente_modulo.id_tipo_modulo NOT IN(21,22,23,100))) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) AND utimestamp > 0";
+elseif ($status == 4) { //Not normal
+	$sql .= " AND (((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) AND (tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100))) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) AND utimestamp > 0";
 
-} elseif ($status == 3) { //Unknown
-	$sql .= " AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,100) AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
+} 
+elseif ($status == 3) { //Unknown
+	$sql .= " AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100) AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
 
-} elseif ($status == 5) {
-	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23)";	
+} 
+elseif ($status == 5) { //Not init
+	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24)";	
 }
 
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
@@ -260,7 +262,7 @@ foreach ($result as $row) {
 	else
 		$interval = $row["agent_interval"];
 	
-	if ((($row["module_type"] < 21) OR ($row["module_type"] > 23)) AND ($row["module_type"] != 100)){
+	if ((($row["module_type"] < 21) OR ($row["module_type"] > 24)) AND ($row["module_type"] != 100)){
 		if ($seconds >= ($interval * 2)) {
 			$option = array ("html_attr" => 'class="redb"');
 		}

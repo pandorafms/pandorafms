@@ -2440,9 +2440,9 @@ if ($graphic_type) {
 	case "combined":
 		// Split id to get all parameters
 		$module_list = array();
-		$module_list = split (",", $id);
+		$module_list = explode (",", $id);
 		$weight_list = array();
-		$weight_list = split (",", $weight_l);
+		$weight_list = explode (",", $weight_l);
 		graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 					$label, $unit_name, $draw_events, $draw_alerts, $pure, $stacked, $date);
 		

@@ -14,6 +14,15 @@
 // GNU General Public License for more details.
 
 
+if (is_ajax ()) {
+	$get_plugin_description = get_parameter('get_plugin_description');
+	$id_plugin = get_parameter('id_plugin');
+	
+	$description = get_db_value_filter('description', 'tplugin', array('id' => $id_plugin));
+	
+	echo safe_output($description);
+	return;
+}
 
 // Load global vars
 global $config;

@@ -367,6 +367,23 @@ foreach ($contents as $content) {
 				array_push($data["objdata"]["data"], $objdata);
 			}
 			break;
+		case 'event_report_group':
+			$data["title"] = __('Group detailed event');
+			$data['group'] = get_group_name($content['id_agent']);
+			$data["objdata"]["event_report_group"] = array();
+			
+			$events = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true, false);
+			
+			foreach ($events->data as $eventRow) {
+				$objdata = array();
+				$objdata['event_name'] = $eventRow[0];
+				$objdata['event_type'] = $eventRow[1];
+				$objdata['criticity'] = $eventRow[2];
+				$objdata['timestamp'] = $eventRow[3];
+				
+				array_push($data["objdata"]["event_report_group"], $objdata);
+			}
+			break;
 		case 'event_report_module':
 			$data["title"] = __('Agents detailed event');
 			$data["objdata"]["event_report_module"] = array();

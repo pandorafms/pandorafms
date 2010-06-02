@@ -29,7 +29,7 @@ if (isset ($_GET["new_msg"]))
 	print_page_header (__('Messages'). " &raquo;  ".__('New message'), "images/email.png", false, "", false, "" );
 elseif (isset ($_GET["read_message"]))
 	print_page_header (__('Messages'). " &raquo;  ".__('Read message'), "images/email.png", false, "", false, "" );
-if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"]))
+else
 	if (empty ($config["pure"]) && !is_ajax ())
 		print_page_header (__('Messages'). " &raquo;  ".__('Message overview'), "images/email.png", false, "", false, "" );
 	
@@ -232,7 +232,7 @@ if (isset ($_GET["read_message"]) || !isset ($_GET["new_msg"])) {
 			array_push ($table->data, $data);
 		}
 
-		echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message&amp;new_msg=1">';
+		echo '<form method="post" action="index.php?sec=messages&amp;sec2=operation/messages/message">';
 		print_table ($table);
 		echo '</form>';
 	}

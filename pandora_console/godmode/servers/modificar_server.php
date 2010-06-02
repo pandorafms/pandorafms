@@ -52,7 +52,6 @@ if (isset($_GET["server"])) {
 	echo "</div>";
 
 } else {
-	$servers = get_server_info ();
 	print_page_header (__('Manage servers'), "", false, "", true);
 
 	if (isset ($_GET["delete"])) {
@@ -77,7 +76,8 @@ if (isset($_GET["server"])) {
 			echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
 		}
 	}
-
+	
+	$servers = get_server_info ();
 	if ($servers !== false) {
 		$table->width = "90%";
 		$table->class = "databox";
@@ -118,7 +118,7 @@ if (isset($_GET["server"])) {
 			$data[4] = human_time_comparation ($server["laststart"]);
 			$data[5] = human_time_comparation ($server["keepalive"]);
 			$data[6] = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
-			$data[6] .= print_image ('images/cross.png', true, array ('title' => __('Delete')));
+			$data[6] .= print_image ('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" . __('Modules run by this server will stop working. Do you want to continue?') ."')) return false"));
 			$data[6] .= '</a>';
 			
 			array_push ($table->data, $data);

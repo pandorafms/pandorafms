@@ -42,18 +42,18 @@ $center = (int) get_parameter ('center', 0);
 
 /* Main code */
 
-print_page_header (__('Network map'));
 
 if ($pure == 1) {
-	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
-	print_image ("images/normalscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
-	echo '</a>';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
+	$onheader .= print_image ("images/normalscreen.png", true, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
+	$onheader .= '</a>';
 } else {
-	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1">';
-	print_image ("images/fullscreen.png", false, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
-	echo '</a>';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1">';
+	$onheader .= print_image ("images/fullscreen.png", true, array ('title' => __('Full screen'), 'alt' => __('Normal screen')));
+	$onheader .= '</a>';
 }
-echo '</h2>';
+
+print_page_header (__('Network map'), "images/bricks.png", false, "", false, $onheader);
 
 // Layout selection
 $layout_array = array (

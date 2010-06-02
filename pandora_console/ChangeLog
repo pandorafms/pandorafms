@@ -1,5 +1,10 @@
 2010-06-02  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/networkmap.php: Fixed the fullscreen
+	icon out of the header for bug: 3004025
+
+2010-06-02  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	operation/agentes/status_monitor.php
 	operation/agentes/group_view.php: Fixed the group

@@ -1,3 +1,10 @@
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php, include/functions.php,
+	godmode/reporting/reporting_builder.php,
+	godmode/reporting/reporting_builder.item_editor.php: added the code for
+	show a new item event_report_group.
+
 2010-06-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/messages/message.php: Small fixes. Fixed bug #3008779.

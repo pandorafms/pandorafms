@@ -38,6 +38,7 @@ switch ($action) {
 		$line = null;
 		$description = null;
 		$sql = null;
+		$group = null;
 		break;
 	default:
 		$actionParameter = 'update';
@@ -175,6 +176,11 @@ switch ($action) {
 				$idAgent = $item['id_agent'];
 				$period = $item['period'];
 				break;
+			case 'event_report_group':
+				$description = $item['description'];
+				$period = $item['period'];
+				$group = $item['id_agent'];
+				break;
 			case 'event_report_module':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
@@ -240,6 +246,10 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_period" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
 			<td style=""><?php print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
+		</tr>
+		<tr id="row_group" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Group');?></td>
+			<td style=""><?php print_select(get_all_groups(), 'group', $group, '', __('All'), '0'); ?></td>
 		</tr>
 		<tr id="row_agent" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
@@ -539,8 +549,14 @@ function chooseType() {
 	$("#row_line_separator").css('display', 'none');
 	$("#sla_list").css('display', 'none');
 	$("#row_custom_example").css('display', 'none');
+	$("#row_group").css('display', 'none');
 	
 	switch (type) {
+		case 'event_report_group':
+			$("#row_description").css('display', '');
+			$("#row_period").css('display', '');
+			$("#row_group").css('display', '');
+			break;
 		case 'simple_graph':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');

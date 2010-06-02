@@ -180,6 +180,9 @@ switch ($action) {
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
 						}
+						else if ($values['type'] == 'event_report_group') {
+							$values['id_agent'] = get_parameter('group');
+						}
 						
 						$values['header_definition'] = get_parameter('header');
 						$values['column_separator'] = get_parameter('field');
@@ -206,6 +209,9 @@ switch ($action) {
 						}
 						else if ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
+						}
+						else if ($values['type'] == 'event_report_group') {
+							$values['id_agent'] = get_parameter('group');
 						}
 						
 						$values['header_definition'] = get_parameter('header');

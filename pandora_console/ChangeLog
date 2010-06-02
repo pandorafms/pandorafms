@@ -1,5 +1,10 @@
 2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/reporting/reporting_xml.php: sorry I lost commit the changes to
+	generate the report item "event_report_group".
+
+2010-06-02  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* general/header.php, godmode/db/db_audit.php,
 	godmode/reporting/reporting_builder.item_editor.php:  cleaned html and fixed
 	unclose html tags in source code, the eclipse warm to me.

@@ -1251,6 +1251,56 @@ function get_agents_detailed_event_reporting ($id_agents, $period = 0, $date = 0
 		return print_table ($table, $return);
 }
 
+/**
+ * 
+ * @param unknown_type $id_group
+ * @param unknown_type $period
+ * @param unknown_type $date
+ * @param unknown_type $return
+ * @param unknown_type $html
+ */
+function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, $return = false, $html = true) {
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if (empty ($period)) {
+		global $config;
+		$period = $config["sla_period"];
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = __('Event name');
+	$table->head[1] = __('Event type');
+	$table->head[2] = __('Criticity');
+	$table->head[3] = __('Timestamp');
+	
+	$events = get_group_events($id_group, $period, $date);
+	
+	if ($events)
+		foreach ($events as $event) {
+			$data = array ();
+			$data[0] = $event['evento'];
+			$data[1] = $event['event_type'];
+			$data[2] = get_priority_name ($event['criticity']);
+			$data[3] = $event['timestamp'];
+			array_push ($table->data, $data);
+		}
+	
+	if ($events) {
+		if ($html) {
+			return print_table ($table, $return);
+		}
+		else {
+			return $table;
+		}
+	}
+}
+
 /** 
  * Get a detailed report of summarized events per agent
  *
@@ -1686,54 +1736,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			break;
-//		case 4:
-//		case 'event_report':
-//			$id_agent = get_agent_id ($agent_name);
-//			$data = array ();
-//			$data[0] = $sizh.__('Event report').$sizhfin;
-//			$data[1] = $sizh.human_time_description ($content['period']).$sizhfin;
-//			array_push ($table->data, $data);
-//			
-//			// Put description at the end of the module (if exists)
-//			if ($content["description"] != ""){
-//				$table->colspan[1][0] = 3;
-//				$data_desc = array();
-//				$data_desc[0] = $content["description"];
-//				array_push ($table->data, $data_desc);
-//			}
-//			
-//			$table->colspan[2][0] = 3;
-//			$data = array ();
-//			$table_report = event_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
-//	
-//			$table_report->class = 'databox';
-//			$table_report->width = '100%';
-//			$data[0] = print_table ($table_report, true);
-//			array_push ($table->data, $data);
-//			
-//			break;
-//		case 5:
-//		case 'alert_report':
-//			$data = array ();
-//			$data[0] = $sizh.__('Alert report').$sizhfin;
-//			$data[1] = $sizh.$report['group_name'].$sizhfin;
-//			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
-//			array_push ($table->data, $data);
-//			
-//			// Put description at the end of the module (if exists)
-//			if ($content["description"] != ""){
-//				$table->colspan[1][0] = 3;
-//				$data_desc = array();
-//				$data_desc[0] = $content["description"];
-//				array_push ($table->data, $data_desc);
-//			}
-//			
-//			$data = array ();
-//			$table->colspan[2][0] = 3;
-//			$data[0] = alert_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
-//			array_push ($table->data, $data);
-//			
-//			break;
 		case 6:
 		case 'monitor_report':
 			//RUNNING
@@ -1857,70 +1859,6 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			break;
-//		case 11:
-//		case 'general_group_report':
-//			$data = array ();
-//			$data[0] = $sizh.__('Group').$sizhfin;
-//			$data[1] = $sizh.$report['group_name'].$sizhfin;
-//			array_push ($table->data, $data);
-//			
-//			// Put description at the end of the module (if exists)
-//			if ($content["description"] != ""){
-//				$table->colspan[0][0] = 2;
-//				$data_desc = array();
-//				$data_desc[0] = $content["description"];
-//				array_push ($table->data, $data_desc);
-//			}
-//			
-//			$data = array ();
-//			$table->colspan[1][0] = 2;
-//			$data[0] = print_group_reporting ($report['id_group'], true);
-//			array_push ($table->data, $data);
-//			
-//			break;
-//		case 12:
-//		case 'monitor_health':
-//			$data = array ();
-//			$data[0] = $sizh.__('Monitor health').$sizhfin;
-//			$data[1] = $sizh.$report["group_name"].$sizhfin;
-//			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
-//			array_push ($table->data, $data);
-//			
-//			// Put description at the end of the module (if exists)
-//			if ($content["description"] != ""){
-//				$table->colspan[0][0] = 4;
-//				$data_desc = array();
-//				$data_desc[0] = $content["description"];
-//				array_push ($table->data, $data_desc);
-//			}
-//			
-//			$data = array ();
-//			$table->colspan[1][0] = 4;
-//			$data[0] = monitor_health_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
-//			array_push ($table->data, $data);
-//			
-//			break;
-//		case 13:
-//		case 'agents_detailed':
-//			$data = array ();
-//			$data[0] = $sizh.__('Agents detailed view').$sizhfin;
-//			$data[1] = $sizh.$report["group_name"].$sizhfin;
-//			array_push ($table->data, $data);
-//			
-//			// Put description at the end of the module (if exists)
-//			if ($content["description"] != ""){
-//				$table->colspan[0][0] = 2;
-//				$data_desc = array();
-//				$data_desc[0] = $content["description"];
-//				array_push ($table->data, $data_desc);
-//			}
-//			
-//			$table->colspan[0][0] = 2;
-//			$data = array ();
-//			$table->colspan[1][0] = 3;
-//			$data[0] = get_group_agents_detailed_reporting ($report['id_group'], $content['period'], $report["datetime"], true);
-//			array_push ($table->data, $data);
-//			break;
 		case 'agent_detailed_event':
 		case 'event_report_agent':
 			//RUNNING
@@ -2007,6 +1945,24 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$cellContent = print_table($table2, true);
 			array_push($table->data, array($cellContent));
+			break;
+		case 'event_report_group':
+			$data = array ();
+			$data[0] = $sizh .  __('Group detailed event') . $sizhfin;
+			$data[1] = $sizh . get_group_name($content['id_agent']) . $sizhfin;
+			array_push ($table->data, $data);
+			
+			if ($content["description"] != ""){
+				$table->colspan[1][0] = 3;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$table->colspan[2][0] = 3;
+			$data[0] = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true);
+			array_push ($table->data, $data);
 			break;
 		case 'event_report_module':
 			$data = array ();

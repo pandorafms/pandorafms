@@ -1,5 +1,11 @@
 2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/update_manager/lib/libupdate_manager_client.php: changed the
+	source code, now check the connection to server with a socket.
+	Fixes: #3004761
+
+2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* general/license/pandora_info_ast_es.html:   cleaned html and fixed unclose
 	html tags in source code, the eclipse warm to me.
 

@@ -147,7 +147,7 @@ foreach ($traps as $trap) {
 $sql = "SELECT * FROM ttrap %s ORDER BY timestamp DESC LIMIT %d,%d";
 $whereSubquery = 'WHERE 1=1';
 	if ($filter_agent != '')
-		$whereSubquery .= ' AND source LIKE "' . $filter_agent . "'";
+		$whereSubquery .= ' AND source LIKE "' . $filter_agent . '"';
 	
 	if ($filter_oid != '') {
 		//Test if install the enterprise to search oid in text or oid field in ttrap.

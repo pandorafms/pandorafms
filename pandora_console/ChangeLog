@@ -1,5 +1,10 @@
 2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* general/license/pandora_info_ast_es.html:   cleaned html and fixed unclose
+	html tags in source code, the eclipse warm to me.
+
+2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/snmpconsole/snmp_view.php: fixed a typo mistake in SQL query.
 	Fixes: #3010543
 

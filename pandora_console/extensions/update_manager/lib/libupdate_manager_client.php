@@ -58,6 +58,14 @@ define ('XMLRPC_DEBUG', 0);
 define ('XMLRPC_TIMEOUT', 15);
 
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass, $function, $parameters) {
+	//Test conection of host
+	$fp = @fsockopen($server_host, $server_port, $errno, $errstr);
+	if ($errstr == "php_network_getaddresses: getaddrinfo failed: Name or service not known") {
+		echo '<strong>Open Update Manager</strong> Server comunication error: failed check connection to server.';
+		return false;
+	}
+	fclose($fp);
+	
 	$msg = new XML_RPC_Message ($function, $parameters);
 	$client = new XML_RPC_Client ($server_path, $server_host, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass);
 	if (defined ('XMLRPC_DEBUG'))

@@ -107,6 +107,12 @@ echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
 
 %preun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
 /etc/init.d/pandora_server stop &>/dev/null
 /etc/init.d/tentacle_serverd stop &>/dev/null
 chkconfig --del pandora_server

@@ -88,6 +88,11 @@ chkconfig pandora_agent_daemon on
 
 %preun
 
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
 chkconfig --del pandora_agent_daemon 
 /etc/init.d/pandora_agent_daemon stop
 rm /etc/init.d/pandora_agent_daemon

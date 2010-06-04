@@ -70,6 +70,12 @@ fi
 
 
 %preun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
 rm -Rf %{prefix}/pandora_console
 
 %files

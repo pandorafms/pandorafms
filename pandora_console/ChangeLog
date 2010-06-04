@@ -1,3 +1,7 @@
+2010-06-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_console.spec: Fixed. Upgrading an RPM broke the installation.
+
 2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/update_manager/lib/libupdate_manager_client.php: changed the

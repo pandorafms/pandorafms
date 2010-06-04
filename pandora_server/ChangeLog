@@ -1,5 +1,9 @@
 2010-06-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_server.spec: Fixed the %postun target.
+
+2010-06-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_console.spec: Fixed. Upgrading an RPM broke the installation.
 
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>

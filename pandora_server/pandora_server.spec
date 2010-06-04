@@ -119,6 +119,12 @@ chkconfig --del pandora_server
 chkconfig --del tentacle_serverd
 
 %postun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
 rm -Rf /etc/init.d/tentacle_serverd
 rm -Rf /etc/init.d/pandora_server
 rm -Rf %{prefix}pandora_server

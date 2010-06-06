@@ -59,13 +59,14 @@ switch ($action) {
 			$table->head = array ();
 			$table->align = array ();
 			$table->align[2] = 'center';
+			$table->align[3] = 'center';
 			$table->align[4] = 'center';
 			$table->data = array ();
 			$table->head[0] = __('Report name');
 			$table->head[1] = __('Description');
 			$table->head[2] = __('Private');
 			$table->head[3] = __('Group');
-			$table->head[4] = '';
+			$table->head[4] = __('Delete');
 			$table->size = array ();
 			$table->size[4] = '40px';
 			
@@ -88,7 +89,7 @@ switch ($action) {
 				else
 					$data[2] = __('No');
 					
-				$data[3] = get_group_name($report['id_group'], true);
+				$data[3] = print_group_icon($report['id_group'], true);
 				$data[4] = '<form method="post" style="display:inline" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 				$data[4] .= print_input_hidden ('id_report', $report['id_report'], true);
 				$data[4] .= print_input_hidden ('action','delete_report', true);
@@ -303,7 +304,7 @@ switch ($action) {
 						";
 						break;
 					case 'type':
-						$sql = "SELECT id_rc  FROM treport_content WHERE %s ORDER BY type %s";
+						$sql = "SELECT id_rc FROM treport_content WHERE %s ORDER BY type %s";
 						break;
 				}
 				$sql = sprintf($sql, 'id_report = ' . $idReport, '%s');

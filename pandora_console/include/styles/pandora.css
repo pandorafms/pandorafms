@@ -281,7 +281,7 @@ input.sub[disabled] {
 
 input.next, input.upd, input.ok, input.wand, input.delete, input.search,
 input.copy, input.add, input.graph, input.percentile, input.binary,
-input.camera, input.config {
+input.camera, input.config, input.cancel {
 	padding-right: 21px;
 }
 input.next {
@@ -322,6 +322,9 @@ input.camera {
 }
 input.config {
 	background: #e5e5e5 url(../../images/config.png) no-repeat right 3px;
+}
+input.cancel {
+	background: #e5e5e5 url(../../images/cancel.png) no-repeat right 3px;
 }
 table, img {
 	border: 0px;

@@ -59,20 +59,20 @@ if ($delete_graph) {
 $graphs = get_user_custom_graphs ();
 
 if (! empty ($graphs)) {
-	$table->width = '650px';
+	$table->width = '720px';
 	$tale->class = 'databox_frame';
 	$table->align = array ();
 	$table->align[0] = 'center';
 	$table->align[3] = 'right';
 	$table->align[4] = 'center';
 	$table->head = array ();
-	$table->head[0] = '';
+	$table->head[0] = __('View');
 	$table->head[1] = __('Graph name');
 	$table->head[2] = __('Description');
 	$table->head[3] = __('Number of Graphs');
 	$table->head[4] = __('Group');
 	$table->size[0] = '20px';
-	$table->size[3] = '80px';
+	$table->size[3] = '125px';
 	$table->size[4] = '50px';
 	if (give_acl ($config['id_user'], 0, "AW")) {
 		$table->align[5] = 'center';
@@ -108,7 +108,7 @@ else {
 }
 
 echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/graph_builder">';
-echo '<div class="action-buttons" style="width: 650px;">';
+echo '<div class="action-buttons" style="width: 720px;">';
 print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";

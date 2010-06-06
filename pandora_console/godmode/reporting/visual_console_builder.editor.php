@@ -1,7 +1,7 @@
 <?php
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -159,16 +159,16 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<tr id="button_update_row" class="datos">
 			<td colspan="2" style="text-align: right;">
 			<?php
-			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub"');
-			print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub"');
+			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+			print_button(__('Update'), 'update_button', false, 'updateAction();', 'class="sub upd"');
 			?>
 			</td>
 		</tr>
 		<tr id="button_create_row" class="datos">
 			<td colspan="2" style="text-align: right;">
 			<?php
-			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub"');
-			print_button(__('Create'), 'create_button', false, 'createAction();', 'class="create sub"');
+			print_button(__('Cancel'), 'cancel_button', false, 'cancelAction();', 'class="sub cancel"');
+			print_button(__('Create'), 'create_button', false, 'createAction();', 'class="sub wand"');
 			?>
 			</td>
 		</tr>

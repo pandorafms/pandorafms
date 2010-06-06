@@ -1,3 +1,15 @@
+2010-06-06  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/reporting/reporting_builder.php, godmode/reporting/graphs.php,
+	godmode/reporting/map_builder.php: Better table headers and table size.
+
+	* godmode/reporting/reporting/visual_console_builder.editor.php: Added
+	nice icons to buttons.
+
+	* images/cancel.php: New icon file.
+
+	* include/styles/pandora.css: New cancel input style.
+
 2010-06-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_console.spec: Fixed. Upgrading an RPM broke the installation.

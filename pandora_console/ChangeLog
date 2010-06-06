@@ -1,5 +1,9 @@
 2010-06-06  Raúl Mateos <raulofpandora@gmail.com>
 
+	* pandora_console_install: Cleaned code. Updated year.
+
+2010-06-06  Raúl Mateos <raulofpandora@gmail.com>
+
 	* godmode/reporting/reporting_builder.php, godmode/reporting/graphs.php,
 	godmode/reporting/map_builder.php: Better table headers and table size.
 
@@ -22,8 +26,8 @@
 
 2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
 
-	* general/license/pandora_info_ast_es.html:   cleaned html and fixed unclose
-	html tags in source code, the eclipse warm to me.
+	* general/license/pandora_info_ast_es.html: cleaned html and fixed unclose
+	html tags in source code, the eclipse warned me.
 
 2010-06-03  Miguel de Dios  <miguel.dedios@artica.es>
 
@@ -39,7 +43,7 @@
 
 	* general/header.php, godmode/db/db_audit.php,
 	godmode/reporting/reporting_builder.item_editor.php:  cleaned html and fixed
-	unclose html tags in source code, the eclipse warm to me.
+	unclose html tags in source code, the eclipse warned me.
 
 2010-06-02  Raúl Mateos <raulofpandora@gmail.com>
 

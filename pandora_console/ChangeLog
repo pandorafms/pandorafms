@@ -1,3 +1,10 @@
+2010-06-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php: fixed the uncolour path between parent
+	and child when update 3.0 to 3.1.
+	
+	Fixes: #3008489
+
 2010-06-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Disabled DB cache for

@@ -1,7 +1,7 @@
 /* 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2010 Artica Soluciones Tecnológicas S.L
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ h1 {
 	font-size: 18px;
 	color: #ffffff;
 }
-lef
 h2 {
 	font: bold 1em Arial, Sans-serif;
 	text-transform: uppercase;
@@ -60,7 +59,7 @@ div#install_img {
 div#foot_install {
 	font-size: 7pt;
 	color: #fff;
-	margin-top: solid 2px #000;
+	margin-top: #000;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-left: 20px;
@@ -71,7 +70,7 @@ div#foot_install {
 	border-left: 1px solid #999;
 	border-right: 1px solid #999;
 }
-div#foot_install a{
+div#foot_install a {
 	color: #ccc;
 }
 input#step4, input#step4:hover {
@@ -92,17 +91,17 @@ div.info {
         margin-top: 7px;
         padding: 2px 1px 6px 25px;
 }
-span.arr{
+span.arr {
 	background: url(../../images/arrow.png) no-repeat;
 	margin-top: 2px;
 	margin-left: 5px;
 	padding: 2px 1px 6px 15px;
 	display: block;
-	font-face: verdana,arial, sans;
+	font-family: verdana,arial, sans;
         font-size: 8.5pt;
 }
 body {
-	font-face: verdana,arial, sans;
+	font-family: verdana,arial, sans;
 	font-size: 9pt;
 	background-color: #fff;
 }

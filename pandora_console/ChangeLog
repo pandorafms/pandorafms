@@ -1,3 +1,12 @@
+2010-06-07  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/agentes/agent_conf_gis.php: Changed warning text and style.
+
+	* include/styles/install.css, include/styles/pandora_minimal.css:
+	Fixed some typos.
+
+	* include/styles/pandora.css: Add new warn style to shown warning texts.
+
 2010-06-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: fixed the uncolour path between parent

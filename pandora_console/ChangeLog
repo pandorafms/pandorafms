@@ -1,3 +1,10 @@
+2010-06-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_list.list.php: fixed the style of action list in the
+	alert list.
+	
+	Fixes: #3000991
+
 2010-06-07  Sergio Martin <sergio.martin@artica.es>
 
 	* install.php: Fixed typo bug for bug 3012385

@@ -246,11 +246,11 @@ foreach ($simple_alerts as $alert) {
 	} else {
 		$data[5] = '<ul class="action_list">';
 		foreach ($actions as $action_id => $action) {
-			$data[5] .= '<li><div>';
+			$data[5] .= '<li>';
 			if ($alert['disabled'])
-				$data[5] .= '<span class="action_name" style="font-style: italic; color: #aaaaaa;">';
+				$data[5] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 			else
-				$data[5] .= '<span class="action_name">';
+				$data[5] .= '<font class="action_name">';
 			$data[5] .= $action['name'];
 			$data[5] .= ' <em>(';
 			if ($action['fires_min'] == $action['fires_max']) {
@@ -258,25 +258,25 @@ foreach ($simple_alerts as $alert) {
 					$data[5] .= __('Always');
 				else
 					$data[5] .= __('On').' '.$action['fires_min'];
-			} else {
+			}
+			else {
 				if ($action['fires_min'] == 0)
 					$data[5] .= __('Until').' '.$action['fires_max'];
 				else
 					$data[5] .= __('From').' '.$action['fires_min'].
 						' '.__('to').' '.$action['fires_max'];
 			}
-		
 			$data[5] .= ')</em>';
-			$data[5] .= '</span>';
-			$data[5] .= ' <span class="delete" style="clear:right">';
-			$data[5] .= '<form method="post" class="delete_link">';
+			$data[5] .= '</font>';
+//			$data[5] .= ' <span class="delete" style="clear:right">';
+			$data[5] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
 			$data[5] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
 			$data[5] .= print_input_hidden ('delete_action', 1, true);
 			$data[5] .= print_input_hidden ('id_alert', $alert['id'], true);
 			$data[5] .= print_input_hidden ('id_action', $action_id, true);
 			$data[5] .= '</form>';
-			$data[5] .= '</span>';
-			$data[5] .= '</div></li>';
+//			$data[5] .= '</span>';
+			$data[5] .= '</li>';
 		}
 		$data[5] .= '</ul>';
 	}

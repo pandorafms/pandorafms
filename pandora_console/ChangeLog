@@ -1,3 +1,8 @@
+2010-06-07  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/configure_alert_template.php: Fixed typo fix 
+	into date to and date from format for bug: 3011725
+
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* general/license/pandora_info_pt_br.html: fixed the unclose tag in the

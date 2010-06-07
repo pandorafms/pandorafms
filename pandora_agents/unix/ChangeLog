@@ -1,3 +1,7 @@
+2010-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added build information to the agent version.
+
 2010-06-07  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent_installer: Added support for FreeBSD.

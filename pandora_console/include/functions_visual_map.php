@@ -628,15 +628,20 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
 				$line['node_end'] = 'layout-data-'.$layout_data["id"];
 				switch ($status_parent) {
-				case 3:		$line["color"] = "#ccc"; // Gray
-							break;
-				case 2: 	$line["color"] = "#20f6f6"; // Yellow
-							break;
-				case 0: 	$line["color"] = "#00ff00"; // Green
-							break;
-				case 4:
-				case 1:    $line["color"] = "#ff0000"; // Red
-							break;
+					default:
+					case 3:
+						$line["color"] = "#ccc"; // Gray
+						break;
+					case 2:
+						$line["color"] = "#20f6f6"; // Yellow
+						break;
+					case 0:
+						$line["color"] = "#00ff00"; // Green
+						break;
+					case 4:
+					case 1:
+						$line["color"] = "#ff0000"; // Red
+						break;
 				}
 				array_push ($lines, $line);
 			}

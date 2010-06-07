@@ -5,7 +5,7 @@
 # (c) 2008-2010 Artica ST
 # (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
 # 
-# This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux)
+# This is a generic installer for all Unix-like systems.(AIX, HP-UX, SunOS, Linux, FreeBSD)
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -22,6 +22,7 @@ PANDORA_CFG=/etc/pandora
 PANDORA_LOG_DIR=/var/log/pandora
 PANDORA_LOG=pandora_agent.log
 TENTACLE=/usr/bin/tentacle_client
+PANDORA_MAN=/usr/share/man
 
 MODE=$1
 PANDORA_BASE=$2
@@ -38,7 +39,7 @@ then
 fi
 
 UNIX_KIND=`uname -s`
-if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd | grep \"$UNIX_KIND\"`" ]
+if [ -z "`echo Linux HP-UX SunOS AIX Solaris Darwin BSD bsd FreeBSD | grep \"$UNIX_KIND\"`" ]
 then
 	echo "This system: '$UNIX_KIND' is not supported by this script"
 	echo "Please make the install yourself as it's described in documentation"
@@ -76,6 +77,16 @@ then
 fi
 
 uninstall () {
+	OS_NAME=`uname -s`
+        if [ "$OS_NAME" = "FreeBSD" ]
+        then
+		PANDORA_HOME=/usr/local/share/pandora_agent
+		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_CFG=/usr/local/etc/pandora
+		TENTACLE=/usr/local/bin/tentacle_client
+		PANDORA_MAN=/usr/local/man
+        fi
+
 	echo "Removing Pandora FMS Agent..."
 	rm -Rf $PANDORA_BASE$PANDORA_BIN 2> /dev/null
 	
@@ -93,15 +104,19 @@ uninstall () {
 	rm -Rf $PANDORA_BASE/etc/rc.pandora_agent_daemon 2> /dev/null
 	rm -Rf $PANDORA_BASE/etc/rc?.d/S90pandora_agent_daemon 2> /dev/null
 	rm -Rf $PANDORA_BASE/sbin/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/usr/local/etc/rc.d/pandora_agent 2> /dev/null
 	
 	rm -Rf $PANDORA_BASE$PANDORA_HOME 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null
 	rm -Rf $PANDORA_BASE$TENTACLE 2> /dev/null
 
+	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/tentacle_client.1.gz 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/pandora_agent.1.gz 2> /dev/null
+
 	# Skip delete of /etc/pandora if exists configuration of a server
-	if [ ! -f $PANDORA_BASE/etc/pandora/pandora_server.conf ]
+	if [ ! -f $PANDORA_BASE/$PANDORA_CFG/pandora_server.conf ]
 	then
-		rm -Rf $PANDORA_BASE/etc/pandora 2> /dev/null
+		rm -Rf $PANDORA_BASE/$PANDORA_CFG 2> /dev/null
 	fi
 
     if [ ! -z "$PANDORA_BASE" ]
@@ -118,6 +133,16 @@ install () {
 	OS_VERSION=`uname -r`
 	OS_NAME=`uname -s`
 	OLDFILENAMETMP=`date +"%Y-%m-%d"`
+
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+		PANDORA_HOME=/usr/local/share/pandora_agent
+		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_CFG=/usr/local/etc/pandora
+		TENTACLE=/usr/local/bin/tentacle_client
+		PANDORA_MAN=/usr/local/man
+	fi
+
 	echo "Detecting Unix distribution: $OS_NAME version $OS_VERSION"
 	if [ -f $PANDORA_BASE$PANDORA_HOME ] && [ "$FORCE" = "0" ]
 	then
@@ -141,10 +166,15 @@ install () {
     echo "Creating Pandora FMS Agent home directory at $PANDORA_BASE$PANDORA_HOME"
     if [ ! -z "$PANDORA_BASE" ]
     then
-        mkdir -p $PANDORA_BASE 2> /dev/null
-        mkdir -p $PANDORA_BASE/usr/bin 2> /dev/null
-        mkdir -p $PANDORA_BASE/var/log 2> /dev/null
-        mkdir -p $PANDORA_BASE/usr/share/man/man1 2> /dev/null
+	mkdir -p $PANDORA_BASE 2> /dev/null
+	mkdir -p $PANDORA_BASE/var/log 2> /dev/null
+	mkdir -p $PANDORA_BASE/$PANDORA_MAN/man1 2> /dev/null
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+            mkdir -p $PANDORA_BASE/usr/local/bin 2> /dev/null
+	else
+            mkdir -p $PANDORA_BASE/usr/bin 2> /dev/null
+	fi
     fi
 
 	mkdir -p $PANDORA_BASE$PANDORA_HOME 2> /dev/null
@@ -169,13 +199,18 @@ install () {
 	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
 	cp pandora_agent $PANDORA_BASE$PANDORA_BIN
 	chmod 755 $PANDORA_BASE$PANDORA_BIN
-	chown root:root $PANDORA_BASE$PANDORA_BIN
-	
-	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_HOME/pandora_agent.conf..."
-	if [ -f $PANDORA_BASE/etc/pandora/pandora_agent.conf ]
+	if [ "$OS_NAME" = "FreeBSD" ]
 	then
-		cp $PANDORA_BASE/etc/pandora/pandora_agent.conf $PANDORA_BASE/etc/pandora/pandora_agent.conf.$OLDFILENAMETMP
-		echo "Backing up old configuration file to $PANDORA_BASE/etc/pandora_agent.conf.$OLDFILENAMETMP"
+		chown root:wheel $PANDORA_BASE$PANDORA_BIN
+	else
+		chown root:root $PANDORA_BASE$PANDORA_BIN
+	fi
+
+	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf..."
+	if [ -f $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf ]
+	then
+		cp $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf.$OLDFILENAMETMP
+		echo "Backing up old configuration file to $PANDORA_BASE/$PANDORA_CFG/pandora_agent.conf.$OLDFILENAMETMP"
 	fi
 
 	echo "Copying Pandora FMS Agent plugins to $PANDORA_BASE$PANDORA_HOME/plugins..."
@@ -190,26 +225,39 @@ install () {
 	echo "Installing Tentacle Client manual"
     if [ -f ../man/man1/tentacle_client.1.gz ]
     then 
-    	cp ../man/man1/tentacle_client.1.gz $PANDORA_BASE/usr/share/man/man1
+    	cp ../man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
     else
-    	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/usr/share/man/man1
+    	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
     fi
-    chmod 644 $PANDORA_BASE/usr/share/man/man1/tentacle_client.1.gz
+    chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/tentacle_client.1.gz
 
 	echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
 	chown -R root $PANDORA_BASE$PANDORA_HOME
 	chmod -R 600 $PANDORA_BASE$PANDORA_TEMP
 	chown root $PANDORA_BASE$PANDORA_TEMP
 	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
-	chown root:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	    chown root:wheel $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG	
+	    chown root:daemon $PANDORA_BASE$PANDORA_TEMP
+	    chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
+	else
+	    chown root:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
+	fi
 
     # Alter dynamically the daemon launcher and setup the new path 
     # if PANDORA_BASE is customized.
 
     if [ ! -z "$PANDORA_BASE" ]
     then
-        DAEMON_SCRIPT=pandora_agent_daemon
-        DAEMON_TEMP=pandora_agent_daemon_temp
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	    DAEMON_SCRIPT=FreeBSD/pandora_agent
+            DAEMON_TEMP=pandora_agent_daemon_temp
+	else
+            DAEMON_SCRIPT=pandora_agent_daemon
+            DAEMON_TEMP=pandora_agent_daemon_temp
+	fi
         
         AGENT_CFG=$OS_NAME/pandora_agent.conf
         AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
@@ -220,17 +268,32 @@ install () {
         PANDORA_BASE_DECODED=`cat PANDORA_BASE.temp2`
         rm PANDORA_BASE.temp PANDORA_BASE.temp2
 
-        sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-        mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	    sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/local\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
 
-        sed -e "s/^PANDORA_PATH\=[.]*/PANDORA_PATH\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
-        mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	    sed -e "s/^command\=[.]*/command\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
 
-        sed -e "s/^LOGFILE\=[.]*/LOGFILE\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
-        mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	    sed -e 's/^command_args\=\"[.]*/command_args\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
 
-        sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
-        mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	    sed -e 's/^required_files\=\"[.]*/required_files\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
+	else
+            sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^PANDORA_PATH\=[.]*/PANDORA_PATH\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^LOGFILE\=[.]*/LOGFILE\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	fi
 
         sed -e "s/^temporal [.]*/temporal $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
         mv $AGENT_CFG_TEMP $AGENT_CFG
@@ -239,13 +302,18 @@ install () {
         mv $AGENT_CFG_TEMP $AGENT_CFG
     fi
 
-    echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_HOME/pandora_agent.conf"
+    echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
 
 	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chown root $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 
-	echo "Linking start-up daemon script 'pandora_agent_daemon' on $OS_NAME";
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+		echo "Linking start-up daemon script 'pandora_agent' on $OS_NAME";
+	else
+		echo "Linking start-up daemon script 'pandora_agent_daemon' on $OS_NAME";
+	fi
 
 	if [ "$OS_NAME" = "AIX" ]
 	then
@@ -285,14 +353,20 @@ install () {
 		fi
 	fi
 
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	PANDORA_STARTUP=/usr/local/etc/rc.d/pandora_agent
+		cp FreeBSD/pandora_agent $PANDORA_STARTUP
+	fi
+
 	echo "Installing Pandora Agent manual"
     if [ -e ../man/man1/pandora_agent.1.gz ]
     then
-    	cp ../man/man1/pandora_agent.1.gz $PANDORA_BASE/usr/share/man/man1
+    	cp ../man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
     else
-    	cp man/man1/pandora_agent.1.gz $PANDORA_BASE/usr/share/man/man1
+    	cp man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
     fi
-    chmod 644 $PANDORA_BASE/usr/share/man/man1/pandora_agent.1.gz
+    chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
 
 	echo "Done."
 	echo " "
@@ -306,8 +380,13 @@ install () {
 	echo " "
 	echo "You also need to setup your $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf config file"
 	echo " "
-	echo "Check your startup configuration to be sure Pandora FMS Agent is ready "
-	echo "to start automatically when system restarts":
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	    echo "Define 'pandora_agent=\"YES\"' in /etc/rc.conf to enable the daemon."
+	else
+	    echo "Check your startup configuration to be sure Pandora FMS Agent is ready "
+	    echo "to start automatically when system restarts":
+	fi
 
 }
 

@@ -1403,7 +1403,7 @@ function get_agent_module_info ($id_agent) {
 		AND tagente_estado.utimestamp > 0 
 		AND tagente_modulo.id_agente = %d", $id_agent);
 	
-	$modules = get_db_all_rows_sql ($sql);
+	$modules = get_db_all_rows_sql ($sql, false, false);
 	
 	if ($modules === false) {
 		return $return;

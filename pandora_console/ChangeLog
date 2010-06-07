@@ -1,3 +1,9 @@
+2010-06-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Disabled DB cache for
+	  get_agent_module_info () to avoid memory errors in big
+	  environments.
+
 2010-06-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_list.list.php: fixed the style of action list in the

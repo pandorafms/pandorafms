@@ -1,3 +1,11 @@
+2010-06-07  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/pandora_agent_installer: Added support for FreeBSD.
+
+	* unix/FreeBSD/pandora_agent: Added startup script for FreeBSD.
+
+	* unix/FreeBSD/pandora_agent.conf: Added configuration file for FreeBSD.
+
 2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* unix/DEBIAN/prerm: disabled the erase conf file and plugin dir.

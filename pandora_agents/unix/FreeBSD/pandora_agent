@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# **********************************************************************
+# Pandora FMS Agent Daemon launcher for FreeBSD
+# (c) 2010 Junichi Satoh <junichi@rworks.jp>
+#
+# **********************************************************************
+
+# PROVIDE: pandora_agent
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+# Add the following line to /etc/rc.conf to enable `pandora_agent':
+#
+# pandora_agent_enable="YES"
+#
+
+. "/etc/rc.subr"
+
+name="pandora_agent"
+
+# read configuration and set defaults
+pandora_agent_enable=${pandora_agent_enable:-"NO"}
+load_rc_config "$name"
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+command=/usr/local/bin/pandora_agent
+command_args="/usr/local/etc/pandora &"
+procname=pandora_agent
+
+pidfile=/var/run/$name.pid
+required_files="/usr/local/etc/pandora/pandora_agent.conf"
+start_precmd=start_precmd
+start_postcmd=start_postcmd
+stop_cmd=pandora_agent_stop
+
+start_precmd()
+{
+	if [ -f $pidfile ]; then
+		PANDORA_PID=`cat $pidfile`
+		echo "pandora_agent is currently running on this machine with PID $PANDORA_PID"
+		echo "Cannot launch again. Aborting."
+		exit 1
+	fi
+}
+
+start_postcmd()
+{
+	PANDORA_PID=`ps auxww | grep $command | grep -v grep | head -1 | awk '{ print $2 }'`
+	echo $PANDORA_PID > $pidfile
+}
+
+pandora_agent_stop()
+{
+	if [ -f $pidfile ]; then
+		echo "Stopping pandora_agent."
+		kill `cat $pidfile`
+		rm -f $pidfile
+	else
+		echo "pandora_agent is not running."
+	fi
+}
+
+run_rc_command "$1"

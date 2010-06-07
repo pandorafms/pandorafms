@@ -1059,3 +1059,9 @@ div#pandora_logo_header {
 .disabled_module {
 	color: #aaa;
 }
+div.warn {
+	background: url(../../images/info.png) no-repeat;
+	color: #ac4444;
+	margin-top: 7px;
+	padding: 2px 1px 6px 25px;
+}

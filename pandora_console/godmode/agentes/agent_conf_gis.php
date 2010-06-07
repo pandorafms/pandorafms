@@ -39,8 +39,7 @@ if (!getAgentMap($id_agente, "500px", "98%", false)) {
 if ($agentData === false) {
 	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
 }
-
-echo "<h4>" . __("Warning: When you change the position the agent automatily enables Ignore GIS Data") . "</h4>";
+echo "<div class='warn'>" .__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
 
 $table->width = '60%';
 $table->data = array();

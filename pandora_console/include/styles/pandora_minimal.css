@@ -6,7 +6,7 @@ Description: A minimal layout
 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-// Copyright (c) 2004-2009 Artica Soluciones Tecnológicas S.L
+// Copyright (c) 2004-2010 Artica Soluciones Tecnológicas S.L
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ a:hover {
 input {
 	padding: 2px 3px 4px 3px;
 	border: 1px solid #ddd;
-	font: verdana, sans-serif;
+	font-family: verdana, sans-serif;
 	font-size: 8pt
 }
 input:hover {
@@ -86,10 +86,8 @@ table, img {
 	border:1px solid #000;
 	position:absolute;
 	margin:0;
-	
 	width:400px;
 	height:240px;
-	
 	visibility:hidden;
 	filter:alpha(opacity=90);
 	-moz-opacity: 0.90;

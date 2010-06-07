@@ -1,3 +1,7 @@
+2010-06-07  Sergio Martin <sergio.martin@artica.es>
+
+	* install.php: Fixed typo bug for bug 3012385
+
 2010-06-06  Raúl Mateos <raulofpandora@gmail.com>
 
 	* pandora_console_install, pandora_console_upgrade: Cleaned code.

@@ -320,7 +320,7 @@ function install_step2() {
 				dependencies. Please correct them or this installer 
 				will not be able to finish your installation.
 				</div>
-				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #4</a>";
+				Ignore it. <a href='install.php?step=3' style='font-weight: bolder;'>Force install Step #3</a>";
 			}
 			else {
 				echo "<a href='install.php?step=3'><br>

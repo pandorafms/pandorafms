@@ -199,7 +199,6 @@ echo "<script type=\"text/javascript\">
 		});
 	});</script>";
 
-      
 if (isset ($id_inc)) { //If $id_inc is set (when $_GET["id"] is set, not $_GET["insert_form"]
 	print_page_header (__('Incident details'). ' #'.$id_inc, "images/book_edit.png", false, "", false, "");
 	echo '<form name="accion_form" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident&action=update">';
@@ -283,12 +282,12 @@ if (empty ($id_creator)) {
 echo '</td></tr><tr><td class="datos2" colspan="4">';
 
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_textarea ("descripcion", 15, 80,  $texto, 'style="height:200px;"');
+	print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;"');
 } else {
-	print_textarea ("descripcion", 15, 80,  $texto, 'style="height:200px;" disabled');
+	print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;" disabled');
 }
 
-echo '</td></tr></table><div style="width: 600px; text-align:right;">';
+echo '</td></tr></table><div style="width: 650px; text-align:right;">';
 
 // Only if user is the used who opened incident or (s)he is admin
 if (isset ($id_inc) AND ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {

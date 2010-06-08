@@ -260,7 +260,13 @@ switch ($action) {
 		
 		$arrayLayers = array();
 		foreach ($layer_list as $layerID) {
-			$arrayLayers[] = JSON_decode($_POST['layer_values_' . $layerID], true);
+			if ($magicQuotesFlag) {
+				$layer = stripslashes($_POST['layer_values_' . $layerID]);
+			}
+			else {
+				$layer = $_POST['layer_values_' . $layerID];
+			}
+			$arrayLayers[] = JSON_decode($layer, true);
 		}
 		
 		$invalidFields = validateMapData($map_name, $map_zoom_level,

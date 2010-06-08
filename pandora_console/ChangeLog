@@ -1,5 +1,10 @@
 2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/gis_maps/configure_gis_map.php: refixed layers when to update data
+	of gis map and magic quotes is on.
+
+2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/alerts_status.php: fixed the style in the list of
 	alerts.
 

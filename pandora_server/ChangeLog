@@ -1,3 +1,9 @@
+2010-06-01  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/postinst: fixed when the package DEB no have previus conf file.
+	
+	* DEBIAN/make_deb_package.sh: cleaned source code.
+
 2010-06-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_server.spec: Fixed the %postun target.

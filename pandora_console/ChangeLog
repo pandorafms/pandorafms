@@ -1,5 +1,10 @@
 2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/conffiles: re-changed the conffiles for try solved a bug in the
+	install DEB package.
+
+2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/gis_maps/configure_gis_map.php: refixed layers when to update data
 	of gis map and magic quotes is on.
 

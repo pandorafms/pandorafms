@@ -29,8 +29,8 @@ use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 
-use constant AGENT_VERSION => '3.1rc1';
-use constant AGENT_BUILD => '100222';
+use constant AGENT_VERSION => '3.1';
+use constant AGENT_BUILD => '100608';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {

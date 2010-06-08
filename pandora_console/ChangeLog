@@ -1,3 +1,11 @@
+2010-06-08  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/incidents/incident_detail.php,
+	operation/incidents/incident.php: cleaned code, improved button usability.
+	TODO: Use links instead buttons where adding notes.
+
+	* operation/incidents/events.php: Cleaned code.
+
 2010-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql, DEBIAN/control,

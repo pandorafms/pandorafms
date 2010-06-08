@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -160,13 +160,13 @@ if ($event_type != ""){
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
 	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal"){
-                $sql_post .= " AND event_type LIKE '%$event_type%' ";
-        }
-        elseif ($event_type == "not_normal"){
-                $sql_post .= " AND event_type LIKE '%warning%' OR LIKE '%critical%' ";
-        }
-        else
-                $sql_post .= " AND event_type = '".$event_type."'";
+		$sql_post .= " AND event_type LIKE '%$event_type%' ";
+	}
+	elseif ($event_type == "not_normal"){
+		$sql_post .= " AND event_type LIKE '%warning%' OR LIKE '%critical%' ";
+	}
+	else
+		$sql_post .= " AND event_type = '".$event_type."'";
 
 }
 if ($severity != -1)

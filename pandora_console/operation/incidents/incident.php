@@ -179,7 +179,7 @@ echo '<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
 <td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = get_incidents_status ();
-print_select ($fields, "estado", $estado, 'javascript:this.form.submit();',  __('All incidents'), -1, false, false, false, 'w155');
+print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
 
 //Legend
 echo '</td><td valign="middle"><noscript>';
@@ -241,7 +241,7 @@ if ($count < 1) {
 		$url .= "&amp;texto=".$texto;
 
 	// Show pagination
-	pagination ($count + $offset, $url, $offset, 15, false); 	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.  
+	pagination ($count + $offset, $url, $offset, 15, false);	//($count + $offset) it's real count of incidents because it's use LIMIT $offset in query.
 	echo '<br />';
 	
 	// Show headers
@@ -262,7 +262,7 @@ if ($count < 1) {
 	$table->head[5] = __('Updated');
 	$table->head[6] = __('Source');
 	$table->head[7] = __('Owner');
-	$table->head[8] = 'X';
+	$table->head[8] = __('Action');
 	
 	$table->size[0] = 43;
 	$table->size[7] = 50;
@@ -291,17 +291,11 @@ if ($count < 1) {
 			$data[0] .= '&nbsp;&nbsp;'.print_image ("images/attachment.png", true, array ("style" => "align:middle;"));
 		
 		$data[1] = print_incidents_status_img ($row["estado"], true);
-		
 		$data[2] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$row["id_incidencia"].'">'.substr(safe_output($row["titulo"]),0,45).'</a>';
-		
-		$data[3] = print_incidents_priority_img ($row["prioridad"], true);																																																													
-		
+		$data[3] = print_incidents_priority_img ($row["prioridad"], true);
 		$data[4] = print_group_icon ($row["id_grupo"], true);
-	
 		$data[5] = print_timestamp ($row["actualizacion"], true);
-		
-		$data[6] = $row["origen"];	
-		
+		$data[6] = $row["origen"];
 		$data[7] = print_username ($row["id_usuario"], true);
 		
 		if (give_acl ($config["id_user"], $row["id_grupo"], "IM") || $config["id_user"] == $row["id_usuario"] || $config["id_user"] == $row["id_creator"]) {
@@ -309,13 +303,14 @@ if ($count < 1) {
 		} else {
 			$data[8] = '';
 		}
-		
+
 		array_push ($table->data, $data);
 	}
 	
 	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
 	print_table ($table);
-	echo '<div style="text-align:right; float:right; padding-right: 30px;">';
+	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
+	echo '<b>'.__('Action').': </b>' ;
 	if (give_acl ($config["id_user"], 0, "IW")) {
 		print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
 	}

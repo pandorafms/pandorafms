@@ -1,3 +1,9 @@
+2010-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql, DEBIAN/control,
+	  DEBIAN/make_deb_package.sh, include/config_process.php,
+	  pandora_console.spec: Update version strings.
+
 2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.main.php: changed the text of button

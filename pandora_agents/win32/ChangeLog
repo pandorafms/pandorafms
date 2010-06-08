@@ -1,3 +1,8 @@
+2010-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc, modules/pandora_module_logevent.cc: Removed
+	  unnecessary log information.
+
 2010-05-27  Raul Mateos  <raulofpandora@gmail.com>
 
 	* bin/pandora_agent.conf: Added some example. Changed

@@ -652,9 +652,7 @@ Pandora_Wmi::getSoftware (list<string> &rows) {
 		if (wmi_svc == NULL) {
            pandoraLog("Error getting wmi_svc\n");
         }
-        else {
-           pandoraLog("wmi_svc is ok\n"); 
-        }
+
         dhCheck (dhGetValue (L"%o", &software_list, wmi_svc,
 				     L".ExecQuery(%S)",
 				     L"SELECT * FROM Win32_Product "));

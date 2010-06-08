@@ -176,7 +176,7 @@ Pandora_Module_Logevent::discardLogEvents () {
     
     // Something went wrong
     if (rc != 0) {
-        pandoraLog ("ReadEventLog error %d", GetLastError ());
+        pandoraDebug ("ReadEventLog error %d", GetLastError ());
     }
 }
 

@@ -34,44 +34,41 @@ use constant AGENT_BUILD => '100222';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
-	# command
-	linux => ['cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\''],
-	solaris => ['MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\''],
-	hpux => ['swapinfo -t | grep memory | awk \'{print $2}\'']
+	linux => 'cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\'',
+	solaris => 'MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\'',
+	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\''
 };
 
 # Commands to retrieve free memory information in kB
 use constant FREEMEMORY_CMDS => {
-	# command
-	linux => ['cat /proc/meminfo  | grep MemFree: | awk \'{ print $2 }\''],
-	solaris => ['vmstat 1 2 | tail -1 | awk \'{ print $5 }\''],
-	hpux => ['swapinfo -t | grep memory | awk \'{print $4}\'']
+	linux => 'cat /proc/meminfo  | grep MemFree: | awk \'{ print $2 }\'',
+	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $5 }\'',
+	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\''
 };
 
 # Commands to retrieve cpu information
 use constant CPUUSAGE_CMDS => {
-	# command
-	linux => ['vmstat 1 2 | tail -1 | awk \'{ print $13 }\''],
-	solaris => ['vmstat 1 2 | tail -1 | awk \'{ print $21 }\''],
-	hpux => ['vmstat 1 2 | tail -1 | awk \'{ print $16 }\'']
+	linux => 'vmstat 1 2 | tail -1 | awk \'{ print $13 }\'',
+	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $21 }\'',
+	hpux => 'vmstat 1 2 | tail -1 | awk \'{ print $16 }\''
 };
 
 # Commands to retrieve process information
 use constant PROC_CMDS => {
-	# command, command name index, cpu usage index, memory usage index
-	linux => ['ps aux', 10, 2, 5],
-	solaris => ['prstat 1 1 | awk -F/ \'{print $1}\' | sed \'s/% / /g\' | sed \'s/K / /g\'', 10, 9, 3],
-	hpux => ['ps -elf', 15, -1, 9],
-	aix => ['ps aux', 10, 2, 5],
+	# cpu usage, memory usage, command name
+	linux => 'ps aux | awk \'NR > 1 {ps = ""; for (i = 11; i <= NF; ++i) {ps = (ps " " $i) }; print $3, $6, ps}\'',
+	solaris => 'prstat 1 1 | awk \'NR > 1 {split ($10, ps, "/"); cpu = substr ($9, 1, length ($9) - 1); mem = substr ($3, 1, length ($3) - 1); print cpu, mem, ps[1]}\'',
+	hpux => 'ps -elf | awk \'NR > 1 {ps = ""; for (i = 15; i <= NF; ++i) {ps = (ps " " $i) }; print 0, $10, ps}\'',
+	aix => 'ps aux | awk \'NR > 1 {print $3, $6, $11}\''
 };
 
 # Commands to retrieve partition information in kB
 use constant PART_CMDS => {
-	# command, mount point index, total index, available index
-	linux => ['df', 5, 1, 3],
-	solaris => ['df -k', 5, 1, 3],
-	hpux => ['df -P', 5, 1, 3],
-	aix => ['df -kP', 5, 1, 3]
+	# total, available, mount point
+	linux => 'df | awk \'NR > 1 {print $2, $4, $6}\'',
+	solaris => 'df -k | awk \'NR > 1 {print $2, $4, $6}\'',
+	hpux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
+	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\''
 };
 	
 # OS and OS version
@@ -284,6 +281,12 @@ sub read_config (;$) {
 		# Plugin
 		} elsif ($line =~ /^\s*module_plugin\s+(.+)$/) {
 			push (@Plugins, $1);
+		# Module proc command redefinition		
+		} elsif ($line =~ /^\s*module_proc_cmd\s+(.+)$/) {
+			PROC_CMDS->{$OS} = $1;
+		# Module freedisk command redefinition		
+		} elsif ($line =~ /^\s*module_freedisk_cmd\s+(.+)$/) {
+			PART_CMDS->{$OS} = $1;
 		# Configuration token
 		} elsif ($line =~ /^\s*(\S+)\s+(.*)$/) {
 			
@@ -625,7 +628,7 @@ sub load_procs () {
 	return if ($Procs{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
 
 	# Get process information
-	my ($cmd, $cmd_idx, $cpu_idx, $mem_idx) = @{PROC_CMDS->{$OS}};
+	my $cmd = PROC_CMDS->{$OS};
 	my @procs = `$cmd`;
 	return undef unless ($? eq 0);
 
@@ -637,17 +640,19 @@ sub load_procs () {
 
 		chomp ($proc);		
 		my @proc_info = split (/\s+/, $proc);
-		next unless defined ($proc_info[$cmd_idx]);
+		next unless ($#proc_info >= 2);
 
 		# Process command
-		my $proc_cmd = join (' ', @proc_info[$cmd_idx..$#proc_info]);
+		my $proc_cmd = join (' ', @proc_info[2..$#proc_info]);
+
+		# Process command
 		$Procs{$proc_cmd} = ();
 		
 		# Process CPU usage
-		$Procs{$proc_cmd}{'cpu'} = $proc_info[$cpu_idx] if defined ($proc_info[$cpu_idx]);
+		$Procs{$proc_cmd}{'cpu'} = $proc_info[0];
 
 		# Process virtual size
-		$Procs{$proc_cmd}{'size'} = $proc_info[$mem_idx] if defined ($proc_info[$mem_idx]);
+		$Procs{$proc_cmd}{'size'} = $proc_info[1];
 	}
 
 	$Procs{'__utimestamp__'} = $utimestamp;
@@ -666,28 +671,27 @@ sub load_parts () {
 	return if ($Parts{'__utimestamp__'} > ($utimestamp - $Conf{'interval'}));
 
 	# Get partition information
-	my ($cmd, $mount_idx, $total_idx, $avail_idx) = @{PART_CMDS->{$OS}};
+	my $cmd = PART_CMDS->{$OS};
 	my @parts = `$cmd`;
 	return undef unless ($? eq 0);
-
-	# Discard the header
-	shift (@parts);
 
 	# Parse partition information
 	foreach my $part (@parts) {
 
 		chomp ($part);		
 		my @part_info = split (/\s+/, $part);
-		next unless defined ($part_info[$mount_idx]);
+		next unless ($#part_info >= 2);
+		
+		my $part = join (' ', @part_info[2..$#part_info]);
 
 		# Mount point
-		$Parts{$part_info[$mount_idx]} = ();
+		$Parts{$part} = ();
 		
 		# Total space in kB
-		$Parts{$part_info[$mount_idx]}{'total'} = $part_info[$total_idx] if defined ($part_info[$total_idx]);
+		$Parts{$part}{'total'} = $part_info[0];
 
 		# Available space in kB
-		$Parts{$part_info[$mount_idx]}{'avail'} = $part_info[$avail_idx] if defined ($part_info[$avail_idx]);
+		$Parts{$part}{'avail'} = $part_info[1];
 	}
 
 	$Parts{'__utimestamp__'} = $utimestamp;
@@ -802,7 +806,7 @@ sub module_cpuusage ($) {
 	return unless defined (CPUUSAGE_CMDS->{$OS});
 
 	# Get CPU usage
-	my ($cmd) = @{CPUUSAGE_CMDS->{$OS}};
+	my $cmd = CPUUSAGE_CMDS->{$OS};
 	my @data = `$cmd 2> /dev/null`;
 
 	# Something went wrong or no data
@@ -821,7 +825,7 @@ sub module_freememory ($) {
 	return () unless defined (FREEMEMORY_CMDS->{$OS});
 
 	# Get available memory
-	my ($cmd) = @{FREEMEMORY_CMDS->{$OS}};
+	my $cmd = FREEMEMORY_CMDS->{$OS};
 	my @data = `$cmd 2> /dev/null`;
 
 	# Something went wrong or no data
@@ -840,7 +844,7 @@ sub module_freepercentmemory ($) {
 	return unless defined (TOTALMEMORY_CMDS->{$OS});
 
 	# Get CPU usage
-	my ($cmd) = @{TOTALMEMORY_CMDS->{$OS}};
+	my $cmd = TOTALMEMORY_CMDS->{$OS};
 	my @data = `$cmd 2> /dev/null`;
 
 	# Something went wrong or no data

@@ -130,8 +130,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[1] = '20px';
 		$table->size[2] = '25%';
 		$table->size[3] = '25%';
-		$table->size[4] = '50%';
-		$table->size[5] = '25%';
+		$table->size[4] = '30%';
+		$table->size[5] = '30%';
 		$table->size[6] = '20px';
 		$table->size[7] = '60px';
 		

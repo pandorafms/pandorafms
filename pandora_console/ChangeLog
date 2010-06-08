@@ -1,3 +1,8 @@
+2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/alerts_status.php: fixed the style in the list of
+	alerts.
+
 2010-06-07  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/agentes/agent_conf_gis.php: Changed warning text and style.

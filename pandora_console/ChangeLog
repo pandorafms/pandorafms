@@ -1,5 +1,10 @@
 2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/reporting_builder.main.php: changed the text of button
+	for more clear mean.
+
+2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* DEBIAN/conffiles: re-changed the conffiles for try solved a bug in the
 	install DEB package.
 

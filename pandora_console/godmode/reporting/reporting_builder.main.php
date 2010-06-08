@@ -27,12 +27,12 @@ $groups = get_user_groups ();
 
 switch ($action) {
 	case 'new':
-		$actionButtonHtml = print_submit_button(__('Add'), 'add', false, 'class="sub wand"', true);
+		$actionButtonHtml = print_submit_button(__('Save'), 'add', false, 'class="sub wand"', true);
 		$hiddenFieldAction = 'save'; 
 		break;
 	case 'update':
 	case 'edit':
-		$actionButtonHtml = print_submit_button(__('Edit'), 'edit', false, 'class="sub upd"', true);
+		$actionButtonHtml = print_submit_button(__('Update'), 'edit', false, 'class="sub upd"', true);
 		$hiddenFieldAction = 'update'; 
 		break;
 }

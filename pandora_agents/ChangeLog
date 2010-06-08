@@ -1,3 +1,10 @@
+2010-06-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/DEBIAN/control, unix/DEBIAN/make_deb_package.sh,
+	  unix/pandora_agent.spec, unix/pandora_agent,
+	  win32/installer/pandora.mpi, win32/pandora.cc: Updated version
+	  strings.
+
 2010-06-07  Junichi Satoh  <junichi@rworks.jp>
 
 	* unix/pandora_agent_installer: Added support for FreeBSD.

@@ -69,6 +69,8 @@ cp -aRf AUTHORS COPYING ChangeLog README $RPM_BUILD_ROOT%{prefix}/pandora_server
 cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 
+cp -aRf man/man1/pandora_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
+
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 
 %clean
@@ -136,6 +138,7 @@ rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
 rm -Rf /etc/cron.daily/pandora_db
 rm -Rf /etc/logrotate.d/pandora
+rm -Rf /usr/share/man/man1/pandora_server.1.gz
 
 %files
 

@@ -1,3 +1,8 @@
+2010-06-09  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Fixed errors of parameters 
+	for bug 3013419
+
 2010-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/control, DEBIAN/make_deb_package.sh,

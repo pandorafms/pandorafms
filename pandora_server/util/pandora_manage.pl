@@ -43,7 +43,7 @@ my %conf;
 $| = 0;
 
 # Init
-pandora_init(\%conf);
+pandora_manage_init(\%conf);
 
 # Read config file
 pandora_load_config (\%conf);
@@ -155,7 +155,7 @@ sub pandora_enable_group ($$$) {
 ##############################################################################
 # Init screen
 ##############################################################################
-sub pandora_init ($) {
+sub pandora_manage_init ($) {
     my $conf = shift; 
     
     $conf->{"verbosity"}=0;	# Verbose 1 by default
@@ -239,18 +239,6 @@ sub pandora_delete_template_module ($$) {
 ##########################################################################
 ## Asociate a module to a template.
 ##########################################################################
-sub pandora_create_template_module_action ($$$) {
-        my ($dbh, $module_id, $template_id, $action_id) = @_;
-
-        my $template_module_id = get_template_module_id ($dbh, $module_id, $template_id);
-        return -1 if ($template_module_id == -1);
-
-        return db_insert ($dbh, 'INSERT INTO talert_template_module_actions (id_alert_template_module, id_alert_action) VALUES (?, ?, ?)', $template_module_id, $template_id, $action_id);
-}
-
-##########################################################################
-## Asociate a module to a template.
-##########################################################################
 sub pandora_delete_template_module_action ($$$) {
         my ($dbh, $module_id, $template_id, $action_id) = @_;
 
@@ -295,17 +283,8 @@ else {
 ##########################################################################
 sub pandora_create_template_module_action ($$$$$) {
         my ($dbh, $template_module_id, $action_id, $fires_min, $fires_max) = @_;
-
+        
         return db_insert ($dbh, 'INSERT INTO talert_template_module_actions (id_alert_template_module, id_alert_action, fires_min, fires_max) VALUES (?, ?, ?, ?)', $template_module_id, $action_id, $fires_min, $fires_max);
-}
-
-##########################################################################
-## Asociate a module to a template.
-##########################################################################
-sub pandora_delete_template_module_action ($$$) {
-        my ($dbh, $template_module_id, $action_id) = @_;
-
-        return db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ? AND id_alert_action = ?', $template_module_id, $action_id);
 }
 
 ##########################################################################

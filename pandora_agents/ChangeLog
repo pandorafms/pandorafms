@@ -1,5 +1,11 @@
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* unix/man, unix/man/man1,
+	  unix/man/man1/pandora_agent.1.gz,
+	  unix/man/man1/tentacle_client.1.gz: Added to repository.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* man, man/man1,
 	  man/man1/pandora_agent.1.gz,
 	  man/man1/tentacle_client.1.gz: Removed from repository.

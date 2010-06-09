@@ -1,7 +1,17 @@
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Set the default server_threshold to 5
+	  seconds.
+
 2010-06-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh: added the code to include the man pages into
 	DEB package.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* conf/pandora_server.conf: Set the default server_threshold to 5
+	  seconds.
 
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 

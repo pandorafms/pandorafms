@@ -1,5 +1,9 @@
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent.spec: Create the man dir.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent_installer, pandora_agent.spec: Copy the man pages.
 
 2010-06-08  Ramon Novoa  <rnovoa@artica.es>

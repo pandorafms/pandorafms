@@ -54,7 +54,7 @@ Array.prototype.in_array = function () {
 			return true;
 	}
 	return false;
-}
+};
 
 /**
  * Fill up select box with id "module" with modules after agent has been selected

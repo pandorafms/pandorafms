@@ -1,3 +1,13 @@
+2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora.js: fixed lost semi colon.
+	
+	* godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/reporting_builder.item_editor.php: fixed lost include
+	autocomplete javascript file.
+	
+	Fixes: #3013425
+
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* general/license/pandora_info_pt_BR.html,

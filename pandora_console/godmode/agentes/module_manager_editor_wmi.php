@@ -40,7 +40,7 @@ if (empty ($update_module_id)) {
 $data = array ();
 $data[0] = __('Target IP');
 $data[1] = print_input_text ('ip_target', $ip_target, '', 15, 60, true);
-$data[2] = _('Namespace');
+$data[2] = __('Namespace');
 $data[2] .= print_help_icon ('wminamespace', true);
 $data[3] = print_input_text ('tcp_send', $tcp_send, '', 5, 20, true, $disabledBecauseInPolicy);
 

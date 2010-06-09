@@ -330,6 +330,8 @@ uninstall () {
 	fi
 	rm -Rf /etc/rc2.d/S90pandora_server 2> /dev/null 
 	rm -Rf /etc/rc.d/rc3.d/S90pandora_server 2> /dev/null 
+	rm -Rf /usr/share/man/man1/pandora_server.1.gz 2>/dev/null
+	rm -Rf /usr/share/man/man1/tentacle_server.1.gz 2>/dev/null
 	echo "Done"
 }
 

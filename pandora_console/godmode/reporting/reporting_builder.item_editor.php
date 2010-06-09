@@ -334,6 +334,7 @@ else {
 echo '</div>';
 echo '</form>';
 
+require_jquery_file ('autocomplete');
 require_javascript_file('pandora');
 if ($enterpriseEnable) {
 	enterpriseTextBox();

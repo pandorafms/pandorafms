@@ -248,6 +248,7 @@ require_jquery_file('colorpicker');
 require_jquery_file('ui.draggable');
 require_javascript_file('wz_jsgraphics');
 require_javascript_file('pandora_visual_console');
+require_jquery_file ('autocomplete');
 require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
 ?>
 <style type="text/css">

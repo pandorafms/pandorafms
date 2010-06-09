@@ -20,7 +20,12 @@ if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = get_system_time ();
 }
 
-echo '<a class="white_bold" target="_blank" href="general/license/pandora_info_'.$config["language"].'.html">';
+$license_file = 'general/license/pandora_info_'.$config["language"].'.html';
+if (! file_exists ($license_file)) {
+	$license_file = 'general/license/pandora_info_en.html';
+}
+
+echo '<a class="white_bold" target="_blank" href="' . $license_file. '">';
 echo 'Pandora FMS '.$pandora_version.' - Build '.$build_version;
 echo '</a><br />';
 echo '<a class="white">'. __('Page generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here

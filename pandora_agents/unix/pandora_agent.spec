@@ -44,6 +44,9 @@ cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/pandora_agent.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
 # Checking old config file (if exists)
 if [ -f /etc/pandora/pandora_agent.conf ] ; then
@@ -100,6 +103,8 @@ rm /etc/init.d/pandora_agent_daemon
 rm -Rf /etc/pandora/pandora_agent.conf
 rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
 rm -Rf /usr/share/pandora_agent
+rm -Rf /usr/share/man/man1/pandora_agent.1.gz
+rm -Rf /usr/share/man/man1/tentacle_client.1.gz
 exit 0
 
 %files
@@ -114,7 +119,8 @@ exit 0
 /etc/init.d/pandora_agent_daemon
 %docdir %{prefix}/pandora_agents/docs
 %{prefix}/pandora_agent
-#%{_mandir}/man1/pandora.1.gz
-#%{_mandir}/man1/pandora_agents.1.gz
 
+%defattr(644,pandora,root)
+/usr/share/man/man1/pandora_agent.1.gz
+/usr/share/man/man1/tentacle_client.1.gz
 

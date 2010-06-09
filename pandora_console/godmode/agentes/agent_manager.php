@@ -212,11 +212,11 @@ $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[12][0] = __('Agent icon');
 $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . 'none.png" />' .
-	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . 'default.png" />' .
-	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . 'ok.png" />' .
-	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . 'bad.png" />' .
-	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . 'warning.png" />';
+	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
+	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
+	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . 'ok.png" style="display:none;" />' .
+	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . 'bad.png" style="display:none;" />' .
+	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . 'warning.png" style="display:none;" />';
 
 if ($config['activate_gis']) {
 	$table->data[13][0] = __('Ignore new GIS data:');
@@ -244,7 +244,7 @@ require_jquery_file ('autocomplete');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-
+	
 //Use this function for change 3 icons when change the selectbox
 function changeIcons() {
 	icon = $("#icon_path :selected").val();
@@ -256,18 +256,23 @@ function changeIcons() {
 	$("#icon_warning").attr("src", "images/spinner.png");
 	
 	if (icon.length == 0) {
-		$("#icon_without_status").attr("src", "");
-		$("#icon_default").attr("src", "");
-		$("#icon_ok").attr("src", "");
-		$("#icon_bad").attr("src", "");
-		$("#icon_warning").attr("src", "");
+		$("#icon_without_status").attr("style", "display:none;");
+		$("#icon_default").attr("style", "display:none;");
+		$("#icon_ok").attr("style", "display:none;");
+		$("#icon_bad").attr("style", "display:none;");
+		$("#icon_warning").attr("style", "display:none;");
 	}
 	else {
-		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".png");
+		$("#icon_without_status").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
 		$("#icon_default").attr("src", "<?php echo $path; ?>" + icon + ".default.png");
 		$("#icon_ok").attr("src", "<?php echo $path; ?>" + icon + ".ok.png");
 		$("#icon_bad").attr("src", "<?php echo $path; ?>" + icon + ".bad.png");
 		$("#icon_warning").attr("src", "<?php echo $path; ?>" + icon + ".warning.png");
+		$("#icon_without_status").attr("style", "");
+		$("#icon_default").attr("style", "");
+		$("#icon_ok").attr("style", "");
+		$("#icon_bad").attr("style", "");
+		$("#icon_warning").attr("style", "");
 	}
 	
 	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +

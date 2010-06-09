@@ -1,3 +1,8 @@
+2010-06-09  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/agent_manager.php: Fixed the agent icons on 
+	agent setup for bug: 3013426
+
 2010-06-09  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/module_manager_editor_wmi.php: Added missing '_'.

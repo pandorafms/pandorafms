@@ -222,14 +222,11 @@ install () {
 	cp tentacle_client $PANDORA_BASE$TENTACLE
 	chmod 755 $PANDORA_BASE$TENTACLE
 
-	echo "Installing Tentacle Client manual"
-    if [ -f ../man/man1/tentacle_client.1.gz ]
-    then 
-    	cp ../man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
-    else
+	echo "Installing the Pandora Agent and Tentacle Client manuals"
     	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
-    fi
-    chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/tentacle_client.1.gz
+    	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/tentacle_client.1.gz
+    	cp man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
+    	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
 
 	echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
 	chown -R root $PANDORA_BASE$PANDORA_HOME
@@ -359,14 +356,11 @@ install () {
 		cp FreeBSD/pandora_agent $PANDORA_STARTUP
 	fi
 
-	echo "Installing Pandora Agent manual"
-    if [ -e ../man/man1/pandora_agent.1.gz ]
-    then
-    	cp ../man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
-    else
+	echo "Installing the Pandora Agent and Tentacle Client manuals"
+    	cp man/man1/tentacle_client.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
+    	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/tentacle_client.1.gz
     	cp man/man1/pandora_agent.1.gz $PANDORA_BASE/$PANDORA_MAN/man1
-    fi
-    chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
+    	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
 
 	echo "Done."
 	echo " "

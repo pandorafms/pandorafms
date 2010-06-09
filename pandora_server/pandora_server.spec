@@ -70,6 +70,7 @@ cp -aRf util/pandora_server $RPM_BUILD_ROOT/etc/init.d/
 cp -aRf util/tentacle_serverd $RPM_BUILD_ROOT/etc/init.d/
 
 cp -aRf man/man1/pandora_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
+cp -aRf man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 
@@ -139,6 +140,7 @@ rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
 rm -Rf /etc/cron.daily/pandora_db
 rm -Rf /etc/logrotate.d/pandora
 rm -Rf /usr/share/man/man1/pandora_server.1.gz
+rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 
 %files
 
@@ -161,4 +163,8 @@ rm -Rf /usr/share/man/man1/pandora_server.1.gz
 
 %defattr(750,pandora,root)
 /etc/pandora
+
+%defattr(644,pandora,root)
+/usr/share/man/man1/pandora_server.1.gz
+/usr/share/man/man1/tentacle_server.1.gz
 

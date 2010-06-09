@@ -1,3 +1,8 @@
+2010-06-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* unix/DEBIAN/make_deb_package.sh: added the code to include the man pages
+	into DEB package.
+
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/man, unix/man/man1,

@@ -580,17 +580,26 @@ sub md5 ($) {
 ################################################################################
 sub guess_os_version ($) {
 	my $os = shift;
+	my $os_version;
 
 	# Linux
-	return `lsb_release -sd` if ($os eq 'linux');
-
+	if ($os eq 'linux') {
+		$os_version = `lsb_release -sd 2>/dev/null`;
 	# AIX
-	if ($os eq 'aix') {
-		return "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
-	}
-
+	} elsif ($os eq 'aix') {
+		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
 	# Solaris, HP-UX, BSD and others
-	return `uname -r`;
+	} else {
+		$os_version = `uname -r`;
+	}
+	
+	# Something went wrong
+	return '' unless defined ($os_version);
+	
+	# Remove any trailing new lines
+	chomp ($os_version);
+
+	return $os_version;
 }
 
 ################################################################################
@@ -948,7 +957,7 @@ while (1) {
 	# Execute plugins
 	foreach my $plugin (@Plugins) {
 
-		my $output = `$ConfDir/plugins/$plugin`;
+		my $output = `$ConfDir/plugins/$plugin 2>/dev/null`;
 
 		# Do not save the output if there was an error
 		next unless ($? eq 0);

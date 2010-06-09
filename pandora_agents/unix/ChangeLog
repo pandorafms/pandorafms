@@ -1,5 +1,10 @@
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent: Improved OS version detection. Disabled error output
+	  for plugins.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent.spec: Create the man dir.
 
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>

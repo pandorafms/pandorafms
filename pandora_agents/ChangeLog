@@ -1,3 +1,9 @@
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* man, man/man1,
+	  man/man1/pandora_agent.1.gz,
+	  man/man1/tentacle_client.1.gz: Removed from repository.
+
 2010-06-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/DEBIAN/control, unix/DEBIAN/make_deb_package.sh,

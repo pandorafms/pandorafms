@@ -75,6 +75,7 @@ then
 	mkdir -p temp_package/var/log/pandora/
 	mkdir -p temp_package/usr/share/pandora_server/conf/
 	mkdir -p temp_package/usr/lib/perl5/
+	mkdir -p temp_package/usr/share/man/man1/
 	
 	cp -aRf bin/pandora_server temp_package/usr/bin/
 	cp -aRf bin/pandora_exec temp_package/usr/bin/
@@ -87,6 +88,8 @@ then
 	
 	cp -aRf util/pandora_server temp_package/etc/init.d/
 	cp -aRf util/tentacle_serverd temp_package/etc/init.d/
+	
+	cp -aRf man/man1/* temp_package/usr/share/man/man1/
 	
 	rm -f temp_package/usr/share/pandora_server/util/PandoraFMS
 	rm -f temp_package/usr/share/pandora_server/bin/PandoraFMS

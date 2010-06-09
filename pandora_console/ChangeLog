@@ -1,3 +1,8 @@
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* general/footer.php: Show the English license if a localized version
+	  is not available.
+
 2010-06-09  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/agent_manager.php: Fixed the agent icons on 

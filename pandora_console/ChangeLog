@@ -1,5 +1,12 @@
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* general/license/pandora_info_ast_es.html,
+	  general/license/pandora_info_es_es.html,
+	  general/license/pandora_info_es_la.html,
+	  general/license/pandora_info_pt_br.html: Removed from repository.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* general/footer.php: Show the English license if a localized version
 	  is not available.
 

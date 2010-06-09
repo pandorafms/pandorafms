@@ -1,5 +1,9 @@
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_server.spec: Create the man dir.
+
+2010-06-09  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_server.spec,
 	  pandora_server_installer: Copy man files.
 

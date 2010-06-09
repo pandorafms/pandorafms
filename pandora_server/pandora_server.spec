@@ -55,6 +55,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
+mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 
 # All binaries go to /usr/bin
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT/usr/bin/

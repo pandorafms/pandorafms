@@ -37,6 +37,7 @@ mkdir -p temp_package/usr/sbin/
 mkdir -p temp_package/etc/pandora/plugins
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/var/log/pandora/
+mkdir -p temp_package/usr/share/man/man1/
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
@@ -47,6 +48,8 @@ cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
+
+cp -aRf man/man1/* temp_package/usr/share/man/man1/
 
 echo "Remove the SVN files and other temp files."
 for item in `find temp_package`

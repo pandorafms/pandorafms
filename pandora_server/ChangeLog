@@ -1,4 +1,4 @@
-2010-06-08  Miguel de Dios  <miguel.dedios@artica.es>
+2010-06-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh: added the code to include the man pages into
 	DEB package.

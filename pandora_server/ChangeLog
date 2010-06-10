@@ -1,3 +1,10 @@
+2010-06-10  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Redefine downtime name and description if
+	not defined.
+
+	* lib/PandoraFMS/Tools.pm: Octopus is now known as Octopods.
+
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Set the default server_threshold to 5

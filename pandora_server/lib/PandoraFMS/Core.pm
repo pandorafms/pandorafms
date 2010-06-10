@@ -789,6 +789,14 @@ sub pandora_planned_downtime ($$) {
 
 	foreach my $downtime (@downtimes) {
 
+        if (!defined($downtime->{'description'})){
+            $downtime->{'description'} = "N/A";
+        }
+
+        if (!defined($downtime->{'name'})){
+            $downtime->{'name'} = "N/A";
+        }
+
 		logger($pa_config, "Starting planned downtime '" . $downtime->{'name'} . "'.", 10);
 
 		db_do($dbh, 'UPDATE tplanned_downtime SET executed = 1 WHERE id = ?', 	$downtime->{'id'});

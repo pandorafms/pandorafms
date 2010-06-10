@@ -104,7 +104,7 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/3com/i){
 			return 11;
 		}
-		elsif ($command =~ m/Octopus/i){
+		elsif ($command =~ m/Octopods/i){
 			return 13;
 		}
 		elsif ($command =~ m/BSD/i){

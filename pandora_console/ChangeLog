@@ -1,3 +1,10 @@
+2010-06-11  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/graph_builder.php: Fixed the 
+	period of graph for bug #3014781, the creation 
+	of combined graphs before store the graph for bug
+	#3014796 and the message over the header for bug #3014798
+
 2010-06-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js: fixed lost semi colon.

@@ -28,6 +28,8 @@ MyDate = dateAdd("s", -cfg_interval, Now) ' Latest X seconds
 
 Set dtmStartDate = CreateObject("WbemScripting.SWbemDateTime")
 
+CONVERT_TO_LOCAL_TIME = TRUE
+
 DateToCheck = CDate(MyDate)
 dtmStartDate.SetVarDate DateToCheck, CONVERT_TO_LOCAL_TIME
 

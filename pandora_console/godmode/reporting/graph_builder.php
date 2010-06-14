@@ -72,65 +72,6 @@ $stacked = 0;
 $add_module = (bool) get_parameter ('add_module');
 $editGraph = (bool) get_parameter('edit_graph');
 
-if (isset ($_GET["store_graph"])) {
-	$name = get_parameter_post ("name");
-	$description = get_parameter_post ("description");
-	$module_number = get_parameter_post ("module_number");
-	//$private = get_parameter_post ("private");
-	$idGroup = get_parameter_post ('graph_id_group');
-	$width = get_parameter_post ("width");
-	$height = get_parameter_post ("height");
-	$events = get_parameter_post ("events");
-	$stacked = get_parameter ("stacked", 0);
-	if ($events == "") // Temporal workaround
-		$events = 0;
-	$period = get_parameter_post ("period");
-	// Create graph
-	$sql = "INSERT INTO tgraph
-		(id_user, name, description, period, width, height, private, id_group, events, stacked) VALUES
-		('".$config['id_user']."',
-		'$name',
-		'$description',
-		$period,
-		$width,
-		$height,
-		0,
-		$idGroup,
-		$events,
-		$stacked)";
-		//echo "DEBUG $sql<br>";
-	$res = mysql_query($sql);
-	if ($res){
-		$id_graph = mysql_insert_id();
-		if ($id_graph){
-			for ($a=0; $a < $module_number; $a++){
-				$id_agentemodulo = get_parameter_post ("module_".$a);
-				$id_agentemodulo_w = get_parameter_post ("module_weight_".$a);
-				$sql = "INSERT INTO tgraph_source (id_graph, id_agent_module, weight) VALUES
-					($id_graph, $id_agentemodulo, $id_agentemodulo_w)";
-				//echo "DEBUG $sql<br>";
-				mysql_query($sql);
-			}
-			echo "<h3 class='suc'>".__('Graph stored successfully')."</h3>";
-		} else
-			echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
-	} else 
-		echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
-}
-
-if (isset($_GET['change_graph'])) {
-	$id = get_parameter('id');
-	$name = get_parameter('name');
-    $id_group = get_parameter('graph_id_group');
-    $description = get_parameter('description');
-    
-    $success = process_sql_update('tgraph', 
-    	array('name' => $name, 'id_group' => $id_group, 'description' => $description), 
-    	array('id_graph' => $id));
-    
-    print_result_message($success, __("Update the graph"), __("Bad update the graph"));
-}
-
 if (isset ($_GET["get_agent"])) {
 	$id_agent = $_POST["id_agent"];
 	if (isset($_POST["chunk"]))
@@ -149,7 +90,7 @@ if (isset ($_GET["delete_module"] )) {
 		$chunkdata = $_POST["chunk"];
 		if (isset($chunkdata)) {
 			$chunk1 = array();
-			$chunk1 = explode ("\|", $chunkdata);
+			$chunk1 = explode ("|", $chunkdata);
 			$modules="";$weights="";
 			for ($a = 0; $a < count ($chunk1); $a++) {
 				if (isset ($_POST["delete_$a"])) {
@@ -250,7 +191,7 @@ if (! isset($_GET["delete_module"])) {
 		$weight_array = array();
 		$agent_array = array();
 		$chunk1 = array();
-		$chunk1 = explode ("\|", $chunkdata);
+		$chunk1 = explode ("|", $chunkdata);
 		$modules="";$weights="";
 		for ($a=0; $a < count($chunk1); $a++){
 			$chunk2[$a] = array();
@@ -306,7 +247,7 @@ if ($editGraph) {
 	$graphInTgraph = get_db_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id);
 	$stacked = $graphInTgraph['stacked'];
 	$events = $graphInTgraph['events'];
-	
+	$period = $graphInTgraph['period'];
 	$modules = implode(',', $module_array);
 	$weights = implode(',', $weight_array);
 	$chunkdata = implode('|', $tempChunkdata);
@@ -390,6 +331,66 @@ if (($render == 1) && (isset($modules))) {
 
 // Header
 print_page_header (__('Graph builder'), "", false, "", true);
+
+if (isset ($_GET["store_graph"])) {
+	$name = get_parameter_post ("name");
+	$description = get_parameter_post ("description");
+	$module_number = get_parameter_post ("module_number");
+	//$private = get_parameter_post ("private");
+	$idGroup = get_parameter_post ('graph_id_group');
+	$width = get_parameter_post ("width");
+	$height = get_parameter_post ("height");
+	$events = get_parameter_post ("events");
+	$stacked = get_parameter ("stacked", 0);
+	if ($events == "") // Temporal workaround
+		$events = 0;
+	$period = get_parameter_post ("period");
+	// Create graph
+	$sql = "INSERT INTO tgraph
+		(id_user, name, description, period, width, height, private, id_group, events, stacked) VALUES
+		('".$config['id_user']."',
+		'$name',
+		'$description',
+		$period,
+		$width,
+		$height,
+		0,
+		$idGroup,
+		$events,
+		$stacked)";
+		//echo "DEBUG $sql<br>";
+	$res = mysql_query($sql);
+	if ($res){
+		$id_graph = mysql_insert_id();
+		if ($id_graph){
+			for ($a=0; $a < $module_number; $a++){
+				$id_agentemodulo = get_parameter_post ("module_".$a);
+				$id_agentemodulo_w = get_parameter_post ("module_weight_".$a);
+				$sql = "INSERT INTO tgraph_source (id_graph, id_agent_module, weight) VALUES
+					($id_graph, $id_agentemodulo, $id_agentemodulo_w)";
+				//echo "DEBUG $sql<br>";
+				mysql_query($sql);
+			}
+			echo "<h3 class='suc'>".__('Graph stored successfully')."</h3>";
+		} else
+			echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
+	} else 
+		echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
+}
+
+if (isset($_GET['change_graph'])) {
+	$id = get_parameter('id');
+	$name = get_parameter('name');
+    $id_group = get_parameter('graph_id_group');
+    $description = get_parameter('description');
+    
+    $success = process_sql_update('tgraph', 
+    	array('name' => $name, 'id_group' => $id_group, 'description' => $description), 
+    	array('id_graph' => $id));
+    
+    print_result_message($success, __("Update the graph"), __("Bad update the graph"));
+}
+
 echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>";
 if ($editGraph) {
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&add_module=1&id=" . $id . "'>";

@@ -1638,7 +1638,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			// Put description at the end of the module (if exists)
 			if ($content["description"] != ""){
-				$table->colspan[1][0] = 3;
+				$table->colspan[2][0] = 3;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];
 				array_push ($table->data, $data_desc);
@@ -1659,7 +1659,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$content["id_gs"]);
 	
 	
-			$table->colspan[2][0] = 3;
+			$table->colspan[1][0] = 3;
 			$data = array ();
 			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 			array_push ($table->data, $data);

@@ -354,6 +354,8 @@ install () {
 	then
 	PANDORA_STARTUP=/usr/local/etc/rc.d/pandora_agent
 		cp FreeBSD/pandora_agent $PANDORA_STARTUP
+		chmod 555 $PANDORA_STARTUP
+		chown root:wheel $PANDORA_STARTUP
 	fi
 
 	echo "Installing the Pandora Agent and Tentacle Client manuals"

@@ -1,3 +1,11 @@
+2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged from trunk:
+	
+	* images/custom_logo/sourceforge.jpg,
+	images/custom_logo/pandora_logo_head.jpg, images/custom_logo/none.jpg: added
+	the version in jpeg of files for PDF reports.
+
 2010-06-14  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/graph_builder.php: Merged fixed 

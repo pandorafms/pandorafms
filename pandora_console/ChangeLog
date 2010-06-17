@@ -1,3 +1,8 @@
+2010-06-17  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/map_builder.php: Merged fix from trunk
+	for bug 3017262
+
 2010-05-05 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged from trunk:

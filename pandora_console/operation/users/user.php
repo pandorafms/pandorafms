@@ -42,7 +42,8 @@ $table->align[3] = "center";
 
 
 $info = array ();
-$info = get_users ();
+// Get users ordered by id_user
+$info = get_users ("id_user");
 
 //Only the users from the user groups are visible
 

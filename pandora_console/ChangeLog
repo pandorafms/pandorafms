@@ -1,5 +1,11 @@
 2010-06-17  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/users/user.php
+	godmode/users/user_list.php: Changed the order
+	of the users to id_user
+
+2010-06-17  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/map_builder.php: Fixed the ACL
 	permissions for bug: 3017262 
 

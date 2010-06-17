@@ -113,10 +113,18 @@ if ($create_user) {
 		print_result_message ($result,
 			__('Successfully created'),
 			__('Could not be created'));
-		$user_info = get_user_info ($id);
+			
 		$password_new = '';
 		$password_confirm = '';
-		$new_user = false;
+		
+		if($result) {
+			$user_info = get_user_info ($id);
+			$new_user = false;
+		}
+		else {
+			$user_info = $values;
+			$new_user = true;
+		}
 	}
 	
 }

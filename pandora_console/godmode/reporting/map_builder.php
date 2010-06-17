@@ -118,7 +118,7 @@ if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 } else {
 	foreach ($maps as $map) {			
-		if (give_acl ($config['id_user'], $map['id_group'], "AW")){
+		if (give_acl ($config['id_user'], $map['id_group'], "IW")){
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&amp;action=edit&amp;id_visual_console='.$map['id'].'">'.$map['name'].'</a>';
 		

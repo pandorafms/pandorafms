@@ -1,5 +1,10 @@
 2010-06-17  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/users/configure_user.php: Fixed the edition
+	of an user after a fail creation for bug: 3017524
+
+2010-06-17  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/users/user.php
 	godmode/users/user_list.php: Changed the order
 	of the users to id_user

@@ -1,3 +1,8 @@
+2010-06-17  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/map_builder.php: Fixed the ACL
+	permissions for bug: 3017262 
+
 2010-06-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fixed the colspan

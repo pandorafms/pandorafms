@@ -74,7 +74,8 @@ $table->align[5] = "center";
 $table->size[5] = 40;
 
 $info = array ();
-$info = get_users ();
+// Get users ordered by id_user
+$info = get_users ("id_user");
 
 $rowPair = true;
 $iterator = 0;

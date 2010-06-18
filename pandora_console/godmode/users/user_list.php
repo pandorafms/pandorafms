@@ -29,7 +29,8 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
 
 if (isset ($_GET["user_del"])) { //delete user
-	$id_user = get_parameter_post ("delete_user");
+	$id_user = get_parameter ("delete_user", 0);
+	//debugPrint($_POST);
 	// Only allow delete user if is not the actual user
 	if($id_user != $config['id_user']){
 		$result = delete_user ($id_user);
@@ -123,16 +124,15 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = print_string_substr ($user_info["comments"], 24, true);
 
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
-		$data[5] = print_input_image ("delete_user", "images/cross.png", $user_info["id_user"], 'border:0px;', true); //Delete user button
+		$data[5] = "<a href='index.php?sec=gusuarios&sec2=godmode/users/user_list&user_del=1&delete_user=".$user_info['id_user']."'>".print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 	} else {
 		$data[5] = ''; //Delete button not in this mode
 	}
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;user_del=1">';
 print_table ($table);
-echo '</form>';
+
 unset ($table);
 
 	

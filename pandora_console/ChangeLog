@@ -1,3 +1,9 @@
+2010-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/users/user_list.php: Fixed the bug of 
+	delete users in Internet Explorer and added the 
+	deleting confirmation javascript for bug: 3017261
+
 2010-06-17  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/users/configure_user.php: Fixed the edition

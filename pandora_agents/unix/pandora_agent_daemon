@@ -22,6 +22,7 @@
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
+PANDORA_USER=root
 DAEMON=/usr/bin/pandora_agent
 LOGFILE=/var/log/pandora/pandora_agent.log
 
@@ -55,7 +56,12 @@ case "$1" in
 			echo "Cannot launch again. Aborting."
 			exit 1
 		fi
-		nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
+		if [ "$PANDORA_USER" = "root" ]
+		then
+			nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
+		else
+			sudo -u $PANDORA_USER $DAEMON $PANDORA_PATH >/dev/null 2> $LOGFILE & 
+		fi
 		rm nohup.out 2> /dev/null
 		sleep 2
 		PANDORA_PID=`pidof_pandora`

@@ -46,6 +46,7 @@ chmod 755 -R temp_package/DEBIAN
 cp -aRf * temp_package/usr/share/pandora_agent/
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
+cp -aRf pandora_exec temp_package/usr/bin/
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 

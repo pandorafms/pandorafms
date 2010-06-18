@@ -17,6 +17,7 @@ FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 PANDORA_HOME=/usr/share/pandora_agent
 PANDORA_BIN=/usr/bin/pandora_agent
+PANDORA_EXEC_BIN=/usr/bin/pandora_exec
 PANDORA_TEMP=/var/spool/pandora
 PANDORA_CFG=/etc/pandora
 PANDORA_LOG_DIR=/var/log/pandora
@@ -26,6 +27,7 @@ PANDORA_MAN=/usr/share/man
 
 MODE=$1
 PANDORA_BASE=$2
+PANDORA_USER=$3
 
 # Check for Perl 5.6.x or higher available
 PERL_VERSION=`perl -v | egrep 'v5.6|v5.7|v5.8|v5.9|v5.1[0-9]' | grep perl`
@@ -57,24 +59,25 @@ then
 	exit 2
 fi
 
-if [ ! -f "pandora_agent" ]
-then
+help () {
+	echo "Syntax":
 	echo " "
-	echo "Execute installer from the directory where you have your files. "
-    echo "Syntax":
+	echo "    ./pandora_agent_installer < --mode > [ destination_path ] [ user_to_run_as ]"
 	echo " "
-	echo "    ./pandora_agent_install < --mode > [ destination_path ]"
+	echo "Modes:"
 	echo " "
+	echo "  --force-install      To force installation if already installed on system"
+	echo "  --install            To install Pandora FMS Agent on this system"
+	echo "  --uninstall          To uninstall/remove Pandora FMS Agent on this System"
+	echo " "	
 	echo "Some exaples of how to use the installer:"
 	echo " "
-	echo "    cd /tmp/pandora_install "
 	echo "   ./pandora_agent_installer --install"
-	echo "   ./pandora_agent_installer --install-with-links /var/opt/PandoraFMS"
 	echo "   ./pandora_agent_installer --install /opt/pandora"
-    echo "   ./pandora_agent_installer --uninstall /opt/pandora"
+	echo "   ./pandora_agent_installer --install \"\" pandora"
+	echo "   ./pandora_agent_installer --uninstall /opt/pandora"
 	echo " "
-	exit 1
-fi
+}
 
 uninstall () {
 	OS_NAME=`uname -s`
@@ -82,6 +85,7 @@ uninstall () {
         then
 		PANDORA_HOME=/usr/local/share/pandora_agent
 		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
 		PANDORA_MAN=/usr/local/man
@@ -89,6 +93,7 @@ uninstall () {
 
 	echo "Removing Pandora FMS Agent..."
 	rm -Rf $PANDORA_BASE$PANDORA_BIN 2> /dev/null
+	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null
 	
 	#Test if exist Pandora Server in this machine
 	if [ -d $PANDORA_BASE$PANDORA_TEMP/data_in ]
@@ -138,6 +143,7 @@ install () {
 	then
 		PANDORA_HOME=/usr/local/share/pandora_agent
 		PANDORA_BIN=/usr/local/bin/pandora_agent
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
 		PANDORA_MAN=/usr/local/man
@@ -186,6 +192,15 @@ install () {
 	mkdir -p $PANDORA_BASE$PANDORA_CFG 2> /dev/null
 	mkdir -p $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null
 
+	# Set the user the agent will run as
+	if [ "$PANDORA_USER" != "" ]
+	then
+		sed -e "s/^\s*PANDORA_USER=.*/PANDORA_USER=$PANDORA_USER/" pandora_agent_daemon > pandora_agent_daemon.tmp 	2> /dev/null && \
+		mv pandora_agent_daemon.tmp pandora_agent_daemon
+		rm -f pandora_agent_daemon.tmp 2> /dev/null
+		chmod 755 pandora_agent_daemon
+	fi
+
 	# Create logfile
 	if [ ! -z "`touch $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG`" ]
 	then
@@ -199,11 +214,15 @@ install () {
 	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
 	cp pandora_agent $PANDORA_BASE$PANDORA_BIN
 	chmod 755 $PANDORA_BASE$PANDORA_BIN
+	cp pandora_exec $PANDORA_BASE$PANDORA_EXEC_BIN
+	chmod 755 $PANDORA_BASE$PANDORA_EXEC_BIN
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
 		chown root:wheel $PANDORA_BASE$PANDORA_BIN
+		chown root:wheel $PANDORA_BASE$PANDORA_EXEC_BIN
 	else
 		chown root:root $PANDORA_BASE$PANDORA_BIN
+		chown root:root $PANDORA_BASE$PANDORA_EXEC_BIN
 	fi
 
 	echo "Copying Pandora FMS Agent configuration file to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf..."
@@ -303,7 +322,9 @@ install () {
 
 	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
-	chown root $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
+	chown $PANDORA_USER $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
+	chmod 711 $PANDORA_BASE$PANDORA_LOG_DIR
+	chown $PANDORA_USER $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
@@ -386,27 +407,13 @@ install () {
 
 }
 
-help () {
-    echo "Syntax":
+if [ ! -f "pandora_agent" ]
+then
 	echo " "
-	echo "    ./pandora_agent_install < --mode > [ destination_path ]"
-	echo " "
-	echo "Modes:"
-	echo " "
-    echo "  --force-install      To force installation if already installed on system"
-    echo "                       (Not compatible with --install-with-links "
-    echo "  --install            To install Pandora FMS Agent on this system"
-    echo "  --uninstall          To uninstall/remove Pandora FMS Agent on this System"
-	echo " "	
-    echo "Some exaples of how to use the installer:"
-	echo " "
-	echo "    cd /tmp/pandora_install "
-	echo "   ./pandora_agent_installer --install"
-	echo "   ./pandora_agent_installer --install /opt/pandora"
-    echo "   ./pandora_agent_installer --uninstall /opt/pandora"
-
-    echo " "
-}
+	echo "Execute installer from the directory where you have your files. "
+	help
+	exit 1
+fi
 
 # Script banner at start
 echo " "

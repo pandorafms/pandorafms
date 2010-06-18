@@ -114,7 +114,8 @@ my %Conf = (
 	'secondary_server_ssl' => 'no',
 	'secondary_server_opts' => '',
 	'autotime' => 0,
-	'timezone_offset' => 0
+	'timezone_offset' => 0,
+	'pandora_exec' => 'pandora_exec'
 );
 
 # Modules
@@ -228,6 +229,7 @@ sub read_config (;$) {
 				'params' => '',
 				'description' => '',
 				'interval' => 1,
+				'timeout' => 0,
 				'counter' => 0,
 				'max' => 0,
 				'min' => 0,
@@ -275,6 +277,8 @@ sub read_config (;$) {
 
 			# Make the module run the first time
 			$module->{'counter'} = $1;
+		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
+			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 			push (@Modules, $module);
@@ -711,12 +715,17 @@ sub load_parts () {
 ################################################################################
 sub module_exec ($) {
 	my $module = shift;
+	my @data;
 
 	# Check module parameters
 	return () unless ($module->{'params'} ne '');
 
 	# Execute the command
-	my @data = `$module->{'params'} 2> /dev/null`;
+	if ($module->{'timeout'} == 0) {
+		@data = `$module->{'params'} 2> /dev/null`;
+	} else {
+		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $module->{'params'} 2> /dev/null`;
+	}
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));

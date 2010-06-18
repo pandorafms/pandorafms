@@ -1,3 +1,16 @@
+2010-06-18  Ramon Novoa  <rnovoa@artica.es>
+	
+	* unix/pandora_exec: Added to repository. pandora_exec script.
+
+	* unix/pandora_agent_installer, unix/DEBIAN/postinst,
+	  unix/DEBIAN/make_deb_package.sh, unix/pandora_agent.spec: Added the
+	  pandora_exec script to the installation.
+
+	* unix/pandora_agent_daemon: Added support for running the agent as
+	  an unprivileged user.
+	
+	* unix/pandora_agent: Added timeout support for module_exec modules.
+
 2010-06-14  Junichi Satoh  <junichi@rworks.jp>
 
 	* unix/pandora_agent_installer: Set execute bit to startup script

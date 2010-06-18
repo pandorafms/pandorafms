@@ -2,6 +2,7 @@
 
 PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_BIN=/usr/bin/pandora_agent
+PANDORA_EXEC_BIN=/usr/bin/pandora_agent
 PANDORA_HOME=/usr/share/pandora_agent
 PANDORA_TEMP=/var/spool/pandora/data_out
 PANDORA_CFG=/etc/pandora
@@ -21,6 +22,7 @@ echo "$LOG_TIMESTAMP Pandora FMS installer has created this file at startup" > $
 
 echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
 chmod 700 $PANDORA_BIN
+chmod 700 $PANDORA_EXEC_BIN
 chmod 600 $PANDORA_HOME/pandora_agent.conf
 chmod -R 700 $PANDORA_HOME/plugins
 chown -R root $PANDORA_HOME
@@ -28,6 +30,7 @@ chmod -R 600 $PANDORA_TEMP
 chmod 640 $PANDORA_LOG
 chgrp root $PANDORA_LOG
 chown -R root:root $PANDORA_BIN
+chown -R root:root $PANDORA_EXEC_BIN
 
 echo "Linking start-up daemon script to /etc/rc$INITLV.d";
 update-rc.d pandora_agent_daemon defaults

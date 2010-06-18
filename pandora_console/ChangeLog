@@ -1,3 +1,9 @@
+2010-06-18  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/users/user_list.php: Merged fix from
+	trunk. Fixed the bug of delete agents in IExplorer
+	and added deleted confirm for bug: 3017261
+
 2010-06-17  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/map_builder.php: Merged fix from trunk

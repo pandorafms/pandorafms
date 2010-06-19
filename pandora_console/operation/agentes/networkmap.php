@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -66,22 +66,22 @@ $layout_array = array (
 echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="100%">';
 echo '<tr>';
-echo '<td valign="top">' . __('Group')  . '<br />';
+echo '<td valign="top">' . __('Group') . '<br />';
 print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 0 ORDER BY nombre', 'group', $group, '', 'All', 0, false);
 echo '</td>';
-echo '<td valign="top">' . __('Layout')  . '<br />';
+echo '<td valign="top">' . __('Layout') . '<br />';
 print_select ($layout_array, 'layout', $layout, '', '', '');
 echo '</td>';
 
-echo '<td valign="top">' . __('No Overlap')  . '<br />';
+echo '<td valign="top">' . __('No Overlap') . '<br />';
 print_checkbox ('nooverlap', '1', $nooverlap);
 echo '</td>';
 
-echo '<td valign="top">' . __('Simple')  . '<br />';
+echo '<td valign="top">' . __('Simple') . '<br />';
 print_checkbox ('simple', '1', $simple);
 echo '</td>';
 
-echo '<td valign="top">' . __('Regenerate')  . '<br />';
+echo '<td valign="top">' . __('Regenerate') . '<br />';
 print_checkbox ('regen', '1', $regen);
 echo '</td>';
 
@@ -114,7 +114,7 @@ echo __('Font') . '<br />';
 print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, 0);
 echo "</td>";
 
-//echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
+//echo ' Display groups <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
 print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"');
 echo '</td></tr>';
@@ -170,8 +170,9 @@ if ($result !== false) {
 	if (! file_exists ($filename_map)) {
 		print_error_message (__('Map could not be generated'));
 		echo $result;
-		echo "<br /> Apparently something went wrong reading the output.<br />";
-		echo "<br /> Is ".$config["attachment_store"]." readable by the webserver process?";
+		echo "<div class='warn'>Apparently something went wrong reading the output.</div>";
+		echo "<br />Is ".$config["attachment_store"]." readable by the webserver process?";
+		echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
 		return;
 	}
 	print_image ($filename_img, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
@@ -179,8 +180,8 @@ if ($result !== false) {
 } else {
 	print_error_message (__('Map could not be generated'));
 	echo $result;
-	echo "<br /> Apparently something went wrong executing the command or writing the output.";
-	echo "<br /><br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
+	echo "<div class='warn'>Apparently something went wrong executing the command or writing the output.</div>";
+	echo "<br />Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver process?";
 	echo "<br /><br /> Is your webserver restricted from executing command line tools through the <code>system()</code> call (PHP Safe Mode or SELinux)";
 	echo "<br /><br /> Is ".$config["attachment_store"]." writeable by the webserver process? To change this do the following (POSIX-based systems): chown &lt;apache user&gt; ".$config["attachment_store"];
 	return;

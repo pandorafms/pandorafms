@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -192,7 +192,7 @@ function create_pandora_node ($name, $font_size = 10, $simple = 0) {
 	}
 
 	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
-		shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
+		shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/group_view" ];';
 
 	return $node;
 }

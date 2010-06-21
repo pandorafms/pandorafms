@@ -1,3 +1,11 @@
+2010-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/graph_builder.main.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/graph_builder.preview.php: Rewritted
+	the combined graphs editor
+
 2010-06-21  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/alerts/alert_list_builder.php: Added link to create template.

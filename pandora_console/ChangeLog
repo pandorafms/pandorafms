@@ -1,3 +1,7 @@
+2010-06-21  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/alerts/alert_list_builder.php: Added link to create template.
+
 2010-06-19  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/networkmap.php: Added text if twopi binary not

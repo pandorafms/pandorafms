@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -91,48 +91,48 @@ if ($add_graph) {
 if ($update_graph) {
 	$id_graph = get_parameter('id');
 	$name = get_parameter('name');
-    $id_group = get_parameter('graph_id_group');
-    $description = get_parameter('description');
-   	$width = get_parameter('width');
-    $height = get_parameter('height');
-    $period = get_parameter('period');
-    $stacked = get_parameter('stacked');    
-    $events = get_parameter('events');
-    $alerts = get_parameter('alerts'); 
-    
-    $success = process_sql_update('tgraph', 
-    	array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
-    	array('id_graph' => $id));
+	$id_group = get_parameter('graph_id_group');
+	$description = get_parameter('description');
+	$width = get_parameter('width');
+	$height = get_parameter('height');
+	$period = get_parameter('period');
+	$stacked = get_parameter('stacked');
+	$events = get_parameter('events');
+	$alerts = get_parameter('alerts'); 
+
+	$success = process_sql_update('tgraph', 
+		array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
+		array('id_graph' => $id));
 }
 
 function add_quotes($item)
 {
-    return "'$item'";
+	return "'$item'";
 }
 
 if ($add_module) {
-		$id_graph = get_parameter('id');
-		$id_modules = get_parameter('module');
-		$id_agents = get_parameter('id_agents');
-		$weight = get_parameter('weight');
+	$id_graph = get_parameter('id');
+	$id_modules = get_parameter('module');
+	$id_agents = get_parameter('id_agents');
+	$weight = get_parameter('weight');
 
-		$id_agent_modules = get_db_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
+	$id_agent_modules = get_db_all_rows_sql("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (".
 		implode(',', $id_agents).
 		") AND nombre IN ('".
 		implode("','", $id_modules).
 		"')");
 
-		if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-			foreach($id_agent_modules as $id_agent_module)
-				$result = process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
+	if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+		foreach($id_agent_modules as $id_agent_module)
+			$result = process_sql_insert('tgraph_source', array('id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight));
 		}
-		else
-			$result = false;
+	else
+		$result = false;
 }
 
 if ($delete_module) {
-		$deleteGraph = get_parameter('delete');
-		$result = process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
+	$deleteGraph = get_parameter('delete');
+	$result = process_sql_delete('tgraph_source', array('id_gs' => $deleteGraph));
 }
 
 if($change_weight){
@@ -174,13 +174,13 @@ if (isset($name))
 print_page_header ($head, "", false, "", true, $buttons);
 
 if($add_graph)
-    print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
-    
+	print_result_message($id_graph, __('Graph stored successfully'), __('There was a problem storing Graph'));
+
 if($add_module)
-    print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
+	print_result_message($result, __('Module added successfully'), __('There was a problem adding Module'));
 
 if ($update_graph) 
-    print_result_message($success, __("Update the graph"), __("Bad update the graph"));
+	print_result_message($success, __("Update the graph"), __("Bad update the graph"));
 
 if ($delete_module) {
 		print_result_message($result, __('Graph deleted successfully'), __('There was a problem deleting Graph'));
@@ -201,7 +201,7 @@ if (!$delete_module) {
 		for ($a=0; $a < count($chunk1); $a++){
 			$chunk2[$a] = array();
 			$chunk2[$a] = explode ( ",", $chunk1[$a]);
-			if (strpos($modules, $chunk2[$a][1]) == 0){  // Skip dupes
+			if (strpos($modules, $chunk2[$a][1]) == 0){ // Skip dupes
 				$module_array[] = $chunk2[$a][1];
 				$agent_array[] = $chunk2[$a][0];
 				$weight_array[] = $chunk2[$a][2];

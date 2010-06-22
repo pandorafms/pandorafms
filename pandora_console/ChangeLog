@@ -1,3 +1,10 @@
+2010-06-22  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/reporting/graph_builder.main.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/graph_builder.preview.php: Updated year. Clean Code.
+
 2010-06-21  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/graph_builder.main.php

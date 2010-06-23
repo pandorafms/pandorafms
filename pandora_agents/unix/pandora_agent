@@ -233,7 +233,9 @@ sub read_config (;$) {
 				'counter' => 0,
 				'max' => 0,
 				'min' => 0,
-				'postprocess' => 0
+				'postprocess' => 0,
+				'save' => '',
+				'actions' => []
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -279,6 +281,20 @@ sub read_config (;$) {
 			$module->{'counter'} = $1;
 		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
 			$module->{'timeout'} = $1;
+		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
+			$module->{'save'} = $1;
+		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
+			my $action = $1;
+			# Numeric comparison
+			if ($action =~ /^\s*([<>!=]+)\s+(\d+\.\d*)\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => $1, 'value_1' => $2, 'command' => $3});
+			# Interval
+			} elsif ($action =~ /^\s*[(]\s*(\d+\.\d*)\s*,\s*(\d+\.\d*)\s*[)]\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => '()', 'value_1' => $1, 'value_2' => $2, 'command' => $3});
+			# Regular expression
+			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
+				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
+			}
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 			push (@Modules, $module);
@@ -625,7 +641,18 @@ sub exec_module ($) {
 	no strict 'refs';
 
 	# Run
-	return &{$module->{'func'}}($module);
+	my @value = &{$module->{'func'}}($module);
+	
+	# Save the module value if needed (only works for the first returned value)
+	if ($module->{'save'} ne '') {
+		if (defined ($value[0])) {
+			$ENV{$module->{'save'}} = $value[0] ;
+		} else {
+			$ENV{$module->{'save'}} = '';
+		}
+	}
+
+	return @value;
 }
 
 ################################################################################
@@ -729,6 +756,9 @@ sub module_exec ($) {
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
+
+	# Evaluate module actions
+	evaluate_module_conditions ($module, $data[0]);
 
 	return @data;
 }
@@ -876,6 +906,25 @@ sub module_freepercentmemory ($) {
 	return () unless defined ($avail);
 	
 	return sprintf (("%d", $avail * 100 / $total));
+}
+
+################################################################################
+# Evaluate and execute module conditions.
+################################################################################
+sub evaluate_module_conditions ($$) {
+	my ($module, $data) = @_;
+
+	# Evaluate conditions
+	foreach my $condition (@{$module->{'conditions'}}) {
+		if (($condition->{'operator'} eq '>' && $data > $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '<' && $data < $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=' && $data == $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '!=' && $data != $condition->{'value_1'}) ||
+			($condition->{'operator'} eq '=~' && $data =~ /$condition->{'value_1'}/) ||
+			($condition->{'operator'} eq '()' && $data > $condition->{'value_1'} && $data < $condition->{'value_2'})) {
+				`$condition->{'command'} 2> /dev/null`;
+		}
+	}
 }
 
 ################################################################################

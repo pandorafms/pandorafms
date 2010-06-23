@@ -160,10 +160,10 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
  * @return string HTML code if return parameter is true.
  */
 function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false) {
+	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false) {
 	
 	$output = "\n";
-	
+
 	static $idcounter = array ();
 	
 	//If duplicate names exist, it will start numbering. Otherwise it won't
@@ -223,6 +223,9 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			} elseif ($value === $selected) {
 				//Needs type comparison otherwise if $selected = 0 and $value = "string" this would evaluate to true
 				$output .= ' selected="selected"';
+			}
+			if (is_array ($option_style) && in_array ($value, array_keys($option_style))) {
+				$output .= ' style="'.$option_style[$value].'"';
 			}
 			if ($label === '') {
 				$output .= '>'.$value."</option>";

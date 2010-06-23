@@ -30,7 +30,6 @@ print_page_header (__('User management').' &raquo; '.__('Users defined in Pandor
 
 if (isset ($_GET["user_del"])) { //delete user
 	$id_user = get_parameter ("delete_user", 0);
-	//debugPrint($_POST);
 	// Only allow delete user if is not the actual user
 	if($id_user != $config['id_user']){
 		$result = delete_user ($id_user);
@@ -76,7 +75,11 @@ $table->size[5] = 40;
 
 $info = array ();
 // Get users ordered by id_user
-$info = get_users ("id_user");
+$info = get_users ("id_user",array ('offset' => (int) get_parameter ('offset'),
+			'limit' => (int) $config['block_size']));
+			
+// Prepare pagination
+pagination (count(get_users ()));
 
 $rowPair = true;
 $iterator = 0;

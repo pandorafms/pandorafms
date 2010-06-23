@@ -191,7 +191,7 @@ function get_user_info ($user) {
  *
  * @return array An array of user information
  */
-function get_users ($order = "fullname") {
+function get_users ($order = "fullname", $filter = false, $fields = false) {
 	switch ($order) {
 	case "id_user":
 	case "registered":
@@ -202,9 +202,12 @@ function get_users ($order = "fullname") {
 		$order = "fullname";
 	}
 	
+	$filter['order'] = $order." ASC";
+
+	
 	$output = array();
 	
-	$result = get_db_all_rows_in_table ("tusuario", $order);
+	$result = get_db_all_rows_filter ("tusuario", $filter, $fields);
 	if ($result !== false) {
 		foreach ($result as $row) {
 			$output[$row["id_user"]] = $row;

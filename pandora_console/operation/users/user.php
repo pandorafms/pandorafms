@@ -43,7 +43,8 @@ $table->align[3] = "center";
 
 $info = array ();
 // Get users ordered by id_user
-$info = get_users ("id_user");
+$info = get_users ("id_user",array ('offset' => (int) get_parameter ('offset'),
+			'limit' => (int) $config['block_size']));
 
 //Only the users from the user groups are visible
 
@@ -62,6 +63,9 @@ $users_hidden = array_diff(array_keys($info),$users_id);
 foreach($users_hidden as $user_hidden){
 	unset($info[$user_hidden]);
 }
+
+// Prepare pagination
+pagination (count(get_users ()));
 
 $rowPair = true;
 $iterator = 0;

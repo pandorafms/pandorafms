@@ -1,3 +1,8 @@
+2010-06-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Continue drawing combined charts if modules
+	  without data are found.
+
 2010-06-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Added a parameter into

@@ -1,5 +1,11 @@
 2010-06-23  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_html.php: Added a parameter into
+	print_select function to set style a selective 
+	options into the select form control
+
+2010-06-23  Sergio Martin <sergio.martin@artica.es>
+
 	* include/auth/mysql.php
 	operation/users/user.php
 	godmode/users/user_list.php: Added pagination

@@ -203,10 +203,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	
 		// Check available data
 		if (count ($data) < 2) {
-			if (!$graphic_type) {
-				return fs_error_image ();
-			}
-			graphic_error ();
+			continue;
 		}
 
 		// Data iterator

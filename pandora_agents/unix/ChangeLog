@@ -1,3 +1,8 @@
+2010-06-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added the module_save and module_condition features.
+	  See http://www.openideas.info/wiki/ for more information.
+
 2010-06-14  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent_installer: Set execute bit to startup script for

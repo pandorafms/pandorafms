@@ -28,10 +28,11 @@
  * @param boolean $showTextInAToopTip Flag to show the tooltip.
  * @param boolean $return Flag to return as string or not.
  * @param boolean $showTextInTitle Flag to show the text on title.
+ * @param string $suffix String at the end of a strimmed string.
  */
-function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true) {
+function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '&hellip;') {
 	if (strlen($text) > ($numChars - 1)) {
-		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . '&hellip;';
+		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . $suffix;
 		
 		if ($showTextInTitle) {
 			$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';

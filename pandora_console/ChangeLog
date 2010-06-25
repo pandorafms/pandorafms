@@ -1,5 +1,11 @@
 2010-06-25  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Adding a parameter to
+	printTruncateText to personalize the suffix string
+	of a truncate string
+
+2010-06-25  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Changed substr() to
         mb_strimwidth() into printTruncateText function
 

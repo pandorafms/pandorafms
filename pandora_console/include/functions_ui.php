@@ -31,7 +31,7 @@
  */
 function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true) {
 	if (strlen($text) > ($numChars - 1)) {
-		$truncateText = substr($text, 0, ($numChars - 1)) . '&hellip;';
+		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . '&hellip;';
 		
 		if ($showTextInTitle) {
 			$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';

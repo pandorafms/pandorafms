@@ -1,3 +1,9 @@
+2010-06-25  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/status_monitor.php: Changed substr() to
+	mb_strimwidth(). Module name should be truncated with displayed length,
+	not number of characters.
+
 2010-06-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Continue drawing combined charts if modules

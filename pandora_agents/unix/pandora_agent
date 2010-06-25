@@ -235,7 +235,9 @@ sub read_config (;$) {
 				'min' => 0,
 				'postprocess' => 0,
 				'save' => '',
-				'actions' => []
+				'actions' => [],
+				'cron' => '',
+				'cron_utimestamp' => 0
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -295,6 +297,8 @@ sub read_config (;$) {
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
 				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
 			}
+		} elsif ($line =~ /^\s*module_cron\s+((\*|\d+)\s+(\*|\d+)\s+(\*|\d+)\s+(\*|\d+)\s+(\*|\d+))\s*$/) {
+			$module->{'cron'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 			push (@Modules, $module);
@@ -634,6 +638,9 @@ sub exec_module ($) {
 	# Check module interval
 	return undef unless (++($module->{'counter'}) >= $module->{'interval'});
 
+	# Check module cron
+	return unless (check_module_cron ($module) == 1);
+	
 	# Reset module counter
 	$module->{'counter'} = 0;
 
@@ -925,6 +932,57 @@ sub evaluate_module_conditions ($$) {
 				`$condition->{'command'} 2> /dev/null`;
 		}
 	}
+}
+
+################################################################################
+# Checks the module's cron string. Returns 1 if the module should be run, 0 if
+# not.
+################################################################################
+sub check_module_cron ($) {
+	my $module = shift;
+	
+	# No cron string defined
+	return 0 unless ($module->{'cron'} ne '');
+
+	# Check if the module was already executed
+	return 0 unless (time() > $module->{'cron_utimestamp'});
+
+	# Get cron configuration
+	my @cron_params = split (/\s/, $module->{'cron'});
+
+	# Get current time
+	my $current_time = time();
+	my @time = localtime($current_time);
+
+	# Minutes, hours, day of the month, month and day of the week
+	my @time_params = @time[1, 2, 3, 4, 6];
+
+	# Fix month (localtime retuns 0..11 and we need 1..12)
+	$time_params[3] += 1;
+	
+	# Check cron parameters	
+	for (my $i = 0; $i < 5; $i++) {
+		return 0 if ($time_params[$i] ne $cron_params[$i] && $cron_params[$i] ne '*');
+	}
+
+	# Do not check in the next minute, hour, day or month.
+	my $offset = 0; 
+	if($cron_params[0] ne '*') {
+		# 1 minute
+		$offset = 60;
+	} elsif($cron_params[1] ne '*') {
+		# 1 hour
+		$offset = 3600;
+	} elsif($cron_params[2] ne '*' || $cron_params[4] ne '*') {
+		# 1 day
+		$offset = 86400;
+	} elsif($cron_params[3] ne '*') {
+		# 31 days
+		$offset = 2678400;
+	}
+
+	$module->{'cron_utimestamp'} = $current_time + $offset;
+	return 1;
 }
 
 ################################################################################

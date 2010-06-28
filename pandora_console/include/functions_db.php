@@ -506,19 +506,22 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  */
 function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true) {
 	$id_agent = safe_int ($id_agent, 1);
-	
+
 	$where = '';
 	if (! empty ($id_agent)) {
 		$where = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
 	
+	if ($where != '') {
+		$where .= ' AND ';
+	} else {
+		$where .= ' WHERE ';
+	}
+	
+	$where .= 'delete_pending = 0 ';
+	
 	if (! empty ($filter)) {
-		if ($where != '') {
-			$where .= ' AND ';
-		} else {
-			$where .= ' WHERE ';
-		}
-		
+		$where .= ' AND ';
 		if (is_array ($filter)) {
 			$fields = array ();
 			foreach ($filter as $field => $value) {

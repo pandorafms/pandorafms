@@ -1,3 +1,8 @@
+2010-06-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_db.php: Fixed the get_agent_modules 
+	function to avoid return the pending delete modules
+
 2010-06-25  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_ui.php: Adding a parameter to

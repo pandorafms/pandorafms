@@ -1,3 +1,9 @@
+2010-06-29  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_console_install: Added support for FreeBSD and RHEL/CentOS.
+
+	* install.php: Added support for FreeBSD.
+
 2010-06-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Fixed the get_agent_modules 

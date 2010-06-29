@@ -307,7 +307,11 @@ function install_step2() {
 			$res += check_include("PEAR.php","PEAR PHP Library");
 			$res += check_include("DB.php","PEAR:DB PHP Library");
 			$res += check_include("XML/RPC.php","PEAR::XML_RPC PHP Library");
-			$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
+			if (PHP_OS == "FreeBSD") {
+				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");
+			} else {
+				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
+			}
 
 			echo "</table>";
 		echo "</div>";

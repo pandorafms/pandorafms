@@ -95,6 +95,13 @@ switch ($activeTab) {
 				$background = get_parameter('background');
 				$width = get_parameter('width');
 				$height = get_parameter('height');
+				
+				if($width == 0 && $height == 0) {
+					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+					$width = $sizeBackground[0];
+					$height = $sizeBackground[1];
+				}
+				
 				process_sql_update('tlayout', array('background' => $background,
 					'width' => $width, 'height' => $height), array('id' => $idVisualConsole));
 				
@@ -142,6 +149,13 @@ switch ($activeTab) {
 				$range = (int) get_parameter ("range", 50);
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
+				
+				if($width == 0 && $height == 0) {
+					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+					$width = $sizeBackground[0];
+					$height = $sizeBackground[1];
+				}
+				
 				$message = '';
 				if ($name_modules[0] == '0')
 					$message .= process_wizard_add ($id_agents, $image, $idVisualConsole, $range, $width, $height);

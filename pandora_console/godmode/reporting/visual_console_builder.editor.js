@@ -122,6 +122,7 @@ function updateAction() {
 		case 'background':
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
+			
 			$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
 			var idElement = 0;
 			break;
@@ -662,8 +663,14 @@ function updateDB(type, idElement , values) {
 						refresh_lines(lines, 'background');
 						break;
 					case 'background':
-						$("#background").css('width', values['width'] + 'px');
-						$("#background").css('height', values['height'] + 'px');
+						if(values['width'] == '0' || values['height'] == '0'){
+							$("#background").css('width', $("#hidden-background_width").val() + 'px');
+							$("#background").css('height', $("#hidden-background_height").val() + 'px');
+						}
+						else {
+							$("#background").css('width', values['width'] + 'px');
+							$("#background").css('height', values['height'] + 'px');
+						}
 						break;
 				}
 			}

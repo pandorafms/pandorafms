@@ -1,3 +1,10 @@
+2010-06-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.php
+	godmode/reporting/visual_console_builder.editor.js: 
+	Fixed the setting of original size by javascript when you 
+	choose 0 x 0 in the visual map background for Bug: 3020721
+
 2010-06-29  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_console_install: Added support for FreeBSD and RHEL/CentOS.

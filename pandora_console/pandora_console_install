@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
 # Pandora FMS Console Installer (c) 2008-2010 Artica ST
-# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu, RHEL/CentOS and
+# FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
 # v3.0 Build 091224
@@ -15,6 +16,8 @@ MODE=$1
 
 
 get_distro () {
+
+	OS_NAME=`uname -s`
 
 	# Get Linux Distro type and version
 	if [ -f "/etc/SuSE-release" ]
@@ -40,8 +43,18 @@ get_distro () {
 					OS_VERSION="FEDORA $OS_VERSION"
 					LINUX_DISTRO=FEDORA
 				else
-					LINUX_DISTRO=GENERIC
-					OS_VERSION=`uname -r`
+					if [ -f "/etc/redhat-release" ]
+					then
+						LINUX_DISTRO=RHEL_CENTOS
+					else
+						if [ "$OS_NAME" = "FreeBSD" ]
+						then
+							LINUX_DISTRO=FreeBSD
+						else
+							LINUX_DISTRO=GENERIC
+						fi
+						OS_VERSION=`uname -r`
+					fi
 				fi
 			fi
 		fi
@@ -50,6 +63,25 @@ get_distro () {
 }
 
 uninstall () {
+	DISTRO=`get_distro`
+
+	if [ "$DISTRO" = "UBUNTU" ]
+        then
+		PANDORA_HOME=/var/www/pandora
+        else
+		if [ "$DISTRO" = "RHEL_CENTOS" ]
+		then
+			PANDORA_HOME=/var/www/html/pandora_console
+		else
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				PANDORA_HOME="/usr/local/www/data/pandora_console /usr/local/www/apache22/data/pandora_console"
+			else
+				PANDORA_HOME=/srv/www/htdocs/pandora
+			fi
+		fi
+	fi
+
 	echo "Removing Pandora FMS Console"
 	rm -Rf $PANDORA_HOME
 	echo "You need to manually drop pandora database from your Database server"
@@ -61,16 +93,33 @@ install () {
 	DISTRO=`get_distro`
 	OLDFILENAMETMP=`date +"%Y-%m-%d"`
 	
-	if [ "$DISTRO" == "UBUNTU" ]
+	if [ "$DISTRO" = "UBUNTU" ]
 	then
 		PANDORA_HOME=/var/www/pandora
 		PANDORA_CONF=$PANDORA_HOME/include/config.php
 	else
-		PANDORA_HOME=/srv/www/htdocs/pandora
-		PANDORA_CONF=$PANDORA_HOME/include/config.php
+		if [ "$DISTRO" = "RHEL_CENTOS" ]
+		then
+			PANDORA_HOME=/var/www/html/pandora_console
+			PANDORA_CONF=$PANDORA_HOME/include/config.php
+		else
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				if [ -d /usr/local/www/apache22 ]
+				then
+					PANDORA_HOME=/usr/local/www/apache22/data/pandora_console
+				else
+					PANDORA_HOME=/usr/local/www/data/pandora_console
+				fi
+				PANDORA_CONF=$PANDORA_HOME/include/config.php
+			else
+				PANDORA_HOME=/srv/www/htdocs/pandora
+				PANDORA_CONF=$PANDORA_HOME/include/config.php
+			fi
+		fi
 	fi
 
-	echo "Detecting Linux distribution: $DISTRO"
+	echo "Detecting operating system: $DISTRO"
 	
 	if [ -f $PANDORA_HOME ] && [ "$FORCE" = "0" ]
 	then
@@ -83,7 +132,7 @@ install () {
 
 	# Create directories
 	echo "Creating Pandora FMS Console home directory at $PANDORA_HOME ..."
-	mkdir $PANDORA_HOME 2> /dev/null
+	mkdir -p $PANDORA_HOME 2> /dev/null
 
 	# Copying Pandora FMS console
 	echo "Copying Pandora FMS Console to $PANDORA_HOME.."
@@ -92,27 +141,49 @@ install () {
 
 
 	# Creating 'pandora' user
-	id pandora
+	id pandora 2> /dev/null
 	if [ $? -eq 0 ]; then
 		echo " "
 		echo "User pandora does exist, skipping this step"
 	else
 		echo "Creating 'pandora' user"
-		useradd pandora 
-		mkdir /home/pandora 2> /dev/null
-		mkdir /home/pandora/.ssh 2> /dev/null
-		chown -R pandora /home/pandora 
+		if [ "$DISTRO" = "FreeBSD" ]
+		then
+			echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
+		else
+			useradd pandora 
+			mkdir /home/pandora 2> /dev/null
+			mkdir /home/pandora/.ssh 2> /dev/null
+			chown -R pandora /home/pandora 
+		fi
+	fi
+
+	if [ ! -d /var/spool/pandora ]
+	then
+		mkdir -p /var/spool/pandora
 	fi
 
 	#Ownership
-	if [ "$DISTRO" == "UBUNTU" ]
+	if [ "$DISTRO" = "UBUNTU" ]
 	then
 		chown -R www-data:root $PANDORA_HOME
 		chown -R pandora:www-data /var/spool/pandora/
 	else 
-		# Assuming SUSE
-		chown -R wwwrun:root $PANDORA_HOME
-		chown -R pandora:www /var/spool/pandora/
+		if [ "$DISTRO" = "RHEL_CENTOS" ]
+		then
+			chown -R apache:apache $PANDORA_HOME
+			chown -R pandora:apache /var/spool/pandora/	
+		else
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				chown -R www:www $PANDORA_HOME
+				chown -R pandora:www /var/spool/pandora/
+			else
+				# Assuming SUSE
+				chown -R wwwrun:root $PANDORA_HOME
+				chown -R pandora:www /var/spool/pandora/
+			fi
+		fi
 	fi
 
 	echo "Setting secure permissions for Pandora FMS spool dir..."

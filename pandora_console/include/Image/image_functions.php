@@ -37,21 +37,15 @@ if (isset($_GET['getFile'])) {
 		
 		$fileTemp = sys_get_temp_dir() . "/tumb_" . $newWidth . "x" . $newHeight . "_" . $fileName;
 		
-		$protocol = 'http';
-		if(!empty($_SERVER['HTTPS']))
-			$protocol .= 's';
-		$protocol .= '://';
-		
 		if (is_file($fileTemp)) {
 			if (!is_readable($fileTemp)) {
 				$fileTemp = sys_get_temp_dir() . "/tumb_" . $newWidth . "x" . $newHeight . "_" . uniqid() . "_" . $fileName;
-				createthumb($protocol.$_SERVER['SERVER_NAME'] . $file, $fileTemp,$newWidth,$newHeight);
+				createthumb( $_SERVER['DOCUMENT_ROOT'] . $file, $fileTemp,$newWidth,$newHeight);
 			}
 		}
-		else createthumb($protocol.$_SERVER['SERVER_NAME'] . $file, $fileTemp,$newWidth,$newHeight);
+		else createthumb( $_SERVER['DOCUMENT_ROOT'] . $file, $fileTemp,$newWidth,$newHeight);
 		getFile($fileName, $fileTemp);
 		unlink($fileTemp);
-		echo $protocol.$_SERVER['SERVER_NAME'] . $file;
 	}
 }
 //END Lines of code for direct url call script

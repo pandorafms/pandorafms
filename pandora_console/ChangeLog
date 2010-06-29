@@ -1,5 +1,10 @@
 2010-06-29  Sergio Martin <sergio.martin@artica.es>
 
+	* include/Image/image_functions.php: Reverted an 
+	undesired last commit change
+
+2010-06-29  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/visual_console_builder.php
 	godmode/reporting/visual_console_builder.editor.js: 
 	Fixed the setting of original size by javascript when you 

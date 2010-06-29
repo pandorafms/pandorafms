@@ -63,12 +63,6 @@ $background = $visualConsole['background'];
 $widthBackground = $visualConsole['width'];
 $heightBackground = $visualConsole['height'];
 
-if (($widthBackground == 0) && ($heightBackground == 0)) {
-	$backgroundSizes = getimagesize('images/console/background/' . $background);
-	$widthBackground = $backgroundSizes[0];
-	$heightBackground = $backgroundSizes[1]; 
-}
-
 $layoutDatas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
@@ -235,6 +229,11 @@ echo '</div>';
 
 print_input_hidden('background_width', $widthBackground);
 print_input_hidden('background_height', $heightBackground);
+
+$backgroundSizes = getimagesize('images/console/background/' . $background);
+
+print_input_hidden('background_original_width', $backgroundSizes[0]);
+print_input_hidden('background_original_height', $backgroundSizes[1]);
 echo "</form>";
 
 //Hack to translate messages in javascript

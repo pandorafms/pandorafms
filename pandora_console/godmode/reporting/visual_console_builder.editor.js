@@ -171,6 +171,10 @@ function readFields() {
 	values['period'] = $("select[name=period]").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
+	if(values['width'] == 0 && values['height'] == 0) {
+		values['width'] = $("#hidden-background_original_width").val();
+		values['height'] = $("#hidden-background_original_height").val();
+	}
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['label_color'] = $("input[name=label_color]").val();

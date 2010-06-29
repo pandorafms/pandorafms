@@ -1,5 +1,11 @@
 2010-06-29  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.editor.php: Fixed
+	storing of width and height of the background of the visual map
+
+2010-06-29  Sergio Martin <sergio.martin@artica.es>
+
 	* include/Image/image_functions.php: Reverted an 
 	undesired last commit change
 

@@ -1,3 +1,8 @@
+2010-06-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.editor.js: Fixed 
+	the storing of width and height of item in visual maps
+
 2010-06-29  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js

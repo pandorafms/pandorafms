@@ -114,12 +114,13 @@ function updateAction() {
 	
 	values = readFields();
 	
-	// TODO VALIDATE DATA
-	
-	updateDB(selectedItem, idItem , values);
-	
+	// TODO VALIDATE DATA	
 	switch (selectedItem) {
 		case 'background':
+			if(values['width'] == 0 && values['height'] == 0) {
+				values['width'] = $("#hidden-background_original_width").val();
+				values['height'] = $("#hidden-background_original_height").val();
+			}
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
 			
@@ -155,6 +156,8 @@ function updateAction() {
 			break;
 	}
 	
+	updateDB(selectedItem, idItem , values);
+
 	actionClick();
 }
 
@@ -171,10 +174,6 @@ function readFields() {
 	values['period'] = $("select[name=period]").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
-	if(values['width'] == 0 && values['height'] == 0) {
-		values['width'] = $("#hidden-background_original_width").val();
-		values['height'] = $("#hidden-background_original_height").val();
-	}
 	values['parent'] = $("select[name=parent]").val();
 	values['map_linked'] = $("select[name=map_linked]").val();
 	values['label_color'] = $("input[name=label_color]").val();

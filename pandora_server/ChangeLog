@@ -1,3 +1,7 @@
+2010-06-30  Sancho lerena <slerena@artica.es>
+
+	* pandora_server.redhat.spec: Specific Spec for redhat linux.
+
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* conf/pandora_server.conf: Set the default server_threshold to 5

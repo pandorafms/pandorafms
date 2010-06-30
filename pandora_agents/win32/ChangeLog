@@ -1,3 +1,11 @@
+2010-06-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc: getDiskFreeSpacePercent should not return
+	  any value if the drive does not exist. Fixed.
+
+	* modules/pandora_module.h, modules/pandora_module_factory.cc,
+	  modules/pandora_module.cc, pandora_windows_service.cc: Added support
+	  for saving the value of a module as an environment variable. 
 
 2010-06-13  Sancho Lerena <slerena@artica.es>
 

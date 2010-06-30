@@ -570,7 +570,7 @@ Pandora_Windows_Service::checkConfig () {
 	int i, conf_size;
 	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
 	char agent_md5[33], conf_md5[33], flag;
-	string conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
+	string agent_name, conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
 
 	tmp = conf->getValue ("remote_config");
 	if (tmp != "1") {
@@ -590,8 +590,15 @@ Pandora_Windows_Service::checkConfig () {
 
 	/* Get agent name */
 	tmp = conf->getValue ("agent_name");
-	if (tmp == "") {
+	if (tmp.empty ()) {
 		tmp = Pandora_Windows_Info::getSystemName ();
+	}
+	agent_name = tmp;
+	
+	/* Error getting agent name */
+	if (tmp.empty ()) {
+		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
+		return;
 	}
 
 	Pandora_File::md5 (tmp.c_str(), tmp.size(), agent_md5);
@@ -675,7 +682,7 @@ Pandora_Windows_Service::checkConfig () {
 		return;
 	}
 
-	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration has changed");
+	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration for agent %s has changed", agent_name.c_str ());
 
 	/* Get configuration file from server */
 	try {
@@ -849,7 +856,12 @@ Pandora_Windows_Service::pandora_run () {
 		
 			pandoraDebug ("Run %s", module->getName ().c_str ());
 			module->run ();
-		
+			
+			/* Save module data to an environment variable */
+			if (!module->getSave().empty ()) {
+				module->exportDataOutput ();
+			}
+
 			this->modules->goNext ();
 		}
 	}

@@ -139,6 +139,7 @@ namespace Pandora_Modules {
 		Module_Type           module_type;
 		string                module_kind_str;
 		Module_Kind           module_kind;
+		string                save;
 
 	protected:
 		
@@ -191,7 +192,8 @@ namespace Pandora_Modules {
 		int          getInterval   ();
 		void         setTimeout    (int timeout);
 		int          getTimeout    ();
-		
+		string       getSave ();
+
 		virtual string getXml      ();
 
 		
@@ -209,13 +211,16 @@ namespace Pandora_Modules {
 		Module_Type getTypeInt     () const;
 		Module_Type getModuleType  () const;
 		Module_Kind getModuleKind  () const;
-		
+
 		void        setType        (string type);
 		void        setKind        (string kind);
 		void        setDescription (string description);
 		void        setMax         (int value);
 		void        setMin         (int value);
 		void        setAsync       (bool async);
+		void        setSave        (string save);
+
+		void        exportDataOutput ();
 	};
 }
 

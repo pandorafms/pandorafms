@@ -80,6 +80,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_TIMEOUT       ("module_timeout ")
 #define TOKEN_REGEXP        ("module_regexp ")
 #define TOKEN_PLUGIN        ("module_plugin ")
+#define TOKEN_SAVE          ("module_save ")
 
 string
 parseLine (string line, string token) {
@@ -122,7 +123,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_retries, module_startdelay, module_retrydelay;
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
-	string                 module_plugin;
+	string                 module_plugin, module_save;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -159,6 +160,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_timeout       = "";
 	module_regexp        = "";
 	module_plugin        = "";
+	module_save        = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -280,6 +282,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_plugin == "") {
 			module_plugin = parseLine (line, TOKEN_PLUGIN);
 		}
+		if (module_save == "") {
+			module_save = parseLine (line, TOKEN_SAVE);
+		}
 
 		iter++;
 	}
@@ -377,6 +382,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 
 	if (module_description != "") {
 		module->setDescription (module_description);
+	}
+
+	if (module_save != "") {
+		module->setSave (module_save);
 	}
 	
 	if (module_async != "") {

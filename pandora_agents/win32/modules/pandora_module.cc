@@ -274,6 +274,36 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 }
 
 /** 
+ * Export the module output to en environment variable.
+ */
+void
+Pandora_Module::exportDataOutput () {
+	Pandora_Data *pandora_data = NULL;
+	string putenv_str, module_data;
+
+	/* putenv expects a string of the form name=value */
+	putenv_str = this->save + "=";
+	
+	/* No data */
+	if ( (!this->has_output) || this->data_list == NULL) {
+		putenv (putenv_str.c_str ());
+		return;
+	}
+
+	/* Get the module data */
+	pandora_data = data_list->front ();
+	if (pandora_data == NULL) {
+		putenv (putenv_str.c_str ());
+		return;
+	}
+	module_data = pandora_data->getValue ();
+	putenv_str += module_data;
+
+	/* Save it as an environment variable */
+	putenv (putenv_str.c_str ());
+}
+
+/** 
  * Set the output of the module.
  *
  * If the function is called more than once before calling getXML, the
@@ -543,4 +573,24 @@ Pandora_Module::getTimeout () {
 void
 Pandora_Module::setDescription (string description) {
 	this->module_description = description;
+}
+
+/** 
+ * Set the name of the environment variable where the module data will be saved.
+ * 
+ * @param save Name of the environment variable.
+ */
+void
+Pandora_Module::setSave (string save) {
+	this->save = save;
+}
+
+/** 
+ * Get the name of the environment variable where the module data will be saved.
+ * 
+ * @return The name of the environment variable.
+ */
+string
+Pandora_Module::getSave () {
+	return this->save;
 }

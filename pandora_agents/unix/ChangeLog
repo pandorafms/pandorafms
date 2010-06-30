@@ -1,3 +1,8 @@
+2010-06-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Call df with -P from the Linux abstraction layer
+	  to avoid split lines.
+
 2010-06-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added the module_cron feature to schedule modules

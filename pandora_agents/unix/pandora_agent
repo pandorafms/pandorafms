@@ -65,7 +65,7 @@ use constant PROC_CMDS => {
 # Commands to retrieve partition information in kB
 use constant PART_CMDS => {
 	# total, available, mount point
-	linux => 'df | awk \'NR > 1 {print $2, $4, $6}\'',
+	linux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
 	solaris => 'df -k | awk \'NR > 1 {print $2, $4, $6}\'',
 	hpux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
 	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\''

@@ -237,7 +237,8 @@ sub read_config (;$) {
 				'save' => '',
 				'actions' => [],
 				'cron' => '',
-				'cron_utimestamp' => 0
+				'cron_utimestamp' => 0,
+				'cron_interval' => -1
 			};
 		} elsif ($line =~ /^\s*module_name\s+(.+)$/) {
 			$module->{'name'} = $1;
@@ -297,8 +298,10 @@ sub read_config (;$) {
 			} elsif ($action =~ /^\s*=~\s+(\S*)\s+(.*)$/) {
 				push (@{$module->{'conditions'}}, {'operator' => '=~', 'value_1' => $1, 'command' => $2});
 			}
-		} elsif ($line =~ /^\s*module_cron\s+((\*|\d+)\s+(\*|\d+)\s+(\*|\d+)\s+(\*|\d+)\s+(\*|\d+))\s*$/) {
+		} elsif ($line =~ /^\s*module_cron\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;
+		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
+			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
 			next unless ($module->{'name'} ne '') and ($module->{'func'} != 0);
 			push (@Modules, $module);
@@ -962,12 +965,27 @@ sub check_module_cron ($) {
 	
 	# Check cron parameters	
 	for (my $i = 0; $i < 5; $i++) {
-		return 0 if ($time_params[$i] ne $cron_params[$i] && $cron_params[$i] ne '*');
+		
+		# Wildcard
+		next if ($cron_params[$i] eq '*');
+		
+		# Get interval
+		my ($bottom, $top) = split (/-/, $cron_params[$i]);
+		$top = $bottom unless defined ($top);
+		
+		# Check interval
+		if ($bottom <= $top) {
+			return 0 if ($time_params[$i] < $bottom || $time_params[$i] > $top);
+		} else {
+			return 0 if ($time_params[$i] < $bottom && $time_params[$i] > $top);
+		}
 	}
 
 	# Do not check in the next minute, hour, day or month.
 	my $offset = 0; 
-	if($cron_params[0] ne '*') {
+	if ($module->{'cron_interval'} >= 0) {
+		$offset = $module->{'cron_interval'};
+	} elsif($cron_params[0] ne '*') {
 		# 1 minute
 		$offset = 60;
 	} elsif($cron_params[1] ne '*') {

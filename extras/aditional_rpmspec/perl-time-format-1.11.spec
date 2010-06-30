@@ -1,14 +1,14 @@
 #Time-Format Perl Module
 #
 %define name        perl-time-format
-%define version	    1.11
+%define version	    1.02
 Summary:            Easy-to-use date/time formatting.
 Name:               %{name}
 Version:            %{version}
 Release:            0
 License:            Other License(s), see package
 Vendor:             Eric J. Roode, <roode@cpan.org>
-Source0:            %{name}-%{version}.tar.bz2
+Source0:            %{name}-%{version}.tar.gz
 URL:                http://search.cpan.org/~roode/Time-Format-1.11/
 Group:              Development/Libraries/Perl
 Packager:           Pablo de la Concepcion <pablo@artica.es>
@@ -63,11 +63,12 @@ rm -rf $RPM_BUILD_ROOT
 %build
 perl Makefile.PL -noxs
 make
-make test
+#make test
 
 %install
-%perl_make_install
-%perl_process_packlist
+make install
+#%perl_make_install
+#%perl_process_packlist
 
 %clean
 rm -rf $RPM_BUILD_ROOT

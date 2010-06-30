@@ -1,0 +1,87 @@
+#
+# Pandora FMS Console
+#
+%define name        pandorafms_console
+%define version     3.1
+%define release     2
+%define httpd_name      httpd
+# User and Group under which Apache is running
+%define httpd_name  httpd
+%define httpd_user  apache
+%define httpd_group apache
+
+# Evaluate PHP version
+%define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
+
+Summary:            Pandora FMS Console
+Name:               %{name}
+Version:            %{version}
+Release:            %{release}
+License:            GPL
+Vendor:             Artica ST <info@artica.es>
+Source0:            %{name}-%{version}.tar.gz
+URL:                http://www.pandorafms.com
+Group:              Productivity/Networking/Web/Utilities
+Packager:           Sancho Lerena <slerena@artica.es>
+Prefix:              /var/www/htdocs
+BuildRoot:          %{_tmppath}/%{name}
+BuildArchitectures: noarch
+AutoReq:            0
+Requires:           httpd
+Requires:           php >= 5.2.0
+Requires:           php-gd, php-snmp, php-pear, 
+Requires:           php-mysql, php-ldap, php-mbstring, php, php-common
+Requires:           graphviz
+Requires:           php-pear-db php-pear-xml_rpc
+Provides:           %{name}-%{version}
+
+%description
+The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
+
+%prep
+rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n pandora_console
+
+%build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
+cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
+if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
+   rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
+fi
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+# Has an install already been done, if so we only want to update the files
+# push install.php aside so that the console works immediately using existing
+# configuration.
+#
+if [ -f %{prefix}/pandora_console/include/config.php ] ; then
+   mv %{prefix}/pandora_console/install.php %{prefix}/pandora_console/install.done
+else
+   echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
+fi
+
+
+%preun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
+rm -Rf %{prefix}/pandora_console
+
+%files
+%defattr(0644,%{httpd_user},%{httpd_group},0755)
+%docdir %{prefix}/pandora_console/docs
+%{prefix}/pandora_console
+
+%defattr(770,pandora,%{httpd_group})
+/var/spool/pandora/data_in

@@ -1,3 +1,7 @@
+2010-06-30  SAncho Lerena <slerena@artica.es>
+
+	* pandora_console.redhat.spec: Specific spec for Redhat.
+
 2010-06-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Continue drawing combined charts if modules

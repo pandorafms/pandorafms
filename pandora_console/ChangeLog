@@ -1,5 +1,10 @@
 2010-06-30  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/events/events.php: Changed the Server and All text
+	on the events filter to use gettext. 
+
+2010-06-30  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/events/events.php: Fixed the agent filter. Now the
 	pagination keep the agent and shows the name of the agent in the 
 	input. Bugfix: 3021807

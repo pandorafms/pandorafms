@@ -107,10 +107,10 @@ if($id_agent == -2) {
 
 	switch ($text_agent)
 	{
-		case All:
+		case __('All'):
 			$id_agent = -1;
 			break;
-		case Server:
+		case __('Server'):
 			$id_agent = 0;
 			break;
 		default:
@@ -122,10 +122,10 @@ else{
 	switch ($id_agent)
 	{
 		case -1:
-			$text_agent = 'All';
+			$text_agent = __('All');
 			break;
 		case 0:
-			$text_agent = 'Server';
+			$text_agent = __('Server');
 			break;
 		default:
 			$text_agent = get_agent_name($id_agent);

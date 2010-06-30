@@ -1,5 +1,11 @@
 2010-06-30  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/events/events.php: Fixed the agent filter. Now the
+	pagination keep the agent and shows the name of the agent in the 
+	input. Bugfix: 3021807
+
+2010-06-30  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/visual_console_builder.editor.js: Fixed 
 	the storing of width and height of item in visual maps
 

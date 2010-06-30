@@ -95,28 +95,42 @@ if ($config['flash_charts']) {
 }
 
 $offset = (int) get_parameter ("offset", 0);
-$ev_group = (int) get_parameter ("ev_group", 1); //1 = all
+$ev_group = (int) get_parameter ("ev_group", 0); //0 = all
 $search = preg_replace ("/&([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/", "%", rawurldecode (get_parameter ("search")));
 $event_type = get_parameter ("event_type", ''); // 0 all
 $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
-//$id_agent = (int) get_parameter ("id_agent", ""); //-1 all, 0 system
-$text_agent = (string) get_parameter("id_agent", "All");
+$id_agent = (int) get_parameter ("id_agent", -2); //-1 all, 0 system
 
-switch ($text_agent)
-{
-	case '-1':
-		$id_agent = -1;
-		break;
-	case 'All':
-		$id_agent = -1;
-		break;
-	case 'Server':
-		$id_agent = 0;
-		break;
-	default:
-		$id_agent = get_agent_id($text_agent);
-		break;
+if($id_agent == -2) {
+	$text_agent = (string) get_parameter("text_agent", "All");
+
+	switch ($text_agent)
+	{
+		case All:
+			$id_agent = -1;
+			break;
+		case Server:
+			$id_agent = 0;
+			break;
+		default:
+			$id_agent = get_agent_id($text_agent);
+			break;
+	}
+}
+else{
+	switch ($id_agent)
+	{
+		case -1:
+			$text_agent = 'All';
+			break;
+		case 0:
+			$text_agent = 'Server';
+			break;
+		default:
+			$text_agent = get_agent_name($id_agent);
+			break;
+	}
 }
 
 $id_event = (int) get_parameter ("id_event", -1);
@@ -132,7 +146,7 @@ $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
 
 //Group selection
-if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
+if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
 	$sql_post = " AND id_grupo = $ev_group";
 } else {
@@ -281,7 +295,7 @@ echo '</td>';
 
 //Agent search
 echo "<td>".__('Agent search')."</td><td>";
-print_input_text_extended ('id_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
+print_input_text_extended ('text_agent', $text_agent, 'text_id_agent', '', 30, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'))
 . '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 

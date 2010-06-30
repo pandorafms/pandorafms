@@ -1,3 +1,9 @@
+2010-06-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events.php: Merged fix from trunk.
+	Fixed the agent filter. Now the pagination keep the 
+	agent and shows the name of the agent in the 
+
 2010-06-30  SAncho Lerena <slerena@artica.es>
 
 	* pandora_console.redhat.spec: Specific spec for Redhat.

@@ -45,7 +45,6 @@ $agents = array();
 foreach ($rows as $row) {
 	$agents[$row['id_agente']] = $row['nombre'];
 }
-$agents[0] = __('None');
 
 $rows = get_db_all_rows_sql('
 	SELECT t1.id_agent_module, t2.nombre
@@ -61,7 +60,6 @@ $modules = array();
 foreach ($rows as $row) {
 	$modules[$row['id_agent_module']] = $row['nombre'];
 }
-$modules[0] = __('None');
 
 $rows = get_db_all_rows_sql('
 	SELECT DISTINCT(type)
@@ -75,14 +73,14 @@ $types = array();
 foreach ($rows as $row) {
 	$types[$row['type']] = get_report_name($row['type']);
 }
-$types[0] = __('None');
 
 $agentFilter = get_parameter('agent_filter', 0);
 $moduleFilter = get_parameter('module_filter', 0);
-$typeFilter = get_parameter('type_filter', '');
+$typeFilter = get_parameter('type_filter', 0);
 
 $filterEnable = true;
-if (($agentFilter == 0) && ($moduleFilter == 0) && ($typeFilter == '')) {
+$urlFilter = '';
+if (($agentFilter == 0) && ($moduleFilter == 0) && ($typeFilter == 0)) {
 	$filterEnable = false;
 }
 
@@ -93,11 +91,11 @@ echo '<a href="javascript: toggleFormFilter();"><b>'.__('Items filter').'</b> <i
 $table = null;
 $table->width = '80%';
 $table->data[0][0] = __('Agents');
-$table->data[0][1] = print_select($agents, 'agent_filter', $agentFilter, '', 0, '', true);
+$table->data[0][1] = print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
 $table->data[0][2] = __('Modules');
-$table->data[0][3] = print_select($modules, 'module_filter', $moduleFilter, '', '', 0, true);
+$table->data[0][3] = print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
 $table->data[1][0] = __('Type');
-$table->data[1][1] = print_select($types, 'type_filter', $typeFilter, '', '', 0, true);
+$table->data[1][1] = print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
 
 echo '<div id="form_filter" style="display: none;">';
 echo '<form method="post" action ="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&&id_report=' . $idReport . '">';
@@ -112,8 +110,14 @@ echo '</form>';
 echo '</div>';
 
 $where = '1=1';
-if ($typeFilter != '') {
-	$where .= ' AND type LIKE "' . $typeFilter . '"';
+if ($typeFilter != '0') {
+	$where .= ' AND type = "' . $typeFilter . '"';
+}
+if($agentFilter != 0) {
+	$where .= ' AND id_agent = ' . $agentFilter;
+}
+if($moduleFilter != 0) {
+	$where .= ' AND id_agent_module = ' . $moduleFilter;
 }
 
 $items = get_db_all_rows_sql('SELECT * FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport . ' ORDER BY `order` LIMIT ' . $offset . ', ' . $config["block_size"]);

@@ -1,5 +1,11 @@
 2010-07-01  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_db.php: Fixed the notice when
+	delete a IP adress from agent configuration for 
+	bug: 3016410
+
+2010-07-01  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/reporting_builder.list_items.php: Fixed the
 	reports items filter for bug: 3013841
 

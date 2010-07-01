@@ -1563,6 +1563,8 @@ function agent_add_address ($id_agent, $ip_address) {
  * @param string IP address to unassign
  */
 function agent_delete_address ($id_agent, $ip_address) {
+	global $config;
+	
 	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
 		AND id_agent = %d",$ip_address, $id_agent);

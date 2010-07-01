@@ -1,3 +1,8 @@
+2010-07-01  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/reporting_builder.list_items.php: Fixed the
+	reports items filter for bug: 3013841
+
 2010-06-30  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.php: Changed the Server and All text

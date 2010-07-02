@@ -1,5 +1,8 @@
 2010-07-02  Sancho Lerena <slerena@artica.es>
 
+	* util/pandora_logrotate: Removed logrotate info from agent and
+	console, should not be here.
+
 	* RHEL: Added directory with patches for RPMBuild in Redhat.
 	
 	* pandora_server.redhat.spec: Patches applied from the contribution	

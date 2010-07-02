@@ -26,7 +26,11 @@ $output = "";
 require_once "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
+require_once "../../include/functions_api.php";
 
+if(!isInACL($_SERVER['REMOTE_ADDR']))
+	exit;
+	
 $sql = "SELECT evento, timestamp, id_agente FROM tevento ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
 
 $result=mysql_query($sql);

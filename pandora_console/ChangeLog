@@ -1,3 +1,11 @@
+2010-06-21  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/graph_builder.main.php
+	godmode/reporting/graph_builder.php
+	godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/graph_builder.preview.php: Merged from trunk.
+	Rewritted the combined graphs editor
+
 2010-06-30  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events.php: Merged from trunk. Changed 

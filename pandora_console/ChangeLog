@@ -1,3 +1,10 @@
+2010-07-02  Sancho Lerena <slerena@artica.es>
+
+        * pandora_console.redhat.spec: Patches applied from the contribution        
+        from KIKUCHI Koichiro, thanks Kikuchi!
+
+	* extras/lodrotate: Specific logrotate file for Redhat systems.
+
 2010-07-02  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_rss.php

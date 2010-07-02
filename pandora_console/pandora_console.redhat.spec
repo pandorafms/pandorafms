@@ -19,20 +19,21 @@ Version:            %{version}
 Release:            %{release}
 License:            GPL
 Vendor:             Artica ST <info@artica.es>
+#Source0:            %{name}-%{version}-%{revision}.tar.gz
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
-Prefix:              /var/www/htdocs
+Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch
 AutoReq:            0
-Requires:           httpd
-Requires:           php >= 5.2.0
-Requires:           php-gd, php-snmp, php-pear, 
-Requires:           php-mysql, php-ldap, php-mbstring, php, php-common
-Requires:           graphviz
-Requires:           php-pear-db php-pear-xml_rpc
+Requires:           httpd >= 2.0.0
+Requires:           php >= 4.3.0
+Requires:           php-gd, php-snmp, php-pear 
+Requires:           php-mysql, php-ldap, php-mbstring, php
+Requires:           php-pear-db, graphviz, php-pear-xml_rpc
+Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
 Provides:           %{name}-%{version}
 
 %description
@@ -48,11 +49,12 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
-if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
-   rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
-fi
+rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
+rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
+cp $RPM_BUILD_ROOT%{prefix}/pandora_console/extras/logrotate $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -76,12 +78,13 @@ if [ "$1" = "1" ]; then
         exit 0
 fi
 
-rm -Rf %{prefix}/pandora_console
-
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
+
+%defattr(0644,root,root)
+%{_sysconfdir}/logrotate.d/pandora_console
 
 %defattr(770,pandora,%{httpd_group})
 /var/spool/pandora/data_in

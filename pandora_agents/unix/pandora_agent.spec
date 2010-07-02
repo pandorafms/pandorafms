@@ -64,9 +64,14 @@ fi
 rm -Rf $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
-exit 0
+# Upgrading
+if [ "$1" = "2" ]; then
+   exit 0
+fi
 
+id pandora >/dev/null 2>&1 || \
+/usr/sbin/useradd -d /var/spool/pandora -s /sbin/nologin -m -g 0 pandora 2> /dev/null
+exit 0
 
 %post
 if [ ! -d /etc/pandora ] ; then

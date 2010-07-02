@@ -1,3 +1,8 @@
+2010-07-02  Sancho Lerena <slerena@artica.es>
+
+        * pandora_agent.spec: Patches applied from the contribution     
+        from KIKUCHI Koichiro, thanks Kikuchi!
+
 2010-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Improved OS version detection. Disabled error output

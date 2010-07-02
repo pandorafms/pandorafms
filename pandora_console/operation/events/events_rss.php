@@ -20,14 +20,12 @@ require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
 
+
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
 // Uncoment this to activate ACL on RSS Events
-/*
-if (!isInACL($ipOrigin)) {
+if (!isInACL($ipOrigin))
     exit;
-}
-*/
 
 header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
 
@@ -61,33 +59,48 @@ $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -1);
 $id_event = (int) get_parameter ("id_event", -1); //This will allow to select only 1 event (eg. RSS)
+$event_view_hr = (int) get_parameter ("event_view_hr", 0);
 
 $sql_post = "";
+
+if ($event_view_hr > 0) {
+	$unixtime = (int) (get_system_time () - ($event_view_hr * 3600)); //Put hours in seconds
+	$sql_post .= " AND `tevento`.`utimestamp` > ".$unixtime;
+}
 if ($ev_group > 1)
 	$sql_post .= " AND `tevento`.`id_grupo` = $ev_group";
-if ($status == 1)
-	$sql_post .= " AND `tevento`.`estado` = 1";
-if ($status == 0)
-	$sql_post .= " AND `tevento`.`estado` = 0";
+if ($status >= 0)
+	$sql_post .= " AND `tevento`.`estado` = ".$status;
 if ($search != "")
 	$sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
-if ($event_type != "")
-	$sql_post .= " AND `tevento`.`event_type` = '$event_type'";
+if ($event_type != ""){
+	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+	// for the user so for him is presented only "warning, critical and normal"
+	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal"){
+		$sql_post .= " AND `tevento`.`event_type` LIKE '%$event_type%' ";
+	}
+	elseif ($event_type == "not_normal"){
+		$sql_post .= " AND `tevento`.`event_type` LIKE '%warning%' OR `tevento`.`event_type` LIKE '%critical%' OR `tevento`.`event_type` LIKE '%unknown%' ";
+	}
+	else
+		$sql_post .= " AND `tevento`.`event_type` = '".$event_type."'";
+}
 if ($severity != -1)
 	$sql_post .= " AND `tevento`.`criticity` >= ".$severity;
 if ($id_agent != -1)
 	$sql_post .= " AND `tevento`.`id_agente` = ".$id_agent;
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
-													
+		
 $sql="SELECT `tevento`.`id_evento` AS event_id,
-	`tagente`.`nombre` AS agent_name,
+	`tevento`.`id_agente` AS id_agent,
 	`tevento`.`id_usuario` AS validated_by,
 	`tevento`.`estado` AS validated,
 	`tevento`.`evento` AS event_descr,
-	`tevento`.`utimestamp` AS unix_timestamp 
-	FROM tevento, tagente
-	WHERE  `tevento`.`id_agente` = `tagente`.`id_agente` ".$sql_post."
+	`tevento`.`utimestamp` AS unix_timestamp,
+	`tevento`.`event_type` AS event_type 
+	FROM tevento
+	WHERE 1 = 1".$sql_post."
 	ORDER BY utimestamp DESC LIMIT 0 , 30";
 
 $result= get_db_all_rows_sql ($sql);
@@ -117,15 +130,26 @@ if (empty ($result)) {
 }
 
 foreach ($result as $row) {
+	if ($row["event_type"] == "system") {
+		$agent_name = __('System');
+	}
+	elseif ($row["id_agent"] > 0) {
+		// Agent name
+		$agent_name = get_agent_name ($row["id_agent"]);
+	}
+	else {
+		$agent_name = __('Alert').__('SNMP');
+	}
+	
 //This is mandatory
 	$rss_feed .= '<item><guid>';
 	$rss_feed .= safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row['event_id']);
 	$rss_feed .= '</guid><title>';
-	$rss_feed .= safe_input ($row['agent_name']);
+	$rss_feed .= $agent_name;
 	$rss_feed .= '</title><description>';
 	$rss_feed .= safe_input ($row['event_descr']);
 	if($row['validated'] == 1) {
-		$rss_feed .= '<br /><br />Validated by ' . safe_input ($row['validated_by']);
+		$rss_feed .= safe_input ('<br /><br />').'Validated by ' . safe_input ($row['validated_by']);
 	}
 	$rss_feed .= '</description><link>';
 	$rss_feed .= safe_input ($url . "/index.php?sec=eventos&sec2=operation/events/events&id_event=" . $row["event_id"]);

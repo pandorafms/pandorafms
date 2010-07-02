@@ -138,9 +138,7 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $groups = get_user_groups ($config["id_user"], "IR");
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
-$group_rep = (int) get_parameter ("group_rep", 1);
-/* Show always the system events */
-$groups[0] = __('System');
+$group_rep = (int) get_parameter ("group_rep", 0);
 
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
@@ -153,7 +151,6 @@ if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
 	if (is_user_admin ($config["id_user"])) {
 		//Do nothing if you're admin, you get full access
 		$sql_post = "";
-		$groups[0] = __('System Events');
 	} else {
 		//Otherwise select all groups the user has rights to.
 		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
@@ -177,7 +174,7 @@ if ($event_type != ""){
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
 	elseif ($event_type == "not_normal"){
-		$sql_post .= " AND event_type LIKE '%warning%' OR LIKE '%critical%' ";
+		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
 	}
 	else
 		$sql_post .= " AND event_type = '".$event_type."'";
@@ -207,11 +204,25 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
 	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
 
-
-
 // Header
-if ($config["pure"] == 0)
-	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, '<a target="_top" href="'.$url.'&amp;pure=1"><img src="images/fullscreen.png"></a>');
+if ($config["pure"] == 0) {
+	$buttons = array(
+	'fullscreen' => array('active' => false,
+		'text' => '<a href="'.$url.'&amp;pure=1">' . 
+			print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
+	'rss' => array('active' => false,
+		'text' => '<a href="operation/events/events_rss.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+			print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
+	'marquee' => array('active' => false,
+		'text' => '<a href="operation/events/events_marquee.php">' . 
+			print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
+	'csv' => array('active' => false,
+		'text' => '<a href="operation/events/export_csv.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+			print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>')
+	);
+	
+	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false,$buttons);
+}
 else {
 	// Fullscreen
 	echo "<h2>".__('Events')." &raquo; ".__('Main event view'). "&nbsp;";
@@ -265,9 +276,11 @@ echo "</td>";
 
 // Event type
 echo "<td>".__('Event type')."</td><td>";
-print_select (get_event_types (), 'event_type', $event_type, '', __('All'), '');
+$types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
-$event_type["not_normal"] = __("Not normal");
+$types["not_normal"] = __("Not normal");
+print_select ($types, 'event_type', $event_type, '', __('All'), '');
+
 
 echo "</td></tr><tr>";
 
@@ -341,19 +354,6 @@ echo "</td></tr>";
 echo '<tr><td colspan="4" style="text-align:right">';
 //The buttons
 print_submit_button (__('Update'), '', false, 'class="sub upd"');
-
-// CSV
-echo '&nbsp;&nbsp;&nbsp;<a href="operation/events/export_csv.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;id_agent='.$id_agent.'">';
-print_image ("images/disk.png", false, array ("title" => __('Export to CSV file')));
-echo '</a>';
-// Marquee
-echo '&nbsp;<a target="_top" href="operation/events/events_marquee.php">';
-print_image ("images/heart.png", false, array ("title" => __('Marquee display')));
-echo '</a>';
-// RSS
-echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;id_agent='.$id_agent.'">';
-print_image ("images/rss.png", false, array ("title" => __('RSS Events')));
-echo '</a>';
 
 echo "</td></tr></table></form>"; //This is the filter div
 echo '<div style="width:220px; float:left;">';

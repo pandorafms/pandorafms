@@ -44,6 +44,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->async           = false;
 	this->data_list       = NULL;
     this->inventory_list  = NULL;
+    this->condition_list  = NULL;
 }
 
 /** 
@@ -52,7 +53,27 @@ Pandora_Module::Pandora_Module (string name) {
  * Should be redefined by child classes.
  */
 Pandora_Module::~Pandora_Module () {
+	Condition *cond = NULL;
+	list<Condition *>::iterator iter;
+
+	/* Clean data lists */
 	this->cleanDataList ();
+
+	/* Clean condition list */
+	if (this->condition_list != NULL && this->condition_list->size () > 0) {
+		iter = this->condition_list->begin ();
+		for (iter = this->condition_list->begin ();
+		     iter != this->condition_list->end ();
+		     iter++) {
+			/* Free regular expressions */
+			cond = *iter;
+			if (cond->string_value != "") {
+				regfree (&(cond->regexp));
+			}
+			delete (*iter);
+		}
+		delete (this->condition_list);
+	}
 }
 
 
@@ -593,4 +614,117 @@ Pandora_Module::setSave (string save) {
 string
 Pandora_Module::getSave () {
 	return this->save;
+}
+
+/** 
+ * Adds a new condition to the module.
+ * 
+ * @param condition Condition string.
+ */
+void
+Pandora_Module::addCondition (string condition) {
+	Condition *cond;
+	char operation[255], string_value[1024], command[1024];
+
+	/* Create the condition list if it does not exist */
+	if (this->condition_list == NULL) {
+		this->condition_list = new list<Condition *> ();
+		if (this->condition_list == NULL) {
+			return;
+		}
+	}
+
+	/* Create the new condition */
+	cond = new Condition;
+	if (cond == NULL) {
+		return;
+	}
+	cond->value_1 = 0;
+	cond->value_2 = 0;
+
+	/* Numeric comparison */
+	if (sscanf (condition.c_str (), "%255s %lf %1024[^]", operation, &(cond->value_1), command) == 3) {
+		cond->operation = operation;
+		cond->command = command;
+		this->condition_list->push_back (cond);
+	/* Regular expression */
+	} else if (sscanf (condition.c_str (), "=~ %1024s %1024[^]", string_value, command) == 2) {
+		cond->operation = "=~";
+		cond->string_value = string_value;
+		cond->command = command;
+		if (regcomp (&(cond->regexp), string_value, 0) != 0) {
+			pandoraDebug ("Invalid regular expression %s", string_value);
+			delete (cond);
+			return;
+		}
+		this->condition_list->push_back (cond);
+	/* Interval */
+	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1024[^]", &(cond->value_1), &(cond->value_2), command) == 3) {
+		cond->operation = "()";
+		cond->command = command;
+		this->condition_list->push_back (cond);
+	} else {
+		pandoraDebug ("Invalid module condition: %s", condition.c_str ());
+	}
+}
+
+/** 
+ * Evaluates and executes module conditions.
+ */
+void
+Pandora_Module::evaluateConditions () {
+	unsigned char run;
+	double double_value;
+	string string_value;
+	Condition *cond = NULL;
+	list<Condition *>::iterator iter;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;
+	Pandora_Data *pandora_data = NULL;
+	regex_t regex;
+
+	/* No data */
+	if ( (!this->has_output) || this->data_list == NULL) {
+		return;
+	}
+
+	/* Get the module data */
+	pandora_data = data_list->front ();
+
+	/* Get the string value of the data */
+	string_value = pandora_data->getValue ();
+
+	/* Get the double value of the data */
+	try {
+		double_value = Pandora_Strutils::strtodouble (string_value);
+	} catch (Pandora_Strutils::Invalid_Conversion e) {
+		double_value = 0;
+	}
+
+	if (this->condition_list != NULL && this->condition_list->size () > 0) {
+		iter = this->condition_list->begin ();
+		for (iter = this->condition_list->begin ();
+		     iter != this->condition_list->end ();
+		     iter++) {
+			cond = *iter;
+			run = 0;
+			if ((cond->operation == ">" && double_value > cond->value_1) ||
+			    (cond->operation == "<" && double_value < cond->value_1) ||
+			    (cond->operation == "=" && double_value == cond->value_1) ||
+			    (cond->operation == "!=" && double_value != cond->value_1) ||
+			    (cond->operation == "=~" && regexec (&(cond->regexp), string_value.c_str (), 0, NULL, 0) == 0) ||
+				(cond->operation == "()" && double_value > cond->value_1 && double_value < cond->value_2)) {
+	
+				/* Run the condition command */
+				ZeroMemory (&si, sizeof (si));
+				ZeroMemory (&pi, sizeof (pi));
+				if (CreateProcess (NULL , (CHAR *)cond->command.c_str (), NULL, NULL, FALSE,
+				    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+				    return;
+				}
+				WaitForSingleObject(pi.hProcess, this->module_timeout);
+				CloseHandle (pi.hProcess);
+			}
+		}
+	}
 }

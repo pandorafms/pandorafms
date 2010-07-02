@@ -23,6 +23,7 @@
 
 #include "../pandora.h"
 #include "pandora_data.h"
+#include "boost/regex.h"
 #include <list>
 #include <string>
 
@@ -87,6 +88,18 @@ namespace Pandora_Modules {
 		MODULE_PLUGIN          /**< Plugin */
 	} Module_Kind;
 	
+	/**
+	 * Defines the structure that holds module conditions.
+	 */
+	typedef struct {
+		double value_1;
+		double value_2;
+		string string_value;
+		string operation;
+		string command;
+		regex_t regexp;
+	} Condition;
+	
 	const string module_exec_str       = "module_exec";
 	const string module_proc_str       = "module_proc";
 	const string module_service_str    = "module_service";
@@ -140,6 +153,7 @@ namespace Pandora_Modules {
 		string                module_kind_str;
 		Module_Kind           module_kind;
 		string                save;
+		list<Condition *>     *condition_list;
 
 	protected:
 		
@@ -221,6 +235,8 @@ namespace Pandora_Modules {
 		void        setSave        (string save);
 
 		void        exportDataOutput ();
+		void        addCondition (string condition);
+		void		evaluateConditions ();
 	};
 }
 

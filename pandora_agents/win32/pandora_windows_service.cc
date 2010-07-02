@@ -282,9 +282,11 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
     WaitForSingleObject(pi.hProcess, INFINITE);
     GetExitCodeProcess (pi.hProcess, &rc);
 	if (rc != 0) {
+		CloseHandle (pi.hProcess);
 		return -1;
 	}
 
+	CloseHandle (pi.hProcess);
 	return 0;
 }
 
@@ -861,6 +863,9 @@ Pandora_Windows_Service::pandora_run () {
 			if (!module->getSave().empty ()) {
 				module->exportDataOutput ();
 			}
+
+			/* Evaluate module conditions */
+			module->evaluateConditions ();
 
 			this->modules->goNext ();
 		}

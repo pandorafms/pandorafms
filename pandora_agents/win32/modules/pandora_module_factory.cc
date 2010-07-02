@@ -81,6 +81,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_REGEXP        ("module_regexp ")
 #define TOKEN_PLUGIN        ("module_plugin ")
 #define TOKEN_SAVE          ("module_save ")
+#define TOKEN_CONDITION     ("module_condition ")
 
 string
 parseLine (string line, string token) {
@@ -123,11 +124,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_retries, module_startdelay, module_retrydelay;
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
-	string                 module_plugin, module_save;
+	string                 module_plugin, module_save, module_condition;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
 	long                    agent_interval;
+	list<string>           condition_list;
+	list<string>::iterator condition_iter;
 
 	module_name          = "";
 	module_type          = "";
@@ -143,7 +146,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_logevent      = "";
 	module_source        = "";
 	module_eventtype     = "";
-	module_eventcode   = "";
+	module_eventcode     = "";
 	module_pattern       = "";
 	module_application   = "";
 	module_async         = "";
@@ -160,7 +163,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_timeout       = "";
 	module_regexp        = "";
 	module_plugin        = "";
-	module_save        = "";
+	module_save          = "";
+	module_condition     = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -285,6 +289,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_save == "") {
 			module_save = parseLine (line, TOKEN_SAVE);
 		}
+		if (module_condition == "") {
+			module_condition = parseLine (line, TOKEN_CONDITION);
+			
+			/* Queue the condition and keep looking for more */
+			if (module_condition != "") {
+				condition_list.push_back (module_condition);
+				module_condition = "";
+			}
+		}
 
 		iter++;
 	}
@@ -380,18 +393,31 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		return NULL;
 	}
 
+	/* Set module description */
 	if (module_description != "") {
 		module->setDescription (module_description);
 	}
 
+	/* Save module data as an environment variable */
 	if (module_save != "") {
 		module->setSave (module_save);
 	}
 	
+	/* Async module */
 	if (module_async != "") {
 		module->setAsync (true);
 	}
-	
+
+	/* Module condition */
+	if (condition_list.size () > 0) {
+		condition_iter = condition_list.begin ();
+		for (condition_iter = condition_list.begin ();
+		     condition_iter != condition_list.end ();
+		     condition_iter++) {
+			module->addCondition (*condition_iter);
+		}
+	}
+
 	/* Plugins do not have a module type */
 	if (module_plugin == "") {
 		type = Pandora_Module::parseModuleTypeFromString (module_type);

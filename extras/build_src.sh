@@ -1,49 +1,40 @@
 #!/bin/bash
 
-CODEHOME=~/code/pandora/trunk
-CODEHOME_ENT=~/code/artica/code
-RPMHOME=/usr/src/packages
+CODEHOME=~/code/pandora/branches/pandora_3.1
+CODEHOME_ENT=~/code/artica/code/pandora/branches/3.1
+CODEHOME_ENT_KEYGEN=~/code/artica/code/updatemanager/keygen
+RPMHOME=/usr/src/redhat
+
 VERSION=$(grep 'my $pandora_version =' $CODEHOME/pandora_server/lib/PandoraFMS/Config.pm | awk '{print substr($4, 2, length($4) - 3)}')
-KEYGEN_VERSION=$(grep "%define version" $CODEHOME_ENT/updatemanager/keygen/pandora/pandora_keygen.spec | awk '{print $3}')
+KEYGEN_VERSION=$VERSION
 
 echo "Creating source tarballs (/usr/src/rpm/SOURCES)"
-rm -Rf /usr/src/rpm/SOURCES/pandorafms_*.tar.gz
+sudo rm -Rf /usr/src/rpm/SOURCES/pandorafms_*.tar.gz
 
+echo "Unix agent"
 cd $CODEHOME/pandora_agents
-sudo tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz --exclude \.svn --exclude nohup linux
-sudo tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup unix
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude SunOS --exclude AIX --exclude HP-UX --exclude FreeBSD --exclude pandora_agent_installer --exclude nohup unix
 
+echo "Console OpenSource"
 cd $CODEHOME
-sudo tar zcvf $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz --exclude \.svn pandora_server
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz --exclude \.svn --exclude config.php --exclude enterprise pandora_console
 
-# Console OpenSource
+echo "Server Opensource"
 cd $CODEHOME
-tar zcvf $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz --exclude \.svn --exclude config.php --exclude enterprise pandora_console
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz --exclude \.svn --exclude *.spec --exclude DEBIAN --exclude RHEL pandora_server
+sudo cp $CODEHOME/pandora_server/RHEL/* $RPMHOME/SOURCES
 
-# Console Enterprise
-cd $CODEHOME_ENT/pandora/trunk/pandora_console
-sudo tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz --exclude \.svn enterprise/*
+echo "Generating Tarballs for enterprise version"
 
-# Server OpenSource
-cd $CODEHOME_ENT/pandora/trunk/pandora_server/
-sudo tar zcvf $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz --exclude \.svn  PandoraFMS-Enterprise
+echo "Console Enterprise"
+cd $CODEHOME_ENT/pandora_console
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz --exclude \.svn enterprise/*
 
-# Updatemanager Client keygen
-cd $CODEHOME_ENT/updatemanager/keygen
-sudo tar cvzf $RPMHOME/SOURCES/pandorafms_keygen-$KEYGEN_VERSION.tar.gz --exclude .svn --exclude keygen --exclude keygen.i386.static --exclude pandora_keygen.spec pandora
+echo "Server Enterprise"
+cd $CODEHOME_ENT/pandora_server/
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_server_enterprise-$VERSION.tar.gz --exclude \.svn --exclude *.spec --exclude DEBIAN --exclude RHEL PandoraFMS-Enterprise
 
-echo " "
-echo " ABORTING RPM Creation, only tarball packages build "
-exit
-
-echo "Creating RPMs  at $RPMHOME/RPMS"
-cd $CODEHOME
-sudo rpmbuild -ba pandora_console/pandora_console.spec
-sudo rpmbuild -ba pandora_agents/linux/pandora_agent.spec
-sudo rpmbuild -ba pandora_agents/unix/pandora_agent.spec
-sudo rpmbuild -ba pandora_server/pandora_server.spec
-sudo rpmbuild -ba $CODEHOME_ENT/pandora/trunk/pandora_console/enterprise/pandora_console_enterprise.spec
-sudo rpmbuild -ba $CODEHOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec
-sudo rpmbuild -ba $CODEHOME_ENT/updatemanager/keygen/pandora/pandora_keygen.spec
-
+echo "Updatemanager Client keygen"
+cd $CODEHOME_ENT_KEYGEN
+sudo tar czf $RPMHOME/SOURCES/pandorafms_keygen-$KEYGEN_VERSION.tar.gz --exclude .svn --exclude keygen --exclude keygen.i386.static --exclude pandora_keygen.spec pandora
 

@@ -1,3 +1,7 @@
+2010-07-02  Sancho Lerena <slerena@artica.es>
+
+	* build_src.sh: Updated script to build all source tarballs.
+
 2010-06-30  Sancho lerena <slerena@artica.es>
 
 	* extras: Added a few specific specs for Redhat/CentOS linux

@@ -235,7 +235,7 @@ sub read_config (;$) {
 				'min' => 0,
 				'postprocess' => 0,
 				'save' => '',
-				'actions' => [],
+				'conditions' => [],
 				'cron' => '',
 				'cron_utimestamp' => 0,
 				'cron_interval' => -1
@@ -767,7 +767,7 @@ sub module_exec ($) {
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
 
-	# Evaluate module actions
+	# Evaluate module conditions
 	evaluate_module_conditions ($module, $data[0]);
 
 	return @data;

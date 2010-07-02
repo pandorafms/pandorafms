@@ -1,3 +1,7 @@
+2010-07-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Fixed a typo.
+
 2010-06-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Improved the module cron to allow intervals and

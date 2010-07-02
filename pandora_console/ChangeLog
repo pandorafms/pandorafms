@@ -1,3 +1,12 @@
+2010-07-02  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_rss.php
+	operation/events/events_marquee.php
+	operation/events/events.php: Fixed several bugs into
+	events viewer and events rss file. Apply Ip restriction
+	to API Ip's List to rss and marquee files.
+	Bugfix: 3017263
+
 2010-07-01  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Fixed the notice when

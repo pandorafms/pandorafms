@@ -1,0 +1,23 @@
+--- util/pandora_logrotate.orig	2010-06-19 00:18:00.308633000 +0900
++++ util/pandora_logrotate	2010-06-19 15:47:25.272260000 +0900
+@@ -15,20 +15,6 @@
+ 	endscript
+ }
+ 
+-# Only for SUSE / DEBIAN / UBUNTU 
+-
+-/var/www/pandora_console 
+-/srv/www/htdocs/pandora_console/pandora_console.log {
+-	weekly
+-	missingok
+-	size 100000
+-	rotate 3
+-	maxage 15
+-	compress
+-	notifempty
+-	create 644 wwwrun www
+-}
+-
+ /var/log/pandora/pandora_snmptrap.log {
+ 	daily
+ 	missingok

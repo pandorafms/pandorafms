@@ -1,0 +1,26 @@
+diff -r c56ea5c0cebd -r a13d062b934a pandora_server/util/pandora_server
+--- a/pandora_server/util/pandora_server        Thu Jun 24 17:52:20 2010 +0900
++++ b/pandora_server/util/pandora_server        Mon Jun 28 20:03:22 2010 +0900
+@@ -7,6 +7,9 @@
+ #
+ # System startup script for Pandora FMS
+ #
++# chkconfig: - 90 10
++# description:  Pandora FMS Server startup scrip
++#
+ ### BEGIN INIT INFO
+ # Provides:       pandora_server
+ # Required-Start: $syslog cron
+diff -r c56ea5c0cebd -r a13d062b934a pandora_server/util/tentacle_serverd
+--- a/pandora_server/util/tentacle_serverd      Thu Jun 24 17:52:20 2010 +0900
++++ b/pandora_server/util/tentacle_serverd      Mon Jun 28 20:03:22 2010 +0900
+@@ -7,6 +7,9 @@
+ #
+ # System startup script for Tentacle Server
+ #
++# chkconfig: - 80 10
++# description: Tentacle Server startup script
++#
+ ### BEGIN INIT INFO
+ # Provides:       tentacle_server
+ # Required-Start: $network

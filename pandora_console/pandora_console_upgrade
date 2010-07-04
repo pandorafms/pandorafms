@@ -1,9 +1,9 @@
+#!/bin/bash
+
 # Pandora FMS 3.1 Console Upgrade (c) 2009-2010 Artica ST
 # Please see http://www.pandorafms.com
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-
-#!/bin/bash
 
 USER=`whoami`
 

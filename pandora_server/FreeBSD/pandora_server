@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# **********************************************************************
+# Pandora FMS Server Daemon launcher for FreeBSD
+# (c) 2010 Junichi Satoh <junichi@rworks.jp>
+#
+# **********************************************************************
+
+# PROVIDE: pandora_server
+# REQUIRE: LOGIN mysql
+# KEYWORD: shutdown
+
+# Add the following line to /etc/rc.conf to enable `pandora_server':
+#
+# pandora_server_enable="YES"
+#
+
+. "/etc/rc.subr"
+
+name="pandora_server"
+rcvar=`set_rcvar`
+
+# read configuration and set defaults
+pandora_server_enable=${pandora_server_enable:-"NO"}
+load_rc_config $name
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+
+command=/usr/local/bin/${name}
+command_args="-D /usr/local/etc/pandora/pandora_server.conf"
+
+pidfile=/var/run/$name.pid
+required_files="/usr/local/etc/pandora/pandora_server.conf"
+start_postcmd=start_postcmd
+stop_postcmd=stop_postcmd
+
+procname="/usr/local/bin/perl"
+
+start_postcmd()
+{
+	PANDORA_PID=`ps auxww | grep $command | grep -v grep | head -1 | awk '{ print $2 }'`
+	echo $PANDORA_PID > $pidfile
+}
+
+stop_postcmd()
+{
+	rm -f $pidfile
+}
+
+run_rc_command "$1"

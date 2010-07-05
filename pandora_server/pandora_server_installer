@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # Pandora FMS Server Installer (c) 2008-2010 Artica ST
-# Linux Version (generic), for SuSe and Debian/Ubuntu only
+# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu and FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
 # v3.1 Build 100223
@@ -43,29 +43,34 @@ get_distro () {
 		OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
 		OS_VERSION="FEDORA $OS_VERSION"
 		LINUX_DISTRO=FEDORA
-	elif [ `uname -s` == "Darwin" ]
+	elif [ `uname -s` = "Darwin" ]
 	then
 		# For future reference, Darwin doesn't have /etc/init.d but uses LaunchDaemons
 		LINUX_DISTRO="Darwin"
 		OS_VERSION=`uname -r`
 		LINUX=NO
-	elif [ `uname -s` == "AIX" ]
+	elif [ `uname -s` = "AIX" ]
 	then
 		# For future reference, AIX doesn't have /etc/init.d
 		LINUX_DISTRO="AIX"
 		OS_VERSION=`uname -r`
 		LINUX=NO
-	elif [ `uname -s` == "SunOS" ]
+	elif [ `uname -s` = "SunOS" ]
 	then
 		# Some Solaris and other Unices don't have /etc/init.d, some have /usr/spool instead of /var/spool
 		LINUX_DISTRO="Solaris"
 		OS_VERSION=`uname -r`
 		LINUX=NO
-	elif [ `uname -s` == "Linux" ]
+	elif [ `uname -s` = "Linux" ]
 	then
 		# Test for Linux to make sure we're on Linux
 		LINUX_DISTRO="GENERIC"
 		OS_VERSION=`uname -r`
+	elif [ `uname -s` = "FreeBSD" ]
+	then
+		LINUX_DISTRO="FreeBSD"
+		OS_VERSION=`uname -r`
+		LINUX=NO
 	else
 		# Default to Linux is false, test for real Linux above - that way we don't assume we can just plunk down files everywhere
 		LINUX_DISTRO=`uname -s`
@@ -102,6 +107,20 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		echo " "
 		echo "	You also will need to install xprobe2 and wmiclient from rpm (download from our website)"
 		echo " "
+		echo "For FreeBSD do : "
+		echo " "
+		echo "  Install perl5.8 from ports with thread enabled."
+		echo "  (perl-5.8.x.pkg can not be used.)"
+		echo "  # cd /usr/ports/lang/perl5.8"
+		echo "  # make config"
+		echo "    -> Enable THREADS."
+		echo "  # make"
+		echo "  # make install"
+		echo " "
+		echo "  Install following tools from ports. Don't use packages."
+		echo "  Recommended: p5-DBI p5-Mail-Sendmail p5-NetAddr-IP p5-XML-Simple p5-Time-Format p5-HTML-Parser p5-Net-Traceroute-PurePerl p5-IO-Socket-Multicast p5-DBD-mysql"
+		echo "  Optional: nmap xprobe"
+		echo " "
 		echo "To get it from source through CPAN do"
 		echo " "
 		echo "	$ cpan Digest::MD5 Time::Local DBI XML::Simple IO::Socket Time::HiRes Time::Format NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
@@ -115,12 +134,22 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		OS_VERSION=`echo $GET_DISTRO | cut -f 2 -d ":"`
 		LINUX=`echo $GET_DISTRO | cut -f 3 -d ":"`	
 	
-		if [ "$DISTRO" == "UBUNTU" ]
+		if [ "$DISTRO" = "UBUNTU" ]
 		then
 			echo "UBUNTU distribution detected"
-		elif [ "$DISTRO" == "SUSE" ]
+		elif [ "$DISTRO" = "SUSE" ]
 		then
 			echo "SUSE distribution detected"
+		elif [ "$DISTRO" = "FreeBSD" ]
+                then
+			echo "FreeBSD detected"
+			PANDORA_SPOOL=/var/spool/pandora
+			PANDORA_HOME=/usr/local/share/pandora_server
+			PANDORA_CFG_DIR=/usr/local/etc/pandora
+			PANDORA_LOG=/var/log/pandora
+			PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
+			TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
+			PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
 		fi
 		
 		echo "Installing binaries and libraries"
@@ -135,23 +164,31 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 				echo "ERROR compiling Pandora FMS Server from sources. Aborting"
 				exit 1
 			fi
-			ln -s /usr/local/bin/pandora_server /usr/bin
-			ln -s /usr/local/bin/pandora_exec /usr/bin		
+			if [ "$DISTRO" != "FreeBSD" ]
+			then
+				ln -s /usr/local/bin/pandora_server /usr/bin
+				ln -s /usr/local/bin/pandora_exec /usr/bin		
+			fi
 		fi
 
 		echo "Creating common Pandora FMS directories"
-		id pandora
+		id pandora 2> /dev/null
 		if [ $? -eq 0 ]; then
 			echo " "
 			echo "User pandora does exist, make sure the SSH directories are correct"
 		else
 			echo "Are you sure we can create a standard 'pandora' user locally? [y/N]"
 			read AREYOUSURE
-			if [ "$AREYOUSURE" == "y" ]; then
-				useradd pandora 
-				mkdir /home/pandora 2> /dev/null
-				mkdir /home/pandora/.ssh 2> /dev/null
-				chown -R pandora /home/pandora 
+			if [ "$AREYOUSURE" = "y" ]; then
+				if [ "$DISTRO" = "FreeBSD" ]
+				then
+					echo "pandora:41121:::::Pandora FMS:/home/pandora:/usr/sbin/nologin:" | adduser -f - -w no 2> /dev/null
+				else
+					useradd pandora 
+					mkdir /home/pandora 2> /dev/null
+					mkdir /home/pandora/.ssh 2> /dev/null
+					chown -R pandora /home/pandora 
+				fi
 			else
 				echo "Please create the 'pandora' user manually according to your authentication scheme then restart the installation"
 				echo "Aborting..."
@@ -166,17 +203,17 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		mkdir $PANDORA_LOG 2> /dev/null	
 
 		echo "Giving proper permission to /var/spool/pandora"
-		id -g www-data > /dev/null
+		id -g www-data 2> /dev/null
 		if [ $? -eq 0 ]
 		then
 			chown -R pandora:www-data $PANDORA_SPOOL
 		else
-			id -g www > /dev/null
+			id -g www 2> /dev/null
 			if [ $? -eq 0 ]
 			then
 				chown -R pandora:www $PANDORA_SPOOL
 			else
-				id -g apache > /dev/null
+				id -g apache 2> /dev/null
 				if [ $? -eq 0 ]
 				then
 					chown -R pandora:apache $PANDORA_SPOOL
@@ -188,7 +225,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		fi
 		
 		
-		echo "Creating setup directory in /etc/pandora"
+		echo "Creating setup directory in $PANDORA_CFG_DIR"
 		mkdir $PANDORA_CFG_DIR 2> /dev/null
 		if [ -e $PANDORA_CFG_FILE ]
 		then
@@ -196,25 +233,36 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 			echo "Old installation detected, backing up pandora_server.conf.$ODFILENAMETMP"
 			mv $PANDORA_CFG_FILE $PANDORA_CFG_FILE.$OLDFILENAMETMP
 		fi
-		echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
-		cp conf/pandora_server.conf $PANDORA_CFG_DIR
+		if [ "$DISTRO" = "FreeBSD" ]
+		then
+			echo cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
+                	cp FreeBSD/pandora_server.conf $PANDORA_CFG_DIR
+		else
+			echo cp conf/pandora_server.conf $PANDORA_CFG_DIR
+			cp conf/pandora_server.conf $PANDORA_CFG_DIR
+		fi
 		chmod 770 $PANDORA_CFG_FILE
 
 		echo "Installing Pandora Server manual"
-		cp man/man1/pandora_server.1.gz /usr/share/man/man1
+		if [ "$DISTRO" = "FreeBSD" ]
+		then
+			cp man/man1/pandora_server.1.gz /usr/local/man/man1
+		else
+			cp man/man1/pandora_server.1.gz /usr/share/man/man1
+		fi
 		
-		if [ "$LINUX" == "YES" ]
+		if [ "$LINUX" = "YES" ]
 		then
 			echo "Copying the daemon script into /etc/init.d/pandora_server"
 			cp util/pandora_server /etc/init.d/		
 			
-			if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
+			if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
 			then
 			
 				echo "Linking startup script to /etc/rc2.d"
 				update-rc.d pandora_server defaults
 			else
-				if [ "$DISTRO" == "SUSE" ]
+				if [ "$DISTRO" = "SUSE" ]
 				then
 					echo "Creating startup daemons"
 					insserv pandora_server
@@ -229,6 +277,13 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					ln -s $PANDORA_SERVER /etc/rc.d/rc$INITLV.d/S90pandora_server
 				fi
 			fi
+		else
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				echo "Copying the daemon script into $PANDORA_SERVER"
+				cp FreeBSD/pandora_server $PANDORA_SERVER 
+				chmod 555 $PANDORA_SERVER
+                        fi
 		fi
 
 		if [ -d /etc/logrotate.d ]; then
@@ -238,11 +293,11 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 			echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 		fi
 	
-		if [ "$LINUX" == "YES" ]
+		if [ "$LINUX" = "YES" ]
 		then
 			if [ "$SECOPT" != "--no-tentacle" ]
 			then
-				if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
+				if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
 				then
 					# Tentacle server install (Ubuntu)
 					echo "Installing tentacle server"
@@ -250,7 +305,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					cp util/tentacle_serverd $TENTACLE_SERVER
    				    update-rc.d tentacle_serverd defaults
 				else
-					if [ "$DISTRO" == "SUSE" ]
+					if [ "$DISTRO" = "SUSE" ]
 					then
 						echo "Creating Tentacle startup daemon"
 						cp bin/tentacle_server /usr/bin
@@ -268,9 +323,22 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 				echo "Installing Tentacle Server manual"
 				cp man/man1/tentacle_server.1.gz /usr/share/man/man1
 			fi
+		else
+			if [ "$SECOPT" != "--no-tentacle" ]
+			then
+				if [ "$DISTRO" = "FreeBSD" ]
+				then
+					echo "Installing tentacle server"
+					cp bin/tentacle_server /usr/local/bin
+					cp FreeBSD/tentacle_server $TENTACLE_SERVER
+					chmod 555 $TENTACLE_SERVER
+					echo "Installing Tentacle Server manual"
+					cp man/man1/tentacle_server.1.gz /usr/local/man/man1
+				fi
+			fi
 		fi
 
-		echo "Creating Pandora FMS distribution directory in /usr/share/pandora_server"
+		echo "Creating Pandora FMS distribution directory in $PANDORA_HOME"
 		mkdir $PANDORA_HOME 2> /dev/null
 		cp -R util $PANDORA_HOME
 		
@@ -281,11 +349,23 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 			echo "perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_db	
 			chmod +x /etc/cron.daily/pandora_db
 		else
-			echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
-			echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+			if [ "$DISTRO" = "FreeBSD" ]
+			then
+				grep pandora_db.pl /etc/crontab > /dev/null 2>&1
+				if [ $? -ne 0 ]
+				then
+					echo "# Pandora FMS" >> /etc/crontab
+					echo "2 0       *       *       *       root    perl /usr/local/share/pandora_server/util/pandora_db.pl /usr/local/etc/pandora/pandora_server.conf" >> /etc/crontab
+				else
+					echo "The crontab for pandora_db.pl is already configured."
+				fi
+			else
+				echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+				echo "	perl /usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf"
+			fi
 		fi
 		echo
-		echo "Now you have to edit your /etc/pandora/pandora_server.conf file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
+		echo "Now you have to edit your $PANDORA_CFG_FILE file to change the database password (default is pandora) with the one set in include/config.php of your Pandora FMS Console."
 		echo "After setting password you can start your Pandora FMS Server!!"
 		rm output
 
@@ -294,15 +374,58 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 			echo "Managing Pandora FMS logs with logrotate (Distro independent)"
 			cp -aRf util/pandora_logrotate /etc/logrotate.d/pandora
 		fi
+
+		if [ "$DISTRO" = "FreeBSD" ]
+		then
+			echo " "
+			echo "Define 'pandora_server_enable=\"YES\"' in /etc/rc.conf to enable pandora server daemon."
+			echo "Define 'tentacle_server_enable=\"YES\"' in /etc/rc.conf to enable tentacle server daemon."
+		fi
 	fi
 
+}
+
+uninstall_freebsd () {
+	PANDORA_SPOOL=/var/spool/pandora
+	PANDORA_HOME=/usr/local/share/pandora_server
+	PANDORA_CFG_DIR=/usr/local/etc/pandora
+	PANDORA_LOG=/var/log/pandora
+	PANDORA_SERVER=/usr/local/etc/rc.d/pandora_server
+	TENTACLE_SERVER=/usr/local/etc/rc.d/tentacle_server
+	PANDORA_CFG_FILE=/usr/local/etc/pandora/pandora_server.conf
+	TMP_CRONTAB=/tmp/crontab.tmp
+
+	echo "Removing Pandora Servers"
+	rm -Rf $PANDORA_SPOOL/data_in/
+
+	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
+	echo "  rmuser pandora"
+
+	rm -Rf $PANDORA_LOG 2> /dev/null
+	rm -Rf $PANDORA_CFG_FILE 2> /dev/null
+	rm -Rf $PANDORA_SERVER 2> /dev/null
+	rm -Rf $PANDORA_HOME
+	rm -Rf $PANDORA_SERVER
+	rm -Rf $TENTACLE_SERVER
+
+	cat /etc/crontab | grep -v "Pandora FMS" | grep -v "pandora_db.pl" > $TMP_CRONTAB
+	cp $TMP_CRONTAB /etc/crontab
+	rm $TMP_CRONTAB
+
+	echo "Done"
+	exit
 }
 
 uninstall () {
 	GET_DISTRO="`get_distro`"
 	DISTRO=`echo $GET_DISTRO | cut -f 1 -d ":"`
 	if [ "`uname -s`" != "Linux" ]; then
+		if [ "$DISTRO" = "FreeBSD" ]
+		then
+			uninstall_freebsd
+		else
 			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+		fi
 	fi
 	echo "Removing Pandora Servers"
 	rm -Rf $PANDORA_SPOOL/data_in/
@@ -323,7 +446,7 @@ uninstall () {
 	rm -Rf $PANDORA_HOME
 	rm -Rf /etc/cron.daily/pandora_db
 	rm -Rf /etc/logrotate.d/pandora
-	if [ "$DISTRO" == "UBUNTU" ] || [ "$DISTRO" == "DEBIAN" ]
+	if [ "$DISTRO" = "UBUNTU" ] || [ "$DISTRO" = "DEBIAN" ]
 	then
 		update-rc.d -f pandora_server remove
 		update-rc.d -f tentacle_serverd remove

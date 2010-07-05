@@ -187,7 +187,7 @@ function list_files ($directory, $stringSearch, $searchHandler, $return = false)
 			}
 		}
 	}
-	if (($errorHandler == true) &&  (@count ($result) === 0)) {
+	if (($errorHandler == true) && (@count ($result) === 0)) {
 		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
 	} else {
 		asort ($result);
@@ -614,7 +614,7 @@ function get_report_types () {
 	$types['avg_value'] = __('Avg. Value');
 	$types['max_value'] = __('Max. Value');
 	$types['min_value'] = __('Min. Value');
-	$types['sumatory'] = __('Sumatory');
+	$types['sumatory'] = __('Summatory');
 	//$types['agent_detailed'] = __('Agent detailed view');
 	$types['text'] = __('Text');
 	$types['sql'] = __('SQL query');

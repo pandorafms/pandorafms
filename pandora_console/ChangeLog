@@ -1,3 +1,8 @@
+2010-07-05  Raúl Mateos <raulofpandora@gmail.com>
+
+	* include/functions.php, include/functions_reporting.php: Cleaned code.
+	Fixed "Summatory" typo.
+
 2010-07-05  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console_upgrade: Changed permissions (was 640).

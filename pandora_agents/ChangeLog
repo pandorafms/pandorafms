@@ -1,3 +1,10 @@
+2010-07-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/pandora_agent_installer: Fixed typo and directory permission
+	for FreeBSD.
+	
+	* unix/FreeBSD/pandora_agent: Simplified.
+
 2010-06-18  Ramon Novoa  <rnovoa@artica.es>
 	
 	* unix/pandora_exec: Added to repository. pandora_exec script.

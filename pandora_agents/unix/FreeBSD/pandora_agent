@@ -18,6 +18,7 @@
 . "/etc/rc.subr"
 
 name="pandora_agent"
+rcvar=`set_rcvar`
 
 # read configuration and set defaults
 pandora_agent_enable=${pandora_agent_enable:-"NO"}
@@ -27,39 +28,24 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 
 command=/usr/local/bin/pandora_agent
 command_args="/usr/local/etc/pandora &"
-procname=pandora_agent
 
 pidfile=/var/run/$name.pid
 required_files="/usr/local/etc/pandora/pandora_agent.conf"
-start_precmd=start_precmd
 start_postcmd=start_postcmd
-stop_cmd=pandora_agent_stop
+stop_postcmd=stop_postcmd
 
-start_precmd()
-{
-	if [ -f $pidfile ]; then
-		PANDORA_PID=`cat $pidfile`
-		echo "pandora_agent is currently running on this machine with PID $PANDORA_PID"
-		echo "Cannot launch again. Aborting."
-		exit 1
-	fi
-}
+procname="/usr/bin/perl"
 
 start_postcmd()
 {
+	sleep 1
 	PANDORA_PID=`ps auxww | grep $command | grep -v grep | head -1 | awk '{ print $2 }'`
 	echo $PANDORA_PID > $pidfile
 }
 
-pandora_agent_stop()
+stop_postcmd()
 {
-	if [ -f $pidfile ]; then
-		echo "Stopping pandora_agent."
-		kill `cat $pidfile`
-		rm -f $pidfile
-	else
-		echo "pandora_agent is not running."
-	fi
+	rm -f $pidfile
 }
 
 run_rc_command "$1"

@@ -1,3 +1,10 @@
+2010-07-05  Junichi Satoh  <junichi@rworks.jp>
+
+	* pandora_agent_installer: Fixed typo and directory permission
+	for FreeBSD.
+	
+	* FreeBSD/pandora_agent: Simplified.
+
 2010-07-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Fixed a typo.

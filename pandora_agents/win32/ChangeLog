@@ -1,3 +1,8 @@
+2010-07-05  Raul Mateos  <raulfopandora@gmail.com>
+
+	* bin/pandora_agent.conf: Added example of D Drive. Added comments
+	to some modules. Added lost module_begin. Improved command.
+
 2010-07-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.h, modules/pandora_module_factory.cc,

@@ -183,7 +183,7 @@ Pandora_Windows_Service::pandora_init () {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value;
+	string        agent_name, os_name, os_version, encoding, value, xml;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
@@ -197,6 +197,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	ctime = time(0);
 	ctime_tm = localtime(&ctime);
 	value = conf->getValue ("autotime");
+	timestamp[0] = '\0';
 	if (value != "1") {
 		sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
 			ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
@@ -213,15 +214,22 @@ Pandora_Windows_Service::getXmlHeader () {
 		encoding = "ISO-8859-1";
 	}
 
-	return "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
-	       "<agent_data agent_name=\"" + agent_name +
-	       "\" description=\"" + conf->getValue ("description") +
-	       "\" version=\"" + getPandoraAgentVersion () +
-	       "\" timestamp=\"" + timestamp +
-	       "\" interval=\"" + conf->getValue ("interval") +
+	xml = "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
+	      "<agent_data agent_name=\"" + agent_name +
+	      "\" description=\"" + conf->getValue ("description") +
+	      "\" version=\"" + getPandoraAgentVersion ();
+
+	/* Skip the timestamp if autotime was enabled */
+	if (timestamp[0] != '\0') {
+		xml += "\" timestamp=\"";
+		xml += timestamp; 
+	}
+
+	xml += "\" interval=\"" + conf->getValue ("interval") +
 	       "\" os_name=\"" + os_name +
 	       "\" os_version=\"" + os_version +
 	       "\" group=\"" + conf->getValue ("group") + "\">\n";
+	return xml;
 }
 
 int

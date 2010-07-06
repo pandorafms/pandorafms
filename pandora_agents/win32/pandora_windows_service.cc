@@ -183,7 +183,7 @@ Pandora_Windows_Service::pandora_init () {
 string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
-	string        agent_name, os_name, os_version, encoding, value;
+	string        agent_name, os_name, os_version, encoding, value, xml;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	
@@ -197,6 +197,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	ctime = time(0);
 	ctime_tm = localtime(&ctime);
 	value = conf->getValue ("autotime");
+	timestamp[0] = '\0';
 	if (value != "1") {
 		sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
 			ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
@@ -213,15 +214,22 @@ Pandora_Windows_Service::getXmlHeader () {
 		encoding = "ISO-8859-1";
 	}
 
-	return "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
-	       "<agent_data agent_name=\"" + agent_name +
-	       "\" description=\"" + conf->getValue ("description") +
-	       "\" version=\"" + getPandoraAgentVersion () +
-	       "\" timestamp=\"" + timestamp +
-	       "\" interval=\"" + conf->getValue ("interval") +
+	xml = "<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n" +
+	      "<agent_data agent_name=\"" + agent_name +
+	      "\" description=\"" + conf->getValue ("description") +
+	      "\" version=\"" + getPandoraAgentVersion ();
+
+	/* Skip the timestamp if autotime was enabled */
+	if (timestamp[0] != '\0') {
+		xml += "\" timestamp=\"";
+		xml += timestamp; 
+	}
+
+	xml += "\" interval=\"" + conf->getValue ("interval") +
 	       "\" os_name=\"" + os_name +
 	       "\" os_version=\"" + os_version +
 	       "\" group=\"" + conf->getValue ("group") + "\">\n";
+	return xml;
 }
 
 int
@@ -282,9 +290,11 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
     WaitForSingleObject(pi.hProcess, INFINITE);
     GetExitCodeProcess (pi.hProcess, &rc);
 	if (rc != 0) {
+		CloseHandle (pi.hProcess);
 		return -1;
 	}
 
+	CloseHandle (pi.hProcess);
 	return 0;
 }
 
@@ -570,7 +580,7 @@ Pandora_Windows_Service::checkConfig () {
 	int i, conf_size;
 	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
 	char agent_md5[33], conf_md5[33], flag;
-	string conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
+	string agent_name, conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
 
 	tmp = conf->getValue ("remote_config");
 	if (tmp != "1") {
@@ -590,8 +600,15 @@ Pandora_Windows_Service::checkConfig () {
 
 	/* Get agent name */
 	tmp = conf->getValue ("agent_name");
-	if (tmp == "") {
+	if (tmp.empty ()) {
 		tmp = Pandora_Windows_Info::getSystemName ();
+	}
+	agent_name = tmp;
+	
+	/* Error getting agent name */
+	if (tmp.empty ()) {
+		pandoraDebug ("Pandora_Windows_Service::checkConfig: Error getting agent name");
+		return;
 	}
 
 	Pandora_File::md5 (tmp.c_str(), tmp.size(), agent_md5);
@@ -675,7 +692,7 @@ Pandora_Windows_Service::checkConfig () {
 		return;
 	}
 
-	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration has changed");
+	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration for agent %s has changed", agent_name.c_str ());
 
 	/* Get configuration file from server */
 	try {

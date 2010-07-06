@@ -689,7 +689,7 @@ sub pandora_manage_main ($$$) {
 			exist_check($id_group,'group',$group_name);
 			my $os_id = get_os_id($dbh,$os_name);
 			exist_check($id_group,'operating system',$group_name);
-			pandora_create_agent ($conf, $server_name, $agent_name, $address, 0, $id_group, 0, $os_id, $description, $interval, $dbh);
+			pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
 		}
 		elsif ($param =~ m/--delete_agent/i) {
 			param_check($ltotal, 1);

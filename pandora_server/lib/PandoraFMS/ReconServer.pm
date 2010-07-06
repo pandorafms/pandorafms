@@ -204,22 +204,23 @@ sub data_consumer ($$) {
 				logger($pa_config, "Placing agent on random position (Lon,Lat)  =  ($longitude, $latitude)", 8);
 				# Crate a new agent adding the positional info (as is unknown we set 0 time_offset, and 0 altitude)
 				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $addr_id,
-					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh, 0, $longitude, $latitude, 0, $location_description);
+					                                  $host_name, $addr, $task->{'id_group'}, 
+									  $parent_id, $id_os, '', 300, $dbh, 0, 
+								          $longitude, $latitude, 0, $location_description);
 			}
 			else {
 				logger($pa_config,"Id location of '$addr' for host '$host_name' NOT found", 3);
 				# Crate a new agent
 				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $addr_id,
-					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh);
+					                                  $host_name, $addr, $task->{'id_group'},
+									  $parent_id, $id_os, '', 300, $dbh);
 			}
 		}		
 		else {	
 			# Crate a new agent
 			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
-					                                  $host_name, $addr, $addr_id,
-					                                  $task->{'id_group'}, $parent_id, $id_os, '', 300, $dbh);
+					                                  $host_name, $addr, $task->{'id_group'},
+									  $parent_id, $id_os, '', 300, $dbh);
 		}
 
 		# Assign the new address to the agent

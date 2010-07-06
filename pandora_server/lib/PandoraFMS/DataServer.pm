@@ -264,12 +264,12 @@ sub process_xml_data ($$$$$) {
 		# Create the agent
 		if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, $parent_id, $os, 
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', $group_id, $parent_id, $os, 
 												 $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 		}
 		else { # Ignore agent positional data
 			logger($pa_config, "Creating agent $agent_name", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', 0, $group_id, $parent_id, $os,
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', $group_id, $parent_id, $os,
 												 $description, $interval, $dbh, $timezone_offset);
 		}
 		if (! defined ($agent_id)) {

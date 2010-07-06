@@ -1,5 +1,9 @@
 2010-07-06  Ramon Novoa  <rnovoa@artica.es>
 
+	* bin/PandoraAgent.exe: Updated to r2961.
+
+2010-07-06  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_windows_service.cc: Fixed the autotime feature. Was not
 	  working since tinyXML was removed. Merged some small improvements
 	  from trunk.

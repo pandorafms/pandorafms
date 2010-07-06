@@ -1,3 +1,9 @@
+2010-07-06  Sancho Lerena <slerena@artica.es>
+
+	* include/functions.php, include/functions_reporting.php: 
+	Reverting last commit from Raul because it was breaking
+	Summatory reporting type.
+
 2010-07-05  Raúl Mateos <raulofpandora@gmail.com>
 
 	* include/functions.php, include/functions_reporting.php: Cleaned code.

@@ -99,7 +99,7 @@ echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes
 	print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
 	echo "</form>";
 
-echo "</td></table>";
+echo "</td></tr></table>";
 
 $search_sql = '';
 if ($search != ""){

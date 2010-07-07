@@ -226,7 +226,8 @@ if ($id_agente) {
 	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
 	echo "<img src='images/network.png' class='top' title='".__('Module templates')."'>&nbsp;</a></li>";
 
-	enterprise_hook ('inventory_tab');
+	enterprise_hook('inventory_tab');
+	enterprise_hook('collection_tab');
 
 	echo '<li class="nomn">';
 	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';

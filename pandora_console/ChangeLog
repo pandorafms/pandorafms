@@ -1,3 +1,26 @@
+2010-07-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_filemanager.php: added const MIME_TEXT. added source
+	code to handler the updload files, zips, delete files/dir and create text
+	files. Added function "delete_directory" for to delete recursive and or
+	not empty any dir, function "file_explorer" to show a file explorer,
+	"box_upload_file_complex" to show a controls to upload file or multiple
+	files in a zip, "box_upload_file_explorer" to show controls to upload
+	file, "box_upload_zip_explorer" to show controls to upload multiple files
+	in a zip, "box_create_text_explorer" to show controls to create text files,
+	and in function "get_file_manager_file_info" use new const MIME_TEXT.
+	
+	* godmode/agentes/modificar_agente.php: cleaned source code, closed the <tr>
+	tag.
+	
+	* godmode/agentes/configurar_agente.php: added hook to enterprise functions
+	for collection.
+
+	* godmode/menu.php: added hook to enterprise functions for collection.
+	
+	* godmode/setup/file_manager.php:changed the source code for use new modular
+	functions to show and management files.
+
 2010-07-05  Raúl Mateos <raulofpandora@gmail.com>
 
 	* include/functions.php, include/functions_reporting.php: Cleaned code.

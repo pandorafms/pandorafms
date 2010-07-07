@@ -39,6 +39,7 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 
 		$sub["godmode/agentes/planned_downtime"]["text"] = __('Scheduled downtime');
 	}
+	enterprise_hook('agents_submenu');
 	
 	$menu["gagente"]["sub"] = $sub;
 }

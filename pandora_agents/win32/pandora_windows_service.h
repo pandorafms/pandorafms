@@ -27,6 +27,9 @@
 #include "modules/pandora_module_list.h"
 #include "ssh/pandora_ssh_client.h"
 
+#define FTP_DEFAULT_PORT 21
+#define SSH_DEFAULT_PORT 22
+
 using namespace std;
 using namespace Pandora_Modules;
 

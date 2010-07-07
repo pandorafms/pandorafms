@@ -1946,7 +1946,7 @@ function get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
  *
  * @return mixed Array of the row or false in case of error.
  */
-function get_db_all_rows_filter ($table, $filter, $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
+function get_db_all_rows_filter ($table, $filter = array(), $fields = false, $where_join = 'AND', $search_history_db = false, $returnSQL = false) {
 	//TODO: Validate and clean fields
 	if (empty ($fields)) {
 		$fields = '*';

@@ -305,8 +305,9 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 {
 	int rc = 0;
 	SSH::Pandora_Ssh_Client ssh_client;
-	string                  tmp_dir, filepath;
+	string                  tmp_dir, filepath,port_str;
 	string                  pubkey_file, privkey_file;
+	int port;
 
 	tmp_dir = conf->getValue ("temporal");
 	if (tmp_dir[tmp_dir.length () - 1] != '\\') {
@@ -321,7 +322,14 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 	privkey_file  = Pandora::getPandoraInstallDir ();
 	privkey_file += "key\\id_dsa";
 	
-	rc = ssh_client.connectWithPublicKey (host.c_str (), 22, "pandora",
+	port_str = conf->getValue ("server_port");
+	if (port_str.length () == 0) {
+		port = SSH_DEFAULT_PORT;
+	} else {
+		port = strtoint(port_str);
+	}
+
+	rc = ssh_client.connectWithPublicKey (host.c_str (), port, "pandora",
 						 pubkey_file, privkey_file, "");
 	if (rc == AUTHENTICATION_FAILED) {
 		pandoraLog ("Pandora Agent: Authentication Failed "
@@ -359,7 +367,8 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 {
 	int rc = 0;
 	FTP::Pandora_Ftp_Client ftp_client;
-	string                  filepath;
+	string                  filepath, port_str;
+	int port;
 
 	filepath = conf->getValue ("temporal");
 	if (filepath[filepath.length () - 1] != '\\') {
@@ -367,8 +376,15 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 	}
 	filepath += filename;
 
+	port_str = conf->getValue ("server_port");
+	if (port_str.length () == 0) {
+		port = FTP_DEFAULT_PORT;
+	} else {
+		port = strtoint(port_str);
+	}
+
 	ftp_client.connect (host,
-			    22,
+			    port,
 			    "pandora",
 			    password);
 
@@ -549,7 +565,7 @@ Pandora_Windows_Service::recvDataFile (string filename) {
 		if (mode == "tentacle") {
 			recvTentacleDataFile (host, filename);
 		} else {
-			pandoraLog ("Transfer mode %s does not support file retrieval.");
+			pandoraLog ("Transfer mode %s does not support file retrieval.", mode.c_str () );
 			throw Pandora_Exception ();
 		}
 	}
@@ -878,6 +894,7 @@ Pandora_Windows_Service::pandora_run () {
 			this->modules->goNext ();
 		}
 	}
+
 
 	this->elapsed_transfer_time += this->interval;
 	

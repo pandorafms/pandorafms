@@ -1493,6 +1493,7 @@ sub log4x_get_severity_num($) {
 	my ($dataObject) = @_;
 	my $data = $dataObject->{'severity'};
 		
+	return undef unless defined ($data);
 	# The severity is a word, so we need to translate to numbers
 		
 	if ($data =~ m/^trace$/i) {

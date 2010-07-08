@@ -1,5 +1,9 @@
 2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* install.php: added to check zip library for the filemanager.
+
+2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_filemanager.php: added in source code lines to test
 	hash of directories or files for give more security to filemanager.
 

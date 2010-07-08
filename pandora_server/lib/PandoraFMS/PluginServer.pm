@@ -168,7 +168,7 @@ sub data_consumer ($$) {
 	logger ($pa_config, "Executing AM # $module_id plugin command '$command'", 9);
 
 	# Execute command
-	$command = $pa_config->{'plugin_exec'} . ' ' . $timeout . ' ' . $command;
+	$command = $pa_config->{'plugin_exec'} . ' ' . $timeout . ' ' . quotemeta ($command);
 
 	my $module_data = `$command`;
 	my $ReturnCode = ($? >> 8) & 0xff;

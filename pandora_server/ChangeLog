@@ -1,3 +1,11 @@
+2010-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/PluginServer.pm: Quote the command passed to
+	  pandora_exec.
+
+	* bin/pandora_exec: Do not verify the command to allow pipes and complex
+	  commands.
+
 2010-07-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Verify that log4x data is available

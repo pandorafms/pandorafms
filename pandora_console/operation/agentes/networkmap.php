@@ -97,7 +97,7 @@ if ($pure == "1") {
 	);
 
 	echo '<td valign="top">' . __('Zoom') . '<br />';
-	print_select ($zoom_array, 'zoom', $zoom, '', '', '');
+	print_select ($zoom_array, 'zoom', $zoom, '', '', '', 0, false, false, false);
 	echo '</td>';
 	
 }

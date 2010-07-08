@@ -1,3 +1,11 @@
+2010-07-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_exec: Do not verify the command to allow pipes and complex
+	  commands.
+
+	* pandora_agent: Quote the command passed to pandora_exec. Fixed
+	  the module cron. Modules without a module cron would not run.
+
 2010-07-05  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent_installer: Fixed typo and directory permission

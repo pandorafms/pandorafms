@@ -761,7 +761,8 @@ sub module_exec ($) {
 	if ($module->{'timeout'} == 0) {
 		@data = `$module->{'params'} 2> /dev/null`;
 	} else {
-		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $module->{'params'} 2> /dev/null`;
+		my $cmd = quotemeta ($module->{'params'});
+		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> /dev/null`;
 	}
 
 	# Something went wrong or no data
@@ -945,7 +946,7 @@ sub check_module_cron ($) {
 	my $module = shift;
 	
 	# No cron string defined
-	return 0 unless ($module->{'cron'} ne '');
+	return 1 unless ($module->{'cron'} ne '');
 
 	# Check if the module was already executed
 	return 0 unless (time() > $module->{'cron_utimestamp'});

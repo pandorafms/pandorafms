@@ -1,5 +1,11 @@
 2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/agent_template.php: added the id_plugin column in the
+	Insert query.
+	Fixes: #3026805
+
+2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/servers/plugin.php: fixed the description text of ajax return
 	when translate the &gt; or &lt; to < or > instead to keep the entity.
 	Fixes: #3026785

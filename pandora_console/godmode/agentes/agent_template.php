@@ -55,11 +55,11 @@ if (isset ($_POST["template_id"])) {
 			$sql = sprintf ("INSERT INTO tagente_modulo
 			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, 
 			tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, id_modulo, 
-			plugin_user, plugin_pass, plugin_parameter, max_timeout)
-			VALUES (%d, %d, '%s', '%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', %d)", 
+			plugin_user, plugin_pass, plugin_parameter, max_timeout, id_plugin)
+			VALUES (%d, %d, '%s', '%s', %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s', %d, %d, '%s', '%s', '%s', %d, %d)", 
 			$id_agente, $row2["type"], $row2["description"], $row2["name"], $row2["max"], $row2["min"], $row2["module_interval"], 
 			$row2["tcp_port"], $row2["tcp_send"], $row2["tcp_rcv"], $row2["snmp_community"], $row2["snmp_oid"], $direccion_agente, $row2["id_module_group"], $row2["id_modulo"], 
-			$row2["plugin_user"], $row2["plugin_pass"], $row2["plugin_parameter"], $row2["max_timeout"]);
+			$row2["plugin_user"], $row2["plugin_pass"], $row2["plugin_parameter"], $row2["max_timeout"], $row2['id_plugin']);
 			
 			$id_agente_modulo = process_sql ($sql, "insert_id");
 			

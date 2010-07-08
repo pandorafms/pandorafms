@@ -478,7 +478,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	
 	if (($prev_dir_str != '') && ($father != $relative_directory)) {
 		$table->data[0][0] = print_image ('images/go_previous.png', true);
-		$table->data[0][1] = '<a href="' . $url . '&directory='.$prev_dir_str.'&hash=' . md5($prev_dir_str.$config['dbpass']) . '">';
+		$table->data[0][1] = '<a href="' . $url . '&directory='.$prev_dir_str.'&hash2=' . md5($prev_dir_str.$config['dbpass']) . '">';
 		$table->data[0][1] .= __('Parent directory');
 		$table->data[0][1] .='</a>';
 		
@@ -501,6 +501,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= print_input_hidden ('create_dir', 1, true);
 		$table->data[1][1] .= print_input_hidden('hash', md5($relative_directory . $config['dbpass']), true);
+		$table->data[1][1] .= print_input_hidden('hash2', md5($relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
@@ -516,6 +517,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
+		$table->data[1][1] .= print_input_hidden('hash2', md5($relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= print_input_hidden ('upload_file_or_zip', 1, true);
 		$table->data[1][1] .= '</form>';	
 		$table->data[1][1] .= '</div>';
@@ -557,7 +559,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		}
 		
 		if ($fileinfo['is_dir']) {
-			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
+			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
 		} else {
 			$data[1] = '<a href="'.$fileinfo['url'].'">'.$fileinfo['name'].'</a>';
 		}

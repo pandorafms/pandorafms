@@ -1,4 +1,9 @@
-2010-07-07  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_filemanager.php: added in source code lines to test
+	hash of directories or files for give more security to filemanager.
+
+2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_filemanager.php: added var global through $config to
 	return status of operation. And clean messages of filemanager.

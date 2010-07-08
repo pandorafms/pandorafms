@@ -145,22 +145,29 @@ if ($upload_file) {
 		$real_directory = (string) get_parameter('real_directory');
 		$directory = (string) get_parameter ('directory');
 		
-		// Copy file to directory and change name
-		if ($directory == '') {
-			$nombre_archivo = $real_directory .'/'. $filename;
+		$hash = get_parameter('hash', '');
+		$testHash = md5($real_directory . $directory . $config['dbpass']);
+		
+		if ($hash != $testHash) {
+			echo "<h3 class=error>".__('Security error.')."</h3>";
 		}
 		else {
-			$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
-		}
-		if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-			echo "<h3 class=error>".__('attach_error')."</h3>";
-		} else {
-			$config['filemanager']['correct_upload_file'] = 1;
-			
-			// Delete temporal file
-			unlink ($_FILES['file']['tmp_name']);
-		}
-		
+			// Copy file to directory and change name
+			if ($directory == '') {
+				$nombre_archivo = $real_directory .'/'. $filename;
+			}
+			else {
+				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+			}
+			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
+				echo "<h3 class=error>".__('attach_error')."</h3>";
+			} else {
+				$config['filemanager']['correct_upload_file'] = 1;
+				
+				// Delete temporal file
+				unlink ($_FILES['file']['tmp_name']);
+			}
+		}		
 	}
 }
 
@@ -188,17 +195,25 @@ if ($create_text_file) {
 		$real_directory = (string) get_parameter('real_directory');
 		$directory = (string) get_parameter ('directory');
 		
-		if ($directory == '') {
-			$nombre_archivo = $real_directory .'/'. $filename;
+		$hash = get_parameter('hash', '');
+		$testHash = md5($real_directory . $directory . $config['dbpass']);
+		
+		if ($hash != $testHash) {
+			echo "<h3 class=error>".__('Security error.')."</h3>";
 		}
 		else {
-			$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
-		}
-		if (! @touch($nombre_archivo)) {
-			echo "<h3 class=error>".__('Error create file.')."</h3>";
-		}
-		else {
-			$config['filemanager']['correct_upload_file'] = 1;
+			if ($directory == '') {
+				$nombre_archivo = $real_directory .'/'. $filename;
+			}
+			else {
+				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+			}
+			if (! @touch($nombre_archivo)) {
+				echo "<h3 class=error>".__('Error create file.')."</h3>";
+			}
+			else {
+				$config['filemanager']['correct_upload_file'] = 1;
+			}
 		}
 	}
 	else {
@@ -228,32 +243,39 @@ if ($upload_zip) {
 		$real_directory = (string) get_parameter('real_directory');
 		$directory = (string) get_parameter ('directory');
 		
-		// Copy file to directory and change name
-		if ($directory == '') {
-			$nombre_archivo = $real_directory .'/'. $filename;
-		}
-		else {
-			$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
-		}
-		if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-			echo "<h3 class=error>".__('attach_error')."</h3>";
-		}
-		else {
-			// Delete temporal file
-			unlink ($_FILES['file']['tmp_name']);
-			
-			//Extract the zip file
-			$zip = new ZipArchive;
-			$pathname = $config['homedir'].'/'.$directory.'/';
-			
-			if ($zip->open($nombre_archivo) === true) {
-				$zip->extractTo($pathname);
-				unlink($nombre_archivo);
-			}
-
-			$config['filemanager']['correct_upload_file'] = 1;
-		}
+		$hash = get_parameter('hash', '');
+		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
+		if ($hash != $testHash) {
+			echo "<h3 class=error>".__('Security error.')."</h3>";
+		}
+		else {
+			// Copy file to directory and change name
+			if ($directory == '') {
+				$nombre_archivo = $real_directory .'/'. $filename;
+			}
+			else {
+				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
+			}
+			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
+				echo "<h3 class=error>".__('attach_error')."</h3>";
+			}
+			else {
+				// Delete temporal file
+				unlink ($_FILES['file']['tmp_name']);
+				
+				//Extract the zip file
+				$zip = new ZipArchive;
+				$pathname = $config['homedir'].'/'.$directory.'/';
+				
+				if ($zip->open($nombre_archivo) === true) {
+					$zip->extractTo($pathname);
+					unlink($nombre_archivo);
+				}
+	
+				$config['filemanager']['correct_upload_file'] = 1;
+			}
+		}
 	}
 }
 
@@ -267,15 +289,23 @@ if ($create_dir) {
 	
 	$directory = (string) get_parameter ('directory', "/");
 	
-	$dirname = (string) get_parameter ('dirname');
-	if ($dirname != '') {
-		@mkdir ($directory.'/'.$dirname);
-		echo '<h3>'.__('Created directory %s', $dirname).'</h3>';
-		
-		$config['filemanager']['correct_create_dir'] = 1;
+	$hash = get_parameter('hash', '');
+	$testHash = md5($directory . $config['dbpass']);
+	
+	if ($hash != $testHash) {
+		 echo "<h3 class=error>".__('Security error.')."</h3>";
 	}
 	else {
-		echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
+		$dirname = (string) get_parameter ('dirname');
+		if ($dirname != '') {
+			@mkdir ($directory.'/'.$dirname);
+			echo '<h3>'.__('Created directory %s', $dirname).'</h3>';
+			
+			$config['filemanager']['correct_create_dir'] = 1;
+		}
+		else {
+			echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
+		}
 	}
 }
 
@@ -288,13 +318,22 @@ if ($delete_file) {
 	$config['filemanager']['delete'] = 0;
 	
 	$filename = (string) get_parameter ('filename');
-	echo "<h3>".__('Deleting')." ".$filename."</h3>";
-	if (is_dir ($filename)) {		
-		rmdir ($filename);
-		$config['filemanager']['delete'] = 1;
-	} else {
-		unlink ($filename);
-		$config['filemanager']['delete'] = 1;
+	
+	$hash = get_parameter('hash', '');
+	$testHash = md5($filename . $config['dbpass']);
+	
+	if ($hash != $testHash) {
+		 echo "<h3 class=error>".__('Security error.')."</h3>";
+	}
+	else {
+		echo "<h3>".__('Deleting')." ".$filename."</h3>";
+		if (is_dir ($filename)) {		
+			rmdir ($filename);
+			$config['filemanager']['delete'] = 1;
+		} else {
+			unlink ($filename);
+			$config['filemanager']['delete'] = 1;
+		}
 	}
 }
 
@@ -338,6 +377,8 @@ function delete_directory($dir)
  * @param boolean $editor The flag to set the edition of text files.
  */
 function file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false) {
+	global $config;
+	
 	?>
 	<script type="text/javascript">
 	function show_form_create_folder() {
@@ -399,7 +440,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	
 	if (($prev_dir_str != '') && ($father != $relative_directory)) {
 		$table->data[0][0] = print_image ('images/go_previous.png', true);
-		$table->data[0][1] = '<a href="' . $url . '&directory='.$prev_dir_str.'">';
+		$table->data[0][1] = '<a href="' . $url . '&directory='.$prev_dir_str.'&hash=' . md5($prev_dir_str.$config['dbpass']) . '">';
 		$table->data[0][1] .= __('Parent directory');
 		$table->data[0][1] .='</a>';
 		
@@ -421,6 +462,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
 		$table->data[1][1] .= print_input_hidden ('directory', $relative_directory, true);
 		$table->data[1][1] .= print_input_hidden ('create_dir', 1, true);
+		$table->data[1][1] .= print_input_hidden('hash', md5($relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= '</form>';
 		$table->data[1][1] .= '</div>';
 		
@@ -435,6 +477,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_submit_button (__('Go'), 'go', false, 'class="sub next"', true);
 		$table->data[1][1] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][1] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= print_input_hidden ('upload_file_or_zip', 1, true);
 		$table->data[1][1] .= '</form>';	
 		$table->data[1][1] .= '</div>';
@@ -446,6 +489,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_submit_button (__('Create'), 'create', false, 'class="sub"', true);
 		$table->data[1][1] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][1] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][1] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][1] .= print_input_hidden ('create_text_file', 1, true);
 		$table->data[1][1] .= '</form>';	
 		$table->data[1][1] .= '</div>';
@@ -475,7 +519,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		}
 		
 		if ($fileinfo['is_dir']) {
-			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'">'.$fileinfo['name'].'</a>';
+			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
 		} else {
 			$data[1] = '<a href="'.$fileinfo['url'].'">'.$fileinfo['name'].'</a>';
 		}
@@ -492,15 +536,16 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$data[4] = '';
 		if (is_writable ($fileinfo['realpath'])  &&
 			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
-			$data[4] = '<form method="post" action="" style="float: left;">';
+			$data[4] = '<form method="post" action="' . $url . '" style="float: left;">';
 			$data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[4] .= print_input_hidden ('filename', $fileinfo['realpath'], true);
+			$data[4] .= print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
 			$data[4] .= print_input_hidden ('delete_file', 1, true);
 			$data[4] .= '</form>';
 			
 			if ($editor) {
 				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
+					$data[4] .= "<a href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
 				}
 			}
 		}
@@ -518,6 +563,8 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
  * @param string $url The url to set in the forms and some links in the explorer.
  */
 function box_upload_file_complex($real_directory, $relative_directory, $url = '') {
+	global $config;
+	
 	$table->width = '100%';
 	
 	$table->data = array ();
@@ -536,6 +583,7 @@ function box_upload_file_complex($real_directory, $relative_directory, $url = ''
 			'class="sub next"', true);
 		$table->data[1][4] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][4] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][4] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][4] .= print_input_hidden ('upload_file_or_zip', 1, true);
 	}
 	
@@ -552,6 +600,8 @@ function box_upload_file_complex($real_directory, $relative_directory, $url = ''
  * @param string $url The url to set in the forms and some links in the explorer.
  */
 function box_upload_file_explorer($real_directory, $relative_directory, $url = '') {
+	global $config;
+	
 	$table->width = '50%';
 	
 	$table->data = array ();
@@ -568,6 +618,7 @@ function box_upload_file_explorer($real_directory, $relative_directory, $url = '
 			'class="sub next"', true);
 		$table->data[1][2] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][2] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][2] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][2] .= print_input_hidden ('upload_file', 1, true);
 	}
 	
@@ -584,6 +635,8 @@ function box_upload_file_explorer($real_directory, $relative_directory, $url = '
  * @param string $url The url to set in the forms and some links in the explorer.
  */
 function box_upload_zip_explorer($real_directory, $relative_directory, $url = '') {
+	global $config;
+	
 	$table->width = '60%';
 	
 	$table->data = array ();
@@ -600,6 +653,7 @@ function box_upload_zip_explorer($real_directory, $relative_directory, $url = ''
 			'class="sub next"', true);
 		$table->data[1][2] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][2] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][2] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][2] .= print_input_hidden ('upload_zip', 1, true);
 	}
 	
@@ -616,6 +670,8 @@ function box_upload_zip_explorer($real_directory, $relative_directory, $url = ''
  * @param string $url The url to set in the forms and some links in the explorer.
  */
 function box_create_text_explorer($real_directory, $relative_directory, $url = '') {
+	global $config;
+	
 	$table->width = '60%';
 	
 	$table->data = array ();
@@ -632,6 +688,7 @@ function box_create_text_explorer($real_directory, $relative_directory, $url = '
 			'class="sub"', true);
 		$table->data[1][2] .= print_input_hidden ('real_directory', $real_directory, true);
 		$table->data[1][2] .= print_input_hidden ('directory', $relative_directory, true);
+		$table->data[1][2] .= print_input_hidden('hash', md5($real_directory . $relative_directory . $config['dbpass']), true);
 		$table->data[1][2] .= print_input_hidden ('create_text_file', 1, true);
 	}
 	

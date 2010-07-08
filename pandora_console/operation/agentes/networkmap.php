@@ -44,11 +44,11 @@ $center = (int) get_parameter ('center', 0);
 
 
 if ($pure == 1) {
-	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0">';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0&layout='.$layout.'">';
 	$onheader .= print_image ("images/normalscreen.png", true, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
 	$onheader .= '</a>';
 } else {
-	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1">';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1&layout='.$layout.'">';
 	$onheader .= print_image ("images/fullscreen.png", true, array ('title' => __('Full screen'), 'alt' => __('Normal screen')));
 	$onheader .= '</a>';
 }

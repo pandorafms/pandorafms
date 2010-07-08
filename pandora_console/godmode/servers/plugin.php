@@ -20,7 +20,7 @@ if (is_ajax ()) {
 	
 	$description = get_db_value_filter('description', 'tplugin', array('id' => $id_plugin));
 	
-	echo safe_output($description);
+	echo htmlentities (safe_output($description), ENT_QUOTES, "UTF-8", true);
 	return;
 }
 

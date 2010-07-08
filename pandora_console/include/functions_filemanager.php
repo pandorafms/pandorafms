@@ -346,8 +346,8 @@ function delete_directory($dir)
 {
 	if ($handle = opendir($dir))
 	{
-	    while (false !== ($file = readdir($handle))) {
-	        if (($file != ".") && ($file != "..")) {
+		while (false !== ($file = readdir($handle))) {
+			if (($file != ".") && ($file != "..")) {
 	
 				if (is_dir($dir . $file))
 				{
@@ -365,6 +365,44 @@ function delete_directory($dir)
 		closedir($handle);
 		rmdir($dir);
 	}
+}
+
+/**
+ * Read a directory recursibly and return a array with the files with
+ * the absolute path and relative
+ * 
+ * @param string $dir absoute dir to scan
+ * @param string $relative_path Relative path to scan, by default ''
+ * 
+ * @return array The files in the dirs, empty array for empty dir of files.
+ */
+function read_recursive_dir($dir, $relative_path = '') {
+	$return = array();
+	
+	if ($handle = opendir($dir))
+	{
+		while (false !== ($entry = readdir($handle))) {
+			if (($entry != ".") && ($entry != "..")) {
+				
+//				debugPrint($entry);
+//				debugPrint($return);
+				
+				if (is_dir($dir . $entry))
+				{
+//					debugPrint('dir');
+					$return = array_merge($return, read_recursive_dir($dir . $entry . '/', $relative_path . $entry . '/' ));
+				}
+				else
+				{
+//					debugPrint('file');
+					$return[] = array('relative' => $relative_path . $entry, 'absolute' => $dir . $entry);
+				}
+			}
+		}
+		closedir($handle);
+	}
+	
+	return $return;
 }
 
 /**

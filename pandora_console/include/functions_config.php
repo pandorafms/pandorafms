@@ -310,6 +310,10 @@ function process_config () {
 	if (!isset ($config["gis_purge"])){
 		update_config_value ('gis_purge', 7);
 	}
+	
+	if (!isset ($config["collection_max_size"])){
+		update_config_value ('collection_max_size', 1000000);
+	}
 
 	/* 
 	 *Parse the ACL IP list for access API that it's save in chunks as

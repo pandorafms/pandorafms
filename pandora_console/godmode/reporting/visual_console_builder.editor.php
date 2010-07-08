@@ -138,7 +138,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="period_row" class="module_graph datos">
 			<td><?php echo __('Period');?></td>
-			<td><?php print_select ($intervals, 'period', '', '', '--', 0);?></td>
+			<td><?php print_select ($intervals, 'period', '', '', '--', 0, false, false, false);?></td>
 		</tr>
 		<tr id="module_graph_size_row" class="module_graph datos">
 			<td><?php echo __('Size');?></td>

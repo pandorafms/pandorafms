@@ -128,6 +128,9 @@ if ($upload_file) {
 	// Load global vars
 	global $config;
 	
+	$config['filemanager'] = array();
+	$config['filemanager']['correct_upload_file'] = 0;
+	
 	check_login ();
 	
 	if (! give_acl ($config['id_user'], 0, "PM")) {
@@ -152,6 +155,8 @@ if ($upload_file) {
 		if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
 			echo "<h3 class=error>".__('attach_error')."</h3>";
 		} else {
+			$config['filemanager']['correct_upload_file'] = 1;
+			
 			// Delete temporal file
 			unlink ($_FILES['file']['tmp_name']);
 		}
@@ -164,6 +169,9 @@ $create_text_file = (bool) get_parameter ('create_text_file');
 if ($create_text_file) {
 	// Load global vars
 	global $config;
+	
+	$config['filemanager'] = array();
+	$config['filemanager']['correct_upload_file'] = 0;
 	
 	check_login ();
 	
@@ -189,6 +197,9 @@ if ($create_text_file) {
 		if (! @touch($nombre_archivo)) {
 			echo "<h3 class=error>".__('Error create file.')."</h3>";
 		}
+		else {
+			$config['filemanager']['correct_upload_file'] = 1;
+		}
 	}
 	else {
 		echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
@@ -199,6 +210,9 @@ if ($create_text_file) {
 if ($upload_zip) {
 	// Load global vars
 	global $config;
+	
+	$config['filemanager'] = array();
+	$config['filemanager']['correct_upload_file'] = 0;
 	
 	check_login ();
 	
@@ -235,7 +249,9 @@ if ($upload_zip) {
 			if ($zip->open($nombre_archivo) === true) {
 				$zip->extractTo($pathname);
 				unlink($nombre_archivo);
-			}	
+			}
+
+			$config['filemanager']['correct_upload_file'] = 1;
 		}
 		
 	}
@@ -244,12 +260,19 @@ if ($upload_zip) {
 // CREATE DIR
 $create_dir = (bool) get_parameter ('create_dir');
 if ($create_dir) {
+	global $config;
+	
+	$config['filemanager'] = array();
+	$config['filemanager']['correct_create_dir'] = 0;
+	
 	$directory = (string) get_parameter ('directory', "/");
 	
 	$dirname = (string) get_parameter ('dirname');
 	if ($dirname != '') {
 		@mkdir ($directory.'/'.$dirname);
 		echo '<h3>'.__('Created directory %s', $dirname).'</h3>';
+		
+		$config['filemanager']['correct_create_dir'] = 1;
 	}
 	else {
 		echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
@@ -259,12 +282,19 @@ if ($create_dir) {
 //DELETE FILE OR DIR
 $delete_file = (bool) get_parameter ('delete_file');
 if ($delete_file) {
+	global $config;
+	
+	$config['filemanager'] = array();
+	$config['filemanager']['delete'] = 0;
+	
 	$filename = (string) get_parameter ('filename');
 	echo "<h3>".__('Deleting')." ".$filename."</h3>";
 	if (is_dir ($filename)) {		
 		rmdir ($filename);
+		$config['filemanager']['delete'] = 1;
 	} else {
 		unlink ($filename);
+		$config['filemanager']['delete'] = 1;
 	}
 }
 
@@ -397,7 +427,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= '<div id="upload_file" style="display: none;">';
 		$table->data[1][1] .= print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
-		$table->data[1][1] .= print_help_tip (__("The zip upload in this collection, easy to upload multiple files."), true);
+		$table->data[1][1] .= print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= print_input_file ('file', true, false);
 		$table->data[1][1] .= print_radio_button('zip_or_file', 'zip', '', false, true) . __('Multiple files zipped');
 		$table->data[1][1] .= print_radio_button('zip_or_file', 'file', '', true, true) .  __('One');
@@ -498,7 +528,7 @@ function box_upload_file_complex($real_directory, $relative_directory, $url = ''
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
 	} else {
-		$table->data[1][0] = __('Upload') . print_help_tip (__("The zip upload in this collection, easy to upload multiple files."), true);
+		$table->data[1][0] = __('Upload') . print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = print_input_file ('file', true, false);
 		$table->data[1][2] = print_radio_button('zip_or_file', 'zip', __('Multiple files zipped'), false, true);
 		$table->data[1][3] = print_radio_button('zip_or_file', 'file', __('One'), true, true);
@@ -564,7 +594,7 @@ function box_upload_zip_explorer($real_directory, $relative_directory, $url = ''
 		echo __('Please check that current directory has write rights for HTTP server');
 		echo '</p>';
 	} else {
-		$table->data[1][0] = __('Upload zip file: ') . print_help_tip (__("The zip upload in this collection, easy to upload multiple files."), true);
+		$table->data[1][0] = __('Upload zip file: ') . print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] = print_input_file ('file', true, false);
 		$table->data[1][2] = print_submit_button (__('Go'), 'go', false,
 			'class="sub next"', true);

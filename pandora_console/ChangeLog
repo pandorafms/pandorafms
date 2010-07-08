@@ -1,5 +1,10 @@
 2010-07-07  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_filemanager.php: added var global through $config to
+	return status of operation. And clean messages of filemanager.
+
+2010-07-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: changed in function "get_db_all_rows_filter" the
 	parameter $filter to set empty array as default value.
 

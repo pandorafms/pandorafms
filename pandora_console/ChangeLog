@@ -1,8 +1,8 @@
-2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-08  Dario Rodriguez <dario.rodriguez@artica.es>
 
-	* godmode/agentes/agent_template.php: added the id_plugin column in the
-	Insert query.
-	Fixes: #3026805
+	* godmode/reporting/visual_console_builder.editor.php: fixed order in 
+	Period combo box of Module Graph
+	Fixes: #3014274
 
 2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
 

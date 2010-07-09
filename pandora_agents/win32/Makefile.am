@@ -7,3 +7,8 @@ PandoraAgent_SOURCES = misc/pandora_file.cc modules/pandora_data.cc modules/pand
 PandoraAgent_CXXFLAGS=-O2 -DCURL_STATICLIB
 endif
 PandoraAgent_LDFLAGS=-enable-auto-import
+
+LDADD = versioninfo.res
+
+.rc.res: 
+	$(WINDRES) $< -O coff -o $@

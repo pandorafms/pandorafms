@@ -20,6 +20,12 @@ CXXFLAGS=
 AC_ARG_ENABLE([debug], [  --enable-debug          produce debugging information (disabled by default)], debug="yes", debug="no")
 AM_CONDITIONAL(DEBUG, test "$debug" = "yes")
 
+# Checks for programs.
+AC_CHECK_TOOL([WINDRES], [windres], [no])
+if test "$WINDRES" = "no"; then
+	AC_MSG_ERROR([windres not found. You can get it from http://www.mingw.org/])
+fi
+
 # Checks for libraries.
 AC_CHECK_LIB([ws2_32], [main], , AC_MSG_ERROR([MingGW not found. You can get it from http://www.mingw.org/]))
 AC_CHECK_LIB([winmm], [main], , AC_MSG_ERROR([libwinmm not found.]))
@@ -52,4 +58,5 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([floor gethostbyname gettimeofday inet_ntoa memchr memmove memset regcomp select socket strchr strdup strrchr strtol])
 
 AC_CONFIG_FILES([Makefile])
+
 AC_OUTPUT

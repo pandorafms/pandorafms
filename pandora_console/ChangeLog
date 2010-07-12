@@ -1,5 +1,11 @@
 2010-07-12  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/alerts/configure_alert_compound.php: fixed the page to request
+	ajax, now it's new ajax page.
+	Fixes: #3020713
+
+2010-07-12  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_visual_console.js: in function "draw_line"
 	changed the const 15 value to dinamic value half width of image.
 	Fixes: #3019645

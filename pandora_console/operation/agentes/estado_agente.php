@@ -72,9 +72,9 @@ $search = get_parameter ("search", "");
 print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
 if ($group_id > 1) {
-	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id)).'">';
+	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id, 'offset' => 0)).'">';
 } else {
-	echo '<form method="post" action="'.get_url_refresh ().'">';
+	echo '<form method="post" action="'.get_url_refresh (array('offset' => 0)).'">';
 }
 
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';

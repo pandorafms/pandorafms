@@ -35,7 +35,6 @@ function initJavascript() {
 	$(".label_color").attachColorPicker();
 	
 	eventsBackground();
-	eventsButtonsToolbox();
 	eventsItems();
 	eventsTextAgent();
 	
@@ -887,102 +886,6 @@ function eventsBackground() {
 function unselectAll() {
 	$("#background").css('border', '2px black solid');
 	$(".item").css('border', '');
-}
-
-function eventsButtonsToolbox() {
-//	$('.button_toolbox').mouseover(function(event) {
-//		event.stopPropagation();
-//
-//		// over label
-//		if ($(event.target).is('span')) {
-//			id = $(event.target).parent().attr('id');
-//		}
-//		else {
-//			id = $(event.target).attr('id');
-//		}
-//
-//		if ($("#" + id).hasClass('disabled') == false) {
-//			$("#" + id).css('background', '#f5f5f5');
-//		}
-//	});
-//	
-//	$('.button_toolbox').mouseout(function(event) {
-//		event.stopPropagation();
-//		id = $(event.target).attr('id');
-//		if ($("#" + id).hasClass('disabled') == false) {				
-//			$("#" + id).css('background', '#e5e5e5');
-//		}
-//		$("#" + id).css('border', '4px outset black');
-//	});
-//	
-//	$('.button_toolbox').mousedown(function(event) {
-//		event.stopPropagation();
-//
-//		// over label
-//		if ($(event.target).is('span')) {
-//			id = $(event.target).parent().attr('id');
-//		}
-//		else {
-//			id = $(event.target).attr('id');
-//		}
-//		
-//		if ($("#" + id).hasClass('disabled') == false) {
-//			$("#" + id).css('border', '4px inset black');
-//		}
-//	});
-//	
-//	$('.button_toolbox').mouseup(function(event) {
-//		event.stopPropagation();
-//
-//		// over label
-//		if ($(event.target).is('span')) {
-//			id = $(event.target).parent().attr('id');
-//		}
-//		else {
-//			id = $(event.target).attr('id');
-//		}
-//		
-//		$("#" + id).css('border', '4px outset black');
-//	});
-//	
-//	$('.button_toolbox').click(function(event) {
-//		event.stopPropagation();
-//
-//		// over label
-//		if ($(event.target).is('span')) {
-//			id = $(event.target).parent().attr('id');
-//		}
-//		else {
-//			id = $(event.target).attr('id');
-//		}
-//
-//		if ($("#" + id).hasClass('disabled') == false) {
-//			switch (id) {
-//				case 'edit_item':
-//					actionClick();
-//					break;
-//				case 'static_graph':
-//					creationItem = 'static_graph';
-//					actionClick();
-//					break;
-//				case 'percentile_bar':
-//					creationItem = 'percentile_bar';
-//					actionClick();
-//					break;
-//				case 'module_graph':
-//					creationItem = 'module_graph';
-//					actionClick();
-//					break;
-//				case 'simple_value':
-//					creationItem = 'simple_value';
-//					actionClick();
-//					break;
-//				case 'delete_item':
-//					deleteItem();
-//					break;
-//			}
-//		}
-//	});
 }
 
 function click2(id) {

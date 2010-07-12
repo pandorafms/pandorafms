@@ -1,3 +1,13 @@
+2010-07-12  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora_visual_console.js: in function "draw_line"
+	changed the const 15 value to dinamic value half width of image.
+	Fixes: #3019645
+	
+	* godmode/reporting/visual_console_builder.editor.js: cleaned source code
+	and deleted unused function "eventsButtonsToolbox", this function was in
+	old wip version of visual editor.
+
 2010-07-12  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* godmode/reporting/visual_console_builder.php: fixed error getting

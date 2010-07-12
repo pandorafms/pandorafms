@@ -20,25 +20,26 @@ function draw_line (line, id_div) {
 	brush = new jsGraphics (div);
 	brush.setStroke (1);
 	brush.setColor (line['color']);
+	
 	if (line['x1']) {
 		x1 = line['x'];
 	} else {
-		x1 = parseInt ($('#'+line['node_begin']).css ('margin-left')) + 15;
+		x1 = parseInt ($('#'+line['node_begin']).css ('margin-left')) + ($('#'+line['node_begin']).width() / 2);
 	}
 	if (line['y1']) {
 		y1 = line['y1'];
 	} else {
-		y1 = parseInt ($('#'+line['node_begin']).css ('margin-top')) + 15;
+		y1 = parseInt ($('#'+line['node_begin']).css ('margin-top')) + ($('#'+line['node_begin']).height() / 2);
 	}
 	if (line['x2']) {
 		x2 = line['x2'];
 	} else {
-		x2 = parseInt ($('#'+line['node_end']).css ('margin-left')) + 15;
+		x2 = parseInt ($('#'+line['node_end']).css ('margin-left')) + ($('#'+line['node_end']).width() / 2);
 	}
 	if (line['y2']) {
 		y2 = line['y2'];
 	} else {
-		y2 = parseInt ($('#'+line['node_end']).css ('margin-top')) + 15;
+		y2 = parseInt ($('#'+line['node_end']).css ('margin-top')) + ($('#'+line['node_end']).height() / 2);
 	}
 	brush.drawLine (x1, y1, x2, y2);
 	brush.paint ();

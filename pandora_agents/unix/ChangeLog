@@ -1,3 +1,8 @@
+2010-07-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: changed the module cron configuration token to
+	  module_crontab.
+
 2010-07-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_exec: Do not verify the command to allow pipes and complex

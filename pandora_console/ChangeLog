@@ -1,3 +1,8 @@
+2010-07-12  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.php: fixed the
+	reset of the size when change a visual map background
+
 2010-07-12  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* operation/search_results.php: fixed bug in search with zero matches

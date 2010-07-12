@@ -1,5 +1,9 @@
 2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/ver_agente.php: added hook to collection enterprise.
+
+2010-07-08  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_filemanager.php: added hash2 parameter for to use in
 	directory navigation.
 

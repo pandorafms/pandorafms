@@ -303,6 +303,9 @@ echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Grou
 // Inventory
 enterprise_hook ('inventory_tab');
 
+// Collection
+enterprise_hook('collection_tab');
+
 // GIS tab
 if ($config['activate_gis']) {
 	if ($tab == "gis") {
@@ -347,6 +350,9 @@ switch ($tab) {
 		break;
 	case "inventory":
 		enterprise_include ('operation/agentes/agent_inventory.php');
+		break;
+	case 'collection':
+		enterprise_include ('operation/agentes/collection_view.php');
 		break;
 }
 

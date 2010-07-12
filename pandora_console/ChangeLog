@@ -1,3 +1,9 @@
+2010-07-12  Dario Rodriguez  <dario.rodriguez@artica.es>
+
+	* godmode/reporting/visual_console_builder.php: fixed error getting
+	image size creating a map without background
+	Fixes: #3014276 
+
 2010-07-12  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/ver_agente.php: re-ordered the tabs. 

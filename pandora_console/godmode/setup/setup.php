@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -75,7 +75,7 @@ $table->data[6][1] = print_input_text ('loginhash_pwd', $config["loginhash_pwd"]
 
 $table->data[8][0] = __('Timestamp or time comparation') . print_help_icon ("time_stamp-comparation", true);
 $table->data[8][1] = __('Comparation in rollover').' ';
-$table->data[8][1] .=  print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
+$table->data[8][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 $table->data[8][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[8][1] .= print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
 

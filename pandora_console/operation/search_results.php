@@ -73,14 +73,15 @@ if ($searchTab == 'users') {
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$users = process_sql($sql);
 	
-	$sql = "SELECT COUNT(id_user) FROM tusuario
+	$sql = "SELECT COUNT(id_user) AS count FROM tusuario
 		WHERE fullname LIKE '%" . $stringSearchSQL . "%' OR
 			firstname LIKE '%" . $stringSearchSQL . "%' OR
 			lastname LIKE '%" . $stringSearchSQL . "%' OR
 			middlename LIKE '%" . $stringSearchSQL . "%' OR
 			email LIKE '%" . $stringSearchSQL . "%'";	
 	$totalUsers = get_db_row_sql($sql);
-	$totalUsers = $totalUsers[0];
+
+	$totalUsers = $totalUsers['count'];
 }
 
 $alerts = false;
@@ -100,7 +101,7 @@ if ($searchTab == 'alerts') {
 				LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$alerts = process_sql($sql);
 	
-	$sql = "SELECT COUNT(t1.id)
+	$sql = "SELECT COUNT(t1.id) AS count
 			FROM talert_template_modules AS t1
 				INNER JOIN tagente_modulo AS t2
 				ON t1.id_agent_module = t2.id_agente_modulo
@@ -109,7 +110,7 @@ if ($searchTab == 'alerts') {
 				INNER JOIN talert_templates AS t4
 				ON t1.id_alert_template = t4.id";
 	$totalAlerts = get_db_row_sql($sql);
-	$totalAlerts = $totalAlerts[0];
+	$totalAlerts = $totalAlerts['count'];
 	
 }
 
@@ -120,9 +121,9 @@ if ($searchTab == 'graphs') {
 			LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 		$graphs = process_sql($sql);
 		
-		$sql = "SELECT COUNT(id_graph) FROM tgraph WHERE name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%'";
+		$sql = "SELECT COUNT(id_graph) AS count FROM tgraph WHERE name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%'";
 		$totalGraphs = get_db_row_sql($sql);
-		$totalGraphs = $totalGraphs[0];
+		$totalGraphs = $totalGraphs['count'];
 	}
 }
 
@@ -132,9 +133,9 @@ if (($config['search_category'] == 'all') || ($config['search_category'] == 'rep
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$reports = process_sql($sql);
 	
-	$sql = "SELECT COUNT(id_report) FROM treport WHERE name LIKE '%" . $stringSearchSQL . "%'";
+	$sql = "SELECT COUNT(id_report) AS count FROM treport WHERE name LIKE '%" . $stringSearchSQL . "%'";
 	$totalReports = get_db_row_sql($sql);
-	$totalReports = $totalReports[0];
+	$totalReports = $totalReports['count'];
 }
 
 $maps = false;
@@ -146,9 +147,9 @@ if (($config['search_category'] == 'all') || ($config['search_category'] == 'map
 			LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 		$maps = process_sql($sql);
 		
-		$sql = "SELECT COUNT(id) FROM tlayout WHERE name LIKE '%" . $stringSearchSQL . "%'";
+		$sql = "SELECT COUNT(id) AS count FROM tlayout WHERE name LIKE '%" . $stringSearchSQL . "%'";
 		$totalMaps = get_db_row_sql($sql);
-		$totalMaps = $totalMaps[0];
+		$totalMaps = $totalMaps['count'];
 	}
 }
 

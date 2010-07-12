@@ -1,5 +1,11 @@
 2010-07-12  Dario Rodriguez  <dario.rodriguez@artica.es>
 
+	* operation/search_results.php: fixed bug in search with zero matches
+	and filtering by: maps, reports or graphs.
+	Fixes: #3025607
+
+2010-07-12  Dario Rodriguez  <dario.rodriguez@artica.es>
+
 	* operation/agentes/estado_agente.php: fixed bug with pagination offset
 	and search.
 	Fixes: #3014703

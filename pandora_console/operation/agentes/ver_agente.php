@@ -295,16 +295,16 @@ if ($tab == "sla") {
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0 title='".__('S.L.A.')."'>&nbsp;</a>";
 echo "</li>";
 
-// Group tab
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
-echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Group"). "'>&nbsp;</a></li>";
-
 // Inventory
 enterprise_hook ('inventory_tab');
 
 // Collection
 enterprise_hook('collection_tab');
+
+// Group tab
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
+echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Group"). "'>&nbsp;</a></li>";
 
 // GIS tab
 if ($config['activate_gis']) {

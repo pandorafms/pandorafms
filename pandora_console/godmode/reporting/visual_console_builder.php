@@ -51,7 +51,7 @@ switch ($activeTab) {
 				// If the background is changed the size is reseted 			
 				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
 				$background_now = $visualConsole['background'];
-				if($background_now != $background) {
+				if($background_now != $background && $background) {
 					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
 					$values['width'] = $sizeBackground[0];
 					$values['height'] = $sizeBackground[1];
@@ -60,7 +60,7 @@ switch ($activeTab) {
 				switch ($action) {
 					case 'update':
 						$result = process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
-						if ($result !== false) {
+						if ($result !== false && $values['background']) {
 							$action = 'edit';
 							$statusProcessInDB = array('flag' => true, 'message' => '<h3 class="suc">'.__('Successfully update.').'</h3>');
 						}

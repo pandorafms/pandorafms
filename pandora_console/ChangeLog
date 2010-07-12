@@ -1,3 +1,9 @@
+2010-07-12  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/setup/setup.php: Updated year. Cleaned code.
+
+	* godmode/alerts/alert_list.builder.php: Added link to create action.
+
 2010-07-12  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/configure_alert_compound.php: fixed the page to request

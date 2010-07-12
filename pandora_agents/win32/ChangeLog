@@ -1,3 +1,10 @@
+2010-07-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module.h, modules/pandora_module_factory.cc,
+	  modules/pandora_module.cc, pandora_windows_service.cc: Added the
+	  module_cron feature to schedule modules using a cron-like syntax and
+	  some small fixes.
+
 2010-07-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Fixed the autotime feature. Was not

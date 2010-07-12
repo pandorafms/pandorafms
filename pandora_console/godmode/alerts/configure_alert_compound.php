@@ -721,7 +721,7 @@ $(document).ready (function () {
 		$("#alerts_loading").show ();
 		$("#alert_list tbody").empty ();
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/alerts/alert_list",
+			{"page" : "include/ajax/alert_list.ajax",
 			"get_agent_alerts_simple" : 1,
 			"id_agent" : this.value
 			},

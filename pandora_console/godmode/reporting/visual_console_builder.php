@@ -47,6 +47,16 @@ switch ($activeTab) {
 				$visualConsoleName = get_parameter('name');
 				
 				$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background);
+					
+				// If the background is changed the size is reseted 			
+				$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
+				$background_now = $visualConsole['background'];
+				if($background_now != $background) {
+					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+					$values['width'] = $sizeBackground[0];
+					$values['height'] = $sizeBackground[1];
+				}
+				
 				switch ($action) {
 					case 'update':
 						$result = process_sql_update('tlayout', $values, array('id' => $idVisualConsole));
@@ -59,9 +69,6 @@ switch ($activeTab) {
 						}
 						break;
 					case 'save':
-						$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
-						$values['width'] = $sizeBackground[0];
-						$values['height'] = $sizeBackground[1];
 						
 						if($values['name'] != "" && $values['background'])
 							$idVisualConsole = process_sql_insert('tlayout', $values);

@@ -881,7 +881,10 @@ Pandora_Windows_Service::pandora_run () {
 			module = this->modules->getCurrentValue ();
 		
 			pandoraDebug ("Run %s", module->getName ().c_str ());
-			module->run ();
+
+			if (module->checkCron () == 1) {
+				module->run ();
+			}
 			
 			/* Save module data to an environment variable */
 			if (!module->getSave().empty ()) {

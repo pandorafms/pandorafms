@@ -82,6 +82,8 @@ using namespace Pandora_Strutils;
 #define TOKEN_PLUGIN        ("module_plugin ")
 #define TOKEN_SAVE          ("module_save ")
 #define TOKEN_CONDITION     ("module_condition ")
+#define TOKEN_CRONTAB       ("module_crontab ")
+#define TOKEN_CRONINTERVAL  ("module_cron_interval ")
 
 string
 parseLine (string line, string token) {
@@ -125,6 +127,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_perfcounter, module_tcpcheck;
 	string                 module_port, module_timeout, module_regexp;
 	string                 module_plugin, module_save, module_condition;
+	string                 module_crontab, module_cron_interval;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -165,6 +168,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_plugin        = "";
 	module_save          = "";
 	module_condition     = "";
+	module_crontab       = "";
+	module_cron_interval = "";
 	
 	stringtok (tokens, definition, "\n");
 	
@@ -298,6 +303,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				module_condition = "";
 			}
 		}
+		if (module_crontab == "") {
+			module_crontab = parseLine (line, TOKEN_CRONTAB);
+		}
+		if (module_cron_interval == "") {
+			module_cron_interval = parseLine (line, TOKEN_CRONINTERVAL);
+		}
 
 		iter++;
 	}
@@ -415,6 +426,16 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		     condition_iter != condition_list.end ();
 		     condition_iter++) {
 			module->addCondition (*condition_iter);
+		}
+	}
+
+	/* Module cron */
+	if (module_crontab != "") {
+		module->setCron (module_crontab);
+		
+		/* Set the cron interval */
+		if (module_cron_interval != "") {
+			module->setCronInterval (atoi (module_cron_interval.c_str ()));
 		}
 	}
 

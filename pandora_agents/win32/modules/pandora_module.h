@@ -26,6 +26,7 @@
 #include "boost/regex.h"
 #include <list>
 #include <string>
+#include <ctime>
 
 using namespace Pandora;
 
@@ -99,7 +100,16 @@ namespace Pandora_Modules {
 		string command;
 		regex_t regexp;
 	} Condition;
-	
+
+	/**
+	 * Defines the structure that holds the module cron.
+	 */
+	typedef struct {
+		time_t utimestamp;
+		int interval;
+		int params[5][2];
+	} Cron;
+
 	const string module_exec_str       = "module_exec";
 	const string module_proc_str       = "module_proc";
 	const string module_service_str    = "module_service";
@@ -154,6 +164,7 @@ namespace Pandora_Modules {
 		Module_Kind           module_kind;
 		string                save;
 		list<Condition *>     *condition_list;
+		Cron				  *cron;
 
 	protected:
 		
@@ -237,6 +248,9 @@ namespace Pandora_Modules {
 		void        exportDataOutput ();
 		void        addCondition (string condition);
 		void		evaluateConditions ();
+		int         checkCron ();
+		void        setCron (string cron_string);
+		void        setCronInterval (int interval);
 	};
 }
 

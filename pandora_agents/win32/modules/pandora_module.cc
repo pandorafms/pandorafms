@@ -45,6 +45,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->data_list       = NULL;
     this->inventory_list  = NULL;
     this->condition_list  = NULL;
+	this->cron            = NULL;
 }
 
 /** 
@@ -73,6 +74,11 @@ Pandora_Module::~Pandora_Module () {
 			delete (*iter);
 		}
 		delete (this->condition_list);
+	}
+	
+	/* Clean the module cron */
+	if (this->cron != NULL) {
+		delete (this->cron);
 	}
 }
 
@@ -624,14 +630,11 @@ Pandora_Module::getSave () {
 void
 Pandora_Module::addCondition (string condition) {
 	Condition *cond;
-	char operation[255], string_value[1024], command[1024];
+	char operation[256], string_value[1024], command[1024];
 
 	/* Create the condition list if it does not exist */
 	if (this->condition_list == NULL) {
 		this->condition_list = new list<Condition *> ();
-		if (this->condition_list == NULL) {
-			return;
-		}
 	}
 
 	/* Create the new condition */
@@ -643,12 +646,12 @@ Pandora_Module::addCondition (string condition) {
 	cond->value_2 = 0;
 
 	/* Numeric comparison */
-	if (sscanf (condition.c_str (), "%255s %lf %1024[^]", operation, &(cond->value_1), command) == 3) {
+	if (sscanf (condition.c_str (), "%255s %lf %1023[^]", operation, &(cond->value_1), command) == 3) {
 		cond->operation = operation;
 		cond->command = command;
 		this->condition_list->push_back (cond);
 	/* Regular expression */
-	} else if (sscanf (condition.c_str (), "=~ %1024s %1024[^]", string_value, command) == 2) {
+	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^]", string_value, command) == 2) {
 		cond->operation = "=~";
 		cond->string_value = string_value;
 		cond->command = command;
@@ -659,7 +662,7 @@ Pandora_Module::addCondition (string condition) {
 		}
 		this->condition_list->push_back (cond);
 	/* Interval */
-	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1024[^]", &(cond->value_1), &(cond->value_2), command) == 3) {
+	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^]", &(cond->value_1), &(cond->value_2), command) == 3) {
 		cond->operation = "()";
 		cond->command = command;
 		this->condition_list->push_back (cond);
@@ -727,4 +730,144 @@ Pandora_Module::evaluateConditions () {
 			}
 		}
 	}
+}
+
+/** 
+ * Checks the module cron. Returns 1 if the module should run, 0 if not.
+ * 
+ * @return 1 if the module should run, 0 if not.
+ */
+int
+Pandora_Module::checkCron () {
+	int i, time_params[5];
+	time_t current_time, offset;
+	struct tm *time_struct;
+	Cron *cron = this->cron;
+
+	// No cron
+	if (cron == NULL) {
+		return 1;
+	}
+
+	// Get current time
+	current_time = time (NULL);
+
+	// Check if the module was already executed
+	if (current_time <= cron->utimestamp) {
+		return 0;
+	}
+
+	// Break current time
+	time_struct = localtime(&current_time);
+	if (time_struct == NULL) {
+		return 1;
+	}
+
+	time_params[0] = time_struct->tm_min;
+	time_params[1] = time_struct->tm_hour;
+	time_params[2] = time_struct->tm_mday;
+	time_params[3] = time_struct->tm_mon;
+	time_params[4] = time_struct->tm_wday;
+	
+	// Fix month (localtime retuns 0..11 and we need 1..12)
+	time_params[3] += 1;
+	
+	// Check cron parameters	
+	for (i = 0; i < 5; i++) {
+		
+		// Wildcard
+		if (cron->params[i][0] < 0) {
+			continue;
+		}
+		
+		// Check interval
+		if (cron->params[i][0] <= cron->params[i][1]) {
+			if (time_params[i] < cron->params[i][0] || time_params[i] > cron->params[i][1]) {
+				return 0;
+			}
+		} else {
+			if (time_params[i] < cron->params[i][0] && time_params[i] > cron->params[i][1]) {
+				return 0;
+			}
+		}
+	}
+
+	// Do not check in the next minute, hour, day or month.
+	offset = 0; 
+	if (cron->interval >= 0) {
+		offset = cron->interval;
+	} else if(cron->params[0][0] >= 0) {
+		// 1 minute
+		offset = 60;
+	} else if(cron->params[1][0] >= 0) {
+		// 1 hour
+		offset = 3600;
+	} else if(cron->params[2][0] >=0 || cron->params[4][0] >= 0) {
+		// 1 day
+		offset = 86400;
+	} else if(cron->params[3][0] >= 0) {
+		// 31 days
+		offset = 2678400;
+	}
+
+	cron->utimestamp = current_time + offset;
+	return 1;
+}
+
+/** 
+ * Sets the module cron from a string.
+ * 
+ * @return 1 if the module should run, 0 if not.
+ */
+void
+Pandora_Module::setCron (string cron_string) {
+	int i, value;
+	char cron_params[5][256], bottom[256], top[256];
+	
+	/* Create the new cron if necessary */
+	if (this->cron == NULL) {
+		this->cron = new Cron ();
+	}
+	
+	/* Parse the cron string */
+	if (sscanf (cron_string.c_str (), "%255s %255s %255s %255s %255s", cron_params[0], cron_params[1], cron_params[2], cron_params[3], cron_params[4]) != 5) {
+		pandoraDebug ("Invalid cron string: %s", cron_string.c_str ());
+		return;
+	}
+	
+	/* Fill the cron structure */
+	this->cron->utimestamp = 0;
+	this->cron->interval = -1;
+	for (i = 0; i < 5; i++) {
+		
+		/* Wildcard */
+		if (cron_params[i][0] == '*') {
+			this->cron->params[i][0] = -1;
+
+		/* Interval */
+		} else if (sscanf (cron_params[i], "%255[^-]-%255s", bottom, top) == 2) {
+			value = atoi (bottom);
+			this->cron->params[i][0] = value;
+			value = atoi (top);
+			this->cron->params[i][1] = value;
+		
+		/* Single value */
+		} else {
+			value = atoi (cron_params[i]);
+			this->cron->params[i][0] = value;
+			this->cron->params[i][1] = value;
+		}
+	}	
+}
+
+/** 
+ * Sets the interval of the module cron.
+ */
+void
+Pandora_Module::setCronInterval (int interval) {
+	if (this->cron == NULL) {
+		this->cron = new Cron ();
+	}
+	
+	this->cron->interval = interval;
 }

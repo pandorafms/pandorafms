@@ -1,3 +1,8 @@
+2010-07-13  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_filemanager.php: changed the form to upload one or more
+	files to more easy. And changed other things for stetic reasons.
+
 2010-07-13  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/datos_agente.php: Putted back data range

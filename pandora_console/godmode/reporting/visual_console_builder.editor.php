@@ -221,6 +221,14 @@ echo '<div id="background" class="ui-widget-content" style="background: url(imag
 	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
 
 foreach ($layoutDatas as $layoutData) {
+			
+	// Pending delete and disable modules must be ignored
+	$delete_pending_module = get_db_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+	$disabled_module = get_db_value ("disabled", "tagente_modulo", "id_agente_modulo", $layoutData["id_agente_modulo"]);
+
+	if($delete_pending_module == 1 || $disabled_module == 1)
+		continue;
+	
 	printItemInVisualConsole($layoutData);
 }
 

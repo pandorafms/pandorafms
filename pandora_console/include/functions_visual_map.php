@@ -367,7 +367,14 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 			// ****************************************************************
 			// Get parent status (Could be an agent, module, map, others doesnt have parent info)
 			// ****************************************************************
-
+			
+			// Pending delete and disable modules must be ignored
+			$delete_pending_module = get_db_value ("delete_pending", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
+			$disabled_module = get_db_value ("disabled", "tagente_modulo", "id_agente_modulo", $layout_data["id_agente_modulo"]);
+			
+			if($delete_pending_module == 1 || $disabled_module == 1)
+				continue;
+				
 			if ($layout_data["parent_item"] != 0){
 				$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $layout_data["parent_item"]);
 				$id_agent_parent = get_db_value ("id_agent", "tlayout_data", "id", $layout_data["parent_item"]);

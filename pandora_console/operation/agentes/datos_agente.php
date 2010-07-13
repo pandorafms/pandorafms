@@ -21,8 +21,10 @@ global $config;
 check_login();
 
 $module_id = get_parameter_get ("id", 0);
-$period = get_parameter_get ("period", 86400);
+$period = get_parameter ("period", 86400);
 $group = get_agentmodule_group ($module_id);
+$agentId = get_parameter("id_agente"); 
+
 
 if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
@@ -101,9 +103,20 @@ if ($result === false) {
 	$result = array ();
 }
 
-$header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id). " - " . human_time_description ($period); 
+$header_title = __('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id); 
+$header_title .= "<br><br>" . __("From the last") . " " . human_time_description ($period);
 
 echo "<h3>".$header_title. "</h3>";
+
+echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=" . $agentId . "&tab=data_view&id=" . $module_id . "'>";
+echo __("Choose a time from now") . ": ";
+$intervals = array ();
+$intervals[3600] = human_time_description_raw (3600); // 1 hour
+$intervals[86400] = human_time_description_raw (86400); // 1 day 
+$intervals[604800] = human_time_description_raw (604800); // 1 week
+$intervals[2592000] = human_time_description_raw (2592000); // 1 month
+echo print_extended_select_for_time ($intervals, 'period', $period, 'this.form.submit();', '', '0', 10) . __(" seconds.");
+echo "</form><br />";
 
 //
 $index = 0;

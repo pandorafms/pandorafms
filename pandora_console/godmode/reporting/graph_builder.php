@@ -81,9 +81,13 @@ if ($add_graph) {
 	'period' => $period, 'width' => $width, 'height' => $height,
 	'private' => 0, 'id_group' => $idGroup, 'events' => $events, 
 	'stacked' => $stacked);
-	
-	$id_graph = process_sql_insert('tgraph', $values);
-		
+
+	if (trim($name) != "") {
+		$id_graph = process_sql_insert('tgraph', $values);
+	} else {
+		$id_graph = false;
+	}
+
 	if(!$id_graph)
 		$edit_graph = false;
 }
@@ -100,9 +104,14 @@ if ($update_graph) {
 	$events = get_parameter('events');
 	$alerts = get_parameter('alerts'); 
 
+	if (trim($name) != "") {
+
 	$success = process_sql_update('tgraph', 
 		array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
 		array('id_graph' => $id));
+	} else {
+		$success = false;
+	}
 }
 
 function add_quotes($item)

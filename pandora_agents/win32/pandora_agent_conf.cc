@@ -20,15 +20,19 @@
 
 #include <fstream>
 #include "pandora_agent_conf.h"
+#include "pandora_strutils.h"
+#include <iostream>
 #include "pandora.h"
 
 using namespace std;
 using namespace Pandora;
+using namespace Pandora_Strutils;
 
 #define MAX_KEYS 100
 
 Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf () {
 	this->key_values = NULL;
+	this->collection_list = NULL;
 }
 
 /**
@@ -36,6 +40,7 @@ Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf () {
  */
 Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
 	delete key_values; 
+	delete collection_list;
 }
 
 Pandora_Agent_Conf *
@@ -68,6 +73,10 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 	if (this->key_values)
 		delete this->key_values;
 	this->key_values = new list<Key_Value> ();
+
+	if (this->collection_list)
+		delete this->collection_list;
+	this->collection_list = new list<string> ();
 	
 	if (!file.is_open ()) {
 		return;
@@ -80,6 +89,19 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 		
 		/* Ignore blank or commented lines */
 		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			/*Check if is a collection*/
+			pos = buffer.find("file_collection");
+			if(pos != string::npos) {
+				string collection_name, trimmed_str;
+				
+				/*Add collection to collection_list*/
+				/*The number 15 is the number of character of string file_collection*/
+				collection_name = buffer.substr(pos+15);
+				trimmed_str = trim (collection_name);
+				collection_list->push_back (trimmed_str);
+				continue;
+			}
+			/*Check if is a module*/
 			pos = buffer.find ("module_");
 			if (pos == string::npos) {
 				Key_Value kv;

@@ -38,6 +38,7 @@ namespace Pandora {
 	class Pandora_Agent_Conf {
 	private:
 		list<Key_Value> *key_values;
+		list<string> *collection_list;		
 
 		Pandora_Agent_Conf             ();
 	public:

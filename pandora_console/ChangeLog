@@ -1,3 +1,10 @@
+2010-07-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php
+	godmode/reporting/visual_console_builder.editor.php: Fixed the
+	visualmaps for ignore the disabled and delete pending modules
+	for bug: 3022892
+
 2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
 
 	* general/pandora_help.php: Delete interrogation picture to get a 

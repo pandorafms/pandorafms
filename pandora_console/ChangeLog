@@ -1,3 +1,8 @@
+2010-07-13  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/datos_agente.php: Putted back data range
+	filter into raw data of the modules for bug: 3023769
+
 2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
 
 	* include/help/en/help_reporting_main_tab.php: Added help for report

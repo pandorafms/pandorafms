@@ -1,3 +1,9 @@
+2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
+
+	* godmode/reporting/graph_builder.php: Fixed problem when creating or
+	updating a graph with empty name.
+	Fixes: #3026943
+
 2010-07-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_visual_map.php

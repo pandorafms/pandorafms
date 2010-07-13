@@ -1,5 +1,13 @@
 2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
 
+	* include/help/en/help_reporting_main_tab.php: Added help for report
+	creator for English.
+	* include/help/es/help_reporting_main_tab.php: Added help for report
+	creator for Spanish.
+	Fixes: #3013763
+
+2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
+
 	* godmode/reporting/graph_builder.php: Fixed problem when creating or
 	updating a graph with empty name.
 	Fixes: #3026943

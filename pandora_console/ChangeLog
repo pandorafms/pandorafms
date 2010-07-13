@@ -1,3 +1,9 @@
+2010-07-13  Darío Rodríguez <dario.rodriguez@artica.es>
+
+	* general/pandora_help.php: Delete interrogation picture to get a 
+	better style.
+	Fixes: #3028524
+
 2010-07-12  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/setup/setup.php: Updated year. Cleaned code.

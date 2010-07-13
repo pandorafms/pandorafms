@@ -108,8 +108,8 @@ if (!function_exists ('mime_content_type')) {
 $upload_file_or_zip = (bool) get_parameter('upload_file_or_zip');
 
 if ($upload_file_or_zip) {
-	$zip_or_file = get_parameter('zip_or_file');
-	if ($zip_or_file == 'file') {
+	$decompress = get_parameter('decompress');
+	if (!$decompress) {
 		$upload_file = true;
 		$upload_zip = false;
 	}
@@ -458,6 +458,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	$table->data = array ();
 	$table->head = array ();
 	$table->size = array ();
+	$table->align[3] = 'right';
 	$table->align[4] = 'center';
 	
 	$table->size[0] = '24px';
@@ -510,8 +511,10 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= '<form method="post" action="' . $url . '" enctype="multipart/form-data">';
 		$table->data[1][1] .= print_help_tip (__("The zip upload in this dir, easy to upload multiple files."), true);
 		$table->data[1][1] .= print_input_file ('file', true, false);
-		$table->data[1][1] .= print_radio_button('zip_or_file', 'zip', '', false, true) . __('Multiple files zipped');
-		$table->data[1][1] .= print_radio_button('zip_or_file', 'file', '', true, true) .  __('One');
+		$table->data[1][1] .= print_checkbox('decompress', 1, false, true);
+		$table->data[1][1] .= __('Decompress');
+//		$table->data[1][1] .= print_radio_button('zip_or_file', 'zip', '', false, true) . __('Multiple files zipped');
+//		$table->data[1][1] .= print_radio_button('zip_or_file', 'file', '', true, true) .  __('One');
 		$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
 		$table->data[1][1] .= print_submit_button (__('Go'), 'go', false, 'class="sub next"', true);
 		$table->data[1][1] .= print_input_hidden ('real_directory', $real_directory, true);
@@ -574,9 +577,10 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		//Actions buttons
 		//Delete button
 		$data[4] = '';
+		$data[4] .= '<span style="">';
 		if (is_writable ($fileinfo['realpath'])  &&
 			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
-			$data[4] = '<form method="post" action="' . $url . '" style="float: left;">';
+			$data[4] .= '<form method="post" action="' . $url . '" style="display: inline;">';
 			$data[4] .= '<input type="image" src="images/cross.png" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			$data[4] .= print_input_hidden ('filename', $fileinfo['realpath'], true);
 			$data[4] .= print_input_hidden('hash', md5($fileinfo['realpath'] . $config['dbpass']), true);
@@ -585,10 +589,11 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 			
 			if ($editor) {
 				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
+					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
 				}
 			}
 		}
+		$data[4] .= '</span>';
 	
 		array_push ($table->data, $data);
 	}

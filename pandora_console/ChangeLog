@@ -1,5 +1,10 @@
 2010-07-13  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_templates_form.php: fixed the error
+	message when update with nothing a template (0 rows to update) .
+
+2010-07-13  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_filemanager.php: changed the form to upload one or more
 	files to more easy. And changed other things for stetic reasons.
 

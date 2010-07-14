@@ -1013,14 +1013,17 @@ Create an internal Pandora incident.
 
 =cut
 ##########################################################################
-sub pandora_create_incident ($$$$$$$$) {
+sub pandora_create_incident ($$$$$$$$;$) {
 	my ($pa_config, $dbh, $title, $text,
-		$priority, $status, $origin, $id_group) = @_;
+		$priority, $status, $origin, $id_group, $owner) = @_;
 
 	logger($pa_config, "Creating incident '$text' source '$origin'.", 8);
-
-	db_do($dbh, 'INSERT INTO tincidencia (`inicio`, `titulo`, `descripcion`, `origen`, `estado`, `prioridad`, `id_grupo`)
-			VALUES (NOW(), ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group);
+	
+	# Initialize default parameters
+	$owner = '' unless defined ($owner);
+	
+	db_do($dbh, 'INSERT INTO tincidencia (`inicio`, `titulo`, `descripcion`, `origen`, `estado`, `prioridad`, `id_grupo`, `id_usuario`)
+			VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)', $title, $text, $origin, $status, $priority, $id_group, $owner);
 }
 
 

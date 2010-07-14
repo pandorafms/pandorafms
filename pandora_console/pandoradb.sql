@@ -424,13 +424,14 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 -- Criticity: 4 - Critical (red) (status 1)
 
 CREATE TABLE IF NOT EXISTS `tgrupo` (
-  `id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
-  `nombre` varchar(100) NOT NULL default '',
-  `icon` varchar(50) default NULL default 'world',
-  `parent` mediumint(4) unsigned NOT NULL default '0',
-  `disabled` tinyint(3) unsigned NOT NULL default '0',
-  `custom_id` varchar(255) default '',
-  PRIMARY KEY  (`id_grupo`)
+	`id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
+	`nombre` varchar(100) NOT NULL default '',
+	`icon` varchar(50) default NULL default 'world',
+	`parent` mediumint(4) unsigned NOT NULL default '0',
+	`propagate` tinyint(1) unsigned NOT NULL default '0',
+	`disabled` tinyint(3) unsigned NOT NULL default '0',
+	`custom_id` varchar(255) default '',
+ 	PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tincidencia` (

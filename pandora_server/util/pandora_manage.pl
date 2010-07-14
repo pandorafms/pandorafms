@@ -463,6 +463,7 @@ sub help_screen{
     help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
     help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
+    help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
     print "\n";
 	exit;
 }
@@ -1012,6 +1013,16 @@ sub pandora_manage_main ($$$) {
 						
 			pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
 			print "[INFO] Validating event for agent '$agent_name'\n\n";
+		}
+		elsif ($param =~ m/--create_incident/i) {
+			param_check($ltotal, 7, 1);
+			my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
+						
+			my $id_group = get_group_id($dbh,$group_name);
+			exist_check($id_group,'group',$group_name);
+						
+			pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
+			print "[INFO] Creating incident '$title'\n\n";
 		}
 	}
 

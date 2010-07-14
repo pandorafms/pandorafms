@@ -39,6 +39,7 @@ namespace Pandora {
 	private:
 		list<Key_Value> *key_values;
 		list<string> *collection_list;		
+		list<string>::iterator collection_it;
 
 		Pandora_Agent_Conf             ();
 	public:
@@ -47,6 +48,12 @@ namespace Pandora {
 		~Pandora_Agent_Conf            ();
 		void               setFile     (string filename);
 		string             getValue    (const string key);
+		
+		string	   		 getCurrentCollection();
+		void             goFirstCollection     ();
+		void             goNextCollection      ();
+		
+		bool             isLastCollection      ();
 	};
 }
 

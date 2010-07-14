@@ -139,3 +139,53 @@ Pandora::Pandora_Agent_Conf::getValue (const string key)
 	return "";
 }
 
+/**
+ * Queries for a collection name.
+ * 
+ * This method returns the name of the current
+ * collection pointed by an iterator.
+ *
+ * @return The name of the current colletion 
+ * 
+ */
+string 
+Pandora::Pandora_Agent_Conf::getCurrentCollection() {
+	string aux;
+	aux = *collection_it;
+	return aux;
+}
+
+/**
+ * Set iterator pointing to the first collection of the list.
+ * 
+ * This method set the iterator pointing to the first collection of the list.
+ *
+ */
+void
+Pandora::Pandora_Agent_Conf::goFirstCollection() {
+	collection_it = collection_list->begin();
+}
+
+/**
+ * Move the collection iterator to the next item
+ * 
+ * This method move the iterator to the next item.
+ *
+ */
+void             
+Pandora::Pandora_Agent_Conf::goNextCollection() {
+	this->collection_it++;
+}
+
+/**
+ * Compare the iterator with the last collection.
+ * 
+ * This method return true if the iterator is pointing to the last collection
+ *
+ * @return True if the iterator is pointing to the last collection
+ * 
+ */
+bool
+Pandora::Pandora_Agent_Conf::isLastCollection() {
+	return collection_it == collection_list->end();
+}

@@ -68,6 +68,7 @@ namespace Pandora {
 		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
 						     string filename);
+		void		   checkCollections ();
 		void           checkConfig ();
 		
 		Pandora_Windows_Service     ();

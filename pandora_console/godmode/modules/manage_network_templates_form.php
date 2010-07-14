@@ -72,8 +72,8 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 	if ($id_np > 0) {
 		//Profile exists
 		$sql = sprintf ("UPDATE tnetwork_profile SET name = '%s', description = '%s' WHERE id_np = %d", $name, $description, $id_np); 		
-		$result = process_sql ($sql);
-		print_result_message ($result,
+		$result = process_sql ($sql); 
+		print_result_message ($result !== false,
 			__('Successfully updated network profile'),
 			__('Error updating network profile'));
 	} else {

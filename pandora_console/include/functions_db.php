@@ -50,6 +50,57 @@ function check_login () {
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
 }
+
+/**
+ * Return a array of id_group of childrens (to branches down)
+ * 
+ * @param integer $parent The id_group parent to search the childrens. 
+ * @param array $groups The groups, its for optimize the querys to DB.
+ */
+function get_childrens($parent, $groups = null) {
+	if (empty($groups)) {
+		$groups = get_db_all_rows_in_table('tgrupo');
+	}
+	
+	$return = array();
+	
+	foreach ($groups as $key => $group) {
+		if ($group['id_grupo'] == 0) {
+			continue;
+		}
+		if ($group['parent'] == $parent) {
+			$return = $return + array($group['id_grupo'] => $group) + get_childrens($group['id_grupo'], $groups);
+		}
+	}
+	
+	return $return;
+}
+
+/**
+ * Return a array of id_group of parents (to roots up).
+ * 
+ * @param integer $parent The id_group parent to search the parent. 
+ * @param boolean $onlyPropagate Flag to search only parents that true to propagate.
+ * @param array $groups The groups, its for optimize the querys to DB.
+ */
+function get_parents($parent, $onlyPropagate = false, $groups = null) {
+	if (empty($groups)) {
+		$groups = get_db_all_rows_in_table('tgrupo');
+	}
+	
+	$return = array();
+	
+	foreach ($groups as $key => $group) {
+		if ($group['id_grupo'] == 0) {
+			continue;
+		}
+		if (($group['id_grupo'] == $parent) && ($group['propagate'] || !$onlyPropagate)) {
+			$return = $return + array($group['id_grupo'] => $group) + get_parents($group['parent'], $groups);
+		}
+	}
+	
+	return $return;
+}
 	
 /**
  * Check access privileges to resources
@@ -82,14 +133,43 @@ function check_acl ($id_user, $id_group, $access) {
 	} else {
 		$id_group = (int) $id_group;
 	}
-			
+	
+	$parents_id = array($id_group);
+	if ($id_group != 0) {
+		$group = get_db_row_filter('tgrupo', array('id_grupo' => $id_group));
+		$parents = get_parents($group['parent'], true);
+		
+		foreach ($parents as $parent) {
+			$parents_id[] = $parent['id_grupo'];
+		}
+	}
+	else {
+		$parents_id = array();
+	}
+	
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
-		$query = sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'", $id_user);
+		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
+				tperfil.incident_management, tperfil.agent_view,
+				tperfil.agent_edit, tperfil.alert_edit,
+				tperfil.alert_management, tperfil.pandora_management,
+				tperfil.db_management, tperfil.user_management
+			FROM tusuario_perfil, tperfil
+			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
+				AND tusuario_perfil.id_usuario = '%s'", $id_user);
 		//GroupID = 0, group id doesnt matter (use with caution!)
-	} else {
-		$query = sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-						AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo = 0)", $id_user, $id_group);
+	}
+	else {
+		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
+				tperfil.incident_management, tperfil.agent_view,
+				tperfil.agent_edit, tperfil.alert_edit,
+				tperfil.alert_management, tperfil.pandora_management,
+				tperfil.db_management, tperfil.user_management
+			FROM tusuario_perfil, tperfil
+			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
+				AND tusuario_perfil.id_usuario = '%s'
+				AND (tusuario_perfil.id_grupo IN (%s)
+				OR tusuario_perfil.id_grupo = 0)", $id_user, implode(', ', $parents_id));
 	}
 	
 	$rowdup = get_db_all_rows_sql ($query);
@@ -1399,10 +1479,11 @@ function get_all_model_groups () {
  * @param string User id
  * @param string The privilege to evaluate
  * @param boolean $returnAllGroup Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true) {
+function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false) {
 	if (empty ($id_user)) {
 		global $config;
 		$id_user = $config['id_user'];
@@ -1414,15 +1495,82 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 	if (!$groups)
 		return $user_groups;
 		
-	if ($returnAllGroup) //All group
-		$user_groups[0] = "All";
-
+	if ($returnAllGroup) { //All group
+		if ($returnAllColumns) {
+			$groups[0] = array('id_grupo' => 0, 'nombre' => __('All'),
+				'icon' => 'world', 'parent' => 0, 'disabled' => 0,
+				'custom_id' => null, 'propagate' => 0); 
+		}
+		else {
+			$groups[0] = array('id_grupo' => 0, 'nombre' => __("All"));
+		}
+	}
+	
 	foreach ($groups as $group) {
-		if (give_acl ($id_user, $group["id_grupo"], $privilege))
-			$user_groups[$group['id_grupo']] = $group['nombre'];
+		if (give_acl ($id_user, $group["id_grupo"], $privilege)) {
+			if ($returnAllColumns) {
+				$user_groups[$group['id_grupo']] = $group;
+			}
+			else {
+				$user_groups[$group['id_grupo']] = $group['nombre'];
+			}
+		}
 	}
 	
 	return $user_groups;
+}
+
+/**
+ * Make with a list of groups a treefied list of groups.
+ * 
+ * @param array $groups The list of groups to create the treefield list.
+ * @param integer $parent The id_group of parent actual scan branch.
+ * @param integer $deep The level of profundity in the branch.
+ * 
+ * @return array The treefield list of groups. 
+ */
+function get_user_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
+	$return = array();
+	
+	foreach ($groups as $key => $group) {
+		if (($key == 0) && ($parent == 0)) { //When the groups is the all group
+			$group['deep'] = $deep;
+			$group['hash_branch'] = true;
+			$deep ++;
+			$return = $return + array($key => $group);
+		}
+		else if ($group['parent'] == $parent) {
+			$group['deep'] = $deep;
+			$branch = get_user_groups_tree_recursive($groups, $key, $deep + 1);
+			if (empty($branch)) {
+				$group['hash_branch'] = false;
+			}
+			else {
+				$group['hash_branch'] = true;
+			}
+			$return = $return + array($key => $group) + $branch;
+		}
+	}
+	
+	return $return;
+}
+
+/** 
+ * Get all the groups a user has reading privileges. Version for tree groups.
+ * 
+ * @param string User id
+ * @param string The privilege to evaluate
+ * @param boolean $returnAllGroup Flag the return group, by default true.
+ * @param boolean $returnAllColumns Flag to return all columns of groups.
+ *
+ * @return array A treefield list of the groups the user has certain privileges.
+ */
+function get_user_groups_tree($id_user = false, $privilege = "AR", $returnAllGroup = true) {
+	$user_groups = get_user_groups (false, "AR", true, true);	
+	
+	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
+	
+	return $user_groups_tree;
 }
 
 /** 
@@ -2156,12 +2304,13 @@ function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cac
  * 
  * @param string Database table name.
  * @param string Field to order by.
+ * @param string $order The type of order, by default 'ASC'.
  *
  * @return mixed A matrix with all the values in the table
  */
-function get_db_all_rows_in_table ($table, $order_field = "") {
+function get_db_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
 	if ($order_field != "") {
-		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY ".$order_field);
+		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY ".$order_field . " " . $order);
 	} else {	
 		return get_db_all_rows_sql ("SELECT * FROM `".$table."`");
 	}

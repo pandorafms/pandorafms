@@ -271,7 +271,7 @@ echo '<table style="float:left;" width="550" cellpadding="4" cellspacing="4" cla
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
-print_select ($groups, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
+print_select_groups($config["id_user"], "IR", true, 'ev_group', $ev_group, '', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type

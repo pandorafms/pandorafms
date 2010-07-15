@@ -1477,7 +1477,7 @@ function get_all_model_groups () {
  * Get all the groups a user has reading privileges.
  * 
  * @param string User id
- * @param string The privilege to evaluate
+ * @param string The privilege to evaluate, and it is false then no check ACL.
  * @param boolean $returnAllGroup Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
  *
@@ -1507,7 +1507,15 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 	}
 	
 	foreach ($groups as $group) {
-		if (give_acl ($id_user, $group["id_grupo"], $privilege)) {
+		if ($privilege === false) {
+			if ($returnAllColumns) {
+				$user_groups[$group['id_grupo']] = $group;
+			}
+			else {
+				$user_groups[$group['id_grupo']] = $group['nombre'];
+			}
+		}
+		else if (give_acl ($id_user, $group["id_grupo"], $privilege)) {
 			if ($returnAllColumns) {
 				$user_groups[$group['id_grupo']] = $group;
 			}
@@ -1566,7 +1574,7 @@ function get_user_groups_tree_recursive($groups, $parent = 0, $deep = 0) {
  * @return array A treefield list of the groups the user has certain privileges.
  */
 function get_user_groups_tree($id_user = false, $privilege = "AR", $returnAllGroup = true) {
-	$user_groups = get_user_groups (false, "AR", true, true);	
+	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);	
 	
 	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
 	

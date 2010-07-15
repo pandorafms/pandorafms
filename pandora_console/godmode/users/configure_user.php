@@ -321,7 +321,7 @@ $data = array ();
 $data[0] = '<form method="post">';
 $data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 	0, true, false, false);
-$data[1] = print_select (get_user_groups ($config['id_user'], 'UM'),
+$data[1] = print_select_groups($config['id_user'], "UM", true,
 	'assign_group', -1, '', __('None'), -1, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
 $data[2] .= print_input_hidden ('id', $id, true);

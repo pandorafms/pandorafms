@@ -103,7 +103,7 @@ $table->data[0][1] = print_select (index_array ($modules, 'nombre', 'nombre'),
 	'module_name', $module_name, false, __('Select'), '', true);
 
 $table->data[1][0] = __('Group');
-$table->data[1][1] = print_select ($groups, 'id_group', $id_group,
+$table->data[1][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true, false, true, '', empty ($module_name));
 
 $table->data[2][0] = __('Agent');

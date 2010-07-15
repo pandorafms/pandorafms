@@ -158,7 +158,7 @@ if ($create_downtime || $update_downtime) {
 		$table->data[4][1] .= print_input_text ('time_to', $time_to, '', 7, 7, true);
 
 		$table->data[5][0] = __('Group');
-		$table->data[5][1] = print_select ($groups, 'id_group', $id_group, '', '', 0, true);
+		$table->data[5][1] = print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
 		echo '<form method="POST" action="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime">';
 
 		if ($id_downtime > 0){
@@ -206,7 +206,7 @@ if ($create_downtime || $update_downtime) {
 	
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&first_update=1&id_downtime=$id_downtime'>";
 
-		print_select ($groups, 'filter_group', $filter_group);	
+		print_select_groups(false, "AR", true, 'filter_group', $filter_group);	
 		echo "<br /><br />";
 		print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);
 		echo "</form>";

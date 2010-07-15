@@ -100,7 +100,7 @@ $table->data[0][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
 	
 $table->data[1][0] = __('Group');
-$table->data[1][1] = print_select ($groups, 'id_group', $id_group,
+$table->data[1][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
 	'', '', '', true, false, true, '', $id_alert_template == 0);
 
 $table->data[2][0] = __('Agent');

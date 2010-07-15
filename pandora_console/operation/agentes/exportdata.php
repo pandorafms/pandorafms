@@ -273,7 +273,7 @@ $table->data[0][0] = '<b>'.__('Group').'</b>';
 	
 $groups = get_user_groups ($config['id_user'], "AR");
 	
-$table->data[0][1] = print_select ($groups, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
+$table->data[0][1] = print_select_groups($config['id_user'], "AR", true, "group", $group, 'this.form.submit();', '', 0, true, false, true, 'w130', false);
 	
 //Agent selector
 $table->data[1][0] = '<b>'.__('Source agent').'</b>';

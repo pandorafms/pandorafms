@@ -52,7 +52,7 @@ $table->data['name'][0] = __('Name');
 $table->data['name'][1] = print_input_text('name', $reportName, __('Name'), 20, 40, true);
 
 $table->data['group'][0] = __('Group');
-$table->data['group'][1] = print_select ($groups, 'id_group', $idGroupReport, false, '', '', true);
+$table->data['group'][1] = print_select_groups(false, "AR", true, 'id_group', $idGroupReport, false, '', '', true);
 
 $table->data['description'][0] = __('Description');
 $table->data['description'][1] = print_textarea('description', 5, 15, $description, '', true);

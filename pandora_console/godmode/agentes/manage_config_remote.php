@@ -104,7 +104,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 		$group_select = get_user_groups ($config['id_user']);
 		$grouplist = implode (',', array_keys ($group_select));
 		
-		echo print_select ($group_select, 'id_group', $id_group, '', '', '', true);
+		echo print_select_groups($config['id_user'], "AR", true, 'id_group', $id_group, '', '', '', true);
 		echo '&nbsp;&nbsp;';
 		echo '<input type=submit name="update_group" class="sub upd"  value="'.__('Filter').'">';
 		echo '<br><br>';

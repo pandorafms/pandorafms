@@ -335,7 +335,7 @@ $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 </table>";
 
 $table->data[2][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
-$table->data[2][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'map_group_id', $map_group_id, '', __('All'), '0', true);
+$table->data[2][1] = print_select_groups(false, false, false, 'map_group_id', $map_group_id, '', __('All'), '0', true);
 
 $table->data[3][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
 $table->data[3][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);
@@ -383,7 +383,7 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td>' . __('Show agents from group') . ':</td>
-				<td colspan="3">' . print_select_from_sql('SELECT 0 as id_grupo, "'.__('All').'" as nombre FROM tgrupo UNION SELECT id_grupo, nombre FROM tgrupo', 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
+				<td colspan="3">' . print_select_groups(false, false, true, 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>

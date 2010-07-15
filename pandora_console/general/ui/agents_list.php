@@ -66,7 +66,7 @@ if ($show_filter_form) {
 			$data = array ();
 		$data = array ();
 		$data[] = __('Group');
-		$data[] = print_select (get_user_groups (false, $access),
+		$data[] = print_select_groups(false, $access, true,
 			'id_group', '', '', '', '', true);
 		if (! $odd)
 			array_push ($table->data, $data);

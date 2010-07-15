@@ -68,7 +68,7 @@ echo "<table cellpadding='4' cellspacing='4' class='databox' width='770'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 
-print_select (get_user_groups(), "ag_group", $ag_group, 'this.form.submit();', '', 0);
+print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();', '', 0);
 
 echo "<td valign='top'>
 <noscript>

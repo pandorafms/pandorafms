@@ -81,7 +81,7 @@ echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
 echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
 
 $groups = get_user_groups ();
-print_select ($groups, 'group_id', $group_id, 'this.form.submit()', '', '');
+print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '');
 
 echo '</td><td style="white-space:nowrap;">';
 

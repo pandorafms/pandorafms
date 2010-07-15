@@ -1011,4 +1011,18 @@ function return_graphtype ($id_module_type){
 
 	return "sparse";
 }
+
+/**
+ * Translate the key in assoc array to numeric offset.
+ * 
+ * @param array $array The array to return the offset.
+ * @param mixed $key The key to translate to offset.
+ * 
+ * @return mixed The offset or false is fail.
+ */
+function array_key_to_offset($array, $key) {
+	$offset = array_search($key, array_keys($array));
+	
+	return $offset;
+}
 ?>

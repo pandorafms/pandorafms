@@ -1,3 +1,24 @@
+2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: added function "array_key_to_offset" to resolve
+	the offset in associative array.
+	
+	* include/functions_db.php: added function "get_childrens" for get the
+	childrens of a group, "get_parents" for get the parents of a group (with the
+	flag propagate or not as you want). In function "check_acl" added the method
+	to scan groups that propagate flag in the branches. Added functions
+	"get_user_groups_tree_recursive" and "get_user_groups_tree" for extract the
+	groups as treefied list. Added in the function "get_db_all_rows_in_table"
+	added the parameter $order to get with ASC or DESC order the rows, by
+	default is ASC as mySQL. 
+	
+	* godmode/groups/configure_group.php: added the field of propagate to update
+	or creation a group.
+	
+	* godmode/groups/group_list.php: changed for the group trees the source code
+	for to show the table as dinamic table that if the row have branch, you can
+	click and desplegate children rows.
+
 2010-07-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql: added in the table tgrupo the column 'propagrate' for to

@@ -30,6 +30,7 @@ $name = "";
 $id_parent = 0;
 $alerts_disabled = 0;
 $custom_id = "";
+$propagate = 0;
 
 $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
@@ -42,6 +43,7 @@ if ($id_group) {
 		$alerts_disabled = $group["disabled"];
 		$id_parent = $group["parent"];
 		$custom_id = $group["custom_id"];
+		$propagate = $group["propagate"];
 	} else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
 		echo "</table>"; 
@@ -75,7 +77,8 @@ $table->data[2][0] = __('Parent');
 $sql = 'SELECT id_grupo, nombre FROM tgrupo ';
 if ($id_group)
 	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
-$table->data[2][1] = print_select_from_sql ($sql, 'id_parent', $id_parent, '', 'None', 0, true);
+$groups = get_user_groups();
+$table->data[2][1] = print_select($groups, 'id_parent', 0, '', '', '', true);
 $table->data[2][1] .= ' <span id="parent_preview">';
 if ($id_parent) {
 	echo '<img src="images/groups_small/'.get_group_icon ($id_parent).'.png" />';
@@ -85,8 +88,11 @@ echo'</span>';
 $table->data[3][0] = __('Alerts');
 $table->data[3][1] = print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
 
-$table->data[4][0] = __('Custom ID');
-$table->data[4][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+$table->data[4][0] = __('Propagate ACL') . print_help_tip (__("Propagate the same ACL security into the child subgroups."), true);
+$table->data[4][1] = print_checkbox('propagate', 1, $propagate, true);
+
+$table->data[5][0] = __('Custom ID');
+$table->data[5][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';
 print_table ($table);

@@ -159,7 +159,7 @@ $table->align = array ();
 $table->align[3] = 'center';
 $table->data = array ();
 
-$groups = get_user_groups_tree ($config['id_user'], "AR", false);
+$groups = get_user_groups_tree ($config['id_user'], "AR", true);
 $iterator = 0;
 
 foreach ($groups as $id_group => $group) {

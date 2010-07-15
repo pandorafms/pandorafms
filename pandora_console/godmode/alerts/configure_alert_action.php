@@ -60,7 +60,7 @@ $table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 $table->data[1][0] = __('Group');
 
 $groups = get_user_groups ();
-$table->data[1][1] = print_select ($groups, 'group', $group, '', '', 0, true);
+$table->data[1][1] = print_select_groups(false, "AR", true, 'group', $group, '', '', 0, true);
 
 $table->data[2][0] = __('Command');
 $table->data[2][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',

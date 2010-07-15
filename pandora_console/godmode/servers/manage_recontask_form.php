@@ -108,9 +108,7 @@ $table->data[6][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined l
 // Group
 $table->data[7][0] = "<b>".__('Group');
 $groups = get_user_groups (false, "AR", false);
-$table->data[7][1] = print_select ($groups, 'id_group', $id_group, '', '', 0, true);
-//$table->data[7][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre', "id_group", $id_group, '', 'All', 0, true);
-
+$table->data[7][1] = print_select_groups(false, "AR", false, 'id_group', $id_group, '', '', 0, true);
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));

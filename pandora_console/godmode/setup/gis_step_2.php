@@ -150,7 +150,7 @@ $table->data[0][0] = __('Connection Name') .print_help_tip (__('Descriptive name
 $table->data[0][1] = print_input_text ('name', $mapConnection_name, '', 30, 60, true);
 
 $table->data[1][0] = __("Group") .print_help_tip (__('Group that owns the connection'), true) . ":";
-$table->data[1][1] = print_select_from_sql('SELECT id_grupo, nombre FROM tgrupo', 'group', $mapConnection_group, '', __('All'), '0', true);
+$table->data[1][1] = print_select_groups(false, false, false, 'group', $mapConnection_group, '', __('All'), '0', true);
 
 $table->data[2][0] = __('Number of zoom levels') . ":";
 $table->data[2][1] = print_input_text ('num_levels_zoom', $mapConnection_numLevelsZoom, '', 4, 10, true);

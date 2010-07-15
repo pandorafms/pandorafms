@@ -92,7 +92,7 @@ $table->size[1] = '85%';
 
 $table->data = array ();
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'id_group', $id_group,
+$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
 	false, '', '', true);
 
 $table->data[1][0] = __('Agents');

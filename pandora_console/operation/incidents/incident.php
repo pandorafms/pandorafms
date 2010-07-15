@@ -209,7 +209,7 @@ print_select (get_users_info (), "usuario", $usuario, 'javascript:this.form.subm
 
 echo '</td></tr><tr><td colspan=3>';
 	
-print_select ($groups, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
+print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
 echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 

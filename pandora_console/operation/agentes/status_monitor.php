@@ -44,7 +44,7 @@ echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
 echo '<td valign="middle">';
 
-print_select (get_user_groups (), "ag_group", $ag_group, 'this.form.submit();',
+print_select_groups(false, "AR", true, "ag_group", $ag_group, 'this.form.submit();',
 	'', '0', false, false, false, 'w130', false, 'width:150px;');
 
 echo "</td>";

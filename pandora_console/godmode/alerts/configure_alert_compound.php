@@ -536,7 +536,7 @@ if ($step == 1) {
 	$table->size[3] = '40%';
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = print_select ($groups, 'search_id_group', $id_group,
+	$table->data[0][1] = print_select_groups(false, "AR", true, 'search_id_group', $id_group,
 		false, '', '', true);
 	$table->data[0][2] = __('Agent');
 	$table->data[0][3] = print_select (get_group_agents ($id_group, false, "none"),

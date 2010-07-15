@@ -43,7 +43,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url) {
 	$table->style = array ();
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = print_select (get_user_groups (), "ag_group", $id_group,
+	$table->data[0][1] = print_select_groups(false, "AR", true, "ag_group", $id_group,
 		'javascript:this.form.submit();', '', '', true);
 		
 	$alert_status_filter = array();

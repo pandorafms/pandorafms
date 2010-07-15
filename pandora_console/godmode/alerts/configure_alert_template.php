@@ -443,7 +443,7 @@ if ($step == 2) {
 
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = get_user_groups ();
-	$table->data[0][1] .= "&nbsp;".print_select ($groups, 'id_group', $id_group, '', '', 0, true);
+	$table->data[0][1] .= "&nbsp;".print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
 
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  print_textarea ('description', 10, 30,

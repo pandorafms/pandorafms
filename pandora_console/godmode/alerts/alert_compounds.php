@@ -94,7 +94,7 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'id_group', $id_group, false, '',
+$table->data[0][1] = print_select_groups(0, "LM", true, 'id_group', $id_group, false, '',
 	'', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="agent_loading" class="invisible">';

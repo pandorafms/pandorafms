@@ -58,7 +58,7 @@ $table->size[3] = '35%';
 /* Source selection */
 $table->id = 'source_table';
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select ($groups, 'source_id_group', $source_id_group,
+$table->data[0][1] = print_select_groups(false, "AR", true, 'source_id_group', $source_id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="source_agent_loading" class="invisible">';

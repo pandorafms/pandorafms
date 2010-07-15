@@ -103,7 +103,7 @@ echo ">";
 
 $group_select = get_user_groups ($config['id_user']);
 echo "<td><b>".__('Group')."</b></td><td>" .
-	print_select ($group_select, 'graph_id_group', $id_group, '', '', '', true) .
+	print_select_groups($config['id_user'], "AR", true, 'graph_id_group', $id_group, '', '', '', true) .
 	"</td></tr>";
 echo "<tr>";
 echo "<td class='datos2'><b>".__('Description')."</b></td>";

@@ -89,7 +89,7 @@ if (isset ($_GET["new_msg"])) { //create message
 		
 	print_select ($users, "dest_user", $dest_user, '', __('-Select user-'), false, false, false, '', false);
 	echo ' - '.__('OR').' - ';
-	print_select ($groups, "dest_group", $dest_group, '', __('-Select group-'), false, false, false, '', false);
+	print_select_groups($config["id_user"], "AR", true, "dest_group", $dest_group, '', __('-Select group-'), false, false, false, '', false);
 	
 	echo '</td></tr><tr><td class="datos">'.__('Subject').':</td><td class="datos">';
 	print_input_text ("subject", $subject, '', 50, 70, false);

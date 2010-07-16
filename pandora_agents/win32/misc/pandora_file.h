@@ -54,6 +54,7 @@ namespace Pandora_File {
 	bool   fileExists (const string filename);
 	int    readFile   (const string filepath, string &result);
 	int    readBinFile (const string filepath, char **buffer);
+	int	   removeDir (const string filepath);
 	int   removeFile (const string filename);
 	void   writeFile  (const string filename, const string data);
 	void   writeBinFile (const string filepath, const char *buffer, int size);

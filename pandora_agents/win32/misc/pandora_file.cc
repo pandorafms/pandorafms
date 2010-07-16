@@ -154,7 +154,7 @@ Pandora_File::removeDir (const string filepath) {
 	
 	/*Open the directory*/
 	dir = opendir (filepath.c_str ());
-	
+
 	/*If not open*/
 	if (dir == NULL) {
 		/**If not exists*/
@@ -207,6 +207,9 @@ Pandora_File::removeDir (const string filepath) {
 	if (rmdir (filepath.c_str ()) == -1) {
 		return DELETE_ERROR;
 	}	
+
+	/*Close dir oppened*/
+	closedir(dir);
 	
 	return 0;
 }

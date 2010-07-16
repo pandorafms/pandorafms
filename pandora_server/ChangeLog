@@ -1,3 +1,7 @@
+2010-07-16  Junichi Satoh <junichi@rworks.jp>
+
+	* FreeBSD/pandora_server.conf: Added snmptrapd file path for FreeBSD.
+
 2010-07-14  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Core.pm

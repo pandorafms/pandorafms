@@ -1,3 +1,7 @@
+2010-07-16  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* operation/incidents/incident.php: Put create button on the right.
+
 2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: fixed typo in the tip.

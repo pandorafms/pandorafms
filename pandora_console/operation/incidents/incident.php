@@ -322,9 +322,9 @@ if ($count < 1) {
 	echo '</form>';
 	unset ($table);
 }
-
+	echo '<br><br>';
 if (give_acl ($config["id_user"], 0, "IW")) {
-	echo '<div style="text-align:right; float:right; padding-right: 30px;">';
+	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
 	echo '<form method="post" action="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 	print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
 	echo '</form>';

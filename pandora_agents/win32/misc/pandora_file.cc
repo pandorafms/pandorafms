@@ -164,10 +164,16 @@ Pandora_File::removeDir (const string filepath) {
 			/*If its a file, delete it*/
 			if(errno == ENOTDIR) {
 				if (remove (filepath.c_str ()) == -1) {
+					
+					/*Close dir oppened*/
+					closedir(dir);	
 					return DELETE_ERROR;
 				}			
 				return 0;
 			} else {
+				
+				/*Close dir oppened*/
+				closedir(dir);
 				return DELETE_ERROR;
 			}
 		}
@@ -187,13 +193,20 @@ Pandora_File::removeDir (const string filepath) {
 			case S_IFDIR:  
 				/*If tmp is a folder, recursive delete*/
 				if ( (strcmp(dir_content->d_name,".") != 0) && (strcmp(dir_content->d_name,"..") != 0)){
-					removeDir(tmp);
+					if( removeDir(tmp) == DELETE_ERROR ) {
+						
+						/*Close dir oppened*/
+						closedir(dir);
+						return DELETE_ERROR;
+					}
 				}
 				
 				break;
 			default:
 				/*If tmp is a file, it will be deleted*/
 				if (remove (tmp.c_str ()) == -1) {
+					/*Close dir oppened*/
+					closedir(dir);
 					return DELETE_ERROR;
 				}						
 				break;
@@ -205,6 +218,8 @@ Pandora_File::removeDir (const string filepath) {
 	
 	/*When the folder is empty, delete the folder*/
 	if (rmdir (filepath.c_str ()) == -1) {
+		/*Close dir oppened*/
+		closedir(dir);
 		return DELETE_ERROR;
 	}	
 

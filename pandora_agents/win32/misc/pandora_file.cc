@@ -23,6 +23,11 @@
 #include <iostream>
 #include <stdio.h>
 #include <windows.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+
 
 using namespace std;
 
@@ -120,17 +125,90 @@ Pandora_File::readBinFile (const string filepath, char **buffer) {
 }
 
 /**
- * Delete a file from a directory.
+ * Delete a file or a directory recursively.
  *
- * @param filepath Path of the file to delete.
+ * @param filepath Path of the file or directory to delete.
  *
- * @exception Delete_Error if the file could not be deleted.
+ * @return non zero if the file could not be deleted.
  */
 int
 Pandora_File::removeFile (const string filepath) {
 	if (remove (filepath.c_str ()) == -1) {
 		 return DELETE_ERROR;
 	}
+}
+
+/**
+ * Delete a directory with all its content.
+ *
+ * @param filepath Path of the directory to delete.
+ *
+ * @return Delete_Error if the file could not be deleted.
+ */
+int
+Pandora_File::removeDir (const string filepath) {
+	DIR *dir;
+	struct dirent *dir_content;
+	struct stat file;
+	string tmp;
+	
+	/*Open the directory*/
+	dir = opendir (filepath.c_str ());
+	
+	/*If not open*/
+	if (dir == NULL) {
+		/**If not exists*/
+		if(errno == ENOENT) {
+			return 0;
+		} else {
+			/*If its a file, delete it*/
+			if(errno == ENOTDIR) {
+				if (remove (filepath.c_str ()) == -1) {
+					return DELETE_ERROR;
+				}			
+				return 0;
+			} else {
+				return DELETE_ERROR;
+			}
+		}
+	}
+	
+	/*If open*/
+	/*Read the directory looking for files and folders*/
+	dir_content = readdir(dir);
+	
+	while (dir_content != NULL) {
+		
+		string tmp = filepath+"\\"+dir_content->d_name;
+		
+		stat(tmp.c_str(),&file);
+
+        switch (file.st_mode & S_IFMT) {
+			case S_IFDIR:  
+				/*If tmp is a folder, recursive delete*/
+				if ( (strcmp(dir_content->d_name,".") != 0) && (strcmp(dir_content->d_name,"..") != 0)){
+					removeDir(tmp);
+				}
+				
+				break;
+			default:
+				/*If tmp is a file, it will be deleted*/
+				if (remove (tmp.c_str ()) == -1) {
+					return DELETE_ERROR;
+				}						
+				break;
+		}
+				
+		/*Next item*/
+		dir_content = readdir(dir);	
+	}
+	
+	/*When the folder is empty, delete the folder*/
+	if (rmdir (filepath.c_str ()) == -1) {
+		return DELETE_ERROR;
+	}	
+	
+	return 0;
 }
 
 /**

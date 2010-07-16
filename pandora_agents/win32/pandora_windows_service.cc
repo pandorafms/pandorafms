@@ -591,6 +591,215 @@ Pandora_Windows_Service::copyLocalDataFile (string remote_path,
     }
 }
 
+int
+Pandora_Windows_Service::unzipCollection(string zip_path, string dest_dir) {
+	string	unzip_cmd, dest_cmd;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;
+	mode_t mode;
+	DWORD rc;
+	
+	/*Delete dest directory*/
+	Pandora_File::removeDir(dest_dir);
+
+	/* Build the command to create destination diectory*/
+	rc = mkdir (dest_dir.c_str());
+	
+	if (rc != 0) {
+		pandoraLog ("Pandora_Windows_Service::unzipCollection: Can not create dir %s", dest_dir.c_str());
+		return -1;
+	}
+	
+	/* Build the command to launch the Tentacle client */
+	unzip_cmd = "unzip.exe \"" + zip_path + "\" -d \"" + dest_dir + "\"";
+	
+	ZeroMemory (&si, sizeof (si));
+	ZeroMemory (&pi, sizeof (pi));
+	if (CreateProcess (NULL , (CHAR *)unzip_cmd.c_str (), NULL, NULL, FALSE,
+	    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+		return -1;
+	}
+
+	/* Get the return code of the tentacle client*/
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    GetExitCodeProcess (pi.hProcess, &rc);
+    
+	if (rc != 0) {
+		CloseHandle (pi.hProcess);
+		pandoraLog ("Pandora_Windows_Service::unzipCollection: Can not unzip file %s", zip_path.c_str());
+		return -1;
+	}
+
+	CloseHandle (pi.hProcess);
+	return 0;	
+}
+
+void
+Pandora_Windows_Service::checkCollections () {
+	
+	int flag, i;
+	char *coll_md5 = NULL, *server_coll_md5 = NULL;
+	string collection_name, collections_dir, collection_md5, tmp;
+	string collection_zip, install_dir, temp_dir, dest_dir, path, env;
+
+	/*Get collections directory*/
+	install_dir = Pandora::getPandoraInstallDir ();
+	collections_dir = install_dir+"collections\\";
+	
+	/* Get temporal directory */
+	temp_dir = conf->getValue ("temporal");
+	if (temp_dir[temp_dir.length () - 1] != '\\') {
+		temp_dir += "\\";
+	}
+
+	/*Set iterator in the firs collection*/
+	conf->goFirstCollection();
+	
+	while (! conf->isLastCollection()) {
+		
+		collection_name = conf->getCurrentCollection();	
+		collection_zip = collection_name+".zip";
+		collection_md5 = collection_name + ".md5";
+		tmp = collections_dir+collection_md5;
+			
+		/*Reading local collection md5*/
+		try {
+			if (Pandora_File::readBinFile (tmp, &coll_md5) < 32) {
+				pandoraLog ("Pandora_Windows_Service::checkCollection: Invalid remote md5", tmp.c_str());
+				if (coll_md5 != NULL) {
+					delete[] coll_md5;
+				}		
+				return;
+			}
+		} catch (...) {
+			/*Getting new md5*/
+			try {				
+				/*Downloading md5 file*/
+				recvDataFile (collection_md5);
+				
+				/*Reading new md5 file*/
+				tmp = temp_dir + collection_md5;
+				
+				if (Pandora_File::readBinFile (tmp, &coll_md5) < 32) {
+					pandoraLog ("Pandora_Windows_Service::checkCollection: Invalid remote md5", tmp.c_str());
+					if (coll_md5 != NULL) {
+						delete[] coll_md5;
+					}		
+					return;
+				}
+				
+				Pandora_File::removeFile (tmp);
+				
+				/* Save new md5 file */
+				tmp = collections_dir + collection_md5;
+				Pandora_File::writeBinFile (tmp, coll_md5, 32);
+				
+			} catch(...) {
+				pandoraLog ("Pandora_Windows_Service::checkCollection: Can not download %s", collection_md5.c_str());
+				return;
+			}
+			
+			/*Getting new zipped collection*/
+			try {
+				/*Downloading zipped collection*/
+				recvDataFile (collection_zip);
+				
+				/*Uncompress zipped collection*/
+				tmp = temp_dir + collection_zip;
+				dest_dir = collections_dir + collection_name;
+				unzipCollection(tmp,dest_dir);
+
+				/*Add the collection directory to the path*/
+				tmp = collections_dir + collection_name;
+				path = getenv ("PATH");
+				env = "PATH=" + path + ";" + tmp;
+				putenv (env.c_str ());		
+				
+			} catch (...) {
+				pandoraLog ("Pandora_Windows_Service::checkCollection: Can not download %s", collection_zip.c_str());
+				return;	
+			}
+			
+			conf->goNextCollection();		
+			continue;
+		}
+		
+		/*Reading server collection md5*/
+		try {
+			
+			recvDataFile(collection_md5);
+			tmp = temp_dir+collection_md5;
+			if (Pandora_File::readBinFile (tmp, &server_coll_md5) < 32) {
+				pandoraLog ("Pandora_Windows_Service::checkCollection: Invalid remote md5", tmp.c_str());
+				if (server_coll_md5 != NULL) {
+					delete[] server_coll_md5;
+				}		
+				return;
+			}
+			Pandora_File::removeFile (tmp);	
+			
+		} catch (...) {
+			pandoraLog ("Pandora_Windows_Service::checkCollection: Can not download %s", collection_md5.c_str());
+			return;		
+		}
+		
+		/*Check both md5*/
+		flag = 0;
+		for (i = 0; i < 32; i++) {
+			if (coll_md5[i] != server_coll_md5[i]) {
+				flag = 1;
+				break;
+			}
+		}
+		
+		/*If the two md5 are equals, exit*/
+		if (flag == 0) {
+			return;
+		}
+		
+		pandoraLog("Pandora_Windows_Service::checkCollections: Collection %s has changed", collection_md5.c_str ());
+					
+		/*Getting new zipped collection*/
+		try {
+			/*Downloading zipped collection*/
+			recvDataFile (collection_zip);
+			
+			/*Uncompress zipped collection*/
+			tmp = temp_dir + collection_zip;
+			dest_dir = collections_dir + collection_name;
+			unzipCollection(tmp,dest_dir);
+
+			/*Add the collection directory to the path*/
+				/*Add the collection directory to the path*/
+				tmp = collections_dir + collection_name;
+				path = getenv ("PATH");
+				env = "PATH=" + path + ";" + tmp;
+				putenv (env.c_str ());		
+					
+		} catch (...) {
+			pandoraLog ("Pandora_Windows_Service::checkCollection: Can not download %s", collection_zip.c_str());
+			return;	
+		}
+		
+		/* Save new md5 file */
+		tmp = collections_dir + collection_md5;
+		Pandora_File::writeBinFile (tmp, server_coll_md5, 32);
+		
+		/*Free coll_md5*/
+		if (coll_md5 != NULL) {
+			delete[] coll_md5;
+		}
+		
+		/*Free server_coll_md5*/
+		if (server_coll_md5 != NULL) {
+			delete[] server_coll_md5;
+		}
+		
+		/*Go to next collection*/		
+		conf->goNextCollection();
+	}
+}
+
 void
 Pandora_Windows_Service::checkCollections () {
 	

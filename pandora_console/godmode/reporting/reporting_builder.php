@@ -254,6 +254,9 @@ switch ($action) {
 	case 'delete':
 		$idItem = get_parameter('id_item');
 		
+		$report = get_db_row_filter('treport', array('id_report' => $idReport));
+		$reportName = $report['name'];
+		
 		$resultOperationDB = process_sql_delete('treport_content_sla_combined', array('id_report_content' => $idItem));
 		
 		if ($resultOperationDB !== false) {

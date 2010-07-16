@@ -1,5 +1,11 @@
 2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/networkmap.php: fixed the pass to parameters between
+	fullscreen and windowed mode.
+	Fixes: #3013769
+
+2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/reporting/reporting_builder.php: fixed lost name of report when
 	delete any element of this element.
 	Fixes: #3025352

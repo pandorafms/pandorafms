@@ -165,15 +165,11 @@ Pandora_File::removeDir (const string filepath) {
 			if(errno == ENOTDIR) {
 				if (remove (filepath.c_str ()) == -1) {
 					
-					/*Close dir oppened*/
-					closedir(dir);	
 					return DELETE_ERROR;
 				}			
 				return 0;
 			} else {
 				
-				/*Close dir oppened*/
-				closedir(dir);
 				return DELETE_ERROR;
 			}
 		}

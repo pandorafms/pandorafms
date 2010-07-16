@@ -1,3 +1,8 @@
+2010-07-16  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Fixed the default data inserting the
+	new colum of tgrupo "propagate"
+
 2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fixed the pass to parameters between

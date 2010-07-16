@@ -39,16 +39,15 @@ $regen = (int) get_parameter ('regen',1); // Always regen by default
 $font_size = (int) get_parameter ('font_size', 12);
 $group = (int) get_parameter ('group', 0);
 $center = (int) get_parameter ('center', 0);
-
 /* Main code */
 
 
 if ($pure == 1) {
-	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0&layout='.$layout.'">';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=0&layout='.$layout.'&nooverlap='.$nooverlap.'&simple='.$simple.'&ranksep='.$ranksep.'&regen='.$regen.'&font_size='.$font_size.'&group='.$group.'">';
 	$onheader .= print_image ("images/normalscreen.png", true, array ('title' => __('Normal screen'), 'alt' => __('Normal screen')));
 	$onheader .= '</a>';
 } else {
-	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1&layout='.$layout.'">';
+	$onheader = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;pure=1&layout='.$layout.'&nooverlap='.$nooverlap.'&simple='.$simple.'&ranksep='.$ranksep.'&regen='.$regen.'&font_size='.$font_size.'&group='.$group.'">';
 	$onheader .= print_image ("images/fullscreen.png", true, array ('title' => __('Full screen'), 'alt' => __('Normal screen')));
 	$onheader .= '</a>';
 }

@@ -1,5 +1,10 @@
 2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/gis_maps/configure_gis_map.php: fixed typo in the tip.
+	Fixes: #3029895
+
+2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: added the function "print_select_groups" to
 	print the field select box for groups with tree style.
 	

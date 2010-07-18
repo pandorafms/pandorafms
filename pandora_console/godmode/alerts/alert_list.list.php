@@ -169,7 +169,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 }
 $table->head[5] = __('Actions');
 $table->head[6] = __('Status');
-$table->head[7] = '';
+$table->head[7] = __('Delete');
+
+$table->valign[6] = 'middle';
+$table->align[6] = 'center';
+$table->align[7] = 'center';
 
 $table->data = array ();
 
@@ -304,7 +308,7 @@ foreach ($simple_alerts as $alert) {
 		$title = __('Alert not fired');
 	}
 	
-	$data[6] = "<center>" . print_status_image($status, $title, true) . "</center>";
+	$data[6] = print_status_image($status, $title, true);
 	
 	$data[7] = '<form class="delete_alert_form" method="post" style="display: inline;">';
 	

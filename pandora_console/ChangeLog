@@ -1,15 +1,23 @@
+2010-07-18  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* operation/incidents/incident_detail.php: Change Add button to links.
+
+	* godmode/alerts/alert_list.list.php: Centered images.
+
+	* godmode/alerts/configure_alert_action: Added link to create command.
+
 2010-07-16  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql: Fixed the default data inserting the
 	new colum of tgrupo "propagate"
 
-2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/networkmap.php: fixed the pass to parameters between
 	fullscreen and windowed mode.
 	Fixes: #3013769
 
-2010-07-15  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-16  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/reporting_builder.php: fixed lost name of report when
 	delete any element of this element.

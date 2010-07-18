@@ -187,13 +187,13 @@ echo "<script type=\"text/javascript\">
 	$(document).ready(function() {
 		$('#file_control').hide();
 		$('#add_note').hide();
-		$('input#submit-attachment').click(function() {
-			$('#submit-attachment').fadeOut('fast');
+		$('a.attachment').click(function() {
+			$('a.attachment').fadeOut('fast');
 			$('#file_control').slideDown('slow');
 			return false;
 		});
-		$('input#submit-note_control').click(function() {
-			$('#submit-note_control').fadeOut('fast');
+		$('a.note_control').click(function() {
+			$('a.note_control').fadeOut('fast');
 			$('#add_note').slideDown('slow');
 			return false;
 		});
@@ -306,9 +306,13 @@ if (isset ($id_inc)) {
 	// ********************************************************************
 	
 	echo '<div>';
-	print_submit_button (__('Add note'), "note_control", false, 'class="sub next"');
+
+	echo '<a class="note_control" href="#">';
+	echo print_image ('images/add.png', true);
+	echo __('Add note');
+	echo '</a>';
 	echo '</div><div>';
-	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'">';
+	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'"><h3>'.__('Add note').'</h3>';
 	echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">
 		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
@@ -339,7 +343,7 @@ if (isset ($id_inc)) {
 	}
 	
 	if (!empty ($table->data)) {
-		echo "<h3>".__('Notes attached to incident').'<h3>';
+		echo "<h3>".__('Notes attached to incident').'</h3>';
 		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
 		print_table ($table);
 		echo '</form>';
@@ -395,14 +399,19 @@ if (isset ($id_inc)) {
 
 	// Upload control
 	if ((give_acl($config["id_user"], $id_grupo, "IW")==1)) {
+
 		echo '<div>';
-		print_submit_button (__('Add attachment'), "attachment", false, 'class="sub next"');
+		echo '<a class="attachment" href="#">';
+		echo print_image ('images/add.png', true);
+		echo __('Add attachment');
+		echo '</a>';
 		echo '</div>';
-		echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
+
+		echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h3>'.__('Add attachment').'</h3>';
 		echo '<table cellpadding="4" cellspacing="3" class="databox" width="400">
 			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
 			<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>
-			<tr><td rowspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
+			<tr><td colspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
 			</table></form></div>';
 	}
 }

@@ -65,6 +65,11 @@ $table->data[1][1] = print_select_groups(false, "AR", true, 'group', $group, '',
 $table->data[2][0] = __('Command');
 $table->data[2][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
+$table->data[2][1] .= ' ';
+$table->data[2][1] .= print_image ('images/add.png', true);
+$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
+$table->data[2][1] .= __('Create Command');
+$table->data[2][1] .= '</a>';
 
 $table->data[3][0] = __('Field 1');
 $table->data[3][1] = print_input_text ('field1', $field1, '', 35, 255, true);

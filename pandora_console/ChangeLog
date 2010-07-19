@@ -1,3 +1,12 @@
+2010-07-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: in function "get_agents" added the parameter
+	$order to order list of agents.
+	
+	* operation/agentes/estado_agente.php: added icons for order by columns and
+	source code for management this ordenation by Name, Os, Interval, Group and
+	Last Contact. 
+	
 2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/status_monitor.php, godmode/groups/group_list.php:

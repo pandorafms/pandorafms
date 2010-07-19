@@ -68,6 +68,8 @@ if (is_ajax ()) {
 // Take some parameters (GET)
 $group_id = get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
+$offset = get_parameter('offset', 0);
+$refr = get_parameter('refr', 0);
 
 print_page_header ( __("Agent detail"), "images/bricks.png", false, "agent_status");
 
@@ -97,8 +99,101 @@ echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
 
 if ($search != ""){
 	$filter = array ("string" => '%'.$search.'%');
-} else {
+}
+else {
 	$filter = array ();
+}
+
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+
+$selected = 'border: 1px solid black;';
+$selectNameUp = '';
+$selectNameDown = '';
+$selectOsUp = '';
+$selectOsDown = '';
+$selectIntervalUp = '';
+$selectIntervalDown = '';
+$selectGroupUp = '';
+$selectGroupDown = '';
+$selectLastContactUp = '';
+$selectLastContactDown = '';
+$order = null;
+
+switch ($sortField) {
+	case 'name':
+		switch ($sort) {
+			case 'up':
+				$selectNameUp = $selected;
+				$order = array('field' => 'nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectNameDown = $selected;
+				$order = array('field' => 'nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'os':
+		switch ($sort) {
+			case 'up':
+				$selectOsUp = $selected;
+				$order = array('field' => 'id_os', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectOsDown = $selected;
+				$order = array('field' => 'id_os', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'interval':
+		switch ($sort) {
+			case 'up':
+				$selectIntervalUp = $selected;
+				$order = array('field' => 'intervalo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectIntervalDown = $selected;
+				$order = array('field' => 'intervalo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'group':
+		switch ($sort) {
+			case 'up':
+				$selectGroupUp = $selected;
+				$order = array('field' => 'id_grupo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectGroupDown = $selected;
+				$order = array('field' => 'id_grupo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'last_contact':
+		switch ($sort) {
+			case 'up':
+				$selectLastContactUp = $selected;
+				$order = array('field' => 'ultimo_contacto', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectLastContactDown = $selected;
+				$order = array('field' => 'ultimo_contacto', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		$selectNameUp = $selected;
+		$selectNameDown = '';
+		$selectOsUp = '';
+		$selectOsDown = '';
+		$selectIntervalUp = '';
+		$selectIntervalDown = '';
+		$selectGroupUp = '';
+		$selectGroupDown = '';
+		$selectLastContactUp = '';
+		$selectLastContactDown = '';
+		$order = array('field' => 'nombre', 'order' => 'ASC');
+		break;
 }
 
 // Show only selected groups	
@@ -130,14 +225,17 @@ if (! empty ($agent_names)) {
 			'id_grupo',
 			'id_os',
 			'ultimo_contacto',
-			'intervalo'));}
+			'intervalo'),
+		'AR',
+		$order);
+}
 
 if (empty ($agents)) {
 	$agents = array ();
 }
 
 // Prepare pagination
-pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search)));
+pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
 
 // Show data.
 $table->cellpadding = 4;
@@ -146,14 +244,24 @@ $table->width = "98%";
 $table->class = "databox";
 
 $table->head = array ();
-$table->head[0] = __('Agent');
-$table->head[1] = __('OS');
-$table->head[2] = __('Interval');
-$table->head[3] = __('Group');
+$table->head[0] = __('Agent'). ' ' .
+	'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+	'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+$table->head[1] = __('OS'). ' ' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=os&sort=up"><img src="images/sort_up.png" style="' . $selectOsUp . '" /></a>' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=os&sort=down"><img src="images/sort_down.png" style="' . $selectOsDown . '" /></a>';
+$table->head[2] = __('Interval'). ' ' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
+$table->head[3] = __('Group'). ' ' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=group&sort=up"><img src="images/sort_up.png" style="' . $selectGroupUp . '" /></a>' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=group&sort=down"><img src="images/sort_down.png" style="' . $selectGroupDown . '" /></a>';
 $table->head[4] = __('Modules');
 $table->head[5] = __('Status');
 $table->head[6] = __('Alerts');
-$table->head[7] = __('Last contact');
+$table->head[7] = __('Last contact'). ' ' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
+		'<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=' . $refr . '&offset=' . $offset . '&group_id=' . $group_id . '&search=' . $search . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
 
 $table->align = array ();
 $table->align[1] = "center";
@@ -239,6 +347,7 @@ foreach ($agents as $agent) {
 
 if (!empty ($table->data)) {
 	print_table ($table);
+	pagination ($total_agents, get_url_refresh (array ('group_id' => $group_id, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort)));
 	unset ($table);
 } else {
 	echo '<div class="nf">'.__('There are no agents included in this group').'</div>';

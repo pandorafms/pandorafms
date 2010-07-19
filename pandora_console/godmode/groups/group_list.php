@@ -89,11 +89,17 @@ if ($create_group) {
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
-
-	$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled, custom_id) 
-			VALUES ("%s", "%s", %d, %d, "%s")',
-			$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled, $custom_id);
-	$result = mysql_query ($sql);
+	
+	/*Check if name field is empty*/
+	if ($name != "") {
+		$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled, custom_id) 
+				VALUES ("%s", "%s", %d, %d, "%s")',
+				$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled, $custom_id);
+		$result = mysql_query ($sql);
+	} else {
+		$result = false;
+	}
+	
 	if ($result) {
 		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
 	} else {
@@ -110,11 +116,17 @@ if ($update_group) {
 	$custom_id = (string) get_parameter ('custom_id');
 	$propagate = (bool) get_parameter('propagate');
 
-	$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-			icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d
-			WHERE id_grupo = %d',
-			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $id_group);
-	$result = process_sql ($sql);
+	/*Check if name field is empty*/
+	if( $name != "") {	
+		$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
+				icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d
+				WHERE id_grupo = %d',
+				$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $id_group);
+		$result = process_sql ($sql);
+	} else {
+		$result = false;
+	}
+	
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
 	} else {

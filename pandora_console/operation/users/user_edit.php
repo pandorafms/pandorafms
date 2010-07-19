@@ -156,7 +156,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
-$table->head[1] = __('Group name');
+$table->head[1] = __('Group');
 
 $table->data = array ();
 
@@ -167,7 +167,7 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data[0] = '<b>'.get_profile_name ($profile["id_perfil"]).'</b>';
-	$data[1] = '<b>'.get_group_name ($profile["id_grupo"], true).'</b>';
+	$data[1] = print_group_icon ($profile["id_grupo"], true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile["id_grupo"], true).'</a>';
 	array_push ($table->data, $data);
 }
 

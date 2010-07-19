@@ -1,5 +1,9 @@
 2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
 
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Updated year.
+
+2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
+
 	* operation/users/user_edit.php, godmode/users/configure_user.php: Use
 	icon and name in groups. Solved link problem due to user list last commit.
 

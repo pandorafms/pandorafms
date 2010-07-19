@@ -1,9 +1,17 @@
+2010-07-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/users/user.php, godmode/users/user_list.php: added the default
+	order to columns.
+	
+	* godmode/agentes/modificar_agente.php: added the source code to order by
+	Name, OS or group column in the list agents.
+
 2010-07-19  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Fixed an index error of
 	groups array.
 
-2010-07-18  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-19  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/auth/mysql.php: added function "get_users" the check to $order
 	parameter if it is array, extract the field and order.

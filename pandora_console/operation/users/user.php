@@ -69,6 +69,15 @@ switch ($sortField) {
 				break;
 		}
 		break;
+	default:
+		$selectUserIDUp = '';
+		$selectUserIDDown = '';
+		$selectFullnameUp = $selected;
+		$selectFullnameDown = '';
+		$selectLastConnectUp = '';
+		$selectLastConnectDown = '';
+		$order = array('field' => 'fullname', 'order' => 'ASC');
+		break;
 }
 
 // Header

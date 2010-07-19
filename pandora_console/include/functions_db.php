@@ -1525,6 +1525,8 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 		}
 	}
 	
+	ksort($user_groups);
+	
 	return $user_groups;
 }
 

@@ -20,6 +20,8 @@ check_login ();
 $offset = (int) get_parameter ("offset");
 $group_id = (int) get_parameter ("group_id");
 $ag_group = get_parameter ("ag_group_refresh", -1);
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
 
 if ($ag_group == -1 )
 	$ag_group = (int) get_parameter ("ag_group", -1);
@@ -101,10 +103,64 @@ echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes
 
 echo "</td></tr></table>";
 
+$selected = 'border: 1px solid black;';
+$selectNameUp = '';
+$selectNameDown = '';
+$selectOsUp = '';
+$selectOsDown = '';
+$selectGroupUp = '';
+$selectGroupDown = '';
+switch ($sortField) {
+	case 'name':
+		switch ($sort) {
+			case 'up':
+				$selectNameUp = $selected;
+				$order = array('field' => 'nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectNameDown = $selected;
+				$order = array('field' => 'nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'os':
+		switch ($sort) {
+			case 'up':
+				$selectOsUp = $selected;
+				$order = array('field' => 'id_os', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectOsDown = $selected;
+				$order = array('field' => 'id_os', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'group':
+		switch ($sort) {
+			case 'up':
+				$selectGroupUp = $selected;
+				$order = array('field' => 'id_grupo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectGroupDown = $selected;
+				$order = array('field' => 'id_grupo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		$selectNameUp = $selected;
+		$selectNameDown = '';
+		$selectOsUp = '';
+		$selectOsDown = '';
+		$selectGroupUp = '';
+		$selectGroupDown = '';
+		$order = array('field' => 'nombre', 'order' => 'ASC');
+		break;
+}
+
 $search_sql = '';
 if ($search != ""){
 	$search_sql = " AND ( nombre COLLATE utf8_general_ci LIKE '%$search%' OR direccion LIKE '%$search%') ";
-} else {
 }
 
 // Show only selected groups    
@@ -120,15 +176,15 @@ if ($ag_group > 0) {
 		FROM tagente
 		WHERE id_grupo = %d
 		%s
-		ORDER BY nombre LIMIT %d, %d',
-		$ag_group, $search_sql, $offset, $config["block_size"]);
+		ORDER BY %s %s LIMIT %d, %d',
+		$ag_group, $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
 } else {
 
     // Admin user get ANY group, even if they doesnt exist
     if (check_acl ($config['id_user'], 0, "PM")){
 	    $sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 	    $total_agents = get_db_sql ($sql);
-	    $sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY nombre LIMIT %d, %d', $search_sql, $offset, $config["block_size"]);
+	    $sql = sprintf ('SELECT * FROM tagente WHERE 1=1 %s ORDER BY %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
     } else {
 
 	    $sql = sprintf ('SELECT COUNT(*)
@@ -143,25 +199,34 @@ if ($ag_group > 0) {
 		    FROM tagente
 		    WHERE id_grupo IN (%s)
 		    %s
-		    ORDER BY nombre LIMIT %d, %d',
+		    ORDER BY %s %s LIMIT %d, %d',
 		    implode (',', array_keys (get_user_groups ())),
-		    $search_sql, $offset, $config["block_size"]);
+		    $search_sql, $order['field'], $order['order'], $offset, $config["block_size"]);
    }
 }
 
 $agents = get_db_all_rows_sql ($sql);
 
 // Prepare pagination
-pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search", $offset);
+pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if ($agents !== false) {
 	
 	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='95%' class='databox'>";
-	echo "<th>".__('Agent name')."</th>";
+	echo "<th>".__('Agent name') . ' ' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+	echo "</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
-	echo "<th>".__('OS')."</th>";
-	echo "<th>".__('Group')."</th>";
+	echo "<th>".__('OS'). ' ' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up"><img src="images/sort_up.png" style="' . $selectOsUp . '" /></a>' .
+		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down"><img src="images/sort_down.png" style="' . $selectOsDown . '" /></a>';
+	echo "</th>";
+	echo "<th>".__('Group'). ' ' .
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=up"><img src="images/sort_up.png" style="' . $selectGroupUp . '" /></a>' .
+			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down"><img src="images/sort_down.png" style="' . $selectGroupDown . '" /></a>';
+		echo "</th>";
 	echo "<th>".__('Description')."</th>";
 	echo "<th>".__('Delete')."</th>";
 	$color=1;
@@ -248,11 +313,12 @@ if ($agents !== false) {
 			$offsetArg = $offset;
 		
 		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-		borrar_agente=".$agent["id_agente"]."&search=$search&offset=$offsetArg'";
+		borrar_agente=".$agent["id_agente"]."&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo "<img border='0' src='images/cross.png'></a></td>";
 	}
 	echo "</table>";
+	pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort", $offset);
 	echo "<table width='95%'><tr><td align='right'>";
 } else {
 	echo "<div class='nf'>".__('There are no defined agents')."</div>";

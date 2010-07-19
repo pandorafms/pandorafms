@@ -156,6 +156,7 @@ $table->head[1] = __('Icon');
 $table->head[2] = __('Alerts');
 $table->head[3] = __('Actions');
 $table->align = array ();
+$table->align[1] = 'center';
 $table->align[3] = 'center';
 $table->data = array ();
 

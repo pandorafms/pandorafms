@@ -132,7 +132,7 @@ $table->head[2] = __('Last contact') . ' ' .
 	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down"><img src="images/sort_down.png" style="' . $selectLastConnectDown . '" /></a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
-$table->head[5] = '';
+$table->head[5] = __('Delete');
 
 $table->align[2] = "center";
 $table->align[3] = "center";

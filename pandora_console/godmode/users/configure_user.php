@@ -293,8 +293,8 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
-$table->head[1] = __('Group name');
-$table->head[2] = '';
+$table->head[1] = __('Group');
+$table->head[2] = __('Action');
 $table->align[2] = 'center';
 
 $result = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $id);
@@ -306,7 +306,7 @@ foreach ($result as $profile) {
 	$data = array ();
 	
 	$data[0] = '<a href="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
-	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo'], True).'</a>';
+	$data[1] = print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo'], True).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= print_input_hidden ('delete_profile', 1, true);
 	$data[2] .= print_input_hidden ('id_user_profile', $profile['id_up'], true);

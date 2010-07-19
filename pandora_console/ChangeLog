@@ -1,3 +1,8 @@
+2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* operation/users/user_edit.php, godmode/users/configure_user.php: Use
+	icon and name in groups. Solved link problem due to user list last commit.
+
 2010-07-19  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* godmode/groups/group_list.php: fixed bug that allow create and update
@@ -12,7 +17,7 @@
 	* operation/agentes/estado_agente.php: added icons for order by columns and
 	source code for management this ordenation by Name, Os, Interval, Group and
 	Last Contact. 
-	
+
 2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/status_monitor.php, godmode/groups/group_list.php:

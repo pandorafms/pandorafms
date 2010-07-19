@@ -192,17 +192,22 @@ function get_user_info ($user) {
  * @return array An array of user information
  */
 function get_users ($order = "fullname", $filter = false, $fields = false) {
-	switch ($order) {
-	case "id_user":
-	case "registered":
-	case "last_connect":
-	case "fullname":
-		break;
-	default:
-		$order = "fullname";
+	if (is_array($order)) {
+		$filter['order'] = $order['field'] . ' ' . $order['order'];
 	}
-	
-	$filter['order'] = $order." ASC";
+	else {
+		switch ($order) {
+			case "registered":
+			case "last_connect":
+			case "fullname":
+				break;
+			default:
+				$order = "fullname";
+				break;
+		}
+		
+		$filter['order'] = $order." ASC";
+	}
 
 	
 	$output = array();

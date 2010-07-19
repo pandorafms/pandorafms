@@ -195,7 +195,7 @@ $table->head[5] = __('Status');
 $table->align[5] = "center";
 
 $table->head[6] = __('Graph');
-$table->align[6] = "left";
+$table->align[6] = "center";
 
 $table->head[7] = __('Data');
 $table->align[7] = "left";

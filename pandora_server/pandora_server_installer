@@ -200,7 +200,9 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		mkdir $PANDORA_SPOOL/data_in 2> /dev/null
 		mkdir $PANDORA_SPOOL/data_in/conf 2> /dev/null
 		mkdir $PANDORA_SPOOL/data_in/md5 2> /dev/null
+		chmod 770 $PANDORA_SPOOL/data_in/md5
 		mkdir $PANDORA_SPOOL/data_in/collections 2> /dev/null
+		chmod 770 $PANDORA_SPOOL/data_in/collections
 		mkdir $PANDORA_LOG 2> /dev/null	
 
 		echo "Giving proper permission to /var/spool/pandora"

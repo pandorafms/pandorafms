@@ -1,3 +1,8 @@
+2010-07-19  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_db.php: Fixed an index error of
+	groups array.
+
 2010-07-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/auth/mysql.php: added function "get_users" the check to $order

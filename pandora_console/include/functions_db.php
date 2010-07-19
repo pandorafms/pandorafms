@@ -1497,12 +1497,12 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 		
 	if ($returnAllGroup) { //All group
 		if ($returnAllColumns) {
-			$groups[0] = array('id_grupo' => 0, 'nombre' => __('All'),
+			$groups[] = array('id_grupo' => 0, 'nombre' => __('All'),
 				'icon' => 'world', 'parent' => 0, 'disabled' => 0,
 				'custom_id' => null, 'propagate' => 0); 
 		}
 		else {
-			$groups[0] = array('id_grupo' => 0, 'nombre' => __("All"));
+			$groups[] = array('id_grupo' => 0, 'nombre' => __("All"));
 		}
 	}
 	

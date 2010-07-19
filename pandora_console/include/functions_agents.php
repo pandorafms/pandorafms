@@ -265,10 +265,11 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
  * format_array_to_where_clause_sql()
  * @param array Fields to get.
  * @param string Access needed in the agents groups.
+ * @param array $order The order of agents, by default is upward for field nombre.
  * 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
-function get_agents ($filter = false, $fields = false, $access = 'AR') {
+function get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
@@ -307,6 +308,8 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
 		$fields[0] = "id_agente";
 		$fields[1] = "nombre";
 	}
+	
+	$filter['order'] = $order['field'] . ' ' . $order['order'];
 
 	return get_db_all_rows_filter ('tagente', $filter, $fields);
 }

@@ -1,3 +1,9 @@
+2010-07-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* DEBIAN/make_deb_package.sh,
+	  pandora_server_installer,
+	  pandora_server.spec: Create the collections directory.
+
 2010-07-19  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* util/tentacle_serverd: Fixed error in filter pattern, changed pattern

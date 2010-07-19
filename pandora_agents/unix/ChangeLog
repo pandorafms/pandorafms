@@ -1,3 +1,7 @@
+2010-07-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Added support for file collections.
+
 2010-07-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: changed the module cron configuration token to

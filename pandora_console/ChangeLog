@@ -1,5 +1,10 @@
 2010-07-19  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: fixed in the function "get_user_groups", order
+	the list of groups by id_grupo for to other external operations.
+
+2010-07-19  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/users/user.php, godmode/users/user_list.php: added the default
 	order to columns.
 	

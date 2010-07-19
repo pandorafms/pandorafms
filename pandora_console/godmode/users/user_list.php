@@ -25,6 +25,57 @@ if (! give_acl ($config['id_user'], 0, "UM")) {
 	exit;
 }
 
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+
+$selected = 'border: 1px solid black;';
+$selectUserIDUp = '';
+$selectUserIDDown = '';
+$selectFullnameUp = '';
+$selectFullnameDown = '';
+$selectLastConnectUp = '';
+$selectLastConnectDown = '';
+$order = null;
+
+switch ($sortField) {
+	case 'id_user':
+		switch ($sort) {
+			case 'up':
+				$selectUserIDUp = $selected;
+				$order = array('field' => 'id_user', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectUserIDDown = $selected;
+				$order = array('field' => 'id_user', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'fullname':
+		switch ($sort) {
+			case 'up':
+				$selectFullnameUp = $selected;
+				$order = array('field' => 'fullname', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectFullnameDown = $selected;
+				$order = array('field' => 'fullname', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'last_connect':
+		switch ($sort) {
+			case 'up':
+				$selectLastConnectUp = $selected;
+				$order = array('field' => 'fullname', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectLastConnectDown = $selected;
+				$order = array('field' => 'fullname', 'order' => 'DESC');
+				break;
+		}
+		break;
+}
+
 // Header
 print_page_header (__('User management').' &raquo; '.__('Users defined in Pandora'), "images/god3.png", false, "", true);
 
@@ -61,9 +112,15 @@ $table->data = array ();
 $table->align = array ();
 $table->size = array ();
 
-$table->head[0] = __('User ID');
-$table->head[1] = __('Name');
-$table->head[2] = __('Last contact');
+$table->head[0] = __('User ID') . ' ' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up"><img src="images/sort_up.png" style="' . $selectUserIDUp . '" /></a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down"><img src="images/sort_down.png" style="' . $selectUserIDDown . '" /></a>';
+$table->head[1] = __('Name') . ' ' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up"><img src="images/sort_up.png" style="' . $selectFullnameUp . '" /></a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down"><img src="images/sort_down.png" style="' . $selectFullnameDown . '" /></a>';
+$table->head[2] = __('Last contact') . ' ' . 
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up"><img src="images/sort_up.png" style="' . $selectLastConnectUp . '" /></a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down"><img src="images/sort_down.png" style="' . $selectLastConnectDown . '" /></a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
 $table->head[5] = '';
@@ -74,8 +131,8 @@ $table->align[5] = "center";
 $table->size[5] = 40;
 
 $info = array ();
-// Get users ordered by id_user
-$info = get_users ("id_user",array ('offset' => (int) get_parameter ('offset'),
+
+$info = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
 			'limit' => (int) $config['block_size']));
 			
 // Prepare pagination

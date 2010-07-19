@@ -1,3 +1,11 @@
+2010-07-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/auth/mysql.php: added function "get_users" the check to $order
+	parameter if it is array, extract the field and order.
+	
+	* operation/users/user.php, godmode/users/user_list.php: added posibility to
+	sort by columns ID User, Full name or Last Contanct.
+
 2010-07-18  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* operation/incidents/incident_detail.php: Change Add button to links.

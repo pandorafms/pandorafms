@@ -146,6 +146,9 @@ my %Parts = (
 	'__utimestamp__' => 0
 );
 
+# Collections
+my %Collections;
+
 ################################################################################
 # Print usage information and exit.
 ################################################################################
@@ -314,6 +317,14 @@ sub read_config (;$) {
 		# Module freedisk command redefinition		
 		} elsif ($line =~ /^\s*module_freedisk_cmd\s+(.+)$/) {
 			PART_CMDS->{$OS} = $1;
+		# Collection
+		} elsif ($line =~ /^\s*file_collection\s+(.+)$/) {
+			my $collection = $1;
+			
+			# Prevent path traversal attacks
+			if ($collection !~ m/(\.\.)|\//) {
+				$Collections{$collection} = 0;
+			}
 		# Configuration token
 		} elsif ($line =~ /^\s*(\S+)\s+(.*)$/) {
 			
@@ -433,7 +444,7 @@ FEOF1`
 	# Get the errorlevel
 	my $rc = $? >> 8;
 	if ($rc != 0) {
-		log_message ('error', "Error sending XML data file: $output");
+		log_message ('error', "Error retrieving file: $output");
 	}
 
 	return $rc;
@@ -444,7 +455,7 @@ FEOF1`
 ################################################################################
 sub check_remote_config () {
 
-	return unless ($Conf{'remote_config'} eq '1' && $Conf{'debug'} eq '0');
+	return unless ($Conf{'remote_config'} eq '1');
 
 	# Calculate the configuration file MD5 digest
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
@@ -477,9 +488,10 @@ sub check_remote_config () {
 	return if (recv_file ($RemoteConfFile) != 0);
 	log_message ('remote config', 'Configuration has changed!');
 
-	# Empty modules and plugins
+	# Empty modules, plugins and collections
 	@Modules = ();
 	@Plugins = ();
+	%Collections = ();
 
 	# Save the new configuration and reload it
 	move ("$Conf{'temporal'}/$RemoteConfFile", "$ConfDir/$ConfFile");
@@ -488,6 +500,50 @@ sub check_remote_config () {
 	# Log file may have changed
 	stop_log ();
 	start_log ();
+}
+
+################################################################################
+# Check and download collections.
+################################################################################
+sub check_collections () {
+
+	while (my ($collection, $in_path) = each (%Collections)) {
+		my $collection_file = $collection . ".zip";
+		my $collection_md5_file = $collection . ".md5";
+
+		# Add the collection directory to the PATH
+		if ($in_path == 0) {
+			$Collections{$collection} = 1;
+			$ENV{'PATH'} .= ":$ConfDir/collections/$collection";
+		}
+
+		# Get remote md5
+		next unless (recv_file ($collection_md5_file) == 0);
+		open (MD5_FILE, "< $Conf{'temporal'}/$collection_md5_file") || error ("Could not open file '$Conf{'temporal'}/$collection_md5_file' for reading: $!.");
+		my $remote_collection_md5 = <MD5_FILE>;
+		close (MD5_FILE);
+		unlink ("$Conf{'temporal'}/$collection_md5_file");
+
+		# Read local md5
+		my $local_collection_md5 = '';
+		if (defined (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file"))) {
+			$local_collection_md5 = <MD5_FILE>;
+			close MD5_FILE;
+		} else {
+			open (MD5_FILE, "> $ConfDir/collections/$collection_md5_file") || error ("Could not open file '$ConfDir/collections/$collection_md5_file' for writing: $!.");
+			print MD5_FILE "$remote_collection_md5";
+			close (MD5_FILE);
+		}
+
+		# Check for changes
+		$local_collection_md5 = $remote_collection_md5 unless defined ($local_collection_md5);
+		next if ($local_collection_md5 eq $remote_collection_md5);
+		
+		# Download and unzip
+		next unless (recv_file ($collection_file) == 0);
+		`rm -rf "$ConfDir/collections/$collection" 2>/dev/null && unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>/dev/null`;
+		unlink ("$Conf{'temporal'}/$collection_file");		
+	}
 }
 
 ###############################################################################
@@ -1040,6 +1096,9 @@ while (1) {
 
 	# Check for a new configuration
 	check_remote_config () unless ($Conf{'debug'} eq '1');
+
+	# Check file collections
+	check_collections () unless ($Conf{'debug'} eq '1');
 
 	my $xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
 	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .

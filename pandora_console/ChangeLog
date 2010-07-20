@@ -1,3 +1,9 @@
+2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/setup/gis_step_2.php: fixed when the spanish translation have a
+	problematic characters.
+	Fixes: #3029149
+
 2010-07-19  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Updated year.

@@ -109,8 +109,6 @@ sub pandora_snmptrapd {
 		# Skip already processed lines
 		readline SNMPLOGFILE for (1..$last_line);
 
-		my $trap2agent = enterprise_hook('snmp_get_trap2agent', [$dbh]);
-
 		# Main loop
 		while (1) {
 			while (my $line = <SNMPLOGFILE>) {
@@ -144,7 +142,7 @@ sub pandora_snmptrapd {
 				$custom_value = $data if ($custom_value eq '');
 
 				# Insert the trap into the DB
-				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $dbh]))) {
+				if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $self->getServerID (), $dbh]))) {
 					my $trap_id = db_insert ($dbh, 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
 											 $timestamp, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type);
 					logger ($pa_config, "Received SNMP Trap from $source", 4);
@@ -152,8 +150,6 @@ sub pandora_snmptrapd {
 					# Evaluate alerts for this trap
 					pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $oid, $custom_oid, $custom_value, $dbh);
 				}
-
-				enterprise_hook ('snmp_trap2agent', [$trap2agent, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $self->getServerID (), $dbh]);
 			}
 			
 			sleep ($pa_config->{'server_threshold'});

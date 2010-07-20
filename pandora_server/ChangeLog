@@ -1,5 +1,10 @@
 2010-07-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/SNMPServer.pm: Add extended information when saving
+	  an SNMP trap to a module.
+
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_server_installer: Delete the spool/pandora directory
 	  if no agent is installed on the same machine.
 

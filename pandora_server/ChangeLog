@@ -1,3 +1,10 @@
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server_installer: Set safer permissions for data_in/conf.
+
+	* util/pandora_db.pl: Fixed the setup password regular expression.
+	  Fixes bug #3026997.
+
 2010-07-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* DEBIAN/make_deb_package.sh,

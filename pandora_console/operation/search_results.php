@@ -34,9 +34,207 @@ else $searchTab = $config['search_category'];
 //INI SECURITY ACL
 if ((!$searchAgents) && ($searchTab == 'agents')) $searchTab = "users";
 
-if ((!$searchGraphs) && ($searchTab == 'graphs')) $searchTab = "users"; 
+if ((!$searchGraphs) && ($searchTab == 'graphs')) $searchTab = "users";
 if ((!$searchMaps) && ($searchTab == 'maps')) $searchTab = "users";
 //END SECURITY ACL
+
+$offset = get_parameter ('offset',0);
+$order = null;
+
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+switch ($searchTab) {
+	case 'agents':
+		$selectNameUp = '';
+		$selectNameDown = '';
+		$selectOsUp = '';
+		$selectOsDown = '';
+		$selectIntervalUp = '';
+		$selectIntervalDown = '';
+		$selectGroupUp = '';
+		$selectGroupDown = '';
+		$selectLastContactUp = '';
+		$selectLastContactDown = '';
+		
+		switch ($sortField) {
+			case 'name':
+				switch ($sort) {
+					case 'up':
+						$selectNameUp = $selected;
+						$order = array('field' => 'nombre', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectNameDown = $selected;
+						$order = array('field' => 'nombre', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'os':
+				switch ($sort) {
+					case 'up':
+						$selectOsUp = $selected;
+						$order = array('field' => 'id_os', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectOsDown = $selected;
+						$order = array('field' => 'id_os', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'interval':
+				switch ($sort) {
+					case 'up':
+						$selectIntervalUp = $selected;
+						$order = array('field' => 'intervalo', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectIntervalDown = $selected;
+						$order = array('field' => 'intervalo', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'group':
+				switch ($sort) {
+					case 'up':
+						$selectGroupUp = $selected;
+						$order = array('field' => 'id_grupo', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectGroupDown = $selected;
+						$order = array('field' => 'id_grupo', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'last_contact':
+				switch ($sort) {
+					case 'up':
+						$selectLastContactUp = $selected;
+						$order = array('field' => 'ultimo_contacto', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectLastContactDown = $selected;
+						$order = array('field' => 'ultimo_contacto', 'order' => 'DESC');
+						break;
+				}
+				break;
+			default:
+				$selectNameUp = $selected;
+				$selectNameDown = '';
+				$selectOsUp = '';
+				$selectOsDown = '';
+				$selectIntervalUp = '';
+				$selectIntervalDown = '';
+				$selectGroupUp = '';
+				$selectGroupDown = '';
+				$selectLastContactUp = '';
+				$selectLastContactDown = '';
+				$order = array('field' => 'nombre', 'order' => 'ASC');
+				break;
+		}
+		break;
+	case 'users':
+		$selectUserIDUp = '';
+		$selectUserIDDown = '';
+		$selectNameUp = '';
+		$selectNameDown = '';
+		$selectEmailUp = '';
+		$selectEmailDown = '';
+		$selectLastContactUp = '';
+		$selectLastContactDown = '';
+		$selectProfileUp = '';
+		$selectProfileDown = '';
+		
+		switch ($sortField) {
+			case 'id_user':
+				switch ($sort) {
+					case 'up':
+						$selectUserIDUp = $selected;
+						$order = array('field' => 'id_user', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectUserIDDown = $selected;
+						$order = array('field' => 'id_user', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'name':
+				switch ($sort) {
+					case 'up':
+						$selectNameUp = $selected;
+						$order = array('field' => 'fullname', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectNameDown = $selected;
+						$order = array('field' => 'fullname', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'email':
+				switch ($sort) {
+					case 'up':
+						$selectLastContactUp = $selected;
+						$order = array('field' => 'email', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectEmailDown = $selected;
+						$order = array('field' => 'email', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'last_contact':
+				switch ($sort) {
+					case 'up':
+						$selectLastContactUp = $selected;
+						$order = array('field' => 'last_connect', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectLastContactDown = $selected;
+						$order = array('field' => 'last_connect', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'last_contact':
+				switch ($sort) {
+					case 'up':
+						$selectLastContactUp = $selected;
+						$order = array('field' => 'last_connect', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectLastContactDown = $selected;
+						$order = array('field' => 'last_connect', 'order' => 'DESC');
+						break;
+				}
+				break;
+			case 'profile':
+				switch ($sort) {
+					case 'up':
+						$selectProfileUp = $selected;
+						$order = array('field' => 'is_admin', 'order' => 'ASC');
+						break;
+					case 'down':
+						$selectProfileDown = $selected;
+						$order = array('field' => 'is_admin', 'order' => 'DESC');
+						break;
+				}
+				break;
+			default:
+				$selectUserIDUp = '';
+				$selectUserIDDown = '';
+				$selectNameUp = '';
+				$selectNameDown = '';
+				$selectEmailUp = '';
+				$selectEmailDown = '';
+				$selectLastContactUp = '';
+				$selectLastContactDown = '';
+				$selectProfileUp = '';
+				$selectProfileDown = '';
+				
+				$order = array('field' => 'id_user', 'order' => 'ASC');
+				break;
+		}
+		break;
+}
 
 $agents = false;
 if ($searchTab == 'agents') {
@@ -47,6 +245,7 @@ if ($searchTab == 'agents') {
 					ON tgrupo.id_grupo = tagente.id_grupo
 			WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
 				tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'
+			ORDER BY " . $order['field'] . " " . $order['order'] . " 
 			LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 		$agents = process_sql($sql);
 		
@@ -70,6 +269,7 @@ if ($searchTab == 'users') {
 			lastname LIKE '%" . $stringSearchSQL . "%' OR
 			middlename LIKE '%" . $stringSearchSQL . "%' OR
 			email LIKE '%" . $stringSearchSQL . "%'
+		ORDER BY " . $order['field'] . " " . $order['order'] . " 
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$users = process_sql($sql);
 	
@@ -156,22 +356,6 @@ if (($config['search_category'] == 'all') || ($config['search_category'] == 'map
 /////////	INI MENU AND TABS /////////////
 
 $img_style = array ("class" => "top", "width" => 16);
-
-/*
-echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
-	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
-	print_image ("images/setup.png", false, $img_style);
-	echo '&nbsp; '.mb_substr (get_agent_name ($id_agente), 0, 21).'</a>';
-	echo "</li></ul></div>";
-
-	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
-	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-	print_image ("images/zoom.png", false, $img_style);
-	echo '&nbsp;'.__('View').'</a></li>';
-*/
-
-
-
 
 echo "
 <div id='menu_tab_frame_view'>
@@ -267,14 +451,24 @@ else {
 		$table->class = "databox";
 		
 		$table->head = array ();
-		$table->head[0] = __('Agent');
-		$table->head[1] = __('OS');
-		$table->head[2] = __('Interval');
-		$table->head[3] = __('Group');
+		$table->head[0] = __('Agent') . ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+		$table->head[1] = __('OS'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=up"><img src="images/sort_up.png" style="' . $selectOsUp . '" /></a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=down"><img src="images/sort_down.png" style="' . $selectOsDown . '" /></a>';
+		$table->head[2] = __('Interval'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
+		$table->head[3] = __('Group'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=up"><img src="images/sort_up.png" style="' . $selectGroupUp . '" /></a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=down"><img src="images/sort_down.png" style="' . $selectGroupDown . '" /></a>';
 		$table->head[4] = __('Modules');
 		$table->head[5] = __('Status');
 		$table->head[6] = __('Alerts');
-		$table->head[7] = __('Last contact');
+		$table->head[7] = __('Last contact'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
 		
 		$table->align = array ();
 		$table->align[0] = "left";
@@ -331,11 +525,21 @@ else {
 		$table->class = "databox";
 		
 		$table->head = array ();
-		$table->head[0] = __('User ID');
-		$table->head[1] = __('Name');
-		$table->head[2] = __('Email');
-		$table->head[3] = __('Last contact');
-		$table->head[4] = __('Profile');
+		$table->head[0] = __('User ID') . ' ' . 
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=up"><img src="images/sort_up.png" style="' . $selectUserIDUp . '" /></a>' .
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=down"><img src="images/sort_down.png" style="' . $selectUserIDDown . '" /></a>';
+		$table->head[1] = __('Name') . ' ' . 
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+		$table->head[2] = __('Email') . ' ' . 
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=up"><img src="images/sort_up.png" style="' . $selectEmailUp . '" /></a>' .
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=down"><img src="images/sort_down.png" style="' . $selectEmailDown . '" /></a>';
+		$table->head[3] = __('Last contact') . ' ' . 
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
+		$table->head[4] = __('Profile') . ' ' . 
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up"><img src="images/sort_up.png" style="' . $selectProfileUp . '" /></a>' .
+			'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down"><img src="images/sort_down.png" style="' . $selectProfileDown . '" /></a>';
 		$table->head[5] = __('Description');
 
 		$table->data = array ();

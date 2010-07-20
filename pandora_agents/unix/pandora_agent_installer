@@ -235,7 +235,12 @@ install () {
 	echo "Copying Pandora FMS Agent plugins to $PANDORA_BASE$PANDORA_HOME/plugins..."
 	cp -r plugins $PANDORA_BASE$PANDORA_HOME
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/plugins
-    ln -s $PANDORA_BASE$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
+    	ln -s $PANDORA_BASE$PANDORA_HOME/plugins $PANDORA_BASE$PANDORA_CFG
+
+	echo "Copying Pandora FMS Agent collections to $PANDORA_BASE$PANDORA_HOME/collections..."
+	cp -r collections $PANDORA_BASE$PANDORA_HOME
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/collections
+    	ln -s $PANDORA_BASE$PANDORA_HOME/collections $PANDORA_BASE$PANDORA_CFG
 
 	echo "Copying tentacle client to $PANDORA_BASE$TENTACLE"
 	cp tentacle_client $PANDORA_BASE$TENTACLE

@@ -35,6 +35,7 @@ mkdir -p temp_package/usr/share/pandora_agent/
 mkdir -p temp_package/usr/bin/
 mkdir -p temp_package/usr/sbin/
 mkdir -p temp_package/etc/pandora/plugins
+mkdir -p temp_package/etc/pandora/collections
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/var/log/pandora/
 mkdir -p temp_package/usr/share/man/man1/

@@ -88,6 +88,10 @@ if [ ! -e /etc/pandora/plugins ]; then
 	ln -s /usr/share/pandora_agent/plugins /etc/pandora
 fi
 
+if [ ! -e /etc/pandora/collections ]; then
+	ln -s /usr/share/pandora_agent/collections /etc/pandora
+fi
+
 mkdir -p /var/spool/pandora/data_out
 chkconfig pandora_agent_daemon on
 

@@ -432,7 +432,11 @@ uninstall () {
 		fi
 	fi
 	echo "Removing Pandora Servers"
-	rm -Rf $PANDORA_SPOOL/data_in/
+	if [ -d $PANDORA_SPOOL/data_out ]; then
+		rm -Rf $PANDORA_SPOOL/data_in
+	else
+		rm -Rf $PANDORA_SPOOL
+	fi
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "	userdel pandora"

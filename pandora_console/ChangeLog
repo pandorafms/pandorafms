@@ -1,5 +1,10 @@
 2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/search_results.php: added icons for order columns in the user
+	list and agent list.
+
+2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/setup/gis_step_2.php: fixed when the spanish translation have a
 	problematic characters.
 	Fixes: #3029149

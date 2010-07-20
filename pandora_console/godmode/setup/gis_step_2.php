@@ -206,7 +206,7 @@ if ($mapConnectionData != null) {
 // Open Street Map Connection
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
-			'<td>'  . __("Tile Server URL") . ':</td>' .
+			'<td>'  . htmlentities(__("Tile Server URL"), ENT_QUOTES) . ':</td>' .
 			'<td><input id="type" type="hidden" name="type" value="OSM" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
 		'</tr>' . 
 	'</table>';
@@ -466,6 +466,7 @@ function loadGoogleMap() {
  */
 function selMapConnectionType() {
 	$('#form_map_connection_type').fadeOut("normal");
+	
 	switch ($('#sel_type :selected').val()) {
 		case 'OSM':
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();

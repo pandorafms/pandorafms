@@ -22,7 +22,7 @@
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
-PANDORA_USER=root
+PANDORA_USER=dario
 DAEMON=/usr/bin/pandora_agent
 LOGFILE=/var/log/pandora/pandora_agent.log
 

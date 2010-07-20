@@ -1,5 +1,9 @@
 2010-07-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent_installer: Fixed some directories and permissions.
+
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_agent_installer,
 	  DEBIAN/make_deb_package.sh,
 	  pandora_agent.spec: Updated to take the collections directory into

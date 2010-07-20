@@ -99,6 +99,7 @@ uninstall () {
 	if [ -d $PANDORA_BASE$PANDORA_TEMP/data_in ]
 	then
 		echo "You have a Pandora Server in this machine. Then don't delete "$PANDORA_TEMP
+		rm -Rf $PANDORA_BASE$PANDORA_TEMP/data_out 2> /dev/null
 	else
 		rm -Rf $PANDORA_BASE$PANDORA_TEMP 2> /dev/null
 	fi 
@@ -253,9 +254,8 @@ install () {
     	chmod 644 $PANDORA_BASE/$PANDORA_MAN/man1/pandora_agent.1.gz
 
 	echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
-	chown -R root $PANDORA_BASE$PANDORA_HOME
-	chmod -R 600 $PANDORA_BASE$PANDORA_TEMP
-	chown root $PANDORA_BASE$PANDORA_TEMP
+	chown -R $PANDORA_USER $PANDORA_BASE$PANDORA_HOME
+	chmod -R 700 $PANDORA_BASE$PANDORA_TEMP/data_out
 	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then

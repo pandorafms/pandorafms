@@ -219,7 +219,7 @@ switch ($searchTab) {
 				}
 				break;
 			default:
-				$selectUserIDUp = '';
+				$selectUserIDUp = $selected;
 				$selectUserIDDown = '';
 				$selectNameUp = '';
 				$selectNameDown = '';
@@ -234,6 +234,78 @@ switch ($searchTab) {
 				break;
 		}
 		break;
+		case 'alerts':
+			$selectDisabledUp = '';
+			$selectDisabledDown = '';
+			$selectAgentUp = '';
+			$selectAgentDown = '';
+			$selectModuleUp = '';
+			$selectModuleDown = '';
+			$selectTemplateUp = '';
+			$selectTemplateDown = '';
+			switch ($sortField) {
+				case 'disabled':
+					switch ($sort) {
+						case 'up':
+							$selectAgentUp = $selected;
+							$order = array('field' => 'disabled', 'order' => 'ASC');
+							break;
+						case 'down':
+							$selectAgentDown = $selected;
+							$order = array('field' => 'disabled', 'order' => 'DESC');
+							break;
+					}
+					break;
+				case 'agent':
+					switch ($sort) {
+						case 'up':
+							$selectAgentUp = $selected;
+							$order = array('field' => 'agent_name', 'order' => 'ASC');
+							break;
+						case 'down':
+							$selectAgentDown = $selected;
+							$order = array('field' => 'agent_name', 'order' => 'DESC');
+							break;
+					}
+					break;
+				case 'module':
+					switch ($sort) {
+						case 'up':
+							$selectModuleUp = $selected;
+							$order = array('field' => 'module_name', 'order' => 'ASC');
+							break;
+						case 'down':
+							$selectModuleDown = $selected;
+							$order = array('field' => 'module_name', 'order' => 'DESC');
+							break;
+					}
+					break;
+				case 'template':
+					switch ($sort) {
+						case 'up':
+							$selectTemplateUp = $selected;
+							$order = array('field' => 'template_name', 'order' => 'ASC');
+							break;
+						case 'down':
+							$selectTemplateDown = $selected;
+							$order = array('field' => 'template_name', 'order' => 'DESC');
+							break;
+					}
+					break;
+				default:
+					$selectDisabledUp = '';
+					$selectDisabledDown = '';
+					$selectAgentUp = $selected;
+					$selectAgentDown = '';
+					$selectModuleUp = '';
+					$selectModuleDown = '';
+					$selectTemplateUp = '';
+					$selectTemplateDown = '';
+					
+					$order = array('field' => 'agent_name', 'order' => 'ASC');
+					break;
+			}
+			break;
 }
 
 $agents = false;
@@ -298,6 +370,7 @@ if ($searchTab == 'alerts') {
 				ON t2.id_agente = t3.id_agente
 				INNER JOIN talert_templates AS t4
 				ON t1.id_alert_template = t4.id
+			ORDER BY " . $order['field'] . " " . $order['order'] . "
 				LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$alerts = process_sql($sql);
 	
@@ -595,10 +668,18 @@ else {
 		$table->class = "databox";
 		
 		$table->head = array ();
-		$table->head[0] = '';
-		$table->head[1] = __('Agent');
-		$table->head[2] = __('Module');
-		$table->head[3] = __('Template');
+		$table->head[0] = '' . ' ' . 
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=up"><img src="images/sort_up.png" style="' . $selectDisabledUp . '" /></a>' .
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=disabled&sort=down"><img src="images/sort_down.png" style="' . $selectDisabledDown . '" /></a>';
+		$table->head[1] = __('Agent') . ' ' . 
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+		$table->head[2] = __('Module') . ' ' . 
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[3] = __('Template') . ' ' . 
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="index.php?search_category=alerts&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 		$table->head[4] = __('Action');
 		
 		$table->align = array ();

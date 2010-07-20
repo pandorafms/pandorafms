@@ -1,5 +1,10 @@
 2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/search_results.php: added icons and source code for order the
+	rows in the list of alerts.
+
+2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/search_results.php: added icons for order columns in the user
 	list and agent list.
 

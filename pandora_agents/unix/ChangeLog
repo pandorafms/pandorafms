@@ -1,3 +1,12 @@
+2010-07-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer,
+	  DEBIAN/make_deb_package.sh,
+	  pandora_agent.spec: Updated to take the collections directory into
+	  account.
+
+	* collections: Added to repository. Collections directory.
+
 2010-07-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Added support for file collections.

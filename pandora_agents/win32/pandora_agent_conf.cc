@@ -69,6 +69,7 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 	ifstream     file (filename.c_str ());
 	string       buffer;
 	unsigned int pos;
+	Collection *aux;
 
 	if (this->key_values)
 		delete this->key_values;
@@ -76,7 +77,7 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 
 	if (this->collection_list)
 		delete this->collection_list;
-	this->collection_list = new list<string> ();
+	this->collection_list = new list<Collection> ();
 	
 	if (!file.is_open ()) {
 		return;
@@ -97,8 +98,13 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 				/*Add collection to collection_list*/
 				/*The number 15 is the number of character of string file_collection*/
 				collection_name = buffer.substr(pos+15);
-				trimmed_str = trim (collection_name);
-				collection_list->push_back (trimmed_str);
+				
+				
+				aux = new Collection();
+				
+				aux->name = trim (collection_name);
+				aux->verify = 0;
+				collection_list->push_back (*aux);
 				continue;
 			}
 			/*Check if is a module*/
@@ -149,10 +155,34 @@ Pandora::Pandora_Agent_Conf::getValue (const string key)
  * 
  */
 string 
-Pandora::Pandora_Agent_Conf::getCurrentCollection() {
+Pandora::Pandora_Agent_Conf::getCurrentCollectionName() {
 	string aux;
-	aux = *collection_it;
+	aux = collection_it->name;
 	return aux;
+}
+
+/**
+ * Queries for a collection check of added to PATH.
+ * 
+ * This method returns 1 if the collections is in the PATH
+ *
+ * @return 1 if the collections is added to PATH
+ * 
+ */
+unsigned char
+Pandora::Pandora_Agent_Conf::getCurrentCollectionVerify() {
+	unsigned char aux;
+	aux = collection_it->verify;
+	return aux;
+}
+
+/**
+ * Set check path add field to 1.
+ * 
+ */
+void
+Pandora::Pandora_Agent_Conf::setCurrentCollectionVerify() {
+	collection_it->verify = 1;
 }
 
 /**

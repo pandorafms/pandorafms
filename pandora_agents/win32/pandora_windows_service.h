@@ -71,6 +71,7 @@ namespace Pandora {
 
 		int	       unzipCollection(string zip_path, string dest_dir);
 		void	       checkCollections ();
+		void		   addCollectionsPath();
 		void           checkConfig ();
 		
 		Pandora_Windows_Service     ();

@@ -27,6 +27,11 @@
 
 using namespace std;
 
+typedef struct {
+	string name;
+	unsigned char verify;
+}Collection;
+
 namespace Pandora {
 	/**
 	 * Agent main configuration class.
@@ -38,8 +43,8 @@ namespace Pandora {
 	class Pandora_Agent_Conf {
 	private:
 		list<Key_Value> *key_values;
-		list<string> *collection_list;		
-		list<string>::iterator collection_it;
+		list<Collection> *collection_list;	
+		list<Collection>::iterator collection_it;
 
 		Pandora_Agent_Conf             ();
 	public:
@@ -49,7 +54,9 @@ namespace Pandora {
 		void               setFile     (string filename);
 		string             getValue    (const string key);
 		
-		string	   		 getCurrentCollection();
+		string	        getCurrentCollectionName();
+		unsigned char	getCurrentCollectionVerify();
+		void 			setCurrentCollectionVerify();
 		void             goFirstCollection     ();
 		void             goNextCollection      ();
 		

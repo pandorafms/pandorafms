@@ -1,3 +1,10 @@
+2010-07-20  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* win32/pandora_agent_conf.cc, pandora_agent_conf.h: Added a variable to
+	control if the collection is added to the PATH.
+	* win32/pandora_windows_service.h, pandora_windows_service.cc: Added logic
+	to check if the collection is added to the PATH or not.
+
 2010-07-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
         * misc/pandora_file.cc: fixed error that caused double free.

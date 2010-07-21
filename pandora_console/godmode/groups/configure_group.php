@@ -78,7 +78,13 @@ $sql = 'SELECT id_grupo, nombre FROM tgrupo ';
 if ($id_group)
 	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
 $groups = get_user_groups();
-$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', 0, '', '', '', true);
+if ($id_group) {
+	$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', 0,
+		'', '', '', true, false, true, '', false, false, false, $id_group);
+}
+else {
+	$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', 0, '', '', '', true);
+}
 $table->data[2][1] .= ' <span id="parent_preview">';
 if ($id_parent) {
 	echo '<img src="images/groups_small/'.get_group_icon ($id_parent).'.png" />';

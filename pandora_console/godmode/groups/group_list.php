@@ -142,6 +142,10 @@ if ($delete_group) {
 	$agent = process_sql ($sql);
 			
 	if(!$agent){
+		
+		$group = get_db_row_filter('tgrupo', array('id_grupo' => $id_group));
+		
+		process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
 
 		$sql = sprintf ('DELETE FROM tgroup_stat WHERE id_group = %d', $id_group);
 		$result = process_sql ($sql);

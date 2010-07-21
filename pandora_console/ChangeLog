@@ -1,3 +1,12 @@
+2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/groups/configure_group.php: fixed to negate the posibility to hang
+	the father into childrens or same.
+	Fixes: #3032553
+	
+	* godmode/groups/group_list.php: fixed the delete a group with children, the
+	children move to grandparent.
+
 2010-07-21  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* images/pandora_logo_header.png, images/custom_logo/pandora_logo_header.*,

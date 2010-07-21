@@ -128,21 +128,125 @@ $total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $pri
 
 if(empty($total)) $total = 0;
 
+$order = null;
+
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+$selectDisabledUp = '';
+$selectDisabledDown = '';
+$selectAgentUp = '';
+$selectAgentDown = '';
+$selectModuleUp = '';
+$selectModuleDown = '';
+$selectTemplateUp = '';
+$selectTemplateDown = '';
+
+switch ($sortField) {
+	case 'disabled':
+		switch ($sort) {
+			case 'up':
+				$selectDisabledUp = $selected;
+				$order = array('field' => 'disabled', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectDisabledDown = $selected;
+				$order = array('field' => 'disabled', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'agent':
+		switch ($sort) {
+			case 'up':
+				$selectAgentUp = $selected;
+				$order = array('field' => 'agent_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectAgentDown = $selected;
+				$order = array('field' => 'agent_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'module':
+		switch ($sort) {
+			case 'up':
+				$selectModuleUp = $selected;
+				$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectModuleDown = $selected;
+				$order = array('field' => 'agent_module_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'template':
+		switch ($sort) {
+			case 'up':
+				$selectTemplateUp = $selected;
+				$order = array('field' => 'template_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTemplateDown = $selected;
+				$order = array('field' => 'template_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		if (!$id_agente) {
+			$selectDisabledUp = '';
+			$selectDisabledDown = '';
+			$selectAgentUp = $selected;
+			$selectAgentDown = '';
+			$selectModuleUp = '';
+			$selectModuleDown = '';
+			$selectTemplateUp = '';
+			$selectTemplateDown = '';
+			$order = array('field' => 'agent_name', 'order' => 'ASC');
+		}
+		else {
+			$selectDisabledUp = '';
+			$selectDisabledDown = '';
+			$selectAgentUp = '';
+			$selectAgentDown = '';
+			$selectModuleUp = $selected;
+			$selectModuleDown = '';
+			$selectTemplateUp = '';
+			$selectTemplateDown = '';
+			$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+		}
+		break;
+}
+
 pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 	array ('offset' => (int) get_parameter ('offset'),
-		'limit' => $config['block_size']), $where);
+		'limit' => $config['block_size'], 'order' => $order), $where, false);
 
+$offset = get_parameter('offset');
+if (!$id_agente) {
+	$url = 'index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&offset=' . $offset;
+}
+else {
+	$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente;
+}
+	
 $table->class = 'alert_list';
 $table->width = '90%';
 $table->size = array ();
+
+$table->align[0] = 'center';
+
 $table->head = array ();
-$table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span>";
+$table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span>" . ' ' .
+	'<a href="' . $url . '&sort_field=disabled&sort=up"><img src="images/sort_up.png" style="' . $selectDisabledUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=disabled&sort=down"><img src="images/sort_down.png" style="' . $selectDisabledDown . '" /></a>';
 if (! $id_agente) {
 	$table->style = array ();
 	$table->style[1] = 'font-weight: bold';
-	$table->head[1] = __('Agent');
-	$table->size[0] = '20px';
+	$table->head[1] = __('Agent') . ' ' .
+		'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
+		'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+	$table->size[0] = '12%';
 	$table->size[1] = '15%';
 	$table->size[2] = '20%';
 	$table->size[3] = '15%';
@@ -153,7 +257,7 @@ if (! $id_agente) {
 }
 else {
 	/* Different sizes or the layout screws up */
-	$table->size[0] = '20px';
+	$table->size[0] = '12%';
 	$table->size[2] = '30%';
 	$table->size[3] = '20%';
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -162,8 +266,12 @@ else {
 	$table->size[5] = '50%';
 }
 
-$table->head[2] = __('Module');
-$table->head[3] = __('Template');
+$table->head[2] = __('Module') . ' ' .
+	'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+$table->head[3] = __('Template') . ' ' .
+	'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[4] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }

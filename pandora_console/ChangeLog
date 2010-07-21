@@ -1,3 +1,15 @@
+2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_agents.php: in function "get_agent_alerts_simple"
+	changed the query for added the posibility of sort the rows.
+	
+	* include/functions_db.php: in function "format_array_to_where_clause_sql"
+	added the posibility of order pass as array of field and sort order.
+
+	*godmode/alerts/alert_list.list.php: added the icons and source code for
+	order rows of list alerts by columns Disabled, Agent Name, Module Name or
+	Template Name.
+
 2010-07-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/search_results.php: added icons and source code for order the

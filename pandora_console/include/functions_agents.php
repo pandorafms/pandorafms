@@ -156,10 +156,16 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	}
 	
 	$orderbyText = '';
-	if ($orderby !== false)
-		$orderbyText = sprintf("ORDER BY %s", $orderby);
+	if ($orderby !== false) {
+		if (is_array($orderby)) {
+			$orderbyText = sprintf("ORDER BY %s", $orderby['field'], $orderby['order']);
+		}
+		else {
+			$orderbyText = sprintf("ORDER BY %s", $orderby);
+		}
+	}
 	
-	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name';
+	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
@@ -168,6 +174,10 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	FROM talert_template_modules
 		INNER JOIN tagente_modulo AS t2
 			ON talert_template_modules.id_agent_module = t2.id_agente_modulo
+		INNER JOIN tagente AS t3
+			ON t2.id_agente = t3.id_agente
+		INNER JOIN talert_templates AS t4
+			ON talert_template_modules.id_alert_template = t4.id
 	WHERE id_agent_module in (%s) %s %s %s",
 	$selectText, $subQuery, $where, $filter, $orderbyText);
 	

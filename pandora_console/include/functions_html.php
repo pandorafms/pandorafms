@@ -157,14 +157,23 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
  * @param bool Set the input to allow multiple selections (optional, single selection by default).
  * @param bool Whether to sort the options or not (optional, unsorted by default).
  * @param string $style The string of style.
+ * @param integer $id_group The id of node that must do not show the children and own.
  *
  * @return string HTML code if return parameter is true.
  */
 function print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
 	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false) {
+	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
 		
-	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);	
+	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
+	
+	if ($id_group !== false) {
+		$childrens = get_childrens($id_group);
+		foreach ($childrens as $child) {
+			unset($user_groups[$child['id_grupo']]);
+		}
+		unset($user_groups[$id_group]);
+	}
 	
 	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
 	

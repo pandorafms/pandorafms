@@ -2512,7 +2512,16 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 	
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
+			if (!isset($values['order']['order'])) {
+				$orderTexts = array();
+				foreach ($values['order'] as $orderItem) {	
+					$orderTexts[] = $orderItem['field'] . ' ' . $orderItem['order'];
+				}
+				$order = ' ORDER BY ' . implode(', ', $orderTexts);
+			}
+			else {
 				$order = sprintf (' ORDER BY %s %s', $values['order']['field'], $values['order']['order']);
+			}
 		}
 		else {
 			$order = sprintf (' ORDER BY %s', $values['order']);

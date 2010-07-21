@@ -1,5 +1,18 @@
 2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_html.php: lost in previus commit the change to
+	"print_select_groups" the new parameter $id_group, to don't show the group
+	with id and children of this group.
+	
+	* include/functions_db.php: in function "format_array_to_where_clause_sql"
+	added to order as array several fields.
+	
+	* operation/agentes/estado_ultimopaquete.php: added the icons and source
+	code for order rows of list alerts by columns Module Name, Type, Interval
+	and Timestamp.
+
+2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/groups/configure_group.php: fixed to negate the posibility to hang
 	the father into childrens or same.
 	Fixes: #3032553

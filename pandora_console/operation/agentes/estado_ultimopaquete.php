@@ -47,12 +47,89 @@ echo "<h3>".__('Display of last data modules received by agent');
 echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/refresh.png'></A>";
 echo "</h3>";
 
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=data&id_agente=' . $id_agente;
+$selectNameUp = '';
+$selectNameDown = '';
+$selectTypeUp = '';
+$selectTypeDown = '';
+$selectIntervalUp = '';
+$selectIntervalDown = '';
+$selectTimestampUp = '';
+$selectTimestampDown = '';
+
+$order[] = array('field' => 'id_module_group', 'order' => 'ASC');
+
+switch ($sortField) {
+	case 'name':
+		switch ($sort) {
+			case 'up':
+				$selectNameUp = $selected;
+				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectNameDown = $selected;
+				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'type':
+		switch ($sort) {
+			case 'up':
+				$selectTypeUp = $selected;
+				$order[] = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTypeDown = $selected;
+				$order[] = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'interval':
+		switch ($sort) {
+			case 'up':
+				$selectIntervalUp = $selected;
+				$order[] = array('field' => 'tagente_modulo.module_interval', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectIntervalDown = $selected;
+				$order[] = array('field' => 'tagente_modulo.module_interval', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'timestamp':
+		switch ($sort) {
+			case 'up':
+				$selectTimestampUp = $selected;
+				$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTimestampDown = $selected;
+				$order[] = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		$selectNameUp = $selected;
+		$selectNameDown = '';
+		$selectTypeUp = '';
+		$selectTypeDown = '';
+		$selectIntervalUp = '';
+		$selectIntervalDown = '';
+		$selectTimestampUp = '';
+		$selectTimestampDown = '';
+		$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+		break;
+}
+
 $modules = get_db_all_rows_filter ('tagente_modulo, tagente_estado',
 	array ('tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo',
 		'disabled' => 0,
 		'tagente_estado.utimestamp != 0',
 		'tagente_modulo.id_agente = '.$id_agente,
-		'order' => 'id_module_group, nombre'));
+		'order' => $order));
 
 if ($modules === false) {
 	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
@@ -61,14 +138,26 @@ if ($modules === false) {
 
 echo "<table width='95%' cellpadding='3' cellspacing='3' class='databox'>";
 echo "<th></th>";
-echo "<th>".__('Module name')."</th>";
-echo "<th>".__('Type')."</th>";
-echo "<th>".__('int')."</th>";
-echo "<th>".__('Description')."</th>";
-echo "<th>".__('Data')."</th>";
+echo "<th>".__('Module name') . ' ' .
+			'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+echo "</th>";
+echo "<th>".__('Type') . ' ' .
+			'<a href="' . $url . '&sort_field=type&sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=type&sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" /></a>';
+echo "</th>";
+echo "<th>".__('int') . ' ' .
+			'<a href="' . $url . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
+echo "</th>";
+echo "<th>".__('Description') . "</th>";
+echo "<th>".__('Data') . "</th>";
 echo "<th>".__('Graph')."</th>";
 echo "<th>".__('Raw Data')."</th>";
-echo "<th>".__('Timestamp')."</th>";
+echo "<th>".__('Timestamp') . ' ' .
+	'<a href="' . $url . '&sort_field=timestamp&sort=up"><img src="images/sort_up.png" style="' . $selectTimestampUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=timestamp&sort=down"><img src="images/sort_down.png" style="' . $selectTimestampDown . '" /></a>';
+echo "</th>";
 $texto=''; $last_modulegroup = 0;
 $color = 1;
 $write = give_acl ($config['id_user'], $agent['id_grupo'], "AW");

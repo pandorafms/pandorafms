@@ -1,3 +1,8 @@
+2010-07-21  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* images/pandora_logo_header.png, images/custom_logo/pandora_logo_header.*,
+	images/neworkmap/pandora_node.png: Updated images to new logo.
+
 2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/alerts_status.php: added the icons and source code for

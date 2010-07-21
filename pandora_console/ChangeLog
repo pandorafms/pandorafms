@@ -1,5 +1,11 @@
 2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/alerts_status.php: added the icons and source code for
+	order rows of list alerts by columns Disabled, Agent Name, Module Name or
+	Template Name.
+
+2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_agents.php: in function "get_agent_alerts_simple"
 	changed the query for added the posibility of sort the rows.
 	

@@ -104,8 +104,80 @@ else {
 	$whereAlertCombined = ''; 
 }
 
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+$selectAgentUp = '';
+$selectAgentDown = '';
+$selectModuleUp = '';
+$selectModuleDown = '';
+$selectTemplateUp = '';
+$selectTemplateDown = '';
+switch ($sortField) {
+	case 'agent':
+		switch ($sort) {
+			case 'up':
+				$selectAgentUp = $selected;
+				$order = array('field' => 'agent_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectAgentDown = $selected;
+				$order = array('field' => 'agent_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'module':
+		switch ($sort) {
+			case 'up':
+				$selectModuleUp = $selected;
+				$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectModuleDown = $selected;
+				$order = array('field' => 'agent_module_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'template':
+		switch ($sort) {
+			case 'up':
+				$selectTemplateUp = $selected;
+				$order = array('field' => 'template_name', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTemplateDown = $selected;
+				$order = array('field' => 'template_name', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		if ($print_agent) {
+			$selectDisabledUp = '';
+			$selectDisabledDown = '';
+			$selectAgentUp = '';
+			$selectAgentDown = '';
+			$selectModuleUp = $selected;
+			$selectModuleDown = '';
+			$selectTemplateUp = '';
+			$selectTemplateDown = '';
+			$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+		}
+		else {
+			$selectDisabledUp = '';
+			$selectDisabledDown = '';
+			$selectAgentUp = '';
+			$selectAgentDown = '';
+			$selectModuleUp = $selected;
+			$selectModuleDown = '';
+			$selectTemplateUp = '';
+			$selectTemplateDown = '';
+			$order = array('field' => 'agent_module_name', 'order' => 'ASC');
+		}
+		break;
+}
+
 $alerts = array();
-$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, array('offset' => $offset_simple, 'limit' => $config['block_size']), $whereAlertSimple, false, false, $idGroup);
+$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order), $whereAlertSimple, false, false, $idGroup);
 $countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
 $alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, array('limit' => $config["block_size"], 'offset' => $offset_combined), $idGroup, false, $whereAlertCombined);
 $countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
@@ -137,9 +209,15 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		
 		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[2] = __('Agent');
-		$table->head[3] = __('Module');
-		$table->head[4] = __('Template');
+		$table->head[2] = __('Agent') . ' ' .
+			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+		$table->head[3] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[4] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
@@ -159,8 +237,12 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		
 		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[2] = __('Module');
-		$table->head[3] = __('Template');
+		$table->head[2] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[3] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
@@ -182,9 +264,15 @@ else
 		$table->size[6] = '60px';
 		
 		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[1] = __('Agent');
-		$table->head[2] = __('Module');
-		$table->head[3] = __('Template');
+		$table->head[1] = __('Agent') . ' ' .
+			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+		$table->head[2] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[3] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
@@ -202,8 +290,12 @@ else
 		$table->size[5] = '60px';
 		
 		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[1] = __('Module');
-		$table->head[2] = __('Template');
+		$table->head[1] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[2] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
 		$table->head[3] = __('Action');
 		$table->head[4] = __('Last fired');
 		$table->head[5] = __('Status');

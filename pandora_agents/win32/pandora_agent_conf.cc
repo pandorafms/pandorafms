@@ -103,8 +103,12 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 				aux = new Collection();
 				
 				aux->name = trim (collection_name);
-				aux->verify = 0;
-				collection_list->push_back (*aux);
+				
+				/*Check for ".." substring for security issues*/
+				if ( collection_name.find("..") == string::npos ) {
+					aux->verify = 0;
+					collection_list->push_back (*aux);
+				}
 				continue;
 			}
 			/*Check if is a module*/
@@ -183,6 +187,28 @@ Pandora::Pandora_Agent_Conf::getCurrentCollectionVerify() {
 void
 Pandora::Pandora_Agent_Conf::setCurrentCollectionVerify() {
 	collection_it->verify = 1;
+}
+
+/**
+ * Check is there is a collection with the same name in the list
+ * 
+ * @param The name of the collection to check.
+ * 
+ * @return True if there is a collection with the same name.
+ */
+bool
+Pandora::Pandora_Agent_Conf::isInCollectionList(string name) {
+	list<Collection>::iterator p;
+	string name_md5;
+	for (p = collection_list->begin();p != collection_list->end();p++) {
+			name_md5 = p->name+".md5";
+			if ( (strcmp(p->name.c_str(), name.c_str()) == 0)  || 
+				(strcmp(name_md5.c_str(), name.c_str()) == 0)){
+				return true;
+			}
+	}
+	
+	return false;
 }
 
 /**

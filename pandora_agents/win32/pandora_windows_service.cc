@@ -33,6 +33,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <direct.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <pandora_agent_conf.h>
 
 using namespace std;
 using namespace Pandora;
@@ -633,7 +637,49 @@ Pandora_Windows_Service::unzipCollection(string zip_path, string dest_dir) {
 	CloseHandle (pi.hProcess);
 	return 0;	
 }
+/*
+ * Check the disk for collections installed
+ */
 
+void
+Pandora_Windows_Service::purgeDiskCollections () {
+	
+	DIR *dir;
+	struct dirent *dir_content;
+	struct stat file;
+	string tmp, filepath;
+	
+	filepath = Pandora::getPandoraInstallDir() +"collections\\";
+	/*Open the directory*/
+	dir = opendir (filepath.c_str ());
+
+	/*Read the directory looking for files and folders*/
+	dir_content = readdir(dir);
+	
+	while (dir_content != NULL) {
+				
+		stat(tmp.c_str(),&file);
+		
+		/*If is a folder, check for . and .. */
+		if ( (strcmp(dir_content->d_name,".") != 0) && (strcmp(dir_content->d_name,"..") != 0) ) {
+			/*If the file is not in collection list, delete the file*/
+			if(! conf->isInCollectionList(dir_content->d_name) ) {
+				tmp = filepath+dir_content->d_name;
+				Pandora_File::removeDir(tmp);
+			}
+		}
+
+		/*Next item*/
+		dir_content = readdir(dir);	
+	}
+	
+	/*Close dir oppened*/
+	closedir(dir);	
+}
+
+/*
+ * Check collections to sync it between server and agent
+ */
 void
 Pandora_Windows_Service::checkCollections () {
 	
@@ -836,6 +882,7 @@ Pandora_Windows_Service::checkCollections () {
 		/*Go to next collection*/		
 		conf->goNextCollection();
 	}
+	purgeDiskCollections ();
 }
 
 void

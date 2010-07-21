@@ -1,3 +1,7 @@
+2010-07-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Delete unused collections.
+
 2010-07-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer: Fixed some directories and permissions.

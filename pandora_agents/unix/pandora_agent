@@ -503,10 +503,23 @@ sub check_remote_config () {
 }
 
 ################################################################################
-# Check and download collections.
+# Delete old collections and download new collections.
 ################################################################################
 sub check_collections () {
 
+	# Delete old collections
+	opendir (DIR, "$ConfDir/collections") || return;
+ 	while (defined (my $file_name = readdir(DIR))) {
+		next if ($file_name eq '.' || $file_name eq '..');
+
+		# Do not delete md5 files associated to a collection
+		$file_name =~ s/\.md5$//;
+
+		rmrf ("$ConfDir/collections/$file_name") unless defined ($Collections{$file_name});
+	}
+	closedir (DIR);
+
+	# Download new collections
 	while (my ($collection, $in_path) = each (%Collections)) {
 		my $collection_file = $collection . ".zip";
 		my $collection_md5_file = $collection . ".md5";
@@ -541,7 +554,8 @@ sub check_collections () {
 		
 		# Download and unzip
 		next unless (recv_file ($collection_file) == 0);
-		`rm -rf "$ConfDir/collections/$collection" 2>/dev/null && unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>/dev/null`;
+		rmrf ("$ConfDir/collections/$collection");
+		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>/dev/null`;
 		unlink ("$Conf{'temporal'}/$collection_file");		
 	}
 }
@@ -1058,6 +1072,26 @@ sub check_module_cron ($) {
 
 	$module->{'cron_utimestamp'} = $current_time + $offset;
 	return 1;
+}
+
+################################################################################
+# Recursively delete files and directories.
+################################################################################
+sub rmrf {
+	my ($path) = @_;
+	local *DIR;
+
+	if (-d $path) {
+		opendir (DIR, $path) || return;
+		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
+			rmrf ("$path/$file_name");
+		}
+		closedir (DIR);
+		rmdir ($path);
+	} else {
+		unlink ($path);
+	}
 }
 
 ################################################################################

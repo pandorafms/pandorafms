@@ -1,3 +1,12 @@
+2010-07-21  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* win32/pandora_agent_conf.cc, pandora_agent_conf.h: Added logic to search 
+	existing collections in config file, and checking for ".." substrings in 
+	path for security reasons.
+	* win32/pandora_windows_service.h, pandora_windows_service.cc: Added logic
+	to remove incoherences between collections directory and collection list 
+	of config file.
+
 2010-07-20  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* win32/pandora_agent_conf.cc, pandora_agent_conf.h: Added a variable to
@@ -7,11 +16,11 @@
 
 2010-07-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
-        * misc/pandora_file.cc: fixed error that caused double free.
+        * win32/misc/pandora_file.cc: fixed error that caused double free.
 
 2010-07-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
-        * misc/pandora_file.cc: fixed unclosed directory with function closedir
+        * win32/misc/pandora_file.cc: fixed unclosed directory with function closedir
 	and control posible delete errors.
 
 2010-07-16  Dario Rodriguez <dario.rodriguez@artica.es>

@@ -47,7 +47,8 @@ namespace Pandora {
 		long                 transfer_interval;
 		bool                 started;
 		void                 *udp_server;
-
+		list<string> collection_disk;
+		
 		string        getXmlHeader    ();
 		int           copyDataFile    (string filename);
 		int           copyTentacleDataFile (string host,
@@ -73,8 +74,10 @@ namespace Pandora {
 		void	       checkCollections ();
 		void		   addCollectionsPath();
 		void           checkConfig ();
+		void		 purgeDiskCollections ();
 		
 		Pandora_Windows_Service     ();
+
 	public:
 		void           pandora_run  ();
 		void           pandora_init ();

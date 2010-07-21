@@ -61,6 +61,7 @@ namespace Pandora {
 		void             goNextCollection      ();
 		
 		bool             isLastCollection      ();
+		bool			isInCollectionList(string name);
 	};
 }
 

@@ -59,6 +59,8 @@ $selectIntervalUp = '';
 $selectIntervalDown = '';
 $selectTimestampUp = '';
 $selectTimestampDown = '';
+$selectDataUp = '';
+$selectDataDown = '';
 
 $order[] = array('field' => 'id_module_group', 'order' => 'ASC');
 
@@ -111,6 +113,19 @@ switch ($sortField) {
 				break;
 		}
 		break;
+	case 'data':
+		switch ($sort) {
+			case 'up':
+				$selectDataUp = $selected;
+				$order[] = array('field' => 'tagente_estado.datos', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectDataDown = $selected;
+				$order[] = array('field' => 'tagente_estado.datos', 'order' => 'DESC');
+				break;
+		}
+		break;
+		break;
 	default:
 		$selectNameUp = $selected;
 		$selectNameDown = '';
@@ -136,7 +151,7 @@ if ($modules === false) {
 	return;
 }
 
-echo "<table width='95%' cellpadding='3' cellspacing='3' class='databox'>";
+echo "<table width='98%' cellpadding='3' cellspacing='3' class='databox'>";
 echo "<th></th>";
 echo "<th>".__('Module name') . ' ' .
 			'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
@@ -151,7 +166,10 @@ echo "<th>".__('int') . ' ' .
 			'<a href="' . $url . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
 echo "</th>";
 echo "<th>".__('Description') . "</th>";
-echo "<th>".__('Data') . "</th>";
+echo "<th>".__('Data') . ' ' .
+	'<a href="' . $url . '&sort_field=data&sort=up"><img src="images/sort_up.png" style="' . $selectDataUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=data&sort=down"><img src="images/sort_down.png" style="' . $selectDataDown . '" /></a>';
+echo "</th>";
 echo "<th>".__('Graph')."</th>";
 echo "<th>".__('Raw Data')."</th>";
 echo "<th>".__('Timestamp') . ' ' .

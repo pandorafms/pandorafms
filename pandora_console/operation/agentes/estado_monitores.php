@@ -24,6 +24,99 @@ if (!isset ($id_agente)) {
 	exit;
 }
 
+$id_agent = get_parameter('id_agente');
+$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agent;
+$selectTypeUp = '';
+$selectTypeDown = '';
+$selectNameUp = '';
+$selectNameDown = '';
+$selectStatusUp = '';
+$selectStatusDown = '';
+$selectDataUp = '';
+$selectDataDown = '';
+$selectLastContactUp = '';
+$selectLastContactDown = '';
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+
+switch ($sortField) {
+	case 'type':
+		switch ($sort) {
+			case 'up':
+				$selectTypeUp = $selected;
+				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTypeDown = $selected;
+				$order = array('field' => 'tagente_modulo.id_tipo_modulo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'name':
+		switch ($sort) {
+			case 'up':
+				$selectNameUp = $selected;
+				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectNameDown = $selected;
+				$order = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'status':
+		switch ($sort) {
+			case 'up':
+				$selectStatusUp = $selected;
+				$order = array('field' => 'tagente_estado.estado', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectStatusDown = $selected;
+				$order = array('field' => 'tagente_estado.estado', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'data':
+		switch ($sort) {
+			case 'up':
+				$selectDataUp = $selected;
+				$order = array('field' => 'tagente_estado.datos', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectDataDown = $selected;
+				$order = array('field' => 'tagente_estado.datos', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'last_contact':
+		switch ($sort) {
+			case 'up':
+				$selectLastContactUp = $selected;
+				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectLastContactDown = $selected;
+				$order = array('field' => 'tagente_estado.utimestamp', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		$selectTypeUp = '';
+		$selectTypeDown = '';
+		$selectNameUp = $selected;
+		$selectNameDown = '';
+		$selectStatusUp = '';
+		$selectStatusDown = '';
+		$selectDataUp = '';
+		$selectDataDown = '';
+		$selectLastContactUp = '';
+		$selectLastContactDown = '';
+		
+		$order = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+		break;
+}
+
 // Get all module from agent
 $sql = sprintf ("
 	SELECT *
@@ -35,8 +128,8 @@ $sql = sprintf ("
 		AND tagente_modulo.disabled = 0
 		AND tagente_modulo.delete_pending = 0
 		AND tagente_estado.utimestamp != 0 
-	ORDER BY tagente_modulo.id_module_group , tagente_modulo.nombre
-	", $id_agente);
+	ORDER BY tagente_modulo.id_module_group , %s %s
+	", $id_agente, $order['field'], $order['order']);
 
 $modules = get_db_all_rows_sql ($sql);
 if (empty ($modules)) {
@@ -50,13 +143,23 @@ $table->head = array ();
 $table->data = array ();
 
 $table->head[0] = '';
-$table->head[1] = __('Type');
-$table->head[2] = __('Module name');
+$table->head[1] = __('Type') . ' ' .
+	'<a href="' . $url . '&sort_field=type&sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=type&sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" /></a>';
+$table->head[2] = __('Module name') . ' ' .
+	'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
 $table->head[3] = __('Description');
-$table->head[4] = __('Status');
-$table->head[5] = __('Data');
+$table->head[4] = __('Status') . ' ' .
+	'<a href="' . $url . '&sort_field=status&sort=up"><img src="images/sort_up.png" style="' . $selectStatusUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=status&sort=down"><img src="images/sort_down.png" style="' . $selectStatusDown . '" /></a>';
+$table->head[5] = __('Data') . ' ' .
+	'<a href="' . $url . '&sort_field=data&sort=up"><img src="images/sort_up.png" style="' . $selectDataUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=data&sort=down"><img src="images/sort_down.png" style="' . $selectDataDown . '" /></a>';
 $table->head[6] = __('Graph');
-$table->head[7] = __('Last contact');
+$table->head[7] = __('Last contact') . ' ' .
+	'<a href="' . $url . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
 
 $table->align = array("left","left","left","left","center");
 

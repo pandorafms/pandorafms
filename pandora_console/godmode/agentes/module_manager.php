@@ -125,10 +125,87 @@ if ($multiple_delete) {
 
 echo "<h3>".__('Assigned modules')."</h3>";
 
+$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=' . $id_agente;
+$selectNameUp = '';
+$selectNameDown = '';
+$selectServerUp = '';
+$selectServerDown = '';
+$selectTypeUp = '';
+$selectTypeDown = '';
+$selectIntervalUp = '';
+$selectIntervalDown = '';
+$sortField = get_parameter('sort_field');
+$sort = get_parameter('sort', 'none');
+$selected = 'border: 1px solid black;';
+
+$order[] = array('field' => 'id_module_group', 'order' => 'ASC');
+
+switch ($sortField) {
+	case 'name':
+		switch ($sort) {
+			case 'up':
+				$selectNameUp = $selected;
+				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectNameDown = $selected;
+				$order[] = array('field' => 'tagente_modulo.nombre', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'server':
+		switch ($sort) {
+			case 'up':
+				$selectServerUp = $selected;
+				$order[] = array('field' => 'id_modulo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectServerDown = $selected;
+				$order[] = array('field' => 'id_modulo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'type':
+		switch ($sort) {
+			case 'up':
+				$selectTypeUp = $selected;
+				$order[] = array('field' => 'id_tipo_modulo', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTypeDown = $selected;
+				$order[] = array('field' => 'id_tipo_modulo', 'order' => 'DESC');
+				break;
+		}
+		break;
+	case 'interval':
+		switch ($sort) {
+			case 'up':
+				$selectIntervalUp = $selected;
+				$order[] = array('field' => 'module_interval', 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectIntervalDown = $selected;
+				$order[] = array('field' => 'module_interval', 'order' => 'DESC');
+				break;
+		}
+		break;
+	default:
+		$selectNameUp = $selected;
+		$selectNameDown = '';
+		$selectServerUp = '';
+		$selectServerDown = '';
+		$selectTypeUp = '';
+		$selectTypeDown = '';
+		$selectIntervalUp = '';
+		$selectIntervalDown = '';
+		$order[] = array('field' => 'nombre', 'order' => 'ASC');
+		break;
+}
+
 $modules = get_db_all_rows_filter ('tagente_modulo',
 	array ('delete_pending' => 0,
 		'id_agente' => $id_agente,
-		'order' => 'id_module_group, nombre'),
+		'order' => $order),
 	array ('id_agente_modulo', 'id_tipo_modulo', 'descripcion', 'nombre',
 		'max', 'min', 'module_interval', 'id_modulo', 'id_module_group',
 		'disabled',));
@@ -140,12 +217,20 @@ if ($modules === false) {
 
 $table->width = '95%';
 $table->head = array ();
-$table->head[0] = __('Name');
+$table->head[0] = __('Name') . ' ' .
+	'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
-$table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>";
-$table->head[3] = __('Type');
-$table->head[4] = __('Interval');
+$table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>" . ' ' .
+	'<a href="' . $url . '&sort_field=server&sort=up"><img src="images/sort_up.png" style="' . $selectServerUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=server&sort=down"><img src="images/sort_down.png" style="' . $selectServerDown . '" /></a>';
+$table->head[3] = __('Type') . ' ' .
+	'<a href="' . $url . '&sort_field=type&sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=type&sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" /></a>';
+$table->head[4] = __('Interval') . ' ' .
+	'<a href="' . $url . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
+	'<a href="' . $url . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
 $table->head[5] = __('Description');
 $table->head[6] = __('Max/Min');
 $table->head[7] = __('Action');
@@ -153,10 +238,10 @@ $table->head[7] = __('Action');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[2] = '35px';
+$table->size[2] = '55px';
 $table->size[7] = '65px';
 $table->align = array ();
-$table->align[2] = 'left';
+$table->align[2] = 'center';
 $table->align[7] = 'left';
 $table->data = array ();
 

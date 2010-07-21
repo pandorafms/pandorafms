@@ -1,5 +1,15 @@
 2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/estado_ultimopaquete.php: added code for sort by
+	data.
+	
+	* operation/agentes/estado_monitores.php,
+	godmode/agentes/module_manager.php: added the icons and source code for
+	order rows of list alerts by columns Module Name, Type, Interval and
+	Timestamp.
+
+2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_html.php: lost in previus commit the change to
 	"print_select_groups" the new parameter $id_group, to don't show the group
 	with id and children of this group.

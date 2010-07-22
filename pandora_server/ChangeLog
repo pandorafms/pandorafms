@@ -1,3 +1,8 @@
+2010-07-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Sort files by creation date before
+	  queuing them. Fixes bug #3031780.
+
 2010-07-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Add extended information when saving

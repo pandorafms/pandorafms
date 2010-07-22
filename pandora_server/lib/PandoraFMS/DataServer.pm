@@ -87,8 +87,13 @@ sub data_producer ($) {
 	opendir (DIR, $pa_config->{'incomingdir'})
 	        || die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
+	my @files = readdir (DIR);
+	closedir(DIR);
+
+    @files = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
+
 	my $queue_count = 0;
- 	while (defined (my $file_name = readdir(DIR))) {
+ 	foreach my $file_name (@files) {
 		if ($queue_count > $pa_config->{"max_queue_files"}) {
 			last;
 		}
@@ -106,7 +111,6 @@ sub data_producer ($) {
 		push (@tasks, $file_name);
 	}
 
-	closedir(DIR);
 	return @tasks;
 }
 

@@ -244,7 +244,7 @@ echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&se
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 735;
+$table->width = '95%';
 $table->class = "databox";
 $table->head = array ();
 $table->size = array ();
@@ -253,77 +253,55 @@ $table->align = array ();
 
 $table->head[0] = __('Status');
 $table->align[0] = "center";
+$table->size[0] = '5%';
 
 $table->head[1] = __('SNMP Agent');
 $table->align[1] = "center";
+$table->size[1] = '15%';
 
 $table->head[2] = __('OID');
 $table->align[2] = "center";
+$table->size[2] = '13%';
 
 $table->head[3] = __('Value');
 $table->align[3] = "center";
+$table->size[3] = '10%';
 
 $table->head[4] = __('Custom');
 $table->align[4] = "center";
+$table->size[4] = '12%';
 
 $table->head[5] = __('User ID');
 $table->align[5] = "center";
+$table->size[5] = '10%';
 
 $table->head[6] = __('Timestamp');
-$table->size[6] = 130;
 $table->align[6] = "center";
+$table->size[6] = '10%';
 
 $table->head[7] = __('Alert');
 $table->align[7] = "center";
+$table->size[7] = '10%';
 
 $table->head[8] = __('Action');
 $table->align[8] = "center";
+$table->size[8] = '10%';
 
 $table->head[9] = print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
 $table->align[9] = "center";
+$table->size[9] = '5%';
 
 // Skip offset records
 $idx = 0;
 if ($traps !== false) {
 	foreach ($traps as $trap) {
 		$data = array ();
-	
-	//	// Apply filters
-	//	if ($filter_agent != '' && $trap["source"] != $filter_agent) {
-	//		continue;
-	//	}
-	//	
-	//	$oid = enterprise_hook ('get_oid', array ($trap));
-	//	if ($oid === ENTERPRISE_NOT_HOOK) {
-	//		$oid = $trap["oid"];
-	//	}
-	//
-	//	if ($filter_oid != '' && $oid != $filter_oid) {
-	//		continue;
-	//	}
-	//
-	//	if ($filter_fired != -1 && $trap["alerted"] != $filter_fired) {
-	//		continue;
-	//	}
-	//
-	//	if ($filter_status != -1 && $trap["status"] != $filter_status) {
-	//		continue;
-	//	}
-	//
+		
 		$severity = enterprise_hook ('get_severity', array ($trap));
 		if ($severity === ENTERPRISE_NOT_HOOK) {
 			$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
 		}
-	//
-	//	if ($filter_severity != -1 && $severity != $filter_severity) {
-	//		continue;
-	//	}
-	//
-	//	if ($search_string != '' && ereg ($search_string, $trap["value"]) == 0 && 
-	//		ereg ($search_string, $trap["value_custom"]) == 0) {
-	//		continue;
-	//	}
-	
+		
 		//Status
 		if ($trap["status"] == 0) {
 			$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
@@ -401,10 +379,26 @@ if ($traps !== false) {
 		if (give_acl ($config["id_user"], 0, "IM")) {
 			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
 		}
+		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');"><img src="images/eye.png" alt="' . __('Show more') . '" title="' . __('Show more') . '"/></a>';
 		
 		$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 	
 		array_push ($table->data, $data);
+		
+		//Hiden file for description
+		$string = '<table border="0" width="90%">
+			<tr><td align="left" valign="top" width="15%"><b>' . __('Custom OID:') . '</b></td><td align="left">' . $trap['oid_custom'] . '</td></tr>'
+			 . '<tr><td align="left" valign="top">' . '<b>' . __('OID:') . '</td><td align="left"> ' . $trap['oid'] . '</td></tr>'
+			 . '<tr><td align="left" valign="top">' . '<b>' . __('Value Custom:') . '</td><td align="left"> ' . $trap['value_custom'] . '</td></tr>'
+			 . '<tr><td align="left" valign="top">' . '<b>' . __('Description:') . '</td><td align="left">' . $trap['description'] . '</td></tr>'
+			 . '</table>';
+		$data = array($string); //$data = array($trap['description']);
+		$idx++;
+		$table->rowclass[$idx] = 'trap_info_' . $trap['id_trap'];
+		$table->colspan[$idx][0] = 10;
+		$table->rowstyle[$idx] = 'display: none;';
+		array_push ($table->data, $data);
+		
 		$idx++;
 	}
 }
@@ -473,6 +467,17 @@ function toggleDiv (divid){
 		document.getElementById(divid).style.display = 'block';
 	} else {
 		document.getElementById(divid).style.display = 'none';
+	}
+}
+
+function toggleVisibleExtendedInfo(id_trap) {
+	display = $('.trap_info_' + id_trap).css('display');
+
+	if (display != 'none') {
+		$('.trap_info_' + id_trap).css('display', 'none');
+	}
+	else {
+		$('.trap_info_' + id_trap).css('display', '');
 	}
 }
 //-->

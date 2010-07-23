@@ -783,6 +783,17 @@ function get_module_type_name ($id_type) {
 }
 
 /** 
+ * Get the name of a module type
+ * 
+ * @param int $id_type Type id
+ * 
+ * @return string The name of the given type.
+ */
+function get_module_type_icon ($id_type) {
+	return (string) get_db_value ('icon', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
+
+/** 
  * Get agent id of an agent module.
  * 
  * @param int $id_agentmodule Agent module id.
@@ -1398,6 +1409,17 @@ function get_module_interval ($id_agent_module) {
  */
 function get_agent_interval ($id_agent) {
 	return (int) get_db_value ('intervalo', 'tagente', 'id_agente', $id_agent);
+}
+
+/** 
+ * Get the operating system of an agent.
+ * 
+ * @param int Agent id.
+ * 
+ * @return int The interval value of a given agent
+ */
+function get_agent_os ($id_agent) {
+	return (int) get_db_value ('id_os', 'tagente', 'id_agente', $id_agent);
 }
 
 /** 
@@ -2596,19 +2618,24 @@ function get_agentmodule_status ($id_agentmodule = 0) {
 
 	$times_fired = get_db_value ('SUM(times_fired)', 'talert_template_modules', 'id_agent_module', $id_agentmodule);
 	if ($times_fired > 0) {
-		return 4; // Alert
+		return 4; // Alert fired
 	}
-	
-
 
 	$status_row = get_db_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 
-	// Not init or current_interval == 0: Return current status and avoid problems here !
+	/*// Not init or current_interval == 0: Return current status and avoid problems here !
 	if ($status_row["current_interval"] == 0)
+		return $status_row["estado"];*/
+		
+	$module_type = get_agentmodule_type($id_agentmodule);
+	
+	// Asynchronous and keepalive modules cant be unknown
+	if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
 		return $status_row["estado"];
-
+	}
+		
 	// Unknown status
-	if ( ($status_row["current_interval"] * 2) + $status_row["utimestamp"] < $current_timestamp){
+	if ($status_row["current_interval"] == 0 || ($status_row["current_interval"] * 2) + $status_row["utimestamp"] < $current_timestamp){
 		$status = 3;
 	}
 	else {
@@ -2627,21 +2654,122 @@ function get_agentmodule_status ($id_agentmodule = 0) {
  * The value -1 is returned in case the agent has exceed its interval.
  */
 function get_agent_status ($id_agent = 0) {
+	$modules = get_agent_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0));
+	
+	$modules_status = array();
+	$modules_async = 0;
+	foreach($modules as $module) {
+		$modules_status[] = get_agentmodule_status($module);
+		
+		$module_type = get_agentmodule_type($module);
+		if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
+			$modules_async++;
+		}
+	}
+	
+	// If all the modules are asynchronous or keep alive, the gruop cannot be unknown
+	if($modules_async < count($modules)) {
+		$time = get_system_time ();
+		$status = get_db_value_filter ('COUNT(*)',
+			'tagente',
+			array ('id_agente' => (int) $id_agent,
+				'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time,
+				'UNIX_TIMESTAMP(ultimo_contacto_remoto) + intervalo * 2 > '.$time));
+		if (! $status)
+			return -1;
+	}
+
+	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
+	
+	// Checking if any module has alert fired (4)
+	if(is_int(array_search(4,$modules_status))){
+		return 4;
+	}	
+	// Checking if any module has unknown status (3)
+	elseif(is_int(array_search(3,$modules_status))){
+		return 3;
+	}
+	// Checking if any module has critical status (1)
+	elseif(is_int(array_search(1,$modules_status))){
+		return 1;
+	}	
+	// Checking if any module has warning status (2)
+	elseif(is_int(array_search(2,$modules_status))){
+		return 2;
+	}
+	else {
+		return 0;
+	}
+	
+}
+
+function get_group_status ($id_group = 0) {	
+	$agents = get_group_agents($id_group);
+	
+	$agents_status = array();
+	foreach($agents as $key => $agent){
+		$agents_status[] = get_agent_status($key);
+	}
+	
+	$childrens = get_childrens($id_group);
+	
+	foreach($childrens as $key => $child){
+		$agents_status[] = get_group_status($key);
+	}
+	
+	// Status is 0 for normal, 1 for critical, 2 for warning and 3/-1 for unknown. 4 for fired alerts
+	
+	// Checking if any agent has fired alert (4)
+	if(is_int(array_search(4,$agents_status))){
+		return 4;
+	}
+	// Checking if any agent has unknown status (-1)
+	elseif(is_int(array_search(-1,$agents_status))){
+		return -1;
+	}
+	// Checking if any agents module has unknown status (3)
+	elseif(is_int(array_search(3,$agents_status))){
+		return 3;
+	}
+	// Checking if any agent has critical status (1)
+	elseif(is_int(array_search(1,$agents_status))){
+		return 1;
+	}
+	// Checking if any agent has warning status (2)
+	elseif(is_int(array_search(2,$agents_status))){
+		return 2;
+	}
+	else {
+		return 0;
+	}
+		
+	return $status;
+}
+
+/** 
+ * Get the worst status of all modules of the agents of a group.
+ * 
+ * @param int Id module to check.
+ * 
+ * @return int Worst status of a module for all of its agents.
+ * The value -1 is returned in case the agent has exceed its interval. <-- DISABLED
+ */
+function get_module_status ($id_module = 0) {
 	$time = get_system_time ();
-	$status = get_db_value_filter ('COUNT(*)',
+	/*$status = get_db_value_filter ('COUNT(*)',
 		'tagente',
 		array ('id_agente' => (int) $id_agent,
 			'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time,
 			'UNIX_TIMESTAMP(ultimo_contacto_remoto) + intervalo * 2 > '.$time));
 	if (! $status)
-		return -1;
+		return -1;*/
 	
-	$status = get_db_sql ("SELECT MAX(estado)
-		FROM tagente_estado, tagente_modulo 
-		WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-		AND tagente_modulo.disabled = 0 
-		AND tagente_modulo.delete_pending = 0 
-		AND tagente_modulo.id_agente = $id_agent");
+	$status = get_db_sql ("SELECT estado
+			FROM tagente_estado, tagente_modulo 
+			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0 
+			AND tagente_modulo.delete_pending = 0 
+			AND tagente_modulo.id_agente_modulo = ".$id_module);
 	
 	// TODO: Check any alert for that agent who has recept alerts fired
 	
@@ -3125,6 +3253,17 @@ function get_agent_group ($id_agent) {
 }
 
 /**
+ * This function gets the modulegroup for a given group
+ *
+ * @param int The group id
+ *
+ * @return int The modulegroup id
+ */
+function get_agentmodule_modulegroup ($id_module) {
+	return (int) get_db_value ('id_module_group', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
+}
+
+/**
  * This function gets the group name for a given group id
  *
  * @param int The group id
@@ -3169,7 +3308,10 @@ function get_modulegroups () {
  * @return string The modulegroup name
  */	
 function get_modulegroup_name ($modulegroup_id) {
-	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
+	if($modulegroup_id == 0)
+		return false;
+	else
+		return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
 }
 
 /**

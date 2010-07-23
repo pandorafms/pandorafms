@@ -34,6 +34,10 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	exit;
 }
 
+if (isset($_GET["tab"])) {
+	echo "<h2>".__('Alerts')."</h2>";
+}
+
 echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
 
 //INI DIV OF FORM FILTER

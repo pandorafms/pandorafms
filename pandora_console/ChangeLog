@@ -1,3 +1,12 @@
+2010-07-23  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/alerts/alert_list.list.php: Added code to show title if page
+	called from Manage Agents.
+
+	* godmode/modules/manage_network_components.php: Change title.
+
+	* godmode/gis_maps/configure_gis_map.php: Change fixed text to variable.
+
 2010-07-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_networkmap.php
@@ -5,20 +14,20 @@
 	operation/agentes/networkmap.topology.php
 	operation/agentes/networkmap.groups.php
 	operation/agentes/ver_agente.php
-	operation/agentes/networkmap.php: Rewritted the get status of modules
-	and agents and writted the same feature for groups and policys. Added
+	operation/agentes/networkmap.php: Rewritten the get status of modules
+	and agents and written the same feature for groups and policies. Added
 	the groups view network map. All for pending task: 3019636
 
 2010-07-23  Dario Rodriguez   <dario.rodriguez@gmail.com>
 
 	* operation/agentes/ver_agente.php: Changed code to use print_page_header
-	to print de tabs
+	to print the tabs
 	* godmode/agentes/configurar_agente.php: Changed code to use print_page_header
-	to print de tabs
+	to print the tabs
 
 2010-07-23  Raúl Mateos   <raulofpandora@gmail.com>
 
-	* godmode/alerts/aler_list*.php: Cleaned code. Removed old title style.
+	* godmode/alerts/alert_list*.php: Cleaned code. Removed old title style.
 
 	* godmode/agentes/massive_operations.php: Updated year. 
 

@@ -367,7 +367,7 @@ $table->data = array ();
 $table->valign[0] = 'top';
 $table->valign[1] = 'top';
 
-$table->data[0][0] = "<h4>List of layers</h4>". print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true);
+$table->data[0][0] = "<h4>" .__('List of layers') . print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true) . "</h4>";
 $table->data[0][1] = '<div style="text-align: right;">' . print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
 
 $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers">' .

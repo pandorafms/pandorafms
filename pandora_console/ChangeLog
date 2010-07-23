@@ -1,3 +1,11 @@
+2010-07-23  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/alerts/aler_list*.php: Cleaned code. Removed old title style.
+
+	* godmode/agentes/massive_operations.php: Updated year. 
+
+	* godmode/agentes/massive_config.php: Use better text in title and button.
+
 2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: added the show more data when click

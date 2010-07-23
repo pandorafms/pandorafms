@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Configuration management').'</h3>';
+echo '<h3>'.__('Massive copy').'</h3>';
 
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
@@ -158,7 +158,7 @@ echo '</fieldset>';
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_input_hidden ('do_operation', 1);
-print_submit_button (__('Go'), 'go', false, 'class="sub next"');
+print_submit_button (__('Copy'), 'go', false, 'class="sub wand"');
 echo '</div>';
 echo '</form>';
 

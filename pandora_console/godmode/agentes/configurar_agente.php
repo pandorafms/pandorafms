@@ -198,58 +198,97 @@ $img_style = array ("class" => "top", "width" => 16);
 
 // TODO: Change to use print_page_header
 if ($id_agente) {
-	echo '<div id="menu_tab_frame"><div id="menu_tab_left"><ul class="mn">';
-	echo '<li class="nomn"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'">';
-	print_image ("images/setup.png", false, $img_style);
-	echo '&nbsp;'.__("Agent configuration").' -&nbsp;'.mb_substr(get_agent_name ($id_agente), 0, 21) .'</a>';
-	//echo '&nbsp;'. print_help_icon ('agent_manager', true);
-	echo "</li></ul></div>";
-
-	echo '<div id="menu_tab"><ul class="mn"><li class="nomn">';
-	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">';
-	echo "<img src='images/zoom.png' class=top title='".__('View')."'>&nbsp;</a></li>";
-
-	echo '<li class="'.($tab == "main" ? 'nomn_high' : 'nomn').'">';
-	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">';
-	echo "<img src='images/cog.png' class='top' title='".__('Setup')."'>&nbsp;</a></li>";
-
-	echo '<li class="'.($tab == "module" ? 'nomn_high' : 'nomn').'">';
-	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">';
-	echo "<img src='images/lightbulb.png' class='top' title='".__('Modules')."'>&nbsp;</a></li>";
-
-	echo '<li class="'.($tab == "alert" ? 'nomn_high' : 'nomn').'">';
-	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">';
-	echo "<img src='images/bell.png' class='top' title='".__('Alerts')."'>&nbsp;</a></li>";
-
-
-	echo '<li class="'.($tab == "template" ? 'nomn_high' : 'nomn').'">';
-	echo '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">';
-	echo "<img src='images/network.png' class='top' title='".__('Module templates')."'>&nbsp;</a></li>";
-
-	enterprise_hook('inventory_tab');
-	enterprise_hook('collection_tab');
-
-	echo '<li class="nomn">';
-	echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">';
-	echo "<img src='images/agents_group.png' class='top' title='".__('Group')."'>&nbsp;</a></li>";
-
-	// GIS tab
-	if ($config['activate_gis']) {
-		if ($tab == "gis") {
-			echo "<li class='nomn_high'>";
-		}
-		else {
-			echo "<li class='nomn'>";
-		}
-		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente=$id_agente'><img src='images/world.png' class='top' border=0 title='".__('GIS data')."'>&nbsp;</a>";
-		echo "</li>";
-	}
-
-	echo "</ul></div></div>";
 	
-	// Make some space between tabs and title
-	// IE might not always show an empty div, added space
-	echo '<div style="height: 25px;">&nbsp;</div>';
+	/* View tab */
+	$viewtab['text'] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">' 
+			. print_image ("images/zoom.png", true, array ("title" =>__('View')))
+			. '</a>';
+			
+	if($tab == 'view')
+		$viewtab['active'] = true;
+	else
+		$viewtab['active'] = false;
+	
+	/* Main tab */
+	$maintab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">' 
+			. print_image ("images/cog.png", true, array ("title" =>__('Setup')))
+			. '</a>';
+	if($tab == 'main')
+	
+		$maintab['active'] = true;
+	else
+		$maintab['active'] = false;
+		
+	/* Module tab */
+	$moduletab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">' 
+			. print_image ("images/lightbulb.png", true, array ("title" =>__('Modules')))
+			. '</a>';
+	
+	if($tab == 'module')
+		$moduletab['active'] = true;
+	else
+		$moduletab['active'] = false;
+		
+	/* Alert tab */
+	$alerttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">' 
+			. print_image ("images/bell.png", true, array ("title" =>__('Alerts')))
+			. '</a>';
+	
+	if($tab == 'alert')
+		$alerttab['active'] = true;
+	else
+		$alerttab['active'] = false;		
+		
+	/* Template tab */
+	$templatetab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">' 
+			. print_image ("images/network.png", true, array ("title" =>__('Module templates')))
+			. '</a>';
+	
+	if($tab == 'template')
+		$templatetab['active'] = true;
+	else
+		$templatetab['active'] = false;		
+	
+	
+	/* Inventory */
+	$inventorytab = enterprise_hook ('inventory_tab');
+
+	if ($inventorytab == -1)
+		$inventorytab = "";
+
+	/* Collection */
+	$collectiontab = enterprise_hook('collection_tab');
+
+	if ($collectiontab == -1)
+		$collectiontab = "";
+	
+	/* Group tab */
+	
+	$grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'
+			. print_image ("images/agents_group.png", true, array( "title=" => __('Group')))
+			. '</a>';
+	
+	$grouptab['active'] = false;
+	
+	$gistab = "";
+	
+	/* GIS tab */
+	if ($config['activate_gis']) {
+		
+		$gistab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'
+			. print_image ("images/world.png", true, array ( "title" => __('GIS data')))
+			. '</a>';
+
+		if ($tab == "gis")
+			$gistab['active'] = true;
+		else
+			$gistab['active'] = false;
+	}
+	
+	$onheader = array('view' => $viewtab, 'main' => $maintab, 'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab, 'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+
+	print_page_header (__('Agent configuration').' -&nbsp;'.mb_substr(get_agent_name ($id_agente), 0, 21), "images/setup.png", false, "", true, $onheader);
+	
 }
 // Create agent 
 else {

@@ -30,6 +30,8 @@ if (is_ajax ()) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
+	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
+	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
@@ -118,7 +120,9 @@ if (is_ajax ()) {
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
-		echo '<h3>'.$agent['nombre'].'</h3>';
+		echo '<h3>';
+		echo '<img src="images/bricks.png" />&nbsp;';
+		echo printTruncateText($agent['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
 		echo '<img src="images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png" /> ';
@@ -202,6 +206,60 @@ if (is_ajax ()) {
 		return;
 	}
 
+	if ($get_agentmodule_status_tooltip) {
+		$id_module = (int) get_parameter ('id_module');
+		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
+		echo '<h3>';
+		echo '<img src="images/brick.png" />&nbsp;';
+		echo printTruncateText($module['nombre'],25,false,true,false).'</h3>';
+		echo '<strong>'.__('Type').':</strong> ';
+		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
+		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
+		echo '<img src="images/'.get_module_type_icon ($agentmoduletype).'" /> <br />';
+		echo '<strong>'.__('Module group').':</strong> ';
+		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
+		if($modulegroup === false){
+			echo __('None').'<br />';
+		}
+		else{
+			echo $modulegroup.'<br />';
+		}
+		echo '<strong>'.__('Agent').':</strong> ';
+		echo printTruncateText(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
+		
+		return;
+	}
+
+	if ($get_group_status_tooltip) {
+		$id_group = (int) get_parameter ('id_group');
+		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+		echo '<h3><img src="images/groups_small/'.get_group_icon ($group['id_grupo']).'.png" /> ';
+		echo printTruncateText($group['nombre'],25,false,true,false).'</h3>';
+		echo '<strong>'.__('Parent').':</strong> ';
+		if($group['parent'] == 0) {
+			echo __('None').'<br />';
+		}
+		else {
+			$group_parent = get_db_row ('tgrupo', 'id_grupo', $group['parent']);
+			echo '<img src="images/groups_small/'.get_group_icon ($group['parent']).'.png" /> ';
+			echo $group_parent['nombre'].'<br />';
+		}
+		echo '<strong>'.__('Sons').':</strong> ';
+		$groups_sons = get_db_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
+		if($groups_sons === false){ 
+			echo __('None').'<br />';
+		}
+		else{
+			echo '<br /><br />';
+			foreach($groups_sons as $group_son) {
+				echo '<img src="images/groups_small/'.get_group_icon ($group_son['id_grupo']).'.png" /> ';
+				echo $group_son['nombre'].'<br />';
+			}
+		}
+		
+		return;
+	}
+	
 	return;
 }
 

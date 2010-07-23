@@ -25,8 +25,6 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	exit;
 }
 
-echo '<h3>'.__('Add alert').'</h3>';
-
 $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->head = array ();
@@ -98,7 +96,7 @@ echo '<form class="add_alert_form" method="post">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('Add'), 'add', false, 'class="sub wand"');
+print_submit_button (__('Add alert'), 'add', false, 'class="sub wand"');
 print_input_hidden ('create_alert', 1);
 echo '</div></form>';
 

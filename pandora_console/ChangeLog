@@ -1,3 +1,10 @@
+2010-07-23  Dario Rodriguez   <dario.rodriguez@gmail.com>
+
+	* operation/agentes/ver_agente.php: Changed code to use print_page_header
+	to print de tabs
+	* godmode/agentes/configurar_agente.php: Changed code to use print_page_header
+	to print de tabs
+
 2010-07-23  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/alerts/aler_list*.php: Cleaned code. Removed old title style.

@@ -235,93 +235,110 @@ if (isset($_GET["flag_agent"])){
 	}
 }
 
-echo "<div id='menu_tab_frame_view'>";
 if ($agent["icon_path"]) {
 	$icon = get_agent_icon_map($agent["id_agente"], true);
 }
 else {
 	$icon = 'images/bricks.png';
 }
-echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='$icon' class='top' border=0>&nbsp; ".__("Agent")."&nbsp;-&nbsp;".mb_substr(get_agent_name($id_agente),0,25)."</a>";
-echo "</li>";
-echo "</ul></div>";
+
+
 $tab = get_parameter ("tab", "main");
-echo "<div id='menu_tab'><ul class='mn'>";
+
+/* Manage tab */
+
+$managetab = "";
+
 if (give_acl ($config['id_user'],$id_grupo, "AW")) {
-	if ($tab == "manage") {
-		echo "<li class='nomn_high'>";
-	} else {
-		echo "<li class='nomn'>";
-	}
-	// Manage agent
-	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0 title='".__('Manage')."'>&nbsp;</a>";
-	echo "</li>";
+	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
+		. print_image("images/setup.png", true, array("title=" => __('Manage')))
+		. '</a>';
+
+	if ($tab == 'manage')
+		$managetab['active'] = true;
+	else
+		$managetab['active'] = false;
 }
 
-// Main view
-if ($tab == "main") {
-	echo "<li class='nomn_high'>";
+/* Main tab */
+$maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
+		. print_image("images/monitor.png", true, array("title=" => __('Main')))
+		. '</a>';
+		
+if ($tab == 'main')
+	$maintab['active'] = true;
+else
+	$maintab['active'] = false;
+	
+/* Data */
+$datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
+	. print_image("images/lightbulb.png", true, array("title=" => __('Data')))
+	. '</a>';
+
+if (($tab == 'data') OR ($tab == 'data_view'))
+	$datatab['active'] = true;
+else
+	$datatab['active'] = false;
+
+/* Alert tab */
+$alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
+		. print_image("images/bell.png", true, array("title=" => __('Alerts')))
+		. '</a>';
+		
+if ($tab == 'alert')
+	$alerttab['active'] = true;
+else
+	$alerttab['active'] = false;
+	
+/* SLA view */
+$slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente='.$id_agente.'">'
+		. print_image("images/images.png", true, array("title=" => __('S.L.A.')))
+		. '</a>';
+
+if ($tab == 'sla') {
+	$slatab['active'] = true;
 } else {
-	echo "<li class='nomn'>";
+	$slatab['active'] = false;
 }
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0 title='".__('Main')."'>&nbsp;</a>";
-echo "</li>";
 
-// Data
-if (($tab == "data") OR ($tab == "data_view")) {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0 title='".__('Data')."'>&nbsp;</a>";
-echo "</li>";
+/* Inventory */
+$inventorytab = enterprise_hook ('inventory_tab');
 
-// Alerts
-if ($tab == "alert") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0 title='".__('Alerts')."'>&nbsp;</a>";
-echo "</li>";
+if ($inventorytab == -1)
+	$inventorytab = "";
 
-// Go to SLA view
-if ($tab == "sla") {
-	echo "<li class='nomn_high'>";
-} else {
-	echo "<li class='nomn'>";
-}
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0 title='".__('S.L.A.')."'>&nbsp;</a>";
-echo "</li>";
+/* Collection */
+$collectiontab = enterprise_hook('collection_tab');
 
-// Inventory
-enterprise_hook ('inventory_tab');
+if ($collectiontab == -1)
+	$collectiontab = "";
 
-// Collection
-enterprise_hook('collection_tab');
+/* Group tab */
 
-// Group tab
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
-echo "<img src='images/agents_group.png' class='top' border=0 title='". __("Group"). "'>&nbsp;</a></li>";
+$grouptab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$id_grupo.'">'
+	. print_image("images/agents_group.png", true, array( "title=" =>  __('Group')))
+	. '</a>';
+	
+$grouptab['active']=false;
 
-// GIS tab
+/* GIS tab */
+$gistab="";
 if ($config['activate_gis']) {
-	if ($tab == "gis") {
-		echo "<li class='nomn_high'>";
-	}
-	else {
-		echo "<li class='nomn'>";
-	}
-	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente=$id_agente'><img src='images/world.png' class='top' border=0 title='".__('GIS data')."'>&nbsp;</a>";
-	echo "</li>";
+	
+	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
+		.print_image("images/world.png", true, array( "title=" => __('GIS data')))
+		.'</a>';
+	
+	if ($tab == 'gis')
+		$gistab['active'] = true;
+	else 
+		$gistab['active'] = false;
 }
 
-echo "</ul>";
-echo "</div>";
-echo "</div>";
-echo "<div style='height: 25px'> </div>";
+$onheader = array('manage' => $managetab, 'main' => $maintab, 'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 'inventory' => $inventorytab, 'collection' => $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+
+print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
+
 
 switch ($tab) {
 	case "gis":

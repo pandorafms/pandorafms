@@ -114,7 +114,7 @@ if (isset ($_GET["user_del"])) { //delete user
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 700;
+$table->width = '700px';
 $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
@@ -202,10 +202,8 @@ foreach ($info as $user_id => $user_info) {
 
 print_table ($table);
 
+echo '<div style="width: '.$table->width.'" class="action-buttons">';
 unset ($table);
-
-	
-echo '<div style="width:680px" class="action-buttons">';
 if ($config["admin_can_add_user"] !== false) {
 	echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user">';
 	print_input_hidden ('new_user', 1);
@@ -221,7 +219,7 @@ echo '<h3>'.__('Profiles defined in Pandora').'</h3>';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = 'databox';
-$table->width = 700;
+$table->width = '700px';
 
 $table->head = array ();
 $table->data = array ();
@@ -240,9 +238,9 @@ $table->head[7] = "UM".print_help_tip (__('Users management'), true);
 $table->head[8] = "DM".print_help_tip (__('Database management'), true);
 $table->head[9] = "LM".print_help_tip (__('Alerts management'), true);
 $table->head[10] = "PM".print_help_tip (__('Systems management'), true);
-$table->head[11] = '';
+$table->head[11] = __('Delete');
 
-$table->align = array_fill (1, 10, "center");
+$table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
 
 $profiles = get_db_all_rows_in_table ("tperfil");
@@ -271,4 +269,5 @@ echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users
 print_table ($table);
 echo '</form>';
 unset ($table);
+
 ?>

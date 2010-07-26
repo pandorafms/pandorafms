@@ -2690,10 +2690,6 @@ function get_agent_status ($id_agent = 0) {
 	if(is_int(array_search(4,$modules_status))){
 		return 4;
 	}	
-	// Checking if any module has unknown status (3)
-	elseif(is_int(array_search(3,$modules_status))){
-		return 3;
-	}
 	// Checking if any module has critical status (1)
 	elseif(is_int(array_search(1,$modules_status))){
 		return 1;
@@ -2701,6 +2697,10 @@ function get_agent_status ($id_agent = 0) {
 	// Checking if any module has warning status (2)
 	elseif(is_int(array_search(2,$modules_status))){
 		return 2;
+	}
+	// Checking if any module has unknown status (3)
+	elseif(is_int(array_search(3,$modules_status))){
+		return 3;
 	}
 	else {
 		return 0;
@@ -2728,14 +2728,6 @@ function get_group_status ($id_group = 0) {
 	if(is_int(array_search(4,$agents_status))){
 		return 4;
 	}
-	// Checking if any agent has unknown status (-1)
-	elseif(is_int(array_search(-1,$agents_status))){
-		return -1;
-	}
-	// Checking if any agents module has unknown status (3)
-	elseif(is_int(array_search(3,$agents_status))){
-		return 3;
-	}
 	// Checking if any agent has critical status (1)
 	elseif(is_int(array_search(1,$agents_status))){
 		return 1;
@@ -2743,6 +2735,14 @@ function get_group_status ($id_group = 0) {
 	// Checking if any agent has warning status (2)
 	elseif(is_int(array_search(2,$agents_status))){
 		return 2;
+	}
+	// Checking if any agent has unknown status (-1)
+	elseif(is_int(array_search(-1,$agents_status))){
+		return -1;
+	}
+	// Checking if any agents module has unknown status (3)
+	elseif(is_int(array_search(3,$agents_status))){
+		return 3;
 	}
 	else {
 		return 0;

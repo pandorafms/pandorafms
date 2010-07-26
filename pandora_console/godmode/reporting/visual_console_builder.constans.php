@@ -17,4 +17,6 @@ define('STATIC_GRAPH', 0);
 define('PERCENTILE_BAR', 3);
 define('MODULE_GRAPH', 1);
 define('SIMPLE_VALUE', 2);
+define('LABEL', 4);
+define('ICON', 5);
 ?>

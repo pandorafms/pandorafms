@@ -1,3 +1,34 @@
+2010-07-26  Miguel de Dios  <miguel.dedios@artica.es>
+	* images/mimetypes/text.png: added lost image file in previous commits about
+	collections.
+
+	*images/tag_red.disabled.png, images/cross.disabled.png,
+	images/chart_curve.disabled.png, images/config.disabled.png,
+	images/chart_bar.disabled.png, images/photo.disabled.png,
+	images/camera.disabled.png, images/binary.disabled.png: added image files
+	for the new palete buttons (when it are disabled) in visual console editor.
+	
+	* include/styles/pandora.css: added the styles for the new buttons of
+	visual console editor (label and icon), and some changes for new style for
+	buttons of the palete in this page.
+	
+	* include/functions_html.php: in function "print_button" added new
+	parameter $imageButton to set the button as image button, by default is
+	false.
+	
+	* include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php,
+	godmode/reporting/visual_console_builder.constans.php: change the buttons
+	palete for a palete with more small buttons as icon buttons, added new items
+	for visual map (icon and label). And fixed the dinamic change label color
+	for any elements.
+	
+	* include/functions_visual_map.php: added the new items (label and icon)
+	and cleaned the source code.
+	
+	Pending task: #3019641
+
 2010-07-26  Dario Rodriguez  <dario.rodriguez@integria.es>
 
 	* include/styles/pandora.css: Added css classes for separator.
@@ -44,7 +75,7 @@
 
 	* godmode/agentes/massive_config.php: Use better text in title and button.
 
-2010-07-21  Miguel de Dios  <miguel.dedios@artica.es>
+2010-07-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: added the show more data when click
 	in the icon eye.

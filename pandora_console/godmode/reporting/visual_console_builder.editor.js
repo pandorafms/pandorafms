@@ -128,6 +128,9 @@ function updateAction() {
 			break;
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
+			
+			$("#" + idItem).css('color', values['label_color']);
+			
 			$("#image_" + idItem).attr('src', getImageElement(idItem));
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
@@ -152,6 +155,26 @@ function updateAction() {
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
+			break;
+		case 'label':
+			$("#" + idItem).css('color', values['label_color']);
+			
+			$("#text_" + idItem).html(values['label']);
+			break;
+		case 'icon':
+			$("#image_" + idItem).attr('src', getImageElement(idItem));
+			if ((values['width'] != 0) && (values['height'] != 0)) {
+				$("#image_" + idItem).attr('width', values['width']);
+				$("#image_" + idItem).attr('height', values['height']);
+				$("#" + idItem).css('width', values['width'] + 'px');
+				$("#" + idItem).css('height', values['height'] + 'px');
+			}
+			else {
+				$("#image_" + idItem).removeAttr('width');
+				$("#image_" + idItem).removeAttr('height');
+				$("#" + idItem).css('width', '');
+				$("#" + idItem).css('height', '');
+			}
 			break;
 	}
 	
@@ -196,9 +219,21 @@ function createAction() {
 				validate = false;
 			}
 			break;
+		case 'label':
+			if ((values['label'] == '')) {
+				alert($("#message_alert_no_label").html());
+				validate = false;
+			}
+			break;
+		case 'icon':
+			if ((values['image'] == '')) {
+				alert($("#message_alert_no_image").html());
+				validate = false;
+			}
+			break;
 	}
 	
-	if (validate) { 
+	if (validate) {
 		insertDB(creationItem, values);
 		actionClick();
 	}
@@ -212,6 +247,8 @@ function actionClick() {
 		activeToolboxButton('percentile_bar', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
+		activeToolboxButton('label', true);
+		activeToolboxButton('icon', true);
 		
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
@@ -233,6 +270,9 @@ function actionClick() {
 	activeToolboxButton('percentile_bar', false);
 	activeToolboxButton('module_graph', false);
 	activeToolboxButton('simple_value', false);
+	activeToolboxButton('label', false);
+	activeToolboxButton('icon', false);
+	
 	activeToolboxButton('edit_item', false);
 	activeToolboxButton('delete_item', false);
 	
@@ -391,6 +431,7 @@ function cleanFields() {
 
 function getModuleGraph(id_data) {
 	var parameter = Array();
+	
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
@@ -557,6 +598,26 @@ function createItem(type, values, id_data) {
 				'</div>'
 			);
 			break;
+		case 'label':
+			var item = $('<div id="' + id_data + '" class="item label" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
+					'</div>'
+				);
+			break;
+		case 'icon':
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				var sizeStyle = '';
+				var imageSize = '';
+			}
+			else {
+				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
+				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
+			}
+			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' + 
+				'</div>'
+			);
+			break;
 	}
 	
 	$("#background").append(item);
@@ -643,6 +704,8 @@ function updateDB(type, idElement , values) {
 					case 'static_graph':
 					case 'percentile_bar':
 					case 'simple_value':
+					case 'label':
+					case 'icon':
 						if ((typeof(values['mov_left']) != 'undefined') &&
 								(typeof(values['mov_top']) != 'undefined')) {
 							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
@@ -777,6 +840,20 @@ function eventsItems() {
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
 			}
+			if ($(divParent).hasClass('label')) {
+				creationItem = null;
+				selectedItem = 'label';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('icon')) {
+				creationItem = null;
+				selectedItem = 'icon';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
 		}
 	});
 	
@@ -820,6 +897,20 @@ function eventsItems() {
 			if ($(divParent).hasClass('simple_value')) {
 				creationItem = null;
 				selectedItem = 'simple_value';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('label')) {
+				creationItem = null;
+				selectedItem = 'label';
+				idItem = $(divParent).attr('id');
+				activeToolboxButton('edit_item', true);
+				activeToolboxButton('delete_item', true);
+			}
+			if ($(divParent).hasClass('icon')) {
+				creationItem = null;
+				selectedItem = 'icon';
 				idItem = $(divParent).attr('id');
 				activeToolboxButton('edit_item', true);
 				activeToolboxButton('delete_item', true);
@@ -890,9 +981,6 @@ function unselectAll() {
 
 function click2(id) {
 	switch (id) {
-		case 'edit_item':
-			actionClick();
-			break;
 		case 'static_graph':
 			creationItem = 'static_graph';
 			actionClick();
@@ -907,6 +995,18 @@ function click2(id) {
 			break;
 		case 'simple_value':
 			creationItem = 'simple_value';
+			actionClick();
+			break;
+		case 'label':
+			creationItem = 'label';
+			actionClick();
+			break;
+		case 'icon':
+			creationItem = 'icon';
+			actionClick();
+			break;
+			
+		case 'edit_item':
 			actionClick();
 			break;
 		case 'delete_item':

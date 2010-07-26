@@ -19,7 +19,7 @@
  * @subpackage Reporting
  */
 
-function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '') {
+function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabled = false, $class= '', $imageButton = false) {
 	if ($float == 'left') {
 		$margin = 'margin-right';
 	}
@@ -27,7 +27,7 @@ function printButtonEditorVisualConsole($idDiv, $label, $float = 'left', $disabl
 		$margin = 'margin-left';
 	}
 	
-	print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . '; ' . $margin . ': 5px;"');
+	print_button($label, 'button_toolbox2', $disabled, "click2('" . $idDiv . "');", 'class="sub ' . $idDiv . ' ' . $class . '" style="float: ' . $float . ';"', false, $imageButton);
 	return;
 	
 	if (!$disabled) $disableClass = '';
@@ -111,6 +111,26 @@ function printItemInVisualConsole($layoutData) {
 			echo $text; 
 			echo ' <strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
 			echo '</div>';
+			break;
+		case LABEL:
+			echo '<div id="' . $id . '" class="item label" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo $text;
+			echo "</div>";
+			break;
+		case ICON:
+			if ($layoutData['image'] != null) {
+				$img = getImageStatusElement($layoutData);
+				$imgSizes = getimagesize($img);
+			}
+			if (($width != 0) && ($height != 0)) {
+				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
+				$imageSize = 'width="' . $width . '" height="' . $height . '"';
+			}
+			echo '<div id="' . $id . '" class="item icon" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			if ($layoutData['image'] != null) {
+				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+			}
+			echo "</div>";
 			break;
 	}
 	
@@ -234,20 +254,26 @@ function process_wizard_add_modules ($id_modules, $image, $id_layout, $range, $w
  * @return string The color as hexadecimal color in html.
  */
 function getColorLineStatus($layoutData) {
-	switch (getStatusElement($layoutData)) {
-		case 3:
-			$color = "#cccccc"; // Gray
-			break;
-		case 2:
-			$color = "#20f6f6"; // Yellow
-			break;
-		case 0:
-			$color = "#00ff00"; // Green
-			break;
-		case 4:
-		case 1:
-			$color = "#ff0000"; // Red
-			break;
+	if (($layoutData['type'] == 5) || ($layoutData['type'] == 4)) {
+		//ICON ELEMENT OR LABEL ELEMENT
+		$color = "#cccccc";
+	}
+	else {
+		switch (getStatusElement($layoutData)) {
+			case 3:
+				$color = "#cccccc"; // Gray
+				break;
+			case 2:
+				$color = "#20f6f6"; // Yellow
+				break;
+			case 0:
+				$color = "#00ff00"; // Green
+				break;
+			case 4:
+			case 1:
+				$color = "#ff0000"; // Red
+				break;
+		}
 	}
 	
 	return $color;
@@ -262,23 +288,30 @@ function getColorLineStatus($layoutData) {
  */
 function getImageStatusElement($layoutData) {
 	$img = "images/console/icons/" . $layoutData["image"];
-	switch (getStatusElement($layoutData)) {
-	case 1:
-	case 4:
-		//Critical (BAD or ALERT)
-		$img .= "_bad.png";
-		break;
-	case 0:
-		//Normal (OK)
-		$img .= "_ok.png";
-		break;
-	case 2:
-		//Warning
-		$img .= "_warning.png";
-		break;
-	default:
+	
+	if ($layoutData['type'] == 5) {
+		//ICON ELEMENT
 		$img .= ".png";
-		// Default is Grey (Other)
+	}
+	else {
+		switch (getStatusElement($layoutData)) {
+			case 1:
+			case 4:
+				//Critical (BAD or ALERT)
+				$img .= "_bad.png";
+				break;
+			case 0:
+				//Normal (OK)
+				$img .= "_ok.png";
+				break;
+			case 2:
+				//Warning
+				$img .= "_warning.png";
+				break;
+			default:
+				$img .= ".png";
+				// Default is Grey (Other)
+		}
 	}
 	
 	return $img;
@@ -486,22 +519,23 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				
 				$img = "images/console/icons/".$layout_data["image"];
 				switch ($status) {
-				case 1:
-				case 4:
-					//Critical (BAD or ALERT)
-					$img .= "_bad.png";
-					break;
-				case 0:
-					//Normal (OK)
-					$img .= "_ok.png";
-					break;
-				case 2:
-					//Warning
-					$img .= "_warning.png";
-					break;
-				default:
-					$img .= ".png";
-					// Default is Grey (Other)
+					case 1:
+					case 4:
+						//Critical (BAD or ALERT)
+						$img .= "_bad.png";
+						break;
+					case 0:
+						//Normal (OK)
+						$img .= "_ok.png";
+						break;
+					case 2:
+						//Warning
+						$img .= "_warning.png";
+						break;
+					default:
+						// Default is Grey (Other)
+						$img .= ".png";
+						break;
 				}
 				
 				if (is_file($img))
@@ -537,26 +571,118 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				echo "</div>";
 			}
 
-			// ****************************************************************
-			// SIMPLE DATA VALUE (type = 2)
-			// ****************************************************************
 			switch ($layout_data['type']) {
-			case 2:
-				if ($resizedMap)
-					echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else
-					echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				echo '<strong>'.$layout_data['label']. ' ';
-				echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
-				echo '</strong></div>';
-				break;
-
-			// ****************************************************************
-			// Progress bar
-			// ****************************************************************		
-			case 3:
+				case 4:
+					// ****************************************************************
+					// LABEL (type = 4)
+					// ****************************************************************
+					$z_index = 4;
+					if ($resizedMap)
+						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					else
+						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					
+					$endTagA = false;
+					if ($show_links) {
+						if (!isset($id_agent)) $id_agent = 0;
+						if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+							// Link to an agent
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							$endTagA = true;
+						} 
+						elseif ($layout_data['id_layout_linked'] > 0) {
+							// Link to a map
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							$endTagA = true;
+						}
+					}
+					if ($layout_data['label_color'][0] == '#') {
+						echo "<br />";
+						echo $layout_data['label'];	
+					}
+					if ($endTagA) echo "</a>";
+					echo "</div>";
+					break;
+				case 5:
+					// ****************************************************************
+					// ICON (type = 5)
+					// ****************************************************************
+					$z_index = 4;
+					if ($resizedMap)
+						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					else
+						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					
+					$endTagA = false;
+					if ($show_links) {
+						if (!isset($id_agent)) $id_agent = 0;
+						if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
+							// Link to an agent
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+							$endTagA = true;
+						} 
+						elseif ($layout_data['id_layout_linked'] > 0) {
+							// Link to a map
+							echo '<a style="' . ($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '') . '" href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data["id_layout_linked"].'">';
+							$endTagA = true;
+						}
+					}
 				
-					// Percentile bar (type = 3)
+					$img_style = array ();
+					$img_style["title"] = $layout_data["label"];
+				
+					if (!empty ($layout_data["width"])) {
+						$img_style["width"] = $layout_data["width"];
+					} 
+					if (!empty ($layout_data["height"])) {
+						$img_style["height"] = $layout_data["height"];
+					}
+				
+					$img = "images/console/icons/".$layout_data["image"] . ".png";
+				
+					if (is_file($img))
+						$infoImage = getimagesize($img);
+				
+					if (!empty ($layout_data["width"])) {
+						if ($resizedMap)
+							$img_style["width"] = (integer)($proportion * $layout_data["width"]);
+						else
+							$img_style["width"] = $layout_data["width"];
+					}
+					else
+						$img_style["width"] = (integer)($proportion * $infoImage[0]);
+				
+					if (!empty ($layout_data["height"])) {
+						if ($resizedMap)
+							$img_style["height"] = (integer)($proportion * $img_style["height"]);
+						else
+							$img_style["height"] = $layout_data["height"];
+					}
+					else
+						$img_style["height"] = (integer)($proportion * $infoImage[1]);
+				
+					print_image ($img, false, $img_style);
+					
+					if ($endTagA) echo "</a>";
+					
+					echo "</div>";
+					break;
+				case 2:
+					// ****************************************************************
+					// SIMPLE DATA VALUE (type = 2)
+					// ****************************************************************
+					if ($resizedMap)
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					else
+						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<strong>'.$layout_data['label']. ' ';
+					echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
+					echo '</strong></div>';
+					break;	
+				case 3:
+					// ****************************************************************
+					// Progress bar
+					// ****************************************************************	
 					if ($resizedMap)
 						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
@@ -577,13 +703,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						echo "<img src='".$config["homeurl"]."/include/fgraph.php?tipo=progress&height=15&width=$width&mode=1&percent=$percentile'>";
 	
 					echo '</div>';
-				//}
-				break;
-
-			// ****************************************************************
-			// Single module graph
-			// ****************************************************************
-			case 1;
+					break;
+				case 1;
+					// ****************************************************************
+					// Single module graph
+					// ****************************************************************
 					// SINGLE GRAPH (type = 1)
 					if ($resizedMap)
 						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
@@ -611,20 +735,8 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=".safe_input ($layout_data['label'])."&height=".$layout_data['height']."&pure=1&width=".$layout_data['width']."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
 					echo "</a>";
 					echo "</div>";
-				break;
+					break;
 			}
-			// Line, not implemented in editor
-			/*
-			} elseif ($layout_data['type'] == 2) {
-				$line['id'] = $layout_data['id'];
-				$line['x'] = $layout_data['pos_x'];
-				$line['y'] = $layout_data['pos_y'];
-				$line['width'] = $layout_data['width'];
-				$line['height'] = $layout_data['height'];
-				$line['color'] = $layout_data['label_color'];
-				array_push ($lines, $line);
-			}
-			*/
 			
 			// ****************************************************************
 			// Lines joining objects

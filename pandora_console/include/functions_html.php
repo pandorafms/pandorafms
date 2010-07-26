@@ -602,13 +602,20 @@ function print_submit_button ($label = 'OK', $name = '', $disabled = false, $att
  * @param string $script JavaScript to attach
  * @param string $attributes Additional HTML attributes.
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $imageButton Set the button as a image button without text, by default is false.
  *
  * @return string HTML code if return parameter is true.
  */
-function print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false) {
+function print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
 	$output = '';
 
-	$output .= '<input type="button" id="button-'.$name.'" name="'.$name.'" value="'. $label .'" onClick="'. $script.'" '.$attributes;
+	$alt = $title = '';
+	if ($imageButton) {
+		$alt = $title = $label;
+		$label = '';
+	}
+	
+	$output .= '<input title="' . $title . '" alt="' . $alt . '" type="button" id="button-'.$name.'" name="'.$name.'" value="'. $label .'" onClick="'. $script.'" '.$attributes;
 	if ($disabled)
 		$output .= ' disabled';
 	$output .= ' />';

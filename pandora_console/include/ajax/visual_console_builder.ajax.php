@@ -99,6 +99,8 @@ switch ($action) {
 			case 'percentile_bar':
 			case 'static_graph':
 			case 'module_graph':
+			case 'label':
+			case 'icon':
 				$values = array();
 				if ($label !== null) {
 					$values['label'] = $label;
@@ -145,6 +147,7 @@ switch ($action) {
 							$values['height'] = $max_percentile;
 						}
 						break;
+					case 'icon':
 					case 'static_graph':
 						if ($image !== null) {
 							$values['image'] = $image;
@@ -171,6 +174,8 @@ switch ($action) {
 			case 'static_graph':
 			case 'module_graph':
 			case 'simple_value':
+			case 'label':
+			case 'icon':
 				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
 				$elementFields['agent_name'] = get_agent_name($elementFields['id_agent']);
 				//Make the html of select box of modules about id_agent.
@@ -235,6 +240,15 @@ switch ($action) {
 				break;
 			case 'simple_value':
 				$values['type'] = SIMPLE_VALUE;
+				break;
+			case 'label':
+				$values['type'] = LABEL;
+				break;
+			case 'icon':
+				$values['type'] = ICON;
+				$values['image'] = $image;
+				$values['width'] = $width;
+				$values['height'] = $height;
 				break;
 		}
 		$idData = process_sql_insert('tlayout_data', $values);

@@ -46,13 +46,15 @@ foreach ($all_images as $image_file) {
 
 echo '<div id="editor" style="margin-top: -10px;">';
 	echo '<div id="toolbox">';
-		printButtonEditorVisualConsole('static_graph', __('Static Graph'), 'left', false, 'camera');
-		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile');
-		printButtonEditorVisualConsole('module_graph', __('Module Graph'), 'left', false, 'graph');
-		printButtonEditorVisualConsole('simple_value', __('Simple Value'), 'left', false, 'binary');
+		printButtonEditorVisualConsole('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
+		printButtonEditorVisualConsole('percentile_bar', __('Percentile Bar'), 'left', false, 'percentile_min', true);
+		printButtonEditorVisualConsole('module_graph', __('Module Graph'), 'left', false, 'graph_min', true);
+		printButtonEditorVisualConsole('simple_value', __('Simple Value'), 'left', false, 'binary_min', true);
+		printButtonEditorVisualConsole('label', __('Label'), 'left', false, 'label_min', true);
+		printButtonEditorVisualConsole('icon', __('Icon'), 'left', false, 'icon_min', true);
 		
-		printButtonEditorVisualConsole('edit_item', __('Edit item'), 'right', true, 'config');
-		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true, 'delete');
+		printButtonEditorVisualConsole('edit_item', __('Edit item'), 'right', true, 'config_min', true);
+		printButtonEditorVisualConsole('delete_item', __('Delete item'), 'right', true, 'delete_min', true);
 	echo '</div>';
 echo '</div>';
 echo '<div style="clear: right; margin-bottom: 10px;"></div>';
@@ -94,13 +96,16 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		<span id="title_panel_span_background" class="title_panel_span" style="display: none; visibility:hidden; font-weight: bolder;"><?php echo  __('Background');?></span>
 		<span id="title_panel_span_static_graph" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Static Graph');?></span>
 		<span id="title_panel_span_percentile_bar" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Percentile Bar');?></span>
+		<span id="title_panel_span_simple_value" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Simple value');?></span>
+		<span id="title_panel_span_label" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Label');?></span>
+		<span id="title_panel_span_icon" class="title_panel_span" style="display: none; font-weight: bolder;"><?php echo  __('Icon');?></span>
 	</caption>
 	<tbody>
-		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="label_row" style="" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td style=""><?php echo __('Label');?></td>
 			<td style=""><?php print_input_text ('label', '', '', 20, 200); ?></td>
 		</tr>
-		<tr id="image_row" style="" class="static_graph datos">
+		<tr id="image_row" style="" class="static_graph icon datos">
 			<td><?php echo __('Image');?></td>
 			<td><?php print_select ($images_list, 'image', '', 'showPreviewStaticGraph(this.value);', 'None', '');?></td>
 		</tr>
@@ -173,7 +178,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 	</tbody>
 	<tbody id="advance_options" style="display: none;">
-		<tr id="position_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="position_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
 			<td><?php echo __('Position');?></td>
 			<td>
 				<?php
@@ -185,7 +190,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="size_row" class="background static_graph datos">
+		<tr id="size_row" class="background static_graph icon datos">
 			<td><?php echo __('Size') . '<a href="#" class="tip">&nbsp;<span>' . __("For use the original image file size, set 0 width and 0 height.") . '</span></a>';?></td>
 			<td>
 				<?php
@@ -195,11 +200,11 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="parent_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="parent_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
 			<td><?php echo __('Parent');?></td>
 			<td><?php print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);?></td>
 		</tr>
-		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
@@ -207,7 +212,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value datos">
+		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				
@@ -246,6 +251,8 @@ echo "</form>";
 
 //Hack to translate messages in javascript
 echo '<span style="display: none" id="message_alert_no_label_no_image">' . __('No image or name defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_label">' . __('No label defined.') .'</span>';
+echo '<span style="display: none" id="message_alert_no_image">' . __('No image defined.') .'</span>';
 
 require_css_file ('color-picker');
 

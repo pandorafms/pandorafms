@@ -1,3 +1,10 @@
+2010-07-26  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Do not compress data for async modules.
+
+	* lib/PandoraFMS/DataServer.pm: Check that the file exists before
+	  trying to parse the XML to avoid XML::Simple error messages.
+
 2010-07-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Sort files by creation date before

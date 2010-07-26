@@ -767,8 +767,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $module->{'id_agente_modulo'});
 
-	# Save module data
-	if ($module_type eq "log4x" || $save == 1) {
+	# Save module data. Async and log4x modules are not compressed.
+	if ($module_type =~ m/(async)|(log4x)/) || $save == 1) {
 		save_module_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
 	}
 }

@@ -127,6 +127,9 @@ sub data_consumer ($$) {
 	$file_name .= "/" unless (substr ($file_name, -1, 1) eq '/');	
 	$file_name .= $task;
 
+	# Double check that the file exists
+	return unless (-f $file_name);
+
 	# Try to parse the XML 3 times
 	my $xml_data;
 
@@ -134,18 +137,18 @@ sub data_consumer ($$) {
 		eval {
 			threads->yield;
 			$xml_data = XMLin ($file_name, forcearray => 'module');
-	};
+		};
 	
-	# Invalid XML
-	if ($@) {
-		sleep (10);
-		next;
-	}
+		# Invalid XML
+		if ($@) {
+			sleep (10);
+			next;
+		}
 
-	# Ignore the timestamp in the XML and use the file timestamp instead
-	$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+		# Ignore the timestamp in the XML and use the file timestamp instead
+		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
 
-	unlink ($file_name);
+		unlink ($file_name);
 		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
 		return;	
 	}

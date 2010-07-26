@@ -677,7 +677,12 @@ function get_agent_modules_count ($id_agent = 0) {
  * @return string Icon path of the given group
  */
 function get_group_icon ($id_group) {
-	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+	if ($id_group == 0) {
+		return 'world';
+	}
+	else {
+		return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+	}
 }
 
 

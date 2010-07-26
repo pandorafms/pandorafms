@@ -1,3 +1,15 @@
+2010-07-26  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_db.php: added into the function "get_group_icon" the
+	return icon for "all" group.
+	
+	* godmode/groups/configure_group.php: fixed and cleaned source code, for
+	the dinamic change of parent icon, show the select of parent with the
+	parent selected, and fixed the position of parent icon image.
+	Fixes: #3034677
+	 
+	* godmode/groups/group_list.php: changed the source code for to show the
+	"all" group open branch by default.
+
 2010-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_networkmap.php: Changed the color of the

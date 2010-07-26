@@ -184,7 +184,9 @@ foreach ($groups as $id_group => $group) {
 		$table->rowstyle[$iterator] = '';
 	}
 	else {
-		$table->rowstyle[$iterator] = 'display: none;';
+		if ($group['parent'] != 0) {
+			$table->rowstyle[$iterator] = 'display: none;';
+		}
 	}
 	
 	$symbolBranchs = '';
@@ -236,9 +238,16 @@ foreach ($groups as $id_group => $group) {
 	
 	$tabulation = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $group['deep']);
 	
+	if ($group['id_grupo'] == 0) {
+		$symbol = '-';
+	}
+	else {
+		$symbol = '+';
+	}
+	
 	if ($group['hash_branch']) {
 		$data[0] = '<strong>'.$tabulation . ' ' . 
-			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">+</span> '. $group['nombre'].'</a></strong>';
+			'<a href="javascript: showBranch(' . $group['id_grupo'] . ', ' . $group['parent'] . ');" title="' . __('Show branch children') . '"><span class="symbol_' . $group['id_grupo'] . ' ' . $symbolBranchs . '">' . $symbol . '</span> '. $group['nombre'].'</a></strong>';
 	}
 	else {
 		$data[0] = '<strong>'.$tabulation . ' '. $group['nombre'].'</strong>';

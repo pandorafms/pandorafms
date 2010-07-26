@@ -30,8 +30,6 @@ if (is_ajax ()) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
-	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
-	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
@@ -120,9 +118,7 @@ if (is_ajax ()) {
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
-		echo '<h3>';
-		echo '<img src="images/bricks.png" />&nbsp;';
-		echo printTruncateText($agent['nombre'],25,false,true,false).'</h3>';
+		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
 		echo '<img src="images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png" /> ';
@@ -206,60 +202,6 @@ if (is_ajax ()) {
 		return;
 	}
 
-	if ($get_agentmodule_status_tooltip) {
-		$id_module = (int) get_parameter ('id_module');
-		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
-		echo '<h3>';
-		echo '<img src="images/brick.png" />&nbsp;';
-		echo printTruncateText($module['nombre'],25,false,true,false).'</h3>';
-		echo '<strong>'.__('Type').':</strong> ';
-		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
-		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
-		echo '<img src="images/'.get_module_type_icon ($agentmoduletype).'" /> <br />';
-		echo '<strong>'.__('Module group').':</strong> ';
-		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
-		if($modulegroup === false){
-			echo __('None').'<br />';
-		}
-		else{
-			echo $modulegroup.'<br />';
-		}
-		echo '<strong>'.__('Agent').':</strong> ';
-		echo printTruncateText(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
-		
-		return;
-	}
-
-	if ($get_group_status_tooltip) {
-		$id_group = (int) get_parameter ('id_group');
-		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
-		echo '<h3><img src="images/groups_small/'.get_group_icon ($group['id_grupo']).'.png" /> ';
-		echo printTruncateText($group['nombre'],25,false,true,false).'</h3>';
-		echo '<strong>'.__('Parent').':</strong> ';
-		if($group['parent'] == 0) {
-			echo __('None').'<br />';
-		}
-		else {
-			$group_parent = get_db_row ('tgrupo', 'id_grupo', $group['parent']);
-			echo '<img src="images/groups_small/'.get_group_icon ($group['parent']).'.png" /> ';
-			echo $group_parent['nombre'].'<br />';
-		}
-		echo '<strong>'.__('Sons').':</strong> ';
-		$groups_sons = get_db_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
-		if($groups_sons === false){ 
-			echo __('None').'<br />';
-		}
-		else{
-			echo '<br /><br />';
-			foreach($groups_sons as $group_son) {
-				echo '<img src="images/groups_small/'.get_group_icon ($group_son['id_grupo']).'.png" /> ';
-				echo $group_son['nombre'].'<br />';
-			}
-		}
-		
-		return;
-	}
-	
 	return;
 }
 
@@ -309,7 +251,7 @@ $managetab = "";
 
 if (give_acl ($config['id_user'],$id_grupo, "AW")) {
 	$managetab['text'] ='<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'
-		. print_image("images/setup.png", true, array("title=" => __('Manage')))
+		. print_image("images/setup.png", true, array ("title" => __('Manage')))
 		. '</a>';
 
 	if ($tab == 'manage')
@@ -320,7 +262,7 @@ if (give_acl ($config['id_user'],$id_grupo, "AW")) {
 
 /* Main tab */
 $maintab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'
-		. print_image("images/monitor.png", true, array("title=" => __('Main')))
+		. print_image("images/monitor.png", true, array("title" => __('Main')))
 		. '</a>';
 		
 if ($tab == 'main')
@@ -330,7 +272,7 @@ else
 	
 /* Data */
 $datatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=data">'
-	. print_image("images/lightbulb.png", true, array("title=" => __('Data')))
+	. print_image("images/lightbulb.png", true, array("title" => __('Data')))
 	. '</a>';
 
 if (($tab == 'data') OR ($tab == 'data_view'))
@@ -340,7 +282,7 @@ else
 
 /* Alert tab */
 $alerttab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'
-		. print_image("images/bell.png", true, array("title=" => __('Alerts')))
+		. print_image("images/bell.png", true, array("title" => __('Alerts')))
 		. '</a>';
 		
 if ($tab == 'alert')
@@ -350,7 +292,7 @@ else
 	
 /* SLA view */
 $slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente='.$id_agente.'">'
-		. print_image("images/images.png", true, array("title=" => __('S.L.A.')))
+		. print_image("images/images.png", true, array("title" => __('S.L.A.')))
 		. '</a>';
 
 if ($tab == 'sla') {
@@ -374,7 +316,7 @@ if ($collectiontab == -1)
 /* Group tab */
 
 $grouptab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='.$id_grupo.'">'
-	. print_image("images/agents_group.png", true, array( "title=" =>  __('Group')))
+	. print_image("images/agents_group.png", true, array( "title" =>  __('Group')))
 	. '</a>';
 	
 $grouptab['active']=false;
@@ -384,7 +326,7 @@ $gistab="";
 if ($config['activate_gis']) {
 	
 	$gistab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'
-		.print_image("images/world.png", true, array( "title=" => __('GIS data')))
+		.print_image("images/world.png", true, array( "title" => __('GIS data')))
 		.'</a>';
 	
 	if ($tab == 'gis')
@@ -393,7 +335,7 @@ if ($config['activate_gis']) {
 		$gistab['active'] = false;
 }
 
-$onheader = array('manage' => $managetab, 'main' => $maintab, 'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 'inventory' => $inventorytab, 'collection' => $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+$onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 'inventory' => $inventorytab, 'collection' => $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
 
 print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 

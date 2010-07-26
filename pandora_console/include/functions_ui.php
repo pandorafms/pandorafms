@@ -1439,11 +1439,13 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 
 	if ($godmode == true){
 		$type = "nomn";
-		$type2 = "menu_tab_frame";
+		$type2 = "menu_tab_frame";		
+		$separator_class = "separator";
 	} 
 	else {
 		$type = "view";
 		$type2 = "menu_tab_frame_view";
+		$separator_class = "separator_view";
 	}
 
 	
@@ -1458,21 +1460,25 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
-		foreach ($options as $option) {
-			if (is_array($option)) {
-				$class = 'nomn';
-				if ($option['active']) {
-					$class = 'nomn_high';
-				}
+		foreach ($options as $key => $option) {
+			if ($key == 'separator') {
+				$buffer .= '<li class='.$separator_class.'>';
+				$buffer .= '</li>';
+			} else {
+				if (is_array($option)) {
+				 $class = 'nomn';
+				 if ($option['active']) {
+				 	 $class = 'nomn_high';
+				 }
 				
-				$buffer .= '<li class="' . $class . '">';
-				$buffer .= $option['text'];
-				$buffer .= '</li>';
-			}
-			else {
-				$buffer .= '<li class="nomn">';
-				$buffer .= $option;
-				$buffer .= '</li>';
+				 $buffer .= '<li class="' . $class . '">';
+				 $buffer .= $option['text'];
+				 $buffer .= '</li>';
+				} else {
+					$buffer .= '<li class="nomn">';
+					$buffer .= $option;
+					$buffer .= '</li>';
+				}
 			}
 		}
 		$buffer .= '</ul></div>';

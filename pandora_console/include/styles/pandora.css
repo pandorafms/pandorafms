@@ -531,6 +531,18 @@ div.title_line {
 	font-weight: bold;
 	line-height: 18px;
 }
+
+#menu_tab li.separator_view {
+	background: #66AA44;
+	padding: 4px;
+}
+
+#menu_tab li.separator {
+	background: #ce5c00;
+	padding: 4px;
+}
+
+
 #menu_tab li.nomn_high a {
 	background: #799E48;
 	color: #fff;

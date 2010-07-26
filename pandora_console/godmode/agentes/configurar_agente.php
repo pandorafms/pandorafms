@@ -265,7 +265,7 @@ if ($id_agente) {
 	/* Group tab */
 	
 	$grouptab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'
-			. print_image ("images/agents_group.png", true, array( "title=" => __('Group')))
+			. print_image ("images/agents_group.png", true, array( "title" => __('Group')))
 			. '</a>';
 	
 	$grouptab['active'] = false;
@@ -285,7 +285,7 @@ if ($id_agente) {
 			$gistab['active'] = false;
 	}
 	
-	$onheader = array('view' => $viewtab, 'main' => $maintab, 'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab, 'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+	$onheader = array('view' => $viewtab, 'separator' => "", 'main' => $maintab, 'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab, 'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
 
 	print_page_header (__('Agent configuration').' -&nbsp;'.mb_substr(get_agent_name ($id_agente), 0, 21), "images/setup.png", false, "", true, $onheader);
 	

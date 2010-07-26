@@ -1,3 +1,8 @@
+2010-07-26  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/users/user_list.php: Added px to width to ease the change of
+	profile edition to this page.
+
 2010-07-26  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Changed the priority of the

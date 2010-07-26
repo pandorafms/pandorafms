@@ -1,3 +1,14 @@
+2010-07-26  Dario Rodriguez  <dario.rodriguez@integria.es>
+
+	* include/styles/pandora.css: Added css classes for separator.
+	* include/functions_ui.php: Added suport to add a separator betwenn tabs
+	in print_page_header.
+	* operation/agentes/ver_agente.php: Fixed some problems with alt tag in
+	images and added separator to tabs
+	* godmode/agentes/configurar_agente.php: Fixed some problems with alt tag
+	in images and added separator to tabs
+
+
 2010-07-23  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/alerts/alert_list.list.php: Added code to show title if page

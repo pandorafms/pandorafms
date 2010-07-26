@@ -1,3 +1,9 @@
+2010-07-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_db.php: Changed the priority of the
+	status of agents and groups when get status from their 
+	descendents
+
 2010-07-26  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_db.php: added into the function "get_group_icon" the
 	return icon for "all" group.

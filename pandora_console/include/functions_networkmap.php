@@ -361,7 +361,7 @@ function create_group_node ($group, $simple = 0, $font_size = 10) {
 				$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFE308'; // Alert fired
+				$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
 				$status_color = '#BBBBBB'; // Unknown monitor
@@ -406,7 +406,7 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 				$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFE308'; // Alert fired
+				$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
 				$status_color = '#BBBBBB'; // Unknown monitor
@@ -466,7 +466,7 @@ function create_module_node ($module, $simple = 0, $font_size = 10) {
 				$status_color = '#FFE308'; // Warning monitor
 			break;
 		case 4:
-				$status_color = '#FFE308'; // Alert fired
+				$status_color = '#FFA300'; // Alert fired
 			break;
 		default:
 				$status_color = '#BBBBBB'; // Unknown monitor

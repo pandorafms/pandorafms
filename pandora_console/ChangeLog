@@ -1,3 +1,9 @@
+2010-07-26  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php: Changed the color of the
+	modules, agents and groups with alerts fired in the network 
+	maps from yellow to orange.
+
 2010-07-26  Miguel de Dios  <miguel.dedios@artica.es>
 	* images/mimetypes/text.png: added lost image file in previous commits about
 	collections.

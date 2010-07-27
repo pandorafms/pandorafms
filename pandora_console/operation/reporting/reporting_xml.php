@@ -219,13 +219,14 @@ foreach ($contents as $content) {
 	
 			$data["objdata"]["sla"] = array ();
 			$sla_failed = false;
+			
 			foreach ($slas as $sla) {
 				$sla_data = array ();
 				$sla_data["agent"] = get_agentmodule_agent_name ($sla['id_agent_module']);
 				$sla_data["module"] = get_agentmodule_name ($sla['id_agent_module']);
 				$sla_data["max"] = $sla['sla_max'];
 				$sla_data["min"] = $sla['sla_min'];
-				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime);
+				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime, $content, $content['time_from'], $content['time_to']);
 				if ($sla_value === false) {
 					$sla_data["error"] = __('Unknown');
 				} else {
@@ -237,21 +238,6 @@ foreach ($contents as $content) {
 				array_push ($data["objdata"]["sla"], $sla_data);
 			}
 			break;
-//		case 4:
-//		case 'event_report':	
-//			$data["title"] = __("Event report");
-//			$table_report = event_reporting ($report['id_group'], $content['period'], $datetime, true);
-//			$data["objdata"] = "<![CDATA[";
-//			$data["objdata"] .= print_table ($table_report, true);
-//			$data["objdata"] .= "]]>";
-//			break;
-//		case 5:
-//		case 'alert_report':
-//			$data["title"] = __('Alert report');
-//			$data["objdata"] = "<![CDATA[";
-//			$data["objdata"] .= alert_reporting ($report['id_group'], $content['period'], $datetime, true);
-//			$data["objdata"] .= "]]>";
-//			break;
 		case 6:
 		case 'monitor_report':
 			$data["title"] = __('Monitor report');

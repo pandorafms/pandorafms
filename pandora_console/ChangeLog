@@ -1,4 +1,25 @@
 2010-07-27  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_reporting.php: added new parameters in the function
+	"get_agentmodule_sla", the parameters days of week to search and range of
+	time. And use new parameteres in the call for SLA data in function
+	"render_report_html_item".
+	
+	* pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: in table
+	"treport_content" added the fields for set days of week and range time
+	for SLA.
+	
+	* operation/reporting/reporting_xml.php: use new parameters in the call for
+	SLA data.
+
+	* godmode/reporting/reporting_builder.php: added source code for save,
+	update new fields (days of week and time range).
+	
+	* godmode/reporting/reporting_builder.item_editor.php: added source code to
+	show the fields (days of week and time range).
+	
+	Pending task: #3033457
+
+2010-07-27  Miguel de Dios  <miguel.dedios@artica.es>
 	* operation/agentes/exportdata.php: fixed the date into export, before it
 	was 12 hour format, now it is 24 hour format.
 	Fixes: #3033541

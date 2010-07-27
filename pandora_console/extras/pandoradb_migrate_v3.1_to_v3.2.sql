@@ -22,3 +22,16 @@
 -- Table `tgrupo`
 -- -----------------------------------------------------
 ALTER TABLE `tgrupo` ADD COLUMN `propagate` tinyint(1) unsigned NOT NULL default '0';
+
+-- -----------------------------------------------------
+-- Table `treport_content`
+-- -----------------------------------------------------
+ALTER TABLE `treport_content` ADD COLUMN `time_from` time default '00:00:00';
+ALTER TABLE `treport_content` ADD COLUMN `time_to` time default '00:00:00';
+ALTER TABLE `treport_content` ADD COLUMN `monday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `tuesday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `wednesday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `thursday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `friday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `saturday` tinyint(1) default 1;
+ALTER TABLE `treport_content` ADD COLUMN `sunday` tinyint(1) default 1;

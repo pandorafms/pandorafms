@@ -1,3 +1,7 @@
+2010-07-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Removed a misplaced parenthesis.
+
 2010-07-26  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Do not compress data for async modules.

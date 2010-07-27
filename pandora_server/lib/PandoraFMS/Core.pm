@@ -999,7 +999,7 @@ sub pandora_module_keep_alive ($$$$$) {
 	logger($pa_config, "Updating keep_alive module for agent '" . $agent_name . "'.", 10);
 
 	# Update keepalive module 
-	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND id_tipo_modulo = 100', $id_agent);
+	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND delete_pending = 0 AND id_tipo_modulo = 100', $id_agent);
 	return unless defined ($module);
 
 	my %data = ('data' => 1);

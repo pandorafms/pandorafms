@@ -1,3 +1,8 @@
+2010-07-27  Miguel de Dios  <miguel.dedios@artica.es>
+	* operation/agentes/exportdata.php: fixed the date into export, before it
+	was 12 hour format, now it is 24 hour format.
+	Fixes: #3033541
+
 2010-07-26  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/users/user_list.php: Added px to width to ease the change of

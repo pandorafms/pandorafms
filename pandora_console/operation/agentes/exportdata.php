@@ -115,7 +115,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$divider = '</td><td>';
 			$rowend = '</td></tr>';
 			$dataend = '</table>';
-		break;
+			break;
 		case "excel":
 			//Excel is tab-delimited, needs quotes and needs Windows-style newlines
 			$datastart = __('Agent')."\t".__('Module')."\t".__('Data')."\t".__('Timestamp')."\r\n";
@@ -124,7 +124,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$rowend = '"'."\r\n";
 			$dataend = "\r\n";
 			$extension = "xls";
-		break;
+			break;
 		case "csv":
 			//Pure CSV is comma delimited
 			$datastart = __('Agent').','.__('Module').','.__('Data').','.__('Timestamp')."\n";
@@ -133,7 +133,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$rowend = '"'."\n";
 			$dataend = "\n";
 			$extension = "csv";
-		break;
+			break;
 	}
 
 	// ***************************************************
@@ -152,6 +152,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			header("Content-Disposition: attachment; filename=export_".date("Ymd", $start)."_".date("Ymd", $end).".".$extension);
 			header("Pragma: no-cache");
 			header("Expires: 0");
+			break;
 	}
 
 	// ***************************************************
@@ -198,7 +199,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= $divider;
 						$output .= $module['data'];
 						$output .= $divider;
-						$output .= date ("Y-m-d g:i:s", $module['utimestamp']);
+						$output .= date ("Y-m-d G:i:s", $module['utimestamp']);
 						$output .= $rowend;
 					}
 
@@ -222,7 +223,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 			$output = "";
 			} // main foreach
 			echo $dataend;
-		break;
+			break;
 
 		case "avg":
 			foreach ($module as $selected) {

@@ -1,5 +1,13 @@
 2010-07-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Make sure delete_pending is set to 0
+	  when selecting keepalive modules.
+
+	* lib/PandoraFMS/DataServer.pm: Do not read more than max_queue_files
+	  files. Suppressed some warnings.
+
+2010-07-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Removed a misplaced parenthesis.
 
 2010-07-26  Ramon Novoa  <rnovoa@artica.es>

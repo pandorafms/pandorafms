@@ -171,7 +171,16 @@ switch ($action) {
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
 						$values['type'] = get_parameter('type', null);
-						
+						$values['monday'] = get_parameter('monday', 0);
+						$values['tuesday'] = get_parameter('tuesday', 0);
+						$values['wednesday'] = get_parameter('wednesday', 0);
+						$values['thursday'] = get_parameter('thursday', 0);
+						$values['friday'] = get_parameter('friday', 0);
+						$values['saturday'] = get_parameter('saturday', 0);
+						$values['sunday'] = get_parameter('sunday', 0);
+						$values['time_from'] = get_parameter('time_from');
+						$values['time_to'] = get_parameter('time_to');
+					
 						if ($values['type'] == 'sql') {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
@@ -201,6 +210,15 @@ switch ($action) {
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
+						$values['monday'] = get_parameter('monday', 0);
+						$values['tuesday'] = get_parameter('tuesday', 0);
+						$values['wednesday'] = get_parameter('wednesday', 0);
+						$values['thursday'] = get_parameter('thursday', 0);
+						$values['friday'] = get_parameter('friday', 0);
+						$values['saturday'] = get_parameter('saturday', 0);
+						$values['sunday'] = get_parameter('sunday', 0);
+						$values['time_from'] = get_parameter('time_from');
+						$values['time_to'] = get_parameter('time_to');
 						
 						if ($values['type'] == 'sql') {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');

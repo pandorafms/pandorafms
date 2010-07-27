@@ -305,11 +305,14 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
  * @param int Maximum data value the module in the right interval. False will
  * ignore max value
  * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param array $dayWeek  Array of days week to extract as array('monday' => false, 'tuesday' => true....), and by default is null.
+ * @param string $timeFrom Time in the day to start to extract in mysql format, by default null.
+ * @param string $timeTo Time in the day to end to extract in mysql format, by default null.
  * 
  * @return float SLA percentage of the requested module. False if no data were
  * found
  */
-function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0) {
+function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
 	
 	// Initialize variables
@@ -324,6 +327,48 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 			WHERE id_agente_modulo = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
+			
+	//Add the working times (mon - tue - wed ...) and from time to time
+	$days = array();
+	//Translate to mysql week days
+	foreach ($daysWeek as $key => $value) {
+		if (!$value) {
+			if ($key == 'monday') {
+				$days[] = 2;
+			}
+			if ($key == 'tuesday') {
+				$days[] = 3;
+			}
+			if ($key == 'wednesday') {
+				$days[] = 4;
+			}
+			if ($key == 'thursday') {
+				$days[] = 5;
+			}
+			if ($key == 'friday') {
+				$days[] = 6;
+			}
+			if ($key == 'saturday') {
+				$days[] = 7;
+			}
+			if ($key == 'sunday') {
+				$days[] = 1;
+			}
+		}
+	}
+
+	if (count($days) > 0) {
+		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+	}
+	
+	if (!empty($timeFrom)) {
+		$sql .= ' AND TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '"';
+	}
+	
+	if (!empty($timeTo)) {
+		$sql .= ' AND TIME(FROM_UNIXTIME(utimestamp)) <= "' . $timeTo . '"';
+	}
+	
 	$interval_data = get_db_all_rows_sql ($sql, true);
 	if ($interval_data === false) $interval_data = array ();
 	
@@ -1707,7 +1752,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
 				$data[0] .= $sla['sla_limit'];
 				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
-					$sla['sla_min'], $sla['sla_max'], $report["datetime"]);
+					$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'], $content['time_to']);
 				if ($sla_value === false) {
 					$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
 					$data[1] .= __('Unknown');

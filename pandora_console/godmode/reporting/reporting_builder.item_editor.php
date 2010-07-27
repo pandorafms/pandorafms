@@ -39,6 +39,16 @@ switch ($action) {
 		$description = null;
 		$sql = null;
 		$group = null;
+		
+		$monday = true;
+		$tuesday = true;
+		$wednesday = true;
+		$thursday = true;
+		$friday = true;
+		$saturday = true;
+		$sunday = true;
+		$time_from = '00:00';
+		$time_to = '23:59';
 		break;
 	default:
 		$actionParameter = 'update';
@@ -66,6 +76,16 @@ switch ($action) {
 			case 'SLA':
 				$description = $item['description'];
 				$period = $item['period'];
+				
+				$monday = $item['monday'];
+				$tuesday = $item['tuesday'];
+				$wednesday = $item['wednesday'];
+				$thursday = $item['thursday'];
+				$friday = $item['friday'];
+				$saturday = $item['saturday'];
+				$sunday = $item['sunday'];
+				$time_from = $item['time_from'];
+				$time_to = $item['time_to'];
 				break;
 			case 'monitor_report':
 				$description = $item['description'];
@@ -102,17 +122,6 @@ switch ($action) {
 				$idAgentModule = $item['id_agent_module'];
 				$period = $item['period'];
 				break;
-//			case 'agent_detailed':
-//				$description = $item['description'];
-//				$idAgent = $item['id_agent'];
-//				$period = $item['period'];
-//				break;
-//			case 'agent_detailed_event':
-//				$description = $item['description'];
-//				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-//				$idAgentModule = $item['id_agent_module'];
-//				$period = $item['period'];
-//				break;
 			case 'text':
 				$description = $item['description'];
 				$text = $item['text'];
@@ -187,24 +196,6 @@ switch ($action) {
 				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				$period = $item['period'];
 				break;
-//			case 'list_events_module':
-//				$description = $item['description'];
-//				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-//				$idAgentModule = $item['id_agent_module'];
-//				break;
-//			case 'list_events_agent':
-//				$description = $item['description'];
-//				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-//				break;
-//			case 'list_alerts_agent':
-//				$description = $item['description'];
-//				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-//				break;
-//			case 'list_alerts_module':
-//				$description = $item['description'];
-//				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
-//				$idAgentModule = $item['id_agent_module'];
-//				break;
 		}
 		
 		break;
@@ -246,6 +237,30 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_period" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
 			<td style=""><?php print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
+		</tr>
+		<tr id="row_working_time">
+			<td style="vertical-align: top;"><?php echo __('Working time');?></td>
+			<td>
+				<table border="0">
+					<tr>
+						<td><?php echo __('Monday'); print_checkbox('monday', 1, $monday);?></td>
+						<td><?php echo __('Tuesday'); print_checkbox('tuesday', 1, $tuesday);?></td>
+						<td><?php echo __('Wednesday'); print_checkbox('wednesday', 1, $wednesday);?></td>
+						<td><?php echo __('Thursday'); print_checkbox('thursday', 1, $thursday);?></td>
+						<td><?php echo __('Friday'); print_checkbox('friday', 1, $friday);?></td>
+						<td><?php echo __('Saturday'); print_checkbox('saturday', 1, $saturday);?></td>
+						<td><?php echo __('Sunday'); print_checkbox('sunday', 1, $sunday);?></td>
+					</tr>
+					<tr>
+						<td><?php echo __('Time from');?></td>
+						<td colspan="6"><?php print_input_text ('time_from', $time_from, '', 7, 7);?></td>
+					</tr>
+					<tr>
+						<td><?php echo __('Time to');?></td>
+						<td colspan="6"><?php print_input_text ('time_to', $time_to, '', 7, 7);?></td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
@@ -334,6 +349,7 @@ else {
 echo '</div>';
 echo '</form>';
 
+require_jquery_file ('timeentry');
 require_jquery_file ('autocomplete');
 require_javascript_file('pandora');
 if ($enterpriseEnable) {
@@ -427,6 +443,13 @@ $(document).ready (function () {
 	agent_module_autocomplete('#text-agent_sla', '#hidden-id_agent_sla', '#id_agent_module_sla');
 	chooseType();
 	chooseSQLquery();
+
+	$("#text-time_to, #text-time_from").timeEntry ({
+		spinnerImage: 'images/time-entry.png',
+		spinnerSize: [20, 20, 0],
+		show24Hours: true
+		}
+	);
 });
 
 function chooseSQLquery() {
@@ -553,6 +576,7 @@ function chooseType() {
 	$("#sla_list").css('display', 'none');
 	$("#row_custom_example").css('display', 'none');
 	$("#row_group").css('display', 'none');
+	$("#row_working_time").css('display', 'none');
 	
 	switch (type) {
 		case 'event_report_group':
@@ -575,6 +599,7 @@ function chooseType() {
 			$("#row_description").css('display', '');
 			$("#row_period").css('display', '');
 			$("#sla_list").css('display', '');
+			$("#row_working_time").css('display', '');
 			break;
 		case 'monitor_report':
 			$("#row_description").css('display', '');
@@ -611,12 +636,6 @@ function chooseType() {
 			$("#row_agent").css('display', '');
 			$("#row_period").css('display', '');
 			break;
-//		case 'agent_detailed_event':
-//			$("#row_description").css('display', '');
-//			$("#row_agent").css('display', '');
-//			$("#row_module").css('display', '');
-//			$("#row_period").css('display', '');
-//			break;
 		case 'text':
 			$("#row_description").css('display', '');
 			$("#row_text").css('display', '');
@@ -687,24 +706,6 @@ function chooseType() {
 			$("#row_module").css('display', '');
 			$("#row_period").css('display', '');
 			break;
-//		case 'list_events_module':
-//			$("#row_description").css('display', '');
-//			$("#row_agent").css('display', '');
-//			$("#row_module").css('display', '');
-//			break;
-//		case 'list_events_agent':
-//			$("#row_description").css('display', '');
-//			$("#row_agent").css('display', '');
-//			break;
-//		case 'list_alerts_agent':
-//			$("#row_description").css('display', '');
-//			$("#row_agent").css('display', '');
-//			break;
-//		case 'list_alerts_module':
-//			$("#row_description").css('display', '');
-//			$("#row_agent").css('display', '');
-//			$("#row_module").css('display', '');
-//			break;
 	}
 }
 </script>

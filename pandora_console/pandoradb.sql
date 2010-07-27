@@ -761,25 +761,37 @@ CREATE TABLE IF NOT EXISTS `treport` (
   PRIMARY KEY(`id_report`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `treport_content`
+-- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `treport_content` (
-  `id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_report` INTEGER UNSIGNED NOT NULL default 0,
-  `id_gs` INTEGER UNSIGNED NULL default NULL,
-  `id_agent_module` bigint(14) unsigned NULL default NULL,
-  `type` varchar(30) default 'simple_graph',
-  `period` int(11) NOT NULL default 0,
-  `order` int (11) NOT NULL default 0,
-  `description` mediumtext, 
-  `id_agent` int(10) unsigned NOT NULL default 0,
-  `text` TEXT default NULL,
-  `external_source` TinyText default NULL,
-  `treport_custom_sql_id` INTEGER UNSIGNED default 0,
-  `header_definition` TinyText default NULL,
-  `column_separator` TinyText default NULL,
-  `line_separator` TinyText default NULL,
-  PRIMARY KEY(`id_rc`),
-  FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
-     ON UPDATE CASCADE ON DELETE CASCADE
+	`id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_report` INTEGER UNSIGNED NOT NULL default 0,
+	`id_gs` INTEGER UNSIGNED NULL default NULL,
+	`id_agent_module` bigint(14) unsigned NULL default NULL,
+	`type` varchar(30) default 'simple_graph',
+	`period` int(11) NOT NULL default 0,
+	`order` int (11) NOT NULL default 0,
+	`description` mediumtext, 
+	`id_agent` int(10) unsigned NOT NULL default 0,
+	`text` TEXT default NULL,
+	`external_source` TinyText default NULL,
+	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
+	`header_definition` TinyText default NULL,
+	`column_separator` TinyText default NULL,
+	`line_separator` TinyText default NULL,
+	`time_from` time default '00:00:00',
+	`time_to` time default '00:00:00',
+	`monday` tinyint(1) default 1,
+	`tuesday` tinyint(1) default 1,
+	`wednesday` tinyint(1) default 1,
+	`thursday` tinyint(1) default 1,
+	`friday` tinyint(1) default 1,
+	`saturday` tinyint(1) default 1,
+	`sunday` tinyint(1) default 1,
+	PRIMARY KEY(`id_rc`),
+	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
+		ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `treport_content_sla_combined` (

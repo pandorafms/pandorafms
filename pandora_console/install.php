@@ -261,7 +261,7 @@ function install_step1_licence() {
 		";
 
 	if (!file_exists("COPYING")){
-		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.";
+		echo "<div class='warn'><b>Licence file 'COPYING' is not present in your distribution. This means you have some 'partial' Pandora FMS distribution. We cannot continue without accepting the licence file.</b>";
 		echo "</div>";
 	} else {
 

@@ -1,4 +1,7 @@
 2010-07-28  Miguel de Dios  <miguel.dedios@artica.es>
+	* install.php: fixed unclose bold tag.
+
+2010-07-28  Miguel de Dios  <miguel.dedios@artica.es>
 	* godmode/reporting/visual_console_builder.data.php: fixed the select box
 	field for to don't show None value for map background.
 

@@ -1,3 +1,7 @@
+2010-07-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* SunOS/pandora_agent.conf: Fixed a typo.
+
 2010-07-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Delete unused collections.

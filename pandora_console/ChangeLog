@@ -1,3 +1,7 @@
+2010-07-28  Miguel de Dios  <miguel.dedios@artica.es>
+	* godmode/reporting/visual_console_builder.data.php: fixed the select box
+	field for to don't show None value for map background.
+
 2010-07-27  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_reporting.php: added new parameters in the function
 	"get_agentmodule_sla", the parameters days of week to search and range of

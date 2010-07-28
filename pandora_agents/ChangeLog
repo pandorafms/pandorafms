@@ -1,3 +1,7 @@
+2010-07-28  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/SunOS/pandora_agent.conf: Fixed a typo.
+
 2010-07-21  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* win32/pandora_agent_conf.cc, pandora_agent_conf.h: Added logic to search 

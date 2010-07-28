@@ -263,7 +263,20 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		if ($sort !== false) {
 			asort ($fields);
 		}
+		$lastopttype = '';
 		foreach ($fields as $value => $label) {
+			$optlabel = $label;
+			if(is_array($label)){
+				if($label['optgroup'] != $lastopttype) {
+					if($lastopttype != '') {
+						$output .=  '</optgroup>';
+					}
+					$output .=  '<optgroup label="'.$label['optgroup'].'">';
+					$lastopttype = $label['optgroup'];
+				}				
+				$optlabel = $label['name'];
+			}
+			
 			$output .= '<option value="'.$value.'"';
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
@@ -277,11 +290,14 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 			if (is_array ($option_style) && in_array ($value, array_keys($option_style))) {
 				$output .= ' style="'.$option_style[$value].'"';
 			}
-			if ($label === '') {
+			if ($optlabel === '') {
 				$output .= '>'.$value."</option>";
 			} else {
-				$output .= '>'.$label."</option>";
+				$output .= '>'.$optlabel."</option>";
 			}
+		}
+		if(is_array($label)){
+			$output .= '</optgroup>';
 		}
 	}
 

@@ -1,3 +1,8 @@
+2010-07-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Async modules are not compressed. Fixed charts
+	  for these modules.
+
 2010-07-28  Miguel de Dios  <miguel.dedios@artica.es>
 	* install.php: fixed unclose bold tag.
 

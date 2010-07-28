@@ -157,6 +157,14 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$agent_id = get_agent_id ($agent_name);
 		$module_name = get_agentmodule_name ($agent_module_id);
 		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 20);
+		$id_module_type = get_agentmodule_type ($agent_module_id);
+		$module_type = get_moduletype_name ($id_module_type);
+		if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
+			$async_module = true;
+			$avg_only = 1;
+		} else {
+			$async_module = false;
+		}
 
 		// Get event data (contains alert data too)
 		if ($show_events == 1 || $show_alerts == 1) {
@@ -182,27 +190,36 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			$data = array ();
 		}
 	
-		// Get previous data
-		$previous_data = get_previous_data ($agent_module_id, $datelimit);
-		if ($previous_data !== false) {
-			$previous_data['utimestamp'] = $datelimit;
-			array_unshift ($data, $previous_data);
+		// Uncompressed module data
+		if ($async_module) {
+			$min_necessary = 1;
+
+		// Compressed module data
+		} else {
+			// Get previous data
+			$previous_data = get_previous_data ($agent_module_id, $datelimit);
+			if ($previous_data !== false) {
+				$previous_data['utimestamp'] = $datelimit;
+				array_unshift ($data, $previous_data);
+			}
+		
+			// Get next data
+			$nextData = get_next_data ($agent_module_id, $date);
+			if ($nextData !== false) {
+				array_push ($data, $nextData);
+			} else if (count ($data) > 0) {
+				// Propagate the last known data to the end of the interval
+				$nextData = array_pop ($data);
+				array_push ($data, $nextData);
+				$nextData['utimestamp'] = $date;
+				array_push ($data, $nextData);
+			}
+			
+			$min_necessary = 2;
 		}
-	
-		// Get next data
-		$nextData = get_next_data ($agent_module_id, $date);
-		if ($nextData !== false) {
-			array_push ($data, $nextData);
-		} else if (count ($data) > 0) {
-			// Propagate the last known data to the end of the interval
-			$nextData = array_pop ($data);
-			array_push ($data, $nextData);
-			$nextData['utimestamp'] = $date;
-			array_push ($data, $nextData);
-		}
-	
+
 		// Check available data
-		if (count ($data) < 2) {
+		if (count ($data) < $min_necessary) {
 			continue;
 		}
 
@@ -277,7 +294,11 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$previous_data = $total;
 			// Compressed data
 			} else {
-				$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
+				if ($async_module) {
+					$graph_values[$i][$timestamp] = 0;
+				} else {
+					$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
+				}
 			}
 		}
 	}
@@ -1271,6 +1292,14 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$agent_name = get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
 	$module_name = get_agentmodule_name ($agent_module_id);
+	$id_module_type = get_agentmodule_type ($agent_module_id);
+	$module_type = get_moduletype_name ($id_module_type);
+	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
+		$async_module = true;
+		$avg_only = 1;
+	} else {
+		$async_module = false;
+	}
 
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
@@ -1295,28 +1324,37 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($data === false) {
 		$data = array ();
 	}
-
-	// Get previous data
-	$previous_data = get_previous_data ($agent_module_id, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($data, $previous_data);
-	}
-
-	// Get next data
-	$nextData = get_next_data ($agent_module_id, $date);
-	if ($nextData !== false) {
-		array_push ($data, $nextData);
-	} else if (count ($data) > 0) {
-		// Propagate the last known data to the end of the interval
-		$nextData = array_pop ($data);
-		array_push ($data, $nextData);
-		$nextData['utimestamp'] = $date;
-		array_push ($data, $nextData);
+	
+	// Uncompressed module data
+	if ($async_module) {
+		$min_necessary = 1;
+	
+	// Compressed module data
+	} else {
+		// Get previous data
+		$previous_data = get_previous_data ($agent_module_id, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($data, $previous_data);
+		}
+	
+		// Get next data
+		$nextData = get_next_data ($agent_module_id, $date);
+		if ($nextData !== false) {
+			array_push ($data, $nextData);
+		} else if (count ($data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$nextData = array_pop ($data);
+			array_push ($data, $nextData);
+			$nextData['utimestamp'] = $date;
+			array_push ($data, $nextData);
+		}
+		
+		$min_necessary = 2;
 	}
 
 	// Check available data
-	if (count ($data) < 2) {
+	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
 			return fs_error_image ();
 		}
@@ -1405,9 +1443,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			$chart[$timestamp]['sum'] = $previous_data;
-			$chart[$timestamp]['min'] = $previous_data;
-			$chart[$timestamp]['max'] = $previous_data;
+			if ($async_module) {
+				$chart[$timestamp]['sum'] = 0;
+				$chart[$timestamp]['min'] = 0;
+				$chart[$timestamp]['max'] = 0;
+			} else {
+				$chart[$timestamp]['sum'] = $previous_data;
+				$chart[$timestamp]['min'] = $previous_data;
+				$chart[$timestamp]['max'] = $previous_data;
+			}
 		}
 
 		$chart[$timestamp]['count'] = 0;
@@ -1492,7 +1536,15 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$agent_name = get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
 	$module_name = get_agentmodule_name ($agent_module_id);
-	
+	$id_module_type = get_agentmodule_type ($agent_module_id);
+	$module_type = get_moduletype_name ($id_module_type);
+	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
+		$async_module = true;
+		$avg_only = 1;
+	} else {
+		$async_module = false;
+	}
+
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
 		$events = get_db_all_rows_filter ('tevento',
@@ -1517,27 +1569,36 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		$data = array ();
 	}
 
-	// Get previous data
-	$previous_data = get_previous_data ($agent_module_id, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($data, $previous_data);
-	}
+	// Uncompressed module data
+	if ($async_module) {
+		$min_necessary = 1;
 
-	// Get next data
-	$nextData = get_next_data ($agent_module_id, $date);
-	if ($nextData !== false) {
-		array_push ($data, $nextData);
-	} else if (count ($data) > 0) {
-		// Propagate the last known data to the end of the interval
-		$nextData = array_pop ($data);
-		array_push ($data, $nextData);
-		$nextData['utimestamp'] = $date;
-		array_push ($data, $nextData);
+	// Compressed module data
+	} else {
+		// Get previous data
+		$previous_data = get_previous_data ($agent_module_id, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($data, $previous_data);
+		}
+	
+		// Get next data
+		$nextData = get_next_data ($agent_module_id, $date);
+		if ($nextData !== false) {
+			array_push ($data, $nextData);
+		} else if (count ($data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$nextData = array_pop ($data);
+			array_push ($data, $nextData);
+			$nextData['utimestamp'] = $date;
+			array_push ($data, $nextData);
+		}
+		
+		$min_necessary = 2;
 	}
 
 	// Check available data
-	if (count ($data) < 2) {
+	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
 			return fs_error_image ();
 		}
@@ -1626,7 +1687,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			$chart[$timestamp]['sum'] = $previous_data;
+			if ($async_module) {
+				$chart[$timestamp]['sum'] = 0;
+			} else {
+				$chart[$timestamp]['sum'] = $previous_data;
+			}
 		}
 
 		$chart[$timestamp]['count'] = 0;
@@ -1733,7 +1798,15 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$agent_name = get_agentmodule_agent_name ($agent_module_id);
 	$agent_id = get_agent_id ($agent_name);
 	$module_name = get_agentmodule_name ($agent_module_id);
-	
+	$id_module_type = get_agentmodule_type ($agent_module_id);
+	$module_type = get_moduletype_name ($id_module_type);
+	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
+		$async_module = true;
+		$avg_only = 1;
+	} else {
+		$async_module = false;
+	}
+
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
 		$events = get_db_all_rows_filter ('tevento',
@@ -1758,27 +1831,36 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$data = array ();
 	}
 
-	// Get previous data
-	$previous_data = get_previous_data ($agent_module_id, $datelimit, 1);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($data, $previous_data);
-	}
+	// Uncompressed module data
+	if ($async_module) {
+		$min_necessary = 1;
 
-	// Get next data
-	$nextData = get_next_data ($agent_module_id, $date, 1);
-	if ($nextData !== false) {
-		array_push ($data, $nextData);
-	} else if (count ($data) > 0) {
-		// Propagate the last known data to the end of the interval
-		$nextData = array_pop ($data);
-		array_push ($data, $nextData);
-		$nextData['utimestamp'] = $date;
-		array_push ($data, $nextData);
+	// Compressed module data
+	} else {
+		// Get previous data
+		$previous_data = get_previous_data ($agent_module_id, $datelimit, 1);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($data, $previous_data);
+		}
+	
+		// Get next data
+		$nextData = get_next_data ($agent_module_id, $date, 1);
+		if ($nextData !== false) {
+			array_push ($data, $nextData);
+		} else if (count ($data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$nextData = array_pop ($data);
+			array_push ($data, $nextData);
+			$nextData['utimestamp'] = $date;
+			array_push ($data, $nextData);
+		}
+		
+		$min_necessary = 2;
 	}
 
 	// Check available data
-	if (count ($data) < 2) {
+	if (count ($data) < $min_necessary) {
 		if (!$graphic_type) {
 			return fs_error_image ();
 		}

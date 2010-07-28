@@ -205,7 +205,7 @@ sub exec_prediction_module ($$$$) {
             next unless defined ($first_data);
             $sum_data++ if ($last_data != 0);
             $sum_data++ if ($first_data != 0);
-            $week_data[$i] = (($last_data + $first_data) / $sum_data);
+            $week_data[$i] = ($sum_data > 0) ? (($last_data + $first_data) / $sum_data) : 0;
         } else {
             $week_data[$i] = $average_interval;
         }
@@ -232,7 +232,7 @@ sub exec_prediction_module ($$$$) {
                 $typical_deviation = $typical_deviation + (($week_data[$i] - $average)**2);
             }
         }
-        $typical_deviation = sqrt ($typical_deviation / ($n-1));
+	$typical_deviation = ($n > 1) ? sqrt ($typical_deviation / ($n-1)) : 0;
 
         my $current_value = get_db_value ($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $target_module->{'id_agente_modulo'});
         if ( ($current_value > ($average - $typical_deviation)) && ($current_value < ($average + $typical_deviation)) ){

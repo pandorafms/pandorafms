@@ -1,3 +1,8 @@
+2010-07-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php: Improved the print_select function
+	to allows agroupation of options
+
 2010-07-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Async modules are not compressed. Fixed charts

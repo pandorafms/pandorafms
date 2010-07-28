@@ -52,7 +52,7 @@ $table->data[1][1] = print_select_groups($config['id_user'], "AR", true, 'id_gro
 $backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');
-$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
+$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', '', 0, true);
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';

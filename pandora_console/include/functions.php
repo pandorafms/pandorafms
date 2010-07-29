@@ -747,6 +747,21 @@ function is_module_data_string ($module_name) {
 }
 
 /**
+ * Checks if a module data is uncompressed according
+ * to the module type.
+ *
+ * @param string module_type Type of the module.
+ *
+ * @return bool true if the module data is uncompressed.
+ */
+function is_module_uncompressed ($module_type) {
+	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
+		return true;
+	}
+	return false;
+}
+
+/**
  * Get all event types in an array
  *
  * @return array module_name Module name to check.

@@ -159,11 +159,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 20);
 		$id_module_type = get_agentmodule_type ($agent_module_id);
 		$module_type = get_moduletype_name ($id_module_type);
-		if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
-			$async_module = true;
+		$uncompressed_module = is_module_uncompressed ($module_type);
+		if ($uncompressed_module) {
 			$avg_only = 1;
-		} else {
-			$async_module = false;
 		}
 
 		// Get event data (contains alert data too)
@@ -191,7 +189,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		}
 	
 		// Uncompressed module data
-		if ($async_module) {
+		if ($uncompressed_module) {
 			$min_necessary = 1;
 
 		// Compressed module data
@@ -294,7 +292,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$previous_data = $total;
 			// Compressed data
 			} else {
-				if ($async_module) {
+				if ($uncompressed_module) {
 					$graph_values[$i][$timestamp] = 0;
 				} else {
 					$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
@@ -1294,11 +1292,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$module_name = get_agentmodule_name ($agent_module_id);
 	$id_module_type = get_agentmodule_type ($agent_module_id);
 	$module_type = get_moduletype_name ($id_module_type);
-	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
-		$async_module = true;
+	$uncompressed_module = is_module_uncompressed ($module_type);
+	if ($uncompressed_module) {
 		$avg_only = 1;
-	} else {
-		$async_module = false;
 	}
 
 	// Get event data (contains alert data too)
@@ -1326,7 +1322,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	
 	// Uncompressed module data
-	if ($async_module) {
+	if ($uncompressed_module) {
 		$min_necessary = 1;
 	
 	// Compressed module data
@@ -1443,7 +1439,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			if ($async_module) {
+			if ($uncompressed_module) {
 				$chart[$timestamp]['sum'] = 0;
 				$chart[$timestamp]['min'] = 0;
 				$chart[$timestamp]['max'] = 0;
@@ -1538,11 +1534,9 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$module_name = get_agentmodule_name ($agent_module_id);
 	$id_module_type = get_agentmodule_type ($agent_module_id);
 	$module_type = get_moduletype_name ($id_module_type);
-	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
-		$async_module = true;
+	$uncompressed_module = is_module_uncompressed ($module_type);
+	if ($uncompressed_module) {
 		$avg_only = 1;
-	} else {
-		$async_module = false;
 	}
 
 	// Get event data (contains alert data too)
@@ -1570,7 +1564,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 
 	// Uncompressed module data
-	if ($async_module) {
+	if ($uncompressed_module) {
 		$min_necessary = 1;
 
 	// Compressed module data
@@ -1687,7 +1681,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			if ($async_module) {
+			if ($uncompressed_module) {
 				$chart[$timestamp]['sum'] = 0;
 			} else {
 				$chart[$timestamp]['sum'] = $previous_data;
@@ -1800,11 +1794,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$module_name = get_agentmodule_name ($agent_module_id);
 	$id_module_type = get_agentmodule_type ($agent_module_id);
 	$module_type = get_moduletype_name ($id_module_type);
-	if (strstr($module_type, 'async') !== false || strstr($module_type, 'log4x') !== false) {
-		$async_module = true;
+	$uncompressed_module = is_module_uncompressed ($module_type);
+	if ($uncompressed_module) {
 		$avg_only = 1;
-	} else {
-		$async_module = false;
 	}
 
 	// Get event data (contains alert data too)
@@ -1832,7 +1824,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 
 	// Uncompressed module data
-	if ($async_module) {
+	if ($uncompressed_module) {
 		$min_necessary = 1;
 
 	// Compressed module data

@@ -44,6 +44,10 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
 
+	$id_module_type = get_agentmodule_type ($id_agent_module);
+	$module_type = get_moduletype_name ($id_module_type);
+	$uncompressed_module = is_module_uncompressed ($module_type);
+
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -52,43 +56,70 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
-	// Get previous data
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-
-	// Get next data
-	$next_data = get_next_data ($id_agent_module, $date);
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+	// Uncompressed module data
+	if ($uncompressed_module) {
+		$min_necessary = 1;
+	
+	// Compressed module data
 	} else {
-		// Propagate the last known data to the end of the interval
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+		// Get previous data
+		$previous_data = get_previous_data ($id_agent_module, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+	
+		// Get next data
+		$next_data = get_next_data ($id_agent_module, $date);
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		} else {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		$min_necessary = 2;
 	}
 
-	if (count ($interval_data) < 2) {
+	if (count ($interval_data) < $min_necessary) {
 		return -1;
 	}
 
 	// Set initial conditions
 	$total = 0;
-	$previous_data = array_shift ($interval_data);
+	$count = 0;
+	if (! $uncompressed_module) {
+		$previous_data = array_shift ($interval_data);
+	}
 	foreach ($interval_data as $data) {
-		$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
-		$previous_data = $data;
+		if (! $uncompressed_module) {
+			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
+			$previous_data = $data;
+		} else {
+			$total += $data['datos'];
+			$count++;
+		}
 	}
 
-	if ($period == 0) {
+	// Compressed module data
+	if (! $uncompressed_module) {
+		if ($period == 0) {
+			return 0;
+		}
+
+		return $total / $period;
+	}
+
+	// Uncompressed module data
+	if ($count == 0) {
 		return 0;
 	}
 
-	return $total / $period;
+	return $total / $count;	
 }
 
 /** 
@@ -108,6 +139,10 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
 
+	$id_module_type = get_agentmodule_type ($id_agent_module);
+	$module_type = get_moduletype_name ($id_module_type);
+	$uncompressed_module = is_module_uncompressed ($module_type);
+
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -116,36 +151,46 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
-	// Get previous data
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-
-	// Get next data
-	$next_data = get_next_data ($id_agent_module, $date);
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+	// Uncompressed module data
+	if ($uncompressed_module) {
+		$min_necessary = 1;
+	
+	// Compressed module data
 	} else {
-		// Propagate the last known data to the end of the interval
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+		// Get previous data
+		$previous_data = get_previous_data ($id_agent_module, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+	
+		// Get next data
+		$next_data = get_next_data ($id_agent_module, $date);
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		} else {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		$min_necessary = 2;
 	}
 
-	if (count ($interval_data) < 2) {
+	if (count ($interval_data) < $min_necessary) {
 		return -1;
 	}
 
 	// Set initial conditions
-	$previous_data = array_shift ($interval_data);
-	if ($previous_data['utimestamp'] == $datelimit) {
-		$max = $previous_data['datos'];
-	} else {
-		$max = 0;
+	$max = 0;
+	if (! $uncompressed_module) {
+		$previous_data = array_shift ($interval_data);
+		if ($previous_data['utimestamp'] == $datelimit) {
+			$max = $previous_data['datos'];
+		}
 	}
 	foreach ($interval_data as $data) {
 		if ($data['datos'] > $max) {
@@ -173,6 +218,10 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
 	$datelimit = $date - $period;	
 
+	$id_module_type = get_agentmodule_type ($id_agent_module);
+	$module_type = get_moduletype_name ($id_module_type);
+	$uncompressed_module = is_module_uncompressed ($module_type);
+
 	// Get module data
 	$interval_data = get_db_all_rows_sql ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = ' . (int) $id_agent_module .
@@ -181,36 +230,46 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
-	// Get previous data
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-
-	// Get next data
-	$next_data = get_next_data ($id_agent_module, $date);
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+	// Uncompressed module data
+	if ($uncompressed_module) {
+		$min_necessary = 1;
+	
+	// Compressed module data
 	} else {
-		// Propagate the last known data to the end of the interval
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+		// Get previous data
+		$previous_data = get_previous_data ($id_agent_module, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+	
+		// Get next data
+		$next_data = get_next_data ($id_agent_module, $date);
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		} else {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		$min_necessary = 2;
 	}
 
-	if (count ($interval_data) < 2) {
+	if (count ($interval_data) < $min_necessary) {
 		return -1;
 	}
 
 	// Set initial conditions
-	$previous_data = array_shift ($interval_data);
-	if ($previous_data['utimestamp'] == $datelimit) {
-		$min = $previous_data['datos'];
-	} else {
-		$min = 0;
+	$min = 0;
+	if (! $uncompressed_module) {
+		$previous_data = array_shift ($interval_data);
+		if ($previous_data['utimestamp'] == $datelimit) {
+			$min = $previous_data['datos'];
+		}
 	}
 	foreach ($interval_data as $data) {
 		if ($data['datos'] < $min) {
@@ -240,6 +299,7 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	$module_interval = get_module_interval ($id_agent_module);
+	$uncompressed_module = is_module_uncompressed ($module_name);
 
 	// Wrong module type
 	if (is_module_data_string ($module_name)) {
@@ -257,35 +317,49 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 			' ORDER BY utimestamp ASC', true);
 	if ($interval_data === false) $interval_data = array ();
 
-	// Get previous data
-	$previous_data = get_previous_data ($id_agent_module, $datelimit);
-	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
-		array_unshift ($interval_data, $previous_data);
-	}
-
-	// Get next data
-	$next_data = get_next_data ($id_agent_module, $date);
-	if ($next_data !== false) {
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+	// Uncompressed module data
+	if ($uncompressed_module) {
+		$min_necessary = 1;
+	
+	// Compressed module data
 	} else {
-		// Propagate the last known data to the end of the interval
-		$next_data = array_pop ($interval_data);
-		array_push ($interval_data, $next_data);
-		$next_data['utimestamp'] = $date;
-		array_push ($interval_data, $next_data);
+		// Get previous data
+		$previous_data = get_previous_data ($id_agent_module, $datelimit);
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+	
+		// Get next data
+		$next_data = get_next_data ($id_agent_module, $date);
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		} else {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		$min_necessary = 2;
 	}
 
-	if (count ($interval_data) < 2) {
+	if (count ($interval_data) < $min_necessary) {
 		return -1;
 	}
 
 	// Set initial conditions
 	$total = 0;
-	$previous_data = array_shift ($interval_data);
+	if (! $uncompressed_module) {
+		$previous_data = array_shift ($interval_data);
+	}
+
 	foreach ($interval_data as $data) {
-		if ($module_inc) {
+		if ($uncompressed_module) {
+			$total += $data['datos'];
+		} else if ($module_inc) {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
 		} else {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']) / $module_interval;

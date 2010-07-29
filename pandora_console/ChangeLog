@@ -1,3 +1,11 @@
+2010-07-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Updated reporting functions to work
+	  with uncompressed data. 
+
+	* include/fgraph.php, include/functions.php: Added a generic
+	  function to check whether a module has compressed data.
+
 2010-07-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Improved the print_select function

@@ -26,23 +26,121 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	exit;
 }
 
-require_once ('include/functions_networkmap.php');
-
-// Load variables
-$layout = (string) get_parameter ('layout', 'radial');
-$nooverlap = (int) get_parameter ('nooverlap', 0);
-$pure = (int) get_parameter ('pure');
-$zoom = (float) get_parameter ('zoom');
-$ranksep = (float) get_parameter ('ranksep', 2.5);
-$simple = (int) get_parameter ('simple', 0);
-$regen = (int) get_parameter ('regen',1); // Always regen by default
-$font_size = (int) get_parameter ('font_size', 12);
-$group = (int) get_parameter ('group', 0);
-$center = (int) get_parameter ('center', 0);
+require_once ('include/functions_networkmap.php');	
+	
+$pure = (int) get_parameter ('pure', 0);
 $activeTab = get_parameter ('tab', 'topology');
+$id_networkmap = get_parameter ('id_networkmap', 0);
+$save_networkmap = get_parameter ('save_networkmap', 0);
+$delete_networkmap = get_parameter ('delete_networkmap', 0);
+$add_networkmap = get_parameter ('add_networkmap', 0);
+$update_networkmap = get_parameter ('update_networkmap', 0);
+$recenter_networkmap = get_parameter ('recenter_networkmap', 0);
+
+if($delete_networkmap) {
+	$result = delete_networkmap($id_networkmap);
+	$message = print_result_message ($result,
+		__('Network map deleted successfully'),
+		__('Could not delete network map'), '', true);
+	
+	$id_networkmap = 0;
+}
+
+if($add_networkmap) {
+	// Load variables
+	$layout = 'radial';
+	$depth = 'all';
+	$nooverlap = 0;
+	$modwithalerts = 0;
+	$hidepolicymodules = 0;
+	$zoom = 1;
+	$ranksep = 2.5;
+	$simple = 0;
+	$regen = 1;
+	$font_size = 12;
+	$group = 0;
+	$module_group = 0;
+	$center = 0;
+	$name = $activeTab;
+	
+	$id_networkmap = create_networkmap($name, $activeTab, $layout, $nooverlap, $simple, $regen, $font_size, $group, $module_group, $depth, $modwithalerts, $hidepolicymodules, $zoom, $ranksep, $center);
+	$message = print_result_message ($id_networkmap,
+		__('Network map created successfully'),
+		__('Could not create network map'), '', true);
+}
+
+if($save_networkmap || $update_networkmap) {
+	// Load variables
+	$layout = (string) get_parameter ('layout', 'radial');
+	$depth = (string) get_parameter ('depth', 'all');
+	$nooverlap = (bool) get_parameter ('nooverlap', 0);
+	$modwithalerts = (int) get_parameter ('modwithalerts', 0);
+	$hidepolicymodules = (int) get_parameter ('hidepolicymodules', 0);
+	$zoom = (float) get_parameter ('zoom', 1);
+	$ranksep = (float) get_parameter ('ranksep', 2.5);
+	$simple = (int) get_parameter ('simple', 0);
+	$regen = (int) get_parameter ('regen', 0);
+	$font_size = (int) get_parameter ('font_size', 12);
+	$group = (int) get_parameter ('group', 0);
+	$module_group = (int) get_parameter ('module_group', 0);
+	$center = (int) get_parameter ('center', 0);
+	$name = (string) get_parameter ('name', $activeTab);
+		
+	if($save_networkmap){
+	$result = update_networkmap($id_networkmap, array('name' => $name, 'type' => $activeTab, 'layout' => $layout, 
+							'nooverlap' => $nooverlap, 'simple' => $simple, 'regenerate' => $regen, 'font_size' => $font_size, 
+							'id_group' => $group, 'id_module_group' => $module_group, 'depth' => $depth, 'only_modules_with_alerts' => $modwithalerts, 
+							'hide_policy_modules' => $hidepolicymodules, 'zoom' => $zoom, 'distance_nodes' => $ranksep, 'center' => $center));
+	$message = print_result_message ($result,
+		__('Network map saved successfully'),
+		__('Could not save network map'), '', true);
+	}
+}
+
+$networkmaps = get_networkmaps();
+
+$nomaps = false;
+if($networkmaps === false) {
+	$nomaps = true;
+}
+/*// When is the first map, we create one
+if($nomaps && $id_networkmap == 0) {
+	$add_networkmap = 1;
+}*/
+
+// If the map id is not defined, we set the first id of the active type
+if(!$nomaps && $id_networkmap == 0) {
+		$networkmaps_of_type = get_networkmaps('', $activeTab);
+		if($networkmaps_of_type !== false){
+			$id_networkmap = reset(array_keys($networkmaps_of_type));
+		}
+}
+
+if(!$update_networkmap && !$save_networkmap && $id_networkmap != 0) {
+	$networkmap_data = get_networkmap($id_networkmap);
+	
+	$layout = $networkmap_data['layout'];
+	$depth = $networkmap_data['depth'];
+	$nooverlap = (bool)$networkmap_data['nooverlap'];
+	$modwithalerts = $networkmap_data['only_modules_with_alerts'];
+	$hidepolicymodules = $networkmap_data['hide_policy_modules'];
+	$zoom = $networkmap_data['zoom'];
+	$ranksep = $networkmap_data['distance_nodes'];
+	$simple = $networkmap_data['simple'];
+	$regen = $networkmap_data['regenerate'];
+	$font_size = $networkmap_data['font_size'];
+	$group = $networkmap_data['id_group'];
+	$module_group = $networkmap_data['id_module_group'];
+	$center = $networkmap_data['center'];
+	$name = $networkmap_data['name'];
+	$activeTab = $networkmap_data['type'];
+}
+
+if($recenter_networkmap) {
+	$center = (int) get_parameter ('center', 0);
+}
+
 /* Main code */
-
-
 if ($pure == 1) {
 	$buttons['screen'] = array('active' => false,
 		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab='.$activeTab.'">' . 
@@ -66,6 +164,35 @@ $buttons['groups'] = array('active' => $activeTab == 'groups',
 $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 			print_image("images/recon.png", true, array ("title" => __('Topology view'))) .'</a>');
+			
+$buttons['separator'] = array('separator' => '');
+
+$combolist = '<form name="query_sel" method="post" action="index.php?sec=estado&sec2=operation/agentes/networkmap">';
+
+$combolist .= print_select($networkmaps, 'id_networkmap', $id_networkmap, 'onchange:this.form.submit()', __('No selected'), 0, true, false, false, '', false, 'margin-top:4px; margin-left:3px; width:150px;');
+
+$combolist .= '</form>';
+
+$buttons['combolist'] = $combolist;
+
+$buttons['addmap'] = array('active' => $activeTab == false,
+	'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;add_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
+			print_image("images/add.png", true, array ("title" => __('Add map'))) .'</a>');
+
+if(!$nomaps && $id_networkmap != 0) {			
+	$buttons['deletemap'] = array('active' => $activeTab == false,
+		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;delete_networkmap=1&amp;tab='.$activeTab.'&amp;pure='.$pure.'">' . 
+				print_image("images/cross.png", true, array ("title" => __('Delete map'))) .'</a>');
+
+	$buttons['savemap'] = array('active' => $activeTab == false,
+		'text' => '<a href="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;save_networkmap=1
+					&amp;tab='.$activeTab.'&amp;save_networkmap=1&amp;name='.$name.'&amp;group='.$group.'
+					&amp;layout='.$layout.'&amp;nooverlap='.$nooverlap.'&amp;simple='.$simple.'&amp;regen='.$regen.'
+					&amp;zoom='.$zoom.'&amp;ranksep='.$ranksep.'&amp;fontsize='.$font_size.'&amp;depth='.$depth.'
+					&amp;modwithalerts='.$modwithalerts.'&amp;hidepolicymodules='.$hidepolicymodules.'
+					&amp;module_group='.$module_group.'&amp;pure='.$pure.'">' . 
+				print_image("images/file.png", true, array ("title" => __('Save map'))) .'</a>');
+}
 
 switch($activeTab){
 	case 'topology':
@@ -79,21 +206,147 @@ switch($activeTab){
 			break;
 }
 
-print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "", false, $buttons);
+print_page_header (__('Network map')." - ".$title, "images/bricks.png", false, "network_map", false, $buttons);
 
-switch ($activeTab) {
-	case 'topology':
-		require_once('operation/agentes/networkmap.topology.php');
-		break;
-	case 'groups':
-		require_once('operation/agentes/networkmap.groups.php');
-		break;
-	case 'policies':
-		require_once(''.ENTERPRISE_DIR.'/operation/policies/networkmap.policies.php');
-		break;
-	default:
-		enterprise_selectTab($activeTab);
-		break;
+//echo $layout." ".$depth." ".$nooverlap." ".$modwithalerts." ".$hidepolicymodules." ".$zoom." ".
+//		$ranksep." ".$simple." ".$regen." ".$font_size." ".$group." ".$module_group." ".$center." ".$name;
+
+if($delete_networkmap || $add_networkmap || $save_networkmap) {
+	echo $message;
+}
+
+if($id_networkmap == 0) {
+			echo "<div class='nf'>".__('There are no defined maps in this view')."</div>";
+}
+
+if(!empty($name)) {
+	echo "<h3>".__('Name').": ".$name."</h3>";
+}
+
+// CONFIGURATION FORM
+
+// Layout selection
+$layout_array = array (
+			'circular' => 'circular',
+			'radial' => 'radial',
+			'spring1' => 'spring 1',
+			'spring2' => 'spring 2',
+			'flat' => 'flat');
+
+echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&amp;id_networkmap='.$id_networkmap.'&amp;tab='.$activeTab.'&amp;pure='.$pure.'&amp;center='.$center.'" method="post">';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="99%">';
+echo '<tr><td>';
+echo '<table cellpadding="0" cellspacing="0" border="0" width="100%">';
+echo '<tr>';
+echo '<td>';
+echo __('Name') . '<br />';
+print_input_text ('name', $name, '', 10, 25, 0);
+echo '</td>';
+echo '<td valign="top">' . __('Group') . '<br />';
+print_select_groups(false, false, false, 'group', $group, '', 'All', 0, false);
+echo '</td>';
+if($activeTab == 'groups' || $activeTab == 'policies'){
+	echo '<td valign="top">' . __('Module group') . '<br />';
+	print_select_from_sql ('SELECT id_mg, name FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, false);
+	echo '</td>';
+}
+echo '<td valign="top">' . __('Layout') . '<br />';
+print_select ($layout_array, 'layout', $layout, '', '', '');
+echo '</td>';
+
+if($activeTab == 'groups'){
+	echo '<td valign="top">' . __('Depth') . '<br />';
+	$depth_levels = array('all' => __('All'), 'agent' => __('Agents'), 'group' => __('Groups'));
+	print_select ($depth_levels, 'depth', $depth, '', '', '', 0, false, false);
+	echo '</td>';
+}
+
+if($activeTab == 'policies'){
+	echo '<td valign="top">' . __('Depth') . '<br />';
+	$depth_levels = array('all' => __('All'), 'agent' => __('Agents'), 'policy' => __('Policies'));
+	print_select ($depth_levels, 'depth', $depth, '', '', '', 0, false, false);
+	echo '</td>';
+}
+
+echo '</tr></table>';
+echo '</td></tr><tr><td>';
+echo '<table cellpadding="0" cellspacing="0" border="0" width="100%">';
+echo '<tr><td valign="top">' . __('No Overlap') . '<br />';
+print_checkbox ('nooverlap', '1', $nooverlap);
+echo '</td>';
+
+if(($activeTab == 'groups' || $activeTab == 'policies') && $depth == 'all') {
+	echo '<td valign="top">' . __('Only modules with alerts') . '<br />';
+	print_checkbox ('modwithalerts', '1', $modwithalerts);
+	echo '</td>';
+
+	if($activeTab == 'groups') {
+		if($config['enterprise_installed']) {
+			echo '<td valign="top">' . __('Hide policy modules') . '<br />';
+			print_checkbox ('hidepolicymodules', '1', $hidepolicymodules);
+			echo '</td>';
+		}
+	}
+}
+
+echo '<td valign="top">' . __('Simple') . '<br />';
+print_checkbox ('simple', '1', $simple);
+echo '</td>';
+
+echo '<td valign="top">' . __('Regenerate') . '<br />';
+print_checkbox ('regen', '1', $regen);
+echo '</td>';
+
+if ($pure == "1") {
+	// Zoom
+	$zoom_array = array (
+		'1' => 'x1',
+		'1.2' => 'x2',
+		'1.6' => 'x3',
+		'2' => 'x4',
+		'2.5' => 'x5',
+		'5' => 'x10',
+	);
+
+	echo '<td valign="top">' . __('Zoom') . '<br />';
+	print_select ($zoom_array, 'zoom', $zoom, '', '', '', 0, false, false, false);
+	echo '</td>';
+	
+}
+
+if ($nooverlap == 1){
+	echo "<td>";
+	echo __('Distance between nodes') . '<br />';
+	print_input_text ('ranksep', $ranksep, $alt = 'Separation between elements in the map (in Non-overlap mode)', 3, 4, 0);
+	echo "</td>";
+}
+
+echo "<td>";
+echo __('Font') . '<br />';
+print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, 0);
+echo "</td>";
+
+echo '<td>';
+print_input_hidden('update_networkmap',1);
+print_submit_button (__('Update'), "updbutton", false, 'class="sub upd"');
+echo '</td></tr>';
+echo '</table></table></form>';
+
+if($id_networkmap != 0) {
+	switch ($activeTab) {
+		case 'topology':
+			require_once('operation/agentes/networkmap.topology.php');
+			break;
+		case 'groups':
+			require_once('operation/agentes/networkmap.groups.php');
+			break;
+		case 'policies':
+			require_once(''.ENTERPRISE_DIR.'/operation/policies/networkmap.policies.php');
+			break;
+		default:
+			enterprise_selectTab($activeTab);
+			break;
+	}
 }
 
 ?>

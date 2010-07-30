@@ -40,7 +40,7 @@ function is_descendant ($node, $ascendant, $parents) {
 }
 
 // Generate a dot graph definition for graphviz
-function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0) {
+function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $id_networkmap = 0) {
 	$parents = array();
 	$orphans = array();
 
@@ -67,6 +67,8 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 		} else {
 			$orphans[$agent['id_agente']] = 1;
 		}
+		
+		$agent['id_node'] = $agent['id_agente'];
 	
 		// Add node
 		$nodes[$agent['id_agente']] = $agent;
@@ -84,14 +86,14 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 			continue;
 		}
 
-		$graph .= create_node ($node , $simple, $font_size)."\n\t\t";
+		$graph .= create_agent_node ($node , $simple, $font_size)."\n\t\t";
 	}
 
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
-			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group);
+			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 		} else {
 			$orphans[$node] = 1;
 		}
@@ -104,7 +106,7 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
-		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group);
+		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 	}
 	
 	// Close graph
@@ -114,7 +116,7 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 }
 
 // Generate a dot graph definition for graphviz with groups
-function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all') {
+function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0) {
 	
 	global $config;
 
@@ -254,7 +256,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	foreach ($parents as $node => $parent_id) {
 		// Verify that the parent is in the graph
 		if (isset ($nodes[$parent_id])) {
-			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap2');
+			$graph .= create_edge ($node, $parent_id, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
 		} else {
 			$orphans[$node] = 1;
 		}
@@ -267,7 +269,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 
 	// Define edges for orphan nodes
 	foreach (array_keys($orphans) as $node) {
-		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap2');
+		$graph .= create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'groups', $id_networkmap);
 	}
 	
 	// Close graph
@@ -277,72 +279,16 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 }
 
 // Returns an edge definition
-function create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap') {
+function create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
 
 	// edgeURL allows node navigation
 	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false,
-	edgeURL="index.php?sec=estado&sec2='.$sec2.'&center='.$head.
+	edgeURL="index.php?sec=estado&sec2='.$sec2.'&tab='.$tab.'&recenter_networkmap=1&center='.$head.
 	'&layout='.$layout.'&nooverlap=' .$nooverlap.'&pure='.$pure.
 	'&zoom='.$zoom.'&ranksep='.$ranksep.'&simple='.$simple.'&regen=1'.
-	'&font_size='.$font_size.'&group='.$group.'"];';
+	'&font_size='.$font_size.'&group='.$group.'&id_networkmap='.$id_networkmap.'"];';
 
 	return $edge;
-}
-
-// Returns a node definition
-function create_node ($agent, $simple = 0, $font_size = 10) {
-	$sql = sprintf ('SELECT COUNT(tagente_modulo.id_agente)
-			FROM tagente_estado, tagente_modulo
-			WHERE tagente_modulo.id_agente = %d
-			AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND tagente_modulo.disabled = 0 
-			AND tagente_estado.estado = 1',
-			$agent['id_agente']);
-	$bad_modules = get_db_sql ($sql);
-	
-	// Set node status
-	if ($bad_modules) {
-		$status_color = '#FF1D1D';
-	} else {
-		$status_color = '#8DFF1D';
-	}
-
-	// Check for alert
-	$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente
-		WHERE tagente.id_agente = %d
-		AND tagente.disabled = 0
-		AND tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-		AND talert_template_modules.times_fired > 0 ',
-		$agent['id_agente']);
-	$alert_modules = get_db_sql ($sql);
-	if ($alert_modules) 
-		$status_color = '#FFE308';
-
-	// Short name
-	$name = strtolower ($agent["nombre"]);
-	if (strlen ($name) > 16)
-		$name = substr ($name, 0, 16);
-
-	if ($simple == 0){
-		// Set node icon
-		if (file_exists ('images/networkmap/'.$agent['id_os'].'.png')) { 
-			$img_node = 'images/networkmap/'.$agent['id_os'].'.png';
-		} else {
-			$img_node = 'images/networkmap/0.png';
-		}
-
-		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
-		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
-		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
-	} else {
-		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
-	}
-	return $node;
 }
 
 // Returns a group node definition
@@ -382,10 +328,10 @@ function create_group_node ($group, $simple = 0, $font_size = 10) {
 		
 		$node = $group['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.$img_node.'</TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
-		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
+		 shape="invtrapezium", URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$group['id_grupo'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
 	} else {
-		$node = $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
+		$node = $group['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="invtrapezium", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_group_status_tooltip=1&id_group='.$group['id_grupo'].'"];';
 	}
 	return $node;
 }
@@ -413,20 +359,6 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 			break;
 	}
 
-	// Check for alert
-	/*$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente
-		WHERE tagente.id_agente = %d
-		AND tagente.disabled = 0
-		AND tagente.id_agente = tagente_modulo.id_agente
-		AND tagente_modulo.disabled = 0
-		AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-		AND talert_template_modules.times_fired > 0 ',
-		$agent['id_agente']);
-	$alert_modules = get_db_sql ($sql);
-	if ($alert_modules) 
-		$status_color = '#FFE308';*/
-
 	// Short name
 	$name = strtolower ($agent["nombre"]);
 	if (strlen ($name) > 16)
@@ -442,10 +374,10 @@ function create_agent_node ($agent, $simple = 0, $font_size = 10) {
 
 		$node = $agent['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
-		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
+		 shape="doublecircle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	} else {
-		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		$node = $agent['id_node'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', shape="doublecircle", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	return $node;
 }
@@ -477,10 +409,10 @@ function create_module_node ($module, $simple = 0, $font_size = 10) {
 	if ($simple == 0){
 		$node = $module['id_node'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.30, height=0.30, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>'.print_moduletype_icon ($module['id_tipo_modulo'], true).'</TD></TR>
 		 <TR><TD>'.$module['nombre'].'</TD></TR></TABLE>>,
-		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
+		 shape="circle", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$module['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
 	} else {
-		$node = $module['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
+		$node = $module['id_node'] . ' [ color="'.$status_color.'", fontsize='.$font_size.', shape="circle", style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agentmodule_status_tooltip=1&id_module='.$module['id_agente_modulo'].'"];';
 	}
 	return $node;
 }
@@ -526,13 +458,17 @@ function open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size) {
 	$size_x = 8;
 	$size_y = 5.4;
 	$size = '';
-
-	if ($layout == 'radial') 
-		$overlap = 'true';
 	
-	if ($layout == 'flat' || $layout == 'radial' || $layout == 'spring1' || $layout == "spring2")
-		if ($nooverlap != '')
+			
+	if ($layout == 'radial') {
+		$overlap = 'true';
+	}
+	
+	if ($layout == 'flat' || $layout == 'radial' || $layout == 'spring1' || $layout == "spring2") {
+		if ($nooverlap != '') {
 			$overlap = 'scalexy';
+		}
+	}
 
 	if ($zoom > 0) {
 		$size_x *= $zoom;
@@ -575,6 +511,153 @@ function get_filter ($layout) {
 	default:
 		return 'twopi';
 	}
+}
+
+/**
+ * Creates a networkmap.
+ *
+ * @param string Network map name.
+ * @param string Network map type (topology, groups or policies).
+ * @param layout Network map layout (circular, flat, radial, spring1 or spring2).
+ * @param bool overlapping activate flag.
+ * @param bool simple view activate flag.
+ * @param bool regenerate file activate flag.
+ * @param int font size.
+ * @param int group id filter (0 for all).
+ * @param int module group id filter (0 for all).
+ * @param int policy id filter (0 for all).
+ * @param string depth level.
+ * @param bool only modules with alerts flag.
+ * @param bool hide policy modules flag
+ * @param float zoom factor
+ * 
+ * @return mixed New networkmap id if created. False if it could not be created.
+ */
+function create_networkmap ($name, $type = 'topology', $layout = 'radial', $nooverlap = true, $simple = false, $regenerate = true, $font_size = 12, $id_group = 0, $id_module_group = 0, $depth = 'all', $only_modules_with_alerts = false, $hide_policy_modules = false, $zoom = 1, $distance_nodes = 2.5, $center = 0) {
+	
+	global $config;
+	
+	$values = array();
+	
+	$values['name'] = $name;
+	$values['type'] = $type;
+	$values['layout'] = $layout;
+	$values['nooverlap'] = $nooverlap;
+	$values['simple'] = $simple;
+	$values['regenerate'] = $regenerate;
+	$values['font_size'] = $font_size;
+	$values['id_group'] = $id_group;
+	$values['id_module_group'] = $id_module_group;
+	$values['depth'] = $depth;
+	$values['only_modules_with_alerts'] = $only_modules_with_alerts;
+	$values['hide_policy_modules'] = $hide_policy_modules;
+	$values['zoom'] = $zoom;
+	$values['distance_nodes'] = $distance_nodes;
+	$values['center'] = $center;
+	$values['id_user'] = $config['id_user'];
+	
+	return @process_sql_insert ('tnetwork_map', $values);
+}
+
+/**
+ * Get a network map report.
+ *
+ * @param int Networkmap id to get.
+ * @param array Extra filter.
+ * @param array Fields to get.
+ *
+ * @return Networkmap with the given id. False if not available or readable.
+ */
+function get_networkmap ($id_networkmap, $filter = false, $fields = false) {
+	global $config;
+	
+	$id_networkmap = safe_int ($id_networkmap);
+	if (empty ($id_networkmap))
+		return false;
+	if (! is_array ($filter))
+		$filter = array ();
+		
+	$filter['id_networkmap'] = $id_networkmap;
+	$filter['id_user'] = $config['id_user'];
+	
+	$networkmap = get_db_row_filter ('tnetwork_map', $filter, $fields);
+		
+	return $networkmap;
+}
+
+/**
+ * Get a user networkmaps.
+ *
+ * @param int Networkmap id to get.
+ * @param array Extra filter.
+ * @param array Fields to get.
+ *
+ * @return Networkmap with the given id. False if not available or readable.
+ */
+function get_networkmaps ($id_user = '', $type = '', $optgrouped = true) {
+	global $config;
+	
+	if($id_user == '') {
+		$id_user = $config['id_user'];
+	}
+	
+	$type_cond = '';
+	if($type != '') {
+		$type_cond = ' AND type = "'.$type.'"';
+	}
+	
+	$networkmaps_raw =  get_db_all_rows_filter ('tnetwork_map', 'id_user = "'.$id_user.'"'.$type_cond.' ORDER BY type DESC, name ASC', array('id_networkmap','name', 'type'));
+	
+	if($networkmaps_raw === false){
+		return false;
+	}
+		
+	$networkmaps = array();
+	foreach($networkmaps_raw as $key => $networkmapitem) {
+		if($optgrouped) {
+			$networkmaps[$networkmapitem['id_networkmap']] = array('name' => $networkmapitem['name'], 
+			'optgroup' => $networkmapitem['type']);
+		}
+		else {
+			$networkmaps[$networkmapitem['id_networkmap']] = $networkmapitem['name'];
+		}
+	}
+	
+	return $networkmaps;
+}
+
+/**
+ * Deletes a network map.
+ * 
+ * @param int Map id to be deleted.
+ *
+ * @return bool True if the map was deleted, false otherwise.
+ */
+function delete_networkmap ($id_networkmap) {
+	$id_networkmap = safe_int ($id_networkmap);
+	if (empty ($id_networkmap))
+		return false;
+	$networkmap = get_networkmap ($id_networkmap);
+	if ($networkmap === false)
+		return false;
+	return @process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
+}
+
+/**
+ * Updates a network map.
+ *
+ * @param int Map id.
+ * @param array Extra values to be set.
+ * 
+ * @return bool True if the map was updated. False otherwise.
+ */
+function update_networkmap ($id_networkmap, $values) {
+	$networkmap = get_networkmap ($id_networkmap);
+	if ($networkmap === false)
+		return false;
+	return (process_sql_update ('tnetwork_map',
+		$values,
+		array ('id_networkmap' => $id_networkmap))) !== false;
 }
 
 ?>

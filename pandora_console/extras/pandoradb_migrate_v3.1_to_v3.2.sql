@@ -35,3 +35,29 @@ ALTER TABLE `treport_content` ADD COLUMN `thursday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `friday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `saturday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `sunday` tinyint(1) default 1;
+
+-- -----------------------------------------------------
+-- Table `tnetwork_map`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tnetwork_map2` (
+  `id_networkmap` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_user` VARCHAR(60)  NOT NULL,
+  `name` VARCHAR(100)  NOT NULL,
+  `type` VARCHAR(20)  NOT NULL,
+  `layout` VARCHAR(20)  NOT NULL,
+  `nooverlap` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `simple` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `regenerate` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+  `font_size` INT UNSIGNED NOT NULL DEFAULT 12,
+  `id_group` INT  NOT NULL DEFAULT 0,
+  `id_module_group` INT  NOT NULL DEFAULT 0,  
+  `id_policy` INT  NOT NULL DEFAULT 0,
+  `depth` VARCHAR(20)  NOT NULL,
+  `only_modules_with_alerts` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `hide_policy_modules` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  `zoom` FLOAT UNSIGNED NOT NULL DEFAULT 1,
+  `distance_nodes` FLOAT UNSIGNED NOT NULL DEFAULT 2.5,
+  `contracted_nodes` TEXT,
+   PRIMARY KEY  (`id_networkmap`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

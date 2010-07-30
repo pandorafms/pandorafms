@@ -33,7 +33,9 @@ if (is_ajax ()) {
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
-
+	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
+	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
+	
 	if ($get_agents_group_json) {
 		$id_group = get_parameter('id_group');
 		
@@ -130,7 +132,6 @@ if (is_ajax ()) {
 		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
 				FROM tagente_estado, tagente_modulo 
 				WHERE tagente_modulo.id_agente = %d
-				AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND tagente_modulo.disabled = 0 
 				AND tagente_estado.estado = 1', $id_agent);
@@ -138,8 +139,8 @@ if (is_ajax ()) {
 		$sql = sprintf ('SELECT COUNT(*)
 				FROM tagente_modulo
 				WHERE id_agente = %d
-				AND disabled = 0 
-				AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
+				AND disabled = 0', $id_agent);
+				//AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
 		$total_modules = get_db_sql ($sql);
 		
 		if ($bad_modules === false)
@@ -153,10 +154,7 @@ if (is_ajax ()) {
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';
-				$name = $module['nombre'];
-				echo substr ($name, 0, 25);
-				if (strlen ($name) > 25)
-					echo '(...)';
+				echo printTruncateText($module['nombre']);
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -188,15 +186,65 @@ if (is_ajax ()) {
 			echo "<ul>";
 			foreach ($alerts as $alert_item) {
 				echo '<li>';
-				$name = $alert_item[0];
-				echo substr ($name, 0, 25);
-				if (strlen ($name) > 25)
-					echo '(...)';
-				echo "&nbsp;";
-				echo human_time_comparation($alert_item[1]);
+				echo printTruncateText($alert_item['nombre']).' -> ';
+				echo human_time_comparation($alert_item['last_fired']);
 				echo '</li>';
 			}
 			echo '</ul>';
+		}
+		
+		return;
+	}
+	
+		if ($get_agentmodule_status_tooltip) {
+		$id_module = (int) get_parameter ('id_module');
+		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
+		echo '<h3>';
+		echo '<img src="images/brick.png" />&nbsp;';
+		echo printTruncateText($module['nombre'],25,false,true,false).'</h3>';
+		echo '<strong>'.__('Type').':</strong> ';
+		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
+		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
+		echo '<img src="images/'.get_module_type_icon ($agentmoduletype).'" /> <br />';
+		echo '<strong>'.__('Module group').':</strong> ';
+		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
+		if($modulegroup === false){
+			echo __('None').'<br />';
+		}
+		else{
+			echo $modulegroup.'<br />';
+		}
+		echo '<strong>'.__('Agent').':</strong> ';
+		echo printTruncateText(get_agentmodule_agent_name ($module['id_agente_modulo']),25,false,true,false).'<br />';
+		
+		return;
+	}
+
+	if ($get_group_status_tooltip) {
+		$id_group = (int) get_parameter ('id_group');
+		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+		echo '<h3><img src="images/groups_small/'.get_group_icon ($group['id_grupo']).'.png" /> ';
+		echo printTruncateText($group['nombre'],25,false,true,false).'</h3>';
+		echo '<strong>'.__('Parent').':</strong> ';
+		if($group['parent'] == 0) {
+			echo __('None').'<br />';
+		}
+		else {
+			$group_parent = get_db_row ('tgrupo', 'id_grupo', $group['parent']);
+			echo '<img src="images/groups_small/'.get_group_icon ($group['parent']).'.png" /> ';
+			echo $group_parent['nombre'].'<br />';
+		}
+		echo '<strong>'.__('Sons').':</strong> ';
+		$groups_sons = get_db_all_fields_in_table ('tgrupo', 'parent', $group['id_grupo']);
+		if($groups_sons === false){ 
+			echo __('None').'<br />';
+		}
+		else{
+			echo '<br /><br />';
+			foreach($groups_sons as $group_son) {
+				echo '<img src="images/groups_small/'.get_group_icon ($group_son['id_grupo']).'.png" /> ';
+				echo $group_son['nombre'].'<br />';
+			}
 		}
 		
 		return;

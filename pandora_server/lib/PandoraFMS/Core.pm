@@ -2059,6 +2059,7 @@ sub pandora_module_unknown ($$) {
 					AND tagente.disabled = 0 
 					AND tagente_modulo.disabled = 0 
 					AND tagente_estado.estado <> 3 
+					AND tagente_modulo.id_tipo_modulo NOT IN (21, 22, 23, 100) 
                     AND (tagente_estado.current_interval = 0 OR (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP())');
 
 	foreach my $module (@modules) {

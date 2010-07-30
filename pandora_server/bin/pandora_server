@@ -230,6 +230,9 @@ while (1) {
 			# Keepalive module control.(very DB intensive, not run frecuently
 			pandora_module_keep_alive_nd (\%Config, $DBH);
 
+			# Set the status of unknown modules
+			pandora_module_unknown (\%Config, $DBH);
+
 			# Multicast status report each 30 x Server Threshold secs
 			enterprise_hook('mcast_status_report', [\%Config, $DBH]);
 		}

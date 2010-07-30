@@ -138,6 +138,7 @@ our @EXPORT = qw(
 	pandora_generate_compound_alerts
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
+	pandora_module_unknown
 	pandora_ping
 	pandora_ping_latency
 	pandora_planned_downtime
@@ -2041,6 +2042,30 @@ sub pandora_self_monitoring ($$) {
 	close (XMLFILE);
 }
 
+##########################################################################
+=head2 C<< pandora_module_unknown (I<$pa_config>, I<$dbh>) >> 
+
+Set the status of unknown modules.
+
+=cut
+##########################################################################
+sub pandora_module_unknown ($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.nombre, tagente_estado.id_agente_estado
+					FROM tagente_modulo, tagente_estado, tagente 
+					WHERE tagente.id_agente = tagente_estado.id_agente 
+					AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
+					AND tagente.disabled = 0 
+					AND tagente_modulo.disabled = 0 
+					AND tagente_estado.estado <> 3 
+                    AND (tagente_estado.current_interval = 0 OR (tagente_estado.current_interval * 2) + tagente_estado.utimestamp < UNIX_TIMESTAMP())');
+
+	foreach my $module (@modules) {
+		logger ($pa_config, "Module " . $module->{'nombre'} . " is going to UNKNOWN", 10);
+		db_do ($dbh, 'UPDATE tagente_estado SET last_status = estado, estado = 3 WHERE id_agente_estado = ?', $module->{'id_agente_estado'});
+	}
+}
 
 # End of function declaration
 # End of defined Code

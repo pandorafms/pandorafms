@@ -1,3 +1,8 @@
+2010-07-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm, bin/pandora_server: Added a real unknown
+	  status.
+
 2010-07-28  Junichi Satoh <junichi@rworks.jp>
 
 	* lib/PandoraFMS/PredictionServer.pm: Fixed problem that pandora

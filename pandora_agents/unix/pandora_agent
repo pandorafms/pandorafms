@@ -102,7 +102,7 @@ my %Conf = (
 	'server_ssl' => 'no',
 	'server_opts' => '',
 	'delayed_startup' => 0,
-	'pandora_nice' => 0, # FIXME: ¿DEPRECATED?
+	'pandora_nice' => 10,
 	'cron_mode' => 0,
 	'remote_config' => 0,
 	'secondary_mode' => 'never',
@@ -500,6 +500,10 @@ sub check_remote_config () {
 	# Log file may have changed
 	stop_log ();
 	start_log ();
+	
+	#Set nice of the pandora_agent
+	my $PID = $$;
+	`renice "$Conf{'pandora_nice'}" "$PID"`;
 }
 
 ################################################################################
@@ -1124,6 +1128,10 @@ $Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
 # Startup delay
 log_message ('log', 'Sleeping for ' . $Conf{'delayed_startup'} . ' seconds.') if ($Conf{'delayed_startup'} > 0);
 sleep ($Conf{'delayed_startup'});
+
+#Set nice of the pandora_agent
+my $PID = $$;
+`renice "$Conf{'pandora_nice'}" "$PID"`;
 
 # Loop
 while (1) {

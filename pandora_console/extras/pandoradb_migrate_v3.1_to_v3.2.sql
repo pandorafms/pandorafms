@@ -40,7 +40,7 @@ ALTER TABLE `treport_content` ADD COLUMN `sunday` tinyint(1) default 1;
 -- Table `tnetwork_map`
 -- -----------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `tnetwork_map2` (
+CREATE TABLE IF NOT EXISTS `tnetwork_map` (
   `id_networkmap` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_user` VARCHAR(60)  NOT NULL,
   `name` VARCHAR(100)  NOT NULL,

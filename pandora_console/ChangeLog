@@ -1,5 +1,10 @@
 2010-07-30  Sergio Martin <sergio.martin@artica.es>
 
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Typo fix 
+	into new table name
+
+2010-07-30  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_networkmap.php
 	include/help/en/help_network_map.php
 	include/help/es/help_network_map.php

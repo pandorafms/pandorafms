@@ -1,3 +1,17 @@
+2010-07-30  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php
+	include/help/en/help_network_map.php
+	include/help/es/help_network_map.php
+	pandoradb.sql
+	operation/agentes/networkmap.topology.php
+	operation/agentes/networkmap.groups.php
+	operation/agentes/ver_agente.php
+	operation/agentes/networkmap.php
+	extras/pandoradb_migrate_v3.1_to_v3.2.sql: Created network maps
+	storage on database, clean the network maps code and fixed some
+	little bugs of the same section
+
 2010-07-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Updated reporting functions to work

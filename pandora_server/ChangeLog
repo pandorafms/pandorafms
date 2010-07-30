@@ -1,5 +1,9 @@
 2010-07-30  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Do not mark async modules as unknown.
+
+2010-07-30  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm, bin/pandora_server: Added a real unknown
 	  status.
 

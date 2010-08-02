@@ -1,5 +1,10 @@
 2010-08-02  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/pchart_graph.php, include/fgraph.php: Removed title from
+	  image charts. Show min, max and avg as part of the image.
+
+2010-08-02  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/functions_reporting.php, include/fgraph.php,
 	  include/functions_fsgraph.php, operation/agentes/stat_win.php: Moved
 	  min, max and avg information into the chart to make it available to

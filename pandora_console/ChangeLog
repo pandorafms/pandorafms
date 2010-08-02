@@ -1,3 +1,11 @@
+2010-08-02  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_filemanager.php: cleaned source code, changed the show
+	to buttons of actions (create file, upload...) to out the list of files. And
+	check if the directory is writeable to show this buttons.
+	
+	* include/get_file.php: added file to work as mediator between the Pandora
+	and file system, and added a some security checks as check login and others.
+	
 2010-07-30  Sergio Martin <sergio.martin@artica.es>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Typo fix 

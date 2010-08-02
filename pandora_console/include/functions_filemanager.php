@@ -420,6 +420,8 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	?>
 	<script type="text/javascript">
 	function show_form_create_folder() {
+		$("#table1-1").css('display', '');
+		
 		$("#main_buttons").css("display", "none");
 		$("#create_folder").css("display", "");
 	}
@@ -435,7 +437,8 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	}
 
 	function show_main_buttons_folder() {
-		$("#main_buttons").css("display", "");
+		//$("#main_buttons").css("display", "");
+		$("#table1-1").css('display', 'none');
 		$("#create_folder").css("display", "none");
 		$("#upload_file").css("display", "none");
 		$("#create_text_file").css("display", "none");
@@ -487,12 +490,14 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	}
 	
 	if (is_writable ($real_directory)) {
+		$table->rowstyle[1] = 'display: none;';
 		$table->data[1][0] = '';
-		$table->data[1][1] = '<div id="main_buttons">';
-		$table->data[1][1] .= print_button(__('Create folder'), 'folder', false, 'show_form_create_folder();', "class='sub'", true);
-		$table->data[1][1] .= print_button(__('Upload file/s'), 'up_files', false, 'show_upload_file();', "class='sub'", true);
-		$table->data[1][1] .= print_button(__('Create text file'), 'create_file', false, 'show_create_text_file();', "class='sub'", true);
-		$table->data[1][1] .= '</div>';
+		$table->data[1][1] = '';
+//		$table->data[1][1] -= '<div id="main_buttons">';
+//		$table->data[1][1] .= print_button(__('Create folder'), 'folder', false, 'show_form_create_folder();', "class='sub'", true);
+//		$table->data[1][1] .= print_button(__('Upload file/s'), 'up_files', false, 'show_upload_file();', "class='sub'", true);
+//		$table->data[1][1] .= print_button(__('Create text file'), 'create_file', false, 'show_create_text_file();', "class='sub'", true);
+//		$table->data[1][1] .= '</div>';
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
 		$table->data[1][1] .= print_button(__('Close'), 'close', false, 'show_main_buttons_folder();', "class='sub' style='float: left;'", true);
@@ -513,8 +518,6 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		$table->data[1][1] .= print_input_file ('file', true, false);
 		$table->data[1][1] .= print_checkbox('decompress', 1, false, true);
 		$table->data[1][1] .= __('Decompress');
-//		$table->data[1][1] .= print_radio_button('zip_or_file', 'zip', '', false, true) . __('Multiple files zipped');
-//		$table->data[1][1] .= print_radio_button('zip_or_file', 'file', '', true, true) .  __('One');
 		$table->data[1][1] .= '&nbsp;&nbsp;&nbsp;';
 		$table->data[1][1] .= print_submit_button (__('Go'), 'go', false, 'class="sub next"', true);
 		$table->data[1][1] .= print_input_hidden ('real_directory', $real_directory, true);
@@ -563,14 +566,17 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		
 		if ($fileinfo['is_dir']) {
 			$data[1] = '<a href="' . $url . '&directory='.$relative_directory.'/'.$fileinfo['name'].'&hash2=' . md5($relative_directory.'/'.$fileinfo['name'].$config['dbpass']) . '">'.$fileinfo['name'].'</a>';
-		} else {
-			$data[1] = '<a href="'.$fileinfo['url'].'">'.$fileinfo['name'].'</a>';
+		}
+		else {
+			$hash = md5($fileinfo['url'] . $config['dbpass']);
+			$data[1] = '<a href="include/get_file.php?file='.$fileinfo['url'].'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
 		$data[2] = print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));
 		if ($fileinfo['is_dir']) {
 			$data[3] = '';
-		} else {
+		}
+		else {
 			$data[3] = format_filesize ($fileinfo['size']);
 		}
 		
@@ -598,6 +604,24 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		array_push ($table->data, $data);
 	}
 	
+	if (is_writable ($real_directory)) {
+		echo "<div style='text-align: right; width: " . $table->width . ";'>";
+		echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px;' title='" . __('Create directory') . "'>";
+		echo "<img src='images/mimetypes/directory.png' />";
+		echo "</a>";
+		echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
+		echo "<img src='images/mimetypes/text.png' />";
+		echo "</a>";
+		echo "<a href='javascript: show_upload_file();'  title='" . __('Upload file/s') . "'>";
+		echo "<img src='images/mimetypes/unknown.png' />";
+		echo "</a>";
+		echo "</div>";
+	}
+	else {
+		echo "<div style='text-align: right; width: " . $table->width . "; color:#AC4444;'>";
+		echo "<image src='images/info.png' />" . __('The directory is only readble.');
+		echo "</div>";
+	}
 	print_table ($table);
 }
 

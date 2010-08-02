@@ -1,3 +1,10 @@
+2010-08-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php, include/fgraph.php,
+	  include/functions_fsgraph.php, operation/agentes/stat_win.php: Moved
+	  min, max and avg information into the chart to make it available to
+	  reports an custom graphs.
+
 2010-08-02  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_filemanager.php: cleaned source code, changed the show
 	to buttons of actions (create file, upload...) to out the list of files. And

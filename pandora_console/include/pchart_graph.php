@@ -539,8 +539,8 @@ class PchartGraph extends PandoraGraphAbstract {
 			$this->graph->setFontProperties ($this->fontpath, 12);
 			$this->graph->drawTextBox (2, 7, $this->width, 20, $this->title, 0, 0, 0, 0, ALIGN_LEFT, false);
 			$this->graph->setFontProperties ($this->fontpath, 9);
-			$this->graph->drawTextBox ($this->width-150, 10, $this->width, 20, $this->subtitle,
-				0, 0, 0, 0, ALIGN_LEFT, false);
+			$this->graph->drawTextBox (0, 10, $this->width, 20, $this->subtitle,
+				0, 0, 0, 0, ALIGN_CENTER, false);
 
 			$this->graph->setFontProperties ($this->fontpath, 6);
 		}

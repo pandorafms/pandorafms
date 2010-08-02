@@ -26,6 +26,7 @@ if (isset($config)) {
 	require_once ($config['homedir'].'/include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_fsgraph.php');
+	require_once ($config['homedir'].'/include/functions_reporting.php');
 /**#@-*/
 }
 else {
@@ -34,6 +35,7 @@ else {
  */
 	require_once ('../include/config.php');
 	require_once ($config['homedir'].'/include/pandora_graph.php');
+	require_once ($config['homedir'].'/include/functions_reporting.php');
 /**#@-*/
 }
 
@@ -231,13 +233,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$graph_values[$i] = array();
 		if ($data[0]['utimestamp'] == $datelimit) {
 			$previous_data = $data[0]['datos'];
-			$min_value = $data[0]['datos'];
-			$max_value = $data[0]['datos'];
 			$j++;
 		} else {
 			$previous_data = 0;
-			$min_value = 0;
-			$max_value = 0;
 		}
 
 		// Calculate chart data
@@ -264,13 +262,6 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			// Average
 			if ($count > 0) {
 				$total /= $count;
-			}
-	
-			// Min and max
-			if ($interval_max > $max_value) {
-				$max_value = $interval_max;
-			} else if ($interval_min < $min_value) {
-				$min_value = $interval_min;
 			}
 	
 			// Read events and alerts that fall in the current interval
@@ -335,7 +326,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$engine->legend = $module_name_list;
 	$engine->fontpath = $config['fontpath'];
 	$engine->title = "";
-	$engine->subtitle = '     '.__('Period').': '.$title_period;
+	$engine->subtitle = "";
 	$engine->show_title = !$pure;
 	$engine->stacked = $stacked;
 	$engine->xaxis_interval = $resolution;
@@ -1483,8 +1474,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
+	$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
-		$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 	
@@ -1493,11 +1484,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$engine->height = $height;
 	$engine->data = &$chart;
 	$engine->xaxis_interval = $resolution;
-	if ($title == '')
-		$title = get_agentmodule_name ($id_agente_modulo);
-	$engine->title = '   '.strtoupper ($nombre_agente)." - ".__('Module').' '.$title;
-	$engine->subtitle = '     '.__('Period').': '.$title_period;
-	$engine->show_title = !$pure;
+	$engine->title = "";
+	$engine->subtitle = $caption;
+	$engine->show_title = true;
 	$engine->max_value = $max_value;
 	$engine->min_value = $min_value;
 	$engine->events = (bool) $show_event;
@@ -1722,8 +1711,8 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
+	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
-		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 
@@ -1740,9 +1729,9 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$engine->data = &$chart_data;
 	$engine->max_value = 1;
 	$engine->legend = array ($module_name);
-	$engine->title = '   '.strtoupper ($agent_name)." - ".__('Module').' '.$title;
-	$engine->subtitle = '     '.__('Period').': '.$title_period;
-	$engine->show_title = !$pure;
+	$engine->title = "";
+	$engine->subtitle = $caption;
+	$engine->show_title = true;
 	$engine->events = false;
 	$engine->fontpath = $config['fontpath'];
 	$engine->alert_top = false;
@@ -1947,8 +1936,8 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
+	$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
-		$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 	
@@ -1966,9 +1955,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$engine->max_value = max ($chart_data);
 	
 	$engine->legend = array ($module_name);
-	$engine->title = '   '.strtoupper ($agent_name)." - ".__('Module').' '.$title;
-	$engine->subtitle = '     '.__('Period').': '.$title_period;
-	$engine->show_title = !$pure;
+	$engine->title = "";
+	$engine->subtitle = $caption;
+	$engine->show_title = true;
 	$engine->events = false;
 	$engine->fontpath = $config['fontpath'];
 	$engine->alert_top = false;

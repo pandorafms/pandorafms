@@ -131,13 +131,17 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 }
 
 // Returns a Pandora FMS module chart
-function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0) {
+function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '') {
 	global $config;
 
 	// Generate the XML
 	$chart = new FusionCharts('MSArea2D', $width, $height);
 	$num_vlines = 0;
 	$count = 0;
+
+	if ($caption != '') {
+		$chart->setChartParam("caption", $caption);
+	}
 
 	// Create categories
 	foreach ($data as $value) {

@@ -166,14 +166,6 @@ else {
 	print_image ($image, false, array ("border" => 0));
 }
 
-if ($graph_type != "log4x") {
-	echo '<table width="450" cellspacing="1" cellpadding="1" class="databox" style="margin-left: 20px">';
-	echo '<tr><td><b>'.__('Max. Value').'</b>: '.format_for_graph (get_agentmodule_data_max ($id, $period, $date));
-	echo '</td><td><b>'.__('Avg. Value').'</b>: '.format_for_graph (get_agentmodule_data_average ($id, $period, $date));
-	echo '</td><td><b>'.__('Min. Value').'</b>: '.format_for_graph (get_agentmodule_data_min ($id, $period, $date));
-	echo '</td></tr></table>';
-}
-
 //z-index is 1 because 2 made the calendar show under the divmenu.
 echo '<div id="divmenu" class="menu" style="z-index:1;"><b>'.__('Pandora FMS Graph configuration menu').'</b><br />'.__('Please, make your changes and apply with the <i>Reload</i> button');
 echo '<form method="get" action="stat_win.php">';

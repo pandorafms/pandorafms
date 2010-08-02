@@ -1367,13 +1367,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$chart = array();
 	if ($data[0]['utimestamp'] == $datelimit) {
 		$previous_data = $data[0]['datos'];
-		$min_value = $data[0]['datos'];
-		$max_value = $data[0]['datos'];
 		$j++;
 	} else {
 		$previous_data = 0;
-		$min_value = 0;
-		$max_value = 0;
 	}
 
 	// Calculate chart data
@@ -1406,16 +1402,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 
 		// Data in the interval
 		if ($count > 0) {
-			
-			// Avg
 			$total /= $count;
-			
-			// Min and max
-			if ($interval_max > $max_value) {
-				$max_value = $interval_max;
-			} else if ($interval_min < $min_value) {
-				$min_value = $interval_min;
-			}
 		}
 
 		// Read events and alerts that fall in the current interval
@@ -1457,6 +1444,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
 	
+	// Get min, max and avg (less efficient but centralized for all modules and reports)
+	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -1491,8 +1483,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
-	if (! $graphic_type) {	
-		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
+	if (! $graphic_type) {
+		$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 	
 	$engine = get_graph_engine ($period);
@@ -1609,11 +1602,9 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$chart = array();
 	if ($data[0]['utimestamp'] == $datelimit) {
 		$previous_data = $data[0]['datos'];
-		$max_value = $data[0]['datos'];
 		$j++;
 	} else {
 		$previous_data = 0;
-		$max_value = 0;
 	}
 
 	// Calculate chart data
@@ -1639,11 +1630,6 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		// Average
 		if ($count > 0) {
 			$total /= $count;
-		}
-
-		// Max
-		if ($total > $max_value) {
-			$max_value = $total;
 		}
 
 		// Read events and alerts that fall in the current interval
@@ -1696,7 +1682,12 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
-	
+
+	// Get min, max and avg (less efficient but centralized for all modules and reports)
+	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
+
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
@@ -1731,8 +1722,9 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
-	if (! $graphic_type) {	
-		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
+	if (! $graphic_type) {
+		$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 
 	$chart_data = array ();
@@ -1869,11 +1861,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$chart = array();
 	if ($data[0]['utimestamp'] == $datelimit) {
 		$previous_data = 1;
-		$max_value = 1;
 		$j++;
 	} else {
 		$previous_data = 0;
-		$max_value = 0;
 	}
 
 	// Calculate chart data
@@ -1885,11 +1875,6 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		while (isset ($data[$j]) !== null && $data[$j]['utimestamp'] >= $timestamp && $data[$j]['utimestamp'] <= ($timestamp + $interval)) {
 			$count++;
 			$j++;
-		}
-
-		// Max
-		if ($count > $max_value) {
-			$max_value = $count;
 		}
 
 		// Read events and alerts that fall in the current interval
@@ -1922,6 +1907,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
+
+	// Get min, max and avg (less efficient but centralized for all modules and reports)
+	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
+	$max_value = round(get_agentmodule_data_max ($agent_module_id, $period, $date), 2);
+	$avg_value = round(get_agentmodule_data_average ($agent_module_id, $period, $date), 2);
 
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
@@ -1957,8 +1947,9 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
-	if (! $graphic_type) {	
-		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts);
+	if (! $graphic_type) {
+		$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
 	
 

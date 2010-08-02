@@ -153,7 +153,6 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 
 	// Uncompressed module data
 	if ($uncompressed_module) {
-		$min_necessary = 1;
 	
 	// Compressed module data
 	} else {
@@ -176,22 +175,15 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
 		}
-		
-		$min_necessary = 2;
-	}
-
-	if (count ($interval_data) < $min_necessary) {
-		return -1;
 	}
 
 	// Set initial conditions
-	$max = 0;
-	if (! $uncompressed_module) {
-		$previous_data = array_shift ($interval_data);
-		if ($previous_data['utimestamp'] == $datelimit) {
-			$max = $previous_data['datos'];
-		}
+	if ($uncompressed_module || $interval_data[0]['utimestamp'] == $datelimit) {
+		$max = $interval_data[0]['datos'];
+	} else {
+		$max = 0;
 	}
+
 	foreach ($interval_data as $data) {
 		if ($data['datos'] > $max) {
 			$max = $data['datos'];
@@ -255,22 +247,19 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 			$next_data['utimestamp'] = $date;
 			array_push ($interval_data, $next_data);
 		}
-		
-		$min_necessary = 2;
 	}
 
-	if (count ($interval_data) < $min_necessary) {
+	if (count ($interval_data) < 1) {
 		return -1;
 	}
 
 	// Set initial conditions
-	$min = 0;
-	if (! $uncompressed_module) {
-		$previous_data = array_shift ($interval_data);
-		if ($previous_data['utimestamp'] == $datelimit) {
-			$min = $previous_data['datos'];
-		}
+	if ($uncompressed_module || $interval_data[0]['utimestamp'] == $datelimit) {
+		$min = $interval_data[0]['datos'];
+	} else {
+		$min = 0;
 	}
+
 	foreach ($interval_data as $data) {
 		if ($data['datos'] < $min) {
 			$min = $data['datos'];

@@ -1,5 +1,11 @@
 2010-08-03  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_networkmap.php
+	include/functions_db.php: Fixed the networkmaps to do not shows
+	the not init modules and get the new unknown status
+
+2010-08-03  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/estado_ultimopaquete.php: Fixed log4x modules
 	check from old id value 30 to new id value 24
 

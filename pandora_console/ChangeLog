@@ -1,3 +1,8 @@
+2010-08-03  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/alerts/alert_list.list.php: Fixed a problem alert filtering
+	by priority does not work.
+
 2010-08-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/pchart_graph.php, include/fgraph.php: Removed title from

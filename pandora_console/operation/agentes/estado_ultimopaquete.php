@@ -250,9 +250,18 @@ foreach ($modules as $module) {
 		echo "</td>";
 	} 
 	
-	if ($module["id_tipo_modulo"] == 30112) {
+	if ($module["id_tipo_modulo"] == 24) { // Log4x
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;</td>";
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;x</td>";
+		
+		switch($module["datos"]){
+			case 10: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('TRACE')."</td>"; break;
+			case 20: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('DEBUG')."</td>"; break;
+			case 30: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>".__('INFO')."</td>"; break;
+			case 40: echo "<td class=$tdcolor style='color:darkorange; font-weight:bold;'>".__('WARN')."</td>"; break;
+			case 50: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('ERROR')."</td>"; break;
+			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('FATAL')."</td>"; break;
+		}
 
 	} else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
@@ -261,28 +270,17 @@ foreach ($modules as $module) {
 
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 
-		if ($module["id_tipo_modulo"] == 30) { // log4x
-			switch($module["datos"]){
-			case 10: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>TRACE</td>"; break;
-			case 20: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>DEBUG</td>"; break;
-			case 30: echo "<td class=$tdcolor style='color:darkgreen; font-weight:bold;'>INFO</td>"; break;
-			case 40: echo "<td class=$tdcolor style='color:darkorange; font-weight:bold;'>WARN</td>"; break;
-			case 50: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>ERROR</td>"; break;
-			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>FATAL</td>"; break;
-			}
-		} else {
-			if (is_numeric($module["datos"])){
-				echo "<td class=".$tdcolor.">";
-				echo format_for_graph($module["datos"] );
-			}
-			else {
-				if (strlen($module["datos"]) > 0 ) $colspan = 2;
-				else $colspan= 1;
-				echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
-				echo substr(safe_output($module["datos"]),0,42);
-			}
-			echo "</td>";
+		if (is_numeric($module["datos"])){
+			echo "<td class=".$tdcolor.">";
+			echo format_for_graph($module["datos"] );
 		}
+		else {
+			if (strlen($module["datos"]) > 0 ) $colspan = 2;
+			else $colspan= 1;
+			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
+			echo substr(safe_output($module["datos"]),0,42);
+		}
+		echo "</td>";
 			
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 		$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];

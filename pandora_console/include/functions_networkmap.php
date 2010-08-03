@@ -193,7 +193,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 			}
 			
 			// Get agent modules data
-			$modules = get_agent_modules ($agent['id_agente'], false, array('disabled' => 0));
+			$modules = get_agent_modules ($agent['id_agente'], false, array('disabled' => 0), true, false);
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				$node_count ++;

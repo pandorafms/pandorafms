@@ -558,6 +558,30 @@ function get_agentmodule ($id_agentmodule) {
 }
 
 /**
+ * Get a id of module from his name and the agent id
+ *
+ * @param string agentmodule name to get.
+ * @param int agent id.
+ *
+ * @return int the agentmodule id
+ */
+function get_agentmodule_id ($agentmodule_name, $agent_id) {
+	return get_db_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id)); 
+}
+
+/**
+ * Get a if a module is init.
+ *
+ * @param int agentmodule id to get.
+ *
+ * @return bool true if is init and false if is not init
+ */
+function get_agentmodule_is_init ($id_agentmodule) {
+	$result = get_db_row_filter ('tagente_estado', array('id_agente_modulo' => $id_agentmodule), 'utimestamp');
+	return (bool)$result['utimestamp'];
+}
+
+/**
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
  * @param mixed Agent id to get modules. It can also be an array of agent id's.
@@ -584,7 +608,7 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true) {
+function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	$id_agent = safe_int ($id_agent, 1);
 
 	$where = '';
@@ -637,11 +661,13 @@ function get_agent_modules ($id_agent, $details = false, $filter = false, $index
 	
 	$modules = array ();
 	foreach ($result as $module) {
-		if (is_array ($details) || $details == '*') {
-			 //Just stack the information in array by ID
-			$modules[$module['id_agente_modulo']] = $module;
-		} else {
-			$modules[$module['id_agente_modulo']] = $module[$details];
+		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+			if (is_array ($details) || $details == '*') {
+				 //Just stack the information in array by ID
+				$modules[$module['id_agente_modulo']] = $module;
+			} else {
+				$modules[$module['id_agente_modulo']] = $module[$details];
+			}
 		}
 	}
 	return $modules;
@@ -2627,27 +2653,8 @@ function get_agentmodule_status ($id_agentmodule = 0) {
 	}
 
 	$status_row = get_db_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
-
-	/*// Not init or current_interval == 0: Return current status and avoid problems here !
-	if ($status_row["current_interval"] == 0)
-		return $status_row["estado"];*/
-		
-	$module_type = get_agentmodule_type($id_agentmodule);
 	
-	// Asynchronous and keepalive modules cant be unknown
-	if(($module_type >= 21 && $module_type <= 23) || $module_type == 100) {
-		return $status_row["estado"];
-	}
-		
-	// Unknown status
-	if ($status_row["current_interval"] == 0 || ($status_row["current_interval"] * 2) + $status_row["utimestamp"] < $current_timestamp){
-		$status = 3;
-	}
-	else {
-		$status = $status_row['estado'];
-	}
-	
-	return $status;
+	return $status_row['estado'];
 }
 
 /** 
@@ -2659,8 +2666,8 @@ function get_agentmodule_status ($id_agentmodule = 0) {
  * The value -1 is returned in case the agent has exceed its interval.
  */
 function get_agent_status ($id_agent = 0) {
-	$modules = get_agent_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0));
-	
+	$modules = get_agent_modules ($id_agent, 'id_agente_modulo', array('disabled' => 0), true, false);
+
 	$modules_status = array();
 	$modules_async = 0;
 	foreach($modules as $module) {
@@ -2671,8 +2678,8 @@ function get_agent_status ($id_agent = 0) {
 			$modules_async++;
 		}
 	}
-	
-	// If all the modules are asynchronous or keep alive, the gruop cannot be unknown
+
+	// If all the modules are asynchronous or keep alive, the group cannot be unknown
 	if($modules_async < count($modules)) {
 		$time = get_system_time ();
 		$status = get_db_value_filter ('COUNT(*)',
@@ -2685,7 +2692,6 @@ function get_agent_status ($id_agent = 0) {
 	}
 
 	// Status is 0 for normal, 1 for critical, 2 for warning and 3 for unknown. 4 for alert fired
-	
 	// Checking if any module has alert fired (4)
 	if(is_int(array_search(4,$modules_status))){
 		return 4;

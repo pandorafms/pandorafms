@@ -104,7 +104,7 @@ $where = '';
 
 if ($searchFlag) {
 	if ($priority != -1 )
-		$where .= " AND priority = " . $priority;
+		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE priority = " . $priority . ")";
 	if (strlen(trim($templateName)) > 0)
 		$where .= " AND id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE '%" . trim($templateName) . "%')";
 	if (strlen(trim($fieldContent)) > 0)
@@ -125,7 +125,7 @@ if ($searchFlag) {
 		$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
 }
 
-$total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
+$total = get_agent_alerts_simple (array_keys ($agents), false,
 	false, $where, false, false, false, true);
 
 if(empty($total)) $total = 0;
@@ -220,7 +220,7 @@ switch ($sortField) {
 }
 
 pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
-$simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
+$simple_alerts = get_agent_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size'], 'order' => $order), $where, false);
 

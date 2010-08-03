@@ -61,3 +61,9 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
   `contracted_nodes` TEXT,
    PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
+
+ALTER TABLE `tagente_modulo` ADD COLUMN `id_policy_module` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `nombre`;

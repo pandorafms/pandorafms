@@ -146,6 +146,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `id_tipo_modulo` smallint(5) NOT NULL default '0',
   `descripcion` varchar(100) NOT NULL default '',
   `nombre` varchar(100) NOT NULL default '',
+  `id_policy_module` INTEGER unsigned NOT NULL default '0',
   `max` bigint(20) default '0',
   `min` bigint(20) default '0',
   `module_interval` int(4) unsigned default '0',

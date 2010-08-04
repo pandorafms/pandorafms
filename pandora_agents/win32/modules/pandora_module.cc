@@ -646,12 +646,12 @@ Pandora_Module::addCondition (string condition) {
 	cond->value_2 = 0;
 
 	/* Numeric comparison */
-	if (sscanf (condition.c_str (), "%255s %lf %1023[^]", operation, &(cond->value_1), command) == 3) {
+	if (sscanf (condition.c_str (), "%255s %lf %1023[^\n]s", operation, &(cond->value_1), command) == 3) {
 		cond->operation = operation;
 		cond->command = command;
 		this->condition_list->push_back (cond);
 	/* Regular expression */
-	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^]", string_value, command) == 2) {
+	} else if (sscanf (condition.c_str (), "=~ %1023s %1023[^\n]s", string_value, command) == 2) {
 		cond->operation = "=~";
 		cond->string_value = string_value;
 		cond->command = command;
@@ -662,7 +662,7 @@ Pandora_Module::addCondition (string condition) {
 		}
 		this->condition_list->push_back (cond);
 	/* Interval */
-	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^]", &(cond->value_1), &(cond->value_2), command) == 3) {
+	} else if (sscanf (condition.c_str (), "(%lf , %lf) %1023[^\n]s", &(cond->value_1), &(cond->value_2), command) == 3) {
 		cond->operation = "()";
 		cond->command = command;
 		this->condition_list->push_back (cond);

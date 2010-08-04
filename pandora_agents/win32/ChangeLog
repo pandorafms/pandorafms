@@ -1,3 +1,8 @@
+2010-08-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module.cc: Changed sscanf format strings. They did
+	  not seem to work well in native Windows.
+
 2010-07-16  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* misc/pandora_file.cc: fixed unclosed directory with function closedir.

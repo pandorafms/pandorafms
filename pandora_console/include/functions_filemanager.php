@@ -130,6 +130,7 @@ if ($upload_file) {
 	
 	$config['filemanager'] = array();
 	$config['filemanager']['correct_upload_file'] = 0;
+	$config['filemanager']['message'] = null;
 	
 	check_login ();
 	
@@ -149,7 +150,7 @@ if ($upload_file) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			echo "<h3 class=error>".__('Security error.')."</h3>";
+			$config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
 		}
 		else {
 			// Copy file to directory and change name
@@ -159,10 +160,13 @@ if ($upload_file) {
 			else {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
+			
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-				echo "<h3 class=error>".__('attach_error')."</h3>";
-			} else {
+				$config['filemanager']['message'] = "<h4 class=error>".__('Upload error')."</h4>";
+			}
+			else {
 				$config['filemanager']['correct_upload_file'] = 1;
+				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
 				
 				// Delete temporal file
 				unlink ($_FILES['file']['tmp_name']);
@@ -179,6 +183,7 @@ if ($create_text_file) {
 	
 	$config['filemanager'] = array();
 	$config['filemanager']['correct_upload_file'] = 0;
+	$config['filemanager']['message'] =  null;
 	
 	check_login ();
 	
@@ -199,7 +204,7 @@ if ($create_text_file) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			echo "<h3 class=error>".__('Security error.')."</h3>";
+			echo "<h4 class=error>".__('Security error.')."</h4>";
 		}
 		else {
 			if ($directory == '') {
@@ -209,15 +214,16 @@ if ($create_text_file) {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
 			if (! @touch($nombre_archivo)) {
-				echo "<h3 class=error>".__('Error create file.')."</h3>";
+				$config['filemanager']['message'] = "<h4 class=error>".__('Error create file.')."</h4>";
 			}
 			else {
+				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
 		}
 	}
 	else {
-		echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
+		$config['filemanager']['message'] = "<h4 class=error>".__('Error create file with empty name.')."</h4>";
 	}
 }
 
@@ -228,6 +234,7 @@ if ($upload_zip) {
 	
 	$config['filemanager'] = array();
 	$config['filemanager']['correct_upload_file'] = 0;
+	$config['filemanager']['message'] = null;
 	
 	check_login ();
 	
@@ -247,7 +254,7 @@ if ($upload_zip) {
 		$testHash = md5($real_directory . $directory . $config['dbpass']);
 		
 		if ($hash != $testHash) {
-			echo "<h3 class=error>".__('Security error.')."</h3>";
+			$config['filemanager']['message'] =  "<h4 class=error>".__('Security error.')."</h4>";
 		}
 		else {
 			// Copy file to directory and change name
@@ -258,7 +265,7 @@ if ($upload_zip) {
 				$nombre_archivo = $config['homedir'].'/'.$directory.'/'.$filename;
 			}
 			if (! @copy ($_FILES['file']['tmp_name'], $nombre_archivo )) {
-				echo "<h3 class=error>".__('attach_error')."</h3>";
+				$config['filemanager']['message'] =  "<h4 class=error>".__('attach_error')."</h4s>";
 			}
 			else {
 				// Delete temporal file
@@ -272,7 +279,7 @@ if ($upload_zip) {
 					$zip->extractTo($pathname);
 					unlink($nombre_archivo);
 				}
-	
+				$config['filemanager']['message'] = '<h4 class=suc>'.__('Upload correct').'</h4>';
 				$config['filemanager']['correct_upload_file'] = 1;
 			}
 		}
@@ -286,6 +293,7 @@ if ($create_dir) {
 	
 	$config['filemanager'] = array();
 	$config['filemanager']['correct_create_dir'] = 0;
+	$config['filemanager']['message'] = null;
 	
 	$directory = (string) get_parameter ('directory', "/");
 	
@@ -293,18 +301,18 @@ if ($create_dir) {
 	$testHash = md5($directory . $config['dbpass']);
 	
 	if ($hash != $testHash) {
-		 echo "<h3 class=error>".__('Security error.')."</h3>";
+		 echo "<h4 class=error>".__('Security error.')."</h4>";
 	}
 	else {
 		$dirname = (string) get_parameter ('dirname');
 		if ($dirname != '') {
 			@mkdir ($directory.'/'.$dirname);
-			echo '<h3>'.__('Created directory %s', $dirname).'</h3>';
+			$config['filemanager']['message'] = '<h4 class="suc">'.__('Created directory').'</h4>';
 			
 			$config['filemanager']['correct_create_dir'] = 1;
 		}
 		else {
-			echo "<h3 class=error>".__('Error create file with empty name.')."</h3>";
+			$config['filemanager']['message'] = "<h4 class=error>".__('Error create file with empty name.')."</h4>";
 		}
 	}
 }
@@ -313,9 +321,10 @@ if ($create_dir) {
 $delete_file = (bool) get_parameter ('delete_file');
 if ($delete_file) {
 	global $config;
-	
+
 	$config['filemanager'] = array();
 	$config['filemanager']['delete'] = 0;
+	$config['filemanager']['message'] = null;
 	
 	$filename = (string) get_parameter ('filename');
 	
@@ -323,10 +332,10 @@ if ($delete_file) {
 	$testHash = md5($filename . $config['dbpass']);
 	
 	if ($hash != $testHash) {
-		 echo "<h3 class=error>".__('Security error.')."</h3>";
+		 $config['filemanager']['message'] = "<h4 class=error>".__('Security error.')."</h4>";
 	}
 	else {
-		echo "<h3>".__('Deleting')." ".$filename."</h3>";
+		$config['filemanager']['message'] = "<h4 class=suc>".__('Deleting')."</h4>";
 		if (is_dir ($filename)) {		
 			rmdir ($filename);
 			$config['filemanager']['delete'] = 1;
@@ -427,11 +436,15 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 	}
 
 	function show_upload_file() {
+		$("#table1-1").css('display', '');
+		
 		$("#main_buttons").css("display", "none");
 		$("#upload_file").css("display", "");
 	}
 
 	function show_create_text_file() {
+		$("#table1-1").css('display', '');
+		
 		$("#main_buttons").css("display", "none");
 		$("#create_text_file").css("display", "");
 	}

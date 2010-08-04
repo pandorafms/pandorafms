@@ -1,3 +1,10 @@
+2010-08-04  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_filemanager.php: move the action messages to $config
+	intermediate var. 
+	
+	* godmode/setup/file_manager.php: added the message of action with the
+	filemanager.
+
 2010-08-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php: Fixed the get_agent_module_info function

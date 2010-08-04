@@ -1,5 +1,10 @@
 2010-08-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* Makefile.am: Use -static-libstdc++ to remove the dependency on
+	  libstdc++-6.dll.
+
+2010-08-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* modules/pandora_module.cc: Free the collection if it can not
 	  be added to the list.
 

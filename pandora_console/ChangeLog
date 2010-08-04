@@ -1,3 +1,24 @@
+2010-08-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/styles/pandora.css
+	include/functions_reporting.php
+	include/functions_ui.php
+	include/functions_db.php
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_agente.php
+	operation/agentes/bulbs.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/group_view.php
+	images/status_sets/default/module_no_data.png
+	images/status_sets/default/alert_fired.png
+	images/status_sets/default/agent_no_monitors.png
+	images/status_sets/default/alert_fired_ball.png
+	images/status_sets/default/agent_no_monitors_ball.png
+	images/status_sets/default/agent_down_ball.png
+	images/status_sets/default/agent_down.png: Fixed several modules
+	and agents list status to use the new unknown status. Some images was
+	changed too for show the same colour than the visual and network maps
+
 2010-08-03  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_networkmap.php

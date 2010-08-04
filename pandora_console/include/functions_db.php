@@ -2658,6 +2658,19 @@ function get_agentmodule_status ($id_agentmodule = 0) {
 }
 
 /** 
+ * Get the last status of an agent module.
+ * 
+ * @param int Id agent module to check.
+ * 
+ * @return int Module last status. 
+ */
+function get_agentmodule_last_status ($id_agentmodule = 0) {
+	$status_row = get_db_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
+	
+	return $status_row['last_status'];
+}
+
+/** 
  * Get the worst status of all modules of a given agent.
  * 
  * @param int Id agent to check.

@@ -481,6 +481,9 @@ tr.rowOdd:hover {
 	border-bottom: 1px solid #708090;
 	width: 100%;
 }
+.orange {
+	color: #ffa300;
+}
 .green {
 	color: #5a8629;
 }

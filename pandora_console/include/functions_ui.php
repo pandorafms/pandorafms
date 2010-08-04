@@ -298,9 +298,13 @@ function print_os_icon ($id_os, $name = true, $return = false) {
  * 
  * @return string HTML with agent name and link
  */
-function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '') {
+function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
 	$agent_name = (string) get_agent_name ($id_agent);
-	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name.'"><b>'.$agent_name.'</b></a>';
+	$agent_name_full = $agent_name;
+	if($cutname) {
+		$agent_name = printTruncateText($agent_name, $cutname);
+	}
+	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';
 	
 	//TODO: Add a pretty javascript (using jQuery) popup-box with agent details
 	
@@ -1179,13 +1183,13 @@ function get_status_images_path () {
 define ('STATUS_MODULE_OK', 'module_ok.png');
 define ('STATUS_MODULE_CRITICAL', 'module_critical.png');
 define ('STATUS_MODULE_WARNING', 'module_warning.png');
+define ('STATUS_MODULE_NO_DATA', 'module_no_data.png');
 
 define ('STATUS_AGENT_CRITICAL', 'agent_critical.png');
 define ('STATUS_AGENT_WARNING', 'agent_warning.png');
 define ('STATUS_AGENT_DOWN', 'agent_down.png');
 define ('STATUS_AGENT_OK', 'agent_ok.png');
 define ('STATUS_AGENT_NO_DATA', 'agent_no_data.png');
-define ('STATUS_AGENT_NO_MONITORS', 'agent_no_monitors.png');
 
 define ('STATUS_ALERT_FIRED', 'alert_fired.png');
 define ('STATUS_ALERT_NOT_FIRED', 'alert_not_fired.png');

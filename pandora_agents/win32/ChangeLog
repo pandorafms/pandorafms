@@ -1,3 +1,8 @@
+2010-08-04  Sancho Lerena <slerena@artica.es>
+
+	* win32/bin/util/df_percent.vbs: New VBS plugin to detect all
+	hardrives and return free disk on %.
+
 2010-08-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module.cc: Changed sscanf format strings. They did

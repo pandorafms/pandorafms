@@ -1,3 +1,10 @@
+2010-08-04  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.redhat.spec: Specific spec for redhat/centos.
+
+	* util/pandora_count.sh: Script to measure how fast dataserver
+	process XML files.
+
 2010-08-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Select uninitialized keep alive modules.

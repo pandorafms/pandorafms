@@ -33,6 +33,11 @@ require_once ("include/functions_filemanager.php");
 // Header
 print_page_header (__('File manager'), "", false, "", true);
 
+if (isset($config['filemanager']['message'])) {
+	echo $config['filemanager']['message'];
+	$config['filemanager']['message'] = null;
+}
+
 //// Upload file
 //if ($upload_file) {
 //	if (isset ($_FILES['file']) && $_FILES['file']['name'] != "") {
@@ -100,7 +105,7 @@ $available_directories[$directory] = $directory;
 
 $real_directory = realpath ($config['homedir'].'/'.$directory);
 
-box_upload_file_explorer($real_directory, $directory);
+//box_upload_file_explorer($real_directory, $directory);
 
 
 echo '<h3>'.__('Index of %s', $directory).'</h3>';

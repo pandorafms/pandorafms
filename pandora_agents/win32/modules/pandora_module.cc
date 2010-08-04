@@ -669,6 +669,9 @@ Pandora_Module::addCondition (string condition) {
 	} else {
 		pandoraDebug ("Invalid module condition: %s", condition.c_str ());
 	}
+	
+	/* Run commands through cmd.exe */
+	cond->command = "cmd.exe /c \"" + cond->command + "\"";
 }
 
 /** 

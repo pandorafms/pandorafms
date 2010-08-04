@@ -1,4 +1,11 @@
+2010-08-04  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control,
+	pandora_agent.spec: Added unzip to dependencies (for fille collection
+	management).
+
 2010-08-04  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandora_agent_daemon: fixed user of daemon, it is root, not dario.
 
 2010-07-28  Junichi Satoh  <junichi@rworks.jp>

@@ -16,7 +16,7 @@ Packager:           Manuel Arostegui <manuel@todo-linux.com>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
-Requires:           coreutils
+Requires:           coreutils unzip
 AutoReq:            0
 Provides:           %{name}-%{version}
 

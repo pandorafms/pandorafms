@@ -1506,8 +1506,14 @@ function get_agent_module_info ($id_agent, $filter = false) {
 		return $return;
 	} 
 	
+	if($filter != ''){
+		$filter = 'AND ';
+	}
+	
+	$filter = 'disabled = 0';
+	
 	$modules = get_agent_modules($id_agent, false, $filter, true, false);
-		
+	
 	if ($modules === false) {
 		return $return;
 	}

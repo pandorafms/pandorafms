@@ -1,5 +1,15 @@
 2010-08-04  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php: Fixed the get_agent_module_info function
+	for avoid to show the disabled modules information
+
+2010-08-04  Sergio Martin <sergio.martin@artica.es>
+
+	* images/status_sets/default/module_no_data_ball.png: Added a image
+	to modules without data
+
+2010-08-04  Sergio Martin <sergio.martin@artica.es>
+
 	* include/styles/pandora.css
 	include/functions_reporting.php
 	include/functions_ui.php

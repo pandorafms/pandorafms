@@ -27,7 +27,6 @@ echo '
 
 	</tr><tr>
 
-	<td class="f9i">' . print_status_image(STATUS_AGENT_NO_MONITORS, __('Agent without monitors'), true) . __('Agent without monitors') . '</td>
 	<td class="f9i">' . print_status_image(STATUS_AGENT_NO_DATA, __('Agent without data'), true) . __('Agent without data') .  '</td>
 	<td class="f9i">' . print_status_image(STATUS_AGENT_DOWN, __('Agent down'), true) . __('Agent down') . '</td>
 

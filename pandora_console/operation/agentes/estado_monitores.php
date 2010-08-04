@@ -203,21 +203,37 @@ foreach ($modules as $module) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
 
-	if ($module["estado"] == 2) {
-		$status = STATUS_MODULE_WARNING;
-		$title = __('WARNING');
-	} elseif ($module["estado"] == 1) {
+	if ($module["estado"] == 1) {
 		$status = STATUS_MODULE_CRITICAL;
 		$title = __('CRITICAL');
-	} else {
+	} elseif ($module["estado"] == 2) {
+		$status = STATUS_MODULE_WARNING;
+		$title = __('WARNING');
+	} elseif ($module["estado"] == 0) {
 		$status = STATUS_MODULE_OK;
 		$title = __('NORMAL');
+	} elseif ($module["estado"] == 3) {
+		$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
+		switch($last_status) {
+			case 0:
+				$status = STATUS_MODULE_OK;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL');
+				break;
+			case 1:
+				$status = STATUS_MODULE_CRITICAL;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL');
+				break;
+			case 2:
+				$status = STATUS_MODULE_WARNING;
+				$title = __('UNKNOWN')." - ".__('Last status')." ".__('WARNING');
+				break;
+		}
 	}
 	
 	if (is_numeric($module["datos"])) {
-		$title .= " : " . format_for_graph($module["datos"]);
+		$title .= ": " . format_for_graph($module["datos"]);
 	} else {
-		$title .= " : " . substr(safe_output($module["datos"]),0,42);
+		$title .= ": " . substr(safe_output($module["datos"]),0,42);
 	}
 
 	$data[4] = print_status_image($status, $title, true);
@@ -257,8 +273,7 @@ foreach ($modules as $module) {
 		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
 	}
 	
-	$seconds = get_system_time () - $module["utimestamp"];
-	if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
+	if ($module['estado'] == 3) {
 		$data[7] = '<span class="redb">';
 	} else {
 		$data[7] = '<span>';

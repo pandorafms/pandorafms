@@ -104,7 +104,6 @@ if ($modulegroup > 0) {
 	$sql .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
 }
 
-
 // Module name selector
 if ($ag_modulename != "") {
 	$sql .= sprintf (" AND tagente_modulo.nombre = '%s'", $ag_modulename);
@@ -116,31 +115,24 @@ if ($ag_freestring != "") {
 }
 
 // Status selector
-if ($status == 0) { //Up
+if ($status == 0) { //Normal
 	$sql .= " AND tagente_estado.estado = 0 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
-	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24))) ";
+	AND (utimestamp > 0 OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100))) ";
 }
 elseif ($status == 2) { //Critical
-	$sql .= " AND tagente_estado.estado = 1 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
-	AND utimestamp > 0 ";
+	$sql .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
 }
 elseif ($status == 1) { //Warning
-	$sql .= " AND tagente_estado.estado = 2 
-	AND ((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2) OR (tagente_modulo.id_tipo_modulo IN(21,22,23,24,100))) 
-	AND utimestamp > 0 ";	
+	$sql .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
 }
 elseif ($status == 4) { //Not normal
-	$sql .= " AND (((UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2) AND (tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100))) OR tagente_estado.estado = 2 OR tagente_estado.estado = 1) AND utimestamp > 0";
-
+	$sql .= " AND tagente_estado.estado <> 0";
 } 
 elseif ($status == 3) { //Unknown
-	$sql .= " AND utimestamp > 0 AND tagente_modulo.id_tipo_modulo NOT IN(21,22,23,24,100) AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
-
-} 
+	$sql .= " AND tagente_estado.estado = 3";
+}
 elseif ($status == 5) { //Not init
-	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,24)";	
+	$sql .= " AND tagente_estado.utimestamp = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";	
 }
 
 $sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
@@ -225,12 +217,27 @@ foreach ($result as $row) {
 
 	$data[4] = ($row['module_interval'] == 0) ? $row['agent_interval'] : $row['module_interval'];
 
-	if ($row["estado"] == 0) {
-		$data[5] = print_status_image(STATUS_MODULE_OK, $row["datos"], true);
+	if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
+		$data[5] = print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
+	} elseif ($row["estado"] == 0) {
+		$data[5] = print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
 	} elseif ($row["estado"] == 1) {
-		$data[5] = print_status_image(STATUS_MODULE_CRITICAL, $row["datos"], true);
+		$data[5] = print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
+	} elseif ($row["estado"] == 2) {
+		$data[5] = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
 	} else {
-		$data[5] = print_status_image(STATUS_MODULE_WARNING, $row["datos"], true);
+		$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
+		switch($last_status) {
+			case 0:
+				$data[5] = print_status_image(STATUS_MODULE_OK, __('UNKNOWN')." - ".__('Last status')." ".__('NORMAL').": ".$row["datos"], true);
+				break;
+			case 1:
+				$data[5] = print_status_image(STATUS_MODULE_CRITICAL, __('UNKNOWN')." - ".__('Last status')." ".__('CRITICAL').": ".$row["datos"], true);
+				break;
+			case 2:
+				$data[5] = print_status_image(STATUS_MODULE_WARNING, __('UNKNOWN')." - ".__('Last status')." ".__('WARNING').": ".$row["datos"], true);
+				break;
+		}
 	}
 
 	$data[6] = "";
@@ -254,21 +261,14 @@ foreach ($result as $row) {
 		$data[7] = format_numeric($row["datos"]);
 	else
 		$data[7] = "<span title='".$row['datos']."' style='white-space: nowrap;'>".substr(safe_output($row["datos"]),0,12)."</span>";
-
-	$seconds = get_system_time () - $row["utimestamp"];
 	
 	if ($row["module_interval"] > 0)
 		$interval = $row["module_interval"];
 	else
 		$interval = $row["agent_interval"];
 	
-	if ((($row["module_type"] < 21) OR ($row["module_type"] > 24)) AND ($row["module_type"] != 100)){
-		if ($seconds >= ($interval * 2)) {
-			$option = array ("html_attr" => 'class="redb"');
-		}
-		else {
-			$option = array ();
-		}
+	if ($row['estado'] == 3){
+		$option = array ("html_attr" => 'class="redb"');
 	} else {
 		$option = array ();
 	}

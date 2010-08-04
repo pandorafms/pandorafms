@@ -155,7 +155,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors Not Init
 	if ($data["monitor_not_init"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #bc0000; text-align: center;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #729fcf; text-align: center;'>";
 		echo $data["monitor_not_init"];
 		echo "</td>";
 	} else {
@@ -173,7 +173,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Monitors Warning
 	if ($data["monitor_warning"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #aba900; text-align: center;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #f2ef00; text-align: center;'>";
 		echo $data["monitor_warning"];
 		echo "</td>";
 	} else {
@@ -190,7 +190,7 @@ foreach ($groups as $id_group => $group_name) {
 	}
 	// Alerts fired
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<td style='font-weight: bold; font-size: 18px; color: #8b01ae; text-align: center;'>";
+		echo "<td style='font-weight: bold; font-size: 18px; color: #ffa300; text-align: center;'>";
 		echo $data["monitor_alerts_fired"];
 		echo "</td>";
 	} else {

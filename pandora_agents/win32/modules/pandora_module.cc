@@ -668,6 +668,8 @@ Pandora_Module::addCondition (string condition) {
 		this->condition_list->push_back (cond);
 	} else {
 		pandoraDebug ("Invalid module condition: %s", condition.c_str ());
+		delete (cond);
+		return;
 	}
 	
 	/* Run commands through cmd.exe */

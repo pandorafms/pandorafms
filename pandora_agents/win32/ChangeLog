@@ -1,5 +1,13 @@
 2010-08-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* modules/pandora_module.cc: Free the collection if it can not
+	  be added to the list.
+
+	* Makefile.am: Use -static-libgcc to remove the dependency on
+	  libgcc_s_sjlj-1.dll.
+
+2010-08-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* modules/pandora_module.cc: Run action commands through cmd.exe.
 
 2010-08-04  Sancho Lerena <slerena@artica.es>

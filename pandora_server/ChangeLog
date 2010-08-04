@@ -1,3 +1,7 @@
+2010-08-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Select uninitialized keep alive modules.
+
 2010-07-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Do not mark async modules as unknown.

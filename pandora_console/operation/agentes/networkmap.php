@@ -334,9 +334,6 @@ echo '</table></table></form>';
 
 if($id_networkmap != 0) {
 	switch ($activeTab) {
-		case 'topology':
-			require_once('operation/agentes/networkmap.topology.php');
-			break;
 		case 'groups':
 			require_once('operation/agentes/networkmap.groups.php');
 			break;
@@ -344,7 +341,8 @@ if($id_networkmap != 0) {
 			require_once(''.ENTERPRISE_DIR.'/operation/policies/networkmap.policies.php');
 			break;
 		default:
-			enterprise_selectTab($activeTab);
+		case 'topology':
+			require_once('operation/agentes/networkmap.topology.php');
 			break;
 	}
 }

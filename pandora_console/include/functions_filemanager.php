@@ -423,7 +423,7 @@ function read_recursive_dir($dir, $relative_path = '') {
  * @param string $father The directory father don't navigate bottom this.
  * @param boolean $editor The flag to set the edition of text files.
  */
-function file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false) {
+function file_explorer($real_directory, $relative_directory, $url, $father = '', $editor = false, $readOnly = false) {
 	global $config;
 	
 	?>
@@ -606,7 +606,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 			$data[4] .= print_input_hidden ('delete_file', 1, true);
 			$data[4] .= '</form>';
 			
-			if ($editor) {
+			if (($editor) && (!$readOnly)) {
 				if ($fileinfo['mime'] == MIME_TEXT) {
 					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
 				}
@@ -617,23 +617,25 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		array_push ($table->data, $data);
 	}
 	
-	if (is_writable ($real_directory)) {
-		echo "<div style='text-align: right; width: " . $table->width . ";'>";
-		echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px;' title='" . __('Create directory') . "'>";
-		echo "<img src='images/mimetypes/directory.png' />";
-		echo "</a>";
-		echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
-		echo "<img src='images/mimetypes/text.png' />";
-		echo "</a>";
-		echo "<a href='javascript: show_upload_file();'  title='" . __('Upload file/s') . "'>";
-		echo "<img src='images/mimetypes/unknown.png' />";
-		echo "</a>";
-		echo "</div>";
-	}
-	else {
-		echo "<div style='text-align: right; width: " . $table->width . "; color:#AC4444;'>";
-		echo "<image src='images/info.png' />" . __('The directory is only readble.');
-		echo "</div>";
+	if (!$readOnly) {
+		if (is_writable ($real_directory)) {
+			echo "<div style='text-align: right; width: " . $table->width . ";'>";
+			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px;' title='" . __('Create directory') . "'>";
+			echo "<img src='images/mimetypes/directory.png' />";
+			echo "</a>";
+			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
+			echo "<img src='images/mimetypes/text.png' />";
+			echo "</a>";
+			echo "<a href='javascript: show_upload_file();'  title='" . __('Upload file/s') . "'>";
+			echo "<img src='images/mimetypes/unknown.png' />";
+			echo "</a>";
+			echo "</div>";
+		}
+		else {
+			echo "<div style='text-align: right; width: " . $table->width . "; color:#AC4444;'>";
+			echo "<image src='images/info.png' />" . __('The directory is only readble.');
+			echo "</div>";
+		}
 	}
 	print_table ($table);
 }

@@ -1,3 +1,10 @@
+2010-08-04  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_filemanager.php: added parameter $readOnly in the
+	function "file_explorer".
+	
+	*pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: added into the
+	table "talert_template_modules" the column "id_policy_alerts".
+	
 2010-08-05  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/networkmap.php: Change the default map to topology map

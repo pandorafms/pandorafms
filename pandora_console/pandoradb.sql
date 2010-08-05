@@ -277,23 +277,24 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_template_modules` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_agent_module` int(10) unsigned NOT NULL,
-  `id_alert_template` int(10) unsigned NOT NULL,
-  `internal_counter` int(4) default '0',
-  `last_fired` bigint(20) NOT NULL default '0',
-  `last_reference` bigint(20) NOT NULL default '0',
-  `times_fired` int(3) NOT NULL default '0',
-  `disabled` tinyint(1) default '0',
-  `priority` tinyint(4) default '0',
-  `force_execution` tinyint(1) default '0',
-  PRIMARY KEY (`id`),
-  KEY `idx_template_module` (`id_agent_module`),
-  FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE,
-  UNIQUE (`id_agent_module`, `id_alert_template`)
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_agent_module` int(10) unsigned NOT NULL,
+	`id_alert_template` int(10) unsigned NOT NULL,
+	`id_policy_alerts` int(10) unsigned NOT NULL default '0',
+	`internal_counter` int(4) default '0',
+	`last_fired` bigint(20) NOT NULL default '0',
+	`last_reference` bigint(20) NOT NULL default '0',
+	`times_fired` int(3) NOT NULL default '0',
+	`disabled` tinyint(1) default '0',
+	`priority` tinyint(4) default '0',
+	`force_execution` tinyint(1) default '0',
+	PRIMARY KEY (`id`),
+	KEY `idx_template_module` (`id_agent_module`),
+	FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (`id_alert_template`) REFERENCES talert_templates(`id`)
+		ON DELETE CASCADE ON UPDATE CASCADE,
+	UNIQUE (`id_agent_module`, `id_alert_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (

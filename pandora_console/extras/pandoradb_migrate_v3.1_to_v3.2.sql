@@ -67,3 +67,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 -- -----------------------------------------------------
 
 ALTER TABLE `tagente_modulo` ADD COLUMN `id_policy_module` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `nombre`;
+
+-- -----------------------------------------------------
+-- Table `talert_template_modules`
+-- -----------------------------------------------------
+ALTER TABLE `talert_template_modules` ADD COLUMN `id_policy_alerts` int(10) unsigned NOT NULL default '0';

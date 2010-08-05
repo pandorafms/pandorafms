@@ -1,3 +1,7 @@
+2010-08-05  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/networkmap.php: Change the default map to topology map
+
 2010-08-04  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_filemanager.php: move the action messages to $config
 	intermediate var. 

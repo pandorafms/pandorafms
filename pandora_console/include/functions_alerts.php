@@ -138,6 +138,21 @@ function delete_alert_action ($id_alert_action) {
 		array ('id' => $id_alert_action))) !== false;
 }
 
+
+function clone_alert_action ($id_alert_action) {
+	$id_alert_action = safe_int ($id_alert_action, 1);
+	if (empty ($id_alert_action))
+		return false;
+		
+	$action = get_alert_action($id_alert_action);
+	
+	if (empty ($action))
+		return false;
+		
+	unset($action['id']);
+	$result = create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
+}
+
 function get_alert_actions ($only_names = true) {
 	$all_actions = get_db_all_rows_in_table ('talert_actions');
 	

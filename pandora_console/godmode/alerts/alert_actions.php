@@ -45,6 +45,17 @@ print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.pn
 $update_action = (bool) get_parameter ('update_action');
 $create_action = (bool) get_parameter ('create_action');
 $delete_action = (bool) get_parameter ('delete_action');
+$copy_action = (bool) get_parameter ('copy_action');
+
+if ($copy_action) {
+	$id = get_parameter ('id');
+	
+	$result = clone_alert_action ($id);
+	
+	print_result_message ($result,
+		__('Successfully copied'),
+		__('Could not be copied'));
+}
 
 if ($create_action) {
 	$name = (string) get_parameter ('name');
@@ -104,13 +115,16 @@ $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
-$table->head[2] = __('Delete');
+$table->head[2] = __('Copy');
+$table->head[3] = __('Delete');
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '40px';
+$table->size[3] = '40px';
 $table->align = array ();
 $table->align[2] = 'center';
+$table->align[3] = 'center';
 
 $actions = get_db_all_rows_in_table ('talert_actions');
 if ($actions === false)
@@ -131,7 +145,10 @@ foreach ($actions as $action) {
 	$data[0] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&id='.$action['id'].'">'.
 		$action['name'].'</a>';
 	$data[1] = print_group_icon ($action["id_group"], true) .'&nbsp;'. get_group_name ($action["id_group"], true);
-	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
+	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&copy_action=1&id='.$action['id'].'"
+		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
+		'<img src="images/copy.png"></a>';
+	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
 		'<img src="images/cross.png"></a>';
 	

@@ -183,6 +183,31 @@ function mainAgentsModules() {
 	}
 
 	echo "</table>";
+	
+		echo "<p>" . __("The colours meaning:") .
+		"<ul style='float: left;'>" .
+		'<li style="clear: both;">
+			<div style="float: left; background: #ffa300; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Orange cell when the module have fired alerts.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Red cell when the module have critical state.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Yellow cell when the module have warning state.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Grey cell when the module have unknown state.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Green cell when the module have normal state.") .
+		'</li>' .
+		"</ul>" .
+	"</p>";
 }
 
 add_operation_menu_option(__("Agents/Modules view"), 'estado', '');

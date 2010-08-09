@@ -81,7 +81,7 @@ function mainAgentsModules() {
 
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."'><<</a> </th>";
+		echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'><<</a> </th>";
 	}
 
 	echo "<th width='150px'>".__("Agents")." \\ ".__("Modules")."</th>";
@@ -98,7 +98,7 @@ function mainAgentsModules() {
 
 		if(($hor_offset + $block) < $nmodules) {
 			$new_hor_offset = $hor_offset+$block;
-			echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."'>>></a> </th>";
+			echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>>></a> </th>";
 		}
 
 	$agents = get_agents (array ('offset' => (int) $offset,

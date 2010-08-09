@@ -126,7 +126,7 @@ $cells[3]["color"] = "#c00";
 $cells[2][0] = __('Monitors warning');
 $cells[2][1] = $data["monitor_warning"];
 $cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Down
-$cells[2]["color"] = "#ffb900";
+$cells[2]["color"] = "#ffcc00";
 
 $cells[1][0] = __('Monitors normal');
 $cells[1][1] = $data["monitor_ok"];
@@ -151,7 +151,7 @@ $cells[6]["color"] = "#000";
 $cells[7][0] = __('Alerts fired');
 $cells[7][1] = $data["monitor_alerts_fired"];
 $cells[7]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
-$cells[7]["color"] = "#c00";
+$cells[7]["color"] = "#ff8800";
 
 print_cells_temp ($cells);
 

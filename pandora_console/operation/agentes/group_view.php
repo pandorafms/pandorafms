@@ -101,7 +101,7 @@ foreach ($groups as $id_group => $group_name) {
 
 	// Calculate entire row color
 	if ($data["monitor_alerts_fired"] > 0){
-		echo "<tr style='background-color: #ffb4e9; height: 35px; '>";
+		echo "<tr style='background-color: #ffd78f; height: 35px; '>";
 	} elseif ($data["monitor_critical"] > 0) {
 		echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
 	} elseif ($data["monitor_warning"] > 0) {

@@ -47,9 +47,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/group_view"]["text"] = __('Group view');
 	$sub["operation/agentes/group_view"]["refr"] = 60;
 	
-	$sub["operation/agentes/agents_modules_view"]["text"] = __('Agents/Modules view');
-	$sub["operation/agentes/agents_modules_view"]["refr"] = 60;
-	
 	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
 	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');

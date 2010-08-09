@@ -1,5 +1,12 @@
 2010-08-09  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php
+	operation/agentes/agents_modules_view.php
+	operation/menu.php: Moved the agents VS modules matrix from
+	menu to extensions
+
+2010-08-09  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/agents_modules_view.php
 	operation/agentes/tactical.php
 	operation/agentes/group_view.php

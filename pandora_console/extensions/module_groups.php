@@ -26,7 +26,9 @@
  */
 function mainModuleGroups() {
 	global $config; //the useful global var of Pandora Console, it has many data can you use
-	
+
+	require_once ('include/functions_reporting.php');
+
 	//The big query
 	$sql = "select COUNT(id_agente) AS count, estado
 		FROM tagente_estado
@@ -85,21 +87,29 @@ function mainModuleGroups() {
 			$color = 'transparent'; //Defaut color for cell
 			$font_color = '#000000'; //Default font color for cell
 			if ($count == 0) {
-				$color = '#babdb6'; //Grey when the cell for this model group and agent group hasn't modules.
+				$color = '#eeeeee'; //Soft grey when the cell for this model group and agent group hasn't modules.
 				$alinkStart = '';
 				$alinkEnd = '';
 			}
-			else {	
-				if (array_key_exists(0,$states) && (count($states) == 1))
-					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
-				else {
-					if (array_key_exists(1,$states)) {
+			else {
+				// TODO: ADD Alerts fired status	
+				/*if (array_key_exists(4,$states)) {
+						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
+				}*/
+				if (array_key_exists(1,$states)) {
 						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
 						$font_color = '#ffffff';
-					}
-					else
+				}
+				elseif (array_key_exists(2,$states)) {
 						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 				}
+				elseif (array_key_exists(3,$states)) {
+					$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
+				}
+				elseif (array_key_exists(0,$states)) {
+					$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
+				}
+				
 				
 				$alinkStart = '<a href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
 					'&modulegroup=' . $idModelGroup . '".
@@ -129,15 +139,15 @@ function mainModuleGroups() {
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Yellow cell when the module group and agent have at least one in warning state and the others in green state.") .
+			__("Yellow cell when the module group and agent have at least one in warning state and the others in grey or green state.") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Grey cell when the module group and agent have at least one in unknown state and the others in green state.") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Green cell when the module group and agent have all modules in OK state.") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey cell when the module group and agent don't have any modules.") .
 		'</li>' .
 		"</ul>" .
 	"</p>";

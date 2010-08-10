@@ -133,6 +133,14 @@ function process_user_login ($login, $pass) {
 				}
 				break;
 
+			// Remote Integria
+			case 'integria':
+				if (enterprise_hook ('remote_integria_process_user_login', array ($login, $pass)) === false) {
+					$config["auth_error"] = "User not found in database or incorrect password";
+					return false;
+				}
+				break;
+
 			// Unknown authentication method
 			default:
 				$config["auth_error"] = "User not found in database or incorrect password";

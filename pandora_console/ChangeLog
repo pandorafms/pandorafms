@@ -1,5 +1,12 @@
 2010-08-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/auth/mysql.php,
+	  include/functions_config.php,
+	  godmode/setup/setup_auth.php: Added support fore more authentication
+	  schemes (enterprise).
+
+2010-08-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/setup/setup_auth.php: Added to repository. Authentication
 	  scheme setup options.
 

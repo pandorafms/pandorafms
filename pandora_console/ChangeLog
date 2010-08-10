@@ -1,3 +1,17 @@
+2010-08-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/export_csv.php,
+	  operation/agentes/stat_win.php,
+	  operation/reporting/reporting_xml.php: Fixed includes.
+
+	* godmode/setup/setup_auth.php,
+	  include/functions_config.php,
+	  include/auth/mysql.php: Added support for a remote user blacklist.
+
+	* include/help/en/help_autocreate_blacklist.php,
+	  include/help/es/help_autocreate_blacklist.php: Added to repository.
+	  Blacklist help files.
+
 2010-08-10  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/networkmap.php: Fixed several notices. When 

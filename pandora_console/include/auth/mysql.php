@@ -153,8 +153,8 @@ function process_user_login ($login, $pass) {
 		}
 
 		// The user does not exist and can not be created
-		if ($config['autocreate_remote_users'] == 0) {
-			$config["auth_error"] = "User not found in database or incorrect password";
+		if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
+			$config["auth_error"] = "Ooops User not found in database or incorrect password";
 			return false;
 		}
 
@@ -420,6 +420,26 @@ function ldap_process_user_login ($login, $password) {
 
 	@ldap_close ($ds);
 	return true;
+}
+
+/**
+ * Checks if a user is in the autocreate blacklist.
+ *
+ * @param string User
+ *
+ * @return bool True if the user is in the blacklist, false otherwise.
+ */
+function is_user_blacklisted ($user) {
+	global $config;
+	
+	$blisted_users = explode (',', $config['autocreate_blacklist']);
+	foreach ($blisted_users as $blisted_user) {
+		if ($user == $blisted_user) {
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 //Reference the global use authorization error to last auth error.

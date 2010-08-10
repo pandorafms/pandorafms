@@ -98,6 +98,7 @@ echo '</form>';
 		$(".ad").css("display", "none");
 		$(".pandora").css("display", "none");
 		$(".babel").css("display", "none");
+		$(".integria").css("display", "none");
 		
 		if (auth_method != "mysql") {
 			$(".remote").css("display", "");

@@ -199,11 +199,21 @@ function update_config () {
 
 	update_config_value ('rpandora_server', get_parameter ('rpandora_server', $config['rpandora_server']));
 	update_config_value ('rpandora_port', get_parameter ('rpandora_port', $config['rpandora_port']));
+	update_config_value ('rpandora_dbname', get_parameter ('rpandora_dbname', $config['rpandora_dbname']));
+	update_config_value ('rpandora_user', get_parameter ('rpandora_user', $config['rpandora_user']));
 	update_config_value ('rpandora_pass', get_parameter ('rpandora_pass', $config['rpandora_pass']));
 
 	update_config_value ('rbabel_server', get_parameter ('rbabel_server', $config['rbabel_server']));
 	update_config_value ('rbabel_port', get_parameter ('rbabel_port', $config['rbabel_port']));
+	update_config_value ('rbabel_dbname', get_parameter ('rbabel_dbname', $config['rbabel_dbname']));
+	update_config_value ('rbabel_user', get_parameter ('rbabel_user', $config['rbabel_user']));
 	update_config_value ('rbabel_pass', get_parameter ('rbabel_pass', $config['rbabel_pass']));
+
+	update_config_value ('rintegria_server', get_parameter ('rintegria_server', $config['rintegria_server']));
+	update_config_value ('rintegria_port', get_parameter ('rintegria_port', $config['rintegria_port']));
+	update_config_value ('rintegria_dbname', get_parameter ('rintegria_dbname', $config['rintegria_dbname']));
+	update_config_value ('rintegria_user', get_parameter ('rintegria_user', $config['rintegria_user']));
+	update_config_value ('rintegria_pass', get_parameter ('rintegria_pass', $config['rintegria_pass']));
 }
 
 /**
@@ -519,6 +529,26 @@ function process_config () {
 
 	if (!isset ($config['rbabel_pass'])) {
 		update_config_value ( 'rbabel_pass', '');
+	}
+
+	if (!isset ($config['rintegria_server'])) {
+		update_config_value ( 'rintegria_server', 'localhost');
+	}
+
+	if (!isset ($config['rintegria_port'])) {
+		update_config_value ( 'rintegria_port', 3306);
+	}
+
+	if (!isset ($config['rintegria_dbname'])) {
+		update_config_value ( 'rintegria_dbname', 'integria');
+	}
+
+	if (!isset ($config['rintegria_user'])) {
+		update_config_value ( 'rintegria_user', 'integria');
+	}
+
+	if (!isset ($config['rintegria_pass'])) {
+		update_config_value ( 'rintegria_pass', '');
 	}
 
 	/* Finally, check if any value was overwritten in a form */

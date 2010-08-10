@@ -1,3 +1,7 @@
+2010-08-10  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Updated build and development version.
+
 2010-08-04  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server.redhat.spec: Specific spec for redhat/centos.

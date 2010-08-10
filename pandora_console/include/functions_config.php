@@ -182,6 +182,7 @@ function update_config () {
 	update_config_value ('gis_purge', get_parameter ('gis_purge', $config['gis_purge']));
 	update_config_value ('auth', get_parameter ('auth', $config['auth']));
 	update_config_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users', $config['autocreate_remote_users']));
+	update_config_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist', $config['autocreate_blacklist']));
 	update_config_value ('default_remote_profile', get_parameter ('default_remote_profile', $config['default_remote_profile']));
 	update_config_value ('default_remote_group', get_parameter ('default_remote_group', $config['default_remote_group']));
 
@@ -441,6 +442,10 @@ function process_config () {
 
 	if (!isset ($config['autocreate_remote_users'])) {
 		update_config_value ('autocreate_remote_users', 0);
+	}
+
+	if (!isset ($config['autocreate_blacklist'])) {
+		update_config_value ('autocreate_blacklist', '');
 	}
 
 	if (!isset ($config['default_remote_profile'])) {

@@ -17,12 +17,8 @@
 
 // Global & session management
 require_once ('../../include/config.php');
-if (!isset ($config["auth"])) {
-	require_once ($config["homedir"]."/include/auth/mysql.php");
-} else {
-	require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
-}
-	
+require_once ('../../include/auth/mysql.php');
+
 if (! isset($_SESSION["id_user"])) {
 	session_start();
 	session_write_close();

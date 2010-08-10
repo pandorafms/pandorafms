@@ -51,34 +51,36 @@ if ($profile_list === false) {
 $table->data[2][1] = print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data[3][0] = __('Autocreate profile group');
 $table->data[3][1] = print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
-for ($i = 1; $i <= 3; $i++) {
+$table->data[4][0] = __('Autocreate blacklist') . print_help_icon ('autocreate_blacklist', true);
+$table->data[4][1] = print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
+for ($i = 1; $i <= 4; $i++) {
 	$table->rowstyle[$i] = $config['auth'] != 'mysql' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'remote';
 }
 
-$table->data[4][0] = __('LDAP server');
-$table->data[4][1] = print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
-$table->data[5][0] = __('LDAP port');
-$table->data[5][1] = print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
-$table->data[6][0] = __('LDAP version');
+$table->data[5][0] = __('LDAP server');
+$table->data[5][1] = print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
+$table->data[6][0] = __('LDAP port');
+$table->data[6][1] = print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
+$table->data[7][0] = __('LDAP version');
 $ldap_versions = array (1 => 'LDAPv1', 2 => 'LDAPv2', 3 => 'LDAPv3');
-$table->data[6][1] = print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
-$table->data[7][0] = __('Start TLS');
-$table->data[7][1] = __('Yes').'&nbsp;'.print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
-$table->data[7][1] .= __('No').'&nbsp;'.print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
-$table->data[8][0] = __('Base DN');
-$table->data[8][1] = print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
-$table->data[9][0] = __('Login attribute');
-$table->data[9][1] = print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
+$table->data[7][1] = print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
+$table->data[8][0] = __('Start TLS');
+$table->data[8][1] = __('Yes').'&nbsp;'.print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
+$table->data[8][1] .= __('No').'&nbsp;'.print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
+$table->data[9][0] = __('Base DN');
+$table->data[9][1] = print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
+$table->data[10][0] = __('Login attribute');
+$table->data[10][1] = print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
 
 // Hide LDAP configuration options
-for ($i = 4; $i <= 9; $i++) {
+for ($i = 5; $i <= 10; $i++) {
 	$table->rowstyle[$i] = $config['auth'] == 'ldap' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'ldap';
 }
 
 // Add enterprise authentication options
-enterprise_hook ('add_enterprise_auth_options', array (&$table, 10));
+enterprise_hook ('add_enterprise_auth_options', array (&$table, 11));
 
 echo '<form id="form_setup" method="post">';
 print_input_hidden ('update_config', 1);
@@ -113,9 +115,11 @@ echo '</form>';
 		if (remote_auto == 0) {
 			$("#default_remote_profile").attr("disabled", true);
 			$("#default_remote_group").attr("disabled", true);
+			$("#autocreate_blacklist").attr("disabled", true);
 		} else {
 			$("#default_remote_profile").attr("disabled", false);
 			$("#default_remote_group").attr("disabled", false);
+			$("#autocreate_blacklist").attr("disabled", false);
 		}
 	}
 </script>

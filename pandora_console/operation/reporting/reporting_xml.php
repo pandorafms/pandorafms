@@ -70,12 +70,7 @@ if (isset ($_GET["direct"])) {
 	*/
 	require_once ("../../include/config.php");
 	require_once ("../../include/functions_reporting.php");
-	
-	if (!isset ($config["auth"])) {
-		require_once ("include/auth/mysql.php");
-	} else {
-		require_once ("include/auth/".$config["auth"]["scheme"].".php");
-	}
+	require_once ("../../include/auth/mysql.php");
 	
 	$nick = get_parameter ("nick");
 	$pass = get_parameter ("pass");
@@ -100,12 +95,7 @@ if (isset ($_GET["direct"])) {
 } else {
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-	
-	if (!isset ($config["auth"])) {
-		require_once ("include/auth/mysql.php");
-	} else {
-		require_once ("include/auth/".$config["auth"]["scheme"].".php");
-	}	
+	require_once ("include/auth/mysql.php");	
 }
 
 check_login ();

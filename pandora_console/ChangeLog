@@ -1,5 +1,10 @@
 2010-08-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* godmode/setup/setup_auth.php: Fixed blacklist id in javascript
+	  code.
+
+2010-08-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* operation/events/export_csv.php,
 	  operation/agentes/stat_win.php,
 	  operation/reporting/reporting_xml.php: Fixed includes.

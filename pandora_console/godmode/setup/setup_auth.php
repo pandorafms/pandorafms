@@ -115,11 +115,11 @@ echo '</form>';
 		if (remote_auto == 0) {
 			$("#default_remote_profile").attr("disabled", true);
 			$("#default_remote_group").attr("disabled", true);
-			$("#autocreate_blacklist").attr("disabled", true);
+			$("#text-autocreate_blacklist").attr("disabled", true);
 		} else {
 			$("#default_remote_profile").attr("disabled", false);
 			$("#default_remote_group").attr("disabled", false);
-			$("#autocreate_blacklist").attr("disabled", false);
+			$("#text-autocreate_blacklist").attr("disabled", false);
 		}
 	}
 </script>

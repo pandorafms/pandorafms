@@ -1,5 +1,10 @@
 2010-08-10  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/networkmap.php: Fixed several notices. When 
+	a category has not maps, the menu is not showed
+
+2010-08-10  Sergio Martin <sergio.martin@artica.es>
+
 	* images/status_sets/default/module_unknown.png 
 	images/status_sets/default/module_alertsfired.png: Added images to
 	some status colors

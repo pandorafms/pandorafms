@@ -217,6 +217,7 @@ if($delete_networkmap || $add_networkmap || $save_networkmap) {
 
 if($id_networkmap == 0) {
 			echo "<div class='nf'>".__('There are no defined maps in this view')."</div>";
+			return;
 }
 
 if(!empty($name)) {

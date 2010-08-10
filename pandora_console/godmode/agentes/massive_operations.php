@@ -27,6 +27,8 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
+enterprise_include ('godmode/agentes/massive_operations.php');
+
 $tab = (string) get_parameter ('tab', 'copy_modules');
 
 /* Copy modules */
@@ -100,37 +102,51 @@ if($tab == 'delete_alerts')
 	$deletealerttab['active'] = true;
 else
 	$deletealerttab['active'] = false;
+	
+/* Collection */
+$policiesTab = enterprise_hook('massive_policies_tab');
+
+if ($policiesTab == -1)
+	$policiesTab = "";
 		
 
-$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab, 'add_action_alerts' => $addactionalerttab, 'delete_action_alerts' => $deleteactionalerttab, 'add_alerts' => $addalerttab, 'delete_alerts' => $deletealerttab);
+$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 
+	'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab,
+	'add_action_alerts' => $addactionalerttab, 'delete_action_alerts' => $deleteactionalerttab, 
+	'add_alerts' => $addalerttab, 'delete_alerts' => $deletealerttab, 'policies' => $policiesTab);
 
 print_page_header (__('Agent configuration'). ' &raquo; '. __('Massive operations'), "images/god1.png", false, "", true, $onheader);
 
 
 switch ($tab) {
-case 'delete_alerts':
-	require_once ('godmode/agentes/massive_delete_alerts.php');
-	break;
-case 'add_alerts':
-	require_once ('godmode/agentes/massive_add_alerts.php');
-	break;
-case 'delete_action_alerts':
-	require_once ('godmode/agentes/massive_delete_action_alerts.php');
-	break;
-case 'add_action_alerts':
-	require_once ('godmode/agentes/massive_add_action_alerts.php');
-	break;
-case 'delete_agents':
-	require_once ('godmode/agentes/massive_delete_agents.php');
-	break;
-case 'delete_modules':
-	require_once ('godmode/agentes/massive_delete_modules.php');
-	break;
-case 'edit_modules':
-	require_once ('godmode/agentes/massive_edit_modules.php');
-	break;
-case 'copy_modules':
-default:
-	require_once ('godmode/agentes/massive_config.php');
+	case 'delete_alerts':
+		require_once ('godmode/agentes/massive_delete_alerts.php');
+		break;
+	case 'add_alerts':
+		require_once ('godmode/agentes/massive_add_alerts.php');
+		break;
+	case 'delete_action_alerts':
+		require_once ('godmode/agentes/massive_delete_action_alerts.php');
+		break;
+	case 'add_action_alerts':
+		require_once ('godmode/agentes/massive_add_action_alerts.php');
+		break;
+	case 'delete_agents':
+		require_once ('godmode/agentes/massive_delete_agents.php');
+		break;
+	case 'delete_modules':
+		require_once ('godmode/agentes/massive_delete_modules.php');
+		break;
+	case 'edit_modules':
+		require_once ('godmode/agentes/massive_edit_modules.php');
+		break;
+	case 'copy_modules':
+		require_once ('godmode/agentes/massive_config.php');
+		break;
+	default:
+		if (!enterprise_hook('massive_operations', array($tab))) {
+			require_once ('godmode/agentes/massive_config.php');
+		}
+		break;
 }
 ?>

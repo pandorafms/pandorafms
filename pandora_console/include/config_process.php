@@ -61,6 +61,12 @@ if (! $config['dbconnection']) {
 
 $ownDir = dirname(__FILE__) . '/';
 
+if (! defined ('EXTENSIONS_DIR'))
+	define ('EXTENSIONS_DIR', 'extensions');
+
+if (! defined ('ENTERPRISE_DIR'))
+	define ('ENTERPRISE_DIR', 'enterprise');
+
 mysql_select_db ($config["dbname"]);
 require_once ($ownDir . 'functions.php');
 require_once ($ownDir . 'functions_db.php');
@@ -102,12 +108,6 @@ if (file_exists ('./include/languages/'.$config["user_language"].'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["user_language"].'.mo'));
 	$l10n->load_tables();
 }
-
-if (! defined ('EXTENSIONS_DIR'))
-	define ('EXTENSIONS_DIR', 'extensions');
-
-if (! defined ('ENTERPRISE_DIR'))
-	define ('ENTERPRISE_DIR', 'enterprise');
 
 require_once ($ownDir . 'functions_extensions.php');
 

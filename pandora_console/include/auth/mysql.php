@@ -54,6 +54,8 @@ if (!isset ($config)) {
 ');
 }
 
+enterprise_include ('include/auth/mysql.php');
+
 $config["user_can_update_info"] = true;
 $config["user_can_update_password"] = true;
 $config["admin_can_add_user"] = true;
@@ -70,24 +72,94 @@ $config["admin_can_make_admin"] = true;
  * @return mixed False in case of error or invalid credentials, the username in case it's correct.
  */
 function process_user_login ($login, $pass) {
-	global $mysql_cache;
+	global $config, $mysql_cache;
 	
-	// Connect to Database
-	$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s'", $login);
-	$row = get_db_row_sql ($sql);
+	// Always authenticate admins against the local database
+	if (strtolower ($config["auth"]) == 'mysql' || is_user_admin ($login)) {
 	
-	//Check that row exists, that password is not empty and that password is the same hash
-	if ($row !== false && $row["password"] !== md5 ("") && $row["password"] == md5 ($pass)) {
-		// Login OK
-		// Nick could be uppercase or lowercase (select in MySQL
-		// is not case sensitive)
-		// We get DB nick to put in PHP Session variable,
-		// to avoid problems with case-sensitive usernames.
-		// Thanks to David Muñiz for Bug discovery :)
-		return $row["id_user"];
+		// Connect to Database
+		$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s'", $login);
+		$row = get_db_row_sql ($sql);
+		
+		//Check that row exists, that password is not empty and that password is the same hash
+		if ($row !== false && $row["password"] !== md5 ("") && $row["password"] == md5 ($pass)) {
+			// Login OK
+			// Nick could be uppercase or lowercase (select in MySQL
+			// is not case sensitive)
+			// We get DB nick to put in PHP Session variable,
+			// to avoid problems with case-sensitive usernames.
+			// Thanks to David Muñiz for Bug discovery :)
+			return $row["id_user"];
+		} else {
+			$mysql_cache["auth_error"] = "User not found in database or incorrect password";
+		}
+
+		return false;
+
+	// Remote authentication
 	} else {
-		$mysql_cache["auth_error"] = "User not found in database or incorrect password";
+		
+		switch ($config["auth"]) {
+			
+			// LDAP
+			case 'ldap':
+				if (ldap_process_user_login ($login, $pass) === false) {
+					$config["auth_error"] = "User not found in database or incorrect password";
+					return false;
+				}
+				break;
+				
+			// Active Directory
+			case 'ad':
+				if (enterprise_hook ('ad_process_user_login', array ($login, $pass)) === false) {
+					$config["auth_error"] = "User not found in database or incorrect password";
+					return false;
+				}
+				break;
+
+			// Remote Pandora FMS
+			case 'pandora':
+				if (enterprise_hook ('remote_pandora_process_user_login', array ($login, $pass)) === false) {
+					$config["auth_error"] = "User not found in database or incorrect password";
+					return false;
+				}
+				break;
+
+			// Remote Babel Enterprise
+			case 'babel':
+				if (enterprise_hook ('remote_babel_process_user_login', array ($login, $pass)) === false) {
+					$config["auth_error"] = "User not found in database or incorrect password";
+					return false;
+				}
+				break;
+
+			// Unknown authentication method
+			default:
+				$config["auth_error"] = "User not found in database or incorrect password";
+				return false;
+		}
+		
+		// Authentication ok, check if the user exists in the local database
+		if (is_user ($login)) {
+			return $login;
+		}
+
+		// The user does not exist and can not be created
+		if ($config['autocreate_remote_users'] == 0) {
+			$config["auth_error"] = "User not found in database or incorrect password";
+			return false;
+		}
+
+		// Create the user in the local database
+		if (create_user ($login, $pass, array ('fullname' => $login, 'comments' => 'Imported from ' . $config['auth'])) === false) {
+			$config["auth_error"] = "User not found in database or incorrect password";
+			return false;
+		}
+
+		create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
+		return $login;
 	}
+
 	return false;
 }
 
@@ -296,6 +368,50 @@ function update_user ($id_user, $values) {
 		return false;
 	
 	return process_sql_update ("tusuario", $values, array ("id_user" => $id_user));
+}
+
+/**
+ * Authenticate against an LDAP server.
+ *
+ * @param string User login
+ * @param string User password (plain text)
+ *
+ * @return bool True if the login is correct, false in other case
+ */
+function ldap_process_user_login ($login, $password) {
+	global $config;
+	
+	if (! function_exists ("ldap_connect")) {
+		$config["auth_error"] = 'Your installation of PHP does not support LDAP';
+		return false;
+	}
+
+	// Connect to the LDAP server
+	$ds = @ldap_connect ($config["ldap_server"], $config["ldap_port"]);
+	if (!$ds) {
+		$config["auth_error"] = 'Error connecting to LDAP server';
+		return false;
+	}
+
+	// Set the LDAP version
+	ldap_set_option ($ds, LDAP_OPT_PROTOCOL_VERSION, $config["ldap_version"]);
+
+	if ($config["ldap_start_tls"]) {
+		if (!@ldap_start_tls ($ds)) { 
+			$config["auth_error"] = 'Could not start TLS for LDAP connection';
+			@ldap_close ($ds);
+			return false;
+		}
+	}
+
+	if (!@ldap_bind ($ds, $config["ldap_login_attr"]."=".$login.",".$config["ldap_base_dn"], $password)) {
+		$config["auth_error"] = 'User not found in database or incorrect password';
+		@ldap_close ($ds);
+		return false;
+	}
+
+	@ldap_close ($ds);
+	return true;
 }
 
 //Reference the global use authorization error to last auth error.

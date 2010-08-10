@@ -1,3 +1,9 @@
+2010-08-10  Miguel de Dios  <miguel.dedios@artica.es>
+	* ajax.php: cleaned source code.
+	
+	* godmode/agentes/massive_operations.php: cleaned source code, and added
+	hook to enterprise massive operations tab.
+	
 2010-08-10  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

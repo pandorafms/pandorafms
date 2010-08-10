@@ -114,7 +114,8 @@ sub pandora_snmptrapd {
 			while (my $line = <SNMPLOGFILE>) {
 				$last_line++;
 				$last_size = (stat ($log_file))[7];
-				
+				chomp ($line);
+
 				# Update index file
 				open INDEXFILE, '>' . $idx_file;
 				print INDEXFILE $last_line . ' ' . $last_size;
@@ -124,7 +125,7 @@ sub pandora_snmptrapd {
 				next if ($line =~ m/NET-SNMP/);
 
 				# Unknown data
-				next if ($line !~ m/\[\*\*\]/);
+				next if ($line !~ m/\[\*\*\]/ || matches_filter ($dbh, $pa_config, $line) == 1);
 
 				logger($pa_config, "Reading trap '$line'", 10);
 				my ($date, $time, $source, $oid, $type, $type_desc, $value, $data) = ('', '', '', '', '', '', '', '');
@@ -171,6 +172,25 @@ sub stop () {
 	unlink ('/var/run/pandora_snmptrapd.pid');
 	
 	$self->SUPER::stop ();
+}
+
+########################################################################################
+# Returns 1 if the given string matches any SNMP filter, 0 otherwise.
+########################################################################################
+sub matches_filter ($$$) {
+	my ($dbh, $pa_config, $string) = @_;
+	
+	# Get filters
+	my @filters = get_db_rows ($dbh, 'SELECT filter FROM tsnmp_filter');
+	foreach my $filter (@filters) {
+		my $regexp = $filter->{'filter'};
+		if ($string =~ m/$regexp/i) {
+			logger($pa_config, "Trap '$string' matches filter '$regexp'. Discarding...", 10);
+			return 1;
+		}
+	}
+	
+	return 0;
 }
 
 1;

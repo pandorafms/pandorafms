@@ -1,5 +1,11 @@
 2010-08-10  Sergio Martin <sergio.martin@artica.es>
 
+	* images/status_sets/default/module_unknown.png 
+	images/status_sets/default/module_alertsfired.png: Added images to
+	some status colors
+
+2010-08-10  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_alerts.php: Fixed a typo bug for show
 	the message of succefully copied when you clone an alert action
 

@@ -1,3 +1,9 @@
+2010-08-10  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	extras/pandoradb_migrate_v3.1_to_v3.2.sql: Fixed the creation of
+	tnetwork_map table creation adding the missed column 'center'
+
 2010-08-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/setup/setup_auth.php: Fixed blacklist id in javascript

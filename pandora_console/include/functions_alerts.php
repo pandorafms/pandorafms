@@ -150,7 +150,8 @@ function clone_alert_action ($id_alert_action) {
 		return false;
 		
 	unset($action['id']);
-	$result = create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
+	return create_alert_action ($action['name']." ".__('copy'), $action['id_alert_command'], $action);
+	
 }
 
 function get_alert_actions ($only_names = true) {

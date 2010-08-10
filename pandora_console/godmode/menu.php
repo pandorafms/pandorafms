@@ -177,6 +177,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 	$sub = array ();
 
+	$sub["godmode/setup/setup_auth"]["text"] = __('Authentication');
 	$sub["godmode/setup/performance"]["text"] = __('Performance');
 	$sub["godmode/setup/setup_visuals"]["text"] = __('Visual styles');
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');

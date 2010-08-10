@@ -1,3 +1,15 @@
+010-08-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/auth/mysql.php, include/functions_config.php,
+	  include/config_process.php, pandora_console.spec,
+	  ajax.php, godmode/menu.php: Added support for different
+	  authentication schemes. Local database and LDAP are
+	  implemented.
+
+	* operation/agentes/networkmap.topology.php,
+	  operation/agentes/networkmap.groups.php: Small fixes. Use filter name
+	  to compose file names.
+
 2010-08-09  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/agents_modules.php: Fixed the horizontal 

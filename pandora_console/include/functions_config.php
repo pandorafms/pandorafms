@@ -180,6 +180,30 @@ function update_config () {
 	update_config_value ('acl_enterprise', get_parameter ('acl_enterprise', $config['acl_enterprise']));
 	update_config_value ('metaconsole', get_parameter ('metaconsole', $config['metaconsole']));
 	update_config_value ('gis_purge', get_parameter ('gis_purge', $config['gis_purge']));
+	update_config_value ('auth', get_parameter ('auth', $config['auth']));
+	update_config_value ('autocreate_remote_users', get_parameter ('autocreate_remote_users', $config['autocreate_remote_users']));
+	update_config_value ('default_remote_profile', get_parameter ('default_remote_profile', $config['default_remote_profile']));
+	update_config_value ('default_remote_group', get_parameter ('default_remote_group', $config['default_remote_group']));
+
+	update_config_value ('ldap_server', get_parameter ('ldap_server', $config['ldap_server']));
+	update_config_value ('ldap_port', get_parameter ('ldap_port', $config['ldap_port']));
+	update_config_value ('ldap_version', get_parameter ('ldap_version', $config['ldap_version']));
+	update_config_value ('ldap_start_tls', get_parameter ('ldap_start_tls', $config['ldap_start_tls']));
+	update_config_value ('ldap_base_dn', get_parameter ('ldap_base_dn', $config['ldap_base_dn']));
+	update_config_value ('ldap_login_attr', get_parameter ('ldap_login_attr', $config['ldap_login_attr']));
+
+	update_config_value ('ad_server', get_parameter ('ad_server', $config['ad_server']));
+	update_config_value ('ad_port', get_parameter ('ad_port', $config['ad_port']));
+	update_config_value ('ad_start_tls', get_parameter ('ad_start_tls', $config['ad_start_tls']));
+	update_config_value ('ad_domain', get_parameter ('ad_domain', $config['ad_domain']));
+
+	update_config_value ('rpandora_server', get_parameter ('rpandora_server', $config['rpandora_server']));
+	update_config_value ('rpandora_port', get_parameter ('rpandora_port', $config['rpandora_port']));
+	update_config_value ('rpandora_pass', get_parameter ('rpandora_pass', $config['rpandora_pass']));
+
+	update_config_value ('rbabel_server', get_parameter ('rbabel_server', $config['rbabel_server']));
+	update_config_value ('rbabel_port', get_parameter ('rbabel_port', $config['rbabel_port']));
+	update_config_value ('rbabel_pass', get_parameter ('rbabel_pass', $config['rbabel_pass']));
 }
 
 /**
@@ -197,13 +221,7 @@ function process_config () {
 	
 	/* Compatibility fix */
 	foreach ($configs as $c) {
-		switch ($c["token"]) {
-		case "auth":
-			include ($config["homedir"]."/general/error_authconfig.php");
-			exit;
-		default:
 			$config[$c['token']] = $c['value'];
-		}
 	}
 	
 	if (!isset ($config['language'])) {
@@ -341,13 +359,8 @@ function process_config () {
 	// if (!isset ($config["autoupdate"])){
 	// 	update_config_value ('autoupdate', true);
 	// }
-
-	if (!isset ($config["auth"])) {
-		require_once ($config["homedir"]."/include/auth/mysql.php");
-	} else {
-		require_once ($config["homedir"]."/include/auth/".$config["auth"]["scheme"].".php");
-	}
 	
+	require_once ($config["homedir"]."/include/auth/mysql.php");
 	
 	// Next is the directory where "/attachment" directory is placed, to upload files stores. 
 	// This MUST be writtable by http server user, and should be in pandora root. 
@@ -410,6 +423,102 @@ function process_config () {
 
 	if (!isset ($config['activate_gis'])) {
 		update_config_value ( 'activate_gis', 0);
+	}
+
+	if (!isset ($config['auth'])) {
+		update_config_value ( 'auth', 'mysql');
+	}
+
+	if (!isset ($config['autocreate_remote_users'])) {
+		update_config_value ('autocreate_remote_users', 0);
+	}
+
+	if (!isset ($config['default_remote_profile'])) {
+		update_config_value ('default_remote_profile', 0);
+	}
+
+	if (!isset ($config['default_remote_group'])) {
+		update_config_value ('default_remote_group', 0);
+	}
+
+	if (!isset ($config['ldap_server'])) {
+		update_config_value ( 'ldap_server', 'localhost');
+	}
+
+	if (!isset ($config['ldap_port'])) {
+		update_config_value ( 'ldap_port', 389);
+	}
+
+	if (!isset ($config['ldap_version'])) {
+		update_config_value ( 'ldap_version', '3');
+	}
+
+	if (!isset ($config['ldap_start_tls'])) {
+		update_config_value ( 'ldap_start_tls', 0);
+	}
+
+	if (!isset ($config['ldap_base_dn'])) {
+		update_config_value ( 'ldap_base_dn', 'ou=People,dc=edu,dc=example,dc=org');
+	}
+
+	if (!isset ($config['ldap_login_attr'])) {
+		update_config_value ( 'ldap_login_attr', 'uid');
+	}
+
+	if (!isset ($config['ad_server'])) {
+		update_config_value ( 'ad_server', 'localhost');
+	}
+
+	if (!isset ($config['ad_port'])) {
+		update_config_value ( 'ad_port', 389);
+	}
+
+	if (!isset ($config['ad_start_tls'])) {
+		update_config_value ( 'ad_start_tls', 0);
+	}
+
+	if (!isset ($config['ad_domain'])) {
+		update_config_value ( 'ad_domain', '');
+	}
+
+	if (!isset ($config['rpandora_server'])) {
+		update_config_value ( 'rpandora_server', 'localhost');
+	}
+
+	if (!isset ($config['rpandora_port'])) {
+		update_config_value ( 'rpandora_port', 3306);
+	}
+
+	if (!isset ($config['rpandora_dbname'])) {
+		update_config_value ( 'rpandora_dbname', 'pandora');
+	}
+
+	if (!isset ($config['rpandora_user'])) {
+		update_config_value ( 'rpandora_user', 'pandora');
+	}
+
+	if (!isset ($config['rpandora_pass'])) {
+		update_config_value ( 'rpandora_pass', '');
+	}
+
+	if (!isset ($config['rbabel_server'])) {
+		update_config_value ( 'rbabel_server', 'localhost');
+	}
+
+	if (!isset ($config['rbabel_port'])) {
+		update_config_value ( 'rbabel_port', 3306);
+	}
+
+	if (!isset ($config['rbabel_dbname'])) {
+		update_config_value ( 'rbabel_dbname', 'babel');
+	}
+
+	if (!isset ($config['rbabel_user'])) {
+		update_config_value ( 'rbabel_user', 'babel');
+	}
+
+	if (!isset ($config['rbabel_pass'])) {
+		update_config_value ( 'rbabel_pass', '');
 	}
 
 	/* Finally, check if any value was overwritten in a form */

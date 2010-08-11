@@ -1040,4 +1040,45 @@ function array_key_to_offset($array, $key) {
 	
 	return $offset;
 }
+
+/**
+ * Make a snmpwalk and return it.
+ * 
+ * @param string $ip_target The target address.
+ * @param string $snmp_version Version of the snmp: 1,2,2c or 3.
+ * @param string $snmp_community.
+ * @param string $snmp3_auth_user.
+ * @param string $snmp3_security_level.
+ * @param string $snmp3_auth_method.
+ * @param string $snmp3_auth_pass.
+ * @param string $snmp3_privacy_method.
+ * @param string $snmp3_privacy_pass.
+ * @param integer $quick_print 0 for all details, 1 for only value.
+ * 
+ * @return array SNMP result.
+ */
+function snmpwalk_versions($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
+				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
+				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0) {
+					
+	snmp_set_quick_print ($quick_print);
+	
+	switch ($snmp_version) {
+		case '3':
+			$snmpwalk = @snmp3_real_walk ($ip_target, $snmp3_auth_user,
+				$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
+				$snmp3_privacy_method, $snmp3_privacy_pass, null);
+			break;
+		case '2':
+		case '2c':
+			$snmpwalk = @snmp2_real_walk ($ip_target, $snmp_community, NULL);
+			break;
+		case '1':
+		default:
+			$snmpwalk = @snmprealwalk($ip_target, $snmp_community, null);	
+			break;
+	}
+	
+	return $snmpwalk;
+}
 ?>

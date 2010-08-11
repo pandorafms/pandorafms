@@ -169,6 +169,44 @@ sub error ($) {
 }
 
 ################################################################################
+# Recursively delete files and directories.
+################################################################################
+sub rmrf {
+	my $path = shift;
+	local *DIR;
+
+	if (-d $path) {
+		opendir (DIR, $path) || return;
+		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
+			rmrf ("$path/$file_name");
+		}
+		closedir (DIR);
+		rmdir ($path);
+	} else {
+		unlink ($path);
+	}
+}
+
+################################################################################
+# Recursively set file permissions.
+################################################################################
+sub chmodr {
+	my ($perm, $path) = @_;
+	local *DIR;
+
+	if (-d $path) {
+		opendir (DIR, $path) || return;
+		while (defined (my $file_name = readdir(DIR))) {
+			next if ($file_name eq '.' || $file_name eq '..');
+			chmodr ($perm, "$path/$file_name");
+		}
+		closedir (DIR);
+	}
+	chmod ($perm, $path);
+}
+
+################################################################################
 # Open the agent logfile and start logging.
 ################################################################################
 sub start_log () {
@@ -519,7 +557,10 @@ sub check_collections () {
 		# Do not delete md5 files associated to a collection
 		$file_name =~ s/\.md5$//;
 
-		rmrf ("$ConfDir/collections/$file_name") unless defined ($Collections{$file_name});
+		if (! defined ($Collections{$file_name})) {
+			rmrf ("$ConfDir/collections/$file_name");
+			unlink ("$ConfDir/collections/$file_name.md5");
+		}
 	}
 	closedir (DIR);
 
@@ -546,10 +587,6 @@ sub check_collections () {
 		if (defined (open (MD5_FILE, "< $ConfDir/collections/$collection_md5_file"))) {
 			$local_collection_md5 = <MD5_FILE>;
 			close MD5_FILE;
-		} else {
-			open (MD5_FILE, "> $ConfDir/collections/$collection_md5_file") || error ("Could not open file '$ConfDir/collections/$collection_md5_file' for writing: $!.");
-			print MD5_FILE "$remote_collection_md5";
-			close (MD5_FILE);
 		}
 
 		# Check for changes
@@ -561,6 +598,14 @@ sub check_collections () {
 		rmrf ("$ConfDir/collections/$collection");
 		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>/dev/null`;
 		unlink ("$Conf{'temporal'}/$collection_file");		
+		
+		# Save the new md5
+		open (MD5_FILE, "> $ConfDir/collections/$collection_md5_file") || error ("Could not open file '$ConfDir/collections/$collection_md5_file' for writing: $!.");
+		print MD5_FILE "$remote_collection_md5";
+		close (MD5_FILE);
+		
+		# Set proper file permissions
+		chmodr (0750, "$ConfDir/collections/$collection");
 	}
 }
 
@@ -1079,26 +1124,6 @@ sub check_module_cron ($) {
 }
 
 ################################################################################
-# Recursively delete files and directories.
-################################################################################
-sub rmrf {
-	my ($path) = @_;
-	local *DIR;
-
-	if (-d $path) {
-		opendir (DIR, $path) || return;
-		while (defined (my $file_name = readdir(DIR))) {
-			next if ($file_name eq '.' || $file_name eq '..');
-			rmrf ("$path/$file_name");
-		}
-		closedir (DIR);
-		rmdir ($path);
-	} else {
-		unlink ($path);
-	}
-}
-
-################################################################################
 # Main.
 ################################################################################
 
@@ -1132,6 +1157,9 @@ sleep ($Conf{'delayed_startup'});
 #Set nice of the pandora_agent
 my $PID = $$;
 `renice "$Conf{'pandora_nice'}" "$PID"`;
+
+# Add the plugins directory to the PATH
+$ENV{'PATH'} .= ":$ConfDir/plugins";
 
 # Loop
 while (1) {
@@ -1193,7 +1221,7 @@ while (1) {
 	# Execute plugins
 	foreach my $plugin (@Plugins) {
 
-		my $output = `$ConfDir/plugins/$plugin 2>/dev/null`;
+		my $output = `$plugin 2>/dev/null`;
 
 		# Do not save the output if there was an error
 		next unless ($? eq 0);

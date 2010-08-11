@@ -1,3 +1,9 @@
+2010-08-11  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_network_map.php,
+	include/help/ja/help_autocreate_blacklist.php: Added new help files
+	in Japanese.
+
 2010-08-10  Miguel de Dios  <miguel.dedios@artica.es>
 	* ajax.php: cleaned source code.
 	

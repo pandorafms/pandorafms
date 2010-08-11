@@ -1,5 +1,10 @@
 2010-08-11  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager_editor.php: Changed the old way of
+	get a snmpwalk to use the new function get_snmpwalk
+
+2010-08-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php: Changed the newst function added name
 
 2010-08-11  Sergio Martin <sergio.martin@artica.es>

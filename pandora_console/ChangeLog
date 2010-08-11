@@ -1,5 +1,9 @@
 2010-08-11  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions.php: Changed the newst function added name
+
+2010-08-11  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php: Added a function to call snmpwalk
 	functions setting the version, ip address, community...
 

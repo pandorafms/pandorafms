@@ -1057,7 +1057,7 @@ function array_key_to_offset($array, $key) {
  * 
  * @return array SNMP result.
  */
-function snmpwalk_versions($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
+function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
 				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
 				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0) {
 					

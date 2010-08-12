@@ -1,5 +1,10 @@
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php: Change the status of the agents (the first
+	column colors) to the status of the agent, not the worst module
+
+2010-08-12  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/agents_modules.php: Improved the agents/modules matrix in 
 	visual way and converting the horizontal module names in vertical images
 

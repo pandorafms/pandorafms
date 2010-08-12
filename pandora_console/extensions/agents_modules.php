@@ -111,27 +111,31 @@ function mainAgentsModules() {
 
 	foreach ($agents as $agent) {
 		// Get stats for this group
-		$data = get_agent_module_info($agent['id_agente']);
+		$agent_status = get_agent_status($agent['id_agente']);
 
-		// Calculate entire row color
-		if ($data["monitor_alertsfired"] > 0){
-			$rowcolor = '#ffa300';
-			$textcolor = '#000';
-		} elseif ($data["monitor_critical"] > 0) {
-			$rowcolor = '#bc0000';
-			$textcolor = '#FFF';
-		} elseif ($data["monitor_warning"] > 0) {
-			$rowcolor = '#f2ef00';
-			$textcolor = '#000';
-		} elseif ($data["monitor_unknown"] > 0) {
-			$rowcolor = '#babdb6';
-			$textcolor = '#000';
-		} elseif ($data["monitor_normal"] > 0)  {
-			$rowcolor = '#8ae234';
-			$textcolor = '#000';
-		} else {
-			$rowcolor = '#babdb6';
-			$textcolor = '#000';
+		switch($agent_status) {
+			case 4: // Alert fired status
+				$rowcolor = '#ffa300';
+				$textcolor = '#000';
+				break;
+			case 1: // Critical status
+				$rowcolor = '#bc0000';
+				$textcolor = '#FFF';
+				break;
+			case 2: // Warning status
+				$rowcolor = '#f2ef00';
+				$textcolor = '#000';
+				break;
+			case 0: // Normal status
+				$rowcolor = '#8ae234';
+				$textcolor = '#000';
+				break;
+			case 3: 
+			case -1: 
+			default: // Unknown status
+				$rowcolor = '#babdb6';
+				$textcolor = '#000';
+				break;
 		}
 		
 		echo "<tr style='height: 35px;'>";

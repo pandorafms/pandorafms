@@ -1,3 +1,9 @@
+2010-08-12  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_ui.php: Improved the function print_status_image
+	to allow an additional parameter for send it image options like
+	style, width...
+
 2010-08-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_alerts.php,

@@ -1207,12 +1207,18 @@ define ('STATUS_SERVER_DOWN', 'server_down.png');
  *
  * @return string HTML code if return parameter is true.
  */
-function print_status_image ($type, $title = "", $return = false) {
+function print_status_image ($type, $title = "", $return = false, $options = false) {
 	list ($imagepath) = get_status_images_path ();
 	
 	$imagepath .= "/".$type;
 	
-	return print_image ($imagepath, $return, array ("title" => $title));
+	if($options === false) {
+		$options = array();
+	}
+	
+	$options['title'] = $title;
+	
+	return print_image ($imagepath, $return, $options);
 }
 
 /**

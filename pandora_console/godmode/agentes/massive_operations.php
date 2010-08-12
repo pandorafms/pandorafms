@@ -49,6 +49,12 @@ if($tab == 'edit_modules')
 else
 	$editmoduletab['active'] = false;
 	
+/* Collection */
+$modulessnmpTab = enterprise_hook('massive_modules_snmp_tab');
+
+if ($modulessnmpTab == -1)
+	$modulessnmpTab = "";
+	
 /* Delete Modules */
 $deletemoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_modules">'
 		. print_image ("images/delete_modules.png", true, array ("title" => __('Delete modules')))
@@ -111,7 +117,7 @@ if ($policiesTab == -1)
 		
 
 $onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 
-	'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab,
+	'add_modules_snmp' => $modulessnmpTab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab,
 	'add_action_alerts' => $addactionalerttab, 'delete_action_alerts' => $deleteactionalerttab, 
 	'add_alerts' => $addalerttab, 'delete_alerts' => $deletealerttab, 'policies' => $policiesTab);
 

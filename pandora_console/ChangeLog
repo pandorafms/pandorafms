@@ -1,5 +1,10 @@
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_html.php: Added the function html2rgb for
+	convert a color string from format #FFFFFF to RGB values
+
+2010-08-12  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/massive_operations.php: Added the massive operation
 	to add snmp modules to an agent
 

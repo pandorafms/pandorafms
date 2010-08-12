@@ -1,5 +1,10 @@
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions.php: Added the function string2image to obtain an image
+	from a string with parameters like text color, background color, rotation degrees...
+
+2010-08-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Improved the function print_status_image
 	to allow an additional parameter for send it image options like
 	style, width...

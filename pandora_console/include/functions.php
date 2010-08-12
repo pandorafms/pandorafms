@@ -1081,4 +1081,32 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 	
 	return $snmpwalk;
 }
+
+/**
+ * Convert a string to an image
+ * 
+ * @param string $ip_target The target address.
+ * 
+ * @return array SNMP result.
+ */
+function string2image($string, $width, $height, $fontsize = 3, 
+			$degrees = '0', $bgcolor = '#FFFFFF', $textcolor = '#000000', 
+			$padding_left = 4, $padding_top = 1) {
+				
+	global $config;
+				
+	$im = ImageCreate($width,$height);
+	$bgrgb = html2rgb($bgcolor);
+	$bgc = ImageColorAllocate($im,$bgrgb[0],$bgrgb[1],$bgrgb[2]);
+	// Set the string
+	$textrgb = html2rgb($textcolor);
+	imagestring($im, $fontsize, $padding_left, $padding_top, $string, ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]));
+	// Rotates the image
+	$rotated = imagerotate($im, $degrees, 0) ; 
+	// Generate the image
+	$file_url = 'attachment/string2image-'.$string.'.gif';
+	imagegif($rotated, $file_url);
+	imagedestroy($rotated);
+	return $file_url;
+}
 ?>

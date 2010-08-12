@@ -463,28 +463,28 @@ sub process_module_data ($$$$$$$$$) {
 	return;
 	}
 	#my $value = get_tag_value ($data, 'data', '');		
-	my $dataObject = get_module_data($data, $agent_name, $module_name, $module_type);
-	my $extraMacros = get_macros_for_data($data, $agent_name, $module_name, $module_type);
+	my $data_object = get_module_data($data, $agent_name, $module_name, $module_type);
+	my $extra_macros = get_macros_for_data($data, $agent_name, $module_name, $module_type);
 	
-	pandora_process_module ($pa_config, $dataObject, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh, $extraMacros);
+	pandora_process_module ($pa_config, $data_object, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh, $extra_macros);
 }
 
 sub get_module_data($$){
 	my ($data, $agent_name, $module_name, $module_type) = @_;
 	
-	my %dataObject;
+	my %data_object;
 	
 	if ($module_type eq "log4x") {
 		foreach my $attr ('severity','message', 'stacktrace'){
-			$dataObject{$attr} = get_tag_value ($data, $attr, '');
+			$data_object{$attr} = get_tag_value ($data, $attr, '');
 		}
 	} else {
 		# Default case
 		my $value = get_tag_value ($data, 'data', '');
-		$dataObject{'data'} = $value;
+		$data_object{'data'} = $value;
 	}
 	#return $value;
-	return \%dataObject;
+	return \%data_object;
 }
 
 sub get_macros_for_data($$){

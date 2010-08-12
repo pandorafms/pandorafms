@@ -1,5 +1,10 @@
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php: Improved the agents/modules matrix in 
+	visual way and converting the horizontal module names in vertical images
+
+2010-08-12  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php: Added the function string2image to obtain an image
 	from a string with parameters like text color, background color, rotation degrees...
 

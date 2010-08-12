@@ -73,3 +73,21 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `id_policy_module` INTEGER UNSIGNED NOT 
 -- Table `talert_template_modules`
 -- -----------------------------------------------------
 ALTER TABLE `talert_template_modules` ADD COLUMN `id_policy_alerts` int(10) unsigned NOT NULL default '0';
+
+
+-- -----------------------------------------------------
+-- Table `tsnmp_filter`
+-- -----------------------------------------------------
+CREATE TABLE  IF NOT EXISTS  `tsnmp_filter` (
+  `id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(255) default '',
+  `filter` varchar(255) default '',
+  PRIMARY KEY  (`id_snmp_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
+ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critica
+l', 'onchange', 'unknown');
+

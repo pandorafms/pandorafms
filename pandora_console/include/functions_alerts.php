@@ -215,7 +215,8 @@ function get_alert_templates_types () {
 	$types['not_equal'] = __('Not equal to');
 	$types['warning'] = __('Warning status');
 	$types['critical'] = __('Critical status');
-	$types['onchange'] = __('On Change');	
+	$types['unknown'] = __('Unknown status');
+	$types['onchange'] = __('On Change');
 
 	return $types;
 }

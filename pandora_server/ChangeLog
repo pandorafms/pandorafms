@@ -1,3 +1,8 @@
+2010-08-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Added support
+	  for unknown status alerts. Style fixes.
+
 2010-08-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm: Added support for SNMP filters.

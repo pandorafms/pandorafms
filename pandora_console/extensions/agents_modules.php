@@ -51,7 +51,7 @@ function mainAgentsModules() {
 
 	$offset = get_parameter('offset', 0);
 	$hor_offset = get_parameter('hor_offset', 0);
-	$block = 13;
+	$block = 20;
 
 	// Header
 	print_page_header (__("Agents/Modules"), "images/bricks.png", false, "", false, $updated_time );
@@ -77,32 +77,33 @@ function mainAgentsModules() {
 		}
 	}
 
-	echo '<table cellpadding="2" cellspacing="0" border="0">';
+	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
 
+	echo "<th width='140px'>".__("Agents")." \\ ".__("Modules")."</th>";	
+
+	$agents = get_agents (array ('offset' => (int) $offset,
+				'limit' => (int) $config['block_size']));
+	$nagents = count($agents);
+		
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'><<</a> </th>";
+		echo "<th width='20px' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
 	}
-
-	echo "<th width='150px'>".__("Agents")." \\ ".__("Modules")."</th>";
-
-	$nmodules = 0;
+		$nmodules = 0;
 	foreach($modules_by_name as $module) {
 		$nmodules++;
 		
 		if($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
 			continue;
 		}
-		echo "<th width='30px'>".printTruncateText($module['name'],4, false)."</th>";
+		$file_name = string2image(printTruncateText($module['name'],10, false, true, false, '...'), 90, 15, 3, 270, '#9EAC8B', 'FFF', 4, 0);
+		echo "<th width='24px'>".print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
-
+				
 		if(($hor_offset + $block) < $nmodules) {
 			$new_hor_offset = $hor_offset+$block;
-			echo "<th width='30px'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>>></a> </th>";
+			echo "<th width='20px' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 		}
-
-	$agents = get_agents (array ('offset' => (int) $offset,
-				'limit' => (int) $config['block_size']));
 
 	// Prepare pagination
 	pagination ((int)count(get_agents ()));
@@ -114,24 +115,29 @@ function mainAgentsModules() {
 
 		// Calculate entire row color
 		if ($data["monitor_alertsfired"] > 0){
-			echo "<tr style='background-color: #ffd78f; height: 35px; '>";
+			$rowcolor = '#ffa300';
+			$textcolor = '#000';
 		} elseif ($data["monitor_critical"] > 0) {
-			echo "<tr style='background-color: #ffc0b5; height: 35px;'>";
+			$rowcolor = '#bc0000';
+			$textcolor = '#FFF';
 		} elseif ($data["monitor_warning"] > 0) {
-			echo "<tr style='background-color: #f4ffbf; height: 35px;'>";
+			$rowcolor = '#f2ef00';
+			$textcolor = '#000';
 		} elseif ($data["monitor_unknown"] > 0) {
-			echo "<tr style='background-color: #ddd; height: 35px;'>";
+			$rowcolor = '#babdb6';
+			$textcolor = '#000';
 		} elseif ($data["monitor_normal"] > 0)  {
-			echo "<tr style='background-color: #bbffa4; height: 35px;'>";
+			$rowcolor = '#8ae234';
+			$textcolor = '#000';
 		} else {
-			echo "<tr style='background-color: #ffffff; height: 35px;'>";
+			$rowcolor = '#babdb6';
+			$textcolor = '#000';
 		}
 		
-		if($hor_offset > 0) {
-			echo "<td></td>";
-		}
+		echo "<tr style='height: 35px;'>";
 		
-		echo "<td>".printTruncateText($agent['nombre'],20)."</td>";
+		$file_name = string2image(printTruncateText($agent['nombre'],20, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
+		echo "<td style='background-color: ".$rowcolor.";'>".print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
 		$agent_modules = get_agent_modules($agent['id_agente']);
 		
 		$nmodules = 0;
@@ -148,22 +154,22 @@ function mainAgentsModules() {
 			foreach($module['id'] as $module_id){
 				if(!$match && array_key_exists($module_id,$agent_modules)) {
 					$status = get_agentmodule_status($module_id);
-					echo "<td style='text-align: center;'>";
+					echo "<td style='text-align: center; background-color: #DDD;'>";
 					switch($status){
 						case 0:
-							print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'));
+							print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 1:
-							print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'));
+							print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 2:
-							print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'));
+							print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 3:
-							print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'));
+							print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 						case 4:
-							print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'));
+							print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), false, array('width' => '20px', 'height' => '20px'));
 							break;
 					}
 					echo "</td>";
@@ -172,38 +178,35 @@ function mainAgentsModules() {
 			}
 			
 			if(!$match) {
-				echo "<td></td>";
+				echo "<td style='background-color: #DDD;'></td>";
 			}
 		}
 		
-		if(($hor_offset+$block) < $nmodules) {
-			echo "<td></td>";
-		}
 		echo "</tr>";
 	}
 
 	echo "</table>";
 	
-		echo "<p>" . __("The colours meaning:") .
+		echo "<br><br><p>" . __("The colours meaning:") .
 		"<ul style='float: left;'>" .
 		'<li style="clear: both;">
-			<div style="float: left; background: #ffa300; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			<div style="float: left; background: #ffa300; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Orange cell when the module have fired alerts.") .
 		'</li>' .
 		'<li style="clear: both;">
-			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			<div style="float: left; background: #cc0000; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Red cell when the module have critical state.") .
 		'</li>' .
 		'<li style="clear: both;">
-			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			<div style="float: left; background: #fce94f; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Yellow cell when the module have warning state.") .
 		'</li>' .
 		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			<div style="float: left; background: #babdb6; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Grey cell when the module have unknown state.") .
 		'</li>' .
 		'<li style="clear: both;">
-			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			<div style="float: left; background: #8ae234; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
 			__("Green cell when the module have normal state.") .
 		'</li>' .
 		"</ul>" .

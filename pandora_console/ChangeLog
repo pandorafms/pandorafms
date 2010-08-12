@@ -1,3 +1,18 @@
+2010-08-12  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_alerts.php,
+	  godmode/alerts/configure_alert_template.php: Added support for
+	  unknown status alerts.
+
+	* pandoradb.sql, godmode/menu.php,
+	  extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added support for SNMP
+	  filters.
+
+	* godmode/snmpconsole/snmp_filters.php: Added to repository. SNMP
+	  filter editor.
+
+	* operation/snmpconsole/snmp_view.php: Fixed header placement.
+
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Added the function html2rgb for

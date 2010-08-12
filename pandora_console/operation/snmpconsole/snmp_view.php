@@ -39,6 +39,16 @@ $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
 $url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&pagination=".$pagination."&offset=".$offset;
 
+if ($config["pure"]) {
+	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
+} else {
+	// Fullscreen
+	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
+}
+
+// Header
+print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", false, $link);
+
 // OPERATIONS
 
 // Delete SNMP Trap entry Event (only incident management access).
@@ -98,17 +108,6 @@ if (isset ($_POST["updatebt"])) {
 			"Trying to mass-delete SNMP Trap ID");
 	}
 }
-
-if ($config["pure"]) {
-	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
-} else {
-	// Fullscreen
-	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
-}
-
-// Header
-print_page_header (__("SNMP Console"), "images/computer_error.png", false, "", false, $link);
-
 
 $sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
 $traps = get_db_all_rows_sql ($sql);

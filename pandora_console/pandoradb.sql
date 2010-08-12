@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field1` varchar(255) default '',
   `field2` varchar(255) default '',
   `field3` mediumtext NOT NULL,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange'),
+  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown'),
   `value` varchar(255) default '',
   `matches_value` tinyint(1) default 0,
   `max_value` double(18,2) default NULL,
@@ -1126,4 +1126,14 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
    PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tsnmp_filter`
+-- -----------------------------------------------------
+
+CREATE TABLE  IF NOT EXISTS  `tsnmp_filter` (
+  `id_snmp_filter` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(255) default '',
+  `filter` varchar(255) default '',
+  PRIMARY KEY  (`id_snmp_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

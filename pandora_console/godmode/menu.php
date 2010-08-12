@@ -102,6 +102,7 @@ if (give_acl($config['id_user'], 0, "LW")) {
 	
 	$sub = array ();
 	//$sub["godmode/snmpconsole/snmp_alert"]["text"] = __('Component groups');
+	$sub['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
 	
 	enterprise_hook ('snmpconsole_submenu');
 

@@ -530,6 +530,7 @@ var warning = "<?php echo __('The alert would fire when the module is in warning
 var critical = "<?php echo __('The alert would fire when the module is in critical status');?>";
 var onchange = "<?php echo __('The alert would fire when the module value changes');?>";
 var onchange_not = "<?php echo __('The alert would fire when the module value does not change');?>";
+var unknown = "<?php echo __('The alert would fire when the module is in unknown status');?>";
 
 function check_regex () {
 	if ($("#type").attr ('value') != 'regex') {
@@ -655,6 +656,13 @@ $(document).ready (function () {
 				$("span#example").empty ().append (onchange);
 			else
 				$("span#example").empty ().append (onchange_not);
+			break;
+		case "unknown":
+			$("#template-value, #template-max, span#matches_value, #template-min").hide ();
+			$("#template-example").show ();
+			
+			/* Show example */
+			$("span#example").empty ().append (unknown);
 			break;
 		default:
 			$("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();

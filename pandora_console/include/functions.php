@@ -69,14 +69,6 @@ function output_clean_strict ($string) {
 	return preg_replace ('/[\|\@\$\%\/\(\)\=\?\*\&\#]/', '', $string);
 }
 
-
-/** 
- * @deprecated use safe_input and get_parameter functions. Keep temporarily for compatibility.
- */
-function entrada_limpia ($string) {
-	return safe_input ($string);
-}
-
 /** 
  * Performs an extra clean to a string removing all but alphanumerical 
  * characters _ and / The string is also stripped to 125 characters from after ://

@@ -1107,6 +1107,8 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$file_url = 'attachment/string2image-'.$string.'.gif';
 	imagegif($rotated, $file_url);
 	imagedestroy($rotated);
+	
+	$file_url = str_replace('#','%23',$file_url);
 	return $file_url;
 }
 ?>

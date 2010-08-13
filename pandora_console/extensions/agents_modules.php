@@ -87,7 +87,7 @@ function mainAgentsModules() {
 		
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='20px' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
+		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
 	}
 		$nmodules = 0;
 	foreach($modules_by_name as $module) {
@@ -102,7 +102,7 @@ function mainAgentsModules() {
 				
 		if(($hor_offset + $block) < $nmodules) {
 			$new_hor_offset = $hor_offset+$block;
-			echo "<th width='20px' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
+			echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 		}
 
 	// Prepare pagination
@@ -140,7 +140,7 @@ function mainAgentsModules() {
 		
 		echo "<tr style='height: 35px;'>";
 		
-		$file_name = string2image(printTruncateText($agent['nombre'],20, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
+		$file_name = string2image(printTruncateText($agent['nombre'],17, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 		echo "<td style='background-color: ".$rowcolor.";'>".print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
 		$agent_modules = get_agent_modules($agent['id_agente']);
 		

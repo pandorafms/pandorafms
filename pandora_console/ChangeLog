@@ -1,5 +1,10 @@
 2010-08-13  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php: Aligned vertically the modules
+	paginatiomn arrows in the agents/modules matrix
+
+2010-08-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions.php: Fixed a bug to generate the image
 	in string2image whenn the string contains a sharp (#)
 

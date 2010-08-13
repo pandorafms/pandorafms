@@ -41,9 +41,9 @@ if (isset($_POST["create"])){ // If create
 }
 
 if (isset($_POST["update"])){ // if update
-	$id_link = entrada_limpia($_POST["id_link"]);
-	$name = entrada_limpia($_POST["name"]);
-	$link = entrada_limpia($_POST["link"]);
+	$id_link = safe_input($_POST["id_link"]);
+	$name = safe_input($_POST["name"]);
+	$link = safe_input($_POST["link"]);
 $sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_link = '".$id_link."'";
 	$result=mysql_query($sql_update);
 	if (! $result)
@@ -53,7 +53,7 @@ $sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_li
 }
 	
 if (isset($_GET["borrar"])){ // if delete
-	$id_link = entrada_limpia($_GET["borrar"]);
+	$id_link = safe_input($_GET["borrar"]);
 	$sql_delete= "DELETE FROM tlink WHERE id_link = ".$id_link;
 	$result=mysql_query($sql_delete);
 	if (! $result)
@@ -67,7 +67,7 @@ if (isset($_GET["borrar"])){ // if delete
 if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))){
 	if (isset($_GET["form_edit"])){
 		$creation_mode = 0;
-			$id_link = entrada_limpia($_GET["id_link"]);
+			$id_link = safe_input($_GET["id_link"]);
 			$sql1='SELECT * FROM tlink WHERE id_link = '.$id_link;
 			$result=mysql_query($sql1);
 			if ($row=mysql_fetch_array($result)){

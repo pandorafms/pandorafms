@@ -1,5 +1,10 @@
 2010-08-13  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/snmpconsole/snmp_view.php: Fixed the pagination
+	block filter in the SNMP console
+
+2010-08-13  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/agents_modules.php: Aligned vertically the modules
 	paginatiomn arrows in the agents/modules matrix
 

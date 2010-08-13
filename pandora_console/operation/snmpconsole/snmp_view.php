@@ -109,7 +109,7 @@ if (isset ($_POST["updatebt"])) {
 	}
 }
 
-$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
+$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$pagination);
 $traps = get_db_all_rows_sql ($sql);
 
 // No traps 
@@ -175,7 +175,7 @@ $whereSubquery = 'WHERE 1=1';
 		$whereSubquery .= ' AND status = ' . $filter_status;
 	
 
-$sql = sprintf($sql, $whereSubquery, $offset, $config['block_size']);
+$sql = sprintf($sql, $whereSubquery, $offset, $pagination);
 
 $traps = get_db_all_rows_sql($sql);
 

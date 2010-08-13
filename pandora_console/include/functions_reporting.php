@@ -876,6 +876,10 @@ function alert_reporting_module ($id_agent_module, $period = 0, $date = 0, $retu
 			INNER JOIN talert_templates AS t2 ON t1.id = t2.id
 		WHERE id_agent_module = ' . $id_agent_module);
 	
+	if ($alerts === false) {
+		$alerts = array();
+	}
+	
 	$i = 0;
 	foreach ($alerts as $alert) {
 		$data = array();

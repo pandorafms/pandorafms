@@ -1,3 +1,8 @@
+2010-08-13  Miguel de Dios  <miguel.dedios@artica.es>
+	* include/functions_reporting.php: fixed the loop of alerts when Pandora
+	haven't alerts.
+	Fixes: #3044246
+
 2010-08-13  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/snmpconsole/snmp_view.php: Fixed the pagination

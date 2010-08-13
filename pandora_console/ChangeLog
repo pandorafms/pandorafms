@@ -1,3 +1,8 @@
+2010-08-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions.php: Fixed a bug to generate the image
+	in string2image whenn the string contains a sharp (#)
+
 2010-08-12  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/agents_modules.php: Change the status of the agents (the first

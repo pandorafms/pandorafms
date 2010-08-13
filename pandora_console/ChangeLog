@@ -1,3 +1,8 @@
+2010-08-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_visual_map.php: Added the alerts fired status
+	to the visual maps drawing an orange edge around the static graph icon
+
 2010-08-13  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions_reporting.php: fixed the loop of alerts when Pandora
 	haven't alerts.

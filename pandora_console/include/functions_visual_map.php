@@ -61,6 +61,7 @@ function printItemInVisualConsole($layoutData) {
 	$period = $layoutData['period'];
 	
 	$sizeStyle = '';
+	$borderStyle = '';
 	$imageSize = '';
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
@@ -69,6 +70,10 @@ function printItemInVisualConsole($layoutData) {
 		case STATIC_GRAPH:
 			if ($layoutData['image'] != null) {
 				$img = getImageStatusElement($layoutData);
+				if(substr($img,0,1) == '4') {
+					$borderStyle ='border: 2px solid #ffa300;';
+					$img = substr_replace($img, '', 0,1);
+				}
 				$imgSizes = getimagesize($img);
 			}
 			if (($width != 0) && ($height != 0)) {
@@ -77,7 +82,7 @@ function printItemInVisualConsole($layoutData) {
 			}
 			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
-				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' style="'.$borderStyle.'" /><br />';
 			}
 			echo $text;
 			echo "</div>";
@@ -296,9 +301,12 @@ function getImageStatusElement($layoutData) {
 	else {
 		switch (getStatusElement($layoutData)) {
 			case 1:
-			case 4:
-				//Critical (BAD or ALERT)
+				//Critical (BAD)
 				$img .= "_bad.png";
+				break;
+			case 4:
+				//Critical (ALERT)
+				$img = "4".$img."_bad.png";
 				break;
 			case 0:
 				//Normal (OK)
@@ -308,6 +316,8 @@ function getImageStatusElement($layoutData) {
 				//Warning
 				$img .= "_warning.png";
 				break;
+			case 3:
+				//Unknown
 			default:
 				$img .= ".png";
 				// Default is Grey (Other)
@@ -520,9 +530,12 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				$img = "images/console/icons/".$layout_data["image"];
 				switch ($status) {
 					case 1:
-					case 4:
-						//Critical (BAD or ALERT)
+						//Critical (BAD)
 						$img .= "_bad.png";
+						break;
+					case 4:
+						//Critical (ALERT)
+						$img = "4".$img."_bad.png";
 						break;
 					case 0:
 						//Normal (OK)
@@ -532,10 +545,16 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 						//Warning
 						$img .= "_warning.png";
 						break;
+					case 3:
+						//Unknown
 					default:
-						// Default is Grey (Other)
 						$img .= ".png";
-						break;
+						// Default is Grey (Other)
+				}
+				$borderStyle = '';
+				if(substr($img,0,1) == '4') {
+					$img_style['border'] ='2px solid #ffa300;';
+					$img = substr_replace($img, '', 0,1);
 				}
 				
 				if (is_file($img))

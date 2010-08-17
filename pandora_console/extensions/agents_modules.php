@@ -48,7 +48,8 @@ function mainAgentsModules() {
 	} else {
 		$updated_time = __("Updated at realtime");
 	}
-
+	
+	$group_id = get_parameter('group_id', 0);
 	$offset = get_parameter('offset', 0);
 	$hor_offset = get_parameter('hor_offset', 0);
 	$block = 20;
@@ -59,8 +60,24 @@ function mainAgentsModules() {
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
 
-	$all_modules = get_agent_modules('', false, false, true, false);
+	echo '<form method="post" action="'.get_url_refresh (array ('group_id' => $group_id, 'offset' => 0, 'hor_offset' => 0)).'">';
 
+	echo '<table cellpadding="4" cellspacing="4" class="databox" width="95%">';
+	echo '<tr><td style="white-space:nowrap;">'.__('Group').': ';
+
+	$groups = get_user_groups ();
+	print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '');
+
+	echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
+
+	$agents = '';
+	if($group_id > 0) {
+		$agents = get_group_agents($group_id);
+		$agents = array_keys($agents);
+	}
+	
+	$all_modules = get_agent_modules($agents, false, false, true, false);
+	
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
@@ -77,14 +94,25 @@ function mainAgentsModules() {
 		}
 	}
 
+	$filter_groups = array ('offset' => (int) $offset,
+				'limit' => (int) $config['block_size']);
+				
+	if($group_id > 0) {
+		$filter_groups['id_grupo'] = $group_id;
+	}
+		
+	$agents = get_agents ($filter_groups);
+	$nagents = count($agents);
+	
+	if($all_modules === false || $agents === false) {
+		echo "<div class='nf'>".__('There are no agents with modules')."</div>";
+		return;
+	}
+	
 	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
 
 	echo "<th width='140px'>".__("Agents")." \\ ".__("Modules")."</th>";	
 
-	$agents = get_agents (array ('offset' => (int) $offset,
-				'limit' => (int) $config['block_size']));
-	$nagents = count($agents);
-		
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
 		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowleft.png",true, array('title' => __('Previous modules')))."</a> </th>";
@@ -96,8 +124,8 @@ function mainAgentsModules() {
 		if($nmodules <= $hor_offset || $nmodules > ($hor_offset+$block)) {
 			continue;
 		}
-		$file_name = string2image(printTruncateText($module['name'],10, false, true, false, '...'), 90, 15, 3, 270, '#9EAC8B', 'FFF', 4, 0);
-		echo "<th width='24px'>".print_image($file_name, true, array('title' => $module['name']))."</th>";
+		$file_name = string2image(printTruncateText($module['name'],15, false, true, false, '...'), 115, 13, 3, 270, '#9EAC8B', 'FFF', 4, 0);
+		echo "<th width='22px'>".print_image($file_name, true, array('title' => $module['name']))."</th>";
 	}
 				
 		if(($hor_offset + $block) < $nmodules) {
@@ -105,8 +133,12 @@ function mainAgentsModules() {
 			echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_modules&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."'>".print_image("images/darrowright.png",true, array('title' => __('More modules')))."</a> </th>";
 		}
 
+	$filter_agents = false;
+	if($group_id > 0) {
+		$filter_agents = array('id_grupo' => $group_id);
+	}
 	// Prepare pagination
-	pagination ((int)count(get_agents ()));
+	pagination ((int)count(get_agents ($filter_agents)));
 	echo "<br>";
 
 	foreach ($agents as $agent) {

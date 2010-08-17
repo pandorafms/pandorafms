@@ -28,8 +28,6 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Massive copy').'</h3>';
-
 $source_id_group = (int) get_parameter ('source_id_group');
 $source_id_agent = (int) get_parameter ('source_id_agent');
 $destiny_id_group = (int) get_parameter ('destiny_id_group');
@@ -71,7 +69,7 @@ $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "n
 //	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 //	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
-echo '<form id="manage_config_form" method="post">';
+echo '<form action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');

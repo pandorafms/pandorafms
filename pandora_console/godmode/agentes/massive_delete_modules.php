@@ -45,8 +45,6 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h3>'.__('Massive modules deletion').'</h3>';
-
 function process_manage_delete ($module_name, $id_agents) {
 	if (empty ($module_name)) {
 		echo '<h3 class="error">'.__('No module selected').'</h3>';
@@ -117,7 +115,7 @@ $agents = get_agents_with_module_name ($module_name, $id_group,
 $table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_modules" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

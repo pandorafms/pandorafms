@@ -41,7 +41,6 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h3>'.__('Massive alerts addition').'</h3>';
 function process_manage_add ($id_alert_template, $id_agents) {
 	if (empty ($id_agents)) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
@@ -118,7 +117,7 @@ $table->data[2][0] = __('Alert template');
 $table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
 	
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

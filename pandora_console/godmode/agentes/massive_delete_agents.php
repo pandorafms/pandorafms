@@ -62,8 +62,6 @@ $id_agents = get_parameter ('id_agents');
 
 $delete = (bool) get_parameter_post ('delete');
 
-echo '<h3>'.__('Massive agent deletion').'</h3>';
-
 if ($delete) {
 	process_manage_delete ($id_agents);
 }
@@ -92,7 +90,7 @@ $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

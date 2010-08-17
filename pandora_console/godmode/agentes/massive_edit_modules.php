@@ -26,8 +26,6 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_modules.php');
 
-echo '<h3>'.__('Massive modules edition').'</h3>';
-
 function process_manage_edit ($module_name, $group_select = null, $agents_select = null) {
 	if (is_int ($module_name) && $module_name <= 0) {
 		echo '<h3 class="error">'.__('No modules selected').'</h3>';
@@ -220,7 +218,7 @@ $table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true
 $table->data['edit7'][2] = __('Historical data');
 $table->data['edit7'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
-echo '<form method="post" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

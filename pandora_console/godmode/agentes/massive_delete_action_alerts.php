@@ -76,8 +76,6 @@ if ($delete) {
 
 }
 
-echo '<h3>'.__('Massive alert actions deletion').'</h3>';
-
 $groups = get_user_groups ();
 
 $table->id = 'delete_table';
@@ -106,7 +104,7 @@ $actions = get_alert_actions ();
 $table->data[2][0] = __('Action');
 $table->data[2][1] = print_select ($actions, 'action', '', '', __('None'), 0, true);	
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

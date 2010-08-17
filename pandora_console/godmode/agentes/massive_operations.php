@@ -30,101 +30,97 @@ require_once ('include/functions_modules.php');
 enterprise_include ('godmode/agentes/massive_operations.php');
 
 $tab = (string) get_parameter ('tab', 'copy_modules');
+$option = (string) get_parameter ('option', '');
 
-/* Copy modules */
-$copymoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=copy_modules">'
-		. print_image ("images/copy.png", true, array ("title" => __('Copy modules')))
-		. "</a>";
-if($tab == 'copy_modules')
-	$copymoduletab['active'] = true;
-else
-	$copymoduletab['active'] = false;
-	
-/* Edit Modules */
-$editmoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=edit_modules">'
-		. print_image ("images/edit.png", true, array ("title" => __('Edit modules')))
-		. "</a>";
-if($tab == 'edit_modules')
-	$editmoduletab['active'] = true;
-else
-	$editmoduletab['active'] = false;
+
+$options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_alerts' => __('Massive alerts deletion'), 
+			'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'));
+			
+$options_agents = array('delete_agents' => __('Massive agents deletion'));
+
+$options_modules = array('delete_modules' => __('Massive modules deletion'), 'edit_modules' => __('Massive modules edition'), 
+				'copy_modules' => __('Massive modules copy'));
+
+$options_policies = array();
+
+$policies_options = enterprise_hook('massive_policies_options');
+
+if($policies_options != -1) {
+	$options_policies = array_merge($options_policies, $policies_options);
+}
+
+$modules_snmp_options = enterprise_hook('massive_modules_snmp_options');
+
+if($modules_snmp_options != -1) {
+	$options_modules = array_merge($options_modules, $modules_snmp_options);
+}
+
+
+if(in_array($option, array_keys($options_alerts))) {
+	$tab = 'massive_alerts';
+}elseif(in_array($option, array_keys($options_agents))) {
+	$tab = 'massive_agents';
+}elseif(in_array($option, array_keys($options_modules))) {
+	$tab = 'massive_modules';
+}elseif(in_array($option, array_keys($options_policies))) {
+	$tab = 'massive_policies';
+}else {
+	$option = '';
+}
+
+switch($tab) {
+	case 'massive_alerts':
+		$options = $options_alerts;
+		break;
+	case 'massive_agents':
+		$options = $options_agents;
+		break;
+	case 'massive_modules':
+		$options = $options_modules;
+		break;
+	case 'massive_policies':
+		$options = $options_policies;
+		break;
+}
+
+// Set the default option of the category
+if($option == ''){
+	$option = array_shift(array_keys($options));
+}
+
+$alertstab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_alerts">'
+		. print_image ('images/bell.png', true, array ('title' => __('Massive alert actions')))
+		. '</a>', 'active' => $tab == 'massive_alerts');
+		
+$agentstab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_agents">'
+		. print_image ('images/bricks.png', true, array ('title' => __('Massive agent actions')))
+		. '</a>', 'active' => $tab == 'massive_agents');
+			
+$modulestab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_modules">'
+		. print_image ('images/brick.png', true, array ('title' => __('Massive module actions')))
+		. '</a>', 'active' => $tab == 'massive_modules');
 	
 /* Collection */
-$modulessnmpTab = enterprise_hook('massive_modules_snmp_tab');
+$policiestab = enterprise_hook('massive_policies_tab');
 
-if ($modulessnmpTab == -1)
-	$modulessnmpTab = "";
-	
-/* Delete Modules */
-$deletemoduletab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_modules">'
-		. print_image ("images/delete_modules.png", true, array ("title" => __('Delete modules')))
-		. "</a>";
-if($tab == 'delete_modules')
-	$deletemoduletab['active'] = true;
-else
-	$deletemoduletab['active'] = false;
-
-/* Delete Agents */
-$deleteagenttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_agents">'
-		. print_image ("images/delete_agents.png", true, array ("title" => __('Delete agents')))
-		. "</a>";
-if($tab == 'delete_agents')
-	$deleteagenttab['active'] = true;
-else
-	$deleteagenttab['active'] = false;
-	
-/* Add alerts actions */
-$addactionalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=add_action_alerts">'
-		. print_image ("images/cog.png", true, array ("title" => __('Add Actions')))
-		. "</a>";
-if($tab == 'add_action_alerts')
-	$addactionalerttab['active'] = true;
-else
-	$addactionalerttab['active'] = false;
-	
-/* Delete alerts actions */
-$deleteactionalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_action_alerts">'
-		. print_image ("images/cog_del.png", true, array ("title" => __('Delete Actions')))
-		. "</a>";
-if($tab == 'delete_action_alerts')
-	$deleteactionalerttab['active'] = true;
-else
-	$deleteactionalerttab['active'] = false;
-	
-/* Add Alerts */
-$addalerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=add_alerts">'
-		. print_image ("images/god2.png", true, array ("title" => __('Add alerts')))
-		. "</a>";
-if($tab == 'add_alerts')
-	$addalerttab['active'] = true;
-else
-	$addalerttab['active'] = false;
-	
-/* Delete Alerts */
-$deletealerttab['text'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=delete_alerts">'
-		. print_image ("images/delete_alerts.png", true, array ("title" => __('Delete alerts')))
-		. "</a>";
-if($tab == 'delete_alerts')
-	$deletealerttab['active'] = true;
-else
-	$deletealerttab['active'] = false;
-	
-/* Collection */
-$policiesTab = enterprise_hook('massive_policies_tab');
-
-if ($policiesTab == -1)
-	$policiesTab = "";
+if ($policiestab == -1)
+	$policiestab = "";
 		
 
-$onheader = array('copy_modules' => $copymoduletab, 'edit_modules' => $editmoduletab, 
-	'add_modules_snmp' => $modulessnmpTab, 'delete_modules' => $deletemoduletab, 'delete_agents' => $deleteagenttab,
-	'add_action_alerts' => $addactionalerttab, 'delete_action_alerts' => $deleteactionalerttab, 
-	'add_alerts' => $addalerttab, 'delete_alerts' => $deletealerttab, 'policies' => $policiesTab);
+$onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulestab, 
+				'massive_alerts' => $alertstab, 'policies' => $policiestab);
 
-print_page_header (__('Agent configuration'). ' &raquo; '. __('Massive operations'), "images/god1.png", false, "", true, $onheader);
+print_page_header (__('Agent configuration'). ' &raquo; '. $options[$option], "images/god1.png", false, "", true, $onheader);
 
+echo '<form method="post" id="form_options" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations">';			
+echo '<table border="0"><tr><td>';
+echo '<h3>'.__('Massive options').':</h3>';
+echo '</td><td>';
+print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
+echo '</td></tr></table>';
+echo '</form>';			
 
-switch ($tab) {
+switch ($option) {
 	case 'delete_alerts':
 		require_once ('godmode/agentes/massive_delete_alerts.php');
 		break;
@@ -147,10 +143,10 @@ switch ($tab) {
 		require_once ('godmode/agentes/massive_edit_modules.php');
 		break;
 	case 'copy_modules':
-		require_once ('godmode/agentes/massive_config.php');
+		require_once ('godmode/agentes/massive_copy_modules.php');
 		break;
 	default:
-		if (!enterprise_hook('massive_operations', array($tab))) {
+		if (!enterprise_hook('massive_operations', array($option))) {
 			require_once ('godmode/agentes/massive_config.php');
 		}
 		break;

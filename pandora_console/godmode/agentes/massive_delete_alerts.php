@@ -43,7 +43,6 @@ if (is_ajax ()) {
 	return;
 }
 
-echo '<h3>'.__('Massive alerts deletion').'</h3>';
 function process_manage_delete ($id_alert_template, $id_agents) {
 	if (empty ($id_alert_template)) {
 		echo '<h3 class="error">'.__('No alert selected').'</h3>';
@@ -112,7 +111,7 @@ $agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
 $table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
 
-echo '<form method="post" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

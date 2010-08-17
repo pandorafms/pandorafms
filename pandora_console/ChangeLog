@@ -1,5 +1,10 @@
 2010-08-17  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/massive_operations.php: Fixed the default tab 
+	of the massive operations section
+
+2010-08-17  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/massive_copy_modules.php
 	godmode/agentes/massive_add_alerts.php
 	godmode/agentes/massive_delete_agents.php

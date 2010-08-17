@@ -29,7 +29,7 @@ require_once ('include/functions_modules.php');
 
 enterprise_include ('godmode/agentes/massive_operations.php');
 
-$tab = (string) get_parameter ('tab', 'copy_modules');
+$tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
 

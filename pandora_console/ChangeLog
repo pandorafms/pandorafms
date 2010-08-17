@@ -1,3 +1,9 @@
+2010-08-17  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/agents_modules.php: Added an agent group filter into
+	the agents/modules matrix and increased the size of the header to
+	read more letters from the module names
+
 2010-08-13  Miguel de Dios  <miguel.dedios@artica.es>
 	* include/functions.php: erased deprecate function "entrada_limpia" for to
 	use only the english named "safe_input".

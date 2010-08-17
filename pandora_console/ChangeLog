@@ -1,3 +1,9 @@
+2010-08-17  Raúl Mateos <raulofpandora@gmail.com>
+
+	* extensions/agents_modules.php, extensions/module_groups.php: Use
+	"status" instead "state". Change the order of colours, to maintain
+	coherence with other pages. Few cosmetic and gramatical changes.
+
 2010-08-17  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/massive_operations.php: Fixed the default tab 

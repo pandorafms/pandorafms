@@ -111,7 +111,7 @@ function mainAgentsModules() {
 	
 	echo '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
 
-	echo "<th width='140px'>".__("Agents")." \\ ".__("Modules")."</th>";	
+	echo "<th width='140px' style='background-color: #799E48;'>".__("Agents")." / ".__("Modules")."</th>";	
 
 	if($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
@@ -227,23 +227,23 @@ function mainAgentsModules() {
 		"<ul style='float: left;'>" .
 		'<li style="clear: both;">
 			<div style="float: left; background: #ffa300; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Orange cell when the module have fired alerts.") .
+			__("Orange cell when the module has fired alerts") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #cc0000; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Red cell when the module have critical state.") .
+			__("Red cell when the module has a critical status") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #fce94f; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Yellow cell when the module have warning state.") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey cell when the module have unknown state.") .
+			__("Yellow cell when the module has a warning status") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #8ae234; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Green cell when the module have normal state.") .
+			__("Green cell when the module has a normal status") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #babdb6; height: 14px; width: 26px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Grey cell when the module has an unknown status") .
 		'</li>' .
 		"</ul>" .
 	"</p>";

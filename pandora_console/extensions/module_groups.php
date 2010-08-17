@@ -135,19 +135,19 @@ function mainModuleGroups() {
 		"<ul style='float: left;'>" .
 		'<li style="clear: both;">
 			<div style="float: left; background: #cc0000; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Red cell when the module group and agent have at least one module in critical state and the others in any state.") .
+			__("Red cell when the module group and agent have at least one module in critical status and the others in any status") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #fce94f; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Yellow cell when the module group and agent have at least one in warning state and the others in grey or green state.") .
-		'</li>' .
-		'<li style="clear: both;">
-			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Grey cell when the module group and agent have at least one in unknown state and the others in green state.") .
+			__("Yellow cell when the module group and agent have at least one in warning status and the others in grey or green status") .
 		'</li>' .
 		'<li style="clear: both;">
 			<div style="float: left; background: #8ae234; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
-			__("Green cell when the module group and agent have all modules in OK state.") .
+			__("Green cell when the module group and agent have all modules in OK status") .
+		'</li>' .
+		'<li style="clear: both;">
+			<div style="float: left; background: #babdb6; height: 20px; width: 80px;margin-right: 5px; margin-bottom: 5px;">&nbsp;</div>' .
+			__("Grey cell when the module group and agent have at least one in unknown status and the others in green status") .
 		'</li>' .
 		"</ul>" .
 	"</p>";

@@ -271,9 +271,11 @@ sub parse_options {
 sub start_client {
 
 	# Connect to server
+	# Note: "Type => SOCK_STREAM" should be clearly defined for Solaris zone.
 	$t_socket = IO::Socket::INET->new (
 	        	PeerAddr => $t_address,
 			PeerPort => $t_port,
+			Type => SOCK_STREAM,
 		);
 
 	if (! defined ($t_socket)) {

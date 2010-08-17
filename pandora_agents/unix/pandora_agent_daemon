@@ -35,7 +35,24 @@ pidof_pandora () {
 	then
 		PANDORA_PID=`ps -ex | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $1 }'`
 	else
-		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+		if [ "$OS_NAME" = "SunOS" ]
+		then
+			ZONENAME_CMD="/bin/zonename"
+			if [ -x $ZONENAME_CMD ]
+			then
+				ZONE=`$ZONENAME_CMD`
+			else
+				ZONE=
+			fi
+			if [ "$ZONE" = "global" ]
+			then
+				PANDORA_PID=`ps -f -z global | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+			else
+				PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+			fi
+		else
+			PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+		fi
 	fi
 	
 	echo $PANDORA_PID

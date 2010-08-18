@@ -1,3 +1,9 @@
+2010-08-18  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Fixed some problems with traceroute.
+	Added feature to use a specific snmpcommunity in all modules created
+	by a recon task.
+
 2010-08-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Added support

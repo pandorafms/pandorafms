@@ -77,7 +77,7 @@ $data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid
 $data[1] .= '</span>';
 $data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
 $data[1] .= '</span> <span class="right" style="width: 50%; text-align: right"><span id="oid_loading" class="invisible">';
-$data[1] .= '<img src="images/spinner.png" />';
+$data[1] .= '<img src="images/spinner.gif" />';
 $data[1] .= '</span>';
 if ($disabledBecauseInPolicy)
 	$disableButton = true;

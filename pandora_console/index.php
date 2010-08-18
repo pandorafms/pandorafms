@@ -86,6 +86,11 @@ if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
 	foreach ($_POST as $key => $value) {
 		$query .= '&'.$key.'='.$value;
 	}
+	
+	// Prevent HTTP response splitting attacks
+	// http://en.wikipedia.org/wiki/HTTP_response_splitting
+	$query = str_replace ("\n", "", $query);
+
 	header ('Location: '.$query);
 	exit; //Always exit after sending location headers
 }
@@ -138,7 +143,7 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	$loginhash_data = get_parameter("loginhash_data", "");
 	$loginhash_user = get_parameter("loginhash_user", "");
 	
-	if ($loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
+	if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.$config["loginhash_pwd"])) {
 		logon_db ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;

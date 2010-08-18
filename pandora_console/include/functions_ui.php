@@ -1286,12 +1286,19 @@ function print_ui_agents_list ($options = false, $filter = false, $return = fals
  * could not be included.
  */
 function get_include_contents ($filename, $params = false) {
+	global $config;
+
 	ob_start ();
 	
 	if (is_array ($params)) {
 		extract ($params);
 	}
 	
+	$filename = realpath ($filename);
+	if (strncmp ($config["homedir"], $filename, strlen ($config["homedir"])) != 0) {
+		return false;
+	}
+
 	$result = include ($filename);
 	if ($result === false) {
 		ob_end_clean ();

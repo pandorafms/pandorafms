@@ -77,22 +77,21 @@ function output_clean_strict ($string) {
  * TODO: Make this multibyte safe (I don't know if there is an attack vector there)
  *
  * @param string String to clean
+ * @param default_string String that will be returned if invalid characters are found.
  * 
  * @return string Cleaned string
  */
-function safe_url_extraclean ($string) {
-	/* Clean "://" from the strings
-	 See: http://seclists.org/lists/incidents/2004/Jul/0034.html
-	*/
-	$pos = strpos ($string, "://");
-	if ($pos != 0) {
-		//Strip the string from (protocol[://] to protocol[://] + 125 chars)
-		$string = substr ($string, $pos + 3, $pos + 128);
-	} else {
-		$string = substr ($string, 0, 125);
-	}
+function safe_url_extraclean ($string, $default_string = '') {
+
 	/* Strip the string to 125 characters */
-	return preg_replace ('/[^a-z0-9_\/\.]/i', '', $string);
+	$string = substr ($string, 0, 125);
+
+	/* Search for unwanted characters */
+	if (preg_match ('/[^a-zA-Z0-9_\/\.]|(\/\/)|(\.\.)/', $string)) {
+		return $default_string;
+	}
+
+	return $string;
 }
 
 /** 
@@ -862,6 +861,9 @@ function enterprise_include ($filename) {
 	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
 	if ($filepath === false)
 		return ENTERPRISE_NOT_HOOK;
+	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0){
+		return ENTERPRISE_NOT_HOOK;
+	}
 	if (file_exists ($filepath)) {
 		include ($filepath);
 		return true;
@@ -874,6 +876,8 @@ function enterprise_include_once ($filename) {
 	// Load enterprise extensions
 	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
 	if ($filepath === false)
+		return ENTERPRISE_NOT_HOOK;
+	if (strncmp ($config["homedir"], $filepath, strlen ($config["homedir"])) != 0)
 		return ENTERPRISE_NOT_HOOK;
 	if (file_exists ($filepath)) {
 		require_once ($filepath);

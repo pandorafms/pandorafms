@@ -63,6 +63,10 @@ full path to Pandora FMS 'config.php' file.
 ";
 		exit;
 	}
+	if (preg_match ('/[^a-zA-Z0-9_\/\.]|(\/\/)|(\.\.)/', $argv[1])) {
+		echo "Invalid path: $argv[1]. Always use absolute paths.";
+		exit;
+	}
 	include $argv[1]."/include/config.php";
 } else {
 

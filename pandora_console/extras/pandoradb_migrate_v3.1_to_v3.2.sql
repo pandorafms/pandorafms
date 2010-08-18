@@ -91,3 +91,5 @@ CREATE TABLE  IF NOT EXISTS  `tsnmp_filter` (
 ALTER TABLE `talert_templates` MODIFY COLUMN `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critica
 l', 'onchange', 'unknown');
 
+ALTER TABLE trecon_task ADD `snmp_community` varchar(64) NOT NULL default 'public';
+

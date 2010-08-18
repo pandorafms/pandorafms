@@ -16,7 +16,7 @@ $url = '?login=1';
 //These variables come from index.php
 if (!empty ($page) && !empty ($sec)) {
 	foreach ($_GET as $key => $value) {
-		$url .= '&amp;'.$key.'='.$value;
+		$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
 	}
 }
 

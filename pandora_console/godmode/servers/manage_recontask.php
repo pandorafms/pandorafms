@@ -57,6 +57,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$id_network_profile = get_parameter_post ("id_network_profile");
 	$recon_ports = get_parameter_post ("recon_ports", "");
 	$id_os = get_parameter_post ("id_os", 10);
+    $snmp_community = get_parameter_post ("snmp_community", "public");
 }
 
 // --------------------------------
@@ -64,9 +65,7 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 // --------------------------------
 if (isset($_GET["update"])) {
 	$id = get_parameter_get ("update");
-	$sql = sprintf ("UPDATE trecon_task SET id_os = %d, name = '%s', subnet = '%s',
-				description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, 
-				id_network_profile = %d, recon_ports = '%s' WHERE id_rt = %u",$id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$recon_ports, $id);
+	$sql = sprintf ("UPDATE trecon_task SET snmp_community = '%s', id_os = %d, name = '%s', subnet = '%s', description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, id_network_profile = %d, recon_ports = '%s' WHERE id_rt = %u",$snmp_community, $id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$recon_ports, $id);
 	
 	if($name != "" && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		$result = process_sql ($sql);
@@ -85,8 +84,8 @@ if (isset($_GET["update"])) {
 // --------------------------------
 if (isset($_GET["create"])) {
 	$sql = sprintf ("INSERT INTO trecon_task 
-			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports) 
-			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports);
+			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports, snmp_community) 
+			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s', '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports, $snmp_community);
 	
 	if($name != "" && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		$result = process_sql ($sql);

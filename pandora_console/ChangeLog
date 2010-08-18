@@ -1,5 +1,8 @@
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
+	* pandora_console/operation/search_results.php: Fixed reference for
+	"down" instead "unknown" using the new code for unknown status.
+
     * include/functions_io.php: safe_input() modified to detect SQL injection
     attacks using /**/ strings.
 

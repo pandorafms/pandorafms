@@ -1,3 +1,8 @@
+2010-08-18  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php: changed the
+	spinning snmp walk image from png to gif
+
 2010-08-17  Raúl Mateos <raulofpandora@gmail.com>
 
 	* extensions/agents_modules.php, extensions/module_groups.php: Use

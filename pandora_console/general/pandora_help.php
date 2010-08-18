@@ -24,10 +24,12 @@ echo '<body style="background-color: #fff;">';
 $id = get_parameter ('id');
 
 /* Possible file locations */
-$files = array ($config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php",
-	$config["homedir"].ENTERPRISE_DIR."/include/help/".$config["language"]."/help_".$id.".php",
-	$config["homedir"].ENTERPRISE_DIR."/include/help/en/help_".$id.".php",
-	$config["homedir"]."/include/help/en/help_".$id.".php");
+$safe_language = safe_url_extraclean ($config["language"], "en");
+$safe_id = safe_url_extraclean ($id, "");
+$files = array ($config["homedir"]."/include/help/".$safe_language."/help_".$safe_id.".php",
+	$config["homedir"].ENTERPRISE_DIR."/include/help/".$safe_language."/help_".$safe_id.".php",
+	$config["homedir"].ENTERPRISE_DIR."/include/help/en/help_".$safe_id.".php",
+	$config["homedir"]."/include/help/en/help_".$safe_id.".php");
 $help_file = '';
 foreach ($files as $file) {
 	if (file_exists ($file)) {

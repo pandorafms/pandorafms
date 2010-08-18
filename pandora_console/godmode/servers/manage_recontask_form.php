@@ -39,6 +39,7 @@ if (isset ($_GET["update"])) { // Edit mode
 	$id_network_profile = $row["id_network_profile"];
 	$id_os = $row["id_os"];
 	$recon_ports = $row["recon_ports"];
+	$snmp_community = $row["snmp_community"];
 } elseif (isset ($_GET["create"])) {
 	$id_rt = -1;
 	$name = "";
@@ -48,6 +49,7 @@ if (isset ($_GET["update"])) { // Edit mode
 	$interval = 43200;
 	$id_group = 0;
 	$create_incident = 1;
+    $snmp_community = "public";
 	$id_network_profile = 1;
 	$id_os = -1; // Any
 	$recon_ports = ""; // Any
@@ -116,9 +118,15 @@ $table->data[8][0] = "<b>".__('Incident');
 $table->data[8][1] = print_select ($values, "create_incident", $create_incident,
 	'','','',true);
 
+// SNMP default community
+$table->data[9][0] = "<b>".__('SNMP Default community');
+$table->data[9][1] =  print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+
 // Comments
-$table->data[9][0] = "<b>".__('Comments');
-$table->data[9][1] =  print_input_text ('description', $description, '', 45, 0, true);
+$table->data[10][0] = "<b>".__('Comments');
+$table->data[10][1] =  print_input_text ('description', $description, '', 45, 0, true);
+
+
 
 
 // Different Form url if it's a create or if it's a update form

@@ -594,6 +594,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `id_recon_server` int(10) unsigned NOT NULL default '0',
   `id_os` tinyint(4) NOT NULL default '0',
   `recon_ports` varchar(250) NOT NULL default '',
+  `snmp_community` varchar(64) NOT NULL default 'public',
   PRIMARY KEY  (`id_rt`),
   KEY `recon_task_daemon` (`id_recon_server`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

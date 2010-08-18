@@ -2,7 +2,7 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     3.1
+%define version     3.2
 %define release     1
 %define httpd_name      httpd
 # User and Group under which Apache is running
@@ -22,7 +22,7 @@ Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
-Packager:           Manuel Arostegui <manuel@todo-linux.com>
+Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /srv/www/htdocs
 BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch
@@ -30,13 +30,13 @@ AutoReq:            0
 Requires:           apache2
 Requires:           php >= 4.3.0
 Requires:           php5-gd, php5-snmp, php5-pear, php5-json, php5-gettext
-Requires:           php5-mysql, php5-ldap, php5-mbstring, php5
+Requires:           php5-mysql, php5-ldap, php5-mbstring, php5 
 Requires:           graphviz, xorg-x11-fonts-core
 Requires:           php5-pear-db, php-pear-xml_rpc
 Provides:           %{name}-%{version}
 
 %description
-The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
+Pandora FMS Console is a web application to manage Pandora FMS. Console allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
 
 %prep
 rm -rf $RPM_BUILD_ROOT

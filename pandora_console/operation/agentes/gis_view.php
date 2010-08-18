@@ -35,6 +35,12 @@ $agentId = get_parameter('id_agente');
 $agent_name = get_agent_name($agentId); 
 $agentData = getDataLastPositionAgent($id_agente);
 
+$url = '';
+//These variables come from index.php
+foreach ($_GET as $key => $value) {
+	$url .= '&amp;'.safe_url_extraclean($key).'='.safe_url_extraclean($value);
+}
+
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
@@ -72,7 +78,7 @@ if ($dataLastPosition !== false) {
 		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
 }
 echo "<br />";
-echo "<form action='index.php?" . $_SERVER['QUERY_STRING'] . "' method='POST'>";
+echo "<form action='index.php?" . $url . "' method='POST'>";
 echo __("Period to show data as path") . ": ";
 print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10);
 echo __(" seconds.") . "&nbsp;";

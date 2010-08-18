@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC100608';
-$pandora_version = 'v3.1';
+$build_version = 'PC100810';
+$pandora_version = 'v3.2dev';
 
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;

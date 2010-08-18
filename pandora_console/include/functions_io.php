@@ -32,7 +32,12 @@ function safe_input($value) {
 		
 	//Replace the character '\' for the equivalent html entitie
 	$valueHtmlEncode = str_replace('\\', "&#92;", $valueHtmlEncode);
-	
+
+    // First attempt to avoid SQL Injection based on SQL comments
+    // Specific for MySQL.
+    $valueHtmlEncode = str_replace('/*', "&#47;&#42;", $valueHtmlEncode);
+    $valueHtmlEncode = str_replace('*/', "&#42;&#47;", $valueHtmlEncode);
+
 	return $valueHtmlEncode;
 }
 

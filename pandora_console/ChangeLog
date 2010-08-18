@@ -1,145 +1,42 @@
-2010-08-18  Sergio Martin <sergio.martin@artica.es>
+2010-08-18  Sancho Lerena <slerena@artica.es>
 
-	* godmode/agentes/module_manager_editor_network.php: changed the
-	spinning snmp walk image from png to gif
+    * include/functions_io.php: safe_input() modified to detect SQL injection
+    attacks using /**/ strings.
 
-2010-08-17  Raúl Mateos <raulofpandora@gmail.com>
+    * index.php: Prevent HTTP response splitting attacks.
 
-	* extensions/agents_modules.php, extensions/module_groups.php: Use
-	"status" instead "state". Change the order of colours, to maintain
-	coherence with other pages. Few cosmetic and gramatical changes.
+    * pandora_console.spec: Updated some spec variables and description.
 
-2010-08-17  Sergio Martin <sergio.martin@artica.es>
+    * pandoradb.sql,
+    extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added a new field in trecon_task
+    to store the snmp_community on detected hosts in a recon task.
 
-	* godmode/agentes/massive_operations.php: Fixed the default tab 
-	of the massive operations section
+    * extras/pandora_diag.php: Fixed security problem in relative path.
 
-2010-08-17  Sergio Martin <sergio.martin@artica.es>
+    * general/pandora_help.php, 
+    general/footer.php: Fixed security problem in relative path/include.
 
-	* godmode/agentes/massive_copy_modules.php
-	godmode/agentes/massive_add_alerts.php
-	godmode/agentes/massive_delete_agents.php
-	godmode/agentes/massive_config.php
-	godmode/agentes/massive_delete_action_alerts.php
-	godmode/agentes/massive_delete_alerts.php
-	godmode/agentes/massive_edit_modules.php
-	godmode/agentes/massive_operations.php
-	godmode/agentes/massive_delete_modules.php
-	godmode/agentes/massive_add_action_alerts.php: Restructured the
-	tabs of masive operations. Now there are only four tabs: module, 
-	agents, alerts and the enterprise policy masive operations. All
-	the operations are now classified under this hierarchy
+    * general/login_page.php: Fixed security problem in URL parsing.
 
-2010-08-17  Sergio Martin <sergio.martin@artica.es>
+    * godmode/servers/manage_recontask_form.php, 
+    manage_recontask.php: Implemented new feature to use a snmp comunity on all
+    network modules added to a new detected host.
 
-	* extensions/agents_modules.php: Added an agent group filter into
-	the agents/modules matrix and increased the size of the header to
-	read more letters from the module names
+    * config_process.php: Updated build.
 
-2010-08-13  Miguel de Dios  <miguel.dedios@artica.es>
-	* include/functions.php: erased deprecate function "entrada_limpia" for to
-	use only the english named "safe_input".
-	 
-	* godmode/setup/links.php: replaced the deprecate function "entrada_limpia"
-	for the english named "safe_input".
+    * functions.php: New version of safe_url_extraclean() function (security fix)
+    and modified also enterprise_include* functions to have a secure include.
 
-2010-08-13  Sergio Martin <sergio.martin@artica.es>
+    * functions_ui.php: Secured function get_include_contents().
 
-	* include/functions_visual_map.php: Added the alerts fired status
-	to the visual maps drawing an orange edge around the static graph icon
+    * operation/agentes/gis_view.php: Secured url extraction/parsing.
 
-2010-08-13  Miguel de Dios  <miguel.dedios@artica.es>
-	* include/functions_reporting.php: fixed the loop of alerts when Pandora
-	haven't alerts.
-	Fixes: #3044246
+2010-08-10  Sancho Lerena <slerena@artica.es>
 
-2010-08-13  Sergio Martin <sergio.martin@artica.es>
+    * include/config_process.php: Updated build and development version.
 
-	* operation/snmpconsole/snmp_view.php: Fixed the pagination
-	block filter in the SNMP console
+	* pandora_console.spec: Updated some texts and version.
 
-2010-08-13  Sergio Martin <sergio.martin@artica.es>
-
-	* extensions/agents_modules.php: Aligned vertically the modules
-	paginatiomn arrows in the agents/modules matrix
-
-2010-08-13  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions.php: Fixed a bug to generate the image
-	in string2image whenn the string contains a sharp (#)
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* extensions/agents_modules.php: Change the status of the agents (the first
-	column colors) to the status of the agent, not the worst module
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* extensions/agents_modules.php: Improved the agents/modules matrix in 
-	visual way and converting the horizontal module names in vertical images
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions.php: Added the function string2image to obtain an image
-	from a string with parameters like text color, background color, rotation degrees...
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions_ui.php: Improved the function print_status_image
-	to allow an additional parameter for send it image options like
-	style, width...
-
-2010-08-12  Ramon Novoa  <rnovoa@artica.es>
-
-	* include/functions_alerts.php,
-	  godmode/alerts/configure_alert_template.php: Added support for
-	  unknown status alerts.
-
-	* pandoradb.sql, godmode/menu.php,
-	  extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added support for SNMP
-	  filters.
-
-	* godmode/snmpconsole/snmp_filters.php: Added to repository. SNMP
-	  filter editor.
-
-	* operation/snmpconsole/snmp_view.php: Fixed header placement.
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions_html.php: Added the function html2rgb for
-	convert a color string from format #FFFFFF to RGB values
-
-2010-08-12  Sergio Martin <sergio.martin@artica.es>
-
-	* godmode/agentes/massive_operations.php: Added the massive operation
-	to add snmp modules to an agent
-
-2010-08-11  Sergio Martin <sergio.martin@artica.es>
-
-	* godmode/agentes/module_manager_editor.php: Changed the old way of
-	get a snmpwalk to use the new function get_snmpwalk
-
-2010-08-11  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions.php: Changed the newst function added name
-
-2010-08-11  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions.php: Added a function to call snmpwalk
-	functions setting the version, ip address, community...
-
-2010-08-11  Junichi Satoh  <junichi@rworks.jp>
-
-	* include/help/ja/help_network_map.php,
-	include/help/ja/help_autocreate_blacklist.php: Added new help files
-	in Japanese.
-
-2010-08-10  Miguel de Dios  <miguel.dedios@artica.es>
-	* ajax.php: cleaned source code.
-	
-	* godmode/agentes/massive_operations.php: cleaned source code, and added
-	hook to enterprise massive operations tab.
-	
 2010-08-10  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

@@ -158,6 +158,7 @@ sub data_consumer ($$) {
 		$host_name = $addr unless defined ($host_name);
 		
 		# Get the parent host
+		logger($pa_config, "Getting the parent for host $addr", 10);
 		my $parent_id = get_host_parent ($pa_config, $addr, $dbh);
 				
 		# Add the new address if it does not exist
@@ -168,10 +169,12 @@ sub data_consumer ($$) {
 			next;
 		}
 
-		my $agent_id;	
-		logger($pa_config, "GIS Status = ".$pa_config->{'activate_gis'}, 10);
+		my $agent_id;
 
-		# If GIS is activated try to geolocate the ip address of the agent and store also it's position.
+        # GIS Code -----------------------------
+
+		# If GIS is activated try to geolocate the ip address of the agent 
+        # and store also it's position.
 
 		if($pa_config->{'activate_gis'} == 1 && $pa_config->{'recon_reverse_geolocation_mode'} !~ m/^disabled$/i) {
 			# Try to get aproximated positional information for the Agent.
@@ -210,14 +213,16 @@ sub data_consumer ($$) {
 			}
 			else {
 				logger($pa_config,"Id location of '$addr' for host '$host_name' NOT found", 3);
-				# Crate a new agent
+				# Create a new agent
 				$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $task->{'id_group'},
 									  $parent_id, $id_os, '', 300, $dbh);
 			}
-		}		
+		}
+        # End of GIS code -----------------------------
+
 		else {	
-			# Crate a new agent
+			# Create a new agent
 			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $task->{'id_group'},
 									  $parent_id, $id_os, '', 300, $dbh);
@@ -227,14 +232,18 @@ sub data_consumer ($$) {
 		db_insert ($dbh, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
 		                  VALUES (?, ?)', $addr_id, $agent_id);
 
-		# Crate network profile modules for the agent
-		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr);
+		# Create network profile modules for the agent
+		create_network_profile_modules ($pa_config, $dbh, $agent_id, $task->{'id_network_profile'}, $addr, $task->{'snmp_community'});
+
 		# Generate an event
         pandora_event ($pa_config, "[RECON] New host [$host_name] detected on network [" . $task->{'subnet'} . ']',
                        $task->{'id_group'}, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 	}
+    # End of task recon sweep 
 
-	# Create an incident
+
+	# Create an incident with totals
+
 	if ($hosts_found > 0 && $task->{'create_incident'} == 1){
 		my $text = "At " . strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " ($hosts_found) new hosts were detected by Pandora FMS Recon Server running on [" . $pa_config->{'servername'} . "_Recon]. This incident has been automatically created following instructions for this recon task [" . $task->{'id_group'} . "].\n\n";
 		if ($task->{'id_network_profile'} > 0) {
@@ -338,7 +347,7 @@ sub add_address ($$) {
 # Create network profile modules for the given agent.
 ##########################################################################
 sub create_network_profile_modules {
-	my ($pa_config, $dbh, $agent_id, $np_id, $addr) = @_;
+	my ($pa_config, $dbh, $agent_id, $np_id, $addr, $snmp_community) = @_;
 	
 	return unless ($np_id > 0);
 
@@ -355,6 +364,9 @@ sub create_network_profile_modules {
 		}
 
 		logger($pa_config, "Processing network component '" . $component->{'name'} . "' for agent $addr.", 10);
+
+        # Use snmp_community from network task instead the component snmp_community
+        $component->{'snmp_community'} = $snmp_community;
 
 		# Create the module
 		my $module_id = db_insert ($dbh, 'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo )
@@ -375,29 +387,31 @@ sub create_network_profile_modules {
 sub get_host_parent ($$){
 	my ($pa_config, $host, $dbh) = @_;
 
-	# Traceroute not available
-    return 0 unless ($TracerouteAvailable != 0);
+    if ($TracerouteAvailable == 0){
+        logger($pa_config, "Traceroute is not available, skipping get_parent for $host", 10);
+        return 0;
+    	# Traceroute not available
+    }
 
-	my $traceroutetimeout = $pa_config->{'networktimeout'} * 2;
+	my $traceroutetimeout = $pa_config->{'networktimeout'};
+
+
     my $tr = Net::Traceroute::PurePerl->new (
 		 backend        => 'PurePerl',
          host           => $host,
          debug          => 0,
          max_ttl        => 15,
          query_timeout  => $traceroutetimeout,
-         packetlen      => 80,
-         protocol       => 'udp', # udp or icmp
+         packetlen      => 150,
+         protocol       => 'icmp', # udp or icmp
     );
+
+    logger($pa_config, "Begin traceroute for $host", 10);
 
 	my $success = 0;
 
-	# Call traceroute
-	eval {
-		local $SIG{'ALRM'} = sub { return 0; };
-		alarm($traceroutetimeout);
-		$success = $tr->traceroute();
-		alarm(0);
-	};
+    # Do the traceroute
+	$success = $tr->traceroute();
 
 	# Error or timeout
 	return 0 if ($@);

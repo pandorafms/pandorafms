@@ -1,5 +1,17 @@
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
+	* include/functions_io.php
+	include/functions_ui.php
+	include/functions.php
+	index.php
+	operation/agentes/gis_view.php
+	extras/pandora_diag.php
+	general/pandora_help.php
+	general/footer.php
+	general/login_page.php: Security fixes ported from trunk/3.2 version.
+
+2010-08-18  Sancho Lerena <slerena@artica.es>
+
 	* pandora_console.redhat.spec: Some minimal updates on Redhat RPM
 	about the logrotate.
 

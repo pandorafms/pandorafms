@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     3.1
-%define release     1
+%define release     2
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -14,7 +14,7 @@ Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              System/Monitoring
-Packager:           Manuel Arostegui <manuel@todo-linux.com>
+Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArchitectures: noarch 
@@ -36,13 +36,6 @@ rm -rf $RPM_BUILD_ROOT
 %build
 
 %install
-#Uncomment this if you build from other RPM system (fedora, opensuse != 11..)
-#%define perl_version %(rpm -q --queryformat='%{VERSION}' perl)
-#export perl_version=`rpm -q --queryformat='%{VERSION}' perl`
-
-# Temporal hack for For SLES 11 only, warning
-#export perl_version=5.10.0
-#%define perl_version 5.10.0
 
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
@@ -79,7 +72,7 @@ rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
 rm -fr $RPM_BUILD_ROOT
 
 %pre
-/usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
+/usr/sbin/useradd -d %{prefix}/pandora_server -s /bin/false -M -g 0 pandora
 if [ -e "/etc/pandora/pandora_server.conf" ]
 then
 	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old

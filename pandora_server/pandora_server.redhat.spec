@@ -93,9 +93,10 @@ chmod 0755 $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/pandora_db
 rm -fr $RPM_BUILD_ROOT
 
 %pre
-# Upgrading
-if [ "$1" = "2" ]; then
-   exit 0
+/usr/sbin/useradd -d %{prefix}/pandora_server -s /bin/false -M -g 0 pandora
+if [ -e "/etc/pandora/pandora_server.conf" ]
+then
+	cat /etc/pandora/pandora_server.conf > /etc/pandora/pandora_server.conf.old
 fi
 
 id pandora >/dev/null 2>&1 || \

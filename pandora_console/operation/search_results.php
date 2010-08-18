@@ -565,8 +565,8 @@ else {
 				$modulesCell .= ' : <span class="yellow">'.$agent_info["monitor_warning"].'</span>';
 			if ($agent_info["monitor_critical"] > 0)
 				$modulesCell .= ' : <span class="red">'.$agent_info["monitor_critical"].'</span>';
-			if ($agent_info["monitor_down"] > 0)
-				$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_down"].'</span>';
+			if ($agent_info["monitor_unknown"] > 0)
+				$modulesCell .= ' : <span class="grey">'.$agent_info["monitor_unknown"].'</span>';
 			
 			if ($agent['disabled']) {
 				$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, "upper") .print_help_tip(__('Disabled'), true) . "</em>";

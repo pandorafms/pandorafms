@@ -1,3 +1,8 @@
+2010-08-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console.redhat.spec: Some minimal updates on Redhat RPM
+	about the logrotate.
+
 2010-07-02  Sancho Lerena <slerena@artica.es>
 
         * pandora_console.redhat.spec: Patches applied from the contribution        

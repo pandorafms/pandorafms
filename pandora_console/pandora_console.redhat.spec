@@ -21,6 +21,7 @@ License:            GPL
 Vendor:             Artica ST <info@artica.es>
 #Source0:            %{name}-%{version}-%{revision}.tar.gz
 Source0:            %{name}-%{version}.tar.gz
+Source1:            extras/%{name}-logrotate
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
@@ -32,8 +33,9 @@ Requires:           httpd >= 2.0.0
 Requires:           php >= 4.3.0
 Requires:           php-gd, php-snmp, php-pear 
 Requires:           php-mysql, php-ldap, php-mbstring, php
-Requires:           php-pear-db, graphviz, php-pear-xml_rpc
+Requires:           php-pear-DB
 Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
+Requires:           graphviz, graphviz-php
 Provides:           %{name}-%{version}
 
 %description
@@ -49,12 +51,12 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
+#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
-cp $RPM_BUILD_ROOT%{prefix}/pandora_console/extras/logrotate $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/pandora_console
+install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT

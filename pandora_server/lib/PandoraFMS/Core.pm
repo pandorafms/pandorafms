@@ -161,14 +161,14 @@ our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginse
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 ##########################################################################
-=head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh> I<$extra_macros> I<$last_data_value>) >>
+=head2 C<< pandora_generate_alerts (I<$pa_config> I<$data> I<$status> I<$agent> I<$module> I<$utimestamp> I<$dbh>  I<$timestamp> I<$extra_macros> I<$last_data_value>) >>
 
 Generate alerts for a given I<$module>.
 
 =cut
 ##########################################################################
-sub pandora_generate_alerts ($$$$$$$;$$$) {
-	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $extra_macros, $last_data_value, $alert_type) = @_;
+sub pandora_generate_alerts ($$$$$$$$;$$$) {
+	my ($pa_config, $data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value, $alert_type) = @_;
 
 	# Do not generate alerts for disabled groups
 	if (is_group_disabled ($dbh, $agent->{'id_grupo'})) {
@@ -188,12 +188,12 @@ sub pandora_generate_alerts ($$$$$$$;$$$) {
 				$utimestamp, $dbh,  $last_data_value);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
-		                       $alert, $rc, $dbh, $extra_macros);
+		                       $alert, $rc, $dbh, $timestamp, $extra_macros);
 
 		# Evaluate compound alerts even if the alert status did not change in
 		# case the compound alert does not recover
 		pandora_generate_compound_alerts ($pa_config, $data, $status, $agent, $module,
-						$alert, $utimestamp, $dbh)
+						$alert, $utimestamp, $dbh, $timestamp)
 	}
 }
 
@@ -312,14 +312,14 @@ sub pandora_evaluate_alert ($$$$$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_process_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$rc>, I<$dbh>) >> 
+=head2 C<< pandora_process_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$rc>, I<$dbh> I<$timestamp>) >> 
 
 Process an alert given the status returned by pandora_evaluate_alert.
 
 =cut
 ##########################################################################
-sub pandora_process_alert ($$$$$$$;$) {
-	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $extra_macros) = @_;
+sub pandora_process_alert ($$$$$$$$;$) {
+	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp, $extra_macros) = @_;
 	
 	logger ($pa_config, "Processing alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 
@@ -353,7 +353,7 @@ sub pandora_process_alert ($$$$$$$;$) {
 		db_do($dbh, 'UPDATE ' . $table . ' SET times_fired = 0,
 				 internal_counter = 0 WHERE id = ?', $id);
 
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $extra_macros);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, $extra_macros);
 		return;
 	}
 
@@ -394,7 +394,7 @@ sub pandora_process_alert ($$$$$$$;$) {
 		db_do($dbh, 'UPDATE  ' . $table . '  SET times_fired = ?,
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $extra_macros);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
 		return;
 	}
 }
@@ -460,14 +460,14 @@ sub pandora_evaluate_compound_alert ($$$$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_generate_compound_alerts (I<$pa_config>, I<$data>, I<$status>, I<$agent>, I<$module>, I<$alert>, I<$utimestamp>, I<$dbh>) >> 
+=head2 C<< pandora_generate_compound_alerts (I<$pa_config>, I<$data>, I<$status>, I<$agent>, I<$module>, I<$alert>, I<$utimestamp>, I<$dbh>, I<$timestamp>) >> 
 
 Generate compound alerts that depend on a given alert.
 
 =cut
 ##########################################################################
-sub pandora_generate_compound_alerts ($$$$$$$$) {
-	my ($pa_config, $data, $status, $agent, $module, $alert, $utimestamp, $dbh) = @_;
+sub pandora_generate_compound_alerts ($$$$$$$$$) {
+	my ($pa_config, $data, $status, $agent, $module, $alert, $utimestamp, $dbh, $timestamp) = @_;
 
 	# Get all compound alerts that depend on this alert
 	my @elements = get_db_rows ($dbh, 'SELECT id_alert_compound FROM talert_compound_elements
@@ -485,20 +485,20 @@ sub pandora_generate_compound_alerts ($$$$$$$$) {
 						$utimestamp, $dbh);
 
 		pandora_process_alert ($pa_config, $data, $agent, $module,
-					$compound_alert, $rc, $dbh);
+					$compound_alert, $rc, $dbh, $timestamp);
 	}
 }
 
 ##########################################################################
-=head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>) >> 
+=head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>, I<$timestamp>) >> 
 
 Execute the given alert.
 
 =cut
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$;$) {
+sub pandora_execute_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
-	    $alert, $alert_mode, $dbh, $extra_macros) = @_;
+	    $alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
 	
 	logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
 
@@ -542,7 +542,7 @@ sub pandora_execute_alert ($$$$$$$;$) {
 
 	# Execute actions
 	foreach my $action (@actions) {
-		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $extra_macros);
+		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
 	}
 
 	# Generate an event
@@ -554,15 +554,15 @@ sub pandora_execute_alert ($$$$$$$;$) {
 }
 
 ##########################################################################
-=head2 C<< pandora_execute_action (I<$pa_config>, I<$data>, I<$agent>, I<$alert>, I<$alert_mode>, I<$action>, I<$module>, I<$dbh>) >> 
+=head2 C<< pandora_execute_action (I<$pa_config>, I<$data>, I<$agent>, I<$alert>, I<$alert_mode>, I<$action>, I<$module>, I<$dbh>, I<$timestamp>) >> 
 
 Execute the given action.
 
 =cut
 ##########################################################################
-sub pandora_execute_action ($$$$$$$$;$) {
+sub pandora_execute_action ($$$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $alert,
-	    $alert_mode, $action, $module, $dbh, $extra_macros) = @_;
+	    $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros) = @_;
 
 	logger($pa_config, "Executing action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 10);
 
@@ -591,7 +591,7 @@ sub pandora_execute_action ($$$$$$$$;$) {
 				_agentdescription_ => (defined ($agent)) ? $agent->{'comentarios'} : '',
 				_agentgroup_ => (defined ($agent)) ? get_group_name ($dbh, $agent->{'id_grupo'}) : '',
 				_address_ => (defined ($agent)) ? $agent->{'direccion'} : '',
-				_timestamp_ => strftime ("%Y-%m-%d %H:%M:%S", localtime()),
+                                _timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 				_data_ => $data,
 				_alert_name_ => $alert->{'name'},
 				_alert_description_ => $alert->{'description'},
@@ -745,7 +745,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	# Generate alerts
 	if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
-		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $extra_macros, $last_data_value);
+		pandora_generate_alerts ($pa_config, $processed_data, $status, $agent, $module, $utimestamp, $dbh, $timestamp, $extra_macros, $last_data_value);
 	} else {
 		logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 	}
@@ -1196,7 +1196,7 @@ sub pandora_exec_forced_alerts {
 			next;
 		}
 
-		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh);
+		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh, undef);
 
 		# Reset the force_execution flag, even if the alert could not be executed
 		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'});
@@ -1318,7 +1318,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
 			my $trap_rcv_full = $trap_oid . " " . $trap_custom_oid . " " . $trap_custom_value;
-			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh) if (defined ($action));
+			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 
 			# Generate an event
 			pandora_event ($pa_config, "SNMP alert fired (" . $alert->{'description'} . ")",
@@ -1730,7 +1730,7 @@ sub save_agent_position($$$$$$;$$) {
     logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, start_timestamp=$start_timestamp agent_id=$agent_id", 10);
 	
 	if (defined($start_timestamp)) {
-		# Upadate the timestap of the received agentk
+		# Upadate the timestamp of the received agent
 		db_insert ($dbh, 'INSERT INTO tgis_data_status (tagente_id_agente, current_longitude , current_latitude, current_altitude, 
 					 stored_longitude , stored_latitude, stored_altitude, start_timestamp, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				  $agent_id, $current_longitude, $current_latitude, $current_altitude, $current_longitude, 
@@ -1769,7 +1769,7 @@ sub update_agent_position($$$$$$;$$$$$) {
 	}
 	else {
     	logger($pa_config, "Updating agent position: longitude=$current_longitude, latitude=$current_latitude, altitude=$current_altitude, agent_id=$agent_id", 10);
-		# Upadate the timestap of the received agent
+		# Upadate the timestamp of the received agent
 		db_do ($dbh, 'UPDATE tgis_data_status SET current_longitude = ?, current_latitude = ?, current_altitude = ?,
 				  number_of_packages = number_of_packages + 1 WHERE tagente_id_agente = ?', 
 				  $current_longitude, $current_latitude, $current_altitude, $agent_id);

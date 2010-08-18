@@ -1,5 +1,9 @@
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Alerts now uses _timestamp_ macro with the
+	timestamp of the data (if provided), not the present time. Thanks 
+	to Daniel Vasconcelos for his patch (SF Tracker id #3044326).
+
 	* lib/PandoraFMS/ReconServer.pm: Fixed some problems with traceroute.
 	Added feature to use a specific snmpcommunity in all modules created
 	by a recon task.

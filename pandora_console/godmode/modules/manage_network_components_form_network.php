@@ -47,7 +47,7 @@ push_table_row ($data, 'snmp_port');
 
 $data = array ();
 $data[0] = __('SNMP OID');
-$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true);
+$data[1] = print_input_text ('snmp_oid', $snmp_oid, '', 30, 400, true);
 //$table->colspan['snmp_2'][1] = 3;
 $data[2] = __('SNMP community');
 $data[3] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);

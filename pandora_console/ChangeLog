@@ -1,5 +1,20 @@
 2010-08-19  Sergio Martin <sergio.martin@artica.es>
 
+	* images/sitemap.png
+	images/unlinkpolicy.png
+	images/link_error.png
+	images/link_delete.png
+	images/link_edit.png
+	images/link_add.png
+	images/link2.png
+	images/link_break.png
+	images/sitemap_color.png
+	images/link_go.png
+	images/linkpolicy.png: Added few icons to the icons 
+	collection to links and massive operations new features
+
+2010-08-19  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql: Fixed a typo bug in the creation of agente_modulo table
 
 2010-08-19  Sergio Martin <sergio.martin@artica.es>

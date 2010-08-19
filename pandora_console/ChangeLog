@@ -1,3 +1,14 @@
+2010-08-19  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/module_manager_editor_network.php
+	godmode/agentes/module_manager_editor_wmi.php
+	godmode/agentes/module_manager_editor_plugin.php
+	godmode/agentes/module_manager_editor_prediction.php
+	godmode/agentes/module_manager_editor.php: Added the policy linkation
+	configuration in the modules form and allowed to modify modules
+	config if the module is unlinked
+
 2010-08-19  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_html.php: fixed the function "print_checkbox_extended"

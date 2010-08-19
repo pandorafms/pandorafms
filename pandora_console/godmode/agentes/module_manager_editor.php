@@ -209,6 +209,20 @@ if ($id_agent_module) {
 		$snmp3_security_level = "";
 	}
 }
+enterprise_include_once('include/functions_policies.php');
+
+$relink_policy = get_parameter('relink_policy', 0);
+$unlink_policy = get_parameter('unlink_policy', 0);
+
+if($relink_policy) {
+	$result = relink_module_policy($id_agent_module);
+	print_result_message($result, 'Module relinked to the policy successful');
+}
+
+if($unlink_policy) {
+	$result = unlink_module_policy($id_agent_module);
+	print_result_message($result, 'Module unlinked from the policy successful');
+}
 
 switch ($moduletype) {
 case "dataserver":
@@ -267,6 +281,12 @@ echo '<h3>'.__('Module assignment');
 if (isset ($extra_title))
 	echo ' - '.$extra_title;
 echo '</h3>';
+
+if (isModuleInPolicy($id_agent_module)) {
+	if($config['enterprise_installed']) {
+		add_policy_linkation($id_agent_module);
+	}
+}
 
 echo '<h3 id="message" class="error invisible"></h3>';
 

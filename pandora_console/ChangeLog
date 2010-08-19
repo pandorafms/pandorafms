@@ -1,5 +1,9 @@
 2010-08-19  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb.sql: Fixed a typo bug in the creation of agente_modulo table
+
+2010-08-19  Sergio Martin <sergio.martin@artica.es>
+
 	* pandoradb.sql
 	extra/pandoradb_migrate_v3.1_to_v3.2.sql: added a database field on
 	agente_modulo to unlink the modules from policies

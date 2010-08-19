@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 -- -----------------------------------------------------
 
 ALTER TABLE `tagente_modulo` ADD COLUMN `id_policy_module` INTEGER UNSIGNED NOT NULL DEFAULT 0 AFTER `nombre`;
+ALTER TABLE `tagente_modulo` ADD COLUMN `policy_linked` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER `delete_pending`;
 
 -- -----------------------------------------------------
 -- Table `talert_template_modules`

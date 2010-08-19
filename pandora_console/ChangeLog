@@ -1,5 +1,11 @@
 2010-08-19  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/module_manager.php: Change the use of 
+	isModuleInPolicy to infoModulePolicy in the case of 
+	the fixed bad use of isModuleInPolicy
+
+2010-08-19  Sergio Martin <sergio.martin@artica.es>
+
 	* images/sitemap.png
 	images/unlinkpolicy.png
 	images/link_error.png

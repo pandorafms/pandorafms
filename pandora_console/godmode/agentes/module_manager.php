@@ -290,7 +290,7 @@ foreach ($modules as $module) {
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = isModuleInPolicy($module['id_agente_modulo'], false);
+		$policyInfo = infoModulePolicy($module['id_agente_modulo']);
 		if ($policyInfo === false)
 			$data[1] = '';
 		else {

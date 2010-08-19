@@ -20,7 +20,7 @@ $disabledTextBecauseInPolicy = '';
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
@@ -149,7 +149,6 @@ $data[3] = print_select(array('noAuthNoPriv' => __('Not auth and not privacy met
 	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_security_level', $snmp3_security_level, '', '', '', true);
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row3'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row3');
-
 
 ?>
 <script type="text/javascript">

@@ -37,7 +37,7 @@ else {
 }
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module);
+		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)

@@ -1,3 +1,9 @@
+2010-08-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/modules/manage_network_components_form_network.php: Changed
+	the maximum OID length to 400, the same as definition of database.
+	(120 is too short for some OIDs.)
+
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console/operation/search_results.php: Fixed reference for

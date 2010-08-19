@@ -1012,6 +1012,7 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 		 $output .= ' disabled="disabled"';
 	}
 	
+	$output .= ' ' . $attributes ;
 	$output .= ' />';
 	$output .= "\n";
 	

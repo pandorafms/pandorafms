@@ -1,3 +1,8 @@
+2010-08-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: fixed the function "print_checkbox_extended"
+	this function didn't use the parameter $atributes, now yes.
+
 2010-08-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/module_manager.php: Change the use of 

@@ -110,7 +110,7 @@ if ($policiestab == -1)
 $onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulestab, 
 				'massive_alerts' => $alertstab, 'policies' => $policiestab);
 
-print_page_header (__('Agent configuration'). ' &raquo; '. $options[$option], "images/god1.png", false, "", true, $onheader);
+print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
 
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';

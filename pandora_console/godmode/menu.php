@@ -28,9 +28,7 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	$menu["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu["gagente"]["id"] = "god-agents";
 		
-	$sub = array ();
-	$sub["godmode/agentes/massive_operations"]["text"] = __('Massive operations');
-	
+	$sub = array ();	
 	$sub["godmode/agentes/manage_config_remote"]["text"] = __('Duplicate config');
 	
 	if (give_acl ($config["id_user"], 0, "PM")) {
@@ -42,6 +40,23 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	enterprise_hook('agents_submenu');
 	
 	$menu["gagente"]["sub"] = $sub;
+}
+
+if (give_acl ($config['id_user'], 0, "AW")) {
+	$menu["gmassive"]["text"] = __('Massive operations');
+	$menu["gmassive"]["sec2"] = "godmode/massive/massive_operations";
+	$menu["gmassive"]["id"] = "god-massive";
+		
+	$sub = array ();
+	$sub["godmode/massive/massive_operations&tab=massive_agents"]["text"] = __('Agents operations');
+	
+	$sub["godmode/massive/massive_operations&tab=massive_modules"]["text"] = __('Modules operations');
+	
+	$sub["godmode/massive/massive_operations&tab=massive_alerts"]["text"] = __('Alerts operations');
+	
+	enterprise_hook('massivepolicies_submenu');
+	
+	$menu["gmassive"]["sub"] = $sub;
 }
 
 if (give_acl ($config['id_user'], 0, "AW")) {

@@ -32,51 +32,57 @@ if (is_ajax ()) {
 	
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group');
-		$id_alert_template = (int) get_parameter ('id_alert_template');
 		
-		$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
-			false, array ('tagente.nombre', 'tagente.id_agente'));
+		$agents_alerts = get_group_agents ($id_group);
 		
-		echo json_encode (index_array ($agents_alerts, 'id_agente', 'nombre'));
+		echo json_encode ($agents_alerts);
 		return;
 	}
 	return;
 }
 
-function process_manage_delete ($id_alert_template, $id_agents) {
-	if (empty ($id_alert_template)) {
-		echo '<h3 class="error">'.__('No alert selected').'</h3>';
-		return false;
-	}
-	
+function process_manage_add ($id_alert_template, $id_agents) {
 	if (empty ($id_agents)) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
 		return false;
 	}
 	
+	if (empty ($id_alert_template)) {
+		echo '<h3 class="error">'.__('No alert selected').'</h3>';
+		return false;
+	}
+	
 	process_sql_begin ();
 	$modules = get_agent_modules ($id_agents, 'id_agente_modulo', false, true);
-	$success = delete_alert_agent_module (false,
-		array ('id_agent_module' => $modules,
-			'id_alert_template' => $id_alert_template));
-	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the alerts, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete alerts').'</h4>';
+	$contfail = 0;
+	$contsuccess = 0;
+	foreach($modules as $module){
+		$success = create_alert_agent_module ($module, $id_alert_template);
+		if(!$success)
+			$contfail = $contfail + 1;
+		else
+			$contsuccess = $contsuccess + 1;
+	}
+	
+	if ($contfail > 0) {
+		echo '<h3 class="error">'.__('There was an error adding the alerts, the operation has been cancelled').'</h3>';
+		echo '<h3 class="error">'.__('Could not add alerts').'</h3>';
 		process_sql_rollback ();
-	} else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
+	}
+	else {
+		echo '<h3 class="suc">'.__('Successfully added').' '.$contsuccess.' '.__('Alerts').'</h3>';
 		process_sql_commit ();
 	}
 }
 
-$id_group = (int) get_parameter ('id_group');
+$id_group = (int) get_parameter ('id_group', -1);
 $id_agents = get_parameter ('id_agents');
 $id_alert_template = (int) get_parameter ('id_alert_template');
 
-$delete = (bool) get_parameter_post ('delete');
+$add = (bool) get_parameter_post ('add');
 
-if ($delete) {
-	process_manage_delete ($id_alert_template, $id_agents);
+if ($add) {
+	process_manage_add ($id_alert_template, $id_agents);
 }
 
 $groups = get_user_groups ();
@@ -92,31 +98,31 @@ $table->size[0] = '15%';
 $table->size[1] = '85%';
 
 $table->data = array ();
-
-$templates = get_alert_templates (false, array ('id', 'name'));
-$table->data[0][0] = __('Alert template');
-$table->data[0][1] = print_select (index_array ($templates, 'id', 'name'),
-	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
 	
-$table->data[1][0] = __('Group');
-$table->data[1][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
-	'', '', '', true, false, true, '', $id_alert_template == 0);
+$table->data[0][0] = __('Group');
+$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+	'', 'Select', -1, true, false, true, '', false);
 
-$table->data[2][0] = __('Agent');
-$table->data[2][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[2][0] .= '<img src="images/spinner.png" />';
-$table->data[2][0] .= '</span>';
+$table->data[1][0] = __('Agent');
+$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= '</span>';
 $agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
-$table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
-	'id_agents[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
-
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+$table->data[1][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
+	'id_agents[]', '', '', '', '', true, true, true, '', false);
+	
+$templates = get_alert_templates (false, array ('id', 'name'));
+$table->data[2][0] = __('Alert template');
+$table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
+	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
+	
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('delete', 1);
-print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
+print_input_hidden ('add', 1);
+print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 
@@ -129,25 +135,15 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("#id_alert_template").change (function () {
-		if (this.value != 0) {
-			$("#id_agents").enable ();
-			$("#id_group").enable ().change ();
-		} else {
-			$("#id_group, #id_agents").disable ();
-		}
-	});
-	
 	$("#id_group").change (function () {
-		var $select = $("#id_agents").disable ();
+		var $select = $("#id_agents").enable ();
 		$("#agent_loading").show ();
 		$("option", $select).remove ();
 		
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/agentes/massive_delete_alerts",
+			{"page" : "godmode/massive/massive_add_alerts",
 			"get_agents" : 1,
-			"id_group" : this.value,
-			"id_alert_template" : $("#id_alert_template").attr ("value")
+			"id_group" : this.value
 			},
 			function (data, status) {
 				options = "";
@@ -161,6 +157,8 @@ $(document).ready (function () {
 			"json"
 		);
 	});
+	
+	$("#id_group").value = "0";
 });
 /* ]]> */
 </script>

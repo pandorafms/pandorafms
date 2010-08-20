@@ -25,37 +25,6 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 
 require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
-require_once ('include/functions_modules.php');
-
-function process_manage_delete ($id_agents) {
-	if (empty ($id_agents)) {
-		echo '<h3 class="error">'.__('No agents selected').'</h3>';
-		return false;
-	}
-	
-	$id_agents = (array) $id_agents;
-	
-	$copy_modules = (bool) get_parameter ('copy_modules');
-	$copy_alerts = (bool) get_parameter ('copy_alerts');
-	
-	process_sql_begin ();
-	
-	$error = false;
-	foreach ($id_agents as $id_agent) {
-		$success = delete_agent ($id_agent);
-		if (! $success)
-			break;
-	}
-	
-	if (! $success) {
-		echo '<h3 class="error">'.__('There was an error deleting the agent, the operation has been cancelled').'</h3>';
-		echo '<h4>'.__('Could not delete agent').' '.get_agent_name ($id_agent).'</h4>';
-		process_sql_rollback ();
-	} else {
-		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
-		process_sql_commit ();
-	}
-}
 
 $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
@@ -63,7 +32,48 @@ $id_agents = get_parameter ('id_agents');
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($id_agents);
+	if(empty($id_agents))
+		print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
+	else {
+		$action = (int) get_parameter ('action');
+		
+		if($action > 0){
+			$agent_alerts = get_agent_alerts($id_agents);
+			
+			$alerts_agent_modules = array();
+			foreach($agent_alerts['simple'] as $agent_alert){
+				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
+			}
+			
+			foreach($agent_alerts['compounds'] as $agent_alert){
+				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id'], false, false, 'id'));
+			}
+
+				
+			$results = true;
+			$agent_module_actions = array();
+			
+			foreach($alerts_agent_modules as $alert_agent_module){
+				$agent_module_actions = get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
+				
+				foreach ($agent_module_actions as $agent_module_action){
+					if($agent_module_action['id_alert_action'] == $action) {
+						echo $agent_module_action['id']." . ". $alert_agent_module['id'] ." ; ";
+						$result = delete_alert_agent_module_action ($agent_module_action['id']);
+						
+						if($result === false)
+							$results = false;
+					}
+				}
+			}
+			
+			print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
+		}
+		else {
+			print_result_message (false, '', __('Could not be deleted').". ".__('No action selected'));
+		}
+	}
+
 }
 
 $groups = get_user_groups ();
@@ -89,8 +99,12 @@ $table->data[1][0] .= '<img src="images/spinner.png" />';
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
+	
+$actions = get_alert_actions ();
+$table->data[2][0] = __('Action');
+$table->data[2][1] = print_select ($actions, 'action', '', '', __('None'), 0, true);	
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=delete_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -111,4 +125,5 @@ $(document).ready (function () {
 		agentSelect: "select#id_agents"
 	});
 });
+/* ]]> */
 </script>

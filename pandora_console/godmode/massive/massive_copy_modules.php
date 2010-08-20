@@ -69,7 +69,7 @@ $table->data[0][3] = print_select (get_group_agents ($source_id_group, false, "n
 //	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 //	. '<a href="#" class="tip">&nbsp;<span>' . __("Type two chars at least for search") . '</span></a>';
 
-echo '<form action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
+echo '<form action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=copy_modules" id="manage_config_form" method="post">';
 
 echo '<fieldset id="fieldset_source">';
 echo '<legend><span>'.__('Source');
@@ -199,7 +199,7 @@ $(document).ready (function () {
 		var no_alerts;
 		/* Get modules */
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
+			{"page" : "operation/massive/ver_agente",
 			"get_agent_modules_json" : 1,
 			"id_agent" : this.value,
 			"filter" : "disabled = 0",

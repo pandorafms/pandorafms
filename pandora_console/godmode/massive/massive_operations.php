@@ -27,7 +27,7 @@ require_once ('include/functions_agents.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_modules.php');
 
-enterprise_include ('godmode/agentes/massive_operations.php');
+enterprise_include ('godmode/massive/massive_operations.php');
 
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
@@ -88,16 +88,16 @@ if($option == ''){
 	$option = array_shift(array_keys($options));
 }
 
-$alertstab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_alerts">'
-		. print_image ('images/bell.png', true, array ('title' => __('Massive alert actions')))
+$alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
+		. print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
 		. '</a>', 'active' => $tab == 'massive_alerts');
 		
-$agentstab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_agents">'
-		. print_image ('images/bricks.png', true, array ('title' => __('Massive agent actions')))
+$agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
+		. print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
 		. '</a>', 'active' => $tab == 'massive_agents');
 			
-$modulestab = array('text' => '<a href="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&tab=massive_modules">'
-		. print_image ('images/brick.png', true, array ('title' => __('Massive module actions')))
+$modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
+		. print_image ('images/brick.png', true, array ('title' => __('Modules operations')))
 		. '</a>', 'active' => $tab == 'massive_modules');
 	
 /* Collection */
@@ -112,7 +112,7 @@ $onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulest
 
 print_page_header (__('Agent configuration'). ' &raquo; '. $options[$option], "images/god1.png", false, "", true, $onheader);
 
-echo '<form method="post" id="form_options" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations">';			
+echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';			
 echo '<table border="0"><tr><td>';
 echo '<h3>'.__('Massive options').':</h3>';
 echo '</td><td>';
@@ -122,32 +122,32 @@ echo '</form>';
 
 switch ($option) {
 	case 'delete_alerts':
-		require_once ('godmode/agentes/massive_delete_alerts.php');
+		require_once ('godmode/massive/massive_delete_alerts.php');
 		break;
 	case 'add_alerts':
-		require_once ('godmode/agentes/massive_add_alerts.php');
+		require_once ('godmode/massive/massive_add_alerts.php');
 		break;
 	case 'delete_action_alerts':
-		require_once ('godmode/agentes/massive_delete_action_alerts.php');
+		require_once ('godmode/massive/massive_delete_action_alerts.php');
 		break;
 	case 'add_action_alerts':
-		require_once ('godmode/agentes/massive_add_action_alerts.php');
+		require_once ('godmode/massive/massive_add_action_alerts.php');
 		break;
 	case 'delete_agents':
-		require_once ('godmode/agentes/massive_delete_agents.php');
+		require_once ('godmode/massive/massive_delete_agents.php');
 		break;
 	case 'delete_modules':
-		require_once ('godmode/agentes/massive_delete_modules.php');
+		require_once ('godmode/massive/massive_delete_modules.php');
 		break;
 	case 'edit_modules':
-		require_once ('godmode/agentes/massive_edit_modules.php');
+		require_once ('godmode/massive/massive_edit_modules.php');
 		break;
 	case 'copy_modules':
-		require_once ('godmode/agentes/massive_copy_modules.php');
+		require_once ('godmode/massive/massive_copy_modules.php');
 		break;
 	default:
 		if (!enterprise_hook('massive_operations', array($option))) {
-			require_once ('godmode/agentes/massive_config.php');
+			require_once ('godmode/massive/massive_config.php');
 		}
 		break;
 }

@@ -29,48 +29,48 @@ require_once ('include/functions_alerts.php');
 $id_group = (int) get_parameter ('id_group');
 $id_agents = get_parameter ('id_agents');
 
-$delete = (bool) get_parameter_post ('delete');
+$add = (bool) get_parameter_post ('add');
 
-if ($delete) {
+if ($add) {
 	if(empty($id_agents))
-		print_result_message (false, '', __('Could not be deleted').". ".__('No agents selected'));
+		print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
 		$action = (int) get_parameter ('action');
+		$fires_min = get_parameter ('fires_min');
+		$fires_max = get_parameter ('fires_max');
 		
 		if($action > 0){
 			$agent_alerts = get_agent_alerts($id_agents);
-			
-			$alerts_agent_modules = array();
+			$cont = 0;
+			$agent_alerts_id = array();
 			foreach($agent_alerts['simple'] as $agent_alert){
-				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
+				$agent_alerts_id[$cont] = $agent_alert['id'];
+				$cont = $cont + 1;
 			}
 			
 			foreach($agent_alerts['compounds'] as $agent_alert){
-				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id'], false, false, 'id'));
+				$agent_alerts_id[$cont] = $agent_alert['id'];
+				$cont = $cont + 1;
 			}
-
+					
+			$options = array();
+			
+			if($fires_min > 0)
+				$options['fires_min'] = $fires_min;
+			if($fires_max > 0)
+				$options['fires_max'] = $fires_max;
 				
 			$results = true;
-			$agent_module_actions = array();
-			
-			foreach($alerts_agent_modules as $alert_agent_module){
-				$agent_module_actions = get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
-				
-				foreach ($agent_module_actions as $agent_module_action){
-					if($agent_module_action['id_alert_action'] == $action) {
-						echo $agent_module_action['id']." . ". $alert_agent_module['id'] ." ; ";
-						$result = delete_alert_agent_module_action ($agent_module_action['id']);
-						
-						if($result === false)
-							$results = false;
-					}
-				}
+			foreach($agent_alerts_id as $agent_alert_id){
+				$result = add_alert_agent_module_action($agent_alert_id, $action, $options);
+				if($result === false)
+					$results = false;
 			}
 			
-			print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
+			print_result_message ($results, __('Successfully added'), __('Could not be added'));
 		}
 		else {
-			print_result_message (false, '', __('Could not be deleted').". ".__('No action selected'));
+			print_result_message (false, '', __('Could not be added').". ".__('No action selected'));
 		}
 	}
 
@@ -103,13 +103,21 @@ $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 $actions = get_alert_actions ();
 $table->data[2][0] = __('Action');
 $table->data[2][1] = print_select ($actions, 'action', '', '', __('None'), 0, true);	
+$table->data[2][1] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
+$table->data[2][1] .= '<span id="advanced_actions" class="advanced_actions invisible">';
+$table->data[2][1] .= __('Number of alerts match from').' ';
+$table->data[2][1] .= print_input_text ('fires_min', 0, '', 4, 10, true);
+$table->data[2][1] .= ' '.__('to').' ';
+$table->data[2][1] .= print_input_text ('fires_max', 0, '', 4, 10, true);
+$table->data[2][1] .= print_help_icon ("alert-matches", true);
+$table->data[2][1] .= '</span>';
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=add_action_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-print_input_hidden ('delete', 1);
-print_submit_button (__('Delete'), 'go', false, 'class="sub delete"');
+print_input_hidden ('add', 1);
+print_submit_button (__('Add'), 'go', false, 'class="sub add"');
 echo '</div>';
 echo '</form>';
 
@@ -123,6 +131,16 @@ require_jquery_file ('pandora.controls');
 $(document).ready (function () {
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents"
+	});
+
+	$("a.show_advanced_actions").click (function () {
+		/* It can be done in two different sites, so it must use two different selectors */
+		actions = $(this).parents ("form").children ("span.advanced_actions");
+		if (actions.length == 0)
+			actions = $(this).parents ("div").children ("span.advanced_actions")
+		$("#advanced_actions").removeClass("advanced_actions invisible");
+		$(this).remove ();
+		return false;
 	});
 });
 /* ]]> */

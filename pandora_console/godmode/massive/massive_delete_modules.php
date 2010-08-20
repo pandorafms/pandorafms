@@ -115,7 +115,7 @@ $agents = get_agents_with_module_name ($module_name, $id_group,
 $table->data[2][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', 0, false, __('None'), 0, true, true, true, '', empty ($module_name));
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=delete_modules" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -148,7 +148,7 @@ $(document).ready (function () {
 		$("option", $select).remove ();
 		
 		jQuery.post ("ajax.php",
-			{"page" : "godmode/agentes/massive_delete_modules",
+			{"page" : "godmode/massive/massive_delete_modules",
 			"get_agents" : 1,
 			"id_group" : this.value,
 			"module_name" : $("#module_name").attr ("value")

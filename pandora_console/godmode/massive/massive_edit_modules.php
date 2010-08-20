@@ -218,7 +218,7 @@ $table->data['edit7'][1] = print_input_text ('min_ff_event', '', '', 5, 15, true
 $table->data['edit7'][2] = __('Historical data');
 $table->data['edit7'][3] = print_select(array('' => '', '1' => __('Yes'), '0' => __('No')),'history_data','','','', '', true);
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_modules" id="form_edit" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
@@ -248,7 +248,7 @@ $(document).ready (function () {
 		$("#module_name").attr ("disabled", "disabled")
 		$("#module_name option[value!=0]").remove ();
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
+			{"page" : "operation/massive/ver_agente",
 			"get_agent_modules_json" : 1,
 			"filter" : filter,
 			"fields" : "DISTINCT(nombre)",
@@ -281,7 +281,7 @@ $(document).ready (function () {
 	$("#groups_select").change (
 		function () {
 			jQuery.post ("ajax.php",
-				{"page" : "operation/agentes/ver_agente",
+				{"page" : "operation/massive/ver_agente",
 				"get_agents_group_json" : 1,
 				"id_group" : this.value,
 				},

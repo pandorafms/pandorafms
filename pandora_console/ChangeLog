@@ -1,5 +1,12 @@
 2010-08-20  Sergio Martin <sergio.martin@artica.es>
 
+	* include/styles/menu.css
+	godmode/massive/massive_operations.php: Fixed 
+	the massive operations header new message and
+	added style to the menu image to massive operations
+
+2010-08-20  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/massive_copy_modules.php
 	godmode/agentes/massive_add_alerts.php
 	godmode/agentes/massive_delete_agents.php

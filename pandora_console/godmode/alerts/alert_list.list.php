@@ -38,72 +38,67 @@ if (isset($_GET["tab"])) {
 	echo "<h2>".__('Alerts')."</h2>";
 }
 
-echo '<a href="#" id="tgl_alert_control"><b>'.__('Alert control filter').'</b>&nbsp;'.print_image ("images/down.png", true, array ("title" => __('Toggle filter(s)'))).'</a><br><br>';
+// Table for filter controls
+$form_filter = '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
+$form_filter .= "<input type='hidden' name='search' value='1' />\n";
+$form_filter .= '<table style="width: 90%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
+$form_filter .= "<tr>\n";
+$form_filter .= "<td>".__('Template name')."</td><td>";
+$form_filter .= print_input_text ('template_name', $templateName, '', 12, 255, true);
+$form_filter .= "</td>\n";
+$temp = get_agents();
+$arrayAgents = array();
+foreach ($temp as $agentElement) {
+	$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+}
+$form_filter .= "<td>".__('Agents')."</td><td>";
+$form_filter .= print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
+array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);
+$form_filter .= '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
+$form_filter .= "</td>\n";
 
-//INI DIV OF FORM FILTER
-echo "<div id='alert_control' style='display:none'>\n";
-	// Table for filter controls
-	echo '<form method="post" action="index.php?sec=galertas&amp;sec2=godmode/alerts/alert_list&amp;refr='.$config["refr"].'&amp;pure='.$config["pure"].'">';
-	echo "<input type='hidden' name='search' value='1' />\n";
-	echo '<table style="width: 90%;" cellpadding="4" cellspacing="4" class="databox">'."\n";
-	echo "<tr>\n";
-	echo "<td>".__('Template name')."</td><td>";
-	print_input_text ('template_name', $templateName, '', 15);
-	echo "</td>\n";
-	$temp = get_agents();
-	$arrayAgents = array();
-	foreach ($temp as $agentElement) {
-		$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+
+$form_filter .= "<td>".__('Module name')."</td><td>";
+$form_filter .= print_input_text ('module_name', $moduleName, '', 12, 255, true);
+$form_filter .= "</td>\n";
+$form_filter .= "</tr>\n";
+
+$form_filter .= "<tr>\n";
+$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions;");
+$arrayActions = array();
+if (is_array($temp)) {
+	foreach ($temp as $actionElement) {
+		$arrayActions[$actionElement['id']] = $actionElement['name'];
 	}
-	echo "<td>".__('Agents')."</td><td>";
-	echo print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 15, 100, false, '',
-	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
-	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
-	echo "</td>\n";
-	
-	
-	echo "<td>".__('Module name')."</td><td>";
-	print_input_text ('module_name', $moduleName, '', 15);
-	echo "</td>\n";
-	echo "</tr>\n";
-	
-	echo "<tr>\n";
-	$temp = get_db_all_rows_sql("SELECT id, name FROM talert_actions;");
-	$arrayActions = array();
-	if (is_array($temp)) {
-		foreach ($temp as $actionElement) {
-			$arrayActions[$actionElement['id']] = $actionElement['name'];
-		}
-	}
-	echo "<td>".__('Actions')."</td><td>";
-	print_select ($arrayActions, "action_id", $actionID,  '', __('All'),-1);
-	echo "</td>\n";
-	echo "<td>".__('Field content')."</td><td>";
-	print_input_text ('field_content', $fieldContent, '', 15);
-	echo "</td>\n";
-	echo "<td>".__('Priority')."</td><td>";
-	print_select (get_priorities (), 'priority',$priority, '', __('All'),-1);
-	echo "</td>";
-	echo "</tr>\n";
-	
-	echo "<tr>\n";
-	echo "<td>".__('Enabled / Disabled')."</td><td>";
-	$ed_list = array ();
-	$ed_list[0] = __('Enable');
-	$ed_list[1] = __('Disable');
-	print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1);
-	echo "</td></tr>\n";
+}
+$form_filter .= "<td>".__('Actions')."</td><td>";
+$form_filter .= print_select ($arrayActions, "action_id", $actionID,  '', __('All'), -1, true);
+$form_filter .= "</td>\n";
+$form_filter .= "<td>".__('Field content')."</td><td>";
+$form_filter .= print_input_text ('field_content', $fieldContent, '', 12, 255, true);
+$form_filter .= "</td>\n";
+$form_filter .= "<td>".__('Priority')."</td><td>";
+$form_filter .= print_select (get_priorities (), 'priority',$priority, '', __('All'), -1, true);
+$form_filter .= "</td>";
+$form_filter .= "</tr>\n";
 
-	echo "<tr>\n";
-	echo "<td colspan='6' align='right'>";
-	print_submit_button (__('Update'), '', false, 'class="sub upd"');
-	echo "</td>";
-	echo "</tr>\n";
-	echo "</table>\n";
-	echo "</form>\n";
-echo "</div>\n";
+$form_filter .= "<tr>\n";
+$form_filter .= "<td>".__('Enabled / Disabled')."</td><td>";
+$ed_list = array ();
+$ed_list[0] = __('Enable');
+$ed_list[1] = __('Disable');
+$form_filter .= print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1, true);
+$form_filter .= "</td></tr>\n";
 
-//END DIV OF FORM FILTER
+$form_filter .= "<tr>\n";
+$form_filter .= "<td colspan='6' align='right'>";
+$form_filter .= print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
+$form_filter .= "</td>";
+$form_filter .= "</tr>\n";
+$form_filter .= "</table>\n";
+$form_filter .= "</form>\n";
+
+toggle($form_filter,__('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
 
@@ -579,6 +574,8 @@ $(document).ready (function () {
 		$(this).remove ();
 		return false;
 	});
+	
+
 });
 /* ]]> */
 </script>

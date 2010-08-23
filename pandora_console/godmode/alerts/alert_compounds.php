@@ -42,6 +42,7 @@ if ($id_group > 0 && isset ($groups[$id_group]))
 else
 	$agents = get_group_agents (array_keys ($groups), false, "none");
 
+$update_compound = (bool) get_parameter ('update_compound');
 $delete_alert = (int) get_parameter ('delete_alert');
 $enable_alert = (int) get_parameter ('enable_alert');
 $disable_alert = (int) get_parameter ('disable_alert');
@@ -49,6 +50,22 @@ $disable_alert = (int) get_parameter ('disable_alert');
 // Header
 print_page_header (__('Alerts').' &raquo; '.__('Correlated alerts'), "images/god2.png", false, "", true);
 
+if ($update_compound) {
+	$id = (int) get_parameter ('id');
+        
+	$recovery_notify = (bool) get_parameter ('recovery_notify');
+	$field2_recovery = (string) get_parameter ('field2_recovery');
+	$field3_recovery = (string) get_parameter ('field3_recovery');
+
+	$result = update_alert_compound ($id,
+		array ('recovery_notify' => $recovery_notify,
+			'field2_recovery' => $field2_recovery,
+			'field3_recovery' => $field3_recovery));
+
+	print_result_message ($result,
+		__('Successfully updated'),
+		__('Could not be updated'));
+}
 
 if ($delete_alert) {
 	$id = (int) get_parameter ('id');

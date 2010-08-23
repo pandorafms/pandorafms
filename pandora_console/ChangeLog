@@ -1,5 +1,10 @@
 2010-08-23  Junichi Satoh  <junichi@rworks.jp>
 
+	* godmode/alert/alert_list.php, godmode/alert/alert_list.list.php:
+	Added 'Enabled/Disabled' selection to alert filter.
+
+2010-08-23  Junichi Satoh  <junichi@rworks.jp>
+
 	* godmode/alert/alert_compounds.php: Fixed the problem alert compounds
 	settings in step3 can not be saved.
 

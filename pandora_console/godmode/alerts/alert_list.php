@@ -55,6 +55,7 @@ $fieldContent = get_parameter('field_content','');
 $searchType = get_parameter('search_type','');
 $priority = get_parameter('priority','');
 $searchFlag = get_parameter('search',0);
+$enabledisable = get_parameter('enabledisable','');
 
 $messageAction = '';
 

@@ -1,5 +1,10 @@
 2010-08-23  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Added a function to toggle
+	an html code easly. The function is called toggle()
+
+2010-08-23  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php: Fixed a null into
 	foreach in SLA function
 

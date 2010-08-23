@@ -1310,6 +1310,58 @@ function get_include_contents ($filename, $params = false) {
 
 	return $contents;
 }
+/**
+ * Print a code into a DIV and enable a toggle to show and hide it
+ * 
+ * @param string html code
+ * @param string name of the link
+ * @param string title of the link
+ * @param bool if the div will be hidden by default (default: true)
+ * 
+ */
+
+function toggle($code, $name, $title = '', $hidde_default = true) {
+// Generate unique Id
+$uniqid = uniqid('');
+
+// Options
+if($hidde_default) {
+	$style = 'display:none';
+	$toggle_a = "$('#tgl_div_".$uniqid."').show();";
+	$toggle_b = "$('#tgl_div_".$uniqid."').hide();";
+	$image_a = "images/go.png";
+	$image_b = "images/down.png";
+}else {
+	$style = '';
+	$toggle_a = "$('#tgl_div_".$uniqid."').hide();";
+	$toggle_b = "$('#tgl_div_".$uniqid."').show();";
+	$image_a = "images/down.png";
+	$image_b = "images/go.png";
+}
+// Link to toggle
+echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br><br>';
+
+// Code into a div
+echo "<div id='tgl_div_".$uniqid."' style='display:none'>\n";
+echo $code;
+echo "</div>";
+
+// JQuery Toggle
+
+echo '<script type="text/javascript">';
+echo '/* <![CDATA[ */';
+echo "$(document).ready (function () {";
+	echo "$('#tgl_ctrl_".$uniqid."').toggle(function() {";
+		echo $toggle_a;
+		echo "$('#image_".$uniqid."').attr({src: '".$image_a."'});";
+		echo "}, function() {";
+		echo $toggle_b;
+		echo "$('#image_".$uniqid."').attr({src: '".$image_b."'});";
+	echo "});";
+echo "});";
+echo '/* ]]> */';
+echo '</script>';
+}
 
 /**
  * Construct and return the URL to be used in order to refresh the current page correctly.

@@ -377,7 +377,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	// Initialize variables
 	if (empty ($date)) $date = get_system_time ();
 	if ((empty ($period)) OR ($period == 0)) $period = $config["sla_period"];
-	
+	if ($daysWeek === null) $daysWeek = array();
 	// Limit date to start searching data
 	$datelimit = $date - $period;
 	

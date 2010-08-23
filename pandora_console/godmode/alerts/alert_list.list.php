@@ -87,6 +87,14 @@ echo "<div id='alert_control' style='display:none'>\n";
 	echo "</tr>\n";
 	
 	echo "<tr>\n";
+	echo "<td>".__('Enabled / Disabled')."</td><td>";
+	$ed_list = array ();
+	$ed_list[0] = __('Enable');
+	$ed_list[1] = __('Disable');
+	print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1);
+	echo "</td></tr>\n";
+
+	echo "<tr>\n";
 	echo "<td colspan='6' align='right'>";
 	print_submit_button (__('Update'), '', false, 'class="sub upd"');
 	echo "</td>";
@@ -123,6 +131,8 @@ if ($searchFlag) {
 			WHERE t1.nombre LIKE '" . trim($agentName) . "')";
 	if ($actionID != -1)
 		$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
+	if ($enabledisable != -1)
+		$where .= " AND talert_template_modules.disabled =" . $enabledisable;
 }
 
 $total = get_agent_alerts_simple (array_keys ($agents), false,

@@ -254,11 +254,7 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 	}
 
 	// Set initial conditions
-	if ($uncompressed_module || $interval_data[0]['utimestamp'] == $datelimit) {
-		$min = $interval_data[0]['datos'];
-	} else {
-		$min = 0;
-	}
+	$min = $interval_data[0]['datos'];
 
 	foreach ($interval_data as $data) {
 		if ($data['datos'] < $min) {

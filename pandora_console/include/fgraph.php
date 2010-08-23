@@ -1474,7 +1474,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
-	$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}
@@ -1936,7 +1936,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	}
 
     // Flash chart
-	$caption = __('Max. Value') . ': ' . $min_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
 	}

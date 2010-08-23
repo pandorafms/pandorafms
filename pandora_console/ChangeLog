@@ -1,5 +1,10 @@
 2010-08-23  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_ui.php: Fixed the not hidden by
+	default of the div in the toggle function
+
+2010-08-23  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Added a function to toggle
 	an html code easly. The function is called toggle()
 

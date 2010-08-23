@@ -1342,7 +1342,7 @@ if($hidde_default) {
 echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br><br>';
 
 // Code into a div
-echo "<div id='tgl_div_".$uniqid."' style='display:none'>\n";
+echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
 echo $code;
 echo "</div>";
 

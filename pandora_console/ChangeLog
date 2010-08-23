@@ -1,5 +1,11 @@
 2010-08-23  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/networkmap.php: Add the feature of
+	hide and shot (toggle) the menu of options in the
+	network maps
+
+2010-08-23  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.list.php: Changed the 
 	filter form to use the toggle function
 

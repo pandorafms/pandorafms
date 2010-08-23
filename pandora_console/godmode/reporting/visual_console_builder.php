@@ -147,6 +147,7 @@ switch ($activeTab) {
 	case 'wizard':
 		$visualConsole = get_db_row_filter('tlayout', array('id' => $idVisualConsole));
 		$visualConsoleName = $visualConsole['name'];
+		$background = $visualConsole['background'];
 		switch ($action) {
 			case 'update':
 				$id_agents = get_parameter ('id_agents', array ());

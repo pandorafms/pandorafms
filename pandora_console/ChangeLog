@@ -1,5 +1,10 @@
 2010-08-23  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.list.php: Changed the 
+	filter form to use the toggle function
+
+2010-08-23  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_ui.php: Fixed the not hidden by
 	default of the div in the toggle function
 

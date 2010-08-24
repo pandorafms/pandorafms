@@ -1,3 +1,10 @@
+2010-08-24  Sergio Martin <sergio.martin@artica.es>
+
+	* extensions/module_groups/icon_menu.png
+	extensions/agents_modules
+	extensions/agents_modules/icon_menu.png: Reupload
+	the icons of extensions
+
 2010-08-24  Sancho Lerena <slerena@artica.es>
 
     * operation/events/events.php: Fixed bug on event searches

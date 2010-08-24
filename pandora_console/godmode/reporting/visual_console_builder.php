@@ -158,10 +158,10 @@ switch ($activeTab) {
 				$width = (int) get_parameter ("width", 0);
 				$height = (int) get_parameter ("height", 0);
 				
-				if($width == 0 && $height == 0) {
-					$sizeBackground = getimagesize($config['homedir'] . '/images/console/background/' . $background);
-					$width = $sizeBackground[0];
-					$height = $sizeBackground[1];
+				if($width == 0 || $height == 0) {
+					$sizeImage = getimagesize($config['homedir'] . '/images/console/icons/' . $image . '.png');
+					$width = $sizeImage[0];
+					$height = $sizeImage[1];
 				}
 				
 				$message = '';

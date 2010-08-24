@@ -1,5 +1,12 @@
 2010-08-24  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php: Improved the agents/modules
+	matrix adding new filters, full screen mode, autorefresh
+	selection and links in the agents names and status squares.
+	For bug: 3051073
+
+2010-08-24  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/agents_modules.php
 	extensions/agents_modules
 	extensions/agents_modules/icon_menu.png: Added new icon

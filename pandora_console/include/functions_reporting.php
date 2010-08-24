@@ -390,6 +390,8 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
+
+    if ($daysWeek)
 	foreach ($daysWeek as $key => $value) {
 		if (!$value) {
 			if ($key == 'monday') {

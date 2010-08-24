@@ -44,7 +44,15 @@ if ($develop_bypass != 1) {
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
 }
 else {
-	error_reporting(E_ALL);
+	// Develop mode, show all notices and errors on Console (and log it)
+	if (version_compare(PHP_VERSION, '5.3.0') >= 0)
+        {
+                error_reporting(E_ALL & ~E_DEPRECATED);
+        }
+        else
+        {
+                error_reporting(E_ALL);
+        }
 	ini_set("display_errors", 1);
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
 }

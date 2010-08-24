@@ -103,7 +103,7 @@ $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -2); //-1 all, 0 system
 
 if($id_agent == -2) {
-	$text_agent = (string) get_parameter("text_agent", "All");
+	$text_agent = (string) get_parameter("text_agent", __("All"));
 
 	switch ($text_agent)
 	{

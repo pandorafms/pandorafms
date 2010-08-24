@@ -1,3 +1,12 @@
+2010-08-24  Sancho Lerena <slerena@artica.es>
+
+    * operation/events/events.php: Fixed bug on event searches
+    in different languages than english.
+
+    * include/functions_reporting.php: Fixed notice on empty foreach.
+
+    * config_process.php: Trying to supress Deprecated messages.
+
 2010-08-24  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/agents_modules.php: Improved the agents/modules

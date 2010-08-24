@@ -1,3 +1,9 @@
+2010-08-24  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.php: Fixed
+	the size of the icons when choose 0 pixels into 
+	the wizard
+
 2010-08-23  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/networkmap.php: Add the feature of

@@ -249,7 +249,7 @@ function mainAgentsModules() {
 	"</p>";
 }
 
-add_operation_menu_option(__("Agents/Modules view"), 'estado', '');
+add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png');
 add_extension_main_function('mainAgentsModules');
 
 ?>

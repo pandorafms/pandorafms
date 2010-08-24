@@ -1,5 +1,12 @@
 2010-08-24  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/agents_modules.php
+	extensions/agents_modules
+	extensions/agents_modules/icon_menu.png: Added new icon
+	to the matriz agents/modules extension
+
+2010-08-24  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/visual_console_builder.php: Fixed
 	the size of the icons when choose 0 pixels into 
 	the wizard

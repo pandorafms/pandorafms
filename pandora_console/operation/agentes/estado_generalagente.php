@@ -160,6 +160,18 @@ $progress = getNextAgentContact($id_agente);
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
 echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';
 
+// Custom fields
+$fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
+
+foreach($fields as $field) {
+	echo '<tr><td class="datos"><b>'.$field['name'].print_help_tip (__('Custom field'), true).'</b></td>';
+	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	if($custom_value === false || $custom_value == '') {
+		$custom_value = '<i>-'.__('empty').'-</i>';
+	}
+	echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
+}
+
 //End of table
 echo '</table></div>';
 ?>

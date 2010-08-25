@@ -92,7 +92,7 @@ $table->class = "databox_color";
 
 $table->head = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold';
+$table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
 $table->data[0][0] = __('Agent name') . 
@@ -168,39 +168,50 @@ $table->data[6][0] = __('Server');
 $table->data[6][1] = print_select (get_server_names (),
 	'server_name', $server_name, '', $none, 0, true);
 
-// Custom ID
-$table->data[7][0] = __('Custom ID');
-$table->data[7][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
-
 // Description
-$table->data[8][0] = __('Description');
-$table->data[8][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+$table->data[7][0] = __('Description');
+$table->data[7][1] = print_input_text ('comentarios', $comentarios, '', 45, 255, true);
+
+print_table ($table);
+unset($table);
+
+$table->width = '95%';
+$table->class = "databox_color";
+
+$table->head = array ();
+$table->style = array ();
+$table->style[0] = 'font-weight: bold; width: 150px;';
+$table->data = array ();
+
+// Custom ID
+$table->data[0][0] = __('Custom ID');
+$table->data[0][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 // Learn mode / Normal mode
-$table->data[9][0] = __('Module definition').print_help_icon("module_definition", true);
-$table->data[9][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
-$table->data[9][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][0] = __('Module definition').print_help_icon("module_definition", true);
+$table->data[1][1] = __('Learning mode').' '.print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Normal mode').' '.print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
-$table->data[10][0] = __('Status');
-$table->data[10][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
-$table->data[10][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][0] = __('Status');
+$table->data[2][1] = __('Disabled').' '.print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][1] .= __('Active').' '.print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"', true);
 
 // Remote configuration
-$table->data[11][0] = __('Remote configuration');
+$table->data[3][0] = __('Remote configuration');
 
 if (!$new_agent) {
 	if (file_exists ($filename['md5'])) {
-		$table->data[11][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
+		$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 		// Delete remote configuration
-		$table->data[11][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
-		$table->data[11][1] .= print_image ("images/cross.png", true).'</a>';
+		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
+		$table->data[3][1] .= print_image ("images/cross.png", true).'</a>';
 	}
 	else
-		$table->data[11][1] = '<em>'.__('Not available').'</em>';		
+		$table->data[3][1] = '<em>'.__('Not available').'</em>';		
 }
 else
-	$table->data[11][1] = '<em>'.__('Not available').'</em>';
+	$table->data[3][1] = '<em>'.__('Not available').'</em>';
 	
 $listIcons = getArrayListIcons();
 
@@ -209,8 +220,8 @@ foreach ($listIcons as $index => $value) $arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
 
-$table->data[12][0] = __('Agent icon');
-$table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
+$table->data[4][0] = __('Agent icon');
+$table->data[4][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
 	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
 	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
 	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . 'ok.png" style="display:none;" />' .
@@ -218,12 +229,44 @@ $table->data[12][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "c
 	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . 'warning.png" style="display:none;" />';
 
 if ($config['activate_gis']) {
-	$table->data[13][0] = __('Ignore new GIS data:');
-	$table->data[13][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[13][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][0] = __('Ignore new GIS data:');
+	$table->data[5][1] = __('Disabled').' '.print_radio_button_extended ("update_gis_data", 0, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
+	$table->data[5][1] .= __('Active').' '.print_radio_button_extended ("update_gis_data", 1, '', $update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-print_table ($table);
+toggle(print_table ($table, true), __('Advanced options'));
+unset($table);
+
+$table->width = '95%';
+$table->class = "databox_color";
+
+$table->head = array ();
+$table->style = array ();
+$table->style[0] = 'font-weight: bold; width: 150px;';
+$table->data = array ();
+
+$fields = get_db_all_fields_in_table('tagent_custom_fields');
+
+if($fields === false) $fields = array();
+
+foreach ($fields as $field) {
+	
+	$data[0] = '<b>'.$field['name'].'</b>';
+		
+	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
+	
+	if($custom_value === false) {
+		$custom_value = '';
+	}
+	
+	$data[1] = print_textarea ('customvalue_'.$field['id_field'], 2, 65, $custom_value, 'style="min-height: 30px;"', true);
+	
+	array_push ($table->data, $data);
+}
+
+if(!empty($fields)) {
+	toggle(print_table ($table, true), __('Custom fields'));
+}
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_agente) {

@@ -129,6 +129,16 @@ if ($create_agent) {
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 
+	$fields = get_db_all_fields_in_table('tagent_custom_fields');
+	
+	if($fields === false) $fields = array();
+	
+	$field_values = array();
+	
+	foreach($fields as $field) {
+		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
+	}
+
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
 		$agent_creation_error = __('No agent name specified');
@@ -150,6 +160,11 @@ if ($create_agent) {
 				'update_gis_data' => $update_gis_data));
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
+			// Create custom fields for this agent
+			foreach($field_values as $key => $value) {
+				process_sql_insert ('tagent_custom_data',
+				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
+			}
 			// Create address for this agent in taddress
 			agent_add_address ($id_agente, $direccion_agente);
 			
@@ -349,8 +364,10 @@ if (isset( $_GET["fix_module"])) {
 		__('Error normalizing module %s', $error));
 }
 
+$update_agent = (bool) get_parameter ('update_agent');
+
 // Update AGENT
-if (isset($_POST["update_agent"])) { // if modified some agent paramenter
+if ($update_agent) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
@@ -376,6 +393,31 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
+	
+	$fields = get_db_all_fields_in_table('tagent_custom_fields');
+	
+	if($fields === false) $fields = array();
+	
+	$field_values = array();
+	
+	foreach($fields as $field) {
+		$field_values[$field['id_field']] = (string) get_parameter_post ('customvalue_'.$field['id_field'], '');
+	}
+	
+	
+	foreach($field_values as $key => $value) {
+		$old_value = get_db_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agente, 'id_field' => $key));
+	
+		if($old_value === false) {
+			// Create custom field if not exist
+			process_sql_insert ('tagent_custom_data',
+				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
+		}else {		
+			process_sql_update ('tagent_custom_data',
+				 array('description' => $value),
+				 array('id_field' => $key,'id_agent' => $id_agente));
+		}
+	}
 	
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 

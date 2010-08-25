@@ -1,3 +1,23 @@
+2010-08-25  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb.sql
+	operation/agentes/estado_generalagente.php
+	operation/agentes/custom_fields.php
+	operation/agentes/ver_agente.php
+	operation/agentes/agent_fields.php
+	extras/pandoradb_migrate_v3.1_to_v3.2.sql
+	godmode/agentes/fields_manager.php
+	godmode/agentes/configurar_agente.php
+	godmode/agentes/configure_field.php
+	godmode/agentes/agent_manager.php
+	godmode/menu.php: Added the custom field feature
+	including agents custom fields managment, agent
+	custom field viewer, custom fields added at the 
+	agent configuration, customization of the custom
+	fields to display it in the agent details and
+	the creation of two new tables into the sql scripts
+	All for pending task: 3052918
+
 2010-08-24  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/module_groups/icon_menu.png

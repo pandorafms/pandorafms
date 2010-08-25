@@ -383,12 +383,28 @@ if ($config['activate_gis']) {
 		$gistab['active'] = false;
 }
 
-$onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 'inventory' => $inventorytab, 'collection' => $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+$custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'
+		. print_image("images/note.png", true, array("title" => __('Custom fields')))
+		. '</a>';
+
+if ($tab == 'custom_fields') {
+	$custom_fields['active'] = true;
+} else {
+	$custom_fields['active'] = false;
+}
+
+$onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 
+				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
+				'inventory' => $inventorytab, 'collection' => $collectiontab, 
+				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields);
 
 print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
 
 switch ($tab) {
+	case "custom_fields":
+		require ("custom_fields.php");
+		break;
 	case "gis":
 		require ("gis_view.php");
 		break;
@@ -416,7 +432,7 @@ switch ($tab) {
 	case "inventory":
 		enterprise_include ('operation/agentes/agent_inventory.php');
 		break;
-	case 'collection':
+	case "collection":
 		enterprise_include ('operation/agentes/collection_view.php');
 		break;
 }

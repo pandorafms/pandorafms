@@ -94,3 +94,28 @@ l', 'onchange', 'unknown');
 
 ALTER TABLE trecon_task ADD `snmp_community` varchar(64) NOT NULL default 'public';
 
+-- -----------------------------------------------------
+-- Table `tagent_custom_fields`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tagent_custom_fields` (
+  `id_field` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(45) NOT NULL default '',
+  `display_on_front` tinyint(1) NOT NULL default 0,
+  PRIMARY KEY  (`id_field`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `tagent_custom_data`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
+  `id_field` int(10) unsigned NOT NULL,
+  `id_agent` int(10) unsigned NOT NULL,
+  `description` text default '',
+  FOREIGN KEY (`id_field`) REFERENCES tagent_custom_fields(`id_field`)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+	ON UPDATE CASCADE ON DELETE CASCADE,
+  PRIMARY KEY  (`id_field`, `id_agent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

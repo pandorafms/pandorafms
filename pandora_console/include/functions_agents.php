@@ -272,9 +272,11 @@ function get_agents ($filter = false, $fields = false, $access = 'AR') {
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
+
+    global $config;
 	
 	//Get user groups
-	$groups = array_keys (get_user_groups (false, $access));
+	$groups = array_keys (get_user_groups ($config["id_user"], $access, false));
 
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {

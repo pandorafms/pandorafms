@@ -29,9 +29,7 @@ $menu['class'] = 'operation';
 if (give_acl ($config['id_user'], 0, "AR")) {
 
 	enterprise_hook ('metaconsole_menu');
-
 	enterprise_hook ('dashboard_menu');
-
 	enterprise_hook ('services_menu');
 
 	//View agents
@@ -115,7 +113,9 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	
 	$menu["visualc"]["sub"] = $sub;
 	//End of visual console
-	
+}
+
+if (give_acl ($config['id_user'], 0, "PM")) {
 	// Server view
 	$menu["estado_server"]["text"] = __('Pandora servers');
 	$menu["estado_server"]["sec2"] = "operation/servers/view_server";
@@ -182,21 +182,28 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 
 // ANY user can view itself !
 
-// Users
-$menu["usuarios"]["text"] = __('View users');
-$menu["usuarios"]["sec2"] = "operation/users/user";
-$menu["usuarios"]["id"] = "oper-users";
-
-$sub = array ();
-$sub["operation/users/user_edit"]["text"] = __('Edit my user');
-$sub["operation/users/user_edit"]["options"]["name"] = "ver";
-$sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
-
 if (give_acl ($config["id_user"], 0, "UM")) {
+
+    // Users
+    $menu["usuarios"]["text"] = __('View users');
+    $menu["usuarios"]["sec2"] = "operation/users/user";
+    $menu["usuarios"]["id"] = "oper-users";
+
+    $sub = array ();
+    $sub["operation/users/user_edit"]["text"] = __('Edit my user');
+    $sub["operation/users/user_edit"]["options"]["name"] = "ver";
+    $sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
 	$sub["operation/users/user_statistics"]["text"] = __('Statistics');
+    $menu["usuarios"]["sub"] = $sub;
+} else {
+    // Users
+    $menu["usuarios"]["text"] = __('Edit my user');
+    $menu["usuarios"]["sec2"] = "operation/users/user_edit";
+    $menu["usuarios"]["id"] = "oper-users";
+
+
 }
 
-$menu["usuarios"]["sub"] = $sub;
 //End of Users
 
 // Rest of options, all with AR privilege (or should events be with incidents?)

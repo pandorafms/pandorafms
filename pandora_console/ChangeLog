@@ -1,3 +1,17 @@
+2010-08-26  Sancho Lerena <slerena@artica.es>
+
+    * include/functions_custom_graphs.php: Fixed ACL.
+
+    * include/functions_agents.php: Fixed ACL on agent search AJAX control.
+
+    * extensions/users_connected.php; Hidden for standard users.
+
+    * operation/events/events_marquee.php: ACL controls.
+
+    * operation/events/events.php: Hide system events to standard users.
+
+    * operation/menu.php: Hide user view on standard users.
+
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_io.php

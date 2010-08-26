@@ -43,6 +43,8 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false) {
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
+
+    $groups = get_user_groups ($id_user, "AR", false);
 	
 	$all_graphs = get_db_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
@@ -52,7 +54,12 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false) {
 	foreach ($all_graphs as $graph) {
 		if ($graph["id_user"] != $id_user && $graph['private'])
 			continue;
-		
+
+        if ($graph["id_group"] > 0)
+            if (!isset($groups[$graph["id_group"]])){
+                continue;
+            }
+
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];
 		}

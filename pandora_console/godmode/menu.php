@@ -108,6 +108,15 @@ if (give_acl ($config['id_user'], 0, "UM")) {
 	$menu["gusuarios"]["text"] = __('Manage users');
 	$menu["gusuarios"]["sec2"] = "godmode/users/user_list";
 	$menu["gusuarios"]["id"] = "god-users";
+
+    
+    if (give_acl ($config['id_user'], 0, "PM")) {
+        $sub = array ();
+	    // Manage profiles
+    	$sub["godmode/profiles/profile_list"]["text"] = __('Manage profiles');
+    	$menu["gusuarios"]["sub"] = $sub;
+    }
+
 }
 
 // SNMP console
@@ -157,10 +166,6 @@ if (give_acl ($config['id_user'], 0, "IW")) {
 }
 
 if (give_acl ($config['id_user'], 0, "PM")) {
-	// Manage profiles
-	$menu["gperfiles"]["text"] = __('Manage profiles');
-	$menu["gperfiles"]["sec2"] = "godmode/profiles/profile_list";
-	$menu["gperfiles"]["id"] = "god-profiles";
 
 	// Servers
 	$menu["gservers"]["text"] = __('Manage servers');

@@ -126,7 +126,7 @@ if ($id_agente) {
 	$table->data[1][1] .= "&nbsp;". print_checkbox ("delete_ip", 1, false, true).__('Delete selected');	
 }
 
-$groups = get_user_groups ($config["id_user"]);
+$groups = get_user_groups ($config["id_user"], "AR",false);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = __('Parent');

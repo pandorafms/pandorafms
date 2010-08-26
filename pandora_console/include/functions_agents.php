@@ -280,12 +280,14 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
  * @return mixed An array with all alerts defined for an agent or false in case no allowed groups are specified.
  */
 function get_agents ($filter = false, $fields = false, $access = 'AR', $order = array('field' => 'nombre', 'order' => 'ASC')) {
+    global $config;
+
 	if (! is_array ($filter)) {
 		$filter = array ();
 	}
-	
+
 	//Get user groups
-	$groups = array_keys (get_user_groups (false, $access));
+	$groups = array_keys (get_user_groups ($config["id_user"], $access, false));
 
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {
@@ -320,7 +322,6 @@ function get_agents ($filter = false, $fields = false, $access = 'AR', $order = 
 	}
 	
 	$filter['order'] = $order['field'] . ' ' . $order['order'];
-
 	return get_db_all_rows_filter ('tagente', $filter, $fields);
 }
 

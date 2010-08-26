@@ -94,6 +94,8 @@ l', 'onchange', 'unknown');
 
 ALTER TABLE trecon_task ADD `snmp_community` varchar(64) NOT NULL default 'public';
 
+ALTER TABLE ttrap MODIFY value_custom text default '';
+ALTER TABLE ttrap MODIFY value text default '';
 -- -----------------------------------------------------
 -- Table `tagent_custom_fields`
 -- -----------------------------------------------------
@@ -119,3 +121,4 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 	ON UPDATE CASCADE ON DELETE CASCADE,
   PRIMARY KEY  (`id_field`, `id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+

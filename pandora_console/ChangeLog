@@ -1,5 +1,7 @@
 2010-08-26  Sancho Lerena  <slerena@gmail.com>
 
+    * include/functions_custom_graphs.php: Fixed ACL problems.
+
     * include/functions_agents.php: Call to get_agents () with current user
     and without returning "all" group, this avoid to render non-visible (ACL)
     agents in the AJAX control to return an agent.

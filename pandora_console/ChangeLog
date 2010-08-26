@@ -1,3 +1,8 @@
+2010-08-26  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/reporting/reporting_builder.list_items.php: Added code to
+	show text if no items found, instead the table header.
+
 2010-08-25  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb.sql

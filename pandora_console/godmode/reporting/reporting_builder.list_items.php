@@ -122,44 +122,47 @@ if($moduleFilter != 0) {
 
 $items = get_db_all_rows_sql('SELECT * FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport . ' ORDER BY `order` LIMIT ' . $offset . ', ' . $config["block_size"]);
 $countItems = get_db_sql('SELECT COUNT(id_rc) FROM treport_content WHERE ' . $where . ' AND id_report = ' . $idReport);
+$table = null;
+
+if ($items){
+	$table->width = '100%';
+	$table->head[0] = '<span title="' . __('Sort') . '">' . __('S.') . '</span>';
+	$table->head[1] = __('Type');
+	if (!$filterEnable) {
+		$table->head[1] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
+	}
+	$table->head[2] = __('Agent');
+	if (!$filterEnable) {
+		$table->head[2] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
+	}
+	$table->head[3] = __('Module');
+	if (!$filterEnable) {
+		$table->head[3] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
+			'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
+	}
+	$table->head[4] = __('Period');
+	$table->head[5] = __('Description');
+	$table->head[6] = '<span title="' . __('Options') . '">' . __('O.') . '</span>';
+
+	$table->align[6] = 'center';
+} else {
+	echo '<br><br><div class="nf">'. __('No items') . '</div>';
+}
+	$lastPage = true;
+	if (((($offset == 0) && ($config["block_size"] > $countItems)) ||
+		($countItems >= ($config["block_size"] + $offset))) &&
+		($countItems > $config["block_size"])) {
+		$lastPage = false;
+	}
+
+	$count = 0;
+	$rowPair = true;
 
 if ($items === false) {
 	$items = array();
 }
-
-$table = null;
-$table->width = '100%';
-$table->head[0] = '<span title="' . __('Sort') . '">' . __('S.') . '</span>';
-$table->head[1] = __('Type');
-if (!$filterEnable) {
-	$table->head[1] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=type&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
-		'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=type&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
-}
-$table->head[2] = __('Agent');
-if (!$filterEnable) {
-	$table->head[2] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=agent&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
-		'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=agent&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
-}
-$table->head[3] = __('Module');
-if (!$filterEnable) {
-	$table->head[3] .= ' <a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=up&field=module&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_up.png" title="' . __('Ascendent') . '" /></a>' .
-		'<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=order&dir=down&field=module&id_report=' . $idReport . $urlFilter . '"><img src="images/sort_down.png" title="' . __('Descent') . '" /></a>';
-}
-$table->head[4] = __('Period');
-$table->head[5] = __('Description');
-$table->head[6] = '<span title="' . __('Options') . '">' . __('O.') . '</span>';
-
-$table->align[6] = 'center';
-
-$lastPage = true;
-if (((($offset == 0) && ($config["block_size"] > $countItems)) ||
-	($countItems >= ($config["block_size"] + $offset))) &&
-	($countItems > $config["block_size"])) {
-	$lastPage = false;
-}
-
-$count = 0;
-$rowPair = true;
 
 foreach ($items as $item) {
 	if ($rowPair)

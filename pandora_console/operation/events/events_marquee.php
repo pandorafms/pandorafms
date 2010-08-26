@@ -13,11 +13,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-error_reporting(E_ALL);
+error_reporting(1);
 
 // Local settings for marquee extension
 
-$MAX_MARQUEE_EVENTS=5;
+$MAX_MARQUEE_EVENTS=10;
 $MARQUEE_INTERVAL=90;
 $MARQUEE_FONT_SIZE="32px";
 $MARQUEE_SPEED=12;
@@ -28,13 +28,40 @@ require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
 
-if(!isInACL($_SERVER['REMOTE_ADDR']))
-	exit;
-	
-$sql = "SELECT evento, timestamp, id_agente FROM tevento ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+session_start ();
 
-$result=mysql_query($sql);
-while($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
+// http://es2.php.net/manual/en/ref.session.php#64525
+// Session locking concurrency speedup!
+check_login ();
+
+session_write_close (); 
+
+
+if(!isInACL($_SERVER['REMOTE_ADDR'])){
+    audit_db ('', $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		"Trying to access marquee without ACL Access");
+	require ("../../general/noaccess.php");
+	exit;
+}
+
+global $config;
+
+$config["id_user"] = $_SESSION["id_usuario"];
+
+$groups = get_user_groups ($config["id_user"], "AR");
+//Otherwise select all groups the user has rights to.
+$sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
+
+// Skip system messages if user is not PM
+if (!give_acl ($config["id_user"], 0, "PM")) {
+    $sql_group_filter .= " AND id_grupo != 0";
+}
+
+	
+$sql = "SELECT evento, timestamp, id_agente FROM tevento WHERE 1=1 $sql_group_filter ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+
+$result = get_db_all_rows_sql ($sql);
+foreach ($result as $row) {
 	$agente = "";
 	if ($row["id_agente"] != 0){
 		$agente = get_db_sql ("SELECT nombre FROM tagente WHERE id_agente = ". $row["id_agente"]);

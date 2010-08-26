@@ -135,13 +135,12 @@ else{
 
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
-$groups = get_user_groups ($config["id_user"], "IR");
 $event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
 $id_user_ack = get_parameter ("id_user_ack", 0);
 $group_rep = (int) get_parameter ("group_rep", 0);
-
 $delete = (bool) get_parameter ("delete");
 $validate = (bool) get_parameter ("validate");
+$groups = get_user_groups ($config["id_user"], "IR");
 
 //Group selection
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
@@ -157,6 +156,10 @@ if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
 	}
 }
 
+// Skip system messages if user is not PM
+if (!give_acl ($config["id_user"], 0, "PM")) {
+    $sql_post .= " AND id_grupo != 0";
+}
 
 if ($status == 1) {
 	$sql_post .= " AND estado = 1";

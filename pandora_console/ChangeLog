@@ -1,3 +1,28 @@
+2010-08-26  Sancho Lerena  <slerena@gmail.com>
+
+    * include/functions_agents.php: Call to get_agents () with current user
+    and without returning "all" group, this avoid to render non-visible (ACL)
+    agents in the AJAX control to return an agent.
+
+    * pandoradb.sql: ttrap value* information resized.
+
+    * extensions/users_connected.php: ACL check before show users.
+
+    * operation/events/events_marquee.php: Added ACL check.
+
+    * operation/events/events.php: System events not shown to normal users.
+
+    * operation/menu.php: Server view is now only for PM.
+
+    * extras/pandoradb_migrate_v3.1_to_v3.2.sql: ttrap value* alter table.
+
+    * general/noaccess.php: Added code to avoid image usage when called from
+    different directories than standard.
+
+    * godmode/agentes/agent_manager.php: Proper call to get_user_groups().
+
+    * godmode/menu.php: Profiles are now under user management.
+
 2010-08-26  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/reporting/reporting_builder.list_items.php: Added code to

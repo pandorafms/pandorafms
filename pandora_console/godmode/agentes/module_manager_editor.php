@@ -282,8 +282,8 @@ if (isset ($extra_title))
 	echo ' - '.$extra_title;
 echo '</h3>';
 
-if (isModuleInPolicy($id_agent_module)) {
-	if($config['enterprise_installed']) {
+if($config['enterprise_installed']) {
+	if (isModuleInPolicy($id_agent_module)) {
 		add_policy_linkation($id_agent_module);
 	}
 }

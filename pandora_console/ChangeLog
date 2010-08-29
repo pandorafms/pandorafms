@@ -1,3 +1,8 @@
+2010-08-29  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/agentes/fields_manager.php: Added code to show text if no 
+	fields defined, instead the table header.
+
 2010-08-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agents/module_manager_editor.php: Changed if() statements
@@ -392,7 +397,7 @@
 	* godmode/setup/setup_auth.php: Added to repository. Authentication
 	  scheme setup options.
 
-010-08-10  Ramon Novoa  <rnovoa@artica.es>
+2010-08-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/auth/mysql.php, include/functions_config.php,
 	  include/config_process.php, pandora_console.spec,

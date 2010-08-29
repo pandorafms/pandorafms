@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (c) 2005-2010 Artica ST
 #
-# Author: Sancho Lerena <slerena@artica.es> 2006-2009
+# Author: Sancho Lerena <slerena@artica.es> 2006-2010
 #
 # /etc/init.d/tentacle_server
 #
@@ -71,7 +71,7 @@ case "$TENTACLE_PATH" in
 esac
 
 if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
-	echo "Tentacle server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON."
+	echo "Tentacle Server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON"
 	rc_failed 1
 	rc_exit
 fi
@@ -80,7 +80,7 @@ case "$1" in
 	start)
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
-			echo "Tentacle server is already running with PID $TENTACLE_PID."
+			echo "Tentacle Server is already running with PID $TENTACLE_PID"
 			rc_failed 2
 			rc_exit	
 		fi
@@ -90,10 +90,10 @@ case "$1" in
 
 		TENTACLE_PID=`get_pid`
 		if [ ! -z "$TENTACLE_PID" ]; then
-			echo "Tentacle server is now running with PID $TENTACLE_PID."
+			echo "Tentacle Server is now running with PID $TENTACLE_PID"
 			rc_status -v
 		else
-			echo "Tentacle server could not be started."
+			echo "Tentacle Server could not be started."
 			echo "Verify that port $TENTACLE_PORT is not used."
 			rc_status -v
 		fi
@@ -103,7 +103,7 @@ case "$1" in
 	stop)
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
-			echo "Tentacle server does not seem to be running."
+			echo "Tentacle Server does not seem to be running"
 			rc_failed 2
 		else
 			kill $TENTACLE_PID
@@ -111,11 +111,11 @@ case "$1" in
 			TENTACLE_PID=`get_pid`
 
 			if [ ! -z "$TENTACLE_PID" ]; then
-				echo "Tentacle server could not be stopped."
+				echo "Tentacle Server could not be stopped"
 				rc_status -s
 			fi
 
-			echo "Tentacle server stopped."
+			echo "Stopping Tentacle Server"
 			rc_status -v
 		fi
 
@@ -131,10 +131,10 @@ case "$1" in
 	status)
 		TENTACLE_PID=`get_pid`
 		if [ -z "$TENTACLE_PID" ]; then
-			echo "Tentacle server is not running."
+			echo "Tentacle Server is not running."
 			rc_status 
 		else
-			echo "Tentacle server is running with PID $TENTACLE_PID."
+			echo "Tentacle Server is running with PID $TENTACLE_PID."
 			rc_status 
 		fi
 		

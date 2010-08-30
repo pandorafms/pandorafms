@@ -158,7 +158,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$agent_name = get_agentmodule_agent_name ($agent_module_id);
 		$agent_id = get_agent_id ($agent_name);
 		$module_name = get_agentmodule_name ($agent_module_id);
-		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 20);
+		$module_name_list[$i] = $agent_name." / ".substr ($module_name, 0, 40);
 		$id_module_type = get_agentmodule_type ($agent_module_id);
 		$module_type = get_moduletype_name ($id_module_type);
 		$uncompressed_module = is_module_uncompressed ($module_type);

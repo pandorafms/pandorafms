@@ -1,3 +1,11 @@
+2010-08-29  Sancho Lerena  <slerena@artica.es>
+
+	* include/pchart_graph.php,
+	include/fgraph.php,
+	include/functions_fsgraph.php: Minor (but important) changes on
+	graphs: combined wired mode available on flash, improved legends
+	on both types, and improved flash wired modes. 
+
 2010-08-29  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/agentes/fields_manager.php: Added code to show text if no 

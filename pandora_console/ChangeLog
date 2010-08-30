@@ -1,3 +1,10 @@
+2010-08-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/users/user.php
+	operation/users/user_statistics.php
+	operation/menu.php: Deleted the users view and the
+	user statistics from operation menu
+
 2010-08-29  Sancho Lerena  <slerena@artica.es>
 
 	* include/pchart_graph.php,

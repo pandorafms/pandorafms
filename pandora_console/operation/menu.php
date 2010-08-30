@@ -185,29 +185,10 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 }
 
 // ANY user can view itself !
-
-if (give_acl ($config["id_user"], 0, "UM")) {
-
-    // Users
-    $menu["usuarios"]["text"] = __('View users');
-    $menu["usuarios"]["sec2"] = "operation/users/user";
-    $menu["usuarios"]["id"] = "oper-users";
-
-    $sub = array ();
-    $sub["operation/users/user_edit"]["text"] = __('Edit my user');
-    $sub["operation/users/user_edit"]["options"]["name"] = "ver";
-    $sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
-	$sub["operation/users/user_statistics"]["text"] = __('Statistics');
-    $menu["usuarios"]["sub"] = $sub;
-} else {
     // Users
     $menu["usuarios"]["text"] = __('Edit my user');
     $menu["usuarios"]["sec2"] = "operation/users/user_edit";
     $menu["usuarios"]["id"] = "oper-users";
-
-
-}
-
 
 //End of Users
 

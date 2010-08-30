@@ -1,3 +1,8 @@
+2010-08-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/alerts_status.php: Fixed ACL merged
+	from trunk
+
 2010-08-29  Sancho Lerena  <slerena@artica.es>
 
 	* include/pchart_graph.php,

@@ -184,20 +184,21 @@ class PchartGraph extends PandoraGraphAbstract {
 				$this->dataset->AddPoint ($data['min'], "MIN");
 				$this->dataset->AddPoint ($data['max'], "MAX");
 			}
-			$this->legend[1] = __("Min. Value");
-			$this->legend[0] = __("Avg. Value");
-			$this->legend[2] = __("Max. Value");
-			$this->dataset->SetSerieName (__("Min. Value"), "MIN");
-			$this->dataset->SetSerieName (__("Avg. Value"), "AVG");
-			$this->dataset->SetSerieName (__("Max. Value"), "MAX");
+			$this->legend[1] = __("Min");
+			$this->legend[0] = __("Avg");
+			$this->legend[2] = __("Max");
+			$this->dataset->SetSerieName (__("Min"), "MIN");
+			$this->dataset->SetSerieName (__("Avg"), "AVG");
+			$this->dataset->SetSerieName (__("Max"), "MAX");
 			$this->set_colors ();
 		}
 		$this->dataset->SetXAxisFormat ('datetime');
 		$this->graph->setDateFormat ("Y");
 		$this->dataset->SetYAxisFormat ('metric');
 		$this->dataset->AddAllSeries ();
-		$this->dataset->SetSerieName (__("Avg. Value"), "AVG");
-		$this->legend[0] = __("Avg. Value");
+
+		$this->dataset->SetSerieName (__("Avg"), "AVG");
+		$this->legend[0] = __("Avg");
 		
 		if ($this->palette_path) {
 			$this->graph->loadColorPalette ($this->palette_path);
@@ -278,10 +279,22 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->dataset = new pData;
 		$this->graph = new pChart ($this->width, $this->height+5);
 		
-		
+        $graph_items = 0;		
 		// $previo stores values from last series to made the stacked graph
 		foreach ($this->data as $i => $data) {
+            $graph_items++;
+            $max = 0;
+            $min = 10000000000000;
+            $avg = 0;
+            $count = 0;
 			foreach ($data as $j => $value) {
+                $count ++;
+                $avg += $value;
+                if ($value > $max )
+                    $max = $value;
+                if ($value < $min )
+                    $min = $value;
+
 				// New code for stacked. Due pchart doesnt not support stacked
 				// area graph, we "made it", adding to a series the values of the
 				// previous one consecutive sum.
@@ -297,13 +310,22 @@ class PchartGraph extends PandoraGraphAbstract {
 				else
 					$previo[$j] = $previo[$j] + $value;
 				
-			}	
+			}
+            if ($count > 0)
+                $avgdata[$i] = $avg / $count;
+            else
+                $avgdata[$i] = 0;
+            $maxdata[$i] = format_for_graph($max);
+            $mindata[$i] = format_for_graph($min);
+            $avgdata[$i] = format_for_graph($avgdata[$i]);
 		}
-
-		
+        
+		$i = 0;
 		foreach ($this->legend as $name) {
-			$this->dataset->setSerieName ($name, $name);
+            $legend = $name . " (".__("Max"). ":$maxdata[$i], ".__("Min"). ":$mindata[$i], ". __("Avg"). ": $avgdata[$i])"; 
+			$this->dataset->setSerieName ($legend, $name);
 			$this->dataset->AddSerie ($name);
+            $i++;
 		}
 		
 		// Set different colors for combined graphs because need to be
@@ -322,6 +344,11 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->dataset->SetYAxisFormat ('metric');
 		$this->dataset->AddAllSeries ();
 		$this->add_background ();
+
+
+        $legend_offset = $this->height - 21 - ($graph_items*15);
+
+        $this->graph->setGraphArea (35,10,$this->width-10, $legend_offset);
 		$this->graph->drawGraphArea (254, 254, 254, false);
 		
 				
@@ -366,7 +393,13 @@ class PchartGraph extends PandoraGraphAbstract {
 			$this->graph->drawFilledCubicCurve ($this->dataset->GetData(),
 				$this->dataset->GetDataDescription(), 1, 30, true);
 		}
-		$this->add_legend ();
+
+    	$this->graph->setFontProperties($this->fontpath,7);  
+    	$this->graph->drawLegend(15,$legend_offset+29,$this->dataset->GetDataDescription(),92,92,92,50,50,50,45,45,45,0); 
+
+// Legend line separator
+//        $this->graph->drawFilledRoundedRectangle(35, $legend_offset + 30 ,$this->width-35,$legend_offset+30,0,220,220,220); 
+
 		$this->add_events ($this->legend[0]);
 		$this->add_alert_levels ();
 		
@@ -548,15 +581,15 @@ class PchartGraph extends PandoraGraphAbstract {
 		/* This is a tiny watermark  */
 		if ($this->watermark) {
 			if ($this->show_title){
-				$this->graph->setFontProperties ($this->fontpath, 6);
-				$this->graph->drawTextBox ($this->width - 5, 40,
-					$this->width - 240, 90, 'PandoraFMS', 90,
-					214, 214, 214, ALIGN_BOTTOM_LEFT, false);
+				$this->graph->setFontProperties ($this->fontpath, 7);
+				$this->graph->drawTextBox ($this->width - 8, 40,
+					$this->width - 240, 90, 'PANDORA FMS', 90,
+					174, 214, 174, ALIGN_BOTTOM_LEFT, false);
 			} else {
-				$this->graph->setFontProperties ($this->fontpath, 6);
-				$this->graph->drawTextBox ($this->width - 5, 50,
-					$this->width - 240, 60, 'PandoraFMS', 90,
-					214, 214, 214, ALIGN_BOTTOM_LEFT, false);
+				$this->graph->setFontProperties ($this->fontpath, 7);
+				$this->graph->drawTextBox ($this->width - 8, 50,
+					$this->width - 240, 60, 'PANDORA FMS', 90,
+					174, 214, 174, ALIGN_BOTTOM_LEFT, false);
 		 	}
 		}
 	}

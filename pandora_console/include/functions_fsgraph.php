@@ -134,17 +134,36 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '') {
 	global $config;
 
+    $graph_type = "MSArea2D"; //MSLine is possible also
+
 	// Generate the XML
-	$chart = new FusionCharts('MSArea2D', $width, $height);
+	$chart = new FusionCharts($graph_type, $width, $height);
 	$num_vlines = 0;
 	$count = 0;
 
+    // NO caption needed (graph avg/max/min stats are in the legend now)
+    /*
 	if ($caption != '') {
 		$chart->setChartParam("caption", $caption);
 	}
+    */
+
+    $total_max = 0;
+    $total_avg = 0;
+    $total_min = 0;
 
 	// Create categories
 	foreach ($data as $value) {
+
+        $total_avg +=$value["sum"];
+
+        if ($avg_only != 1){
+             if ($value["max"] > $total_max)
+                $total_max =$value["max"];
+             if ($value["min"] < $total_min)
+                $total_min =$value["min"];
+        }
+        
 		if ($count++ % $step == 0) {
 			$show_name = '1';
 			$num_vlines++;
@@ -153,6 +172,14 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		}
 		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $value['timestamp_bottom']) . ';showName=' . $show_name);
 	}
+
+    if ($count > 0)
+        $total_avg = format_for_graph($total_avg / $count);
+    else
+        $total_avg = 0;
+
+    $total_min = format_for_graph ($total_min);
+    $total_max = format_for_graph ($total_max);
 
 	// Event chart
 	if ($show_events == 1) {
@@ -172,7 +199,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Max chart
 	if ($avg_only == 0) {
-		$chart->addDataSet(__('Max'), 'color=' . $config['graph_color3']);
+		$chart->addDataSet(__('Max')." ($total_max)", 'color=' . $config['graph_color3']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['max']);
 		}
@@ -180,7 +207,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Avg chart
 	$empty = 1;
-	$chart->addDataSet(__('Avg'), 'color=' . $config['graph_color2']);
+	$chart->addDataSet(__('Avg'). " ($total_avg)", 'color=' . $config['graph_color2']);
 	foreach ($data as $value) {
 		if ($value['sum'] > 0) {
 			$empty = 0;
@@ -190,13 +217,13 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 
 	// Min chart
 	if ($avg_only == 0) {
-		$chart->addDataSet(__('Min'), 'color=' . $config['graph_color1']);
+		$chart->addDataSet(__('Min'). " ($total_min)", 'color=' . $config['graph_color1']);
 		foreach ($data as $value) {
 			$chart->addChartData($value['min']);
 		}
 	}
 
- 	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+ 	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	$random_number = rand ();
 	$div_id = 'chart_div_' . $random_number;
@@ -208,7 +235,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 	$output .= '<script type="text/javascript">
 			<!--
 			function pie_' . $chart_id . ' () {
-				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_MSArea2D.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
+				var myChart = new FusionCharts("' . $pre_url . '/include/FusionCharts/FCF_'.$graph_type.'.swf", "' . $chart_id . '", "' . $width. '", "' . $height. '", "0", "1");
 				myChart.setDataXML("' . addslashes($chart->getXML ()) . '");
 				myChart.addParam("WMode", "Transparent");
 				myChart.render("' . $div_id . '");
@@ -235,6 +262,8 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 				break;
 		case 2: $chart_type = 'MSLine';
 				break;
+		case 3: $chart_type = 'MSLine';
+				break;
 		default: $chart_type = 'StackedArea2D';
 	}
 	
@@ -255,18 +284,29 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 	}
 
 	// Stack charts
+
 	$empty = 1;	
+    $prev = array();
 	for ($i = 0; $i < sizeof ($data); $i++) {
-		$chart->addDataSet ($sets[$i]);
-		foreach ($data[$i] as $value) {
-			if ($value > 0) {
-				$empty = 0;
-			}
-			$chart->addChartData($value);
-		}
+        $chart->addDataSet ($sets[$i]);  
+		foreach ($data[$i] as $indice => $value) {
+            // Custom code to do the stack lines, because library doesn't do itself
+            if ($type == 3){
+                if ($i > 0){
+                    $prev[$indice] = $prev[$indice] + $value;
+                } else {
+                    $prev[$indice] = $value;
+                }
+                    $myvalue = $prev[$indice];                
+        			$chart->addChartData($myvalue);
+            } else {
+                $chart->addChartData($value);
+            }
+		}		      
 	}
 
-	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showAlternateVGridColor=1;showNames=1;rotateNames=1;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
+
+	$chart->setChartParams('legendAllowDrag=1;legendMarkerCircle=1;animation=0;numVDivLines=' . $num_vlines . ';showShadow=0; showAlternateVGridColor=1;showNames=1;lineThickness=2;anchorRadius=0.7;rotateNames=1;divLineAlpha=30;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;showPlotBorder=1;plotBorderThickness=0;areaBorderThickness=0;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	// Return the code
 	return get_chart_code ($chart, $width, $height, 'include/FusionCharts/FCF_' . $chart_type . '.swf');

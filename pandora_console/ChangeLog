@@ -1,5 +1,11 @@
 2010-08-30  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/alerts_status.php: Fixed the 
+	ACLs in the alerts view. Now only are showed the
+	alerts of the visible agents for the user
+
+2010-08-30  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/users/user.php
 	operation/users/user_statistics.php
 	operation/menu.php: Deleted the users view and the

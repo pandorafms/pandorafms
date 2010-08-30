@@ -73,7 +73,8 @@ else {
 		return;
 	}
 	
-	$agents = false;
+	$agents = array_keys(get_group_agents(array_keys(get_user_groups($config["id_user"], 'AR', false))));
+
 	$idGroup = $id_group;
 	
 	$print_agent = true;

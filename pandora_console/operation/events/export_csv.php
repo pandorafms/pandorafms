@@ -71,14 +71,15 @@ $sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
 $new = true;
 while ($event = get_db_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
-	if (! give_acl ($config["id_user"], $event["id_grupo"], "AR"))
+	if (!check_acl($config["id_user"], $event["id_grupo"], "AR") ||
+	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	
 	echo $event["timestamp"];
 	echo ",";
-	echo get_db_value ('nombre', 'tagente', 'id_agente', $event["id_agente"]);
+	echo get_agent_name($event["id_agente"]);
 	echo ",";
-	echo get_db_value ('nombre', 'tgrupo', 'id_grupo', $event["id_grupo"]);
+	echo get_group_name($event["id_grupo"]);
 	echo ",";
 	echo $event["evento"];
 	echo ",";

@@ -1,3 +1,9 @@
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/export_csv.php: Fixed ACLs to avoid
+	to export system events to not administrators for bug 
+	3053486
+
 2010-08-31  Raúl Mateos   <raulofpandora@gmail.com>
 
 	* godmode/reporting/reporting_builder.php,

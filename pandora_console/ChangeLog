@@ -1,5 +1,10 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/search_reports.php: Added the description
+	field to the reports search in the main menu
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/search_maps.php: Fixed the group icon
 	in the maps search view
 

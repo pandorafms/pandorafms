@@ -42,11 +42,11 @@ if(!$userreports_id){
 $reports = false;
 
 if($searchReports) {
-	$sql = "SELECT id_report, name, description FROM treport WHERE name LIKE '%" . $stringSearchSQL . "%'".$reports_condition.
+	$sql = "SELECT id_report, name, description FROM treport WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition.
 		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$reports = process_sql($sql);
 
-	$sql = "SELECT COUNT(id_report) AS count FROM treport WHERE name LIKE '%" . $stringSearchSQL . "%'";
+	$sql = "SELECT COUNT(id_report) AS count FROM treport WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')";
 	$totalReports = get_db_row_sql($sql);
 	$totalReports = $totalReports['count'];
 }

@@ -120,6 +120,7 @@ $users = false;
 if ($searchUsers) {
 	$sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
 		WHERE fullname LIKE '%" . $stringSearchSQL . "%' OR
+			id_user LIKE '%" . $stringSearchSQL . "%' OR
 			firstname LIKE '%" . $stringSearchSQL . "%' OR
 			lastname LIKE '%" . $stringSearchSQL . "%' OR
 			middlename LIKE '%" . $stringSearchSQL . "%' OR

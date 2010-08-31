@@ -1,5 +1,10 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/search_users.php: Added the id_user field
+	to the search in the main search
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/search_agents.php
 	operation/search_graphs.php
 	operation/search_alerts.php

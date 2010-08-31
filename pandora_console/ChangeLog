@@ -1,5 +1,11 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_db.php: Added support to '<>'
+	comparation in the format_array_to_where_clause_sql
+	function
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/networkmap.php: Fixed the groups
 	combo into the options of networkmaps to show only
 	visible groups

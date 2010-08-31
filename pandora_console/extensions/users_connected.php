@@ -12,53 +12,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function users_extension_main () {
-
-	// Header
-	print_page_header (__("Users connected"), "images/extensions.png", false, "", false);
-
-	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
-
-	$rows = get_db_all_rows_sql ($sql);
-	if (empty ($rows)) {
-		$rows = array ();
-	}
-
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->width = 600;
-	$table->class = "databox";
-	$table->size = array ();
-	$table->data = array ();
-	$table->head = array ();
-
-	$table->head[0] = __('User');
-	$table->head[1] = __('IP');
-	$table->head[2] = __('Date');
-
-	$rowPair = true;
-	$iterator = 0;
-
-	// Get data
-	foreach ($rows as $row) {
-		if ($rowPair)
-			$table->rowclass[$iterator] = 'rowPair';
-		else
-			$table->rowclass[$iterator] = 'rowOdd';
-		$rowPair = !$rowPair;
-		$iterator++;
-
-		$data = array ();
-		$data[0] = $row["id_usuario"];
-		$data[1] = $row["ip_origen"];
-		$data[2] = $row["fecha"];
-		array_push ($table->data, $data);
-	}
-
-	print_table ($table);
-
-}
 function users_extension_main_god () {
+	if (isset($config["id_user"])) {
+		if (!!give_acl ($config["id_user"], 0, "UM")) {
+			return;
+		}
+	}
+	
 	// Header
 	print_page_header (__("Users connected"), "images/extensions.png", false, "", true);
 	
@@ -105,12 +65,12 @@ function users_extension_main_god () {
 }
 add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");
 
-if (isset($config["id_user"]))
+if (isset($config["id_user"])) {
     if (give_acl ($config["id_user"], 0, "UM")) {
         add_operation_menu_option(__('Users connected'), 'usuarios',"users/icon.png");
     }
+}
 
 add_extension_godmode_function ('users_extension_main_god');
-add_extension_main_function ('users_extension_main');
 
 ?>

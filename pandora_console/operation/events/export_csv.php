@@ -75,7 +75,8 @@ $sql = get_db_all_rows_filter ('tevento', $filter, $fields, 'AND', true, true);
 $new = true;
 while ($event = get_db_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
-	if (! give_acl ($config["id_user"], $event["id_grupo"], "AR"))
+	if (!check_acl($config["id_user"], $event["id_grupo"], "AR") ||
+	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	
 	echo $event["timestamp"];

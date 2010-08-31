@@ -1,5 +1,10 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/update_manager.php: Removed update manager from
+	menu for users without PM permissions
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/search_agents.php
 	operation/search_graphs.php
 	operation/search_alerts.php

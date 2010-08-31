@@ -1,3 +1,14 @@
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/search_agents.php
+	operation/search_graphs.php
+	operation/search_alerts.php
+	operation/search_reports.php
+	operation/search_maps.php
+	operation/search_results.php
+	operation/search_users.php: Restructured and fixed ACLs
+	in the main search merged from trunk
+
 2010-08-30  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/alerts_status.php: Fixed ACL merged

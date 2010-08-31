@@ -1,5 +1,11 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/status_monitor.php: Fixed the modules
+	combo in the status monitor screen to show only
+	the visible agents modules. Merged from trunk
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/networkmap.php: Fixed the groups combo
 	in the networkmaps options to show only visible groups
 	merge from trunk

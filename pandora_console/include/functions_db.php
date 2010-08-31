@@ -2562,7 +2562,7 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		$offset = sprintf (' OFFSET %d', $values['offset']);
 		unset ($values['offset']);
 	}
-	
+
 	if (isset ($values['order'])) {
 		if (is_array($values['order'])) {
 			if (!isset($values['order']['order'])) {
@@ -2619,8 +2619,14 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}
 			else if ($value[0] == "<"){
-				$value = substr($value,1,strlen($value)-1);
-				$query .= sprintf ("%s < '%s'", $field, $value);
+				if ($value[1] == ">"){
+					$value = substr($value,2,strlen($value)-2);
+					$query .= sprintf ("%s <> '%s'", $field, $value);
+				}	
+				else {
+					$value = substr($value,1,strlen($value)-1);
+					$query .= sprintf ("%s < '%s'", $field, $value);
+				}
 			} 
 			else {
 				$query .= sprintf ("%s = '%s'", $field, $value);

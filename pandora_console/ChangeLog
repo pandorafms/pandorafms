@@ -1,5 +1,11 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/status_monitor.php: Fixed the 
+	modules combo in the status monitor screen to 
+	show only the visible agents modules
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_db.php: Added support to '<>'
 	comparation in the format_array_to_where_clause_sql
 	function

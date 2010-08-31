@@ -1,5 +1,11 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/networkmap.php: Fixed the groups
+	combo into the options of networkmaps to show only
+	visible groups
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/update_manager.php: Removed the update
 	manager extension from the menu if the user
 	doesnt have PM permissions

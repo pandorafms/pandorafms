@@ -123,11 +123,15 @@ function pandora_update_manager_godmode () {
 	require_once ('update_manager/settings.php');
 }
 
-add_operation_menu_option (__('Update manager'));
-add_godmode_menu_option (__('Update manager settings'), 'PM','gsetup');
-add_extension_main_function ('pandora_update_manager_main');
-add_extension_godmode_function ('pandora_update_manager_godmode');
-add_extension_login_function ('pandora_update_manager_login');
+if(isset($config['id_user'])) {
+	if (give_acl ($config['id_user'], 0, "PM")) {
+		add_operation_menu_option (__('Update manager'));
+		add_godmode_menu_option (__('Update manager settings'), 'PM','gsetup');
+		add_extension_main_function ('pandora_update_manager_main');
+		add_extension_godmode_function ('pandora_update_manager_godmode');
+		add_extension_login_function ('pandora_update_manager_login');
+	}
+}
 
 $db = NULL;
 

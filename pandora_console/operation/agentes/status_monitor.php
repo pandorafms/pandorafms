@@ -69,7 +69,10 @@ print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 echo '</tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
-$modules = get_db_all_rows_filter ('tagente_modulo', false, 'DISTINCT(nombre)');
+$user_groups = implode (",", array_keys (get_user_groups ()));
+$user_agents = implode (",", array_keys (get_group_agents($user_groups)));
+
+$modules = get_db_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
 print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
@@ -96,7 +99,7 @@ if ($ag_group > 0 && give_acl ($config["id_user"], $ag_group, "AR")) {
 	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
 } else {
 	// User has explicit permission on group 1 ?
-	$sql .= " AND tagente.id_grupo IN (".implode (",", array_keys (get_user_groups ())).")";
+	$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
 }
 
 // Module group

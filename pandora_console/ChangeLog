@@ -1,5 +1,11 @@
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/update_manager.php: Removed the update
+	manager extension from the menu if the user
+	doesnt have PM permissions
+
+2010-08-31  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/users_connected.php: Clean code and added
 	additional ACL condition
 

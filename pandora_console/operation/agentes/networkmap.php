@@ -67,7 +67,8 @@ echo '<form action="index.php?sec=estado&amp;sec2=operation/agentes/networkmap&a
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="100%">';
 echo '<tr>';
 echo '<td valign="top">' . __('Group')  . '<br />';
-print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 0 ORDER BY nombre', 'group', $group, '', 'All', 0, false);
+$user_groups = implode(',',array_keys(get_user_groups()));
+print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo IN ('.$user_groups.') ORDER BY nombre', 'group', $group, '', 'All', 0, false);
 echo '</td>';
 echo '<td valign="top">' . __('Layout')  . '<br />';
 print_select ($layout_array, 'layout', $layout, '', '', '');

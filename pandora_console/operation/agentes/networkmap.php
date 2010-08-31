@@ -244,7 +244,7 @@ $options_form .= __('Name') . '<br />';
 $options_form .= print_input_text ('name', $name, '', 10, 25, true);
 $options_form .= '</td>';
 $options_form .= '<td valign="top">' . __('Group') . '<br />';
-$options_form .= print_select_groups(false, false, false, 'group', $group, '', 'All', 0, true);
+$options_form .= print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 $options_form .= '</td>';
 if($activeTab == 'groups' || $activeTab == 'policies'){
 	$options_form .= '<td valign="top">' . __('Module group') . '<br />';

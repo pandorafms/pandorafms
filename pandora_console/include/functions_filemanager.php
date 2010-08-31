@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -633,7 +633,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		}
 		else {
 			echo "<div style='text-align: right; width: " . $table->width . "; color:#AC4444;'>";
-			echo "<image src='images/info.png' />" . __('The directory is only readble.');
+			echo "<image src='images/info.png' />" . __('The directory is read-only');
 			echo "</div>";
 		}
 	}

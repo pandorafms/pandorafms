@@ -1,3 +1,9 @@
+2010-08-31  Raúl Mateos   <raulofpandora@gmail.com>
+
+	* godmode/reporting/reporting_builder.php,
+	godmode/gis_maps/configure_gis_mao.php, include/functions_filemanager.php:
+	Fixed some misspelled strings
+
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/status_monitor.php: Fixed the 

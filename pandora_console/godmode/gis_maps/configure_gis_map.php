@@ -320,7 +320,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 	}
 }
 
-$table->data[1][0] = __("Add Map connection") . print_help_tip (__('At least one map connection must be deffined, it will be possible to change between the connections in the map'), true). ": " . $iconError;
+$table->data[1][0] = __("Add Map connection") . print_help_tip (__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true). ": " . $iconError;
 $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 	<tr>
 		<td>

@@ -428,7 +428,7 @@ else {
 print_page_header(__('Reporting') . $textReportName, "images/reporting_edit.png", false, "reporting_" . $activeTab . "_tab", true, $buttons);
 
 if ($resultOperationDB !== null) {
-	print_result_message ($resultOperationDB, __('Successfully action'), __('Unsuccessfully action'));
+	print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
 }
 
 switch ($activeTab) {

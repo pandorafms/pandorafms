@@ -26,6 +26,17 @@ $ipOrigin = $_SERVER['REMOTE_ADDR'];
 // Uncoment this to activate ACL on RSS Events
 if (!isInACL($ipOrigin))
     exit;
+    
+// Check user credentials
+$user = get_parameter('user');
+$hashup = get_parameter('hashup');
+
+$pss = get_user_info($user);
+$hashup2 = md5($user.$pss['password']);
+
+if($hashup != $hashup2){
+	exit;
+}
 
 header("Content-Type: application/xml; charset=UTF-8"); //Send header before starting to output
 
@@ -92,9 +103,14 @@ if ($id_agent != -1)
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
 		
+// Avoid to show system events to not administrators
+if(!check_acl($user, 0, "PM"))
+	$sql_post .= " AND `tevento`.`event_type` <> 'system'";
+	
 $sql="SELECT `tevento`.`id_evento` AS event_id,
 	`tevento`.`id_agente` AS id_agent,
 	`tevento`.`id_usuario` AS validated_by,
+	`tevento`.`id_grupo` AS id_group,
 	`tevento`.`estado` AS validated,
 	`tevento`.`evento` AS event_descr,
 	`tevento`.`utimestamp` AS unix_timestamp,
@@ -130,6 +146,9 @@ if (empty ($result)) {
 }
 
 foreach ($result as $row) {
+	if (!check_acl($user, $row["id_group"], "AR")) {
+		continue;
+	}
 	if ($row["event_type"] == "system") {
 		$agent_name = __('System');
 	}

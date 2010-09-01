@@ -170,8 +170,11 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
 	
 	//RSS
-	$sub["operation/events/events_rss.php"]["text"] = __('RSS');
-	$sub["operation/events/events_rss.php"]["type"] = "direct";
+	$pss = get_user_info($config['id_user']);
+	$hashup = md5($config['id_user'].$pss['password']);
+	
+	$sub["operation/events/events_rss.php?user=".$config['id_user']."&hashup=".$hashup]["text"] = __('RSS');
+	$sub["operation/events/events_rss.php?user=".$config['id_user']."&hashup=".$hashup]["type"] = "direct";
 	
 	//CSV
 	$sub["operation/events/export_csv.php"]["text"] = __('CSV File');

@@ -1,5 +1,11 @@
 2010-09-01  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/menu.php
+	operation/events/events_rss.php: Added url parameters
+	to the event rss to authenticate the user and fix the ACLs
+
+2010-09-01  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/alerts_status.php
 	operation/search_alerts.php: Fixed the search of 
 	alerts in alerts view and in main search

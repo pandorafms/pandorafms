@@ -1,3 +1,9 @@
+2010-09-01  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/alerts_status.php
+	operation/search_alerts.php: Fixed the search of 
+	alerts in alerts view and in main search
+
 2010-08-31  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/export_csv.php: Fixed ACLs to avoid

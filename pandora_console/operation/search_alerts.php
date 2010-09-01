@@ -95,10 +95,14 @@ $alerts = false;
 if($searchAlerts) {
 	$agents = array_keys(get_group_agents(array_keys(get_user_groups($config["id_user"], 'AR', false))));
 	
-	/*$whereAlerts = ' AND (t2.nombre LIKE "%'.$stringSearchSQL.'%" OR t3.nombre LIKE "%'.$stringSearchSQL.'%"
-					OR t4.name LIKE "%'.$stringSearchSQL.'%") ';*/
+	$whereAlerts = 'AND (' .
+		'id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%' . $stringSearchSQL . '%") OR ' .
+		'id_alert_template IN (SELECT id FROM talert_templates WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $stringSearchSQL . '%")) OR ' .
+		'talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action IN (SELECT id FROM talert_actions WHERE name LIKE "%' . $stringSearchSQL . '%")) OR ' .
+		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE nombre LIKE "%' . $stringSearchSQL . '%") OR ' .
+		'id_agent_module IN (SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN (SELECT id_agente FROM tagente WHERE nombre LIKE "%' . $stringSearchSQL . '%"))' .
+		')';
 		
-	$whereAlerts = false;			
 	$alertsraw = get_agent_alerts_simple ($agents, "all_enabled", array('offset' => get_parameter ('offset',0), 'limit' => $config['block_size'], 'order' => $order['field'] . " " . $order['order']), $whereAlerts);
 
 	$stringSearchPHP = substr($stringSearchSQL,1,strlen($stringSearchSQL)-2);
@@ -113,38 +117,11 @@ if($searchAlerts) {
 		$alerts[$key]['template_name'] = $alert['template_name'];
 		$actions = get_alert_agent_module_actions($alert['id']);
 		
-		// Check substring into agent, module, template and action names
-		if(strpos($alert['agent_name'], $stringSearchPHP) !== false) {
-			$finded = true;
-		}
-		
-		if(!$finded) {
-			if(strpos($alert['agent_module_name'], $stringSearchPHP) !== false)	{
-				$finded = true;
-			}
-		}
-		
-		if(!$finded) {
-			if(strpos($alert['template_name'], $stringSearchPHP) !== false)	{
-				$finded = true;
-			}
-		}
-		
 		foreach($actions as $action) {
 			$actions_name[] = $action['name'];
-			
-			if(!$finded) {
-				if(strpos($action['name'], $stringSearchPHP) !== false)	{
-					$finded = true;
-				}			
-			}
 		}
 		
 		$alerts[$key]['actions'] = implode(',',$actions_name);
-		
-		if(!$finded) {
-			unset($alerts[$key]);
-		}
 	}
 
 	$totalAlerts = count($alerts);

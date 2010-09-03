@@ -15,6 +15,7 @@ use Time::Local;		# DateTime basic manipulation
 use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
 use POSIX;
+use HTML::Entities;		# Encode or decode strings with HTML entities
 
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
@@ -306,6 +307,74 @@ sub pandora_delete_user_profile ($$$$) {
 }
 
 ##########################################################################
+## Delete all the data of module, agent's modules or group's agent's modules
+##########################################################################
+sub pandora_delete_data ($$$) {
+        my ($dbh, $type, $id) = @_;
+        
+        if($type eq 'group') {
+			my @delete_agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $id);
+			foreach my $agent (@delete_agents) {
+				my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $agent->{'id_agente'});
+				foreach my $module (@delete_modules) {
+					pandora_delete_module_data($dbh, $module->{'id_agente_modulo'});
+				}
+			}
+		}
+        elsif ($type eq 'agent') {
+			my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $id);
+			foreach my $module (@delete_modules) {
+				pandora_delete_module_data($dbh, $module->{'id_agente_modulo'});
+			}
+		}
+		elsif ($type eq 'module'){
+			pandora_delete_module_data($dbh, $id);
+		}
+		else {
+			return 0;
+		}
+}
+
+##########################################################################
+## Delete all the data of module
+##########################################################################
+sub pandora_delete_module_data ($$) {
+        my ($dbh, $id_module) = @_;
+        my $buffer = 1000;
+        
+		while(1) {
+			my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			
+			my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
+
+			if($ntot == 0) {
+				last;
+			}
+			
+			if($nd > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+			
+			if($ndinc > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+		
+			if($ndlog4x > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+			
+			if($ndstring > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+		}
+			
+		return 1;
+}
+
+##########################################################################
 ## Create a network module
 ##########################################################################
 sub pandora_create_network_module ($$$$$$$$$$$$$$$$$) {
@@ -464,6 +533,7 @@ sub help_screen{
     help_screen_line('--create_event', '<event> <event_type> <agent_name> <module_name> <group_name> [<event_status> <severity> <template_name>]', 'Add event');
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
+    help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
     print "\n";
 	exit;
 }
@@ -695,6 +765,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param =~ m/--delete_agent/i) {
 			param_check($ltotal, 1);
 			my $agent_name = @ARGV[2];
+			$agent_name = decode_entities($agent_name);
 			print "[INFO] Deleting agent '$agent_name'\n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -1023,6 +1094,47 @@ sub pandora_manage_main ($$$) {
 						
 			pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
 			print "[INFO] Creating incident '$title'\n\n";
+		}
+		elsif ($param =~ m/--delete_data/i) {
+			param_check($ltotal, 3, 1);
+			my ($opt, $name, $name2) = @ARGV[2..4];
+		
+			if($opt eq '-m' || $opt eq '--m') {
+				# Delete module data
+				param_check($ltotal, 3) unless ($name2 ne '');
+				my $id_agent = get_agent_id($dbh,$name2);
+				exist_check($id_agent,'agent',$name2);
+				
+				my $id_module = get_agent_module_id($dbh,$name,$id_agent);
+				exist_check($id_module,'module',$name);
+			
+				print "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
+				
+				pandora_delete_data($dbh, 'module', $id_module);
+			}
+			elsif($opt eq '-a' || $opt eq '--a') {
+				# Delete agent's modules data
+				my $id_agent = get_agent_id($dbh,$name);
+				exist_check($id_agent,'agent',$name);
+				
+				print "DELETING THE DATA OF THE AGENT $name\n\n";
+				
+				pandora_delete_data($dbh, 'module', $id_agent);
+			}
+			elsif($opt eq '-g' || $opt eq '--g') {
+				# Delete group's modules data
+				my $id_group = get_group_id($dbh,$name);
+				exist_check($id_group,'group',$name);
+				
+				print "DELETING THE DATA OF THE GROUP $name\n\n";
+				
+				pandora_delete_data($dbh, 'group', $id_group);
+			}
+			else {
+				print "[ERROR] Invalid parameter '$opt'.\n\n";
+				help_screen ();
+				exit;
+			}
 		}
 	}
 

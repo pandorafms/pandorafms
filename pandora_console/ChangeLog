@@ -1,3 +1,10 @@
+
+2010-09-03  Sancho Lerena <slerena@artica.es>
+
+	* include/sounds/*.wav: New sounds for the fancy sound
+	alert console feature Miguel is working on :-). All sounds
+	are free (cc) and taken from http://www.freesound.org/.
+	
 2010-09-02  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_operations.php

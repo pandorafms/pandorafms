@@ -1,5 +1,11 @@
 2010-09-03  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Added to CLI the option of
+	delete historic data from module, agent modules or
+	group agents modules
+
+2010-09-03  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_db.pl: Added a delete buffer to the delete of 
 	the pending_delete modules
 

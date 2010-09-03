@@ -191,12 +191,45 @@ sub pandora_purgedb ($$) {
 	my @deleted_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 1');
 
 	foreach my $module (@deleted_modules) {
-		print " Deleting data for module " . $module->{'id_agente_modulo'} . "\n";
-		db_do ($dbh, "DELETE FROM tagente_datos WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
-		db_do ($dbh, "DELETE FROM tagente_datos_log4x WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
-		db_do ($dbh, "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ?", $module->{'id_agente_modulo'});
-		db_do ($dbh, "DELETE FROM tagente_datos_inc WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
-        db_do ($dbh, "DELETE FROM tagente_estado  WHERE id_agente_modulo  = ?", $module->{'id_agente_modulo'});
+        
+        my $buffer = 1000;
+        my $id_module = $module->{'id_agente_modulo'};
+        
+		print " Deleting data for module " . $id_module . "\n";
+		
+		while(1) {
+			my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+			my $nstate = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_estado WHERE id_agente_modulo=?', $id_module);
+			
+			my $ntot = $nd + $ndinc + $ndlog4x + $ndstring + $nstate;
+
+			if($ntot == 0) {
+				last;
+			}
+			
+			if($nd > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+			
+			if($ndinc > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+		
+			if($ndlog4x > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+			
+			if($ndstring > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+			
+			if($nstate > 0) {
+				db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			}
+		}
 	}
 
 	print "[PURGE] Delete pending deleted modules (status, module table)...\n";

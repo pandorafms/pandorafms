@@ -1,3 +1,10 @@
+2010-09-03  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_operations.php
+	godmode/massive/massive_delete_profiles.php
+	godmode/massive/massive_add_profiles.php: Added the 
+	addition an deletion of profiles to users into 
+	massive operations
 
 2010-09-03  Sancho Lerena <slerena@artica.es>
 

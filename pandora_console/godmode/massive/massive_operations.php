@@ -32,12 +32,13 @@ enterprise_include ('godmode/massive/massive_operations.php');
 $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
-
 $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_alerts' => __('Massive alerts deletion'), 
 			'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
 			'enable_disable_alerts' => __('Massive alert enable/disable'));
 			
 $options_agents = array('delete_agents' => __('Massive agents deletion'));
+
+$options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
 
 $options_modules = array('delete_modules' => __('Massive modules deletion'), 'edit_modules' => __('Massive modules edition'), 
 				'copy_modules' => __('Massive modules copy'));
@@ -61,6 +62,8 @@ if(in_array($option, array_keys($options_alerts))) {
 	$tab = 'massive_alerts';
 }elseif(in_array($option, array_keys($options_agents))) {
 	$tab = 'massive_agents';
+}elseif(in_array($option, array_keys($options_users))) {
+	$tab = 'massive_users';
 }elseif(in_array($option, array_keys($options_modules))) {
 	$tab = 'massive_modules';
 }elseif(in_array($option, array_keys($options_policies))) {
@@ -79,6 +82,9 @@ switch($tab) {
 	case 'massive_modules':
 		$options = $options_modules;
 		break;
+	case 'massive_users':
+		$options = $options_users;
+		break;
 	case 'massive_policies':
 		$options = $options_policies;
 		break;
@@ -92,6 +98,11 @@ if($option == ''){
 $alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
 		. print_image ('images/bell.png', true, array ('title' => __('Alerts operations')))
 		. '</a>', 'active' => $tab == 'massive_alerts');
+		
+
+$userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
+		. print_image ('images/group.png', true, array ('title' => __('Users operations')))
+		. '</a>', 'active' => $tab == 'massive_users');
 		
 $agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
 		. print_image ('images/bricks.png', true, array ('title' => __('Agents operations')))
@@ -109,7 +120,8 @@ if ($policiestab == -1)
 		
 
 $onheader = array('massive_agents' => $agentstab, 'massive_modules' => $modulestab, 
-				'massive_alerts' => $alertstab, 'policies' => $policiestab);
+				'user_agents' => $userstab, 'massive_alerts' => $alertstab, 
+				'policies' => $policiestab);
 
 print_page_header (__('Massive operations'). ' &raquo; '. $options[$option], "images/sitemap_color.png", false, "", true, $onheader);
 
@@ -136,6 +148,12 @@ switch ($option) {
 		break;
 	case 'enable_disable_alerts':
 		require_once ('godmode/massive/massive_enable_disable_alerts.php');
+		break;
+	case 'add_profiles':
+		require_once ('godmode/massive/massive_add_profiles.php');
+		break;
+	case 'delete_profiles':
+		require_once ('godmode/massive/massive_delete_profiles.php');
 		break;
 	case 'delete_agents':
 		require_once ('godmode/massive/massive_delete_agents.php');

@@ -20,6 +20,48 @@
  */
 
 /**
+ * Get fired status from any alert of agent in group.
+ * 
+ * @param integer $idGroup The ID of group.
+ * @param mixed $type The list of types to search or type. By default "alert_fired".
+ * 
+ * @return mixed Return id if the group have any alert is fired or false is not.
+ */
+function get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
+	global $config;
+	
+	$return = false;
+	
+	$typeWhere = '';
+	
+	if (!is_array($type)) {
+		$typeWhere = ' AND event_type = "' . $type . '" ';
+	}
+	else {
+		$temp = array();
+		foreach ($type as $item) {
+			$temp[] = '"' . $item . '"';
+		}
+		
+		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
+	}
+	
+	$agents = get_group_agents($idGroup, false, "lower", false);
+	
+	$idAgents = array_keys($agents);
+	
+	$result = get_db_all_rows_sql('SELECT id_evento
+		FROM tevento
+		WHERE estado = 0 AND id_agente IN (' . implode(',', $idAgents) . ') ' . $typeWhere . $query . ' ORDER BY id_evento DESC LIMIT 1');
+	
+	if ($result === false) {
+		return false;
+	}
+	
+	return $result[0]['id_evento'];
+}
+
+/**
  * Insert in talert_commands a new command.
  *
  * @param string name command name to save in DB.

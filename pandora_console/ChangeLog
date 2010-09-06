@@ -1,3 +1,31 @@
+2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: upload lost lines. 
+
+2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+ 
+	* pandoradb_data.sql: added default value for "sound_alert",
+	"sound_critical" and "sound_warning" into table "tconfig".  
+	
+	* include/functions_config.php: in function "update_config" added to
+	update sounds.
+	
+	* include/functions_alerts.php: added function "get_event_status_group" for
+	scan the events.
+	
+	* operation/events/sound_events.php: added first version of event sound
+	window.
+	
+	* operation/events/events.php: added the request for ajax of sound event
+	window.
+	
+	* images/pause.button.png, images/ok.button.png,images/music_note.png,
+	images/play.button.png: added images for sound event window and button in
+	the head of events.
+	
+	* godmode/setup/setup.php: added source code for to config the sounds of
+	events.
+
 2010-09-03  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_operations.php

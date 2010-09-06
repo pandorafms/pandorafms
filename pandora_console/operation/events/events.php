@@ -32,6 +32,7 @@ if (is_ajax ()) {
 	$get_event_tooltip = (bool) get_parameter ('get_event_tooltip');
 	$validate_event = (bool) get_parameter ('validate_event');
 	$delete_event = (bool) get_parameter ('delete_event');
+	$get_events_fired = (bool) get_parameter('get_events_fired');
 	
 	if ($get_event_tooltip) {
 		$id = (int) get_parameter ('id');
@@ -85,6 +86,44 @@ if (is_ajax ()) {
 		else
 			echo 'error';
 		return;
+	}
+	
+	if ($get_events_fired) {
+		require("include/functions_alerts.php");
+		
+		$id = get_parameter('id_row');
+		$idGroup = get_parameter('id_group');
+		
+		$query = ' AND id_evento > ' . $id;
+		
+		$type = array();
+		$alert = get_parameter('alert_fired');
+		if ($alert == 'true') {
+			$resultAlert = get_event_status_group($idGroup, 'alert_fired', $query);
+		}
+		$critical = get_parameter('critical');
+		if ($critical == 'true') {
+			$resultCritical = get_event_status_group($idGroup, 'going_up_critical', $query);
+		}
+		$warning = get_parameter('warning');
+		if ($warning == 'true') {
+			$resultWarning = get_event_status_group($idGroup, 'going_up_warning', $query);
+		}
+		
+		if ($resultAlert) {
+			$return = array('fired' => $resultAlert, 'sound' => $config['sound_alert']);
+		}
+		else if ($resultCritical) {
+			$return = array('fired' => $resultCritical, 'sound' => $config['sound_critical']);
+		}
+		else if ($resultWarning) {
+			$return = array('fired' => $resultWarning, 'sound' => $config['sound_warning']);
+		}
+		else {
+			$return = array('fired' => 0);
+		}
+		
+		echo json_encode($return);
 	}
 	
 	return;
@@ -163,24 +202,27 @@ if (!give_acl ($config["id_user"], 0, "PM")) {
 
 if ($status == 1) {
 	$sql_post .= " AND estado = 1";
-} elseif ($status == 0) {
+}
+elseif ($status == 0) {
 	$sql_post .= " AND estado = 0";
 }
 
-if ($search != "")
+if ($search != "") {
 	$sql_post .= " AND evento LIKE '%".$search."%'";
+}
 
-if ($event_type != ""){
+if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal"){
+	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
-	elseif ($event_type == "not_normal"){
+	elseif ($event_type == "not_normal") {
 		$sql_post .= " AND event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%' ";
 	}
-	else
+	else {
 		$sql_post .= " AND event_type = '".$event_type."'";
+	}
 
 }
 if ($severity != -1)
@@ -210,21 +252,33 @@ $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
 // Header
 if ($config["pure"] == 0) {
 	$buttons = array(
-	'fullscreen' => array('active' => false,
-		'text' => '<a href="'.$url.'&amp;pure=1">' . 
-			print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
-	'rss' => array('active' => false,
-		'text' => '<a href="operation/events/events_rss.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-			print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
-	'marquee' => array('active' => false,
-		'text' => '<a href="operation/events/events_marquee.php">' . 
-			print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
-	'csv' => array('active' => false,
-		'text' => '<a href="operation/events/export_csv.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
-			print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>')
-	);
+		'fullscreen' => array('active' => false,
+			'text' => '<a href="'.$url.'&amp;pure=1">' . 
+				print_image("images/fullscreen.png", true, array ("title" => __('Full screen'))) .'</a>'),
+		'rss' => array('active' => false,
+			'text' => '<a href="operation/events/events_rss.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+				print_image("images/rss.png", true, array ("title" => __('RSS Events'))) .'</a>'),
+		'marquee' => array('active' => false,
+			'text' => '<a href="operation/events/events_marquee.php">' . 
+				print_image("images/heart.png", true, array ("title" => __('Marquee display'))) .'</a>'),
+		'csv' => array('active' => false,
+			'text' => '<a href="operation/events/export_csv.php?ev_group='.$ev_group.'&amp;event_type='.$event_type.'&amp;search='.rawurlencode ($search).'&amp;severity='.$severity.'&amp;status='.$status.'&amp;event_view_hr='.$event_view_hr.'&amp;id_agent='.$id_agent.'">' . 
+				print_image("images/disk.png", true, array ("title" => __('Export to CSV file'))) .'</a>'),
+		'sound_event' => array('active' => false,
+			'text' => '<a href="javascript: openSoundEventWindow();">' . print_image('images/music_note.png', true, array('title' => __('Sound events'))) . '</a>')
+		);
 	
-	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false,$buttons);
+	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
+	
+	?>
+	<script type="text/javascript">
+	function openSoundEventWindow() {
+		url = '<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
+		
+		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+	}
+	</script>
+	<?php
 }
 else {
 	// Fullscreen

@@ -108,6 +108,43 @@ $table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, 
 $table->data[19][0] = __('Timezone setup');
 $table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
 
+$sounds = get_sounds();
+$table->data[20][0] = __('Sound for Alert fired');
+$table->data[20][1] = print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
+$table->data[20][1] .= ' <a href="javascript: toggleButton(\'alert\');"><img id="button_sound_alert" style="vertical-align: middle;" src="images/play.button.png" width="20" /></a>';
+$table->data[20][1] .= '<div id="layer_sound_alert"></div>';
+
+$table->data[21][0] = __('Sound for Monitor critical');
+$table->data[21][1] = print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
+$table->data[21][1] .= ' <a href="javascript: toggleButton(\'critical\');"><img id="button_sound_critical" style="vertical-align: middle;" src="images/play.button.png" width="20" /></a>';
+$table->data[21][1] .= '<div id="layer_sound_critical"></div>';
+
+$table->data[22][0] = __('Sound for Monitor warning');
+$table->data[22][1] = print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
+$table->data[22][1] .= ' <a href="javascript: toggleButton(\'warning\');"><img id="button_sound_warning" style="vertical-align: middle;" src="images/play.button.png" width="20" /></a>';
+$table->data[22][1] .= '<div id="layer_sound_warning"></div>';
+?>
+<script type="text/javascript">
+function toggleButton(type) {
+	if ($("#button_sound_" + type).attr('src') == 'images/pause.button.png') {
+		$("#button_sound_" + type).attr('src', 'images/play.button.png');
+		$('#layer_sound_' + type).html("");
+	}
+	else {
+		$("#button_sound_" + type).attr('src', 'images/pause.button.png');
+		$('#layer_sound_' + type).html("<embed src='" + $("#sound_" + type).val() + "' autostart='true' hidden='true' loop='true'>");
+	}
+}
+
+function replaySound(type) {
+	if ($("#button_sound_" + type).attr('src') == 'images/pause.button.png') {
+		$('#layer_sound_' + type).html("");
+		$('#layer_sound_' + type).html("<embed src='" + $("#sound_" + type).val() + "' autostart='true' hidden='true' loop='true'>");
+	}
+}
+</script>
+<?php
+
 enterprise_hook ('setup');
 
 echo '<form id="form_setup" method="post">';
@@ -117,4 +154,20 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
+
+function get_sounds() {
+	global $config;
+	
+	$return = array();
+	
+	$files = scandir($config['homedir'] . '/include/sounds');
+	
+	foreach ($files as $file) {
+		if (strstr($file, 'wav') !== false) {
+			$return['include/sounds/' . $file] = $file;
+		}
+	}
+	
+	return $return;
+}
 ?>

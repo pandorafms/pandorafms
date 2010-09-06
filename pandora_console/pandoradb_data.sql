@@ -71,7 +71,10 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('audit_purge', 15),
 ('trap_purge', 7),
 ('event_purge', 15),
-('gis_purge', 15);
+('gis_purge', 15),
+('sound_alert', 'include/sounds/air_shock_alarm.wav'),
+('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav'),
+('sound_warning', 'include/sounds/negativebeep.wav'));
 
 
 UNLOCK TABLES;

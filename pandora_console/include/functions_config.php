@@ -215,6 +215,10 @@ function update_config () {
 	update_config_value ('rintegria_dbname', get_parameter ('rintegria_dbname', $config['rintegria_dbname']));
 	update_config_value ('rintegria_user', get_parameter ('rintegria_user', $config['rintegria_user']));
 	update_config_value ('rintegria_pass', get_parameter ('rintegria_pass', $config['rintegria_pass']));
+	
+	update_config_value ('sound_alert', get_parameter('sound_alert', $config['sound_alert']));
+	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
+	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 }
 
 /**

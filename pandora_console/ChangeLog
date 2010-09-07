@@ -1,5 +1,11 @@
 2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/plugin_registration.php: fixed the translation string previous
+	to form.
+	Fixes: #3053312
+
+2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/events/sound_events.php: fixed the location of image in the
 	header.
 

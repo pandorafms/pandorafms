@@ -24,7 +24,7 @@ function pluginreg_extension_main () {
 	print_page_header (__('Plugin registration'), "images/extensions.png", false, "", true, "" );
 
 	echo "<div class=notify>";
-	echo __("This extension makes registration of server plugins more easy. Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.<br><br>You can get more plugins in our <a href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>Public Resource Library</A>");
+	printf(__("This extension makes registration of server plugins more easy. Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource Library</a>") , "http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en");
 	echo "</div>";
 	
 	echo "<br><br>";
@@ -33,9 +33,10 @@ function pluginreg_extension_main () {
 		// Upload form
 		echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
 		echo '<table class="databox" id="table1" width="50%" border="0" cellpadding="4" cellspacing="4">';
-		echo "<tr><td class='datos'><input type='file' name='plugin_upload'>";
-		echo "<td class='datos'><input type=submit class='sub next' value='".__('Upload')."'>";
+		echo "<tr><td class='datos'><input type='file' name='plugin_upload' />";
+		echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
 		echo "</form></table>";
+		
 		return;
 	} 	
 	

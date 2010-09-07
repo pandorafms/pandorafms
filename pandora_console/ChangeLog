@@ -1,3 +1,9 @@
+2010-09-07 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/configure_alert_compound.php: fixed the url in the ajax
+	request.
+	Fixes: #3056088
+
 2010-09-01  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/menu.php

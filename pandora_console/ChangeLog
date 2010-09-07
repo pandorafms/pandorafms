@@ -1,5 +1,10 @@
 2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/events/sound_events.php: fixed the location of image in the
+	header.
+
+2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* ChangeLog: upload lost lines. 
 
 2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>

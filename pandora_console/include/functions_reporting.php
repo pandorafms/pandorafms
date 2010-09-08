@@ -64,7 +64,7 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -73,7 +73,7 @@ function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -128,7 +128,7 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -137,7 +137,7 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -193,7 +193,7 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -202,7 +202,7 @@ function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -269,7 +269,7 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -278,7 +278,7 @@ function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -339,7 +339,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -348,7 +348,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -1754,10 +1754,17 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-			$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]));
+			$monitor_value = get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]);
+			if ($monitor_value === false) {
+				$monitor_value = __('Unknown');
+			} else {
+				$monitor_value = format_numeric ($monitor_value);
+			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
 			$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
-			$monitor_value = format_numeric (100 - $monitor_value, 2) ;
+			if ($monitor_value !== __('Unknown')) {
+				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
+			}
 			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
 			$data[1] .= $monitor_value.' % <img src="images/b_red.png" height="32" width="32" /></p>';
 			array_push ($table->data, $data);
@@ -1782,7 +1789,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
-			$value = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]));
+			$value = get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			if ($value === false) {
+				$value = __('Unknown');
+			} else {
+				$value = format_numeric ($value);
+			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
@@ -1830,7 +1842,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$data = array ();
 			$table->colspan[1][0] = 2;
-			$value = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]));
+			$value = get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			if ($value === false) {
+				$value = __('Unknown');
+			} else {
+				$value = format_numeric ($value);
+			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
@@ -1854,7 +1871,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$data = array ();
 			$table->colspan[1][0] = 2;
-			$value = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]));
+			$value = get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $report["datetime"]);
+			if ($value === false) {
+				$value = __('Unknown');
+			} else {
+				$value = format_numeric ($value);
+			}
+
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 			array_push ($table->data, $data);
 			
@@ -2112,7 +2135,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$ttr = get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($ttr != 0) $ttr = human_time_description_raw ($ttr);
+			if ($ttr === false) {
+				$ttr = __('Unknown');
+			} else if ($ttr != 0) {
+				$ttr = human_time_description_raw ($ttr);
+			}
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
@@ -2136,7 +2163,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$tto = get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($tto != 0) $tto = human_time_description_raw ($tto);
+			if ($tto === false) {
+				$tto = __('Unknown');
+			} else if ($tto != 0) {
+				$tto = human_time_description_raw ($tto);
+			}
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
@@ -2160,7 +2191,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$mtbf = get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mtbf != 0) $mtbf = human_time_description_raw ($mtbf);
+			if ($mtbf === false) {
+				$mtbf = __('Unknown');
+			} else if ($mtbf != 0) {
+				$mtbf = human_time_description_raw ($mtbf);
+			}
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
@@ -2184,7 +2219,11 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data = array ();
 			$table->colspan[2][0] = 3;
 			$mttr = get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mttr != 0) $mttr = human_time_description_raw ($mttr);
+			if ($mttr === false) {
+				$mttr = __('Unknown');
+			} else if ($mttr != 0) {
+				$mttr = human_time_description_raw ($mttr);
+			}
 			
 			$data = array ();
 			$table->colspan[2][0] = 3;
@@ -2216,7 +2255,7 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	                           FROM tagente_modulo
 	                           WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
-		return -1;
+		return false;
 	}
 
 	$critical_min = $module['min_critical'];
@@ -2250,7 +2289,7 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2259,7 +2298,7 @@ function get_agentmodule_mtbf ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -2324,7 +2363,7 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	                           FROM tagente_modulo
 	                           WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
-		return -1;
+		return false;
 	}
 
 	$critical_min = $module['min_critical'];
@@ -2358,7 +2397,7 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2367,7 +2406,7 @@ function get_agentmodule_mttr ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -2431,7 +2470,7 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	                           FROM tagente_modulo
 	                           WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
-		return -1;
+		return false;
 	}
 
 	$critical_min = $module['min_critical'];
@@ -2465,7 +2504,7 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2474,7 +2513,7 @@ function get_agentmodule_tto ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions
@@ -2529,7 +2568,7 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	                           FROM tagente_modulo
 	                           WHERE id_agente_modulo = ' . (int) $id_agent_module);
 	if ($module === false) {
-		return -1;
+		return false;
 	}
 
 	$critical_min = $module['min_critical'];
@@ -2563,7 +2602,7 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
-	} else {
+	} else if (count ($interval_data) > 0) {
 		// Propagate the last known data to the end of the interval
 		$next_data = array_pop ($interval_data);
 		array_push ($interval_data, $next_data);
@@ -2572,7 +2611,7 @@ function get_agentmodule_ttr ($id_agent_module, $period, $date = 0) {
 	}
 
 	if (count ($interval_data) < 2) {
-		return -1;
+		return false;
 	}
 
 	// Set initial conditions

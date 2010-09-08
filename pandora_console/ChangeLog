@@ -1,3 +1,9 @@
+2010-09-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/reporting/reporting_xml.php: Merged from trunk. Improved
+	  error detection in reports.
+
 2010-09-07 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/configure_alert_compound.php: fixed the url in the ajax

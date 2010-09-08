@@ -1,5 +1,10 @@
 2010-09-08  Sancho Lerena <slerena@artica.es>
 
+	* util/compaq_chassis_trap_manager.pl,
+	util/esx_trap_manager.pl: First official external trap handlers.
+
+2010-09-08  Sancho Lerena <slerena@artica.es>
+
 	* lib/PandoraFMS/SNMPServer.pm
 	lib/PandoraFMS/Core.pm: SNMP Trap console doesnt send trap value to
 	alert function. Now does :-)

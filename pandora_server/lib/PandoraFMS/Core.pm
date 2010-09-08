@@ -1231,15 +1231,15 @@ sub pandora_module_keep_alive_nd {
 }
 
 ##########################################################################
-=head2 C<< pandora_evaluate_snmp_alerts (I<$pa_config>, I<$trap_id>, I<$trap_agent>, I<$trap_oid>, I<$trap_oid_text>, I<$trap_custom_oid>, I<$trap_custom_value>, I<$dbh>) >> 
+=head2 C<< pandora_evaluate_snmp_alerts (I<$pa_config>, I<$trap_id>, I<$trap_agent>, I<$trap_oid>, I<$trap_oid_text>, I<$value>, I<$trap_custom_oid>, I<$trap_custom_value>, I<$dbh>) >> 
 
 Execute alerts that apply to the given SNMP trap.
 
 =cut
 ##########################################################################
-sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
+sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	my ($pa_config, $trap_id, $trap_agent, $trap_oid,
-		$trap_oid_text, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
+		$trap_oid_text, $trap_value, $trap_custom_oid, $trap_custom_value, $dbh) = @_;
 
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp');
@@ -1317,7 +1317,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$) {
 							WHERE talert_actions.id_alert_command = talert_commands.id
 							AND talert_actions.id = ?', $alert->{'id_alert'});
 
-			my $trap_rcv_full = $trap_oid . " " . $trap_custom_oid . " " . $trap_custom_value;
+			my $trap_rcv_full = $trap_oid . " " . $trap_value. " ". $trap_custom_oid . " " . $trap_custom_value;
 			pandora_execute_action ($pa_config, $trap_rcv_full, \%agent, \%alert, 1, $action, undef, $dbh, $timestamp) if (defined ($action));
 
 			# Generate an event

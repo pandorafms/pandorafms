@@ -1,3 +1,9 @@
+2010-09-08  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm
+	lib/PandoraFMS/Core.pm: SNMP Trap console doesnt send trap value to
+	alert function. Now does :-)
+
 2010-09-03  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added to CLI the option of

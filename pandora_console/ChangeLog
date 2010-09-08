@@ -1,3 +1,7 @@
+2010-09-07  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Fixed typo in data SQL.
+
 2010-09-06  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/plugin_registration.php: fixed the translation string previous

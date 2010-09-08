@@ -1,3 +1,9 @@
+2010-09-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php,
+	  operation/reporting/reporting_xml.php: Improved error detection in
+	  reports.
+
 2010-09-07  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Fixed typo in data SQL.

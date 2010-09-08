@@ -224,7 +224,12 @@ switch ($sortField) {
 		break;
 }
 
-pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+if ($id_agente) {
+	pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
+}
+else {
+	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+}
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), false,
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size'], 'order' => $order), $where, false);

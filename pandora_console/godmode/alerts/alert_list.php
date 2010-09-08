@@ -151,7 +151,6 @@ if ($disable_alert) {
 	$messageAction = print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
 }
 
-// Header
 if ($id_agente) {
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 	

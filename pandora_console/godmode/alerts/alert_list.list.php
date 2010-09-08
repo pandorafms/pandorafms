@@ -128,7 +128,12 @@ $total = get_agent_alerts_simple (array_keys ($agents), array('priority' => $pri
 
 if(empty($total)) $total = 0;
 
-pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+if ($id_agente) {
+	pagination ($total, 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=' . $id_agente);
+}
+else {
+	pagination ($total, 'index.php?sec=gagente&sec2=godmode/alerts/alert_list');
+}
 $simple_alerts = get_agent_alerts_simple (array_keys ($agents), array('priority' => $priority),
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size']), $where);

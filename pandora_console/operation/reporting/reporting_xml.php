@@ -231,29 +231,57 @@ foreach ($contents as $content) {
 		case 6:
 		case 'monitor_report':
 			$data["title"] = __('Monitor report');
-			$monitor_value = format_numeric (get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime));
+			$monitor_value = get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime);
+			if ($monitor_value === false) {
+				$monitor_value = __('Unknown');
+			} else {
+				$monitor_value = format_numeric ($monitor_value);
+			}
 			$data["objdata"]["good"] = $monitor_value;
-			$data["objdata"]["bad"] = format_numeric (100 - $monitor_value, 2);
+			if ($monitor_value !== __('Unknown')) {
+				$monitor_value = format_numeric (100 - $monitor_value);
+			}
+			$data["objdata"]["bad"] = $monitor_value;
 			break;
 		case 7:
 		case 'avg_value':
 			$data["title"] = __('Avg. Value');
-			$data["objdata"] = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime));
+			$data["objdata"] = get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"] === false) {
+				$data["objdata"] = __('Unknown');
+			} else {
+				$data["objdata"] = format_numeric ($data["objdata"]);
+			}
 			break;
 		case 8:
 		case 'max_value':
 			$data["title"] = __('Max. Value');
-			$data["objdata"] = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime));
+			$data["objdata"] = get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"] === false) {
+				$data["objdata"] = __('Unknown');
+			} else {
+				$data["objdata"] = format_numeric ($data["objdata"]);
+			}
 			break;
 		case 9:
 		case 'min_value':
 			$data["title"] = __('Min. Value');
-			$data["objdata"] = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime));
+			$data["objdata"] = get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"] === false) {
+				$data["objdata"] = __('Unknown');
+			} else {
+				$data["objdata"] = format_numeric ($data["objdata"]);
+			}
 			break;
 		case 10:
 		case 'sumatory':
 			$data["title"] = __('Sumatory');
-			$data["objdata"] = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime));
+			$data["objdata"] = get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime);
+			if ($data["objdata"] === false) {
+				$data["objdata"] = __('Unknown');
+			} else {
+				$data["objdata"] = format_numeric ($data["objdata"]);
+			}
 			break;
 //		case 11:
 //		case 'general_group_report':
@@ -506,31 +534,47 @@ foreach ($contents as $content) {
 			break;
 		case 'TTRT':
 			$ttr = get_agentmodule_ttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($ttr != 0) $ttr = human_time_description_raw ($ttr);
-			
+			if ($ttr === false) {
+				$ttr = __('Unknown');
+			} else if ($ttr != 0) {
+				$ttr = human_time_description_raw ($ttr);
+			}
+
 			$data["title"] = __('TTRT');
-			$data["objdata"] = format_numeric($ttr);
+			$data["objdata"] = $ttr;
 			break;
 		case 'TTO':
 			$tto = get_agentmodule_tto ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($tto != 0) $tto = human_time_description_raw ($tto);
+			if ($tto === false) {
+				$tto = __('Unknown');
+			} else if ($tto != 0) {
+				$tto = human_time_description_raw ($tto);
+			}
 				
 			$data["title"] =  __('TTO');
-			$data["objdata"] = format_numeric($tto);
+			$data["objdata"] = $tto;
 			break;
 		case 'MTBF':
 			$mtbf = get_agentmodule_mtbf ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mtbf != 0) $mtbf = human_time_description_raw ($mtbf);
+			if ($mtbf === false) {
+				$mtbf = __('Unknown');
+			} else if ($mtbf != 0) {
+				$mtbf = human_time_description_raw ($mtbf);
+			}
 				
 			$data["title"] = __('MTBF');
-			$data["objdata"] = format_numeric($mtbf);
+			$data["objdata"] = $mtbf;
 			break;
 		case 'MTTR':
 			$mttr = get_agentmodule_mttr ($content['id_agent_module'], $content['period'], $report["datetime"]);
-			if ($mttr != 0) $mttr = human_time_description_raw ($mttr);
+			if ($mttr === false) {
+				$mttr = __('Unknown');
+			} else if ($mttr != 0) {
+				$mttr = human_time_description_raw ($mttr);
+			}
 				
 			$data["title"] = __('MTTR');
-			$data["objdata"] = format_numeric($mttr);
+			$data["objdata"] = $mttr;
 			break;
 	}
 	xml_array ($data);

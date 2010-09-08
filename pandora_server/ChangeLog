@@ -1,3 +1,10 @@
+2010-09-08  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/SNMPServer.pm
+	lib/PandoraFMS/Core.pm: SNMP Trap console doesnt send trap value to
+	alert function. Now does :-). Ported from Trunk version.
+
+
 2010-08-18  Sancho Lerena <slerena@artica.es>
 
         * lib/PandoraFMS/Core.pm: Alerts now uses _timestamp_ macro with the

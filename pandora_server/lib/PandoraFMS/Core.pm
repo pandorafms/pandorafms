@@ -228,8 +228,13 @@ sub pandora_evaluate_alert ($$$$$$$) {
 
 	# Check time slot
 	my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
-	return 1 if (($alert->{'time_to'} ne $alert->{'time_from'}) &&
-		(($time ge $alert->{'time_to'}) || ($time le $alert->{'time_from'})));
+	if (($alert->{'time_from'} ne $alert->{'time_to'})) {
+		if ($alert->{'time_from'} lt $alert->{'time_to'}) {
+			return 1 if (($time le $alert->{'time_from'}) || ($time ge $alert->{'time_to'}));
+		} else {
+			return 1 if (($time le $alert->{'time_from'}) && ($time ge $alert->{'time_to'}));
+		}
+	}
 
 	# Check time threshold
 	my $limit_utimestamp = $alert->{'last_reference'} + $alert->{'time_threshold'};

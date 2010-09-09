@@ -207,6 +207,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	$sub["godmode/setup/links"]["text"] = __('Links');
 	$sub["godmode/setup/news"]["text"] = __('Site news');
+	$sub["godmode/setup/os"]["text"] = __('Edit OS');
 	enterprise_hook ('historydb_submenu');
 	enterprise_hook ('enterprise_acl_submenu');
 

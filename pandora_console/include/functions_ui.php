@@ -276,7 +276,7 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 		return "-";
 	}
 	
-	$output = '<img src="images/'.$icon.'" alt="'.$os_name.'" title="'.$os_name.'" />';
+	$output = '<img src="images/os_icons/'.$icon.'" alt="'.$os_name.'" title="'.$os_name.'" />';
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;

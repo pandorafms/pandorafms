@@ -1,3 +1,20 @@
+2010-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_networkmap.php: cleaned source code.
+	
+	* include/functions_ui.php: in function "print_os_icon" change the
+	directory to search os icon because it change for new feature.
+	
+	* images/os_icons, images/os_icons/*: copied the icons image files into this
+	dir for to use in new feature.
+	
+	* godmode/menu.php: added new item in submenu "Setup" for the management
+	the OS.
+	
+	* godmode/setup/os.php: added the page to management the list OS of agents.
+	
+	Pending task: #3057663
+
 2010-09-09  Sancho Lerena   <slerena@artica.es>
 
 	* fgraph.php: Graph "Modules per agent" was not working properly

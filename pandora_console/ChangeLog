@@ -1,5 +1,11 @@
 2010-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/setup/os.list.php, godmode/setup/os.builder.php,
+	godmode/setup/os.php: changed the source code and added "os.builder.php" and
+	"os.list.php" for to change the management page for to be a "tab page".
+
+2010-09-09  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_networkmap.php: cleaned source code.
 	
 	* include/functions_ui.php: in function "print_os_icon" change the

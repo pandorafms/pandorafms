@@ -1,3 +1,8 @@
+2010-09-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed alert behaviour when time_from is
+	  greater than time_to. Fixes bug #3048043.
+
 2010-09-08  Sancho Lerena <slerena@artica.es>
 
 	* util/compaq_chassis_trap_manager.pl,

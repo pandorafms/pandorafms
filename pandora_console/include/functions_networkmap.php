@@ -319,7 +319,7 @@ function create_group_node ($group, $simple = 0, $font_size = 10) {
 	if ($simple == 0){
 		// Set node icon
 		if (file_exists ('images/groups_small/'.$icon.'.png')) { 
-			$img_node = '<IMG SRC="images/groups_small/'.$icon.'.png"/>';
+			$img_node = '<img src="images/groups_small/'.$icon.'.png"/>';
 		} else {
 			$img_node = '-';
 		}

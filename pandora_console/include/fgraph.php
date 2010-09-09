@@ -824,13 +824,13 @@ function graph_db_agentes_modulos ($width, $height) {
 	
 	$modules = get_db_all_rows_sql ('SELECT COUNT(id_agente_modulo),id_agente
 					FROM tagente_modulo GROUP BY id_agente
-					ORDER BY 1 DESC LIMIT 8');
+					ORDER BY 1 DESC LIMIT 10');
 	if ($modules === false)
 		$modules = array ();
 	
 	foreach ($modules as $module) {
 		$agent_name = get_agent_name ($module['id_agente'], "none");
-		$data[$agent_name] = $module[0];
+		$data[$agent_name] = $module['COUNT(id_agente_modulo)'];
 	}
 
 	if (! $graphic_type) {

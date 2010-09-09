@@ -1,3 +1,8 @@
+2010-09-09  Sancho Lerena   <slerena@artica.es>
+
+	* fgraph.php: Graph "Modules per agent" was not working properly
+	due a invalid reference to array. Fixed.
+
 2010-09-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_list.list.php: fixed the pagination when the list of

@@ -26,6 +26,7 @@ if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_use
 
 $action = get_parameter('action', 'new');
 $idOS = get_parameter('id_os', 0);
+$tab = get_parameter('tab', 'builder');
 
 if ($idOS) {
 	$os = get_db_row_filter('tconfig_os', array('id_os' => $idOS));
@@ -39,8 +40,7 @@ else {
 	$icon = get_parameter('icon',0);
 }
 
-// Header
-print_page_header(__('Edit OS'), "", false, "", true);
+$message = '';
 
 switch ($action) {
 	default:
@@ -65,17 +65,15 @@ switch ($action) {
 		$resultOrId = process_sql_insert('tconfig_os', $values);
 		
 		if ($resultOrId === false) {
-			print_error_message(__('Fail to create OS'));
+			$message = print_error_message(__('Fail to create OS'), '', true);
+			$tab = 'builder';
 			$actionHidden = 'save';
 			$textButton = __('Create');
 			$classButton = 'class="sub next"';
 		}
 		else {
-			$idOs = $resultOrId;
-			print_success_message(__('Success to create OS'));
-			$actionHidden = 'update';
-			$textButton = __('Update');
-			$classButton = 'class="sub upd"';
+			$message = print_success_message(__('Success to create OS'), '', true);
+			$tab = 'list';
 		}
 		break;
 	case 'update':
@@ -92,7 +90,10 @@ switch ($action) {
 		}
 		$result = process_sql_update('tconfig_os', $values, array('id_os' => $idOS));
 		
-		print_result_message($result, __('Success to update OS'), __('Error to update OS'));
+		$message = print_result_message($result, __('Success to update OS'), __('Error to update OS'), '', true);
+		if ($result !== false) {
+			$tab = 'list';
+		}
 		
 		$actionHidden = 'update';
 		$textButton = __('Update');
@@ -104,125 +105,42 @@ switch ($action) {
 		$count = $count[0]['count'];
 		
 		if ($count > 0) {
-			print_error_message(__('There are agents with this OS.'));
+			$message = print_error_message(__('There are agents with this OS.'), '', true);
 		}
 		else {
 			$result = (bool)process_sql_delete('tconfig_os', array('id_os' => $idOS));
 			
-			print_result_message($result, __('Success to delete'), __('Error to delete'));
+			$message = print_result_message($result, __('Success to delete'), __('Error to delete'), '', true);
 		}
-		
-		$idOS = 0;
-		$name = get_parameter('name', '');
-		$description = get_parameter('description', '');
-		$icon = get_parameter('icon',0);
-		
-		$actionHidden = 'save';
-		$textButton = __('Create');
-		$classButton = 'class="sub next"';
 		break;
 }
 
-$table = null;
+$buttons = array(
+	'list' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=list">' . 
+			print_image ("images/god6.png", true, array ("title" => __('List OS'))) .'</a>'),
+	'builder' => array(
+		'active' => false,
+		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&tab=builder">' . 
+			print_image ("images/config.png", true, array ("title" => __('Builder OS'))) .'</a>'));
 
-$table->width = '80%';
-$table->head[0] = '';
-$table->head[1] = __('Name');
-$table->head[2] = __('Description');
-$table->head[3] = '';
-$table->align[0] = 'center';
-$table->align[3] = 'center';
-$table->size[0] = '20px';
-$table->size[3] = '20px';
+			
+$buttons[$tab]['active'] = true;
 
-$osList = get_db_all_rows_in_table('tconfig_os');
+// Header
+print_page_header(__('Edit OS'), "", false, "", true, $buttons);
 
-$table->data = array();
-foreach ($osList as $os) {
-	$data = array();
-	$data[] = print_os_icon($os['id_os'], false, true);
-	$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&id_os=' . $os['id_os'] . '">' . safe_output($os['name']) . '</a>';
-	$data[] = printTruncateText(safe_output($os['description']), 25, true, true);
-	if ($os['id_os'] > 13) {
-		$data[] = '<a href="index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&id_os=' . $os['id_os'] . '"><img src="images/cross.png" /></a>';
-	}
-	else {
-		//The original icons of pandora don't delete.
-		$data[] = '';
-	}
-	
-	$table->data[] = $data;
-}
+echo $message;
 
-$htmlListOS = print_table($table, true);
-
-toggle($htmlListOS,__('List of OS'), __('Toggle'));
-
-echo '<form id="form_setup" method="post">';
-unset($table->head);
-unset($table->align);
-unset($table->size);
-unset($table->data);
-
-$table->width = '50%';
-
-$table->style[0] = 'font-weight: bolder; vertical-align: top;';
-
-$table->data[0][0] = __('Name:');
-$table->data[0][1] = print_input_text('name', $name, __('Name'), 20, 30, true);
-$table->data[1][0] = __('Description');
-$table->data[1][1] = print_textarea('description', 5, 10, $description, '', true);
-$icons = get_list_os_icons_dir();
-$table->data[2][0] = __('Icon');
-$table->data[2][1] = print_select($icons, 'icon',  $icon, 'show_icon_OS();', __('None'), 0, true);
-$table->data[2][1] .= ' <span id="icon_image">' . print_os_icon($idOS, false, true) . '</span>';
-
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_button(__('New OS'), 'new_button', false, 'new_os();', 'class="sub add"');
-echo '</div>';
-echo '<form action="post">';
-print_table($table);
-
-print_input_hidden('id_os', $idOS);
-print_input_hidden ('action', $actionHidden);
-
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button ($textButton, 'update_button', false, $classButton);
-echo '</div>';
-echo '</form>';
-
-function get_list_os_icons_dir() {
-	global $config;
-	
-	$return = array();
-	
-	$items = scandir($config['homedir'] . '/images/os_icons');
-	
-	foreach ($items as $item) {
-		if (strstr($item, '_small.png') || strstr($item, '_small.gif')
-			|| strstr($item, '_small.jpg')) {
-			continue;
-		}
-		if (strstr($item, '.png') || strstr($item, '.gif')
-			|| strstr($item, '.jpg')) {
-			$return[$item] = $item;
-		}
-	}
-	
-	return $return;
+switch ($tab) {
+	case 'list':
+		require_once('godmode/setup/os.list.php');
+		return;
+		break;
+	case 'builder':
+		require_once('godmode/setup/os.builder.php');
+		return;
+		break;
 }
 ?>
-<script type="text/javascript">
-function new_os() {
-	location.href='<?php
-		if ($config['https']) echo "https://";
-		else echo "http://";
-		echo $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/index.php?sec=gsetup&sec2=godmode/setup/os&action=new';
-		?>';
-}
-
-function show_icon_OS() {
-	$("#icon_image").html('<img src="images/os_icons/' + $("#icon").val() + '" />');
-}
-</script>

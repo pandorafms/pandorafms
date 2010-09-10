@@ -1571,7 +1571,7 @@ sub get_module_status ($$$) {
 # Validate event.
 # This validates all events pending to ACK for the same id_agent_module
 ##########################################################################
-sub pandora_validate_event (%$$) {
+sub pandora_validate_event ($$$) {
 	my ($pa_config, $id_agentmodule, $dbh) = @_;
 	if (!defined($id_agentmodule)){
 		return;

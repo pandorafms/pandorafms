@@ -1,3 +1,9 @@
+2010-09-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/NetworkServer.pm,
+	  lib/PandoraFMS/Core.pm: Fixed some prototypes that led to warnings
+	  in recent versions of PERL. This fixes bug #3061906.
+
 2010-09-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed alert behaviour when time_from is

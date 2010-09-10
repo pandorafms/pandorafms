@@ -140,7 +140,7 @@ sub data_consumer ($$) {
 #						 tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
-sub pandora_query_tcp (%$$$$$$$) {
+sub pandora_query_tcp ($$$$$$$$) {
 	my $pa_config = $_[0];
 	my $tcp_port = $_[1];
 	my $ip_target = $_[2];
@@ -247,7 +247,7 @@ next_pair:
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
 
-sub pandora_query_snmp (%$) {
+sub pandora_query_snmp ($$) {
 	my $pa_config = $_[0];
 	my $module = $_[1];
 

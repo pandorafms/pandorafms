@@ -1,5 +1,10 @@
 2010-09-13  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_modules.php: Added the local module
+	deletion in conf file
+
+2010-09-13  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/reporting/custom_reporting.php: Center an
 	icon into the reports table
 

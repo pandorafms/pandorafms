@@ -118,6 +118,8 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
 function delete_agent_module ($id_agent_module) {
 	$where = array ('id_agent_module' => $id_agent_module);
 	
+	deleteLocalModuleInConf(get_agentmodule_agent($id_agent_module), get_agentmodule_name($id_agent_module));
+	
 	process_sql_delete ('talert_template_modules', $where);
 	process_sql_delete ('tgraph_source', $where);
 	process_sql_delete ('treport_content', $where);

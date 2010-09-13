@@ -287,6 +287,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 	`last_reference` bigint(20) NOT NULL default '0',
 	`times_fired` int(3) NOT NULL default '0',
 	`disabled` tinyint(1) default '0',
+	`standby` tinyint(1) default '0',
 	`priority` tinyint(4) default '0',
 	`force_execution` tinyint(1) default '0',
 	PRIMARY KEY (`id`),
@@ -298,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 	UNIQUE (`id_agent_module`, `id_alert_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
+CREATE TABLE IF NOT talert_template_module_actions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_alert_template_module` int(10) unsigned NOT NULL,
   `id_alert_action` int(10) unsigned NOT NULL,

@@ -1,3 +1,8 @@
+2010-09-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added a
+	  new column to talert_template_modules to support standby alerts.
+
 2010-09-13  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/ver_agente.php: added the tab to show all graphs in a

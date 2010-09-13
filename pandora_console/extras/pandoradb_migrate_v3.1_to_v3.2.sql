@@ -74,7 +74,7 @@ ALTER TABLE `tagente_modulo` ADD COLUMN `policy_linked` TINYINT(1) UNSIGNED NOT 
 -- Table `talert_template_modules`
 -- -----------------------------------------------------
 ALTER TABLE `talert_template_modules` ADD COLUMN `id_policy_alerts` int(10) unsigned NOT NULL default '0';
-
+ALTER TABLE `talert_template_modules` ADD COLUMN `standby` tinyint(1) default '0';
 
 -- -----------------------------------------------------
 -- Table `tsnmp_filter`

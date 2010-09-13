@@ -502,6 +502,7 @@ if ($id_agente) {
 
 $update_module = (bool) get_parameter ('update_module');
 $create_module = (bool) get_parameter ('create_module');
+$delete_module = (bool) get_parameter ('delete_module');
 $edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
@@ -711,7 +712,7 @@ if ($create_module) {
 
 // MODULE DELETION
 // =================
-if (isset ($_GET["delete_module"])){ // DELETE agent module !
+if ($delete_module){ // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
 	$module_data = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
 	$id_grupo = (int) dame_id_grupo ($id_agente);
@@ -729,6 +730,9 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 		require ("general/noaccess.php");
 		exit;
 	}
+	
+	enterprise_include_once('include/functions_config_agents.php');
+	enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_borrar_modulo), get_agentmodule_name($id_borrar_modulo)));
 	
 	//Init transaction
 	$error = 0;

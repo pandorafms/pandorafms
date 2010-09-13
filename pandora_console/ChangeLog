@@ -1,5 +1,11 @@
 2010-09-13  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/agentes/configurar_agente.php: Added local module
+	deletion in conf file to another place where the modules can
+	be deleted. Clean the code too
+
+2010-09-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_modules.php: Added the local module
 	deletion in conf file
 

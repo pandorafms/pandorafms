@@ -45,6 +45,7 @@ enterprise_hook ('load_custom_reporting_1');
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
+$table->align[4] = 'center';
 $table->data = array ();
 
 foreach ($reports as $report) {

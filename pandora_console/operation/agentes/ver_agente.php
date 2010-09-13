@@ -393,10 +393,19 @@ if ($tab == 'custom_fields') {
 	$custom_fields['active'] = false;
 }
 
+$graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'
+		. print_image("images/chart_curve.png", true, array("title" => __('Graphs')))
+		. '</a>';
+if ($tab == 'graphs') {
+	$graphs['active'] = true;
+} else {
+	$graphs['active'] = false;
+}
+
 $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 
 				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
-				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields);
+				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs);
 
 print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
@@ -434,6 +443,9 @@ switch ($tab) {
 		break;
 	case "collection":
 		enterprise_include ('operation/agentes/collection_view.php');
+		break;
+	case "graphs";
+		require("operation/agentes/graphs.php");
 		break;
 }
 

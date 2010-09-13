@@ -1,3 +1,8 @@
+2010-09-13  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/reporting/custom_reporting.php: Center an
+	icon into the reports table
+
 2010-09-09  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/setup/os.list.php, godmode/setup/os.builder.php,

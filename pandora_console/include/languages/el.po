@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pandora-el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-23 11:59+0200\n"
-"PO-Revision-Date: 2010-01-26 11:50+0000\n"
-"Last-Translator: George Kontis <giormatsis@gmail.com>\n"
+"POT-Creation-Date: 2010-08-30 15:37+0200\n"
+"PO-Revision-Date: 2010-09-02 15:41+0000\n"
+"Last-Translator: Noir <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-05-17 14:41+0000\n"
+"X-Launchpad-Export-Date: 2010-09-13 07:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../index.php:238
@@ -23,13 +23,13 @@ msgstr ""
 
 #: ../../index.php:239
 msgid ""
-"Please check that the web server has write rights on the {HOMEDIR}/"
-"attachment directory"
+"Please check that the web server has write rights on the "
+"{HOMEDIR}/attachment directory"
 msgstr ""
 
 #: ../../index.php:264
 msgid "Sorry! I can't find the page!"
-msgstr ""
+msgstr "Συγνώμη! Δε μπορώ να βρώ την σελίδα!"
 
 #: ../../general/logon_failed.php:19
 msgid "Authentication error"
@@ -58,7 +58,7 @@ msgstr "Λειτουργία"
 msgid "Administration"
 msgstr "Διαχείριση συστήματος"
 
-#: ../../general/links_menu.php:18 ../../godmode/menu.php:202
+#: ../../general/links_menu.php:18 ../../godmode/menu.php:208
 msgid "Links"
 msgstr "Σύνδεσμοι"
 
@@ -66,7 +66,7 @@ msgstr "Σύνδεσμοι"
 msgid "Welcome to Pandora FMS Web Console"
 msgstr ""
 
-#: ../../general/logon_ok.php:35 ../../godmode/menu.php:203
+#: ../../general/logon_ok.php:35 ../../godmode/menu.php:209
 msgid "Site news"
 msgstr "Νέα του ιστότοπου"
 
@@ -156,7 +156,7 @@ msgstr "Ορίστηκαν οι προειδοποιήσεις"
 msgid "Users defined"
 msgstr "Καθορίστηκαν χρήστες"
 
-#: ../../general/logon_ok.php:141 ../../operation/users/user_statistics.php:35
+#: ../../general/logon_ok.php:141
 msgid "This is your last activity in Pandora FMS console"
 msgstr ""
 
@@ -165,9 +165,8 @@ msgstr ""
 #: ../../enterprise/godmode/setup/setup_auth.php:85
 #: ../../enterprise/godmode/setup/setup_auth.php:101
 #: ../../enterprise/extensions/cron/main.php:149
-#: ../../operation/users/user.php:162
-#: ../../operation/users/user_statistics.php:43
-#: ../../operation/search_results.php:633
+#: ../../operation/search_users.php:198
+#: ../../operation/search_results.php.old:601
 #: ../../godmode/servers/manage_export_form.php:99
 #: ../../godmode/users/user_list.php:175
 #: ../../godmode/admin_access_logs.php:99
@@ -178,7 +177,8 @@ msgstr "Χρήστης"
 
 #: ../../general/logon_ok.php:150
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:82
-#: ../../operation/events/events.php:432
+#: ../../operation/events/events.php:435 ../../operation/search_alerts.php:140
+#: ../../operation/search_results.php.old:651
 #: ../../operation/snmpconsole/snmp_view.php:285
 #: ../../operation/snmpconsole/snmp_view.php:439
 #: ../../operation/incidents/incident.php:265
@@ -187,7 +187,6 @@ msgstr "Χρήστης"
 #: ../../operation/agentes/alerts_status.php:246
 #: ../../operation/agentes/alerts_status.php:276
 #: ../../operation/agentes/alerts_status.php:299
-#: ../../operation/search_results.php:683
 #: ../../godmode/servers/manage_recontask.php:111
 #: ../../godmode/servers/manage_export.php:100
 #: ../../godmode/users/configure_user.php:297
@@ -211,23 +210,20 @@ msgstr "Ενέργεια"
 #: ../../general/logon_ok.php:151
 #: ../../enterprise/extensions/backup/main.php:49
 #: ../../enterprise/include/functions_reporting_pdf.php:826
-#: ../../operation/users/user_statistics.php:45
 #: ../../operation/reporting/reporting_viewer.php:82
 #: ../../godmode/reporting/reporting_builder.preview.php:72
 #: ../../godmode/admin_access_logs.php:101
 #: ../../extensions/users_connected.php:37
 #: ../../extensions/users_connected.php:82
-#: ../../include/functions_reporting.php:2086
+#: ../../include/functions_reporting.php:2083
 msgid "Date"
 msgstr "Ημερομηνία"
 
-#: ../../general/logon_ok.php:152 ../../operation/users/user_statistics.php:46
-#: ../../godmode/admin_access_logs.php:102
+#: ../../general/logon_ok.php:152 ../../godmode/admin_access_logs.php:102
 msgid "Source IP"
 msgstr "Πηγή διεύθυνσης IP"
 
 #: ../../general/logon_ok.php:153 ../../operation/users/user_edit.php:136
-#: ../../operation/users/user_statistics.php:47
 #: ../../godmode/servers/manage_recontask_form.php:126
 #: ../../godmode/users/configure_user.php:258
 #: ../../godmode/modules/manage_network_components_form_wmi.php:181
@@ -235,11 +231,11 @@ msgstr "Πηγή διεύθυνσης IP"
 msgid "Comments"
 msgstr "Σχόλια"
 
-#: ../../general/noaccess.php:15
+#: ../../general/noaccess.php:16 ../../general/noaccess.php:18
 msgid "You don't have access to this page"
 msgstr "Δεν έχετε πρόσβαση σε αυτή την σελίδα"
 
-#: ../../general/noaccess.php:23
+#: ../../general/noaccess.php:32
 msgid ""
 "Access to this page is restricted to authorized users only, please contact "
 "system administrator if you need assistance. <br><br>Please know that all "
@@ -247,10 +243,10 @@ msgid ""
 "Database"
 msgstr ""
 "Η πρόσβαση στη σελίδα περιορίζεται σε εξουσιοδοτημένους χρήστες, παρακαλώ "
-"επικοινωνήστε με το διαχειριστή του συστήματος αν χρειάζεστε βοήθεια."
-"<br><br> Παρακαλώ ενημερωθείτε πως όλες οι προσπάθειες πρόσβασης στη σελίδα "
-"καταγράφονται στα ημερολόγια ασφαλείας της βάσης δεδομένων του συστήματος "
-"Πανδώρας."
+"επικοινωνήστε με το διαχειριστή του συστήματος αν χρειάζεστε "
+"βοήθεια.<br><br> Παρακαλώ ενημερωθείτε πως όλες οι προσπάθειες πρόσβασης στη "
+"σελίδα καταγράφονται στα ημερολόγια ασφαλείας της βάσης δεδομένων του "
+"συστήματος Πανδώρας."
 
 #: ../../general/footer.php:31
 msgid "Page generated at"
@@ -304,18 +300,20 @@ msgstr "Αυτόματη ανανέωση"
 
 #: ../../general/header.php:102 ../../general/header.php:103
 #: ../../general/header.php:104 ../../general/header.php:105
-#: ../../enterprise/dashboard/main_dashboard.php:178
+#: ../../enterprise/dashboard/main_dashboard.php:179
 #: ../../operation/gis_maps/render_view.php:103
 #: ../../operation/gis_maps/render_view.php:104
 #: ../../operation/gis_maps/render_view.php:105
 #: ../../godmode/snmpconsole/snmp_alert.php:224
 #: ../../godmode/alerts/configure_alert_compound.php:346
 #: ../../godmode/alerts/configure_alert_template.php:367
-#: ../../include/functions.php:344 ../../include/functions.php:356
+#: ../../extensions/agents_modules.php:77 ../../include/functions.php:344
+#: ../../include/functions.php:356
 msgid "seconds"
 msgstr "δευτερόλεπτα"
 
 #: ../../general/header.php:106 ../../operation/gis_maps/render_view.php:106
+#: ../../extensions/agents_modules.php:77
 msgid "minute"
 msgstr "λεπτό"
 
@@ -324,8 +322,8 @@ msgstr "λεπτό"
 #: ../../operation/gis_maps/render_view.php:107
 #: ../../operation/gis_maps/render_view.php:108
 #: ../../operation/gis_maps/render_view.php:109
-#: ../../include/functions.php:362 ../../include/functions.php:364
-#: ../../include/functions_alerts.php:361
+#: ../../extensions/agents_modules.php:77 ../../include/functions.php:362
+#: ../../include/functions.php:364 ../../include/functions_alerts.php:361
 #: ../../include/functions_alerts.php:362
 #: ../../include/functions_alerts.php:363
 #: ../../include/functions_alerts.php:364
@@ -372,7 +370,7 @@ msgstr "Εισάγετε λέξεις κλειδιά για την αναζήτ�
 
 #: ../../general/header.php:155
 #: ../../enterprise/dashboard/widgets/events_list.php:20
-#: ../../operation/events/events.php:224 ../../operation/events/events.php:228
+#: ../../operation/events/events.php:227 ../../operation/events/events.php:231
 #: ../../include/functions_fsgraph.php:159
 msgid "Events"
 msgstr "Γεγονότα"
@@ -443,10 +441,13 @@ msgstr ""
 #: ../../enterprise/extensions/tree_view.php:617
 #: ../../operation/servers/view_server_detail.php:86
 #: ../../operation/users/user_edit.php:159
-#: ../../operation/events/events.php:273
+#: ../../operation/events/events.php:276
 #: ../../operation/visual_console/index.php:31
+#: ../../operation/search_results.php.old:504
+#: ../../operation/search_results.php.old:773
 #: ../../operation/incidents/incident.php:261
 #: ../../operation/incidents/incident_detail.php:258
+#: ../../operation/search_maps.php:45
 #: ../../operation/agentes/alerts_status.functions.php:45
 #: ../../operation/agentes/status_monitor.php:44
 #: ../../operation/agentes/networkmap.php:246
@@ -457,9 +458,8 @@ msgstr ""
 #: ../../operation/agentes/group_view.php:80
 #: ../../operation/agentes/estado_agente.php:83
 #: ../../operation/agentes/estado_agente.php:256
-#: ../../operation/search_results.php:536
-#: ../../operation/search_results.php:805
-#: ../../operation/gis_maps/index.php:34 ../../operation/gis_maps/ajax.php:154
+#: ../../operation/search_agents.php:168 ../../operation/gis_maps/index.php:34
+#: ../../operation/gis_maps/ajax.php:154
 #: ../../godmode/servers/manage_recontask.php:111
 #: ../../godmode/servers/manage_recontask_form.php:111
 #: ../../godmode/users/configure_user.php:296
@@ -487,7 +487,7 @@ msgstr ""
 #: ../../godmode/agentes/planned_downtime.php:160
 #: ../../godmode/agentes/planned_downtime.php:236
 #: ../../godmode/agentes/planned_downtime.php:274
-#: ../../godmode/agentes/configurar_agente.php:268
+#: ../../godmode/agentes/configurar_agente.php:283
 #: ../../godmode/agentes/agent_manager.php:139
 #: ../../godmode/massive/massive_delete_alerts.php:101
 #: ../../godmode/massive/massive_delete_action_alerts.php:92
@@ -499,7 +499,7 @@ msgstr ""
 #: ../../godmode/massive/massive_add_action_alerts.php:92
 #: ../../godmode/gis_maps/index.php:64
 #: ../../godmode/gis_maps/configure_gis_map.php:337
-#: ../../extensions/agents_modules.php:66 ../../include/functions_ui.php:1238
+#: ../../extensions/agents_modules.php:71 ../../include/functions_ui.php:1238
 msgid "Group"
 msgstr "Ομάδα"
 
@@ -516,10 +516,11 @@ msgstr "Ομάδα"
 #: ../../enterprise/godmode/policies/policy_agents.php:241
 #: ../../enterprise/godmode/agentes/collection_manager.php:47
 #: ../../enterprise/godmode/agentes/collections.php:169
+#: ../../operation/search_results.php.old:478
 #: ../../operation/incidents/incident.php:218
 #: ../../operation/agentes/status_monitor.php:76
 #: ../../operation/agentes/estado_agente.php:96
-#: ../../operation/search_results.php:437
+#: ../../operation/search_results.php:99
 #: ../../godmode/modules/manage_network_components.php:261
 #: ../../godmode/modules/manage_network_components.php:265
 #: ../../godmode/alerts/alert_templates.php:157
@@ -530,7 +531,7 @@ msgid "Search"
 msgstr "Αναζήτηση"
 
 #: ../../general/ui/agents_list.php:120
-#: ../../enterprise/godmode/policies/policy_modules.php:468
+#: ../../enterprise/godmode/policies/policy_modules.php:457
 #: ../../operation/reporting/reporting_viewer.php:94
 #: ../../godmode/alerts/configure_alert_compound.php:551
 #: ../../godmode/reporting/reporting_builder.preview.php:84
@@ -558,9 +559,8 @@ msgid "Data value"
 msgstr ""
 
 #: ../../enterprise/dashboard/widget.php:46
-#, fuzzy
 msgid "Title"
-msgstr "Χρόνος"
+msgstr ""
 
 #: ../../enterprise/dashboard/widget.php:123
 #: ../../enterprise/dashboard/main_dashboard.php:359
@@ -593,10 +593,10 @@ msgstr "Χρόνος"
 #: ../../enterprise/godmode/agentes/collection_manager.php:146
 #: ../../enterprise/extensions/cron/main.php:225
 #: ../../operation/users/user_edit.php:145
-#: ../../operation/events/events.php:356
+#: ../../operation/events/events.php:359
 #: ../../operation/reporting/graph_viewer.php:128
 #: ../../operation/reporting/reporting_viewer.php:85
-#: ../../operation/agentes/networkmap.php:332
+#: ../../operation/agentes/networkmap.php:333
 #: ../../godmode/profiles/profile_list.php:203
 #: ../../godmode/servers/modificar_server.php:51
 #: ../../godmode/servers/plugin.php:134
@@ -617,7 +617,7 @@ msgstr "Χρόνος"
 #: ../../godmode/snmpconsole/snmp_filters.php:94
 #: ../../godmode/snmpconsole/snmp_filters.php:130
 #: ../../godmode/alerts/configure_alert_command.php:66
-#: ../../godmode/alerts/alert_list.list.php:99
+#: ../../godmode/alerts/alert_list.list.php:95
 #: ../../godmode/alerts/configure_alert_action.php:93
 #: ../../godmode/reporting/reporting_builder.main.php:35
 #: ../../godmode/reporting/graph_builder.main.php:163
@@ -631,7 +631,8 @@ msgstr "Χρόνος"
 #: ../../godmode/agentes/planned_downtime.php:178
 #: ../../godmode/agentes/planned_downtime.php:278
 #: ../../godmode/agentes/planned_downtime.php:305
-#: ../../godmode/agentes/agent_manager.php:230
+#: ../../godmode/agentes/configure_field.php:56
+#: ../../godmode/agentes/agent_manager.php:273
 #: ../../godmode/agentes/agent_template.php:149
 #: ../../godmode/massive/massive_edit_modules.php:226
 #: ../../extensions/update_manager/main.php:88
@@ -663,14 +664,12 @@ msgid "Not copyed. Error copying data"
 msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:88
-#, fuzzy
 msgid "Successfully copyed"
-msgstr "Επιτυχής αναβάθμιση"
+msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:101
-#, fuzzy
 msgid "Source user"
-msgstr "Πηγή"
+msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:150
 #: ../../enterprise/dashboard/dashboard_replicate.php:168
@@ -683,9 +682,8 @@ msgid "Show"
 msgstr "Εμφάνιση"
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:154
-#, fuzzy
 msgid "Destination user"
-msgstr "Διαγραφή"
+msgstr ""
 
 #: ../../enterprise/dashboard/dashboard_replicate.php:176
 msgid "User Dashboards"
@@ -705,12 +703,12 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/mysql_builder.php:43
 #: ../../enterprise/godmode/policies/policy_agents.php:150
 #: ../../enterprise/godmode/policies/policy_agents.php:203
-#: ../../enterprise/godmode/policies/policy_agents.php:304
-#: ../../enterprise/godmode/policies/policy_agents.php:320
+#: ../../enterprise/godmode/policies/policy_agents.php:323
+#: ../../enterprise/godmode/policies/policy_agents.php:339
 #: ../../enterprise/godmode/policies/policy_alerts.php:159
 #: ../../enterprise/godmode/policies/policy_queue.php:136
-#: ../../enterprise/godmode/policies/policies.php:173
-#: ../../enterprise/godmode/policies/policies.php:179
+#: ../../enterprise/godmode/policies/policies.php:176
+#: ../../enterprise/godmode/policies/policies.php:182
 #: ../../enterprise/godmode/agentes/inventory_manager.php:174
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:152
 #: ../../enterprise/extensions/backup/main.php:158
@@ -727,7 +725,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:326
 #: ../../godmode/modules/manage_network_templates.php:130
 #: ../../godmode/setup/news.php:150 ../../godmode/setup/links.php:128
-#: ../../godmode/alerts/alert_list.list.php:566
+#: ../../godmode/alerts/alert_list.list.php:561
 #: ../../godmode/alerts/alert_templates.php:224
 #: ../../godmode/alerts/alert_actions.php:149
 #: ../../godmode/alerts/alert_actions.php:152
@@ -738,6 +736,7 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.elements.php:136
 #: ../../godmode/reporting/map_builder_wizard.php:175
 #: ../../godmode/reporting/map_builder_wizard.php:178
+#: ../../godmode/agentes/fields_manager.php:117
 #: ../../godmode/agentes/module_manager.php:338
 #: ../../godmode/agentes/module_manager.php:347
 #: ../../godmode/agentes/module_manager.php:358
@@ -779,9 +778,8 @@ msgid "Server health"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:39
-#, fuzzy
 msgid "of servers up"
-msgstr "Οι διακομιστές έχουν πρόβλημα"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/reports.php:19
 #: ../../enterprise/dashboard/widgets/reports.php:26
@@ -800,7 +798,7 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:25
 #: ../../enterprise/godmode/setup/setup_acl.php:94
-#: ../../operation/events/events.php:342
+#: ../../operation/events/events.php:345
 #: ../../godmode/servers/manage_recontask.php:130
 #: ../../godmode/servers/manage_recontask_form.php:103
 #: ../../godmode/reporting/visual_console_builder.wizard.php:80
@@ -812,10 +810,10 @@ msgstr "Οποιοδήποτε"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:27
 #: ../../enterprise/include/functions_reporting_pdf.php:576
-#: ../../operation/events/events.php:278
-#: ../../include/functions_reporting.php:1336
-#: ../../include/functions_reporting.php:1391
-#: ../../include/functions_reporting.php:1449
+#: ../../operation/events/events.php:281
+#: ../../include/functions_reporting.php:1333
+#: ../../include/functions_reporting.php:1388
+#: ../../include/functions_reporting.php:1446
 msgid "Event type"
 msgstr ""
 
@@ -825,11 +823,12 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:114
 #: ../../enterprise/godmode/agentes/inventory_manager.php:164
 #: ../../operation/servers/view_server_detail.php:74
+#: ../../operation/search_results.php.old:501
 #: ../../operation/agentes/status_monitor.php:183
 #: ../../operation/agentes/sla_view.php:56
 #: ../../operation/agentes/estado_generalagente.php:106
 #: ../../operation/agentes/estado_agente.php:253
-#: ../../operation/search_results.php:533
+#: ../../operation/search_agents.php:165
 #: ../../godmode/servers/manage_recontask.php:111
 #: ../../godmode/servers/manage_export_form.php:82
 #: ../../godmode/servers/manage_export.php:100
@@ -845,7 +844,7 @@ msgstr "Διάστημα ανανέωσης"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:30
 #: ../../enterprise/dashboard/widgets/single_graph.php:37
-#: ../../include/functions_custom_graphs.php:112
+#: ../../include/functions_custom_graphs.php:119
 msgid "1 hour"
 msgstr "1 ώρα"
 
@@ -866,37 +865,36 @@ msgstr "12 ώρες"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:34
 #: ../../enterprise/dashboard/widgets/single_graph.php:41
-#: ../../include/functions_custom_graphs.php:117
+#: ../../include/functions_custom_graphs.php:124
 msgid "1 day"
 msgstr "1 ημέρα"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:35
-#: ../../include/functions_custom_graphs.php:118
+#: ../../include/functions_custom_graphs.php:125
 msgid "2 days"
 msgstr "2 ημέρες"
 
 #: ../../enterprise/dashboard/widgets/events_list.php:37
-#, fuzzy
 msgid "Limit"
-msgstr "Σύνδεσμοι"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:44
-#: ../../operation/events/events.php:293
+#: ../../operation/events/events.php:296
 msgid "Event status"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:45
-#: ../../operation/events/events.php:295
+#: ../../operation/events/events.php:298
 msgid "All event"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:46
-#: ../../operation/events/events.php:296
+#: ../../operation/events/events.php:299
 msgid "Only validated"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/events_list.php:47
-#: ../../operation/events/events.php:297
+#: ../../operation/events/events.php:300
 msgid "Only pending"
 msgstr ""
 
@@ -911,8 +909,9 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_agents.php:159
 #: ../../enterprise/godmode/policies/policy_agents.php:161
 #: ../../enterprise/extensions/tree_view.php:654
-#: ../../operation/events/events.php:110 ../../operation/events/events.php:125
-#: ../../operation/events/events.php:282 ../../operation/events/events.php:289
+#: ../../operation/events/events.php:106 ../../operation/events/events.php:110
+#: ../../operation/events/events.php:125 ../../operation/events/events.php:285
+#: ../../operation/events/events.php:292
 #: ../../operation/snmpconsole/snmp_view.php:191
 #: ../../operation/snmpconsole/snmp_view.php:195
 #: ../../operation/snmpconsole/snmp_view.php:199
@@ -929,9 +928,9 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:200
 #: ../../godmode/modules/manage_network_components.php:260
 #: ../../godmode/setup/gis_step_2.php:153
-#: ../../godmode/alerts/alert_list.list.php:79
-#: ../../godmode/alerts/alert_list.list.php:85
-#: ../../godmode/alerts/alert_list.list.php:94
+#: ../../godmode/alerts/alert_list.list.php:75
+#: ../../godmode/alerts/alert_list.list.php:81
+#: ../../godmode/alerts/alert_list.list.php:90
 #: ../../godmode/alerts/alert_list.php:162
 #: ../../godmode/alerts/alert_list.php:198
 #: ../../godmode/alerts/alert_list.php:211
@@ -947,8 +946,9 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:172
 #: ../../godmode/massive/massive_edit_modules.php:290
 #: ../../godmode/gis_maps/configure_gis_map.php:338
-#: ../../include/functions_db.php:1553 ../../include/functions_db.php:1558
-#: ../../include/functions.php:543 ../../include/functions.php:815
+#: ../../extensions/agents_modules.php:67 ../../include/functions_db.php:1553
+#: ../../include/functions_db.php:1558 ../../include/functions.php:543
+#: ../../include/functions.php:815
 msgid "All"
 msgstr "Όλα"
 
@@ -956,7 +956,7 @@ msgstr "Όλα"
 #: ../../enterprise/operation/metaconsole/eventview.php:90
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:167
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:67
-#: ../../operation/events/events.php:288 ../../operation/events/events.php:404
+#: ../../operation/events/events.php:291 ../../operation/events/events.php:407
 #: ../../operation/snmpconsole/snmp_view.php:215
 #: ../../include/functions_events.php:283
 msgid "Severity"
@@ -977,7 +977,7 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:57
 #: ../../operation/agentes/group_view.php:84
 #: ../../godmode/alerts/alert_list.builder.php:261
-#: ../../include/functions_reporting.php:1729
+#: ../../include/functions_reporting.php:1726
 #: ../../include/functions_db.php:1725 ../../include/functions.php:647
 #: ../../include/functions.php:762 ../../include/functions_ui.php:182
 #: ../../include/functions_ui.php:183 ../../include/functions_alerts.php:227
@@ -988,7 +988,7 @@ msgstr "Άγνωστο"
 #: ../../enterprise/include/functions_reporting_pdf.php:415
 #: ../../operation/reporting/reporting_xml.php:182
 #: ../../godmode/reporting/reporting_builder.item_editor.php:299
-#: ../../include/functions_reporting.php:1650 ../../include/functions.php:602
+#: ../../include/functions_reporting.php:1647 ../../include/functions.php:602
 msgid "Custom graph"
 msgstr ""
 
@@ -1010,7 +1010,7 @@ msgstr "Γράφημα"
 #: ../../godmode/reporting/graph_builder.main.php:136
 #: ../../godmode/reporting/reporting_builder.item_editor.php:238
 #: ../../godmode/reporting/visual_console_builder.elements.php:70
-#: ../../godmode/reporting/reporting_builder.list_items.php:148
+#: ../../godmode/reporting/reporting_builder.list_items.php:145
 #: ../../godmode/reporting/visual_console_builder.editor.php:145
 #: ../../include/fgraph.php:483
 msgid "Period"
@@ -1040,9 +1040,8 @@ msgid "Layout"
 msgstr "Διάταξη"
 
 #: ../../enterprise/dashboard/widgets/groups_status.php:16
-#, fuzzy
 msgid "Groups status"
-msgstr "Τελευταία ημερομηνία"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/groups_status.php:18
 msgid "General and quick group status report"
@@ -1084,12 +1083,12 @@ msgid "Welcome"
 msgstr "Καλώς ήλθατε"
 
 #: ../../enterprise/dashboard/widgets/example.php:30
-#, fuzzy
 msgid "Welcome to Pandora FMS"
-msgstr "Pandora FMS"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:31
-msgid "This is an example of a dashboard widget. A widget may contain elements"
+msgid ""
+"This is an example of a dashboard widget. A widget may contain elements"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:32
@@ -1117,7 +1116,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/network_map.php:20
 #: ../../enterprise/operation/policies/networkmap.policies.php:87
 #: ../../operation/agentes/networkmap.groups.php:86
-#: ../../operation/agentes/networkmap.php:209
+#: ../../operation/agentes/networkmap.php:216
 #: ../../operation/agentes/networkmap.topology.php:86
 #: ../../operation/menu.php:50
 msgid "Network map"
@@ -1142,9 +1141,8 @@ msgid "Simple"
 msgstr "Απλό"
 
 #: ../../enterprise/dashboard/widgets/network_map.php:38
-#, fuzzy
 msgid "Font size"
-msgstr "Γραμματοσειρά"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/network_map.php:39
 msgid "8"
@@ -1167,29 +1165,29 @@ msgid "12"
 msgstr "12"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:19
-#, fuzzy
 msgid "Maps status"
-msgstr "Τελευταία ημερομηνία"
+msgstr ""
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:21
 msgid "General and quick visual maps report"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:23
-#: ../../operation/search_results.php:503
+#: ../../operation/search_results.php.old:469
+#: ../../operation/search_results.php:90
 msgid "Maps"
 msgstr "Χάρτες"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:67
 #: ../../enterprise/extensions/backup/main.php:96
 #: ../../enterprise/include/functions_reporting_pdf.php:477
-#: ../../include/functions_reporting.php:1746
+#: ../../include/functions_reporting.php:1743
 #: ../../include/functions_db.php:3593
 msgid "OK"
 msgstr "Εντάξει"
 
 #: ../../enterprise/dashboard/widgets/maps_status.php:69
-#: ../../godmode/agentes/agent_manager.php:217
+#: ../../godmode/agentes/agent_manager.php:228
 msgid "Bad"
 msgstr "Κακό"
 
@@ -1209,13 +1207,17 @@ msgstr ""
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:69
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:72
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:29
+#: ../../enterprise/godmode/policies/policy_linking.php:70
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:357
 #: ../../enterprise/extensions/dict.php:72
 #: ../../enterprise/include/functions_reporting_pdf.php:452
+#: ../../operation/search_alerts.php:131
+#: ../../operation/search_results.php.old:495
+#: ../../operation/search_results.php.old:642
 #: ../../operation/snmpconsole/snmp_view.php:190
 #: ../../operation/agentes/status_monitor.php:176
 #: ../../operation/agentes/ver_agente.php:217
-#: ../../operation/agentes/ver_agente.php:388
+#: ../../operation/agentes/ver_agente.php:401
 #: ../../operation/agentes/exportdata.php:113
 #: ../../operation/agentes/exportdata.php:121
 #: ../../operation/agentes/exportdata.php:130
@@ -1224,10 +1226,9 @@ msgstr ""
 #: ../../operation/agentes/alerts_status.php:341
 #: ../../operation/agentes/alerts_status.php:347
 #: ../../operation/agentes/estado_agente.php:247
-#: ../../operation/search_results.php:527
-#: ../../operation/search_results.php:674
-#: ../../operation/gis_maps/ajax.php:109 ../../operation/gis_maps/ajax.php:126
-#: ../../godmode/alerts/alert_list.list.php:258
+#: ../../operation/search_agents.php:159 ../../operation/gis_maps/ajax.php:109
+#: ../../operation/gis_maps/ajax.php:126
+#: ../../godmode/alerts/alert_list.list.php:253
 #: ../../godmode/alerts/configure_alert_compound.php:454
 #: ../../godmode/alerts/configure_alert_compound.php:541
 #: ../../godmode/alerts/alert_compounds.php:116
@@ -1237,7 +1238,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:270
 #: ../../godmode/reporting/reporting_builder.item_editor.php:364
 #: ../../godmode/reporting/visual_console_builder.elements.php:67
-#: ../../godmode/reporting/reporting_builder.list_items.php:138
+#: ../../godmode/reporting/reporting_builder.list_items.php:135
 #: ../../godmode/reporting/visual_console_builder.editor.php:116
 #: ../../godmode/agentes/module_manager_editor_prediction.php:59
 #: ../../godmode/massive/massive_delete_alerts.php:105
@@ -1246,10 +1247,10 @@ msgstr ""
 #: ../../godmode/massive/massive_delete_modules.php:107
 #: ../../godmode/massive/massive_add_alerts.php:106
 #: ../../godmode/gis_maps/configure_gis_map.php:392
-#: ../../include/functions_reporting.php:736
-#: ../../include/functions_reporting.php:1038
-#: ../../include/functions_reporting.php:1243
-#: ../../include/functions_reporting.php:1715
+#: ../../include/functions_reporting.php:733
+#: ../../include/functions_reporting.php:1035
+#: ../../include/functions_reporting.php:1240
+#: ../../include/functions_reporting.php:1712
 msgid "Agent"
 msgstr "Ατζέντης"
 
@@ -1258,11 +1259,14 @@ msgstr "Ατζέντης"
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:38
 #: ../../enterprise/godmode/policies/policy_alerts.php:94
+#: ../../enterprise/godmode/policies/policy_linking.php:71
 #: ../../enterprise/godmode/agentes/inventory_manager.php:105
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:122
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:15
 #: ../../enterprise/extensions/tree_view.php:644
 #: ../../enterprise/include/functions_reporting_pdf.php:453
+#: ../../operation/search_alerts.php:134
+#: ../../operation/search_results.php.old:645
 #: ../../operation/agentes/exportdata.php:113
 #: ../../operation/agentes/exportdata.php:121
 #: ../../operation/agentes/exportdata.php:130
@@ -1270,19 +1274,18 @@ msgstr "Ατζέντης"
 #: ../../operation/agentes/alerts_status.php:240
 #: ../../operation/agentes/alerts_status.php:270
 #: ../../operation/agentes/alerts_status.php:293
-#: ../../operation/search_results.php:677
-#: ../../godmode/alerts/alert_list.list.php:281
+#: ../../godmode/alerts/alert_list.list.php:276
 #: ../../godmode/alerts/configure_alert_compound.php:455
 #: ../../godmode/alerts/alert_list.builder.php:48
 #: ../../godmode/reporting/graph_builder.graph_editor.php:77
 #: ../../godmode/reporting/reporting_builder.item_editor.php:281
 #: ../../godmode/reporting/reporting_builder.item_editor.php:365
 #: ../../godmode/reporting/visual_console_builder.elements.php:68
-#: ../../godmode/reporting/reporting_builder.list_items.php:143
+#: ../../godmode/reporting/reporting_builder.list_items.php:140
 #: ../../godmode/reporting/visual_console_builder.editor.php:121
 #: ../../godmode/agentes/module_manager_editor_prediction.php:65
-#: ../../include/fgraph.php:482 ../../include/functions_reporting.php:788
-#: ../../include/functions_reporting.php:1717
+#: ../../include/fgraph.php:482 ../../include/functions_reporting.php:785
+#: ../../include/functions_reporting.php:1714
 msgid "Module"
 msgstr "Άρθρωμα"
 
@@ -1297,7 +1300,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_xml.php:303
 #: ../../godmode/setup/news.php:108
 #: ../../godmode/reporting/reporting_builder.item_editor.php:307
-#: ../../include/functions_reporting.php:1901
+#: ../../include/functions_reporting.php:1898
 #: ../../include/functions_db.php:3059 ../../include/functions_db.php:3081
 #: ../../include/functions.php:610
 msgid "Text"
@@ -1311,8 +1314,8 @@ msgstr ""
 #: ../../enterprise/godmode/modules/local_components.php:155
 #: ../../enterprise/godmode/policies/policy_agents.php:69
 #: ../../enterprise/godmode/policies/policies.php:91
-#: ../../enterprise/godmode/policies/policy_modules.php:391
-#: ../../operation/events/events.php:257
+#: ../../enterprise/godmode/policies/policy_modules.php:388
+#: ../../operation/events/events.php:260
 #: ../../operation/snmpconsole/snmp_view.php:61
 #: ../../operation/incidents/incident.php:59
 #: ../../operation/incidents/incident_detail.php:83
@@ -1349,8 +1352,8 @@ msgstr "Διεγράφη επιτυχώς"
 #: ../../enterprise/godmode/policies/policy_agents.php:70
 #: ../../enterprise/godmode/policies/policy_alerts.php:50
 #: ../../enterprise/godmode/policies/policy_alerts.php:73
-#: ../../enterprise/godmode/policies/policy_modules.php:392
-#: ../../operation/events/events.php:258 ../../operation/events/events.php:689
+#: ../../enterprise/godmode/policies/policy_modules.php:389
+#: ../../operation/events/events.php:261 ../../operation/events/events.php:692
 #: ../../operation/snmpconsole/snmp_view.php:62
 #: ../../operation/incidents/incident.php:60
 #: ../../operation/incidents/incident_detail.php:84
@@ -1373,26 +1376,24 @@ msgid "Could not be deleted"
 msgstr "Δεν μπόρεσε να διαγραφεί"
 
 #: ../../enterprise/dashboard/main_dashboard.php:65
-#, fuzzy
 msgid "Could not create dashboard"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:67
-#, fuzzy
 msgid "Dashboard successfuly created"
-msgstr "το SLA δημιουργήθηκε επιτυχώς"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:74
 #: ../../enterprise/dashboard/main_dashboard.php:326
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:54
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:58
 #: ../../enterprise/godmode/policies/policy_alerts.php:116
-#: ../../operation/events/events.php:329
+#: ../../operation/events/events.php:332
 #: ../../operation/snmpconsole/snmp_view.php:212
 #: ../../godmode/setup/gis_step_2.php:366
 #: ../../godmode/setup/gis_step_2.php:445
-#: ../../godmode/alerts/alert_list.list.php:367
-#: ../../godmode/agentes/agent_manager.php:215
+#: ../../godmode/alerts/alert_list.list.php:362
+#: ../../godmode/agentes/agent_manager.php:226
 #: ../../godmode/gis_maps/index.php:66 ../../include/functions_ui.php:458
 msgid "Default"
 msgstr "Προεπιλογή"
@@ -1406,6 +1407,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:59
 #: ../../operation/gis_maps/render_view.php:90
 #: ../../godmode/reporting/reporting_builder.preview.php:51
+#: ../../extensions/agents_modules.php:82
 msgid "Full screen mode"
 msgstr ""
 
@@ -1414,6 +1416,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:63
 #: ../../operation/gis_maps/render_view.php:94
 #: ../../godmode/reporting/reporting_builder.preview.php:55
+#: ../../extensions/agents_modules.php:86
 msgid "Back to normal mode"
 msgstr ""
 
@@ -1422,23 +1425,24 @@ msgid "Slides mode"
 msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:162
-#, fuzzy
 msgid "Next Dashboard"
-msgstr "Νέος Κωδικός"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:166
-#, fuzzy
 msgid "Start"
-msgstr "Ξεκίνησε"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:173
 msgid "Stop"
 msgstr ""
 
+#: ../../enterprise/dashboard/main_dashboard.php:178
+msgid "Next slide in"
+msgstr ""
+
 #: ../../enterprise/dashboard/main_dashboard.php:179
-#, fuzzy
 msgid "Manual"
-msgstr "Κύριο"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:210
 msgid "Add widget"
@@ -1449,9 +1453,8 @@ msgid "Rename dashboard"
 msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:213
-#, fuzzy
 msgid "Delete dashboard"
-msgstr "Διαγραφή"
+msgstr ""
 
 #: ../../enterprise/dashboard/main_dashboard.php:342
 #: ../../enterprise/dashboard/main_dashboard.php:354
@@ -1470,20 +1473,19 @@ msgstr "Διαγραφή"
 #: ../../enterprise/godmode/policies/policy_collections.php:123
 #: ../../enterprise/godmode/policies/policy_agents.php:246
 #: ../../enterprise/godmode/policies/policies.php:122
-#: ../../enterprise/godmode/policies/policy_modules.php:411
+#: ../../enterprise/godmode/policies/policy_modules.php:408
 #: ../../enterprise/godmode/policies/configure_policy.php:49
 #: ../../enterprise/godmode/agentes/inventory_manager.php:161
 #: ../../enterprise/godmode/agentes/collection_manager.php:71
 #: ../../enterprise/godmode/agentes/collection_manager.php:107
 #: ../../operation/servers/view_server.php:51
-#: ../../operation/users/user.php:97
+#: ../../operation/search_users.php:172
 #: ../../operation/visual_console/index.php:30
-#: ../../operation/extensions.php:46
-#: ../../operation/agentes/networkmap.php:224
+#: ../../operation/search_results.php.old:572
+#: ../../operation/search_results.php.old:772
+#: ../../operation/search_maps.php:44 ../../operation/extensions.php:46
 #: ../../operation/agentes/networkmap.php:243
 #: ../../operation/agentes/tactical.php:248
-#: ../../operation/search_results.php:604
-#: ../../operation/search_results.php:804
 #: ../../operation/gis_maps/index.php:33
 #: ../../godmode/servers/manage_recontask.php:111
 #: ../../godmode/servers/modificar_server.php:44
@@ -1517,6 +1519,7 @@ msgstr "Διαγραφή"
 #: ../../godmode/agentes/module_manager.php:220
 #: ../../godmode/agentes/planned_downtime.php:148
 #: ../../godmode/agentes/planned_downtime.php:235
+#: ../../godmode/agentes/configure_field.php:43
 #: ../../godmode/agentes/module_manager_editor_common.php:122
 #: ../../include/functions_filemanager.php:483
 #: ../../include/functions_db.php:3000
@@ -1544,7 +1547,7 @@ msgstr "Όνομα"
 #: ../../godmode/servers/manage_recontask_form.php:140
 #: ../../godmode/modules/manage_network_templates_form.php:224
 #: ../../godmode/setup/news.php:156 ../../godmode/setup/links.php:134
-#: ../../godmode/alerts/alert_list.list.php:463
+#: ../../godmode/alerts/alert_list.list.php:458
 #: ../../godmode/alerts/configure_alert_compound.php:358
 #: ../../godmode/reporting/graph_builder.graph_editor.php:138
 #: ../../godmode/reporting/map_builder_wizard.php:181
@@ -1582,7 +1585,7 @@ msgstr ""
 
 #: ../../enterprise/operation/metaconsole/agentsearch.php:26
 #: ../../enterprise/operation/menu.php:61
-#: ../../operation/events/events.php:310
+#: ../../operation/events/events.php:313
 msgid "Agent search"
 msgstr ""
 
@@ -1609,10 +1612,10 @@ msgstr ""
 #: ../../enterprise/godmode/modules/local_components.php:215
 #: ../../enterprise/extensions/tree_view.php:608
 #: ../../operation/servers/view_server_detail.php:89
+#: ../../operation/search_results.php.old:498
 #: ../../operation/agentes/estado_generalagente.php:88
 #: ../../operation/agentes/estado_agente.php:250
-#: ../../operation/search_results.php:530
-#: ../../operation/gis_maps/ajax.php:140
+#: ../../operation/search_agents.php:162 ../../operation/gis_maps/ajax.php:140
 #: ../../godmode/servers/manage_recontask.php:111
 #: ../../godmode/servers/manage_recontask_form.php:101
 #: ../../godmode/agentes/modificar_agente.php:222
@@ -1623,13 +1626,14 @@ msgstr "ΛΣ"
 
 #: ../../enterprise/operation/metaconsole/agentsearch.php:69
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:92
-#: ../../enterprise/godmode/policies/policies.php:157
+#: ../../enterprise/godmode/policies/policies.php:160
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:341
-#: ../../enterprise/include/functions_policies.php:1242
+#: ../../enterprise/include/functions_policies.php:1266
 #: ../../operation/servers/view_server.php:55
+#: ../../operation/search_results.php.old:507
 #: ../../operation/agentes/exportdata.php:305
 #: ../../operation/agentes/estado_agente.php:259
-#: ../../operation/search_results.php:539
+#: ../../operation/search_agents.php:171
 #: ../../godmode/reporting/graph_builder.graph_editor.php:125
 #: ../../godmode/reporting/map_builder_wizard.php:172
 #: ../../godmode/reporting/visual_console_builder.wizard.php:66
@@ -1637,11 +1641,11 @@ msgstr "ΛΣ"
 #: ../../godmode/agentes/module_manager_editor.php:278
 #: ../../godmode/agentes/module_manager.php:19
 #: ../../godmode/agentes/modificar_agente.php:276
-#: ../../godmode/agentes/configurar_agente.php:224
+#: ../../godmode/agentes/configurar_agente.php:239
 #: ../../godmode/massive/massive_copy_modules.php:100
 #: ../../godmode/massive/massive_delete_modules.php:97
-#: ../../godmode/db/db_refine.php:73 ../../extensions/agents_modules.php:114
-#: ../../include/functions_reporting.php:1244
+#: ../../godmode/db/db_refine.php:73 ../../extensions/agents_modules.php:156
+#: ../../include/functions_reporting.php:1241
 msgid "Modules"
 msgstr "Μονάδες"
 
@@ -1657,6 +1661,7 @@ msgstr "Μονάδες"
 #: ../../enterprise/extensions/backup/main.php:51
 #: ../../operation/servers/view_server.php:52
 #: ../../operation/servers/view_server_detail.php:80
+#: ../../operation/search_results.php.old:508
 #: ../../operation/snmpconsole/snmp_view.php:219
 #: ../../operation/snmpconsole/snmp_view.php:253
 #: ../../operation/snmpconsole/snmp_view.php:427
@@ -1675,23 +1680,24 @@ msgstr "Μονάδες"
 #: ../../operation/agentes/alerts_status.php:278
 #: ../../operation/agentes/alerts_status.php:301
 #: ../../operation/agentes/estado_agente.php:260
-#: ../../operation/search_results.php:540
+#: ../../operation/search_agents.php:172
 #: ../../godmode/servers/modificar_server.php:98
-#: ../../godmode/alerts/alert_list.list.php:291
-#: ../../godmode/agentes/agent_manager.php:185
-#: ../../include/functions_reporting.php:681
+#: ../../godmode/alerts/alert_list.list.php:286
+#: ../../godmode/agentes/agent_manager.php:196
+#: ../../include/functions_reporting.php:678
 #: ../../include/functions_ui.php:1238
 msgid "Status"
 msgstr "Κατάσταση"
 
 #: ../../enterprise/operation/metaconsole/agentsearch.php:71
-#: ../../enterprise/godmode/policies/policies.php:160
-#: ../../enterprise/include/functions_policies.php:1251
+#: ../../enterprise/godmode/policies/policies.php:163
+#: ../../enterprise/include/functions_policies.php:1275
+#: ../../operation/search_results.php.old:455
+#: ../../operation/search_results.php.old:509
 #: ../../operation/agentes/ver_agente.php:333
 #: ../../operation/agentes/alerts_status.php:67
 #: ../../operation/agentes/estado_agente.php:261
-#: ../../operation/search_results.php:470
-#: ../../operation/search_results.php:541
+#: ../../operation/search_agents.php:173 ../../operation/search_results.php:69
 #: ../../godmode/groups/group_list.php:172
 #: ../../godmode/groups/configure_group.php:92
 #: ../../godmode/alerts/configure_alert_command.php:42
@@ -1706,25 +1712,25 @@ msgstr "Κατάσταση"
 #: ../../godmode/alerts/alert_compounds.php:51
 #: ../../godmode/alerts/alert_commands.php:42
 #: ../../godmode/agentes/modificar_agente.php:280
-#: ../../godmode/agentes/configurar_agente.php:234
+#: ../../godmode/agentes/configurar_agente.php:249
 #: ../../godmode/massive/massive_copy_modules.php:109
 #: ../../godmode/massive/massive_add_alerts.php:73
 #: ../../include/functions_fsgraph.php:167
-#: ../../include/functions_reporting.php:1253
+#: ../../include/functions_reporting.php:1250
 msgid "Alerts"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/agentsearch.php:72
 #: ../../enterprise/operation/agentes/ver_agente.php:65
-#: ../../operation/users/user.php:100
+#: ../../operation/search_users.php:178
+#: ../../operation/search_results.php.old:510
+#: ../../operation/search_results.php.old:578
 #: ../../operation/agentes/ver_agente.php:129
 #: ../../operation/agentes/estado_monitores.php:160
 #: ../../operation/agentes/estado_generalagente.php:140
 #: ../../operation/agentes/estado_agente.php:262
-#: ../../operation/search_results.php:542
-#: ../../operation/search_results.php:610
-#: ../../operation/gis_maps/ajax.php:112 ../../operation/gis_maps/ajax.php:156
-#: ../../godmode/users/user_list.php:130
+#: ../../operation/search_agents.php:174 ../../operation/gis_maps/ajax.php:112
+#: ../../operation/gis_maps/ajax.php:156 ../../godmode/users/user_list.php:130
 #: ../../godmode/agentes/planned_downtime.php:238
 msgid "Last contact"
 msgstr ""
@@ -1792,9 +1798,9 @@ msgid "Error creating network component %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/componentmanager.php:228
-#, fuzzy, php-format
+#, php-format
 msgid "Created network component %s"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/componentmanager.php:245
 #: ../../enterprise/operation/metaconsole/alertmanager.php:234
@@ -1815,8 +1821,8 @@ msgstr "Πηγή"
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:115
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:129
 #: ../../enterprise/godmode/policies/policy_agents.php:147
-#: ../../enterprise/godmode/policies/policy_agents.php:365
-#: ../../enterprise/godmode/policies/policy_agents.php:388
+#: ../../enterprise/godmode/policies/policy_agents.php:384
+#: ../../enterprise/godmode/policies/policy_agents.php:407
 #: ../../enterprise/godmode/policies/policy_alerts.php:177
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:213
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:318
@@ -1834,7 +1840,7 @@ msgstr "Πηγή"
 #: ../../godmode/users/configure_user.php:325
 #: ../../godmode/modules/manage_nc_groups_form.php:51
 #: ../../godmode/modules/manage_network_components_form_plugin.php:26
-#: ../../godmode/alerts/alert_list.list.php:452
+#: ../../godmode/alerts/alert_list.list.php:447
 #: ../../godmode/alerts/configure_alert_template.php:387
 #: ../../godmode/alerts/configure_alert_action.php:67
 #: ../../godmode/alerts/alert_list.builder.php:75
@@ -1846,7 +1852,7 @@ msgstr "Πηγή"
 #: ../../godmode/agentes/module_manager_editor_plugin.php:44
 #: ../../godmode/agentes/module_manager_editor_common.php:209
 #: ../../godmode/agentes/agent_manager.php:166
-#: ../../godmode/agentes/agent_manager.php:213
+#: ../../godmode/agentes/agent_manager.php:224
 #: ../../godmode/massive/massive_delete_action_alerts.php:105
 #: ../../godmode/massive/massive_edit_modules.php:213
 #: ../../godmode/massive/massive_delete_modules.php:116
@@ -1882,13 +1888,14 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:90
 #: ../../enterprise/godmode/policies/policy_agents.php:164
 #: ../../enterprise/godmode/policies/policy_agents.php:222
-#: ../../enterprise/godmode/policies/policies.php:166
-#: ../../enterprise/include/functions_policies.php:1278
+#: ../../enterprise/godmode/policies/policies.php:169
+#: ../../enterprise/include/functions_policies.php:1311
+#: ../../operation/search_results.php.old:446
 #: ../../operation/agentes/networkmap.php:260
 #: ../../operation/agentes/networkmap.php:267
 #: ../../operation/agentes/group_view.php:82
-#: ../../operation/search_results.php:451
-#: ../../godmode/alerts/alert_list.list.php:58
+#: ../../operation/search_results.php:55
+#: ../../godmode/alerts/alert_list.list.php:54
 #: ../../godmode/reporting/graph_builder.graph_editor.php:123
 #: ../../godmode/reporting/map_builder_wizard.php:168
 #: ../../godmode/reporting/visual_console_builder.wizard.php:62
@@ -1897,7 +1904,7 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:170
 #: ../../godmode/massive/massive_delete_agents.php:86
 #: ../../godmode/massive/massive_add_action_alerts.php:96
-#: ../../extensions/agents_modules.php:114
+#: ../../extensions/agents_modules.php:156
 msgid "Agents"
 msgstr "Πράκτορες"
 
@@ -1927,7 +1934,7 @@ msgstr "Κανονικό"
 #: ../../operation/agentes/status_monitor.php:55
 #: ../../operation/agentes/group_view.php:87
 #: ../../operation/gis_maps/render_view.php:121
-#: ../../godmode/agentes/agent_manager.php:218 ../../include/fgraph.php:894
+#: ../../godmode/agentes/agent_manager.php:229 ../../include/fgraph.php:894
 #: ../../include/functions.php:520 ../../include/functions.php:789
 #: ../../include/functions.php:811
 msgid "Warning"
@@ -1953,8 +1960,8 @@ msgstr "Κρίσιμο"
 #: ../../operation/snmpconsole/snmp_view.php:365
 #: ../../operation/agentes/bulbs.php:25
 #: ../../operation/agentes/group_view.php:89
-#: ../../godmode/alerts/alert_list.list.php:422
-#: ../../include/functions_reporting.php:1572
+#: ../../godmode/alerts/alert_list.list.php:417
+#: ../../include/functions_reporting.php:1569
 #: ../../include/functions_db.php:3093 ../../include/functions.php:768
 #: ../../include/functions_ui.php:471 ../../include/functions_events.php:432
 msgid "Alert fired"
@@ -1991,14 +1998,13 @@ msgid "Not Init"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:27
-#, fuzzy
 msgid "Event view"
-msgstr "Γεγονότα"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:90
 #: ../../enterprise/operation/metaconsole/eventview.php:102
-#: ../../operation/events/events.php:404 ../../operation/events/events.php:416
-#: ../../godmode/reporting/reporting_builder.list_items.php:132
+#: ../../operation/events/events.php:407 ../../operation/events/events.php:419
+#: ../../godmode/reporting/reporting_builder.list_items.php:129
 #: ../../godmode/agentes/module_manager.php:225
 #: ../../include/functions_events.php:283
 msgid "S."
@@ -2007,9 +2013,9 @@ msgstr ""
 #: ../../enterprise/operation/metaconsole/eventview.php:93
 #: ../../enterprise/operation/agentes/ver_agente.php:20
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:66
-#: ../../enterprise/godmode/policies/policy_modules.php:412
+#: ../../enterprise/godmode/policies/policy_modules.php:409
 #: ../../operation/servers/view_server.php:53
-#: ../../operation/events/events.php:43 ../../operation/events/events.php:407
+#: ../../operation/events/events.php:43 ../../operation/events/events.php:410
 #: ../../operation/agentes/status_monitor.php:178
 #: ../../operation/agentes/ver_agente.php:205
 #: ../../operation/agentes/estado_monitores.php:146
@@ -2028,33 +2034,33 @@ msgstr ""
 #: ../../godmode/alerts/alert_templates.php:191
 #: ../../godmode/reporting/reporting_builder.item_editor.php:220
 #: ../../godmode/reporting/reporting_builder.list_items.php:97
-#: ../../godmode/reporting/reporting_builder.list_items.php:133
+#: ../../godmode/reporting/reporting_builder.list_items.php:130
 #: ../../godmode/agentes/module_manager.php:228
 #: ../../godmode/agentes/module_manager_editor_common.php:127
 #: ../../godmode/agentes/agent_template.php:129
-#: ../../include/functions_reporting.php:1105
+#: ../../include/functions_reporting.php:1102
 #: ../../include/functions_events.php:286
 msgid "Type"
 msgstr "Τύπος"
 
 #: ../../enterprise/operation/metaconsole/eventview.php:93
-#: ../../operation/events/events.php:407
+#: ../../operation/events/events.php:410
 msgid "T."
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:97
 #: ../../enterprise/include/functions_reporting_pdf.php:575
-#: ../../operation/events/events.php:411
-#: ../../include/functions_reporting.php:682
-#: ../../include/functions_reporting.php:1335
-#: ../../include/functions_reporting.php:1390
-#: ../../include/functions_reporting.php:1448
+#: ../../operation/events/events.php:414
+#: ../../include/functions_reporting.php:679
+#: ../../include/functions_reporting.php:1332
+#: ../../include/functions_reporting.php:1387
+#: ../../include/functions_reporting.php:1445
 #: ../../include/functions_events.php:290
 msgid "Event name"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:99
-#: ../../operation/events/events.php:413
+#: ../../operation/events/events.php:416
 #: ../../operation/agentes/estado_generalagente.php:70
 #: ../../godmode/agentes/modificar_agente.php:217
 #: ../../godmode/agentes/agent_manager.php:98 ../../godmode/db/db_info.php:81
@@ -2063,13 +2069,13 @@ msgid "Agent name"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:105
-#: ../../operation/events/events.php:419
+#: ../../operation/events/events.php:422
 msgid "G."
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:108
 #: ../../enterprise/include/functions_reporting_pdf.php:579
-#: ../../operation/events/events.php:56 ../../operation/events/events.php:429
+#: ../../operation/events/events.php:56 ../../operation/events/events.php:432
 #: ../../operation/snmpconsole/snmp_view.php:277
 #: ../../operation/messages/message.php:192
 #: ../../operation/agentes/status_monitor.php:195
@@ -2079,17 +2085,17 @@ msgstr ""
 #: ../../operation/agentes/estado_ultimopaquete.php:175
 #: ../../godmode/setup/news.php:131
 #: ../../extensions/update_manager/main.php:75
-#: ../../include/functions_reporting.php:684
-#: ../../include/functions_reporting.php:1339
-#: ../../include/functions_reporting.php:1393
-#: ../../include/functions_reporting.php:1452
+#: ../../include/functions_reporting.php:681
+#: ../../include/functions_reporting.php:1336
+#: ../../include/functions_reporting.php:1390
+#: ../../include/functions_reporting.php:1449
 #: ../../include/functions_events.php:298
 msgid "Timestamp"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:158
-#: ../../operation/events/events.php:48 ../../operation/events/events.php:500
-#: ../../operation/events/events.php:535
+#: ../../operation/events/events.php:48 ../../operation/events/events.php:503
+#: ../../operation/events/events.php:538
 #: ../../operation/events/events_rss.php:134 ../../godmode/setup/setup.php:83
 #: ../../include/fgraph.php:944 ../../include/functions.php:773
 #: ../../include/functions_events.php:364
@@ -2098,7 +2104,7 @@ msgstr "Σύστημα"
 
 #: ../../enterprise/operation/metaconsole/eventview.php:167
 #: ../../enterprise/godmode/policies/policy_alerts.php:93
-#: ../../operation/events/events.php:53 ../../operation/events/events.php:507
+#: ../../operation/events/events.php:53 ../../operation/events/events.php:510
 #: ../../operation/events/events_rss.php:141
 #: ../../operation/snmpconsole/snmp_view.php:198
 #: ../../operation/snmpconsole/snmp_view.php:281
@@ -2109,18 +2115,18 @@ msgid "Alert"
 msgstr "Alert"
 
 #: ../../enterprise/operation/metaconsole/eventview.php:167
-#: ../../operation/events/events.php:53 ../../operation/events/events.php:507
+#: ../../operation/events/events.php:53 ../../operation/events/events.php:510
 #: ../../operation/events/events_rss.php:141
 msgid "SNMP"
 msgstr "SNMP"
 
 #: ../../enterprise/operation/metaconsole/eventview.php:174
-#: ../../operation/events/events.php:514
+#: ../../operation/events/events.php:517
 msgid "Go to data overview"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/eventview.php:180
-#: ../../operation/events/events.php:520
+#: ../../operation/events/events.php:523
 msgid "Go to alert overview"
 msgstr ""
 
@@ -2135,9 +2141,9 @@ msgid "Error updating command %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:105
-#, fuzzy, php-format
+#, php-format
 msgid "Updated command %s"
-msgstr "Εντολή"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:112
 #, php-format
@@ -2145,9 +2151,9 @@ msgid "Error creating command %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:114
-#, fuzzy, php-format
+#, php-format
 msgid "Created command %s"
-msgstr "Εντολή"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:141
 #, php-format
@@ -2155,9 +2161,9 @@ msgid "Error updating action %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:143
-#, fuzzy, php-format
+#, php-format
 msgid "Updated action %s"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:153
 #, php-format
@@ -2165,9 +2171,9 @@ msgid "Error creating action %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:155
-#, fuzzy, php-format
+#, php-format
 msgid "Created action %s"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:203
 #, php-format
@@ -2175,9 +2181,9 @@ msgid "Error updating template %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:205
-#, fuzzy, php-format
+#, php-format
 msgid "Updated template %s"
-msgstr "Πρότυπο"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:215
 #, php-format
@@ -2185,15 +2191,14 @@ msgid "Error creating template %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/alertmanager.php:217
-#, fuzzy, php-format
+#, php-format
 msgid "Created template %s"
-msgstr "Πρότυπο"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:33
 #: ../../enterprise/operation/menu.php:64
-#, fuzzy
 msgid "User manager"
-msgstr "Όνομα χρήστη"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:92
 #, php-format
@@ -2201,9 +2206,9 @@ msgid "Error updating user %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:94
-#, fuzzy, php-format
+#, php-format
 msgid "Updated user %s"
-msgstr "Ενημέρωση όλων"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:101
 #, php-format
@@ -2211,12 +2216,13 @@ msgid "Error creating user %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:103
-#, fuzzy, php-format
+#, php-format
 msgid "Created user %s"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:147
-#: ../../operation/search_results.php:461
+#: ../../operation/search_results.php.old:452
+#: ../../operation/search_results.php:62
 msgid "Users"
 msgstr "Χρήστες"
 
@@ -2227,7 +2233,6 @@ msgid "Target"
 msgstr "Στόχος"
 
 #: ../../enterprise/operation/metaconsole/usermanager.php:161
-#: ../../operation/users/user.php:198
 #: ../../godmode/profiles/profile_list.php:227
 #: ../../godmode/users/user_list.php:229
 msgid "Profiles"
@@ -2249,9 +2254,9 @@ msgid "Created policy %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:110
-#, fuzzy, php-format
+#, php-format
 msgid "Updated module %s"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:111
 #, php-format
@@ -2259,24 +2264,24 @@ msgid "Error updating module %s"
 msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:118
-#, fuzzy, php-format
+#, php-format
 msgid "Created module %s"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:119
-#, fuzzy, php-format
+#, php-format
 msgid "Error creating module %s"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:126
-#, fuzzy, php-format
+#, php-format
 msgid "Deleted module %s"
-msgstr "Επιλέξτε"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:127
-#, fuzzy, php-format
+#, php-format
 msgid "Error deleting module %s"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/operation/metaconsole/policymanager.php:168
 #, php-format
@@ -2305,7 +2310,7 @@ msgstr ""
 #: ../../enterprise/godmode/massive/massive_add_alerts_policy.php:88
 #: ../../operation/agentes/alerts_status.php:210
 #: ../../operation/agentes/alerts_status.php:238
-#: ../../godmode/alerts/alert_list.list.php:288
+#: ../../godmode/alerts/alert_list.list.php:283
 #: ../../godmode/agentes/module_manager.php:224
 msgid "Policy"
 msgstr ""
@@ -2324,9 +2329,9 @@ msgstr ""
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:35
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:370
 #: ../../enterprise/extensions/dict.php:75
-#: ../../operation/events/events.php:313
+#: ../../operation/events/events.php:316
 #: ../../operation/agentes/exportdata.php:302
-#: ../../godmode/alerts/alert_list.list.php:61
+#: ../../godmode/alerts/alert_list.list.php:57
 #: ../../godmode/alerts/alert_list.builder.php:45
 #: ../../godmode/reporting/reporting_builder.item_editor.php:276
 #: ../../godmode/agentes/agent_manager.php:135
@@ -2342,9 +2347,8 @@ msgstr ""
 
 #: ../../enterprise/operation/inventory/inventory.php:165
 #: ../../enterprise/operation/inventory/inventory.php:174
-#, fuzzy
 msgid "No data find."
-msgstr "Ορίστηκαν οι προειδοποιήσεις"
+msgstr ""
 
 #: ../../enterprise/operation/inventory/inventory.php:277
 #: ../../enterprise/operation/agentes/agent_inventory.php:150
@@ -2356,13 +2360,13 @@ msgstr "Σύνολο"
 #: ../../enterprise/operation/inventory/inventory.php:317
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:425
 #: ../../enterprise/extensions/dict.php:118
-#: ../../operation/events/events.php:632
+#: ../../operation/events/events.php:635
 #: ../../operation/agentes/exportdata.php:389
-#: ../../godmode/alerts/alert_list.list.php:501
+#: ../../godmode/alerts/alert_list.list.php:496
 #: ../../godmode/alerts/alert_list.builder.php:131
 #: ../../godmode/reporting/visual_console_builder.elements.php:182
 #: ../../godmode/reporting/visual_console_builder.editor.php:89
-#: ../../godmode/agentes/agent_manager.php:299
+#: ../../godmode/agentes/agent_manager.php:342
 #: ../../godmode/gis_maps/configure_gis_map.php:552
 #: ../../extensions/users_connected.php:36
 #: ../../extensions/users_connected.php:81
@@ -2370,25 +2374,23 @@ msgid "IP"
 msgstr "Διεύθυνση IP"
 
 #: ../../enterprise/operation/services/services.php:28
-#: ../../enterprise/include/functions_policies.php:1233
+#: ../../enterprise/include/functions_policies.php:1257
 #: ../../operation/visual_console/render_view.php:68
 #: ../../operation/gis_maps/render_view.php:98
 #: ../../godmode/reporting/graph_builder.php:159
-#: ../../godmode/agentes/configurar_agente.php:214 ../../godmode/menu.php:190
+#: ../../godmode/agentes/configurar_agente.php:229 ../../godmode/menu.php:196
 msgid "Setup"
 msgstr ""
 
 #: ../../enterprise/operation/services/services.php:31
 #: ../../enterprise/godmode/services/manage_services.php:70
-#, fuzzy
 msgid "List Services"
-msgstr "Επώνυμο:"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:32
 #: ../../enterprise/operation/menu.php:24 ../../enterprise/godmode/menu.php:53
-#, fuzzy
 msgid "Services"
-msgstr "Σοβαρές"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:44
 #: ../../enterprise/godmode/services/manage_services.main.php:25
@@ -2417,20 +2419,23 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/collections.php:186
 #: ../../enterprise/extensions/backup/main.php:48
 #: ../../enterprise/extensions/backup/main.php:141
-#: ../../operation/users/user.php:104 ../../operation/events/events.php:60
+#: ../../operation/search_users.php:184 ../../operation/events/events.php:60
+#: ../../operation/search_results.php.old:584
+#: ../../operation/search_results.php.old:705
+#: ../../operation/search_results.php.old:734
+#: ../../operation/search_reports.php:54
 #: ../../operation/incidents/incident_detail.php:368
 #: ../../operation/incidents/incident_detail.php:413
 #: ../../operation/reporting/custom_reporting.php:39
 #: ../../operation/reporting/graph_viewer.php:147
+#: ../../operation/search_graphs.php:57
+#: ../../operation/agentes/custom_fields.php:47
 #: ../../operation/agentes/estado_monitores.php:152
 #: ../../operation/agentes/estado_ultimopaquete.php:168
 #: ../../operation/agentes/estado_generalagente.php:110
 #: ../../operation/agentes/alerts_status.php:342
 #: ../../operation/agentes/alerts_status.php:348
 #: ../../operation/agentes/gis_view.php:111
-#: ../../operation/search_results.php:616
-#: ../../operation/search_results.php:737
-#: ../../operation/search_results.php:766
 #: ../../operation/gis_maps/ajax.php:152
 #: ../../godmode/servers/modificar_server.php:46
 #: ../../godmode/servers/modificar_server.php:99
@@ -2455,16 +2460,16 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:66
 #: ../../godmode/reporting/graph_builder.main.php:109
 #: ../../godmode/reporting/reporting_builder.item_editor.php:234
-#: ../../godmode/reporting/reporting_builder.list_items.php:149
+#: ../../godmode/reporting/reporting_builder.list_items.php:146
 #: ../../godmode/agentes/module_manager.php:234
 #: ../../godmode/agentes/modificar_agente.php:230
 #: ../../godmode/agentes/planned_downtime.php:150
 #: ../../godmode/agentes/planned_downtime.php:273
 #: ../../godmode/agentes/module_manager_editor_common.php:185
-#: ../../godmode/agentes/agent_manager.php:176
+#: ../../godmode/agentes/agent_manager.php:172
 #: ../../godmode/agentes/agent_template.php:130
 #: ../../extensions/update_manager/main.php:78
-#: ../../include/functions_reporting.php:1106
+#: ../../include/functions_reporting.php:1103
 msgid "Description"
 msgstr "Περιγραφή"
 
@@ -2472,13 +2477,13 @@ msgstr "Περιγραφή"
 #: ../../operation/snmpconsole/snmp_view.php:265
 #: ../../godmode/alerts/configure_alert_template.php:465
 #: ../../godmode/massive/massive_edit_modules.php:197
-#: ../../include/functions_reporting.php:1107
+#: ../../include/functions_reporting.php:1104
 msgid "Value"
 msgstr "Τιμή"
 
 #: ../../enterprise/operation/services/services.php:85
 #: ../../operation/gis_maps/render_view.php:123
-#: ../../godmode/agentes/agent_manager.php:216
+#: ../../godmode/agentes/agent_manager.php:227
 msgid "Ok"
 msgstr "ΟΚ"
 
@@ -2494,33 +2499,28 @@ msgstr ""
 
 #: ../../enterprise/operation/services/services.php:137
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:44
-#, fuzzy
 msgid "Agent Name"
-msgstr "Ατζέντης"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:138
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:45
-#, fuzzy
 msgid "Module Name"
-msgstr "Άρθρωμα"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:140
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:47
-#, fuzzy
 msgid "Weight Critical"
-msgstr "Κρίσιμο"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:141
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:48
-#, fuzzy
 msgid "Weight Warning"
-msgstr "Προειδοποίηση"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:142
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:49
-#, fuzzy
 msgid "Weight Ok"
-msgstr "Ύψος"
+msgstr ""
 
 #: ../../enterprise/operation/services/services.php:143
 #: ../../enterprise/godmode/agentes/collections.data.php:42
@@ -2539,7 +2539,7 @@ msgstr "Ύψος"
 #: ../../operation/agentes/estado_monitores.php:156
 #: ../../operation/agentes/estado_ultimopaquete.php:169
 #: ../../operation/agentes/gis_view.php:119
-#: ../../godmode/reporting/visual_console_builder.php:210
+#: ../../godmode/reporting/visual_console_builder.php:211
 msgid "Data"
 msgstr "Δεδομένα"
 
@@ -2549,7 +2549,7 @@ msgstr "Δεδομένα"
 #: ../../operation/agentes/status_monitor.php:238
 #: ../../operation/agentes/estado_monitores.php:211
 #: ../../operation/agentes/estado_monitores.php:228
-#: ../../extensions/agents_modules.php:202
+#: ../../extensions/agents_modules.php:249
 msgid "WARNING"
 msgstr ""
 
@@ -2559,7 +2559,7 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:235
 #: ../../operation/agentes/estado_monitores.php:208
 #: ../../operation/agentes/estado_monitores.php:224
-#: ../../extensions/agents_modules.php:199
+#: ../../extensions/agents_modules.php:246
 msgid "CRITICAL"
 msgstr ""
 
@@ -2569,7 +2569,7 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:232
 #: ../../operation/agentes/estado_monitores.php:214
 #: ../../operation/agentes/estado_monitores.php:220
-#: ../../extensions/agents_modules.php:196
+#: ../../extensions/agents_modules.php:243
 msgid "NORMAL"
 msgstr ""
 
@@ -2600,9 +2600,8 @@ msgstr ""
 #: ../../enterprise/operation/agentes/ver_agente.php:179
 #: ../../enterprise/godmode/agentes/collection_manager.php:25
 #: ../../enterprise/godmode/agentes/collections.php:184
-#, fuzzy
 msgid "Collection"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/collection_view.php:45
 #: ../../enterprise/godmode/agentes/collection_manager.php:35
@@ -2613,7 +2612,7 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/collection_manager.php:106
 #: ../../operation/agentes/alerts_status.php:210
 #: ../../operation/agentes/alerts_status.php:238
-#: ../../godmode/alerts/alert_list.list.php:288
+#: ../../godmode/alerts/alert_list.list.php:283
 #: ../../godmode/agentes/module_manager.php:224
 msgid "P."
 msgstr ""
@@ -2626,18 +2625,16 @@ msgstr ""
 #: ../../enterprise/operation/agentes/collection_view.php:78
 #: ../../enterprise/godmode/agentes/collection_manager.php:84
 #: ../../enterprise/godmode/agentes/collection_manager.php:135
-#, fuzzy
 msgid "Show files"
-msgstr "Προφίλ"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/collection_view.php:86
 #: ../../enterprise/godmode/policies/policy_collections.php:94
 #: ../../enterprise/godmode/policies/policy_collections.php:142
 #: ../../enterprise/godmode/agentes/collection_manager.php:92
 #: ../../enterprise/godmode/agentes/collection_manager.php:149
-#, fuzzy
 msgid "Outdate"
-msgstr "Ενημέρωση"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/ver_agente.php:23
 #: ../../enterprise/extensions/tree_view.php:626
@@ -2648,6 +2645,7 @@ msgstr "Ενημέρωση"
 #: ../../godmode/modules/manage_network_components_form_wmi.php:101
 #: ../../godmode/agentes/module_manager_editor_common.php:148
 #: ../../godmode/massive/massive_edit_modules.php:202
+#: ../../extensions/agents_modules.php:65
 msgid "Module group"
 msgstr ""
 
@@ -2669,14 +2667,13 @@ msgstr ""
 #: ../../enterprise/operation/agentes/ver_agente.php:141
 #: ../../operation/agentes/ver_agente.php:185
 #: ../../operation/agentes/tactical.php:151 ../../include/fgraph.php:2503
-#: ../../include/functions_reporting.php:953
+#: ../../include/functions_reporting.php:950
 msgid "Alerts fired"
 msgstr "Ξεκίνησαν ειδοποιήσεις"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:37
-#, fuzzy
 msgid "Pandora agents "
-msgstr "Συνολικοί πράκτορες"
+msgstr ""
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:48
 #: ../../enterprise/godmode/agentes/inventory_manager.php:154
@@ -2710,14 +2707,12 @@ msgstr ""
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:24
 #: ../../enterprise/godmode/agentes/inventory_manager.php:146
 #: ../../enterprise/godmode/menu.php:25
-#, fuzzy
 msgid "Inventory modules"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:43
-#, fuzzy
 msgid "Successfully created inventory module"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:45
 msgid "Error creating inventory module"
@@ -2725,9 +2720,8 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:53
 #: ../../enterprise/godmode/agentes/inventory_manager.php:72
-#, fuzzy
 msgid "Successfully updated inventory module"
-msgstr "Επιτυχής αναβάθμιση"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:55
 #: ../../enterprise/godmode/agentes/inventory_manager.php:74
@@ -2736,9 +2730,8 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:62
 #: ../../enterprise/godmode/agentes/inventory_manager.php:56
-#, fuzzy
 msgid "Successfully deleted inventory module"
-msgstr "Διεγράφη επιτυχώς"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:64
 #: ../../enterprise/godmode/agentes/inventory_manager.php:58
@@ -2764,13 +2757,13 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/mysql_builder.php:36
 #: ../../enterprise/godmode/reporting/mysql_builder.php:43
 #: ../../enterprise/godmode/policies/policies.php:125
-#: ../../enterprise/godmode/policies/policies.php:183
-#: ../../enterprise/godmode/policies/policy_modules.php:451
+#: ../../enterprise/godmode/policies/policies.php:186
+#: ../../enterprise/godmode/policies/policy_modules.php:440
 #: ../../enterprise/godmode/agentes/inventory_manager.php:175
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:153
 #: ../../enterprise/extensions/cron/main.php:179
 #: ../../enterprise/extensions/backup/main.php:118
-#: ../../operation/events/events.php:593
+#: ../../operation/events/events.php:596
 #: ../../operation/snmpconsole/snmp_view.php:379
 #: ../../operation/snmpconsole/snmp_view.php:421
 #: ../../operation/snmpconsole/snmp_view.php:442
@@ -2789,7 +2782,7 @@ msgstr ""
 #: ../../godmode/setup/news.php:132 ../../godmode/setup/links.php:114
 #: ../../godmode/setup/gis.php:64 ../../godmode/snmpconsole/snmp_alert.php:306
 #: ../../godmode/snmpconsole/snmp_filters.php:128
-#: ../../godmode/alerts/alert_list.list.php:292
+#: ../../godmode/alerts/alert_list.list.php:287
 #: ../../godmode/alerts/alert_templates.php:227
 #: ../../godmode/alerts/alert_actions.php:119
 #: ../../godmode/alerts/alert_compounds.php:167
@@ -2801,8 +2794,9 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:69
 #: ../../godmode/reporting/reporting_builder.php:97
 #: ../../godmode/reporting/map_builder.php:109
-#: ../../godmode/reporting/reporting_builder.list_items.php:234
+#: ../../godmode/reporting/reporting_builder.list_items.php:237
 #: ../../godmode/extensions.php:48
+#: ../../godmode/agentes/fields_manager.php:117
 #: ../../godmode/agentes/module_manager.php:340
 #: ../../godmode/agentes/module_manager.php:362
 #: ../../godmode/agentes/modificar_agente.php:231
@@ -2830,7 +2824,7 @@ msgstr "Διαγραφή"
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:206
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:18
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:81
-#: ../../enterprise/godmode/policies/policies.php:195
+#: ../../enterprise/godmode/policies/policies.php:198
 #: ../../enterprise/godmode/policies/policy_modules.php:184
 #: ../../enterprise/godmode/policies/configure_policy.php:73
 #: ../../enterprise/godmode/agentes/collections.data.php:37
@@ -2863,7 +2857,7 @@ msgstr "Διαγραφή"
 #: ../../godmode/snmpconsole/snmp_filters.php:96
 #: ../../godmode/snmpconsole/snmp_filters.php:142
 #: ../../godmode/alerts/configure_alert_command.php:69
-#: ../../godmode/alerts/alert_list.list.php:470
+#: ../../godmode/alerts/alert_list.list.php:465
 #: ../../godmode/alerts/alert_list.php:185
 #: ../../godmode/alerts/configure_alert_action.php:96
 #: ../../godmode/alerts/alert_templates.php:241
@@ -2876,7 +2870,8 @@ msgstr "Διαγραφή"
 #: ../../godmode/agentes/module_manager_editor.php:312
 #: ../../godmode/agentes/module_manager.php:62
 #: ../../godmode/agentes/planned_downtime.php:324
-#: ../../godmode/agentes/agent_manager.php:234
+#: ../../godmode/agentes/configure_field.php:59
+#: ../../godmode/agentes/agent_manager.php:277
 #: ../../godmode/gis_maps/index.php:103
 #: ../../include/functions_filemanager.php:519
 #: ../../include/functions_filemanager.php:548
@@ -2886,9 +2881,8 @@ msgstr "Δημιουργία"
 
 #: ../../enterprise/godmode/modules/configure_local_component.php:68
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:156
-#, fuzzy
 msgid "Configuration"
-msgstr "Πληροφοριακό"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:41
 #: ../../enterprise/godmode/agentes/inventory_manager.php:90
@@ -2896,9 +2890,8 @@ msgid "Inventory module error"
 msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:77
-#, fuzzy
 msgid "Format"
-msgstr "Κανονικό"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:78
 msgid "separate fields with "
@@ -2909,9 +2902,8 @@ msgid "Code"
 msgstr "Κώδικας"
 
 #: ../../enterprise/godmode/modules/local_components.php:76
-#, fuzzy
 msgid "Component"
-msgstr "Σχόλια"
+msgstr ""
 
 #: ../../enterprise/godmode/modules/local_components.php:88
 #: ../../godmode/modules/manage_network_components.php:80
@@ -2937,8 +2929,8 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:76
 #: ../../godmode/alerts/alert_commands.php:58
 #: ../../godmode/agentes/planned_downtime.php:117
-#: ../../godmode/agentes/configurar_agente.php:191
-#: ../../godmode/agentes/configurar_agente.php:328
+#: ../../godmode/agentes/configurar_agente.php:206
+#: ../../godmode/agentes/configurar_agente.php:343
 msgid "Could not be created"
 msgstr "Δεν μπόρεσε να δημιουργηθεί"
 
@@ -2946,7 +2938,7 @@ msgstr "Δεν μπόρεσε να δημιουργηθεί"
 #: ../../enterprise/godmode/modules/local_components.php:156
 #: ../../enterprise/godmode/policies/policies.php:76
 #: ../../enterprise/godmode/policies/policies.php:92
-#: ../../enterprise/godmode/policies/policy_modules.php:374
+#: ../../enterprise/godmode/policies/policy_modules.php:371
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:59
 #: ../../operation/snmpconsole/snmp_view.php:77
 #: ../../operation/incidents/incident.php:99
@@ -2974,9 +2966,8 @@ msgid "Duplicate"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.setup.php:35
-#, fuzzy
 msgid "Create Service"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.setup.php:38
 msgid "Edit Service"
@@ -2987,33 +2978,29 @@ msgid "Edit Service Element"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:27
-#, fuzzy
 msgid "Create Service Element"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:44
 msgid "First select an agent"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:51
-#, fuzzy
 msgid "Critical weight"
-msgstr "Κρίσιμο"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:54
-#, fuzzy
 msgid "Warning weight"
-msgstr "Προειδοποίηση"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_element.php:57
-#, fuzzy
 msgid "Ok weight"
-msgstr "Ύψος"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.php:67
 #: ../../godmode/reporting/graphs.php:69
 #: ../../godmode/agentes/modificar_agente.php:284
-#: ../../godmode/agentes/configurar_agente.php:204
+#: ../../godmode/agentes/configurar_agente.php:219
 #: ../../godmode/gis_maps/index.php:65
 msgid "View"
 msgstr "Προβολή"
@@ -3023,9 +3010,8 @@ msgid "Service Editor"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.php:80
-#, fuzzy
 msgid "Monitors editor"
-msgstr "Οθόνη"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.php:87
 msgid "Service management"
@@ -3052,9 +3038,8 @@ msgid "Service deleted successfully"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.php:110
-#, fuzzy
 msgid "Error deleting service"
-msgstr "Διαγραφή"
+msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.php:117
 msgid "Service element created successfully"
@@ -3081,9 +3066,8 @@ msgid "Error deleting service element"
 msgstr ""
 
 #: ../../enterprise/godmode/services/manage_services.edit_elements.php:63
-#, fuzzy
 msgid "Delete service element"
-msgstr "Διαγραφή επιλεγμένου"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:42
 #: ../../enterprise/godmode/menu.php:62
@@ -3135,9 +3119,8 @@ msgid "No"
 msgstr "Όχι"
 
 #: ../../enterprise/godmode/setup/setup_history.php:51
-#, fuzzy
 msgid "Host"
-msgstr "Ώρες"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:54
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:224
@@ -3152,19 +3135,16 @@ msgstr "Θύρα"
 #: ../../enterprise/godmode/setup/setup_auth.php:67
 #: ../../enterprise/godmode/setup/setup_auth.php:83
 #: ../../enterprise/godmode/setup/setup_auth.php:99
-#, fuzzy
 msgid "Database name"
-msgstr "Βάση δεδομένων"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:60
-#, fuzzy
 msgid "Database user"
-msgstr "Βάση δεδομένων"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:63
-#, fuzzy
 msgid "Database password"
-msgstr "Βάση δεδομένων"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:66
 #: ../../godmode/alerts/alert_templates.php:68
@@ -3189,29 +3169,25 @@ msgid "Step"
 msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_history.php:72
-#, fuzzy
 msgid "Delay"
-msgstr "Del"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:29
 msgid "Metaconsole setup"
 msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:104
-#, fuzzy
 msgid "Pandora FMS Metaconsole item edition"
-msgstr "Το σύστημα βοήθειας της Πανδώρας FMS"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:107
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:169
-#, fuzzy
 msgid "Server name"
-msgstr "Όνομα χρήστη"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:114
-#, fuzzy
 msgid "Auth token"
-msgstr "Δημιουργός"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:119
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:170
@@ -3224,22 +3200,20 @@ msgid "DB Host"
 msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:129
-#, fuzzy
 msgid "DB Name"
-msgstr "Όνομα"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:134
-#, fuzzy
 msgid "DB User"
-msgstr "Χρήστης"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:138
-#, fuzzy
 msgid "DB Password"
-msgstr "Κωδικός πρόσβασης"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_metaconsole.php:172
-#: ../../operation/users/user.php:160 ../../operation/search_results.php:629
+#: ../../operation/search_users.php:194
+#: ../../operation/search_results.php.old:597
 #: ../../godmode/users/user_list.php:171
 msgid "Admin"
 msgstr "Διαχειριστής"
@@ -3253,21 +3227,19 @@ msgid "Add new ACL element to profile"
 msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:76
-#, fuzzy
 msgid "Section"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:81
-#, fuzzy
 msgid "Page"
-msgstr "Εικόνα"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:92
-#, fuzzy
 msgid "Filter by profile"
-msgstr "Φίλτρο"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:96
+#: ../../enterprise/godmode/policies/policy_linking.php:41
 #: ../../operation/incidents/incident.php:179
 #: ../../operation/agentes/alerts_status.functions.php:62
 #: ../../godmode/modules/manage_network_templates_form.php:202
@@ -3287,9 +3259,8 @@ msgid "Profile name"
 msgstr "Όνομα προφίλ"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:109
-#, fuzzy
 msgid "Section code"
-msgstr "Επιλέξτε"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_acl.php:110
 msgid "Page code"
@@ -3300,9 +3271,8 @@ msgid "Active directory"
 msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:34
-#, fuzzy
 msgid "Remote Pandora FMS"
-msgstr "Pandora FMS"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:35
 msgid "Remote Babel Enterprise"
@@ -3322,26 +3292,22 @@ msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:52
 #: ../../godmode/setup/setup_auth.php:68
-#, fuzzy
 msgid "Start TLS"
-msgstr "Ξεκίνησε"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:55
-#, fuzzy
 msgid "Domain"
-msgstr "Φόρτωση"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:63
-#, fuzzy
 msgid "Pandora FMS host"
-msgstr "Pandora FMS"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:65
 #: ../../enterprise/godmode/setup/setup_auth.php:81
 #: ../../enterprise/godmode/setup/setup_auth.php:97
-#, fuzzy
 msgid "MySQL port"
-msgstr "Θύρα"
+msgstr ""
 
 #: ../../enterprise/godmode/setup/setup_auth.php:79
 msgid "Babel Enterprise host"
@@ -3382,27 +3348,24 @@ msgid "Error parsing MIB"
 msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:102
-#, fuzzy
 msgid "Successfully added trap custom values"
-msgstr "Οι πράκτορες προστέθηκαν επιτυχώς στην διάταξη"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:104
 msgid "Error adding trap custom values"
 msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:114
-#, fuzzy
 msgid "Successfully updated trap custom values"
-msgstr "Επιτυχής αναβάθμιση"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:116
 msgid "Error updating trap custom values"
 msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:123
-#, fuzzy
 msgid "Successfully deleted trap custom values"
-msgstr "Διεγράφη επιτυχώς"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:125
 msgid "Error deleting trap custom values"
@@ -3413,14 +3376,12 @@ msgid "Unsupported file type"
 msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:142
-#, fuzzy
 msgid "Load MIB"
-msgstr "Φόρτος"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:144
-#, fuzzy
 msgid "Upload MIB"
-msgstr "Λάθος ονόματος"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:165
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:49
@@ -3435,9 +3396,8 @@ msgstr "OID"
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:166
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:58
-#, fuzzy
 msgid "Custom OID"
-msgstr "Προσαρμοσμένο"
+msgstr ""
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:170
 #: ../../enterprise/godmode/policies/policy_alerts.php:95
@@ -3446,12 +3406,13 @@ msgstr "Προσαρμοσμένο"
 #: ../../enterprise/extensions/cron/main.php:153
 #: ../../enterprise/extensions/backup/main.php:52
 #: ../../godmode/groups/group_list.php:173
-#: ../../godmode/alerts/alert_list.list.php:78
-#: ../../godmode/alerts/alert_list.list.php:290
+#: ../../godmode/alerts/alert_list.list.php:74
+#: ../../godmode/alerts/alert_list.list.php:285
 #: ../../godmode/alerts/configure_alert_compound.php:355
-#: ../../godmode/alerts/alert_list.builder.php:73 ../../godmode/menu.php:93
-#: ../../include/functions_reporting.php:790
-#: ../../include/functions_reporting.php:871
+#: ../../godmode/alerts/alert_list.builder.php:73
+#: ../../godmode/agentes/fields_manager.php:95 ../../godmode/menu.php:94
+#: ../../include/functions_reporting.php:787
+#: ../../include/functions_reporting.php:868
 #: ../../include/functions_filemanager.php:486
 msgid "Actions"
 msgstr "Ενέργειες"
@@ -3479,10 +3440,10 @@ msgstr ""
 #: ../../godmode/reporting/visual_console_builder.editor.php:77
 #: ../../godmode/reporting/visual_console_builder.editor.php:78
 #: ../../include/functions.php:368
-#: ../../include/functions_custom_graphs.php:113
-#: ../../include/functions_custom_graphs.php:114
-#: ../../include/functions_custom_graphs.php:115
-#: ../../include/functions_custom_graphs.php:116
+#: ../../include/functions_custom_graphs.php:120
+#: ../../include/functions_custom_graphs.php:121
+#: ../../include/functions_custom_graphs.php:122
+#: ../../include/functions_custom_graphs.php:123
 #: ../../include/functions_alerts.php:366
 #: ../../include/functions_alerts.php:367
 #: ../../include/functions_alerts.php:368
@@ -3560,9 +3521,8 @@ msgstr ""
 #: ../../enterprise/godmode/policies/policy_agents.php:154
 #: ../../enterprise/godmode/policies/policy_agents.php:156
 #: ../../godmode/reporting/graph_builder.graph_editor.php:119
-#, fuzzy
 msgid "Filter group"
-msgstr "Φίλτρο"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:22
 #: ../../enterprise/godmode/reporting/mysql_builder.php:119
@@ -3574,15 +3534,13 @@ msgid "There are no defined custom SQL"
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:56
-#, fuzzy
 msgid "Create custom SQL"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:67
 #: ../../enterprise/godmode/reporting/mysql_builder.php:87
-#, fuzzy
 msgid ": Create new custom"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:83
 #: ../../enterprise/godmode/reporting/mysql_builder.php:97
@@ -3591,19 +3549,17 @@ msgid ": Edit: "
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:122
-#, fuzzy
 msgid "Successfully operation"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:122
-#, fuzzy
 msgid "Could not be operation"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:139
 #: ../../enterprise/include/functions_reporting_pdf.php:612
 #: ../../operation/reporting/reporting_xml.php:309
-#: ../../include/functions_reporting.php:1918
+#: ../../include/functions_reporting.php:1915
 msgid "SQL"
 msgstr ""
 
@@ -3619,17 +3575,18 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/collections.editor.php:124
 #: ../../enterprise/extensions/cron/main.php:176
 #: ../../operation/servers/view_server_detail.php:98
-#: ../../operation/search_results.php:781
+#: ../../operation/search_results.php.old:749
+#: ../../operation/search_reports.php:68
 #: ../../godmode/groups/group_list.php:261
-#: ../../godmode/reporting/reporting_builder.list_items.php:232
+#: ../../godmode/reporting/reporting_builder.list_items.php:235
+#: ../../godmode/agentes/fields_manager.php:116
 #: ../../godmode/agentes/modificar_agente.php:272
 msgid "Edit"
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:53
-#, fuzzy
 msgid "Font family"
-msgstr "Σύνδεση απέτυχε"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:56
 #: ../../godmode/setup/setup_visuals.php:88
@@ -3638,37 +3595,34 @@ msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:57
 msgid ""
-"The dir of custom logos is in your www Pandora Console in \"images/"
-"custom_logo\". You can upload more files (ONLY JPEG) in upload tool in "
-"console."
+"The dir of custom logos is in your www Pandora Console in "
+"\"images/custom_logo\". You can upload more files (ONLY JPEG) in upload tool "
+"in console."
 msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:63
-#, fuzzy
 msgid "Header"
-msgstr "Αποστολέας"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:66
-#, fuzzy
 msgid "First page"
-msgstr "Όνομα:"
+msgstr ""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:69
-#, fuzzy
 msgid "Footer"
-msgstr "Φίλτρο"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_collections.php:20
 #: ../../enterprise/godmode/policies/policy_agents.php:38
 #: ../../enterprise/godmode/policies/policy_alerts.php:24
+#: ../../enterprise/godmode/policies/policy_linking.php:20
 #: ../../enterprise/godmode/policies/policy_queue.php:77
 #: ../../enterprise/godmode/policies/policies.php:87
 #: ../../enterprise/godmode/policies/policy_modules.php:204
 #: ../../enterprise/godmode/policies/configure_policy.php:28
 #: ../../enterprise/godmode/policies/configure_policy.php:30
-#, fuzzy
 msgid "Policies Management"
-msgstr "Πολιτικές"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_collections.php:20
 msgid "Collections in policy"
@@ -3686,12 +3640,11 @@ msgid "Remove"
 msgstr "Αφαίρεση"
 
 #: ../../enterprise/godmode/policies/policy_collections.php:106
-#: ../../enterprise/godmode/policies/policies.php:154
+#: ../../enterprise/godmode/policies/policies.php:157
 #: ../../enterprise/godmode/menu.php:19
-#: ../../enterprise/include/functions_policies.php:1260
-#, fuzzy
+#: ../../enterprise/include/functions_policies.php:1293
 msgid "Collections"
-msgstr "Ενέργειες"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_collections.php:109
 #: ../../enterprise/godmode/agentes/collection_manager.php:41
@@ -3715,14 +3668,12 @@ msgid "Could not apply policy in agent %s"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:86
-#, fuzzy
 msgid "Successfully added to delete queue"
-msgstr "Διεγράφη επιτυχώς"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:87
-#, fuzzy
 msgid "Could not be added to delete queue"
-msgstr "Δεν μπόρεσε να διαγραφεί"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:109
 #: ../../enterprise/godmode/policies/policy_modules.php:284
@@ -3745,14 +3696,12 @@ msgid "Could not be added"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:113
-#, fuzzy
 msgid "Successfully deleted from delete queue"
-msgstr "Διεγράφη επιτυχώς"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:114
-#, fuzzy
 msgid "Could not be deleted from delete queue"
-msgstr "Δεν μπόρεσε να διαγραφεί"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_agents.php:144
 #: ../../godmode/gis_maps/configure_gis_map.php:397
@@ -3771,31 +3720,36 @@ msgstr ""
 msgid "Delete modules from policy"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:278
+#: ../../enterprise/godmode/policies/policy_agents.php:250
+msgid "Unlinked modules"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_agents.php:250
+msgid "U."
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_agents.php:282
 #: ../../godmode/agentes/agent_manager.php:112
 msgid "This agent can be remotely configured"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:283
+#: ../../enterprise/godmode/policies/policy_agents.php:287
 msgid "This agent can not be remotely configured"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:287
-#, fuzzy
+#: ../../enterprise/godmode/policies/policy_agents.php:291
 msgid "Policy applied"
-msgstr "Πολιτικές"
+msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:292
-#, fuzzy
+#: ../../enterprise/godmode/policies/policy_agents.php:296
 msgid "Re-apply"
-msgstr "Απάντηση"
+msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:299
-#, fuzzy
+#: ../../enterprise/godmode/policies/policy_agents.php:303
 msgid "Apply"
-msgstr "Απάντηση"
+msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_agents.php:317
+#: ../../enterprise/godmode/policies/policy_agents.php:336
 #: ../../godmode/reporting/map_builder_wizard.php:48
 #: ../../godmode/massive/massive_delete_alerts.php:53
 #: ../../godmode/massive/massive_delete_action_alerts.php:36
@@ -3808,9 +3762,8 @@ msgid "No agents selected"
 msgstr "Δεν επιλέχθηκαν πράκτορες"
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:24
-#, fuzzy
 msgid "Alerts in policy"
-msgstr "Δεν ξεκίνησαν ειδοποιήσεις"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:38
 msgid "Created successfuly"
@@ -3829,26 +3782,26 @@ msgid "Deleted action successfuly"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:130
-#: ../../godmode/alerts/alert_list.list.php:382
+#: ../../godmode/alerts/alert_list.list.php:377
 #: ../../godmode/alerts/configure_alert_compound.php:384
 msgid "Always"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:132
-#: ../../godmode/alerts/alert_list.list.php:384
+#: ../../godmode/alerts/alert_list.list.php:379
 #: ../../godmode/alerts/configure_alert_compound.php:386
 msgid "On"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:136
-#: ../../godmode/alerts/alert_list.list.php:388
+#: ../../godmode/alerts/alert_list.list.php:383
 #: ../../godmode/alerts/configure_alert_compound.php:389
 msgid "Until"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:138
 #: ../../operation/agentes/gis_view.php:111
-#: ../../godmode/alerts/alert_list.list.php:390
+#: ../../godmode/alerts/alert_list.list.php:385
 #: ../../godmode/alerts/configure_alert_compound.php:391
 #: ../../godmode/alerts/alert_templates.php:89
 #: ../../godmode/agentes/planned_downtime.php:275
@@ -3857,8 +3810,8 @@ msgstr "Από"
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:139
 #: ../../enterprise/godmode/policies/policy_alerts.php:183
-#: ../../godmode/alerts/alert_list.list.php:391
-#: ../../godmode/alerts/alert_list.list.php:458
+#: ../../godmode/alerts/alert_list.list.php:386
+#: ../../godmode/alerts/alert_list.list.php:453
 #: ../../godmode/alerts/configure_alert_compound.php:392
 #: ../../godmode/alerts/alert_templates.php:91
 #: ../../godmode/alerts/alert_list.builder.php:84
@@ -3868,22 +3821,23 @@ msgid "to"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:154
-#: ../../godmode/alerts/alert_list.list.php:412
-#: ../../godmode/alerts/alert_list.list.php:414
+#: ../../godmode/alerts/alert_list.list.php:407
+#: ../../godmode/alerts/alert_list.list.php:409
 msgid "Add action"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:179
 #: ../../enterprise/godmode/policies/policy_modules.php:169
-#: ../../godmode/alerts/alert_list.list.php:454
+#: ../../godmode/alerts/alert_list.list.php:449
 #: ../../godmode/reporting/visual_console_builder.editor.php:176
 #: ../../godmode/agentes/module_manager_editor.php:297
+#: ../../godmode/agentes/agent_manager.php:237
 #: ../../godmode/massive/massive_add_action_alerts.php:106
 msgid "Advanced options"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:181
-#: ../../godmode/alerts/alert_list.list.php:456
+#: ../../godmode/alerts/alert_list.list.php:451
 #: ../../godmode/alerts/alert_list.builder.php:82
 #: ../../godmode/massive/massive_add_action_alerts.php:108
 msgid "Number of alerts match from"
@@ -3903,70 +3857,102 @@ msgid "Alert template"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_alerts.php:212
-#, fuzzy
 msgid "Policy module"
-msgstr "Μονάδες"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:20
+msgid "Linking modules"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:32
+msgid "Success: Update linking modules to policy"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:32
+msgid "Error: Update linking modules to policy"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:39
+msgid "Free text for filter (*)"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:40
+msgid "Free text for filter"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:58
+msgid "List of modules unlinked"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:61
+msgid "Empty list"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:72
+#: ../../enterprise/godmode/policies/policies.php:154
+#: ../../enterprise/include/functions_policies.php:1284
+msgid "Linking"
+msgstr ""
+
+#: ../../enterprise/godmode/policies/policy_linking.php:87
+#: ../../godmode/setup/links.php:96
+msgid "Link"
+msgstr "Σύνδεσμος"
 
 #: ../../enterprise/godmode/policies/policy_queue.php:77
 msgid "Queue of apply all agents in policy"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:102
-#, fuzzy
 msgid "Agents applied"
-msgstr "Ξεκίνησαν ειδοποιήσεις"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:105
-#, fuzzy
 msgid "Apply policies"
-msgstr "Πολιτικές"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:106
 msgid "Re-apply policies"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:133
-#, fuzzy
 msgid "Agents deleted"
-msgstr "Δεν επιλέχθηκαν πράκτορες"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_queue.php:136
-#, fuzzy
 msgid "Delete agents"
-msgstr "Διαγραφή"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policies.php:97
 #: ../../godmode/alerts/alert_actions.php:56
 #: ../../godmode/reporting/map_builder.php:84
 #: ../../godmode/reporting/map_builder.php:92
-#: ../../include/functions_agents.php:464
+#: ../../include/functions_agents.php:465
 msgid "Successfully copied"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policies.php:98
 #: ../../godmode/alerts/alert_actions.php:57
-#, fuzzy
 msgid "Could not be copied"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policies.php:124
-#: ../../enterprise/godmode/policies/policies.php:177
+#: ../../enterprise/godmode/policies/policies.php:180
 #: ../../godmode/alerts/alert_actions.php:118
 #: ../../godmode/reporting/map_builder.php:108
 #: ../../godmode/massive/massive_copy_modules.php:159
 msgid "Copy"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policies.php:163
-#: ../../enterprise/include/functions_policies.php:1269
+#: ../../enterprise/godmode/policies/policies.php:166
+#: ../../enterprise/include/functions_policies.php:1302
 msgid "Queue"
 msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_modules.php:16
-#: ../../enterprise/godmode/policies/policy_modules.php:499
-#, fuzzy
+#: ../../enterprise/godmode/policies/policy_modules.php:488
 msgid "Not needed"
-msgstr "Δεν επιλέχθηκαν πράκτορες"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_modules.php:113
 msgid ""
@@ -3976,15 +3962,14 @@ msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_modules.php:157
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:101
-#, fuzzy
 msgid "Add module"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/policy_modules.php:204
 msgid "Modules in policy"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:373
+#: ../../enterprise/godmode/policies/policy_modules.php:370
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:58
 #: ../../operation/snmpconsole/snmp_view.php:76
 #: ../../operation/incidents/incident.php:98
@@ -3999,50 +3984,49 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:99
 #: ../../godmode/alerts/alert_compounds.php:66
 #: ../../godmode/alerts/alert_commands.php:80
-#: ../../godmode/agentes/configurar_agente.php:418
+#: ../../godmode/agentes/configurar_agente.php:460
 #: ../../godmode/massive/massive_edit_modules.php:97
 msgid "Successfully updated"
 msgstr "Επιτυχής αναβάθμιση"
 
-#: ../../enterprise/godmode/policies/policy_modules.php:377
+#: ../../enterprise/godmode/policies/policy_modules.php:374
 msgid ""
 "The module type in Data configuration is empty, take from combo box of form."
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:380
+#: ../../enterprise/godmode/policies/policy_modules.php:377
 msgid ""
 "The module name in Data configuration is empty, take from text field of form."
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:433
+#: ../../enterprise/godmode/policies/policy_modules.php:430
 msgid "Local component"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:446
+#: ../../enterprise/godmode/policies/policy_modules.php:435
 msgid ""
-"This action del module in policy and\\nin all modules use this policy.\\n"
-"\\nAre you sure?"
+"This action del module in policy and\\nin all modules use this policy.\\n\\"
+"nAre you sure?"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:482
+#: ../../enterprise/godmode/policies/policy_modules.php:471
 #: ../../godmode/agentes/module_manager_editor.php:328
 msgid "No module name provided"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:483
+#: ../../enterprise/godmode/policies/policy_modules.php:472
 #: ../../godmode/agentes/module_manager_editor.php:329
 msgid "No target IP provided"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:484
+#: ../../enterprise/godmode/policies/policy_modules.php:473
 #: ../../godmode/agentes/module_manager_editor.php:330
 msgid "No SNMP OID provided"
 msgstr ""
 
-#: ../../enterprise/godmode/policies/policy_modules.php:565
-#, fuzzy
+#: ../../enterprise/godmode/policies/policy_modules.php:554
 msgid "Variable"
-msgstr "Ανενεργό"
+msgstr ""
 
 #: ../../enterprise/godmode/policies/configure_policy.php:28
 msgid "Setup policy"
@@ -4055,14 +4039,13 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:38
 #: ../../enterprise/godmode/agentes/collection_manager.php:25
 #: ../../godmode/agentes/modificar_agente.php:57
-#: ../../godmode/agentes/configurar_agente.php:290
+#: ../../godmode/agentes/configurar_agente.php:305
 msgid "Agent configuration"
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:46
-#, fuzzy
 msgid "Successfully added inventory module"
-msgstr "Οι πράκτορες προστέθηκαν επιτυχώς στην διάταξη"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:48
 msgid "Error adding inventory module"
@@ -4090,9 +4073,8 @@ msgid "Username"
 msgstr "Όνομα χρήστη"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:130
-#, fuzzy
 msgid "Update all"
-msgstr "Ενημέρωση"
+msgstr "Ενημέρωση όλων"
 
 #: ../../enterprise/godmode/agentes/module_manager.php:12
 msgid "Create a new web Server module"
@@ -4121,9 +4103,8 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/collections.editor.php:226
 #: ../../enterprise/godmode/agentes/collections.editor.php:235
 #: ../../enterprise/include/functions_collection.php:22
-#, fuzzy
 msgid "Files"
-msgstr "Φίλτρο"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:81
 msgid "Unable to create the collection, empty name."
@@ -4136,9 +4117,8 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:111
 #: ../../enterprise/godmode/agentes/collections.data.php:190
-#, fuzzy
 msgid "Correct create collection"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:165
 msgid "Unable to edit the collection, empty name."
@@ -4160,9 +4140,8 @@ msgid ""
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:206
-#, fuzzy
 msgid "Recreate file"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:209
 #: ../../godmode/reporting/visual_console_builder.data.php:49
@@ -4171,9 +4150,8 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.data.php:212
 #: ../../operation/snmpconsole/snmp_view.php:392
-#, fuzzy
 msgid "Description:"
-msgstr "Περιγραφή"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:42
 msgid "Files in "
@@ -4181,9 +4159,8 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:74
 #: ../../enterprise/godmode/agentes/collections.editor.php:118
-#, fuzzy
 msgid "Edit file"
-msgstr "Ενημέρωση όλων"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:75
 #: ../../enterprise/godmode/agentes/collections.editor.php:119
@@ -4201,9 +4178,8 @@ msgid "Security error."
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:162
-#, fuzzy
 msgid "Correct update file."
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.editor.php:162
 msgid "Incorrect update file."
@@ -4214,23 +4190,20 @@ msgid "Please, first save a new collection before to upload files."
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:25
-#, fuzzy
 msgid "Web server module"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:46
 msgid "Web checks"
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:54
-#, fuzzy
 msgid "Timeout"
-msgstr "Χρόνος"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:56
-#, fuzzy
 msgid "Agent browser id"
-msgstr "Λειτουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_web.php:62
 msgid "Requests"
@@ -4263,9 +4236,8 @@ msgid "No component was found"
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_data.php:47
-#, fuzzy
 msgid "Data configuration"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/agent_disk_conf_editor.php:66
 msgid "Error: The conf file of agent is not readble."
@@ -4291,14 +4263,12 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:18
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:30
-#, fuzzy
 msgid "Service"
-msgstr "Αναζήτηση"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/module_manager_editor_prediction.php:31
-#, fuzzy
 msgid "Select Service"
-msgstr "Επιλέξτε"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collection_manager.php:102
 msgid "Collections Applied"
@@ -4309,9 +4279,8 @@ msgid "File of collection is more big than the limit ("
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:97
-#, fuzzy
 msgid "Success: recreate file"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:100
 msgid "Error: recreate file "
@@ -4323,23 +4292,20 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:145
 #: ../../enterprise/godmode/agentes/collections.php:148
-#, fuzzy
 msgid "Successful create collection package."
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:148
 msgid "Can not create collection package."
 msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:198
-#, fuzzy
 msgid "Are you sure to delete?"
-msgstr "Είστε σίγουρος;"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:199
-#, fuzzy
 msgid "Delete collection"
-msgstr "Διαγραφή επιλεγμένου"
+msgstr ""
 
 #: ../../enterprise/godmode/agentes/collections.php:203
 msgid "Re-Apply changes"
@@ -4355,27 +4321,24 @@ msgstr ""
 
 #: ../../enterprise/godmode/menu.php:13
 #: ../../enterprise/godmode/massive/massive_operations.php:16
-#, fuzzy
 msgid "Policies operations"
-msgstr "Ορίστηκαν οι προειδοποιήσεις"
+msgstr ""
 
 #: ../../enterprise/godmode/menu.php:37
 msgid "Local components"
 msgstr ""
 
 #: ../../enterprise/godmode/menu.php:43
-#, fuzzy
 msgid "Manage policies"
-msgstr "Πολιτικές"
+msgstr ""
 
 #: ../../enterprise/godmode/menu.php:68
 msgid "ACL Setup"
 msgstr ""
 
 #: ../../enterprise/godmode/menu.php:76
-#, fuzzy
 msgid "Custom SQL"
-msgstr "Προσαρμοσμένο"
+msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:165
 #: ../../godmode/reporting/map_builder_wizard.php:84
@@ -4389,9 +4352,8 @@ msgid "No agent selected or the agent does not exist"
 msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:202
-#, fuzzy
 msgid "Successfully modules created"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:221
 #: ../../godmode/agentes/module_manager_editor_plugin.php:51
@@ -4491,9 +4453,8 @@ msgid "Auth and privacy method"
 msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:275
-#, fuzzy
 msgid "SNMP Walk"
-msgstr "SNMP"
+msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:278
 #: ../../godmode/agentes/module_manager_editor_network.php:78
@@ -4501,14 +4462,12 @@ msgid "Unable to do SNMP walk"
 msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:339
-#, fuzzy
 msgid "Interfaces"
-msgstr "Διάστημα ανανέωσης"
+msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:359
-#, fuzzy
 msgid "Create modules"
-msgstr "Μονάδες"
+msgstr ""
 
 #: ../../enterprise/godmode/massive/massive_add_modules_snmp.php:399
 #: ../../operation/agentes/exportdata.php:363
@@ -4570,7 +4529,7 @@ msgstr ""
 #: ../../operation/agentes/estado_monitores.php:220
 #: ../../operation/agentes/estado_monitores.php:224
 #: ../../operation/agentes/estado_monitores.php:228
-#: ../../extensions/agents_modules.php:205
+#: ../../extensions/agents_modules.php:252
 msgid "UNKNOWN"
 msgstr ""
 
@@ -4579,9 +4538,8 @@ msgid "<h2>There aren't agents in this agrupation.</h2>"
 msgstr ""
 
 #: ../../enterprise/extensions/tree_view.php:595
-#, fuzzy
 msgid "Sort the agents by"
-msgstr "Συνολικοί πράκτορες"
+msgstr ""
 
 #: ../../enterprise/extensions/tree_view.php:635
 #: ../../operation/agentes/networkmap.php:267
@@ -4594,14 +4552,14 @@ msgid "Monitor status"
 msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:36
-#, fuzzy, php-format
+#, php-format
 msgid "Created agent %s"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:37
-#, fuzzy, php-format
+#, php-format
 msgid "Could not create agent %s"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:41
 msgid "File processed"
@@ -4621,14 +4579,12 @@ msgid "Upload file"
 msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:66
-#, fuzzy
 msgid "Separator"
-msgstr "Δημιουργός"
+msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:70
-#, fuzzy
 msgid "Upload CSV file"
-msgstr "Αρχείο CSV"
+msgstr ""
 
 #: ../../enterprise/extensions/csv_import/main.php:75
 #: ../../include/functions_filemanager.php:535
@@ -4639,18 +4595,16 @@ msgid "Go"
 msgstr ""
 
 #: ../../enterprise/extensions/dict.php:58
-#, fuzzy
 msgid "Configuration could not be saved"
-msgstr "Δεν μπόρεσε να αναβαθμιστεί"
+msgstr ""
 
 #: ../../enterprise/extensions/dict.php:60
 msgid "Configuration saved"
 msgstr ""
 
 #: ../../enterprise/extensions/dict.php:134
-#, fuzzy
 msgid "Dictionary"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../enterprise/extensions/csv_import.php:25
 msgid "CSV import"
@@ -4689,18 +4643,16 @@ msgid "Please, add the following line to your crontab file"
 msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:129
-#, fuzzy
 msgid "Last execution"
-msgstr "Τελευταία εβδομάδα"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:135
 msgid "Cron extension is running"
 msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:144
-#, fuzzy
 msgid "Scheduled jobs"
-msgstr "Προγραμματισμένο"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:150
 #: ../../enterprise/extensions/cron/main.php:199
@@ -4713,17 +4665,16 @@ msgid "Scheduled"
 msgstr "Προγραμματισμένο"
 
 #: ../../enterprise/extensions/cron/main.php:152
-#, fuzzy
 msgid "Last run"
-msgstr "Επώνυμο:"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:161
-#, fuzzy
 msgid "Force run"
-msgstr "Εξαναγκασμός"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:171
-#: ../../operation/search_results.php:607
+#: ../../operation/search_users.php:175
+#: ../../operation/search_results.php.old:575
 msgid "Email"
 msgstr "Ηλεκτρονικό ταχυδρομείο"
 
@@ -4762,9 +4713,8 @@ msgid "Backup Pandora database"
 msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:48
-#, fuzzy
 msgid "Not scheduled"
-msgstr "Προγραμματισμένο"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:49
 msgid "Hourly"
@@ -4779,9 +4729,8 @@ msgid "Weekly"
 msgstr "Εβδομαδιαία"
 
 #: ../../enterprise/extensions/cron/functions.php:52
-#, fuzzy
 msgid "Monthly"
-msgstr "Μήνας"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:53
 msgid "Yearly"
@@ -4796,9 +4745,8 @@ msgid "Open the attached file to view it"
 msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:190
-#, fuzzy
 msgid "Generated at"
-msgstr "Η σελίδα ξεκινάει από"
+msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:194
 msgid "Please do not answer or reply to this email"
@@ -4817,69 +4765,61 @@ msgid "Size"
 msgstr "Μέγεθος"
 
 #: ../../enterprise/extensions/backup/main.php:100
-#, fuzzy
 msgid "Lost"
-msgstr "Σύνδεσμοι"
+msgstr ""
 
 #: ../../enterprise/extensions/backup/main.php:107
-#, fuzzy
 msgid "Download"
-msgstr "Κάτω"
+msgstr ""
 
 #: ../../enterprise/extensions/backup/main.php:126
 msgid "Backups list"
 msgstr ""
 
 #: ../../enterprise/extensions/backup/main.php:131
-#, fuzzy
 msgid "Create backup"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../enterprise/extensions/backup.php:42
-#, fuzzy
 msgid "Backup"
-msgstr "Παρασκήνιο"
+msgstr ""
 
 #: ../../enterprise/include/functions_policies.php:65
 #: ../../include/functions_alerts.php:153
 msgid "copy"
 msgstr ""
 
-#: ../../enterprise/include/functions_policies.php:1158
+#: ../../enterprise/include/functions_policies.php:1182
 msgid "Policy linkation"
 msgstr ""
 
-#: ../../enterprise/include/functions_policies.php:1160
+#: ../../enterprise/include/functions_policies.php:1184
 msgid "Module unlinked"
 msgstr ""
 
-#: ../../enterprise/include/functions_policies.php:1162
+#: ../../enterprise/include/functions_policies.php:1186
 msgid "Relink to policy"
 msgstr ""
 
-#: ../../enterprise/include/functions_policies.php:1164
-#, fuzzy
+#: ../../enterprise/include/functions_policies.php:1188
 msgid "Module Linked"
-msgstr "Άρθρωμα"
+msgstr ""
 
-#: ../../enterprise/include/functions_policies.php:1166
+#: ../../enterprise/include/functions_policies.php:1190
 msgid "Unlink from policy"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:186
-#, fuzzy
 msgid "Contents"
-msgstr "Σχόλια"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:224
-#, fuzzy
 msgid "Page "
-msgstr "Εικόνα"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:224
-#, fuzzy
 msgid " of "
-msgstr " με "
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:383
 #: ../../include/functions_visual_map.php:812
@@ -4898,22 +4838,21 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:881
 #: ../../enterprise/include/functions_reporting_pdf.php:898
 #: ../../enterprise/include/functions_reporting_pdf.php:915
-#, fuzzy
 msgid "Period: "
-msgstr "Περίοδος"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:433
 #: ../../operation/reporting/reporting_xml.php:202
 #: ../../operation/agentes/ver_agente.php:343
 #: ../../operation/agentes/sla_view.php:54
 #: ../../operation/agentes/sla_view.php:118
-#: ../../include/functions_reporting.php:1689 ../../include/functions.php:603
+#: ../../include/functions_reporting.php:1686 ../../include/functions.php:603
 msgid "S.L.A."
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:443
 #: ../../operation/reporting/reporting_xml.php:206
-#: ../../include/functions_reporting.php:1706
+#: ../../include/functions_reporting.php:1703
 msgid "There are no SLAs defined"
 msgstr ""
 
@@ -4927,18 +4866,18 @@ msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:454
 #: ../../godmode/reporting/reporting_builder.item_editor.php:367
-#: ../../include/functions_reporting.php:1719
+#: ../../include/functions_reporting.php:1716
 msgid "SLA Max. (value)"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:455
 #: ../../godmode/reporting/reporting_builder.item_editor.php:366
-#: ../../include/functions_reporting.php:1721
+#: ../../include/functions_reporting.php:1718
 msgid "SLA Min. (value)"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:456
-#: ../../include/functions_reporting.php:1723
+#: ../../include/functions_reporting.php:1720
 msgid "SLA Limit"
 msgstr ""
 
@@ -4947,13 +4886,13 @@ msgid "SLA final result: "
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:480
-#: ../../include/functions_reporting.php:1748
+#: ../../include/functions_reporting.php:1745
 msgid "Fail"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:491
 #: ../../operation/reporting/reporting_xml.php:233
-#: ../../include/functions_reporting.php:1759 ../../include/functions.php:604
+#: ../../include/functions_reporting.php:1756 ../../include/functions.php:604
 msgid "Monitor report"
 msgstr ""
 
@@ -4964,7 +4903,7 @@ msgstr "Επάνω"
 #: ../../enterprise/include/functions_reporting_pdf.php:508
 #: ../../operation/reporting/reporting_xml.php:240
 #: ../../include/fgraph.php:1477 ../../include/fgraph.php:1714
-#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1786
+#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1783
 #: ../../include/pchart_graph.php:188 ../../include/pchart_graph.php:191
 #: ../../include/pchart_graph.php:199 ../../include/pchart_graph.php:200
 #: ../../include/functions.php:605
@@ -4976,7 +4915,7 @@ msgstr "Συνηθ. Τιμή"
 #: ../../godmode/modules/manage_network_components_form_common.php:94
 #: ../../godmode/agentes/module_manager_editor_common.php:204
 #: ../../include/fgraph.php:1477 ../../include/fgraph.php:1714
-#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1810
+#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1807
 #: ../../include/pchart_graph.php:189 ../../include/pchart_graph.php:192
 #: ../../include/functions.php:606
 msgid "Max. Value"
@@ -4987,7 +4926,7 @@ msgstr "Ανωτ. Τιμή"
 #: ../../godmode/modules/manage_network_components_form_common.php:92
 #: ../../godmode/agentes/module_manager_editor_common.php:202
 #: ../../include/fgraph.php:1477 ../../include/fgraph.php:1714
-#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1834
+#: ../../include/fgraph.php:1939 ../../include/functions_reporting.php:1831
 #: ../../include/pchart_graph.php:187 ../../include/pchart_graph.php:190
 #: ../../include/functions.php:607
 msgid "Min. Value"
@@ -5005,82 +4944,81 @@ msgid "Agents detailed event"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:577
-#: ../../include/functions_reporting.php:1337
-#: ../../include/functions_reporting.php:1392
-#: ../../include/functions_reporting.php:1450
+#: ../../include/functions_reporting.php:1334
+#: ../../include/functions_reporting.php:1389
+#: ../../include/functions_reporting.php:1447
 msgid "Criticity"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:578
-#: ../../operation/events/events.php:425
-#: ../../include/functions_reporting.php:1338
-#: ../../include/functions_reporting.php:1451
+#: ../../operation/events/events.php:428
+#: ../../include/functions_reporting.php:1335
+#: ../../include/functions_reporting.php:1448
 msgid "Count"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:657
 #: ../../operation/reporting/reporting_xml.php:347
-#: ../../include/functions_reporting.php:1967
+#: ../../include/functions_reporting.php:1964
 msgid "Group detailed event"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:696
 #: ../../operation/reporting/reporting_xml.php:381
-#: ../../include/functions_reporting.php:2004 ../../include/functions.php:618
+#: ../../include/functions_reporting.php:2001 ../../include/functions.php:618
 msgid "Alert report module"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:741
 #: ../../operation/reporting/reporting_xml.php:418
-#: ../../include/functions_reporting.php:2023 ../../include/functions.php:619
+#: ../../include/functions_reporting.php:2020 ../../include/functions.php:619
 msgid "Alert report agent"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:794
 #: ../../operation/reporting/reporting_xml.php:457
-#: ../../include/functions_reporting.php:2043 ../../include/functions.php:612
+#: ../../include/functions_reporting.php:2040 ../../include/functions.php:612
 msgid "Import text from URL"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:812
 #: ../../operation/reporting/reporting_xml.php:469
-#: ../../include/functions_reporting.php:2066 ../../include/functions.php:613
+#: ../../include/functions_reporting.php:2063 ../../include/functions.php:613
 msgid "Serialize data"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:859
 #: ../../operation/reporting/reporting_xml.php:511
-#: ../../include/functions_reporting.php:2116 ../../include/functions.php:614
+#: ../../include/functions_reporting.php:2113 ../../include/functions.php:614
 msgid "TTRT"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:876
 #: ../../operation/reporting/reporting_xml.php:518
-#: ../../include/functions_reporting.php:2140 ../../include/functions.php:615
+#: ../../include/functions_reporting.php:2137 ../../include/functions.php:615
 msgid "TTO"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:893
 #: ../../operation/reporting/reporting_xml.php:525
-#: ../../include/functions_reporting.php:2164 ../../include/functions.php:616
+#: ../../include/functions_reporting.php:2161 ../../include/functions.php:616
 msgid "MTBF"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting_pdf.php:910
 #: ../../operation/reporting/reporting_xml.php:532
-#: ../../include/functions_reporting.php:2188 ../../include/functions.php:617
+#: ../../include/functions_reporting.php:2185 ../../include/functions.php:617
 msgid "MTTR"
 msgstr ""
 
 #: ../../enterprise/include/functions_reporting.php:13
-#: ../../godmode/reporting/visual_console_builder.php:216
+#: ../../godmode/reporting/visual_console_builder.php:217
 msgid "Wizard"
 msgstr "Αυτόματος εγκαταστάτης"
 
 #: ../../enterprise/include/functions_reporting.php:17
-#, fuzzy
 msgid "Advance options"
-msgstr "Ενέργειες"
+msgstr ""
 
 #: ../../enterprise/include/functions_reporting.php:108
 msgid "Made with the wizard."
@@ -5096,18 +5034,17 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:309
 #: ../../godmode/agentes/module_manager.php:332
 #: ../../godmode/agentes/module_manager.php:333
-#: ../../include/functions_reporting.php:1172
-#: ../../include/functions_reporting.php:1210
-#: ../../include/functions_reporting.php:1239
+#: ../../include/functions_reporting.php:1169
+#: ../../include/functions_reporting.php:1207
+#: ../../include/functions_reporting.php:1236
 #: ../../include/functions_db.php:3053 ../../include/functions.php:581
 #: ../../include/functions.php:586 ../../include/functions.php:589
 msgid "N/A"
 msgstr "N/A"
 
 #: ../../enterprise/include/functions_backup.php:86
-#, fuzzy
 msgid "No description"
-msgstr "Περιγραφή"
+msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:154
 msgid "Restoring a backup"
@@ -5136,9 +5073,8 @@ msgid "Connect to MySQL database using the following command"
 msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:175
-#, fuzzy
 msgid "Create a new database"
-msgstr "Πρότυπο"
+msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:188
 msgid "Restore the backup"
@@ -5149,15 +5085,13 @@ msgid "Modify console configuration to use this new database"
 msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:197
-#, fuzzy
 msgid "Open configuration file"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:201
 #: ../../enterprise/include/functions_backup.php:213
-#, fuzzy
 msgid "Find"
-msgstr "Παρασκευή"
+msgstr ""
 
 #: ../../enterprise/include/functions_backup.php:203
 #: ../../enterprise/include/functions_backup.php:216
@@ -5184,7 +5118,7 @@ msgstr ""
 
 #: ../../operation/servers/view_server.php:33
 #: ../../operation/servers/view_server_detail.php:26
-#: ../../operation/menu.php:120
+#: ../../operation/menu.php:124
 msgid "Pandora servers"
 msgstr ""
 
@@ -5308,13 +5242,13 @@ msgstr ""
 msgid "Error updating user info"
 msgstr ""
 
-#: ../../operation/users/user_edit.php:87 ../../operation/users/user.php:94
-#: ../../operation/events/events.php:423
+#: ../../operation/users/user_edit.php:87 ../../operation/search_users.php:169
+#: ../../operation/events/events.php:426
+#: ../../operation/search_results.php.old:569
 #: ../../operation/snmpconsole/snmp_view.php:273
-#: ../../operation/search_results.php:601
 #: ../../godmode/users/configure_user.php:207
 #: ../../godmode/users/user_list.php:124
-#: ../../include/functions_reporting.php:683
+#: ../../include/functions_reporting.php:680
 #: ../../include/functions_events.php:294
 msgid "User ID"
 msgstr "Ταυτότητα (ID) χρήστη"
@@ -5339,7 +5273,7 @@ msgid ""
 "authentication scheme"
 msgstr ""
 
-#: ../../operation/users/user_edit.php:126 ../../operation/users/user.php:155
+#: ../../operation/users/user_edit.php:126
 #: ../../godmode/users/configure_user.php:250
 #: ../../godmode/users/user_list.php:165
 msgid "E-mail"
@@ -5370,106 +5304,42 @@ msgstr ""
 msgid "This user doesn't have any assigned profile/group"
 msgstr ""
 
-#: ../../operation/users/user.php:84
-msgid "Pandora users"
+#: ../../operation/search_users.php:160 ../../operation/search_alerts.php:119
+#: ../../operation/search_results.php.old:484
+#: ../../operation/search_reports.php:44 ../../operation/search_graphs.php:47
+#: ../../operation/search_maps.php:35 ../../operation/search_agents.php:150
+msgid "Zero results found"
 msgstr ""
 
-#: ../../operation/users/user.php:103 ../../operation/search_results.php:613
+#: ../../operation/search_users.php:181
+#: ../../operation/search_results.php.old:581
 #: ../../godmode/users/user_list.php:133
 msgid "Profile"
 msgstr "Προφίλ"
 
-#: ../../operation/users/user.php:152 ../../godmode/users/user_list.php:162
-msgid "First name"
-msgstr "Όνομα:"
-
-#: ../../operation/users/user.php:153 ../../godmode/users/user_list.php:163
-msgid "Last name"
-msgstr "Επώνυμο:"
-
-#: ../../operation/users/user.php:154 ../../godmode/users/user_list.php:164
-msgid "Phone"
-msgstr "Τηλέφωνο"
-
-#: ../../operation/users/user.php:160 ../../operation/search_results.php:630
+#: ../../operation/search_users.php:195
+#: ../../operation/search_results.php.old:598
 #: ../../godmode/users/configure_user.php:241
 #: ../../godmode/users/user_list.php:172
 msgid "Administrator"
 msgstr "Διαχειριστής"
 
-#: ../../operation/users/user.php:162 ../../operation/search_results.php:634
+#: ../../operation/search_users.php:199
+#: ../../operation/search_results.php.old:602
 #: ../../godmode/users/configure_user.php:246
 #: ../../godmode/users/user_list.php:176
 msgid "Standard User"
 msgstr ""
 
-#: ../../operation/users/user.php:175 ../../operation/search_results.php:646
+#: ../../operation/search_users.php:211
+#: ../../operation/search_results.php.old:614
 #: ../../godmode/users/user_list.php:189
 msgid "The user doesn't have any assigned profile/group"
 msgstr ""
 
-#: ../../operation/users/user.php:187
-#: ../../godmode/profiles/profile_list.php:29
-#: ../../godmode/users/user_list.php:217
-msgid "Profiles defined in Pandora"
-msgstr ""
-
-#: ../../operation/users/user.php:200 ../../godmode/users/user_list.php:231
-msgid "System incidents reading"
-msgstr ""
-
-#: ../../operation/users/user.php:201 ../../godmode/users/user_list.php:232
-msgid "System incidents writing"
-msgstr ""
-
-#: ../../operation/users/user.php:202 ../../godmode/users/user_list.php:233
-msgid "System incidents management"
-msgstr ""
-
-#: ../../operation/users/user.php:203 ../../godmode/users/user_list.php:234
-msgid "Agents reading"
-msgstr ""
-
-#: ../../operation/users/user.php:204 ../../godmode/users/user_list.php:235
-msgid "Agents management"
-msgstr ""
-
-#: ../../operation/users/user.php:205 ../../godmode/users/user_list.php:236
-msgid "Alerts editing"
-msgstr ""
-
-#: ../../operation/users/user.php:206 ../../godmode/users/user_list.php:237
-msgid "Users management"
-msgstr ""
-
-#: ../../operation/users/user.php:207
-#: ../../godmode/profiles/profile_list.php:235
-#: ../../godmode/users/user_list.php:238
-msgid "Database management"
-msgstr ""
-
-#: ../../operation/users/user.php:208
-#: ../../godmode/profiles/profile_list.php:236
-#: ../../godmode/users/user_list.php:239
-msgid "Alerts management"
-msgstr ""
-
-#: ../../operation/users/user.php:209 ../../godmode/users/user_list.php:240
-msgid "Systems management"
-msgstr ""
-
-#: ../../operation/users/user_statistics.php:25
-msgid "User activity statistics"
-msgstr ""
-
-#: ../../operation/users/user_statistics.php:44
-msgid "Category"
-msgstr ""
-
 #: ../../operation/events/event_statistics.php:32
 #: ../../operation/incidents/incident_statistics.php:28
-#: ../../operation/menu.php:152 ../../operation/menu.php:166
-#: ../../operation/menu.php:196
+#: ../../operation/menu.php:156 ../../operation/menu.php:170
 msgid "Statistics"
 msgstr "Στατιστικά"
 
@@ -5489,84 +5359,84 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
-#: ../../operation/events/events.php:212 ../../operation/events/events.php:233
+#: ../../operation/events/events.php:215 ../../operation/events/events.php:236
 #: ../../operation/snmpconsole/snmp_view.php:46
-#: ../../operation/agentes/networkmap.php:152
+#: ../../operation/agentes/networkmap.php:153
 msgid "Full screen"
 msgstr ""
 
-#: ../../operation/events/events.php:215
+#: ../../operation/events/events.php:218
 msgid "RSS Events"
 msgstr ""
 
-#: ../../operation/events/events.php:218
+#: ../../operation/events/events.php:221
 msgid "Marquee display"
 msgstr ""
 
-#: ../../operation/events/events.php:221
+#: ../../operation/events/events.php:224
 msgid "Export to CSV file"
 msgstr ""
 
-#: ../../operation/events/events.php:228
+#: ../../operation/events/events.php:231
 msgid "Main event view"
 msgstr ""
 
-#: ../../operation/events/events.php:245
+#: ../../operation/events/events.php:248
 msgid "Successfully validated"
 msgstr ""
 
-#: ../../operation/events/events.php:246 ../../operation/events/events.php:666
+#: ../../operation/events/events.php:249 ../../operation/events/events.php:669
 msgid "Could not be validated"
 msgstr ""
 
-#: ../../operation/events/events.php:263
+#: ../../operation/events/events.php:266
 msgid "Event control filter"
 msgstr ""
 
-#: ../../operation/events/events.php:263
+#: ../../operation/events/events.php:266
 #: ../../operation/snmpconsole/snmp_view.php:122
-#: ../../godmode/alerts/alert_list.list.php:41
+#: ../../godmode/alerts/alert_list.list.php:101
 #: ../../godmode/reporting/reporting_builder.list_items.php:89
 msgid "Toggle filter(s)"
 msgstr ""
 
-#: ../../operation/events/events.php:281
+#: ../../operation/events/events.php:284
 #: ../../operation/agentes/status_monitor.php:58
 msgid "Not normal"
 msgstr ""
 
-#: ../../operation/events/events.php:305
+#: ../../operation/events/events.php:308
 #: ../../godmode/alerts/alert_compounds.php:123
 msgid "Free search"
 msgstr ""
 
-#: ../../operation/events/events.php:320
+#: ../../operation/events/events.php:323
 #: ../../operation/snmpconsole/snmp_view.php:206
 #: ../../godmode/setup/setup_visuals.php:66
 msgid "Block size for pagination"
 msgstr ""
 
-#: ../../operation/events/events.php:332
+#: ../../operation/events/events.php:335
 msgid "Max. hours old"
 msgstr ""
 
-#: ../../operation/events/events.php:339
+#: ../../operation/events/events.php:342
 msgid "User ack."
 msgstr ""
 
-#: ../../operation/events/events.php:346
+#: ../../operation/events/events.php:349
 msgid "Repeated"
 msgstr ""
 
-#: ../../operation/events/events.php:349
+#: ../../operation/events/events.php:352
 msgid "All events"
 msgstr ""
 
-#: ../../operation/events/events.php:350
+#: ../../operation/events/events.php:353
 msgid "Group events"
 msgstr ""
 
-#: ../../operation/events/events.php:401 ../../operation/events/events.php:590
+#: ../../operation/events/events.php:404 ../../operation/events/events.php:593
 #: ../../operation/snmpconsole/snmp_view.php:376
 #: ../../operation/snmpconsole/snmp_view.php:416
 #: ../../operation/snmpconsole/snmp_view.php:440
@@ -5579,36 +5449,50 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
-#: ../../operation/events/events.php:401
+#: ../../operation/events/events.php:404
 #: ../../include/functions_events.php:280
 msgid "V."
 msgstr ""
 
-#: ../../operation/events/events.php:449
+#: ../../operation/events/events.php:452
 #: ../../include/functions_events.php:311
 msgid "Event not validated"
 msgstr ""
 
-#: ../../operation/events/events.php:453
+#: ../../operation/events/events.php:456
 msgid "Event validated"
 msgstr ""
 
-#: ../../operation/events/events.php:557
+#: ../../operation/events/events.php:560
 msgid "Validate event"
 msgstr ""
 
-#: ../../operation/events/events.php:564
+#: ../../operation/events/events.php:567
 msgid "Delete event"
 msgstr ""
 
-#: ../../operation/events/events.php:571
+#: ../../operation/events/events.php:574
 msgid "Create incident from event"
 msgstr ""
 
-#: ../../operation/events/events.php:599
+#: ../../operation/events/events.php:602
 #: ../../include/functions_events.php:262
 msgid "No events"
 msgstr ""
+
+#: ../../operation/search_alerts.php:137
+#: ../../operation/search_results.php.old:648
+#: ../../operation/agentes/alerts_status.php:218
+#: ../../operation/agentes/alerts_status.php:243
+#: ../../operation/agentes/alerts_status.php:273
+#: ../../operation/agentes/alerts_status.php:296
+#: ../../godmode/alerts/alert_list.list.php:279
+#: ../../godmode/alerts/alert_list.builder.php:60
+#: ../../godmode/agentes/agent_template.php:104
+#: ../../include/functions_reporting.php:786
+#: ../../include/functions_reporting.php:867
+msgid "Template"
+msgstr "Πρότυπο"
 
 #: ../../operation/visual_console/index.php:22
 #: ../../operation/visual_console/render_view.php:70
@@ -5617,7 +5501,8 @@ msgid "Visual console"
 msgstr ""
 
 #: ../../operation/visual_console/index.php:32
-#: ../../operation/search_results.php:806
+#: ../../operation/search_results.php.old:774
+#: ../../operation/search_maps.php:46
 msgid "Elements"
 msgstr "Στοιχεία"
 
@@ -5630,6 +5515,7 @@ msgid "Autorefresh time"
 msgstr ""
 
 #: ../../operation/visual_console/render_view.php:87
+#: ../../extensions/agents_modules.php:76
 msgid "Refresh"
 msgstr "Ανανέωση"
 
@@ -5637,8 +5523,60 @@ msgstr "Ανανέωση"
 msgid "Until refresh"
 msgstr ""
 
+#: ../../operation/search_results.php.old:459
+#: ../../operation/search_results.php:76
+msgid "Graphs"
+msgstr ""
+
+#: ../../operation/search_results.php.old:465
+#: ../../operation/search_results.php:83
+msgid "Reports"
+msgstr ""
+
+#: ../../operation/search_results.php.old:540
+#: ../../operation/agentes/alerts_status.functions.php:54
+#: ../../operation/agentes/estado_generalagente.php:72
+#: ../../operation/search_agents.php:204
+#: ../../godmode/groups/group_list.php:256
+#: ../../godmode/alerts/configure_alert_compound.php:407
+#: ../../godmode/alerts/configure_alert_template.php:397
+#: ../../godmode/agentes/modificar_agente.php:266
+#: ../../godmode/agentes/agent_conf_gis.php:63
+#: ../../godmode/agentes/module_manager_editor_common.php:124
+#: ../../godmode/agentes/agent_manager.php:197
+#: ../../godmode/agentes/agent_manager.php:233
+#: ../../godmode/massive/massive_edit_modules.php:188
+#: ../../extensions/update_manager/lib/libupdate_manager.php:591
+msgid "Disabled"
+msgstr "Ανενεργό"
+
+#: ../../operation/search_results.php.old:704
+#: ../../operation/reporting/graph_viewer.php:146
+#: ../../operation/search_graphs.php:56 ../../godmode/reporting/graphs.php:70
+msgid "Graph name"
+msgstr ""
+
+#: ../../operation/search_results.php.old:733
+#: ../../operation/search_reports.php:53
+#: ../../operation/reporting/custom_reporting.php:38
+#: ../../godmode/reporting/reporting_builder.php:65
+msgid "Report name"
+msgstr ""
+
+#: ../../operation/search_results.php.old:735
+#: ../../operation/search_reports.php:55
+#: ../../operation/reporting/custom_reporting.php:40
+msgid "HTML"
+msgstr "HTML"
+
+#: ../../operation/search_results.php.old:736
+#: ../../operation/search_reports.php:56
+#: ../../operation/reporting/custom_reporting.php:41
+msgid "XML"
+msgstr "XML"
+
 #: ../../operation/snmpconsole/snmp_view.php:43
-#: ../../operation/agentes/networkmap.php:147
+#: ../../operation/agentes/networkmap.php:148
 msgid "Normal screen"
 msgstr ""
 
@@ -5666,8 +5604,8 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:134
 #: ../../operation/snmpconsole/snmp_view.php:434
 #: ../../operation/agentes/alerts_status.functions.php:52
-#: ../../include/functions_reporting.php:791
-#: ../../include/functions_reporting.php:872
+#: ../../include/functions_reporting.php:788
+#: ../../include/functions_reporting.php:869
 #: ../../include/functions_db.php:3011
 msgid "Fired"
 msgstr ""
@@ -5711,31 +5649,27 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:367
 #: ../../operation/agentes/bulbs.php:33
-#: ../../godmode/alerts/alert_list.list.php:428
-#: ../../include/functions_reporting.php:1507
+#: ../../godmode/alerts/alert_list.list.php:423
+#: ../../include/functions_reporting.php:1504
 #: ../../include/functions_db.php:3095 ../../include/functions_ui.php:477
 msgid "Alert not fired"
 msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:381
-#, fuzzy
 msgid "Show more"
-msgstr "Εμφάνιση"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:389
-#, fuzzy
 msgid "Custom OID:"
-msgstr "Προσαρμοσμένο"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:390
-#, fuzzy
 msgid "OID:"
-msgstr "OID"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:391
-#, fuzzy
 msgid "Value Custom:"
-msgstr "Προσαρμοσμένο"
+msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:407
 msgid "No matching traps found"
@@ -5790,10 +5724,10 @@ msgstr ""
 #: ../../operation/incidents/incident.php:260
 #: ../../operation/incidents/incident_detail.php:267
 #: ../../godmode/snmpconsole/snmp_alert.php:227
-#: ../../godmode/alerts/alert_list.list.php:84
+#: ../../godmode/alerts/alert_list.list.php:80
 #: ../../godmode/alerts/configure_alert_template.php:452
 #: ../../godmode/alerts/alert_templates.php:47
-#: ../../include/functions_reporting.php:739
+#: ../../include/functions_reporting.php:736
 msgid "Priority"
 msgstr "Προτεραιότητα"
 
@@ -5910,12 +5844,12 @@ msgstr ""
 
 #: ../../operation/messages/message.php:29
 #: ../../operation/messages/message.php:31
-#: ../../operation/messages/message.php:34 ../../operation/menu.php:212
+#: ../../operation/messages/message.php:34 ../../operation/menu.php:205
 msgid "Messages"
 msgstr "Μηνύματα"
 
 #: ../../operation/messages/message.php:29
-#: ../../operation/messages/message.php:241 ../../operation/menu.php:218
+#: ../../operation/messages/message.php:241 ../../operation/menu.php:211
 msgid "New message"
 msgstr ""
 
@@ -6019,12 +5953,12 @@ msgid "No Subject"
 msgstr "Κανένα Θέμα"
 
 #: ../../operation/reporting/reporting_xml.php:176
-#: ../../include/functions_reporting.php:1626 ../../include/functions.php:601
+#: ../../include/functions_reporting.php:1623 ../../include/functions.php:601
 msgid "Simple graph"
 msgstr ""
 
 #: ../../operation/reporting/reporting_xml.php:281
-#: ../../include/functions_reporting.php:1882
+#: ../../include/functions_reporting.php:1879
 msgid "Agent detailed event"
 msgstr ""
 
@@ -6032,7 +5966,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:94
 #: ../../operation/reporting/graph_viewer.php:136
 #: ../../operation/reporting/reporting_viewer.php:67
-#: ../../operation/menu.php:223
+#: ../../operation/menu.php:216
 #: ../../godmode/reporting/reporting_builder.php:44
 #: ../../godmode/reporting/reporting_builder.php:428
 msgid "Reporting"
@@ -6040,7 +5974,7 @@ msgstr "Αναφέρωντας"
 
 #: ../../operation/reporting/custom_reporting.php:27
 #: ../../operation/reporting/reporting_viewer.php:67
-#: ../../operation/menu.php:228
+#: ../../operation/menu.php:221
 #: ../../godmode/reporting/reporting_builder.php:44
 msgid "Custom reporting"
 msgstr ""
@@ -6051,22 +5985,6 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:105
 msgid "There are no defined reportings"
 msgstr ""
-
-#: ../../operation/reporting/custom_reporting.php:38
-#: ../../operation/search_results.php:765
-#: ../../godmode/reporting/reporting_builder.php:65
-msgid "Report name"
-msgstr ""
-
-#: ../../operation/reporting/custom_reporting.php:40
-#: ../../operation/search_results.php:767
-msgid "HTML"
-msgstr "HTML"
-
-#: ../../operation/reporting/custom_reporting.php:41
-#: ../../operation/search_results.php:768
-msgid "XML"
-msgstr "XML"
 
 #: ../../operation/reporting/graph_viewer.php:35
 #: ../../operation/reporting/graph_viewer.php:40
@@ -6122,19 +6040,13 @@ msgstr ""
 msgid "Custom graph viewer"
 msgstr ""
 
-#: ../../operation/reporting/graph_viewer.php:146
-#: ../../operation/search_results.php:736
-#: ../../godmode/reporting/graphs.php:70
-msgid "Graph name"
-msgstr ""
-
 #: ../../operation/reporting/reporting_viewer.php:120
 #: ../../godmode/reporting/reporting_builder.preview.php:110
 msgid "Invalid date selected"
 msgstr ""
 
-#: ../../operation/extensions.php:26 ../../operation/menu.php:236
-#: ../../godmode/extensions.php:32 ../../godmode/menu.php:234
+#: ../../operation/extensions.php:26 ../../operation/menu.php:229
+#: ../../godmode/extensions.php:32 ../../godmode/menu.php:240
 msgid "Extensions"
 msgstr "Επεκτάσεις"
 
@@ -6157,22 +6069,6 @@ msgstr ""
 #: ../../operation/agentes/alerts_status.functions.php:50
 msgid "All (Enabled)"
 msgstr ""
-
-#: ../../operation/agentes/alerts_status.functions.php:54
-#: ../../operation/agentes/estado_generalagente.php:72
-#: ../../operation/search_results.php:572
-#: ../../godmode/groups/group_list.php:256
-#: ../../godmode/alerts/configure_alert_compound.php:407
-#: ../../godmode/alerts/configure_alert_template.php:397
-#: ../../godmode/agentes/modificar_agente.php:266
-#: ../../godmode/agentes/agent_conf_gis.php:63
-#: ../../godmode/agentes/module_manager_editor_common.php:124
-#: ../../godmode/agentes/agent_manager.php:186
-#: ../../godmode/agentes/agent_manager.php:222
-#: ../../godmode/massive/massive_edit_modules.php:188
-#: ../../extensions/update_manager/lib/libupdate_manager.php:591
-msgid "Disabled"
-msgstr "Ανενεργό"
 
 #: ../../operation/agentes/alerts_status.functions.php:58
 #: ../../operation/agentes/estado_agente.php:90
@@ -6200,7 +6096,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:148
 #: ../../godmode/modules/manage_network_components.php:293
 #: ../../godmode/modules/manage_network_components_form_wmi.php:78
-#: ../../godmode/alerts/alert_list.list.php:65
+#: ../../godmode/alerts/alert_list.list.php:61
 #: ../../godmode/agentes/agent_template.php:128
 #: ../../godmode/massive/massive_edit_modules.php:162
 msgid "Module name"
@@ -6216,80 +6112,71 @@ msgstr ""
 #: ../../operation/agentes/estado_monitores.php:220
 #: ../../operation/agentes/estado_monitores.php:224
 #: ../../operation/agentes/estado_monitores.php:228
-#, fuzzy
 msgid "Last status"
-msgstr "Τελευταία ημερομηνία"
+msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:282
 msgid "This group doesn't have any monitor"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:43
+#: ../../operation/agentes/networkmap.php:44
 msgid "Network map deleted successfully"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:44
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:45
 msgid "Could not delete network map"
-msgstr "Δεν μπόρεσε να διαγραφεί"
-
-#: ../../operation/agentes/networkmap.php:68
-msgid "Network map created successfully"
 msgstr ""
 
 #: ../../operation/agentes/networkmap.php:69
-#, fuzzy
-msgid "Could not create network map"
-msgstr "Δεν μπόρεσε να δημιουργηθεί"
+msgid "Network map created successfully"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:95
-msgid "Network map saved successfully"
+#: ../../operation/agentes/networkmap.php:70
+msgid "Could not create network map"
 msgstr ""
 
 #: ../../operation/agentes/networkmap.php:96
-#, fuzzy
+msgid "Network map saved successfully"
+msgstr ""
+
+#: ../../operation/agentes/networkmap.php:97
 msgid "Could not save network map"
-msgstr "Δεν μπόρεσε να διαγραφεί"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:157
-#: ../../operation/agentes/networkmap.php:205
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:158
+#: ../../operation/agentes/networkmap.php:208
 msgid "Policies view"
-msgstr "Πολιτικές"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:162
-#: ../../operation/agentes/networkmap.php:202
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:163
+#: ../../operation/agentes/networkmap.php:205
 msgid "Groups view"
-msgstr "Όνομα ομάδας"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:166
-#: ../../operation/agentes/networkmap.php:199
+#: ../../operation/agentes/networkmap.php:167
+#: ../../operation/agentes/networkmap.php:202
 msgid "Topology view"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:172
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:173
 msgid "No selected"
-msgstr "Δεν επιλέχθηκαν πράκτορες"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:180
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:183
 msgid "Add map"
-msgstr "Προσθήκη"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:185
-#, fuzzy
+#: ../../operation/agentes/networkmap.php:188
 msgid "Delete map"
-msgstr "Διαγραφή"
+msgstr ""
 
-#: ../../operation/agentes/networkmap.php:194
+#: ../../operation/agentes/networkmap.php:197
 #: ../../godmode/gis_maps/configure_gis_map.php:425
 #: ../../godmode/gis_maps/configure_gis_map.php:432
 msgid "Save map"
 msgstr ""
 
-#: ../../operation/agentes/networkmap.php:219
+#: ../../operation/agentes/networkmap.php:223
 msgid "There are no defined maps in this view"
 msgstr ""
 
@@ -6322,12 +6209,20 @@ msgstr "Μεγέθυνση"
 msgid "Distance between nodes"
 msgstr ""
 
+#: ../../operation/agentes/networkmap.php:321
+msgid "Separation between elements in the map (in Non-overlap mode)"
+msgstr ""
+
 #: ../../operation/agentes/networkmap.php:326
 msgid "Font"
 msgstr "Γραμματοσειρά"
 
+#: ../../operation/agentes/networkmap.php:337
+msgid "Map options"
+msgstr ""
+
 #: ../../operation/agentes/bulbs.php:21
-#: ../../include/functions_reporting.php:1565
+#: ../../include/functions_reporting.php:1562
 msgid "All Monitors OK"
 msgstr ""
 
@@ -6340,8 +6235,8 @@ msgid "Change between Green/Red state"
 msgstr ""
 
 #: ../../operation/agentes/bulbs.php:26
-#: ../../godmode/alerts/alert_list.list.php:425
-#: ../../include/functions_reporting.php:1575
+#: ../../godmode/alerts/alert_list.list.php:420
+#: ../../include/functions_reporting.php:1572
 #: ../../include/functions_ui.php:474
 msgid "Alert disabled"
 msgstr ""
@@ -6351,7 +6246,7 @@ msgid "Alerts disabled"
 msgstr ""
 
 #: ../../operation/agentes/bulbs.php:30
-#: ../../include/functions_reporting.php:1505
+#: ../../include/functions_reporting.php:1502
 msgid "Agent without data"
 msgstr ""
 
@@ -6371,9 +6266,8 @@ msgid "Parent"
 msgstr "Γονέας"
 
 #: ../../operation/agentes/ver_agente.php:237
-#, fuzzy
 msgid "Sons"
-msgstr "μήνες"
+msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:302
 msgid "Manage"
@@ -6385,8 +6279,44 @@ msgid "Main"
 msgstr "Κύριο"
 
 #: ../../operation/agentes/ver_agente.php:377
-#: ../../godmode/agentes/configurar_agente.php:279
+#: ../../godmode/agentes/configurar_agente.php:294
 msgid "GIS data"
+msgstr ""
+
+#: ../../operation/agentes/ver_agente.php:387
+#: ../../godmode/agentes/agent_manager.php:268
+msgid "Custom fields"
+msgstr ""
+
+#: ../../operation/agentes/custom_fields.php:32
+#: ../../operation/agentes/agent_fields.php:32
+#: ../../operation/agentes/estado_generalagente.php:34
+msgid "There was a problem loading agent"
+msgstr ""
+
+#: ../../operation/agentes/custom_fields.php:45
+#: ../../godmode/agentes/fields_manager.php:93
+msgid "Field"
+msgstr ""
+
+#: ../../operation/agentes/custom_fields.php:46
+#: ../../godmode/agentes/fields_manager.php:94
+#: ../../godmode/agentes/configure_field.php:46
+msgid "Display on front"
+msgstr ""
+
+#: ../../operation/agentes/custom_fields.php:46
+#: ../../godmode/agentes/fields_manager.php:94
+#: ../../godmode/agentes/configure_field.php:46
+msgid ""
+"The fields with display on front enabled will be displayed into the agent "
+"details"
+msgstr ""
+
+#: ../../operation/agentes/custom_fields.php:70
+#: ../../operation/agentes/agent_fields.php:52
+#: ../../operation/agentes/estado_generalagente.php:170
+msgid "empty"
 msgstr ""
 
 #: ../../operation/agentes/exportdata.php:69 ../../operation/menu.php:61
@@ -6443,6 +6373,15 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:343
 msgid "Export"
 msgstr "Εξαγωγή"
+
+#: ../../operation/agentes/agent_fields.php:42
+msgid "Agent custom fields"
+msgstr ""
+
+#: ../../operation/agentes/agent_fields.php:49
+#: ../../operation/agentes/estado_generalagente.php:167
+msgid "Custom field"
+msgstr ""
 
 #: ../../operation/agentes/estado_monitores.php:289
 msgid "This agent doesn't have any active monitors"
@@ -6608,10 +6547,6 @@ msgstr "Δείξε γεγονότα"
 msgid "Show alerts"
 msgstr ""
 
-#: ../../operation/agentes/estado_generalagente.php:34
-msgid "There was a problem loading agent"
-msgstr ""
-
 #: ../../operation/agentes/estado_generalagente.php:51
 msgid "Agent access rate (24h)"
 msgstr ""
@@ -6696,25 +6631,12 @@ msgstr ""
 msgid "F."
 msgstr ""
 
-#: ../../operation/agentes/alerts_status.php:218
-#: ../../operation/agentes/alerts_status.php:243
-#: ../../operation/agentes/alerts_status.php:273
-#: ../../operation/agentes/alerts_status.php:296
-#: ../../operation/search_results.php:680
-#: ../../godmode/alerts/alert_list.list.php:284
-#: ../../godmode/alerts/alert_list.builder.php:60
-#: ../../godmode/agentes/agent_template.php:104
-#: ../../include/functions_reporting.php:789
-#: ../../include/functions_reporting.php:870
-msgid "Template"
-msgstr "Πρότυπο"
-
 #: ../../operation/agentes/alerts_status.php:222
 #: ../../operation/agentes/alerts_status.php:247
 #: ../../operation/agentes/alerts_status.php:277
 #: ../../operation/agentes/alerts_status.php:300
 #: ../../godmode/snmpconsole/snmp_alert.php:278
-#: ../../include/functions_reporting.php:1109
+#: ../../include/functions_reporting.php:1106
 msgid "Last fired"
 msgstr ""
 
@@ -6812,54 +6734,38 @@ msgstr ""
 msgid "GIS Maps"
 msgstr ""
 
-#: ../../operation/menu.php:146 ../../godmode/profiles/profile_list.php:175
+#: ../../operation/menu.php:150 ../../godmode/profiles/profile_list.php:175
 #: ../../godmode/profiles/profile_list.php:230
 msgid "Manage incidents"
 msgstr ""
 
-#: ../../operation/menu.php:160
+#: ../../operation/menu.php:164
 #: ../../godmode/reporting/graph_builder.main.php:148
 msgid "View events"
 msgstr ""
 
-#: ../../operation/menu.php:169
+#: ../../operation/menu.php:173
 msgid "RSS"
 msgstr "RSS:"
 
-#: ../../operation/menu.php:173
+#: ../../operation/menu.php:177
 msgid "CSV File"
 msgstr "Αρχείο CSV"
 
-#: ../../operation/menu.php:177
+#: ../../operation/menu.php:181
 msgid "Marquee"
 msgstr "Marquee"
 
-#: ../../operation/menu.php:186
-msgid "View users"
-msgstr ""
-
-#: ../../operation/menu.php:191
+#: ../../operation/menu.php:189
 msgid "Edit my user"
 msgstr ""
 
-#: ../../operation/menu.php:206 ../../godmode/servers/modificar_server.php:135
+#: ../../operation/menu.php:199 ../../godmode/servers/modificar_server.php:135
 msgid "SNMP console"
 msgstr ""
 
-#: ../../operation/menu.php:230
+#: ../../operation/menu.php:223
 msgid "Custom graphs"
-msgstr ""
-
-#: ../../operation/search_results.php:481
-msgid "Graphs"
-msgstr ""
-
-#: ../../operation/search_results.php:492
-msgid "Reports"
-msgstr ""
-
-#: ../../operation/search_results.php:516
-msgid "Zero results found"
 msgstr ""
 
 #: ../../operation/gis_maps/index.php:66
@@ -6896,6 +6802,11 @@ msgstr ""
 msgid "Default position of map."
 msgstr ""
 
+#: ../../godmode/profiles/profile_list.php:29
+#: ../../godmode/users/user_list.php:217
+msgid "Profiles defined in Pandora"
+msgstr ""
+
 #: ../../godmode/profiles/profile_list.php:46
 #: ../../godmode/users/user_list.php:112
 msgid "There was a problem deleting the profile"
@@ -6917,7 +6828,7 @@ msgstr ""
 #: ../../godmode/alerts/alert_actions.php:75
 #: ../../godmode/alerts/alert_commands.php:57
 #: ../../godmode/agentes/planned_downtime.php:119
-#: ../../godmode/agentes/configurar_agente.php:327
+#: ../../godmode/agentes/configurar_agente.php:342
 msgid "Successfully created"
 msgstr "Επιτυχής δημιουργία"
 
@@ -6956,11 +6867,11 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:183
 #: ../../godmode/alerts/alert_list.php:185
-#: ../../godmode/alerts/alert_list.php:187 ../../godmode/menu.php:86
+#: ../../godmode/alerts/alert_list.php:187 ../../godmode/menu.php:87
 msgid "Manage alerts"
 msgstr ""
 
-#: ../../godmode/profiles/profile_list.php:185 ../../godmode/menu.php:107
+#: ../../godmode/profiles/profile_list.php:185 ../../godmode/menu.php:108
 msgid "Manage users"
 msgstr ""
 
@@ -6992,13 +6903,23 @@ msgstr ""
 msgid "Manage user rights"
 msgstr ""
 
+#: ../../godmode/profiles/profile_list.php:235
+#: ../../godmode/users/user_list.php:238
+msgid "Database management"
+msgstr ""
+
+#: ../../godmode/profiles/profile_list.php:236
+#: ../../godmode/users/user_list.php:239
+msgid "Alerts management"
+msgstr ""
+
 #: ../../godmode/profiles/profile_list.php:237
 msgid "Pandora system management"
 msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:30
 #: ../../godmode/servers/manage_recontask_form.php:59
-#: ../../godmode/menu.php:170
+#: ../../godmode/menu.php:176
 msgid "Manage recontask"
 msgstr ""
 
@@ -7039,7 +6960,7 @@ msgstr ""
 msgid "Update Server"
 msgstr ""
 
-#: ../../godmode/servers/modificar_server.php:55 ../../godmode/menu.php:165
+#: ../../godmode/servers/modificar_server.php:55 ../../godmode/menu.php:171
 msgid "Manage servers"
 msgstr ""
 
@@ -7064,7 +6985,8 @@ msgid "Started"
 msgstr "Ξεκίνησε"
 
 #: ../../godmode/servers/modificar_server.php:121
-msgid "Modules run by this server will stop working. Do you want to continue?"
+msgid ""
+"Modules run by this server will stop working. Do you want to continue?"
 msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:131
@@ -7169,7 +7091,7 @@ msgid "There are no plugins in the system"
 msgstr ""
 
 #: ../../godmode/servers/manage_export_form.php:59
-#: ../../godmode/servers/manage_export.php:46 ../../godmode/menu.php:174
+#: ../../godmode/servers/manage_export.php:46 ../../godmode/menu.php:180
 msgid "Export targets"
 msgstr ""
 
@@ -7353,13 +7275,56 @@ msgstr ""
 msgid "There was a problem deleting the user"
 msgstr ""
 
+#: ../../godmode/users/user_list.php:162
+msgid "First name"
+msgstr "Όνομα:"
+
+#: ../../godmode/users/user_list.php:163
+msgid "Last name"
+msgstr "Επώνυμο:"
+
+#: ../../godmode/users/user_list.php:164
+msgid "Phone"
+msgstr "Τηλέφωνο"
+
 #: ../../godmode/users/user_list.php:196
-#, fuzzy
 msgid "Deleting User"
-msgstr "Διαγραφή"
+msgstr ""
 
 #: ../../godmode/users/user_list.php:210
 msgid "Create user"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:231
+msgid "System incidents reading"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:232
+msgid "System incidents writing"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:233
+msgid "System incidents management"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:234
+msgid "Agents reading"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:235
+msgid "Agents management"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:236
+msgid "Alerts editing"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:237
+msgid "Users management"
+msgstr ""
+
+#: ../../godmode/users/user_list.php:240
+msgid "Systems management"
 msgstr ""
 
 #: ../../godmode/groups/group_list.php:79
@@ -7461,7 +7426,7 @@ msgstr ""
 
 #: ../../godmode/groups/configure_group.php:98
 #: ../../godmode/agentes/module_manager_editor_common.php:190
-#: ../../godmode/agentes/agent_manager.php:172
+#: ../../godmode/agentes/agent_manager.php:187
 msgid "Custom ID"
 msgstr ""
 
@@ -7579,7 +7544,7 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:176
 #: ../../godmode/massive/massive_edit_modules.php:181
 #: ../../godmode/massive/massive_edit_modules.php:198
-#: ../../include/functions_reporting.php:1140
+#: ../../include/functions_reporting.php:1137
 #: ../../include/functions_alerts.php:213
 msgid "Min."
 msgstr ""
@@ -7592,7 +7557,7 @@ msgstr ""
 #: ../../godmode/massive/massive_edit_modules.php:178
 #: ../../godmode/massive/massive_edit_modules.php:183
 #: ../../godmode/massive/massive_edit_modules.php:200
-#: ../../include/functions_reporting.php:1141
+#: ../../include/functions_reporting.php:1138
 #: ../../include/functions_alerts.php:212
 msgid "Max."
 msgstr ""
@@ -7775,7 +7740,7 @@ msgstr ""
 msgid "Name error"
 msgstr "Λάθος ονόματος"
 
-#: ../../godmode/setup/file_manager.php:34 ../../godmode/menu.php:199
+#: ../../godmode/setup/file_manager.php:34 ../../godmode/menu.php:205
 msgid "File manager"
 msgstr ""
 
@@ -7785,19 +7750,16 @@ msgid "Index of %s"
 msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:31
-#, fuzzy
 msgid "Authentication configuration"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:37
-#, fuzzy
 msgid "Authentication method"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:38
-#, fuzzy
 msgid "Local Pandora FMS"
-msgstr "Pandora FMS"
+msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:38
 msgid "ldap"
@@ -7820,14 +7782,12 @@ msgid "Autocreate blacklist"
 msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:61
-#, fuzzy
 msgid "LDAP server"
-msgstr "Εξυπηρετητής SNMP"
+msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:63
-#, fuzzy
 msgid "LDAP port"
-msgstr "Θύρα"
+msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:65
 msgid "LDAP version"
@@ -7838,9 +7798,8 @@ msgid "Base DN"
 msgstr ""
 
 #: ../../godmode/setup/setup_auth.php:73
-#, fuzzy
 msgid "Login attribute"
-msgstr "Σύνδεση απέτυχε"
+msgstr ""
 
 #: ../../godmode/setup/links.php:27
 msgid "Link management"
@@ -7861,10 +7820,6 @@ msgstr ""
 #: ../../godmode/setup/links.php:93 ../../godmode/setup/links.php:113
 msgid "Link name"
 msgstr ""
-
-#: ../../godmode/setup/links.php:96
-msgid "Link"
-msgstr "Σύνδεσμος"
 
 #: ../../godmode/setup/gis_step_2.php:39
 msgid "Create new map connection"
@@ -8159,7 +8114,7 @@ msgstr ""
 msgid "Timezone setup"
 msgstr ""
 
-#: ../../godmode/setup/gis.php:32 ../../godmode/menu.php:201
+#: ../../godmode/setup/gis.php:32 ../../godmode/menu.php:207
 msgid "Map conections GIS"
 msgstr ""
 
@@ -8253,39 +8208,34 @@ msgid "Custom Value/OID"
 msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:275
-#: ../../include/functions_reporting.php:738
-#: ../../include/functions_reporting.php:1110
+#: ../../include/functions_reporting.php:735
+#: ../../include/functions_reporting.php:1107
 msgid "Times fired"
 msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:35
-#, fuzzy
 msgid "Update filter"
-msgstr "Ενημέρωση όλων"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:37
-#, fuzzy
 msgid "Create filter"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:41
 msgid "Filter overview"
 msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:49
-#, fuzzy
 msgid "There was a problem updating the filter"
-msgstr "Υπήρξε ένα πρόβλημα στον εντοπισμό της πηγής του γραφήματος"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:56
-#, fuzzy
 msgid "There was a problem creating the filter"
-msgstr "Παρουσιάστηκε πρόβλημα στη δημιουργία του SLA"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:65
-#, fuzzy
 msgid "There was a problem deleting the filter"
-msgstr "Παρουσιάστηκε πρόβλημα κατά τη διαγραφή του SLA"
+msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_filters.php:105
 msgid "There are no SNMP filters"
@@ -8295,43 +8245,43 @@ msgstr ""
 msgid "Configure alert command"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:41
-msgid "Alert control filter"
-msgstr ""
-
-#: ../../godmode/alerts/alert_list.list.php:50
+#: ../../godmode/alerts/alert_list.list.php:46
 msgid "Template name"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:81
+#: ../../godmode/alerts/alert_list.list.php:77
 msgid "Field content"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:90
-#: ../../godmode/alerts/alert_list.list.php:252
+#: ../../godmode/alerts/alert_list.list.php:86
+#: ../../godmode/alerts/alert_list.list.php:247
 msgid "Enabled / Disabled"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:92
-#: ../../godmode/alerts/alert_list.list.php:542
+#: ../../godmode/alerts/alert_list.list.php:88
+#: ../../godmode/alerts/alert_list.list.php:537
 msgid "Enable"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:93
-#: ../../godmode/alerts/alert_list.list.php:534
+#: ../../godmode/alerts/alert_list.list.php:89
+#: ../../godmode/alerts/alert_list.list.php:529
 msgid "Disable"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:252
+#: ../../godmode/alerts/alert_list.list.php:101
+msgid "Alert control filter"
+msgstr ""
+
+#: ../../godmode/alerts/alert_list.list.php:247
 msgid "E/D"
 msgstr ""
 
-#: ../../godmode/alerts/alert_list.list.php:422
+#: ../../godmode/alerts/alert_list.list.php:417
 #: ../../include/functions_ui.php:471
 msgid "times"
 msgstr "φορές"
 
-#: ../../godmode/alerts/alert_list.list.php:445
+#: ../../godmode/alerts/alert_list.list.php:440
 msgid "No alerts defined"
 msgstr ""
 
@@ -8517,18 +8467,16 @@ msgid "Could not be disabled"
 msgstr ""
 
 #: ../../godmode/alerts/alert_list.php:176
-#, fuzzy
 msgid "List alerts"
-msgstr "Επώνυμο:"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.php:180
 msgid "Builder alert"
 msgstr ""
 
 #: ../../godmode/alerts/alert_list.php:187
-#, fuzzy
 msgid "List"
-msgstr "Σύνδεσμοι"
+msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:30
 msgid "Configure alert template"
@@ -8566,8 +8514,8 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:522
 msgid ""
-"The alert would fire when the value doesn't match <span id=\\\"value\\\"></"
-"span>"
+"The alert would fire when the value doesn't match <span id=\\\"value\\"
+"\"></span>"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:523
@@ -8587,8 +8535,8 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:526
 msgid ""
-"The alert would fire when the value is not between <span id=\\\"min\\\"></"
-"span> and <span id=\\\"max\\\"></span>"
+"The alert would fire when the value is not between <span id=\\\"min\\"
+"\"></span> and <span id=\\\"max\\\"></span>"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_template.php:527
@@ -8628,9 +8576,8 @@ msgid "Configure alert action"
 msgstr ""
 
 #: ../../godmode/alerts/configure_alert_action.php:71
-#, fuzzy
 msgid "Create Command"
-msgstr "Εντολή"
+msgstr ""
 
 #: ../../godmode/alerts/configure_alert_action.php:83
 msgid "Command preview"
@@ -8708,14 +8655,12 @@ msgid "Latest value"
 msgstr ""
 
 #: ../../godmode/alerts/alert_list.builder.php:70
-#, fuzzy
 msgid "Create Template"
-msgstr "Πρότυπο"
+msgstr ""
 
 #: ../../godmode/alerts/alert_list.builder.php:91
-#, fuzzy
 msgid "Create Action"
-msgstr "Ενέργεια"
+msgstr ""
 
 #: ../../godmode/alerts/alert_commands.php:42
 msgid "Alert commands"
@@ -8741,22 +8686,22 @@ msgstr ""
 msgid "Successfully delete."
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:213
+#: ../../godmode/reporting/visual_console_builder.php:214
 msgid "List elements"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:219
+#: ../../godmode/reporting/visual_console_builder.php:220
 msgid "Editor"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:222
+#: ../../godmode/reporting/visual_console_builder.php:223
 #: ../../godmode/reporting/reporting_builder.php:413
 #: ../../godmode/reporting/graph_builder.php:165
 msgid "Preview"
 msgstr ""
 
-#: ../../godmode/reporting/visual_console_builder.php:233
-#: ../../godmode/reporting/map_builder.php:18 ../../godmode/menu.php:146
+#: ../../godmode/reporting/visual_console_builder.php:234
+#: ../../godmode/reporting/map_builder.php:18 ../../godmode/menu.php:156
 msgid "Visual console builder"
 msgstr ""
 
@@ -8802,20 +8747,18 @@ msgid "Item editor"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:431
-#, fuzzy
 msgid "Successfully action"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:431
-#, fuzzy
 msgid "Unsuccessfully action"
-msgstr "Επιτυχής δημιουργία"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:162
 msgid "Graph editor"
 msgstr ""
 
-#: ../../godmode/reporting/graph_builder.php:177 ../../godmode/menu.php:138
+#: ../../godmode/reporting/graph_builder.php:177 ../../godmode/menu.php:148
 msgid "Graph builder"
 msgstr ""
 
@@ -8828,14 +8771,13 @@ msgid "There was a problem storing Graph"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:189
-#: ../../godmode/agentes/configurar_agente.php:660
+#: ../../godmode/agentes/configurar_agente.php:703
 msgid "Module added successfully"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:189
-#, fuzzy
 msgid "There was a problem adding Module"
-msgstr "Παρουσιάστηκε πρόβλημα στη δημιουργία του SLA"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:192
 msgid "Update the graph"
@@ -8850,9 +8792,8 @@ msgid "Graph deleted successfully"
 msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:195
-#, fuzzy
 msgid "There was a problem deleting Graph"
-msgstr "Παρουσιάστηκε πρόβλημα κατά τη διαγραφή του SLA"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.main.php:130
 msgid "1 year"
@@ -8885,9 +8826,8 @@ msgid "Custom SQL template"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:323
-#, fuzzy
 msgid "SQL preview"
-msgstr "Προεπισκόπηση"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:331
 msgid "Field separator"
@@ -8898,9 +8838,8 @@ msgid "Line separator"
 msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:344
-#, fuzzy
 msgid "Create item"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:347
 #: ../../godmode/reporting/visual_console_builder.editor.php:56
@@ -9009,38 +8948,39 @@ msgstr ""
 msgid "Items filter"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:132
-#, fuzzy
+#: ../../godmode/reporting/reporting_builder.list_items.php:129
 msgid "Sort"
-msgstr "Θύρα"
+msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:135
-#: ../../godmode/reporting/reporting_builder.list_items.php:140
-#: ../../godmode/reporting/reporting_builder.list_items.php:145
+#: ../../godmode/reporting/reporting_builder.list_items.php:132
+#: ../../godmode/reporting/reporting_builder.list_items.php:137
+#: ../../godmode/reporting/reporting_builder.list_items.php:142
 msgid "Ascendent"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:136
-#: ../../godmode/reporting/reporting_builder.list_items.php:141
-#: ../../godmode/reporting/reporting_builder.list_items.php:146
-#, fuzzy
+#: ../../godmode/reporting/reporting_builder.list_items.php:133
+#: ../../godmode/reporting/reporting_builder.list_items.php:138
+#: ../../godmode/reporting/reporting_builder.list_items.php:143
 msgid "Descent"
-msgstr "Διαγραφή"
+msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:150
+#: ../../godmode/reporting/reporting_builder.list_items.php:147
 msgid "Options"
 msgstr "Επιλογές"
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:150
-#, fuzzy
+#: ../../godmode/reporting/reporting_builder.list_items.php:147
 msgid "O."
-msgstr "."
+msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:177
+#: ../../godmode/reporting/reporting_builder.list_items.php:151
+msgid "No items"
+msgstr ""
+
+#: ../../godmode/reporting/reporting_builder.list_items.php:180
 msgid "Move to up"
 msgstr ""
 
-#: ../../godmode/reporting/reporting_builder.list_items.php:184
+#: ../../godmode/reporting/reporting_builder.list_items.php:187
 msgid "Move to down"
 msgstr ""
 
@@ -9093,14 +9033,12 @@ msgid "No image or name defined."
 msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:254
-#, fuzzy
 msgid "No label defined."
-msgstr "Ορίστηκαν οι προειδοποιήσεις"
+msgstr ""
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:255
-#, fuzzy
 msgid "No image defined."
-msgstr "Καθορίστηκαν χρήστες"
+msgstr ""
 
 #: ../../godmode/admin_access_logs.php:32
 msgid "Pandora audit"
@@ -9116,6 +9054,42 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor.php:331
 msgid "No module to predict"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:30
+msgid "Agents custom fields manager"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:52
+msgid "Field successfully created"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:54
+msgid "There was a problem creating field"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:71
+msgid "Field successfully updated"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:73
+msgid "There was a problem modifying field"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:83
+msgid "There was a problem deleting field"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:85
+msgid "Field successfully deleted"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:101
+msgid "No fields defined"
+msgstr ""
+
+#: ../../godmode/agentes/fields_manager.php:126
+msgid "Create field"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:47
@@ -9139,12 +9113,12 @@ msgid "Create a new prediction server module"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:114
-#: ../../godmode/agentes/configurar_agente.php:715
+#: ../../godmode/agentes/configurar_agente.php:761
 msgid "There was a problem deleting the module"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:117
-#: ../../godmode/agentes/configurar_agente.php:718
+#: ../../godmode/agentes/configurar_agente.php:764
 msgid "Module deleted succesfully"
 msgstr ""
 
@@ -9193,9 +9167,8 @@ msgid ""
 msgstr ""
 
 #: ../../godmode/agentes/agent_conf_gis.php:47
-#, fuzzy
 msgid "Agent position"
-msgstr "Πράκτορες"
+msgstr ""
 
 #: ../../godmode/agentes/agent_conf_gis.php:50
 msgid "Longitude: "
@@ -9210,13 +9183,13 @@ msgid "Altitude: "
 msgstr ""
 
 #: ../../godmode/agentes/agent_conf_gis.php:62
-#: ../../godmode/agentes/agent_manager.php:221
+#: ../../godmode/agentes/agent_manager.php:232
 msgid "Ignore new GIS data:"
 msgstr ""
 
 #: ../../godmode/agentes/agent_conf_gis.php:64
-#: ../../godmode/agentes/agent_manager.php:187
-#: ../../godmode/agentes/agent_manager.php:223
+#: ../../godmode/agentes/agent_manager.php:198
+#: ../../godmode/agentes/agent_manager.php:234
 msgid "Active"
 msgstr "Ενεργό"
 
@@ -9280,70 +9253,78 @@ msgstr ""
 msgid "WMI server module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:134
-#: ../../godmode/agentes/configurar_agente.php:382
+#: ../../godmode/agentes/configurar_agente.php:144
+#: ../../godmode/agentes/configurar_agente.php:424
 msgid "No agent name specified"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:137
-#: ../../godmode/agentes/configurar_agente.php:385
+#: ../../godmode/agentes/configurar_agente.php:147
+#: ../../godmode/agentes/configurar_agente.php:427
 msgid "There is already an agent in the database with this name"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:166
+#: ../../godmode/agentes/configurar_agente.php:181
 #: ../../include/functions_agents.php:65
 msgid "Agent keepalive monitor"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:244
-#: ../../godmode/agentes/agent_template.php:85 ../../godmode/menu.php:78
+#: ../../godmode/agentes/configurar_agente.php:259
+#: ../../godmode/agentes/agent_template.php:85 ../../godmode/menu.php:79
 msgid "Module templates"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:296
+#: ../../godmode/agentes/configurar_agente.php:311
 msgid "Agent manager"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:319
+#: ../../godmode/agentes/configurar_agente.php:334
 msgid "Conf file deleted successfully"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:320
+#: ../../godmode/agentes/configurar_agente.php:335
 msgid "Could not delete conf file"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:344
+#: ../../godmode/agentes/configurar_agente.php:359
 msgid "No data to normalize"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:348
+#: ../../godmode/agentes/configurar_agente.php:363
 #, php-format
 msgid "Deleted data above %d"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:349
+#: ../../godmode/agentes/configurar_agente.php:364
 #, php-format
 msgid "Error normalizing module %s"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:415
+#: ../../godmode/agentes/configurar_agente.php:457
 msgid "There was a problem updating the agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:440
+#: ../../godmode/agentes/configurar_agente.php:482
 msgid "There was a problem loading the agent"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:593
+#: ../../godmode/agentes/configurar_agente.php:636
 msgid "There was a problem updating module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:596
+#: ../../godmode/agentes/configurar_agente.php:639
 msgid "Module successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:656
+#: ../../godmode/agentes/configurar_agente.php:699
 msgid "There was a problem adding module"
+msgstr ""
+
+#: ../../godmode/agentes/configure_field.php:36
+msgid "Update agent custom field"
+msgstr ""
+
+#: ../../godmode/agentes/configure_field.php:38
+msgid "Create agent custom field"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_common.php:65
@@ -9384,32 +9365,32 @@ msgstr "Διαγραφή επιλεγμένου"
 msgid "Cascade protection"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:180
+#: ../../godmode/agentes/agent_manager.php:191
 msgid "Module definition"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:181
+#: ../../godmode/agentes/agent_manager.php:192
 msgid "Learning mode"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:182
+#: ../../godmode/agentes/agent_manager.php:193
 msgid "Normal mode"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:190
+#: ../../godmode/agentes/agent_manager.php:201
 msgid "Remote configuration"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:200
-#: ../../godmode/agentes/agent_manager.php:203
+#: ../../godmode/agentes/agent_manager.php:211
+#: ../../godmode/agentes/agent_manager.php:214
 msgid "Not available"
 msgstr "Μη διαθέσιμο"
 
-#: ../../godmode/agentes/agent_manager.php:212
+#: ../../godmode/agentes/agent_manager.php:223
 msgid "Agent icon"
 msgstr ""
 
-#: ../../godmode/agentes/agent_manager.php:214
+#: ../../godmode/agentes/agent_manager.php:225
 msgid "Without status"
 msgstr ""
 
@@ -9458,9 +9439,8 @@ msgid "Source module"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_prediction.php:68
-#, fuzzy
 msgid "Select Module"
-msgstr "Επιλέξτε"
+msgstr ""
 
 #: ../../godmode/agentes/agent_template.php:76
 msgid "Error adding module"
@@ -9494,125 +9474,125 @@ msgstr ""
 msgid "Scheduled downtime"
 msgstr ""
 
-#: ../../godmode/menu.php:46 ../../godmode/massive/massive_operations.php:113
+#: ../../godmode/menu.php:39
+msgid "Manage custom fields"
+msgstr ""
+
+#: ../../godmode/menu.php:47 ../../godmode/massive/massive_operations.php:113
 msgid "Massive operations"
 msgstr ""
 
-#: ../../godmode/menu.php:51 ../../godmode/massive/massive_operations.php:96
-#, fuzzy
+#: ../../godmode/menu.php:52 ../../godmode/massive/massive_operations.php:96
 msgid "Agents operations"
-msgstr "Λειτουργία"
+msgstr ""
 
-#: ../../godmode/menu.php:53 ../../godmode/massive/massive_operations.php:100
+#: ../../godmode/menu.php:54 ../../godmode/massive/massive_operations.php:100
 msgid "Modules operations"
 msgstr ""
 
-#: ../../godmode/menu.php:55 ../../godmode/massive/massive_operations.php:92
-#, fuzzy
+#: ../../godmode/menu.php:56 ../../godmode/massive/massive_operations.php:92
 msgid "Alerts operations"
-msgstr "Ορίστηκαν οι προειδοποιήσεις"
+msgstr ""
 
-#: ../../godmode/menu.php:67
+#: ../../godmode/menu.php:68
 msgid "Manage modules"
 msgstr ""
 
-#: ../../godmode/menu.php:72
+#: ../../godmode/menu.php:73
 msgid "Component groups"
 msgstr ""
 
-#: ../../godmode/menu.php:74
+#: ../../godmode/menu.php:75
 msgid "Network components"
 msgstr ""
 
-#: ../../godmode/menu.php:91
+#: ../../godmode/menu.php:92
 msgid "Templates"
 msgstr ""
 
-#: ../../godmode/menu.php:95
+#: ../../godmode/menu.php:96
 msgid "Commands"
 msgstr ""
 
-#: ../../godmode/menu.php:97
+#: ../../godmode/menu.php:98
 msgid "Correlation"
 msgstr ""
 
-#: ../../godmode/menu.php:114
+#: ../../godmode/menu.php:116
+msgid "Manage profiles"
+msgstr ""
+
+#: ../../godmode/menu.php:124
 msgid "Manage SNMP console"
 msgstr ""
 
-#: ../../godmode/menu.php:120
-#, fuzzy
+#: ../../godmode/menu.php:130
 msgid "SNMP filters"
-msgstr "Εξυπηρετητής SNMP"
+msgstr ""
 
-#: ../../godmode/menu.php:129
+#: ../../godmode/menu.php:139
 msgid "Manage reports"
 msgstr ""
 
-#: ../../godmode/menu.php:135
+#: ../../godmode/menu.php:145
 msgid "Report builder"
 msgstr ""
 
-#: ../../godmode/menu.php:151 ../../godmode/gis_maps/index.php:60
+#: ../../godmode/menu.php:161 ../../godmode/gis_maps/index.php:60
 #: ../../godmode/gis_maps/configure_gis_map.php:20
 msgid "GIS Maps builder"
 msgstr ""
 
-#: ../../godmode/menu.php:160
-msgid "Manage profiles"
-msgstr ""
-
-#: ../../godmode/menu.php:172
+#: ../../godmode/menu.php:178
 msgid "Manage plugins"
 msgstr ""
 
-#: ../../godmode/menu.php:185
+#: ../../godmode/menu.php:191
 msgid "System audit log"
 msgstr ""
 
-#: ../../godmode/menu.php:196
-#, fuzzy
+#: ../../godmode/menu.php:202
 msgid "Authentication"
-msgstr "Σφάλμα πιστοποίησης"
+msgstr ""
 
-#: ../../godmode/menu.php:197
+#: ../../godmode/menu.php:203
 msgid "Performance"
 msgstr ""
 
-#: ../../godmode/menu.php:198
+#: ../../godmode/menu.php:204
 msgid "Visual styles"
 msgstr ""
 
-#: ../../godmode/menu.php:207
+#: ../../godmode/menu.php:213
 msgid "Diagnostic info"
 msgstr ""
 
-#: ../../godmode/menu.php:212
+#: ../../godmode/menu.php:218
 msgid "DB maintenance"
 msgstr ""
 
-#: ../../godmode/menu.php:217
+#: ../../godmode/menu.php:223
 msgid "DB information"
 msgstr ""
 
-#: ../../godmode/menu.php:219 ../../godmode/db/db_purge.php:37
+#: ../../godmode/menu.php:225 ../../godmode/db/db_purge.php:37
 msgid "Database purge"
 msgstr ""
 
-#: ../../godmode/menu.php:221 ../../godmode/db/db_refine.php:29
+#: ../../godmode/menu.php:227 ../../godmode/db/db_refine.php:29
 #: ../../include/functions_db.php:3563
 msgid "Database debug"
 msgstr ""
 
-#: ../../godmode/menu.php:223
+#: ../../godmode/menu.php:229
 msgid "Database audit"
 msgstr ""
 
-#: ../../godmode/menu.php:225
+#: ../../godmode/menu.php:231
 msgid "Database event"
 msgstr ""
 
-#: ../../godmode/menu.php:227 ../../godmode/db/db_main.php:142
+#: ../../godmode/menu.php:233 ../../godmode/db/db_main.php:142
 msgid "Database sanity"
 msgstr ""
 
@@ -9632,9 +9612,8 @@ msgstr ""
 
 #: ../../godmode/massive/massive_delete_action_alerts.php:73
 #: ../../godmode/massive/massive_add_action_alerts.php:73
-#, fuzzy
 msgid "No action selected"
-msgstr "Δεν επιλέχθηκαν πράκτορες"
+msgstr ""
 
 #: ../../godmode/massive/massive_copy_modules.php:89
 msgid "Operations"
@@ -9661,7 +9640,7 @@ msgid "To agent(s)"
 msgstr ""
 
 #: ../../godmode/massive/massive_copy_modules.php:297
-#: ../../include/functions_agents.php:358
+#: ../../include/functions_agents.php:359
 msgid "No source agent to copy"
 msgstr ""
 
@@ -9670,12 +9649,12 @@ msgid "No operation selected"
 msgstr ""
 
 #: ../../godmode/massive/massive_copy_modules.php:310
-#: ../../godmode/db/db_refine.php:43 ../../include/functions_agents.php:388
+#: ../../godmode/db/db_refine.php:43 ../../include/functions_agents.php:389
 msgid "No modules have been selected"
 msgstr ""
 
 #: ../../godmode/massive/massive_copy_modules.php:315
-#: ../../include/functions_agents.php:363
+#: ../../include/functions_agents.php:364
 msgid "No destiny agent(s) to copy"
 msgstr ""
 
@@ -9701,7 +9680,8 @@ msgid "Could not delete modules"
 msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:51
-msgid "There was an error deleting the agent, the operation has been cancelled"
+msgid ""
+"There was an error deleting the agent, the operation has been cancelled"
 msgstr ""
 
 #: ../../godmode/massive/massive_delete_agents.php:52
@@ -9709,13 +9689,13 @@ msgid "Could not delete agent"
 msgstr ""
 
 #: ../../godmode/massive/massive_add_alerts.php:68
-msgid "There was an error adding the alerts, the operation has been cancelled"
+msgid ""
+"There was an error adding the alerts, the operation has been cancelled"
 msgstr ""
 
 #: ../../godmode/massive/massive_add_alerts.php:69
-#, fuzzy
 msgid "Could not add alerts"
-msgstr "Δεν μπόρεσε να διαγραφεί"
+msgstr ""
 
 #: ../../godmode/massive/massive_operations.php:36
 msgid "Massive alerts addition"
@@ -10300,7 +10280,7 @@ msgid ""
 msgstr ""
 
 #: ../../extensions/module_groups.php:134
-#: ../../extensions/agents_modules.php:226
+#: ../../extensions/agents_modules.php:274
 msgid "The colours meaning:"
 msgstr ""
 
@@ -10339,9 +10319,10 @@ msgstr ""
 msgid ""
 "This extension makes registration of server plugins more easy. Here you can "
 "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
-"refer to documentation on how to obtain and use Pandora FMS Server Plugins."
-"<br><br>You can get more plugins in our <a href='http://pandorafms.org/index."
-"php?sec=community&sec2=repository&lng=en'>Public Resource Library</A>"
+"refer to documentation on how to obtain and use Pandora FMS Server "
+"Plugins.<br><br>You can get more plugins in our <a "
+"href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>P"
+"ublic Resource Library</A>"
 msgstr ""
 
 #: ../../extensions/plugin_registration.php:67
@@ -10371,7 +10352,7 @@ msgstr ""
 #: ../../extensions/users_connected.php:18
 #: ../../extensions/users_connected.php:63
 #: ../../extensions/users_connected.php:106
-#: ../../extensions/users_connected.php:107
+#: ../../extensions/users_connected.php:110
 msgid "Users connected"
 msgstr ""
 
@@ -10409,49 +10390,47 @@ msgstr ""
 msgid "Update manager settings"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:58
-#, fuzzy
+#: ../../extensions/agents_modules.php:100
 msgid "Agents/Modules"
-msgstr "Μονάδες"
+msgstr ""
 
-#: ../../extensions/agents_modules.php:108
+#: ../../extensions/agents_modules.php:150
 msgid "There are no agents with modules"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:118
+#: ../../extensions/agents_modules.php:160
 msgid "Previous modules"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:133
-#, fuzzy
+#: ../../extensions/agents_modules.php:176
 msgid "More modules"
-msgstr "Μονάδες"
+msgstr ""
 
-#: ../../extensions/agents_modules.php:208
+#: ../../extensions/agents_modules.php:255
 msgid "ALERTS FIRED"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:230
+#: ../../extensions/agents_modules.php:278
 msgid "Orange cell when the module has fired alerts"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:234
+#: ../../extensions/agents_modules.php:282
 msgid "Red cell when the module has a critical status"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:238
+#: ../../extensions/agents_modules.php:286
 msgid "Yellow cell when the module has a warning status"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:242
+#: ../../extensions/agents_modules.php:290
 msgid "Green cell when the module has a normal status"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:246
+#: ../../extensions/agents_modules.php:294
 msgid "Grey cell when the module has an unknown status"
 msgstr ""
 
-#: ../../extensions/agents_modules.php:252
+#: ../../extensions/agents_modules.php:300
 msgid "Agents/Modules view"
 msgstr ""
 
@@ -10483,8 +10462,8 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:33
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
-"Enterprise version, for more information visit <a href=\"http://pandorafms."
-"com\">http://pandorafms.com</a>."
+"Enterprise version, for more information visit <a "
+"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 msgstr ""
 
 #: ../../extensions/update_manager/main.php:35
@@ -10737,79 +10716,76 @@ msgid "Percentile bar"
 msgstr ""
 
 #: ../../include/functions_fsgraph.php:175
-#, fuzzy
 msgid "Max"
-msgstr "Μέγιστο"
+msgstr ""
 
 #: ../../include/functions_fsgraph.php:183
 msgid "Avg"
 msgstr ""
 
 #: ../../include/functions_fsgraph.php:193
-#, fuzzy
 msgid "Min"
-msgstr "Κύριο"
+msgstr ""
 
 #: ../../include/functions_gis.php:23 ../../include/functions_gis.php:27
 #: ../../include/functions_gis.php:32
 msgid "Hierarchy of agents"
 msgstr ""
 
-#: ../../include/functions_reporting.php:737
+#: ../../include/functions_reporting.php:734
 msgid "Alert description"
 msgstr ""
 
-#: ../../include/functions_reporting.php:954
+#: ../../include/functions_reporting.php:951
 msgid "Total alerts monitored"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1003
+#: ../../include/functions_reporting.php:1000
 msgid "Total monitors"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1004
+#: ../../include/functions_reporting.php:1001
 msgid "Monitors down on period"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1039
-#: ../../include/functions_reporting.php:1174
+#: ../../include/functions_reporting.php:1036
+#: ../../include/functions_reporting.php:1171
 msgid "Monitor"
 msgstr "Οθόνη"
 
-#: ../../include/functions_reporting.php:1084
+#: ../../include/functions_reporting.php:1081
 msgid "Agents in group"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1108
+#: ../../include/functions_reporting.php:1105
 msgid "Threshold"
 msgstr "Κατώφλι"
 
-#: ../../include/functions_reporting.php:1175
+#: ../../include/functions_reporting.php:1172
 msgid "Last failure"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1270
+#: ../../include/functions_reporting.php:1267
 msgid "Monitors"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1556
+#: ../../include/functions_reporting.php:1553
 msgid "At least one module in CRITICAL status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1559
+#: ../../include/functions_reporting.php:1556
 msgid "At least one module in WARNING status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1562
+#: ../../include/functions_reporting.php:1559
 msgid "At least one module is in UKNOWN status"
 msgstr ""
 
-#: ../../include/functions_reporting.php:1858 ../../include/functions.php:608
-#, fuzzy
+#: ../../include/functions_reporting.php:1855 ../../include/functions.php:608
 msgid "Summatory"
-msgstr "Περίληψη"
+msgstr ""
 
-#: ../../include/functions_reporting.php:1985
+#: ../../include/functions_reporting.php:1982
 msgid "Module detailed event"
 msgstr ""
 
@@ -10838,9 +10814,8 @@ msgid "Web server"
 msgstr ""
 
 #: ../../include/functions_filemanager.php:165
-#, fuzzy
 msgid "Upload error"
-msgstr "Λάθος ονόματος"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:169
 #: ../../include/functions_filemanager.php:220
@@ -10885,9 +10860,8 @@ msgstr ""
 #: ../../include/functions_filemanager.php:516
 #: ../../include/functions_filemanager.php:528
 #: ../../include/functions_filemanager.php:545
-#, fuzzy
 msgid "Close"
-msgstr "Χρώματα"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:530
 #: ../../include/functions_filemanager.php:662
@@ -10904,9 +10878,8 @@ msgid "Create directory"
 msgstr ""
 
 #: ../../include/functions_filemanager.php:626
-#, fuzzy
 msgid "Create text"
-msgstr "Δημιουργία"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:629
 msgid "Upload file/s"
@@ -10935,9 +10908,8 @@ msgid "Multiple files zipped"
 msgstr ""
 
 #: ../../include/functions_filemanager.php:665
-#, fuzzy
 msgid "One"
-msgstr "Ιδιοκτήτης"
+msgstr ""
 
 #: ../../include/functions_filemanager.php:734
 msgid "Upload zip file: "
@@ -11112,7 +11084,8 @@ msgid "The alert would fire when the value is not <span id=\"value\"></span>"
 msgstr ""
 
 #: ../../include/functions_ui.php:551
-msgid "The alert would fire when the value matches <span id=\"value\"></span>"
+msgid ""
+"The alert would fire when the value matches <span id=\"value\"></span>"
 msgstr ""
 
 #: ../../include/functions_ui.php:554
@@ -11192,15 +11165,15 @@ msgstr ""
 msgid "Unknown type:"
 msgstr ""
 
-#: ../../include/functions_custom_graphs.php:119
+#: ../../include/functions_custom_graphs.php:126
 msgid "1 week"
 msgstr "1 εβδομάδα"
 
-#: ../../include/functions_custom_graphs.php:120
+#: ../../include/functions_custom_graphs.php:127
 msgid "1 month"
 msgstr "1 μήνας"
 
-#: ../../include/functions_custom_graphs.php:121
+#: ../../include/functions_custom_graphs.php:128
 msgid "6 months"
 msgstr "6 μήνες"
 
@@ -11217,9 +11190,8 @@ msgid "Not equal to"
 msgstr ""
 
 #: ../../include/functions_alerts.php:218
-#, fuzzy
 msgid "Unknown status"
-msgstr "Άγνωστο"
+msgstr ""
 
 #: ../../include/functions_alerts.php:219
 msgid "On Change"
@@ -11233,38 +11205,20 @@ msgstr "εβδομάδα"
 msgid "weeks"
 msgstr "εβδομάδες"
 
-#: ../../include/functions_agents.php:461
+#: ../../include/functions_agents.php:462
 msgid ""
 "There was an error copying the agent configuration, the copy has been "
 "cancelled"
 msgstr ""
 
-#~ msgid "Reporting successfully created"
-#~ msgstr "Η αναφορά δημιουργήθηκε επιτυχώς"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "Υπήρξε πρόβλημα στην δημιουργία της αναφοράς"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "To SLA διαγράφθηκε επιτυχώς"
-
-#~ msgid "SLAs defined"
-#~ msgstr "Τα SLAs δημιοργήθηκαν"
-
-#~ msgid "3 months"
-#~ msgstr "3 μήνες"
-
-#~ msgid "Order"
-#~ msgstr "Σειρά"
+#~ msgid "Hour"
+#~ msgstr "Ώρα"
 
 #~ msgid "Factor"
 #~ msgstr "Συντελεστής"
 
-#~ msgid "15 days"
-#~ msgstr "15 ημέρες"
-
-#~ msgid "Hour"
-#~ msgstr "Ώρα"
+#~ msgid "Order"
+#~ msgstr "Σειρά"
 
 #~ msgid "S"
 #~ msgstr "Σ"
@@ -11275,11 +11229,28 @@ msgstr ""
 #~ msgid "create"
 #~ msgstr "Δημιουργία"
 
+#~ msgid "3 months"
+#~ msgstr "3 μήνες"
+
+#~ msgid "There was a problem creating reporting"
+#~ msgstr "Υπήρξε πρόβλημα στην δημιουργία της αναφοράς"
+
+#~ msgid "Reporting successfully created"
+#~ msgstr "Η αναφορά δημιουργήθηκε επιτυχώς"
+
 #~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can "
-#~ "manage its agents, alerts and incidents. Session is open while activity "
-#~ "exists."
+#~ "This is the Web Management System for Pandora FMS. From here you can manage "
+#~ "its agents, alerts and incidents. Session is open while activity exists."
 #~ msgstr ""
-#~ "Αυτο είναι το Σύστημα ηλεκτρονικής διαχείρησης για την Pandora FMS. Από "
-#~ "εδώ μπορείτε να διαχειριστείτε τους πράκτορες, τις προειδοποιησεις και τα "
+#~ "Αυτο είναι το Σύστημα ηλεκτρονικής διαχείρησης για την Pandora FMS. Από εδώ "
+#~ "μπορείτε να διαχειριστείτε τους πράκτορες, τις προειδοποιησεις και τα "
 #~ "συμβάντα. Η συνεδρία είναι ενεργή όσο υπάρχει δραστηριότητα."
+
+#~ msgid "SLA was successfully delete"
+#~ msgstr "To SLA διαγράφθηκε επιτυχώς"
+
+#~ msgid "SLAs defined"
+#~ msgstr "Τα SLAs δημιοργήθηκαν"
+
+#~ msgid "15 days"
+#~ msgstr "15 ημέρες"

@@ -1,3 +1,16 @@
+2010-09-13  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/ver_agente.php: added the tab to show all graphs in a
+	one page about modules in the agent.
+	
+	* operation/agentes/graphs.php: the page to show all graphs of agent
+	modules.
+	 
+	* operation/agentes/stat_win.php: cleaned html and closed some open html
+	tags.
+
+	Pending task: #3060349
+
 2010-09-13  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/cs.po

@@ -94,7 +94,8 @@ function getTermEle(ele) {
 }
 //-->
 </script>
-</head><body bgcolor="#ffffff">
+</head>
+<body bgcolor="#ffffff">
 <?php
 
 // Get input parameters
@@ -232,3 +233,5 @@ print_submit_button ('GO', "submit", false, 'class="sub next"');
 
 echo '</td></tr></table></form></div></body></html>';
 ?>
+</body>
+</html>

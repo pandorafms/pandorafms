@@ -504,7 +504,13 @@ Execute the given alert.
 sub pandora_execute_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
 	    $alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
-	
+
+	# Alerts in stand-by are not executed
+	if ($alert->{'standby'} == 1) {
+		logger ($pa_config, "Alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "' is in stand-by. Not executing.", 10);
+		return;
+	}
+
 	logger ($pa_config, "Executing alert '" . $alert->{'name'} . "' for module '" . $module->{'nombre'} . "'.", 10);
 
 	# Get active actions/commands

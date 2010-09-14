@@ -1,3 +1,7 @@
+2010-09-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Do not execute alerts in stand-by.
+
 2010-09-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/NetworkServer.pm,

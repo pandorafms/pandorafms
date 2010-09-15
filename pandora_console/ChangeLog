@@ -1,3 +1,34 @@
+2010-09-15  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: in function "get_agent_module_info" added
+	the return "status" and "alert_value".
+	
+	* include/auth/mysql.php: in function "process_user_login" cleaned the
+	source code style.
+
+	* include/functions_ui.php: in function "print_timestamp" added in the
+	parameter $option the check of units ('large' and 'tiny' at the moment).
+	Added the function "print_group_icon2" that it is the same of
+	"print_group_icon" but it has a new parameter $path for to set the images
+	path.
+	
+	* include/functions.php: in function "human_time_comparation" added the
+	parameter $units to set the type return text for time unit (at the moment
+	only "large" and "tiny"). And in the function "human_time_description_raw"
+	added the paramter $units for to set the type of return text for units, at
+	the moment only "large" and "tiny".
+	
+	* include/functions_db.php, operation/agentes/ver_agente.php: cleaned source
+	code.
+	
+	* mobile/index.php, mobile/operation/agents,
+	mobile/operation/agents/view_agents.php, mobile/include/db.class.php,
+	mobile/include/style, mobile/include/style/main.css,
+	mobile/include/user.class.php, mobile/include/functions_web.php,
+	mobile/include/system.class.php, mobile/images/bricks.png,
+	mobile/images/up.png, mobile/images/zoom.png, mobile/images/down.png: added
+	first version of file for Pandora Mobile version.
+
 2010-09-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Fixed a typo.

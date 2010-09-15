@@ -276,11 +276,12 @@ function format_integer_round ($number, $rounder = 5) {
  * TODO: Make sense out of all these time functions and stick with 2 or 3
  *
  * @param int $timestamp Unixtimestamp to compare with current time.
+ * @param string $units The type of unit, by default 'large'.
  * 
  * @return string A human readable string of the diference between current
  * time and a given timestamp.
  */
-function human_time_comparation ($timestamp) {
+function human_time_comparation ($timestamp, $units = 'large') {
 	global $config;
 	
 	if (!is_numeric ($timestamp)) {
@@ -289,7 +290,7 @@ function human_time_comparation ($timestamp) {
 	
 	$seconds = get_system_time () - $timestamp;
 
-	return human_time_description_raw ($seconds);
+	return human_time_description_raw($seconds, false, $units);
 }
 
 /**
@@ -321,13 +322,33 @@ function get_system_time () {
  * 
  * @param int $seconds Seconds elapsed time
  * @param int $exactly If it's true, return the exactly human time
+ * @param string $units The type of unit, by default 'large'.
  * 
  * @return string A human readable translation of minutes.
  */
-function human_time_description_raw ($seconds, $exactly = false) {
+function human_time_description_raw ($seconds, $exactly = false, $units = 'large') {
+	
+	switch ($units) {
+		case 'large':
+			$secondsString = __('seconds');
+			$daysString = __('days');
+			$monthsString = __('months');
+			$minutesString = __('minutes');
+			$hoursString = __('hours');
+			$nowString = __('Now');
+			break;
+		case 'tiny':
+			$secondsString = __('s');
+			$daysString = __('d');
+			$monthsString = __('M');
+			$minutesString = __('m');
+			$hoursString = __('h');
+			$nowString = __('N');
+			break;
+	}
 
 	if (empty ($seconds)) {
-		return __('Now'); 
+		return $nowString; 
 		// slerena 25/03/09
 		// Most times $seconds is empty is because last contact is current date
 		// Put here "uknown" or N/A or something similar is not a good idea
@@ -341,39 +362,39 @@ function human_time_description_raw ($seconds, $exactly = false) {
 		$months = format_numeric ($seconds / 2592000, 0);
 		
 		if (($mins == 0) && ($hours == 0) && ($days == 0) && ($months == 0))
-			return format_numeric ($secs, 0).' '.__('seconds');
+			return format_numeric ($secs, 0).' '. $secondsString;
 		else if (($hours == 0) && ($days == 0) && ($months == 0))
 			return sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
 		else if (($days == 0) && ($months == 0))
 			return sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
 		else if (($months == 0))
-			return $days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
+			return $days.' ' . $daysString . ' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);
 		else
-			return $months.' '.__('months').' '.$days.' '.__('days').' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
+			return $months.' '. $monthsString .' '.$days.' ' . $daysString . ' '.sprintf("%02d",$hours).':'.sprintf("%02d",$mins).':'.sprintf("%02d",$secs);	
 	}
 	
 	if ($seconds < 60)
-		return format_numeric ($seconds, 0)." ".__('seconds');
+		return format_numeric ($seconds, 0)." " . $secondsString;
 	
 	if ($seconds < 3600) {
 		$minutes = floor($seconds / 60);
 		$seconds = $seconds % 60;
 		if ($seconds == 0)
-			return $minutes.' '.__('minutes');
+			return $minutes.' ' . $minutesString;
 		$seconds = sprintf ("%02d", $seconds);
-		return $minutes.':'.$seconds.' '.__('minutes');
+		return $minutes.':'.$seconds.' ' . $minutesString;
 	}
 	
 	if ($seconds < 86400)
-		return format_numeric ($seconds / 3600, 0)." ".__('hours');
+		return format_numeric ($seconds / 3600, 0)." " . $hoursString;
 	
 	if ($seconds < 2592000)
-		return format_numeric ($seconds / 86400, 0)." ".__('days');
+		return format_numeric ($seconds / 86400, 0) . " " . $daysString;
 	
 	if ($seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 0)." ".__('months');
+		return format_numeric ($seconds / 2592000, 0)." ". $monthsString;
 	
-	return "+6 ".__('months');
+	return "+6 " . $monthsString;
 }
 
 /** 

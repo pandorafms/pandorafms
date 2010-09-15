@@ -90,14 +90,16 @@ function process_user_login ($login, $pass) {
 			// to avoid problems with case-sensitive usernames.
 			// Thanks to David Muñiz for Bug discovery :)
 			return $row["id_user"];
-		} else {
+		}
+		else {
 			$mysql_cache["auth_error"] = "User not found in database or incorrect password";
 		}
 
 		return false;
 
 	// Remote authentication
-	} else {
+	}
+	else {
 		
 		switch ($config["auth"]) {
 			

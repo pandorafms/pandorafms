@@ -1,5 +1,16 @@
 2010-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* images/status_sets/default/server_down_ball.png,
+	images/status_sets/default/server_ok_ball.png: added small image (for to
+	use in Pandora Mobile) for server status.
+	
+	* mobile/operation/servers/view_servers.php: added first version page to
+	show server status in Pandora Mobile.
+	
+	* mobile/index.php: added hook for the server status page.
+
+2010-09-15  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_reporting.php: in function "get_agent_module_info" added
 	the return "status" and "alert_value".
 	

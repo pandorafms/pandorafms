@@ -18,6 +18,7 @@ require_once("include/system.class.php");
 require_once("include/user.class.php");
 require_once("include/functions_web.php");
 require_once('operation/agents/view_agents.php');
+require_once('operation/servers/view_servers.php');
 
 $system = new System();
 
@@ -70,6 +71,8 @@ $user->hackinjectConfig();
 							$viewAgent->show();
 							break;
 						case 'servers':
+							$viewServers = new ViewServers();
+							$viewServers->show();
 							break;
 					}
 				}

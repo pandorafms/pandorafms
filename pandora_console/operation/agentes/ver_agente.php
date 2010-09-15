@@ -389,7 +389,8 @@ $custom_fields['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ve
 
 if ($tab == 'custom_fields') {
 	$custom_fields['active'] = true;
-} else {
+}
+else {
 	$custom_fields['active'] = false;
 }
 
@@ -398,7 +399,8 @@ $graphs['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agen
 		. '</a>';
 if ($tab == 'graphs') {
 	$graphs['active'] = true;
-} else {
+}
+else {
 	$graphs['active'] = false;
 }
 

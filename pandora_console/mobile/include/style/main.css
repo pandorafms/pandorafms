@@ -1,0 +1,101 @@
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	
+	font-size: 12px;
+}
+
+body {
+}
+
+input {
+	border: 1px solid;
+}
+
+.icon_menu {
+	width: 50px;
+	height: 50px;
+}
+
+.orange {
+	color: #ffa300;
+}
+.green {
+	color: #5a8629;
+}
+.yellow {
+	color: #F3C500;
+}
+.greenb {
+	color: #00aa00;
+}
+.grey {
+	color: #808080;
+	font-weight: bold;
+}
+
+select {
+	border: #CCCCCC 1px solid;
+}
+
+.button_filter {
+	background: url("../../images/zoom.png") no-repeat scroll center center;
+	margin-left: 5px;
+	width: 20px;
+	height: 20px;
+}
+
+input {
+	border: #CCCCCC 1px solid;
+}
+
+.title_h3 {
+	border-top: 1px solid #CCCCCC;
+	margin: 5px;
+	color: #3F4E2F;
+}
+/*----------------INI-MENU----------------------------------------------------*/
+#top_menu {
+	background: #3F4E2F;
+	overflow: hidden;
+	position: absolute;
+	z-index: 2;
+}
+
+#margin_bottom_menu {
+	margin-bottom: 17px;
+}
+
+#menu {
+	display: none;
+}
+
+#down_button {
+	height: 15px;
+	background: #fff;
+}
+
+#down_button img {
+	background: #3F4E2F;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#button_menu_up {
+	display: none;	
+}
+/*----------------END-MENU----------------------------------------------------*/
+
+/*----------------INI-TABLE---------------------------------------------------*/
+th {
+background-color:#9EAC8B;
+color:#FFFFFF;
+text-align:center;
+}
+
+.databox {
+	border: 1px solid #f2f2f2;
+	background-color: #fafafa;
+}
+/*----------------END-TABLE---------------------------------------------------*/

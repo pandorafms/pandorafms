@@ -141,6 +141,7 @@ function print_result_message ($result, $good = '', $bad = '', $attributes = '',
  *	Key html_attr: which html attributes to add (defaults to none)
  *	Key tag: Which html tag to use (defaults to span)
  *	Key prominent: Overrides user preference and display "comparation" or "timestamp"
+ *	key units: The type of units.
  *
  * @return string HTML code if return parameter is true.
  */
@@ -181,12 +182,18 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	if ($unixtime <= 0) {
 		$title = __('Unknown').'/'.__('Never');
 		$data = __('Unknown');
-	} elseif ($prominent == "timestamp") {
+	}
+	elseif ($prominent == "timestamp") {
 		$title = human_time_comparation ($unixtime);
 		$data = date ($config["date_format"], $unixtime);
-	} else {
+	}
+	else {
 		$title = date ($config["date_format"], $unixtime);
-		$data = human_time_comparation ($unixtime);
+		$units = 'large';
+		if (isset($option['units'])) {
+			$units = $option['units'];
+		}
+		$data = human_time_comparation ($unixtime, $units);
 	}
 	
 	$output = '<'.$tag;
@@ -247,9 +254,45 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if (empty ($icon))
-		$output .= '<span title="'.get_group_name ($id_group, true).'">&nbsp;-&nbsp</span>';
+		$output .= '<span title="'. get_group_name($id_group, true).'">&nbsp;-&nbsp</span>';
 	else
 		$output .= '<img style="' . $style . '" class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
+	
+	if ($link) 
+		$output .= '</a>';
+	
+	if (!$return)
+		echo $output;
+	
+	return $output;
+}
+
+/** 
+ * Print group icon within a link. Other version.
+ * 
+ * @param int Group id
+ * @param bool Whether to return or print
+ * @param string What path to use (relative to images/). Defaults to groups_small
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_group_icon2($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
+	if($id_group > 0)
+		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
+	else
+		$icon = "world";
+	
+	if($style == '')
+		$style = 'width: 16px; height: 16px;';
+		
+	$output = '';
+	if ($link) 
+		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
+	
+	if (empty ($icon))
+		$output .= '<span title="'. get_group_name($id_group, true).'">&nbsp;-&nbsp</span>';
+	else
+		$output .= '<img style="' . $style . '" class="bot" src="'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
 	
 	if ($link) 
 		$output .= '</a>';

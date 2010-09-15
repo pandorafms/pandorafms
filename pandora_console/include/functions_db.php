@@ -520,13 +520,6 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
 	$result = get_db_all_rows_sql ($sql);
 	
-	////////////////LOG AJAX///////////////////////
-	///////////////////////////////////////////////
-	//$log = fopen ( "/tmp/log_sql", "a");
-	//fwrite ($log, $sql."\n\n");
-	//fclose($log);
-	///////////////////////////////////////////////
-	
 	if ($result === false)
 		return array (); //Return an empty array
 	

@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
 	UNIQUE (`id_agent_module`, `id_alert_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT talert_template_module_actions` (
+CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_alert_template_module` int(10) unsigned NOT NULL,
   `id_alert_action` int(10) unsigned NOT NULL,

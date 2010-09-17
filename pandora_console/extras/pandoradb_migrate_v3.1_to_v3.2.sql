@@ -120,5 +120,5 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
   FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
 	ON UPDATE CASCADE ON DELETE CASCADE,
   PRIMARY KEY  (`id_field`, `id_agent`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

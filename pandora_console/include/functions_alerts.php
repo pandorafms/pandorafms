@@ -526,6 +526,13 @@ function set_alerts_agent_module_disable ($id_alert_agent_module, $disabled) {
 		array ('id' => $id_alert_agent_module))) !== false;
 }
 
+function set_alerts_agent_module_standby ($id_alert_agent_module, $standby) {
+	$id_alert_agent_module = safe_int ($id_alert_agent_module, 0);
+	return (@process_sql_update ('talert_template_modules',
+		array ('standby' => (bool) $standby),
+		array ('id' => $id_alert_agent_module))) !== false;
+}
+
 function get_alerts_agent_module_last_fired ($id_alert_agent_module) {
 	$id_alert_agent_module = safe_int ($id_alert_agent_module, 1);
 	return get_db_value ('last_fired', 'talert_template_modules', 'id',

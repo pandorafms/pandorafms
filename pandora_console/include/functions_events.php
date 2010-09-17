@@ -150,7 +150,7 @@ function delete_event ($id_event, $similar = true) {
  *
  * @return bool Whether or not it was successful
  */	
-function validate_event ($id_event, $similars = true) {
+function validate_event ($id_event, $similars = true, $comment = '', $new_status = 1) {
 	global $config;
 	
 	//Cleans up the selection for all unwanted values also casts any single values as an array 
@@ -166,8 +166,34 @@ function validate_event ($id_event, $similars = true) {
 	process_sql_begin ();
 	$errors = 0;
 	
+	switch($new_status) {
+		case 1:
+			$new_status_string = __('Validated');
+			break;
+		case 2:
+			$new_status_string = __('Setted in process');
+			break;
+	}
+	
+	$comment = str_replace(array("\r\n", "\r", "\n"), '<br>', $comment);
+	
+	if($comment != '') {
+		$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$comment.'</div>';
+	}else {
+		$commentbox = '';
+	}
+
+	$comment = '<b>-- '.$new_status_string.' '.__('by').' '.$config['id_user'].' '.'['.date ($config["date_format"]).'] --</b><br>'.$commentbox;
+	
 	foreach ($id_event as $event) {
-		$sql = sprintf ("UPDATE tevento SET estado = 1, id_usuario = '%s' WHERE id_evento = %d", $config['id_user'], $event);
+		$fullevent = get_event($event);
+
+		if($fullevent['user_comment'] != ''){
+			$commentbox = '<div style="border:1px dotted #CCC; min-height: 10px;">'.$fullevent['user_comment'].'</div>';
+			$comment .= '<br>'.$fullevent['user_comment'];
+		}
+	
+		$sql = sprintf ("UPDATE tevento SET estado = %d, id_usuario = '%s', user_comment = '%s' WHERE id_evento = %d", $new_status, $config['id_user'], $comment, $event);
 		$ret = process_sql ($sql);
 		
 		if (give_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
@@ -403,50 +429,105 @@ function print_event_type_img ($type, $return = false) {
 	switch ($type) {
 	case "alert_recovered": 
 		$output .= print_image ("images/error.png", true,
-			array ("title" => __('Alert recovered')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "alert_manual_validation": 
 		$output .= print_image ("images/eye.png", true,
-			array ("title" => __('Alert manually validated')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "going_up_warning":
 		$output .= print_image ("images/b_yellow.png", true,
-			array ("title" => __('Going from critical to warning')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "going_down_critical":
 	case "going_up_critical": //This is to be backwards compatible
 		$output .= print_image ("images/b_red.png", true,
-			array ("title" => __('Going down to critical state')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "going_up_normal":
 	case "going_down_normal": //This is to be backwards compatible
 		$output .= print_image ("images/b_green.png", true,
-			array ("title" => __('Going up to normal state')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "going_down_warning":
 		$output .= print_image ("images/b_yellow.png", true,
-			array ("title" => __('Going down from normal to warning')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "alert_fired":
 		$output .= print_image ("images/bell.png", true,
-			array ("title" => __('Alert fired')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "system";
 		$output .= print_image ("images/cog.png", true,
-			array ("title" => __('SYSTEM')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "recon_host_detected";
 		$output .= print_image ("images/network.png", true,
-			array ("title" => __('Recon server detected a new host')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "new_agent";
 		$output .= print_image ("images/wand.png", true,
-			array ("title" => __('New agent created')));
+			array ("title" => print_event_type_description($type, true)));
 		break;
 	case "unknown": 
 	default:
 		$output .= print_image ("images/err.png", true,
-			array ("title" => __('Unknown type:').': '.$type));
+			array ("title" => print_event_type_description($type, true)));
+		break;
+	}
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+/** 
+ * Prints the event type description
+ * 
+ * @param string $type Event type from SQL 
+ * @param bool $return Whether to return or print
+ * 
+ * @return string HTML with img 
+ */
+function print_event_type_description ($type, $return = false) {
+	$output = '';
+	
+	switch ($type) {
+	case "alert_recovered": 
+		$output .= __('Alert recovered');
+		break;
+	case "alert_manual_validation": 
+		$output .= __('Alert manually validated');
+		break;
+	case "going_up_warning":
+		$output .= __('Going from critical to warning');
+		break;
+	case "going_down_critical":
+	case "going_up_critical": //This is to be backwards compatible
+		$output .= __('Going down to critical state');
+		break;
+	case "going_up_normal":
+	case "going_down_normal": //This is to be backwards compatible
+		$output .= __('Going up to normal state');
+		break;
+	case "going_down_warning":
+		$output .= __('Going down from normal to warning');
+		break;
+	case "alert_fired":
+		$output .= __('Alert fired');
+		break;
+	case "system";
+		$output .= __('SYSTEM');
+		break;
+	case "recon_host_detected";
+		$output .= __('Recon server detected a new host');
+		break;
+	case "new_agent";
+		$output .= __('New agent created');
+		break;
+	case "unknown": 
+	default:
+		$output .= __('Unknown type:').': '.$type;
 		break;
 	}
 	

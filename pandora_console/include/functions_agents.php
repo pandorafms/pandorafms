@@ -110,22 +110,29 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * alerts found.
  */
 function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false, $idGroup = false, $count = false) {
+	if (is_array($filter)) {
+		$disabled = $filter['disabled'];
+		$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
+	}else {
+		$filter = '';
+		$disabled = $filter;
+	}
 	
-	switch ($filter) {
+	switch ($disabled) {
 		case "notfired":
-			$filter = ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
+			$filter .= ' AND times_fired = 0 AND talert_template_modules.disabled = 0';
 			break;
 		case "fired":
-			$filter = ' AND times_fired > 0 AND talert_template_modules.disabled = 0';
+			$filter .= ' AND times_fired > 0 AND talert_template_modules.disabled = 0';
 			break;
 		case "disabled":
-			$filter = ' AND talert_template_modules.disabled = 1';
+			$filter .= ' AND talert_template_modules.disabled = 1';
 			break;
-		case 'all_enabled':
-			$filter = ' AND talert_template_modules.disabled = 0';
+		case "all_enabled":
+			$filter .= ' AND talert_template_modules.disabled = 0';
 			break;
 		default:
-			$filter = '';
+			$filter .= '';
 	}
 	
 	if (is_array ($options)) {
@@ -180,7 +187,7 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 			ON talert_template_modules.id_alert_template = t4.id
 	WHERE id_agent_module in (%s) %s %s %s",
 	$selectText, $subQuery, $where, $filter, $orderbyText);
-	
+
 	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -206,20 +213,20 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
  */
 function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = false, $idGroup = false, $count = false, $where = '') {
 	switch ($filter) {
-	case "notfired":
-		$filter = ' AND times_fired = 0 AND disabled = 0';
-		break;
-	case "fired":
-		$filter = ' AND times_fired > 0 AND disabled = 0';
-		break;
-	case "disabled":
-		$filter = ' AND disabled = 1';
-		break;
-	case 'all_enabled':
-		$filter = ' AND disabled = 0';
-		break;
-	default:
-		$filter = '';
+		case "notfired":
+			$filter = ' AND times_fired = 0 AND disabled = 0';
+			break;
+		case "fired":
+			$filter = ' AND times_fired > 0 AND disabled = 0';
+			break;
+		case "disabled":
+			$filter = ' AND disabled = 1';
+			break;
+		case 'all_enabled':
+			$filter = ' AND disabled = 0';
+			break;
+		default:
+			$filter = '';
 	}
 	
 	if (is_array ($options)) {

@@ -34,7 +34,7 @@ $option = (string) get_parameter ('option', '');
 
 $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_alerts' => __('Massive alerts deletion'), 
 			'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
-			'enable_disable_alerts' => __('Massive alert enable/disable'));
+			'enable_disable_alerts' => __('Massive alert enable/disable'), 'standby_alerts' => __('Massive alert setting standby'));
 			
 $options_agents = array('delete_agents' => __('Massive agents deletion'));
 
@@ -148,6 +148,9 @@ switch ($option) {
 		break;
 	case 'enable_disable_alerts':
 		require_once ('godmode/massive/massive_enable_disable_alerts.php');
+		break;
+	case 'standby_alerts':
+		require_once ('godmode/massive/massive_standby_alerts.php');
 		break;
 	case 'add_profiles':
 		require_once ('godmode/massive/massive_add_profiles.php');

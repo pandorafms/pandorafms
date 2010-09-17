@@ -1,3 +1,33 @@
+2010-09-17  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_events.php
+	pandoradb.sql
+	extras/pandoradb_migrate_v3.1_to_v3.2.sql
+	operation/events/events_validate.php
+	operation/events/events_list.php
+	operation/events/events.php: Deleted several
+	columns from the events view and adding a
+	show/hide advanced fields feature. 
+	Added a new state 'in process' to validation
+	and an input comment when a status is changed.
+
+	* include/fgraph.php: Fixed quotes
+	in constant definition
+
+	* include/functions_ui.php
+	include/functions_agents.php
+	include/functions_alerts.php
+	operation/agentes/alerts_status.php
+	operation/agentes/alerts_status.functions.php
+	images/bell_pause.png
+	godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.php
+	godmode/massive/massive_operations.php
+	godmode/massive/massive_standby_alerts.php: Added
+	the feature of set and set off on standby an alert
+	in the alets management and view if an alert is in
+	standby in the rest of views.
+
 2010-09-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/fgraph.php: added function "grafico_modulo_sparse_mobile" for

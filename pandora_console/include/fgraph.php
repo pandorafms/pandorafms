@@ -42,7 +42,8 @@ else {
 
 
 set_time_limit (0);
-error_reporting (0);
+//error_reporting (0);
+error_reporting (E_ALL);
 
 if (! isset ($config["id_user"])) {
 	session_start ();
@@ -973,7 +974,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES); //It was urlencoded, so we urldecode it
 	$data = array ();
 	$loop = 0;
-	define (NUM_PIECES_PIE, 6);	
+	define ('NUM_PIECES_PIE', 6);	
 
 	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ", "EXEC");	
 	//remove bad strings from the query so queries like ; DELETE FROM  don't pass

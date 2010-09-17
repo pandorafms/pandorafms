@@ -1,3 +1,7 @@
+2010-09-17  Junichi Satoh  <junichi@rworks.jp>
+
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added missing ';'.
+
 2010-09-15  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* images/status_sets/default/server_down_ball.png,

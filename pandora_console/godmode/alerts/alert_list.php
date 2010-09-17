@@ -44,6 +44,8 @@ $delete_action = (bool) get_parameter ('delete_action');
 $delete_alert = (bool) get_parameter ('delete_alert');
 $disable_alert = (bool) get_parameter ('disable_alert');
 $enable_alert = (bool) get_parameter ('enable_alert');
+$standbyon_alert = (bool) get_parameter ('standbyon_alert');
+$standbyoff_alert = (bool) get_parameter ('standbyoff_alert');
 $tab = get_parameter('tab', 'list');
 $group = get_parameter('group', 0); //0 is All group
 $templateName = get_parameter('template_name','');
@@ -56,6 +58,7 @@ $searchType = get_parameter('search_type','');
 $priority = get_parameter('priority','');
 $searchFlag = get_parameter('search',0);
 $enabledisable = get_parameter('enabledisable','');
+$standby = get_parameter('standby','');
 
 $messageAction = '';
 
@@ -151,6 +154,20 @@ if ($disable_alert) {
 	$messageAction = print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
 }
 
+if ($standbyon_alert) {
+	$id_alert = (int) get_parameter ('id_alert');
+	
+	$result = set_alerts_agent_module_standby ($id_alert, true);
+	$messageAction = print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'), '', true);
+}
+
+if ($standbyoff_alert) {
+	$id_alert = (int) get_parameter ('id_alert');
+	
+	$result = set_alerts_agent_module_standby ($id_alert, false);
+	$messageAction = print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'), '', true);
+}
+
 if ($id_agente) {
 	$agents = array ($id_agente => get_agent_name ($id_agente));
 	
@@ -180,10 +197,10 @@ else {
 	
 	$buttons[$tab]['active'] = true;
 
-	if (isset($_GET["tab"])) {
-		print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
-	} else {
+	if ($tab == 'list') {
 		print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('List'), "images/god2.png", false, "manage_alert_list", true, $buttons);
+	} else {
+		print_page_header(__('Alerts') . ' &raquo; ' . __('Manage alerts') . ' &raquo; ' . __('Create'), "images/god2.png", false, "manage_alert_list", true, $buttons);
 	}
 	
 	echo $messageAction;

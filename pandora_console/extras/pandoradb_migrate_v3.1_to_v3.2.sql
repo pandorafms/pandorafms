@@ -122,3 +122,8 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
   PRIMARY KEY  (`id_field`, `id_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- -----------------------------------------------------
+-- Table `tagent_custom_data`
+-- -----------------------------------------------------
+
+ALTER TABLE `tevento` MODIFY COLUMN `user_comment` TEXT NOT NULL;

@@ -375,26 +375,26 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if ($agent) {
-			$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 3,
-				'description' => 4, 'template' => 4, 'action' => 5, 'last_fired' => 6, 'status' => 7,
-				'validate' => 8);
+			$index = array('policy' => 0, 'standby' => 1, 'force_execution' => 2, 'agent_name' => 3, 'module_name' => 4,
+				'description' => 5, 'template' => 5, 'action' => 6, 'last_fired' => 7, 'status' => 8,
+				'validate' => 9);
 		}
 		else {
-			$index = array('policy' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
-				'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
-				'validate' => 7);
+			$index = array('policy' => 0, 'standby' => 1, 'force_execution' => 2, 'agent_name' => 3, 'module_name' => 3,
+				'description' => 4, 'template' => 4, 'action' => 5, 'last_fired' => 6, 'status' => 7,
+				'validate' => 8);
 		}
 	}
 	else {
 		if ($agent) {
-			$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 2,
-				'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
-				'validate' => 6);
+			$index = array('standby' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 3,
+				'description' => 4, 'template' => 4, 'action' => 5, 'last_fired' => 6, 'status' => 7,
+				'validate' => 7);
 		}
 		else {
-			$index = array('force_execution' => 0, 'agent_name' => 1, 'module_name' => 1,
-				'description' => 2, 'template' => 2, 'action' => 3, 'last_fired' => 4, 'status' => 5,
-				'validate' => 6);
+			$index = array('standby' => 0, 'force_execution' => 1, 'agent_name' => 2, 'module_name' => 2,
+				'description' => 3, 'template' => 3, 'action' => 4, 'last_fired' => 5, 'status' => 6,
+				'validate' => 7);
 		}
 	}
 	
@@ -443,6 +443,12 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	}
 	else if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && ($compound))
 		$data[$index['policy']] = '';
+	
+	// Standby
+	$data[$index['standby']] = '';
+	if ($alert["standby"] == 1) {
+		$data[$index['standby']] = print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
+	} 
 	
 	// Force alert execution
 	$data[$index['force_execution']] = '';

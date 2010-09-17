@@ -24,6 +24,7 @@ require_once('operation/agentes/alerts_status.functions.php');
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 $filter = get_parameter ("filter", "all_enabled");
+$filter_standby = get_parameter ("filter_standby", "all");
 $offset_simple = (int) get_parameter_get ("offset_simple", 0);
 $offset_combined = (int) get_parameter_get("offset_combined", 0);
 $id_group = (int) get_parameter ("ag_group", 0); //0 is the All group (selects all groups)
@@ -39,7 +40,7 @@ $flag_alert = (bool) get_parameter ('force_execution', 0);
 $alert_validate = (bool) get_parameter ('alert_validate', 0);
 $tab = get_parameter_get ("tab", null);
 
-$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&ag_group='.$id_group;
+$url = 'index.php?sec='.$sec.'&sec2='.$sec2.'&refr='.$config["refr"].'&filter='.$filter.'&filter_standby='.$filter_standby.'&ag_group='.$id_group;
 	
 if ($flag_alert == 1 && give_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
@@ -178,16 +179,32 @@ switch ($sortField) {
 }
 
 $alerts = array();
-$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter, array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order), $whereAlertSimple, false, false, $idGroup);
+$options_simple = array('offset' => $offset_simple, 'limit' => $config['block_size'], 'order' => $order);
+$options_combined = array('limit' => $config["block_size"], 'offset' => $offset_combined);
+
+$filter_alert = array();
+if($filter_standby == 'standby_on') {
+	$filter_alert['disabled'] = $filter;
+	$filter_alert['standby'] = '1';
+}else if($filter_standby == 'standby_off') {
+	$filter_alert['disabled'] = $filter;
+	$filter_alert['standby'] = '0';
+}else {
+	$filter_alert = $filter;
+}
+
+$alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
 $countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
-$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, array('limit' => $config["block_size"], 'offset' => $offset_combined), $idGroup, false, $whereAlertCombined);
+
+$alerts['alerts_combined'] = get_agent_alerts_compound($agents, $filter, $options_combined, $idGroup, false, $whereAlertCombined);
 $countAlertsCombined = get_agent_alerts_compound($agents, $filter, false, $idGroup, true, $whereAlertCombined);
 if ($tab != null) {
 	$url = $url.'&tab='.$tab;
 }
+
 // Filter form
 if ($print_agent) {
-	printFormFilterAlert($id_group, $filter, $free_search, $url);
+	toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, true),__('Alert control filter'), __('Toggle filter(s)'));
 }
 
 $table->width = '95%';
@@ -201,14 +218,75 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
 		$table->size[0] = '20px';
 		$table->size[1] = '20px';
-		$table->size[2] = '25%';
+		$table->size[2] = '20px';
 		$table->size[3] = '25%';
-		$table->size[4] = '30%';
+		$table->size[4] = '25%';
 		$table->size[5] = '30%';
+		$table->size[6] = '30%';
+		$table->size[7] = '20px';
+		$table->size[8] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
+		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[3] = __('Agent') . ' ' .
+			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+		$table->head[4] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[5] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+		$table->head[6] = __('Action');
+		$table->head[7] = __('Last fired');
+		$table->head[8] = __('Status');
+		$table->head[9] = __('Validate');
+		
+		$table->align[8] = 'center';
+		$table->align[9] = 'center';
+	}
+	else {
+		$table->size[0] = '20px';
+		$table->size[1] = '20px';
+		$table->size[2] = '20px';
+		$table->size[3] = '25%';
+		$table->size[4] = '50%';
+		$table->size[5] = '25%';
 		$table->size[6] = '20px';
 		$table->size[7] = '60px';
 		
 		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
+		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+		$table->head[3] = __('Module') . ' ' .
+			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+		$table->head[4] = __('Template') . ' ' .
+			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+		$table->head[5] = __('Action');
+		$table->head[6] = __('Last fired');
+		$table->head[7] = __('Status');
+		$table->head[8] = __('Validate');
+		
+		$table->align[7] = 'center';
+		$table->align[8] = 'center';
+	}
+}
+else
+{
+	if ($print_agent) {
+		$table->size[0] = '20px';
+		$table->size[1] = '20px';
+		$table->size[2] = '25%';
+		$table->size[3] = '25%';
+		$table->size[4] = '50%';
+		$table->size[5] = '25%';
+		$table->size[6] = '20px';
+		$table->size[7] = '60px';
+		
+		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Agent') . ' ' .
 			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
@@ -236,7 +314,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[5] = '20px';
 		$table->size[6] = '60px';
 		
-		$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Module') . ' ' .
 			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
@@ -251,59 +329,6 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		
 		$table->align[6] = 'center';
 		$table->align[7] = 'center';
-	}
-}
-else
-{
-	if ($print_agent) {
-		$table->size[0] = '20px';
-		$table->size[1] = '25%';
-		$table->size[2] = '25%';
-		$table->size[3] = '50%';
-		$table->size[4] = '25%';
-		$table->size[5] = '20px';
-		$table->size[6] = '60px';
-		
-		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[1] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
-		$table->head[2] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
-		$table->head[3] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
-		$table->head[4] = __('Action');
-		$table->head[5] = __('Last fired');
-		$table->head[6] = __('Status');
-		$table->head[7] = __('Validate');
-		
-		$table->align[6] = 'center';
-		$table->align[7] = 'center';
-	}
-	else {
-		$table->size[0] = '20px';
-		$table->size[1] = '25%';
-		$table->size[2] = '50%';
-		$table->size[3] = '25%';
-		$table->size[4] = '20px';
-		$table->size[5] = '60px';
-		
-		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
-		$table->head[1] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
-		$table->head[2] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
-		$table->head[3] = __('Action');
-		$table->head[4] = __('Last fired');
-		$table->head[5] = __('Status');
-		$table->head[6] = __('Validate');
-		
-		$table->align[5] = 'center';
-		$table->align[6] = 'center';
 	}
 }
 
@@ -339,14 +364,16 @@ $table->titlestyle = "background-color:#799E48;";
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[0] = '';
 	$table->head[1] = '';
-	$table->head[2] = __('Agent');
-	$table->head[3] = __('Description');
+	$table->head[2] = '';
+	$table->head[3] = __('Agent');
+	$table->head[4] = __('Description');
 }
 else
 {
 	$table->head[0] = '';
-	$table->head[1] = __('Agent');
-	$table->head[2] = __('Description');
+	$table->head[1] = '';
+	$table->head[2] = __('Agent');
+	$table->head[3] = __('Description');
 }
 $table->data = array ();
 

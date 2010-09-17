@@ -29,6 +29,31 @@ use Sys::Hostname;
 use File::Basename;
 use File::Copy;
 
+# Agent XML data
+my $Xml;
+
+# Semaphore used to acces $Xml
+my $Sem = undef;
+
+# Semaphore used to control the number of threads
+my $ThreadSem = undef;
+
+# Thread list
+my @Threads;
+
+# Load thread support
+eval {
+	local $SIG{__DIE__};
+	require threads;
+	require threads::shared;
+	require Thread::Semaphore;
+};
+if (!$@) {
+	threads::shared::share (\$Xml);
+	threads::shared::share (\$Sem);
+	$Sem = Thread::Semaphore->new;
+}	
+
 use constant AGENT_VERSION => '3.1';
 use constant AGENT_BUILD => '100608';
 
@@ -115,7 +140,8 @@ my %Conf = (
 	'secondary_server_opts' => '',
 	'autotime' => 0,
 	'timezone_offset' => 0,
-	'pandora_exec' => 'pandora_exec'
+	'pandora_exec' => 'pandora_exec',
+	'agent_threads' => 1
 );
 
 # Modules
@@ -378,6 +404,9 @@ sub read_config (;$) {
 	$AgentMD5 = md5 ($Conf{'agent_name'}) unless (defined ($token));
 	$RemoteConfFile = "$AgentMD5.conf";
 	$RemoteMD5File = "$AgentMD5.md5";
+	
+	# Set the maximun number of threads
+	$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'}) if defined ($Sem);
 
 	close (CONF_FILE);
 	return '';
@@ -755,10 +784,10 @@ sub exec_module ($) {
 	my $module = shift;
 
 	# Need something to execute
-	return () unless ($module->{'func'} != 0);
+	return unless ($module->{'func'} != 0);
 	
 	# Check module interval
-	return undef unless (++($module->{'counter'}) >= $module->{'interval'});
+	return unless (++($module->{'counter'}) >= $module->{'interval'});
 
 	# Check module cron
 	return unless (check_module_cron ($module) == 1);
@@ -781,7 +810,9 @@ sub exec_module ($) {
 		}
 	}
 
-	return @value;
+	write_module_xml ($module, @value);
+	
+	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 }
 
 ################################################################################
@@ -1124,6 +1155,60 @@ sub check_module_cron ($) {
 }
 
 ################################################################################
+# Write module data in XML format.
+################################################################################
+sub write_module_xml ($@) {
+	my ($module, @data) = @_;
+
+	# No data
+	return unless (defined $data[0]);
+
+	# Critical section
+	$Sem->down () if (defined ($Sem));
+
+	$Xml .= "  <module>\n" .
+			"    <name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
+	        "    <description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
+			"    <type>" . $module->{'type'} . "</type>\n";
+
+	# Data list
+	if ($#data > 0) {
+		$Xml .= "    <datalist>\n";
+		foreach my $data_item (@data) {
+			chomp ($data_item);
+			$Xml .= "      <data><value><![CDATA[$data_item]]></value></data>\n";
+		}
+		$Xml .= "    </datalist>\n";
+	# Single data
+	} else {
+		chomp ($data[0]);
+		$Xml .= "    <data><![CDATA[$data[0]]]></data>\n";
+	}
+    $Xml .= "  </module>\n";
+
+ 	$Sem->up () if (defined ($Sem));
+}
+
+################################################################################
+# Execute the given plugin.
+################################################################################
+sub exec_plugin ($) {
+	my $plugin = shift;
+
+	my $output = `$plugin 2>/dev/null`;
+
+	# Do not save the output if there was an error
+	return unless ($? eq 0);
+
+	# Critical section
+	$Sem->down () if (defined ($Sem));
+	$Xml .= $output;
+ 	$Sem->up () if (defined ($Sem));
+
+	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -1170,71 +1255,74 @@ while (1) {
 	# Check file collections
 	check_collections () unless ($Conf{'debug'} eq '1');
 
-	my $xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
-	          "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
-			  "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
-			  "' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-			  "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+	$Xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
+	       "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+		   "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
+		   "' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
+		   "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
 	
 	if (defined ($Conf{'parent_agent_name'})) {
-		$xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
+		$Xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
 	}
 	if (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
-		$xml .= "' longitude='" .$Conf{'longitude'} .  "' latitude='" .$Conf{'latitude'};
+		$Xml .= "' longitude='" .$Conf{'longitude'} .  "' latitude='" .$Conf{'latitude'};
 		if (defined ($Conf{'altitude'})) {
-			$xml .= "' altitude='" .$Conf{'altitude'};
+			$Xml .= "' altitude='" .$Conf{'altitude'};
 		}
 		if (defined ($Conf{'position_description'})) {
-			$xml .= "' position_description='" .$Conf{'position_description'};
+			$Xml .= "' position_description='" .$Conf{'position_description'};
 		}
 	}
-	$xml .= "'>\n";
+	$Xml .= "'>\n";
 
 	# Execute modules
 	foreach my $module (@Modules) {
 
-		# Execute the module and generate the XML
-		my @data = exec_module ($module);
-		next unless (defined $data[0]);
-
-		$xml .= "  <module>\n" .
-                "    <name><![CDATA[$module->{'name'}]]></name>\n" .
-		        "    <description><![CDATA[$module->{'description'}]]></description>\n" . 
-				"    <type>$module->{'type'}</type>\n";
-
-		# Data list
-		if ($#data > 0) {
-			$xml .= "    <datalist>\n";
-			foreach my $data_item (@data) {
-				chomp ($data_item);
-				$xml .= "      <data><value><![CDATA[$data_item]]></value></data>\n";
+		# Execute the module in a separate thread
+		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
+			$ThreadSem->down ();
+			my $thr = threads->create (\&exec_module, $module);
+			if (! defined ($thr)) {
+				$ThreadSem->up ();
+			} else {
+				push (@Threads, $thr);
 			}
-			$xml .= "    </datalist>\n";
-		# Single data
+		# Execute the module
 		} else {
-			chomp ($data[0]);
-			$xml .= "    <data><![CDATA[$data[0]]]></data>\n";
+			exec_module ($module);
 		}
-	    $xml .= "  </module>\n";
 	}
 
 	# Execute plugins
 	foreach my $plugin (@Plugins) {
 
-		my $output = `$plugin 2>/dev/null`;
-
-		# Do not save the output if there was an error
-		next unless ($? eq 0);
-
-		$xml .= $output;
+		# Execute the plugin in a separate thread
+		if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1) {
+			$ThreadSem->down ();
+			my $thr = threads->create (\&exec_plugin, $plugin);
+			if (! defined ($thr)) {
+				$ThreadSem->up ();
+			} else {
+				push (@Threads, $thr);
+			}
+		# Execute the plugin
+		} else {
+			exec_plugin ($plugin);
+		}
 	}
 
-	$xml .= "</agent_data>";
+	# Wait for all the threads
+	foreach my $thread (@Threads) {
+		$thread->join ();
+	}
+	@Threads = ();
+
+	$Xml .= "</agent_data>";
 
 	# Save XML data file
 	my $temp_file = $Conf{'temporal'} . '/' . $Conf{'agent_name'} . '.' . time () . '.data';
 	open (TEMP_FILE, "> $temp_file") || error ("Could not write XML data file: $!");
-	print TEMP_FILE $xml;
+	print TEMP_FILE $Xml;
 	close (TEMP_FILE);
 
 	# Debug mode

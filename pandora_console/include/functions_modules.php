@@ -229,4 +229,76 @@ function get_agents_with_module_name ($module_name, $id_group, $filter = false, 
 	return get_db_all_rows_filter ('tagente, tagente_modulo',
 		$filter, $fields);
 }
+
+//
+// This are functions to format the data
+//
+
+function format_time($ts)
+{
+	return print_timestamp ($ts, true, array("prominent" => "comparation"));
+}
+
+function format_data($data)
+{
+	if (is_numeric ($data)) {
+		$data = format_numeric($data, 2);
+	} else {
+		$data = safe_input ($data);
+	}
+	return $data;
+}
+
+function format_verbatim($data){
+	// We need to replace \n by <br> to create a "similar" output to
+	// information recolected in logs.
+	$data2 = preg_replace ("/\\n/", "<br>", $data);
+	return "<span style='font-size:10px;'>" . $data2 . "</span>";
+}
+
+function format_timestamp($ts)
+{
+	global $config;
+
+	// This returns data with absolute user-defined timestamp format
+	// and numeric by data managed with 2 decimals, and not using Graph format 
+	// (replacing 1000 by K and 1000000 by G, like version 2.x
+	return date ($config["date_format"], $ts);
+}
+
+function format_delete($id)
+{
+	global $period, $module_id, $config, $group;
+
+	$txt = "";
+
+	if (give_acl ($config['id_user'], $group, "AW") ==1) {
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'"><img src="images/cross.png" border="0" /></a>';
+	}
+	return $txt;
+}
+
+function format_delete_string($id)
+{
+	global $period, $module_id, $config, $group;
+
+	$txt = "";
+
+	if (give_acl ($config['id_user'], $group, "AW") ==1) {
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'"><img src="images/cross.png" border="0" /></a>';
+	}
+	return $txt;
+}
+
+function format_delete_log4x($id)
+{
+	global $period, $module_id, $config, $group;
+
+	$txt = "";
+
+	if (give_acl ($config['id_user'], $group, "AW") ==1) {
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'"><img src="images/cross.png" border="0" /></a>';
+	}
+	return $txt;
+}
 ?>

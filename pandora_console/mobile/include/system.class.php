@@ -50,7 +50,7 @@ class System {
 		return $return;
 	}
 	
-	private function getConfig($name, $default = null) {
+	public function getConfig($name, $default = null) {
 		if (!isset($this->config[$name])) {
 			return $default;
 		}

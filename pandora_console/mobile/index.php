@@ -19,6 +19,9 @@ require_once("include/user.class.php");
 require_once("include/functions_web.php");
 require_once('operation/agents/view_agents.php');
 require_once('operation/servers/view_servers.php');
+require_once('operation/agents/tactical.php');
+require_once('operation/agents/group_view.php');
+require_once('operation/agents/view_alerts.php');
 
 $system = new System();
 
@@ -46,7 +49,20 @@ $user->hackinjectConfig();
 				if (!$user->checkLogin()) {
 					$user->login();
 				}
+				else {
+				$user->hackinjectConfig();
 				menu();
+				
+				if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
+					audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+						"Trying to access Agent Data view");
+					require ("../general/noaccess.php");
+					return;
+				}
+				
+				$tactical = new Tactical();
+				$tactical->show();
+				}
 				break;
 			case 'logout':
 				$user->logout();
@@ -57,22 +73,78 @@ $user->hackinjectConfig();
 				}
 				else {
 					menu();
-					$page = $system->getRequest('page', 'dashboard');
+					$page = $system->getRequest('page', 'tactical');
 					switch ($page) {
 						default:
-						case 'dashboard':
+						case 'tactical':
+							if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
+							$tactical = new Tactical();
+							$tactical->show();
 							break;
 						case 'agents':
+							if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
 							$viewAgents = new ViewAgents();
 							$viewAgents->show();
 							break;
 						case 'agent':
-							$viewAgent = new ViewAgent();
-							$viewAgent->show();
+							$action = $system->getRequest('action', 'view_agent');
+							switch ($action) {
+								case 'view_module_graph':
+									$idAgentModule = $system->getRequest('id', 0);
+									$viewGraph = new viewGraph($idAgentModule);
+									$viewGraph->show();
+									break;
+								default:
+								case 'view_agent':
+									$viewAgent = new ViewAgent();
+									$viewAgent->show();
+									break;
+							}
 							break;
 						case 'servers':
+							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
 							$viewServers = new ViewServers();
 							$viewServers->show();
+							break;
+						case 'alerts':
+							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
+							$viewAlerts = new ViewAlerts();
+							$viewAlerts->show();
+							break;
+						case 'groups':
+							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
+							$groupView = new GroupView();
+							$groupView->show();
 							break;
 					}
 				}

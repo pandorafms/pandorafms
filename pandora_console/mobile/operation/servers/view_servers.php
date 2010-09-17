@@ -47,10 +47,10 @@ class ViewServers {
 			$data = array();
 			
 			if ($server['status'] == 0) {
-				$server_status = print_status_image (STATUS_SERVER_DOWN, '', true);
+				$server_status = print_status_image(STATUS_SERVER_DOWN, '', true);
 			}
 			else {
-				$server_status = print_status_image (STATUS_SERVER_OK, '', true);
+				$server_status = print_status_image(STATUS_SERVER_OK, '', true);
 			}
 			$data[] = strip_tags($server["name"]);
 			$data[] = str_replace('images/', '../images/', $server['img']);

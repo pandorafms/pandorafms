@@ -704,14 +704,6 @@ function get_group_icon ($id_group) {
 	}
 }
 
-
-/** 
- * DEPRECATED in favor of get_group_icon
- */
-function dame_grupo_icono ($id_group) {
-	return get_group_icon ($id_group);
-}
-
 /** 
  * Get agent id from a module id that it has.
  * 

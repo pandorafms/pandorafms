@@ -4,6 +4,11 @@
 	border: 0;
 	
 	font-size: 12px;
+	font-family: Arial;
+}
+
+a:hover {
+	text-decoration: none;
 }
 
 body {
@@ -50,10 +55,29 @@ input {
 	border: #CCCCCC 1px solid;
 }
 
-.title_h3 {
+.title_h3, .title_h3 * {
 	border-top: 1px solid #CCCCCC;
 	margin: 5px;
 	color: #3F4E2F;
+}
+
+.title_h3_server {
+	border-top: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	margin: 5px;
+	color: #3F4E2F;
+}
+tr.rowPair {
+	background-color: #fff;
+}
+tr.rowOdd {
+	background-color: #EEEEEE;
+}
+tr.rowPair:hover {
+	background-color: #E0E0E0;
+}
+tr.rowOdd:hover {
+	background-color: #E0E0E0
 }
 /*----------------INI-MENU----------------------------------------------------*/
 #top_menu {

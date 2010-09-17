@@ -15,6 +15,7 @@
 require_once("../include/functions_agents.php");
 require_once("../include/functions_reporting.php");
 require_once("../include/functions_alerts.php");
+require_once("../include/functions_modules.php");
 
 class ViewAgents {
 	private $user;
@@ -98,6 +99,7 @@ class ViewAgents {
 			else
 				$table->rowclass[$iterator] = 'rowOdd';
 			$rowPair = !$rowPair;
+			$iterator++;
 			
 			$agent_info = get_agent_module_info ($agent["id_agente"]); //$this->system->debug($agent_info);
 			
@@ -167,6 +169,14 @@ class ViewAgent {
 	}
 	
 	public function show() {
+		$idGroup = $this->agent['id_grupo'];
+		if (! give_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
+			audit_db ($this->system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
+			include ("../general/noaccess.php");
+			return;
+		}
+		
 		$table = null;
 		
 		$table->width = '100%';
@@ -178,7 +188,7 @@ class ViewAgent {
 		$table->data[1][0] = __('IP:');
 		$table->data[1][1] = implode(',', $this->ips);
 		$table->data[2][0] = __('OS:');
-		$table->data[2][1] = str_replace('images/os_icons/', '../images/os_icons/', print_os_icon($this->agent['id_os']));
+		$table->data[2][1] = str_replace('images/os_icons/', '../images/os_icons/', print_os_icon($this->agent['id_os'], true, true));
 		$table->data[3][0] = __('Last contact');
 		$table->data[3][1] = $this->agent['ultimo_contacto'];
 		
@@ -222,10 +232,11 @@ class ViewAgent {
 			else
 				$table->rowclass[$iterator] = 'rowOdd';
 			$rowPair = !$rowPair;
+			$iterator++;
 			
 			$data = array();
 			
-			$data[] = printTruncateText($module["nombre"], 10, true, true);
+			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . printTruncateText($module["nombre"], 10, true, true) . '</a>';
 			$status = STATUS_MODULE_WARNING;
 			$title = "";
 		
@@ -315,12 +326,15 @@ class ViewAgent {
 		
 		echo "<h3 class='title_h3'>" . __('Alerts') . "</h3>";
 		$alertsSimple = get_agent_alerts_simple (array($this->idAgent));
+		$rowPair = false;
+		$iterator = 0;
 		foreach ($alertsSimple as $alert) {
 			if ($rowPair)
 				$table->rowclass[$iterator] = 'rowPair';
 			else
 				$table->rowclass[$iterator] = 'rowOdd';
 			$rowPair = !$rowPair;
+			$iterator++;
 			
 			$data = array();
 			
@@ -380,6 +394,151 @@ class ViewAgent {
 //			
 //			$table->data[] = $data;
 //		}
+	}
+}
+
+class viewGraph {
+	private $system;
+	private $idAgentModule;
+	
+	function __construct($idAgentModule = 0) {
+		global $system;
+		
+		$this->system = $system;
+		$this->idAgentModule = $idAgentModule;
+		$this->agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $this->idAgentModule));
+		//$this->system->debug($this->agentModule);
+		$this->period = $this->system->getRequest('period', 86400);
+		$this->offset = $this->system->getRequest("offset", 0);
+		
+		$this->agent = get_db_row_filter('tagente', array('id_agente' => $this->agentModule['id_agente']));
+	}
+	
+	function show() {
+		$idGroup = $this->agent['id_grupo'];
+		if (! give_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
+			audit_db ($this->system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
+			include ("../general/noaccess.php");
+			return;
+		}
+		
+		$image = "../include/fgraph.php?tipo=sparse_mobile&draw_alerts=1&draw_events=1' . 
+			'&id=" . $this->idAgentModule . "&zoom=1&label=".safe_output($this->agentModule['nombre']) .
+			"&height=120&width=240&period=" . $this->period . "&avg_only=0";
+
+		$image .= "&date=" . get_system_time ();
+		
+		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . get_agentmodule_agent_name($this->idAgentModule)."</a> / ".safe_output($this->agentModule['nombre']) . "</h3>";
+		
+		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
+		print_image ($image, false, array ("border" => 0));
+		
+		echo "<h3 class='title_h3'>" . __('Data') . "</h3>";
+		
+		echo "<form method='post' action='index.php?page=agent&action=view_module_graph&id=" . $this->idAgentModule . "'>";
+		echo __("Choose period:");
+		$intervals = array ();
+		$intervals[3600] = human_time_description_raw (3600); // 1 hour
+		$intervals[86400] = human_time_description_raw (86400); // 1 day 
+		$intervals[604800] = human_time_description_raw (604800); // 1 week
+		$intervals[2592000] = human_time_description_raw (2592000); // 1 month
+		echo print_extended_select_for_time ($intervals, 'period', $this->period, 'this.form.submit();', '', '0', 5) . __(" secs");
+		echo "</form><br />";
+		
+		$moduletype_name = get_moduletype_name (get_agentmodule_type ($this->idAgentModule));
+		
+		if ($moduletype_name == "log4x") {
+			$sql_body = sprintf ("FROM tagente_datos_log4x
+				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
+			
+			$columns = array(
+				
+				//"Timestamp" => array("utimestamp",				"format_timestamp", 	"align" => "center" ),
+				"Sev" 		=> array("severity", 				"format_data", 			"align" => "center", "width" => "70px"),
+				"Message"	=> array("message", 				"format_verbatim",		"align" => "left", "width" => "45%"),
+				"StackTrace" 		=> array("stacktrace",				"format_verbatim", 			"align" => "left", "width" => "50%")
+			);
+		}
+		else if (preg_match ("/string/", $moduletype_name)) {
+			$sql_body = sprintf (" FROM tagente_datos_string
+				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
+			
+			$columns = array(
+				//"Timestamp"	=> array("utimestamp", 			"format_timestamp", 		"align" => "center"),
+				"Data" 		=> array("datos", 				"format_data", 				"align" => "center"),
+				"Time" 		=> array("utimestamp", 			"format_time", 				"align" => "center")
+			);
+		}
+		else {
+			$sql_body = sprintf (" FROM tagente_datos
+				WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY utimestamp DESC", $this->idAgentModule, (get_system_time () - $this->period));
+			
+			$columns = array(
+				//"Timestamp"	=> array("utimestamp", 			"format_timestamp", 	"align" => "center"),
+				"Data" 		=> array("datos", 				"format_data", 			"align" => "center"),
+				"Time" 		=> array("utimestamp", 			"format_time", 			"align" => "center")
+			);
+		}
+		
+		$sql_count = 'SELECT COUNT(*) ' . $sql_body;
+		
+		$count = get_db_value_sql($sql_count);
+		
+		$sql = 'SELECT * ' . $sql_body . ' LIMIT ' . $this->offset . ',' . $this->system->getPageSize();
+		
+		$result = get_db_all_rows_sql ($sql);
+		
+		
+		$table = null;
+		$table->width = '100%';
+		$table->head = array();
+		$index = 0;
+		foreach($columns as $col => $attr) {
+			$table->head[$index] = $col;
+			
+			if (isset($attr["align"]))
+				$table->align[$index] = $attr["align"];
+			
+			if (isset($attr["width"]))
+				$table->size[$index] = $attr["width"];
+		
+			$index++;
+		}
+		
+		$table->data = array(); //$this->system->debug($result);
+		$rowPair = false;
+		$iterator = 0;
+		foreach ($result as $row) {
+			if ($rowPair)
+				$table->rowclass[$iterator] = 'rowPair';
+			else
+				$table->rowclass[$iterator] = 'rowOdd';
+			$rowPair = !$rowPair;
+			$iterator++;
+			
+			$data = array ();
+		
+			foreach($columns as $col => $attr){
+				$data[] = $attr[1] ($row[$attr[0]]);
+				//debugPrint( "\$data[] = ".$attr[1]." (".$row[$attr[0]].");");
+			}
+		
+			array_push ($table->data, $data);
+		}
+		
+		print_table($table);
+		
+		$pagination = pagination ($count,
+			get_url_refresh (array ('period' => $this->period)),
+			0, 0, true);
+			
+		$pagination = str_replace('images/go_first.png', '../images/go_first.png', $pagination);
+		$pagination = str_replace('images/go_previous.png', '../images/go_previous.png', $pagination);
+		$pagination = str_replace('images/go_next.png', '../images/go_next.png', $pagination);
+		$pagination = str_replace('images/go_last.png', '../images/go_last.png', $pagination);
+		
+		echo $pagination;
 	}
 }
 ?>

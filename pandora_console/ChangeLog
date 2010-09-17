@@ -1,3 +1,49 @@
+2010-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/fgraph.php: added function "grafico_modulo_sparse_mobile" for
+	to paint a mobile graph.
+	
+	* include/functions_db.php: erased deprecate function "dame_grupo_icono".
+	
+	* include/functions_module.php: moved the functions "format_delete",
+	"format_time", "format_data", "format_verbatim", "format_timestamp",
+	"format_delete", "format_delete_string", "format_delete_log4x" from the
+	file "operation/agentes/datos_agente.php" for to use in other source code
+	places.
+	
+	* operation/agentes/datos_agente.php: extracted the functions
+	"format_delete", "format_time", "format_data", "format_verbatim",
+	"format_timestamp", "format_delete", "format_delete_string",
+	"format_delete_log4x" to "include/functions_module.php" for to use in other
+	source code.
+	
+	* operation/agentes/tactical.php: cleaned source code style.
+	
+	* operation/agentes/group_view.php: cleaned source code style.
+	
+	* mobile/operation/agents/view_agents.php: added class "viewGraph" to show
+	graph and data of any module.
+	
+	* mobile/operation/agents/tactical.php: added first version of page to show
+	tactical mobile page.
+	
+	* mobile/operation/agents/view_alerts.php: added first version of page to
+	show alerts mobile page.
+	
+	* mobile/operation/agents/group_view.php: added first version of page to
+	show group view mobile page.
+	
+	* mobile/operation/servers/view_servers.php: added first version of page to
+	show servers mobile page.
+	
+	* mobile/include/style/main.css: added many new styles.
+	
+	* mobile/include/functions_web.php: added links into menu for new pages.
+	
+	* mobile/include/system.class.php: fixed scope of method "getConfig".
+	
+	* mobile/index.php: added hooks for new pages.
+
 2010-09-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added missing ';'.

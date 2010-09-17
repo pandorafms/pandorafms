@@ -86,25 +86,29 @@ $table->style[0] = "padding-top:4px; padding-bottom:4px;";
 $table->data[0][0] ='<b>'.__('Global health').'</b>';
 
 $table->style[1] = "padding-top:4px; padding-bottom:4px;";
-$table->data[1][0] = print_image ($img.$data["global_health"], true, array ("width" => '100%', "height" => 20, "title" => $data["global_health"].'% '.__('of monitors OK')));
+$table->data[1][0] = print_image ($img.$data["global_health"], true,
+	array ("width" => '100%', "height" => 20, "title" => $data["global_health"].'% '.__('of monitors OK')));
 
 $table->style[2] = "padding-top:4px; padding-bottom:4px;";
 $table->data[2][0] ='<b>'.__('Monitor health').'</b>';
 
 $table->style[3] = "padding-top:4px; padding-bottom:4px;";
-$table->data[3][0] = print_image ($img.$data["monitor_health"], true, array ("width" => '100%', "height" => 20, "title" => $data["monitor_health"].'% '.__('of monitors up')));
+$table->data[3][0] = print_image ($img.$data["monitor_health"], true,
+	array ("width" => '100%', "height" => 20, "title" => $data["monitor_health"].'% '.__('of monitors up')));
 
 $table->style[4] = "padding-top:4px; padding-bottom:4px;";
 $table->data[4][0] = '<b>'.__('Module sanity').'</b>';
 
 $table->style[5] = "padding-top:4px; padding-bottom:4px;";
-$table->data[5][0] = print_image ($img.$data["module_sanity"], true, array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
+$table->data[5][0] = print_image ($img.$data["module_sanity"], true,
+	array ("width" => '100%', "height" => 20, "title" => $data["module_sanity"].'% '.__('of total modules inited')));
 
 $table->style[6] = "padding-top:4px; padding-bottom:4px;";
 $table->data[6][0] = '<b>'.__('Alert level').'</b>';
 
 $table->style[7] = "padding-top:4px; padding-bottom:4px;";
-$table->data[7][0] = print_image ($img.$data["alert_level"], true, array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
+$table->data[7][0] = print_image ($img.$data["alert_level"], true,
+	array ("width" => '100%', "height" => 20, "title" => $data["alert_level"].'% '.__('of defined alerts not fired')));
 	
 print_table ($table);
 unset ($table);

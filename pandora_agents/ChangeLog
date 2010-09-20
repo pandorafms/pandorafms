@@ -1,3 +1,8 @@
+2010-09-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/pandora_agent, win32/modules/pandora_module.cc: Added
+	  module_interval information to the data XML.
+
 2010-09-17  Junichi Satoh  <junichi@rworks.jp>
 
 	* unix/SunOS/make_solaris_package/README,

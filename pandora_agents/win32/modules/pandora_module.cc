@@ -22,6 +22,9 @@
 #include "../pandora_strutils.h"
 #include "../pandora.h"
 
+#include <iostream>
+#include <sstream>
+
 using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
@@ -415,7 +418,8 @@ Pandora_Module::run () {
  */
 string
 Pandora_Module::getXml () {
- 	string        module_xml, data_clean;
+	ostringstream module_interval;
+ 	string        module_xml, data_clean, interval_str;
 	Pandora_Data *data;
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
@@ -436,7 +440,13 @@ Pandora_Module::getXml () {
 		module_xml += this->module_description;
 		module_xml += "]]></description>\n";
 	}
-    
+    if (this->module_interval > 1) {
+		module_interval << this->module_interval;
+		module_xml += "\t<module_interval><![CDATA[";
+		module_xml += module_interval.str ();
+		module_xml += "]]></module_interval>\n";
+	}
+
     /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;

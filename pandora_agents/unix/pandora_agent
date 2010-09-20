@@ -1171,6 +1171,10 @@ sub write_module_xml ($@) {
 	        "    <description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 			"    <type>" . $module->{'type'} . "</type>\n";
 
+	if ($module->{'interval'} > 1) {
+		$Xml .= "    <module_interval>" . $module->{'interval'} . "</module_interval>\n";
+	}
+
 	# Data list
 	if ($#data > 0) {
 		$Xml .= "    <datalist>\n";

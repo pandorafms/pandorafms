@@ -70,7 +70,7 @@ push_table_simple ($data, 'snmp_1');
 $data = array ();
 $data[0] = __('SNMP OID');
 $data[1] = '<span class="left"; style="width: 50%">';
-$data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 120, true, $disabledBecauseInPolicy);
+$data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 255, true, $disabledBecauseInPolicy);
 $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true, false, false, '', $disabledBecauseInPolicy);
 $data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid" />';

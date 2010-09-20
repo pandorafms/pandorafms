@@ -1,5 +1,11 @@
 2010-09-20  Sergio Martin <sergio.martin@artica.es>
 
+	* pandoradb_data.sql: Changed the english language from
+	en to en_GB to use the british english translation to 
+	fix mistakes in the english strings
+
+2010-09-20  Sergio Martin <sergio.martin@artica.es>
+
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Fixed a
 	two lines ALTER statment to one line for bug 3065850
 

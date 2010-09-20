@@ -1,3 +1,8 @@
+2010-09-20  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/customfields.php: Add code to show text when no
+	fields defined.
+
 2010-09-20  Sancho Lerena <slerena@artica.es>
 
 	* include/config.inc.php: config_process.php is obtained from defined

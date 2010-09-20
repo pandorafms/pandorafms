@@ -40,7 +40,7 @@ INSERT INTO `talert_commands` VALUES (9,'SMS','sendsms _field1_ _field2_','Send 
 
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` (`token`, `value`) VALUES 
-('language','en'),
+('language','en_GB'),
 ('block_size','20'),
 ('days_purge','60'),
 ('days_compact','15'),
@@ -124,7 +124,7 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `tlanguage` WRITE;
-INSERT INTO `tlanguage` VALUES ('en','English');
+INSERT INTO `tlanguage` VALUES ('en_GB','English');
 INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('ar','العربية');
 INSERT INTO `tlanguage` VALUES ('ast','Asturianu');

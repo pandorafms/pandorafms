@@ -379,6 +379,127 @@ sub pandora_delete_module_data ($$) {
 sub pandora_delete_module_from_conf ($$) {
         my ($conf_file, $module_name) = @_;
 
+		my $found = 0;
+		my $skip = 0;
+		my $new_txt = "";
+
+		# $found = 0 means the search to the first module and the search between modules
+		# $found = 1 means found the module_begin and wait for the module_name
+		# $found = 2 means found the module_name required and search to the end of this module
+
+		open (FILE, $conf_file);
+		
+#		Alternative way with regular expresion
+
+#		my @txt_array = <FILE>;
+#		my $txt = join ('', @txt_array);
+
+#		$txt =~ s/module_begin(\s)*(\r\n|\n)module_name $module_name(.|\r\n|\n)*?module_end([^\n])*//g;
+
+		while (<FILE>) {
+			my ($line) = split("\t");
+			
+			if(($found == 1) && ($line =~ 'module_name '.$module_name)) {
+				$skip = 1;
+				$found = 2;
+			}
+			elsif($found == 1) {
+				$found = 0;
+			}
+		
+			if(($found == 0) && ($line =~ 'module_begin')) {
+				$found = 1;
+			}
+			
+			if(($found == 2) && ($line =~ 'module_end')){
+				$skip = 1;
+				$found = -1;
+			}
+				
+			if($found == 2) {
+				$skip = 1;
+			}
+
+			if($skip == 0) {
+				$new_txt = $new_txt . $line;
+			}
+
+			$skip = 0;
+		}
+			
+		close(FILE);
+		
+		open FILE, "> ".$conf_file;
+		print FILE "$new_txt";
+		
+		close(FILE);
+		
+		pandora_clean_blank_lines_conf($conf_file);
+}
+
+##########################################################################
+## Delete all modules without policy from conf
+##########################################################################
+sub pandora_delete_not_policy_modules ($) {
+        my $conf_file = shift;
+
+		my $found = 0;
+		my $skip = 0;
+		my $new_txt = "";
+
+		# $found = 0 means the search to the first module and the search between modules
+		# $found = 1 means found the module_begin and wait for the module_name
+		# $found = -1 means found a policy tag and wait for the end of policy tags
+		
+		open (FILE, $conf_file);
+		while (<FILE>) {
+			my ($line) = split("\t");
+			
+			if($found == 1) {
+				$skip = 1;
+			}
+			
+			if(($found == 1) && ($line =~ 'module_end')){
+				$found = 0;
+			}
+		
+			if(($found == -1) && ($line =~ '#END')) {
+				$found = 0;
+			}
+			
+			if(($found == 0) && ($line =~ '#INI')) {
+				$found = -1;
+				$skip = 0;
+			}
+			
+			if(($found == 0) && ($line =~ 'module_begin')) {
+				$skip = 1;
+				$found = 1;
+			}
+
+			if($skip == 0) {
+				$new_txt = $new_txt . $line;
+			}
+
+			$skip = 0;
+		}
+			
+		close(FILE);
+		
+		open FILE, "> ".$conf_file;
+		print FILE "$new_txt";
+		
+		close(FILE);
+		
+		pandora_clean_blank_lines_conf($conf_file);
+}
+
+##########################################################################
+## Delete a module from conf file
+##########################################################################
+sub pandora_delete_module_from_conf ($$) {
+        my ($conf_file, $module_name) = @_;
+
 		open FILE, $conf_file;
 		my @txt_array = <FILE>;
 		my $txt = join ('', @txt_array);
@@ -577,6 +698,7 @@ sub help_screen{
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
+    help_screen_line('--delete_not_policy_modules', 'Delete all modules without policy from configuration file', '<agent_conf_file>');
     print "\n";
 	exit;
 }
@@ -874,6 +996,13 @@ sub pandora_manage_main ($$$) {
 				pandora_delete_module_from_conf($conf_file, $module_name);
 			}
 						
+		}
+		elsif ($param =~ m/--delete_not_policy_modules/i) {
+			param_check($ltotal, 1);
+			my $conf_file = @ARGV[2];
+			
+			print "[INFO] Deleting modules without policy from conf file \n\n";
+			pandora_delete_not_policy_modules($conf_file);					
 		}
 		elsif ($param =~ m/--create_template_module/i) {
 			param_check($ltotal, 3);
@@ -1183,6 +1312,12 @@ sub pandora_manage_main ($$$) {
 				help_screen ();
 				exit;
 			}
+		}
+		else {
+			print "[ERROR] Invalid option '$param'.\n\n";
+			$param = '';
+			help_screen ();
+			exit;
 		}
 	}
 

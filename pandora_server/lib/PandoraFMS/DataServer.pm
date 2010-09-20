@@ -136,6 +136,7 @@ sub data_consumer ($$) {
 	my ($pa_config, $dbh) = ($self->getConfig (), $self->getDBH ());
 
 	my $file_name = $pa_config->{'incomingdir'};
+	my $xml_err;
 	
 	# Fix path
 	$file_name .= "/" unless (substr ($file_name, -1, 1) eq '/');	
@@ -155,7 +156,8 @@ sub data_consumer ($$) {
 	
 		# Invalid XML
 		if ($@) {
-			sleep (10);
+			$xml_err = $@;
+			sleep (1);
 			next;
 		}
 
@@ -168,7 +170,7 @@ sub data_consumer ($$) {
 	}
 
 	rename($file_name, $file_name . '_BADXML');
-	pandora_event ($pa_config, "Unable to process XML data file ($file_name)", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+	pandora_event ($pa_config, "Unable to process XML data file '$file_name': $xml_err", 0, 0, 0, 0, 0, 'error', 0, $dbh);
 }
 
 ###############################################################################
@@ -395,6 +397,20 @@ sub process_module_data ($$$$$$$$$) {
 		return;
 	}
 
+	# Get module parameters, matching column names in tagente_modulo
+	my $module_conf;
+	$module_conf->{'max'} = get_tag_value ($data, 'max', 0);
+	$module_conf->{'min'} = get_tag_value ($data, 'min', 0);
+	$module_conf->{'descripcion'} = get_tag_value ($data, 'description', '');
+	$module_conf->{'post_process'} = get_tag_value ($data, 'post_process', 0);
+	$module_conf->{'module_interval'} = get_tag_value ($data, 'module_interval', 1);
+	
+	# Calculate the module interval in seconds
+	$module_conf->{'module_interval'} *= $interval;
+
+	# Allow , as a decimal separator
+	$module_conf->{'post_process'} =~ s/,/./;
+
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
@@ -421,25 +437,23 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 
-		# Get min/max/description/post process
-		my $max = get_tag_value ($data, 'max', 0);
-		my $min = get_tag_value ($data, 'min', 0);
-		my $description = get_tag_value ($data, 'description', '');
-		my $post_process = get_tag_value ($data, 'post_process', 0);
-
-		# Allow , as a decimal separator
-		$post_process =~ s/,/./;
-
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
-			$max, $min, $post_process, $description, $interval, $dbh);
+			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
+			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
 		}
+	} else {
+		# Update module configuration if in learning mode
+		if ($agent->{'modo'} eq '1') {
+			update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+		}
 	}
+
 	$ModuleSem->up ();
 
 	# Module disabled!
@@ -460,47 +474,68 @@ sub process_module_data ($$$$$$$$$) {
 	};
 	if ($@) {
 		logger($pa_config, "Invalid timestamp '$timestamp' from module '$module_name' agent '$agent_name'.", 3);
-	return;
+		return;
 	}
 	#my $value = get_tag_value ($data, 'data', '');		
-	my $data_object = get_module_data($data, $agent_name, $module_name, $module_type);
-	my $extra_macros = get_macros_for_data($data, $agent_name, $module_name, $module_type);
+	my $data_object = get_module_data($data, $module_type);
+	my $extra_macros = get_macros_for_data($data, $module_type);
 	
 	pandora_process_module ($pa_config, $data_object, $agent, $module, $module_type, $timestamp, $utimestamp, $server_id, $dbh, $extra_macros);
 }
 
+##########################################################################
+# Retrieve module data from the XML tree.
+##########################################################################
 sub get_module_data($$){
-	my ($data, $agent_name, $module_name, $module_type) = @_;
-	
+	my ($data, $module_type) = @_;	
+
 	my %data_object;
-	
-	if ($module_type eq "log4x") {
+
+	# Log4x modules hava extended information
+	if ($module_type eq 'log4x') {
 		foreach my $attr ('severity','message', 'stacktrace'){
 			$data_object{$attr} = get_tag_value ($data, $attr, '');
 		}
 	} else {
-		# Default case
-		my $value = get_tag_value ($data, 'data', '');
-		$data_object{'data'} = $value;
+		$data_object{'data'} = get_tag_value ($data, 'data', '');
 	}
-	#return $value;
+
 	return \%data_object;
 }
 
+##########################################################################
+# Retrieve module data from the XML tree.
+##########################################################################
 sub get_macros_for_data($$){
-	my ($data, $agent_name, $module_name, $module_type) = @_;
-	
+	my ($data, $module_type) = @_;
+
 	my %macros;
-	
-	if ($module_type eq "log4x") {
-		foreach my $attr ('severity','message', 'stacktrace'){
-			my $macro = "_" . $attr . "_";
-			$macros{$macro} = get_tag_value ($data, $attr, '');
+
+	if ($module_type eq 'log4x') {
+		foreach my $attr ('severity','message', 'stacktrace') {
+			$macros{'_' . $attr . '_'} = get_tag_value ($data, $attr, '');
 		}
-	} else {
 	}
 
 	return \%macros;
+}
+
+##########################################################################
+# Update module configuration in tagente_modulo if necessary.
+##########################################################################
+sub update_module_configuration ($$$$) {
+	my ($pa_config, $dbh, $module, $module_conf) = @_;
+
+	# Update if at least one of the configuration tokens has changed
+	if ($module->{'min'} != $module_conf->{'min'} || $module->{'max'} != $module_conf->{'max'} ||
+	    $module->{'descripcion'} ne $module_conf->{'descripcion'} || $module->{'post_process'} != $module_conf->{'post_process'} ||
+	    $module->{'module_interval'} != $module_conf->{'module_interval'}) {
+			logger($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
+			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?
+			              WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'},
+			       $module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
+			return;
+	}
 }
 
 1;

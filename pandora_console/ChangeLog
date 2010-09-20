@@ -1,3 +1,11 @@
+2010-09-20  Sancho Lerena <slerena@artica.es>
+
+	* include/config.inc.php: config_process.php is obtained from defined
+	path in homedir variable.
+
+	* godmode/agentes/module_manager_editor_network.php: Limit for OID lenght
+	was too short, DB gets 255 chars, now input also gets 255 chars.
+
 2010-09-17  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/events/events.php: cleaned source code style.

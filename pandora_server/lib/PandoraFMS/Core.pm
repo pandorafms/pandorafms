@@ -686,7 +686,7 @@ Process Pandora module.
 =cut
 ##########################################################################
 sub pandora_process_module ($$$$$$$$$;$) {
-	my ($pa_config, $dataObject, $agent, $module, $module_type,
+	my ($pa_config, $data_object, $agent, $module, $module_type,
 	    $timestamp, $utimestamp, $server_id, $dbh, $extra_macros) = @_;
 	
 	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
@@ -712,9 +712,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 
 	# Process data
- 	my $processed_data = process_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
+ 	my $processed_data = process_data ($data_object, $module, $module_type, $utimestamp, $dbh);
  	if (! defined ($processed_data)) {
-		logger($pa_config, "Received invalid data '" . $dataObject->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
+		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
 		pandora_update_module_on_error ($pa_config, $module, $dbh);
 		return;
 	}
@@ -783,7 +783,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 	# Save module data. Async and log4x modules are not compressed.
 	if ($module_type =~ m/(async)|(log4x)/ || $save == 1) {
-		save_module_data ($dataObject, $module, $module_type, $utimestamp, $dbh);
+		save_module_data ($data_object, $module, $module_type, $utimestamp, $dbh);
 	}
 }
 
@@ -1081,7 +1081,6 @@ sub pandora_create_module ($$$$$$$$$$) {
 	$max = 0 if ($max eq '');
 	$min = 0 if ($min eq '');
 	$post_process = 0 if ($post_process eq '');
-	$description = 'N/A' if ($description eq '');
 
 	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `id_modulo`)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $post_process, $description, $interval);
@@ -1417,13 +1416,13 @@ sub subst_alert_macros ($$) {
 # Process module data.
 ##########################################################################
 sub process_data ($$$$$) {
-	my ($dataObject, $module, $module_type, $utimestamp, $dbh) = @_;
+	my ($data_object, $module, $module_type, $utimestamp, $dbh) = @_;
 
 	if ($module_type eq "log4x") {
-		return log4x_get_severity_num($dataObject);
+		return log4x_get_severity_num($data_object);
 	}
 	
-	my $data = $dataObject->{'data'};
+	my $data = $data_object->{'data'};
 	
 	# String data
 	if ($module_type =~ m/_string$/) {
@@ -1452,7 +1451,7 @@ sub process_data ($$$$$) {
 		
 		# Not an error, no previous data
 		if (!defined($data)){
-			$dataObject->{'data'} = 0;
+			$data_object->{'data'} = 0;
 			return 0;
 		}
 		#return 0 unless defined ($data);
@@ -1468,7 +1467,7 @@ sub process_data ($$$$$) {
 	# Format data
 	$data = sprintf("%.2f", $data);
 
-	$dataObject->{'data'} = $data;
+	$data_object->{'data'} = $data;
 	return $data;
 }
 
@@ -1507,8 +1506,8 @@ sub process_inc_data ($$$$) {
 }
 
 sub log4x_get_severity_num($) {
-	my ($dataObject) = @_;
-	my $data = $dataObject->{'severity'};
+	my ($data_object) = @_;
+	my $data = $data_object->{'severity'};
 		
 	return undef unless defined ($data);
 	# The severity is a word, so we need to translate to numbers
@@ -1647,7 +1646,7 @@ sub generate_status_event ($$$$$$$) {
 # Saves module data to the DB.
 ##########################################################################
 sub save_module_data ($$$$$) {
-	my ($dataObject, $module, $module_type, $utimestamp, $dbh) = @_;
+	my ($data_object, $module, $module_type, $utimestamp, $dbh) = @_;
 
 	if ($module_type eq "log4x") {
 		#<module>
@@ -1664,12 +1663,12 @@ sub save_module_data ($$$$$) {
 
 		db_do($dbh, $sql, 
 			$module->{'id_agente_modulo'}, $utimestamp,
-			$dataObject->{'severity'},
-			$dataObject->{'message'},
-			$dataObject->{'stacktrace'}
+			$data_object->{'severity'},
+			$data_object->{'message'},
+			$data_object->{'stacktrace'}
 		);
 	} else {
-		my $data = $dataObject->{'data'};
+		my $data = $data_object->{'data'};
 		my $table = ($module_type =~ m/_string/) ? 'tagente_datos_string' : 'tagente_datos';
 
 		db_do($dbh, 'INSERT INTO ' . $table . ' (id_agente_modulo, datos, utimestamp)

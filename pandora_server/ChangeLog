@@ -1,3 +1,8 @@
+2010-09-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Update module
+	  configuration from XML data files.
+
 2010-09-20  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Improved the last feature

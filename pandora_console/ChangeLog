@@ -1,3 +1,14 @@
+2010-09-17  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/events/events.php: cleaned source code style.
+	
+	* mobile/operation/events/events.php: added page to show list of events in
+	the last day.
+
+	* mobile/include/functions_web.php: added link to events list page.
+	
+	* mobile/index.php: added the hook to link the event.
+
 2010-09-20  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_generalagente.php: Fixed a 

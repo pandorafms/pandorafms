@@ -22,6 +22,7 @@ require_once('operation/servers/view_servers.php');
 require_once('operation/agents/tactical.php');
 require_once('operation/agents/group_view.php');
 require_once('operation/agents/view_alerts.php');
+require_once('operation/events/events.php');
 
 $system = new System();
 
@@ -145,6 +146,17 @@ $user->hackinjectConfig();
 							
 							$groupView = new GroupView();
 							$groupView->show();
+							break;
+						case 'events':
+							if (! give_acl ($system->getConfig('id_user'), 0, "IR")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access event viewer");
+								require ("general/noaccess.php");
+								return;
+							}
+							
+							$eventsView = new EventsView();
+							$eventsView->show();
 							break;
 					}
 				}

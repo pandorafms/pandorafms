@@ -1,3 +1,8 @@
+2010-09-20  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added to CLI the deletion 
+	of module from conf files when is local module
+
 2010-09-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Do not execute alerts in stand-by.

@@ -373,7 +373,50 @@ sub pandora_delete_module_data ($$) {
 			
 		return 1;
 }
+##########################################################################
+## Delete a module from conf file
+##########################################################################
+sub pandora_delete_module_from_conf ($$) {
+        my ($conf_file, $module_name) = @_;
 
+		open FILE, $conf_file;
+		my @txt_array = <FILE>;
+		my $txt = join ('', @txt_array);
+
+		$txt =~ s/module_begin(\s)*(\r\n|\n)module_name $module_name(.|\r\n|\n)*?module_end([^\n])*//g;
+						
+		close(FILE);
+		
+		open FILE, "> ".$conf_file;
+		print FILE "$txt";
+		
+		close(FILE);
+		
+		pandora_clean_blank_lines_conf($conf_file);
+}
+
+##########################################################################
+## Clean blank lines into conf file
+##########################################################################
+sub pandora_clean_blank_lines_conf ($) {
+        my $conf_file = shift;
+
+		open FILE, $conf_file;
+		my @txt_array = <FILE>;
+		my $txt = join ('', @txt_array);
+
+		$txt =~ s/\r/\n/g;
+				
+		$txt =~ s/\n\n\n/\n\n/g;
+		
+		close(FILE);
+		
+		open FILE, "> ".$conf_file;
+		print FILE "$txt";
+		
+		close(FILE);
+}
+				
 ##########################################################################
 ## Create a network module
 ##########################################################################
@@ -520,7 +563,7 @@ sub help_screen{
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
 	help_screen_line('--create_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add module to agent');
-    help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
+    help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name> [<agent_conf_file>]');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
     help_screen_line('--create_template_action', '<action_name> <template_name> <module_name> <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template');
@@ -802,7 +845,7 @@ sub pandora_manage_main ($$$) {
 			$warning_max = 0 unless defined ($warning_max);
 			$critical_min = 0 unless defined ($critical_min);
 			$critical_max = 0 unless defined ($critical_max);
-			$history_data = 0 unless defined ($history_data); 
+			$history_data = 0 unless defined ($history_data);
 			$module_port = '' unless defined ($module_port);
 			$description = '' unless defined ($description);
 			$min = 0 unless defined ($min);
@@ -816,8 +859,8 @@ sub pandora_manage_main ($$$) {
 			$module_address, $module_port, $dbh);
 		}
 		elsif ($param =~ m/--delete_module/i) {
-			param_check($ltotal, 2);
-			my ($module_name,$agent_name) = @ARGV[2..3];
+			param_check($ltotal, 3, 1);
+			my ($module_name,$agent_name,$conf_file) = @ARGV[2..4];
 			print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -826,6 +869,11 @@ sub pandora_manage_main ($$$) {
 			exist_check($id_module,'module',$module_name);
 			
 			pandora_delete_module($dbh,$id_module);
+			
+			if (defined ($conf_file)) {
+				pandora_delete_module_from_conf($conf_file, $module_name);
+			}
+						
 		}
 		elsif ($param =~ m/--create_template_module/i) {
 			param_check($ltotal, 3);

@@ -49,10 +49,12 @@ if (is_ajax ()) {
 		echo ' ';
 		if ($event["event_type"] == "system") {
 			echo __('System');
-		} elseif ($event["id_agente"] > 0) {
+		}
+		elseif ($event["id_agente"] > 0) {
 			// Agent name
 			echo get_agent_name ($event["id_agente"]);
-		} else {
+		}
+		else {
 			echo __('Alert').__('SNMP');
 		}
 		echo '<br />';
@@ -193,7 +195,7 @@ if ($config["pure"] == 0) {
 		);
 	
 	print_page_header (__("Events"), "images/lightning_go.png", false, "eventview", false, $buttons);
-
+	
 	?>
 	<script type="text/javascript">
 	function openSoundEventWindow() {
@@ -240,13 +242,14 @@ if ($validate) {
 	if(isset($ids[0]) && $ids[0] != -1){
 		$return = validate_event ($ids, ($group_rep == 1), $comment, $new_status);
 		if($new_status == 1) {
-		print_result_message ($return,
-			__('Successfully validated'),
-			__('Could not be validated'));
-		}else if($new_status == 2) {
-		print_result_message ($return,
-			__('Successfully set in process'),
-			__('Could not be set in process'));
+			print_result_message ($return,
+				__('Successfully validated'),
+				__('Could not be validated'));
+		}
+		else if($new_status == 2) {
+			print_result_message ($return,
+				__('Successfully set in process'),
+				__('Could not be set in process'));
 		}
 	}
 }

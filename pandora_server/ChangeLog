@@ -1,5 +1,10 @@
 2010-09-20  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Added to CLI the deletion
+	of all modules without policy from config file
+
+2010-09-20  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Added to CLI the deletion 
 	of module from conf files when is local module
 

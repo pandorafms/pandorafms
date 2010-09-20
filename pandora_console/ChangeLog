@@ -1,3 +1,8 @@
+2010-09-20  Sergio Martin <sergio.martin@artica.es>
+
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Fixed a
+	two lines ALTER statment to one line for bug 3065850
+
 2010-09-17  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_events.php

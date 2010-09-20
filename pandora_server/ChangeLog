@@ -1,5 +1,11 @@
 2010-09-20  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Improved the last feature
+	of CLI deleting the modules of all conf files of 
+	the incoming directory now
+
+2010-09-20  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_manage.pl: Added to CLI the deletion
 	of all modules without policy from config file
 

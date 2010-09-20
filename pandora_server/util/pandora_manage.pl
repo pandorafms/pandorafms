@@ -698,7 +698,7 @@ sub help_screen{
     help_screen_line('--validate_event', '<agent_name> <module_name> <datetime_min> <datetime_max> <user_name> <criticity> <template_name>', 'Validate events');
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
-    help_screen_line('--delete_not_policy_modules', 'Delete all modules without policy from configuration file', '<agent_conf_file>');
+    help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     print "\n";
 	exit;
 }
@@ -998,11 +998,26 @@ sub pandora_manage_main ($$$) {
 						
 		}
 		elsif ($param =~ m/--delete_not_policy_modules/i) {
-			param_check($ltotal, 1);
-			my $conf_file = @ARGV[2];
+			param_check($ltotal, 0);
 			
-			print "[INFO] Deleting modules without policy from conf file \n\n";
-			pandora_delete_not_policy_modules($conf_file);					
+			my $incomingdir;
+
+			$incomingdir = $conf->{incomingdir}.'/conf/';
+
+			# Open the folder
+			opendir FOLDER, $incomingdir || die "[ERROR] Opening incoming directory";
+			
+			# Store the list of files
+			my @files = readdir(FOLDER);
+			my $file;
+			
+			print "[INFO] Deleting modules without policy from conf files \n\n";
+			foreach $file (@files)
+			{
+				if($file ne '.' && $file ne '..') {
+					pandora_delete_not_policy_modules($incomingdir.$file);
+				}
+			}
 		}
 		elsif ($param =~ m/--create_template_module/i) {
 			param_check($ltotal, 3);

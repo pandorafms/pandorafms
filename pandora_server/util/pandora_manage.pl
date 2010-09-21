@@ -182,22 +182,31 @@ sub pandora_manage_init ($) {
 ##########################################################################
 sub pandora_delete_module ($$) {
         my ($dbh, $module_id) = @_;
-
-        # Delete the module
-        db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $module_id);
+		      
+        # Delete Graphs, layouts & reports
+        db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
+        db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
+        db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent_module = ?', $module_id);
         
         # Delete the module state
         db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
         
         # Delete templates asociated to the module
         db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
+        
+        # Set pending delete the module
+        db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
 }
 
 ##########################################################################
 ## Delete an agent given its id.
 ##########################################################################
-sub pandora_delete_agent ($$) {
-        my ($dbh, $agent_id) = @_;
+sub pandora_delete_agent ($$$) {
+        my ($dbh, $agent_id, $conf) = @_;
+        my $agent_name = get_agent_name($dbh, $agent_id);
+
+        # Delete from all their policies
+        enterprise_hook('pandora_delete_agent_from_policies', [$agent_id, $dbh]);
 
         # Delete the agent
         db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
@@ -209,6 +218,14 @@ sub pandora_delete_agent ($$) {
         db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
         
         my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ?', $agent_id);
+                
+        # Delete the conf files
+        if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+			unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+		}
+		if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+			unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+		}
         
         foreach my $module (@modules) {
 			pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
@@ -373,170 +390,6 @@ sub pandora_delete_module_data ($$) {
 			
 		return 1;
 }
-##########################################################################
-## Delete a module from conf file
-##########################################################################
-sub pandora_delete_module_from_conf ($$) {
-        my ($conf_file, $module_name) = @_;
-
-		my $found = 0;
-		my $skip = 0;
-		my $new_txt = "";
-
-		# $found = 0 means the search to the first module and the search between modules
-		# $found = 1 means found the module_begin and wait for the module_name
-		# $found = 2 means found the module_name required and search to the end of this module
-
-		open (FILE, $conf_file);
-		
-#		Alternative way with regular expresion
-
-#		my @txt_array = <FILE>;
-#		my $txt = join ('', @txt_array);
-
-#		$txt =~ s/module_begin(\s)*(\r\n|\n)module_name $module_name(.|\r\n|\n)*?module_end([^\n])*//g;
-
-		while (<FILE>) {
-			my ($line) = split("\t");
-			
-			if(($found == 1) && ($line =~ 'module_name '.$module_name)) {
-				$skip = 1;
-				$found = 2;
-			}
-			elsif($found == 1) {
-				$found = 0;
-			}
-		
-			if(($found == 0) && ($line =~ 'module_begin')) {
-				$found = 1;
-			}
-			
-			if(($found == 2) && ($line =~ 'module_end')){
-				$skip = 1;
-				$found = -1;
-			}
-				
-			if($found == 2) {
-				$skip = 1;
-			}
-
-			if($skip == 0) {
-				$new_txt = $new_txt . $line;
-			}
-
-			$skip = 0;
-		}
-			
-		close(FILE);
-		
-		open FILE, "> ".$conf_file;
-		print FILE "$new_txt";
-		
-		close(FILE);
-		
-		pandora_clean_blank_lines_conf($conf_file);
-}
-
-##########################################################################
-## Delete all modules without policy from conf
-##########################################################################
-sub pandora_delete_not_policy_modules ($) {
-        my $conf_file = shift;
-
-		my $found = 0;
-		my $skip = 0;
-		my $new_txt = "";
-
-		# $found = 0 means the search to the first module and the search between modules
-		# $found = 1 means found the module_begin and wait for the module_name
-		# $found = -1 means found a policy tag and wait for the end of policy tags
-		
-		open (FILE, $conf_file);
-		while (<FILE>) {
-			my ($line) = split("\t");
-			
-			if($found == 1) {
-				$skip = 1;
-			}
-			
-			if(($found == 1) && ($line =~ 'module_end')){
-				$found = 0;
-			}
-		
-			if(($found == -1) && ($line =~ '#END')) {
-				$found = 0;
-			}
-			
-			if(($found == 0) && ($line =~ '#INI')) {
-				$found = -1;
-				$skip = 0;
-			}
-			
-			if(($found == 0) && ($line =~ 'module_begin')) {
-				$skip = 1;
-				$found = 1;
-			}
-
-			if($skip == 0) {
-				$new_txt = $new_txt . $line;
-			}
-
-			$skip = 0;
-		}
-			
-		close(FILE);
-		
-		open FILE, "> ".$conf_file;
-		print FILE "$new_txt";
-		
-		close(FILE);
-		
-		pandora_clean_blank_lines_conf($conf_file);
-}
-
-##########################################################################
-## Delete a module from conf file
-##########################################################################
-sub pandora_delete_module_from_conf ($$) {
-        my ($conf_file, $module_name) = @_;
-
-		open FILE, $conf_file;
-		my @txt_array = <FILE>;
-		my $txt = join ('', @txt_array);
-
-		$txt =~ s/module_begin(\s)*(\r\n|\n)module_name $module_name(.|\r\n|\n)*?module_end([^\n])*//g;
-						
-		close(FILE);
-		
-		open FILE, "> ".$conf_file;
-		print FILE "$txt";
-		
-		close(FILE);
-		
-		pandora_clean_blank_lines_conf($conf_file);
-}
-
-##########################################################################
-## Clean blank lines into conf file
-##########################################################################
-sub pandora_clean_blank_lines_conf ($) {
-        my $conf_file = shift;
-
-		open FILE, $conf_file;
-		my @txt_array = <FILE>;
-		my $txt = join ('', @txt_array);
-
-		$txt =~ s/\r/\n/g;
-				
-		$txt =~ s/\n\n\n/\n\n/g;
-		
-		close(FILE);
-		
-		open FILE, "> ".$conf_file;
-		print FILE "$txt";
-		
-		close(FILE);
-}
 				
 ##########################################################################
 ## Create a network module
@@ -683,8 +536,8 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
-	help_screen_line('--create_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add module to agent');
-    help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name> [<agent_conf_file>]');
+	help_screen_line('--create_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add module to agent');
+    help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
     help_screen_line('--create_template_action', '<action_name> <template_name> <module_name> <agent_name> [<fires_min> <fires_max>]', 'Add alert action to module-template');
@@ -936,13 +789,13 @@ sub pandora_manage_main ($$$) {
 			my $id_agent = get_agent_id($dbh,$agent_name);
 			exist_check($id_agent,'agent',$agent_name);
 			
-			pandora_delete_agent($dbh,$id_agent);
+			pandora_delete_agent($dbh,$id_agent,$conf);
 		}
 		elsif ($param =~ m/--create_module/i) {
-			param_check($ltotal, 15, 11);
+			param_check($ltotal, 16, 12);
 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description,
 			$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-			$critical_max, $history_data) = @ARGV[2..9];
+			$critical_max, $history_data, $definition_file) = @ARGV[2..9];
 			
 			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 				
@@ -974,6 +827,14 @@ sub pandora_manage_main ($$$) {
 			$max = 0 unless defined ($max);
 			$post_process = 0 unless defined ($post_process);
 			$interval = 300 unless defined ($interval);
+			if(defined($definition_file)){
+				open (FILE, $definition_file);
+				my $definition = "";
+				while (<FILE>) {
+					my ($line) = split("\t");
+					$definition = $definition . $line;
+				}
+			}
 			
 			pandora_create_network_module ($conf, $agent_id, $module_type_id, $module_name, 
 			$max, $min, $post_process, $description, $interval, $warning_min, 
@@ -981,8 +842,8 @@ sub pandora_manage_main ($$$) {
 			$module_address, $module_port, $dbh);
 		}
 		elsif ($param =~ m/--delete_module/i) {
-			param_check($ltotal, 3, 1);
-			my ($module_name,$agent_name,$conf_file) = @ARGV[2..4];
+			param_check($ltotal, 2);
+			my ($module_name,$agent_name) = @ARGV[2..3];
 			print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
 			
 			my $id_agent = get_agent_id($dbh,$agent_name);
@@ -992,8 +853,8 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_delete_module($dbh,$id_module);
 			
-			if (defined ($conf_file)) {
-				pandora_delete_module_from_conf($conf_file, $module_name);
+			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+				enterprise_hook('pandora_delete_module_from_conf', [$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf',$module_name]);
 			}
 						
 		}
@@ -1015,8 +876,15 @@ sub pandora_manage_main ($$$) {
 			foreach $file (@files)
 			{
 				if($file ne '.' && $file ne '..') {
-					pandora_delete_not_policy_modules($incomingdir.$file);
+					my $ret = enterprise_hook('pandora_delete_not_policy_modules', [$incomingdir.$file]);
 				}
+			}
+			
+			my @local_modules_without_policies = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_policy_module = 0 AND id_tipo_modulo = 1');
+			
+			
+			foreach my $module (@local_modules_without_policies) {
+				pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
 			}
 		}
 		elsif ($param =~ m/--create_template_module/i) {

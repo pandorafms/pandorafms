@@ -39,7 +39,8 @@ class User {
 		if ($this->logged) {
 			//hack to compatibility with pandora
 			global $config;
-			$config['id_user'] = $this->user;			
+			$config['id_user'] = $this->user;
+			$this->system->setSessionBase('id_usuario', $this->user);		
 		}
 	}
 	

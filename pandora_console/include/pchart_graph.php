@@ -509,10 +509,12 @@ class PchartGraph extends PandoraGraphAbstract {
 		
 		foreach ($this->data as $i => $data) {
 			/* Finally, check if there were events */
-		
 			if (! $data['events'])
 				continue;
 			
+			if (!isset($this->dataset->Data[$i]))
+				continue;
+				
 			$x1 = (int) ($this->x1 + $i * $this->graph->DivisionWidth);
 			$y1 = (int) ($this->y2 - ($this->dataset->Data[$i][$serie] * $this->graph->DivisionRatio));
 			$this->graph->drawFilledCircle ($x1, $y1, 1.5, 255, 0, 0);

@@ -781,7 +781,7 @@ function print_table (&$table, $return = false) {
 
 
 	if (empty ($table->width)) {
-		$table->width = '80%';
+		//$table->width = '80%';
 	}
 	
 	if (empty ($table->border)) {
@@ -812,7 +812,12 @@ function print_table (&$table, $return = false) {
 	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 
-	$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
+	if (!empty($table->width)) {
+		$output .= '<table style="' . $styleTable . '" width="'.$table->width.'"'.$table->tablealign;
+	}
+	else {
+		$output .= '<table style="' . $styleTable . '" "'.$table->tablealign;
+	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;

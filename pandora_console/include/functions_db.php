@@ -46,6 +46,17 @@ function check_login () {
 			return 0;
 		}
 	}
+	else {
+		require_once('../mobile/include/user.class.php');
+		session_start ();
+		session_write_close ();
+		$user = $_SESSION['user'];
+		$id_user = $user->getIdUser();
+		
+		if (is_user ($id_user)) {
+			return 0;
+		}
+	}
 	audit_db ("N/A", getenv ("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
@@ -2155,9 +2166,11 @@ function get_db_all_rows_filter ($table, $filter = array(), $fields = false, $wh
 	//TODO: Validate and clean filter options
 	if (is_array ($filter)) {
 		$filter = format_array_to_where_clause_sql ($filter, $where_join, ' WHERE ');
-	} elseif (is_string ($filter)) {
+	}
+	elseif (is_string ($filter)) {
 		$filter = 'WHERE '.$filter;
-	} else {
+	}
+	else {
 		$filter = '';
 	}
 
@@ -2527,6 +2540,7 @@ $sql = 'SELECT * FROM table WHERE '.format_array_to_where_clause_sql ($values, '
  * clause of an SQL sentence.
  */
 function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = false) {
+	
 	$fields = array ();
 	
 	if (! is_array ($values)) {
@@ -2592,13 +2606,17 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 		
 		if (is_null ($value)) {
 			$query .= sprintf ("%s IS NULL", $field);
-		} elseif (is_int ($value) || is_bool ($value)) {
+		}
+		elseif (is_int ($value) || is_bool ($value)) {
 			$query .= sprintf ("%s = %d", $field, $value);
-		} else if (is_float ($value) || is_double ($value)) {
+		}
+		else if (is_float ($value) || is_double ($value)) {
 			$query .= sprintf ("%s = %f", $field, $value);
-		} elseif (is_array ($value)) {
+		}
+		elseif (is_array ($value)) {
 			$query .= sprintf ('%s IN ("%s")', $field, implode ('", "', $value));
-		} else {
+		}
+		else {
 			if ($value[0] == ">"){
 				$value = substr($value,1,strlen($value)-1);
 				$query .= sprintf ("%s > '%s'", $field, $value);

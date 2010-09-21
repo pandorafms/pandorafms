@@ -105,7 +105,7 @@ class ViewAgents {
 			
 			$data = array();
 			
-			$truncName = printTruncateText($agent['nombre'], 10, true, true);
+			$truncName = printTruncateText($agent['nombre'], 25, true, true);
 			
 			$data[] = print_group_icon2($agent["id_grupo"], true, "../images/groups_small", '', false);
 			$data[] = '<a href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . $truncName . '</a>';
@@ -125,8 +125,8 @@ class ViewAgents {
 			$moduleInfo .= '</b>';
 			
 			$data[] = $moduleInfo;
-			$data[] = '<img src="../images/status_sets/default/' . str_replace('.png', '_ball.png', $agent_info['status']) . '" />';
-			$data[] = '<img src="../images/status_sets/default/' . str_replace('.png', '_ball.png', $agent_info['alert_value']) . '" />';
+			$data[] = '<img width="12" height="12" src="../images/status_sets/default/' . $agent_info['status'] . '" />';
+			$data[] = '<img width="12" height="12" src="../images/status_sets/default/' . $agent_info['alert_value'] . '" />';
 			
 			
 			$table->data[] = $data;
@@ -215,7 +215,7 @@ class ViewAgent {
 		echo "<h3 class='title_h3'>" . __('Modules') . "</h3>";
 		
 		$table = null;
-		$table->width = '100%';
+		//$table->width = '100%';
 		$table->head = array();
 		$table->head[0] = __('Module');
 		$table->head[1] = '<span title="' . __('Status') . '" alt="' . __('Status') . '">' . __('S') . '</span>';
@@ -236,7 +236,8 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . printTruncateText($module["nombre"], 10, true, true) . '</a>';
+			$data[] = '<a href="index.php?page=agent&action=view_module_graph&id=' . $module['id_agente_modulo'] . '">' . 
+				printTruncateText($module["nombre"], 20, true, true) . '</a>';
 			$status = STATUS_MODULE_WARNING;
 			$title = "";
 		
@@ -274,8 +275,8 @@ class ViewAgent {
 				$title .= ": " . substr(safe_output($module["datos"]),0,42);
 			}
 		
-			$data[] = str_replace('.png', '_ball.png', str_replace('images/status_sets', 
-				'../images/status_sets', print_status_image($status, $title, true)));
+			$data[] = str_replace(array('images/status_sets', '<img'), 
+				array('../images/status_sets', '<img height="15" width="15"') , print_status_image($status, $title, true));
 			
 			if ($module["id_tipo_modulo"] == 24) { // log4x
 				switch($module["datos"]) {
@@ -338,10 +339,10 @@ class ViewAgent {
 			
 			$data = array();
 			
-			$data[] = printTruncateText(get_agentmodule_name($alert["id_agent_module"]), 10, true, true);
+			$data[] = printTruncateText(get_agentmodule_name($alert["id_agent_module"]), 20, true, true);
 			
 			$template = safe_output(get_alert_template ($alert['id_alert_template']));
-			$data[] = printTruncateText(safe_output($template['name']), 10, true, true);
+			$data[] = printTruncateText(safe_output($template['name']), 20, true, true);
 			
 //			$actions = get_alert_agent_module_actions ($alert['id'], false, false);
 //			if (!empty($actions)){
@@ -377,8 +378,8 @@ class ViewAgent {
 				$title = __('Alert not fired');
 			}
 			
-			$data[] = str_replace('.png', '_ball.png', str_replace('images/status_sets', 
-				'../images/status_sets', print_status_image($status, $title, true)));
+			$data[] = str_replace(array('images/status_sets', '<img'), 
+				array('../images/status_sets', '<img width="15" height="15"'), print_status_image($status, $title, true));
 			
 			$table->data[] = $data;
 		}
@@ -423,8 +424,8 @@ class viewGraph {
 			return;
 		}
 		
-		$image = "../include/fgraph.php?tipo=sparse_mobile&draw_alerts=1&draw_events=1' . 
-			'&id=" . $this->idAgentModule . "&zoom=1&label=".safe_output($this->agentModule['nombre']) .
+		$image = "../include/fgraph.php?tipo=sparse_mobile&draw_alerts=1&draw_events=1" . 
+			'&id=' . $this->idAgentModule . "&zoom=1&label=".safe_output($this->agentModule['nombre']) .
 			"&height=120&width=240&period=" . $this->period . "&avg_only=0";
 
 		$image .= "&date=" . get_system_time ();
@@ -432,7 +433,7 @@ class viewGraph {
 		echo "<h3 class='title_h3'><a href='index.php?page=agent&id=" . $this->agentModule['id_agente'] . "'>" . get_agentmodule_agent_name($this->idAgentModule)."</a> / ".safe_output($this->agentModule['nombre']) . "</h3>";
 		
 		echo "<h3 class='title_h3'>" . __('Graph') . "</h3>";
-		print_image ($image, false, array ("border" => 0));
+		print_image ($image, false, array ("border" => 0));		
 		
 		echo "<h3 class='title_h3'>" . __('Data') . "</h3>";
 		

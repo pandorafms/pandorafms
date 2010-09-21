@@ -56,8 +56,8 @@ class ViewServers {
 			$data[] = str_replace('images/', '../images/', $server['img']);
 			$data[] = human_time_comparation ($server["laststart"], 'tiny');
 			$data[] = human_time_comparation ($server["keepalive"], 'tiny');
-			$data[] = str_replace('.png', '_ball.png', str_replace('images/status_sets', 
-				'../images/status_sets', $server_status));
+			$data[] = str_replace(array('images/status_sets', '<img'), 
+				array('../images/status_sets', '<img width="15" height="15"'), $server_status);
 //			$this->system->debug($server["name"]);
 			
 			$table->data[] = $data;

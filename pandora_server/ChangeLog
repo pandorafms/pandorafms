@@ -1,3 +1,8 @@
+2010-09-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DataServer.pm: Do not update agent configuration if
+	  not in learning mode. Fixes bug #3069710.
+
 2010-09-21  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Fixed the agent deletion and

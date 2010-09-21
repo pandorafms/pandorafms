@@ -304,10 +304,19 @@ sub process_xml_data ($$$$$) {
 
 	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
 	# in order to avoid not only events, also possible invalid data coming from agents.
-
-	my $agent_disabled = get_db_value ($dbh, 'SELECT disabled FROM tagente WHERE id_agente = ?', $agent_id);
-	if (defined ($agent_disabled) && $agent_disabled == 1){
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $agent_id);
+	if (!defined ($agent)) {
+		logger($pa_config, "Error retrieving information for agent ID $agent_id",10);
 		return;
+	}
+	return if ($agent->{'disabled'} == 1);
+	
+	# Do not overwrite agent parameters if the agent is in normal mode
+	if ($agent->{'modo'} == 0) {;
+		$interval = $agent->{'intervalo'};
+		$os_version = $agent->{'os_version'};
+		$agent_version = $agent->{'agent_version'};
+		$timezone_offset = $agent->{'timezone_offset'};
 	}
 
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {

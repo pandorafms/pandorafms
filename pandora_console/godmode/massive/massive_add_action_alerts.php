@@ -48,8 +48,10 @@ if ($add) {
 				$cont = $cont + 1;
 			}
 			
+			$cont = 0;
+			$agent_alerts_id_compound = array();
 			foreach($agent_alerts['compounds'] as $agent_alert){
-				$agent_alerts_id[$cont] = $agent_alert['id'];
+				$agent_alerts_id_compound[$cont] = $agent_alert['id'];
 				$cont = $cont + 1;
 			}
 					
@@ -63,6 +65,12 @@ if ($add) {
 			$results = true;
 			foreach($agent_alerts_id as $agent_alert_id){
 				$result = add_alert_agent_module_action($agent_alert_id, $action, $options);
+				if($result === false)
+					$results = false;
+			}
+
+			foreach($agent_alerts_id_compound as $agent_alert_id_compound) {
+				$result = add_alert_compound_action ($agent_alert_id_compound, $action, $options);
 				if($result === false)
 					$results = false;
 			}

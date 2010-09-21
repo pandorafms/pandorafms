@@ -1,3 +1,12 @@
+2010-09-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_delete_action_alerts.php: Fixed
+	addition/deletion for compound alerts does not work.
+
+	* include/functions_alerts.php: To fix above problem, added a function,
+	delete_alert_compound_action().
+
 2010-09-20  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/customfields.php: Add code to show text when no

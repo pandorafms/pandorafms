@@ -827,6 +827,14 @@ function add_alert_compound_action ($id_alert_compound, $id_alert_action, $optio
 	return (@process_sql_insert ('talert_compound_actions', $values)) !== false;
 }
 
+function delete_alert_compound_action ($id_alert_compound_action) {
+	if (empty ($id_alert_compound_action))
+		return false;
+
+	return (@process_sql_delete ('talert_compound_actions',
+		array ('id' => $id_alert_compound_action))) !== false;
+}
+
 function set_alerts_compound_disable ($id_alert_compound, $disabled) {
 	$id_alert_agent_module = safe_int ($id_alert_compound, 0);
 	return (@process_sql_update ('talert_compound',

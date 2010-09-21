@@ -45,8 +45,11 @@ if ($delete) {
 				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
 			}
 			
+			$cont = 0;
+			$alerts_compound = array();
 			foreach($agent_alerts['compounds'] as $agent_alert){
-				$alerts_agent_modules = array_merge($alerts_agent_modules, get_alerts_agent_module ($agent_alert['id'], false, false, 'id'));
+				$alerts_compound[$cont] = $agent_alert['id'];
+				$cont = $cont + 1;
 			}
 
 				
@@ -58,9 +61,19 @@ if ($delete) {
 				
 				foreach ($agent_module_actions as $agent_module_action){
 					if($agent_module_action['id_alert_action'] == $action) {
-						echo $agent_module_action['id']." . ". $alert_agent_module['id'] ." ; ";
 						$result = delete_alert_agent_module_action ($agent_module_action['id']);
 						
+						if($result === false)
+							$results = false;
+					}
+				}
+			}
+
+			foreach($alerts_compound as $alert_compound) {
+				$compound_actions = get_alert_compound_actions ($alert_compound['id'], array('id','id_alert_action'));
+				foreach ($compound_actions as $compound_action) {
+					if ($compound_action['id_alert_action'] == $action) {
+						$result = delete_alert_compound_action($compound_action['id']);
 						if($result === false)
 							$results = false;
 					}

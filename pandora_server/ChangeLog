@@ -1,3 +1,9 @@
+2010-09-21  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Fixed the agent deletion and
+	the module deletion to delete all the additional structures
+	and files
+
 2010-09-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm, lib/PandoraFMS/DataServer.pm: Update module

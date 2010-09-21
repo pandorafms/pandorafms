@@ -36,6 +36,8 @@ if (! give_acl ($config["id_user"], 0, "AW")) {
 	exit;
 }
 
+enterprise_include_once('include/functions_policies.php');
+
 $search = get_parameter ("search", "");
 
 if (isset ($_GET["borrar_agente"])) { // if delete agent

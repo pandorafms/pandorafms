@@ -3222,6 +3222,9 @@ function delete_agent ($id_agents, $disableACL = false) {
 		// Dont delete here, this records are deleted in daily script
 		// temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
+		// Delete agent policies
+		enterprise_hook('delete_agent_policies', array($id_agent));
+
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
 		// temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $where_modules);

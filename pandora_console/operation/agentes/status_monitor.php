@@ -97,7 +97,8 @@ $sql = " FROM tagente, tagente_modulo, tagente_estado
 // Agent group selector
 if ($ag_group > 0 && give_acl ($config["id_user"], $ag_group, "AR")) {
 	$sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
-} else {
+}
+else {
 	// User has explicit permission on group 1 ?
 	$sql .= " AND tagente.id_grupo IN (".$user_groups.")";
 }
@@ -222,13 +223,17 @@ foreach ($result as $row) {
 
 	if($row['utimestamp'] == 0 && (($row['module_type'] < 21 || $row['module_type'] > 23) && $row['module_type'] != 100)){
 		$data[5] = print_status_image(STATUS_MODULE_NO_DATA, __('NOT INIT'), true);
-	} elseif ($row["estado"] == 0) {
+	}
+	elseif ($row["estado"] == 0) {
 		$data[5] = print_status_image(STATUS_MODULE_OK, __('NORMAL').": ".$row["datos"], true);
-	} elseif ($row["estado"] == 1) {
+	}
+	elseif ($row["estado"] == 1) {
 		$data[5] = print_status_image(STATUS_MODULE_CRITICAL, __('CRITICAL').": ".$row["datos"], true);
-	} elseif ($row["estado"] == 2) {
+	}
+	elseif ($row["estado"] == 2) {
 		$data[5] = print_status_image(STATUS_MODULE_WARNING, __('WARNING').": ".$row["datos"], true);
-	} else {
+	}
+	else {
 		$last_status =  get_agentmodule_last_status($row['id_agente_modulo']);
 		switch($last_status) {
 			case 0:

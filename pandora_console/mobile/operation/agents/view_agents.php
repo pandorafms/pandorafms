@@ -36,8 +36,10 @@ class ViewAgents {
 	private function showForm() {
 		echo "<form>";
 		print_input_hidden('page', 'agents');
+		global $config;
+		$config['text_char_long'] = 12;
 		print_select_groups($this->user->getIdUser(), "AR", true, 'filter_group', $this->filterGroup);
-		print_input_text('filter_text', $this->filterText, __('Free text search'), 10, 20);
+		print_input_text('filter_text', $this->filterText, __('Free text search'), 5, 20);
 		echo "<input type='submit' class='button_filter' name='submit_button' value='' alt='" . __('Filter') . "' title='" . __('Filter') . "' />";
 		echo "<form>";
 	}

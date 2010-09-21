@@ -779,7 +779,10 @@ function is_module_uncompressed ($module_type) {
  * @return array module_name Module name to check.
  */
 function get_event_types () {
+	global $config;
+	
 	$types = array ();
+	
 	$types['unknown'] = __('Unknown');
 
 	$types['critical'] = __('Monitor Critical');
@@ -794,6 +797,12 @@ function get_event_types () {
 	$types['system'] = __('System');
 	$types['error'] = __('Error');
 	
+	if (isset($config['text_char_long'])) {
+		foreach ($types as $key => $type) {
+			$types[$key] = printTruncateText($type, $config['text_char_long'], false, true, false);
+		}
+	}
+	
 	return $types;
 }
 
@@ -803,12 +812,20 @@ function get_event_types () {
  * @return array An array with all the priorities.
  */
 function get_priorities () {
+	global $config;
+	
 	$priorities = array ();
 	$priorities[0] = __('Maintenance');
 	$priorities[1] = __('Informational');
 	$priorities[2] = __('Normal');
 	$priorities[3] = __('Warning');
 	$priorities[4] = __('Critical');
+	
+	if (isset($config['text_char_long'])) {
+		foreach ($priorities as $key => $priority) {
+			$priorities[$key] = printTruncateText($priority, $config['text_char_long'], false, true, false);
+		}
+	}
 	
 	return $priorities;
 }
@@ -844,20 +861,26 @@ function get_priority_name ($priority) {
  *
  * @return string CSS priority class.
  */
-function get_priority_class ($priority) {
+function get_priority_class($priority) {
 	switch ($priority) {
-	case 0: 
-		return "datos_blue";
-	case 1: 
-		return "datos_grey";
-	case 2:
-		return "datos_green";
-	case 3: 
-		return "datos_yellow";
-	case 4: 
-		return "datos_red";
-	default: 
-		return "datos_grey";
+		case 0: 
+			return "datos_blue";
+			break;
+		case 1: 
+			return "datos_grey";
+			break;
+		case 2:
+			return "datos_green";
+			break;
+		case 3: 
+			return "datos_yellow";
+			break;
+		case 4: 
+			return "datos_red";
+			break;
+		default: 
+			return "datos_grey";
+			break;
 	}
 }
 	

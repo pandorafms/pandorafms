@@ -18,9 +18,12 @@ input {
 	border: 1px solid;
 }
 
-.icon_menu {
-	width: 50px;
-	height: 50px;
+.tactical_link {
+	text-decoration: none;
+}
+
+.tactical_link:hover {
+	text-decoration: underline;
 }
 
 .orange {
@@ -79,6 +82,16 @@ tr.rowPair:hover {
 tr.rowOdd:hover {
 	background-color: #E0E0E0
 }
+
+#footer {
+	background: #000;
+	height: 30px;
+	color: #fff;
+	text-align: center;
+	margin-top: 20px;
+	font-size: 10px;
+}
+
 /*----------------INI-MENU----------------------------------------------------*/
 #top_menu {
 	background: #3F4E2F;
@@ -88,7 +101,7 @@ tr.rowOdd:hover {
 }
 
 #margin_bottom_menu {
-	margin-bottom: 17px;
+	/*margin-bottom: 17px;*/
 }
 
 #menu {
@@ -96,7 +109,7 @@ tr.rowOdd:hover {
 }
 
 #down_button {
-	height: 15px;
+	height: 20px;
 	background: #fff;
 }
 
@@ -106,10 +119,29 @@ tr.rowOdd:hover {
 	padding-right: 10px;
 }
 
-#button_menu_up {
-	display: none;	
+.icon_menu {
+	width: 30px;
+	height: 30px;
 }
 /*----------------END-MENU----------------------------------------------------*/
+
+/*----------------INI-EVENTS ROW BACKGROUND-----------------------------------*/
+.datos_green, .datos_greenf9 {
+	background-color: #BBFFA4;
+}
+.datos_red, .datos_redf9 {
+	background-color: #FFC0B5;
+}
+.datos_yellow, .datos_yellowf9 {
+	background-color: #F4FFBF;
+}
+.datos_blue, .datos_bluef9 {
+	background-color: #CDE2EA;
+}
+.datos_grey, .datos_greyf9 {
+	background-color: #E4E4E4;
+}
+/*----------------END-EVENTS ROW BACKGROUND-----------------------------------*/
 
 /*----------------INI-TABLE---------------------------------------------------*/
 th {

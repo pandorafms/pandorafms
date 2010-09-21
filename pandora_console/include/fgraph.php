@@ -48,7 +48,17 @@ error_reporting (E_ALL);
 if (! isset ($config["id_user"])) {
 	session_start ();
 	session_write_close ();
-	$config["id_user"] = $_SESSION["id_usuario"];
+	if (isset($_SESSION["id_usuario"])) {
+		$config["id_user"] = $_SESSION["id_usuario"];
+	}
+}
+
+if (! isset ($config["id_user"])) {
+	require_once('../mobile/include/user.class.php');
+	session_start ();
+	session_write_close ();
+	$user = $_SESSION['user'];
+	$config["id_user"] = $user->getIdUser();
 }
 
 //Fixed the graph for cron (that it's login)
@@ -1530,7 +1540,7 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp'));
+			array ('evento', 'utimestamp', 'event_type'));
 		if ($events === false) {
 			$events = array ();
 		}
@@ -1634,6 +1644,7 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 		// Read events and alerts that fall in the current interval
 		$event_value = 0;
 		$alert_value = 0;
+		
 		while (isset ($events[$k]) && $events[$k]['utimestamp'] >= $timestamp && $events[$k]['utimestamp'] <= ($timestamp + $interval)) {
 			if ($show_events == 1) {
 				$event_value++;
@@ -1666,7 +1677,7 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['count'] = 0;
 		$chart[$timestamp]['timestamp_bottom'] = $timestamp;
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
-		$chart[$timestamp]['event'] = $event_value;
+		$chart[$timestamp]['events'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
 	}
 	
@@ -1678,8 +1689,8 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 	// Fix event and alert scale
 	$event_max = $max_value * 1.25;
 	foreach ($chart as $timestamp => $chart_data) {
-		if ($chart_data['event'] > 0) {
-			$chart[$timestamp]['event'] = $event_max;
+		if ($chart_data['events'] > 0) {
+			$chart[$timestamp]['events'] = $event_max;
 		}
 		if ($chart_data['alert'] > 0) {
 			$chart[$timestamp]['alert'] = $event_max;
@@ -1724,7 +1735,7 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 	$engine->show_title = false; //true;
 	$engine->max_value = $max_value;
 	$engine->min_value = $min_value;
-	$engine->events = (bool) $show_event;
+	$engine->events = (bool) $show_events;
 	$engine->alert_top = false;
 	$engine->alert_bottom = false;;
 	if (! $pure) {

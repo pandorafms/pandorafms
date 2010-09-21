@@ -27,7 +27,7 @@ class Tactical {
 		$data = get_group_stats();
 		
 		$table = null;
-		$table->width = '100%';
+		//$table->width = '100%';
 		
 		$table->size[0] = '10px';
 		
@@ -77,7 +77,7 @@ class Tactical {
 		$server_performance = get_server_performance();
 		
 		$table = null;
-		$table->width = '100%';
+		//$table->width = '100%';
 		
 		$table->align = array();
 		$table->align[1] = 'right';
@@ -98,7 +98,7 @@ class Tactical {
 		echo "<h3 class='title_h3_server'>" . __('Summary') . "</h3>";
 		
 		$table = null;
-		$table->width = '100%';
+		//$table->width = '100%';
 		$table->align[1] = 'right';
 		$table->data[0][0] = '<span style="color: #000;">' . __('Total agents') . '</span>';
 		$table->data[0][1] = '<span style="color: #000;">' . $data["total_agents"] . '</span>';

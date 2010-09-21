@@ -59,6 +59,12 @@ class System {
 		}
 	}
 	
+	public function setSessionBase($name, $value) {
+		session_start();
+		$_SESSION[$name] = $value;
+		session_write_close();
+	}
+	
 	public function setSession($name, $value) {
 		$this->session[$name] = $value;
 		

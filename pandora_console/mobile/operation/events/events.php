@@ -123,14 +123,16 @@ class EventsView {
 		$count = get_db_value_sql($sql_count);
 		
 		$rows = get_db_all_rows_sql($sql);
+		if ($rows === false)
+			$rows = array();
 		
 		
 		$table = null;
 		$table->width = '100%';
 		$table->head = array();
 		$table->head[0] = '<span title="' . __('Severity') . '" alt="' . __('Severity') . '">' . __('S') . '</span>';
-		$table->head[1] = '<span title="' . __('Group') . '" alt="' . __('Group') . '">' . __('G') . '</span>';
-		$table->head[2] = '<span title="' . __('Type') . '" alt="' . __('Type') . '">' . __('T') . '</span>';
+//		$table->head[1] = '<span title="' . __('Group') . '" alt="' . __('Group') . '">' . __('G') . '</span>';
+//		$table->head[2] = '<span title="' . __('Type') . '" alt="' . __('Type') . '">' . __('T') . '</span>';
 		$table->head[3] = '<span title="' . __('Timestamp') . '" alt="' . __('Timestamp') . '">' . __('T') . '</span>';
 		$table->head[4] = '<span title="' . __('Description') . '" alt="' . __('Description') . '">' . __('Des.') . '</span>';
 		$table->head[5] = '<span title="' . __('Agent') . '" alt="' . __('Agent') . '">' . __('Agent') . '</span>';
@@ -142,19 +144,19 @@ class EventsView {
 			switch ($row["criticity"]) {
 				default:
 				case 0:
-					$img = "../images/status_sets/default/severity_maintenance.png";
+					$img = "../images/status_sets/default/severity_maintenance_pixel.png";
 					break;
 				case 1:
-					$img = "../images/status_sets/default/severity_informational.png";
+					$img = "../images/status_sets/default/severity_informational_pixel.png";
 					break;
 				case 2:
-					$img = "../images/status_sets/default/severity_normal.png";
+					$img = "../images/status_sets/default/severity_normal_pixel.png";
 					break;
 				case 3:
-					$img = "../images/status_sets/default/severity_warning.png";
+					$img = "../images/status_sets/default/severity_warning_pixel.png";
 					break;
 				case 4:
-					$img = "../images/status_sets/default/severity_critical.png";
+					$img = "../images/status_sets/default/severity_critical_pixel.png";
 					break;
 			}
 			
@@ -163,34 +165,35 @@ class EventsView {
 				'&severity=' . $row["criticity"] . '&search=' . $search . '">' .
 				print_image ($img, true, 
 				array ("class" => "image_status",
-					"width" => 12,
-					"height" => 12,
+					"width" => 15,
+					"height" => 15,
 					"title" => get_priority_name($row["criticity"]))) . '</a>';
 				
-			$data[] = '<a href="index.php?page=events&ev_group=' .
-				$row["id_grupo"] .  '&event_type=' . $event_type .
-				'&severity='. $severity . '&search=' . $search . '">' . 
-				str_replace('images/', '../images/', print_group_icon ($row["id_grupo"], true, "groups_small", '', false))
-				. '</a>';
-			
-			$data[] = '<a href="index.php?page=events&ev_group=' . $ev_group .
-				'&event_type=' . $row["event_type"] . '&severity=' . $severity .
-				'&search=' . $search . '">' .
-				str_replace('images/', '../images/', print_event_type_img($row["event_type"], true)) .
-				'</a>';
+//			$data[] = '<a href="index.php?page=events&ev_group=' .
+//				$row["id_grupo"] .  '&event_type=' . $event_type .
+//				'&severity='. $severity . '&search=' . $search . '">' . 
+//				str_replace('images/', '../images/', print_group_icon ($row["id_grupo"], true, "groups_small", '', false))
+//				. '</a>';
+//			
+//			$data[] = '<a href="index.php?page=events&ev_group=' . $ev_group .
+//				'&event_type=' . $row["event_type"] . '&severity=' . $severity .
+//				'&search=' . $search . '">' .
+//				str_replace('images/', '../images/', print_event_type_img($row["event_type"], true)) .
+//				'</a>';
+				
 			$data[] = print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
 						
-			$data[] = printTruncateText($row["evento"], 8, true, true);
+			$data[] = printTruncateText($row["evento"], 40, true, true);
 			
 			if ($row["event_type"] == "system") {
-				$data[] = printTruncateText(__('System'), 8, true, true);
+				$data[] = printTruncateText(__('System'), 20, true, true);
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
-				$data[] = printTruncateText(get_agent_name($row["id_agente"]), 8, true, true);
+				$data[] = printTruncateText(get_agent_name($row["id_agente"]), 20, true, true);
 			}
 			else {
-				$data[] = printTruncateText(__('Alert SNMP'), 8, true, true);
+				$data[] = printTruncateText(__('Alert SNMP'), 20, true, true);
 			}
 			
 			$table->data[] = $data;

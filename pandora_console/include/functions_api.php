@@ -978,6 +978,21 @@ function set_delete_module($id, $id2, $other, $trash1) {
 	}
 }
 
+function set_module_data($id, $thrash2, $other, $trash1) {
+	if ($other['type'] == 'array') {
+		$idAgentModule = $id;
+		$data = $other['data'][0];
+		$time = $other['data'][1];
+		if ($time == 'now') $time = time();
+		
+		
+	}
+	else {
+		returnError('error_parameter', 'Error in the parameters.');
+		return;
+	}
+}
+
 function set_new_module($id, $id2, $other, $trash1) {
 	if ($other['type'] == 'string') {
 		returnError('error_parameter', 'Error in the parameters.');

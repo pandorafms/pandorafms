@@ -164,6 +164,7 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
 function print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
 	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
 	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
+	global $config;
 		
 	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
 	
@@ -179,7 +180,14 @@ function print_select_groups($id_user = false, $privilege = "AR", $returnAllGrou
 	
 	$fields = array();
 	foreach ($user_groups_tree as $group) {
-		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $group['nombre'];
+		if (isset($config['text_char_long'])) {
+			$groupName = printTruncateText($group['nombre'], $config['text_char_long'], false, true, false);
+		}
+		else {
+			$groupName = $group['nombre'];
+		}
+		
+		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
 	}
 	
 	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
@@ -332,6 +340,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  */
 function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false,
 	$multiple = false, $sort = true, $disabled = false, $style = false) {
+	global $config;
 	
 	$fields = array ();
 	$result = get_db_all_rows_sql ($sql);
@@ -341,7 +350,12 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 	foreach ($result as $row) {
 		$id = array_shift($row);
 		$value = array_shift($row);
-		$fields[$id] = $value;
+		if (isset($config['text_char_long'])) {
+			$fields[$id] = printTruncateText($value, $config['text_char_long'], false, true, false);
+		}
+		else {
+			$fields[$id] = $value;
+		}
 	}
 	
 	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort,'',$disabled, $style);

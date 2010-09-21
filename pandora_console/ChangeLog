@@ -1,3 +1,26 @@
+2010-09-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_html.php: in function "print_select_groups" and function
+	"print_select_from_sql" added source code to check $config['text_char_long']
+	for show small text in this widgets.
+	
+	* include/functions.php: in function "get_event_types" and "get_priorities"
+	added source code to check $config['text_char_long'] for show small text in
+	this widgets. And in function "get_priority_class" cleaned source code.
+	
+	* operation/agentes/status_monitor.php, operation/events/events.php: cleaned
+	source code style.
+
+	* images/pandora.ico.gif: added image file for to use in the mobile footer.
+	
+	* mobile/operation/agents/monitor_status.php,
+	mobile/operation/agents/view_agents.php,
+	mobile/operation/agents/tactical.php,
+	mobile/operation/agents/group_view.php, mobile/operation/events/events.php,
+	mobile/include/style/main.css, mobile/include/functions_web.php,
+	mobile/index.php, general/footer.php: continued the develop, yep the
+	Pandora Console Mobile is complete (only rest the bugs).
+
 2010-09-21  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php

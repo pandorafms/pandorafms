@@ -34,14 +34,14 @@ class GroupView {
 		
 		$table->head = array();
 		$table->head[0] = '&nbsp;';
-		$table->head[1] = '<span title="' . __('Total Agents') . '" alt="' . __('Total Agents') . '">' . __('T') . '</span>';
-		$table->head[2] = '<span title="' . __('Agent unknown') . '" alt="' . __('Agent unknown') . '">' . __('A') . '</span>';
-		$table->head[3] = '<span title="' . __('Unknown') . '" alt="' . __('Unknown') . '">' . __('U') . '</span>';
-		$table->head[4] = '<span title="' . __('Not Init') . '" alt="' . __('Not Init') . '">' . __('N') . '</span>';
-		$table->head[5] = '<span title="' . __('Normal') . '" alt="' . __('Normal') . '">' . __('N') . '</span>';
-		$table->head[6] = '<span title="' . __('Warning') . '" alt="' . __('Warning') . '">' . __('W') . '</span>';
-		$table->head[7] = '<span title="' . __('Critical') . '" alt="' . __('Critical') . '">' . __('C') . '</span>';
-		$table->head[8] = '<span title="' . __('Alert fired') . '" alt="' . __('Alert fired') . '">' . __('A') . '</span>';
+//		$table->head[1] = '<span title="' . __('Total Agents') . '" alt="' . __('Total Agents') . '">' . __('T') . '</span>';
+//		$table->head[2] = '<span title="' . __('Agent unknown') . '" alt="' . __('Agent unknown') . '">' . __('A') . '</span>';
+		$table->head[3] = '<span title="' . __('Unknown') . '" alt="' . __('Unknown') . '">' . __('Unk') . '</span>';
+//		$table->head[4] = '<span title="' . __('Not Init') . '" alt="' . __('Not Init') . '">' . __('N') . '</span>';
+		$table->head[5] = '<span title="' . __('Normal') . '" alt="' . __('Normal') . '">' . __('Nor') . '</span>';
+//		$table->head[6] = '<span title="' . __('Warning') . '" alt="' . __('Warning') . '">' . __('W') . '</span>';
+//		$table->head[7] = '<span title="' . __('Critical') . '" alt="' . __('Critical') . '">' . __('C') . '</span>';
+		$table->head[8] = '<span title="' . __('Alert fired') . '" alt="' . __('Alert fired') . '">' . __('Aler') . '</span>';
 		
 		$rowPair = false;
 		$iterator = 0;
@@ -62,14 +62,14 @@ class GroupView {
 			
 			$groupName = get_group_name($idGroup);
 			
-			$data[] = '<a href="index.php?page=agents&filter_group=' . $idGroup . '"><img alt="' . $groupName . '" title="' . $groupName . '" src="../images/groups_small/' . get_group_icon($idGroup) . '" /></a>';
-			$data[] = $groupData['total_agents'];
-			$data[] = $groupData['agents_unknown'];
+			$data[] = '<a href="index.php?page=agents&filter_group=' . $idGroup . '">' . $groupName . '</a>';
+//			$data[] = $groupData['total_agents'];
+//			$data[] = $groupData['agents_unknown'];
 			$data[] = $groupData['monitor_unknown'];
-			$data[] = $groupData['monitor_not_init'];
+//			$data[] = $groupData['monitor_not_init'];
 			$data[] = $groupData["monitor_ok"];
-			$data[] = $groupData["monitor_warning"];
-			$data[] = $groupData["monitor_critical"];
+//			$data[] = $groupData["monitor_warning"];
+//			$data[] = $groupData["monitor_critical"];
 			$data[] = $groupData["monitor_alerts_fired"];
 			
 			$table->data[] = $data;

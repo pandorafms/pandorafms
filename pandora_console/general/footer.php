@@ -26,7 +26,7 @@ if (! file_exists ($config["homedir"] . $license_file)) {
 }
 
 echo '<a class="white_bold" target="_blank" href="' . $config["homeurl"] . $license_file. '">';
-echo 'Pandora FMS '.$pandora_version.' - Build '.$build_version;
+echo sprintf(__('Pandora FMS %s - Build %s', $pandora_version, $build_version));
 echo '</a><br />';
 echo '<a class="white">'. __('Page generated at') . ' '. print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 echo '</a>';

@@ -218,7 +218,7 @@ else {
 	echo "</h2>";
 }
 
-if($section == 'validate' && $ids[0] == -1){
+if (($section == 'validate') && ($ids[0] == -1)) {
 		$section = 'list';
 		print_error_message (__('No events selected'));
 }

@@ -53,22 +53,22 @@ class Tactical {
 		$table->data[8][0] = $table->data[8][1] = '';
 		
 		$table->data[0][1] = "<h3 class='title_h3_server'>" . __('Monitor checks') . "</h3>";
-		$table->data[1][2] = __('Monitor checks');
-		$table->data[1][3] = $data["monitor_checks"];
-		$table->data[2][2] = '<span style="color: #c00;">' . __('Monitors critical') . '</span>';
-		$table->data[2][3] = '<span style="color: #c00;">' . $data["monitor_critical"] . '</span>';
-		$table->data[3][2] = '<span style="color: #ffcc00;">' . __('Monitors warning') .'</span>';
-		$table->data[3][3] = '<span style="color: #ffcc00;">' . $data["monitor_warning"] . '</span>';
-		$table->data[4][2] = '<span style="color: #8ae234;">' . __('Monitors normal') . '</span>';
-		$table->data[4][3] = '<span style="color: #8ae234;">' . $data["monitor_ok"] . '</span>';
-		$table->data[5][2] = '<span style="color: #aaa;">' . __('Monitors unknown') . '</span>';
-		$table->data[5][3] = '<span style="color: #aaa;">' . $data["monitor_unknown"] . '</span>';
-		$table->data[6][2] = '<span style="color: #ef2929;">' . __('Monitors not init') . '</span>';
-		$table->data[6][3] = '<span style="color: #ef2929;">' . $data["monitor_not_init"] . '</span>';
-		$table->data[7][2] = '<span style="color: #000;">' . __('Alerts defined') . '</span>';
-		$table->data[7][3] = '<span style="color: #000;">' . $data["monitor_alerts"] . '</span>';
-		$table->data[8][2] = '<span style="color: #ff8800;">' . __('Alerts fired') . '</span>';
-		$table->data[8][3] = '<span style="color: #ff8800;">' . $data["monitor_alerts_fired"] . '</span>';
+		$table->data[1][2] = '<a href="index.php?page=monitor" class="tactical_link" style="color: #000;">' . __('Monitor checks') . '</a>';
+		$table->data[1][3] = '<a href="index.php?page=monitor" class="tactical_link" style="color: #000;">' . $data["monitor_checks"] . '</a>';
+		$table->data[2][2] = '<a href="index.php?page=monitor&status=2" class="tactical_link" style="color: #c00;">' . __('Monitors critical') . '</a>';
+		$table->data[2][3] = '<a href="index.php?page=monitor&status=2" class="tactical_link" style="color: #c00;">' . $data["monitor_critical"] . '</a>';
+		$table->data[3][2] = '<a href="index.php?page=monitor&status=1" class="tactical_link" style="color: #ffcc00;">' . __('Monitors warning') .'</a>';
+		$table->data[3][3] = '<a href="index.php?page=monitor&status=1" class="tactical_link" style="color: #ffcc00;">' . $data["monitor_warning"] . '</a>';
+		$table->data[4][2] = '<a href="index.php?page=monitor&status=0" class="tactical_link" style="color: #8ae234;">' . __('Monitors normal') . '</a>';
+		$table->data[4][3] = '<a href="index.php?page=monitor&status=0" class="tactical_link" style="color: #8ae234;">' . $data["monitor_ok"] . '</a>';
+		$table->data[5][2] = '<a href="index.php?page=monitor&status=3" class="tactical_link" style="color: #aaa;">' . __('Monitors unknown') . '</a>';
+		$table->data[5][3] = '<a href="index.php?page=monitor&status=3" class="tactical_link" style="color: #aaa;">' . $data["monitor_unknown"] . '</a>';
+		$table->data[6][2] = '<a href="index.php?page=monitor&status=5" class="tactical_link" style="color: #ef2929;">' . __('Monitors not init') . '</a>';
+		$table->data[6][3] = '<a href="index.php?page=monitor&status=5" class="tactical_link" style="color: #ef2929;">' . $data["monitor_not_init"] . '</a>';
+		$table->data[7][2] = '<a href="index.php?page=alerts" class="tactical_link" style="color: #000;">' . __('Alerts defined') . '</a>';
+		$table->data[7][3] = '<a href="index.php?page=alerts" class="tactical_link" style="color: #000;">' . $data["monitor_alerts"] . '</a>';
+		$table->data[8][2] = '<a href="index.php?page=events&event_type=alert_fired" class="tactical_link" style="color: #ff8800;">' . __('Alerts fired') . '</a>';
+		$table->data[8][3] = '<a href="index.php?page=events&event_type=alert_fired" class="tactical_link" style="color: #ff8800;">' . $data["monitor_alerts_fired"] . '</a>';
 		
 		print_table($table);
 		
@@ -100,8 +100,8 @@ class Tactical {
 		$table = null;
 		//$table->width = '100%';
 		$table->align[1] = 'right';
-		$table->data[0][0] = '<span style="color: #000;">' . __('Total agents') . '</span>';
-		$table->data[0][1] = '<span style="color: #000;">' . $data["total_agents"] . '</span>';
+		$table->data[0][0] = '<a href="index.php?page=agents" class="tactical_link" style="color: #000;">' . __('Total agents') . '</span>';
+		$table->data[0][1] = '<a href="index.php?page=agents" class="tactical_link" style="color: #000;">' . $data["total_agents"] . '</span>';
 		$table->data[1][0] = '<span style="color: #ef2929;">' . __('Uninitialized modules') . '</span>';
 		$table->data[1][1] = '<span style="color: #ef2929;">' . $data["server_sanity"] . '</span>';
 		$table->data[2][0] = '<span style="color: #aaa;">' . __('Agents unknown') . '</span>';

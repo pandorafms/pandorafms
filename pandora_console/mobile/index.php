@@ -23,6 +23,8 @@ require_once('operation/agents/tactical.php');
 require_once('operation/agents/group_view.php');
 require_once('operation/agents/view_alerts.php');
 require_once('operation/events/events.php');
+require_once('operation/agents/monitor_status.php');
+$enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 
 $system = new System();
 
@@ -34,15 +36,15 @@ $user->hackinjectConfig();
 ?>
 <html>
 	<head>
-		<title>XXX</title>
+		<title>Pandora FMS - <?php echo __('the Flexible Monitoring System (mobile version)'); ?></title>
 		<link rel="stylesheet" href="include/style/main.css" type="text/css" />
 		<link rel="stylesheet" href="../include/styles/tip.css" type="text/css" />
 		<script type="text/javascript" src="../include/javascript/jquery.js"></script>
 	</head>
 	<body>
-		<!--<div style="width: 100%; height: 100%; border: 2px solid red; overflow: hidden;">-->
+		<div>
 		<!--<div style="width: 240px; height: 320px; border: 2px solid red; overflow: hidden;">-->
-		<div style="width: 240px; height: 640px; border: 2px solid red; overflow: hidden;">
+		<!--<div style="width: 240px; height: 640px; border: 2px solid red; overflow: hidden;">-->
 		<?php
 		$action = $system->getRequest('action');
 		switch ($action) {
@@ -54,8 +56,8 @@ $user->hackinjectConfig();
 				$user->hackinjectConfig();
 				menu();
 				
-				if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
-					audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+				if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+					audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 						"Trying to access Agent Data view");
 					require ("../general/noaccess.php");
 					return;
@@ -76,10 +78,15 @@ $user->hackinjectConfig();
 					menu();
 					$page = $system->getRequest('page', 'tactical');
 					switch ($page) {
+						case 'reports':
+								if ($enterpriseHook !== ENTERPRISE_NOT_HOOK) {
+									$enterprise = new Enterprise($page); 
+								}
+								break;
 						default:
 						case 'tactical':
-							if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -89,8 +96,8 @@ $user->hackinjectConfig();
 							$tactical->show();
 							break;
 						case 'agents':
-							if (! give_acl ($system->getConfig('id_user'), 0, "AR")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -115,8 +122,8 @@ $user->hackinjectConfig();
 							}
 							break;
 						case 'servers':
-							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -126,8 +133,8 @@ $user->hackinjectConfig();
 							$viewServers->show();
 							break;
 						case 'alerts':
-							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -137,8 +144,8 @@ $user->hackinjectConfig();
 							$viewAlerts->show();
 							break;
 						case 'groups':
-							if (! give_acl ($system->getConfig('id_user'), 0, "PM")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -148,8 +155,8 @@ $user->hackinjectConfig();
 							$groupView->show();
 							break;
 						case 'events':
-							if (! give_acl ($system->getConfig('id_user'), 0, "IR")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							if (! give_acl($system->getConfig('id_user'), 0, "IR")) {
+								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
 									"Trying to access event viewer");
 								require ("general/noaccess.php");
 								return;
@@ -158,12 +165,28 @@ $user->hackinjectConfig();
 							$eventsView = new EventsView();
 							$eventsView->show();
 							break;
+						case 'monitor':
+							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+									"Trying to access Agent Data view");
+								require ("../general/noaccess.php");
+								return;
+							}
+							
+							$monitorStatus = new MonitorStatus($user);
+							$monitorStatus->show();
+							break;
 					}
 				}
 				break;
 		}
 		?>
 		</div>
+		<?php
+		if ($user->isLogged()) {
+			footer();
+		}
+		?>
 	</body>
 </html>
 <?php

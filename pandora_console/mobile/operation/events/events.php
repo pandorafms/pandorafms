@@ -24,6 +24,9 @@ class EventsView {
 	}
 	
 	function show() {
+		global $config;
+		$config['text_char_long'] = 12;
+		
 		$offset = $this->system->getRequest("offset", 0);
 		$ev_group = $this->system->getRequest("ev_group", 0); //0 = all
 		$event_type = get_parameter ("event_type", ''); // 0 all
@@ -48,7 +51,7 @@ class EventsView {
 		$table->data[0][3] = print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
 		$table->data[1][0] = '<span alt="' . __('Severity') . '" title="' . __('Severity') . '"><b>' . __('S') . '</b></span>';
 		$table->data[1][1] = print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
-		$table->data[1][2] = print_input_text('search', $search, '', 10, 20, true);
+		$table->data[1][2] = print_input_text('search', $search, '', 5, 20, true);
 		$table->data[1][2] .= "<input type='submit' class='button_filter' name='submit_button' value='' alt='" . __('Filter') . "' title='" . __('Filter') . "' />";
 		
 		echo "<form method='post'>";
@@ -116,9 +119,7 @@ class EventsView {
 		
 		$sql_count = str_replace('*', 'COUNT(*)', $sql);
 		
-		$sql = $sql . ' LIMIT %d,%d';
-		
-		$sql = sprintf($sql, $offset, $this->system->getPageSize());
+		$sql = $sql . sprintf(' LIMIT %d,%d', $offset, $this->system->getPageSize());
 		
 		$count = get_db_value_sql($sql_count);
 		
@@ -130,7 +131,7 @@ class EventsView {
 		$table = null;
 		$table->width = '100%';
 		$table->head = array();
-		$table->head[0] = '<span title="' . __('Severity') . '" alt="' . __('Severity') . '">' . __('S') . '</span>';
+//		$table->head[0] = '<span title="' . __('Severity') . '" alt="' . __('Severity') . '">' . __('S') . '</span>';
 //		$table->head[1] = '<span title="' . __('Group') . '" alt="' . __('Group') . '">' . __('G') . '</span>';
 //		$table->head[2] = '<span title="' . __('Type') . '" alt="' . __('Type') . '">' . __('T') . '</span>';
 		$table->head[3] = '<span title="' . __('Timestamp') . '" alt="' . __('Timestamp') . '">' . __('T') . '</span>';
@@ -138,6 +139,7 @@ class EventsView {
 		$table->head[5] = '<span title="' . __('Agent') . '" alt="' . __('Agent') . '">' . __('Agent') . '</span>';
 		
 		$table->data = array();
+		$iterator = 0;
 		foreach ($rows as $row) {
 			$data = array();
 			
@@ -160,14 +162,17 @@ class EventsView {
 					break;
 			}
 			
-			$data[] = '<a href="index.php?page=events&offset=' . $offset .
-				'&ev_group=' . $ev_group . '&event_type=' . $event_type .
-				'&severity=' . $row["criticity"] . '&search=' . $search . '">' .
-				print_image ($img, true, 
-				array ("class" => "image_status",
-					"width" => 15,
-					"height" => 15,
-					"title" => get_priority_name($row["criticity"]))) . '</a>';
+			$table->rowclass[$iterator] = get_priority_class($row["criticity"]);
+			$iterator++;
+			
+//			$data[] = '<a href="index.php?page=events&offset=' . $offset .
+//				'&ev_group=' . $ev_group . '&event_type=' . $event_type .
+//				'&severity=' . $row["criticity"] . '&search=' . $search . '">' .
+//				print_image ($img, true, 
+//				array ("class" => "image_status",
+//					"width" => 15,
+//					"height" => 15,
+//					"title" => get_priority_name($row["criticity"]))) . '</a>';
 				
 //			$data[] = '<a href="index.php?page=events&ev_group=' .
 //				$row["id_grupo"] .  '&event_type=' . $event_type .
@@ -183,14 +188,14 @@ class EventsView {
 				
 			$data[] = print_timestamp($row["timestamp"], true, array('units' => 'tiny'));
 						
-			$data[] = printTruncateText($row["evento"], 40, true, true);
+			$data[] = $row["evento"];
 			
 			if ($row["event_type"] == "system") {
 				$data[] = printTruncateText(__('System'), 20, true, true);
 			}
 			elseif ($row["id_agente"] > 0) {
 				// Agent name
-				$data[] = printTruncateText(get_agent_name($row["id_agente"]), 20, true, true);
+				$data[] = '<a href="index.php?page=agent&id=' . $row["id_agente"] . '">' . printTruncateText(get_agent_name($row["id_agente"]), 20, true, true) . '</a>';
 			}
 			else {
 				$data[] = printTruncateText(__('Alert SNMP'), 20, true, true);

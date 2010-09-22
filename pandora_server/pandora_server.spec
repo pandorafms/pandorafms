@@ -2,7 +2,7 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     3.1
+%define version     3.2dev
 %define release     1
 
 Summary:            Pandora FMS Server
@@ -23,7 +23,7 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-time-format 
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           nmap wmic sudo xprobe2
+Requires:           nmap wmic sudo xprobe2 perl-HTML-Tree perl-XML-SAX
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.

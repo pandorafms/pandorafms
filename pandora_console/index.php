@@ -147,13 +147,15 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 		logon_db ($loginhash_user, $_SERVER['REMOTE_ADDR']);
 		$_SESSION['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
-	} else {
+	}
+	else {
 		require_once ('general/login_page.php');
 		audit_db ("system", $_SERVER['REMOTE_ADDR'], "Logon Failed (loginhash", "");
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-} elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
+}
+elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// Login process 
 	
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
@@ -186,7 +188,8 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 			$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
 			$l10n->load_tables();
 		}
-	} else {
+	}
+	else {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
@@ -194,7 +197,8 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
-} elseif (! isset ($config['id_user'])) {
+}
+elseif (! isset ($config['id_user'])) {
 	// There is no user connected
 	require_once ('general/login_page.php');
 	while (@ob_end_flush ());

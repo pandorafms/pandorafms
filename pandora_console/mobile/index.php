@@ -39,7 +39,6 @@ $user->hackinjectConfig();
 		<title>Pandora FMS - <?php echo __('the Flexible Monitoring System (mobile version)'); ?></title>
 		<link rel="stylesheet" href="include/style/main.css" type="text/css" />
 		<link rel="stylesheet" href="../include/styles/tip.css" type="text/css" />
-		<script type="text/javascript" src="../include/javascript/jquery.js"></script>
 	</head>
 	<body>
 		<div>
@@ -50,29 +49,35 @@ $user->hackinjectConfig();
 		switch ($action) {
 			case 'login':
 				if (!$user->checkLogin()) {
-					$user->login();
+					$user->showLogin();
 				}
 				else {
-				$user->hackinjectConfig();
-				menu();
-				
-				if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
-					audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
-						"Trying to access Agent Data view");
-					require ("../general/noaccess.php");
-					return;
-				}
-				
-				$tactical = new Tactical();
-				$tactical->show();
+					if ($user->isLogged()) {
+						$user->hackinjectConfig();
+						menu();
+						
+						if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
+							audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								"Trying to access Agent Data view");
+							require ("../general/noaccess.php");
+							return;
+						}
+						
+						$tactical = new Tactical();
+						$tactical->show();
+					}
+					else {
+						$user->showLogin();
+					}
 				}
 				break;
 			case 'logout':
 				$user->logout();
+				$user->showLogin('<span style="color: red; font-weight: bolder; float: right;">' . __('LOGOUT') . '</span>');
 				break;
 			default:
 				if (!$user->isLogged()) {
-					$user->login();
+					$user->showLogin();
 				}
 				else {
 					menu();
@@ -80,7 +85,8 @@ $user->hackinjectConfig();
 					switch ($page) {
 						case 'reports':
 								if ($enterpriseHook !== ENTERPRISE_NOT_HOOK) {
-									$enterprise = new Enterprise($page); 
+									$enterprise = new Enterprise($page);
+									$enterprise->show(); 
 								}
 								break;
 						default:

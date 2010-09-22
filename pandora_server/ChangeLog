@@ -1,3 +1,9 @@
+2010-09-22  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Added the parameter with
+	a definition module to module creation to create 
+	a local module
+
 2010-09-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Do not update agent configuration if

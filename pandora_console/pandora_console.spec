@@ -2,7 +2,7 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     3.2
+%define version     3.2dev
 %define release     1
 %define httpd_name      httpd
 # User and Group under which Apache is running
@@ -22,7 +22,7 @@ Vendor:             Artica ST <info@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
-Packager:           Sancho Lerena <slerena@artica.es>
+Packager:           Manuel Arostegui <manuel@todo-linux.com>
 Prefix:              /srv/www/htdocs
 BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch
@@ -32,7 +32,7 @@ Requires:           php >= 4.3.0
 Requires:           php5-gd, php5-snmp, php5-pear, php5-json, php5-gettext
 Requires:           php5-mysql, php5-ldap, php5-mbstring, php5 
 Requires:           graphviz, xorg-x11-fonts-core
-Requires:           php5-pear-db, php-pear-xml_rpc
+Requires:           php-pear-db, php-pear-xml_rpc, php5-zip
 Provides:           %{name}-%{version}
 
 %description

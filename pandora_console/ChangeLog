@@ -1,3 +1,8 @@
+2010-09-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console.spec: Spec for SUSE updated. Version, and some dep
+	names updated.
+
 2010-09-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* ChangeLog: fixed previous commit of jobmate that erase some lines of

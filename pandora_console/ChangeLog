@@ -1,78 +1,8 @@
-2010-09-22  Sergio Martin <sergio.martin@artica.es>
+2010-09-22  Sancho Lerena <slerena@artica.es>
 
-	* include/functions_modules.php: Fixed bad call to 
-	enterprise function
-
-2010-09-21  Miguel de Dios  <miguel.dedios@artica.es>
-
-	* include/functions_html.php: in function "print_select_groups" and function
-	"print_select_from_sql" added source code to check $config['text_char_long']
-	for show small text in this widgets.
-	
-	* include/functions.php: in function "get_event_types" and "get_priorities"
-	added source code to check $config['text_char_long'] for show small text in
-	this widgets. And in function "get_priority_class" cleaned source code.
-	
-	* operation/agentes/status_monitor.php, operation/events/events.php: cleaned
-	source code style.
-
-	* images/pandora.ico.gif: added image file for to use in the mobile footer.
-	
-	* mobile/operation/agents/monitor_status.php,
-	mobile/operation/agents/view_agents.php,
-	mobile/operation/agents/tactical.php,
-	mobile/operation/agents/group_view.php, mobile/operation/events/events.php,
-	mobile/include/style/main.css, mobile/include/functions_web.php,
-	mobile/index.php, general/footer.php: continued the develop, yep the
-	Pandora Console Mobile is complete (only rest the bugs).
-
-2010-09-21  Sergio Martin <sergio.martin@artica.es>
-
-	* include/functions_db.php
-	godmode/agentes/modificar_agente.php: Added the calls
-	to enterprise to delete an agent to all their policies
-	when we delete it for bug 3072471
-
-2010-09-21  Miguel de Dios  <miguel.dedios@artica.es>
-
-	* include/functions_html.php: fixed the width by default in the function
-	"print_table", now there isn't a default width (before it was 80%).
-	
-	* include/pchart_graph.php: fixed in the function "add_events" when tryed
-	to add a event out the data. 
-	
-	* include/fgraph.php: check the user with the mobile methods.
-	
-	* include/functions_db.php: in function "check_login" check the user with
-	the mobile methods.
-	
-	* images/status_sets/default/severity_warning_pixel.png,
-	images/status_sets/default/severity_normal_pixel.png,
-	images/status_sets/default/severity_informational_pixel.png,
-	images/status_sets/default/severity_maintenance_pixel.png,
-	images/status_sets/default/severity_critical_pixel.png: added the image
-	files for to show in the event mobile's page.
-	
-	* mobile/operation/agents/view_agents.php,
-	mobile/operation/agents/tactical.php,
-	mobile/operation/agents/view_alerts.php, mobile/operation/events/events.php,
-	mobile/operation/servers/view_servers.php, mobile/include/user.class.php,
-	mobile/include/system.class.php: changed the style the some pages to show
-	more clearly the pages in old m$-mobiles.
-
-2010-09-21  Junichi Satoh  <junichi@rworks.jp>
-
-	* godmode/massive/massive_add_action_alerts.php,
-	godmode/massive/massive_delete_action_alerts.php: Fixed
-	addition/deletion for compound alerts does not work.
-
-	* include/functions_alerts.php: To fix above problem, added a function,
-	delete_alert_compound_action().
-
-2010-09-20  Raúl Mateos <raulofpandora@gmail.com>
-
-	* operation/agentes/customfields.php: Add code to show text when no
-	fields defined.
+	* godmode/reporting/visual_console_builder.elements.php,
+	godmode/reporting/visual_console_builder.editor.php: Fixed bug
+	#3073239: bad intervals in combo for period selection.
 
 2010-09-20  Sancho Lerena <slerena@artica.es>
 

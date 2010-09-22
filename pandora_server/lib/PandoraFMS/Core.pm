@@ -1312,13 +1312,14 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'description' => $alert->{'description'},
 				'times_fired' => $times_fired,
 				'time_threshold' => 0,
-				'id_alert_action' => $alert->{'id_alert'},
+				'id' => $alert->{'id_alert'},
 				'priority' => $alert->{'priority'},
 			);
 
 			my %agent = (
 				'nombre' => $trap_agent,
 				'direccion' => $trap_agent,
+				'comentarios' => '',
 			);
 
 			# Execute alert

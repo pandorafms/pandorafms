@@ -1,3 +1,8 @@
+2010-09-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a couple of missing macros in 
+	  SNMP alerts.
+
 2010-09-22  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Added the parameter with

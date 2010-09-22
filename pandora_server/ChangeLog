@@ -1,3 +1,8 @@
+2010-09-22  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server/pandora_server.spec: Updated spec with some 
+	missing deps.
+
 2010-09-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a couple of missing macros in 

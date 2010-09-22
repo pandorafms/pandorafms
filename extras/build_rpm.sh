@@ -1,10 +1,11 @@
 #!/bin/bash
 
 CODEHOME=~/code/pandora/trunk
-CODEHOME_ENT=~/code/artica/code
+CODEHOME_ENT=~/code/artica
 RPMHOME=/usr/src/packages
 
 echo "Creating RPMs  at $RPMHOME/RPMS"
+
 cd $CODEHOME
 sudo rpmbuild -ba pandora_console/pandora_console.spec
 sudo rpmbuild -ba pandora_agents/unix/pandora_agent.spec

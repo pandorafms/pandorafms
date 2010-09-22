@@ -1,3 +1,9 @@
+
+2010-09-22  Sancho Lerena <slerena@artica.es>
+
+	* extras/build_src.sh
+	extras/build_rpm.sh: Fixed scripts for my enviroment (SUSE 11.3)
+
 2010-06-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Fixed parameter check. Make sure

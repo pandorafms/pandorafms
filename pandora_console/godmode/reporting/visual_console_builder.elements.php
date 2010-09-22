@@ -55,11 +55,11 @@ $intervals[21600] = "6 ".__('hours');
 $intervals[43200] = "12 ".__('hours');
 $intervals[86400] = __('Last day');
 $intervals[172800] = "2 ". __('days');
-$intervals[1209600] = __('Last week');
-$intervals[2419200] = "15 ".__('days');
-$intervals[4838400] = __('Last month');
-$intervals[9676800] = "2 ".__('months');
-$intervals[29030400] = "6 ".__('months');
+$intervals[604800] = __('Last week');
+$intervals[1209600] = "14 ".__('days');
+$intervals[2592000] = __('Last month');
+$intervals[5184000] = "2 ".__('months');
+$intervals[15552000] = "6 ".__('months');
 
 $table->width = '100%';
 $table->head = array ();

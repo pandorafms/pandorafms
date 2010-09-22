@@ -1,3 +1,10 @@
+2010-09-22  Sancho Lerena <slerena@artica.es>
+
+        * godmode/reporting/visual_console_builder.elements.php,
+        godmode/reporting/visual_console_builder.editor.php: Fixed bug 
+        #3073239: bad intervals in combo for period selection.
+
+
 2010-09-08  Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

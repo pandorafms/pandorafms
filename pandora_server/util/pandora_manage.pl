@@ -715,23 +715,23 @@ sub pandora_manage_main ($$$) {
 			help_screen () ;
 			exit;
 		}
-		elsif ($param =~ m/--disable_alerts\z/i) {
+		elsif ($param eq '--disable_alerts') {
 			print "[INFO] Disabling all alerts \n\n";
 	        pandora_disable_alerts ($conf, $dbh);
 	    }
-		elsif ($param =~ m/--enable_alerts\z/i) {
+		elsif ($param eq '--enable_alerts') {
 			print "[INFO] Enabling all alerts \n\n";
 	        pandora_enable_alerts ($conf, $dbh);
 		} 
-		elsif ($param =~ m/--disable_eacl\z/i) {
+		elsif ($param eq '--disable_eacl') {
 			print "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
 	        pandora_disable_eacl ($conf, $dbh);
 		} 
-		elsif ($param =~ m/--enable_eacl\z/i) {
+		elsif ($param eq '--enable_eacl') {
 			print "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
             pandora_enable_eacl ($conf, $dbh);
 		} 
-        elsif ($param =~ m/--disable_group/i) {
+        elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);
 			my $group_name = @ARGV[2];
 			my $id_group;
@@ -748,7 +748,7 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_disable_group ($conf, $dbh, $id_group);
 		}
-		elsif ($param =~ m/--enable_group/i) {
+		elsif ($param eq '--enable_group') {
 			param_check($ltotal, 1);
 			my $group_name = @ARGV[2];
 			my $id_group;
@@ -765,7 +765,7 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_enable_group ($conf, $dbh, $id_group);
 		}
-		elsif ($param =~ m/--create_agent/i) {
+		elsif ($param eq '--create_agent') {
 			param_check($ltotal, 7, 3);
 			my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
 			print "[INFO] Creating agent '$agent_name'\n\n";
@@ -780,7 +780,7 @@ sub pandora_manage_main ($$$) {
 			exist_check($id_group,'operating system',$group_name);
 			pandora_create_agent ($conf, $server_name, $agent_name, $address, $id_group, 0, $os_id, $description, $interval, $dbh);
 		}
-		elsif ($param =~ m/--delete_agent/i) {
+		elsif ($param eq '--delete_agent') {
 			param_check($ltotal, 1);
 			my $agent_name = @ARGV[2];
 			$agent_name = decode_entities($agent_name);
@@ -791,14 +791,59 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_delete_agent($dbh,$id_agent,$conf);
 		}
-		elsif ($param =~ m/--create_module/i) {
+		elsif ($param eq '--create_module') {
 			param_check($ltotal, 16, 12);
 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description,
 			$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-			$critical_max, $history_data, $definition_file) = @ARGV[2..9];
+			$critical_max, $history_data, $definition_file) = @ARGV[2..17];
+			
+			my $module_name_def;
+			my $module_type_def;
 			
 			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 				
+			# If the module is local, we add it to the conf file
+			if(defined($definition_file) && (-e $definition_file) && (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf')){
+				open (FILE, $definition_file);
+				my @file = <FILE>;
+				my $definition = join("", @file);
+				close (FILE);
+
+				# If the parameter name or type and the definition file name or type 
+				# dont match will be set the file definitions
+				open (FILE, $definition_file);
+				while (<FILE>) {
+					chomp;
+					my ($key, $val) = split / /;
+					if ($key eq 'module_name') {
+						$module_name_def =  $val;
+					}
+					if ($key eq 'module_type') {
+						$module_type_def =  $val;
+					}
+				}
+				close (FILE);
+				
+				open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+				my @file = <FILE>;
+				my $conf_file = join("", @file);
+				close(FILE);
+				
+				open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
+				print FILE "$conf_file\n$definition";
+				close(FILE);
+			}
+			
+			if($module_type ne $module_type_def) {
+				$module_type = $module_type_def;
+				print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
+			}
+			
+			if($module_name ne $module_name_def) {
+				$module_name = $module_name_def;
+				print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
+			}
+			
 			# The get_module_id has wrong name. Change in future
 			my $module_type_id = get_module_id($dbh,$module_type);
 			exist_check($module_type_id,'module type',$module_type);
@@ -827,21 +872,13 @@ sub pandora_manage_main ($$$) {
 			$max = 0 unless defined ($max);
 			$post_process = 0 unless defined ($post_process);
 			$interval = 300 unless defined ($interval);
-			if(defined($definition_file)){
-				open (FILE, $definition_file);
-				my $definition = "";
-				while (<FILE>) {
-					my ($line) = split("\t");
-					$definition = $definition . $line;
-				}
-			}
 			
 			pandora_create_network_module ($conf, $agent_id, $module_type_id, $module_name, 
 			$max, $min, $post_process, $description, $interval, $warning_min, 
 			$warning_max, $critical_min, $critical_max, $history_data, 
 			$module_address, $module_port, $dbh);
 		}
-		elsif ($param =~ m/--delete_module/i) {
+		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
 			my ($module_name,$agent_name) = @ARGV[2..3];
 			print "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
@@ -858,7 +895,7 @@ sub pandora_manage_main ($$$) {
 			}
 						
 		}
-		elsif ($param =~ m/--delete_not_policy_modules/i) {
+		elsif ($param eq '--delete_not_policy_modules') {
 			param_check($ltotal, 0);
 			
 			my $incomingdir;
@@ -887,7 +924,7 @@ sub pandora_manage_main ($$$) {
 				pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
 			}
 		}
-		elsif ($param =~ m/--create_template_module/i) {
+		elsif ($param eq '--create_template_module') {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
 			print "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
@@ -901,7 +938,7 @@ sub pandora_manage_main ($$$) {
 				
 			pandora_create_template_module ($dbh, $module_id, $template_id);
 		}
-		elsif ($param =~ m/--delete_template_module/i) {
+		elsif ($param eq '--delete_template_module') {
 			param_check($ltotal, 3);
 			my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
 			print "[INFO] Delete template '$template_name' from module '$module_name' from agent '$agent_name' \n\n";
@@ -918,7 +955,7 @@ sub pandora_manage_main ($$$) {
 				
 			pandora_delete_template_module ($dbh, $template_module_id);
 		}
-		elsif ($param =~ m/--create_template_action/i) {
+		elsif ($param eq '--create_template_action') {
 			param_check($ltotal, 6, 2);
 			my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
 			print "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
@@ -939,7 +976,7 @@ sub pandora_manage_main ($$$) {
 									
 			pandora_create_template_module_action ($dbh, $template_module_id, $action_id, $fires_min, $fires_max);
 		}
-		elsif ($param =~ m/--delete_template_action/i) {
+		elsif ($param eq '--delete_template_action') {
 			param_check($ltotal, 4);
 			my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
 			print "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
@@ -957,7 +994,7 @@ sub pandora_manage_main ($$$) {
 		
 			pandora_delete_template_module_action ($dbh, $template_module_id, $action_id);
 		}
-		elsif ($param =~ m/--data_module/i) {
+		elsif ($param eq '--data_module') {
 			param_check($ltotal, 5, 1);
 			my ($server_name,$agent_name,$module_name,$module_type,$datetime) = @ARGV[2..6];
 			my $utimestamp;
@@ -998,7 +1035,7 @@ sub pandora_manage_main ($$$) {
 			
 			print "[INFO] Inserting data to module '$module_name'\n\n";
 		}
-		elsif ($param =~ m/--create_user/i) {
+		elsif ($param eq '--create_user') {
 			param_check($ltotal, 4, 1);
 			my ($user_name,$password,$is_admin,$comments) = @ARGV[2..5];
 						
@@ -1008,7 +1045,7 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_create_user ($dbh, $user_name, md5($password), $is_admin, $comments);
 		}
-		elsif ($param =~ m/--delete_user/i) {
+		elsif ($param eq '--delete_user') {
 			param_check($ltotal, 1);
 			my $user_name = @ARGV[2];
 			print "[INFO] Deleting user '$user_name' \n\n";
@@ -1016,7 +1053,7 @@ sub pandora_manage_main ($$$) {
 			my $result = pandora_delete_user($dbh,$user_name);
 			exist_check($result,'user',$user_name);
 		}
-		elsif ($param =~ m/--create_profile/i) {
+		elsif ($param eq '--create_profile') {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
 			
@@ -1037,7 +1074,7 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_create_user_profile ($dbh, $user_name, $id_profile, $id_group);
 		}
-		elsif ($param =~ m/--delete_profile/i) {
+		elsif ($param eq '--delete_profile') {
 			param_check($ltotal, 3);
 			my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
 			
@@ -1058,7 +1095,7 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_delete_user_profile ($dbh, $user_name, $id_profile, $id_group);
 		}
-		elsif ($param =~ m/--create_event/i) {
+		elsif ($param eq '--create_event') {
 			param_check($ltotal, 8, 3);
 			my ($event,$event_type,$agent_name,$module_name,$group_name,$event_status,$severity,$template_name) = @ARGV[2..9];
 			
@@ -1097,7 +1134,7 @@ sub pandora_manage_main ($$$) {
 			pandora_event ($conf, $event, $id_group, $id_agent, $severity,
 		$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh);
 		}
-		elsif ($param =~ m/--validate_event/i) {
+		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);
 			my ($agent_name, $module_name, $datetime_min, $datetime_max, $user_name, $criticity, $template_name) = @ARGV[2..8];
 			
@@ -1145,7 +1182,7 @@ sub pandora_manage_main ($$$) {
 			pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
 			print "[INFO] Validating event for agent '$agent_name'\n\n";
 		}
-		elsif ($param =~ m/--create_incident/i) {
+		elsif ($param eq '--create_incident') {
 			param_check($ltotal, 7, 1);
 			my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
 						
@@ -1155,7 +1192,7 @@ sub pandora_manage_main ($$$) {
 			pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
 			print "[INFO] Creating incident '$title'\n\n";
 		}
-		elsif ($param =~ m/--delete_data/i) {
+		elsif ($param eq '--delete_data') {
 			param_check($ltotal, 3, 1);
 			my ($opt, $name, $name2) = @ARGV[2..4];
 		

@@ -111,7 +111,6 @@ if (is_ajax ()) {
 	}
 	
 	if ($get_events_fired) {
-		require("include/functions_alerts.php");
 		
 		$id = get_parameter('id_row');
 		$idGroup = get_parameter('id_group');

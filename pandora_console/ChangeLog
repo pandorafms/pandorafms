@@ -1,3 +1,9 @@
+2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/events/events.php: fixed the re-include two time the file.
+	
+	Fixes:  #3073577
+
 2010-09-22  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.spec: Spec for SUSE updated. Version, and some dep

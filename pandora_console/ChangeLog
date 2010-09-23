@@ -1,5 +1,10 @@
 2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_api.php: added function "set_module_data" for to hook
+	call to create module data across web api.
+
+2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/events/events.php: fixed the re-include two time the file.
 	
 	Fixes:  #3073577

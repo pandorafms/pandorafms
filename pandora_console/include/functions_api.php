@@ -979,13 +979,47 @@ function set_delete_module($id, $id2, $other, $trash1) {
 }
 
 function set_module_data($id, $thrash2, $other, $trash1) {
+	global $config;
+	
 	if ($other['type'] == 'array') {
 		$idAgentModule = $id;
 		$data = $other['data'][0];
 		$time = $other['data'][1];
 		if ($time == 'now') $time = time();
 		
+		$agentModule = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+		if ($agentModule === false) {
+			returnError('error_parameter', 'Not found module agent.');
+		}
+		else {
+			$agent = get_db_row_filter('tagente', array('id_agente' => $agentModule['id_agente']));
+			
+			$xmlTemplate = "<?xml version='1.0' encoding='ISO-8859-1'?>
+				<agent_data description='' group='' os_name='%s' " .
+				" os_version='%s' interval='%d' version='%s' timestamp='%s' agent_name='%s' timezone_offset='%d'>
+					<module>
+						<name><![CDATA[%s]]></name>
+						<description><![CDATA[%s]]></description>
+						<type><![CDATA[%s]]></type>
+						<data><![CDATA[%s]]></data>
+					</module>
+				</agent_data>";
 		
+			$xml = sprintf($xmlTemplate, safe_output(get_os_name($agent['id_os'])),
+				safe_output($agent['os_version']), $agent['intervalo'],
+				safe_output($agent['agent_version']), date('Y/m/d h:i:s', $time),
+				safe_output($agent['nombre']), $agent['timezone_offset'],
+				safe_output($agentModule['nombre']), safe_output($agentModule['descripcion']), get_module_type_name($agentModule['id_tipo_modulo']), $data);
+		
+				
+			if (false === @file_put_contents($config['remote_config'] . '/' . safe_output($agent['nombre']) . '.' . $time . '.data', $xml)) {
+				returnError('error_file', 'Can save agent data xml.');
+			}
+			else {
+				returnData('string', array('type' => 'string', 'data' => $xml));
+				return;		
+			}
+		}
 	}
 	else {
 		returnError('error_parameter', 'Error in the parameters.');

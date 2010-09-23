@@ -317,9 +317,16 @@ $table->head[6] = __('Actions');
 $table->head[7] = __('Status');
 $table->head[8] = __('Delete');
 
+$table->valign[2] = 'middle';
+$table->valign[4] = 'middle';
 $table->valign[6] = 'middle';
+$table->valign[7] = 'middle';
+$table->valign[8] = 'middle';
+$table->align[2] = 'center';
+$table->align[4] = 'center';
 $table->align[6] = 'center';
 $table->align[7] = 'center';
+$table->align[8] = 'center';
 
 $table->data = array ();
 

@@ -314,13 +314,20 @@ sub db_process_insert($$$;@) {
 		
 	my @columns_array = keys %$parameters;
 	my @values_array = values %$parameters;
-	
+
 	if(!defined($table) || $#columns_array == -1) {
 		return -1;
 		exit;
 	}
 	
 	my $columns_string = join(',',@columns_array);
+	
+	for (my $i=0; $i<=$#values_array; $i++) {
+		if(!defined($values_array[$i])) {
+			$values_array[$i] = '';
+		}
+	}	
+
 	my $values_string = "'".join("','",@values_array)."'";
 	
 	my $query = "INSERT INTO $table ($columns_string) VALUES ($values_string)";

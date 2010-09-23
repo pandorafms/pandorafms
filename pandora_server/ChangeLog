@@ -1,5 +1,10 @@
 2010-09-23  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/DB.pm: Improved the db_process_insert
+	function against the null values
+
+2010-09-23  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/DB.pm: Added a function db_process_insert
 	to insert a generic query receiving a hash reference with
 	the parameters (columns in index and value in values)

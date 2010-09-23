@@ -27,8 +27,9 @@ function users_extension_main_god () {
 	$rows = get_db_all_rows_sql ($sql);
 	if (empty ($rows)) {
 		$rows = array ();
+		echo "<div class='nf'>".__('No other users connected')."</div>";
 	}
-
+	else {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = 600;
@@ -61,7 +62,7 @@ function users_extension_main_god () {
 	}
 
 	print_table ($table);
-
+}
 }
 add_godmode_menu_option (__('Users connected'), 'UM','gusuarios',"users/icon.png");
 

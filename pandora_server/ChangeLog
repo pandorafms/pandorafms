@@ -1,3 +1,12 @@
+2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* DEBIAN/make_deb_package.sh, pandora_server_installer, pandora_server.spec:
+	changed the permissions 750 for the dir "data_in" to 770, for to allow the
+	web api call for add module data for agent.
+	
+	TODO: change the pandora_server.redhat.spec the permissions for dir
+	"data_in".
+
 2010-09-23  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Improved the db_process_insert

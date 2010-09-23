@@ -162,6 +162,7 @@ rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 
 %defattr(770,pandora,www)
 /var/spool/pandora
+/var/spool/pandora/data_in
 /var/spool/pandora/data_in/md5
 /var/spool/pandora/data_in/collections
 

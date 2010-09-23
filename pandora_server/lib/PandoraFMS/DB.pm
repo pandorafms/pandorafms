@@ -30,6 +30,7 @@ our @EXPORT = qw(
 		db_connect
 		db_disconnect
 		db_do
+		db_process_insert
 		db_insert
 		get_action_id
 		get_agent_id
@@ -301,6 +302,29 @@ sub get_db_rows ($$;@) {
 sub db_insert ($$;@) {
 	my ($dbh, $query, @values) = @_;
 
+	$dbh->do($query, undef, @values);
+	return $dbh->{'mysql_insertid'};
+}
+
+##########################################################################
+## SQL insert. Returns the ID of the inserted row.
+##########################################################################
+sub db_process_insert($$$;@) {
+	my ($dbh, $table, $parameters, @values) = @_;
+		
+	my @columns_array = keys %$parameters;
+	my @values_array = values %$parameters;
+	
+	if(!defined($table) || $#columns_array == -1) {
+		return -1;
+		exit;
+	}
+	
+	my $columns_string = join(',',@columns_array);
+	my $values_string = "'".join("','",@values_array)."'";
+	
+	my $query = "INSERT INTO $table ($columns_string) VALUES ($values_string)";
+	
 	$dbh->do($query, undef, @values);
 	return $dbh->{'mysql_insertid'};
 }

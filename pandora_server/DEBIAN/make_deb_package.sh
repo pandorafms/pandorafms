@@ -70,6 +70,7 @@ then
 	mkdir -p temp_package/etc/pandora/
 	touch temp_package/etc/pandora/pandora_server.conf
 	mkdir -p temp_package/var/spool/pandora/data_in
+	chmod 770 temp_package/var/spool/pandora/data_in
 	mkdir -p temp_package/var/spool/pandora/data_in/conf
 	mkdir -p temp_package/var/spool/pandora/data_in/md5
 	chmod 770 temp_package/var/spool/pandora/data_in/md5

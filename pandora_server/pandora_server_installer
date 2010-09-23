@@ -198,6 +198,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 
 		mkdir $PANDORA_SPOOL 2> /dev/null
 		mkdir $PANDORA_SPOOL/data_in 2> /dev/null
+		chmod 770 $PANDORA_SPOOL/data_in
 		mkdir $PANDORA_SPOOL/data_in/conf 2> /dev/null
 		chmod 750 $PANDORA_SPOOL/data_in/conf
 		mkdir $PANDORA_SPOOL/data_in/md5 2> /dev/null

@@ -13,7 +13,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Load globar vars
+// Load global vars
 global $config;
 
 check_login ();
@@ -248,8 +248,7 @@ $profiles = get_db_all_rows_in_table ("tperfil");
 $img = print_image ("images/ok.png", true, array ("border" => 0)); 
 
 foreach ($profiles as $profile) {
-	$data[0] = $profile["name"];
-	
+	$data[0] = '<a href="index.php?sec=gperfiles&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'.$profile["name"].'</b></a>';
 	$data[1] = ($profile["incident_view"] ? $img : '');
 	$data[2] = ($profile["incident_edit"] ? $img : '');
 	$data[3] = ($profile["incident_management"] ? $img : '');
@@ -260,14 +259,17 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = print_input_image ("delete_profile", "images/cross.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
-	
+	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img src="images/cross.png"></a>';	
 	array_push ($table->data, $data);
 }
-
-echo '<form method="post" action="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list&amp;profile_del=1">';
-print_table ($table);
-echo '</form>';
-unset ($table);
+	
+	echo '<form method="post" action="index.php?sec=gperfiles&sec2=godmode/users/configure_profile">';
+	print_table ($table);
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	print_input_hidden ('new_profile', 1);
+	print_submit_button (__('Create'), "crt", false, 'class="sub next"');
+	echo "</div>";
+	echo '</form>';
+	unset ($table);
 
 ?>

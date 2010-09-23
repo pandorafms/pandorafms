@@ -1,3 +1,9 @@
+2010-09-23  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a function db_process_insert
+	to insert a generic query receiving a hash reference with
+	the parameters (columns in index and value in values)
+
 2010-09-22  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server/pandora_server.spec: Updated spec with some 

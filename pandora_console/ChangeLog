@@ -1,3 +1,14 @@
+2010-09-23  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/users/user_list.php: Able to edit profiles.
+	
+	* godmode/users/configure_profile.php: New page, based on the old
+	profile one (that should be deleted if all it's OK)
+	
+	* godmode/menu.php: Removed profiles menu entry.
+	
+	* godmode/alerts/alert_list.list.php: Centered several icons.
+
 2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_api.php: added function "set_module_data" for to hook

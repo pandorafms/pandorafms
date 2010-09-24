@@ -1,5 +1,10 @@
 2010-09-24  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_manage.pl: Added the apply_policy
+	help
+
+2010-09-24  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Tools.pm: Moved the util functions 
 	from pandora_manage to Tools.
 	* util/pandora_manage.pl: Added the apply policy

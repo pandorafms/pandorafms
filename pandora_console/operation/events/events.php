@@ -174,6 +174,14 @@ $groups = get_user_groups ($config["id_user"], "IR");
 
 $ids = (array) get_parameter ("eventid", -1);
 
+$url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
+	rawurlencode($search) . "&amp;event_type=" . $event_type .
+	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
+	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
+	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
+	$pagination . "&amp;group_rep=" . $group_rep . "&amp;event_view_hr=" .
+	$event_view_hr . "&amp;id_user_ack=" . $id_user_ack;
+
 // Header
 if ($config["pure"] == 0) {
 	$buttons = array(

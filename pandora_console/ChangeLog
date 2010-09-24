@@ -1,3 +1,10 @@
+2010-09-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/events/events.php: fixed the lost $url var, recovered from the
+	last version of SVN.
+	
+	Fixes: #3071767
+
 2010-09-23  Raúl Mateos <raulofpandora@gmail.com>
 
 	* extensions/users_connected.php: Show text to admin if no other

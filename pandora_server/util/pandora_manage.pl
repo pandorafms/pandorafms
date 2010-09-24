@@ -544,6 +544,7 @@ sub help_screen{
     help_screen_line('--create_incident', '<title> <description> <origin> <status> <priority 0 for Informative, 1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance> <group> [<owner>]', 'Create incidents');
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
+    help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
     print "\n";
 	exit;
 }

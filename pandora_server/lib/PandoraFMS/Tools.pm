@@ -20,8 +20,12 @@ package PandoraFMS::Tools;
 use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
+use POSIX;
 use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 #use Module::Loaded;
+
+# Used to calculate the MD5 checksum of a string
+use constant MOD232 => 2**32;
 
 require Exporter;
 
@@ -47,6 +51,8 @@ our @EXPORT = qw(
 	disk_free
 	load_average
 	free_mem
+	md5
+	md5_init
 );
 
 ##########################################################################
@@ -72,7 +78,7 @@ sub pandora_trash_ascii {
 ##########################################################################
 
 sub pandora_get_os ($) {
-	$command = $_[0];
+	my $command = $_[0];
 	if (defined($command) && $command ne ""){
 		if ($command =~ m/Windows/i){
 			return 9;
@@ -398,6 +404,130 @@ sub get_tag_value ($$$) {
 	}
 
 	return $def_value;
+}
+
+###############################################################################
+# Initialize some variables needed by the MD5 algorithm.
+# See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+my (@R, @K);
+sub md5_init () {
+
+	# R specifies the per-round shift amounts
+	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
+
+	# Use binary integer part of the sines of integers (radians) as constants
+	for (my $i = 0; $i < 64; $i++) {
+		$K[$i] = floor(abs(sin($i + 1)) * MOD232);
+	}
+}
+
+###############################################################################
+# Return the MD5 checksum of the given string. 
+# Pseudocode from http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub md5 ($) {
+	my $str = shift;
+
+	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
+
+	# Initialize variables
+	my $h0 = 0x67452301;
+	my $h1 = 0xEFCDAB89;
+	my $h2 = 0x98BADCFE;
+	my $h3 = 0x10325476;
+
+	# Pre-processing
+	my $msg = unpack ("B*", pack ("A*", $str));
+	my $bit_len = length ($msg);
+
+	# Append "1" bit to message
+	$msg .= '1';
+
+	# Append "0" bits until message length in bits ≡ 448 (mod 512)
+	$msg .= '0' while ((length ($msg) % 512) != 448);
+
+	# Append bit /* bit, not byte */ length of unpadded message as 64-bit little-endian integer to message
+	$msg .= unpack ("B64", pack ("VV", $bit_len));
+
+	# Process the message in successive 512-bit chunks
+	for (my $i = 0; $i < length ($msg); $i += 512) {
+
+		my @w;
+		my $chunk = substr ($msg, $i, 512);
+
+		# Break chunk into sixteen 32-bit little-endian words w[i], 0 <= i <= 15
+		for (my $j = 0; $j < length ($chunk); $j += 32) {
+			push (@w, unpack ("V", pack ("B32", substr ($chunk, $j, 32))));
+		}
+
+		# Initialize hash value for this chunk
+		my $a = $h0;
+		my $b = $h1;
+		my $c = $h2;
+		my $d = $h3;
+		my $f;
+		my $g;
+
+		# Main loop
+		for (my $y = 0; $y < 64; $y++) {
+			if ($y <= 15) {
+				$f = $d ^ ($b & ($c ^ $d));
+				$g = $y;
+			}
+			elsif ($y <= 31) {
+				$f = $c ^ ($d & ($b ^ $c));
+				$g = (5 * $y + 1) % 16;
+			}
+			elsif ($y <= 47) {
+				$f = $b ^ $c ^ $d;
+				$g = (3 * $y + 5) % 16;
+			}
+			else {
+				$f = $c ^ ($b | (0xFFFFFFFF & (~ $d)));
+				$g = (7 * $y) % 16;
+			}
+
+			my $temp = $d;
+			$d = $c;
+			$c = $b;
+			$b = ($b + leftrotate (($a + $f + $K[$y] + $w[$g]) % MOD232, $R[$y])) % MOD232;
+			$a = $temp;
+		}
+
+		# Add this chunk's hash to result so far
+		$h0 = ($h0 + $a) % MOD232;
+		$h1 = ($h1 + $b) % MOD232;
+		$h2 = ($h2 + $c) % MOD232;
+		$h3 = ($h3 + $d) % MOD232;
+	}
+
+	# Digest := h0 append h1 append h2 append h3 #(expressed as little-endian)
+	return unpack ("H*", pack ("V", $h0)) . unpack ("H*", pack ("V", $h1)) . unpack ("H*", pack ("V", $h2)) . unpack ("H*", pack ("V", $h3));
+}
+
+###############################################################################
+# MD5 leftrotate function. See http://en.wikipedia.org/wiki/MD5#Pseudocode.
+###############################################################################
+sub leftrotate ($$) {
+	my ($x, $c) = @_;
+
+	return (0xFFFFFFFF & ($x << $c)) | ($x >> (32 - $c));
+}
+
+##########################################################################
+## Convert a date (yyy-mm-ddThh:ii:ss) to Timestamp.
+##########################################################################
+sub dateTimeToTimestamp {
+        $_[0] =~ /(\d{4})-(\d{2})-(\d{2})([ |T])(\d{2}):(\d{2}):(\d{2})/;
+        my($year, $mon, $day, $GMT, $hour, $min, $sec) = ($1, $2, $3, $4, $5, $6, $7);
+        #UTC
+        return timegm($sec, $min, $hour, $day, $mon - 1, $year - 1900);
+        #BST
+        #print "BST\t" . mktime($sec, $min, $hour, $day, $mon - 1, $year - 1900, 0, 0) . "\n";
 }
 
 ##############################################################################

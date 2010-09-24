@@ -31,9 +31,6 @@ my $version = "3.1 PS100519";
 # Parameter
 my $param;
 
-# Used to calculate the MD5 checksum of a string
-use constant MOD232 => 2**32;
-
 # Initialize MD5 variables
 md5_init ();
 
@@ -235,10 +232,14 @@ sub pandora_delete_agent ($$$) {
 ##########################################################################
 ## Create a template module.
 ##########################################################################
-sub pandora_create_template_module ($$$) {
-my ($dbh, $module_id, $template_id) = @_;
-
-return db_insert ($dbh, 'INSERT INTO talert_template_modules (id_agent_module, id_alert_template) VALUES (?, ?)', $module_id, $template_id);
+sub pandora_create_template_module ($$$$) {
+	my ($pa_config, $id_agent_module, $id_alert_template, $dbh) = @_;
+	
+	my $module_name = get_module_name($dbh, $id_agent_module);
+ 	logger($pa_config, "Creating alert of template '$id_alert_template' on agent module '$module_name'.", 10);
+	
+	$dbh->do("INSERT INTO talert_template_modules (`id_agent_module`, `id_alert_template`) VALUES ($id_agent_module, $id_alert_template)");
+	return $dbh->{'mysql_insertid'};
 }
 
 ##########################################################################
@@ -299,10 +300,14 @@ else {
 ##########################################################################
 ## Asociate a module to a template.
 ##########################################################################
-sub pandora_create_template_module_action ($$$$$) {
-        my ($dbh, $template_module_id, $action_id, $fires_min, $fires_max) = @_;
-        
-        return db_insert ($dbh, 'INSERT INTO talert_template_module_actions (id_alert_template_module, id_alert_action, fires_min, fires_max) VALUES (?, ?, ?, ?)', $template_module_id, $action_id, $fires_min, $fires_max);
+sub pandora_create_template_module_action ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+			
+ 	logger($pa_config, "Creating module alert action to alert '$parameters->{'id_alert_template_module'}'.", 10);
+	
+	my $action_id = db_process_insert($dbh, 'talert_template_module_actions', $parameters);
+	
+	return $action_id;
 }
 
 ##########################################################################
@@ -394,28 +399,15 @@ sub pandora_delete_module_data ($$) {
 ##########################################################################
 ## Create a network module
 ##########################################################################
-sub pandora_create_network_module ($$$$$$$$$$$$$$$$$) {
-	my ($pa_config, $agent_id, $module_type_id, $module_name, $max,
-		$min, $post_process, $description, $interval, $warning_min, 
-		$warning_max, $critical_min, $critical_max, $history_data, 
-		$module_address, $module_port, $dbh) = @_;
- 
- 	logger($pa_config, "Creating module '$module_name' for agent ID $agent_id.", 10);
- 
-	# Provide some default values	
-	$warning_min = 0 if ($warning_min eq '');
-	$warning_max = 0 if ($warning_max eq '');
-	$critical_min = 0 if ($critical_min eq ''); 
-	$critical_max = 0 if ($critical_max eq ''); 
-	$history_data = 0 if ($history_data eq '');
-	$max = 0 if ($max eq '');
-	$min = 0 if ($min eq '');
-	$post_process = 0 if ($post_process eq '');
-	$description = 'N/A' if ($description eq '');
+sub pandora_create_network_module ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+			
+ 	logger($pa_config, "Creating module '$parameters->{'name'}' for agent ID $parameters->{'id_agente'}.", 10);
 
-	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `min_warning`, `max_warning`, `min_critical`, `max_critical`, `history_data`, `id_modulo`)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $post_process, $description, $interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data);
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
+	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
+
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	
 	return $module_id;
 }
 
@@ -554,137 +546,6 @@ sub help_screen{
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     print "\n";
 	exit;
-}
-
-###############################################################################
-###############################################################################
-# UTILITY FUNCTIONS
-###############################################################################
-###############################################################################
-
-###############################################################################
-# Initialize some variables needed by the MD5 algorithm.
-# See http://en.wikipedia.org/wiki/MD5#Pseudocode.
-###############################################################################
-my (@R, @K);
-sub md5_init () {
-
-	# R specifies the per-round shift amounts
-	@R = (7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-		  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-		  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-		  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21);
-
-	# Use binary integer part of the sines of integers (radians) as constants
-	for (my $i = 0; $i < 64; $i++) {
-		$K[$i] = floor(abs(sin($i + 1)) * MOD232);
-	}
-}
-
-###############################################################################
-# MD5 leftrotate function. See http://en.wikipedia.org/wiki/MD5#Pseudocode.
-###############################################################################
-sub leftrotate ($$) {
-	my ($x, $c) = @_;
-
-	return (0xFFFFFFFF & ($x << $c)) | ($x >> (32 - $c));
-}
-
-###############################################################################
-# Return the MD5 checksum of the given string. 
-# Pseudocode from http://en.wikipedia.org/wiki/MD5#Pseudocode.
-###############################################################################
-sub md5 ($) {
-	my $str = shift;
-
-	# Note: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating
-
-	# Initialize variables
-	my $h0 = 0x67452301;
-	my $h1 = 0xEFCDAB89;
-	my $h2 = 0x98BADCFE;
-	my $h3 = 0x10325476;
-
-	# Pre-processing
-	my $msg = unpack ("B*", pack ("A*", $str));
-	my $bit_len = length ($msg);
-
-	# Append "1" bit to message
-	$msg .= '1';
-
-	# Append "0" bits until message length in bits ≡ 448 (mod 512)
-	$msg .= '0' while ((length ($msg) % 512) != 448);
-
-	# Append bit /* bit, not byte */ length of unpadded message as 64-bit little-endian integer to message
-	$msg .= unpack ("B64", pack ("VV", $bit_len));
-
-	# Process the message in successive 512-bit chunks
-	for (my $i = 0; $i < length ($msg); $i += 512) {
-
-		my @w;
-		my $chunk = substr ($msg, $i, 512);
-
-		# Break chunk into sixteen 32-bit little-endian words w[i], 0 <= i <= 15
-		for (my $j = 0; $j < length ($chunk); $j += 32) {
-			push (@w, unpack ("V", pack ("B32", substr ($chunk, $j, 32))));
-		}
-
-		# Initialize hash value for this chunk
-		my $a = $h0;
-		my $b = $h1;
-		my $c = $h2;
-		my $d = $h3;
-		my $f;
-		my $g;
-
-		# Main loop
-		for (my $y = 0; $y < 64; $y++) {
-			if ($y <= 15) {
-				$f = $d ^ ($b & ($c ^ $d));
-				$g = $y;
-			}
-			elsif ($y <= 31) {
-				$f = $c ^ ($d & ($b ^ $c));
-				$g = (5 * $y + 1) % 16;
-			}
-			elsif ($y <= 47) {
-				$f = $b ^ $c ^ $d;
-				$g = (3 * $y + 5) % 16;
-			}
-			else {
-				$f = $c ^ ($b | (0xFFFFFFFF & (~ $d)));
-				$g = (7 * $y) % 16;
-			}
-
-			my $temp = $d;
-			$d = $c;
-			$c = $b;
-			$b = ($b + leftrotate (($a + $f + $K[$y] + $w[$g]) % MOD232, $R[$y])) % MOD232;
-			$a = $temp;
-		}
-
-		# Add this chunk's hash to result so far
-		$h0 = ($h0 + $a) % MOD232;
-		$h1 = ($h1 + $b) % MOD232;
-		$h2 = ($h2 + $c) % MOD232;
-		$h3 = ($h3 + $d) % MOD232;
-	}
-
-	# Digest := h0 append h1 append h2 append h3 #(expressed as little-endian)
-	return unpack ("H*", pack ("V", $h0)) . unpack ("H*", pack ("V", $h1)) . unpack ("H*", pack ("V", $h2)) . unpack ("H*", pack ("V", $h3));
-}
-
-
-##########################################################################
-## Convert a date (yyy-mm-ddThh:ii:ss) to Timestamp.
-##########################################################################
-sub dateTimeToTimestamp {
-        $_[0] =~ /(\d{4})-(\d{2})-(\d{2})([ |T])(\d{2}):(\d{2}):(\d{2})/;
-        my($year, $mon, $day, $GMT, $hour, $min, $sec) = ($1, $2, $3, $4, $5, $6, $7);
-        #UTC
-        return timegm($sec, $min, $hour, $day, $mon - 1, $year - 1900);
-        #BST
-        #print "BST\t" . mktime($sec, $min, $hour, $day, $mon - 1, $year - 1900, 0, 0) . "\n";
 }
 
 ###############################################################################
@@ -832,14 +693,16 @@ sub pandora_manage_main ($$$) {
 				open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
 				print FILE "$conf_file\n$definition";
 				close(FILE);
+				
+				enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 			}
 			
-			if($module_type ne $module_type_def) {
+			if(defined($definition_file) && $module_type ne $module_type_def) {
 				$module_type = $module_type_def;
 				print "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 			}
 			
-			if($module_name ne $module_name_def) {
+			if(defined($definition_file) && $module_name ne $module_name_def) {
 				$module_name = $module_name_def;
 				print "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 			}
@@ -860,23 +723,28 @@ sub pandora_manage_main ($$$) {
 					exit;
 				}
 			}
+			my %parameters;
 			
-			$warning_min = 0 unless defined ($warning_min);
-			$warning_max = 0 unless defined ($warning_max);
-			$critical_min = 0 unless defined ($critical_min);
-			$critical_max = 0 unless defined ($critical_max);
-			$history_data = 0 unless defined ($history_data);
-			$module_port = '' unless defined ($module_port);
-			$description = '' unless defined ($description);
-			$min = 0 unless defined ($min);
-			$max = 0 unless defined ($max);
-			$post_process = 0 unless defined ($post_process);
-			$interval = 300 unless defined ($interval);
+			%parameters->{'id_tipo_modulo'} = $module_type_id;
+			%parameters->{'nombre'} = $module_name;
+			%parameters->{'id_agente'} = $agent_id;
+			%parameters->{'ip_target'} = $module_address;
+		
+			# Optional parameters
+			%parameters->{'min_warning'} = $warning_min unless !defined ($warning_min);
+			%parameters->{'max_warning'} = $warning_max unless !defined ($warning_max);
+			%parameters->{'min_critical'} = $critical_min unless !defined ($critical_min);
+			%parameters->{'max_critical'} = $critical_max unless !defined ($critical_max);
+			%parameters->{'history_data'} = $history_data unless !defined ($history_data);
+			%parameters->{'tcp_port'} = $module_port unless !defined ($module_port);
+			%parameters->{'descripcion'} = $description unless !defined ($description);
+			%parameters->{'min'} = $min unless !defined ($min);
+			%parameters->{'max'} = $max unless !defined ($max);
+			%parameters->{'post_process'} = $post_process unless !defined ($post_process);
+			%parameters->{'module_interval'} = $interval unless !defined ($interval);	
+			%parameters->{'id_modulo'} = 1;	
 			
-			pandora_create_network_module ($conf, $agent_id, $module_type_id, $module_name, 
-			$max, $min, $post_process, $description, $interval, $warning_min, 
-			$warning_max, $critical_min, $critical_max, $history_data, 
-			$module_address, $module_port, $dbh);
+			pandora_create_network_module ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
@@ -891,7 +759,7 @@ sub pandora_manage_main ($$$) {
 			pandora_delete_module($dbh,$id_module);
 			
 			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
-				enterprise_hook('pandora_delete_module_from_conf', [$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf',$module_name]);
+				enterprise_hook('pandora_delete_module_from_conf', [$conf,$agent_name,$module_name]);
 			}
 						
 		}
@@ -936,7 +804,7 @@ sub pandora_manage_main ($$$) {
 			my $template_id = get_template_id($dbh,$template_name);
 			exist_check($template_id,'template',$template_name);
 				
-			pandora_create_template_module ($dbh, $module_id, $template_id);
+			pandora_create_template_module ($conf, $module_id, $template_id, $dbh);
 		}
 		elsif ($param eq '--delete_template_module') {
 			param_check($ltotal, 3);
@@ -973,8 +841,15 @@ sub pandora_manage_main ($$$) {
 			
 			$fires_min = 0 unless defined ($fires_min);
 			$fires_max = 0 unless defined ($fires_max);
-									
-			pandora_create_template_module_action ($dbh, $template_module_id, $action_id, $fires_min, $fires_max);
+			
+			my %parameters;						
+			
+			%parameters->{'id_alert_template_module'} = $template_module_id;
+			%parameters->{'id_alert_action'} = $action_id;
+			%parameters->{'fires_min'} = $fires_min;
+			%parameters->{'fires_max'} = $fires_max;
+			
+			pandora_create_template_module_action ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--delete_template_action') {
 			param_check($ltotal, 4);
@@ -1233,6 +1108,105 @@ sub pandora_manage_main ($$$) {
 				exit;
 			}
 		}
+		elsif ($param eq '--apply_policy') {
+			param_check($ltotal, 1);
+			my $policy_name = @ARGV[2];
+			
+			my $configuration_data = "";
+
+			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
+			
+			# Get the agents
+			my $array_pointer_ag = enterprise_hook('get_policy_agents',[$dbh, $policy_id]);
+			
+			if(!defined($array_pointer_ag)) {
+				print "[ERROR] This option is not available in OPEN version.\n\n";
+				exit;
+			}
+			
+			print "[INFO] Applying policy '$policy_name'\n\n";
+			
+			foreach my $agent (@{$array_pointer_ag}) {
+				my $id_agent = $agent->{'id_agent'};
+				my $agent_name = get_agent_name($dbh, $id_agent);
+				
+				# Get the modules
+				my $array_pointer_mod = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
+				
+				if(!defined($array_pointer_mod)) {
+					print "[ERROR] This option is not available in OPEN version.\n\n";
+					exit;
+				}
+				
+				foreach my $module (@{$array_pointer_mod}) {
+					# Adapt the fields from tpolicy_modules to tagente_modulos
+					$module->{'id_agente'} = $id_agent;
+
+					$module->{'id_policy_module'} = $module->{'id'};
+					delete $module->{'id'};
+					
+					$module->{'descripcion'} = $module->{'description'};
+					delete $module->{'description'};
+					
+					$module->{'nombre'} = $module->{'name'};
+					delete $module->{'name'};
+					
+					$module->{'id_modulo'} = $module->{'id_module'};
+					delete $module->{'id_module'};
+
+					delete $module->{'id_policy'};
+					
+					#Store the conf data
+					$configuration_data .= "\n\n$module->{'configuration_data'}";
+
+					delete $module->{'configuration_data'};
+					
+					# Create module
+					my $id_module = pandora_create_network_module ($conf, $module, $dbh);
+				
+					# Get policy alerts and create it on created modules
+					my $array_pointer_ale = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, $module->{'id_policy_module'}]);
+					
+					foreach my $alert (@{$array_pointer_ale}) {
+						my $id_alert_template_module = pandora_create_template_module ($conf, $id_module, $alert->{'id_alert_template'}, $dbh);
+
+						# Get policy alert actions and create it on modules created
+						my $array_pointer_aleact = enterprise_hook('get_policy_alert_actions',[$dbh, $alert->{'id'}]);
+						
+						foreach my $alert_action (@{$array_pointer_aleact}) {
+							delete $alert_action->{'id_policy_alert'};
+							delete $alert_action->{'id'};
+							
+							$alert_action->{'id_alert_template_module'} = $id_alert_template_module;
+							
+							pandora_create_template_module_action ($conf, $alert_action, $dbh);
+						}
+					}
+				
+				#Add the conf information to the agent conf file
+				enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data,$agent_name,$dbh]);
+			
+				# Flag applyed the agent
+				enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
+			}
+			
+			# Get policy collections and link it on created modules
+				my $array_pointer_col = enterprise_hook('get_policy_collections',[$dbh, $policy_id]);
+				
+				my $collection_data = '';
+				
+				foreach my $collection (@{$array_pointer_col}) {
+					my $collection_name = enterprise_hook('get_collection_name',[$dbh, $collection->{'id_collection'}]);
+
+					$collection_data = "\n#file_collection $collection_name\n"; 
+					$collection_data .= "\nfile_collection fc_$collection->{'id_collection'}\n\n"; 
+				}
+				
+				if($collection_data ne '') {
+					enterprise_hook('pandora_create_collection_conf_info',[$conf, $policy_name, $collection_data,$agent_name,$dbh]);
+				}
+			}
+		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';
@@ -1241,7 +1215,7 @@ sub pandora_manage_main ($$$) {
 		}
 	}
 
-     print "[W] Nothing to do. Exiting !\n\n";
+     print "\n[W] Nothing to do. Exiting !\n\n";
 
     exit;
 }

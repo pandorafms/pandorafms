@@ -1,3 +1,11 @@
+2010-09-24  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm: Moved the util functions 
+	from pandora_manage to Tools.
+	* util/pandora_manage.pl: Added the apply policy
+	feature: includen conf file management; modules, alerts
+	and collection creation 
+
 2010-09-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/make_deb_package.sh, pandora_server_installer, pandora_server.spec:

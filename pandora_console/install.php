@@ -33,8 +33,8 @@
 
 <?php
 
-$version = "3.1-dev";
-$build = "100513";
+$version = "3.2-dev";
+$build = "100924";
 $banner = "v$version Build $build";
 
 error_reporting(0);

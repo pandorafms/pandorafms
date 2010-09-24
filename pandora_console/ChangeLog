@@ -1,3 +1,8 @@
+2010-09-24  Sancho Lerena <slerena@artica.es>
+
+	* install.php: Updated version and build
+
+
 2010-09-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/events/events.php: fixed the lost $url var, recovered from the

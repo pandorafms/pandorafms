@@ -1,3 +1,12 @@
+2010-09-26  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console.spec: Updated some missing deps.
+
+	* operation/agentes/estado_generalagente.php: Fixed
+	notice on empty array.
+
+	* pandora_console.redhat.spec: Specific SPEC for redhat.
+
 2010-09-24  Sancho Lerena <slerena@artica.es>
 
 	* install.php: Updated version and build

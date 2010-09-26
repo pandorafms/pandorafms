@@ -2,13 +2,13 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     3.2dev
-%define release     1
+%define version     3.2
+%define release     2
 %define httpd_name      httpd
 # User and Group under which Apache is running
-%define httpd_name  apache2
-%define httpd_user  wwwrun
-%define httpd_group www
+%define httpd_name  httpd
+%define httpd_user  apache
+%define httpd_group apache
 
 # Evaluate PHP version
 %define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
@@ -19,24 +19,27 @@ Version:            %{version}
 Release:            %{release}
 License:            GPL
 Vendor:             Artica ST <info@artica.es>
+#Source0:            %{name}-%{version}-%{revision}.tar.gz
 Source0:            %{name}-%{version}.tar.gz
+Source1:            extras/%{name}-logrotate
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
-Packager:           Manuel Arostegui <manuel@todo-linux.com>
-Prefix:              /srv/www/htdocs
+Packager:           Sancho Lerena <slerena@artica.es>
+Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch
 AutoReq:            0
-Requires:           apache2, apache2-mod_php5
+Requires:           httpd >= 2.0.0
 Requires:           php >= 4.3.0
-Requires:           php5-gd, php5-snmp, php5-pear, php5-json, php5-gettext
-Requires:           php5-mysql, php5-ldap, php5-mbstring, php5 
-Requires:           graphviz, xorg-x11-fonts-core
-Requires:           php-pear-db, php-pear-xml_rpc, php5-zip
+Requires:           php-gd, php-snmp, php-pear 
+Requires:           php-mysql, php-ldap, php-mbstring, php, php-zip
+Requires:           php-pear-DB
+Requires:           xorg-x11-fonts-75dpi, xorg-x11-fonts-misc
+Requires:           graphviz, graphviz-php
 Provides:           %{name}-%{version}
 
 %description
-Pandora FMS Console is a web application to manage Pandora FMS. Console allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
+The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
 
 %prep
 rm -rf $RPM_BUILD_ROOT
@@ -48,11 +51,12 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
+#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
-if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
-   rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
-fi
+rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
+rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
+install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -76,12 +80,13 @@ if [ "$1" = "1" ]; then
         exit 0
 fi
 
-rm -Rf %{prefix}/pandora_console
-
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 
-%defattr(770,pandora,www)
+%defattr(0644,root,root)
+%{_sysconfdir}/logrotate.d/pandora_console
+
+%defattr(770,pandora,%{httpd_group})
 /var/spool/pandora/data_in

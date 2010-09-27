@@ -1,3 +1,8 @@
+2010-09-27  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/pandora_agent_installer: Set PANDORA_USER="root" when it is
+	not defined.
+
 2010-09-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/pandora_agent, win32/modules/pandora_module.cc: Added

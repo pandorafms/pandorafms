@@ -108,7 +108,7 @@ if ($update_graph) {
 
 	$success = process_sql_update('tgraph', 
 		array('name' => $name, 'id_group' => $id_group, 'description' => $description, 'width' => $width, 'height' => $height, 'period' => $period, 'stacked' => $stacked, 'events' => $events), 
-		array('id_graph' => $id));
+		array('id_graph' => $id_graph));
 	} else {
 		$success = false;
 	}
@@ -167,7 +167,7 @@ if($edit_graph) {
 		
 	$buttons[$active_tab]['active'] = true;
 
-	$graphInTgraph = get_db_row_sql("SELECT name FROM tgraph WHERE id_graph = " . $id);
+	$graphInTgraph = get_db_row_sql("SELECT name FROM tgraph WHERE id_graph = " . $id_graph);
 	$name = $graphInTgraph['name'];
 }
 else {

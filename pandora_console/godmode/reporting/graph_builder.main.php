@@ -70,6 +70,7 @@ if ($edit_graph) {
 }else {
 	$id_agent = 0;
 	$id_module = 0;
+	$id_group = 0;
 	$name = "Pandora FMS combined graph";
 	$width = 550;
 	$height = 210;

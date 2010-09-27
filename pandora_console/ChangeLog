@@ -1,3 +1,8 @@
+2010-09-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/graph_builder.main.php: Set default
+	value to id_group to avoid notices
+
 2010-09-26  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.spec: Updated some missing deps.

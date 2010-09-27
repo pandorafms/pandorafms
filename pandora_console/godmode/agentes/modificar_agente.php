@@ -300,11 +300,11 @@ if ($agents !== false) {
 
 
 		// Operating System icon
-		echo "<td class='$tdcolor' align='center'>";
+		echo "<td class='$tdcolor' align='center' valign='middle'>";
 		print_os_icon ($agent["id_os"], false);
 		echo "</td>";
 		// Group icon and name
-		echo "<td class='$tdcolor' align='center'>".print_group_icon ($id_grupo, true)."</td>";
+		echo "<td class='$tdcolor' align='center' valign='middle'>".print_group_icon ($id_grupo, true)."</td>";
 		// Description
 		echo "<td class='".$tdcolor."f9'>".$agent["comentarios"]."</td>";
 		// Action
@@ -314,7 +314,7 @@ if ($agents !== false) {
 		else
 			$offsetArg = $offset;
 		
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+		echo "<td class='$tdcolor' align='center' valign='middle'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 		borrar_agente=".$agent["id_agente"]."&search=$search&offset=$offsetArg&sort_field=$sortField&sort=$sort'";
 		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 		echo "<img border='0' src='images/cross.png'></a></td>";

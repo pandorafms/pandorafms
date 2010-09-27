@@ -38,7 +38,7 @@ procname="/usr/bin/perl"
 
 start_postcmd()
 {
-	PANDORA_PID=`pgrep -f -j none $mame`
+	PANDORA_PID=`pgrep -f -j none $name`
 	echo $TENTACLE_PID > $pidfile
 }
 

@@ -1,5 +1,10 @@
 2010-09-27  Junichi Satoh  <junichi@rworks.jp>
 
+	* unix/FreeBSD/pandora_agent: Changed PID detection method to support
+	"jail", FreeBSD virtualization.
+
+2010-09-27  Junichi Satoh  <junichi@rworks.jp>
+
 	* unix/pandora_agent_installer: Set PANDORA_USER="root" when it is
 	not defined.
 

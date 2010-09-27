@@ -39,7 +39,7 @@ procname="/usr/bin/perl"
 start_postcmd()
 {
 	sleep 1
-	PANDORA_PID=`ps auxww | grep $command | grep -v grep | head -1 | awk '{ print $2 }'`
+	PANDORA_PID=`pgrep -f -j none $mame`
 	echo $PANDORA_PID > $pidfile
 }
 

@@ -248,7 +248,7 @@ $profiles = get_db_all_rows_in_table ("tperfil");
 $img = print_image ("images/ok.png", true, array ("border" => 0)); 
 
 foreach ($profiles as $profile) {
-	$data[0] = '<a href="index.php?sec=gperfiles&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'.$profile["name"].'</b></a>';
+	$data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'"><b>'.$profile["name"].'</b></a>';
 	$data[1] = ($profile["incident_view"] ? $img : '');
 	$data[2] = ($profile["incident_edit"] ? $img : '');
 	$data[3] = ($profile["incident_management"] ? $img : '');

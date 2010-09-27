@@ -304,8 +304,8 @@ if ($result === false) {
 
 foreach ($result as $profile) {
 	$data = array ();
-	
-	$data[0] = '<a href="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
+
+	$data[0] = '<a href="index.php?sec=gusaurios&amp;sec2=godmode/users/configure_profile&id='.$profile['id_perfil'].'">'.get_profile_name ($profile['id_perfil']).'</a>';
 	$data[1] = print_group_icon($profile["id_grupo"],true).' <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$profile['id_grupo'].'">'.get_group_name ($profile['id_grupo'], True).'</a>';
 	$data[2] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
 	$data[2] .= print_input_hidden ('delete_profile', 1, true);

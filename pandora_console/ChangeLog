@@ -1,5 +1,10 @@
 2010-09-27  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/events/events_list.php: Added confirm popup
+	to delete event button
+
+2010-09-27  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/reporting/graph_builder.php: Fixed typo bug
 
 2010-09-27  Sergio Martin <sergio.martin@artica.es>

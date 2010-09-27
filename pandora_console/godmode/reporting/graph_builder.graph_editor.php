@@ -51,6 +51,10 @@ if ($editGraph) {
 	$weight_array = array();
 	$agent_array = array();
 	
+	if($graphRows === false) {
+			$graphRows = array();
+	}
+	
 	foreach ($graphRows as $graphRow) {
 		$idgs_array[] = $graphRow['id_gs'];
 		$module_array[] = $graphRow['id_agent_module'];

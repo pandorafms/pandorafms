@@ -1,3 +1,10 @@
+2010-09-27  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/graph_builder.graph_editor.php
+	godmode/reporting/graph_builder.preview.php: Fixed few
+	foreach loops to avoid notices setting empty array to 
+	false variables
+
 2010-09-27  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/users/user_list.php, godmode/users/configure_user.php:

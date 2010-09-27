@@ -1,3 +1,17 @@
+2010-09-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_menu.php, operation/events/events_list.php: cleaned
+	style source code.
+
+	* operation/menu.php: added subentry in "View events" for "Sound Events".
+	
+	* operation/events/events_rss.php: added source code for the $id_agent equal
+	-2 (this mean that get the agent by text name) and added new check for new
+	status.
+	
+	* operation/events/events.php: added source code for the $id_agent equal -2
+	(this mean that get the agent by text name).
+
 2010-09-27  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/agentes/modificar_agente.php: Vertical aligned some icons.

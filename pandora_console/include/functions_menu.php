@@ -97,7 +97,8 @@ function print_menu (&$menu) {
 				$class = 'submenu_selected';
 				$selected = true;
 				$visible = true;
-			} elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
+			}
+			elseif ($sec2 == $subsec2 && !isset ($sub[$subsec2]["options"])) {
 				$class = 'submenu_selected';
 				$selected = true;
 				
@@ -106,7 +107,8 @@ function print_menu (&$menu) {
 					$visible = true;
 				else
 					$visible = false;
-			} else {
+			}
+			else {
 				//Else it's not selected
 				$class = 'submenu_not_selected';
 			}
@@ -118,11 +120,13 @@ function print_menu (&$menu) {
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
 				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>";
-			} else {
+			}
+			else {
 				//This is an internal link
 				if (isset ($sub[$subsec2]["options"])) {
 					$link_add = "&amp;".$sub[$subsec2]["options"]["name"]."=".$sub[$subsec2]["options"]["value"];
-				} else {
+				}
+				else {
 					$link_add = "";
 				}
 				

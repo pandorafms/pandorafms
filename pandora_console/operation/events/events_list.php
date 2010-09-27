@@ -29,7 +29,7 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	return;
 }
 
-if($id_agent == -2) {
+if ($id_agent == -2) {
 	$text_agent = (string) get_parameter("text_agent", __("All"));
 
 	switch ($text_agent)
@@ -45,7 +45,7 @@ if($id_agent == -2) {
 			break;
 	}
 }
-else{
+else {
 	switch ($id_agent)
 	{
 		case -1:
@@ -252,7 +252,8 @@ $result = get_db_all_rows_sql ($sql);
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
-} else {
+}
+else {
 	$sql = "SELECT COUNT(DISTINCT(evento)) FROM tevento WHERE 1=1 ".$sql_post;
 }
 

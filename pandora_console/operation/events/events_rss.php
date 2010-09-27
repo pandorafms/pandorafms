@@ -24,8 +24,9 @@ require_once "../../include/functions_api.php";
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
 // Uncoment this to activate ACL on RSS Events
-if (!isInACL($ipOrigin))
+if (!isInACL($ipOrigin)) {
     exit;
+}
     
 // Check user credentials
 $user = get_parameter('user');
@@ -80,8 +81,20 @@ if ($event_view_hr > 0) {
 }
 if ($ev_group > 1)
 	$sql_post .= " AND `tevento`.`id_grupo` = $ev_group";
-if ($status >= 0)
-	$sql_post .= " AND `tevento`.`estado` = ".$status;
+
+	
+switch($status) {
+	case 0:
+	case 1:
+	case 2:
+		$sql_post .= " AND `tevento`.`estado` = ".$status;
+		break;
+	case 3:
+		$sql_post .= " AND (`tevento`.`estado` = 0 OR `tevento`.`estado` = 2)";
+		break;
+}
+
+	
 if ($search != "")
 	$sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
 if ($event_type != ""){
@@ -98,6 +111,42 @@ if ($event_type != ""){
 }
 if ($severity != -1)
 	$sql_post .= " AND `tevento`.`criticity` >= ".$severity;
+	
+
+
+if ($id_agent == -2) {
+	$text_agent = (string) get_parameter("text_agent", __("All"));
+
+	switch ($text_agent)
+	{
+		case __('All'):
+			$id_agent = -1;
+			break;
+		case __('Server'):
+			$id_agent = 0;
+			break;
+		default:
+			$id_agent = get_agent_id($text_agent);
+			break;
+	}
+}
+else {
+	switch ($id_agent)
+	{
+		case -1:
+			$text_agent = __('All');
+			break;
+		case 0:
+			$text_agent = __('Server');
+			break;
+		default:
+			$text_agent = get_agent_name($id_agent);
+			break;
+	}
+}
+	
+	
+	
 if ($id_agent != -1)
 	$sql_post .= " AND `tevento`.`id_agente` = ".$id_agent;
 if ($id_event != -1)

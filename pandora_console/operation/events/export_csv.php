@@ -50,6 +50,39 @@ if (($event_type != "all") AND ($event_type != 0))
 	$filter['event_type'] = $event_type;
 if ($severity != -1)
 	$filter[] = 'criticity >= '.$severity;
+	
+if ($id_agent == -2) {
+	$text_agent = (string) get_parameter("text_agent", __("All"));
+
+	switch ($text_agent)
+	{
+		case __('All'):
+			$id_agent = -1;
+			break;
+		case __('Server'):
+			$id_agent = 0;
+			break;
+		default:
+			$id_agent = get_agent_id($text_agent);
+			break;
+	}
+}
+else {
+	switch ($id_agent)
+	{
+		case -1:
+			$text_agent = __('All');
+			break;
+		case 0:
+			$text_agent = __('Server');
+			break;
+		default:
+			$text_agent = get_agent_name($id_agent);
+			break;
+	}
+}
+	
+	
 if ($id_agent != -1)
 	$filter['id_agente'] = $id_agent;
 

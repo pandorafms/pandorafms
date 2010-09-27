@@ -184,6 +184,23 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
 	$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	
+	//Sound Events
+	$javascript = "javascript: window.open('operation/events/sound_events.php');";
+	$javascript = 'javascript: alert(111);';
+	$javascript = 'javascript: openSoundEventWindow();';
+	$sub[$javascript]["text"] = __('Sound Events');
+	$sub[$javascript]["type"] = "direct";
+	
+	?>
+	<script type="text/javascript">
+	function openSoundEventWindow() {
+		url = '<?php echo 'http://' . $_SERVER['SERVER_NAME'] . $config['homeurl'] . '/operation/events/sound_events.php'; ?>';
+		
+		window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+	}
+	</script>
+	<?php
+	
 	$menu["eventos"]["sub"] = $sub;
 }
 

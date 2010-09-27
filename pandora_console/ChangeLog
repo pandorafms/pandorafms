@@ -1,3 +1,8 @@
+2010-09-27  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/agentes/modificar_agente.php: Vertical aligned some icons.
+	TO DO: The table should be "migrated" to new table code.
+
 2010-09-27  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/graph_builder.graph_editor.php

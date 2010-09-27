@@ -200,6 +200,8 @@ install () {
 		mv pandora_agent_daemon.tmp pandora_agent_daemon
 		rm -f pandora_agent_daemon.tmp 2> /dev/null
 		chmod 755 pandora_agent_daemon
+	else
+		PANDORA_USER="root"
 	fi
 
 	# Create logfile
@@ -259,8 +261,8 @@ install () {
 	chmod 640 $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
-	    chown root:wheel $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG	
-	    chown root:daemon $PANDORA_BASE$PANDORA_TEMP
+	    chown $PANDORA_USER:wheel $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG	
+	    chown $PANDORA_USER:daemon $PANDORA_BASE$PANDORA_TEMP
 	    chmod -R 770 $PANDORA_BASE$PANDORA_TEMP
 	    chmod 775 $PANDORA_BASE$PANDORA_TEMP
 	else

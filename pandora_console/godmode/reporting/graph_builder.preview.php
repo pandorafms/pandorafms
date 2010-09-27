@@ -72,6 +72,10 @@ $module_array = array();
 $weight_array = array();
 $agent_array = array();
 
+if($graphRows === false) {
+		$graphRows = array();
+}
+	
 foreach ($graphRows as $graphRow) {
 	$module_array[] = $graphRow['id_agent_module'];
 	$weight_array[] = $graphRow['weight'];

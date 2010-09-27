@@ -1,3 +1,8 @@
+2010-09-27  Raúl Mateos <raulofpandora@gmail.com>
+
+	* godmode/users/user_list.php, godmode/users/configure_user.php:
+	change the sec url variable to show the menu highlighted.
+
 2010-09-27  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_list.php: Added confirm popup

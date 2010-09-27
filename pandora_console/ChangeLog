@@ -1,4 +1,9 @@
-2010-09-24  Miguel de Dios  <miguel.dedios@artica.es>
+2010-09-27  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/events/sound_events.php: fixed the ajax check for when start
+	with empty list of events. 
+
+2010-09-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_menu.php, operation/events/events_list.php: cleaned
 	style source code.

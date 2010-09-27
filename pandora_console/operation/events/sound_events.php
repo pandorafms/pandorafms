@@ -104,7 +104,6 @@ function changeType() {
 }
 
 function toggleButton() {
-	//alert($("#button").attr('src'));
 	if ($("#button").attr('src') == '../../images/pause.button.png') {
 		$("#button").attr('src', '../../images/play.button.png');
 		stopSound();
@@ -152,8 +151,8 @@ function forgetPreviousEvents() {
 			firedId = parseInt(data['fired']);
 			if (firedId != 0) {
 				id_row = firedId;
-				running = true;
 			}
+			running = true;
 		},
 		"json"
 	);	

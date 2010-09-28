@@ -1,5 +1,10 @@
 2010-09-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_html.php: Deleted the useless function
+	print_select_groups 
+
+2010-09-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php: Added the function print_select_groups
 	merged from trunk
 

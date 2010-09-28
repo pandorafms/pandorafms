@@ -139,65 +139,6 @@ function print_select_style ($fields, $name, $selected = '', $style='', $script 
 	echo $output;
 }
 
-/**
- * Prints the groups of user of fields in a popup menu of a form.
- * 
- * @param string User id
- * @param string The privilege to evaluate
- * @param boolean $returnAllGroup Flag the return group, by default true.
- * @param boolean $returnAllColumns Flag to return all columns of groups.
- * @param array Array with dropdown values. Example: $fields["value"] = "label"
- * @param string Select form name
- * @param variant Current selected value. Can be a single value or an
- * array of selected values (in combination with multiple)
- * @param string Javascript onChange code.
- * @param string Label when nothing is selected.
- * @param variant Value when nothing is selected
- * @param bool Whether to return an output string or echo now (optional, echo by default).
- * @param bool Set the input to allow multiple selections (optional, single selection by default).
- * @param bool Whether to sort the options or not (optional, unsorted by default).
- * @param string $style The string of style.
- * @param integer $id_group The id of node that must do not show the children and own.
- *
- * @return string HTML code if return parameter is true.
- */
-
-function print_select_groups($id_user = false, $privilege = "AR", $returnAllGroup = true,
-	$name, $selected = '', $script = '', $nothing = '', $nothing_value = 0, $return = false, 
-	$multiple = false, $sort = true, $class = '', $disabled = false, $style = false, $option_style = false, $id_group = false) {
-	global $config;
-		
-	$user_groups = get_user_groups ($id_user, $privilege, $returnAllGroup, true);
-	
-	if ($id_group !== false) {
-		$childrens = get_childrens($id_group);
-		foreach ($childrens as $child) {
-			unset($user_groups[$child['id_grupo']]);
-		}
-		unset($user_groups[$id_group]);
-	}
-	
-	$user_groups_tree = get_user_groups_tree_recursive($user_groups);
-	
-	$fields = array();
-	foreach ($user_groups_tree as $group) {
-		if (isset($config['text_char_long'])) {
-			$groupName = printTruncateText($group['nombre'], $config['text_char_long'], false, true, false);
-		}
-		else {
-			$groupName = $group['nombre'];
-		}
-		
-		$fields[$group['id_grupo']] = str_repeat("&nbsp;&nbsp;&nbsp;&nbsp;", $group['deep']) . $groupName;
-	}
-	
-	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value,
-		$return, $multiple, false, $class, $disabled, $style, $option_style);
-		
-	if ($return) {
-		return $output;
-	}
-}
 
 /**
  * Prints an array of fields in a popup menu of a form.

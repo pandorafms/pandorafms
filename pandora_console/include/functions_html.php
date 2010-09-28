@@ -378,7 +378,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
  */
 
 function print_extended_select_for_time ($fields, $name, $selected = '', $script = '', $nothing = '',
-	$nothing_value = '0', $size = false, $return = false) {
+	$nothing_value = '0', $size = false, $return = false, $select_style = false) {
 	
 	if (($selected !== false) && (!isset($fields[$selected]))) {
 		$fields[$selected] = human_time_description_raw($selected,true);
@@ -387,7 +387,7 @@ function print_extended_select_for_time ($fields, $name, $selected = '', $script
 	ob_start();
 	
 	print_select ($fields, $name . '_select', $selected,"javascript: $('#text-" . $name . "').val($('#" . $name . "_select').val());" . $script,
-		$nothing, $nothing_value, false, false, false);
+		$nothing, $nothing_value, false, false, false, '', false, $select_style);
 	print_input_text ($name, $selected, '', $size);
 	
 	$returnString = ob_get_clean();

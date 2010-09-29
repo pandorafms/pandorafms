@@ -226,7 +226,7 @@ echo '<div style="width: 75%; float:left;" id="rightcolumn">';
 // Last events information
 // --------------------------------------------------------------------------
 
-print_events_table ("WHERE estado=0 ", 10, "100%");
+print_events_table ("WHERE estado<>1 ", 10, "100%");
 
 
 // --------------------------------------------------------------------------

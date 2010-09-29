@@ -1,5 +1,11 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/visual_console/render_view.php: Fixed the
+	missing full screen tab in the visual console section
+	for bug: 3078003
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/tactical.php: Hide the server
 	and global data in the tactical view to not
 	administrator users

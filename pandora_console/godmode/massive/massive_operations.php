@@ -36,7 +36,7 @@ $options_alerts = array('add_alerts' => __('Massive alerts addition'), 'delete_a
 			'add_action_alerts' => __('Massive alert actions addition'), 'delete_action_alerts' => __('Massive alert actions deletion'),
 			'enable_disable_alerts' => __('Massive alert enable/disable'), 'standby_alerts' => __('Massive alert setting standby'));
 			
-$options_agents = array('delete_agents' => __('Massive agents deletion'));
+$options_agents = array('edit_agents' => __('Massive agents edition'), 'delete_agents' => __('Massive agents deletion'));
 
 $options_users = array('add_profiles' => __('Massive profiles addition'), 'delete_profiles' => __('Massive profiles deletion'));
 
@@ -130,6 +130,8 @@ echo '<table border="0"><tr><td>';
 echo '<h3>'.__('Massive options').':</h3>';
 echo '</td><td>';
 print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
+if($option == 'edit_agents') 
+	echo '<a href="#" class="tip">&nbsp;<span>' . __("The blank fields will not be updated") . '</span></a>';
 echo '</td></tr></table>';
 echo '</form>';			
 
@@ -160,6 +162,9 @@ switch ($option) {
 		break;
 	case 'delete_agents':
 		require_once ('godmode/massive/massive_delete_agents.php');
+		break;
+	case 'edit_agents':
+		require_once ('godmode/massive/massive_edit_agents.php');
 		break;
 	case 'delete_modules':
 		require_once ('godmode/massive/massive_delete_modules.php');

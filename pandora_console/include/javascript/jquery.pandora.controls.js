@@ -57,6 +57,60 @@
 	});
 	
 	$.extend ({
+		pandoraSelectGroupAgentDisabled: new function() {
+			this.defaults = {
+				agentSelect: "select#id_agent",
+				loading: "#agent_loading",
+				callbackBefore: dummyFunc,
+				callbackPre: dummyFunc,
+				callbackPost: dummyFunc,
+				callbackAfter: dummyFunc,
+				debug: false
+			};
+			
+			/* public methods */
+			this.construct = function (settings) {
+				return this.each (function() {
+					this.config = {};
+					
+					this.config = $.extend (this.config, $.pandoraSelectGroupAgentDisabled.defaults, settings);
+					var config = this.config;
+					
+					$(this).change (function () {
+						var $select = $(config.agentSelect).disable ();
+						$(config.loading).show ();
+						$("option[value!=0]", $select).remove ();
+						if (! config.callbackBefore (this))
+							return;
+						
+						jQuery.post ("ajax.php",
+							{"page" : "godmode/groups/group_list",
+							"get_group_agents" : 1,
+							"disabled" : 1,
+							"id_group" : this.value
+							},
+							function (data, status) {
+								jQuery.each (data, function (id, value) {
+									config.callbackPre ();
+									option = $("<option></option>")
+										.attr ("value", id)
+										.html (value);
+									config.callbackPost (id, value, option);
+									$(config.agentSelect).append (option);
+								});
+								$(config.loading).hide ();
+								$select.enable ();
+								config.callbackAfter ();
+							},
+							"json"
+						);
+					});
+				});
+			};
+		}
+	});
+	
+	$.extend ({
 		pandoraSelectAgentModule: new function() {
 			this.defaults = {
 				moduleSelect: "select#id_agent_module",
@@ -253,6 +307,7 @@
 	
 	$.fn.extend({
 		pandoraSelectGroupAgent: $.pandoraSelectGroupAgent.construct,
+		pandoraSelectGroupAgentDisabled: $.pandoraSelectGroupAgentDisabled.construct,
 		pandoraSelectAgentModule: $.pandoraSelectAgentModule.construct,
 		pandoraSelectAgentAlert: $.pandoraSelectAgentAlert.construct,
 		pandoraSelectOS: $.pandoraSelectOS.construct,

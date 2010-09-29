@@ -1,5 +1,14 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/jquery.pandora.controls.js
+	godmode/groups/group_list.php
+	godmode/massive/massive_operations.php
+	godmode/massive/massive_edit_agents.php: Added the massive
+	agent editor to the massive operations for pending task
+	#3057662
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/agentes/fields_manager.php: Fixed the custom fields 
 	section notice where is empty
 

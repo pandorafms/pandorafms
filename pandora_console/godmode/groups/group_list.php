@@ -60,6 +60,7 @@ if (is_ajax ()) {
 	
 	if ($get_group_agents) {
 		$id_group = (int) get_parameter ('id_group');
+		$disabled = (int) get_parameter ('disabled', 0);
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
 			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
@@ -68,7 +69,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		echo json_encode (get_group_agents ($id_group, false, "none"));
+		echo json_encode (get_group_agents ($id_group, array('disabled' => $disabled), "none"));
 		return;
 	}
 

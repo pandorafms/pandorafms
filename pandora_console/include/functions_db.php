@@ -3527,7 +3527,7 @@ function process_sql_rollback () {
 function get_group_users ($id_group, $filter = false) {
 	if (! is_array ($filter))
 		$filter = array ();
-	$filter['id_grupo'] = (int) $id_group;
+	$filter['id_grupo'] = $id_group;
 	$resulta = array();
 	$resulta = get_db_all_rows_filter ("tusuario_perfil", $filter);
 	

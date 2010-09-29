@@ -917,6 +917,7 @@ function enterprise_include ($filename) {
 
 function enterprise_include_once ($filename) {
 	global $config;
+	
 	// Load enterprise extensions
 	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
 	if ($filepath === false)

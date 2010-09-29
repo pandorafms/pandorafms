@@ -409,7 +409,7 @@ class Image_Canvas
         }    
         if (isset($params['end1'])) {
             $angle = Image_Canvas_Tool::getAngle($x0, $y0, $x1, $y1);
-            //print "<pre>"; var_dump($params, $angle); print "</pre>";
+            
             $this->drawEnd(
                 array(
                     'end' => $params['end1'], 

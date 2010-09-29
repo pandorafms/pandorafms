@@ -524,7 +524,6 @@ class viewGraph {
 		
 			foreach($columns as $col => $attr){
 				$data[] = $attr[1] ($row[$attr[0]]);
-				//debugPrint( "\$data[] = ".$attr[1]." (".$row[$attr[0]].");");
 			}
 		
 			array_push ($table->data, $data);

@@ -199,7 +199,7 @@ $(document).ready (function () {
 		var no_alerts;
 		/* Get modules */
 		jQuery.post ("ajax.php",
-			{"page" : "operation/massive/ver_agente",
+			{"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
 			"id_agent" : this.value,
 			"filter" : "disabled = 0",

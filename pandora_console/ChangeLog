@@ -1,5 +1,10 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_events.php: Change to the new status 
+	images and names to the events on the tactical view.
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/jquery.pandora.controls.js
 	godmode/groups/group_list.php
 	godmode/massive/massive_operations.php

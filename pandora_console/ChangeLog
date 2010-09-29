@@ -1,3 +1,8 @@
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/fields_manager.php: Fixed the custom fields 
+	section notice where is empty
+
 2010-09-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Added style parameter to the 

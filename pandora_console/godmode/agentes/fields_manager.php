@@ -87,8 +87,8 @@ if ($delete_field) {
 
 $fields = get_db_all_fields_in_table('tagent_custom_fields');
 
-if ($fields) {
 	$table->width = '65%';
+if ($fields) {
 	$table->head = array ();
 	$table->head[0] = __('Field');
 	$table->head[1] = __('Display on front').print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
@@ -119,7 +119,8 @@ foreach ($fields as $field) {
 	array_push ($table->data, $data);
 }
 
-print_table ($table);
+if($fields)
+	print_table ($table);
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configure_field">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

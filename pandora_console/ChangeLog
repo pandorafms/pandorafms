@@ -1,3 +1,9 @@
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/messages/message.php
+	  include/functions_db.php: Fixed the ACLs in 
+	  the user destination combo merged from trunk
+
 2010-09-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_html.php: Deleted the useless function

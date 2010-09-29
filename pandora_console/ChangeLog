@@ -1,5 +1,12 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_db.php
+	operation/messages/message.php: Fixed the ACLs 
+	to show only the user group users in the destination
+	users combo for bug: 3077857
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/massive/massive_copy_modules.php: Fixed the
 	massive modules copy for bug 3078010
 

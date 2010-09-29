@@ -274,7 +274,7 @@ $table->head = array ();
 $table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span><br>" .
 	'<a href="' . $url . '&sort_field=disabled&sort=up"><img src="images/sort_up.png" style="' . $selectDisabledUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=disabled&sort=down"><img src="images/sort_down.png" style="' . $selectDisabledDown . '" /></a>';
-$table->head[1] = "<span title='" . __('Standby') . "'>" . __('Standby') . "</span><br>" .
+$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span><br>" .
 	'<a href="' . $url . '&sort_field=standby&sort=up"><img src="images/sort_up.png" style="' . $selectStandbyUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=standby&sort=down"><img src="images/sort_down.png" style="' . $selectStandbyDown . '" /></a>';
 if (! $id_agente) {
@@ -286,11 +286,12 @@ if (! $id_agente) {
 	$table->size[0] = '8%';
 	$table->size[1] = '8%';
 	$table->size[2] = '20%';
-	$table->size[3] = '15%';
+	$table->size[3] = '20%';
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$table->size[4] = '20px';
+		$table->size[4] = '15%';
 	}
-	$table->size[5] = '50%';
+	$table->size[5] = '8%';
+	$table->size[6] = '20%';
 }
 else {
 	/* Different sizes or the layout screws up */
@@ -315,9 +316,12 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 }
 $table->head[6] = __('Actions');
 $table->head[7] = __('Status');
-$table->head[8] = __('Delete');
+$table->head[8] = "<span title='" . __('Delete') . "'>" . __('D.') . "</span>";
 
+$table->valign[0] = 'middle';
+$table->valign[1] = 'middle';
 $table->valign[2] = 'middle';
+$table->valign[3] = 'middle';
 $table->valign[4] = 'middle';
 $table->valign[6] = 'middle';
 $table->valign[7] = 'middle';
@@ -440,7 +444,7 @@ foreach ($simple_alerts as $alert) {
 			$data[6] .= '</font>';
 //			$data[6] .= ' <span class="delete" style="clear:right">';
 			$data[6] .= '<form method="post" class="delete_link" style="display: inline; vertical-align: -50%;">';
-			$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+			$data[6] .= print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 			$data[6] .= print_input_hidden ('delete_action', 1, true);
 			$data[6] .= print_input_hidden ('id_alert', $alert['id'], true);
 			$data[6] .= print_input_hidden ('id_action', $action_id, true);
@@ -478,7 +482,7 @@ foreach ($simple_alerts as $alert) {
 	
 	$data[8] = '<form class="delete_alert_form" method="post" style="display: inline;">';
 	
-	$data[8] .= print_input_image ('delete', 'images/cross.png', 1, '', true);
+	$data[8] .= print_input_image ('delete', 'images/cross.png', 1, '', true, array('title' => __('Delete')));
 	$data[8] .= print_input_hidden ('delete_alert', 1, true);
 	$data[8] .= print_input_hidden ('id_alert', $alert['id'], true);
 	$data[8] .= '</form>';

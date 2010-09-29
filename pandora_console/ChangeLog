@@ -1,5 +1,11 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.list.php: Fixed the
+	ugly layout of the alerts list in godmode section
+	for bug 3077999 
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/visual_console/render_view.php: Fixed the
 	missing full screen tab in the visual console section
 	for bug: 3078003

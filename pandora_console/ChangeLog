@@ -1,5 +1,11 @@
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/tactical.php: Hide the server
+	and global data in the tactical view to not
+	administrator users
+
+2010-09-29  Sergio Martin <sergio.martin@artica.es>
+
 	*  operation/agentes/tactical.php: Allowed to show
 	in process events in tactical view
 

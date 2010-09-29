@@ -23,12 +23,14 @@ require_once ("include/functions_reporting.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
 	return;
 }
+
+$is_admin = check_acl ($config['id_user'], 0, "PM");
 
 $force_refresh = get_parameter ("force_refresh", "");
 if ($force_refresh == 1){
@@ -162,38 +164,39 @@ print_cells_temp ($cells);
 // --------------------------------------------------------------------------
 // Server performance 
 // --------------------------------------------------------------------------
+if($is_admin) {
+	$server_performance = get_server_performance();
 
-$server_performance = get_server_performance();
+	echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
+	$cells = array ();
 
-echo '<tr><th colspan="2">'.__('Server performance').'</th></tr>';
-$cells = array ();
+	$cells[0][0] = __('Local modules rate');
+	$cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
+	$cells[0]["color"] = "#729fcf";
+	$cells[0]["href"] = "";
 
-$cells[0][0] = __('Local modules rate');
-$cells[0][1] = format_numeric($server_performance ["local_modules_rate"]);
-$cells[0]["color"] = "#729fcf";
-$cells[0]["href"] = "";
+	$cells[1][0] = __('Remote modules rate');
+	$cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
+	$cells[1]["color"] = "#729fcf";
+	$cells[1]["href"] = "";
 
-$cells[1][0] = __('Remote modules rate');
-$cells[1][1] = format_numeric($server_performance ["remote_modules_rate"]);
-$cells[1]["color"] = "#729fcf";
-$cells[1]["href"] = "";
+	$cells[2][0] = __('Local modules');
+	$cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
+	$cells[2]["color"] = "#3465a4";
+	$cells[2]["href"] = "";
 
-$cells[2][0] = __('Local modules');
-$cells[2][1] = format_numeric($server_performance ["total_local_modules"]);
-$cells[2]["color"] = "#3465a4";
-$cells[2]["href"] = "";
+	$cells[3][0] = __('Remote modules');
+	$cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
+	$cells[3]["color"] = "#3465a4";
+	$cells[3]["href"] = "";
 
-$cells[3][0] = __('Remote modules');
-$cells[3][1] = format_numeric($server_performance ["total_remote_modules"]);
-$cells[3]["color"] = "#3465a4";
-$cells[3]["href"] = "";
+	$cells[4][0] = __('Total running modules');
+	$cells[4][1] = format_numeric($server_performance ["total_modules"]);
+	$cells[4]["color"] = "#000";
+	$cells[4]["href"] = "";
 
-$cells[4][0] = __('Total running modules');
-$cells[4][1] = format_numeric($server_performance ["total_modules"]);
-$cells[4]["color"] = "#000";
-$cells[4]["href"] = "";
-
-print_cells_temp ($cells);
+	print_cells_temp ($cells);
+}
 
 echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
 
@@ -232,70 +235,70 @@ print_events_table ("WHERE estado<>1 ", 10, "100%");
 // --------------------------------------------------------------------------
 // Server information
 // --------------------------------------------------------------------------
+if($is_admin) {
+	$serverinfo = get_server_info ();
+	$cells = array ();
 
-$serverinfo = get_server_info ();
-$cells = array ();
-
-if ($serverinfo === false) {
-	$serverinfo = array ();
-}
-
-$table->class = "databox";
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = "100%";
-
-$table->title = __('Tactical server information');
-$table->titlestyle = "background-color:#799E48;";
-
-$table->head = array ();
-$table->head[0] = __('Name');
-$table->head[1] = __('Type');
-$table->head[2] = __('Status');
-$table->head[3] = __('Load');
-$table->head[4] = __('Lag').' '.print_help_icon ("serverlag", true);
-$table->align[2] = 'center';
-$table->align[3] = 'center';
-$table->align[4] = 'right';
-
-$table->data = array ();
-
-foreach ($serverinfo as $server) {
-	$data = array ();
-	$data[0] = $server["name"];
-	$data[1] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
-	if ($server["master"] == 1)
-		$data[1] .= print_help_tip (__("This is a master server"), true);
-	
-	if ($server["status"] == 0){
-		$data[2] = print_status_image (STATUS_SERVER_DOWN, '', true);
-	} else {
-		$data[2] = print_status_image (STATUS_SERVER_OK, '', true);
+	if ($serverinfo === false) {
+		$serverinfo = array ();
 	}
-	
-	if ($server["type"] != "snmp") {
-		$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, '');	
 
-		if ($server["type"] != "recon"){
-			$data[4] = $server["lag_txt"];
+	$table->class = "databox";
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->width = "100%";
+
+	$table->title = __('Tactical server information');
+	$table->titlestyle = "background-color:#799E48;";
+
+	$table->head = array ();
+	$table->head[0] = __('Name');
+	$table->head[1] = __('Type');
+	$table->head[2] = __('Status');
+	$table->head[3] = __('Load');
+	$table->head[4] = __('Lag').' '.print_help_icon ("serverlag", true);
+	$table->align[2] = 'center';
+	$table->align[3] = 'center';
+	$table->align[4] = 'right';
+
+	$table->data = array ();
+
+	foreach ($serverinfo as $server) {
+		$data = array ();
+		$data[0] = $server["name"];
+		$data[1] = '<span style="white-space:nowrap;">'.$server["img"].'</span> ('.ucfirst($server["type"]).")";
+		if ($server["master"] == 1)
+			$data[1] .= print_help_tip (__("This is a master server"), true);
+		
+		if ($server["status"] == 0){
+			$data[2] = print_status_image (STATUS_SERVER_DOWN, '', true);
 		} else {
+			$data[2] = print_status_image (STATUS_SERVER_OK, '', true);
+		}
+		
+		if ($server["type"] != "snmp") {
+			$data[3] = print_image ("include/fgraph.php?tipo=progress&percent=".$server["load"]."&height=20&width=80", true, '');	
+
+			if ($server["type"] != "recon"){
+				$data[4] = $server["lag_txt"];
+			} else {
+				$data[4] = __("N/A");
+			}
+		} else {
+			$data[3] = "";
 			$data[4] = __("N/A");
 		}
-	} else {
-		$data[3] = "";
-		$data[4] = __("N/A");
+
+		array_push ($table->data, $data);
 	}
 
-	array_push ($table->data, $data);
+	if (!empty ($table->data)) {
+		print_table ($table);
+	} else {
+		echo '<div class="nf">'.__('There are no servers configured in the database').'</div>';
+	}
+	unset ($table);
 }
-
-if (!empty ($table->data)) {
-	print_table ($table);
-} else {
-	echo '<div class="nf">'.__('There are no servers configured in the database').'</div>';
-}
-unset ($table);
-
 
 
 echo '</div>';

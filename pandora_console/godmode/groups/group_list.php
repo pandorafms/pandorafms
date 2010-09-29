@@ -26,6 +26,8 @@ if (! give_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
+require_once("include/functions_groups.php");
+
 if (is_ajax ()) {
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');
@@ -139,10 +141,12 @@ if ($update_group) {
 if ($delete_group) {
 	$id_group = (int) get_parameter ('id_group');
 	
-	$sql = sprintf ('SELECT * FROM tagente WHERE id_grupo = %d', $id_group);
-	$agent = process_sql ($sql);
-			
-	if(!$agent){
+//	$sql = sprintf ('SELECT * FROM tagente WHERE id_grupo = %d', $id_group);
+//	$agent = process_sql ($sql);
+
+	$usedGroup = checkUsedGroup($id_group);
+	
+	if (!$usedGroup['return']) {
 		
 		$group = get_db_row_filter('tgrupo', array('id_grupo' => $id_group));
 		
@@ -154,14 +158,18 @@ if ($delete_group) {
 		$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
 		$result = process_sql ($sql);
 	}
-	else
-		echo "<h3 class='error'>".__('The group is not empty.')."</h3>";
+	else {
+		echo "<h3 class='error'>" .
+			sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])) . "</h3>";
+	}
 
 	
-	if (!$result || $agent )
-		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
-	else
+	if ((!$result) || (!$usedGroup['return'])) {
+		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
+	} 
+	else {
 		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
+	}
 		 
 }
 

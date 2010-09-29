@@ -745,7 +745,7 @@ ialias'))) {
         $x = $this->_getX($params['x']);
         $y = $this->_getY($params['y']);
         $size = $params['size'];
-        //var_dump($params);
+        
         $angle = deg2rad((isset($params['angle']) ? $params['angle'] : 0));
         $pi2 = pi() / 2;
         switch ($params['end']) {

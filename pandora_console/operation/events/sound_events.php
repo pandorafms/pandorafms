@@ -42,6 +42,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 }
 
 echo "<html>";
+echo "<head>";
 echo "<title>" . __("Sound Alerts") . "</title>";
 echo "<style type='text/css'>";
 ?>
@@ -56,6 +57,9 @@ img {
 }
 <?php
 echo "</style>";
+echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico" />';
+echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
+echo "</head>";
 echo "<body>";
 
 echo "<h1 style='background: #66AA44; color: #fff;'><img src='../../images/pandora_header_logo.png'/>" . __("Sound Events") . "</h1>";

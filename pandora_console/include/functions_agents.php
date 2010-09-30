@@ -241,13 +241,13 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 			$subQuery = 'SELECT id_agente FROM tagente';
 		}
 	}
-	else if ($id_agent === false) {
+	else if ($id_agent == false) {
 		$subQuery = 'SELECT id_agente
 			FROM tagente WHERE disabled = 0';
 	}
 	else {
 		$id_agent = (array) $id_agent;
-			
+		
 		$subQuery = implode (',', $id_agent);
 	}
 	

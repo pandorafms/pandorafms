@@ -189,7 +189,7 @@ if ($id_profile || $new_profile) {
 	$table->data[10][0] = __('Pandora management');
 	$table->data[10][1] = print_checkbox ('pandora_management', 1, $pandora_management, true);
 	
-	echo '<form method="post" action="index.php?sec=gusuarioss&sec2=godmode/users/configure_profile">';
+	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
 	
 	print_table ($table);
 	

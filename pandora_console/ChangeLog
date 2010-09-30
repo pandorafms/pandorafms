@@ -1,3 +1,8 @@
+2010-09-30  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/tactical.php: Fixed the global
+	data showed in tactical view merged from trunk
+
 2010-09-29  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/messages/message.php

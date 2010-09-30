@@ -27,6 +27,7 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 
 $table->id = 'add_alert_table';
 $table->class = 'databox';
+$table->width = '95%';
 $table->head = array ();
 $table->data = array ();
 $table->size = array ();

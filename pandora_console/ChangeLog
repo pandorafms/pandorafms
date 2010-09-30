@@ -1,3 +1,8 @@
+2010-09-30  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.builder.php: Fixed an error of 
+	table width declaration for bug 3078730
+
 2010-09-30  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: cleaned source code style.

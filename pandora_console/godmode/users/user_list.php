@@ -263,7 +263,7 @@ foreach ($profiles as $profile) {
 	array_push ($table->data, $data);
 }
 	
-	echo '<form method="post" action="index.php?sec=gperfiles&sec2=godmode/users/configure_profile">';
+	echo '<form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_profile">';
 	print_table ($table);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	print_input_hidden ('new_profile', 1);

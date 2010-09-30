@@ -1,5 +1,11 @@
 2010-09-30  Raúl Mateos <raulofpandora@gmail.com>
 
+	* godmode/users/*.php: Removed reference to gperfiles sec.
+
+	* godmode/profiles/: Deleted no more used folder.
+
+2010-09-30  Raúl Mateos <raulofpandora@gmail.com>
+
 	* operation/menu.php: Changed sound_events.php page size.
 
 	* operation/events/sound_events.php: Added some missing HTML tags.

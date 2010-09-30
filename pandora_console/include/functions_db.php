@@ -47,7 +47,7 @@ function check_login () {
 		}
 	}
 	else {
-		require_once('../mobile/include/user.class.php');
+		require_once($config["homedir"].'/mobile/include/user.class.php');
 		session_start ();
 		session_write_close ();
 		$user = $_SESSION['user'];
@@ -2954,6 +2954,10 @@ echo __('Hello, %s!', $user);
  */
 function __ ($string /*, variable arguments */) {
 	global $l10n;
+	
+	if ($string == '') {
+		return $string;
+	}
 	
 	if (func_num_args () == 1) {
 		if (is_null ($l10n))

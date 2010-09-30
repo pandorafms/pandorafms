@@ -141,7 +141,8 @@ function check_acl ($id_user, $id_group, $access) {
 		return 0;
 	} elseif (is_user_admin ($id_user)) {
 		return 1;
-	} else {
+	}
+	else {
 		$id_group = (int) $id_group;
 	}
 	

@@ -1,5 +1,12 @@
 2010-09-30  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: cleaned source code style.
+	
+	* mobile/include/system.class.php: fixed when include this file in other
+	parts of pandora, as when unlogin try generate pdf file.
+
+2010-09-30  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: in function "checklogin" fixed the include of
 	file "user.class.php". In function "__" fixed when try translate a empty
 	string. 

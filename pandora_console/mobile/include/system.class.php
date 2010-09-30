@@ -12,7 +12,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-require_once('../include/config.php');
+if (!isset($config)) {
+	require_once('../include/config.php');
+}
 require_once('db.class.php');
 
 class System {

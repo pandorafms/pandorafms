@@ -1,3 +1,7 @@
+2010-09-29  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: erased deprecate function "comprueba_login".
+
 2010-09-30  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/users/*.php: Removed reference to gperfiles sec.

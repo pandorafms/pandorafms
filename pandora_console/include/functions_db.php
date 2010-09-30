@@ -1383,13 +1383,6 @@ function dame_admin ($id_user) {
 }
 
 /** 
- * @deprecated Use check_login () instead
- */
-function comprueba_login () {
-	return check_login ();
-}
-
-/** 
  * Check if an agent has alerts fired.
  * 
  * @param int Agent id.

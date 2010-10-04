@@ -26,21 +26,10 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 
 require_once ('include/functions_modules.php');
 
-function process_manage_edit ($module_name, $group_select = null, $agents_select = null) {
+function process_manage_edit ($module_name, $agents_select = null) {
 	if (is_int ($module_name) && $module_name <= 0) {
 		echo '<h3 class="error">'.__('No modules selected').'</h3>';
 		return false;
-	}
-	
-	if (($group_select === null) || ($group_select == 0))
-		$agents = array_keys (get_group_agents (array_keys (get_user_groups ()), false, "none"));
-	else {
-		if (($agents_select === null) || ($agents_select == 0)) {
-			$agents = array_keys (get_group_agents ($group_select, false, "none"));
-		}
-		else {
-			$agents = $agents_select;
-		}
 	}
 	
 	/* List of fields which can be updated */
@@ -48,7 +37,7 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 		'disabled','post_process','snmp_community','min','max','id_module_group', 'plugin_user', 'plugin_pass', 'id_export', 'history_data');
 	$values = array ();
 	foreach ($fields as $field) {
-		$value = get_parameter ($field);
+		$value = get_parameter ($field, '');
 		if ($value != '')
 			$values[$field] = $value;
 	}
@@ -58,14 +47,15 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 	}
 	
 	$modules = get_db_all_rows_filter ('tagente_modulo',
-		array ('id_agente' => $agents,
+		array ('id_agente' => $agents_select,
 			'nombre' => $module_name),
 		array ('id_agente_modulo'));
 	
 	process_sql_begin ();
-	
+
 	if ($modules === false)
 		return false;
+		
 	foreach ($modules as $module) {
 		$result = update_agent_module ($module['id_agente_modulo'], $values, true);
 		
@@ -82,21 +72,103 @@ function process_manage_edit ($module_name, $group_select = null, $agents_select
 }
 
 $module_type = (int) get_parameter ('module_type');
-$module_name = (string) get_parameter ('module_name');
 $idGroupMassive = (int) get_parameter('id_group_massive');
 $idAgentMassive = (int) get_parameter('id_agent_massive');
 $group_select = get_parameter('groups_select');
-$agents_select = get_parameter('agents_select');
+
+$module_name = get_parameter ('module_name');
+$agents_select = get_parameter('agents');
+$agents_id = get_parameter('id_agents');
+$modules_select = get_parameter('module');
+$selection_mode = get_parameter('selection_mode', 'modules');
+
 
 $update = (bool) get_parameter_post ('update');
 
-if ($update) {
-	$result = process_manage_edit ($module_name, $group_select, $agents_select);
+if ($update) {	
+	if($selection_mode == 'modules') {	
+		$force = get_parameter('force_type', false);
+		
+		if($agents_select == false) {
+			$agents_select = array();
+			$agents_ = array();
+		}
+
+		foreach($agents_select as $agent_name) {
+			$agents_[] = get_agent_id($agent_name);
+		}
+		$modules_ = $module_name;
+	}
+	else if($selection_mode == 'agents') {
+		$force = get_parameter('force_group', false);
+
+		$agents_ = $agents_id;
+		$modules_ = $modules_select;
+	}
 	
-	print_result_message ($result,
-		__('Successfully updated'),
+	$success = 0;
+	$count = 0;
+	
+	if($agents_ == false) {
+		$agents_ = array();
+	}
+	
+	// If the option to select all of one group or module type is checked
+	if($force) {
+		if($force == 'type') {
+			$condition = '';
+			if($module_type != 0)
+				$condition = ' AND t2.id_tipo_modulo = '.$module_type;
+				
+			$agents_ = get_db_all_rows_sql('SELECT DISTINCT(t1.id_agente) FROM tagente t1, tagente_modulo t2 WHERE t1.id_agente = t2.id_agente');
+			foreach($agents_ as $id_agent) {
+				$module_name = get_db_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent, 'id_tipo_modulo' =>  $module_type),'nombre');
+
+				if($module_name == false) {
+					$module_name = array();
+				}
+				foreach($module_name as $mod_name) {
+					$result = process_manage_edit ($mod_name['nombre'], $id_agent['id_agente']);
+					$count ++;
+					$success += (int)$result;
+				}
+			}
+		}
+		else if($force == 'group') {
+			$agents_ = array_keys (get_group_agents ($group_select, false, "none"));
+			foreach($agents_ as $id_agent) {
+				$module_name = get_db_all_rows_filter('tagente_modulo', array('id_agente' => $id_agent),'nombre');
+				if($module_name == false) {
+					$module_name = array();
+				}
+				foreach($module_name as $mod_name) {
+					$result = process_manage_edit ($mod_name['nombre'], $id_agent);
+					$count ++;
+					$success += (int)$result;
+				}
+			}
+		}
+		
+		// We empty the agents array to skip the standard procedure
+		$agents_ = array();
+	}
+
+	foreach($agents_ as $agent_) {
+		
+		if($modules_ == false) {
+			$modules_ = array();
+		}
+	
+		foreach($modules_ as $module_) {
+			$result = process_manage_edit ($module_, $agents_);
+			$count ++;
+			$success += (int)$result;
+		}
+	}
+	
+	print_result_message ($success > 0,
+		__('Successfully updated')."(".$success."/".$count.")",
 		__('Could not be updated'));
-	
 }
 
 $table->id = 'delete_table';
@@ -138,12 +210,23 @@ foreach ($module_types as $type) {
 }
 
 $table->data = array ();
-$table->data[0][0] = __('Module type');
-$table->data[0][0] .= '<span id="module_loading" class="invisible">';
-$table->data[0][0] .= '<img src="images/spinner.png" />';
-$table->data[0][0] .= '</span>';
-$table->data[0][1] = print_select ($types,
-	'module_type', $module_type, false, __('Select'), 0, true, false, false);
+	
+$table->data[0][0] = __('Selection mode');
+$table->data[0][1] = __('Select modules first').' '.print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+$table->data[0][2] = '';
+$table->data[0][3] = __('Select agents first').' '.print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
+
+$table->rowclass[1] = 'select_modules_row';
+$table->data[1][0] = __('Module type');
+$table->data[1][0] .= '<span id="module_loading" class="invisible">';
+$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= '</span>';
+$types[0] = __('All');
+$table->colspan[1][1] = 2;
+$table->data[1][1] = print_select ($types,
+	'module_type', '', false, __('Select'), -1, true, false, true);
+
+$table->data[1][3] = __('Select all modules of this type').' '.print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
 
 $modules = array ();
 if ($module_type != '') {
@@ -159,17 +242,34 @@ foreach ($names as $name) {
 	$modules[$name['nombre']] = $name['nombre'];
 }
 
-$table->data[0][2] = __('Module name');
-$table->data[0][3] = print_select ($modules, 'module_name',
-	$module_name, false, __('Select'), 0, true, false, false);
+$table->rowclass[2] = 'select_agents_row';
+$table->data[2][0] = __('Agent group');
+$groups = get_all_groups(true);
+$groups[0] = __('All');
+$table->colspan[2][1] = 2;
+$table->data[2][1] = print_select ($groups, 'groups_select',
+	'', true, __('Select'), -1, true, false, true);
+$table->data[2][3] = __('Select all modules of this group').' '.print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
 
-$table->rowstyle[1] = 'vertical-align: top;';
-$table->data[1][0] = __('Agent group');
-$table->data[1][1] = print_select (get_all_groups(true), 'groups_select',
-	$idGroupMassive, false, __('All'), 0, true, false, false);
-$table->data[1][2] = __('Agents');
-$table->data[1][3] = print_select ($agents, 'agents_select[]',
-	$idAgentMassive, false, __('All'), 0, true, true, false);
+$table->rowstyle[3] = 'vertical-align: top;';
+$table->rowclass[3] = 'select_modules_row select_modules_row_2';
+$table->data[3][0] = __('Modules');
+$table->data[3][1] = print_select ($modules, 'module_name[]',
+	$module_name, false, __('Select'), -1, true, true, true);
+
+$table->data[3][2] = __('Agents');
+$table->data[3][3] = print_select (array(), 'agents[]',
+	$agents_select, false, __('None'), 0, true, true, false);
+	
+$table->rowstyle[4] = 'vertical-align: top;';
+$table->rowclass[4] = 'select_agents_row select_agents_row_2';
+$table->data[4][0] = __('Agents');
+$table->data[4][1] = print_select ($agents, 'id_agents[]',
+	$agents_id, false, '', '', true, true, false);
+	
+$table->data[4][2] = __('Modules');
+$table->data[4][3] = print_select (array(), 'module[]',
+	$modules_select, false, '', '', true, true, false);
 
 
 $table->data['edit1'][0] = __('Warning status');
@@ -228,27 +328,59 @@ echo '</div>';
 echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
-
+//Hack to translate text "none" in PHP to javascript
+echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 require_jquery_file ('pandora.controls');
+
+if($selection_mode == 'modules'){
+	$modules_row = '';
+	$agents_row = 'none';
+}
+else {
+	$modules_row = 'none';
+	$agents_row = '';
+}
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	$("#id_agents").change(agent_changed_by_multiple_agents);
+	$("#module_name").change(module_changed_by_multiple_modules);
+	
+	clean_lists();
+
+	$(".select_modules_row").css('display', '<?php echo $modules_row?>');
+	$(".select_agents_row").css('display', '<?php echo $agents_row?>');
+
 	$("#module_type").change (function () {
+		if (this.value < 0) {
+			clean_lists();
+			$(".select_modules_row_2").css('display', 'none');
+			return;
+		}
+		else {
+			$("#module").html('<?php echo __('None'); ?>');
+			$("#module_name").html('');
+			$('input[type=checkbox]').attr('disabled', false);
+			$(".select_modules_row_2").css('display', '');
+		}
+		
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		
 		if (this.value == '0') {
 			filter = '';
 		}
 		else {
 			filter = "id_tipo_modulo="+this.value;
 		}
-	
+
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
 		$("#module_name option[value!=0]").remove ();
 		jQuery.post ("ajax.php",
-			{"page" : "operation/massive/ver_agente",
+			{"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
 			"filter" : filter,
 			"fields" : "DISTINCT(nombre)",
@@ -265,34 +397,98 @@ $(document).ready (function () {
 			"json"
 		);
 	});
-	
-	$("#module_name").change (function () {
-		if (this.value <= 0) {
-//			$("td#delete_table-0-1").css ("width", "85%");
-			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
-			return;
-		}
+	function show_form() {
 		$("td#delete_table-0-1, td#delete_table-edit1-1, td#delete_table-edit2-1").css ("width", "35%");
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").removeAttr ("checked");
 		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+	}
+	
+	function clean_lists() {
+		$("#id_agents").html('<?php echo __('None'); ?>');
+		$("#module_name").html('<?php echo __('None'); ?>');
+		$("#agents").html('<?php echo __('None'); ?>');
+		$("#module").html('<?php echo __('None'); ?>');
+		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+		$('input[type=checkbox]').attr('checked', false);
+		$('input[type=checkbox]').attr('disabled', true);
+		$('#module_type').val(-1);
+		$('#groups_select').val(-1);
+	}
+	
+	$('input[type=checkbox]').change (
+		function () {			
+			if(this.id == "checkbox-force_type"){
+				if(this.checked) {
+					$(".select_modules_row_2").css('display', 'none');
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+				}
+				else {
+					$(".select_modules_row_2").css('display', '');
+					if($('#module_name option:selected').val() == undefined) {
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+					}
+				}
+			}
+			else {
+				if(this.checked) {
+					$(".select_agents_row_2").css('display', 'none');
+					$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").show ();
+				}
+				else {
+					$(".select_agents_row_2").css('display', '');
+					if($('#id_agents option:selected').val() == undefined) {
+						$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+					}				
+				}
+			}
+		}
+	);
+	
+	$("#module_name").change (show_form);
+	$("#id_agents").change (show_form);
+	
+	$("#form_edit input[name=selection_mode]").change (function () {
+		selector = this.value;
+		clean_lists();
+
+		if(selector == 'agents') {
+			$(".select_modules_row").css('display', 'none');
+			$(".select_agents_row").css('display', '');
+		}
+		else if(selector == 'modules') {
+			$(".select_agents_row").css('display', 'none');
+			$(".select_modules_row").css('display', '');
+		}
 	});
 	
 	$("#groups_select").change (
 		function () {
+			if (this.value < 0) {
+				clean_lists();
+				$(".select_agents_row_2").css('display', 'none');
+				return;
+			}
+			else {
+				$("#module").html('<?php echo __('None'); ?>');
+				$("#id_agents").html('');
+				$('input[type=checkbox]').attr('disabled', false);
+				$(".select_agents_row_2").css('display', '');
+			}
+			
+			$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7").hide ();
+
 			jQuery.post ("ajax.php",
-				{"page" : "operation/massive/ver_agente",
+				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
 				"id_group" : this.value,
 				},
 				function (data, status) {
-					$("#agents_select").html('');
-					option = $("<option></option>").attr ("value", 0).html ("<?php echo __('All'); ?>").attr ("selected", "selected");
-					$("#agents_select").append (option);
+					$("#id_agents").html('');
 				
 					jQuery.each (data, function (id, value) {
 						option = $("<option></option>").attr ("value", value["id_agente"]).html (value["nombre"]);
-						$("#agents_select").append (option);
+						$("#id_agents").append (option);
 					});
 				},
 				"json"

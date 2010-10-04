@@ -1,3 +1,12 @@
+2010-10-04  Sergio Martin <sergio.martin@artica.es>
+
+	* include/javascript/pandora.js
+	operation/agentes/ver_agente.php
+	godmode/massive/massive_operations.php
+	godmode/massive/massive_edit_modules.php: Restructured
+	the massive module editor to increase the power of the tool
+	adding multiple selection methods
+
 2010-10-4  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/pChart/pChart.class: merge bugfixes from the proyect

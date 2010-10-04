@@ -1500,7 +1500,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$engine->show_title = true;
 	$engine->max_value = $max_value;
 	$engine->min_value = $min_value;
-	$engine->events = (bool) $show_event;
+	$engine->events = (bool) $show_events;
 	$engine->alert_top = false;
 	$engine->alert_bottom = false;;
 	if (! $pure) {

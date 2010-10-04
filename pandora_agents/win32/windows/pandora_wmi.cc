@@ -988,14 +988,14 @@ Pandora_Wmi::getNICsInfo (list<string> &rows) {
                ret +=  caption;		  	 
             }
             dhFreeString(caption);
-            ret += inventory_field_separator + " MAC: ";
+            ret += inventory_field_separator;
 			dhGetValue (L"%s", &mac_address, nic_info_item,
 				    L".MACAddress");
 			if (mac_address != NULL) {
 		  	   ret += mac_address;   		  	  
 		  	}            
             dhFreeString (mac_address);		
-            ret += inventory_field_separator + " IP: ";
+            ret += inventory_field_separator;
 		    dhGetValue (L"%v", &ip_addresses, nic_info_item,
 				    L".IPAddress");
 		    if (&ip_addresses != NULL)

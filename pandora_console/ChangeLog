@@ -1,3 +1,8 @@
+2010-10-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/estado_generalagente.php: Properly initialize the
+	  custom field array.
+
 2010-10-4  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/fgraph.php: fixed typo tiny error in function

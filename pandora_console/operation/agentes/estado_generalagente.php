@@ -162,7 +162,9 @@ echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progres
 
 // Custom fields
 $fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));
-
+if ($fields === false) {
+	$fields = array ();
+}
 if ($fields)
 foreach($fields as $field) {
 	echo '<tr><td class="datos"><b>'.$field['name'].print_help_tip (__('Custom field'), true).'</b></td>';

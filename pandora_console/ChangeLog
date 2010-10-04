@@ -1,3 +1,8 @@
+2010-10-4  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/fgraph.php: fixed typo tiny error in function
+	"grafico_modulo_sparse" when use $show_event instead $show_events.
+
 2010-09-30  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.builder.php: Fixed an error of 

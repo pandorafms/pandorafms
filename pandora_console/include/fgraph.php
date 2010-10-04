@@ -343,6 +343,9 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 	$engine->xaxis_interval = $resolution;
 	$events = false;
 	$alerts = false;
+	if (!isset($max_value)) {
+		$max_value = 0;
+	}
 	$engine->combined_graph ($graph, $events, $alerts, $unit_name, $max_value, $stacked);
 }
 

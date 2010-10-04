@@ -475,13 +475,17 @@
            $Scale1 = ( $this->VMax - $this->VMin ) / $Factor;
            $Scale2 = ( $this->VMax - $this->VMin ) / $Factor / 2;
            $Scale4 = ( $this->VMax - $this->VMin ) / $Factor / 4;
-
+			
            if ($Scale1 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = max(floor($Scale1),1); $Scale = 1;}
            if ($Scale2 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = max(floor($Scale2),1); $Scale = 2;}
            if (!$ScaleOk)
             {
-             if ( $Scale2 > 1 ) { $Factor = $Factor * 10; }
-             if ( $Scale2 < 1 ) { $Factor = $Factor / 10; }
+				//Fixed because in some cases throughts a division
+				//by zero error.
+				//if ( $Scale2 > 1 ) { $Factor = $Factor * 10; }
+				//if ( $Scale2 < 1 ) { $Factor = $Factor / 10; }
+				if ( $Scale2 > 1 ) { $Factor = $Factor * (2 * $MaxDivs); }
+				if ( $Scale2 < 1 ) { $Factor = $Factor / (2 * $MaxDivs); }
             }
           }
 
@@ -511,8 +515,12 @@
      else
       $Divisions = $this->Divisions;
 
-     $this->DivisionCount = $Divisions;
+	//This lines patch the error division by zero in some cases.	
+	if ($Divisions == 0)
+		$Divisions = 1;
 
+     $this->DivisionCount = $Divisions;
+	
      $DataRange = $this->VMax - $this->VMin;
      if ( $DataRange == 0 ) { $DataRange = .1; }
 
@@ -3144,7 +3152,9 @@
      if ( $B < 0 ) { $B = 0; } if ( $B > 255 ) { $B = 255; }
 
      $Distance = sqrt(($X2-$X1)*($X2-$X1)+($Y2-$Y1)*($Y2-$Y1));  
-
+	 if ($Distance == 0) {
+		 $Distance = 1;
+	 }
      $XStep = ($X2-$X1) / $Distance;
      $YStep = ($Y2-$Y1) / $Distance;
 

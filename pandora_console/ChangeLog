@@ -1,3 +1,11 @@
+2010-10-4  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/pChart/pChart.class: merge bugfixes from the proyect
+	"Babel Enterprise" fixing by Dario Rodriguez <dario.rodriguez@artica.es>.
+	
+	* include/fgraph.php: fixed undefined var $max_value in function
+	"graphic_combined_module".
+
 2010-10-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/estado_generalagente.php: Properly initialize the

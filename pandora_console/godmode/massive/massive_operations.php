@@ -130,7 +130,7 @@ echo '<table border="0"><tr><td>';
 echo '<h3>'.__('Massive options').':</h3>';
 echo '</td><td>';
 print_select($options, 'option', $option, 'this.form.submit()', '', 0, false, false, false);
-if($option == 'edit_agents') 
+if($option == 'edit_agents' || $option == 'edit_modules') 
 	echo '<a href="#" class="tip">&nbsp;<span>' . __("The blank fields will not be updated") . '</span></a>';
 echo '</td></tr></table>';
 echo '</form>';			

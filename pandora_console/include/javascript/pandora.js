@@ -164,6 +164,63 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				 );
 }
 
+/**
+ * Fill up select box with id "agent" with agents after module has been selected, but this not empty the select box.s
+ *
+ * @param event that has been triggered
+ * @param id_module Module ID that has been selected
+ * @param selected Which agent(s) have to be selected
+ */
+function module_changed_by_multiple_modules (event, id_module, selected) {
+	var idModules = Array();
+	
+	jQuery.each ($("#module_name option:selected"), function (i, val) {
+		//val() because the var is same <option val="NNN"></option>
+		idModules.push($(val).val());
+	});
+	
+	$('#agents').attr ('disabled', 1);
+	$('#agents').empty ();
+	$('#agents').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+	jQuery.post ('ajax.php', 
+				 {"page": "operation/agentes/ver_agente",
+				 "get_agents_json_for_multiple_modules": 1,
+				 "module_name[]": idModules
+				 },
+				 function (data) {
+					 $('#agents').append ($('<option></option>').html ("Loading...").attr ("value", 0));
+
+					 $('#agents').empty ();
+					 
+					 if (typeof($(document).data('text_for_module')) != 'undefined') {
+						 $('#agents').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					 }
+					 else {
+						 if (typeof(data['any_text']) != 'undefined') {
+							 $('#agents').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						 }
+						 else {
+							 var anyText = $("#any_text").html(); //Trick for catch the translate text.
+							 
+							 if (anyText == null) {
+								 anyText = 'Any';
+							 }
+							 
+							 $('#agents').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						 }
+					 }
+					 jQuery.each (data, function (i, val) {
+								  s = js_html_entity_decode(val);
+								  $('#agents').append ($('<option></option>').html (s).attr ("value", val));
+								  $('#agents').fadeIn ('normal');
+								  });
+					 if (selected != undefined)
+					 $('#agents').attr ('value', selected);
+					 $('#agents').attr ('disabled', 0);
+				 },
+				 "json"
+				 );
+}
 
 /**
  * Fill up select box with id "module" with modules after agent has been selected, but this not empty the select box.s

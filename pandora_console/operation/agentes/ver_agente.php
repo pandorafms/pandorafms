@@ -32,6 +32,7 @@ if (is_ajax ()) {
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
+	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
@@ -71,6 +72,19 @@ if (is_ajax ()) {
 		$nameModules = get_db_all_rows_sql('SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (' . implode(',', $idAgents) . ')');
 		
 		echo json_encode($nameModules);
+		return;
+	}
+	
+	if ($get_agents_json_for_multiple_modules) {
+		$nameModules = get_parameter('module_name');
+		
+		$nameAgents = get_db_all_rows_sql('SELECT DISTINCT(t1.nombre) as name FROM tagente t1, tagente_modulo t2 WHERE t1.id_agente = t2.id_agente AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\') AND (SELECT count(t3.nombre) FROM tagente t3, tagente_modulo t4 WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules));
+		
+		foreach($nameAgents as $nameAgent) {
+			$names[] = $nameAgent['name'];
+		}
+		
+		echo json_encode($names);
 		return;
 	}
 	

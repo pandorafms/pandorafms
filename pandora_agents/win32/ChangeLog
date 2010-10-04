@@ -1,5 +1,9 @@
 2010-10-04  Ramon Novoa  <rnovoa@artica.es>
 
+	* windows/pandora_wmi.cc: Fixed inventory NIC information.
+
+2010-10-04  Ramon Novoa  <rnovoa@artica.es>
+
 	* modules/pandora_module_inventory.cc: Fixed XML generation for
 	  inventory modules.
 

@@ -86,7 +86,7 @@ class User {
 									<td style="color: #036A3A; height: 20px;" colspan="2" valign="top" align="left"><?php echo $pandora_version;?> <?php echo $text;?></td>
 									<td style="width: 80px; height: 80px;" valign="bottom" align="left" rowspan="4">
 										<?php
-										print_submit_button(__(''), 'login', false, 'class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
+										print_submit_button('', 'login', false, 'class="login_button" alt="' . __('Login') . '" title="' . __('Login') . '"');
 										?>
 									</td>
 								</tr>

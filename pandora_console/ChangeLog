@@ -1,5 +1,10 @@
 2010-10-04  Sergio Martin <sergio.martin@artica.es>
 
+	* mobile/include/user.class.php: Fixed empty translated
+	string
+
+2010-10-04  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/pandora.js
 	operation/agentes/ver_agente.php
 	godmode/massive/massive_operations.php

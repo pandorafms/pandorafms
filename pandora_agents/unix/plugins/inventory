@@ -93,7 +93,7 @@ sub get_servicies_init_machine($$) {
 sub get_processes ($$) {
 	my ($name, $modules) = @_;
 
-	my $script = "ps aux";
+	my $script = "ps -eo command";
 
         my @services = `$script`;
         foreach my $row (@services) {

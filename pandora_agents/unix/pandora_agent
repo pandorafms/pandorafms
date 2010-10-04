@@ -400,8 +400,14 @@ sub read_config (;$) {
 		}
 	}
 
+	# Token not found
+	if (defined ($token)) {
+		close (CONF_FILE);
+		return undef;
+	}
+
 	# Update the agent MD5 since agent_name may have changed
-	$AgentMD5 = md5 ($Conf{'agent_name'}) unless (defined ($token));
+	$AgentMD5 = md5 ($Conf{'agent_name'});
 	$RemoteConfFile = "$AgentMD5.conf";
 	$RemoteMD5File = "$AgentMD5.md5";
 	
@@ -409,7 +415,6 @@ sub read_config (;$) {
 	$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'}) if defined ($Sem);
 
 	close (CONF_FILE);
-	return '';
 }
 
 ################################################################################

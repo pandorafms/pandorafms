@@ -338,18 +338,17 @@ Pandora_Module_Inventory::getXml() {
 				module_xml +=  "]]></type>\n";
 		
 				module_xml += "\t\t\t<datalist>\n";
-		    } else {
-				try {
-					data_clean = strreplace (this->getDataOutput (data),
-					                         "%", "%%" );
-				} catch (Output_Error e) {
-					continue;
-				}
+		    }
 
-				module_xml += "\t\t\t\t<data><![CDATA[";
-				module_xml += data_clean;
-				module_xml += "]]></data>\n";
+			try {
+				data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+			} catch (Output_Error e) {
+				continue;
 			}
+
+			module_xml += "\t\t\t\t<data><![CDATA[";
+			module_xml += data_clean;
+			module_xml += "]]></data>\n";
 			
 			prev_module = current_module;
 		}

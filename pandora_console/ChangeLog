@@ -1,3 +1,11 @@
+2010-10-05  Sancho Lerena  <slerena@artica.es>
+
+    * include/config_process.php: Set to 0 $config['debug'] by default to avoid
+    debug messages on normal operation mode, developers should setup debug
+    mode in their config.php file.
+
+    * pandoradb_data.sql: Added default template and action as sample.
+
 2010-10-05  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: cleaned source code style and optimize

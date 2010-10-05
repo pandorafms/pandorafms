@@ -59,6 +59,9 @@ else {
 
 $config['start_time'] = microtime (true);
 
+// Only set this to 1 on active development, this will trace all SQL errors.
+$config['debug'] = 0;
+
 // Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 // If you want persistent connections change it to mysql_pconnect(). 
 $config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);

@@ -1,5 +1,7 @@
 2010-10-05  Sancho Lerena  <slerena@artica.es>
 
+    * include/config_process.php: Remove config['debug'] from prev. commit.
+
     * include/config_process.php: Set to 0 $config['debug'] by default to avoid
     debug messages on normal operation mode, developers should setup debug
     mode in their config.php file.

@@ -1391,7 +1391,7 @@ function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, 
 	
 	$events = get_group_events($id_group, $period, $date);
 	
-	if ($events)
+	if ($events) {
 		foreach ($events as $event) {
 			$data = array ();
 			$data[0] = $event['evento'];
@@ -1400,14 +1400,16 @@ function get_group_detailed_event_reporting ($id_group, $period = 0, $date = 0, 
 			$data[3] = $event['timestamp'];
 			array_push ($table->data, $data);
 		}
-	
-	if ($events) {
+		
 		if ($html) {
 			return print_table ($table, $return);
 		}
 		else {
 			return $table;
 		}
+	}
+	else {
+		return false;
 	}
 }
 
@@ -1457,26 +1459,28 @@ function get_module_detailed_event_reporting ($id_modules, $period = 0, $date = 
 		}
 	}
 
-	if ($events)
-	foreach ($events as $eventRow) {
-		foreach ($eventRow as $event) {
-			$data = array ();
-			$data[0] = $event['evento'];
-			$data[1] = $event['event_type'];
-			$data[2] = get_priority_name ($event['criticity']);
-			$data[3] = $event['count_rep'];
-			$data[4] = $event['time2'];
-			array_push ($table->data, $data);
-		}
-	}
-	
 	if ($events) {
+		foreach ($events as $eventRow) {
+			foreach ($eventRow as $event) {
+				$data = array ();
+				$data[0] = $event['evento'];
+				$data[1] = $event['event_type'];
+				$data[2] = get_priority_name ($event['criticity']);
+				$data[3] = $event['count_rep'];
+				$data[4] = $event['time2'];
+				array_push ($table->data, $data);
+			}
+		}
+	
 		if ($html) {
 			return print_table ($table, $return);
 		}
 		else {
 			return $table;
 		}
+	}
+	else {
+		return false;
 	}
 }
 

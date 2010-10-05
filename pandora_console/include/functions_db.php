@@ -139,7 +139,8 @@ function check_acl ($id_user, $id_group, $access) {
 		//User ID needs to be specified
 		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
 		return 0;
-	} elseif (is_user_admin ($id_user)) {
+	}
+	elseif (is_user_admin ($id_user)) {
 		return 1;
 	}
 	else {

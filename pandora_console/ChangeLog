@@ -1,3 +1,10 @@
+2010-10-05  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: cleaned source code style and optimize
+	some parts (deleted redundant if sentences).
+	
+	* include/functions_db.php: cleaned source code style.
+
 2010-10-05  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_ultimopaquete.php

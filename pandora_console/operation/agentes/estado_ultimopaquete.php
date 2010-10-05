@@ -154,7 +154,7 @@ if ($modules === false) {
 $isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
 
 echo "<table width='98%' cellpadding='3' cellspacing='3' class='databox'>";
-echo "<th></th>";
+echo "<th><span title='" . __('Force execution') . "'>".__('F.')."</span></th>";
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	echo "<th><span title='" . __('Policy') . "'>".__('P.')."</span></th>";
 }

@@ -142,22 +142,29 @@ $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
 
-$table->head[0] = '';
-$table->head[1] = __('Type') . ' ' .
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+
+$table->head[0] = "<span title='" . __('Force execution') . "'>".__('F.')."</span>";
+
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->head[1] = "<span title='" . __('Policy') . "'>".__('P.')."</span>";
+}
+
+$table->head[2] = __('Type') . ' ' .
 	'<a href="' . $url . '&sort_field=type&sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=type&sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" /></a>';
-$table->head[2] = __('Module name') . ' ' .
+$table->head[3] = __('Module name') . ' ' .
 	'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
-$table->head[3] = __('Description');
-$table->head[4] = __('Status') . ' ' .
+$table->head[4] = __('Description');
+$table->head[5] = __('Status') . ' ' .
 	'<a href="' . $url . '&sort_field=status&sort=up"><img src="images/sort_up.png" style="' . $selectStatusUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=status&sort=down"><img src="images/sort_down.png" style="' . $selectStatusDown . '" /></a>';
-$table->head[5] = __('Data') . ' ' .
+$table->head[6] = __('Data') . ' ' .
 	'<a href="' . $url . '&sort_field=data&sort=up"><img src="images/sort_up.png" style="' . $selectDataUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=data&sort=down"><img src="images/sort_down.png" style="' . $selectDataDown . '" /></a>';
-$table->head[6] = __('Graph');
-$table->head[7] = __('Last contact') . ' ' .
+$table->head[7] = __('Graph');
+$table->head[8] = __('Last contact') . ' ' .
 	'<a href="' . $url . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
 
@@ -191,14 +198,29 @@ foreach ($modules as $module) {
 	} else {
 		$data[0] = '';
 	}
+	
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if($module["id_policy_module"] != 0) {
+			$img = 'images/policies.png';
+			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
+			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			$policyInfo = infoModulePolicy($module["id_policy_module"]);
+			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $id_policy . '">' . 
+				print_image($img,true, array('title' => $name_policy)) .
+				'</a>';
+		}
+		else {
+			$data[1] = "";
+		}	
+	}
 
-	$data[1] = show_server_type ($module['id_modulo']);
+	$data[2] = show_server_type ($module['id_modulo']);
 
 	if (give_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[1] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&id_agent_module='.$module["id_agente_modulo"].'&edit_module='.$module["id_modulo"].'"><img src="images/config.png"></a>';
+	  $data[2] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&id_agent_module='.$module["id_agente_modulo"].'&edit_module='.$module["id_modulo"].'"><img src="images/config.png"></a>';
 	  
-	$data[2] = print_string_substr ($module["nombre"], 25, true);
-	$data[3] = print_string_substr ($module["descripcion"], 30, true);
+	$data[3] = print_string_substr ($module["nombre"], 25, true);
+	$data[4] = print_string_substr ($module["descripcion"], 30, true);
 
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
@@ -236,7 +258,7 @@ foreach ($modules as $module) {
 		$title .= ": " . substr(safe_output($module["datos"]),0,42);
 	}
 
-	$data[4] = print_status_image($status, $title, true);
+	$data[5] = print_status_image($status, $title, true);
 
 	if ($module["id_tipo_modulo"] == 24) { // log4x
 		switch($module["datos"]) {
@@ -256,10 +278,10 @@ foreach ($modules as $module) {
 		}
 	}
 
-	$data[5] = $salida;
+	$data[6] = $salida;
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 
-	$data[6] = " ";
+	$data[7] = " ";
 	if ($module['history_data'] == 1){
 		$nombre_tipo_modulo = get_moduletype_name ($module["id_tipo_modulo"]);
 		$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
@@ -269,17 +291,17 @@ foreach ($modules as $module) {
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$module["id_agente_modulo"]."&label=".$module["nombre"]."&refresh=600','day_".$win_handle."')";
 
 	//	if ($nombre_tipo_modulo != "log4x")
-			$data[6] .= '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
-		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
+			$data[7] .= '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
+		$data[7] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$module["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
 	}
 	
 	if ($module['estado'] == 3) {
-		$data[7] = '<span class="redb">';
+		$data[8] = '<span class="redb">';
 	} else {
-		$data[7] = '<span>';
+		$data[8] = '<span>';
 	}
-	$data[7] .= print_timestamp ($module["utimestamp"], true);
-	$data[7] .= '</span>';
+	$data[8] .= print_timestamp ($module["utimestamp"], true);
+	$data[8] .= '</span>';
 	
 	array_push ($table->data, $data);
 	$rowIndex++;

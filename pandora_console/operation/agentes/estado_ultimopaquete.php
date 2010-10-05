@@ -151,8 +151,13 @@ if ($modules === false) {
 	return;
 }
 
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+
 echo "<table width='98%' cellpadding='3' cellspacing='3' class='databox'>";
 echo "<th></th>";
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	echo "<th><span title='" . __('Policy') . "'>".__('P.')."</span></th>";
+}
 echo "<th>".__('Module name') . ' ' .
 			'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
 			'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
@@ -194,7 +199,8 @@ foreach ($modules as $module) {
 		// Render module group names (fixed code)
 		$nombre_grupomodulo = get_modulegroup_name ($module["id_module_group"]);
 		$last_modulegroup = $module["id_module_group"];
-		echo "<tr><td class='datos3' align='center' colspan='9'>
+		$colspan = 9 + (int)$isFunctionPolicies;
+		echo "<tr><td class='datos3' align='center' colspan='".$colspan."'>
 		<b>".$nombre_grupomodulo."</b></td></tr>";
 	}
 	
@@ -212,6 +218,23 @@ foreach ($modules as $module) {
 		}
 	}
 	echo "</td>";
+	
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		if($module["id_policy_module"] != 0) {
+			echo "<td>";
+			$img = 'images/policies.png';
+			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
+			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
+			$policyInfo = infoModulePolicy($module["id_policy_module"]);
+			echo'<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $id_policy . '">' . 
+				print_image($img,true, array('title' => $name_policy)) .
+				'</a>';
+			echo "</td>";
+		}
+		else {
+			echo "<td></td>";
+		}
+	}
 	$nombre_grupomodulo = get_modulegroup_name ($module["id_module_group"]);
 	if ($nombre_grupomodulo != ""){
 		if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group

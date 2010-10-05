@@ -1,3 +1,8 @@
+2010-10-05  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_ultimopaquete.php: Added the policy
+	column to the monitors list for bug 3078713
+
 2010-10-04  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/cs.po

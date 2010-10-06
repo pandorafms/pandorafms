@@ -61,21 +61,24 @@ use constant AGENT_BUILD => '100608';
 use constant TOTALMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\'',
 	solaris => 'MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\'',
-	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\''
+	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\'',
+	freebsd => 'sysctl hw.physmem | awk \'{print $2 / 1024}\''
 };
 
 # Commands to retrieve free memory information in kB
 use constant FREEMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo  | grep MemFree: | awk \'{ print $2 }\'',
 	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $5 }\'',
-	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\''
+	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\'',
+	freebsd => 'vmstat -H 1 2 | tail -1 | awk \'{ print $5 }\''
 };
 
 # Commands to retrieve cpu information
 use constant CPUUSAGE_CMDS => {
 	linux => 'vmstat 1 2 | tail -1 | awk \'{ print $13 }\'',
 	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $21 }\'',
-	hpux => 'vmstat 1 2 | tail -1 | awk \'{ print $16 }\''
+	hpux => 'vmstat 1 2 | tail -1 | awk \'{ print $16 }\'',
+	freebsd => 'vmstat -n 0 1 2 | tail -1 | awk \'{ print $15 }\''
 };
 
 # Commands to retrieve process information
@@ -84,7 +87,8 @@ use constant PROC_CMDS => {
 	linux => 'ps aux | awk \'NR > 1 {ps = ""; for (i = 11; i <= NF; ++i) {ps = (ps " " $i) }; print $3, $6, ps}\'',
 	solaris => 'prstat 1 1 | awk \'NR > 1 {split ($10, ps, "/"); cpu = substr ($9, 1, length ($9) - 1); mem = substr ($3, 1, length ($3) - 1); print cpu, mem, ps[1]}\'',
 	hpux => 'ps -elf | awk \'NR > 1 {ps = ""; for (i = 15; i <= NF; ++i) {ps = (ps " " $i) }; print 0, $10, ps}\'',
-	aix => 'ps aux | awk \'NR > 1 {print $3, $6, $11}\''
+	aix => 'ps aux | awk \'NR > 1 {print $3, $6, $11}\'',
+	freebsd => 'ps -axw -o %cpu,%mem,command | awk \'NR > 1 {ps = ""; for (i = 3; i <= NF; ++i) {ps = (ps " " $i) }; print $1, $2, ps}\''
 };
 
 # Commands to retrieve partition information in kB
@@ -93,7 +97,8 @@ use constant PART_CMDS => {
 	linux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
 	solaris => 'df -k | awk \'NR > 1 {print $2, $4, $6}\'',
 	hpux => 'df -P | awk \'NR > 1 {print $2, $4, $6}\'',
-	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\''
+	aix => 'df -kP | awk \'NR > 1 {print $2, $4, $6}\'',
+	freebsd => 'df -k | awk \'NR > 1 {print $2, $4, $6}\''
 };
 	
 # OS and OS version

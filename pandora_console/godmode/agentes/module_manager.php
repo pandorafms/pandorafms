@@ -294,10 +294,19 @@ foreach ($modules as $module) {
 		if ($policyInfo === false)
 			$data[1] = '';
 		else {
-			$img = 'images/policies.png';
+			$linked = isModuleLinked($module['id_agente_modulo']);
+			
+			if ($linked) {
+				$img = 'images/policies.png';
+				$title = $policyInfo['name_policy'];
+			}
+			else {
+				$img = 'images/unlinkpolicy.png';
+				$title = __('(Unlinked) ') . $policyInfo['name_policy'];
+			}
 				
 			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
-				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
+				print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 	}

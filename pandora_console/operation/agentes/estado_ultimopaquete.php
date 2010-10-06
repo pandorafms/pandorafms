@@ -221,13 +221,24 @@ foreach ($modules as $module) {
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if($module["id_policy_module"] != 0) {
-			echo "<td>";
-			$img = 'images/policies.png';
+			$linked = isModuleLinked($module['id_agente_modulo']);
 			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
 			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
 			$policyInfo = infoModulePolicy($module["id_policy_module"]);
+			
+			if ($linked) {
+				$img = 'images/policies.png';
+				$title = $name_policy;
+			}
+			else {
+				$img = 'images/unlinkpolicy.png';
+				$title = __('(Unlinked) ') . $name_policy;
+			}
+			
+			echo "<td>";
+			
 			echo'<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $id_policy . '">' . 
-				print_image($img,true, array('title' => $name_policy)) .
+				print_image($img,true, array('title' => $title)) .
 				'</a>';
 			echo "</td>";
 		}

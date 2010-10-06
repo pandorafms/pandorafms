@@ -1,5 +1,9 @@
 2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager_editor.php: cleaned source code style.
+
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/config_process.php: force the absolute path when include the
 	languages translation files.
 

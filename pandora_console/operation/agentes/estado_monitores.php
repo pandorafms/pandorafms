@@ -192,21 +192,33 @@ foreach ($modules as $module) {
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
 			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&id_agente_modulo='.$module["id_agente_modulo"].'&flag=1&refr=60"><img src="images/target.png" border="0" /></a>';
-		} else {
+		}
+		else {
 			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&id_agente_modulo='.$module["id_agente_modulo"].'&refr=60"><img src="images/refresh.png" border="0"></a>';
 		}
-	} else {
+	}
+	else {
 		$data[0] = '';
 	}
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		if($module["id_policy_module"] != 0) {
-			$img = 'images/policies.png';
+			$linked = isModuleLinked($module['id_agente_modulo']);
 			$id_policy = get_db_value_sql('SELECT id_policy FROM tpolicy_modules WHERE id = '.$module["id_policy_module"]);
 			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
 			$policyInfo = infoModulePolicy($module["id_policy_module"]);
+			
+			if ($linked) {
+				$img = 'images/policies.png';
+				$title = $name_policy;
+			}
+			else {
+				$img = 'images/unlinkpolicy.png';
+				$title = __('(Unlinked) ') . $name_policy;
+			}
+
 			$data[1] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $id_policy . '">' . 
-				print_image($img,true, array('title' => $name_policy)) .
+				print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 		else {
@@ -228,13 +240,16 @@ foreach ($modules as $module) {
 	if ($module["estado"] == 1) {
 		$status = STATUS_MODULE_CRITICAL;
 		$title = __('CRITICAL');
-	} elseif ($module["estado"] == 2) {
+	}
+	elseif ($module["estado"] == 2) {
 		$status = STATUS_MODULE_WARNING;
 		$title = __('WARNING');
-	} elseif ($module["estado"] == 0) {
+	}
+	elseif ($module["estado"] == 0) {
 		$status = STATUS_MODULE_OK;
 		$title = __('NORMAL');
-	} elseif ($module["estado"] == 3) {
+	}
+	elseif ($module["estado"] == 3) {
 		$last_status =  get_agentmodule_last_status($module['id_agente_modulo']);
 		switch($last_status) {
 			case 0:
@@ -254,7 +269,8 @@ foreach ($modules as $module) {
 	
 	if (is_numeric($module["datos"])) {
 		$title .= ": " . format_for_graph($module["datos"]);
-	} else {
+	}
+	else {
 		$title .= ": " . substr(safe_output($module["datos"]),0,42);
 	}
 
@@ -262,18 +278,19 @@ foreach ($modules as $module) {
 
 	if ($module["id_tipo_modulo"] == 24) { // log4x
 		switch($module["datos"]) {
-		case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
-		case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
-		case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
-		case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
-		case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
-		case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
+			case 10: $salida = "TRACE"; $style="font-weight:bold; color:darkgreen;"; break;
+			case 20: $salida = "DEBUG"; $style="font-weight:bold; color:darkgreen;"; break;
+			case 30: $salida = "INFO";  $style="font-weight:bold; color:darkgreen;"; break;
+			case 40: $salida = "WARN";  $style="font-weight:bold; color:darkorange;"; break;
+			case 50: $salida = "ERROR"; $style="font-weight:bold; color:red;"; break;
+			case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
 		}
 		$salida = "<span style='$style'>$salida</span>";
 	} else {
 		if (is_numeric($module["datos"])){
 			$salida = format_numeric($module["datos"]);
-		} else {
+		}
+		else {
 			$salida = "<span title='".$module['datos']."' style='white-space: nowrap;'>".substr(safe_output($module["datos"]),0,12)."</span>";
 		}
 	}
@@ -297,7 +314,8 @@ foreach ($modules as $module) {
 	
 	if ($module['estado'] == 3) {
 		$data[8] = '<span class="redb">';
-	} else {
+	}
+	else {
 		$data[8] = '<span>';
 	}
 	$data[8] .= print_timestamp ($module["utimestamp"], true);
@@ -309,7 +327,8 @@ foreach ($modules as $module) {
 
 if (empty ($table->data)) {
 	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
-} else {
+}
+else {
 	echo "<h3>".__('Full list of monitors')."</h3>";
 	print_table ($table);
 }

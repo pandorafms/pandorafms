@@ -1,3 +1,13 @@
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php, godmode/agentes/module_manager.php:
+	fixed the icon of policy in list of modules, now show when the module is
+	unlinked. And cleaned source code style.
+	
+	Fixes: #3078716
+
 2010-10-06  Sergio Martin <sergio.martin@artica.es>
 
 	* include/fgraph.php

@@ -28,6 +28,8 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	return;
 }
 
+$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
+
 print_page_header ("Monitor detail", "images/bricks.png", false);
 
 
@@ -177,6 +179,9 @@ $table->data = array ();
 $table->size = array ();
 $table->align = array ();
 
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
+	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
+
 $table->head[1] = __('Agent');
 
 $table->head[2] = __('Type');
@@ -210,6 +215,28 @@ foreach ($result as $row) {
 	$iterator++;
 	
 	$data = array ();
+	
+	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+		$policyInfo = infoModulePolicy($row['id_agente_modulo']);
+		if ($policyInfo === false)
+			$data[0] = '';
+		else {
+			$linked = isModuleLinked($row['id_agente_modulo']);
+			
+			if ($linked) {
+				$img = 'images/policies.png';
+				$title = $policyInfo['name_policy'];
+			}
+			else {
+				$img = 'images/unlinkpolicy.png';
+				$title = __('(Unlinked) ') . $policyInfo['name_policy'];
+			}
+				
+			$data[0] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+				print_image($img,true, array('title' => $title)) .
+				'</a>';
+		}
+	}
 	
 	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
 	$data[1] .= substr ($row["agent_name"], 0, 25);

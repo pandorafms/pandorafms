@@ -1,3 +1,11 @@
+2010-10-06  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/reporting/visual_console_builder.php
+	godmode/reporting/visual_console_builder.editor.js
+	godmode/reporting/visual_console_builder.editor.php: Fixed the
+	bad icon change in visual console editor when update an item
+	for bug 3078016
+
 2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: added default sound events in

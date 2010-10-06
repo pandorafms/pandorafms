@@ -68,7 +68,7 @@ $heightBackground = $visualConsole['height'];
 $layoutDatas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $idVisualConsole);
 if ($layoutDatas === false)
 	$layoutDatas = array();
-	
+
 /* Layout_data editor form */
 $intervals = array ();
 $intervals[3600] = "1 ".__('hour');
@@ -235,6 +235,7 @@ foreach ($layoutDatas as $layoutData) {
 		continue;
 	
 	printItemInVisualConsole($layoutData);
+	print_input_hidden('status_'.$layoutData['id'], getStatusElement($layoutData));
 }
 
 echo '</div>';

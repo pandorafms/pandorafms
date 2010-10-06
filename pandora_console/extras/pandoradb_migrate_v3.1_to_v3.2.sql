@@ -126,3 +126,18 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_data` (
 -- -----------------------------------------------------
 
 ALTER TABLE `tevento` MODIFY COLUMN `user_comment` TEXT NOT NULL;
+
+
+
+
+-- -----------------------------------------------------------------------
+-- Data insertion --
+-- -----------------------------------------------------------------------
+
+-- -----------------------------------------------------
+-- Table `tconfig`
+-- -----------------------------------------------------
+INSERT INTO tconfig (`token`, `value`) VALUES ('sound_alert', 'include/sounds/air_shock_alarm.wav');
+INSERT INTO tconfig (`token`, `value`) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
+INSERT INTO tconfig (`token`, `value`) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');
+

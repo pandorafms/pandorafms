@@ -130,8 +130,32 @@ function updateAction() {
 			$("#text_" + idItem).html(values['label']);
 			
 			$("#" + idItem).css('color', values['label_color']);
-			
-			$("#image_" + idItem).attr('src', getImageElement(idItem));
+						
+			switch ($('#hidden-status_' + idItem).val()) {
+				case '1':
+					//Critical (BAD)
+					suffix = "_bad.png";
+					break;
+				case '4':
+					//Critical (ALERT)
+					suffix = "_bad.png";
+					break;
+				case '0':
+					//Normal (OK)
+					suffix = "_ok.png";
+					break;
+				case '2':
+					//Warning
+					suffix = "_warning.png";
+					break;
+				case '3':
+					//Unknown
+				default:
+					suffix = ".png";
+					// Default is Grey (Other)
+			}
+
+			$("#image_" + idItem).attr('src', 'images/console/icons/' + values['image'] + suffix);
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -187,7 +211,7 @@ function readFields() {
 	var values = {};
 	
 	values['label'] = $("input[name=label]").val(); 
-	values['image'] = $("select[name=image]").val(); 
+	values['image'] = $("select[name=image]").val();
 	values['left'] = $("input[name=left]").val(); 
 	values['top'] = $("input[name=top]").val(); 
 	values['agent'] = $("input[name=agent]").val(); 

@@ -44,8 +44,9 @@ if (isset ($_GET["user_del"])) { //delete user
 	else
 		print_error_message (__('There was a problem deleting the user'));
 	
-} elseif (isset ($_GET["profile_del"])) { //delete profile
-	$id_profile = (int) get_parameter_post ("delete_profile");
+}
+elseif (isset ($_GET["profile_del"])) { //delete profile
+	$id_profile = (int) get_parameter ("delete_profile");
 	$result = delete_profile ($id_profile);
 	print_result_message ($result, 
 		__('Successfully deleted'),
@@ -192,7 +193,8 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = print_input_image ("delete_profile", "images/cross.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
+	//$data[11] = print_input_image ("delete_profile", "images/cross.png", $profile["id_perfil"], 'border:0px;', true); //Delete profile button
+	$data[11] = '<a href="?sec=gusuarios&amp;sec2=godmode/users/user_list&profile_del=1&delete_profile='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img src="images/cross.png"></a>';
 	
 	array_push ($table->data, $data);
 }

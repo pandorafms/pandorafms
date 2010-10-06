@@ -1,5 +1,12 @@
 2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: added default sound events in
+	tconfig, fixed bug that found Raul. Thanks for the tips, Raul.
+	
+	Fixes: #3073370
+
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_config.php: added in function "process_config" added
 	lines code to check unset 'autoupdate' in $config.
 	

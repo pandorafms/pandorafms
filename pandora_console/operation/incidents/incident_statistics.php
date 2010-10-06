@@ -42,19 +42,19 @@ if ($config['flash_charts']) {
 }
 echo '<tr><td><h3>'.__('Incidents by group').'</h3>';
 if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
+	echo graphic_incident_group ();
 } else {
 	echo '<img src="include/fgraph.php?tipo=group_incident" border="0"></td>';
 }
 echo '<td><h3>'.__('Incidents by user').'</h3>';
 if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
+	echo graphic_incident_user ();
 } else {
 	echo '<img src="include/fgraph.php?tipo=user_incident" border="0"></td></tr>';
 }
 echo '<tr><td><h3>'.__('Incidents by source').'</h3>';
 if ($config['flash_charts']) {
-	echo grafico_incidente_prioridad ();
+	echo graphic_incident_source ();
 } else {
 	echo '<img src="include/fgraph.php?tipo=source_incident" border="0"></td></tr>';
 }

@@ -32,13 +32,15 @@ if (is_ajax ()) {
 	
 	if ($get_actions_alert_template) {
 		$id_template = get_parameter("id_template");
-		$rows = get_db_all_rows_sql("SELECT t1.id, t1.name,
+		$sql = sprintf ("SELECT t1.id, t1.name,
 				(SELECT COUNT(t2.id) 
 					FROM talert_templates AS t2 
-					WHERE t2.id = " . $id_template . "
+					WHERE t2.id =  %d 
 						AND t2.id_alert_action = t1.id) as 'sort_order'
 			FROM talert_actions AS t1 
-			ORDER BY sort_order DESC");
+			ORDER BY sort_order DESC", $id_template);
+			
+		$rows = get_db_all_rows_sql($sql);
 		
 		
 		if ($rows !== false)
@@ -66,7 +68,7 @@ if (is_ajax ()) {
 }
 
 // Take some parameters (GET)
-$group_id = get_parameter ("group_id", 0);
+$group_id = (int) get_parameter ("group_id", 0);
 $search = get_parameter ("search", "");
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);

@@ -38,10 +38,10 @@ if (is_ajax ()) {
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	
 	if ($get_agents_group_json) {
-		$id_group = get_parameter('id_group');
-		
+		$id_group = (int) get_parameter('id_group');
+
 		if($id_group > 0)
-			$filter = " WHERE id_grupo = ". $id_group;
+			$filter = sprintf(" WHERE id_grupo = %d", $id_group);
 		else {
 			$groups_orig = get_user_groups();
 
@@ -283,16 +283,19 @@ if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 }
 
 // Check for Network FLAG change request
-if (isset($_GET["flag"])) {
-	if ($_GET["flag"] == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
-		$sql = "UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = ".$_GET["id_agente_modulo"];
+$flag = get_parameter('flag', '');
+if ($flag !== '') {
+	if ($flag == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+		$id_agent_module = get_parameter('id_agente_modulo');
+		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = %d", $id_agent_module);
 		process_sql ($sql);
 	}
 }
 // Check for Network FLAG change request
-if (isset($_GET["flag_agent"])){
-	if ($_GET["flag_agent"] == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
-		$sql ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ". $id_agente;
+$flag_agent = get_parameter('flag_agent','');
+if ($flag_agent !== ''){
+	if ($flag_agent == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+		$sql = sprintf("UPDATE tagente_modulo SET flag=1 WHERE id_agente = %d", $id_agente);
 		process_sql ($sql);
 	}
 }

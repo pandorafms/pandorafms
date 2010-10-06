@@ -1,3 +1,8 @@
+2010-10-06  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Retrieve agent information before the module
+	  type. Fixes bug #3080827.
+
 2010-09-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* FreeBSD/pandora_server, FreeBSD/tentacle_server: Fixed a typo.

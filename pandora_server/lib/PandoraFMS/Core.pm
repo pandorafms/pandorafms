@@ -691,21 +691,21 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	
 	logger($pa_config, "Processing module '" . $module->{'nombre'} . "' for agent " . (defined ($agent) && $agent ne '' ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 
-	# Get module type
-	if (! defined ($module_type) || $module_type eq '') {
-		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});
-		if (! defined ($module_type)) {
-			logger($pa_config, "Invalid module type ID " . $module->{'id_tipo_modulo'} . " module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
-			pandora_update_module_on_error ($pa_config, $module, $dbh);
-			return;
-		}
-	}
-
 	# Get agent information
 	if (! defined ($agent) || $agent eq '') {
 		$agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE id_agente = ?', $module->{'id_agente'});
 		if (! defined ($agent)) {
 			logger($pa_config, "Agent ID " . $module->{'id_agente'} . " not found while processing module '" . $module->{'nombre'} . "'.", 3);
+			pandora_update_module_on_error ($pa_config, $module, $dbh);
+			return;
+		}
+	}
+
+	# Get module type
+	if (! defined ($module_type) || $module_type eq '') {
+		$module_type = get_db_value ($dbh, 'SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?', $module->{'id_tipo_modulo'});
+		if (! defined ($module_type)) {
+			logger($pa_config, "Invalid module type ID " . $module->{'id_tipo_modulo'} . " module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 10);
 			pandora_update_module_on_error ($pa_config, $module, $dbh);
 			return;
 		}

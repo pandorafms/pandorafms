@@ -112,8 +112,8 @@ if (isset ($config['id_user'])){
 
 $l10n = NULL; 
 
-if (file_exists ('./include/languages/'.$config["user_language"].'.mo')) {
-	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["user_language"].'.mo'));
+if (file_exists ($config["homedir"]  . '/include/languages/'.$config["user_language"].'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ($config["homedir"] . '/include/languages/'.$config["user_language"].'.mo'));
 	$l10n->load_tables();
 }
 

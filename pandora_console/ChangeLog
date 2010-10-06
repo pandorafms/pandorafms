@@ -1,3 +1,8 @@
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/config_process.php: force the absolute path when include the
+	languages translation files.
+
 2010-10-05  Sancho Lerena  <slerena@artica.es>
 
     * include/config_process.php: Remove config['debug'] from prev. commit.

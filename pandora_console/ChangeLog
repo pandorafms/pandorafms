@@ -1,3 +1,9 @@
+2010-10-06  Sergio Martin <sergio.martin@artica.es>
+
+	* include/fgraph.php
+	operation/incidents/incident_statistics.php: Fixed the incident
+	statistics for bug 3078118
+
 2010-10-06 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	*operation/agentes/estado_agente.php, ver_agente.php: Fixed some problems 

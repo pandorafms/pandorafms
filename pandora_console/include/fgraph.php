@@ -688,15 +688,19 @@ function grafico_incidente_prioridad () {
 	global $graphic_type;
 
 	$data_tmp = array (0, 0, 0, 0, 0, 0);
-	$sql = 'SELECT COUNT(id_incidencia), prioridad
+	$sql = 'SELECT COUNT(id_incidencia) n_incidents, prioridad
 		FROM tincidencia GROUP BY prioridad
 		ORDER BY 2 DESC';
 	$incidents = get_db_all_rows_sql ($sql);
+	
+	if($incidents == false) {
+		$incidents = array();
+	}
 	foreach ($incidents as $incident) {
 		if ($incident['prioridad'] < 5)
-			$data_tmp[$incident[1]] = $incident[0];
+			$data_tmp[$incident['prioridad']] = $incident['n_incidents'];
 		else
-			$data_tmp[5] += $incident[0];
+			$data_tmp[5] += $incident['n_incidents'];
 	}
 	$data = array (__('Informative') => $data_tmp[0],
 			__('Low') => $data_tmp[1],
@@ -721,15 +725,18 @@ function graphic_incident_group () {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia), nombre
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
 			FROM tincidencia,tgrupo
 			WHERE tgrupo.id_grupo = tincidencia.id_grupo
 			GROUP BY tgrupo.id_grupo ORDER BY 1 DESC LIMIT %d',
 			$max_items);
 	$incidents = get_db_all_rows_sql ($sql);
-	foreach ($incidents as $incident) {
-		$name = $incident[1].' ('.$incident[0].')';
-		$data[$name] = $incident[0];
+	
+	if($incidents == false) {
+		$incidents = array();
+	}
+	foreach ($incidents as $incident) {		
+		$data[$incident['nombre']] = $incident['n_incidents'];
 	}
 
 	if (! $graphic_type) {
@@ -753,13 +760,23 @@ function graphic_incident_user () {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia), id_usuario
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
 			FROM tincidencia GROUP BY id_usuario
 			ORDER BY 1 DESC LIMIT %d', $max_items);
 	$incidents = get_db_all_rows_sql ($sql);
+	
+	if($incidents == false) {
+		$incidents = array();
+	}
 	foreach ($incidents as $incident) {
-		$name = $incident[1].' ('.$incident[0].')';
-		$data[$name] = $incident[0];
+		if($incident['id_usuario'] == false) {
+			$name = __('System');
+		}
+		else {
+			$name = $incident['id_usuario'];
+		}
+
+		$data[$name] = $incident['n_incidents'];
 	}
 	
 	if (! $graphic_type) {
@@ -782,12 +799,16 @@ function graphic_user_activity ($width = 350, $height = 230) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_usuario), id_usuario
+	$sql = sprintf ('SELECT COUNT(id_usuario) n_incidents, id_usuario
 			FROM tsesion GROUP BY id_usuario
 			ORDER BY 1 DESC LIMIT %d', $max_items);
 	$logins = get_db_all_rows_sql ($sql);
+	
+	if($logins == false) {
+		$logins = array();
+	}
 	foreach ($logins as $login) {
-		$data[$login[1]] = $login[0];
+		$data[$login['id_usuario']] = $login['n_incidents'];
 	}
 	
 	if (! $graphic_type) {
@@ -809,12 +830,16 @@ function graphic_incident_source ($width = 320, $height = 200) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia), origen 
+	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incident, origen 
 			FROM tincidencia GROUP BY `origen`
 			ORDER BY 1 DESC LIMIT %d', $max_items);
 	$origins = get_db_all_rows_sql ($sql);
+	
+	if($origins == false) {
+		$origins = array();
+	}
 	foreach ($origins as $origin) {
-		$data[$origin[1]] = $origin[0];
+		$data[$origin['origen']] = $origin['n_incident'];
 	}
 	
 	if (! $graphic_type) {

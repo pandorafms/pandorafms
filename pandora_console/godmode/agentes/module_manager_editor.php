@@ -160,7 +160,8 @@ if ($id_agent_module) {
 	$min_critical = $module['min_critical'];
 	$max_critical = $module['max_critical'];
 	$ff_event = $module['min_ff_event'];
-} else {
+}
+else {
 	if (!isset ($moduletype)) {
 		$moduletype = (string) get_parameter ('moduletype');
 		
@@ -225,54 +226,60 @@ if($unlink_policy) {
 }
 
 switch ($moduletype) {
-case "dataserver":
-	$moduletype = 1;
-case 1:
-	/* Categories is an array containing the allowed module types
-	 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
-	$categories = array (0, 1, 2, 6, 7, 8, -1);
-	require ('module_manager_editor_common.php');
-	require ('module_manager_editor_data.php');
-	break;
-case "networkserver":
-	$moduletype = 2;
-case 2:
-	$categories = array (3, 4, 5);
-	require ('module_manager_editor_common.php');
-	require ('module_manager_editor_network.php');
-	break;
-case "pluginserver":
-	$moduletype = 4;
-case 4:
-	$categories = array (0, 1, 2);
-	require ('module_manager_editor_common.php');
-	require ('module_manager_editor_plugin.php');
-	break;
-case "predictionserver":
-	$moduletype = 5;
-case 5:
-	$categories = array (0, 1);
-	require ('module_manager_editor_common.php');
-	require ('module_manager_editor_prediction.php');
-	break;
-case "wmiserver":
-	$moduletype = 6;
-case 6:
-	$categories = array (0, 1, 2);
-	require ('module_manager_editor_common.php');
-	require ('module_manager_editor_wmi.php');
-	break;
-/* WARNING: type 7 is reserved on enterprise */
-default:
-	if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
-		echo '<h3 class="error">DEBUG: Invalid module type specified in '.__FILE__.':'.__LINE__.'</h3>';
-		echo 'Most likely you have recently upgraded from an earlier version of Pandora and either <br />
-			1) forgot to use the database converter<br />
-			2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
-			3) found a new bug - please report a way to duplicate this error';
+	case "dataserver":
+	case 1:
+		$moduletype = 1;
 		
-		return;
-	}
+		/* Categories is an array containing the allowed module types
+		 (generic_data, generic_string, etc) from ttipo_modulo (field categoria) */
+		$categories = array (0, 1, 2, 6, 7, 8, -1);
+		require ('module_manager_editor_common.php');
+		require ('module_manager_editor_data.php');
+		break;
+	case "networkserver":
+	case 2:
+		$moduletype = 2;
+		
+		$categories = array (3, 4, 5);
+		require ('module_manager_editor_common.php');
+		require ('module_manager_editor_network.php');
+		break;
+	case "pluginserver":
+	case 4:
+		$moduletype = 4;
+		
+		$categories = array (0, 1, 2);
+		require ('module_manager_editor_common.php');
+		require ('module_manager_editor_plugin.php');
+		break;
+	case "predictionserver":
+	case 5:
+		$moduletype = 5;
+		
+		$categories = array (0, 1);
+		require ('module_manager_editor_common.php');
+		require ('module_manager_editor_prediction.php');
+		break;
+	case "wmiserver":
+	case 6:
+		$moduletype = 6;
+		
+		$categories = array (0, 1, 2);
+		require ('module_manager_editor_common.php');
+		require ('module_manager_editor_wmi.php');
+		break;
+	/* WARNING: type 7 is reserved on enterprise */
+	default:
+		if (enterprise_include ('godmode/agentes/module_manager_editor.php') === ENTERPRISE_NOT_HOOK) {
+			echo '<h3 class="error">DEBUG: Invalid module type specified in '.__FILE__.':'.__LINE__.'</h3>';
+			echo 'Most likely you have recently upgraded from an earlier version of Pandora and either <br />
+				1) forgot to use the database converter<br />
+				2) used a bad version of the database converter (see Bugreport #2124706 for the solution)<br />
+				3) found a new bug - please report a way to duplicate this error';
+			
+			return;
+		}
+		break;
 }
 
 echo "<h2>".__('Modules')."</h2>";

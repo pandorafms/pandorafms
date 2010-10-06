@@ -1,5 +1,13 @@
 2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_config.php: added in function "process_config" added
+	lines code to check unset 'autoupdate' in $config.
+	
+	* operation/incidents/incident_statistics.php, godmode/users/user_list.php:
+	cleaned source code style.
+
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/status_monitor.php,
 	operation/agentes/estado_ultimopaquete.php,
 	operation/agentes/estado_monitores.php, godmode/agentes/module_manager.php:

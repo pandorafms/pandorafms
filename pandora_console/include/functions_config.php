@@ -559,6 +559,10 @@ function process_config () {
 	if (!isset ($config['rintegria_pass'])) {
 		update_config_value ( 'rintegria_pass', '');
 	}
+	
+	if (!isset ($config['autoupdate'])) {
+		update_config_value ( 'autoupdate', 0);
+	}
 
 	/* Finally, check if any value was overwritten in a form */
 	update_config ();

@@ -209,7 +209,8 @@ if ($config["admin_can_add_user"] !== false) {
 	print_input_hidden ('new_user', 1);
 	print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
 	echo '</form>';
-} else {
+}
+else {
 	echo '<i>'.__('The current authentication scheme doesn\'t support creating users from Pandora FMS').'</i>';
 }
 echo '</div>';

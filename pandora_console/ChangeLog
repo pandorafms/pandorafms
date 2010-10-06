@@ -1,3 +1,10 @@
+2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/agentes/configurar_agente.php: fixed the source code, now when you
+	create a agent, the agent have not a any module.
+	
+	Fixes: #3077024
+
 2010-10-06  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/reporting/visual_console_builder.php

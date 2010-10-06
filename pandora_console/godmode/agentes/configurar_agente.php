@@ -143,10 +143,12 @@ if ($create_agent) {
 	if ($nombre_agente == "") {
 		$agent_creation_error = __('No agent name specified');
 		$agent_created_ok = 0;
-	} elseif (get_agent_id ($nombre_agente)) {
+	}
+	elseif (get_agent_id ($nombre_agente)) {
 		$agent_creation_error = __('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
-	} else {
+	}
+	else {
 		$id_agente = process_sql_insert ('tagente', 
 			array ('nombre' => $nombre_agente,
 				'direccion' => $direccion_agente,
@@ -171,37 +173,9 @@ if ($create_agent) {
 			$agent_created_ok = true;
 
 			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
-		"Created agent $nombre_agente");
-			
-			// Create special module agent_keepalive
-			$id_agent_module = process_sql_insert ('tagente_modulo', 
-				array ('nombre' => 'agent_keepalive',
-					'id_agente' => $id_agente,
-					'id_tipo_modulo' => 100,
-					'descripcion' => __('Agent keepalive monitor'),
-					'id_modulo' => 1,
-					'min_warning' => 0,
-					'max_warning' => 1));
-			
-			if ($id_agent_module !== false) {
-				// Create agent_keepalive in tagente_estado table
-				$result = process_sql_insert ('tagente_estado', 
-					array ('id_agente_modulo' => $id_agent_module,
-						'datos' => '',
-						'timestamp' => 0,
-						'estado' => 0,
-						'id_agente' => $id_agente,
-						'last_try' => 0,
-						'utimestamp' => 0,
-						'current_interval' => 0,
-						'running_by' => 0,
-						'last_execution_try' => 0));
-				if ($result === false)
-					$agent_created_ok = false;
-			} else {
-				$agent_created_ok = false;
-			}
-		} else {
+				"Created agent $nombre_agente");
+		}
+		else {
 			$id_agente = 0;
 			$agent_creation_error = __('Could not be created');
 		}

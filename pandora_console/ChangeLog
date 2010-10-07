@@ -1,5 +1,10 @@
 2010-10-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/fgraph.php: Fixed crash when try to render 
+	a graph without data
+
+2010-10-07  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/massive/massive_edit_agents.php: Removed the IP 
 	address field from the agent massive edition
 

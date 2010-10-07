@@ -228,7 +228,10 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 			
 			$min_necessary = 2;
 		}
-
+		
+		// Set initial conditions
+		$graph_values[$i] = array();
+		
 		// Check available data
 		if (count ($data) < $min_necessary) {
 			continue;
@@ -240,8 +243,6 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		// Event iterator
 		$k = 0;
 	
-		// Set initial conditions
-		$graph_values[$i] = array();
 		if ($data[0]['utimestamp'] == $datelimit) {
 			$previous_data = $data[0]['datos'];
 			$j++;
@@ -324,7 +325,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 		$title_period = __('Last %s days', format_numeric (($period / (3600 * 24)), 2));
 		$time_format = 'M j';
 	}
-	
+
 	if (! $graphic_type) {
 		return fs_combined_chart ($graph_values, $graph, $module_name_list, $width, $height, $stacked, $resolution / 10, $time_format);
 	}

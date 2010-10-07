@@ -52,8 +52,6 @@ $update_agents = get_parameter ('update_agents', 0);
 if ($update_agents) {
 	$values = array();
 	
-	if(get_parameter ('address', '') != '')
-		$values['address'] = get_parameter ('address', '');
 	if(get_parameter ('group', '') != -1)
 		$values['id_grupo'] = get_parameter ('group');
 	if(get_parameter ('interval', '') != '')
@@ -205,23 +203,20 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
-$table->data[0][0] = __('IP Address');
-$table->data[0][1] = print_input_text ('address', $direccion_agente, '', 16, 100, true);
-
 $groups = get_user_groups ($config["id_user"], "AR",false);
 $agents = get_group_agents (array_keys ($groups));
 
-$table->data[1][0] = __('Parent');
-$table->data[1][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
+$table->data[0][0] = __('Parent');
+$table->data[0][1] = print_input_text_extended ('id_parent', get_agent_name ($id_parent), 'text-id_parent', '', 30, 100, false, '',
 	array('style' => 'background: url(images/lightning.png) no-repeat right;'), true)
 	. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search") . '</span></a>';
 
-$table->data[1][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
+$table->data[0][1] .= print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . print_help_icon("cascade_protection", true);
 
-$table->data[2][0] = __('Group');
-$table->data[2][1] = print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
+$table->data[1][0] = __('Group');
+$table->data[1][1] = print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
 
-$table->data[3][0] = __('Interval');
+$table->data[2][0] = __('Interval');
 
 $intervals = array ();
 $intervals[30] = human_time_description_raw (30);
@@ -232,26 +227,26 @@ $intervals[1200] = human_time_description_raw (1200);
 $intervals[1800] = human_time_description_raw (1800);
 $intervals[3600] = human_time_description_raw (3600);
 $intervals[7200] = human_time_description_raw (7200);
-$table->data[3][1] = print_extended_select_for_time ($intervals, 'interval', $interval, '', '', '0', 10, true, 'width: 150px') . __(" seconds.");
+$table->data[2][1] = print_extended_select_for_time ($intervals, 'interval', $interval, '', '', '0', 10, true, 'width: 150px') . __(" seconds.");
 
-$table->data[4][0] = __('OS');
-$table->data[4][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
+$table->data[3][0] = __('OS');
+$table->data[3][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os',
 	'id_os', $id_os, '', __('No change'), -1, true, false, true, false, 'width: 105px;');
-$table->data[4][1] .= ' <span id="os_preview">';
-$table->data[4][1] .= print_os_icon ($id_os, false, true);
-$table->data[4][1] .= '</span>';
+$table->data[3][1] .= ' <span id="os_preview">';
+$table->data[3][1] .= print_os_icon ($id_os, false, true);
+$table->data[3][1] .= '</span>';
 
 // Network server
 $none = '';
 if ($server_name == '' && $id_agente)
 	$none = __('None');
-$table->data[5][0] = __('Server');
-$table->data[5][1] = print_select (get_server_names (),
+$table->data[4][0] = __('Server');
+$table->data[4][1] = print_select (get_server_names (),
 	'server_name', $server_name, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
 
 // Description
-$table->data[6][0] = __('Description');
-$table->data[6][1] = print_input_text ('description', $description, '', 45, 255, true);
+$table->data[5][0] = __('Description');
+$table->data[5][1] = print_input_text ('description', $description, '', 45, 255, true);
 
 print_table ($table);
 unset($table);

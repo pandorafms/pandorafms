@@ -51,6 +51,7 @@ if ($update_module) {
 
 echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 echo "<th>".__('Icon')."</th>";
+echo "<th>".__('ID')."</th>";
 echo "<th>".__('Name')."</th>";
 echo "<th>".__('Description')."</th>";
 $sql = 'SELECT * FROM ttipo_modulo ORDER BY nombre';
@@ -70,6 +71,9 @@ while ($row = mysql_fetch_array ($result)){
 		<img src='images/".$row["icon"]."' 
 		border='0'>
 		</td>
+		<td class='$tdcolor'>
+		<b>".$row[0]."
+		</b></td>
 		<td class='$tdcolor'>
 		<b>".$row["nombre"]."
 		</b></td>

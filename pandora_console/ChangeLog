@@ -1,3 +1,10 @@
+2010-10-07  Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Added custom fields to the global
+	edit/insert code. Not really used here, but for the future.
+
+	* godmode/modules/module_list.php: Show ID of modules, useful information.
+
 2010-10-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/calendar.js, include/javascript/jquery.colorpicker.js:

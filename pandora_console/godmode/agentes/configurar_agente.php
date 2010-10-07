@@ -512,12 +512,15 @@ if ($update_module || $create_module) {
 	$tcp_rcv = (string) get_parameter ('tcp_rcv');
 	$tcp_port = (int) get_parameter ('tcp_port');
 
-	$custom_string_1 = "";
-	$custom_string_2 = "";
-	$custom_string_3 = "";
-	$custom_integer_1 = "";
-	$custom_integer_2 = "";
-	// Services are an enterprise feature, so we got the parameters using this function.
+	$custom_string_1 = (string) get_parameter ('custom_string_1');
+	$custom_string_2 = (string) get_parameter ('custom_string_2');
+	$custom_string_3 = (string) get_parameter ('custom_string_3');
+	$custom_integer_1 = (int) get_parameter ('custom_integer_1');
+	$custom_integer_2 = (int) get_parameter ('custom_integer_2');
+
+	// Services are an enterprise feature, 
+    // so we got the parameters using this function.
+
 	enterprise_hook ('get_service_parameters');
 	
 	$agent_name = (string) get_parameter('agent_name',get_agent_name ($id_agente));

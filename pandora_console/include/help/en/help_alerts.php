@@ -15,7 +15,7 @@ The next fields must be filled to assign an alert:
 <ul>
 	<li>Alert type: This can be selected from the alert list previously generated.</li>
 	<li>Max. Value: Deﬁnes the maximum value for a module. Any value above that threshold will trigger the alert.</li>
-	<li>Min. Value: Deﬁnes the minimum value for a module. Any value below that will trigger the alert. "max." & "min." couple are the key values while defining an alert, since they define the range of normal values, out of that range Pandora FMS will trigger the alert.</li>
+	<li>Min. Value: Deﬁnes the minimum value for a module. Any value below that will trigger the alert. "max." &amp; "min." couple are the key values while defining an alert, since they define the range of normal values, out of that range Pandora FMS will trigger the alert.</li>
 	<li>Alert text: In case of string modules, you can define a regular expression or a single string to match contents of data module to trigger the alert.</li>
 	<li>Time from / Time to: This defines a range of "valid" time range to fire alerts.</li>
 	<li>Description: Describes the function of the alert, and it is useful to identify the alert among the others in the general view of alerts.</li>

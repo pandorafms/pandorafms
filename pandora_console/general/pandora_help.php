@@ -16,11 +16,15 @@
 
 require_once ("../include/config.php");
 require_once ("../include/functions.php");
-
-echo '<html><head><title>'.__('Pandora FMS help system').'</title></head>';
-echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">';
-echo '<body style="background-color: #fff;">';
-
+?>
+<html><head><title>
+<?php
+echo __('Pandora FMS help system');
+?>
+</title></head>
+<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">
+<body style="background-color: #fff;">
+<?php
 $id = get_parameter ('id');
 
 /* Possible file locations */

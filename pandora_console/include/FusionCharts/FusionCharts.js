@@ -76,7 +76,7 @@ infosoftglobal.FusionCharts = function(swf, id, w, h, debugMode, registerWithJS,
 		// Only add the onunload cleanup if the Flash Player version supports External Interface and we are in IE
 		infosoftglobal.FusionCharts.doPrepUnload = true;
 	}
-}
+};
 
 infosoftglobal.FusionCharts.prototype = {
 	setAttribute: function(name, value){
@@ -237,7 +237,7 @@ infosoftglobal.FusionCharts.prototype = {
 			return true;		
 		}
 	}
-}
+};
 
 /* ---- detection functions ---- */
 infosoftglobal.FusionChartsUtil.getPlayerVersion = function(){
@@ -284,12 +284,12 @@ infosoftglobal.FusionChartsUtil.getPlayerVersion = function(){
 		}
 	}
 	return PlayerVersion;
-}
+};
 infosoftglobal.PlayerVersion = function(arrVersion){
 	this.major = arrVersion[0] != null ? parseInt(arrVersion[0]) : 0;
 	this.minor = arrVersion[1] != null ? parseInt(arrVersion[1]) : 0;
 	this.rev = arrVersion[2] != null ? parseInt(arrVersion[2]) : 0;
-}
+};
 // ------------ Fix for Out of Memory Bug in IE in FP9 ---------------//
 /* Fix for video streaming bug */
 infosoftglobal.FusionChartsUtil.cleanupSWFs = function() {
@@ -302,7 +302,7 @@ infosoftglobal.FusionChartsUtil.cleanupSWFs = function() {
 			}
 		}
 	}
-}
+};
 // Fixes bug in fp9
 if (infosoftglobal.FusionCharts.doPrepUnload) {
 	if (!infosoftglobal.unloadSet) {
@@ -310,15 +310,15 @@ if (infosoftglobal.FusionCharts.doPrepUnload) {
 			__flash_unloadHandler = function(){};
 			__flash_savedUnloadHandler = function(){};
 			window.attachEvent("onunload", infosoftglobal.FusionChartsUtil.cleanupSWFs);
-		}
+		};
 		window.attachEvent("onbeforeunload", infosoftglobal.FusionChartsUtil.prepUnload);
 		infosoftglobal.unloadSet = true;
 	}
 }
 /* Add document.getElementById if needed (mobile IE < 5) */
-if (!document.getElementById && document.all) { document.getElementById = function(id) { return document.all[id]; }}
+if (!document.getElementById && document.all) { document.getElementById = function(id) { return document.all[id]; };}
 /* Add Array.push if needed (ie5) */
-if (Array.prototype.push == null) { Array.prototype.push = function(item) { this[this.length] = item; return this.length; }}
+if (Array.prototype.push == null) { Array.prototype.push = function(item) { this[this.length] = item; return this.length; };}
 
 /* Function to return Flash Object from ID */
 infosoftglobal.FusionChartsUtil.getChartObject = function(id)
@@ -337,7 +337,7 @@ infosoftglobal.FusionChartsUtil.getChartObject = function(id)
 	chartRef  = document.getElementById(id);
   
   return chartRef;
-}
+};
 /*
  Function to update chart's data at client side (FOR FusionCharts vFREE and 2.x
 */
@@ -352,7 +352,7 @@ infosoftglobal.FusionChartsUtil.updateChartXML = function(chartId, strXML){
 	chartObj.SetVariable("_root.newData",strXML);
 	//Go to the required frame
 	chartObj.TGotoLabel("/", "JavaScriptHandler"); 
-}
+};
 
 
 /* Aliases for easy usage */

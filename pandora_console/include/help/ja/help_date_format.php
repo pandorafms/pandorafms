@@ -337,24 +337,31 @@
   <h3 class="title">例</h3>
 
 <table cellpadding=4 cellspacing=4 class=datos>
-<th>フォーマット設定 <th>表示例
 <tr>
-<td>F j, Y, g:i a <td>           March 10, 2001, 5:16 pm
+<th>フォーマット設定</th><th>表示例</th>
+</tr>
 <tr>
-<td>m.d.y         <td>           03.10.01
+<td>F j, Y, g:i a</td><td>           March 10, 2001, 5:16 pm</td>
+</tr>
 <tr>
-<td>j, n, Y       <td>           10, 3, 2001
+<td>m.d.y</td><td>           03.10.01</td>
+</tr>
 <tr>
-<td>Ymd           <td>20010310
+<td>j, n, Y</td><td>           10, 3, 2001</td>
+</tr>
 <tr>
-<td>h-i-s, j-m-y, it is w Day z  <td>05-16-17, 10-03-01, 1631 1618 6 Fripm01
+<td>Ymd</td><td>20010310</td>
+</tr>
 <tr>
-<td>\i\t \i\s \t\h\e jS \d\a\y. <td>It is the 10th day.
+<td>h-i-s, j-m-y, it is w Day z</td><td>05-16-17, 10-03-01, 1631 1618 6 Fripm01</td>
+</tr>
+<tr>
+<td>\i\t \i\s \t\h\e jS \d\a\y.</td><td>It is the 10th day.</td>
+</tr>
 
 <tr>
-<td>
-D M j G:i:s T Y					<td>Sat Mar 10 15:16:08 MST 2001
-
+<td>D M j G:i:s T Y					</td><td>Sat Mar 10 15:16:08 MST 2001</td>
+</tr>
 <tr>
-<td>H:i:s <td>17:16:17
+<td>H:i:s</td><td>17:16:17</td>
 </table>

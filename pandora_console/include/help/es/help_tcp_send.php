@@ -50,27 +50,28 @@ SSH-2.0|Protocol mismatch
 <h3>Ejemplo #3. Comprobar un servicio SMTP</h3>
 
 <p>
-Este es un ejemplo de una conversacion SMTP:
+Este es un ejemplo de una conversacion SMTP:</p>
 <pre>
 R: 220 mail.supersmtp.com Bla bla bla
 S: HELO myhostname.com
 R: 250 myhostname.com
-S: MAIL FROM: <pepito@myhostname.com>
+S: MAIL FROM: &lt;pepito@myhostname.com&gt;
 R: 250 OK
-S: RCPT TO: <Jones@supersmtp.com>
+S: RCPT TO: &lt;Jones@supersmtp.com&gt;
 R: 250 OK
 S: DATA
-R: 354 Start mail input; end with <CRLF>.<CRLF>
+R: 354 Start mail input; end with &lt;CRLF&gt;.&lt;CRLF&gt;
 S: .......aquí su correo-e........
 S: .
 R: 250 OK
 S: QUIT
 R: 221 mail.supersmtp.com Service closing bla bla bla
 </pre>
+<p>
 <br />
 De tal forma que si quiere comprar los primeros pasos de la conversación, los campos deberían ser:
 <br /><br />
-<b>TCP SEND </b>: HELO myhostname.com^M|MAIL FROM: <pepito@myhostname.com>^M| RCPT TO: <Jones@supersmtp.com>^M
+<b>TCP SEND </b>: HELO myhostname.com^M|MAIL FROM: &lt;pepito@myhostname.com&gt;^M| RCPT TO: &lt;Jones@supersmtp.com&gt;^M
 <br /><br />
 <b>TCP SEND </b>: 250|250|250
 <br /><br />

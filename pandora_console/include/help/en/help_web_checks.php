@@ -7,9 +7,10 @@
 
 <p>
 Advanced WEB Monitoring is a feature done by the Goliat/WEB Server in Pandora FMS Enterprise version.
-<br><br>
+<br /><br />
 This is a sample of GOLIAT Webcheck module:
-<br>
+<br />
+</p>
 <pre>
 
 
@@ -24,7 +25,7 @@ resource 1
 task_end
 
 task_begin
-get http://galaga.artica.es/pandora/index.php?sec=messages&sec2=operation/messages/message
+get http://galaga.artica.es/pandora/index.php?sec=messages&amp;sec2=operation/messages/message
 cookie 1
 resource 1
 check_string Read messages
@@ -32,4 +33,3 @@ task_end
 
 
 </pre>
-</p>

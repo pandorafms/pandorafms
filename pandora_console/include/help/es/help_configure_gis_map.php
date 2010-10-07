@@ -15,7 +15,7 @@ Cada mapa tiene un nombre descriptivo que se utiliza para reconocer el mapa dent
 </p>
 <h2>Seleccionar Conexiones</h2>
 <p>
-El primer paso es seleccionar la principal </strong>conexión </strong> empleada en este Mapa GIS. Al menos una conexión debe ser seleccionada para configurar el MAPA GIS, pero es posible añadir más presionando el icono(Add) <img src="../images/add.png" alt="Add" /> 
+El primer paso es seleccionar la principal <strong>conexión </strong> empleada en este Mapa GIS. Al menos una conexión debe ser seleccionada para configurar el MAPA GIS, pero es posible añadir más presionando el icono(Add) <img src="../images/add.png" alt="Add" /> 
 
 </p>
 <p>

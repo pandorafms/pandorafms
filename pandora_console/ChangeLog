@@ -1,5 +1,8 @@
 2010-10-07  Sancho Lerena <slerena@artica.es>
 
+        * godmode/alerts/alert_list.list.php: Another ugly warning fixed due 
+        an undefined array. PLEASE dont use foreach on arrays non-checked !
+
 	* godmode/agentes/configurar_agente.php: Added custom fields to the global
 	edit/insert code. Not really used here, but for the future.
 

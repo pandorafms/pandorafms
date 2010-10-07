@@ -44,9 +44,14 @@ $form_filter .= print_input_text ('template_name', $templateName, '', 12, 255, t
 $form_filter .= "</td>\n";
 $temp = get_agents();
 $arrayAgents = array();
-foreach ($temp as $agentElement) {
-	$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+
+# Avoid empty arrays, warning messages are UGLY !
+if ($temp){
+    foreach ($temp as $agentElement) {
+    	$arrayAgents[$agentElement['id_agente']] = $agentElement['nombre'];
+    }
 }
+
 $form_filter .= "<td>".__('Agents')."</td><td>";
 $form_filter .= print_input_text_extended ('agent_name', $agentName, 'text-agent_name', '', 12, 100, false, '',
 array('style' => 'background: url(images/lightning.png) no-repeat right;'), true);

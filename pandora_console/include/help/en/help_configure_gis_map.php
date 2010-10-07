@@ -14,7 +14,7 @@ Each map has a desciptive name used to recognice the map within Pandora FMS.
 </p>
 <h2>Select Connections</h2>
 <p>
-The first step is to select the main </strong>connection</strong> used in this GIS Map. At least one connection must be selected to configure the GIS Map, but it's possible to add more by pressing the <img src="../images/add.png" alt="Add" /> (Add) icon.
+The first step is to select the main <strong>connection</strong> used in this GIS Map. At least one connection must be selected to configure the GIS Map, but it's possible to add more by pressing the <img src="../images/add.png" alt="Add" /> (Add) icon.
 </p>
 <p>
 When the firs connection is set, Pandora FMS asks if you want to use the default values of the connection for the map, to avoid to write again all the information. Also if the default connection for the map is changed (using the radio button), Pandora FMS will ask again if you want to use the values of the new default connection.

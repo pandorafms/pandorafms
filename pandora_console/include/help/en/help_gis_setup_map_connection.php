@@ -15,12 +15,13 @@ Currently Pandora FMS support 3 differet kinds of connections: OpenStreetMap, Go
 </p>
 <h3>Open Street Maps</h3>
 <p>
-To use the Open Street maps connection you can setup your own server (see <a href="http://wiki.openstreetmap.org/wiki/Main_Page">http://wiki.openstreetmap.org/wiki/Main_Page</a> to start and <a href="http://wiki.openstreetmap.org/wiki/Mapnik">http://wiki.openstreetmap.org/wiki/Mapnik</a> as an example of how to render your own tiles.) also you can access the open street map tile server:</br>
+To use the Open Street maps connection you can setup your own server (see <a href="http://wiki.openstreetmap.org/wiki/Main_Page">http://wiki.openstreetmap.org/wiki/Main_Page</a> to start and <a href="http://wiki.openstreetmap.org/wiki/Mapnik">http://wiki.openstreetmap.org/wiki/Mapnik</a> as an example of how to render your own tiles.) also you can access the open street map tile server:<br />
+</p>
 <pre>
 http://tile.openstreetmap.org/${z}/${x}/${y}.png
 </pre>
+<p>
 Using their <a href="http://wiki.openstreetmap.org/wiki/Licence">Licence</a>
-</p>
 </p>
 <h3>Google MAPS</h3>
 <p>

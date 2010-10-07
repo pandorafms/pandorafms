@@ -1,3 +1,20 @@
+2010-10-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/calendar.js, include/FusionCharts/FusionCharts.js: fixed end of
+	sentences with lost semicolons, the Eclipse IDE warned me some this bugs.
+	
+	* include/help/en/help_date_format.php,
+	include/help/en/help_agent_status.php, include/help/en/help_eventview.php,
+	include/help/en/help_configure_gis_map.php, include/help/en/help_alerts.php,
+	include/help/en/help_plugin_definition.php,
+	include/help/en/help_alert_macros.php,
+	include/help/en/help_gis_setup_map_connection.php,
+	general/license/pandora_info_en.html,
+	general/license/pandora_info_pt_BR.html,
+	general/license/pandora_info_es.html, general/license/pandora_info_ja.html,
+	general/pandora_help.php: cleaned html and fixed unclose html tags in source
+	code, the Eclipse IDE warned me some this bugs.
+
 2010-10-07  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_reporting.php

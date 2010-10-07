@@ -20,23 +20,23 @@ Operation could be "status", "qps", "load", "fragment" and "memory". It returns 
 
 <table cellpadding=4 cellspacing=4 class=databox width=80%>
 <tr>
-<td valign='top'>Plugin command<td>/usr/share/pandora/util/plugins/informix_plugin_pandora (default location for plugins)
-<tr>
-<td>Max. timeout:<td> 15 (for example).
+<td valign='top'>Plugin command</td><td>/usr/share/pandora/util/plugins/informix_plugin_pandora (default location for plugins)</td>
 </tr>
 <tr>
-<td>IP Address option<td> -H
-
+<td>Max. timeout:</td><td> 15 (for example).</td>
+</tr>
 <tr>
-<td>Port option<td> Leave it blank.
+<td>IP Address option</td><td> -H</td>
+</tr>
+<tr>
+<td>Port option</td><td> Leave it blank.</td>
+</tr>
+<tr>
+<td>User option</td><td> -U</td>
 </tr>
 
 <tr>
-<td>User option<td> -U
-</tr>
-
-<tr>
-<td>Password option<td> -P
+<td>Password option</td><td> -P</td>
 </tr>
 
 </table>

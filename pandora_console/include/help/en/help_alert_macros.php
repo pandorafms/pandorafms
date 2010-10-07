@@ -24,12 +24,13 @@ The following macros are available:
 <li>_moduledescription_ : Description of the module who fired the alert </li>
 <li>_alert_name_ : Alert name </li>
 <li>_alert_priority_ : Numerical alert priorityu </li>
-<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.
+<li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
 <li>_id_alert_ : Numerical ID of the alert (unique), used to correlate on third party software</li>
 
 
 </ul>
 <p>
 </p>
+<p>
 Example: Agent _agent_ has fired alert _alert_ with data _data_
 </p>

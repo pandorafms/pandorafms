@@ -654,7 +654,7 @@
                         }
                 }
              return result;
-            }
+            };
 
     // Add a method to left pad zeroes
 
@@ -663,7 +663,7 @@
             {var result = '';
              for (var i=0;i<(padToLength - this.length);i++) {result += '0';}
              return (result + this);
-            }
+            };
 
     // Set up a closure so that any next function can be triggered
     // after the calendar has been closed AND that function can take
@@ -683,7 +683,7 @@
 
                          return (args.shift()==scwTriggerEle)
                                     ?func.apply(this, args):null;
-                        }
+                        };
                     };
 
     // Set up some shortcuts
@@ -1451,7 +1451,7 @@
 
                  // The first Base Day in the year
                  var scwFirstBaseDay =
-                        new Date(scwInDateWeekBase.getFullYear(),0,1)
+                        new Date(scwInDateWeekBase.getFullYear(),0,1);
 
                  scwFirstBaseDay.setDate(scwFirstBaseDay.getDate()
                                             - scwFirstBaseDay.getDay()

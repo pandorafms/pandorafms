@@ -1,3 +1,8 @@
+2010-10-07  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Added an example usage of the
+	  agent_threads configuration token.
+
 2010-10-06  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent: Added FreeBSD specific commands.

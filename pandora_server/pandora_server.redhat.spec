@@ -24,10 +24,10 @@ Prereq:             %{_sbindir}/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           coreutils
-Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-Time-Format 
+Requires:           perl-DBI perl-DBD-mysql 
 Requires:           perl-XML-Simple perl-XML-SAX
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           nmap wmic sudo xprobe2
+Requires:           nmap wmic sudo
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.

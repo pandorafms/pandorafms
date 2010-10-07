@@ -21,7 +21,7 @@ use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
 use POSIX;
-use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
+use PandoraFMS::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 #use Module::Loaded;
 
 # Used to calculate the MD5 checksum of a string
@@ -334,11 +334,6 @@ sub enterprise_load ($) {
 	my $pa_config = shift;
 
 	# Check dependencies
-	eval 'local $SIG{__DIE__}; require IO::Socket::Multicast';
-	if ($@) {
-		print_message ($pa_config, " [*] Error loading Pandora FMS Enterprise: IO::Socket::Multicast not found.", 1);
-		return 0;
-	}
 
 	# Already loaded
 	#return 1 if (is_loaded ('PandoraFMS::Enterprise'));

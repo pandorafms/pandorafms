@@ -30,11 +30,15 @@
 }
 
 /var/log/pandora/pandora_snmptrap.log {
-	daily
+	weekly
 	missingok
-	size 150000
+	size 500000
 	rotate 1
-	maxage 7
+	maxage 365
 	notifempty
-	create 644 root root
+	create 664 root root
+        postrotate
+        /etc/init.d/pandora_server restart
+        endscript
+
 }

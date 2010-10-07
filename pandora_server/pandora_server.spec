@@ -21,9 +21,9 @@ BuildArchitectures: noarch
 Requires(pre):      /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
-Requires:           perl-Mail-Sendmail perl-DBI perl-DBD-mysql perl-time-format 
+Requires:           perl-DBI perl-DBD-mysql 
 Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           nmap wmic sudo xprobe2 perl-HTML-Tree perl-XML-SAX
+Requires:           nmap wmic sudo perl-HTML-Tree perl-XML-SAX
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.

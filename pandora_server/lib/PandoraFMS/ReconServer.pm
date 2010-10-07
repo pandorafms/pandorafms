@@ -45,7 +45,7 @@ my @TaskQueue :shared;
 my %PendingTasks :shared;
 my $Sem :shared = Thread::Semaphore->new;
 my $TaskSem :shared = Thread::Semaphore->new (0);
-my $TracerouteAvailable = (eval 'use Net::Traceroute::PurePerl; 1') ? 1 : 0;
+my $TracerouteAvailable = (eval 'use PandoraFMS::Traceroute::PurePerl; 1') ? 1 : 0;
 
 ########################################################################################
 # Recon Server class constructor.
@@ -396,7 +396,7 @@ sub get_host_parent ($$){
 	my $traceroutetimeout = $pa_config->{'networktimeout'};
 
 
-    my $tr = Net::Traceroute::PurePerl->new (
+    my $tr = PandoraFMS::Traceroute::PurePerl->new (
 		 backend        => 'PurePerl',
          host           => $host,
          debug          => 0,

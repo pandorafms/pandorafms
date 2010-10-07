@@ -1,3 +1,42 @@
+2010-10-07  Sancho Lerena <slerena@artica.es>
+
+    * conf/pandora_server.conf: Removed multicast options
+
+    * Makefile.PL: Removed need for dependencies on Mail::Sendmail
+    and Traceroute::PurePerl, now are included in the Pandora FMS
+    distribution.
+
+    * lib/PandoraFMS/Config.pm: Removed options for multicast
+
+    * lib/PandoraFMS/Traceroute.pm, 
+      lib/PandoraFMS/Sendmail.pm,
+      lib/PandoraFMS/Traceroute/PurePerl.pm: Now included on Pandora FMS
+    distribution, this will help to do easier installs of Pandora, because
+    that packages was difficult to build/install in different distros.
+
+    * lib/PandoraFMS/Core.pm: Removed the old multicast-on change enterprise
+    feature, not used/supported anymore.
+
+    * lib/PandoraFMS/ReconServer.pm: Now uses the internal Traceroute Pureperl
+    implementation.
+
+    * lib/PandoraFMS/Tools.pm: Now uses the internal Mail::Sendmail copy.
+
+    * bin/pandora_server: Removed the multicast option from main loop.
+
+    * FreeBSD/pandora_server.conf: Removed multicast from options.
+
+    * util/mcast_client.pl: Deleted sample client for multicast.
+
+    * util/pandora_logrotate: Updated the rotate options for SNMP logfile.
+
+    * util/compaq_chassis_trap_manager2.pl: Added sample of SNMP Trap postprocessor.
+
+    * pandora_server.redhat.spec,
+      pandora_server.spec,
+      DEBIAN/control: Updated packages deps and other minor changes (xprobe2 is not
+      mandatory now).
+
 2010-10-06  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Retrieve agent information before the module

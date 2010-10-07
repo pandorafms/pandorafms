@@ -233,8 +233,6 @@ while (1) {
 			# Set the status of unknown modules
 			pandora_module_unknown (\%Config, $DBH);
 
-			# Multicast status report each 30 x Server Threshold secs
-			enterprise_hook('mcast_status_report', [\%Config, $DBH]);
 		}
 
 		# TASKS DONE EACH 60 SECONDS (Low latency tasks)
@@ -255,12 +253,12 @@ while (1) {
 					pandora_group_statistics (\%Config, $DBH);
 					pandora_server_statistics (\%Config, $DBH);
 				}
+            }
 
-				# Pandora self monitoring
-				if (defined($Config{"self_monitoring"}) 
-				&& $Config{"self_monitoring"} == 1){
-					pandora_self_monitoring (\%Config, $DBH);
-				}
+			# Pandora self monitoring
+			if (defined($Config{"self_monitoring"}) 
+			&& $Config{"self_monitoring"} == 1){
+				pandora_self_monitoring (\%Config, $DBH);
 			}
 		}
 	};

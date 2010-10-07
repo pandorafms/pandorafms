@@ -258,15 +258,6 @@ sub pandora_load_config {
 	# max log size (bytes)
 	$pa_config->{'max_log_size'} = 32000;
 
-	# Multicast status report
-	$pa_config->{'mcast_status_group'} = '';
-	$pa_config->{'mcast_status_port'} = '';
-
-
-	# Multicast change report
-	$pa_config->{'mcast_change_group'} = '';
-	$pa_config->{'mcast_change_port'} = '';
-
 	# Ignore the timestamp in the XML and use the file timestamp instead
 	$pa_config->{'use_xml_timestamp'} = 0; 
 
@@ -519,18 +510,6 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
 			$pa_config->{'max_log_size'}= clean_blank($1); 
-		}
-		elsif ($parametro =~ m/^mcast_status_group\s([0-9\.]*)/i) {
-			$pa_config->{'mcast_status_group'}= clean_blank($1); 
-		}
-		elsif ($parametro =~ m/^mcast_change_group\s([0-9\.]*)/i) {
-			$pa_config->{'mcast_change_group'}= clean_blank($1); 
-		}
-		elsif ($parametro =~ m/^mcast_status_port\s([0-9]*)/i) {
-			$pa_config->{'mcast_status_port'}= clean_blank($1); 
-		}
-		elsif ($parametro =~ m/^mcast_change_port\s([0-9]*)/i) {
-			$pa_config->{'mcast_change_port'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^wmi_threads\s([0-9]*)/i) {
 			$pa_config->{'wmi_threads'}= clean_blank($1); 

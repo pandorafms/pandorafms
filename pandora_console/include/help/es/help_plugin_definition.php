@@ -20,24 +20,24 @@ La operación podría ser &laquo;status&raquo;, &laquo;qps&raquo;, &laquo;load&r
 
 <table cellpadding=4 cellspacing=4 class=databox width=80%>
 <tr>
-<td valign='top'>Comando del complemento<td>/usr/share/pandora/util/plugins/informix_plugin_pandora (ubicación predeterminada para los complementos)
+<td valign='top'>Comando del complemento</td><td>/usr/share/pandora/util/plugins/informix_plugin_pandora (ubicación predeterminada para los complementos)</td>
 </tr>
 <tr>
-<td>Máx. tiempo de expiración<td> 15 (por ejemplo).
+<td>Máx. tiempo de expiración</td><td> 15 (por ejemplo).</td>
 <tr>
-<td>Dirección IP<td> -H
-</tr>
-
-<tr>
-<td>Opción de puerto<td> Déjela en blanco.
+<td>Dirección IP</td><td> -H</td>
 </tr>
 
 <tr>
-<td>Opción de usuario<td> -U
+<td>Opción de puerto</td><td> Déjela en blanco.</td>
 </tr>
 
 <tr>
-<td>Opción de contraseña<td> -P
+<td>Opción de usuario</td><td> -U</td>
+</tr>
+
+<tr>
+<td>Opción de contraseña</td><td> -P</td>
 </tr>
 
 </table>

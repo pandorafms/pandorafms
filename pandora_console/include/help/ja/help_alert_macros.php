@@ -7,6 +7,7 @@
 
 <p>
 次のマクロが利用できます:
+</p>
 <ul>
 <li>_field1_ : ユーザ定義フィールド1</li>
 <li>_field2_ : ユーザ定義フィールド2</li>
@@ -30,6 +31,5 @@
 
 </ul>
 <p>
-</p>
 例: Agent _agent_ has fired alert _alert_ with data _data_
 </p>

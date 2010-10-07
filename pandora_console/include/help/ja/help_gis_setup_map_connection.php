@@ -17,11 +17,12 @@
 <p>
 Open Street マップを利用するためには、以下に示す Open Street マップサーバにアクセスできる必要があります。
 (詳細は、<a href="http://wiki.openstreetmap.org/wiki/ja:Main_Page">http://wiki.openstreetmap.org/wiki/ja:Main_Page</a> を参照してください。また、<a href="http://wiki.openstreetmap.org/wiki/ja:Mapnik">http://wiki.openstreetmap.org/wiki/ja:Mapnik</a> にサンプルがあります。)
+</p>
 <pre>
 http://tile.openstreetmap.org/${z}/${x}/${y}.png
 </pre>
+<p>
 OpenStreetマップの利用は、<a href="http://wiki.openstreetmap.org/wiki/Licence">ライセンス</a>に従っています。
-</p>
 </p>
 <h3>Google マップ</h3>
 <p>

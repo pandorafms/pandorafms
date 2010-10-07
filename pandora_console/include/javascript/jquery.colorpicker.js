@@ -46,5 +46,5 @@ $.colorPicker.hideColorPicker();},_generateColorPicker:function(){var colors=new
 {if((i%width)==0){html+="<tr>";}
 html+='<td class="color" title="'+colors[i]+'" style="background-color:'+colors[i]+'"><label>&nbsp;&nbsp;&nbsp;</label></td>';if(((i+1)>=total)||(((i+1)%width)==0))
 {html+="</tr>";}}
-html+="</table>";return html}});$.fn.attachColorPicker=function(){return this.each(function(){var nodeName=this.nodeName.toLowerCase();if(nodeName=='input')
+html+="</table>";return html;}});$.fn.attachColorPicker=function(){return this.each(function(){var nodeName=this.nodeName.toLowerCase();if(nodeName=='input')
 {var inst=new ColorPickerInstance();$.colorPicker._connectColorPicker(this,inst);}});};$.fn.getValue=function(){var inst=(this.length>0?$.colorPicker._getInst(this[0]._colId):null);return(inst?inst._getValue():null);};$.fn.setValue=function(value){var inst=(this.length>0?$.colorPicker._getInst(this[0]._colId):null);if(inst)inst._setValue(value);};$(document).ready(function(){$.colorPicker=new colorPicker();$(document.body).append($.colorPicker._colorPickerDiv).mousedown($.colorPicker._checkExternalClick);});})(jQuery);

@@ -55,27 +55,28 @@ SSH-2.0|Protocol mismatch
 <h3>例3) SMTP サービスの確認</h3>
 
 <p>
-これは、SMTP 通信の例です。
+これは、SMTP 通信の例です。</p>
 <pre>
 R: 220 mail.supersmtp.com Blah blah blah
 S: HELO myhostname.com
 R: 250 myhostname.com
-S: MAIL FROM: <pepito@myhostname.com>
+S: MAIL FROM: &lt;pepito@myhostname.com&gt;
 R: 250 OK
-S: RCPT TO: <Jones@supersmtp.com>
+S: RCPT TO: &lt;Jones@supersmtp.com&gt;
 R: 250 OK
 S: DATA
-R: 354 Start mail input; end with <CRLF>.<CRLF>
+R: 354 Start mail input; end with &lt;CRLF&gt;.&lt;CRLF&gt;
 S: .......your mail here........
 S: .
 R: 250 OK
 S: QUIT
 R: 221 mail.supersmtp.com Service closing blah blah blah
 </pre>
+<p>
 <br />
 最初の通信ステップをチェックしたい場合、各フィールドへ設定する値は次のようになります。
 <br /><br />
-<b>「TCP 送信文字列」</b>: HELLO myhostname.com^M|MAIL FROM: <pepito@myhostname.com>^M| RCPT TO: <Jones@supersmtp.com>^M
+<b>「TCP 送信文字列」</b>: HELLO myhostname.com^M|MAIL FROM: &lt;pepito@myhostname.com&gt;^M| RCPT TO: &lt;Jones@supersmtp.com&gt;^M
 <br /><br />
 <b>「TCP 受信文字列」</b>: 250|250|250
 <br /><br />

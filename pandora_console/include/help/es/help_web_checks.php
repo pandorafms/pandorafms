@@ -10,7 +10,8 @@ La monitorización WEB avanzada es una funcionalidad que realiza el Servidor WEB
 
 <br><br>
 Este es un ejemplo del modulo Webcheck de GOLIAT:
-<br>
+<br />
+</p>
 <pre>
 
 
@@ -25,7 +26,7 @@ resource 1
 task_end
 
 task_begin
-get http://galaga.artica.es/pandora/index.php?sec=messages&sec2=operation/messages/message
+get http://galaga.artica.es/pandora/index.php?sec=messages&amp;sec2=operation/messages/message
 cookie 1
 resource 1
 check_string Read messages
@@ -33,4 +34,3 @@ task_end
 
 
 </pre>
-</p>

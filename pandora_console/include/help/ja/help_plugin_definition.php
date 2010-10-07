@@ -24,23 +24,23 @@ Pandora FMS で利用するために、このプラグインは単一の値を�
 
 <table cellpadding=4 cellspacing=4 class=databox width=80%>
 <tr>
-<td valign='top'>プラグインコマンド<td>/usr/share/pandora/util/plugins/informix_plugin_pandora (プラグインのデフォルト配置ディレクトリ)
+<td valign='top'>プラグインコマンド</td><td>/usr/share/pandora/util/plugins/informix_plugin_pandora (プラグインのデフォルト配置ディレクトリ)</td>
 <tr>
-<td>最大タイムアウト<td> 15 (例)
+<td>最大タイムアウト</td><td> 15 (例)</td>
 </tr>
 <tr>
-<td>IPアドレスオプション<td> -H
+<td>IPアドレスオプション</td><td> -H</td>
 
 <tr>
-<td>Port オプション<td> 未記入
-</tr>
-
-<tr>
-<td>User オプション<td> -U
+<td>Port オプション</td><td> 未記入</td>
 </tr>
 
 <tr>
-<td>Password オプション<td> -P
+<td>User オプション</td><td> -U</td>
+</tr>
+
+<tr>
+<td>Password オプション</td><td> -P</td>
 </tr>
 
 </table>

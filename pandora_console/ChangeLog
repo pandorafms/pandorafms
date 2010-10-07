@@ -1,5 +1,29 @@
 2010-10-07  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/calendar.js, include/javascript/jquery.colorpicker.js:
+	fixed end of sentences with lost semicolons, the Eclipse IDE warned me some
+	this bugs.
+	
+	* include/javascript/jquery.timeentry.js, include/help/en/help_wmiquery.php,
+	include/help/en/help_tcp_send.php, include/help/en/help_web_checks.php,
+	include/help/es/help_date_format.php, include/help/es/help_tcp_send.php,
+	include/help/es/help_agent_status.php, include/help/es/help_eventview.php,
+	include/help/es/help_configure_gis_map.php,
+	include/help/es/help_web_checks.php,
+	include/help/es/help_plugin_definition.php,
+	include/help/es/help_alert_macros.php, include/help/ja/help_wmiquery.php,
+	include/help/ja/help_date_format.php,
+	include/help/ja/help_alert-matches.php, include/help/ja/help_tcp_send.php,
+	include/help/ja/help_agent_status.php, include/help/ja/help_eventview.php,
+	include/help/ja/help_configure_gis_map.php,
+	include/help/ja/help_map_builder.php, include/help/ja/help_web_checks.php,
+	include/help/ja/help_plugin_definition.php,
+	include/help/ja/help_alert_macros.php,
+	include/help/ja/help_gis_setup_map_connection.php: cleaned html and fixed
+	unclose html tags in source code, the Eclipse IDE warned me some this bugs.
+
+2010-10-07  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/calendar.js, include/FusionCharts/FusionCharts.js: fixed end of
 	sentences with lost semicolons, the Eclipse IDE warned me some this bugs.
 	

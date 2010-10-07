@@ -92,8 +92,12 @@ $weights = implode(',', $weight_array);
 
 	echo "<table class='databox'>";
 	echo "<tr><td>";
+	
+	$graph_width = get_db_sql ("SELECT width FROM tgraph WHERE id_graph = ".$id);
+	$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$id);
+	
 	if ($config['flash_charts']) {
-		echo graphic_combined_module (explode (',', $modules), explode (',', $weights), $period, $width, $height,
+		echo graphic_combined_module (explode (',', $modules), explode (',', $weights), $period, $graph_width, $graph_height,
 				'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked);
 	} else {
 		echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";

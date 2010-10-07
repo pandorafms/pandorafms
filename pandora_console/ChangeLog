@@ -1,5 +1,14 @@
 2010-10-07  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_reporting.php
+	include/functions_visual_map.php
+	operation/reporting/graph_viewer.php
+	godmode/reporting/graph_builder.preview.php: Fixed the setting
+	of width and height on custom graphs setup. Increased the height 
+	of the graph in few sections to fix the rise of the leyend
+
+2010-10-07  Sergio Martin <sergio.martin@artica.es>
+
 	* include/fgraph.php: Fixed crash when try to render 
 	a graph without data
 

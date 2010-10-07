@@ -306,7 +306,7 @@ function getImageStatusElement($layoutData) {
 				break;
 			case 4:
 				//Critical (ALERT)
-				$img = "4".$img."_bad.png";
+				$img .= "_bad.png";
 				break;
 			case 0:
 				//Normal (OK)

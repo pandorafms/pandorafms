@@ -1680,10 +1680,9 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				array_push ($weights, $content2["weight"]);
 			}
 			
-			$graph_width = get_db_sql ("SELECT width FROM tgraph WHERE id_graph = ".$content["id_gs"]);
-			$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$content["id_gs"]);
-	
-	
+			// Increase the height to fix the leyend rise
+			$sizgraph_h += count($modules) * 15;
+			
 			$table->colspan[1][0] = 3;
 			$data = array ();
 			$data[0] = '<img src="include/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';

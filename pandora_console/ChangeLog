@@ -1,3 +1,8 @@
+2010-10-07  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/massive/massive_edit_agents.php: Removed the IP 
+	address field from the agent massive edition
+
 2010-10-06  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/configurar_agente.php: fixed the source code, now when you

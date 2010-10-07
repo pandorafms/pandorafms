@@ -48,88 +48,91 @@ if ($delete_graph) {
 }
 
 if ($view_graph) {
+	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id";
+	$sources = get_db_all_rows_sql($sql);
+
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id";
-	$res=mysql_query($sql);
-	if ($graph = mysql_fetch_array($res)){
-		$id_user = $graph["id_user"];
-		$private = $graph["private"];
-		$width = $graph["width"];
-		$height = $graph["height"];
-		$zoom = (int) get_parameter ('zoom', 0);
-		if ($zoom > 0) {
-			switch ($zoom) {
-			case 1: 
-				$width = 500;
-				$height = 210;
-				break;
-			case 2:  
-				$width = 650;
-				$height = 310;
-				break;
-			case 3:
-				$width = 770;
-				$height = 400;
-				break;
-			}
+	$graph = get_db_row_sql($sql);
+
+	$id_user = $graph["id_user"];
+	$private = $graph["private"];
+	$width = $graph["width"];
+	$height = $graph["height"] + count($sources) * 10;
+	$zoom = (int) get_parameter ('zoom', 0);
+	//Increase the height to fix the leyend rise
+	if ($zoom > 0) {
+		switch ($zoom) {
+		case 1: 
+			$width = 500;
+			$height = 200 + count($sources) * 15;
+			break;
+		case 2:  
+			$width = 650;
+			$height = 300 + count($sources) * 10;
+			break;
+		case 3:
+			$width = 770;
+			$height = 400 + count($sources) * 5;
+			break;
 		}
-		$period = (int) get_parameter ('period');
-		if (! $period)
-			$period = $graph["period"];
-		else 
-			$period = 3600 * $period;
-		$events = $graph["events"];
-		$description = $graph["description"];
-		$stacked = (int) get_parameter ('stacked', -1);
-		if ($stacked == -1)
-			$stacked = $graph["stacked"];
-		
-		$name = $graph["name"];
-		if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
-			audit_db($config['id_user'],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access to a custom graph not allowed");
-			include ("general/noaccess.php");
-			exit;
-		}
-		
-		// Header
-		print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, "" );
-
-		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
-		echo "<tr><td>";
-		print_custom_graph ($id, $height, $width, $period, $stacked);
-		echo "</td></tr></table>";
-		$period_label = human_time_description ($period);
-		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'>";
-		echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
-		echo "<tr><td class='datos'>";
-		echo "<b>".__('Period')."</b>";
-		echo "<td class='datos'>";
-		
-		print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
-			'', '', 0, false, false, false);
-
-		echo "<td class='datos'>";
-		$stackeds = array ();
-		$stackeds[0] = __('Graph defined');
-		$stackeds[0] = __('Area');
-		$stackeds[1] = __('Stacked area');
-		$stackeds[2] = __('Line');
-		$stackeds[3] = __('Stacked line');
-		print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
-
-		echo "<td class='datos'>";
-		$zooms = array();
-		$zooms[0] = __('Graph defined');
-	 	$zooms[1] = __('Zoom x1');
-		$zooms[2] = __('Zoom x2');
-		$zooms[3] = __('Zoom x3');
-		print_select ($zooms, 'zoom', $zoom , '', '', 0);
-
-		echo "<td class='datos'>";
-		echo "<input type=submit value='".__('Update')."' class='sub upd'>";
-		echo "</table>";
-		echo "</form>";	
-		return;
 	}
+	$period = (int) get_parameter ('period');
+	if (! $period)
+		$period = $graph["period"];
+	else 
+		$period = 3600 * $period;
+	$events = $graph["events"];
+	$description = $graph["description"];
+	$stacked = (int) get_parameter ('stacked', -1);
+	if ($stacked == -1)
+		$stacked = $graph["stacked"];
+	
+	$name = $graph["name"];
+	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
+		audit_db($config['id_user'],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access to a custom graph not allowed");
+		include ("general/noaccess.php");
+		exit;
+	}
+	
+	// Header
+	print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, "" );
+
+	echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
+	echo "<tr><td>";
+	print_custom_graph ($id, $height, $width, $period, $stacked);
+	echo "</td></tr></table>";
+	$period_label = human_time_description ($period);
+	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'>";
+	echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
+	echo "<tr><td class='datos'>";
+	echo "<b>".__('Period')."</b>";
+	echo "<td class='datos'>";
+	
+	print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
+		'', '', 0, false, false, false);
+
+	echo "<td class='datos'>";
+	$stackeds = array ();
+	$stackeds[0] = __('Graph defined');
+	$stackeds[0] = __('Area');
+	$stackeds[1] = __('Stacked area');
+	$stackeds[2] = __('Line');
+	$stackeds[3] = __('Stacked line');
+	print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
+
+	echo "<td class='datos'>";
+	$zooms = array();
+	$zooms[0] = __('Graph defined');
+	$zooms[1] = __('Zoom x1');
+	$zooms[2] = __('Zoom x2');
+	$zooms[3] = __('Zoom x3');
+	print_select ($zooms, 'zoom', $zoom , '', '', 0);
+
+	echo "<td class='datos'>";
+	echo "<input type=submit value='".__('Update')."' class='sub upd'>";
+	echo "</table>";
+	echo "</form>";	
+	return;
 }
 
 // Header

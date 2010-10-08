@@ -764,6 +764,10 @@ function add_alert_compound_element ($id_alert_compound, $id_alert_template_modu
 	return @process_sql_insert ('talert_compound_elements', $values);
 }
 
+function get_alert_compounds ($filter = false, $fields = false) {
+	return @get_db_all_rows_filter ('talert_compound', $filter, $fields);
+}
+
 function get_alert_compound ($id_alert_compound) {
 	return get_db_row ('talert_compound', 'id', $id_alert_compound);
 }

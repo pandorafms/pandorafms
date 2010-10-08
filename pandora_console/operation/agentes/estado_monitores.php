@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -168,7 +168,7 @@ $table->head[8] = __('Last contact') . ' ' .
 	'<a href="' . $url . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
 	'<a href="' . $url . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
 
-$table->align = array("left","left","left","left","center");
+$table->align = array("left","left","left","left","left","center");
 
 $last_modulegroup = 0;
 $rowIndex = 0;

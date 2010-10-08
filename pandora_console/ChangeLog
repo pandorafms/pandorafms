@@ -1,3 +1,7 @@
+2010-10-08  Raúl Mateos <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_monitores.php: Center status icon.
+
 2010-10-08  Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_io.php: Added functions ascii_to_html and html_to_ascii. 

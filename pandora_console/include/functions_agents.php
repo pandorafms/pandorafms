@@ -496,4 +496,146 @@ function getNextAgentContact($idAgent, $maxModules = false) {
 	else
 		return false;
 }
+
+/**
+ * Get all the modules common in various agents that have associated alerts. If an empty list is passed it will select all
+ *
+ * @param mixed Agent id to get modules. It can also be an array of agent id's.
+ * @param mixed Array, comma delimited list or singular value of rows to
+ * select. If nothing is specified, nombre will be selected. A special
+ * character "*" will select all the values.
+ * @param mixed Aditional filters to the modules. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword).
+ * @param bool Wheter to return the modules indexed by the id_agente_modulo or
+ * not. Default is indexed.
+ * Example:
+<code>
+Both are similars:
+$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
+$modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+
+Both are similars:
+$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+$modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+</code>
+ *
+ * @return array An array with all modules in the agent.
+ * If multiple rows are selected, they will be in an array
+ */
+function get_agents_common_modules_with_alerts ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
+	$id_agent = safe_int ($id_agent, 1);
+
+	$where = '';
+	if (! empty ($id_agent)) {
+		$where = sprintf (' WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0 AND id_agente IN (%s) AND (SELECT count(nombre) FROM tagente_modulo t3, talert_template_modules t4 WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0 AND t1.nombre = t3.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
+	}
+		
+	if (! empty ($filter)) {
+		$where .= ' AND ';
+		if (is_array ($filter)) {
+			$fields = array ();
+			foreach ($filter as $field => $value) {
+				array_push ($fields, $field.'="'.$value.'"');
+			}
+			$where .= implode (' AND ', $fields);
+		} else {
+			$where .= $filter;
+		}
+	}
+	
+	$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo)
+		FROM tagente_modulo t1, talert_template_modules t2
+		%s
+		ORDER BY nombre',
+		$where);
+	$result = get_db_all_rows_sql ($sql);
+
+	if (empty ($result)) {
+		return array ();
+	}
+	
+	if (! $indexed)
+		return $result;
+	
+	$modules = array ();
+	foreach ($result as $module) {
+		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+			$modules[$module['id_agente_modulo']] = $module['id_agente_modulo'];
+		}
+	}
+	return $modules;
+}
+
+/**
+ * Get all the modules common in various agents. If an empty list is passed it will select all
+ *
+ * @param mixed Agent id to get modules. It can also be an array of agent id's.
+ * @param mixed Array, comma delimited list or singular value of rows to
+ * select. If nothing is specified, nombre will be selected. A special
+ * character "*" will select all the values.
+ * @param mixed Aditional filters to the modules. It can be an indexed array
+ * (keys would be the field name and value the expected value, and would be
+ * joined with an AND operator) or a string, including any SQL clause (without
+ * the WHERE keyword).
+ * @param bool Wheter to return the modules indexed by the id_agente_modulo or
+ * not. Default is indexed.
+ * Example:
+<code>
+Both are similars:
+$modules = get_agent_modules ($id_agent, false, array ('disabled' => 0));
+$modules = get_agent_modules ($id_agent, false, 'disabled = 0');
+
+Both are similars:
+$modules = get_agent_modules ($id_agent, '*', array ('disabled' => 0, 'history_data' => 0));
+$modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0');
+</code>
+ *
+ * @return array An array with all modules in the agent.
+ * If multiple rows are selected, they will be in an array
+ */
+function get_agents_common_modules ($id_agent, $filter = false, $indexed = true, $get_not_init_modules = true) {
+	$id_agent = safe_int ($id_agent, 1);
+
+	$where = '';
+	if (! empty ($id_agent)) {
+		$where = sprintf (' WHERE delete_pending = 0 AND id_agente IN (%s) AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (%s)) = (%s)', implode (",", (array) $id_agent), implode (",", (array) $id_agent), count($id_agent));
+	}
+		
+	if (! empty ($filter)) {
+		$where .= ' AND ';
+		if (is_array ($filter)) {
+			$fields = array ();
+			foreach ($filter as $field => $value) {
+				array_push ($fields, $field.'="'.$value.'"');
+			}
+			$where .= implode (' AND ', $fields);
+		} else {
+			$where .= $filter;
+		}
+	}
+	
+	$sql = sprintf ('SELECT DISTINCT(t1.id_agente_modulo) as id_agente_modulo
+		FROM tagente_modulo t1, talert_template_modules t2
+		%s
+		ORDER BY nombre',
+		$where);
+	$result = get_db_all_rows_sql ($sql);
+
+	if (empty ($result)) {
+		return array ();
+	}
+	
+	if (! $indexed)
+		return $result;
+	
+	$modules = array ();
+	foreach ($result as $module) {
+		if($get_not_init_modules || get_agentmodule_is_init($module['id_agente_modulo'])) {
+			$modules[$module['id_agente_modulo']] = $module['id_agente_modulo'];
+		}
+	}
+	return $modules;
+}
 ?>

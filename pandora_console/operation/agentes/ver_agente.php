@@ -32,6 +32,7 @@ if (is_ajax ()) {
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
+	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
 	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
@@ -85,6 +86,21 @@ if (is_ajax ()) {
 		}
 		
 		echo json_encode($names);
+		return;
+	}
+	
+	if ($get_agent_modules_alerts_json_for_multiple_agents) {
+		$idAgents = get_parameter('id_agent');
+		$id_template = get_parameter('template');
+		
+		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre) FROM tagente_modulo t1, talert_template_modules t2 WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t3, talert_template_modules t4 WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0 AND t1.nombre = t3.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+		
+		$result = array();
+		foreach($nameModules as $nameModule) {
+			$result[] = $nameModule['nombre'];
+		}
+		
+		echo json_encode($result);
 		return;
 	}
 	

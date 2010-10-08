@@ -97,7 +97,7 @@ $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
 
 $page = get_parameter('page', '');
-if (strstr($page, "policy_modules") === false) {
+if (strstr($page, "policy_modules") === false && $id_agent_module) {
 	if ($config['enterprise_installed'])
 		$disabledBecauseInPolicy = isModuleInPolicy($id_agent_module) && isModuleLinked($id_agent_module);
 	else

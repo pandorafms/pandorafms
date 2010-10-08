@@ -1,3 +1,9 @@
+2010-10-08  Sergio Martin <sergio.martin@artica.es>
+
+	*  godmode/agentes/module_manager_editor_common.php
+	 godmode/agentes/module_manager_editor.php: Fixed SQL 
+	 error when try to create a module called 0
+
 2010-10-08  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/massive/massive_add_action_alerts.php,

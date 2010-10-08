@@ -93,7 +93,7 @@ case "$1" in
 			exit 1
 		else
 			echo "Stopping Pandora Agent."
-			kill $PANDORA_PID > /dev/null 2>&1        
+			kill -9 $PANDORA_PID > /dev/null 2>&1        
 		fi
 	;;
 

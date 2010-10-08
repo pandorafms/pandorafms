@@ -37,8 +37,49 @@ function safe_input($value) {
     // Specific for MySQL.
     $valueHtmlEncode = str_replace('/*', "&#47;&#42;", $valueHtmlEncode);
     $valueHtmlEncode = str_replace('*/', "&#42;&#47;", $valueHtmlEncode);
+	
+	//Replace ( for the html entitie
+	$valueHtmlEncode = str_replace('(', "&#40;", $valueHtmlEncode);
+	
+	//Replace ( for the html entitie
+	$valueHtmlEncode = str_replace(')', "&#41;", $valueHtmlEncode);	
+	
+	//Replace some characteres for html entities
+	for ($i=0;$i<32;$i++) {
+		$valueHtmlEncode = str_ireplace(chr($i),ascii_to_html($i), $valueHtmlEncode);			
+	}
 
 	return $valueHtmlEncode;
+}
+
+/** 
+ * Convert ascii char to html entitines
+ * 
+ * @param int num of ascci char
+ * 
+ * @return string String of html entitie
+ */
+function ascii_to_html($num) {
+	
+	if ($num <= 15) {
+		return "&#x0".dechex($num).";";
+	} else {
+		return "&#x".dechex($num).";";
+	}
+}
+
+/** 
+ * Convert hexadecimal html entity value to char
+ * 
+ * @param string String of html hexadecimal value
+ * 
+ * @return string String with char
+ */
+function html_to_ascii($hex) {
+		
+	$dec = hexdec($hex);
+	
+	return chr($dec);
 }
 
 /**
@@ -71,6 +112,17 @@ function safe_output($value, $utf8 = true)
 	else {
 		$valueHtmlEncode =  html_entity_decode ($value, ENT_QUOTES);
 	}
+	
+	//Replace the html entitie of ( for the char
+	$valueHtmlEncode = str_replace("&#40;", '(', $valueHtmlEncode);
+	
+	//Replace the html entitie of ) for the char
+	$valueHtmlEncode = str_replace("&#41;", ')', $valueHtmlEncode);		
+	
+	//Revert html entities to chars
+	for ($i=0;$i<32;$i++) {
+		$valueHtmlEncode = str_ireplace("&#x".dechex($i).";",html_to_ascii(dechex($i)), $valueHtmlEncode);			
+	}	
 	
 	return $valueHtmlEncode;	
 }

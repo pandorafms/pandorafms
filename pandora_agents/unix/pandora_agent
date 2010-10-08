@@ -424,6 +424,12 @@ sub read_config (;$) {
 	# Set the maximun number of threads
 	$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'}) if defined ($Sem);
 
+	# Set tentacle client options
+	if ($Conf{'transfer_mode'} eq 'tentacle') {
+		$Conf{'server_opts'} = '-x \'' . $Conf{'server_pwd'} . '\' ' . $Conf{'server_opts'} if ($Conf{'server_pwd'} ne '');
+		$Conf{'server_opts'} = '-c ' . $Conf{'server_opts'} if ($Conf{'server_ssl'} eq 'yes');
+	}
+
 	close (CONF_FILE);
 }
 

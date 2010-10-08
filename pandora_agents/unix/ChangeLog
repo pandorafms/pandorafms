@@ -1,3 +1,8 @@
+2010-10-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Pass server_pwd and server_ssl configuration tokens
+	  to tentacle. Fixes bug #3080299.
+
 2010-10-07  Ramon Novoa  <rnovoa@artica.es>
 
 	* Linux/pandora_agent.conf: Added an example usage of the

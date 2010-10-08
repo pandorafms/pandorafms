@@ -572,7 +572,7 @@ function get_agentmodule ($id_agentmodule) {
  * @return int the agentmodule id
  */
 function get_agentmodule_id ($agentmodule_name, $agent_id) {
-	return get_db_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id)); 
+	return get_db_row_filter ('tagente_modulo', array('nombre' => $agentmodule_name, 'id_agente' => $agent_id, 'delete_pending' => 0)); 
 }
 
 /**

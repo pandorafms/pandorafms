@@ -1,3 +1,11 @@
+2010-10-08  Sancho Lerena <slerena@artica.es>
+
+    * include/functions_io.php: Added \s character to list of HTML decoded/encoded
+    items to be converted from user entries (Safety for XSS and SQL Injection).
+
+    * pandoradb_data.sql: Added more default templates, actions and commands. 
+    This is for remote agent management (refresh).
+    
 2010-10-08  Raúl Mateos <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_monitores.php: Center status icon.

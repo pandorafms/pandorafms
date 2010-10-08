@@ -31,14 +31,16 @@ if (is_ajax ()) {
 	$get_actions_alert_template = (bool) get_parameter("get_actions_alert_template");
 	
 	if ($get_actions_alert_template) {
-		$id_template = get_parameter("id_template");
-		$rows = get_db_all_rows_sql("SELECT t1.id, t1.name,
+		$id_template = (int) get_parameter("id_template");
+		$sql = sprintf ("SELECT t1.id, t1.name,
 				(SELECT COUNT(t2.id) 
 					FROM talert_templates AS t2 
-					WHERE t2.id = " . $id_template . "
+					WHERE t2.id =  %d 
 						AND t2.id_alert_action = t1.id) as 'sort_order'
 			FROM talert_actions AS t1 
-			ORDER BY sort_order DESC");
+			ORDER BY sort_order DESC", $id_template);
+			
+		$rows = get_db_all_rows_sql($sql);
 		
 		
 		if ($rows !== false)

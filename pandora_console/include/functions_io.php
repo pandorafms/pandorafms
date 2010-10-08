@@ -38,7 +38,28 @@ function safe_input($value) {
 	$valueHtmlEncode = str_replace('/*', "&#47;&#42;", $valueHtmlEncode);
 	$valueHtmlEncode = str_replace('*/', "&#42;&#47;", $valueHtmlEncode);
 	
+    //Replace some characteres for html entities
+	for ($i=0;$i<33;$i++) {
+		$valueHtmlEncode = str_ireplace(chr($i),ascii_to_html($i), $valueHtmlEncode);			
+	}
+
 	return $valueHtmlEncode;
+}
+
+/** 
+ * Convert ascii char to html entitines
+ * 
+ * @param int num of ascci char
+ * 
+ * @return string String of html entitie
+ */
+function ascii_to_html($num) {
+	
+	if ($num <= 15) {
+		return "&#x0".dechex($num).";";
+	} else {
+		return "&#x".dechex($num).";";
+	}
 }
 
 /**

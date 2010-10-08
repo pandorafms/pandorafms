@@ -1,3 +1,9 @@
+
+2010-10-08 Sancho Lerena <slerena@artica.es>
+
+	* include/functions_io.php: Fixed problem with SQL injection
+	when using blank/tab characters.
+
 2010-10-08 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* operation/agentes/estado_agente.php, ver_agente.php: Fixed a problem

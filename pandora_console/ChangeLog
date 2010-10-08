@@ -1,5 +1,16 @@
 2010-10-08  Sergio Martin <sergio.martin@artica.es>
 
+	* include/javascript/pandora.js
+	include/functions_agents.php
+	operation/agentes/ver_agente.php
+	godmode/massive/massive_add_alerts.php
+	godmode/massive/massive_delete_alerts.php: Improved the 
+	addition/deletion of alerts in massive operations to 
+	select not only the agents (the modules too) for pending
+	task 3082862
+
+2010-10-08  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_db.php: Fixed the function get_agentmodule_id
 	to avoid the pending_delete modules
 

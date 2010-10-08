@@ -41,7 +41,7 @@ if (is_ajax ()) {
 	return;
 }
 
-function process_manage_add ($id_alert_template, $id_agents) {
+function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 	if (empty ($id_agents)) {
 		echo '<h3 class="error">'.__('No agents selected').'</h3>';
 		return false;
@@ -52,71 +52,86 @@ function process_manage_add ($id_alert_template, $id_agents) {
 		return false;
 	}
 	
-	process_sql_begin ();
-	$modules = get_agent_modules ($id_agents, 'id_agente_modulo', false, true);
-	$contfail = 0;
-	$contsuccess = 0;
-	foreach($modules as $module){
-		$success = create_alert_agent_module ($module, $id_alert_template);
-		if(!$success)
-			$contfail = $contfail + 1;
-		else
-			$contsuccess = $contsuccess + 1;
+	foreach($module_names as $module){
+		foreach($id_agents as $id_agent) {
+			 $module_id = get_agentmodule_id($module, $id_agent);
+			 $modules_id[] = $module_id['id_agente_modulo'];
+		}
+	}
+		
+	if(count($module_names) == 1 && $module_names[0] == '0'){
+		$modules_id = get_agents_common_modules ($id_agents, false, true);
 	}
 	
-	if ($contfail > 0) {
-		echo '<h3 class="error">'.__('There was an error adding the alerts, the operation has been cancelled').'</h3>';
-		echo '<h3 class="error">'.__('Could not add alerts').'</h3>';
-		process_sql_rollback ();
+	
+	$conttotal = 0;
+	$contsuccess = 0;
+	foreach($modules_id as $module){
+		$success = create_alert_agent_module ($module, $id_alert_template);
+
+		if($success)
+			$contsuccess ++;
+		$conttotal ++;
 	}
-	else {
-		echo '<h3 class="suc">'.__('Successfully added').' '.$contsuccess.' '.__('Alerts').'</h3>';
-		process_sql_commit ();
-	}
+	
+	print_result_message ($contsuccess > 0,
+	__('Successfully added')."(".$contsuccess."/".$conttotal.")",
+	__('Could not be added'));
+
 }
 
 $id_group = (int) get_parameter ('id_group', -1);
 $id_agents = get_parameter ('id_agents');
+$module_names = get_parameter ('module');
 $id_alert_template = (int) get_parameter ('id_alert_template');
 
 $add = (bool) get_parameter_post ('add');
 
 if ($add) {
-	process_manage_add ($id_alert_template, $id_agents);
+	process_manage_add ($id_alert_template, $id_agents, $module_names);
 }
 
 $groups = get_user_groups ();
 
-$table->id = 'delete_table';
+$table->id = 'add_table';
 $table->width = '95%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';
-$table->style[2] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold; vertical-align:top';
 $table->size = array ();
 $table->size[0] = '15%';
-$table->size[1] = '85%';
+$table->size[1] = '40%';
+$table->size[2] = '15%';
+$table->size[3] = '40%';
 
 $table->data = array ();
 	
 $table->data[0][0] = __('Group');
-$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', 0,
 	'', 'Select', -1, true, false, true, '', false);
+$table->data[0][2] = '';
+$table->data[0][3] = '';
 
-$table->data[1][0] = __('Agent');
+$table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[1][0] .= '<img src="images/spinner.png" />';
 $table->data[1][0] .= '</span>';
 $agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
-$table->data[1][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
+$agents = get_agents();
+$table->data[1][1] = print_select (index_array ($agents, 'id_agente', 'nombre'),
 	'id_agents[]', '', '', '', '', true, true, true, '', false);
-	
+$table->data[1][2] = __('Modules');
+$table->data[1][3] = print_select (array(), 'module[]',	'', false, '', '', true, true, false);
+
 $templates = get_alert_templates (false, array ('id', 'name'));
 $table->data[2][0] = __('Alert template');
 $table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
 	'id_alert_template', $id_alert_template, false, __('Select'), 0, true);
-	
+$table->data[2][2] = '';
+$table->data[2][3] = '';
+
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
@@ -128,6 +143,9 @@ echo '</form>';
 
 echo '<h3 class="error invisible" id="message"> </h3>';
 
+//Hack to translate text "none" in PHP to javascript
+echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
+
 require_jquery_file ('form');
 require_jquery_file ('pandora.controls');
 ?>
@@ -135,6 +153,8 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+	$("#id_agents").change(agent_changed_by_multiple_agents);
+
 	$("#id_group").change (function () {
 		var $select = $("#id_agents").enable ();
 		$("#agent_loading").show ();

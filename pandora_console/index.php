@@ -157,11 +157,12 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 }
 elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// Login process 
-	
+	include_once('include/functions_db.php');//Include it to use escape_string_sql function
 	$config["auth_error"] = ""; //Set this to the error message from the authorization mechanism
 	$nick = get_parameter_post ("nick"); //This is the variable with the login
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
-	
+	$nick = escape_string_sql($nick);
+	$pass = escape_string_sql($pass);
 	// process_user_login is a virtual function which should be defined in each auth file.
 	// It accepts username and password. The rest should be internal to the auth file.
 	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it

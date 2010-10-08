@@ -63,6 +63,23 @@ function check_login () {
 }
 
 /**
+ * 
+ * Escape string to set it properly to use in sql queries
+ * 
+ * @param string String to be cleaned.
+ * 
+ * @return string String cleaned.
+ */
+function escape_string_sql ($string) {
+	
+	$str = mysql_real_escape_string($string);
+	
+	return $str;
+}
+
+
+
+/**
  * Return a array of id_group of childrens (to branches down)
  * 
  * @param integer $parent The id_group parent to search the childrens. 

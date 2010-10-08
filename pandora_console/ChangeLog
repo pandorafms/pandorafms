@@ -1,3 +1,12 @@
+2010-10-08  Dario Rodriguez <dario.rodriguez@artica.es>
+
+	* include/functions_io.php: Added functions ascii_to_html and html_to_ascii. 
+	Also use this functions to convert no printing chars in function safe_input 
+	and to revert the conversion in function safe_output.
+	* include/functions_db.php: Added function escape_string_sql, is a
+	wrapper db indepenten function to do the same that function mysql_real_escape_string
+	* index.php: Use function escape_string_sql with login parameters.
+
 2010-10-08  Sergio Martin <sergio.martin@artica.es>
 
 	* include/javascript/pandora.js

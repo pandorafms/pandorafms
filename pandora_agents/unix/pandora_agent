@@ -28,6 +28,7 @@ use POSIX qw(strftime floor);
 use Sys::Hostname;
 use File::Basename;
 use File::Copy;
+use IO::Socket;
 
 # Agent XML data
 my $Xml;
@@ -47,6 +48,7 @@ eval {
 	require threads;
 	require threads::shared;
 	require Thread::Semaphore;
+    require IO::Socket;
 };
 if (!$@) {
 	threads::shared::share (\$Xml);
@@ -54,8 +56,8 @@ if (!$@) {
 	$Sem = Thread::Semaphore->new;
 }	
 
-use constant AGENT_VERSION => '3.1';
-use constant AGENT_BUILD => '100608';
+use constant AGENT_VERSION => '3.2dev';
+use constant AGENT_BUILD => '101008';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -146,7 +148,10 @@ my %Conf = (
 	'autotime' => 0,
 	'timezone_offset' => 0,
 	'pandora_exec' => 'pandora_exec',
-	'agent_threads' => 1
+	'agent_threads' => 1,
+    'udp_server_port' => 41122,
+    'udp_server_auth_address' => '0.0.0.0',
+    'udp_server' => 0
 );
 
 # Modules
@@ -1204,6 +1209,43 @@ sub write_module_xml ($@) {
 }
 
 ################################################################################
+# Receive a UDP server signal to restart agent
+################################################################################
+sub udp_server_signal () {
+    log_message ('udp server', 'Received signal to restart the agent.');
+}
+
+################################################################################
+# Basic UDP server to restart agent on UDP signal received
+################################################################################
+sub udp_server ($$) {
+
+    my $udp_port = shift;
+    my $udp_auth_address = shift;
+    my $parent_pid = getppid();
+
+    my($sock, $oldmsg, $newmsg, $hisaddr, $hishost, $MAXLEN);
+    $MAXLEN = 1024;
+
+    log_message ('udp server', 'Starting UDP server listening on '.$udp_auth_address.":".$udp_port);
+    $sock = IO::Socket::INET->new(LocalPort => $udp_port, Proto => 'udp') or die "socket: $@";
+
+    while ($sock->recv($newmsg, $MAXLEN)) {
+	    my($port, $ipaddr) = sockaddr_in($sock->peername);
+	    $hishost = gethostbyaddr($ipaddr, AF_INET);
+
+        log_message ('udp server', 'Received signal from '.$hishost);
+
+        if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
+            if ($newmsg =~ /REFRESH AGENT/){
+                # Send signal to restart agent
+                kill 'SIGINT' , $parent_pid;
+            }
+        }
+    } 
+}
+
+################################################################################
 # Execute the given plugin.
 ################################################################################
 sub exec_plugin ($) {
@@ -1260,8 +1302,24 @@ my $PID = $$;
 # Add the plugins directory to the PATH
 $ENV{'PATH'} .= ":$ConfDir/plugins";
 
+# Start UDP server if configured
+if ($Conf{'udp_server'} == 1){
+    my $pid = fork();
+
+    if ($pid == 0){
+        udp_server ($Conf{'udp_server_port'}, $Conf{'udp_server_auth_address'});
+        exit;
+    }
+}
+
+
 # Loop
 while (1) {
+
+    # Ignore signals from UDP server while processing execution
+    if ($Conf{'udp_server'} == 1){
+        $SIG{'INT'} = 'DEFAULT';
+    }
 
 	# Check for a new configuration
 	check_remote_config () unless ($Conf{'debug'} eq '1');
@@ -1353,6 +1411,11 @@ while (1) {
 	# Cron mode
 	last if ($Conf{'cron_mode'} == 1);
 	
+    # Enable signal capture to break the Sleep interval on UDP signal
+    if ($Conf{'udp_server'} == 1){
+        $SIG{'INT'} = \&udp_server_signal;
+    }
+
 	# Go to sleep
 	sleep ($Conf{'interval'});
 }

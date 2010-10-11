@@ -63,7 +63,6 @@ function getSystemInfo(&$systemInfo, $script = false) {
 		$systemInfo['apache_modules'] = apache_get_modules();
 	}
 	
-//	$systemInfo['php_load_extensions'] = get_loaded_extensions();
 	$systemInfo['php_ini'] = ini_get_all();
 	$systemInfo['phpversion'] = phpversion();
 	foreach (get_loaded_extensions() as $module) {
@@ -123,27 +122,76 @@ function show_logfile($file_name, $numLines) {
 	global $config;
 
 	if (!file_exists($file_name)){
-		echo "<h2 class=error>".__("Cannot find file"). "(".$file_name;
-		echo ")</h2>";
+		echo "<h2 class=error>" . __("Cannot find file") . "(" . $file_name .
+			")</h2>";
 	} 
 	else {
-		echo "<h2>" . $file_name . "</h2>";
-		echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
-		echo shell_exec('tail -n ' . $numLines . '  ' . $file_name);
-		echo "</textarea>";
+		if (!is_readable($file_name)) {
+			echo "<h2 class=error>" . __("Cannot read file") . "(" . $file_name .
+				")</h2>";
+		}
+		else {
+			echo "<h2>" . $file_name . "</h2>";
+			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
+			echo shell_exec('tail -n ' . $numLines . '  ' . $file_name);
+			echo "</textarea>";
+		}
 	}
 }
 
-function getLinesLog($file, $numLines = 2000) {
-	
-}
-
-function getLastLog($show = true, $numLines = 2000) {
+function getLastLog($numLines = 2000) {
 	global $config;
 	
 	show_logfile($config["homedir"]."/pandora_console.log", $numLines);
 	show_logfile("/var/log/pandora/pandora_server.log", $numLines);
 	show_logfile("/var/log/pandora/pandora_server.error", $numLines);
+	show_logfile("/etc/mysql/my.cnf", $numLines);
+	show_logfile($config["homedir"]."/include/config.php", $numLines);
+	show_logfile("/etc/pandora/pandora_server.conf", $numLines);
+	show_logfile("/var/log/syslog", $numLines);	
+}
+
+function show_array($title, $anchor, $array = array()) {
+	$table = null;
+	
+	$table->width = '100%';
+	$table->titlestyle = 'border: 1px solid black;';
+	$table->class = "databox_color";
+	$table->data = array();
+	
+	foreach ($array as $index => $item) {
+		if (!is_array($item)) {
+			$row = array();
+			$row[] = $index;
+			$row[] = $item;
+			$table->data[] = $row;
+		}
+		else {
+			foreach ($item as $index2 => $item2) {
+				if (!is_array($item2)) {
+					$row = array();
+					$row[] = $index;
+					$row[] = $index2;
+					$row[] = $item2;
+					$table->data[] = $row;
+				}
+				else {
+					foreach ($item2 as $index3 => $item3) {
+						$row = array();
+						$row[] = $index;
+						$row[] = $index2;
+						$row[] = $index3;
+						$row[] = $item3;
+						$table->data[] = $row;
+					}
+				}
+			}
+		}
+	}
+	
+	echo "<h1><a name='" . $anchor . "'>" . $title . "</a></h1>";
+	
+	print_table($table);
 }
 
 function mainSystemInfo() {
@@ -155,10 +203,7 @@ function mainSystemInfo() {
 	    return;
     }
     
-    debugPrint($_POST);
-    
     $show = (bool) get_parameter('show');
-    $save = (bool) get_parameter('save');
     $pandora_diag = (bool) get_parameter('pandora_diag', 0);
     $system_info = (bool) get_parameter('system_info', 0);
     $log_info = (bool) get_parameter('log_info', 0);
@@ -170,111 +215,60 @@ function mainSystemInfo() {
    	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
     echo '</div>';
     
-    echo "<form method='post'>";
+    echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
+    
+	echo "<form method='post'>";
     $table = null;
     $table->width = '80%';
     $table->align = array();
     $table->align[1] = 'right';
-    $table->data[0][0] = __('Pandora Diagnostic info');
+	if ($pandora_diag) {
+    	$table->data[0][0] = '<a href="#diag_info">' . __('Pandora Diagnostic info') . "</a>";
+	}
+	else {
+		$table->data[0][0] = __('Pandora Diagnostic info');
+	}
     $table->data[0][1] = print_checkbox('pandora_diag', 1, $pandora_diag, true);
-    $table->data[1][0] = __('System info');
+    if ($system_info) {
+		$table->data[1][0] = '<a href="#system_info">' . __('System info') . '</a>';
+    }
+    else {
+    	$table->data[1][0] = __('System info');
+    }
     $table->data[1][1] = print_checkbox('system_info', 1, $system_info, true);
-	$table->data[2][0] = __('Log Info');
+    if ($log_info) {
+		$table->data[2][0] = '<a href="#log_info">' . __('Log Info') . '</a>';
+    }
+    else {
+    	$table->data[2][0] = __('Log Info');
+    }
     $table->data[2][1] = print_checkbox('log_info', 1, $log_info, true);
 	$table->data[3][0] = __('Number lines of log');
     $table->data[3][1] = print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
     print_table($table);
     echo "<div style='width: " . $table->width . "; text-align: right;'>";
    	print_submit_button(__('Show'), 'show', false, 'class="sub next"');
-   	echo "&nbsp;";
-   	print_submit_button(__('Save'), 'save', false, 'class="sub wand"');
    	echo "</div>";
     echo "</form>";
     
-    echo "<p>" . __('This tool is used just to view your Pandora FMS system logfiles directly from console') . "</p>";
-    
-//    $systemInfo = array();
-    
-//    if ($pandora_diag) {
-//    	getPandoraDiagnostic($systemInfo);
-//    }
-//    if ($system_info) {
-//    	getSystemInfo(&$systemInfo);
-//    }
-//    
-//    if ($show) {
-//    	$table = null;
-//    	$table->width = '90%';    	
-//    	$table->head = array();
-//    	$table->head[0] = __('Info');
-//    	$table->head[1] = __('Value');
-//    	
-//    	$table->valign = array();
-//    	$table->valign[0] = 'top';
-//    	
-//    	$table->data = array();
-//    	foreach ($systemInfo as $name => $info) {
-//    		$row = array();
-//    		
-//    		switch ($name) {
-//    			case 'apache_modules':
-//    				foreach ($info as $name => $module) {
-//    					$row = array();
-//    					
-//    					$row[] = 'apache_module';
-//    					$row[] = $module;
-//    					
-//    					$table->data[] = $row;
-//    				}
-//    				break;
-//    			case 'php_ini':
-//    				foreach ($info as $name => $ini) {
-//	    				$row = array();
-//	    				
-//	    				$row[] = $name;
-//	    				$row[] = __('Global value: ') . $ini['global_value'] . __(' Local value: ') . $ini['local_value']; 
-//	    				
-//	    				$table->data[] = $row;
-//    				}
-//    				break;
-//    			case 'php_load_extensions':
-//    				foreach ($info as $name => $extension) {
-//	    				$row = array();
-//	    				
-//	    				$row[] = $name;
-//	    				$row[] = $extension;
-//	    				
-//    					$table->data[] = $row;
-//    				}
-//    				break;
-//    			case 'disk':
-//    				foreach ($info as $entry) {
-//    					$row = array();
-//	    				
-//	    				$row[] = 'system_disk';
-//	    				$row[] = 'Filesystem: ' . $entry['Filesystem'] . '<br />' .
-//	    					'Size: ' . $entry['Size'] . '<br />' .
-//	    					'Used: ' . $entry['Used'] . '<br />' .
-//	    					'Use%: ' . $entry['Use%'] . '<br />' .
-//	    					'Avail: ' . $entry['Avail'] . '<br />' .
-//	    					'Mounted on: ' . $entry['Mounted_on'] . '<br />';
-//    					$table->data[] = $row;
-//    				}
-//    				break;
-//    			default:
-//					$row[] = $name;
-//		    		$row[] = $info;
-//    	    		$table->data[] = $row;
-//    				break;
-//    		}
-//    	}
-//    	
-//    	print_table($table);
-//    	
-//        if ($log_info) {
-//    		getLastLog($show, $log_num_lines);
-//    	}
-//    }
+    if ($show) {
+	    if ($pandora_diag) {
+	    	$info = array();
+	    	getPandoraDiagnostic($info);
+	    	show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
+	    }
+	    
+	    if ($system_info) {
+	    	$info = array();
+	    	getSystemInfo($info);
+	    	show_array(__('System info'), 'system_info', $info);
+	    }
+	    
+	    if ($log_info) {
+	    	echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
+	    	getLastLog($log_num_lines);
+	    }
+    }
 }
 
 function consoleMode() {

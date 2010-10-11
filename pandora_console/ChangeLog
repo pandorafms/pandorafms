@@ -1,5 +1,12 @@
 2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* extensions/system_info.php: finally I finished (I hope) the extension of
+	get system info, now the console part run.
+	
+	Pending task: #3065357
+
+2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: cleaned source code style.
 	
 	* extensions/system_info.php: first version of extension for extract system

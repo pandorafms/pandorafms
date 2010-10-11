@@ -85,7 +85,12 @@ process_config ();
 require_once ($ownDir . 'streams.php');
 require_once ($ownDir . 'gettext.php');
 
-$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
+if (isset($_SERVER['REMOTE_ADDR'])) {
+	$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
+}
+else {
+	$config["remote_addr"] = null;
+}
 $config['user_language'] = $config["language"];
 
 // Set a the system timezone default 

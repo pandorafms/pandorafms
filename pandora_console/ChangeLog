@@ -1,3 +1,17 @@
+2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/config_process.php: fixed the execution in as script.
+	
+	* include/fgraph.php: fixed in the "graphic_combined_module" when is empty.
+	And cleaned source code style.
+	
+	* include/functions_extensions.php: cleaned source code style.
+	
+	* extensions/pandora_logs.php: cleaned source code style. And set to
+	translation a string.
+	
+	* extras/pandora_diag.php: cleaned source code style.
+
 2010-10-11 Sancho Lerena <slerena@artica.es>
 
         * include/functions_reporting.php: Fixed problem with SQL custom reports

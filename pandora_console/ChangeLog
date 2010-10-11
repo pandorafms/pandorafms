@@ -1,3 +1,12 @@
+2010-10-11 Sancho Lerena <slerena@artica.es>
+
+        * include/functions_reporting.php: Fixed problem with SQL custom reports
+        because the SQL html encoding. Added a SQL check for secure user-input
+        SQL code.
+
+        * include/functions.php: Added check_sql() function to do a basic
+        safety check on SQL code.
+
 2010-10-11 Dario Rodriguez <dario.rodriguez@artica.es>
 
 	* include/functions_io.php: Added \s character in decode HTML entities

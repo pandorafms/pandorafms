@@ -2169,9 +2169,11 @@ function get_db_all_rows_filter ($table, $filter = array(), $fields = false, $wh
 	//TODO: Validate and clean fields
 	if (empty ($fields)) {
 		$fields = '*';
-	} elseif (is_array ($fields)) {
+	}
+	elseif (is_array ($fields)) {
 		$fields = implode (',', $fields);
-	} elseif (! is_string ($fields)) {
+	}
+	elseif (! is_string ($fields)) {
 		return false;	
 	}
 	

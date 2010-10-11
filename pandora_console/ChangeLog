@@ -1,3 +1,11 @@
+2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: cleaned source code style.
+	
+	* extensions/system_info.php: first version of extension for extract system
+	info of Pandora System, at the moment run as PHP script shell, the source
+	code for console is commented because I will change for new source code.
+
 2010-10-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Search history DB if necessary for module charts.

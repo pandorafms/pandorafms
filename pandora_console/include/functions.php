@@ -981,6 +981,23 @@ function index_array ($array, $index = 'id', $value = 'name') {
 }
 
 /**
+* Function to restrict SQL on custom-user-defined queries 
+*
+* @param string SQL code
+* @return string SQL code validated (it will return empty if SQL is not ok)
+**/
+
+function check_sql ($sql){
+
+	// We remove "*" to avoid things like SELECT * FROM tusuario
+	
+	if (preg_match("/\*|DELETE|DROP|ALTER|MODIFY|UNION|password|pass|INSERT|UPDATE/", $sql)){
+		return "";
+	}
+	return $sql;
+}
+
+/**
  * Return a graph type (string) given a module_type
  *
  * This function is useful to determine what kind of graph will be

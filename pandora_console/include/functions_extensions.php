@@ -173,7 +173,7 @@ function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
  * @param string fatherId
  * @param string icon
  */
-function add_godmode_menu_option ($name, $acl,$fatherId = null, $icon = null) {
+function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 	global $config;
 	global $extension_file;
 	

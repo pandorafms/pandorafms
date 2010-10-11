@@ -32,7 +32,8 @@ function render_row ($data, $label){
 		echo "|";
 		echo $data;
 		echo "\n";
-	} else { 
+	}
+	else { 
 		echo "<tr>";
 		echo "<td>" . $label;
 		echo "<td>" . $data;
@@ -45,7 +46,7 @@ function render_row ($data, $label){
 $console_mode = 1;
 if (!isset($argc))
 	$console_mode = 0;
-
+	
 if ($console_mode == 1) {
 	echo "\nPandora FMS PHP diagnostic tool v3.1 (c) Artica ST 2009-2010 \n";
 
@@ -68,9 +69,8 @@ full path to Pandora FMS 'config.php' file.
 		exit;
 	}
 	include $argv[1]."/include/config.php";
-} else {
-
-	session_start ();
+}
+else {
 	if (file_exists("../include/config.php"))
 		include "../include/config.php";
 

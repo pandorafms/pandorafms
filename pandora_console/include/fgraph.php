@@ -1291,7 +1291,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', true);
 	if ($data === false) {
 		$data = array ();
 	}

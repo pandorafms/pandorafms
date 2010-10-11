@@ -1152,4 +1152,22 @@ function string2image($string, $width, $height, $fontsize = 3,
 	$file_url = str_replace('#','%23',$file_url);
 	return $file_url;
 }
+
+/**
+* Function to restrict SQL on custom-user-defined queries 
+*
+* @param string SQL code
+* @return string SQL code validated (it will return empty if SQL is not ok)
+**/
+
+function check_sql ($sql){
+
+        // We remove "*" to avoid things like SELECT * FROM tusuario
+
+        if (preg_match("/\*|DELETE|DROP|ALTER|MODIFY|UNION|password|pass|INSERT|UPDATE/", $sql)){
+                return "";
+        }
+        return $sql;
+}
+
 ?>

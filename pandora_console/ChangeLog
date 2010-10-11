@@ -1,3 +1,7 @@
+2010-10-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Search history DB if necessary for module charts.
+
 2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/config_process.php: fixed the execution in as script.

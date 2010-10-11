@@ -120,7 +120,7 @@ function safe_output($value, $utf8 = true)
 	$valueHtmlEncode = str_replace("&#41;", ')', $valueHtmlEncode);		
 	
 	//Revert html entities to chars
-	for ($i=0;$i<32;$i++) {
+	for ($i=0;$i<33;$i++) {
 		$valueHtmlEncode = str_ireplace("&#x".dechex($i).";",html_to_ascii(dechex($i)), $valueHtmlEncode);			
 	}	
 	

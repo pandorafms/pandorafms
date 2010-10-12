@@ -179,7 +179,7 @@ $all_agents = get_group_agents ($id_group, array('disabled' => 1), "none") + $en
 $table->data[1][1] = print_select ($all_agents,
 	'id_agents[]', 0, false, '', '', true, true);
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=edit_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=edit_agents" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 $nombre_agente = "";

@@ -132,7 +132,7 @@ $table->data[2][1] = print_select (index_array ($templates, 'id', 'name'),
 $table->data[2][2] = '';
 $table->data[2][3] = '';
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/massive/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+echo '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=add_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
 print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';

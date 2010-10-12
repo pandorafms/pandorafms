@@ -1,3 +1,12 @@
+2010-10-12  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_add_action_alerts.php,
+	godmode/massive/massive_delete_action_alerts.php,
+	godmode/massive/massive_add_alerts.php,
+	godmode/massive/massive_copy_modules.php,
+	godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_edit_agents.php: Fixed action URLs.
+
 2010-10-11  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/system_info.php: finally I finished (I hope) the extension of

@@ -137,7 +137,7 @@ if ($graph === false) {
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
 
 $filename_map = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout;
-$filename_img = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout."_".$font_size;
+$filename_img = "attachment/networkmap_".$layout."_".$font_size;
 $filename_dot = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout;
 
 

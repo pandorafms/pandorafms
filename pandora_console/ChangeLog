@@ -1,5 +1,7 @@
 2010-10-13  Sancho Lerena <slerena@artica.es>
 
+	* operation/agentes/networkmap.php: Fixed problem in unsafe parameters.
+
 	* operation/agentes/networkmap.php: Applied security fixes to network
 	grapviz maps (safe_url call to parameters first). Ported from trunk.
 

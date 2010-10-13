@@ -109,6 +109,12 @@ use HTML::Entities;
 use Time::Local;
 use POSIX qw(strftime);
 
+# Force XML::Simple to use XML::Parser instead SAX to manage XML
+# due a bug processing some XML with blank spaces.
+# See http://www.perlmonks.org/?node_id=706838
+
+$XML::Simple::PREFERRED_PARSER='XML::Parser';
+
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 

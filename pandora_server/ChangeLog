@@ -1,3 +1,14 @@
+2010-10-13  Sancho Lerena <slerena@artica.es>
+
+    * Core.pm: Force XML::Simple to use XML::Parser instead SAX to manage XML
+    due a bug processing some XML with blank spaces.
+
+    * DataServer.pm: Checking for BADXML is 2 times with 2 secs of delay now. 
+    Aditional check before deleting / procesing XML.
+
+    * pandora_server: Added handle of BadXML error to avoid see "unhandled" 
+    errors on log, and set to verbose level 2.
+
 2010-10-07  Sancho Lerena <slerena@artica.es>
 
     * conf/pandora_server.conf: Removed multicast options

@@ -134,9 +134,19 @@ sub pandora_crash () {
 	# will be nice to replace this code, but at this time it's the only way I know
 
 	foreach my $error_line (@_) {
-		if ($error_line !~ m/Enterprise/i && $error_line !~ m/Format_XS/i && $error_line !~ m/ConfigLocal/i){
+
+        # Trap the XML error and exit without nasty messages
+        if ($error_line =~ m/XML\/Parser/){
+            logger (\%Config, "Problem parsing XML file, XML file discarded: $error_line", 2);
+            return;
+        }
+
+		elsif ($error_line !~ m/Enterprise/i && $error_line !~ m/Format_XS/i && $error_line !~ m/ConfigLocal/i){
 			logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
-		} else {
+		} 
+
+
+        else {
 			if ($error_line !~ m/Can\'t\slocate/) {
 				logger (\%Config, '[E] \'' . $Config{'servername'} . "': $error_line", 1);
 			} else {

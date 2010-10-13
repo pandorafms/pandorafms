@@ -1,3 +1,11 @@
+2010-10-13  Sancho Lerena <slerena@artica.es>
+
+    * Core.pm: Force XML::Simple to use XML::Parser instead SAX to manage XML
+    due a bug processing some XML with blank spaces.
+
+    * DataServer.pm: Checking for BADXML is 2 times with 2 secs of delay now. 
+    Aditional check before deleting / procesing XML.
+
 2010-09-08  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/SNMPServer.pm

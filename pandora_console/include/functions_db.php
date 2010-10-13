@@ -673,6 +673,7 @@ function get_agent_modules ($id_agent, $details = false, $filter = false, $index
 		($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
 		implode (",", (array) $details),
 		$where);
+	$sql = safe_output($sql);
 	$result = get_db_all_rows_sql ($sql);
 	
 	if (empty ($result)) {

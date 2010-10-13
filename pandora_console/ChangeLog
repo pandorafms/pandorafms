@@ -1,3 +1,8 @@
+2010-10-13  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_db.php: Fixed a SQL query with
+	the safe_output function
+
 2010-10-12  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/massive/massive_add_action_alerts.php,

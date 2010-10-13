@@ -135,9 +135,12 @@ if ($graph === false) {
 
 // Generate image and map
 // If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
-$filename_map = $config["attachment_store"]."/networkmap_".$layout;
-$filename_img = "attachment/networkmap_".$layout."_".$font_size;
-$filename_dot = $config["attachment_store"]."/networkmap_".$layout;
+
+$filename_map = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout;
+$filename_img = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout."_".$font_size;
+$filename_dot = safe_url_extraclean ($config["attachment_store"])."/networkmap_".$layout;
+
+
 if ($simple) {
 	$filename_map .= "_simple";
 	$filename_img .= "_simple";

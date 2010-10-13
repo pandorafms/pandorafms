@@ -1,5 +1,10 @@
 2010-10-13  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/agentes/ver_agente.php: Fixed a SQL 
+	query with safe_output function
+
+2010-10-13  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_db.php: Fixed a SQL query with
 	the safe_output function
 

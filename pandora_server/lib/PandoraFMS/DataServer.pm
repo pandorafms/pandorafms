@@ -145,10 +145,10 @@ sub data_consumer ($$) {
 	# Double check that the file exists
 	return unless (-f $file_name);
 
-	# Try to parse the XML 3 times
+	# Try to parse the XML 2 times, with a delay between tries of 2 seconds
 	my $xml_data;
 
-	for (1..3) {
+	for (0..1) {
 		eval {
 			threads->yield;
 			$xml_data = XMLin ($file_name, forcearray => 'module');
@@ -157,12 +157,15 @@ sub data_consumer ($$) {
 		# Invalid XML
 		if ($@) {
 			$xml_err = $@;
-			sleep (1);
+			sleep (2);
 			next;
 		}
 
 		# Ignore the timestamp in the XML and use the file timestamp instead
 		$xml_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime((stat($file_name))[9])) if ($pa_config->{'use_xml_timestamp'} eq '1' || ! defined ($xml_data->{'timestamp'}));
+
+    	# Double check that the file exists
+    	return unless (-f $file_name);
 
 		unlink ($file_name);
 		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());

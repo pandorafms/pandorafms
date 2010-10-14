@@ -1,5 +1,10 @@
 2010-10-14  Sergio Martin <sergio.martin@artica.es>
 
+	* images/policies_brick.png: Added a module-policy
+	icon
+
+2010-10-14  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_html.php
 	include/functions_io.php
 	include/functions_ui.php

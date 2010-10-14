@@ -276,7 +276,7 @@ if ($id_agente) {
 	
 	$onheader = array('view' => $viewtab, 'separator' => "", 'main' => $maintab, 'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab, 'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
 
-	print_page_header (__('Agent configuration').' -&nbsp;'.mb_substr(get_agent_name ($id_agente), 0, 21), "images/setup.png", false, "", true, $onheader);
+	print_page_header (__('Agent configuration').' -&nbsp;'.printTruncateText(get_agent_name ($id_agente)), "images/setup.png", false, "", true, $onheader);
 	
 }
 // Create agent 
@@ -477,6 +477,7 @@ if ($id_agente) {
 $update_module = (bool) get_parameter ('update_module');
 $create_module = (bool) get_parameter ('create_module');
 $delete_module = (bool) get_parameter ('delete_module');
+$duplicate_module = (bool) get_parameter ('duplicate_module');
 $edit_module = (bool) get_parameter ('edit_module');
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
@@ -744,6 +745,16 @@ if ($delete_module){ // DELETE agent module !
 		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
 		"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
 	}
+}
+
+// MODULE DUPLICATION
+// =================
+if ($duplicate_module){ // DUPLICATE agent module !
+	$id_duplicate_module = (int) get_parameter_get ("duplicate_module",0);
+	$result = copy_agent_module_to_agent ($id_duplicate_module,
+				get_agentmodule_agent($id_duplicate_module),
+				__('copy of').' '.get_agentmodule_name($id_duplicate_module));
+	debugPrint(var_dump($result));
 }
 
 // UPDATE GIS

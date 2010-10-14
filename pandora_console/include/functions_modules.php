@@ -26,15 +26,19 @@
  * 
  * @param int Source agent module id.
  * @param int Detiny agent id.
+ * @param string Forced name to the new module.
  *
  * @return New agent module id on success. Existing module id if it already exists.
  * False on error.
  */
-function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent) {
+function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $forced_name = false) {
 	$module = get_agentmodule ($id_agent_module);
 	if ($module === false)
 		return false;
 	
+	if($forced_name !== false)
+		$module['nombre'] = $forced_name;
+		
 	$modules = get_agent_modules ($id_destiny_agent, false,
 		array ('nombre' => $module['nombre'], 'disabled' => false));
 	

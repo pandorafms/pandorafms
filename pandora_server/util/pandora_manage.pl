@@ -26,7 +26,7 @@ use PandoraFMS::Core;
 use PandoraFMS::Config;
 
 # version: define current version
-my $version = "3.1 PS100519";
+my $version = "3.2 PS101014";
 
 # Parameter
 my $param;
@@ -520,8 +520,8 @@ sub help_screen{
 	print "Usage: $0 <path to pandora_server.conf> [options] \n\n" unless $param ne '';
 	print "Available options:\n\n" unless $param ne '';
 	print "Available options for $param:\n\n" unless $param eq '';
-	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups');
-	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups');
+	help_screen_line('--disable_alerts', '', 'Disable alerts in all groups (system wide)');
+	help_screen_line('--enable_alerts', '', 'Enable alerts in all groups (system wide)');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
@@ -655,6 +655,7 @@ sub pandora_manage_main ($$$) {
 		}
 		elsif ($param eq '--create_module') {
 			param_check($ltotal, 16, 12);
+
 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description,
 			$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 			$critical_max, $history_data, $definition_file) = @ARGV[2..17];
@@ -711,6 +712,7 @@ sub pandora_manage_main ($$$) {
 			# The get_module_id has wrong name. Change in future
 			my $module_type_id = get_module_id($dbh,$module_type);
 			exist_check($module_type_id,'module type',$module_type);
+
 			my $agent_id = get_agent_id($dbh,$agent_name);
 			exist_check($agent_id,'agent',$agent_name);
 			
@@ -726,24 +728,26 @@ sub pandora_manage_main ($$$) {
 			}
 			my %parameters;
 			
-			%parameters->{'id_tipo_modulo'} = $module_type_id;
-			%parameters->{'nombre'} = $module_name;
-			%parameters->{'id_agente'} = $agent_id;
-			%parameters->{'ip_target'} = $module_address;
+			$parameters{'id_tipo_modulo'} = $module_type_id;
+			$parameters{'nombre'} = $module_name;
+			$parameters{'id_agente'} = $agent_id;
+			$parameters{'ip_target'} = $module_address;
 		
 			# Optional parameters
-			%parameters->{'min_warning'} = $warning_min unless !defined ($warning_min);
-			%parameters->{'max_warning'} = $warning_max unless !defined ($warning_max);
-			%parameters->{'min_critical'} = $critical_min unless !defined ($critical_min);
-			%parameters->{'max_critical'} = $critical_max unless !defined ($critical_max);
-			%parameters->{'history_data'} = $history_data unless !defined ($history_data);
-			%parameters->{'tcp_port'} = $module_port unless !defined ($module_port);
-			%parameters->{'descripcion'} = $description unless !defined ($description);
-			%parameters->{'min'} = $min unless !defined ($min);
-			%parameters->{'max'} = $max unless !defined ($max);
-			%parameters->{'post_process'} = $post_process unless !defined ($post_process);
-			%parameters->{'module_interval'} = $interval unless !defined ($interval);	
-			%parameters->{'id_modulo'} = 1;	
+			$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
+			$parameters{'max_warning'} = $warning_max unless !defined ($warning_max);
+			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
+			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
+			$parameters{'history_data'} = $history_data unless !defined ($history_data);
+			$parameters{'tcp_port'} = $module_port unless !defined ($module_port);
+			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'min'} = $min unless !defined ($min);
+			$parameters{'max'} = $max unless !defined ($max);
+			$parameters{'post_process'} = $post_process unless !defined ($post_process);
+			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+
+
+			$parameters{'id_modulo'} = 1;	
 			
 			pandora_create_network_module ($conf, \%parameters, $dbh);
 		}
@@ -845,10 +849,10 @@ sub pandora_manage_main ($$$) {
 			
 			my %parameters;						
 			
-			%parameters->{'id_alert_template_module'} = $template_module_id;
-			%parameters->{'id_alert_action'} = $action_id;
-			%parameters->{'fires_min'} = $fires_min;
-			%parameters->{'fires_max'} = $fires_max;
+			$parameters{'id_alert_template_module'} = $template_module_id;
+			$parameters{'id_alert_action'} = $action_id;
+			$parameters{'fires_min'} = $fires_min;
+			$parameters{'fires_max'} = $fires_max;
 			
 			pandora_create_template_module_action ($conf, \%parameters, $dbh);
 		}

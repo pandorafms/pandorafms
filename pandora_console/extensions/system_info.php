@@ -469,6 +469,8 @@ function consoleMode() {
 		echo 'tar zcvf ' . $tempDirSystem . '/' . $nameDir . '.tar.gz ' . $tempDir . '*' . "\n";
 		$result = shell_exec('tar zcvf ' . $tempDirSystem . '/' . $nameDir . '.tar.gz ' . $tempDir . '*');
 		
+		//TODO Delete the temp directory
+		
 		echo "You find the result file in " . $tempDirSystem . '/' . $nameDir . ".tar.gz\n";
 	}
 }

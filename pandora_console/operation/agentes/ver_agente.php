@@ -140,6 +140,10 @@ if (is_ajax ()) {
 			($fields != '' ? explode (',', $fields) : "*"),
 			($filter != '' ? $filter : false), $indexed);
 			
+		foreach($agent_modules as $key => $module) {
+			$agent_modules[$key]['nombre'] = safe_output($module['nombre']);
+		}
+			
 		//Hack to translate text "any" in PHP to javascript
 		//$agent_modules['any_text'] = __('Any');
 		

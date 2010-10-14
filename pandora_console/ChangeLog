@@ -1,5 +1,12 @@
 2010-10-14  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_modules.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/configurar_agente.php: Added clone module
+	into an agent to the manage modules view
+
+2010-10-14  Sergio Martin <sergio.martin@artica.es>
+
 	* operation/agentes/exportdata.php: Safe output the autocomplete
 	of magic inputs
 

@@ -67,7 +67,7 @@ if (! isset ($id_agente))
 	return;
 	
 
-$multiple_delete = get_parameter('multiple_delete');
+$multiple_delete = (bool) get_parameter('multiple_delete');
 
 if ($multiple_delete) {
 	$id_agent_modules_delete = (array)get_parameter('id_delete');
@@ -240,7 +240,7 @@ $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[2] = '55px';
-$table->size[7] = '65px';
+$table->size[7] = '90px';
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[7] = 'left';
@@ -365,6 +365,11 @@ foreach ($modules as $module) {
 		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 	$data[7] .= print_image ('images/cross.png', true,
 		array ('title' => __('Delete')));
+	$data[7] .= '</a> ';
+	$data[7] .= '<a href="index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'].'"
+		onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+	$data[7] .= print_image ('images/copy.png', true,
+		array ('title' => __('Duplicate')));
 	$data[7] .= '</a> ';
 	
 	// Make a data normalization

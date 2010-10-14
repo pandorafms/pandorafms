@@ -177,6 +177,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `min_ff_event` int(4) unsigned default '0',
   `delete_pending` int(1) unsigned default 0,
   `policy_linked` tinyint(1) unsigned not null default 0,
+  `policy_adopted` tinyint(1) unsigned not null default 0,
   `custom_string_1` text default '',
   `custom_string_2` text default '',
   `custom_string_3` text default '',

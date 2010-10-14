@@ -1,3 +1,26 @@
+2010-10-14  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: added in the
+	table "tagente_modulo" the field "policy_adopted" for to set a module
+	pre exist in policy as adopted.
+	
+	*operation/agentes/status_monitor.php,
+	operation/agentes/estado_ultimopaquete.php,
+	operation/agentes/estado_monitores.php,
+	godmode/agentes/module_manager_editor_common.php,
+	godmode/agentes/module_manager.php: show the icon of "adopted" or "adopted 
+	but unlinked" in the list of modules.
+	
+	Pending tasks: #3083123
+	
+
+	
+	* include/functions_modules.php: cleaned source code style in function
+	"update_agent_module".
+	
+	* godmode/agentes/module_manager_editor_network.php: fixed warning messages
+	when use this file in policies.
+
 2010-10-14  Sergio Martin <sergio.martin@artica.es>
 
 	* images/policies_not_brick.png: Added a module-not-policy

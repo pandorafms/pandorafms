@@ -1,3 +1,10 @@
+2010-10-14  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* godmode/agentes/module_manager_editor.php: fixed the ajax with the new
+	safe_ouput function.
+	
 2010-10-13  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/networkmap.php: Fixed problem in unsafe parameters.

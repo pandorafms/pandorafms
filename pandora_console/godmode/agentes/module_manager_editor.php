@@ -61,6 +61,9 @@ if (is_ajax ()) {
 		$id_component = (int) get_parameter ('id_module_component');
 		
 		$component = get_db_row ('tlocal_component', 'id', $id_component);
+		foreach ($component as $index => $element) {
+			$component[$index] = html_entity_decode($element, ENT_QUOTES, "UTF-8");
+		}
 		
 		$typeName = parseLocalModuleExtractValue('module_type',$component['data']);
 		

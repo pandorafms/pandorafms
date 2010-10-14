@@ -162,7 +162,7 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_standby_alerts",
 			"get_alerts" : 1,
-			"id_group" : this.value,
+			"id_group" : $("#id_group").attr("value"),
 			"id_alert_template" : $("#id_alert_template").attr("value"),
 			"standby" : 0
 			},
@@ -181,7 +181,7 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_standby_alerts",
 			"get_alerts" : 1,
-			"id_group" : this.value,
+			"id_group" : $("#id_group").attr("value"),
 			"id_alert_template" : $("#id_alert_template").attr("value"),
 			"standby" : 1
 			},

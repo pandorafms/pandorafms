@@ -1,3 +1,9 @@
+2010-10-14  Junichi Satoh  <junichi@rworks.jp>
+
+	* godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_standby_alerts.php: Fixed alert listing is not
+	affected by group selection.
+
 2010-10-13  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/ver_agente.php: Fixed a SQL 

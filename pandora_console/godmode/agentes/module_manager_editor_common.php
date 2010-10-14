@@ -125,7 +125,22 @@ $table_simple->data[0][2] = __('Disabled');
 $table_simple->data[0][3] = print_checkbox ("disabled", 1, $disabled, true);
 
 $table_simple->data[1][0] = __('Type').' '.print_help_icon ('module_type', true);
-if ($id_agent_module) {
+
+if (isset($id_agent_module)) {
+	if ($id_agent_module) {
+		$edit = false;
+	}
+	else {
+		$edit = true;
+	}
+}
+else 
+{
+	//Run into a policy
+	$edit = true;
+}
+
+if (!$edit) {
 	$table_simple->data[1][1] = '<em>'.get_moduletype_description ($id_module_type).'</em>';
 }
 else {

@@ -113,15 +113,28 @@ if ($id_module_type >= 15 && $id_module_type <= 18) {
 	/* SNMP */
 	$table_advanced->rowstyle['tcp_send'] = 'display: none';
 	$table_advanced->rowstyle['tcp_receive'] = 'display: none';
-} elseif ($id_module_type >= 8 && $id_module_type <= 11) {
+}
+elseif ($id_module_type >= 8 && $id_module_type <= 11) {
 	/* TCP or ICMP */
 	$table_simple->rowstyle['snmp_1'] = 'display: none';
 	$table_simple->rowstyle['snmp_2'] = 'display: none';
-} elseif (empty ($update_module_id)) {
+}
+elseif (empty ($update_module_id)) {
 	$table_advanced->rowstyle['tcp_send'] = 'display: none';
 	$table_advanced->rowstyle['tcp_receive'] = 'display: none';
 	$table_simple->rowstyle['snmp_1'] = 'display: none';
 	$table_simple->rowstyle['snmp_2'] = 'display: none';
+}
+
+//For a policy
+if (!isset($id_agent_module)) {
+	$snmp3_auth_user = '';
+	$snmp3_auth_pass = '';
+	$snmp_version = 1;
+	$snmp3_privacy_method = '';
+	$snmp3_privacy_pass = '';
+	$snmp3_auth_method = '';
+	$snmp3_security_level = '';
 }
 
 $data = array();

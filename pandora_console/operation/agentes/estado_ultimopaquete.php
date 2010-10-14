@@ -226,13 +226,30 @@ foreach ($modules as $module) {
 			$name_policy = get_db_value_sql('SELECT name FROM tpolicies WHERE id = '.$id_policy);
 			$policyInfo = infoModulePolicy($module["id_policy_module"]);
 			
+			$adopt = false;
+			if (isModuleAdopt($module['id_agente_modulo'])) {
+				$adopt = true;
+			}
+			
 			if ($linked) {
-				$img = 'images/policies.png';
-				$title = $name_policy;
+				if ($adopt) {
+					$img = 'images/policies_brick.png';
+					$title = __('(Adopt) ') . $name_policy;
+				}
+				else {
+					$img = 'images/policies.png';
+					$title = $name_policy;
+				}
 			}
 			else {
-				$img = 'images/unlinkpolicy.png';
-				$title = __('(Unlinked) ') . $name_policy;
+				if ($adopt) {
+					$img = 'images/policies_not_brick.png';
+					$title = __('(Unlinked) (Adopt) ') . $name_policy;
+				}
+				else {
+					$img = 'images/unlinkpolicy.png';
+					$title = __('(Unlinked) ') . $name_policy;
+				}
 			}
 			
 			echo "<td>";

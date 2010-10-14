@@ -223,13 +223,30 @@ foreach ($result as $row) {
 		else {
 			$linked = isModuleLinked($row['id_agente_modulo']);
 			
+			$adopt = false;
+			if (isModuleAdopt($row['id_agente_modulo'])) {
+				$adopt = true;
+			}
+			
 			if ($linked) {
-				$img = 'images/policies.png';
-				$title = $policyInfo['name_policy'];
+				if ($adopt) {
+					$img = 'images/policies_brick.png';
+					$title = __('(Adopt) ') . $policyInfo['name_policy'];
+				}
+				else {
+					$img = 'images/policies.png';
+					$title = $policyInfo['name_policy'];
+				}
 			}
 			else {
-				$img = 'images/unlinkpolicy.png';
-				$title = __('(Unlinked) ') . $policyInfo['name_policy'];
+				if ($adopt) {
+					$img = 'images/policies_not_brick.png';
+					$title = __('(Unlinked) (Adopt) ') . $policyInfo['name_policy'];
+				}
+				else {
+					$img = 'images/unlinkpolicy.png';
+					$title = __('(Unlinked) ') . $policyInfo['name_policy'];
+				}
 			}
 				
 			$data[0] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 

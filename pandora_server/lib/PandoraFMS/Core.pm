@@ -621,7 +621,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_id_alert_ => $alert->{'id'}
 				 );
 	
-	if (defined ($extra_macros)){
+	if ((defined ($extra_macros)) && (ref($extra_macros) eq "HASH"))  {
 		while ((my $macro, my $value) = each (%{$extra_macros})) {
 			$macros{$macro} = $value;
 		}

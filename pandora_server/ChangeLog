@@ -1,5 +1,10 @@
 2010-10-14  Sancho Lerena <slerena@artica.es>
 
+	* PandoraFMS/Core.pm: Fixed bug #3085249 about empty extra_macros hash.
+
+	* util/pandora_backup.sh: Fixed bug #3080826 about backup of links, now
+	are using -h parameter on tar to get the real file instead the link.
+
 	* util/pandora_manage.pl: Removed some warnings.
 
 2010-10-13  Sancho Lerena <slerena@artica.es>

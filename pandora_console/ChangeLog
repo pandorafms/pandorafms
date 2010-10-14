@@ -1,3 +1,13 @@
+2010-10-14  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_html.php
+	include/functions_io.php
+	include/functions_ui.php
+	godmode/agentes/module_manager.php: Created a new safe input
+	function more soft than safe_input() for html code. Applied this
+	function (safe_input_html()) in few functions like print_image
+	or print_page_header.
+
 2010-10-14  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* extensions/system_info.php: add TODO.

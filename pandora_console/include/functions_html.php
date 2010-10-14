@@ -547,7 +547,7 @@ function print_input_image ($name, $src, $value, $style = '', $return = false, $
 	
 	foreach ($attrs as $attribute) {
 		if (isset ($options[$attribute])) {
-			$output .= ' '.$attribute.'="'.safe_input ($options[$attribute]).'"';
+			$output .= ' '.$attribute.'="'.safe_input_html ($options[$attribute]).'"';
 		}
 	}
 	
@@ -1110,7 +1110,7 @@ function print_image ($src, $return = false, $options = false) {
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {
-				$output .= $attribute.'="'.safe_input ($options[$attribute]).'" ';
+				$output .= $attribute.'="'.safe_input_html ($options[$attribute]).'" ';
 			}
 		}
 	} else {
@@ -1118,7 +1118,7 @@ function print_image ($src, $return = false, $options = false) {
 	}
 	
 	if (!isset ($options["alt"]) && isset ($options["title"])) {
-		$options["alt"] = $options["title"]; //Set alt to title if it's not set
+		$options["alt"] = safe_input_html($options["title"]); //Set alt to title if it's not set
 	} elseif (!isset ($options["alt"])) {
 		$options["alt"] = "";
 	}
@@ -1127,7 +1127,7 @@ function print_image ($src, $return = false, $options = false) {
 		$output .= 'style="'.$style.'" ';
 	}
 	
-	$output .= 'alt="'.safe_input ($options['alt']).'" />';
+	$output .= 'alt="'.safe_input_html ($options['alt']).'" />';
 	
 	if (!$return) {
 		echo $output;

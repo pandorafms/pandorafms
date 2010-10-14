@@ -31,6 +31,7 @@
  * @param string $suffix String at the end of a strimmed string.
  */
 function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '&hellip;') {
+	$text = safe_output($text);
 	if (strlen($text) > ($numChars - 1)) {
 		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . $suffix;
 		
@@ -1546,7 +1547,7 @@ function get_full_url ($url = false) {
  */
 
 function print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
-
+	$title = safe_input_html($title);
 	if (($icon == "") && ($godmode == true)){
 		$icon = "images/setup.png";
 	}

@@ -335,7 +335,7 @@ foreach ($modules as $module) {
 		$data[4] = $agent_interval;
 	}
 	
-	$data[5] = mb_strimwidth ($module['descripcion'], 0, 30, "...");
+	$data[5] = printTruncateText($module['descripcion'], 25, false);
 	
 	// MAX / MIN values
 	$data[6] = $module["max"] ? $module["max"] : __('N/A');

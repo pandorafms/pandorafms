@@ -1,5 +1,10 @@
 2010-10-15  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/alerts/alert_list.list.php: Improved the size of the
+	alert view columns
+
+2010-10-15  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.list.php
 	godmode/alerts/alert_list.builder.php: Fixed the ugly layout of 
 	the alert views

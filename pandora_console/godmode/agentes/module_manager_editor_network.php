@@ -53,7 +53,16 @@ $snmp_versions['3'] = 'v. 3';
 
 $data = array ();
 $data[0] = __('SNMP community');
-$data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
+$adopt = false;
+if (isset($id_agent_module)) {
+	$adopt = isModuleAdopt($id_agent_module);
+}
+if (!$adopt) {
+	$data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
+}
+else {
+	$data[1] = print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, false);
+}
 
 $data[2] = _('SNMP version');
 

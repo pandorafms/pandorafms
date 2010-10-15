@@ -1,3 +1,8 @@
+2010-10-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/agentes/module_manager_editor_network.php: added lines to unblock
+	SNMP community when the module is adopt.
+
 2010-10-14  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/ver_agente.php: Safe output the list of

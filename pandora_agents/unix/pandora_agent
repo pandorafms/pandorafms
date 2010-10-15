@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # **********************************************************************
-# Pandora FMS Generic Linux Agent
+# Pandora FMS Generic Unix/Perl Agent
 # (c) 2010 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
@@ -12,7 +12,7 @@ pandora_agent - Pandora FMS Agent
 
 =head1 VERSION
 
-Version 3.1
+Version 3.2
 
 =head1 USAGE
 
@@ -57,7 +57,7 @@ if (!$@) {
 }	
 
 use constant AGENT_VERSION => '3.2dev';
-use constant AGENT_BUILD => '101008';
+use constant AGENT_BUILD => '101015';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -1423,6 +1423,7 @@ while (1) {
     }
 
 	# Go to sleep
+	#
 	sleep ($Conf{'interval'});
 }
 

@@ -269,7 +269,7 @@ else {
 }
 	
 $table->class = 'alert_list';
-$table->width = '90%';
+$table->width = '95%';
 $table->size = array ();
 
 $table->align[0] = 'center';
@@ -302,12 +302,12 @@ else {
 	/* Different sizes or the layout screws up */
 	$table->size[0] = '8%';
 	$table->size[1] = '8%';
-	$table->size[2] = '30%';
+	$table->size[2] = '20%';
 	$table->size[3] = '20%';
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '20px';
 	}
-	$table->size[5] = '50%';
+	$table->size[5] = '8%';
 }
 
 $table->head[3] = __('Module') . '<br>' .

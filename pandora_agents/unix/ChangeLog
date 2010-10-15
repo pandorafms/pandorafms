@@ -1,3 +1,9 @@
+2010-10-15  SAncho Lerena <slerena@artica.es>
+
+	* plugins/nagios_plugin_wrapper: Added new plugin.
+
+	* pandora_agent: Version update.
+
 2010-10-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Pass server_pwd and server_ssl configuration tokens

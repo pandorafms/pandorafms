@@ -288,26 +288,28 @@ if (! $id_agente) {
 	$table->head[2] = __('Agent') . '<br>' .
 		'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
 		'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
-	$table->size[0] = '8%';
-	$table->size[1] = '8%';
+	$table->size[0] = '6%';
+	$table->size[1] = '6%';
 	$table->size[2] = '20%';
 	$table->size[3] = '20%';
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '15%';
 	}
-	$table->size[5] = '8%';
-	$table->size[6] = '20%';
+	$table->size[5] = '6%';
+	$table->size[6] = '15%';
 }
 else {
 	/* Different sizes or the layout screws up */
-	$table->size[0] = '8%';
-	$table->size[1] = '8%';
-	$table->size[2] = '20%';
-	$table->size[3] = '20%';
+	$table->size[0] = '6%';
+	$table->size[1] = '6%';
+	$table->size[3] = '25%';
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$table->size[4] = '20px';
+		$table->size[4] = '25%';
 	}
-	$table->size[5] = '8%';
+	$table->size[5] = '6%';
+	$table->size[6] = '25%';
+	$table->size[7] = '10%';
+
 }
 
 $table->head[3] = __('Module') . '<br>' .
@@ -390,13 +392,13 @@ foreach ($simple_alerts as $alert) {
 			$data[2] .= '</span>';
 		$data[2] .= '</a>';
 	}
-	$data[3] = get_agentmodule_name ($alert['id_agent_module']);
+	$data[3] = printTruncateText(get_agentmodule_name ($alert['id_agent_module']), 25, false);
 	$data[4] = ' <a class="template_details"
 		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">
 		<img id="template-details-'.$alert['id_alert_template'].'" class="img_help" src="images/zoom.png"/></a> ';
 
 	$data[4] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
-	$data[4] .= get_alert_template_name ($alert['id_alert_template']);
+	$data[4] .= printTruncateText(get_alert_template_name ($alert['id_alert_template']), 15, false);
 	$data[4] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
@@ -430,7 +432,7 @@ foreach ($simple_alerts as $alert) {
 				$data[6] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 			else
 				$data[6] .= '<font class="action_name">';
-			$data[6] .= $action['name'];
+			$data[6] .= printTruncateText($action['name'], 15, false);
 			$data[6] .= ' <em>(';
 			if ($action['fires_min'] == $action['fires_max']) {
 				if ($action['fires_min'] == 0)

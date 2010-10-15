@@ -583,6 +583,14 @@ CREATE TABLE IF NOT EXISTS `tperfil` (
   PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `trecon_script` (
+  `id_recon_script` int(10) NOT NULL auto_increment,
+  `name` varchar(100) default '',
+  `description` varchar(100) default '',
+  `script` varchar(250) default '',
+  PRIMARY KEY  (`id_recon_script`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `trecon_task` (
   `id_rt` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -598,8 +606,15 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `id_os` tinyint(4) NOT NULL default '0',
   `recon_ports` varchar(250) NOT NULL default '',
   `snmp_community` varchar(64) NOT NULL default 'public',
+  `id_recon_script` int(10),
+  `field1` varchar(250) NOT NULL default '',
+  `field2` varchar(250) NOT NULL default '',
+  `field3` varchar(250) NOT NULL default '',
+  `field4` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id_rt`),
-  KEY `recon_task_daemon` (`id_recon_server`)
+  KEY `recon_task_daemon` (`id_recon_server`),
+  FOREIGN KEY (`id_recon_script`) REFERENCES trecon_script(`id_recon_script`)
+   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 

@@ -35,6 +35,9 @@ $table->size = array ();
 $table->size[0] = '10%';
 $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
+$table->align[0] = 'left';
+$table->align[1] = 'left';
+
 
 /* Add an agent selector */
 if (! $id_agente) {
@@ -57,6 +60,8 @@ $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest v
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
 $table->data[0][1] .= '<img src="images/spinner.png" /></span>';
+
+$table->data[1][0] = __('Template');
 
 $table->data[1][0] = __('Template');
 $templates = get_alert_templates (false, array ('id', 'name'));

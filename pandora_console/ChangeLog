@@ -1,3 +1,9 @@
+2010-10-15  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.list.php
+	godmode/alerts/alert_list.builder.php: Fixed the ugly layout of 
+	the alert views
+
 2010-10-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/agentes/module_manager_editor_network.php: added lines to unblock

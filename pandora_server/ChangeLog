@@ -1,3 +1,7 @@
+2010-10-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/ReconServer.pm: Added support for recon scripts.
+
 2010-10-14  Sancho Lerena <slerena@artica.es>
 
 	* PandoraFMS/Core.pm: Fixed bug #3085249 about empty extra_macros hash.

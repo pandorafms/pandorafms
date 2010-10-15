@@ -111,6 +111,12 @@ sub data_consumer ($$) {
 	my $task = get_db_single_row ($dbh, 'SELECT * FROM trecon_task WHERE id_rt = ?', $task_id);	
 	return -1 unless defined ($task);
 	
+	# Is it a recon script?
+	if (defined ($task->{'id_recon_script'})) {
+		exec_recon_script ($pa_config, $dbh, $task);
+		return;
+	}
+
 	# Get a NetAddr::IP object for the target network
 	my $net_addr = new NetAddr::IP ($task->{'subnet'});
 	if (! defined ($net_addr)) {
@@ -433,6 +439,21 @@ sub get_host_parent ($$){
 			return get_agent_from_addr ($dbh, $parent_addr);
 		}
 	}
+	return 0;
+}
+
+##########################################################################
+# Executes recon scripts
+##########################################################################	
+sub exec_recon_script ($$$) {
+	my ($pa_config, $dbh, $task) = @_;
+	
+	# Get recon plugin data	
+	my $script = get_db_single_row ($dbh, 'SELECT * FROM trecon_script WHERE id_recon_script = ?', $task->{'id_recon_script'});
+	return -1 unless defined ($script);
+
+	logger($pa_config, 'Executing recon script ' . $script->{'name'}, 10);
+	`$script->{'script'} $task->{'field1'} $task->{'field2'} $task->{'field3'} $task->{'field4'}`;
 	return 0;
 }
 

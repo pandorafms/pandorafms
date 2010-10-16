@@ -181,7 +181,7 @@ switch ($action) {
 						$values['time_from'] = get_parameter('time_from');
 						$values['time_to'] = get_parameter('time_to');
 					
-						if ($values['type'] == 'sql') {
+						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
@@ -220,13 +220,14 @@ switch ($action) {
 						$values['time_from'] = get_parameter('time_from');
 						$values['time_to'] = get_parameter('time_to');
 						
-						if ($values['type'] == 'sql') {
+						if (($values['type'] == 'sql') OR ($values['type'] == 'sql_graph_hbar')OR ($values['type'] == 'sql_graph_vbar') OR ($values['type'] == 'sql_graph_pie')) {
+ 
 							$values['treport_custom_sql_id'] = get_parameter('id_custom');
 							if ($values['treport_custom_sql_id'] == 0) {
 								$values['external_source'] = get_parameter('sql');
 							}
 						}
-						else if ($values['type'] == 'url') {
+						elseif ($values['type'] == 'url') {
 							$values['external_source'] = get_parameter('url');
 						}
 						else if ($values['type'] == 'event_report_group') {

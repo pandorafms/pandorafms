@@ -132,6 +132,21 @@ switch ($action) {
 				$idCustom = $item['treport_custom_sql_id'];
 				$header = $item['header_definition'];
 				break;
+			case 'sql_graph_pie':
+				$description = $item['description'];
+				$sql = $item['external_source'];
+				$idCustom = $item['treport_custom_sql_id'];
+				break;
+			case 'sql_graph_vbar':
+				$description = $item['description'];
+				$sql = $item['external_source'];
+				$idCustom = $item['treport_custom_sql_id'];
+				break;
+			case 'sql_graph_hbar':
+				$description = $item['description'];
+				$sql = $item['external_source'];
+				$idCustom = $item['treport_custom_sql_id'];
+				break;
 			case 'url':
 				$description = $item['description'];
 				$url = $item['column_separator'];
@@ -644,6 +659,24 @@ function chooseType() {
 			$("#row_description").css('display', '');
 			$("#row_query").css('display', '');
 			$("#row_header").css('display', '');
+			$("#row_custom").css('display', '');
+			$("#row_custom_example").css('display', '');
+			break;
+		case 'sql_graph_pie':
+			$("#row_description").css('display', '');
+			$("#row_query").css('display', '');
+			$("#row_custom").css('display', '');
+			$("#row_custom_example").css('display', '');
+			break;
+		case 'sql_graph_hbar':
+			$("#row_description").css('display', '');
+			$("#row_query").css('display', '');
+			$("#row_custom").css('display', '');
+			$("#row_custom_example").css('display', '');
+			break;
+        case 'sql_graph_vbar':
+			$("#row_description").css('display', '');
+			$("#row_query").css('display', '');
 			$("#row_custom").css('display', '');
 			$("#row_custom_example").css('display', '');
 			break;

@@ -147,10 +147,10 @@ echo '<generated><unix>'.$time.'</unix>';
 echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';
 
 $xml["id"] = $id_report;
-$xml["name"] = $report['name'];
-$xml["description"] = $report['description'];
+$xml["name"] = safe_output_xml ($report['name']);
+$xml["description"] = safe_output_xml($report['description']);
 $xml["group"]["id"] = $report['id_group'];
-$xml["group"]["name"] = $group_name;
+$xml["group"]["name"] = safe_output_xml ($group_name);
 
 if ($contents === false) {
 	$contents = array ();
@@ -164,17 +164,19 @@ $counter = 0;
 foreach ($contents as $content) {
 	echo '<object id="'.$counter.'">';
 	$data = array ();
-	$data["module"] = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-	$data["agent"] = get_agentmodule_agent_name ($content['id_agent_module']);
+	$data["module"] = safe_output_xml (get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']));
+	$data["agent"] = safe_output_xml (get_agentmodule_agent_name ($content['id_agent_module']));
 	$data["period"] = human_time_description ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
+
+    $session_id = session_id();
 
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':	
 			$data["title"] = __('Simple graph');
-			$data["objdata"]["img"] = 'include/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
+			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
 			break;
 		case 2:
 		case 'custom_graph':
@@ -195,7 +197,7 @@ foreach ($contents as $content) {
 				array_push ($weights, $content2["weight"]);
 			}
 	
-			$data["objdata"]["img"] = 'include/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
+			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
 			break;
 		case 3:
 		case 'SLA':

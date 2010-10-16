@@ -2623,6 +2623,51 @@ function grafico_modulo_log4x_format_y_axis ( $number , $decimals=2, $dec_point=
         return "$n";
 }
 
+/**
+ * Print a custom SQL-defined graph 
+ * 
+ * @param integer ID of report content, used to get SQL code to get information for graph
+ * @param integer height graph height
+ * @param integer width graph width
+ * @param integer Graph type 1 vbar, 2 hbar, 3 pie
+ */
+function graph_custom_sql_graph ($id, $width, $height, $type = 1) {
+	global $config;
+
+    $report_content = get_db_row ('treport_content', 'id_rc', $id);
+    if ($report_content["external_source"] != ""){
+        $sql = safe_output ($report_content["external_source"]);
+    }
+    else {
+        $sql = get_db_sql (sprintf ("SELECT sql FROM treport_custom_sql WHERE id = %d",$report_content["treport_custom_sql_id"]));
+    }
+
+	$data_result = get_db_all_rows_sql ($sql);
+
+	if ($data_result === false)
+		$data_result = array ();
+
+	$data = array ();
+	
+	foreach ($data_result as $data_item) {
+		$data[$data_item["label"]] = $data_item["value"];
+	}
+
+    switch ($type) {
+        case 1: // vertical bar
+            generic_vertical_bar_graph ($width, $height, $data);
+            break;
+        case 2: // horizontal bar
+            generic_horizontal_bar_graph ($width, $height, $data);
+            break;
+        case 3: // Pie
+            generic_pie_graph ($width, $height, $data);
+            break;
+    }
+
+}
+
+
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
     switch ($errno) {
@@ -2688,6 +2733,7 @@ $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
 $mode = get_parameter ("mode", 1);
 $url = get_parameter ("url");
+$report_id = (int) get_parameter ("report_id", 0);
 
 if ($graphic_type) {
 	switch ($graphic_type) {
@@ -2800,6 +2846,18 @@ if ($graphic_type) {
 	case 'log4x':
 		grafico_modulo_log4x ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
+
+    case 'sql_graph_vbar':
+        graph_custom_sql_graph ($report_id, $width, $height, 1);
+        break;
+
+    case 'sql_graph_hbar':
+        graph_custom_sql_graph ($report_id, $width, $height, 2);
+        break;
+
+    case 'sql_graph_pie':
+        graph_custom_sql_graph ($report_id, $width, $height, 3);
+        break;
 
 	case 'graphic_error':
 	default:

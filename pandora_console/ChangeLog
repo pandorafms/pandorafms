@@ -1,3 +1,20 @@
+2010-10-16  Sancho Lerena <slerena@artica.es>
+
+    * pandoradb_migrate_v3.1_to_v3.2.sql: Variable for SQL custom reports has
+    more size now (custom SQL reports could be huge SQL sentences).
+
+    * godmode/reporting/reporting_builder.php, 
+    godmode/reporting/reporting_builder.item_editor.php: Added suppor for the 
+    new SQL graph reports (vbar, hbar and pie).
+
+    * include/fgraph.php: Support for new SQL graphs, with new function 
+    graph_custom_sql_graph().
+
+    * include/functions_reporting.php:  Support for new SQL graphs.
+
+    * operation/reporting/reporting_xml.php: Fixed some problems and added
+    support for graphs using session_id.
+
 2010-10-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Added support for recon scripts.

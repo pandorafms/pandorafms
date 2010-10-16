@@ -35,6 +35,7 @@ ALTER TABLE `treport_content` ADD COLUMN `thursday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `friday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `saturday` tinyint(1) default 1;
 ALTER TABLE `treport_content` ADD COLUMN `sunday` tinyint(1) default 1;
+ALTER TABLE `treport_content` MODIFY external_source TEXT default NULL;
 
 -- -----------------------------------------------------
 -- Table `tnetwork_map`

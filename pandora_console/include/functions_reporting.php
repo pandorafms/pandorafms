@@ -1996,6 +1996,39 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$cellContent = print_table($table2, true);
 			array_push($table->data, array($cellContent));
 			break;
+
+		case 'sql_graph_pie':
+        case 'sql_graph_vbar':
+        case 'sql_graph_hbar':
+			$data = array();
+			$data[0] = $sizh. __('User defined graph') . " (".__($content["type"])  .")". $sizhfin;
+			array_push ($table->data, $data);
+			$table->colspan[0][0] = 2;
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[0][0] = 2;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$table2->class = 'databox';
+			$table2->width = '100%';
+			
+			//Create the head
+			$table2->head = array();
+			if ($content['header_definition'] != '') {
+				$table2->head = explode('|', $content['header_definition']);
+			}
+          
+			$data = array ();
+
+			$data[0] = '<img src="include/fgraph.php?tipo='.$content["type"].'&report_id='.$content["id_rc"].'&width='.$sizgraph_w.'&pure=1" border="0" alt="">';
+
+			array_push($table->data, $data);
+			break;
+
 		case 'event_report_group':
 			$data = array ();
 			$data[0] = $sizh . __('Group detailed event') . $sizhfin;
@@ -2014,6 +2047,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			$data[0] = get_group_detailed_event_reporting($content['id_agent'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
 			break;
+
 		case 'event_report_module':
 			$data = array ();
 			$data[0] = $sizh. __('Module detailed event') . $sizhfin;

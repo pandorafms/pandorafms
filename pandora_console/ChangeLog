@@ -1,5 +1,8 @@
 2010-10-16  Sancho Lerena <slerena@artica.es>
 
+	* DEBIAN/control: Removed apache and apache php mod from deps, giving
+	user chance to use another HTTP server.
+
     * pandoradb_migrate_v3.1_to_v3.2.sql: Variable for SQL custom reports has
     more size now (custom SQL reports could be huge SQL sentences).
 

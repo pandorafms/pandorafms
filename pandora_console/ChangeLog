@@ -1,3 +1,7 @@
+2010-10-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added support for recon scripts.
+
 2010-10-16  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/control: Removed apache and apache php mod from deps, giving

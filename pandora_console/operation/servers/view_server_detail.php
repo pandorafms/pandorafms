@@ -59,7 +59,7 @@ if ($recon_tasks === false) {
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->width = 725;
+$table->width = "99%";
 $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
@@ -80,23 +80,17 @@ $table->align[3] = "center";
 $table->head[4] = __('Status');
 $table->align[4] = "center";
 
-$table->head[5] = __('Module template');
+$table->head[5] = __('Recon module');
 $table->align[5] = "center";
 
-$table->head[6] = __('Group');
+$table->head[6] = __('Progress');
 $table->align[6] = "center";
 
-$table->head[7] = __('OS');
+$table->head[7] = __('Updated at');
 $table->align[7] = "center";
 
-$table->head[8] = __('Progress');
+$table->head[8] = __('Edit');
 $table->align[8] = "center";
-
-$table->head[9] = __('Updated at');
-$table->align[9] = "center";
-
-$table->head[10] = __('Edit');
-$table->align[10] = "center";
 
 foreach ($recon_tasks as $task) {
 	$data = array ();
@@ -105,36 +99,43 @@ foreach ($recon_tasks as $task) {
 	$data[0] .= print_image ("images/target.png", true, array ("title" => __('Force')));
 	$data[0] .= '</a>';
 	
-	$data[1] = '<b>'.safe_input ($task["name"]).'</b>';
+	$data[1] = '<b>'. $task["name"].'</b>';
 
 	$data[2] = human_time_description ($task["interval_sweep"]);
 
+if ($task["id_recon_script"] == 0){
 	$data[3] = $task["subnet"];
-	
+} else {
+	$data[3] = __("N/A");
+}
 	if ($task["status"] <= 0) {
 		$data[4] = __('Done');
 	} else {
 		$data[4] = __('Pending');
 	}
 
-	$data[5] = get_networkprofile_name ($task["id_network_profile"]);
-	
-	$data[6] = print_group_icon ($task["id_group"], true);
-	
-	$data[7] = print_os_icon ($task["id_os"], false, true);
-	
+if ($task["id_recon_script"] == 0){
+	// Network recon task
+	$data[5] = print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+	$data[5] .= get_networkprofile_name ($task["id_network_profile"]);
+} else {
+	// APP recon task
+	$data[5] = print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+	$data[5] .= get_db_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
+}	
+		
 	if ($task["status"] <= 0 || $task["status"] > 100) {
-		$data[8] = "-";
+		$data[6] = "-";
 	} else {
-		$data[8] = print_image ("include/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
+		$data[6] = print_image ("include/fgraph.php?tipo=progress&percent=".$task['status']."&height=20&width=100", true, array ("title" => __('Progress').':'.$task["status"].'%'));
 	}
 	
-	$data[9] = print_timestamp ($task["utimestamp"], true);
+	$data[7] = print_timestamp ($task["utimestamp"], true);
 
 	if (give_acl ($config["id_user"], $task["id_group"], "PM")) {
-		$data[10] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
+		$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.print_image ("images/wrench_orange.png", true).'</a>';
 	} else {
-		$data[10] = '';
+		$data[8] = '';
 	}
 	
 	array_push ($table->data, $data);

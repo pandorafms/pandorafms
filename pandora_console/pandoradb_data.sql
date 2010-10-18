@@ -96,7 +96,7 @@ INSERT INTO `tconfig_os` VALUES
 (10,'Other','Other SO','so_other.png'),
 (11,'Network','Pandora FMS Network Agent','network.png'),
 (12,'Web Server','Web Server/Application','network.png'),
-(13,'Octopus','Pandora FMS Hardware Agent','network.png');
+(13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png');
 UNLOCK TABLES;
 
 

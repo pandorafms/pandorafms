@@ -150,7 +150,7 @@ INSERT INTO tconfig (`token`, `value`) VALUES ('sound_warning', 'include/sounds/
 CREATE TABLE IF NOT EXISTS `trecon_script` (
   `id_recon_script` int(10) NOT NULL auto_increment,
   `name` varchar(100) default '',
-  `description` varchar(100) default '',
+  `description` TEXT default NULL,
   `script` varchar(250) default '',
   PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

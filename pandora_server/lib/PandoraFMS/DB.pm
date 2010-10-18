@@ -41,10 +41,12 @@ our @EXPORT = qw(
 		get_db_value
 		get_group_id
 		get_group_name
+		get_module_group_id
 		get_module_id
 		get_module_name
 		get_nc_profile_name
 		get_os_id
+		get_plugin_id
 		get_profile_id
 		get_server_id
 		get_template_id
@@ -200,6 +202,30 @@ sub get_module_id ($$) {
 	my ($dbh, $module_name) = @_;
 
 	my $rc = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", $module_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return plugin ID given the plugin name.
+##########################################################################
+sub get_plugin_id ($$) {
+	my ($dbh, $plugin_name) = @_;
+
+	my $rc = get_db_value ($dbh, "SELECT id FROM tplugin WHERE name = ?", $plugin_name);
+	return defined ($rc) ? $rc : -1;
+}
+
+##########################################################################
+## Return module group ID given the module group name.
+##########################################################################
+sub get_module_group_id ($$) {
+	my ($dbh, $module_group_name) = @_;
+
+	if(!defined($module_group_name) || $module_group_name eq '') {
+		return 0;
+	}
+	
+	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", $module_group_name);
 	return defined ($rc) ? $rc : -1;
 }
 

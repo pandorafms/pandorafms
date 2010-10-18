@@ -1,3 +1,10 @@
+2010-10-18  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm
+	util/pandora_manage.pl: Splitted in 4 parameters the CLI module creation
+	parameter: create_data_module, create_network_module, create_snmp_module, 
+	create_plugin_module
+
 2010-10-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Added support for recon scripts.

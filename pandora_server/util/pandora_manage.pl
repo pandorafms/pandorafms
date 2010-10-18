@@ -397,9 +397,9 @@ sub pandora_delete_module_data ($$) {
 }
 				
 ##########################################################################
-## Create a network module
+## Create an agent module
 ##########################################################################
-sub pandora_create_network_module ($$$) {
+sub pandora_create_agent_module ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
 			
  	logger($pa_config, "Creating module '$parameters->{'name'}' for agent ID $parameters->{'id_agente'}.", 10);
@@ -528,7 +528,10 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
    	help_screen_line('--create_agent', '<agent_name> <operating_system> <group> <server_name> [<address> <description> <interval>]', 'Create agent');
 	help_screen_line('--delete_agent', '<agent_name>', 'Delete agent');
-	help_screen_line('--create_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add module to agent');
+	help_screen_line('--create_data_module', '<module_name> <module_type> <agent_name> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <definition_file>]', 'Add data server module to agent');
+	help_screen_line('--create_network_module', '<module_name> <module_type> <agent_name> <module_address> [<module_port> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> <snmp3_priv_pass>]', 'Add snmp network module to agent');
+	help_screen_line('--create_plugin_module', '<module_name> <module_type> <agent_name> <module_address> <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>]', 'Add plug-in module to agent');
     help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -653,12 +656,12 @@ sub pandora_manage_main ($$$) {
 			
 			pandora_delete_agent($dbh,$id_agent,$conf);
 		}
-		elsif ($param eq '--create_module') {
-			param_check($ltotal, 16, 12);
+		elsif ($param eq '--create_data_module') {
+			param_check($ltotal, 15, 12);
 
-			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description,
+			my ($module_name, $module_type, $agent_name, $description, $module_group, 
 			$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
-			$critical_max, $history_data, $definition_file) = @ARGV[2..17];
+			$critical_max, $history_data, $definition_file) = @ARGV[2..16];
 			
 			my $module_name_def;
 			my $module_type_def;
@@ -713,8 +716,73 @@ sub pandora_manage_main ($$$) {
 			my $module_type_id = get_module_id($dbh,$module_type);
 			exist_check($module_type_id,'module type',$module_type);
 
+			if ($module_type !~ m/.?generic.?/ && $module_type !~ m/.?async.?/ && $module_type ne 'log4x' && $module_type ne 'keep_alive') {
+					print "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
+					exit;
+			}
+			
 			my $agent_id = get_agent_id($dbh,$agent_name);
 			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_group_id = get_module_group_id($dbh,$module_group);
+			exist_check($module_group_id,'module group',$module_group);
+			
+			my %parameters;
+			
+			$parameters{'id_tipo_modulo'} = $module_type_id;
+			$parameters{'nombre'} = $module_name;
+			$parameters{'id_agente'} = $agent_id;
+		
+			# Optional parameters
+			$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
+			$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
+			$parameters{'max_warning'} = $warning_max unless !defined ($warning_max);
+			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
+			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
+			$parameters{'history_data'} = $history_data unless !defined ($history_data);
+			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'min'} = $min unless !defined ($min);
+			$parameters{'max'} = $max unless !defined ($max);
+			$parameters{'post_process'} = $post_process unless !defined ($post_process);
+			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+
+
+			$parameters{'id_modulo'} = 1;	
+			
+			pandora_create_agent_module ($conf, \%parameters, $dbh);
+		}
+		elsif ($param eq '--create_network_module') {
+			param_check($ltotal, 17, 13);
+
+			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
+			$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
+			$critical_max, $history_data, $definition_file) = @ARGV[2..17];
+			
+			my $module_name_def;
+			my $module_type_def;
+			
+			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+			
+			if ($module_type =~ m/.?snmp.?/) {
+				print "[ERROR] '$module_type' is not a valid type. For snmp modules use --create_snmp_module parameter\n\n";
+				$param = '--create_snmp_module';
+				help_screen ();
+				exit 1;
+			}
+			if ($module_type !~ m/.?icmp.?/ && $module_type !~ m/.?tcp.?/) {
+					print "[ERROR] '$module_type' is not valid type for (not snmp) network modules. Try with icmp or tcp types\n\n";
+					exit;
+			}
+			
+			# The get_module_id has wrong name. Change in future
+			my $module_type_id = get_module_id($dbh,$module_type);
+			exist_check($module_type_id,'module type',$module_type);
+			
+			my $agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_group_id = get_module_group_id($dbh,$module_group);
+			exist_check($module_group_id,'module group',$module_group);
 			
 			if ($module_type !~ m/.?icmp.?/) {
 			  	if (not defined($module_port)) {
@@ -734,6 +802,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'ip_target'} = $module_address;
 		
 			# Optional parameters
+			$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 			$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
 			$parameters{'max_warning'} = $warning_max unless !defined ($warning_max);
 			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
@@ -746,10 +815,143 @@ sub pandora_manage_main ($$$) {
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
 			$parameters{'module_interval'} = $interval unless !defined ($interval);	
 
-
 			$parameters{'id_modulo'} = 1;	
 			
-			pandora_create_network_module ($conf, \%parameters, $dbh);
+			pandora_create_agent_module ($conf, \%parameters, $dbh);
+		}
+		elsif ($param eq '--create_snmp_module') {
+			param_check($ltotal, 25, 19);
+
+			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
+			$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+			$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
+			$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_priv_pass) = @ARGV[2..26];
+			
+			my $module_name_def;
+			my $module_type_def;
+			
+			print "[INFO] Adding snmp module '$module_name' to agent '$agent_name'\n\n";
+			
+			# The get_module_id has wrong name. Change in future
+			my $module_type_id = get_module_id($dbh,$module_type);
+			exist_check($module_type_id,'module type',$module_type);
+
+			my $agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_group_id = get_module_group_id($dbh,$module_group);
+			exist_check($module_group_id,'module group',$module_group);
+			
+			if ($module_type !~ m/.?snmp.?/) {
+				print "[ERROR] '$module_type' is not a valid snmp type\n\n";
+				exit;
+			}
+			
+			if ($module_port > 65535 || $module_port < 1) {
+				print "[ERROR] Port error. Port must into [1-65535]\n\n";
+				exit;
+			}
+			
+			my %parameters;
+			
+			$parameters{'id_tipo_modulo'} = $module_type_id;
+			$parameters{'nombre'} = $module_name;
+			$parameters{'id_agente'} = $agent_id;
+			$parameters{'ip_target'} = $module_address;
+			$parameters{'tcp_port'} = $module_port;
+			$parameters{'tcp_send'} = $version;
+		
+			# Optional parameters
+			$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
+			$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
+			$parameters{'max_warning'} = $warning_max unless !defined ($warning_max);
+			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
+			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
+			$parameters{'history_data'} = $history_data unless !defined ($history_data);
+			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'min'} = $min unless !defined ($min);
+			$parameters{'max'} = $max unless !defined ($max);
+			$parameters{'post_process'} = $post_process unless !defined ($post_process);
+			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+			
+			if($version == 3) {
+				$parameters{'custom_string_1'} = $snmp3_priv_method;
+				$parameters{'custom_string_2'} = $snmp3_priv_pass;
+				$parameters{'custom_string_3'} = $snmp3_sec_level;
+				$parameters{'plugin_parameter'} = $snmp3_auth_method;
+				$parameters{'plugin_user'} = $snmp3_auth_user; 
+				$parameters{'plugin_pass'} = $snmp3_priv_pass;
+			}
+
+			# id_modulo = 2 for snmp modules
+			$parameters{'id_modulo'} = 2;	
+			
+			pandora_create_agent_module ($conf, \%parameters, $dbh);
+		}
+		elsif ($param eq '--create_plugin_module') {
+			param_check($ltotal, 20, 11);
+ 
+ 			my ($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
+			$user, $password, $parameters, $description, $module_group, $min, $max, $post_process, 
+			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+			$definition_file) = @ARGV[2..21];
+			
+			my $module_name_def;
+			my $module_type_def;
+			
+			print "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+			
+			# The get_module_id has wrong name. Change in future
+			my $module_type_id = get_module_id($dbh,$module_type);
+			exist_check($module_type_id,'module type',$module_type);
+
+			if ($module_type !~ m/.?generic.?/ && $module_type ne 'log4x') {
+					print "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
+					exit;
+			}
+			
+			my $agent_id = get_agent_id($dbh,$agent_name);
+			exist_check($agent_id,'agent',$agent_name);
+			
+			my $module_group_id = get_module_group_id($dbh,$module_group);
+			exist_check($module_group_id,'module group',$module_group);
+					
+			my $plugin_id = get_plugin_id($dbh,$plugin_name);
+			exist_check($plugin_id,'plugin',$plugin_name);
+			
+			if ($module_port > 65535 || $module_port < 1) {
+				print "[ERROR] Port error. Port must into [1-65535]\n\n";
+				exit;
+			}
+
+			my %parameters;
+			
+			$parameters{'id_tipo_modulo'} = $module_type_id;
+			$parameters{'nombre'} = $module_name;
+			$parameters{'id_agente'} = $agent_id;
+			$parameters{'ip_target'} = $module_address;
+			$parameters{'tcp_port'} = $module_port;
+			$parameters{'id_plugin'} = $plugin_id;
+			$parameters{'plugin_user'} = $user;
+			$parameters{'plugin_pass'} = $password;
+			$parameters{'plugin_parameter'} = $parameters;
+		
+			# Optional parameters
+			$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
+			$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
+			$parameters{'max_warning'} = $warning_max unless !defined ($warning_max);
+			$parameters{'min_critical'} = $critical_min unless !defined ($critical_min);
+			$parameters{'max_critical'} = $critical_max unless !defined ($critical_max);
+			$parameters{'history_data'} = $history_data unless !defined ($history_data);
+			$parameters{'descripcion'} = $description unless !defined ($description);
+			$parameters{'min'} = $min unless !defined ($min);
+			$parameters{'max'} = $max unless !defined ($max);
+			$parameters{'post_process'} = $post_process unless !defined ($post_process);
+			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+
+			$parameters{'id_modulo'} = 4;	
+			
+			pandora_create_agent_module ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
@@ -1167,7 +1369,7 @@ sub pandora_manage_main ($$$) {
 					delete $module->{'configuration_data'};
 					
 					# Create module
-					my $id_module = pandora_create_network_module ($conf, $module, $dbh);
+					my $id_module = pandora_create_agent_module ($conf, $module, $dbh);
 				
 					# Get policy alerts and create it on created modules
 					my $array_pointer_ale = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, $module->{'id_policy_module'}]);

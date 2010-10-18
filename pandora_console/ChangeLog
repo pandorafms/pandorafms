@@ -1,3 +1,10 @@
+2010-10-18  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extensions/insert_data.php: added first version of extension to added
+	data in any module in any agent, by form or csv.
+	
+	Pending tasks: #3063417
+
 2010-10-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Added support for recon scripts.

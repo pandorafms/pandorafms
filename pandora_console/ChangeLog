@@ -1,3 +1,18 @@
+2010-10-18  Sancho Lerena <slerena@artica.es>
+	
+	* pandoradb.sql: Alter some trecon_task info to avoid problems on new
+	custom script items (due the referencial integrity).
+	
+	* pandoradb_data.sql: Octopods instead octopus.
+	
+	* godmode/menu.php,
+	* godmode/servers/recon_script.php: Added new option to manage recon scripts
+	
+	* godmode/servers/manage_recontask.php,
+	godmode/servers/manage_recontask_form.php: Changes to manage the new recon
+	tasks using custom-defined scripts to detect and monitor things (neeed some
+	Javascript improvements).
+	
 2010-10-18  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extensions/insert_data.php: added first version of extension to added

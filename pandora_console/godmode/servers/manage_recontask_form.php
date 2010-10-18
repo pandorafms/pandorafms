@@ -40,6 +40,16 @@ if (isset ($_GET["update"])) { // Edit mode
 	$id_os = $row["id_os"];
 	$recon_ports = $row["recon_ports"];
 	$snmp_community = $row["snmp_community"];
+	$id_recon_script = $row["id_recon_script"];
+	$field1 = $row["field1"];
+	$field2 = $row["field2"];
+	$field3 = $row["field3"];
+	$field4 = $row["field4"];
+	if ($id_recon_script == 0)
+		$mode = "network_sweep";
+	else
+		$mode = "recon_script";
+		
 } elseif (isset ($_GET["create"])) {
 	$id_rt = -1;
 	$name = "";
@@ -53,6 +63,12 @@ if (isset ($_GET["update"])) { // Edit mode
 	$id_network_profile = 1;
 	$id_os = -1; // Any
 	$recon_ports = ""; // Any
+	$field1 = "";
+	$field2 = "";
+	$field3 = "";
+	$field4 = "";
+	$id_recon_script = 0;
+	$mode = "network_sweep";
 }
 
 // Headers
@@ -70,12 +86,21 @@ $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
 
 // Recon server
 $table->data[1][0] = "<b>".__('Recon server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
-$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name',
-	"id_recon_server", $id_recon_server, '', '', '', true);
 
+$table->data[1][1] = print_select_from_sql ('SELECT id_server, name FROM tserver WHERE server_type = 3 ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
+
+
+$fields['network_sweep'] = __("Network sweep");
+$fields['recon_script'] = __("Custom script");
+
+
+$table->data[2][0] = "<b>".__('Mode')."</b>";
+$table->data[2][1] = print_select ($fields, "mode", $mode, '', '', 0, true);
+
+		
 // Network 
-$table->data[2][0] = "<b>".__('Network');
-$table->data[2][1] = print_input_text ('network', $network, '', 25, 0, true);
+$table->data[3][0] = "<b>".__('Network');
+$table->data[3][1] = print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
 $values = array ();
@@ -89,44 +114,64 @@ $values[604800] = __('%d week', 1);
 $values[1209600] = __('%d weeks', 2);
 $values[2592000] = __('%d month', 1);
 
-$table->data[3][0] = "<b>".__('Interval');
-$table->data[3][1] = print_select ($values, "interval", $interval, '', '', '', true);
+$table->data[4][0] = "<b>".__('Interval');
+$table->data[4][1] = print_select ($values, "interval", $interval, '', '', '', true);
 
 // Module template
-$table->data[4][0] = "<b>".__('Module template');
-$table->data[4][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
+$table->data[5][0] = "<b>".__('Module template');
+$table->data[5][1] = print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
 	"id_network_profile", $id_network_profile, '', '', '', true);
 
+// Recon script
+$table->data[6][0] = "<b>".__('Recon script');
+$table->data[6][1] = print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', "id_recon_script", $id_recon_script, '', '', '', true);
+
+
 // OS
-$table->data[5][0] = "<b>".__('OS');
-$table->data[5][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
+$table->data[7][0] = "<b>".__('OS');
+$table->data[7][1] = print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
 	"id_os", $id_os, '', __('Any'), -1, true);
 
 // Recon ports
-$table->data[6][0] = "<b>".__('Ports');
-$table->data[6][1] =  print_input_text ('recon_ports', $recon_ports, '', 25, 0, true);
-$table->data[6][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank').'</span></a>';
+$table->data[8][0] = "<b>".__('Ports');
+$table->data[8][1] =  print_input_text ('recon_ports', $recon_ports, '', 25, 0, true);
+$table->data[8][1] .= '<a href="#" class="tip">&nbsp;<span>'.__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank').'</span></a>';
 
 // Group
-$table->data[7][0] = "<b>".__('Group');
+$table->data[9][0] = "<b>".__('Group');
 $groups = get_user_groups (false, "AR", false);
-$table->data[7][1] = print_select_groups(false, "AR", false, 'id_group', $id_group, '', '', 0, true);
+$table->data[9][1] = print_select_groups(false, "AR", false, 'id_group', $id_group, '', '', 0, true);
 
 // Incident
 $values = array (0 => __('No'), 1 => __('Yes'));
-$table->data[8][0] = "<b>".__('Incident');
-$table->data[8][1] = print_select ($values, "create_incident", $create_incident,
+$table->data[10][0] = "<b>".__('Incident');
+$table->data[10][1] = print_select ($values, "create_incident", $create_incident,
 	'','','',true);
 
 // SNMP default community
-$table->data[9][0] = "<b>".__('SNMP Default community');
-$table->data[9][1] =  print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+$table->data[11][0] = "<b>".__('SNMP Default community');
+$table->data[11][1] =  print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
+
+// Field1
+$table->data[12][0] = "<b>".__('Script field #1');
+$table->data[12][1] =  print_input_text ('field1', $field1, '', 40, 0, true);
+
+// Field2
+$table->data[13][0] = "<b>".__('Script field #2');
+$table->data[13][1] =  print_input_text ('field2', $field2, '', 40, 0, true);
+
+// Field3
+$table->data[14][0] = "<b>".__('Script field #3');
+$table->data[14][1] =  print_input_text ('field3', $field3, '', 40, 0, true);
+
+// Field4
+$table->data[15][0] = "<b>".__('Script field #4');
+$table->data[15][1] =  print_input_text ('field4', $field4, '', 40, 0, true);
+
 
 // Comments
-$table->data[10][0] = "<b>".__('Comments');
-$table->data[10][1] =  print_input_text ('description', $description, '', 45, 0, true);
-
-
+$table->data[16][0] = "<b>".__('Comments');
+$table->data[16][1] =  print_input_text ('description', $description, '', 45, 0, true);
 
 
 // Different Form url if it's a create or if it's a update form

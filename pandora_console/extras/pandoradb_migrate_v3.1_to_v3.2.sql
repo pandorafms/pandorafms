@@ -143,3 +143,25 @@ INSERT INTO tconfig (`token`, `value`) VALUES ('sound_alert', 'include/sounds/ai
 INSERT INTO tconfig (`token`, `value`) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
 INSERT INTO tconfig (`token`, `value`) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');
 
+-- -----------------------------------------------------
+-- Table `trecon_script`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `trecon_script` (
+  `id_recon_script` int(10) NOT NULL auto_increment,
+  `name` varchar(100) default '',
+  `description` varchar(100) default '',
+  `script` varchar(250) default '',
+  PRIMARY KEY  (`id_recon_script`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- -----------------------------------------------------
+-- Table `trecon_task`
+-- -----------------------------------------------------
+ALTER TABLE trecon_task ADD COLUMN `id_recon_script` int(10);
+ALTER TABLE trecon_task ADD COLUMN `field1` varchar(250) NOT NULL default '';
+ALTER TABLE trecon_task ADD COLUMN `field2` varchar(250) NOT NULL default '';
+ALTER TABLE trecon_task ADD COLUMN `field3` varchar(250) NOT NULL default '';
+ALTER TABLE trecon_task ADD COLUMN `field4` varchar(250) NOT NULL default '';
+ALTER TABLE trecon_task ADD FOREIGN KEY (`id_recon_script`) REFERENCES trecon_script(`id_recon_script`) ON UPDATE CASCADE ON DELETE CASCADE;
+

@@ -1,3 +1,8 @@
+2010-10-19  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_io.php: fixed the function "safe_input" when the
+	parameter is a array.
+
 2010-10-18  Sancho Lerena <slerena@artica.es>
 	
 	* pandoradb.sql: Alter some trecon_task info to avoid problems on new

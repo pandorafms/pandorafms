@@ -133,6 +133,7 @@ our @EXPORT = qw(
 	pandora_create_agent
 	pandora_create_incident
 	pandora_create_module
+	pandora_create_module_from_hash
 	pandora_evaluate_alert
 	pandora_evaluate_compound_alert
 	pandora_evaluate_snmp_alerts
@@ -1091,6 +1092,21 @@ sub pandora_create_module ($$$$$$$$$$) {
 	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `id_modulo`)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
+	return $module_id;
+}
+
+##########################################################################
+## Create an agent module
+##########################################################################
+sub pandora_create_module_from_hash ($$$) {
+	my ($pa_config, $parameters, $dbh) = @_;
+			
+ 	logger($pa_config, "Creating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
+
+	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
+
+	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	
 	return $module_id;
 }
 

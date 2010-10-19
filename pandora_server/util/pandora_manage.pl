@@ -395,21 +395,6 @@ sub pandora_delete_module_data ($$) {
 			
 		return 1;
 }
-				
-##########################################################################
-## Create an agent module
-##########################################################################
-sub pandora_create_agent_module ($$$) {
-	my ($pa_config, $parameters, $dbh) = @_;
-			
- 	logger($pa_config, "Creating module '$parameters->{'name'}' for agent ID $parameters->{'id_agente'}.", 10);
-
-	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
-
-	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
-	
-	return $module_id;
-}
 
 ##########################################################################
 # Validate event.
@@ -749,7 +734,7 @@ sub pandora_manage_main ($$$) {
 
 			$parameters{'id_modulo'} = 1;	
 			
-			pandora_create_agent_module ($conf, \%parameters, $dbh);
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--create_network_module') {
 			param_check($ltotal, 17, 13);
@@ -817,7 +802,7 @@ sub pandora_manage_main ($$$) {
 
 			$parameters{'id_modulo'} = 1;	
 			
-			pandora_create_agent_module ($conf, \%parameters, $dbh);
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--create_snmp_module') {
 			param_check($ltotal, 25, 19);
@@ -872,7 +857,9 @@ sub pandora_manage_main ($$$) {
 			$parameters{'min'} = $min unless !defined ($min);
 			$parameters{'max'} = $max unless !defined ($max);
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
-			$parameters{'module_interval'} = $interval unless !defined ($interval);	
+			$parameters{'module_interval'} = $interval unless !defined ($interval);
+			$parameters{'snmp_community'} = $community unless !defined ($community);
+			$parameters{'snmp_oid'} = $oid unless !defined ($oid);
 			
 			if($version == 3) {
 				$parameters{'custom_string_1'} = $snmp3_priv_method;
@@ -886,7 +873,7 @@ sub pandora_manage_main ($$$) {
 			# id_modulo = 2 for snmp modules
 			$parameters{'id_modulo'} = 2;	
 			
-			pandora_create_agent_module ($conf, \%parameters, $dbh);
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--create_plugin_module') {
 			param_check($ltotal, 20, 11);
@@ -951,7 +938,7 @@ sub pandora_manage_main ($$$) {
 
 			$parameters{'id_modulo'} = 4;	
 			
-			pandora_create_agent_module ($conf, \%parameters, $dbh);
+			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 		elsif ($param eq '--delete_module') {
 			param_check($ltotal, 2);
@@ -1369,7 +1356,7 @@ sub pandora_manage_main ($$$) {
 					delete $module->{'configuration_data'};
 					
 					# Create module
-					my $id_module = pandora_create_agent_module ($conf, $module, $dbh);
+					my $id_module = pandora_create_module_from_hash ($conf, $module, $dbh);
 				
 					# Get policy alerts and create it on created modules
 					my $array_pointer_ale = enterprise_hook('get_policy_module_alerts',[$dbh, $policy_id, $module->{'id_policy_module'}]);

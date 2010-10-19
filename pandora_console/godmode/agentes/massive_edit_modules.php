@@ -285,7 +285,7 @@ $(document).ready (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
-				"id_group" : this.value,
+				"id_group" : this.value
 				},
 				function (data, status) {
 					$("#agents_select").html('');

@@ -1,3 +1,8 @@
+2010-10-19  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/agentes/massive_edit_modules.php: Fixed typo in jquery
+	for iexplorer compatibility merged from trunk 3090389
+
 2010-10-15  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Fixed a not defined variable config

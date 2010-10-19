@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 // Load global vars
 check_login ();
 
@@ -340,6 +339,7 @@ else {
 	$modules_row = 'none';
 	$agents_row = '';
 }
+
 ?>
 
 <script type="text/javascript">
@@ -481,7 +481,7 @@ $(document).ready (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 				"get_agents_group_json" : 1,
-				"id_group" : this.value,
+				"id_group" : this.value
 				},
 				function (data, status) {
 					$("#id_agents").html('');

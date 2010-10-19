@@ -1,3 +1,10 @@
+2010-10-19  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_db.php: added hook for "user translation" in function
+	"__".
+	
+	Pending task: #3057674
+
 2010-10-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_edit_modules.php: Fixed a jquery typo

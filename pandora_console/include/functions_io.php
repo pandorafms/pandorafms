@@ -1,4 +1,15 @@
 <?php
+/**
+ * Safe input function for array.
+ * 
+ * @param mixed $item The item pass as reference of item.
+ * 
+ * @return void
+ */
+function safe_input_array(&$item) {
+	$item = safe_input($item);
+}
+
 /** 
  * Cleans a string by encoding to UTF-8 and replacing the HTML
  * entities. UTF-8 is necessary for foreign chars like asian 
@@ -16,7 +27,7 @@ function safe_input($value) {
 		return $value;
 		
 	if (is_array($value)) {
-		array_walk($value, "safe_input");
+		array_walk($value, "safe_input_array");
 		return $value;
 	}
 	

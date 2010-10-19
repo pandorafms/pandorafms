@@ -200,6 +200,7 @@ switch ($action) {
 						$elementFields['height_module_graph'] = $elementFields['height'];
 						break;
 				}
+				$elementFields['label'] = safe_output($elementFields['label']);
 				echo json_encode($elementFields);
 				break;
 		}

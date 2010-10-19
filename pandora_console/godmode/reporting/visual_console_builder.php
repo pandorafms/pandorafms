@@ -117,7 +117,6 @@ switch ($activeTab) {
 				foreach ($idsElements as $idElement) {
 					$id = $idElement['id'];
 					$values = array();
-					//$values['label'] = get_parameter('label_' . $id, '');
 					$values['label'] = get_parameter('label_' . $id, '');
 					$values['image'] = get_parameter('image_' . $id, '');
 					$values['width'] = get_parameter('width_' . $id, 0);

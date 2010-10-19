@@ -406,7 +406,7 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	
 	if ($layout_datas !== false) {
 		foreach ($layout_datas as $layout_data) {
-
+			$layout_data['label'] = safe_output($layout_data['label']);
 			// ****************************************************************
 			// Get parent status (Could be an agent, module, map, others doesnt have parent info)
 			// ****************************************************************
@@ -878,8 +878,6 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 
 	$id_layout = (int) $id_layout;
 	
-	$sql = sprintf ('SELECT id_agente_modulo, parent_item, id_layout_linked, id_agent
-		FROM `tlayout_data` WHERE `id_layout` = %d', $id_layout);
 	$result = get_db_all_rows_filter ('tlayout_data', array ('id_layout' => $id_layout),
 		array ('id_agente_modulo', 'parent_item', 'id_layout_linked', 'id_agent', 'type'));
 	if ($result === false)

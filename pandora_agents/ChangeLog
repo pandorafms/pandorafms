@@ -1,3 +1,7 @@
+2010-10-19  Junichi Satoh  <junichi@rworks.jp>
+
+	* unix/SunOS/make_solaris_package/prototype: Added nagios_plugin_wrapper.
+
 2010-10-08  Sancho Lerena <slerena@artica.es>
 
 	* unix/pandora_agent_daemon: Kill with -9 to be sure is killed,

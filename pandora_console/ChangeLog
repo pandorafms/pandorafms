@@ -1,5 +1,12 @@
 2010-10-20  Sergio Martin <sergio.martin@artica.es>
 
+	* godmode/servers/manage_export_form.php
+	godmode/servers/manage_recontask.php
+	godmode/servers/manage_recontask_form.php: Improved and fixed
+	little bugs into the custom recon scripts interface
+
+2010-10-20  Sergio Martin <sergio.martin@artica.es>
+
 	* godmode/alerts/alert_list.list.php: Clean the code
 
 2010-10-20  Sancho Lerena <slerena@artica.es>

@@ -58,14 +58,14 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$recon_ports = get_parameter_post ("recon_ports", "");
 	$id_os = get_parameter_post ("id_os", 10);
     $snmp_community = get_parameter_post ("snmp_community", "public");
-    $id_recon_script = get_parameter ("id_recon_script", 0);
+    $id_recon_script = get_parameter ("id_recon_script", 'NULL');
     $mode = get_parameter ("mode", "");
     $field1 = get_parameter ("field1", "");
     $field2 = get_parameter ("field2", "");
     $field3 = get_parameter ("field3", "");
     $field4 = get_parameter ("field4", "");
     if ($mode == "network_sweep")
-		$id_recon_script = 0;
+		$id_recon_script = 'NULL';
 	else
 		$id_network_profile = 0;
 		
@@ -101,8 +101,8 @@ if (isset($_GET["update"])) {
 if (isset($_GET["create"])) {
 	$sql = sprintf ("INSERT INTO trecon_task 
 			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os, recon_ports, snmp_community, id_recon_script, field1, field2, field3, field4) 
-			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s', '%s', '%d', '%s', '%s', '%s', '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports, $snmp_community,$id_recon_script, $field1, $field2, $field3, $field4);
-	
+			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d, '%s', '%s', %s, '%s', '%s', '%s', '%s')",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os, $recon_ports, $snmp_community,$id_recon_script, $field1, $field2, $field3, $field4);
+
 	if ($name != "") {
 		if (($id_recon_script == 0) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 			$result = process_sql ($sql);

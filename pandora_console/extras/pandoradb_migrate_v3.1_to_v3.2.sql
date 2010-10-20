@@ -165,3 +165,6 @@ ALTER TABLE trecon_task ADD COLUMN `field3` varchar(250) NOT NULL default '';
 ALTER TABLE trecon_task ADD COLUMN `field4` varchar(250) NOT NULL default '';
 ALTER TABLE trecon_task ADD FOREIGN KEY (`id_recon_script`) REFERENCES trecon_script(`id_recon_script`) ON UPDATE CASCADE ON DELETE CASCADE;
 
+ALTER TABLE tagente_modulo MODIFY `descripcion` TEXT NOT NULL default '';
+ALTER TABLE tagente_modulo MODIFY `tcp_send` TEXT default '';
+ALTER TABLE tagente_modulo MODIFY `tcp_rcv` TEXT default '';

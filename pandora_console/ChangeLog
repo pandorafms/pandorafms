@@ -1,3 +1,9 @@
+2010-10-20  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.list.php: Fixed a clone function 
+	of jquery for incompatibility with IE browser for bug 3090389 
+	Merged from trunk
+
 2010-10-19  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/agentes/massive_edit_modules.php: Fixed typo in jquery

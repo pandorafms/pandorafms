@@ -453,7 +453,7 @@ sub exec_recon_script ($$$) {
 	return -1 unless defined ($script);
 
 	logger($pa_config, 'Executing recon script ' . $script->{'name'}, 10);
-	`$script->{'script'} $task->{'id_rt'} $task->{'field1'} $task->{'field2'} $task->{'field3'} $task->{'field4'}`;
+	`$script->{'script'} $task->{'id_rt'} $task->{'id_group'} $task->{'create_incident'} $task->{'field1'} $task->{'field2'} $task->{'field3'} $task->{'field4'}`;
 	return 0;
 }
 

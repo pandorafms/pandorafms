@@ -1,5 +1,10 @@
 2010-10-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/ReconServer.pm: Pass the recon task group_id and
+	  create_incident parameters to the recon script.
+
+2010-10-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/ReconServer.pm: Pass the recon task id to the recon
 	  script.
 

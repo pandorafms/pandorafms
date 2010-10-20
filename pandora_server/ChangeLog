@@ -1,3 +1,23 @@
+2010-10-20  Sancho Lerena <slerena@artica.es>
+
+    * conf/pandora_server.conf.windows: Sample conf for running pandora server
+    on Windows (see windows.README).
+
+    * lib/PandoraFMS/NetworkServer.pm: Adapted to have SNMPGET and PING functions
+    redefined by each SO, this will allow to have native support on pandora
+    to run under different OS (need to check FreeBSD and Solaris!). Windows
+    support implemented.
+
+    * lib/PandoraFMS/Core.pm: Removed ping functions here and moved to Tools.pm
+
+    * lib/PandoraFMS/Tools.pm: Adapted Ping functions to work with any SO, at
+    this time Linux and Windows only, need to check for Solaris and BSD.
+
+    * util/windows.README: Small doc on how to make Pandora Server work on 
+    Windows servers.
+
+    * util/pandora_logrotate: Removed the index in the logrotation.
+
 2010-10-20  Junichi Satoh  <junichi@rworks.jp>
 
 	* util/pandora_server: Added support for chkconfig.

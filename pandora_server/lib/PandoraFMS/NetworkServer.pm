@@ -25,6 +25,7 @@ use threads::shared;
 use Thread::Semaphore;
 
 use IO::Socket::INET;
+use HTML::Entities;
 use POSIX qw(strftime);
 
 # Default lib dir for RPM and DEB packages
@@ -150,6 +151,9 @@ sub pandora_query_tcp ($$$$$$$$) {
 	my $tcp_rcv = $_[6];
 	my $id_tipo_modulo = $_[7];
 
+    $tcp_send = decode_entities($tcp_send);
+    $tcp_rcv = decode_entities($tcp_rcv);
+
         my $counter; 
         for ($counter =0; $counter < $pa_config->{'tcp_checks'}; $counter++){
 	        my $temp; my $temp2;
@@ -242,6 +246,52 @@ next_pair:
         }
 }
 
+###############################################################################
+# Set commands for SNMP checks depending on OS type
+###############################################################################
+
+sub pandora_snmp_get_command ($$$$$$$$$) {
+
+    my ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra) = @_;
+
+    my $output = "";
+
+    # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
+    my $OSNAME = $^O;
+
+    # On windows, we need the snmpget command from net-snmp, already present on win agent
+    # the call is the same than in linux
+    if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
+        if ($snmp_version ne "3"){
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c $snmp_community $snmp_target $snmp_oid 2> NUL`;
+        } else {
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2> NUL`;
+        }
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "solaris"){
+        $output = "";
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "freebsd"){
+        $output = "";
+    }
+
+    # by default LINUX calls
+    else {
+        if ($snmp_version ne "3"){
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
+        } else {
+            $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null`;
+        }
+    }
+
+    return $output;
+}
+
+
 ##########################################################################
 # SUB pandora_query_snmp (pa_config, module)
 # Makes a call to SNMP modules to get a value,
@@ -280,7 +330,8 @@ sub pandora_query_snmp ($$) {
 	# SNMP v1, v2 and v2c call
 	if ($snmp_version ne '3'){
 
-		$output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;
+        $output = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, "", "");
+
 		if ($output ne ""){
 			$module_result = 0;
 			$module_data = $output;
@@ -301,8 +352,8 @@ sub pandora_query_snmp ($$) {
 		if ($snmp3_security_level eq "authPriv"){
 			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass -x $snmp3_privacy_method -X $snmp3_privacy_pass ";
 		}
-
-		$snmp3_execution = "$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -l $snmp3_security_level $snmp3_extra $snmp_target $snmp_oid 2>/dev/null";
+       
+        $snmp3_execution = pandora_snmp_get_command ($snmpget_cmd, $snmp_version, $snmp_retries, $snmp_timeout, $snmp_community, $snmp_target, $snmp_oid, $snmp3_security_level, $snmp3_extra);
 
 		$output = `$snmp3_execution`;
 		if ($output ne ""){

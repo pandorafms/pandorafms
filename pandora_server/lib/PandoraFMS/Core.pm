@@ -68,10 +68,6 @@ Exported Functions:
 
 =item * C<pandora_module_keep_alive_nd>
 
-=item * C<pandora_ping>
-
-=item * C<pandora_ping_latency>
-
 =item * C<pandora_planned_downtime>
 
 =item * C<pandora_process_alert>
@@ -146,8 +142,6 @@ our @EXPORT = qw(
 	pandora_module_keep_alive
 	pandora_module_keep_alive_nd
 	pandora_module_unknown
-	pandora_ping
-	pandora_ping_latency
 	pandora_planned_downtime
 	pandora_process_alert
 	pandora_process_module
@@ -1377,46 +1371,6 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 	}
 }
 
-##############################################################################
-=head2 C<< pandora_ping (I<$pa_config>, I<$host>) >> 
-
-Ping the given host. 
-Returns:
- 1 if the host is alive
- 0 otherwise.
-
-=cut
-##############################################################################
-sub pandora_ping ($$) { 
-	my ($pa_config, $host) = @_;
-
-	# Ping the host
-	`ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
-
-	return ($? == 0) ? 1 : 0;
-}
-
-##############################################################################
-=head2 C<< pandora_ping_latency (I<$pa_config>, I<$host>) >> 
-
-Ping the given host. Returns the average round-trip time.
-
-=cut
-##############################################################################
-sub pandora_ping_latency ($$) {
-	my ($pa_config, $host) = @_;
-
-	# Ping the host
-	my @output = `ping -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
-	
-	# Something went wrong
-	return 0 if ($? != 0);
-	
-	# Parse the output
-	my $stats = pop (@output);
-	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
-	return $2;
-}
 
 ##########################################################################
 # Utility functions, not to be exported.

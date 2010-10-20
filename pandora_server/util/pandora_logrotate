@@ -38,6 +38,7 @@
 	notifempty
 	create 664 root root
         postrotate
+	rm /var/log/pandora/pandora_snmptrap.log.index 2> /dev/null
         /etc/init.d/pandora_server restart
         endscript
 

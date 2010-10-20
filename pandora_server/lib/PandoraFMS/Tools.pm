@@ -53,6 +53,8 @@ our @EXPORT = qw(
 	free_mem
 	md5
 	md5_init
+	pandora_ping
+	pandora_ping_latency
 );
 
 ##########################################################################
@@ -547,6 +549,135 @@ sub load_average {
 sub free_mem {
 	my $free_mem = `free | grep Mem | awk '{ print \$4 }'`;
 	return $free_mem;
+}
+
+
+##############################################################################
+=head2 C<< pandora_ping (I<$pa_config>, I<$host>) >> 
+
+Ping the given host. 
+Returns:
+ 1 if the host is alive
+ 0 otherwise.
+
+=cut
+##############################################################################
+sub pandora_ping ($$) { 
+	my ($pa_config, $host) = @_;
+
+    my $output = 0;
+
+    # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
+    my $OSNAME = $^O;
+
+    # Windows XP .. Windows 7
+    if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
+        my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
+        $output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+        if ($output =~ /TTL/){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "solaris"){
+        $output = "";
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "freebsd"){
+        $output = "";
+    }
+
+    # by default LINUX calls
+    else {
+
+        my $ping_command = "ping";
+
+        if ($host =~ /\d+:|:\d+/ ) {
+            $ping_command = "ping6";
+        }
+
+	    # Ping the host
+    	`$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+	    return ($? == 0) ? 1 : 0;
+   }
+
+    return $output;
+}
+
+##############################################################################
+=head2 C<< pandora_ping_latency (I<$pa_config>, I<$host>) >> 
+
+Ping the given host. Returns the average round-trip time.
+
+=cut
+##############################################################################
+sub pandora_ping_latency ($$) {
+	my ($pa_config, $host) = @_;
+
+
+    my $output = 0;
+
+    # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
+    my $OSNAME = $^O;
+
+    # Windows XP .. Windows 2008, I assume Win7 is the same
+    if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
+
+        # System ping reports in different languages, but with the same format:
+        # Mínimo = xxms, Máximo = xxms, Media = XXms
+        # Minimun = xxms, Mamimun = xxms, Average = XXms
+
+        # If this fails, ping can be replaced by fping which also have the same format
+        # but always in english
+
+        my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
+        $output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
+    
+        if ($output =~ m/\=\s([0-9]*)[a-z][a-z]\r/){
+            return $1;
+        } else {
+            return 0;
+        }
+
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "solaris"){
+        $output = "";
+    }
+
+    # Need to implement
+    elsif ($OSNAME eq "freebsd"){
+        $output = "";
+    }
+
+    # by default LINUX calls
+    else {
+        my $ping_command = "ping";
+
+        if ($host =~ /\d+:|:\d+/ ) {
+            $ping_command = "ping6";
+        }
+
+
+        # Ping the host
+        my @output = `$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+
+        # Something went wrong
+        return 0 if ($? != 0);
+
+        # Parse the output
+        my $stats = pop (@output);
+        return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+        return $2;
+    }
+
+    # If no valid get values until now, just return with empty value (not valid)
+    return $output;
 }
 
 # End of function declaration

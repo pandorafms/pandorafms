@@ -1,0 +1,27 @@
+Pandora FMS on Windows servers
+==============================
+
+This is not recommended for production systems (due lack of depth testing and performance penalty) but it's possible to have Pandora FMS server working on Windows servers (XP, 2000, 2003, Vista, 2008 and Windows 7).
+
+You need to have the ActiveState Perl installed in your system and some Perl modules installed (ActiveState Perl has a nice installer).
+
+You will need to create the paths you will need by hand, there aren't an automated installer for Windows (yet):
+
+c:\pandora_server - Will contain everything, put contents of pandora server tarball there.
+
+c:\pandora_server\conf - Will contain the configuration file, you have a windows sample file in conf\pandora_server.conf.windows as sample
+
+c:\pandora_server\data_in - put search there for all incoming data files.
+
+c:\pandora_server\bin - Will search there for tentacle_server, nmap, and snmpget tool. You will use the snmpget tool from the pandora windows agent (\util\snmpget.exe).
+
+To start tentacle
+-----------------
+
+C:\pandora_server\bin>perl tentacle_server -p 41121 -a 0.0.0.0 -s c:\pandora_server\data_in -i.*\.conf:conf;.*\.md5:md5;.*\.zip:collections
+
+To start pandora server
+-----------------------
+
+C:\pandora_server\bin>perl pandora_server c:\windows_server\conf\pandora_server.conf
+

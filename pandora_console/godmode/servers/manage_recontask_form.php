@@ -75,11 +75,21 @@ if (isset ($_GET["update"])) { // Edit mode
 print_page_header (__('Manage recontask')." ".print_help_icon ("recontask", true), "", false, "", true);
 
 
-$table->width=600;
+$table->width='90%';
 $table->cellspacing=4;
 $table->cellpadding=4;
 $table->class="databox_color";
+$table->rowclass[3]="network_sweep";
+$table->rowclass[5]="network_sweep";
+$table->rowclass[7]="network_sweep";
+$table->rowclass[8]="network_sweep";
+$table->rowclass[11]="network_sweep";
 
+$table->rowclass[6]="recon_script";
+$table->rowclass[12]="recon_script";
+$table->rowclass[13]="recon_script";
+$table->rowclass[14]="recon_script";
+$table->rowclass[15]="recon_script";
 // Name
 $table->data[0][0] = "<b>".__('Task name')."</b>";
 $table->data[0][1] = print_input_text ('name', $name, '', 25, 0, true);
@@ -178,7 +188,7 @@ $table->data[16][1] =  print_input_text ('description', $description, '', 45, 0,
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 
 print_table ($table);
-echo '<div class="action-buttons" style="width: 620px">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_rt != -1) 
 	print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
 else
@@ -188,3 +198,28 @@ echo "</div>";
 echo "</form>";
 
 ?>
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	if($('#mode').val() == 'recon_script') {
+			$(".recon_script").attr ('style', '');
+			$(".network_sweep").attr ('style', 'display:none');
+	}
+	else if($('#mode').val() == 'network_sweep') {
+			$(".network_sweep").attr ('style', '');
+			$(".recon_script").attr ('style', 'display:none');
+	}
+			
+	$('#mode').change(function() {
+		if(this.value == 'recon_script') {
+				$(".recon_script").attr ('style', '');
+				$(".network_sweep").attr ('style', 'display:none');
+		}
+		else if(this.value == 'network_sweep') {
+				$(".network_sweep").attr ('style', '');
+				$(".recon_script").attr ('style', 'display:none');
+		}
+	});
+});
+/* ]]> */
+</script>

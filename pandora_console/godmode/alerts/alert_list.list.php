@@ -343,6 +343,7 @@ $table->data = array ();
 
 $rowPair = true;
 $iterator = 0;
+
 foreach ($simple_alerts as $alert) {
 	if ($alert['disabled']) {
 		 $table->rowstyle[$iterator] = 'font-style: italic; color: #aaaaaa;';
@@ -471,6 +472,25 @@ foreach ($simple_alerts as $alert) {
 		$data[6] .= ' ' . __('Add action');
 	$data[6] .= '</a>';
 	
+	$data[6] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
+	$data[6] .= print_input_hidden ('add_action', 1, true);
+	$data[6] .= print_input_hidden ('id_alert_module', $alert['id'], true);
+	$actions = get_alert_actions ();
+	$data[6] .= print_select ($actions, 'action', '', '', __('None'), 0, true);
+	$data[6] .= '<br />';
+	$data[6] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
+	$data[6] .= '<span class="advanced_actions invisible">';
+	$data[6] .= __('Number of alerts match from').' ';
+	$data[6] .= print_input_text ('fires_min', -1, '', 4, 10, true);
+	$data[6] .= ' '.__('to').' ';
+	$data[6] .= print_input_text ('fires_max', -1, '', 4, 10, true);
+	$data[6] .= print_help_icon ("alert-matches", true);
+	$data[6] .= '</span>';
+	$data[6] .= '<div class="right">';
+	$data[6] .= print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);
+	$data[6] .= '</div>';
+	$data[6] .= '</form>';
+	
 	$status = STATUS_ALERT_NOT_FIRED;
 	$title = "";
 	
@@ -501,25 +521,6 @@ if (isset($data)){
 } else {
 	echo "<div class='nf'>".__('No alerts defined')."</div>";
 }
-
-echo '<form id="add_action_form" method="post" class="invisible">';
-print_input_hidden ('add_action', 1);
-print_input_hidden ('id_alert_module', 0);
-$actions = get_alert_actions ();
-print_select ($actions, 'action', '', '', __('None'), 0);
-echo '<br />';
-echo '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
-echo '<span class="advanced_actions invisible">';
-echo __('Number of alerts match from').' ';
-print_input_text ('fires_min', -1, '', 4, 10);
-echo ' '.__('to').' ';
-print_input_text ('fires_max', -1, '', 4, 10);
-echo print_help_icon ("alert-matches", true);
-echo '</span>';
-echo '<div class="right">';
-print_submit_button (__('Add'), 'add_action', false, 'class="sub next"');
-echo '</div>';
-echo '</form>';
 
 // Create alert button
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
@@ -631,9 +632,12 @@ $(document).ready (function () {
 		id = this.id.split ("-").pop ();
 		
 		/* Replace link with a combo with the actions and a form */
-		$form = $('form#add_action_form:last').clone (true).show ();
-		$("input#hidden-id_alert_module", $form).attr ("value", id);
-		$(this).replaceWith ($form);
+		//$form = $('form#add_action_form:last').clone (true).show ();
+		//alert($form);
+		//$("input#hidden-id_alert_module", $form).attr ("value", id);
+		$('#add_action_form-' + id).attr("class", '');
+		$(this).attr("class", 'invisible');
+		//$(this).replaceWith ($form);
 		return false;
 	});
 	

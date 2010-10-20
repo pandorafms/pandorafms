@@ -41,7 +41,7 @@ if (isset($_GET["server"])) {
 	$table->width=450;
 	$table->class="databox_color";
 	
-	$table->data[] = array (__('Name'),print_input_text ('name',$row["name"],'',50,0,true));
+	$table->data[] = array (__('Name'),$row["name"]);
 	$table->data[] = array (__('IP Address'),print_input_text ('address',$row["ip_address"],'',50,0,true));
 	$table->data[] = array (__('Description'),print_input_text ('description',$row["description"],'',50,0,true));
 	print_table ($table);
@@ -64,11 +64,10 @@ if (isset($_GET["server"])) {
 			echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
 		}
 	} elseif (isset($_GET["update"])) {
-		$name = get_parameter_post ("name");
 		$address = get_parameter_post ("address");
 		$description = get_parameter_post ("description");
 		$id_server = get_parameter_post ("server");
-		$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d", $name, $address, $description, $id_server);
+		$sql = sprintf ("UPDATE tserver SET ip_address = '%s', description = '%s' WHERE id_server = %d", $address, $description, $id_server);
 		$result = process_sql ($sql);
 		if ($result !== false) {
 			echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';

@@ -900,7 +900,7 @@ function delete_alert_compound ($id_alert_compound) {
 		array ('id' => $id_alert_compound))) !== false;
 }
 
-function get_agents_with_alert_template ($id_alert_template, $id_group, $filter = false, $fields = false) {
+function get_agents_with_alert_template ($id_alert_template, $id_group, $filter = false, $fields = false, $id_agents = false) {
 	if (empty ($id_alert_template))
 		return false;
 	if (! is_array ($filter))
@@ -908,11 +908,13 @@ function get_agents_with_alert_template ($id_alert_template, $id_group, $filter 
 	$filter[] = 'tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module';
 	$filter[] = 'tagente_modulo.id_agente = tagente.id_agente';
 	$filter['id_alert_template'] = $id_alert_template;
-	$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+	if (empty ($id_agents))
+		$filter['`tagente`.id_agente'] = array_keys (get_group_agents ($id_group, false, "none"));
+	else
+		$filter['`tagente`.id_agente'] = $id_agents;
 	
 	return get_db_all_rows_filter ('tagente, tagente_modulo, talert_template_modules',
 		$filter, $fields);
 }
-
 
 ?>

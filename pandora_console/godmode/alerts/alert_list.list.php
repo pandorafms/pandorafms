@@ -631,13 +631,9 @@ $(document).ready (function () {
 	$("a.add_action").click (function () {
 		id = this.id.split ("-").pop ();
 		
-		/* Replace link with a combo with the actions and a form */
-		//$form = $('form#add_action_form:last').clone (true).show ();
-		//alert($form);
-		//$("input#hidden-id_alert_module", $form).attr ("value", id);
 		$('#add_action_form-' + id).attr("class", '');
 		$(this).attr("class", 'invisible');
-		//$(this).replaceWith ($form);
+
 		return false;
 	});
 	

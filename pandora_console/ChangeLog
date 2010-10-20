@@ -1,3 +1,7 @@
+2010-10-20  Sergio Martin <sergio.martin@artica.es>
+
+	* godmode/alerts/alert_list.list.php: Clean the code
+
 2010-10-20  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb.sql

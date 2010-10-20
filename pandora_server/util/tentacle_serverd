@@ -7,6 +7,11 @@
 #
 # System startup script for Tentacle Server
 #
+# Comments to support chkconfig on RedHat Linux
+# chkconfig: 2345 90 90
+# description: Tentacle Server startup script
+#
+# Comments to support LSB init script conventions
 ### BEGIN INIT INFO
 # Provides:       tentacle_server
 # Required-Start: $network
@@ -15,7 +20,6 @@
 # Should-Stop:    $network
 # Default-Start:  2 3 5
 # Default-Stop:   0 1 6
-# chkconfig:      2345 90 90
 # Short-Description: Tentacle Server startup script
 # Description:    Tentacle Server startup script
 ### END INIT INFO

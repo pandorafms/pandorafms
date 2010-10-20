@@ -7,6 +7,11 @@
 #
 # System startup script for Pandora FMS
 #
+# Comments to support chkconfig on RedHat Linux
+# chkconfig: 2345 90 10
+# description: Pandora FMS Server startup scrip
+#
+# Comments to support LSB init script conventions
 ### BEGIN INIT INFO
 # Provides:       pandora_server
 # Required-Start: $syslog cron

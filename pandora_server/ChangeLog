@@ -1,5 +1,11 @@
 2010-10-20  Junichi Satoh  <junichi@rworks.jp>
 
+	* util/pandora_server: Added support for chkconfig.
+
+	* util/tentacle_serverd: Divided comments into chkconfig and LSB init.
+
+2010-10-20  Junichi Satoh  <junichi@rworks.jp>
+
 	* util/tentacle_serverd: Added support for chkconfig.
 
 2010-10-19  Sergio Martin <sergio.martin@artica.es>

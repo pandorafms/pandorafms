@@ -374,6 +374,20 @@ sub process_module_data ($$$$$$$$$) {
 		return;
 	}
 
+	# Get module parameters, matching column names in tagente_modulo
+	my $module_conf;
+	$module_conf->{'max'} = get_tag_value ($data, 'max', 0);
+	$module_conf->{'min'} = get_tag_value ($data, 'min', 0);
+	$module_conf->{'descripcion'} = get_tag_value ($data, 'description', '');
+	$module_conf->{'post_process'} = get_tag_value ($data, 'post_process', 0);
+	$module_conf->{'module_interval'} = get_tag_value ($data, 'module_interval', 1);
+	
+	# Calculate the module interval in seconds
+	$module_conf->{'module_interval'} *= $interval;
+
+	# Allow , as a decimal separator
+	$module_conf->{'post_process'} =~ s/,/./;
+
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
@@ -400,25 +414,23 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 
-		# Get min/max/description/post process
-		my $max = get_tag_value ($data, 'max', 0);
-		my $min = get_tag_value ($data, 'min', 0);
-		my $description = get_tag_value ($data, 'description', '');
-		my $post_process = get_tag_value ($data, 'post_process', 0);
-
-		# Allow , as a decimal separator
-		$post_process =~ s/,/./;
-
 		# Create the module
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
-			$max, $min, $post_process, $description, $interval, $dbh);
+			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
+			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh);
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
 			$ModuleSem->up ();
 			return;
 		}
+	} else {
+		# Update module configuration if in learning mode
+		if ($agent->{'modo'} eq '1') {
+			update_module_configuration ($pa_config, $dbh, $module, $module_conf);
+		}
 	}
+
 	$ModuleSem->up ();
 
 	# Module disabled!
@@ -480,6 +492,24 @@ sub get_macros_for_data($$){
 	}
 
 	return \%macros;
+}
+
+##########################################################################
+# Update module configuration in tagente_modulo if necessary.
+##########################################################################
+sub update_module_configuration ($$$$) {
+	my ($pa_config, $dbh, $module, $module_conf) = @_;
+
+	# Update if at least one of the configuration tokens has changed
+	if ($module->{'min'} != $module_conf->{'min'} || $module->{'max'} != $module_conf->{'max'} ||
+	    $module->{'descripcion'} ne $module_conf->{'descripcion'} || $module->{'post_process'} != $module_conf->{'post_process'} ||
+	    $module->{'module_interval'} != $module_conf->{'module_interval'}) {
+			logger($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
+			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?
+			              WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'},
+			       $module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
+			return;
+	}
 }
 
 1;

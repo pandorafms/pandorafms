@@ -1,3 +1,10 @@
+2010-10-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* lib/PandoraFMS/NetworkServer.pm: Deleted FreeBSD specific SNMPGET
+	definition. It is the same as Linux.
+
+	* lib/PandoraFMS/Tools.pm: Added FreeBSD specific Ping function.
+
 2010-10-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Pass the recon task group_id and

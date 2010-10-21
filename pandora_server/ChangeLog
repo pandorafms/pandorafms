@@ -1,3 +1,9 @@
+2010-10-21  Junichi Satoh  <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Fixed timeout option for FreeBSD ping.
+	(Note: In ping6, '-t' option is not implemented. So, 'networktimeout'
+	is not used with ping6.)
+
 2010-10-21  Sergio Martin <sergio.martin@artica.es>
 
 	* util/recon_scripts

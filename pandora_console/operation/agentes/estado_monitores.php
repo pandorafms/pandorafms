@@ -303,7 +303,8 @@ foreach ($modules as $module) {
 			case 60: $salida = "FATAL"; $style="font-weight:bold; color:red;"; break;
 		}
 		$salida = "<span style='$style'>$salida</span>";
-	} else {
+	}
+	else {
 		if (is_numeric($module["datos"])){
 			$salida = format_numeric($module["datos"]);
 		}

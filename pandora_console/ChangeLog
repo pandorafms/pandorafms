@@ -1,3 +1,17 @@
+2010-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: added check tconfig parameter
+	"can_block_policies" in functions.
+	
+	Pending task: #3080762
+	
+	* operation/agentes/ver_agente.php: added hook enterprise the tab policy.
+	
+	Pending task: #3080762
+
+	* include/functions_ui.php, operation/agentes/estado_monitores.php: cleaned
+	source code style.
+
 2010-10-20  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/servers/manage_export_form.php

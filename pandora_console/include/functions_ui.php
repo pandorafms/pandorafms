@@ -492,7 +492,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
 
-	if (!empty($actions)){
+	if (!empty($actions)) {
 		$actionText = '<ul class="action_list">';
 		foreach ($actions as $action) {
 			$actionText .= '<li><div><span class="action_name">' . $action['name'];

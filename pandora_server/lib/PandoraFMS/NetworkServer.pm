@@ -274,12 +274,7 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
         $output = "";
     }
 
-    # Need to implement
-    elsif ($OSNAME eq "freebsd"){
-        $output = "";
-    }
-
-    # by default LINUX calls
+    # by default LINUX/FreeBSD calls
     else {
         if ($snmp_version ne "3"){
             $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;

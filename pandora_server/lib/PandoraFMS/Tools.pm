@@ -586,9 +586,16 @@ sub pandora_ping ($$) {
         $output = "";
     }
 
-    # Need to implement
     elsif ($OSNAME eq "freebsd"){
-        $output = "";
+	my $ping_command = "ping";
+
+	if ($host =~ /\d+:|:\d+/ ) {
+	    $ping_command = "ping6";
+	}
+
+	# Ping the host
+	`$ping_command -q -i $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+	return ($? == 0) ? 1 : 0;
     }
 
     # by default LINUX calls
@@ -650,9 +657,23 @@ sub pandora_ping_latency ($$) {
         $output = "";
     }
 
-    # Need to implement
     elsif ($OSNAME eq "freebsd"){
-        $output = "";
+	my $ping_command = "ping";
+
+	if ($host =~ /\d+:|:\d+/ ) {
+	    $ping_command = "ping6";
+	}
+
+	# Ping the host
+	my @output = `$ping_command -q -i $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+
+	# Something went wrong
+	return 0 if ($? != 0);
+
+	# Parse the output
+	my $stats = pop (@output);
+	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+	return $2;
     }
 
     # by default LINUX calls

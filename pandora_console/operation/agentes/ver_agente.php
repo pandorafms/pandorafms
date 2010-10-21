@@ -382,7 +382,8 @@ $slatab['text']= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agent
 
 if ($tab == 'sla') {
 	$slatab['active'] = true;
-} else {
+}
+else {
 	$slatab['active'] = false;
 }
 
@@ -397,6 +398,11 @@ $collectiontab = enterprise_hook('collection_tab');
 
 if ($collectiontab == -1)
 	$collectiontab = "";
+	
+/* Policy */
+$policyTab = enterprise_hook('policy_tab');
+if ($policyTab == -1)
+	$policyTab = "";
 
 /* Group tab */
 
@@ -444,7 +450,7 @@ else {
 $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 
 				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
-				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs);
+				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
 
 print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
@@ -482,6 +488,9 @@ switch ($tab) {
 		break;
 	case "collection":
 		enterprise_include ('operation/agentes/collection_view.php');
+		break;
+	case 'policy':
+		enterprise_include ('operation/agentes/policy_view.php');
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

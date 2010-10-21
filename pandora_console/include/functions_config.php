@@ -219,6 +219,8 @@ function update_config () {
 	update_config_value ('sound_alert', get_parameter('sound_alert', $config['sound_alert']));
 	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
+	
+	update_config_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
 }
 
 /**
@@ -562,6 +564,10 @@ function process_config () {
 	
 	if (!isset ($config['autoupdate'])) {
 		update_config_value ( 'autoupdate', 0);
+	}
+	
+	if (!isset ($config['can_block_policies'])) {
+		update_config_value ( 'can_block_policies', 0);
 	}
 
 	/* Finally, check if any value was overwritten in a form */

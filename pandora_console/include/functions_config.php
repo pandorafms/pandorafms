@@ -220,7 +220,25 @@ function update_config () {
 	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 	
-	update_config_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
+	$enterprise = enterprise_include_once('include/functions_policies.php');
+	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
+		$locked = enterprise_hook('semaphore_policy_test_and_set');
+		if ($locked) {
+			pandora_audit("Policy management", "BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+
+			update_config_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
+			
+			pandora_audit("Policy management", "UNBLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+			enterprise_hook('semaphore_policy_unlock');
+		}
+		else {
+			pandora_audit("Policy management", "Try to BLOCK policies for change tconfig['can_block_policies'] by " . $config['id_user']);
+		}
+	}
+	else {
+		update_config_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
+	}
+	
 }
 
 /**

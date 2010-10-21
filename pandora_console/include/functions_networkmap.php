@@ -664,7 +664,7 @@ function update_networkmap ($id_networkmap, $values) {
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	$("area[title!='<?php echo __('Pandora FMS'); ?>']").cluetip ({
+	$("area[title!='<?php echo 'Pandora FMS'; ?>']").cluetip ({
 		arrows: true,
 		attribute: 'title',
 		cluetipClass: 'default'

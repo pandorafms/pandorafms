@@ -533,6 +533,7 @@ sub help_screen{
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', 'Delete historic data of a module, the modules of an agent or the modules of the agents of a group');
     help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
     help_screen_line('--apply_policy', '<policy_name>', 'Force apply a policy');
+    help_screen_line('--force_unblock_policies', '', 'Force unblock the policies');
     print "\n";
 	exit;
 }
@@ -1309,6 +1310,14 @@ sub pandora_manage_main ($$$) {
 			my $configuration_data = "";
 
 			my $policy_id = enterprise_hook('get_policy_id',[$dbh, $policy_name]);
+			exist_check($policy_id,'policy',$policy_name);
+
+			my $blocked_policies = enterprise_hook('pandora_block_policies', [$dbh]);
+									
+			if($blocked_policies eq '0E0') {
+				print "[ERROR] The policies are blocked in other terminal.\n\n";
+				exit;
+			}
 			
 			# Get the agents
 			my $array_pointer_ag = enterprise_hook('get_policy_agents',[$dbh, $policy_id]);
@@ -1377,14 +1386,14 @@ sub pandora_manage_main ($$$) {
 						}
 					}
 				
-				#Add the conf information to the agent conf file
-				enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data,$agent_name,$dbh]);
+					#Add the conf information to the agent conf file
+					enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data,$agent_name,$dbh]);
+				
+					# Flag applyed the agent
+					enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
+				}
 			
-				# Flag applyed the agent
-				enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
-			}
-			
-			# Get policy collections and link it on created modules
+				# Get policy collections and link it on created modules
 				my $array_pointer_col = enterprise_hook('get_policy_collections',[$dbh, $policy_id]);
 				
 				my $collection_data = '';
@@ -1400,6 +1409,10 @@ sub pandora_manage_main ($$$) {
 					enterprise_hook('pandora_create_collection_conf_info',[$conf, $policy_name, $collection_data,$agent_name,$dbh]);
 				}
 			}
+			enterprise_hook('pandora_unblock_policies', [$dbh]);
+		}
+		elsif ($param eq '--force_unblock_policies') {			
+			enterprise_hook('pandora_unblock_policies', [$dbh]);
 		}
 		else {
 			print "[ERROR] Invalid option '$param'.\n\n";

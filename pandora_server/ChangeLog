@@ -1,3 +1,11 @@
+2010-10-21  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added a generic update function to return
+	the number of changes
+
+	* util/pandora_manage.pl: Added the unblock policies to the CLI and
+	the block/unblock policies when it are applied.
+
 2010-10-21  Junichi Satoh  <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Tools.pm: Fixed timeout option for FreeBSD ping.

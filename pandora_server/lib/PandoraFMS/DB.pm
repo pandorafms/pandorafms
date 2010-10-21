@@ -32,6 +32,7 @@ our @EXPORT = qw(
 		db_do
 		db_process_insert
 		db_insert
+		db_update
 		get_action_id
 		get_agent_id
 		get_agent_name
@@ -330,6 +331,17 @@ sub db_insert ($$;@) {
 
 	$dbh->do($query, undef, @values);
 	return $dbh->{'mysql_insertid'};
+}
+
+##########################################################################
+## SQL update. Returns the number of updated rows.
+##########################################################################
+sub db_update ($$;@) {
+	my ($dbh, $query, @values) = @_;
+	
+	my $rows = $dbh->do($query, undef, @values);
+	
+	return $rows;
 }
 
 ##########################################################################

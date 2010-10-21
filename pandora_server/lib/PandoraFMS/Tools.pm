@@ -587,14 +587,14 @@ sub pandora_ping ($$) {
     }
 
     elsif ($OSNAME eq "freebsd"){
-	my $ping_command = "ping";
+	my $ping_command = "ping -t $pa_config->{'networktimeout'}";
 
 	if ($host =~ /\d+:|:\d+/ ) {
 	    $ping_command = "ping6";
 	}
 
 	# Ping the host
-	`$ping_command -q -i $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
+	`$ping_command -q -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
 	return ($? == 0) ? 1 : 0;
     }
 
@@ -658,14 +658,14 @@ sub pandora_ping_latency ($$) {
     }
 
     elsif ($OSNAME eq "freebsd"){
-	my $ping_command = "ping";
+	my $ping_command = "ping -t $pa_config->{'networktimeout'}";
 
 	if ($host =~ /\d+:|:\d+/ ) {
 	    $ping_command = "ping6";
 	}
 
 	# Ping the host
-	my @output = `$ping_command -q -i $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
+	my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;
 
 	# Something went wrong
 	return 0 if ($? != 0);

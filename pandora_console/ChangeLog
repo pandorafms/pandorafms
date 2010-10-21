@@ -1,5 +1,18 @@
 2010-10-21  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_config.php: fixed the change the flag tconfig
+	"can_block_policies", now the operation is between policy semaphore.
+	
+	Fixes: #3091940
+
+	* include/functions_db.php: fixed the save user IP when the $config don't
+	load this var yet.
+	
+	* include/functions_networkmap.php: fixed the translation call function when
+	the pandora don't load the function.
+
+2010-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_config.php: added check tconfig parameter
 	"can_block_policies" in functions.
 	

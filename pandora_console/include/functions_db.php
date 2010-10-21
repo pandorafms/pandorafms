@@ -323,7 +323,21 @@ function audit_db ($id, $ip, $accion, $descripcion){
  */
 function pandora_audit ($accion, $descripcion){
 	global $config;
-	$ip = $config["remote_addr"]; 
+	
+	if (isset($config["remote_addr"])) {
+		$ip = $config["remote_addr"]; 
+		
+	}
+	else {
+		if ($_SERVER['REMOTE_ADDR']) {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		else {
+			$ip = null;
+		}
+	}
+	
+	
 	$id = $config["id_user"];
 
 	$accion = safe_input($accion);

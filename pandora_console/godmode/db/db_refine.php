@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -57,8 +57,11 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	echo '<br /><br /><h3 class="suc">'.__('Filtering completed').'</h3>';
 }
 echo '<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">';
+echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+
+echo '<tr><td class="datost">';
 echo '<div style="float:left; width: 250px;">';
-echo '<b>'.__('Source agent').'</b><br />';
+echo '<b>'.__('Source agent').'</b><br /><br />';
 
 $agent_selected = get_parameter_post ("origen", 0);
 $agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
@@ -80,13 +83,20 @@ print_select ($modules, "origen_modulo[]", $module_selected, '', '', '0', false,
 echo '</div>'; //Left div
 
 echo '<div style="float:left; width:250px;"><b>'.__('Purge data out of these limits').'</b><br /><br />';
+echo '<table><tr><td>';
 echo __('Minimum').': ';
+echo '</td><td>';
 print_input_text ("min", 0, __('Minimum'), 4, 0, false);
-echo '<br />';
-echo __('Maximum').': ';
+echo '</td></tr>';
+echo '<tr><td>';
+echo __('Maximum').': 	';
+echo '</td><td>';
 print_input_text ("max", 0, __('Maximum'), 4, 0, false);
-echo '<br />';
+echo '</td></tr>';
+echo '</table>';
+echo '</div>';
+echo '<div style="clear:both;">&nbsp;</div>';
+print_submit_button (__('Delete'), 'eliminar', false, 'class="sub delete" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
+echo '</td></tr></table>';
 
-print_submit_button (__('Delete'), 'eliminar', false, 'class="sub delete" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"'); 
-echo '</div><div style="clear:both;">&nbsp;</div>';
 ?>

@@ -23,6 +23,7 @@ use warnings;
 use threads;
 use threads::shared;
 use Thread::Semaphore;
+use HTML::Entities;
 
 use IO::Socket::INET;
 use POSIX qw(strftime);
@@ -149,6 +150,9 @@ sub pandora_query_tcp (%$$$$$$$) {
 	my $tcp_send = $_[5];
 	my $tcp_rcv = $_[6];
 	my $id_tipo_modulo = $_[7];
+
+    $tcp_send = decode_entities($tcp_send);
+    $tcp_rcv = decode_entities($tcp_rcv);
 
         my $counter; 
         for ($counter =0; $counter < $pa_config->{'tcp_checks'}; $counter++){

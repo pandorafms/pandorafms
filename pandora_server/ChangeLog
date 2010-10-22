@@ -1,5 +1,8 @@
 2010-10-22  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/NetworkServer.pm: Enforce HTML decoding on tcp send
+	and receive parameters.
+
 	* lib/PandoraFMS/Config.pm: Fixed parsing mta_from.
 
 	* lib/PandoraFMS/Tools.pm: Enforce HTML decoding of mail subject & text.

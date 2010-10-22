@@ -254,14 +254,14 @@ if (isset ($_GET["update_alert"])) {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = 750;
+	$table->width = "750 px";
 	$table->class= "databox";
 	$table->align = array ();
 
 	$table->head[0] = __('Alert action');
 	
 	$table->head[1] = __('SNMP Agent');
-	$table->size[1] = 75;
+	$table->size[1] = "90px";
 	$table->align[1] = 'center';
 
 	$table->head[2] = __('OID');
@@ -279,8 +279,8 @@ if (isset ($_GET["update_alert"])) {
 	$table->align[6] = 'center';
 
 	$table->head[7] = __('Action');
-	$table->size[7] = 50;
-	$table->align[7] = 'right';
+	$table->size[7] = "50px";
+	$table->align[7] = 'center';
 
 	foreach ($result as $row) {
 		$data = array ();

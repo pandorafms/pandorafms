@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -131,6 +131,7 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 			}
 		}
 		echo '</select>';
+		echo '</td></tr>';		
 
 		// Destination agent
 		echo '<tr><td class="datost">';
@@ -147,12 +148,11 @@ if ((isset($_GET["operacion"])) AND ($update_group == -1) ) {
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}
 		echo '</select>';
-		
+		echo '</td>';
 		// Form buttons
 		echo '<td align="right" class="datosb">';
 		echo '<input type="submit" name="copy" class="sub next" value="'.__('Replicate configuration').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
-		echo '<tr><td colspan=2>';
-		echo '</div></td></tr>';
+		echo '</td></tr>';
 		echo '</table>';
 	}
 

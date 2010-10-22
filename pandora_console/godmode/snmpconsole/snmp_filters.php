@@ -110,15 +110,15 @@ if ($edit_filter > -2) {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = 750;
+	$table->width = "750px";
 	$table->class= "databox";
 	$table->align = array ();
 
 	$table->head[0] = __('Description');	
 	$table->head[1] = __('Filter');
 	$table->head[2] = __('Action');
-	$table->size[2] = 50;
-	$table->align[2] = 'right';
+	$table->size[2] = "50px";
+	$table->align[2] = 'center';
 
 	foreach ($result as $row) {
 		$data = array ();

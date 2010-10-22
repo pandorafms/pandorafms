@@ -21,8 +21,11 @@ use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
 use POSIX;
-use PandoraFMS::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
-#use Module::Loaded;
+use PandoraFMS::Sendmail;	
+use HTML::Entities;
+
+# New in 3.2. Used to sendmail internally, without external scripts
+# use Module::Loaded;
 
 # Used to calculate the MD5 checksum of a string
 use constant MOD232 => 2**32;
@@ -55,6 +58,7 @@ our @EXPORT = qw(
 	md5_init
 	pandora_ping
 	pandora_ping_latency
+    ticks_totime
 );
 
 ##########################################################################
@@ -166,14 +170,14 @@ sub pandora_daemonize {
 ##########################################################################
 
 sub pandora_sendmail {                  
-
-	#WARNING: To use MTA Auth is needed v0.79_16 or higer of Mail:Sendmail
-	#http://cpansearch.perl.org/src/MIVKOVIC/Mail-Sendmail-0.79_16/Sendmail.pm
 	
 	my $pa_config = $_[0];
 	my $to_address = $_[1];
 	my $subject = $_[2];
 	my $message = $_[3];
+
+    $subject = decode_entities ($subject);
+    $message = decode_entities ($message);
 
 	my %mail = ( To   => $to_address,
 			  Message => $message,
@@ -192,7 +196,9 @@ sub pandora_sendmail {
 		return;
 	} else {
 		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+        if (defined($Mail::Sendmail::error)){
+    		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+        }
 	}
 
 }
@@ -551,6 +557,32 @@ sub free_mem {
 	return $free_mem;
 }
 
+##########################################################################
+## SUB ticks_totime
+	# Transform a snmp timeticks count in a date
+##########################################################################
+
+sub ticks_totime ($){
+
+	# Calculate ticks per second, minute, hour, and day
+	my $TICKS_PER_SECOND = 100;
+	my $TICKS_PER_MINUTE = $TICKS_PER_SECOND * 60;
+	my $TICKS_PER_HOUR   = $TICKS_PER_MINUTE * 60;
+	my $TICKS_PER_DAY    = $TICKS_PER_HOUR * 24;
+
+	my $ticks   = shift;
+	
+	if (!defined($ticks)){
+			return "";
+	}
+	
+	my $seconds = int($ticks / $TICKS_PER_SECOND) % 60;
+	my $minutes = int($ticks / $TICKS_PER_MINUTE) % 60;
+	my $hours   = int($ticks / $TICKS_PER_HOUR)   % 24;
+	my $days    = int($ticks / $TICKS_PER_DAY);
+
+	return "$days days, $hours hours, $minutes minutes, $seconds seconds";
+}
 
 ##############################################################################
 =head2 C<< pandora_ping (I<$pa_config>, I<$host>) >> 

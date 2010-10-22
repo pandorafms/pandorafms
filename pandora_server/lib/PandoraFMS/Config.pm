@@ -376,7 +376,7 @@ sub pandora_load_config {
 			$pa_config->{'mta_auth'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
-			$pa_config->{'mta_from'}= clean_blank($1); 
+			$pa_config->{'mta_from'}= $1; 
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 
@@ -569,7 +569,6 @@ sub pandora_load_config {
 			$pa_config->{'update_parent'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
-
 
 	if (($pa_config->{"verbosity"} > 4) && ($pa_config->{"quiet"} == 0)){
 		if ($pa_config->{"PID"} ne ""){

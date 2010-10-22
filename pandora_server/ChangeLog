@@ -1,3 +1,14 @@
+2010-10-22  Sancho Lerena <slerena@artica.es>
+
+    * Config.pm: Parsing for mta_from doesn't remove blanks, allowing to
+    use a Normal name + Email address in the from.
+
+    * Tools.pm: Email output is parsed with a html decode first. 
+    Added timeticks option for tools (intented to use in the future).
+
+    * pandora_server.conf: Example of usage in the mta_from with a fully
+    composed email address.
+
 2010-10-22  Junichi Satoh  <junichi@rworks.jp>
 
 	* lib/PandoraFMS/NetworkServer.pm: Deleted Solaris specific SNMPGET

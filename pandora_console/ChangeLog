@@ -1,3 +1,9 @@
+2010-10-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/styles/pandora_minimal.css, include/fgraph.php,
+	  include/functions_fsgraph.php, operation/agentes/stat_win.php: Added
+	  support for chart baseline (Enterprise).
+
 2010-10-22  Raúl Mateos <raulofpandora@gmail.com>
 
 	* godmode/db/db_refine.php, godmode/agentes/manage_config_remote.php,

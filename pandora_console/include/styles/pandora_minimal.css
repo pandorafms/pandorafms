@@ -87,7 +87,7 @@ table, img {
 	position:absolute;
 	margin:0;
 	width:400px;
-	height:240px;
+	height:260px;
 	visibility:hidden;
 	filter:alpha(opacity=90);
 	-moz-opacity: 0.90;

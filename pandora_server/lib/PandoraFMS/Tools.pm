@@ -566,6 +566,7 @@ sub pandora_ping ($$) {
 	my ($pa_config, $host) = @_;
 
     my $output = 0;
+    my $i;
 
     # See codes on http://perldoc.perl.org/perlport.html#PLATFORMS
     my $OSNAME = $^O;
@@ -573,17 +574,35 @@ sub pandora_ping ($$) {
     # Windows XP .. Windows 7
     if (($OSNAME eq "MSWin32") || ($OSNAME eq "MSWin32-x64") || ($OSNAME eq "cygwin")){
         my $ms_timeout = $pa_config->{'networktimeout'} * 1000;
-        $output = `ping -n $pa_config->{'icmp_checks'} -w $ms_timeout $host`;
-        if ($output =~ /TTL/){
-            return 1;
-        } else {
-            return 0;
-        }
+	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+       	    $output = `ping -n 1 -w $ms_timeout $host`;
+            if ($output =~ /TTL/){
+        	return 1;
+	    }
+	    sleep 1;
+	}
+	return 0;
     }
 
-    # Need to implement
     elsif ($OSNAME eq "solaris"){
-        $output = "";
+	my $ping_command = "ping";
+
+	if ($host =~ /\d+:|:\d+/ ) {
+	    $ping_command = "ping -A inet6"
+	}
+
+	# Note: timeout option is not implemented in ping.
+	# 'networktimeout' is not used by ping on Solaris.
+
+	# Ping the host
+	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+	    `$ping_command -s -n $host 56 1 >/dev/null 2>&1`;
+	    if ($? == 0) {
+		return 1;
+	    }
+	    sleep 1;
+	}
+	return 0;
     }
 
     elsif ($OSNAME eq "freebsd"){
@@ -593,9 +612,18 @@ sub pandora_ping ($$) {
 	    $ping_command = "ping6";
 	}
 
+	# Note: timeout(-t) option is not implemented in ping6.
+	# 'networktimeout' is not used by ping6 on FreeBSD.
+
 	# Ping the host
-	`$ping_command -q -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
-	return ($? == 0) ? 1 : 0;
+	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+	    `$ping_command -q -n -c 1 $host >/dev/null 2>&1`;
+	    if ($? == 0) {
+		return 1;
+	    }
+	    sleep 1;
+	}
+	return 0;
     }
 
     # by default LINUX calls
@@ -607,9 +635,15 @@ sub pandora_ping ($$) {
             $ping_command = "ping6";
         }
 
-	    # Ping the host
-    	`$ping_command -q -W $pa_config->{'networktimeout'} -n -c $pa_config->{'icmp_checks'} $host >/dev/null 2>&1`;
-	    return ($? == 0) ? 1 : 0;
+	# Ping the host
+	for ($i=0; $i < $pa_config->{'icmp_checks'}; $i++) {
+	    `$ping_command -q -W $pa_config->{'networktimeout'} -n -c 1 $host >/dev/null 2>&1`;
+	    if ($? == 0) {
+		return 1;
+	    }
+	    sleep 1;
+	}
+	return 0;
    }
 
     return $output;
@@ -652,17 +686,39 @@ sub pandora_ping_latency ($$) {
 
     }
 
-    # Need to implement
     elsif ($OSNAME eq "solaris"){
-        $output = "";
+	my $ping_command = "ping";
+
+	if ($host =~ /\d+:|:\d+/ ) {
+	    $ping_command = "ping -A inet6";
+	}
+
+	# Note: timeout option is not implemented in ping.
+	# 'networktimeout' is not used by ping on Solaris.
+
+	# Ping the host
+	my @output = `$ping_command -s -n $host 56 $pa_config->{'icmp_checks'} 2>/dev/null`;
+
+	# Something went wrong
+	return 0 if ($? != 0);
+
+	# Parse the output
+	my $stats = pop (@output);
+	return 0 unless ($stats =~ m/([\d\.]+)\/([\d\.]+)\/([\d\.]+)\/([\d\.]+) +ms/);
+	return $2;
     }
 
     elsif ($OSNAME eq "freebsd"){
-	my $ping_command = "ping -t $pa_config->{'networktimeout'}";
+	my $ping_command = "ping";
 
 	if ($host =~ /\d+:|:\d+/ ) {
 	    $ping_command = "ping6";
 	}
+
+	# Note: timeout(-t) option is not implemented in ping6. 
+	# timeout(-t) and waittime(-W) options in ping are not the same as
+	# Linux. On latency, there are no way to set timeout.
+	# 'networktimeout' is not used on FreeBSD.
 
 	# Ping the host
 	my @output = `$ping_command -q -n -c $pa_config->{'icmp_checks'} $host 2>/dev/null`;

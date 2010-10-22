@@ -1,3 +1,9 @@
+2010-10-22  Sancho Lerena <slerena@artica.es>
+
+	* lib/PandoraFMS/Config.pm: Fixed parsing mta_from.
+
+	* lib/PandoraFMS/Tools.pm: Enforce HTML decoding of mail subject & text.
+
 2010-10-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DataServer.pm: Update module configuration from XML

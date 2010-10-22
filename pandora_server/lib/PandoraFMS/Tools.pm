@@ -20,6 +20,7 @@ package PandoraFMS::Tools;
 use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
+use use HTML::Entities;
 use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 #use Module::Loaded;
 
@@ -72,7 +73,7 @@ sub pandora_trash_ascii {
 ##########################################################################
 
 sub pandora_get_os ($) {
-	$command = $_[0];
+	my $command = $_[0];
 	if (defined($command) && $command ne ""){
 		if ($command =~ m/Windows/i){
 			return 9;
@@ -104,7 +105,7 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/3com/i){
 			return 11;
 		}
-		elsif ($command =~ m/Octopus/i){
+		elsif ($command =~ m/Octopods/i){
 			return 13;
 		}
 		elsif ($command =~ m/BSD/i){
@@ -167,6 +168,9 @@ sub pandora_sendmail {
 	my $subject = $_[2];
 	my $message = $_[3];
 
+    $subject = decode_entities ($subject);
+    $message = decode_entities ($message);
+
 	my %mail = ( To   => $to_address,
 			  Message => $message,
 			  Subject => $subject,
@@ -184,7 +188,9 @@ sub pandora_sendmail {
 		return;
 	} else {
 		logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
-		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+        if (defined($Mail::Sendmail::error)){
+    		logger ($pa_config, "ERROR Code: $Mail::Sendmail::error", 5);
+        }
 	}
 
 }

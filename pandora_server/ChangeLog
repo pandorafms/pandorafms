@@ -1,5 +1,10 @@
 2010-10-22  Junichi Satoh  <junichi@rworks.jp>
 
+	* lib/PandoraFMS/NetworkServer.pm: Deleted Solaris specific SNMPGET
+	definition. It is the same as Linux.
+	
+2010-10-22  Junichi Satoh  <junichi@rworks.jp>
+
 	* lib/PandoraFMS/Tools.pm: Changed ping count to for() loop instead of
 	using count(-c) option in pandora_ping(). By it, ping execution can be
 	finished in short time.

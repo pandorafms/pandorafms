@@ -131,7 +131,7 @@ function fs_2d_area_chart ($data, $width, $height, $step = 1, $params = '') {
 }
 
 // Returns a Pandora FMS module chart
-function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '') {
+function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $time_format = 'G:i', $show_events = 0, $show_alerts = 0, $caption = '', $baseline = 0) {
 	global $config;
 
     $graph_type = "MSArea2D"; //MSLine is possible also
@@ -223,6 +223,14 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		}
 	}
 
+	// Baseline chart
+	if ($baseline == 1) {
+		$chart->addDataSet(__('Baseline'), 'color=0097BD;alpha=10;showAreaBorder=0;');
+		foreach ($data as $value) {
+			$chart->addChartData($value['baseline']);
+		}
+	}
+	
  	$chart->setChartParams('animation=0;numVDivLines=' . $num_vlines . ';showShadow=0;showAlternateVGridColor=1;showNames=1;rotateNames=1;lineThickness=0.1;anchorRadius=0.5;showValues=0;baseFontSize=9;showLimits=0;showAreaBorder=1;areaBorderThickness=0.1;areaBorderColor=000000' . ($empty == 1 ? ';yAxisMinValue=0;yAxisMaxValue=1' : ''));
 
 	$random_number = rand ();

@@ -38,8 +38,7 @@ else {
 	require_once ($config['homedir'].'/include/functions_reporting.php');
 /**#@-*/
 }
-
-
+enterprise_include ('include/functions_reporting.php');
 
 set_time_limit (0);
 //error_reporting (0);
@@ -1311,7 +1310,7 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				$width, $height , $title, $unit_name,
 				$show_alerts, $avg_only = 0, $pure = false,
-				$date = 0) {
+				$date = 0, $baseline = 0, $return_data = 0) {
 	global $config;
 	global $graphic_type;
 	
@@ -1405,6 +1404,15 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$previous_data = 0;
 	}
 
+	// Get baseline data
+	$baseline_data = array ();
+	if ($baseline == 1) {
+		$baseline_data = enterprise_hook ('enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
+		if ($baseline_data === ENTERPRISE_NOT_HOOK) {
+			$baseline_data = array ();
+		}
+	}
+
 	// Calculate chart data
 	for ($i = 0; $i < $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
@@ -1475,7 +1483,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['timestamp_top'] = $timestamp + $interval;
 		$chart[$timestamp]['event'] = $event_value;
 		$chart[$timestamp]['alert'] = $alert_value;
+		$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
+		if ($chart[$timestamp]['baseline'] == NULL) {
+			$baseline = 0;
+		}
 	}
+	
+	// Return chart data and don't draw
+	if ($return_data == 1) {
+		return $chart;
+	}	
 	
 	// Get min, max and avg (less efficient but centralized for all modules and reports)
 	$min_value = round(get_agentmodule_data_min ($agent_module_id, $period, $date), 2);
@@ -1518,7 +1535,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
     // Flash chart
 	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
 	if (! $graphic_type) {
-		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption);
+		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline);
 	}
 	
 	$engine = get_graph_engine ($period);
@@ -2734,12 +2751,13 @@ $graphic_type = (string) get_parameter ('tipo');
 $mode = get_parameter ("mode", 1);
 $url = get_parameter ("url");
 $report_id = (int) get_parameter ("report_id", 0);
+$baseline = (int) get_parameter ('baseline', 0);
 
 if ($graphic_type) {
 	switch ($graphic_type) {
 	case 'sparse': 
 		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-		$label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
 		break;
 	case 'sparse_mobile': 
 		grafico_modulo_sparse_mobile ($id, $period, $draw_events, $width, $height,

@@ -117,6 +117,7 @@ $start_date = get_parameter ("start_date", date("Y-m-d"));
 $draw_events = get_parameter ("draw_events", 0);
 $graph_type = get_parameter ("type", "sparse");
 $zoom = get_parameter ("zoom", 1);
+$baseline = get_parameter ("baseline", 0);
 
 if ($zoom > 1) {
 	$height = $height * ($zoom / 2.1);
@@ -138,7 +139,7 @@ else
 if ($config['flash_charts'] && $graph_type != "log4x") {
 	switch ($graph_type) {
 		case 'sparse':	echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+						                            $label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
 						break;
 		case 'boolean': 
 			echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
@@ -156,7 +157,7 @@ if ($config['flash_charts'] && $graph_type != "log4x") {
 	}
 }
 else {
-	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only;
+	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
 
 	$image .= "&date=" . $date;
 
@@ -226,6 +227,10 @@ print_checkbox ("draw_events", 1, (bool) $draw_events);
 echo '</td></tr><tr><td>'.__('Show alerts').'</td><td>';
 
 print_checkbox ("draw_alerts", 1, (bool) $draw_alerts);
+
+echo '</td></tr><tr><td>'.__('Draw baseline').'</td><td>';
+
+print_checkbox ("baseline", 1, (bool) $baseline);
 
 echo '</td><td>';
 

@@ -1,3 +1,8 @@
+2010-10-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: Use a filtered variable instead of
+	  the layout name to compose temporary file names.
+
 2010-10-20  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/alerts/alert_list.list.php: Fixed a clone function 

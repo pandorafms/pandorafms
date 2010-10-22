@@ -269,12 +269,7 @@ sub pandora_snmp_get_command ($$$$$$$$$) {
         }
     }
 
-    # Need to implement
-    elsif ($OSNAME eq "solaris"){
-        $output = "";
-    }
-
-    # by default LINUX/FreeBSD calls
+    # by default LINUX/FreeBSD/Solaris calls
     else {
         if ($snmp_version ne "3"){
             $output = `$snmpget_cmd -v $snmp_version -r $snmp_retries -t $snmp_timeout -OUevqt -c '$snmp_community' $snmp_target $snmp_oid 2>/dev/null`;

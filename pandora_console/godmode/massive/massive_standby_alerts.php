@@ -31,29 +31,42 @@ if (is_ajax ()) {
 	$get_alerts = (bool) get_parameter ('get_alerts');
 	
 	if ($get_alerts) {
-		$id_group = (int) get_parameter ('id_group');
-		$id_alert_template = (int) get_parameter ('id_alert_template');
-		$standby = (int) get_parameter ('standby');
+		$id_agents = get_parameter ('id_agents');
+		$get_templates = (bool) get_parameter ('get_templates');
 
-		$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
-			array('order' => 'tagente.nombre, talert_template_modules.standby', '`talert_template_modules`.standby' => $standby), 
-			array ('LEFT(CONCAT(LEFT(tagente.nombre,40), " - ", tagente_modulo.nombre), 85) as agent_agentmodule_name', 
-			'talert_template_modules.id as template_module_id'));
+		if ($get_templates) {
+			if (!is_array($id_agents)) {
+				echo json_encode ('');
+				return;
+			}
+			$alert_templates = get_agent_alerts_simple ($id_agents);
+			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
+			return;
+		} else {
+			$id_alert_templates = (array) get_parameter ('id_alert_templates');
+			$standby = (int) get_parameter ('standby');
 
-		echo json_encode (index_array ($agents_alerts, 'template_module_id', 'agent_agentmodule_name'));
-		return;
+			$agents_alerts = get_agents_with_alert_template ($id_alert_templates, false,
+				array('order' => 'tagente.nombre, talert_template_modules.standby', '`talert_template_modules`.standby' => $standby), 
+				array ('LEFT(CONCAT(LEFT(tagente.nombre,40), " - ", tagente_modulo.nombre), 85) as agent_agentmodule_name', 
+				'talert_template_modules.id as template_module_id'), $id_agents);
+
+			echo json_encode (index_array ($agents_alerts, 'template_module_id', 'agent_agentmodule_name'));
+			return;
+		}
 	}
 	return;
 }
 
 $id_group = (int) get_parameter ('id_group');
+$id_agents = (array) get_parameter ('id_agents');
 $action = (string) get_parameter ('action', '');
 
 $result = false;
 
 switch($action) {
 	case 'set_off_standby_alerts':
-		$id_alert_template = (int) get_parameter ('id_alert_template_standby', 0);
+		$id_alert_templates = (int) get_parameter ('id_alert_template_standby', 0);
 		$id_standby_alerts = get_parameter_post ('id_standby_alerts', array());
 		foreach($id_standby_alerts as $id_alert) {
 			$result = set_alerts_agent_module_standby ($id_alert, false);
@@ -61,7 +74,7 @@ switch($action) {
 			print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
 		break;
 	case 'set_standby_alerts':
-		$id_alert_template = (int) get_parameter ('id_alert_template_standby', 0);
+		$id_alert_templates = (int) get_parameter ('id_alert_template_standby', 0);
 		$id_not_standby_alerts = get_parameter_post ('id_not_standby_alerts', array());
 		
 		foreach($id_not_standby_alerts as $id_alert) {
@@ -70,7 +83,7 @@ switch($action) {
 			print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
 		break;
 	default:
-		$id_alert_template = (int) get_parameter ('id_alert_template', 0);
+		$id_alert_templates = (int) get_parameter ('id_alert_template', 0);
 		break;
 }
 
@@ -90,39 +103,48 @@ $table->data = array ();
 
 $templates = get_alert_templates (false, array ('id', 'name'));
 $table->data[0][0] = '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_standby_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-$table->data[0][0] .= print_input_hidden('id_alert_template_not_standby', $id_alert_template, true);
-$table->data[0][0] .= __('Alert template');
-$table->data[0][1] = print_select (index_array ($templates, 'id', 'name'),
-	'id_alert_template', $id_alert_template, false, __('All'), 0, true);
-	
-$table->data[1][0] = __('Group');
-$table->data[1][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
-	'', '', '', true, false, true, '');
+$table->data[0][0] .= print_input_hidden('id_alert_template_not_standby', $id_alert_templates, true);
+$table->data[0][0] .= __('Group');
+$table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_group,
+        '', '', '', true, false, true, '');
 
-$table->data[2][0] = __('Not standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
-$table->data[2][0] .= '<span id="alerts_loading" class="invisible">';
+$table->data[1][0] = __('Agents');
+$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
+$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= '</span>';
+$table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
+        'id_agents[]', 0, false, '', '', true, true);
+
+$table->data[2][0] = __('Alert template');
+$table->data[2][0] .= '<span id="template_loading" class="invisible">';
 $table->data[2][0] .= '<img src="images/spinner.png" />';
 $table->data[2][0] .= '</span>';
-$agents_alerts = get_agents_with_alert_template ($id_alert_template, $id_group,
+$table->data[2][1] = print_select ('',  'id_alert_templates[]', '', '', '', '', true, true, true, '', true);
+	
+$table->data[3][0] = __('Not standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
+$table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
+$table->data[3][0] .= '<img src="images/spinner.png" />';
+$table->data[3][0] .= '</span>';
+$agents_alerts = get_agents_with_alert_template ($id_alert_templates, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
-$table->data[2][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
-	'id_not_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
+$table->data[3][1] = print_select (index_array ($agents_alerts, 'id_agente', 'nombre'),
+	'id_not_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);
 
-$table->data[3][0] = __('Action');
+$table->data[4][0] = __('Action');
 
-$table->data[3][1] = "<table border='0' width='100%'><tr><td>".print_input_image ('standby_alerts', 'images/darrowdown.png', 1, 'margin-left: 150px;', true, array ('title' => __('Set standby selected alerts')))."</td><td>";
-$table->data[3][1] .= '</form>';
-$table->data[3][1] .= '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_off_standby_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
-$table->data[3][1] .= print_input_hidden('id_alert_template_standby', $id_alert_template, true);
-$table->data[3][1] .= print_input_image ('set_off_standby_alerts', 'images/darrowup.png', 1, 'margin-left: 200px;', true, array ('title' => __('Set standby selected alerts')))."</td></tr></table>";
-
-$table->data[4][0] = __('Standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
-$table->data[4][0] .= '<span id="alerts_loading2" class="invisible">';
-$table->data[4][0] .= '<img src="images/spinner.png" />';
-$table->data[4][0] .= '</span>';
-$table->data[4][1] = print_select (index_array ($agents_alerts, 'id_agente2', 'nombre'),
-	'id_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_template == 0);
+$table->data[4][1] = "<table border='0' width='100%'><tr><td>".print_input_image ('standby_alerts', 'images/darrowdown.png', 1, 'margin-left: 150px;', true, array ('title' => __('Set standby selected alerts')))."</td><td>";
 $table->data[4][1] .= '</form>';
+$table->data[4][1] .= '<form method="post" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts&option=standby_alerts&action=set_off_standby_alerts" onsubmit="if (! confirm(\''.__('Are you sure?').'\')) return false;">';
+$table->data[4][1] .= print_input_hidden('id_alert_template_standby', $id_alert_templates, true);
+$table->data[4][1] .= print_input_image ('set_off_standby_alerts', 'images/darrowup.png', 1, 'margin-left: 200px;', true, array ('title' => __('Set standby selected alerts')))."</td></tr></table>";
+
+$table->data[5][0] = __('Standby alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
+$table->data[5][0] .= '<span id="alerts_loading2" class="invisible">';
+$table->data[5][0] .= '<img src="images/spinner.png" />';
+$table->data[5][0] .= '</span>';
+$table->data[5][1] = print_select (index_array ($agents_alerts, 'id_agente2', 'nombre'),
+	'id_standby_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);
+$table->data[5][1] .= '</form>';
 
 print_table ($table);
 
@@ -135,23 +157,70 @@ require_jquery_file ('pandora.controls');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
-	update_alerts();
+	clear_alert_fields();
+
+	$("#id_group").pandoraSelectGroupAgent ({
+		agentSelect: "select#id_agents",
+		callbackPost: function () {
+			clear_alert_fields();
+		}
+	});
+
+	$("#id_agents").change (function () {
+		clear_alert_fields();
+		update_alert_templates();
+	});
 	
-	$("#id_alert_template").change (function () {
+	$("#id_alert_templates").change (function () {
 		if (this.value != 0) {
 			$("#id_not_standby_alerts").enable ();
 			$("#id_standby_alerts").enable ();
-			$("#id_group").enable ().change ();
 		} else {
 			$("#id_group, #id_not_standby_alerts").disable ();
 			$("#id_group, #id_standby_alerts").disable ();
 		}
-		$("#hidden-id_alert_template_not_standby").attr("value",$("#id_alert_template").attr("value"));
-		$("#hidden-id_alert_template_standby").val($("#id_alert_template").attr("value"));
+		update_alerts();
 	});
 	
+	function update_alert_templates() {
+		var idAgents = Array();
+		jQuery.each ($("#id_agents option:selected"), function (i, val) {
+			idAgents.push($(val).val());
+		});
+		$("#template_loading").show();
+
+		var $select_template = $("#id_alert_templates").disable ();
+		$("option", $select_template).remove ();
+
+		jQuery.post ("ajax.php",
+				{"page" : "godmode/massive/massive_standby_alerts",
+				"get_alerts" : 1,
+				"get_templates" : 1,
+				"id_agents[]" : idAgents
+				},
+				function (data, status) {
+					options = "";
+					jQuery.each (data, function (id, value) {
+						options += "<option value=\""+id+"\">"+value+"</option>";
+					});
+					$("#id_alert_templates").append (options);
+					$("#template_loading").hide ();
+					$select_template.enable ();
+				},
+				"json"
+			);
+	}
 	
 	function update_alerts() {
+		var idAgents = Array();
+		jQuery.each ($("#id_agents option:selected"), function (i, val) {
+			idAgents.push($(val).val());
+		});
+		var idAlertTemplates = Array();
+		jQuery.each ($("#id_alert_templates option:selected"), function (i, val) {
+			idAlertTemplates.push($(val).val());
+		});
+
 		var $select = $("#id_not_standby_alerts").disable ();
 		var $select2 = $("#id_standby_alerts").disable ();
 		$("#alerts_loading").show ();
@@ -162,8 +231,9 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_standby_alerts",
 			"get_alerts" : 1,
-			"id_group" : $("#id_group").attr("value"),
-			"id_alert_template" : $("#id_alert_template").attr("value"),
+			"get_templates" : 0,
+			"id_agents[]" : idAgents,
+			"id_alert_templates[]" : idAlertTemplates,
 			"standby" : 0
 			},
 			function (data, status) {
@@ -181,8 +251,9 @@ $(document).ready (function () {
 		jQuery.post ("ajax.php",
 			{"page" : "godmode/massive/massive_standby_alerts",
 			"get_alerts" : 1,
-			"id_group" : $("#id_group").attr("value"),
-			"id_alert_template" : $("#id_alert_template").attr("value"),
+			"get_templates" : 0,
+			"id_agents[]" : idAgents,
+			"id_alert_templates[]" : idAlertTemplates,
 			"standby" : 1
 			},
 			function (data, status) {
@@ -198,9 +269,15 @@ $(document).ready (function () {
 		);
 	}
 	
-	$("#id_group").change (function () {
-		update_alerts();
-	});
+	function clear_alert_fields() {
+		var $select_template = $("#id_alert_templates").disable ();
+		var $select_not_standby = $("#id_not_standby_alerts").disable ();
+		var $select_standby = $("#id_standby_alerts").disable ();
+		$("option", $select_template).remove ();
+		$("option", $select_not_standby).remove ();
+		$("option", $select_standby).remove ();
+	}
+
 });
 /* ]]> */
 </script>

@@ -425,7 +425,8 @@ foreach ($simple_alerts as $alert) {
 			$data[6] = __("Default"). " : ".get_db_sql ("SELECT name FROM talert_actions WHERE id = $default_action");
 		}
 
-	} else {
+	}
+	else {
 		$data[6] = '<ul class="action_list">';
 		foreach ($actions as $action_id => $action) {
 			$data[6] .= '<li>';
@@ -497,10 +498,12 @@ foreach ($simple_alerts as $alert) {
 	if ($alert["times_fired"] > 0) {
 		$status = STATUS_ALERT_FIRED;
 		$title = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
-	} elseif ($alert["disabled"] > 0) {
+	}
+	elseif ($alert["disabled"] > 0) {
 		$status = STATUS_ALERT_DISABLED;
 		$title = __('Alert disabled');
-	} else {
+	}
+	else {
 		$status = STATUS_ALERT_NOT_FIRED;
 		$title = __('Alert not fired');
 	}
@@ -518,7 +521,8 @@ foreach ($simple_alerts as $alert) {
 
 if (isset($data)){
 	print_table ($table);
-} else {
+}
+else {
 	echo "<div class='nf'>".__('No alerts defined')."</div>";
 }
 
@@ -564,7 +568,9 @@ $(document).ready (function () {
 //----------------------------
 
 
-<?php if (! $id_agente) : ?>
+<?php
+if (! $id_agente) {
+?>
 	$("#id_group").pandoraSelectGroupAgent ({
 		callbackBefore: function () {
 			$select = $("#id_agent_module").disable ();
@@ -575,7 +581,9 @@ $(document).ready (function () {
 	});
 	
 	//$("#id_agent").pandoraSelectAgentModule ();
-<?php endif; ?>
+<?php
+}
+?>
 	$("a.template_details").cluetip ({
 		arrows: true,
 		attribute: 'href',

@@ -242,7 +242,7 @@
 			
 			function appendToTable(table,cache) {
 				
-				if(table.config.debug) {var appendTime = new Date()}
+				if(table.config.debug) {var appendTime = new Date();}
 				
 				var c = cache, 
 					r = c.row, 
@@ -583,7 +583,7 @@
 					// cancel selection	
 					}).mousedown(function() {
 						if(config.cancelSelection) {
-							this.onselectstart = function() {return false};
+							this.onselectstart = function() {return false;};
 							return false;
 						}
 					});

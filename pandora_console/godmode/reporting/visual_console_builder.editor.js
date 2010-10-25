@@ -280,7 +280,7 @@ function actionClick() {
 		
 		showAdvanceOptions(false);
 		
-		openPropertiesPanel = false
+		openPropertiesPanel = false;
 		
 		return;
 	}

@@ -178,7 +178,7 @@ function generateNamedColors() {
 
 	for (n in named) {
 		v = named[n];
-		h += '<a href="javascript:insertAction();" onmouseover="showColor(\'' + n +  '\',\'' + v + '\');" style="background-color: ' + n + '"><!-- IE --></a>'
+		h += '<a href="javascript:insertAction();" onmouseover="showColor(\'' + n +  '\',\'' + v + '\');" style="background-color: ' + n + '"><!-- IE --></a>';
 	}
 
 	el.innerHTML = h;

@@ -12,7 +12,7 @@ function init() {
 	ed = tinyMCEPopup.editor;
 
 	tinyMCEPopup.resizeToInnerSize();
-	f = document.forms[0]
+	f = document.forms[0];
 
 	fe = ed.selection.getNode();
 	if (/mceItem(Flash|ShockWave|WindowsMedia|QuickTime|RealMedia)/.test(ed.dom.getAttrib(fe, 'class'))) {

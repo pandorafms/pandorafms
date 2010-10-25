@@ -13,7 +13,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-enterprise_include_once('include/functions_policies.php');
+$isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -54,7 +54,7 @@ $snmp_versions['3'] = 'v. 3';
 $data = array ();
 $data[0] = __('SNMP community');
 $adopt = false;
-if (isset($id_agent_module)) {
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
 	$adopt = isModuleAdopt($id_agent_module);
 }
 if (!$adopt) {

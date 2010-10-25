@@ -566,7 +566,7 @@ $.fn.resetForm = function() {
 $.fn.enable = function(b) { 
     if (b == undefined) b = true;
     return this.each(function() { 
-        this.disabled = !b 
+        this.disabled = !b;
     });
 };
 

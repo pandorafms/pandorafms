@@ -2,12 +2,12 @@
 	$.fn.check = function () {
 		return this.each (function () {
 			this.checked = true;
-		})};
+		});};
 	
 	$.fn.uncheck = function () {
 		return this.each (function () {
 			this.checked = false;
-		})};
+		});};
 	
 	$.fn.enable = function () {
 		return $(this).removeAttr ("disabled");

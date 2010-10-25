@@ -1,5 +1,9 @@
 2010-10-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_agents.php: clean source style.
+
+2010-10-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_agents.php, godmode/agentes/modificar_agente.php,
 	godmode/alerts/alert_list.list.php: clean source style.
 	

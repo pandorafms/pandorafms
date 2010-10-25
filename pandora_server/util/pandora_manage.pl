@@ -1422,7 +1422,7 @@ sub pandora_manage_main ($$$) {
 		}
 	}
 
-     print "\n[W] Nothing to do. Exiting !\n\n";
+     print "\n[*] Nothing to do. Exiting !\n\n";
 
     exit;
 }

@@ -1,3 +1,8 @@
+2010-10-25  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Change a Warning notice to
+	informative notice
+
 2010-10-22  Sancho Lerena <slerena@artica.es>
 
     * Config.pm: Parsing for mta_from doesn't remove blanks, allowing to

@@ -109,11 +109,14 @@ function create_agent ($name, $id_group, $interval, $ip_address, $values = false
  * @return array All simple alerts defined for an agent. Empty array if no
  * alerts found.
  */
-function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', $allModules = false, $orderby = false, $idGroup = false, $count = false) {
+function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = false, $where = '', 
+	$allModules = false, $orderby = false, $idGroup = false, $count = false) {
+	
 	if (is_array($filter)) {
 		$disabled = $filter['disabled'];
 		$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
-	}else {
+	}
+	else {
 		$filter = '';
 		$disabled = $filter;
 	}
@@ -227,6 +230,7 @@ function get_agent_alerts_compound ($id_agent = false, $filter = '', $options = 
 			break;
 		default:
 			$filter = '';
+			break;
 	}
 	
 	if (is_array ($options)) {
@@ -299,13 +303,15 @@ function get_agents ($filter = false, $fields = false, $access = 'AR', $order = 
 	//If no group specified, get all user groups
 	if (empty ($filter['id_grupo'])) {
 		$filter['id_grupo'] = $groups;
-	} elseif (! is_array ($filter['id_grupo'])) {
+	}
+	elseif (! is_array ($filter['id_grupo'])) {
 		//If group is specified but not allowed, return false
 		if (! in_array ($filter['id_grupo'], $groups)) {
 			return false;
 		}
 		$filter['id_grupo'] = (array) $filter['id_grupo']; //Make an array
-	} else {
+	}
+	else {
 		//Check each group specified to the user groups, remove unwanted groups
 		foreach ($filter['id_grupo'] as $key => $id_group) {
 			if (! in_array ($id_group, $groups)) {

@@ -20,7 +20,7 @@ package PandoraFMS::Tools;
 use warnings;
 use Time::Local;
 use POSIX qw(setsid strftime);
-use use HTML::Entities;
+use HTML::Entities;
 use Mail::Sendmail;	# New in 2.0. Used to sendmail internally, without external scripts
 #use Module::Loaded;
 

@@ -1556,7 +1556,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	$engine->fontpath = $config['fontpath'];
 	
-	$engine->sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name);
+	$engine->sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name, $baseline);
 }
 
 function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,

@@ -1,3 +1,10 @@
+2010-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extensions/module_groups.php: show color for when the alert fired, and
+	added cluetip for more details.
+	
+	Pending task: #3041855
+
 2010-10-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/pchart_graph.php, include/fgraph.php: Added baseline support

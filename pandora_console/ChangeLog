@@ -1,3 +1,8 @@
+2010-10-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/pchart_graph.php, include/fgraph.php: Added baseline support
+	  to image charts (Enterprise).
+
 2010-10-25  Raúl Mateos <raulofpandora@gmail.com>
 
 	* images/control*.png: Added two small images for sound control in setup.

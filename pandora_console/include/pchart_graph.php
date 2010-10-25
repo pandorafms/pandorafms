@@ -165,7 +165,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->Stroke ();
 	}
 	
-	public function sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name) {
+	public function sparse_graph ($period, $avg_only, $min_value, $max_value, $unit_name, $baseline = 0) {
 		// Dataset definition
 		$this->dataset = new pData;
 		$this->graph = new pChart ($this->width, $this->height+5);
@@ -192,6 +192,14 @@ class PchartGraph extends PandoraGraphAbstract {
 			$this->dataset->SetSerieName (__("Max"), "MAX");
 			$this->set_colors ();
 		}
+		
+		// Draw baseline
+		if ($baseline == 1) {
+			foreach ($this->data as $data) {
+				$this->dataset->AddPoint ($data['baseline'], "BLINE");
+			}
+		}
+
 		$this->dataset->SetXAxisFormat ('datetime');
 		$this->graph->setDateFormat ("Y");
 		$this->dataset->SetYAxisFormat ('metric');

@@ -1,3 +1,8 @@
+2010-10-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed a bug that made the server crash when
+	  trying to match an alert with an invalid regular expression.
+
 2010-10-25  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Change a Warning notice to

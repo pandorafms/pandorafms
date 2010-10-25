@@ -47,7 +47,9 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
 		delete_agent ($id_agentes);
-	} else { // NO permissions.
+	}
+	else {
+		// NO permissions.
 		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation",
 			"Trying to delete agent \'$agent_name\'");
 		require ("general/noaccess.php");
@@ -59,11 +61,12 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 print_page_header (__('Agent configuration')." &raquo; ".__('Agents defined in Pandora'), "", false, "", true);
 
 // Show group selector
-if (isset($_POST["ag_group"])){
+if (isset($_POST["ag_group"])) {
 	$ag_group = get_parameter_post ("ag_group");
 	echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group_refresh=".$ag_group."'>";
-} else {
+}
+else {
 	echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
@@ -86,9 +89,10 @@ echo __('Free text for search (*)');
 echo "</td><td>";
 
 // Show group selector
-if (isset($_POST["ag_group"])){
+if (isset($_POST["ag_group"])) {
 	$group_mod = "&ag_group_refresh=".get_parameter_post ("ag_group");
-} else {
+}
+else {
 	$group_mod ="";
 }
 
@@ -98,10 +102,11 @@ echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Search')."'>";
 echo "</form>";
 echo "<td>";
+
 echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	print_input_hidden ('new_agent', 1);
 	print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-	echo "</form>";
+echo "</form>";
 
 echo "</td></tr></table>";
 

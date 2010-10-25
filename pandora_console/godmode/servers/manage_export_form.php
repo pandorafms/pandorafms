@@ -26,7 +26,7 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if (isset (get_parameter("update")) { // Edit mode
+if (isset (get_parameter("update"))) { // Edit mode
 	$id_rt = (int) get_parameter_get ("update");
 	$row = get_db_row ("trecon_task","id_rt",$id_rt);
 	$name = $row["name"];

@@ -1,4 +1,11 @@
-2010-10-21  Miguel de Dios  <miguel.dedios@artica.es>
+2010-10-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_agents.php, godmode/agentes/modificar_agente.php,
+	godmode/alerts/alert_list.list.php: clean source style.
+	
+	* godmode/servers/manage_export_form.php: fixed a unclose parentheses.
+
+2010-10-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extensions/module_groups.php: show color for when the alert fired, and
 	added cluetip for more details.

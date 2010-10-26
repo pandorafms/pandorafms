@@ -44,6 +44,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 
 
 if ($config['flash_charts']) {
+	$id_agente=0;
 	$width=600;
 	$height=400;
 	echo grafico_db_agentes_purge ($id_agente, $width, $height);
@@ -82,7 +83,7 @@ $table->head[0] = __('Agent name');
 $table->head[1] = __('Assigned modules');
 $table->head[2] = __('Total data');
 
-$agents = get_group_agents (1);
+$agents = get_group_agents (0);
 
 $count = get_agent_modules_data_count (array_keys ($agents));
 

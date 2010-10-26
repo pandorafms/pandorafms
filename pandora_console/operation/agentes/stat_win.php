@@ -228,9 +228,10 @@ echo '</td></tr><tr><td>'.__('Show alerts').'</td><td>';
 
 print_checkbox ("draw_alerts", 1, (bool) $draw_alerts);
 
-echo '</td></tr><tr><td>'.__('Draw baseline').'</td><td>';
-
-print_checkbox ("baseline", 1, (bool) $baseline);
+if ($config['enterprise_installed'] && $graph_type == "sparse") {
+	echo '</td></tr><tr><td>'.__('Draw baseline').'</td><td>';
+	print_checkbox ("baseline", 1, (bool) $baseline);
+}
 
 echo '</td><td>';
 

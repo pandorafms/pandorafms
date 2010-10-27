@@ -1,5 +1,11 @@
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/agentes/configurar_agente.php,
+	godmode/massive/massive_edit_agents.php: erased the calls "debugPrint" found
+	in source code.
+
+2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_db.php: in function "pandora_audit" added new parameter
 	$info for to set more info in the audit. Cleaned source code style.
 	

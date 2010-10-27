@@ -42,7 +42,7 @@ if (is_ajax ()) {
 			if (file_exists ($config["remote_config"]."/md5/".$agent_md5.".md5"))
 				$cont ++;
 		}
-		debugPrint($cont);
+		
 		return;
 	}
 }

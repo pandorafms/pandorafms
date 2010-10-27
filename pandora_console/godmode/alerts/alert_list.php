@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -81,7 +81,7 @@ if ($create_alert) {
 		
 		// Audit the creation only when the alert creation is correct
 		if($id) {
-			audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
+			pandora_audit("Alert management",
 		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 		}
 
@@ -110,7 +110,7 @@ if ($delete_alert) {
 	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
-	audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "Alert management",
+	pandora_audit("Alert management",
 	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 
 	$result = delete_alert_agent_module ($id_alert_agent_module);

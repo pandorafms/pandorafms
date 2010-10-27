@@ -173,7 +173,7 @@ class ViewAgent {
 	public function show() {
 		$idGroup = $this->agent['id_grupo'];
 		if (! give_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
-			audit_db ($this->system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+			pandora_audit("ACL Violation",
 				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
 			include ("../general/noaccess.php");
 			return;
@@ -420,7 +420,7 @@ class viewGraph {
 	function show() {
 		$idGroup = $this->agent['id_grupo'];
 		if (! give_acl ($this->system->getConfig('id_user'), $idGroup, "AR")) {
-			audit_db ($this->system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+			pandora_audit("ACL Violation",
 				"Trying to access (read) to agent ".get_agent_name($this->idAgent));
 			include ("../general/noaccess.php");
 			return;

@@ -21,7 +21,7 @@ require_once ("include/fgraph.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "IR") == 1) {
-	audit_db ($config['id_user'], $config["remote_addr"], "ACL Violation", "Trying to access Incident section");
+	pandora_audit("ACL Violation", "Trying to access Incident section");
 	require ("general/noaccess.php");
 	exit;
 }

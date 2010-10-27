@@ -23,7 +23,7 @@ check_login ();
 
 if (! give_acl ($config["id_user"], 0, "IR")) {
  	// Doesn't have access to this page
-	audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation", "Trying to access incident details");
+	pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -170,7 +170,7 @@ elseif (isset ($_GET["insert_form"])) {
 	$prioridad = 0;
 	$id_grupo = 0;
 } else {
-	audit_db ($config['id_user'],$config["remote_addr"], "HACK","Trying to get to incident details in an unusual way");
+	pandora_audit("HACK","Trying to get to incident details in an unusual way");
 	require ("general/noaccess.php");
 	exit;
 }

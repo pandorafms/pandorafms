@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -57,7 +57,7 @@ if($delete_profiles) {
 				foreach($users_id as $id_up){
 					$user = (string) get_db_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
 
-					audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+					pandora_audit("User management",
 						"Deleted profile for user ".safe_input($user));
 
 					$return = delete_user_profile ($user, $id_up);

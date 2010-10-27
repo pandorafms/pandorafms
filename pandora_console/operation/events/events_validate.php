@@ -23,7 +23,7 @@ require_once ("include/functions_alerts.php"); //Alerts processing functions
 check_login ();
 
 if (! give_acl ($config["id_user"], 0, "IR")) {
-	audit_db ($config["id_user"], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;

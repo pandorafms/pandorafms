@@ -17,7 +17,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, 'PM')) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to use Open Update Manager extension");
+	pandora_audit("ACL Violation", "Trying to use Open Update Manager extension");
 	include ("general/noaccess.php");
 	return;
 }

@@ -19,7 +19,7 @@ require_once ("include/functions_incidents.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "IR")) {
-	audit_db($config['id_user'],$config["remote_addr"], "ACL Violation","Trying to access incident viewer");
+	pandora_audit("ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -48,7 +48,7 @@ if ($action == "mass") {
 		if (give_acl ($config['id_user'], get_incidents_group ($incident), "IM") || get_incidents_author ($incident) == $config["id_user"] || get_incidents_owner ($incident) == $config["id_user"]) {
 			continue;
 		}
-		audit_db ($config["id_user"],$config["remote_addr"],"ACL Forbidden","Mass-update or deletion of incident");
+		pandora_audit("ACL Forbidden","Mass-update or deletion of incident");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -66,14 +66,15 @@ if ($action == "mass") {
 			__('Could not reclame ownership'));
 	}
 
-} elseif ($action == "update") {
+}
+elseif ($action == "update") {
 	$id_inc = get_parameter ("id_inc", 0);
 	$author = get_incidents_author ($id_inc);
 	$owner = get_incidents_owner ($id_inc);
 	$grupo = get_incidents_group ($id_inc);
 	
 	if ($author != $config["id_user"] && $owner != $config["id_user"] && !give_acl ($config['id_user'], $grupo, "IM")) { // Only admins (manage incident) or owners/creators can modify incidents
-		audit_db ($author, $config["remote_addr"], "ACL Forbidden", "Update incident #".$id_inc);
+		pandora_audit("ACL Forbidden", "Update incident #".$id_inc, $author);
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -91,7 +92,7 @@ if ($action == "mass") {
 	$result = process_sql ($sql);
 
 	if ($result !== false) {
-		audit_db ($config["id_user"], $config["remote_addr"], "Incident updated","User ".$config['id_user']." updated incident #".$id_inc);
+		pandora_audit("Incident updated","User ".$config['id_user']." updated incident #".$id_inc);
 	}
 	
 	print_result_message ($result,
@@ -103,7 +104,7 @@ if ($action == "mass") {
 	$grupo = get_parameter_post ("grupo_form", 1);
 	
 	if (!give_acl ($config['id_user'], $grupo, "IW")) {
-		audit_db ($config["id_user"], $config["remote_addr"], "ACL Forbidden", "User ".$config["id_user"]." tried to update incident");
+		pandora_audit("ACL Forbidden", "User ".$config["id_user"]." tried to update incident");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -121,8 +122,9 @@ if ($action == "mass") {
 
 	if ($id_inc === false) {
 		echo '<h3 class="error">'.__('Error creating incident').'</h3>';		
-	} else {
-		audit_db ($config["id_user"], $config["remote_addr"], "Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
+	}
+	else {
+		pandora_audit("Incident created", "User ".$config["id_user"]." created incident #".$id_inc);
 	}
 }
 
@@ -145,7 +147,7 @@ $grupo = (int) get_parameter ("grupo", 0);
 if ($grupo > 0) {
 	$filter .= sprintf (" AND id_grupo = %d", $grupo);
 	if (give_acl ($config['id_user'], $grupo, "IM") == 0) {
-		audit_db ($config["id_user"],$config["remote_addr"],"ACL Forbidden","User tried to read incidents from group without access");
+		pandora_audit("ACL Forbidden","User tried to read incidents from group without access");
 		include ("general/noaccess.php");
 		exit;
 	}

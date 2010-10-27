@@ -135,7 +135,7 @@ if ($upload_file) {
 	check_login ();
 	
 	if (! give_acl ($config['id_user'], 0, "PM")) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access File manager");
+		pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -188,7 +188,7 @@ if ($create_text_file) {
 	check_login ();
 	
 	if (! give_acl ($config['id_user'], 0, "PM")) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access File manager");
+		pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -239,7 +239,7 @@ if ($upload_zip) {
 	check_login ();
 	
 	if (! give_acl ($config['id_user'], 0, "PM")) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access File manager");
+		pandora_audit("ACL Violation", "Trying to access File manager");
 		require ("general/noaccess.php");
 		return;
 	}

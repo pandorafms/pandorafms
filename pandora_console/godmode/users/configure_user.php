@@ -29,7 +29,7 @@ if ($user_info["language"] == ""){
 }
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	return;
@@ -107,7 +107,7 @@ if ($create_user) {
 	else {
 		$result = create_user ($id, $password_new, $values);
 
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+		pandora_audit("User management",
 		"Created user ".safe_input($id));
 
 		print_result_message ($result,
@@ -155,7 +155,7 @@ if ($update_user) {
 				print_error_message (__('Passwords does not match'));
 			}
 		} else {
-			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+			pandora_audit("User management",
 		"Updated user ".safe_input($id));
 			print_result_message ($res1,
 				__('User info successfully updated'),
@@ -174,7 +174,7 @@ if ($add_profile) {
 	$id2 = (string) get_parameter ('id');
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+	pandora_audit("User management",
 		"Added profile for user ".safe_input($id2));
 	$return = create_user_profile ($id2, $profile2, $group2);
 	print_result_message ($return,
@@ -186,7 +186,7 @@ if ($delete_profile) {
 	$id2 = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
 		
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+	pandora_audit("User management",
 		"Deleted profile for user ".safe_input($id2));
 
 	$return = delete_user_profile ($id2, $id_up);

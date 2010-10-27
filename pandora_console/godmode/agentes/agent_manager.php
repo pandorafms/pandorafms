@@ -50,7 +50,7 @@ require_javascript_file('openlayers.pandora');
 $new_agent = (bool) get_parameter ('new_agent');
 
 if (! isset ($id_agente) && ! $new_agent) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access agent manager witout an agent");
+	pandora_audit("ACL Violation", "Trying to access agent manager witout an agent");
 	require ("general/noaccess.php");
 	return;
 }

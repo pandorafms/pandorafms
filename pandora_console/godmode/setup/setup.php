@@ -32,7 +32,7 @@ if (is_ajax ()) {
 
 
 if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access Setup Management");
+	pandora_audit("ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 	return;
 }

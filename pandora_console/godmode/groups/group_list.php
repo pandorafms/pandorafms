@@ -20,7 +20,7 @@ global $config;
 check_login();
 
 if (! give_acl($config['id_user'], 0, "PM")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Group Management");
 	require ("general/noaccess.php");
 	return;
@@ -48,7 +48,7 @@ if (is_ajax ()) {
 		}
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;
@@ -65,7 +65,7 @@ if (is_ajax ()) {
 		$disabled = (int) get_parameter ('disabled', 0);
 		
 		if (! give_acl ($config['id_user'], $id_group, "AR")) {
-			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
 			echo json_encode (false);
 			return;

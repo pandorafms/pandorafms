@@ -22,8 +22,10 @@ if ($config['flash_charts']) {
 
 check_login ();
 
+$enterprise_include = enterprise_include_once('godmode/admin_access_logs.php');
+
 if (! give_acl ($config['id_user'], 0, "PM")) {
-	audit_db($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit( "ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
 	exit;
@@ -33,9 +35,14 @@ print_page_header (__('Pandora audit')." &raquo; ".__('Review Logs'), "", false,
 
 $offset = get_parameter ("offset", 0);
 $tipo_log = get_parameter ("tipo_log", 'all');
-echo "<table width='750px' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+$user_filter = get_parameter('user_filter', 'all');
+$filter_text = get_parameter('filter_text', '');
+$filter_hours_old = get_parameter('filter_hours_old', 24);
+$filter_ip = get_parameter('filter_ip', '');
+
+echo "<table width='90%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 echo '<tr><td class="datost">';
-echo '<div style="float: left; width: 250px;">';
+echo '<div style="float: left; width: 400px;">';
 echo '<b>'.__('Filter').'</b><br><br>';
 
 $rows = get_db_all_rows_sql ("SELECT DISTINCT(accion) FROM tsesion");
@@ -48,32 +55,64 @@ foreach ($rows as $row) {
 	$actions[$row["accion"]] = $row["accion"]; 
 }
 echo '<form name="query_sel" method="post" action="index.php?sec=godmode&sec2=godmode/admin_access_logs">';
-echo __('Action').': ';
-print_select ($actions, 'tipo_log', $tipo_log, 'this.form.submit();', __('All'), 'all');
-echo '<br /><noscript><input name="uptbutton" type="submit" class="sub" value="'.__('Show').'"></noscript>';
+$table = null;
+$table->width = '100%';
+$table->data = array();
+$table->data[0][0] = __('Action');
+$table->data[0][1] = print_select ($actions, 'tipo_log', $tipo_log, '', __('All'), 'all', true);
+$table->data[1][0] = __('User');
+$table->data[1][1] = print_select_from_sql('SELECT id_user, id_user AS text FROM tusuario', 'user', $user_filter, '', __('All'), 0, true);
+$table->data[2][0] = __('Free text for search (*)');
+$table->data[2][1] = print_input_text('filter_text', $filter_text, __('Free text for search (*)'), 20, 40, true);
+$table->data[3][0] = __('Max. hours old');
+$table->data[3][1] = print_input_text('filter_hours_old', $filter_hours_old, __('Max. hours old'), 3, 6, true);
+$table->data[4][0] = __('IP');
+$table->data[4][1] = print_input_text('filter_ip', $filter_ip, __('IP'), 15, 15, true);
+$table->data[5][0] = '';
+$table->data[5][1] = print_submit_button(__('Filter'), 'filter', false, 'class="sub search" style="float: right;"', true);
+print_table($table);
 echo '</form>';
 echo '</div>';
-echo '<div style="float: left; width: 250px;">';
+echo '<div style="float: right; width: 250px;">';
 if ($config['flash_charts']) {
 	echo graphic_user_activity (300, 140);
-} else {
+}
+else {
 	echo '<img src="include/fgraph.php?tipo=user_activity&width=300&height=140" />';
 }
 echo '</div>';
 echo '<div style="clear:both;">&nbsp;</div>';
 echo '</td></tr></table>';
-$filter = '';
+
+
+
+$filter = 'WHERE 1 = 1';
+
 if ($tipo_log != 'all') {
-	$filter = sprintf (" WHERE accion = '%s'", $tipo_log);
+	$filter .= sprintf (" AND accion = '%s'", $tipo_log);
 }
 
-$sql = "SELECT COUNT(*) FROM tsesion ".$filter;
+if ($user_filter != 'all') {
+	$filter .= sprintf(' AND ID_usuario = "%s"', $user_filter);
+}
+
+$filter .= ' AND (accion LIKE "%' . $filter_text . '%" OR descripcion LIKE "%' . $filter_text . '%")';
+
+if ($filter_ip != '') {
+	$filter .= sprintf(' AND IP_origen LIKE "%s"', $filter_ip);
+}
+
+if ($filter_hours_old != 0) {
+	$filter .= ' AND fecha >= DATE_ADD(NOW(), INTERVAL -' . $filter_hours_old . ' HOUR)';
+}
+
+$sql = "SELECT COUNT(*) FROM tsesion " . $filter;
 $count = get_db_sql ($sql);
 $url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
 
 pagination ($count, $url);
 
-$sql = sprintf ("SELECT * FROM tsesion%s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
+$sql = sprintf ("SELECT * FROM tsesion %s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
 $result = get_db_all_rows_sql ($sql);
 
 if (empty ($result)) {
@@ -87,17 +126,44 @@ $table->class = "databox";
 $table->size = array ();
 $table->data = array ();
 $table->head = array ();
+$table->align = array();
+$table->rowclass = array();
 
 $table->head[0] = __('User');
 $table->head[1] = __('Action');
 $table->head[2] = __('Date');
 $table->head[3] = __('Source IP');
 $table->head[4] = __('Comments');
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->head[5] = enterprise_hook('tableHeadEnterpriseAudit', array('title1'));
+}
+
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->head[6] = enterprise_hook('tableHeadEnterpriseAudit', array('title2'));
+}
 
 $table->size[0] = 80;
 $table->size[2] = 130;
 $table->size[3] = 100;
 $table->size[4] = 200;
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->size[5] = enterprise_hook('tableHeadEnterpriseAudit', array('size1'));
+}
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->size[6] = enterprise_hook('tableHeadEnterpriseAudit', array('size2'));
+}
+
+
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->align[5] = enterprise_hook('tableHeadEnterpriseAudit', array('align'));
+}
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	$table->align[6] = enterprise_hook('tableHeadEnterpriseAudit', array('align2'));
+}
+
+$table->colspan = array();
+$table->rowstyle = array();
+
 
 $rowPair = true;
 $iterator = 0;
@@ -117,9 +183,23 @@ foreach ($result as $row) {
 	$data[2] = $row["fecha"];
 	$data[3] = $row["IP_origen"];
 	$data[4] = $row["descripcion"];
+	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+		$data[5] = enterprise_hook('cell1EntepriseAudit', array($row['ID_sesion']));
+	}
+	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+		$data[6] = enterprise_hook('cell2EntepriseAudit', array($row['ID_sesion']));
+	}
 	array_push ($table->data, $data);
+	
+	
+	if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+		enterprise_hook('rowEnterpriseAudit', array($table, &$iterator, $row['ID_sesion']));
+	}
 }
 
 print_table ($table);
 
+if ($enterprise_include !== ENTERPRISE_NOT_HOOK) {
+	enterprise_hook('enterpriseAuditFooter');
+}
 ?>

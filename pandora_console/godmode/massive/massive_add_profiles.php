@@ -18,7 +18,7 @@
 check_login ();
 
 if (! check_acl ($config['id_user'], 0, "AW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access massive alert deletion");
 	require ("general/noaccess.php");
 	return;
@@ -44,7 +44,7 @@ if($create_profiles) {
 					$profile_data = get_db_row_filter ("tusuario_perfil", array("id_usuario" => $user, "id_perfil" => $profile, "id_grupo" => $group));
 					// If the profile doesnt exist, we create it
 					if ($profile_data === false) {
-						audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+						pandora_audit("User management",
 							"Added profile for user ".safe_input($user));
 						$return = create_user_profile ($user, $profile, $group);
 						if($return !== false){

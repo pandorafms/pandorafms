@@ -21,7 +21,7 @@ global $config;
 check_login ();	
 
 if (! give_acl ($config['id_user'], 0, "DM")) {
-	audit_db($config['id_user'],$_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access Database Debug Admin section");
+	pandora_audit("ACL Violation","Trying to access Database Debug Admin section");
 	require ("general/noaccess.php");
 	exit;
 }

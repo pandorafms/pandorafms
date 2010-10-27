@@ -29,7 +29,7 @@ $map = get_db_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = getMapConf($idMap);
 
 if (! check_acl ($config['id_user'], $map['group_id'], "IR")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access map builder");
+	pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }

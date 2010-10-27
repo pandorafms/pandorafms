@@ -306,10 +306,11 @@ function safe_acl_group ($id_user, $id_groups, $access) {
  * @param string $descripcion Long action description
  * @param string $id User id, by default is the user that login.
  * @param string $ip The ip to make the action, by default is $_SERVER['REMOTE_ADDR'] or $config["remote_addr"]
+ * @param string $info The extended info for enterprise audit, by default is empty string.
  * 
  * @return int Return the id of row in tsesion or false in case of fail.
  */
-function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false) {
+function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false, $info = '') {
 	global $config;
 	
 	if ($ip !== false) {
@@ -344,7 +345,12 @@ function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false) {
 		'fecha' => date('Y-m-d H:i:s'),
 		'utimestamp' => time());
 	
-	return process_sql_insert('tsesion', $values);
+	$id_audit = process_sql_insert('tsesion', $values);
+	
+	enterprise_include_once('include/functions_audit.php');
+	enterprise_hook('pandora_audit_enterprise', array($id_audit, $info));
+	
+	return $id_audit;
 }
 
 
@@ -1902,10 +1908,12 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1, $searc
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
-	} else if (is_float ($condition) || is_double ($condition)) {
+	}
+	else if (is_float ($condition) || is_double ($condition)) {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f LIMIT 1",
 				$field, $table, $field_search, $condition);
-	} else {
+	}
+	else {
 		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
 				$field, $table, $field_search, $condition);
 	}
@@ -1913,8 +1921,11 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1, $searc
 	
 	if ($result === false)
 		return false;
+	
 	if ($field[0] == '`')
 		$field = str_replace ('`', '', $field);
+	
+		
 	return $result[0][$field];
 }
 

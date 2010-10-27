@@ -37,11 +37,16 @@ $id_profile = (int) get_parameter ('id');
 // Profile deletion
 if ($delete_profile) {
 	// Delete profile
+	$profile = get_db_row('tperfil', 'id_perfil', $id_profile);
 	$sql = sprintf ('DELETE FROM tperfil WHERE id_perfil = %d', $id_profile);
 	$ret = process_sql ($sql);
 	if ($ret === false) {
 		echo '<h3 class="error">'.__('There was a problem deleting the profile').'</h3>';
-	} else {
+	}
+	else {		
+		pandora_audit("Profile management",
+			"Delete profile ".safe_input($profile['name']));
+		
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
 	}
@@ -78,9 +83,19 @@ if ($update_profile) {
 		$id_profile);
 	$ret = process_sql ($sql);
 	if ($ret !== false) {
+		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Pandora Management: ' . $pandora_management;
+		pandora_audit("User management",
+			"Update profile ".safe_input($name), false, false, $info);
+		
 		echo '<h3 class="suc">'.__('Successfully updated').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
-	} else {
+	}
+	else {
 		echo '<h3 class="error"'.__('There was a problem updating this profile').'</h3>';
 	}
 	$id_profile = 0;
@@ -113,7 +128,17 @@ if ($create_profile) {
 	if ($ret !== false) {
 		echo '<h3 class="suc">'.__('Successfully created').'</h3>';
 		echo '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list">&laquo; Back</a>';
-	} else {
+		
+		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Pandora Management: ' . $pandora_management;
+		pandora_audit("User management",
+			"Created profile ".safe_input($name), false, false, $info);
+	}
+	else {
 		echo '<h3 class="error">'.__('There was a problem creating this profile').'</h3>';
 	}
 	$id_profile = 0;
@@ -136,7 +161,8 @@ if ($id_profile || $new_profile) {
 		$pandora_management = 0;
 		
 		$page_title = __('Create profile');
-	} else {
+	}
+	else {
 		$profile = get_db_row ('tperfil', 'id_perfil', $id_profile);
 	
 		if ($profile === false) {
@@ -144,6 +170,22 @@ if ($id_profile || $new_profile) {
 			include ("general/footer.php"); 
 			exit;
 		}
+		
+		
+		
+		$id_audit = pandora_audit("User management",
+			"Edit profile ".safe_input($name));
+		enterprise_include_once('include/functions_audit.php');
+		$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
+			' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
+			' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
+			' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
+			' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
+			' Pandora Management: ' . $pandora_management;
+		enterprise_hook('pandora_audit_enterprise', array($id_audit, $info));
+		
+		
+		
 		$name = $profile["name"];
 		$incident_view = (bool) $profile["incident_view"];
 		$incident_edit = (bool) $profile["incident_edit"];

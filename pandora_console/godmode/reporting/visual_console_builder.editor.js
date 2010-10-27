@@ -833,7 +833,7 @@ function eventsItems() {
 		event.stopPropagation();
 		if (!openPropertiesPanel) {
 			divParent = $(event.target).parent();
-			unselectAll()
+			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
 			
 			if ($(divParent).hasClass('static_graph')) {
@@ -894,7 +894,7 @@ function eventsItems() {
 		event.stopPropagation();
 		if (!openPropertiesPanel) {
 			divParent = $(event.target).parent();
-			unselectAll()
+			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
 			
 			if ($(divParent).hasClass('static_graph')) {

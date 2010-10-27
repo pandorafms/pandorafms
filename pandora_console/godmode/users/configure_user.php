@@ -105,10 +105,14 @@ if ($create_user) {
 		$new_user = true;
 	}
 	else {
-		$result = create_user ($id, $password_new, $values);
+		$info = 'FullName: ' . $values['fullname'] . ' Firstname: ' . $values['firstname'] .
+			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
+			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
+			' Is_admin: ' . $values['is_admin'] .
+			' Laguage: ' . $values['language'];
 
 		pandora_audit("User management",
-		"Created user ".safe_input($id));
+			"Created user ".safe_input($id), false, false, $info);
 
 		print_result_message ($result,
 			__('Successfully created'),
@@ -151,17 +155,27 @@ if ($update_user) {
 				print_result_message ($res1 || $res2,
 					__('User info successfully updated'),
 					__('Error updating user info (no change?)'));
-			} else {
+			}
+			else {
 				print_error_message (__('Passwords does not match'));
 			}
-		} else {
-			pandora_audit("User management",
-		"Updated user ".safe_input($id));
+		}
+		else {
+			$info = 'FullName: ' . $values['fullname'] . ' Firstname: ' . $values['firstname'] .
+				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
+				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
+				' Is_admin: ' . $values['is_admin'] .
+				' Laguage: ' . $values['language'];
+			
+			pandora_audit("User management", "Updated user ".safe_input($id),
+				false, false, $info);
+		
 			print_result_message ($res1,
 				__('User info successfully updated'),
 				__('Error updating user info (no change?)'));
 		}
-	} else {
+	}
+	else {
 		print_result_message ($res1,
 			__('User info successfully updated'),
 			__('Error updating user info (no change?)'));
@@ -175,7 +189,7 @@ if ($add_profile) {
 	$group2 = (int) get_parameter ('assign_group');
 	$profile2 = (int) get_parameter ('assign_profile');
 	pandora_audit("User management",
-		"Added profile for user ".safe_input($id2));
+		"Added profile for user ".safe_input($id2), false, false, 'Profile: ' . $profile2 . ' Group: ' . $group2);
 	$return = create_user_profile ($id2, $profile2, $group2);
 	print_result_message ($return,
 		__('Profile added successfully'),
@@ -185,9 +199,13 @@ if ($add_profile) {
 if ($delete_profile) {
 	$id2 = (string) get_parameter ('id_user');
 	$id_up = (int) get_parameter ('id_user_profile');
+	
+	$perfilUser = get_db_row('tusuario_perfil', 'id_up', $id_up);
+	$id_perfil = $perfilUser['id_perfil'];
+	$perfil = get_db_row('tperfil', 'id_perfil', $id_perfil);
 		
 	pandora_audit("User management",
-		"Deleted profile for user ".safe_input($id2));
+		"Deleted profile for user ".safe_input($id2), false, false, 'The profile with id ' . $id_perfil . ' in the group ' . $perfilUser['id_grupo']);
 
 	$return = delete_user_profile ($id2, $id_up);
 	print_result_message ($return,

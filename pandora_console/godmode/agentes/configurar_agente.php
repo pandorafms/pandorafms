@@ -754,7 +754,7 @@ if ($duplicate_module){ // DUPLICATE agent module !
 	$result = copy_agent_module_to_agent ($id_duplicate_module,
 				get_agentmodule_agent($id_duplicate_module),
 				__('copy of').' '.get_agentmodule_name($id_duplicate_module));
-	debugPrint(var_dump($result));
+	
 }
 
 // UPDATE GIS

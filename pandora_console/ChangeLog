@@ -1,5 +1,12 @@
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/agentes/modificar_agente.php,
+	godmode/agentes/configurar_agente.php:  now in the source code pick more
+	info in the audit for actions to create, update and delete agent, and in
+	other hand for the actions to create, update, duplicate and delete module.
+
+2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/agentes/configurar_agente.php,
 	godmode/massive/massive_edit_agents.php: erased the calls "debugPrint" found
 	in source code.

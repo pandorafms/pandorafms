@@ -306,8 +306,10 @@ function safe_acl_group ($id_user, $id_groups, $access) {
  * @param string $descripcion Long action description
  * @param string $id User id, by default is the user that login.
  * @param string $ip The ip to make the action, by default is $_SERVER['REMOTE_ADDR'] or $config["remote_addr"]
+ * 
+ * @return int Return the id of row in tsesion or false in case of fail.
  */
-function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false){
+function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false) {
 	global $config;
 	
 	if ($ip !== false) {
@@ -334,8 +336,15 @@ function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false){
 
 	$accion = safe_input($accion);
 	$descripcion = safe_input($descripcion);
-	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
-	process_sql ($sql);
+	
+	$values = array('ID_usuario' => $id,
+		'accion' => $accion,
+		'IP_origen' => $ip,
+		'descripcion' => $descripcion,
+		'fecha' => date('Y-m-d H:i:s'),
+		'utimestamp' => time());
+	
+	return process_sql_insert('tsesion', $values);
 }
 
 

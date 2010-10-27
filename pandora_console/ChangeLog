@@ -1,5 +1,11 @@
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/javascript/jquery.ui.datepicker.js,
+	include/javascript/jquery.ui.core.js: fixed end of lines that it haven't
+	semicolon end char.
+
+2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/agentes/modificar_agente.php,
 	godmode/agentes/configurar_agente.php:  now in the source code pick more
 	info in the audit for actions to create, update and delete agent, and in

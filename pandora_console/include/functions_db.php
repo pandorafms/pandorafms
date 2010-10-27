@@ -57,7 +57,7 @@ function check_login () {
 			return 0;
 		}
 	}
-	audit_db ("N/A", getenv ("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+	pandora_audit("No session", "Trying to access without a valid session", "N/A");
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
 }
@@ -300,45 +300,37 @@ function safe_acl_group ($id_user, $id_groups, $access) {
 
 	
 /** 
- * Adds an audit log entry (DEPRECATED!)
- * 
- * @param string $id User id
- * @param string $ip Client IP
- * @param string $accion Action description
- * @param string $descripcion Long action description
- */
-function audit_db ($id, $ip, $accion, $descripcion){
-	$accion = safe_input($accion);
-	$descripcion = safe_input($descripcion);
-	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
-	process_sql ($sql);
-}
-
-
-/** 
  * Adds an audit log entry (new function in 3.0)
  * 
  * @param string $accion Action description
  * @param string $descripcion Long action description
+ * @param string $id User id, by default is the user that login.
+ * @param string $ip The ip to make the action, by default is $_SERVER['REMOTE_ADDR'] or $config["remote_addr"]
  */
-function pandora_audit ($accion, $descripcion){
+function pandora_audit ($accion, $descripcion, $user_id = false, $ip = false){
 	global $config;
 	
-	if (isset($config["remote_addr"])) {
-		$ip = $config["remote_addr"]; 
-		
-	}
-	else {
-		if ($_SERVER['REMOTE_ADDR']) {
-			$ip = $_SERVER['REMOTE_ADDR'];
+	if ($ip !== false) {
+		if (isset($config["remote_addr"])) {
+			$ip = $config["remote_addr"]; 
+			
 		}
 		else {
-			$ip = null;
+			if ($_SERVER['REMOTE_ADDR']) {
+				$ip = $_SERVER['REMOTE_ADDR'];
+			}
+			else {
+				$ip = null;
+			}
 		}
 	}
 	
-	
-	$id = $config["id_user"];
+	if ($user_id !== false) {
+		$id = $user_id;
+	}
+	else {
+		$id = $config["id_user"];
+	}
 
 	$accion = safe_input($accion);
 	$descripcion = safe_input($descripcion);
@@ -355,7 +347,8 @@ function pandora_audit ($accion, $descripcion){
  * @param string $ip Client user IP address.
  */
 function logon_db ($id_user, $ip) {
-	audit_db ($id_user, $ip, "Logon", "Logged in");
+	pandora_audit("Logon", "Logged in", $id_user, $ip);
+	
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
 	process_user_contact ($id_user);
 }
@@ -367,7 +360,7 @@ function logon_db ($id_user, $ip) {
  * @param string $ip Client user IP address.
  */
 function logoff_db ($id_user, $ip) {
-	audit_db ($id_user, $ip, "Logoff", "Logged out");
+	pandora_audit("Logoff", "Logged out", $id_user, $ip);
 }
 
 /**
@@ -1808,7 +1801,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 		process_sql ($sql);
 	}
 	$agent_name = get_agent_name($id_agent, "");
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
+	pandora_audit("Agent management",
 	"Deleted IP $ip_address from agent '$agent_name'");
 
 	// Need to change main address?
@@ -3230,8 +3223,9 @@ function delete_agent ($id_agents, $disableACL = false) {
 			$id_agent);
 		$addresses = get_db_all_rows_sql ($sql);
 		
-		if ($addresses === false)
+		if ($addresses === false) {
 			$addresses = array ();
+		}
 		foreach ($addresses as $address) {
 			temp_sql_delete ("taddress_agent", "id_ag", $address["id_ag"]);
 		}
@@ -3297,7 +3291,7 @@ function delete_agent ($id_agents, $disableACL = false) {
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
 
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "Agent management",
+		pandora_audit( "Agent management",
 		"Deleted agent '$agent_name'");
 
 		

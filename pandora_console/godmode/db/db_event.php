@@ -21,7 +21,7 @@ check_login ();
 print_page_header (__('Database maintenance').' &raquo; '.__('Event database cleanup'), "images/god8.png", false, "", true);
 
 if (! give_acl ($config['id_user'], 0, "DM")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access Database Management Event");
+	pandora_audit("ACL Violation", "Trying to access Database Management Event");
 	require ("general/noaccess.php");
 	exit;
 }

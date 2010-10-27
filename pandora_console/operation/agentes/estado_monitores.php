@@ -18,7 +18,7 @@ global $config;
 
 if (!isset ($id_agente)) {
 	//This page is included, $id_agente should be passed to it.
-	audit_db ($config['id_user'], $config['remote_addr'], "HACK Attempt",
+	pandora_audit("HACK Attempt",
 			  "Trying to get to monitor list without id_agent passed");
 	include ("general/noaccess.php");
 	exit;

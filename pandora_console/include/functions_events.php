@@ -121,9 +121,10 @@ function delete_event ($id_event, $similar = true) {
 		
 		if (give_acl ($config["id_user"], get_event_group ($event), "IM") == 0) {
 			//Check ACL
-			audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation", "Attempted deleting event #".$event);
-		} elseif ($ret !== false) {
-			audit_db ($config["id_user"], $config["remote_addr"], "Event deleted", "Deleted event #".$event);
+			pandora_audit("ACL Violation", "Attempted deleting event #".$event);
+		}
+		elseif ($ret !== false) {
+			pandora_audit("Event deleted", "Deleted event #".$event);
 			//ACL didn't fail nor did return
 			continue;
 
@@ -198,7 +199,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		
 		if (give_acl ($config["id_user"], get_event_group ($event), "IW") == 0) {
 			//Check ACL
-			audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation", "Attempted updating event #".$event);
+			pandora_audit("ACL Violation", "Attempted updating event #".$event);
 		} elseif ($ret !== false) {
 			//ACL didn't fail nor did return
 			continue;
@@ -213,7 +214,7 @@ function validate_event ($id_event, $similars = true, $comment = '', $new_status
 		return false;
 	} else {
 		foreach ($id_event as $event) {
-			audit_db ($config["id_user"], $config["remote_addr"], "Event validated", "Validated event #".$event);
+			pandora_audit("Event validated", "Validated event #".$event);
 		}
 		process_sql_commit ();
 		return true;

@@ -150,7 +150,7 @@ if (! isset ($config['id_user']) && isset ($_GET["loginhash"])) {
 	}
 	else {
 		require_once ('general/login_page.php');
-		audit_db ("system", $_SERVER['REMOTE_ADDR'], "Logon Failed (loginhash", "");
+		pandora_audit("Logon Failed (loginhash", "", "system");
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}
@@ -194,7 +194,7 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed", "Invalid login: ".$nick);
+		pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 		while (@ob_end_flush ());
 		exit ("</html>");
 	}

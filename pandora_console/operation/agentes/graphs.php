@@ -19,7 +19,7 @@ global $config;
 require_once ("include/functions_agents.php");
 
 if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".get_agent_name($id_agente));
 	include ("general/noaccess.php");
 	return;

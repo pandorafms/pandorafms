@@ -22,7 +22,7 @@ require_once ("include/functions_alerts.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "LM")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -62,7 +62,7 @@ if ($update_command) {
 	$id = (int) get_parameter ('id');
 	$alert = get_alert_command ($id);
 	if ($alert['internal']) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access Alert Management");
+		pandora_audit("ACL Violation", "Trying to access Alert Management");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -86,7 +86,7 @@ if ($delete_command) {
 	
 	// Internal commands cannot be deleted
 	if (get_alert_command_internal ($id)) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");
 		return;

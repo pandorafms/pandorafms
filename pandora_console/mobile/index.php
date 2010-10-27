@@ -57,7 +57,7 @@ $user->hackinjectConfig();
 						menu();
 						
 						if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
-							audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+							pandora_audit("ACL Violation",
 								"Trying to access Agent Data view");
 							require ("../general/noaccess.php");
 							return;
@@ -92,7 +92,7 @@ $user->hackinjectConfig();
 						default:
 						case 'tactical':
 							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -103,7 +103,7 @@ $user->hackinjectConfig();
 							break;
 						case 'agents':
 							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -129,7 +129,7 @@ $user->hackinjectConfig();
 							break;
 						case 'servers':
 							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -140,7 +140,7 @@ $user->hackinjectConfig();
 							break;
 						case 'alerts':
 							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -151,7 +151,7 @@ $user->hackinjectConfig();
 							break;
 						case 'groups':
 							if (! give_acl($system->getConfig('id_user'), 0, "PM")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;
@@ -162,7 +162,7 @@ $user->hackinjectConfig();
 							break;
 						case 'events':
 							if (! give_acl($system->getConfig('id_user'), 0, "IR")) {
-								audit_db($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access event viewer");
 								require ("general/noaccess.php");
 								return;
@@ -173,7 +173,7 @@ $user->hackinjectConfig();
 							break;
 						case 'monitor':
 							if (! give_acl($system->getConfig('id_user'), 0, "AR")) {
-								audit_db ($system->getConfig('id_user'), $_SERVER['REMOTE_ADDR'], "ACL Violation",
+								pandora_audit("ACL Violation",
 									"Trying to access Agent Data view");
 								require ("../general/noaccess.php");
 								return;

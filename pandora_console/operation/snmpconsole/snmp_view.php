@@ -22,7 +22,7 @@ enterprise_include ("operation/snmpconsole/snmp_view.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AR")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access SNMP Console");
 	require ("general/noaccess.php");
 	exit;
@@ -61,7 +61,7 @@ if (isset ($_GET["delete"])){
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	} else {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to delete SNMP event ID #".$id_trap);
 	}
 }
@@ -76,7 +76,7 @@ if (isset ($_GET["check"])) {
 			__('Successfully updated'),
 			__('Could not be updated'));
 	} else {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to checkout SNMP Trap ID".$id_trap);
 	}
 }
@@ -90,7 +90,7 @@ if (isset ($_POST["deletebt"])) {
 			process_sql ($sql);
 		}
 	} else {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}
 }
@@ -104,7 +104,7 @@ if (isset ($_POST["updatebt"])) {
 			process_sql ($sql);
 		}
 	} else {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to mass-delete SNMP Trap ID");
 	}
 }

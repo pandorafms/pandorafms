@@ -85,14 +85,16 @@ if (isset ($_GET["direct"])) {
 		$config['id_user'] = $nick;
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
-	} else {
+	}
+	else {
 		// User not known
 		$login_failed = true;
 		require_once ('general/login_page.php');
-		audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed", "Invalid login: ".$nick);
+		pandora_audit("Logon Failed", "Invalid login: ".$nick, $nick);
 		exit;
 	}
-} else {
+}
+else {
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
 	require_once ("include/auth/mysql.php");	
@@ -103,7 +105,7 @@ check_login ();
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "HACK Attempt",
+	pandora_audit("HACK Attempt",
 			  "Trying to access graph viewer without valid ID");
 	require ("general/noaccess.php");
 	exit;
@@ -114,7 +116,7 @@ $report = get_db_row ('treport', 'id_report', $id_report);
 $report["datetime"] = get_system_time();
 
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access graph reader");
+	pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }

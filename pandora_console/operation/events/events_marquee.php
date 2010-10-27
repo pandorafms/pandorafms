@@ -38,7 +38,7 @@ session_write_close ();
 
 
 if(!isInACL($_SERVER['REMOTE_ADDR'])){
-    audit_db ('', $_SERVER['REMOTE_ADDR'], "ACL Violation",
+    pandora_audit("ACL Violation",
 		"Trying to access marquee without ACL Access");
 	require ("../../general/noaccess.php");
 	exit;

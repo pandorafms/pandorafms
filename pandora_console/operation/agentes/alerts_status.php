@@ -55,7 +55,7 @@ if ($idAgent != 0) {
 	$id_group = get_group_agents ($idAgent);
 	
 	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
-		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
+		pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
 	}
@@ -69,7 +69,7 @@ if ($idAgent != 0) {
 } 
 else {
 	if (!give_acl ($config["id_user"], 0, "AR")) {
-		audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to access alert view");
+		pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;
 	}

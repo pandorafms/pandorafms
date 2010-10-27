@@ -252,7 +252,7 @@ function delete_incidents ($id_incident) {
 		$notes = array_merge ($notes, array_keys (get_incidents_notes ($id_inc)));
 		$attachments = array_merge ($attachments, array_keys (get_incidents_attach ($id_inc)));
 		
-		audit_db ($config['id_user'], $config["remote_addr"], "Incident deleted", $config['id_user']." deleted incident #".$id_inc);
+		pandora_audit("Incident deleted", $config['id_user']." deleted incident #".$id_inc);
 	}
 	
 	//Delete notes

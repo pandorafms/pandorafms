@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "UM")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
 	exit;
@@ -94,7 +94,7 @@ if (isset ($_GET["user_del"])) { //delete user
 	if($id_user != $config['id_user']){
 		$result = delete_user ($id_user);
 
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "User management",
+		pandora_audit("User management",
 			"Deleted user ".safe_input($id_user));
 
 		print_result_message ($result,

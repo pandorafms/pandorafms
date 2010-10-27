@@ -30,7 +30,7 @@ if (($ag_group == -1) && ($group_id != 0))
 	$ag_group = $group_id;
 
 if (! give_acl ($config["id_user"], 0, "AW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
 	exit;
@@ -40,17 +40,19 @@ enterprise_include_once('include/functions_policies.php');
 
 $search = get_parameter ("search", "");
 
-if (isset ($_GET["borrar_agente"])) { // if delete agent
-	$id_agente = get_parameter_get ("borrar_agente");
+$agent_to_delete = (int)get_parameter('borrar_agente');
+
+if (!empty($agent_to_delete)) {
+	$id_agente = $agent_to_delete;
 	$agent_name = get_agent_name ($id_agente);
 	$id_grupo = dame_id_grupo ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
-		delete_agent ($id_agentes);
+		delete_agent($id_agentes);
 	}
 	else {
 		// NO permissions.
-		audit_db ($config["id_user"],$_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to delete agent \'$agent_name\'");
 		require ("general/noaccess.php");
 		exit;

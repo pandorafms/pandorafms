@@ -28,7 +28,7 @@ if ($user_info["language"] == ""){
 $id = $user_info["id_user"]; //This is done in case there are problems with uppercase/lowercase (MySQL auth has that problem)
 
 if ((!give_acl ($config["id_user"], get_user_groups ($id), "UM")) AND ($id != $config["id_user"])){
-	audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation","Trying to view a user without privileges");
+	pandora_audit("ACL Violation","Trying to view a user without privileges");
 	require ("general/noaccess.php");
 	exit;
 }

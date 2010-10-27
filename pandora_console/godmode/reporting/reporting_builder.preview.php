@@ -24,7 +24,7 @@ $report = get_db_row ('treport', 'id_report', $id_report);
 
 // Check ACL on the report to see if user has access to the report.
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation","Trying to access graph reader");
+	pandora_audit("ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }

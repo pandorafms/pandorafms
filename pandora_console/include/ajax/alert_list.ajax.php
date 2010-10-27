@@ -18,7 +18,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -41,7 +41,7 @@ if ($get_agent_alerts_simple) {
 	$id_group = get_agent_group ($id_agent);
 	
 	if (! give_acl ($config['id_user'], $id_group, "AR")) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+		pandora_audit("ACL Violation",
 			"Trying to access Alert Management");
 		echo json_encode (false);
 		return;

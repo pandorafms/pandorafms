@@ -79,7 +79,7 @@ function updateArrowLayers() {
 <?php
 
 if (! give_acl ($config['id_user'], 0, "IW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to access map builder");
+	pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
 }

@@ -21,7 +21,7 @@ function mainAgentsModules() {
 	check_login ();
 	// ACL Check
 	if (! give_acl ($config['id_user'], 0, "AR")) {
-		audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", 
+		pandora_audit("ACL Violation", 
 		"Trying to access Agent view (Grouped)");
 		require ("general/noaccess.php");
 		exit;
@@ -36,7 +36,7 @@ function mainAgentsModules() {
 			$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
 			process_sql ($sql);
 		} else {
-			audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation", "Trying to set flag for groups");
+			pandora_audit("ACL Violation", "Trying to set flag for groups");
 			require ("general/noaccess.php");
 			exit;
 		}

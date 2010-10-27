@@ -19,7 +19,7 @@ global $config;
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;
@@ -28,7 +28,7 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 /* Check if this page is included from a agent edition */
 
 if (! give_acl ($config['id_user'], 0, "LW")) {
-	audit_db ($config['id_user'], $_SERVER['REMOTE_ADDR'], "ACL Violation",
+	pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
 	exit;

@@ -104,7 +104,8 @@ if (isset ($_GET["user_del"])) { //delete user
 	else
 		print_error_message (__('There was a problem deleting the user'));
 	
-} elseif (isset ($_GET["profile_del"])) { //delete profile
+}
+elseif (isset ($_GET["profile_del"])) { //delete profile
 	$id_profile = (int) get_parameter_post ("delete_profile");
 	$result = delete_profile ($id_profile);
 	print_result_message ($result, 

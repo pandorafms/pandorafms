@@ -167,14 +167,14 @@ elseif (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	// It accepts username and password. The rest should be internal to the auth file.
 	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
 	// process_user_login should return false in case of errors or invalid login, the nickname if correct
-	$nick = process_user_login ($nick, $pass);
+	$nick_in_db = process_user_login ($nick, $pass);
 			
-	if ($nick !== false) {
+	if ($nick_in_db !== false) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
-		logon_db ($nick, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $nick;
-		$config['id_user'] = $nick;
+		logon_db ($nick_in_db, $_SERVER['REMOTE_ADDR']);
+		$_SESSION['id_usuario'] = $nick_in_db;
+		$config['id_user'] = $nick_in_db;
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);
 

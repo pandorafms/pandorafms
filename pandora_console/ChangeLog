@@ -1,5 +1,14 @@
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_db.php: in function "pandora_audit" clean source code
+	style, use the Pandora DB interface and now return id the row in tsesion.
+	 
+	* index.php: fixed when login failed the audit.
+	
+	* godmode/users/user_list.php: clean source code style.
+
+2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/admin_access_logs.php: added hooks to enterprise code, and added
 	new filter with more options.
 

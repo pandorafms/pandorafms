@@ -1,5 +1,15 @@
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_db.php: in function "pandora_audit" added new parameter
+	$info for to set more info in the audit. Cleaned source code style.
+	
+	* godmode/users/configure_user.php, godmode/users/configure_profile.php: now
+	in the source code pick more info in the audit for actions to create,
+	update and delete profiles and user, and for action to add and remove
+	profiles to user.
+	
+2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_db.php: in function "pandora_audit" clean source code
 	style, use the Pandora DB interface and now return id the row in tsesion.
 	 

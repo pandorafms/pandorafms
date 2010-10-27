@@ -174,8 +174,8 @@ Pandora_Module_Logevent::discardLogEvents () {
     rc = ReadEventLog(this->log_event, EVENTLOG_FORWARDS_READ | EVENTLOG_SEEK_READ,
                       newest_event, pevlr, BUFFER_SIZE, &read, &needed);
     
-    // Something went wrong
-    if (rc != 0) {
+    // Something went wrong (we need more information on error 997, ignore it for now)
+    if (rc != 0 && rc != 997) {
         pandoraDebug ("ReadEventLog error %d", GetLastError ());
     }
 }

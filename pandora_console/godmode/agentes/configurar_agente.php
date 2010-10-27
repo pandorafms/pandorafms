@@ -172,8 +172,16 @@ if ($create_agent) {
 			
 			$agent_created_ok = true;
 
+			$info = 'Name: ' . $nombre_agente . ' IP: ' . $direccion_agente .
+				' Group: ' . $grupo . ' Interval: ' . $intervalo .
+				' Comments: ' . $comentarios . ' Mode: ' . $modo .
+				' ID_parent: ' . $id_parent . ' Server: ' . $server_name .
+				' ID os: ' . $id_os . ' Disabled: ' . $disabled .
+				' Custom ID: ' . $custom_id . ' Cascade protection: '  . $cascade_protection . 
+				' Icon path: ' . $icon_path . ' Update GIS data: ' . $update_gis_data;
+			
 			pandora_audit("Agent management",
-				"Created agent $nombre_agente");
+				"Created agent $nombre_agente", false, false, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -386,7 +394,8 @@ if ($update_agent) { // if modified some agent paramenter
 			// Create custom field if not exist
 			process_sql_insert ('tagent_custom_data',
 				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
-		}else {		
+		}
+		else {		
 			process_sql_update ('tagent_custom_data',
 				 array('description' => $value),
 				 array('id_field' => $key,'id_agent' => $id_agente));
@@ -397,9 +406,11 @@ if ($update_agent) { // if modified some agent paramenter
 	if ($nombre_agente == "") { 
 		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
 	//If there is an agent with the same name, but a different ID
-	} elseif (get_agent_id ($nombre_agente) > 0 && get_agent_id ($nombre_agente) != $id_agente) {
+	}
+	elseif (get_agent_id ($nombre_agente) > 0 && get_agent_id ($nombre_agente) != $id_agente) {
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
-	} else {
+	}
+	else {
 		//If different IP is specified than previous, add the IP
 		if ($direccion_agente != '' && $direccion_agente != get_agent_address ($id_agente))
 			agent_add_address ($id_agente, $direccion_agente);
@@ -429,11 +440,19 @@ if ($update_agent) { // if modified some agent paramenter
 			
 		if ($result === false) {
 			print_error_message (__('There was a problem updating the agent'));
-		} else {
+		}
+		else {
+			$info = 'Group: ' . $grupo . ' Interval: ' . $intervalo .
+				' Comments: ' . $comentarios . ' Mode: ' . $modo . 
+				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
+				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
+				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
+				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data;
+			
 			enterprise_hook ('update_agent', array ($id_agente));
 			print_success_message (__('Successfully updated'));
 			pandora_audit("Agent management",
-		"Updated agent $nombre_agente");
+				"Updated agent $nombre_agente", false, false, $info);
 
 		}
 	}
@@ -574,8 +593,7 @@ if ($update_module || $create_module) {
 if ($update_module) {
 	$id_agent_module = (int) get_parameter ('id_agent_module');
 	
-	$result = update_agent_module ($id_agent_module,
-		array ('descripcion' => $description,
+	$values = array ('descripcion' => $description,
 			'id_module_group' => $id_module_group,
 			'nombre' => $name,
 			'max' => $max,
@@ -608,12 +626,19 @@ if ($update_module) {
 			'custom_string_3' => $custom_string_3,
 			'custom_integer_1' => $custom_integer_1,
 			'custom_integer_2' => $custom_integer_2,
-			'min_ff_event' => $ff_event));
+			'min_ff_event' => $ff_event);
+	
+	$result = update_agent_module ($id_agent_module,
+		$values);
 	
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
 		$edit_module = true;
-	} else {
+		
+		pandora_audit("Agent management",
+			"Fail to try update module '$name' for agent ".$agent["nombre"]);
+	}
+	else {
 		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
@@ -621,7 +646,7 @@ if ($update_module) {
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 
 		pandora_audit("Agent management",
-		"Updated module '$name' for agent ".$agent["nombre"]);
+			"Updated module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
 	}
 }
 
@@ -636,8 +661,7 @@ if ($create_module) {
 	
 	$id_module = (int) get_parameter ('id_module');
 	
-	$id_agent_module = create_agent_module ($id_agente, $name,
-		array ('id_tipo_modulo' => $id_module_type,
+	$values = array ('id_tipo_modulo' => $id_module_type,
 			'descripcion' => $description, 
 			'max' => $max,
 			'min' => $min, 
@@ -671,20 +695,27 @@ if ($create_module) {
 			'custom_integer_1' => $custom_integer_1,
 			'custom_integer_2' => $custom_integer_2,
 			'min_ff_event' => $ff_event
-		));
+		);
+	
+	$id_agent_module = create_agent_module ($id_agente, $name, $values);
 	
 	if ($id_agent_module === false) {
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 		$edit_module = true;
 		$moduletype = $id_module;
-	} else {
+		pandora_audit("Agent management",
+			"Fail to try added module '$name' for agent ".$agent["nombre"]);
+	}
+	else {
 		echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
 		$id_agent_module = false;
 		$edit_module = false;
+		
+		$info = '';
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 		pandora_audit("Agent management",
-		"Added module '$name' for agent ".$agent["nombre"]);
+			"Added module '$name' for agent ".$agent["nombre"], false, false, json_encode($values));
 	}
 }
 
@@ -743,18 +774,28 @@ if ($delete_module){ // DELETE agent module !
 
 		$agent = get_db_row ('tagente', 'id_agente', $id_agente);
 		pandora_audit("Agent management",
-		"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
+			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
 	}
 }
 
 // MODULE DUPLICATION
 // =================
-if ($duplicate_module){ // DUPLICATE agent module !
+if ($duplicate_module) { // DUPLICATE agent module !
 	$id_duplicate_module = (int) get_parameter_get ("duplicate_module",0);
 	$result = copy_agent_module_to_agent ($id_duplicate_module,
 				get_agentmodule_agent($id_duplicate_module),
 				__('copy of').' '.get_agentmodule_name($id_duplicate_module));
 	
+	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+	
+	if ($result) {
+		pandora_audit("Agent management",
+			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"] . " with the new id for clon " . $result);
+	}
+	else {
+		pandora_audit("Agent management",
+			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"]);
+	}
 }
 
 // UPDATE GIS

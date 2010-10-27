@@ -49,6 +49,7 @@ if (!empty($agent_to_delete)) {
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		$id_agentes[0] = $id_agente;
 		delete_agent($id_agentes);
+		pandora_audit("Agent management", "Delete Agent " . $agent_name);
 	}
 	else {
 		// NO permissions.

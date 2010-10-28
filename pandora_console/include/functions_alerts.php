@@ -144,6 +144,14 @@ function get_alert_command_description ($id_alert_command) {
 	return get_db_value ('description', 'talert_commands', 'id', $id_alert_command);
 }
 
+/**
+ * 
+ * @param $name
+ * @param $id_alert_command
+ * @param $values
+ * 
+ * @return mixed Returns the id if success or false in case of fail. 
+ */
 function create_alert_action ($name, $id_alert_command, $values = false) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))

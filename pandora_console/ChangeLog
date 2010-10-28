@@ -1,3 +1,18 @@
+2010-10-28  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/javascript/jquery.ui.datepicker.js, include/javascript/jquery.js,
+	include/javascript/jquery.ui.core.js,
+	include/javascript/tiny_mce/tiny_mce_popup.js,
+	include/javascript/OpenLayers/OpenLayers.js,
+	include/javascript/jquery.ui.resizable.js,
+	include/javascript/jquery.timeentry.js: : delete unpacked source code of js.
+	
+	* include/functions_alerts.php: added header comment to function
+	"create_alert_action".
+	
+	* godmode/alerts/alert_list.php: fixed the return status for message status
+	in actions "delete_alert", "add_action" and "delete_action".
+
 2010-10-28  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_custom_graphs.php

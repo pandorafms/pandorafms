@@ -114,7 +114,7 @@ if ($delete_alert) {
 	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 
 	$result = delete_alert_agent_module ($id_alert_agent_module);
-	$messageAction = print_result_message ($id, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($add_action) {
@@ -129,7 +129,7 @@ if ($add_action) {
 		$values['fires_max'] = $fires_max;
 	
 	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
-	$messageAction = print_result_message ($id, __('Successfully added'), __('Could not be added'), '', true);
+	$messageAction = print_result_message ($result, __('Successfully added'), __('Could not be added'), '', true);
 }
 
 if ($delete_action) {
@@ -137,7 +137,7 @@ if ($delete_action) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = delete_alert_agent_module_action ($id_action);
-	$messageAction = print_result_message ($id, __('Successfully deleted'), __('Could not be deleted'), '', true);
+	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
 if ($enable_alert) {

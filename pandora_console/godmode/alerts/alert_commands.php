@@ -53,6 +53,15 @@ if ($create_command) {
 	$result = create_alert_command ($name, $command,
 		array ('description' => $description));
 	
+	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
+		
+	if ($result) {
+		pandora_audit("Command management", "Create alert command " . $result, false, false, $info);
+	}
+	else {
+		pandora_audit("Command management", "Fail try to create alert command", false, false, $info);
+	}
+	
 	print_result_message ($result, 
 		__('Successfully created'),
 		__('Could not be created'));
@@ -76,6 +85,14 @@ if ($update_command) {
 	$values['description'] = $description;
 	$result = update_alert_command ($id, $values);
 	
+	$info = 'Name: ' . $name . ' Command: ' . $command . ' Description: ' . $description;
+	if ($result) {
+		pandora_audit("Command management", "Create alert command " . $id, false, false, $info);
+	}
+	else {
+		pandora_audit("Command management", "Fail to create alert command " . $id, false, false, $info);
+	}
+	
 	print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
@@ -93,6 +110,13 @@ if ($delete_command) {
 	}
 	
 	$result = delete_alert_command ($id);
+	
+	if ($result) {
+		pandora_audit("Command management", "Delete alert command " . $id);
+	}
+	else {
+		pandora_audit("Command management", "Fail to delete alert command " . $id);
+	}
 	
 	print_result_message ($result,
 		__('Successfully deleted'),

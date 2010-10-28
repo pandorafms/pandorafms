@@ -134,6 +134,13 @@ if ($delete_template) {
 	
 	$result = delete_alert_template ($id);
 	
+	if ($result) {
+		pandora_audit("Template alert management", "Delete alert template " . $id);
+	}
+	else {
+		pandora_audit("Template alert management", "Fail try to delete alert template " . $id);
+	}
+	
 	print_result_message ($result,
 		__('Successfully deleted'),
 		__('Could not be deleted'));

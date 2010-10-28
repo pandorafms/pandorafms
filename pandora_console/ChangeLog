@@ -1,5 +1,14 @@
 2010-10-28  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/alerts/alert_list.php,
+	godmode/alerts/configure_alert_template.php,
+	godmode/alerts/alert_templates.php, godmode/alerts/alert_actions.php,
+	godmode/alerts/alert_commands.php: now in the source code pick more info in
+	the audit for actions to create, update and delete profiles and user, and
+	for action to add and remove profiles to user.
+
+2010-10-28  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/javascript/jquery.ui.datepicker.js, include/javascript/jquery.js,
 	include/javascript/jquery.ui.core.js,
 	include/javascript/tiny_mce/tiny_mce_popup.js,

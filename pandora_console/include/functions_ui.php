@@ -31,7 +31,7 @@
  * @param string $suffix String at the end of a strimmed string.
  */
 function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '&hellip;') {
-	$text = safe_output($text);
+	$text = safe_output_html($text);
 	if (strlen($text) > ($numChars - 1)) {
 		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . $suffix;
 		

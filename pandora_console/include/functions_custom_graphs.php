@@ -89,6 +89,12 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
 	$modules = array ();
 	$weights = array ();
+	
+	if($sources === false) {
+		echo "<div class='nf'>".__('Empty graph')."</div>";
+		return;
+	}
+	
 	foreach ($sources as $source) {
 		array_push ($modules, $source['id_agent_module']);
 		array_push ($weights, $source['weight']);

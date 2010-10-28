@@ -1,5 +1,11 @@
 2010-10-28  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_custom_graphs.php
+	godmode/reporting/graph_builder.preview.php: Fixed various bugs when
+	you try to render a custom graph without modules for bug 3096434
+
+2010-10-28  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_io.php
 	include/functions_ui.php: Fixed the html setting in the header 
 	for the dashboard bug 3094692 

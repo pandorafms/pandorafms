@@ -92,11 +92,6 @@ function safe_input_html($value) {
 	if (! mb_check_encoding ($value, 'UTF-8'))
 		$value = utf8_encode ($value);
 
-	//Replace some characteres for html entities
-	for ($i=0;$i<33;$i++) {
-		$value = str_ireplace(chr($i),ascii_to_html($i), $value);	
-	}
-
 	return $value;
 }
 
@@ -173,6 +168,41 @@ function safe_output($value, $utf8 = true)
 	}	
 	
 	return $valueHtmlEncode;	
+}
+
+/**
+ * Convert the $value encode in html entity to clear char string. This function 
+ * should be called always to "clean" HTML encoded data; to render to a text
+ * plain ascii file, to render to console, or to put in any kind of data field
+ * who doesn't make the HTML render by itself.
+ * 
+ * @param mixed String or array of strings to be cleaned.
+ * @param boolean $utf8 Flag, set the output encoding in utf8, by default true.
+ * 
+ * @return unknown_type
+ */
+function safe_output_html($value, $utf8 = true)
+{
+	if (is_numeric($value))
+		return $value;
+		
+	if (is_array($value)) {
+		array_walk($value, "safe_output");
+		return $value;
+	}
+		
+	//Replace the html entitie of ( for the char
+	$value = str_replace("&#40;", '(', $value);
+	
+	//Replace the html entitie of ) for the char
+	$value = str_replace("&#41;", ')', $value);		
+	
+	//Revert html entities to chars
+	for ($i=0;$i<33;$i++) {
+		$value = str_ireplace("&#x".dechex($i).";",html_to_ascii(dechex($i)), $value);			
+	}	
+	
+	return $value;	
 }
 
 /** 

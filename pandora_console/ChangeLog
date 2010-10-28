@@ -1,3 +1,9 @@
+2010-10-28  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_io.php
+	include/functions_ui.php: Fixed the html setting in the header 
+	for the dashboard bug 3094692 
+
 2010-10-27  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/javascript/jquery.ui.datepicker.js,
@@ -247,6 +253,7 @@
 	
 	* godmode/setup/setup.php: Use added images.
 
+>>>>>>> .r3474
 2010-10-25  Junichi Satoh  <junichi@rworks.jp>
 
 	* godmode/agentes/module_manager_editor_network.php: Added enterprise

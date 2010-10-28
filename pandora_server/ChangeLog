@@ -1,3 +1,8 @@
+2010-10-28  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_sync_db.pl: Added the Pandora Database Synchronization
+	script to server for pending task 3085932
+
 2010-10-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a bug that made the server crash when

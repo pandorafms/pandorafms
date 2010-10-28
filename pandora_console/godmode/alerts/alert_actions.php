@@ -52,6 +52,13 @@ if ($copy_action) {
 	
 	$result = clone_alert_action ($id);
 	
+	if ($result) {
+		pandora_audit("Command management", "Duplicate alert action " . $id . " clone to " . $result);
+	}
+	else {
+		pandora_audit("Command management", "Fail try to duplicate alert action " . $id);
+	}
+	
 	print_result_message ($result,
 		__('Successfully copied'),
 		__('Could not be copied'));
@@ -70,6 +77,16 @@ if ($create_action) {
 			'field2' => $field2,
 			'field3' => $field3,
 			'id_group' => $group));
+		
+	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
+		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group;
+		
+	if ($result) {
+		pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
+	}
+	else {
+		pandora_audit("Command management", "Fail try to create alert action", false, false, $info);
+	}
 	
 	print_result_message ($result,
 		__('Successfully created'),
@@ -95,6 +112,16 @@ if ($update_action) {
 
 	$result = update_alert_action ($id, $values);
 	
+	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
+		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group;
+		
+	if ($result) {
+		pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));
+	}
+	else {
+		pandora_audit("Command management", "Fail try to update alert action " . $id, false, false, json_encode($values));
+	}
+	
 	print_result_message ($result,
 		__('Successfully updated'),
 		__('Could not be updated'));
@@ -104,6 +131,13 @@ if ($delete_action) {
 	$id = get_parameter ('id');
 	
 	$result = delete_alert_action ($id);
+	
+	if ($result) {
+		pandora_audit("Command management", "Delete alert action " . $id);
+	}
+	else {
+		pandora_audit("Command management", "Fail try to delete alert action " . $id);
+	}
 	
 	print_result_message ($result,
 		__('Successfully deleted'),

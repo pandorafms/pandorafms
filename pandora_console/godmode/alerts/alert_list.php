@@ -82,7 +82,11 @@ if ($create_alert) {
 		// Audit the creation only when the alert creation is correct
 		if($id) {
 			pandora_audit("Alert management",
-		"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+				"Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'", false, false, 'ID: ' . $id);
+		}
+		else {
+			pandora_audit("Alert management",
+				"Fail Added alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
 		}
 
 		$messageAction =  print_result_message ($id, __('Successfully created'), __('Could not be created'), '', true);
@@ -110,10 +114,17 @@ if ($delete_alert) {
 	$module_name = get_db_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
 	$agent_name = get_agent_name (get_db_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
 
-	pandora_audit("Alert management",
-	"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
-
 	$result = delete_alert_agent_module ($id_alert_agent_module);
+	
+	if ($result) {
+		pandora_audit("Alert management",
+			"Deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+	}
+	else {
+		pandora_audit("Alert management",
+			"Fail to deleted alert '$alert_template_name' for module '$module_name' in agent '$agent_name'");
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
@@ -129,6 +140,14 @@ if ($add_action) {
 		$values['fires_max'] = $fires_max;
 	
 	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Add action ' . $id_action . ' in  alert ' . $id_alert_module);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to add action ' . $id_action . ' in alert ' . $id_alert_module);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully added'), __('Could not be added'), '', true);
 }
 
@@ -137,6 +156,14 @@ if ($delete_action) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = delete_alert_agent_module_action ($id_action);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Delete action ' . $id_action . ' in alert ' . $id_alert_module);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to delete action ' . $id_action . ' in alert ' . $id_alert_module);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);
 }
 
@@ -144,6 +171,14 @@ if ($enable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_disable ($id_alert, false);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Enable  ' . $id_alert);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to enable ' . $id_alert);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'), '', true);
 }
 
@@ -151,6 +186,14 @@ if ($disable_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_disable ($id_alert, true);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Disable  ' . $id_alert);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to disable ' . $id_alert);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'), '', true);
 }
 
@@ -158,6 +201,14 @@ if ($standbyon_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_standby ($id_alert, true);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Standby  ' . $id_alert);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to standby ' . $id_alert);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'), '', true);
 }
 
@@ -165,6 +216,14 @@ if ($standbyoff_alert) {
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = set_alerts_agent_module_standby ($id_alert, false);
+	
+	if ($result) {
+		pandora_audit("Alert management", 'Standbyoff  ' . $id_alert);
+	}
+	else {
+		pandora_audit("Alert management", 'Fail to standbyoff ' . $id_alert);
+	}
+	
 	$messageAction = print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'), '', true);
 }
 

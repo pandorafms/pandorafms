@@ -37,6 +37,14 @@ if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');
 	
 	$id = duplicate_alert_template ($source_id);
+	
+	if ($id) {
+		pandora_audit("Template alert management", "Duplicate alert template " . $source_id . " clone to " . $id);
+	}
+	else {
+		pandora_audit("Template alert management", "Fail try to duplicate alert template " . $source_id);
+	}
+	
 	print_result_message ($id,
 		__('Successfully created from %s', get_alert_template_name ($source_id)),
 		__('Could not be created'));
@@ -59,7 +67,8 @@ function print_alert_template_steps ($step, $id) {
 		echo __('Step').' 1 &raquo; ';
 		echo '<span>'.__('Conditions').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 1 &raquo; ';
 		echo '<span>'.__('Conditions').'</span>';
 	}
@@ -78,7 +87,8 @@ function print_alert_template_steps ($step, $id) {
 		echo __('Step').' 2 &raquo; ';
 		echo '<span>'.__('Firing').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 2 &raquo; ';
 		echo '<span>'.__('Firing').'</span>';
 	}
@@ -97,7 +107,8 @@ function print_alert_template_steps ($step, $id) {
 		echo __('Step').' 3 &raquo; ';
 		echo '<span>'.__('Recovery').'</span>';
 		echo '</a>';
-	} else {
+	}
+	else {
 		echo __('Step').' 3 &raquo; ';
 		echo '<span>'.__('Recovery').'</span>';
 	}
@@ -123,8 +134,7 @@ function update_template ($step) {
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
 
-		$result = update_alert_template ($id,
-			array ('name' => $name,
+		$values = array ('name' => $name,
 				'type' => $type,
 				'description' => $description,
 				'value' => $value,
@@ -132,9 +142,11 @@ function update_template ($step) {
 				'min_value' => $min,
 				'id_group' => $id_group,
 				'matches_value' => $matches,
-				'priority' => $priority));
-
-	} elseif ($step == 2) {
+				'priority' => $priority);
+		
+		$result = update_alert_template ($id,$values);
+	}
+	elseif ($step == 2) {
 		$monday = (bool) get_parameter ('monday');
 		$tuesday = (bool) get_parameter ('tuesday');
 		$wednesday = (bool) get_parameter ('wednesday');
@@ -178,17 +190,27 @@ function update_template ($step) {
 			);
 		
 		$result = update_alert_template ($id, $values);
-	} elseif ($step == 3) {
+	}
+	elseif ($step == 3) {
 		$recovery_notify = (bool) get_parameter ('recovery_notify');
 		$field2_recovery = (string) get_parameter ('field2_recovery');
 		$field3_recovery = (string) get_parameter ('field3_recovery');
+
+		$values = array ('recovery_notify' => $recovery_notify,
+			'field2_recovery' => $field2_recovery,
+			'field3_recovery' => $field3_recovery);
 		
-		$result = update_alert_template ($id,
-			array ('recovery_notify' => $recovery_notify,
-				'field2_recovery' => $field2_recovery,
-				'field3_recovery' => $field3_recovery));
-	} else {
+		$result = update_alert_template ($id, $values);
+	}
+	else {
 		return false;
+	}
+	
+	if ($result) {
+		pandora_audit("Template alert management", "Update alert template " . $id, false, false, json_encode($values));
+	}
+	else {
+		pandora_audit("Template alert management", "Fail try to update alert template " . $id, false, false, json_encode($values));
 	}
 	
 	return $result;
@@ -242,14 +264,22 @@ if ($create_template) {
 	$priority = (int) get_parameter ('priority');
 	$id_group = get_parameter ("id_group");
 
-	$result = create_alert_template ($name, $type,
-		array ('description' => $description,
+	$values = array ('description' => $description,
 			'value' => $value,
 			'max_value' => $max,
 			'min_value' => $min,
 			'id_group' => $id_group,
 			'matches_value' => $matches,
-			'priority' => $priority));
+			'priority' => $priority);
+	
+	$result = create_alert_template ($name, $type, $values);
+		
+	if ($result) {
+		pandora_audit("Command management", "Create alert command " . $result, false, false, json_encode($values));
+	}
+	else {
+		pandora_audit("Command management", "Fail try to create alert command", false, false, json_encode($values));
+	}
 	
 	print_result_message ($result,
 		__('Successfully created'),

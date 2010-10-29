@@ -1,5 +1,26 @@
 2010-10-29  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* extensions/dbmanager.php, godmode/agentes/module_manager_editor.php,
+	godmode/massive/massive_add_alerts.php,
+	godmode/massive/massive_copy_modules.php,
+	godmode/massive/massive_delete_agents.php,
+	godmode/massive/massive_enable_disable_alerts.php,
+	godmode/massive/massive_operations.php,
+	godmode/massive/massive_delete_profiles.php,
+	godmode/massive/massive_edit_agents.php,
+	godmode/massive/massive_delete_action_alerts.php,
+	godmode/massive/massive_delete_modules.php,
+	godmode/massive/massive_add_profiles.php,
+	godmode/massive/massive_delete_alerts.php,
+	godmode/massive/massive_edit_modules.php,
+	godmode/massive/massive_standby_alerts.php,
+	godmode/massive/massive_add_action_alerts.php:  now in the source code pick
+	more info in the audit for actions.
+	
+	Pending tasks: #3089687
+
+2010-10-29  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/massive/massive_delete_profiles.php: fixed result message of
 	operation. And cleaned source code style.
 

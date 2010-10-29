@@ -36,7 +36,16 @@ $destiny_id_agents = (array) get_parameter ('destiny_id_agent', array ());
 $do_operation = (bool) get_parameter ('do_operation');
 
 if ($do_operation) {
-	process_manage_config ($source_id_agent, $destiny_id_agents);
+	$result = process_manage_config ($source_id_agent, $destiny_id_agents);
+	
+	if ($result) {
+		pandora_audit("Masive management", "Copy modules", false, false,
+			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
+	}
+	else {
+		pandora_audit("Masive management", "Fail to try copy modules", false, false,
+			'Source agent: ' . json_encode($source_id_agent) . ' Destinity agent: ' . json_encode($destiny_id_agents));
+	}
 }
 
 $groups = get_user_groups ();

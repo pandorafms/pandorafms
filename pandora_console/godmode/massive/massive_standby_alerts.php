@@ -42,7 +42,8 @@ if (is_ajax ()) {
 			$alert_templates = get_agent_alerts_simple ($id_agents);
 			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
 			return;
-		} else {
+		}
+		else {
 			$id_alert_templates = (array) get_parameter ('id_alert_templates');
 			$standby = (int) get_parameter ('standby');
 
@@ -71,7 +72,16 @@ switch($action) {
 		foreach($id_standby_alerts as $id_alert) {
 			$result = set_alerts_agent_module_standby ($id_alert, false);
 		}
-			print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
+		
+		print_result_message ($result, __('Successfully set off standby'), __('Could not be set off standby'));
+		
+		$info = 'Alert: ' . json_encode($id_standby_alerts);	
+		if ($result) {
+			pandora_audit("Masive management", "Set off standby alerts", false, false, $info);
+		}
+		else {
+			pandora_audit("Masive management", "Fail try to set off standby alerts", false, false, $info);
+		}
 		break;
 	case 'set_standby_alerts':
 		$id_alert_templates = (int) get_parameter ('id_alert_template_standby', 0);
@@ -80,7 +90,16 @@ switch($action) {
 		foreach($id_not_standby_alerts as $id_alert) {
 			$result = set_alerts_agent_module_standby ($id_alert, true);
 		}
-			print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
+		
+		print_result_message ($result, __('Successfully set standby'), __('Could not be set standby'));
+		
+		$info = 'Alert: ' . json_encode($id_not_standby_alerts);	
+		if ($result) {
+			pandora_audit("Masive management", "Set on standby alerts", false, false, $info);
+		}
+		else {
+			pandora_audit("Masive management", "Fail try to set on standby alerts", false, false, $info);
+		}
 		break;
 	default:
 		$id_alert_templates = (int) get_parameter ('id_alert_template', 0);

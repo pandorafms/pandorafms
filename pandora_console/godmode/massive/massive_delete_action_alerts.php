@@ -117,6 +117,17 @@ if ($delete) {
 						}
 					}
 				}
+				
+				if ($results) {
+					pandora_audit("Masive management", "Delete alert action", false, false,
+						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
+						' Alert compound: ' . $id_alert_compounds . ' Action: ' . $action);
+				}
+				else {
+					pandora_audit("Masive management", "Fail try to delete alert action", false, false,
+						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
+						' Alert compound: ' . $id_alert_compounds . ' Action: ' . $action);
+				}
 			
 				print_result_message ($results, __('Successfully deleted'), __('Could not be deleted')/*.": ". $agent_alerts['simple'][0]['id']*/);
 			}

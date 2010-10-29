@@ -64,9 +64,14 @@ function process_manage_delete ($module_name, $id_agents) {
 		echo '<h3 class="error">'.__('There was an error deleting the modules, the operation has been cancelled').'</h3>';
 		echo '<h4>'.__('Could not delete modules').'</h4>';
 		process_sql_rollback ();
-	} else {
+		
+		return false;
+	}
+	else {
 		echo '<h3 class="suc">'.__('Successfully deleted').'</h3>';
 		process_sql_commit ();
+		
+		return true;
 	}
 }
 
@@ -77,7 +82,16 @@ $module_name = (string) get_parameter ('module_name');
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($module_name, $id_agents);
+	$result = process_manage_delete ($module_name, $id_agents);
+	
+	if ($result) {
+		pandora_audit("Masive management", "Delete module ", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_names);
+	}
+	else {
+		pandora_audit("Masive management", "Fail try to delete module", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_names);
+	}
 }
 
 $groups = get_user_groups ();

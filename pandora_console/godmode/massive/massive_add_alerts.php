@@ -74,6 +74,13 @@ function process_manage_add ($id_alert_template, $id_agents, $module_names) {
 		$conttotal ++;
 	}
 	
+	if ($countSuccess > 0) {
+		pandora_audit("Masive management", "Add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+	}
+	else {
+		pandora_audit("Masive management", "Fail try to add alert", false, false, "Alert template: " . $id_alert_template . " Modules: " . json_encode($modules_id));
+	}
+	
 	print_result_message ($contsuccess > 0,
 	__('Successfully added')."(".$contsuccess."/".$conttotal.")",
 	__('Could not be added'));

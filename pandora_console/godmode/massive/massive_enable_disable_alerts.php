@@ -71,7 +71,16 @@ switch($action) {
 		foreach($id_disabled_alerts as $id_alert) {
 			$result = set_alerts_agent_module_disable ($id_alert, false);
 		}
-			print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'));
+		
+		print_result_message ($result, __('Successfully enabled'), __('Could not be enabled'));
+		
+		$info = 'Alert: ' . json_encode($id_disabled_alerts);	
+		if ($result) {
+			pandora_audit("Masive management", "Enable alert", false, false, $info);
+		}
+		else {
+			pandora_audit("Masive management", "Fail try to enable alert", false, false, $info);
+		}
 		break;
 	case 'disable_alerts':
 		$id_alert_templates = (int) get_parameter ('id_alert_template_enabled', 0);
@@ -80,7 +89,16 @@ switch($action) {
 		foreach($id_enabled_alerts as $id_alert) {
 			$result = set_alerts_agent_module_disable ($id_alert, true);
 		}
-			print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'));
+		
+		print_result_message ($result, __('Successfully disabled'), __('Could not be disabled'));
+		
+		$info = 'Alert: ' . json_encode($id_disabled_alerts);	
+		if ($result) {
+			pandora_audit("Masive management", "Disaable alert", false, false, $info);
+		}
+		else {
+			pandora_audit("Masive management", "Fail try to Disable alert", false, false, $info);
+		}
 		break;
 	default:
 		$id_alert_templates = (int) get_parameter ('id_alert_template', 0);

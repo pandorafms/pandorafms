@@ -40,14 +40,15 @@ if (is_ajax ()) {
 			$alert_templates = get_agent_alerts_simple ($id_agents);
 			echo json_encode (index_array ($alert_templates, 'id_alert_template', 'template_name'));
 			return;
-		} else {
-        		$filter = '';
-        		foreach ($id_agents as $id_agent) {
-                		if ($filter != '') {
-                       			$filter .= ' OR ';
-                		}
-                		$filter .= 'id_agent=' . $id_agent;
-        		};
+		}
+		else {
+        	$filter = '';
+        	foreach ($id_agents as $id_agent) {
+                	if ($filter != '') {
+                       		$filter .= ' OR ';
+                	}
+                	$filter .= 'id_agent=' . $id_agent;
+        	};
 			$alert_compounds = get_alert_compounds ($filter, array('id', 'name'));
 			echo json_encode (index_array ($alert_compounds, 'id', 'name'));
 			return;
@@ -71,7 +72,7 @@ if ($add) {
 		$fires_min = get_parameter ('fires_min');
 		$fires_max = get_parameter ('fires_max');
 		
-		if($action > 0){
+		if ($action > 0) {
 			$agent_alerts = get_agent_alerts($id_agents);
 			$cont = 0;
 			$agent_alerts_id = array();
@@ -100,20 +101,25 @@ if ($add) {
 				
 			if (empty($agent_alerts_id) && empty($agent_alerts_id_compound)) {
 				print_result_message (false, '', __('Could not be added').". ".__('No alerts selected'));
-			} else {
+			}
+			else {
 				$results = true;
-				foreach($agent_alerts_id as $agent_alert_id){
+				foreach ($agent_alerts_id as $agent_alert_id) {
 					$result = add_alert_agent_module_action($agent_alert_id, $action, $options);
 					if($result === false)
 						$results = false;
 				}
 
-				foreach($agent_alerts_id_compound as $agent_alert_id_compound) {
+				foreach ($agent_alerts_id_compound as $agent_alert_id_compound) {
 					$result = add_alert_compound_action ($agent_alert_id_compound, $action, $options);
 					if($result === false)
 						$results = false;
 				}
 			
+				pandora_audit("Masive management", "Add alert action " . $id_agent, false, false, 'Agents: ' . 
+					json_encode($id_agents) . ' Alerts : ' . json_encode($agent_alerts) .
+					' Fires Min: ' . $fires_min . ' Fires Max: ' . $fires_max . ' Action: ' . $action);
+				
 				print_result_message ($results, __('Successfully added'), __('Could not be added'));
 			}
 		}
@@ -150,7 +156,8 @@ $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 
 if (empty($id_agents)) {
 	$alert_templates = '';
-} else {
+}
+else {
 	$alert_templates = get_agent_alerts_simple ($id_agents);
 }
 $table->data[2][0] = __('Alert templates');
@@ -161,7 +168,8 @@ $table->data[2][1] = print_select (index_array ($alert_templates, 'id_alert_temp
 
 if (empty($id_agents)) {
 	$alert_compounds = '';
-} else {
+}
+else {
 	$filter = '';
 	foreach ($id_agents as $id_agent) {
                 if ($filter != '') {

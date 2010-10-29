@@ -79,8 +79,10 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	
 	print_result_message ($contsuccess > 0,
 	__('Successfully deleted')."(".$contsuccess."/".$conttotal.")",
-	__('Could not be deleted'));	
+	__('Could not be deleted'));
 
+	
+	return (bool)($contsuccess > 0);
 }
 
 $id_group = (int) get_parameter ('id_group');
@@ -91,7 +93,16 @@ $id_alert_template = (int) get_parameter ('id_alert_template');
 $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
-	process_manage_delete ($id_alert_template, $id_agents, $module_names);
+	$result = process_manage_delete ($id_alert_template, $id_agents, $module_names);
+	
+	if ($result) {
+		pandora_audit("Masive management", "Delete alert ", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
+	}
+	else {
+		pandora_audit("Masive management", "Fail try to delete alert", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Template: ' . $id_alert_template . ' Module: ' . $module_names);
+	}
 }
 
 $groups = get_user_groups ();

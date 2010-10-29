@@ -1,3 +1,8 @@
+2010-10-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/fgraph.php: Do not propagate compressed data to dates in the
+	  future to make the baseline clearer.
+
 2010-10-29  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extensions/dbmanager.php, godmode/agentes/module_manager_editor.php,

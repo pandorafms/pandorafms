@@ -1467,7 +1467,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			if ($uncompressed_module) {
+			if ($uncompressed_module || ($timestamp > time ())) {
 				$chart[$timestamp]['sum'] = 0;
 				$chart[$timestamp]['min'] = 0;
 				$chart[$timestamp]['max'] = 0;
@@ -1485,7 +1485,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$chart[$timestamp]['alert'] = $alert_value;
 		$chart[$timestamp]['baseline'] = array_shift ($baseline_data);
 		if ($chart[$timestamp]['baseline'] == NULL) {
-			$baseline = 0;
+			$chart[$timestamp]['baseline'] = 0;
 		}
 	}
 	

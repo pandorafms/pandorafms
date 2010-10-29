@@ -58,17 +58,22 @@ if($modules_snmp_options != -1) {
 }
 
 
-if(in_array($option, array_keys($options_alerts))) {
+if (in_array($option, array_keys($options_alerts))) {
 	$tab = 'massive_alerts';
-}elseif(in_array($option, array_keys($options_agents))) {
+}
+elseif (in_array($option, array_keys($options_agents))) {
 	$tab = 'massive_agents';
-}elseif(in_array($option, array_keys($options_users))) {
+}
+elseif (in_array($option, array_keys($options_users))) {
 	$tab = 'massive_users';
-}elseif(in_array($option, array_keys($options_modules))) {
+}
+elseif (in_array($option, array_keys($options_modules))) {
 	$tab = 'massive_modules';
-}elseif(in_array($option, array_keys($options_policies))) {
+}
+elseif (in_array($option, array_keys($options_policies))) {
 	$tab = 'massive_policies';
-}else {
+}
+else {
 	$option = '';
 }
 
@@ -91,7 +96,7 @@ switch($tab) {
 }
 
 // Set the default option of the category
-if($option == ''){
+if ($option == '') {
 	$option = array_shift(array_keys($options));
 }
 

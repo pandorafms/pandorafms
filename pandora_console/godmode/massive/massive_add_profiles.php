@@ -29,31 +29,41 @@ require_once ('include/functions_alerts.php');
 
 $create_profiles = (int) get_parameter ('create_profiles');
 
-if($create_profiles) {
+if ($create_profiles) {
 	$profiles_id = get_parameter ('profiles_id', -1);
 	$groups_id = get_parameter ('groups_id', -1);
 	$users_id = get_parameter ('users_id', -1);
 	$n_added = 0;
 
-	if($profiles_id == -1 || $groups_id == -1 || $users_id == -1){
+	if ($profiles_id == -1 || $groups_id == -1 || $users_id == -1) {
 		$result = false;
-	}else{ 
-		foreach($profiles_id as $profile){
-			foreach($groups_id as $group){
-				foreach($users_id as $user){
+	}
+	else { 
+		foreach ($profiles_id as $profile) {
+			foreach ($groups_id as $group) {
+				foreach ($users_id as $user) {
 					$profile_data = get_db_row_filter ("tusuario_perfil", array("id_usuario" => $user, "id_perfil" => $profile, "id_grupo" => $group));
 					// If the profile doesnt exist, we create it
 					if ($profile_data === false) {
 						pandora_audit("User management",
 							"Added profile for user ".safe_input($user));
 						$return = create_user_profile ($user, $profile, $group);
-						if($return !== false){
+						if ($return !== false) {
 							$n_added ++;
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	if ($n_added > 0) {
+		pandora_audit("Masive management", "Add profiles", false, false,
+			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
+	}
+	else {
+		pandora_audit("Masive management", "Fail to try add profiles", false, false,
+			'Profiles: ' . 	json_encode($profiles_id) . ' Groups: ' . json_encode($groups_id) . 'Users: ' . json_encode($users_id));
 	}
 	
 	print_result_message ($n_added > 0,

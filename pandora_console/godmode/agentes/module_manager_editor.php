@@ -221,11 +221,15 @@ $unlink_policy = get_parameter('unlink_policy', 0);
 if($relink_policy) {
 	$result = relink_module_policy($id_agent_module);
 	print_result_message($result, 'Module relinked to the policy successful');
+	
+	pandora_audit("Agent management", "Re-link module " . $id_agent_module);
 }
 
 if($unlink_policy) {
 	$result = unlink_module_policy($id_agent_module);
 	print_result_message($result, 'Module unlinked from the policy successful');
+	
+	pandora_audit("Agent management", "Unlink module " . $id_agent_module);
 }
 
 switch ($moduletype) {

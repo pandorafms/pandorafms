@@ -168,6 +168,14 @@ if ($update) {
 	print_result_message ($success > 0,
 		__('Successfully updated')."(".$success."/".$count.")",
 		__('Could not be updated'));
+	
+	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);	
+	if ($success > 0) {
+		pandora_audit("Masive management", "Edit module", false, false, $info);
+	}
+	else {
+		pandora_audit("Masive management", "Fail try to edit module", false, false, $info);
+	}
 }
 
 $table->id = 'delete_table';

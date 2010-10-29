@@ -67,6 +67,15 @@ if ($delete_profiles) {
 		}
 	}
 	
+	if ($result) {
+		pandora_audit("Masive management", "Delete profile ", false, false,
+			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
+	}
+	else {
+		pandora_audit("Masive management", "Fail try to delete profile", false, false,
+			'Profiles: ' . json_encode($profiles_id) . ' Groups: ' . $groups_id . ' Users: ' . $users_id);
+	}
+	
 	print_result_message ($result,
 		__('Profiles deleted successfully'),
 		__('Profiles cannot be deleted'));

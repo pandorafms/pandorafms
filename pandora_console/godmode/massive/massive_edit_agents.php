@@ -52,90 +52,102 @@ $update_agents = get_parameter ('update_agents', 0);
 if ($update_agents) {
 	$values = array();
 	
-	if(get_parameter ('group', '') != -1)
+	if (get_parameter ('group', '') != -1)
 		$values['id_grupo'] = get_parameter ('group');
-	if(get_parameter ('interval', '') != '')
+	if (get_parameter ('interval', '') != '')
 		$values['intervalo'] = get_parameter ('interval');
-	if(get_parameter ('id_os', '') != -1)
+	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
-	if(get_parameter ('id_parent', '') != '')
+	if (get_parameter ('id_parent', '') != '')
 		$values['id_parent'] = get_parameter ('id_parent');
-	if(get_parameter ('server_name', '') != -1)
+	if (get_parameter ('server_name', '') != -1)
 		$values['server_name'] = get_parameter ('server_name');
-	if(get_parameter ('description', '') != '')
+	if (get_parameter ('description', '') != '')
 		$values['comentarios'] = get_parameter ('description');
-	if(get_parameter ('mode', '') != -1)
+	if (get_parameter ('mode', '') != -1)
 		$values['modo'] = get_parameter ('mode');
-	if(get_parameter ('disabled', '') != -1)
+	if (get_parameter ('disabled', '') != -1)
 		$values['disabled'] = get_parameter ('disabled');
-	if(get_parameter ('icon_path', '') != '')
+	if (get_parameter ('icon_path', '') != '')
 		$values['icon_path'] = get_parameter('icon_path');
-	if(get_parameter ('update_gis_data', -1) != -1)
+	if (get_parameter ('update_gis_data', -1) != -1)
 		$values['update_gis_data'] = get_parameter('update_gis_data');
-	if(get_parameter ('custom_id', '') != '')
+	if (get_parameter ('custom_id', '') != '')
 		$values['custom_id'] = get_parameter('custom_id');
-	if(get_parameter ('cascade_protection', -1) != -1)
+	if (get_parameter ('cascade_protection', -1) != -1)
 		$values['cascade_protection'] = get_parameter('cascade_protection');
-	if(get_parameter ('delete_conf', 0) != 0)
+	if (get_parameter ('delete_conf', 0) != 0)
 		$values['delete_conf'] = get_parameter('delete_conf');
 
 	$fields = get_db_all_fields_in_table('tagent_custom_fields');
 	
-	if($fields === false) $fields = array();
+	if ($fields === false) $fields = array();
 	
 	$id_agents = get_parameter('id_agents', false);
-	if(!$id_agents) {
+	if (!$id_agents) {
 		print_error_message(__('No agents selected'));
 		$id_agents = array();
-	} else{
-		if(empty($values) && empty($fields)){
+	}
+	else {
+		if (empty($values) && empty($fields)) {
 			print_error_message(__('No values changed'));
 			$id_agents = array();
 		}
 	}
 	
 	// CONF FILE DELETION
-	if(isset($values['delete_conf'])) {
+	if (isset($values['delete_conf'])) {
 		unset($values['delete_conf']);
 		$n_deleted = 0;
-		foreach($id_agents as $id_agent) {
+		foreach ($id_agents as $id_agent) {
 			$agent_md5 = md5(get_agent_name($id_agent));
 			@unlink ($config["remote_config"]."/md5/".$agent_md5.".md5");
 			$result = @unlink ($config["remote_config"]."/conf/".$agent_md5.".conf");
 			
 			$n_deleted += (int)$result;
 		}
-	print_result_message ($n_deleted > 0,
+		
+		
+		if ($n_deleted > 0) {
+			pandora_audit("Masive management", "Delete conf file " . $id_agent);
+		}
+		else {
+			pandora_audit("Masive management", "Try to delete conf file " . $id_agent);
+		}
+		
+		
+		print_result_message ($n_deleted > 0,
 			__('Configuration files deleted successfully').'('.$n_deleted.')',
 			__('Configuration files cannot be deleted'));
 	}
 	
-	if(empty($values) && empty($fields)){
+	if (empty($values) && empty($fields)) {
 		$id_agents = array();
 	}
 	
 	$n_edited = 0;
 	$result = false;
-	foreach($id_agents as $id_agent) {		
-		if(!empty($values)) {
+	foreach ($id_agents as $id_agent) {		
+		if (!empty($values)) {
 			$result = process_sql_update ('tagente',
 					 $values,
 					 array ('id_agente' => $id_agent));
 		}
 				
 		// Update Custom Fields
-		foreach($fields as $field) {
-			if(get_parameter_post ('customvalue_'.$field['id_field'], '') != '') {
+		foreach ($fields as $field) {
+			if (get_parameter_post ('customvalue_'.$field['id_field'], '') != '') {
 				$key = $field['id_field'];
 				$value = get_parameter_post ('customvalue_'.$field['id_field'], '');
 			
 				$old_value = get_db_all_rows_filter('tagent_custom_data', array('id_agent' => $id_agent, 'id_field' => $key));
 			
-				if($old_value === false) {
+				if ($old_value === false) {
 					// Create custom field if not exist
 					$result = process_sql_insert ('tagent_custom_data',
 						 array('id_field' => $key,'id_agent' => $id_agent, 'description' => $value));
-				}else {		
+				}
+				else {		
 					$result = process_sql_update ('tagent_custom_data',
 						 array('description' => $value),
 						 array('id_field' => $key,'id_agent' => $id_agent));
@@ -145,6 +157,16 @@ if ($update_agents) {
 		
 		$n_edited += (int)$result;
 	}
+	
+	
+	if ($n_edited > 0) {
+		pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
+	}
+	else {
+		pandora_audit("Masive management", "Try to update agent " . $id_agent, false, false, json_encode($fields));
+	}
+	
+	
 	print_result_message ($n_edited > 0,
 			__('Agents updated successfully').'('.$n_edited.')',
 			__('Agents cannot be updated'));
@@ -152,7 +174,7 @@ if ($update_agents) {
 }
 $id_group = 0;
 
-$groups = get_user_groups ();
+$groups = get_user_groups();
 
 $table->id = 'delete_table';
 $table->width = '95%';
@@ -328,7 +350,7 @@ $table->data = array ();
 
 $fields = get_db_all_fields_in_table('tagent_custom_fields');
 
-if($fields === false) $fields = array();
+if ($fields === false) $fields = array();
 
 foreach ($fields as $field) {
 	
@@ -336,7 +358,7 @@ foreach ($fields as $field) {
 		
 	$custom_value = get_db_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
-	if($custom_value === false) {
+	if ($custom_value === false) {
 		$custom_value = '';
 	}
 	
@@ -345,7 +367,7 @@ foreach ($fields as $field) {
 	array_push ($table->data, $data);
 }
 
-if(!empty($fields)) {
+if (!empty($fields)) {
 	toggle(print_table ($table, true), __('Custom fields'));
 }
 
@@ -424,7 +446,7 @@ $(document).ready (function () {
 				"id_agents[]" : idAgents
 				},
 				function (data, status) {
-					if(data == 0){ 
+					if (data == 0) { 
 						$("#delete_configurations").attr("style", "display: none");
 						$("#not_available_configurations").attr("style", "");
 					}
@@ -445,6 +467,7 @@ $(document).ready (function () {
 	});
 	
 	$("select#id_os").pandoraSelectOS ();
+	
 	$("#text-id_parent").autocomplete ("ajax.php",
 		{
 			scroll: true,
@@ -467,9 +490,11 @@ $(document).ready (function () {
 			delay: 200
 		}
 	);
+	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents"
 	});
+	
 	$("#id_group").pandoraSelectGroupAgentDisabled ({
 		agentSelect: "select#id_agents"
 	});

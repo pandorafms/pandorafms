@@ -91,11 +91,17 @@ function dbmgr_extension_main () {
 	if ($result === false) {
 		echo '<strong>An error has occured when querying the database.</strong><br />';
 		echo $error;
+		
+		pandora_audit("Extension DB inface", "Error in SQL", false, false, $sql);
+		
 		return;
 	}
 	
 	if (! is_array ($result)) {
 		echo "<strong>Output: <strong>".$result;
+		
+		pandora_audit("Extension DB inface", "SQL", false, false, $sql);
+		
 		return;
 	}
 	

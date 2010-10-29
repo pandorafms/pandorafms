@@ -167,7 +167,7 @@ Pandora_Windows_Service::pandora_init () {
  	/* Sleep if a startup delay was specified */
  	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
  	if (startup_delay > 0) {
-        pandoraLog ("Delaying startup %d seconds", startup_delay);
+        pandoraLog ("Delaying startup %d miliseconds", startup_delay);
         Sleep (startup_delay);
     }
 

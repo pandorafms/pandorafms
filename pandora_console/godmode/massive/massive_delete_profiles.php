@@ -44,23 +44,24 @@ if (is_ajax ()) {
 
 $delete_profiles = (int) get_parameter ('delete_profiles');
 
-if($delete_profiles) {
+if ($delete_profiles) {
 	$profiles_id = get_parameter ('profiles_id', -1);
 	$groups_id = get_parameter ('groups_id', -1);
 	$users_id = get_parameter ('users_id', -1);
 
 	if($profiles_id == -1 || $groups_id == -1 || $users_id == -1){
 		$result = false;
-	}else{ 
-		foreach($profiles_id as $profile){
-			foreach($groups_id as $group){
-				foreach($users_id as $id_up){
+	}
+	else { 
+		foreach($profiles_id as $profile) {
+			foreach($groups_id as $group) {
+				foreach($users_id as $id_up) {
 					$user = (string) get_db_value_filter ('id_usuario', 'tusuario_perfil', array('id_up' => $id_up));
 
 					pandora_audit("User management",
 						"Deleted profile for user ".safe_input($user));
 
-					$return = delete_user_profile ($user, $id_up);
+					$result = delete_user_profile ($user, $id_up);
 				}
 			}
 		}

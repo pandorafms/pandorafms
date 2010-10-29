@@ -1,3 +1,18 @@
+2010-10-29  Sancho Lerena <slerena@artica.es>
+
+    * win32/bin/util/mibs: Added default mibs for the small snmpagent tool.
+
+    * win32/bin/util/getsnmp.bat,
+    win32/bin/util/snmpget.exe: Added tool to get snmp info from the agent 
+    using tool from a module_exec.
+
+    * win32/installer/pandora.mpi: Updated installer to have snmpget and mibs
+    in the install process.
+
+    * win32/pandora_windows_service.cc: Fixed bug 3098165.
+
+    * win32/pandora.cc: Updated version
+
 2010-10-19  Junichi Satoh  <junichi@rworks.jp>
 
 	* unix/SunOS/make_solaris_package/prototype: Added nagios_plugin_wrapper.

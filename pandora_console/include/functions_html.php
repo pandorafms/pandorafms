@@ -420,6 +420,7 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	
 	if ($maxlength == 0)
 		$maxlength = 255;
+		
 	if ($size == 0)
 		$size = 10;
 
@@ -438,12 +439,13 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	
 	if (is_array ($attributes)) {
 		foreach ($attributes as $attribute => $attr_value) {
-			if (! in_array ($attribute,$valid_attrs)) {
+			if (! in_array ($attribute, $valid_attrs)) {
 				continue;
 			}
 			$output .= $attribute.'="'.$attr_value.'" ';
 		}
-	} else {
+	}
+	else {
 		$output .= trim ($attributes)." ";
 		$attributes = array ();
 	}
@@ -452,16 +454,25 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 	$attrs = array ("name" => "unnamed", "value" => "",
 		"id" => "text-".sprintf ('%04d', $idcounter),
 		"size" => "", "maxlength" => "");
-
+	
 	foreach ($attrs as $attribute => $default) {
 		if (array_key_exists ($attribute, $attributes)) {
 			continue;
 		} //If the attribute was already processed, skip
 		
+		/*
+		 * Remember, this next code have a $$ that for example there is a var as
+		 * $a = 'john' then $$a is a var $john .
+		 *
+		 * In this case is use for example for $name and $atribute = 'name' .
+		 * 
+		 */
+		
 		/* Exact operator because we want to show "0" on the value */
 		if ($$attribute !== '') {
 			$output .= $attribute.'="'.$$attribute.'" ';
-		} elseif ($default != '') {
+		}
+		elseif ($default != '') {
 			$output .= $attribute.'="'.$default.'" ';
 		}
 	}
@@ -515,6 +526,7 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
 function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
 	if ($maxlength == 0)
 		$maxlength = 255;
+	
 	if ($size == 0)
 		$size = 10;
 		

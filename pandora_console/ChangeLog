@@ -1,3 +1,12 @@
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_html.php: cleaned source code style. And added line
+	comments for to explain obfuscated $$ operation in function
+	"print_input_text_extended".
+	
+	* godmode/agentes/module_manager_editor_plugin.php: set the field
+	"plugin_parameters" with unlimited size. 
+
 2010-10-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Do not propagate compressed data to dates in the

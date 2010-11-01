@@ -2672,7 +2672,10 @@ function format_array_to_where_clause_sql ($values, $join = 'AND', $prefix = fal
 					$value = substr($value,1,strlen($value)-1);
 					$query .= sprintf ("%s < '%s'", $field, $value);
 				}
-			} 
+			}
+			else if ($value[0] == '%') {
+				$query .= sprintf ("%s LIKE '%s'", $field, $value);
+			}
 			else {
 				$query .= sprintf ("%s = '%s'", $field, $value);
 			}

@@ -1,5 +1,13 @@
 2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_db.php: in function "format_array_to_where_clause_sql"
+	added lines for test when is a string start with % for check with LIKE
+	operator.
+	
+	Fixes: #3098170
+
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_html.php: cleaned source code style. And added line
 	comments for to explain obfuscated $$ operation in function
 	"print_input_text_extended".

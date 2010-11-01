@@ -1,3 +1,8 @@
+2010-11-01  Sancho Lerena <slerena@artica.es>
+
+	* unix/tentacle_client: Updated tentacle client to 0.30 version, 
+	with support for HTTP proxies.
+
 2010-10-29  Sancho Lerena <slerena@artica.es>
 
     * win32/bin/util/mibs: Added default mibs for the small snmpagent tool.

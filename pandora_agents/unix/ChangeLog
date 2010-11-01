@@ -1,3 +1,21 @@
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	Merged bugfix from trunk
+	
+	* DEBIAN/postinst, DEBIAN/conffiles, DEBIAN/make_deb_package.sh: fixed the
+	warning of check md5sum on dir "plugins". Now the dir "plugins" is filled
+	postinstall with the package plugins in temp directory, the copy is
+	interactive for don't overwrite the user modified plugins of previous
+	installation.
+	
+	Fixes: #3081496
+
+	Merged bugfix from trunk
+	
+	* DEBIAN/make_deb_package.sh: fixed recursive infinite loop with try to
+	copy "temp_package" into "temp_package/usr/share/pandora_agent/temp_package"
+	again and again.
+
 2010-07-02  Sancho Lerena <slerena@artica.es>
 
         * pandora_agent.spec: Patches applied from the contribution     

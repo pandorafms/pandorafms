@@ -38,18 +38,34 @@ mkdir -p temp_package/etc/pandora/plugins
 mkdir -p temp_package/etc/init.d/
 mkdir -p temp_package/var/log/pandora/
 mkdir -p temp_package/usr/share/man/man1/
+mkdir -p temp_package/usr/share/pandora_agent/plugins
+mkdir -p temp_package/tmp
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
 chmod 755 -R temp_package/DEBIAN
 
-cp -aRf * temp_package/usr/share/pandora_agent/
+#Next lines is same to
+#cp -aRf * temp_package/usr/share/pandora_agent/
+#but don't copy recursive the temp_package into temp_package
+
+for item in `ls`
+do
+	if  [ $item != 'temp_package' ]
+	then
+		cp -aRf $item temp_package/usr/share/pandora_agent/
+	fi
+done
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 
 cp -aRf man/man1/* temp_package/usr/share/man/man1/
+
+#Create a temp file for to update files of plugins dir but don't crush dir.
+cp -aRf temp_package/usr/share/pandora_agent/plugins temp_package/tmp
+rm -rf temp_package/usr/share/pandora_agent/plugins/*
 
 echo "Remove the SVN files and other temp files."
 for item in `find temp_package`

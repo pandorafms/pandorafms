@@ -79,6 +79,7 @@ install -m 0444 man/man1/pandora_server.1.gz $RPM_BUILD_ROOT%{_mandir}/man1/
 install -m 0444 man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT%{_mandir}/man1/
 
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
+rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
 install -m 0644 util/pandora_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_server
 install -m 0640 conf/pandora_server.conf $RPM_BUILD_ROOT%{_sysconfdir}/pandora/

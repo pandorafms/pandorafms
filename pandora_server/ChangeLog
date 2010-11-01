@@ -1,3 +1,12 @@
+2010-11-01  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/control,
+	DEBIAN/make_deb_package.sh
+	pandora_server.spec
+	lib/PandoraFMS/Config.pm
+	pandora_server.redhat.spec:  Version updates and small changes for packaging
+	the 3.2 RC1 version in the next days/hours.
+
 2010-10-28  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_sync_db.pl: Added the Pandora Database Synchronization

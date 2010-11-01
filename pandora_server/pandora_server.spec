@@ -2,7 +2,7 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     3.2dev
+%define version     3.2RC1
 %define release     1
 
 Summary:            Pandora FMS Server
@@ -36,13 +36,6 @@ rm -rf $RPM_BUILD_ROOT
 %build
 
 %install
-#Uncomment this if you build from other RPM system (fedora, opensuse != 11..)
-#%define perl_version %(rpm -q --queryformat='%{VERSION}' perl)
-#export perl_version=`rpm -q --queryformat='%{VERSION}' perl`
-
-# Temporal hack for For SLES 11 only, warning
-#export perl_version=5.10.0
-#%define perl_version 5.10.0
 
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
@@ -75,6 +68,7 @@ cp -aRf man/man1/pandora_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf man/man1/tentacle_server.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
 rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/PandoraFMS
+rm -f $RPM_BUILD_ROOT%{prefix}/pandora_server/util/recon_scripts/PandoraFMS
 
 %clean
 rm -fr $RPM_BUILD_ROOT

@@ -44,7 +44,17 @@ echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
 chmod 755 -R temp_package/DEBIAN
 
-cp -aRf * temp_package/usr/share/pandora_agent/
+#Next lines is same to
+#cp -aRf * temp_package/usr/share/pandora_agent/
+#but don't copy recursive the temp_package into temp_package
+
+for item in `ls`
+do
+	if  [ $item != 'temp_package' ]
+	then
+		cp -aRf $item temp_package/usr/share/pandora_agent/
+	fi
+done
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
 cp -aRf pandora_exec temp_package/usr/bin/

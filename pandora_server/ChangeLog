@@ -1,3 +1,9 @@
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/make_deb_package.sh: fixed recursive infinite loop with try to
+	copy "temp_package" into "temp_package/usr/share/pandora_agent/temp_package"
+	again and again.
+
 2010-11-01  Sancho Lerena <slerena@artica.es>
 
 	* DEBIAN/control,

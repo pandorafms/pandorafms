@@ -66,7 +66,7 @@ push_table_simple ($data, 'plugin_2');
 $data = array ();
 $data[0] = __('Plugin parameters');
 $data[0] .= print_help_icon ('plugin_parameters', true);
-$data[1] = print_input_text ('plugin_parameter', $plugin_parameter, '', 255, 255, true, $disabledBecauseInPolicy);
+$data[1] = print_input_text ('plugin_parameter', $plugin_parameter, '', 255, '', true, $disabledBecauseInPolicy);
 $table_simple->colspan['plugin_3'][1] = 3;
 
 push_table_simple ($data, 'plugin_3');

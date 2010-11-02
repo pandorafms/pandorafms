@@ -33,8 +33,8 @@ my $target_group = $ARGV[1]; # Defined by user
 my $create_incident = $ARGV[2]; # Defined by user
 
 # Used Custom Fields in this script
-my $target_network = $ARGV[3]; # Defined by user
-my $target_community = $ARGV[4]; # Defined by user
+my $target_network = $ARGV[3]; # Filed1 defined by user
+my $target_community = $ARGV[4]; # Field2 defined by user
 # Unused Custom Fields in this script
 # my $field3 = $ARGV[5]; # Defined by user
 # my $field4 = $ARGV[6]; # Defined by user
@@ -55,7 +55,11 @@ sub show_help {
 	print "\nSpecific Pandora FMS SNMP Recon Plugin for SNMP device autodiscovery\n";
 	print "(c) Artica ST 2010 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
-	print "   snmp_recon_app.pl <task_id> <group_id> <create_incident_flag> <network> <snmp_community> \n\n";
+	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2>\n\n";
+	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
+	print " * custom_field2 = snmp_community. \n\n";
+	print " Additional information:\nWhen the script is called from a recon task, 'task_id' parameter is automatically filled, ";
+	print "group_id and create_incident_flag are passed from interface form combos and custom fields manually filled.\n\n\n";
 	exit;
 }
 
@@ -113,19 +117,20 @@ sub get_snmp_response ($$$) {
 ##########################################################################
 sub process_module_snmp ($$$$$$$$$){
 	
-	my ($dbh, $target_community, $addr, $oid, $type, $module_name, $module_type, $module_description, $conf) = @_;
+	my ($dbh, $target_community, $addr, $oid, $type, $module_name, $module_type_name, $module_description, $conf) = @_;
 	
 	my %parameters;
-			
-	$parameters{'id_tipo_modulo'} = $module_type;
-	$parameters{'nombre'} = $module_name;
+	
+	# Obtain the type id from the type name
+	$parameters{'id_tipo_modulo'} = get_module_id ($dbh,$module_type_name);
+	$parameters{'nombre'} = safe_input($module_name);
 	$parameters{'descripcion'} = $module_description;
 	$parameters{'id_agente'} = get_agent_from_addr ($dbh, $addr);
 	$parameters{'ip_target'} = $addr;
 	$parameters{'tcp_send'} = 1;
 	$parameters{'snmp_community'} = $target_community;
 	$parameters{'snmp_oid'} = $oid;
-			
+
 	# id_modulo = 2 for snmp modules
 	$parameters{'id_modulo'} = 2;	
 
@@ -235,16 +240,16 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	pandora_event (\%conf, "[RECON] New SNMP host [$host_name] detected on network [" . $target_network . ']',                      $target_group, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $dbh);
 
 	# SysUptime
-	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.1.3.0", "ticks", "SysUptime", "generic_data_string", "System uptime reported by SNMP", $conf);
+	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.1.3.0", "ticks", "SysUptime", "remote_snmp_string", "System uptime reported by SNMP", $conf);
 
 	# SysName
-	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.1.5.0", "", "SysName", "generic_data_string", "System name reported by SNMP", $conf);
+	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.1.5.0", "", "SysName", "remote_snmp_string", "System name reported by SNMP", $conf);
 
 	# Local system total traffic 
 	
-	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.4.3.0", "", "Local InReceives", "generic_data_inc", "System local incoming traffic (bytes)", $conf);
+	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.4.3.0", "", "Local InReceives", "remote_snmp_inc", "System local incoming traffic (bytes)", $conf);
 	
-	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.4.10.0", "", "Local OutRequests", "generic_data_inc", "System local outgoing traffic (bytes)", $conf);
+	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.4.10.0", "", "Local OutRequests", "remote_snmp_inc", "System local outgoing traffic (bytes)", $conf);
 
 	# Process interface list
 	# Get interface limit
@@ -260,11 +265,11 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 		# Remove forbidden caracters
 		$interface =~ s/\"|\n|\<|\>|\&|\[|\]//g;
 				
-		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "generic_proc", "Operative status for $interface at position $ax", $conf);
+		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_icmp_proc", "Operative status for $interface at position $ax", $conf);
 			
-		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.10.$ax", "", "$interface Inbound bps", "generic_data_inc", "Incoming traffic for $interface", $conf);
+		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.10.$ax", "", "$interface Inbound bps", "remote_snmp_inc", "Incoming traffic for $interface", $conf);
 		
-		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.16.$ax", "", "$interface Outbound bps", "generic_data_inc", "Outgoing traffic for $interface", $conf);
+		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.16.$ax", "", "$interface Outbound bps", "remote_snmp_inc", "Outgoing traffic for $interface", $conf);
 						
 		# Do a grace sleep to avoid destination server ban me
 		sleep 1;

@@ -10,6 +10,8 @@
 
 	* extensions/pandora_logs.php: Fixed html typos.
 
+	* include/config_process.php: Updated build to prepare 3.2 RC1 release.
+
 2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_db.php: in function "format_array_to_where_clause_sql"

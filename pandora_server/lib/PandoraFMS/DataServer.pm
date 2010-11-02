@@ -403,7 +403,7 @@ sub process_module_data ($$$$$$$$$) {
 		$dbh) = @_;
 
 	# Get agent data
-	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', $agent_name);
+	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', safe_input($agent_name));
 	if (! defined ($agent)) {
 		logger($pa_config, "Invalid agent '$agent_name' for module '$module_name'.", 3);
 		return;
@@ -425,7 +425,7 @@ sub process_module_data ($$$$$$$$$) {
 
 	# Get module data or create it if it does not exist
 	$ModuleSem->down ();
-	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
+	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
 		# Do not auto create modules
 		if ($pa_config->{'autocreate'} ne '1') {
@@ -453,7 +453,7 @@ sub process_module_data ($$$$$$$$$) {
 		pandora_create_module ($pa_config, $agent->{'id_agente'}, $module_id, $module_name,
 			$module_conf->{'max'}, $module_conf->{'min'}, $module_conf->{'post_process'},
 			$module_conf->{'descripcion'}, $module_conf->{'module_interval'}, $dbh);
-		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, $module_name);
+		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND nombre = ?', $agent->{'id_agente'}, safe_input($module_name));
 		if (! defined ($module)) {
 			logger($pa_config, "Could not create module '$module_name' for agent '$agent_name'.", 3);
 			$ModuleSem->up ();

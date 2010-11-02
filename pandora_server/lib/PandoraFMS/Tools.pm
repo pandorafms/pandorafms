@@ -59,6 +59,8 @@ our @EXPORT = qw(
 	pandora_ping
 	pandora_ping_latency
     ticks_totime
+    safe_input
+    safe_output
 );
 
 ##########################################################################
@@ -75,6 +77,81 @@ sub pandora_trash_ascii {
 		$output = $output.chr(int(rand(25)+97));
 	}
 	return $output
+}
+
+##########################################################################
+## Convert the $value encode in html entity to clear char string.
+##########################################################################
+sub safe_input($) {
+	my $value = shift;
+
+	$value = encode_entities ($value);
+		
+	#//Replace the character '\' for the equivalent html entitie
+	$value =~ s/\\/&#92;/gi;
+
+    #// First attempt to avoid SQL Injection based on SQL comments
+    #// Specific for MySQL.
+	$value =~ s/\/\*/&#47;&#42;/gi;
+	$value =~ s/\*\//&#42;&#47;/gi;
+	
+	#//Replace ( for the html entitie
+	$value =~ s/\(/&#40;/gi;
+	
+	#//Replace ( for the html entitie
+	$value =~ s/\)/&#41;/gi;	
+	
+	#//Replace some characteres for html entities
+	for (my $i=0;$i<33;$i++) {
+		my $pattern = chr($i);
+		my $hex = ascii_to_html($i);
+		$value =~ s/$pattern/$hex/gi;		
+	}
+	
+	return $value;
+}
+
+##########################################################################
+## Convert the html entities to value encode to rebuild char string.
+##########################################################################
+sub safe_output($) {
+	my $value = shift;
+
+	$value = decode_entities ($value);
+		
+	#//Replace the character '\' for the equivalent html entitie
+	$value =~ s/&#92;/\\/gi;
+
+    #// First attempt to avoid SQL Injection based on SQL comments
+    #// Specific for MySQL.
+	$value =~ s/&#47;&#42;/\/\*/gi;
+	$value =~ s/&#42;&#47;/\*\//gi;
+	
+	#//Replace ( for the html entitie
+	$value =~ s/&#40;/\(/gi;
+	
+	#//Replace ( for the html entitie
+	$value =~ s/&#41;/\)/gi;	
+	
+	#//Replace some characteres for html entities
+	for (my $i=0;$i<33;$i++) {
+		my $pattern = chr($i);
+		my $hex = ascii_to_html($i);
+		$value =~ s/$hex/$pattern/gi;		
+	}
+	
+	return $value;
+}
+
+##########################################################################
+# SUB ascii_to_html (string)
+# Convert an ascii string to hexadecimal
+##########################################################################
+
+sub ascii_to_html($) {
+	my $ascii = shift;
+	
+	return "&#x".substr(unpack("H*", pack("N", $ascii)),6,3).";";
 }
 
 

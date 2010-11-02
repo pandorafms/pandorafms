@@ -20,6 +20,7 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+use PandoraFMS::Tools;	
 
 require Exporter;
 
@@ -101,7 +102,7 @@ sub get_action_id ($$) {
 sub get_agent_id ($$) {
 	my ($dbh, $agent_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", $agent_name, $agent_name);
+	my $rc = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ? OR direccion = ?", safe_input($agent_name), $agent_name);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -113,7 +114,7 @@ sub get_server_id ($$$) {
 
 	my $rc = get_db_value ($dbh, "SELECT id_server FROM tserver
 					WHERE name = ? AND server_type = ?",
-					$server_name, $server_type);
+					safe_input($server_name), $server_type);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -123,7 +124,7 @@ sub get_server_id ($$$) {
 sub get_group_id ($$) {
 	my ($dbh, $group_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id_grupo FROM tgrupo WHERE nombre = ?", $group_name);
+	my $rc = get_db_value ($dbh, "SELECT id_grupo FROM tgrupo WHERE nombre = ?", safe_input($group_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -163,7 +164,7 @@ sub get_module_name ($$) {
 sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", $module_name, $agent_id);
+	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", safe_input($module_name), $agent_id);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -173,7 +174,7 @@ sub get_agent_module_id ($$$) {
 sub get_template_id ($$) {
 	my ($dbh, $template_name) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", $template_name);
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -202,7 +203,7 @@ sub is_group_disabled ($$) {
 sub get_module_id ($$) {
 	my ($dbh, $module_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", $module_name);
+	my $rc = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", safe_input($module_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -212,7 +213,7 @@ sub get_module_id ($$) {
 sub get_plugin_id ($$) {
 	my ($dbh, $plugin_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id FROM tplugin WHERE name = ?", $plugin_name);
+	my $rc = get_db_value ($dbh, "SELECT id FROM tplugin WHERE name = ?", safe_input($plugin_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -226,7 +227,7 @@ sub get_module_group_id ($$) {
 		return 0;
 	}
 	
-	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", $module_group_name);
+	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -245,7 +246,7 @@ sub get_nc_profile_name ($$) {
 sub get_profile_id ($$) {
 	my ($dbh, $profile_name) = @_;
 
-	my $rc = get_db_value ($dbh, "SELECT id_perfil FROM tperfil WHERE name = ?", $profile_name);
+	my $rc = get_db_value ($dbh, "SELECT id_perfil FROM tperfil WHERE name = ?", safe_input($profile_name));
 	return defined ($rc) ? $rc : -1;
 }
 

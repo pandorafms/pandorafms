@@ -1,3 +1,17 @@
+2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* ChangeLog: uploaded lost lines of my commit of yesterday.
+
+2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/conffiles, DEBIAN/make_deb_package.sh: fixed the
+	warning of check md5sum on dir "plugins". Now the dir "plugins" is filled
+	postinstall with the package plugins in temp directory, the copy is
+	interactive for don't overwrite the user modified plugins of previous
+	installation.
+	
+	Fixes: #3081496
+
 2010-10-19  Junichi Satoh  <junichi@rworks.jp>
 
 	* SunOS/make_solaris_package/prototype: Added nagios_plugin_wrapper.

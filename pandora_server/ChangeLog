@@ -1,5 +1,15 @@
 2010-11-02  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Core.pm
+	lib/PandoraFMS/ReconServer.pm
+	lib/PandoraFMS/DataServer.pm
+	lib/PandoraFMS/Tools.pm: Fixed insert db operations
+	in server to store the html entities. This improves
+	fix bug 3096436
+
+2010-11-02  Sergio Martin <sergio.martin@artica.es>
+
 	* util/recon_scripts/snmpdevices.pl: Fixed a missed typo
 
 2010-11-02  Sergio Martin <sergio.martin@artica.es>

@@ -1090,7 +1090,7 @@ sub pandora_create_module ($$$$$$$$$$) {
 	$post_process = 0 if ($post_process eq '');
 
 	my $module_id = db_insert($dbh, 'INSERT INTO tagente_modulo (`id_agente`, `id_tipo_modulo`, `nombre`, `max`, `min`, `post_process`, `descripcion`, `module_interval`, `id_modulo`)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, $module_name, $max, $min, $post_process, $description, $interval);
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
 	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $agent_id);
 	return $module_id;
 }
@@ -1134,12 +1134,12 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	# Test if the optional positional parameters are defined or GIS is disabled
 	if (!defined ($timezone_offset) ) {
 		$agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, $description, $group_id, $os_id, safe_input($server_name), $interval, $parent_id);
 	}
 	else {
 		 $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
-				`timezone_offset`, `modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', $agent_name, $address, 
-				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset);	
+				`timezone_offset`, `modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, 
+				 $description, $group_id, $os_id, safe_input($server_name), $interval, $parent_id, $timezone_offset);	
 	}
 	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
 		if (!defined($altitude)) {

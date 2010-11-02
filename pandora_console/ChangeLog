@@ -1,3 +1,8 @@
+2010-11-02  Sergio Martin <sergio.martin@artica.es>
+
+	* pandoradb_data.sql: Changed several spaces and parentheses
+	in the insert data script to their html entities.
+
 2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/javascript/jquery.ui.datepicker.js,

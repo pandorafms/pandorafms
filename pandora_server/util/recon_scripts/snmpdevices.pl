@@ -265,7 +265,7 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 		# Remove forbidden caracters
 		$interface =~ s/\"|\n|\<|\>|\&|\[|\]//g;
 				
-		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_icmp_proc", "Operative status for $interface at position $ax", $conf);
+		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.8.$ax", "interface", "$interface Status", "remote_snmp_proc", "Operative status for $interface at position $ax", $conf);
 			
 		process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.2.2.1.10.$ax", "", "$interface Inbound bps", "remote_snmp_inc", "Incoming traffic for $interface", $conf);
 		

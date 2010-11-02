@@ -1,5 +1,9 @@
 2010-11-02  Sergio Martin <sergio.martin@artica.es>
 
+	* util/recon_scripts/snmpdevices.pl: Fixed a missed typo
+
+2010-11-02  Sergio Martin <sergio.martin@artica.es>
+
 	* util/recon_scripts/snmpdevices.pl: Fixed a module types bug and
 	html entities codification
 

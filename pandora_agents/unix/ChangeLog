@@ -1,3 +1,8 @@
+2010-11-02  Raul Mateos  <raulofpandora@gmail.com>
+
+	* tentacle_client: Fixed year from last commit. Converted some spaces
+	to tab.
+
 2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* ChangeLog: uploaded lost lines of my commit of yesterday.
@@ -16,7 +21,7 @@
 
 	* SunOS/make_solaris_package/prototype: Added nagios_plugin_wrapper.
 
-2010-10-15  SAncho Lerena <slerena@artica.es>
+2010-10-15  Sancho Lerena <slerena@artica.es>
 
 	* plugins/nagios_plugin_wrapper: Added new plugin.
 

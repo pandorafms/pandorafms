@@ -1,3 +1,8 @@
+2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/agentes/ver_agente.php: fixed the ajax request for
+	"get_agent_modules_json" with new safe_input.
+
 2010-11-01  Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

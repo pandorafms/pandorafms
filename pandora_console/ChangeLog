@@ -1,3 +1,11 @@
+2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/javascript/jquery.ui.datepicker.js,
+	include/javascript/jquery.ui.dialog.js,
+	include/javascript/jquery.ui.draggable.js,
+	include/javascript/jquery.timeentry.js: fixed end of lines that it haven't
+	semicolon end char.
+
 2010-11-02  Raúl Mateos <raulofpandora@gmail.com>
 
 	* extensions/pandora_logs.php: Fixed html typos.

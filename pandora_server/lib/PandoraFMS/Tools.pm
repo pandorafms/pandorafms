@@ -369,8 +369,8 @@ sub limpia_cadena {
     my $micadena;
     $micadena = $_[0];
 	if (defined($micadena)){
-    	$micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]/ /g;
-    	$micadena =~ s/[\n\l\f]/ /g;
+    	$micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]//g;
+    	$micadena =~ s/[\n\l\f]//g;
     	return $micadena;
 	} else {
 		return "";

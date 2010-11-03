@@ -1164,10 +1164,9 @@ function string2image($string, $width, $height, $fontsize = 3,
 **/
 
 function check_sql ($sql){
-
         // We remove "*" to avoid things like SELECT * FROM tusuario
 
-        if (preg_match("/\*|DELETE|DROP|ALTER|MODIFY|UNION|password|pass|INSERT|UPDATE/", $sql)){
+        if (preg_match("/\*|delete|drop|alter|modify|union|password|pass|insert|update/i", $sql)){
                 return "";
         }
         return $sql;

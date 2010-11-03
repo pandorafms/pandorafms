@@ -1968,29 +1968,37 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			if ($content['treport_custom_sql_id'] != 0) {
-				$sql = safe_output (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
+				$sql = safe_output_html (get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $content['treport_custom_sql_id'])));
 			}
 			else {
-				$sql = safe_output ($content['external_source']);
+				$sql = safe_output_html ($content['external_source']);
 			}
 
             // Do a security check on SQL coming from the user
             $sql = check_sql ($sql);
-
-			$result = get_db_all_rows_sql($sql);
-			if ($result === false) {
-				$result = array();
-			}
 			
-			if (isset($result[0])) {
-				if (count($result[0]) > count($table2->head)) {
-					$table2->head = array_pad($table2->head, count($result[0]), '&nbsp;');
+			if($sql != '') {
+				$result = get_db_all_rows_sql($sql);
+				if ($result === false) {
+					$result = array();
+				}
+				
+				if (isset($result[0])) {
+					if (count($result[0]) > count($table2->head)) {
+						$table2->head = array_pad($table2->head, count($result[0]), '&nbsp;');
+					}
+				}
+				
+				$table2->data = array();
+				foreach ($result as $row) {
+					array_push($table2->data, $row);
 				}
 			}
-			
-			$table2->data = array();
-			foreach ($result as $row) {
-				array_push($table2->data, $row);
+			else {
+				$table2->data = array();
+				array_push($table2->data, array("id_user" => "<div class='nf'>[".__('Illegal query')."]<br>".
+				__('Due security restrictions, there are some tokens or words you cannot use').
+				': *, delete, drop, alter, modify, union, password, pass, insert '.__('or')." update.</div>"));
 			}
 			
 			$cellContent = print_table($table2, true);

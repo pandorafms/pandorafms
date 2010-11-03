@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -120,6 +120,9 @@ function copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent, $force
  * @return True if the module was deleted. False if not.
  */
 function delete_agent_module ($id_agent_module) {
+	if(!$id_agent_module) 
+		return false;
+		
 	$where = array ('id_agent_module' => $id_agent_module);
 	
 	enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_agent_module), get_agentmodule_name($id_agent_module)));

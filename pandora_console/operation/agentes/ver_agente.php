@@ -111,7 +111,7 @@ if (is_ajax ()) {
 		
 		$result = array();
 		foreach($nameModules as $nameModule) {
-			$result[] = $nameModule['nombre'];
+			$result[] = safe_output($nameModule['nombre']);
 		}
 		
 		echo json_encode($result);
@@ -127,7 +127,7 @@ if (is_ajax ()) {
 		
 		if ($agentName != null) {
 				$search = array();
-				$search['name'] = $agentName;
+				$search['name'] = safe_output($agentName);
 		}
 		else
 			$search = false;

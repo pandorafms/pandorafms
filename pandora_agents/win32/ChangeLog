@@ -1,3 +1,7 @@
+2010-11-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/util/tentacle_client.exe: Updated the tentacle client.
+
 2010-10-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc: We need more information on error

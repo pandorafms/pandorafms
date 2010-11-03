@@ -1,5 +1,10 @@
 2010-11-03  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_update_version.sh: Fixed the regular expression that matches
+	  the InstallVersion token.
+
+2010-11-03  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora_update_version.sh: Update the InstallJammer mpi file.
 
 2010-09-22  Sancho Lerena <slerena@artica.es>

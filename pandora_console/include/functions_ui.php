@@ -431,14 +431,14 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	$data = array ();
 	
 	if (($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) && (!$compound)) {
-		$policyInfo = isAlertInPolicy($alert['id_agent_module'], $alert['id_alert_template'], false);
+		$policyInfo = isAlertInPolicy2($alert['id'], false);
 		if ($policyInfo === false)
 			$data[$index['policy']] = '';
 		else {
 			$img = 'images/policies.png';
 				
-			$data[$index['policy']] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
-				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
+			$data[$index['policy']] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
+				print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
 	}

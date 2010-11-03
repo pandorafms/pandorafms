@@ -721,7 +721,7 @@ if ($create_module) {
 
 // MODULE DELETION
 // =================
-if ($delete_module){ // DELETE agent module !
+if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
 	$module_data = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_borrar_modulo);
 	$id_grupo = (int) dame_id_grupo ($id_agente);

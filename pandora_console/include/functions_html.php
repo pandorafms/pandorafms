@@ -1241,4 +1241,120 @@ function html2rgb($htmlcolor)
         return false;
 	}
 }
+
+/**
+ * Print a magic-ajax control to select the module.
+ * 
+ * @param string $name The name of ajax control, by default is "module".
+ * @param string $default The default value to show in the ajax control.
+ * @param array $id_agents The array list of id agents as array(1,2,3), by default is false and the function use all agents (if the ACL desactive).
+ * @param bool $ACL Filter the agents by the ACL list of user.
+ * @param string $scriptResult The source code of script to call, by default is
+ * empty. And the example is:
+ * 		function (e, data, formatted) {
+ *			...
+ *		}
+ *
+ * 		And the formatted is the select item as string.
+ * 
+ * @param array $filter Other filter of modules.
+ * @param bool $return If it is true return a string with the output instead to echo the output.
+ * 
+ * @return mixed If the $return is true, return the output as string.
+ */
+function print_autocomplete_modules($name = 'module', $default = '', $id_agents = false, $ACL = true, $scriptResult = '', $filter = array(), $return = false) {
+	global $config;
+	
+	if ($id_agents === false) {
+		$groups = array();
+		if ($ACL) {
+			$groups = get_user_groups($config['id_user'], "AW", false);
+			$groups = array_keys($groups);
+			
+			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
+		}
+		else {
+			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente');
+		}
+		
+		if ($agents === false) $agents = array();
+		
+		$id_agents = array();
+		foreach ($agents as $agent) {
+			$id_agents[] = $agent['id_agente'];
+		}
+	}
+	else {
+		if ($ACL) {
+			$groups = get_user_groups($config['id_user'], "AW", false);
+			$groups = array_keys($groups);
+			
+			$agents = get_db_all_rows_sql('SELECT id_agente FROM tagente WHERE id_grupo IN (' . implode(',', $groups) . ')');
+			
+			if ($agents === false) $agents = array();
+		
+			$id_agentsACL = array();
+			foreach ($agents as $agent) {
+				if (array_search($agent['id_agente'], $id_agents) !== false) {
+					$id_agentsACL[] = $agent['id_agente']; 
+				}
+			}
+			
+			$id_agents = $id_agentsACL;
+		}
+	}
+	
+	ob_start();
+	
+	require_jquery_file ('autocomplete');
+	
+	?>
+	<script type="text/javascript">
+		$(document).ready (function () {		
+			$("#text-<?php echo $name; ?>").autocomplete(
+				"ajax.php",
+				{
+					minChars: 2,
+					scroll:true,
+					extraParams: {
+						page: "include/ajax/module",
+						search_modules: 1,
+						id_agents: '<?php echo json_encode($id_agents); ?>',
+						other_filter: '<?php echo json_encode($filter); ?>'
+					},
+					formatItem: function (data, i, total) {
+						if (total == 0)
+							$("#text-<?php echo $name; ?>").css ('background-color', '#cc0000');
+						else
+							$("#text-<?php echo $name; ?>").css ('background-color', '');
+						
+						if (data == "")
+							return false;
+						
+						return data[0];
+					},
+					delay: 200
+				}
+			);
+
+			$("#text-<?php echo $name; ?>").result (
+				<?php echo $scriptResult; ?>
+			);
+		});
+	</script>
+	<?php
+	
+	print_input_text_extended ($name, $default, 'text-' . $name, '', 30, 100, false, '',
+		array('style' => 'background: url(images/lightning_blue.png) no-repeat right;'));
+	echo '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search the module.") . '</span></a>';
+
+	$output = ob_get_clean();
+	
+	if ($return) {
+		return $output;
+	}
+	else {
+		echo $output;
+	}
+}
 ?>

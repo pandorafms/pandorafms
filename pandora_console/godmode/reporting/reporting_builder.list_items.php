@@ -216,21 +216,12 @@ foreach ($items as $item) {
 	
 	$row[4] = human_time_description_raw($item['period']);
 	
-	 //. '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two<br><br><br>characters to search") . '</span></a>';
-	
 	if ($item['description'] == '') {
 		$row[5] = '-';
 	}
 	else {
 		$row[5] = printTruncateText($item['description'], 25, true, true);
 	}
-	
-//	if ($item['id_gs'] == null) {
-//		$row[5] = '-';
-//	}
-//	else {
-//		$row[5] = get_db_value_filter('name', 'tgraph', array('id_graph' => $item['id_gs']));
-//	}
 	
 	$row[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=edit&id_report=' . $idReport . '&id_item=' . $item['id_rc'] . '"><img src="images/wrench_orange.png" title="' . __('Edit') . '" /></a>';
 	$row[6] .= '&nbsp;';

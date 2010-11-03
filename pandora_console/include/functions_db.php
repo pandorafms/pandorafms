@@ -2752,8 +2752,7 @@ function get_agent_status ($id_agent = 0) {
 		$status = get_db_value_filter ('COUNT(*)',
 			'tagente',
 			array ('id_agente' => (int) $id_agent,
-				'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time,
-				'UNIX_TIMESTAMP(ultimo_contacto_remoto) + intervalo * 2 > '.$time));
+				'UNIX_TIMESTAMP(ultimo_contacto) + intervalo * 2 > '.$time));
 		if (! $status)
 			return -1;
 	}

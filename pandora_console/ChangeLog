@@ -1,3 +1,17 @@
+2010-11-03  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Updated build
+
+	* include/config_process.php: Updated build.
+
+	* include/functions_db.php: Fixed the way takes agent status for visual maps,
+	was a wrong filter on remote_contact timestamp, that info is not used to
+	calculate agent unknown status !.
+
+	* index.php: develop mode set to 0
+
+	* operation/snmpconsole/snmp_view.php: Removed a notice for a noninit var (again)
+
 2010-11-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_reporting.php: Order results before calculating

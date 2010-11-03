@@ -295,7 +295,9 @@ $idx = 0;
 if ($traps !== false) {
 	foreach ($traps as $trap) {
 		$data = array ();
-		
+		if (empty($trap["description"])){
+			$trap["description"]="";
+		}		
 		$severity = enterprise_hook ('get_severity', array ($trap));
 		if ($severity === ENTERPRISE_NOT_HOOK) {
 			$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
@@ -372,6 +374,7 @@ if ($traps !== false) {
 	
 		//Actions
 		$data[8] = "";
+		
 		if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
 			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
 		}

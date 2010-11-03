@@ -37,6 +37,7 @@ CONSOLE_DB_FILE="$CODE_HOME/pandora_console/pandoradb_data.sql"
 CONSOLE_FILE="$CODE_HOME/pandora_console/include/config_process.php"
 AGENT_UNIX_FILE="$CODE_HOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODE_HOME/pandora_agents/win32/pandora.cc"
+AGENT_WIN_MPI_FILE="$CODE_HOME/pandora_agents/win32/installer/pandora.mpi"
 
 # Update version in spec files
 function update_spec_version {
@@ -96,6 +97,9 @@ sed -e "s/\s*use\s*constant\s*AGENT_VERSION =>.*/use constant AGENT_VERSION => '
 sed -e "s/\s*use\s*constant\s*AGENT_BUILD =>.*/use constant AGENT_BUILD => '$BUILD';/" "$AGENT_UNIX_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_UNIX_FILE"
 echo "Updating Pandora Windows Agent version..."
 sed -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_FILE"
+sed -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
+sed -n "1h;1!H;\${;g;s/InstallVersion[\r\n]{.*}/InstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 
 rm -f "$TEMP_FILE"
 

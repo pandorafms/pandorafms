@@ -99,7 +99,8 @@ echo "Updating Pandora Windows Agent version..."
 sed -e "s/\s*#define\s*PANDORA_VERSION\s*.*/#define PANDORA_VERSION (\"$VERSION(Build $BUILD)\")/" "$AGENT_WIN_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_FILE"
 sed -e "s/{Pandora FMS Windows Agent v.*}/{Pandora FMS Windows Agent v$VERSION}/" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 NUMERIC_VERSION=$(echo $VERSION | sed -e "s/\([0-9]*\.[0-9]*\).*/\1/")
-sed -n "1h;1!H;\${;g;s/InstallVersion[\r\n]{\S*}/InstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+sed -n "1h;1!H;\${;g;s/[\r\n]InstallVersion[\r\n]{\S*}/\nInstallVersion\n{$NUMERIC_VERSION.0.0}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
+sed -n "1h;1!H;\${;g;s/[\r\n]Version[\r\n]{[^\n\r]*}/\nVersion\n{$BUILD}/g;p;}" "$AGENT_WIN_MPI_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$AGENT_WIN_MPI_FILE"
 
 rm -f "$TEMP_FILE"
 

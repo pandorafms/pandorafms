@@ -1,3 +1,10 @@
+2010-11-03  Raul Mateos <raulofpandora@gmail.com>
+
+	* index.php: Updated year :-D
+
+	* general/footer.php, header.php: Updated year. Fixed some HTML strings
+	to improve W3C validation. A lot of work to do in this area.
+
 2010-11-03  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_html.php: added the function

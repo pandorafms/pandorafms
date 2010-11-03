@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,14 +19,14 @@ $msg_cnt = 0;
 ?>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; padding:0px;" border="0">
 	<tr>
-		<td rowspan=2>
+		<td rowspan="2">
 
 		<a href="index.php?sec=main">
 <?php
 		if (!defined ('PANDORA_ENTERPRISE')){
-			echo "<img border=0 src='images/pandora_header_logo.png' alt='Pandora FMS Opensource'>";
+			echo "<img border='0' src='images/pandora_header_logo.png' alt='Pandora FMS Opensource'>";
 		} else {
-			echo "<img border=0 src='images/pandora_header_logo_enterprise.png' alt='Pandora FMS Enterprise'>";
+			echo "<img border='0' src='images/pandora_header_logo_enterprise.png' alt='Pandora FMS Enterprise'>";
 		}
 ?>
 		</a>
@@ -115,15 +115,15 @@ $msg_cnt = 0;
 				echo '</span>';
 			}
 		echo "</td>";
-		echo "<td width='20%' rowspan=2>";
+		echo "<td width='20%' rowspan='2'>";
 		echo "<a href='index.php?sec=main'>";
 		if (isset($config["custom_logo"]))
-			echo "<img height=60 width=139 src='images/custom_logo/" . $config["custom_logo"] . "'>"; 
+			echo "<img height='60' width='139' src='images/custom_logo/" . $config["custom_logo"] . "'>"; 
 ?>
 		</td>
 	</tr>
 	<tr>
-	<td colspan=2>
+	<td colspan="2">
 
 <?php
 if ($config["metaconsole"] == 0){

@@ -429,7 +429,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	if (!empty($timeTo)) {
 		$sql .= ' AND TIME(FROM_UNIXTIME(utimestamp)) <= "' . $timeTo . '"';
 	}
-	
+	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = get_db_all_rows_sql ($sql, true);
 	if ($interval_data === false) $interval_data = array ();
 	

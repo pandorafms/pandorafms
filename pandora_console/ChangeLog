@@ -1,3 +1,8 @@
+2010-11-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Order results before calculating
+	  the SLA.
+
 2010-11-03  Sergio Martin <sergio.martin@artica.es>
 
 	*  include/functions_modules.php

@@ -334,8 +334,11 @@ $table->valign[6] = 'middle';
 $table->valign[7] = 'middle';
 $table->valign[8] = 'middle';
 $table->align[2] = 'center';
+if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
+	$table->align[5] = 'center';
+}
 $table->align[4] = 'center';
-$table->align[6] = 'center';
+$table->align[6] = 'left';
 $table->align[7] = 'center';
 $table->align[8] = 'center';
 
@@ -403,14 +406,14 @@ foreach ($simple_alerts as $alert) {
 	$data[4] .= "</a>";
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
-		$policyInfo = isAlertInPolicy($alert['id_agent_module'], $alert['id_alert_template'], false);
+		$policyInfo = isAlertInPolicy2($alert['id'], false);
 		if ($policyInfo === false)
 			$data[5] = '';
 		else {
 			$img = 'images/policies.png';
 				
-			$data[5] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
-				print_image($img,true, array('title' => $policyInfo['name_policy'])) .
+			$data[5] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
+				print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
 	}

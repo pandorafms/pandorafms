@@ -663,7 +663,8 @@ function get_agent_modules ($id_agent, $details = false, $filter = false, $index
 	
 	if ($where != '') {
 		$where .= ' AND ';
-	} else {
+	}
+	else {
 		$where .= ' WHERE ';
 	}
 	
@@ -674,17 +675,27 @@ function get_agent_modules ($id_agent, $details = false, $filter = false, $index
 		if (is_array ($filter)) {
 			$fields = array ();
 			foreach ($filter as $field => $value) {
-				array_push ($fields, $field.'="'.$value.'"');
+				if ($value[0] == '%') {
+					array_push ($fields, $field.' LIKE "'.$value.'"');
+				}
+				else if (substr($value, -1) == '%') {
+					array_push ($fields, $field.' LIKE "'.$value.'"');
+				}
+				else {
+					array_push ($fields, $field.' = "'.$value.'"');
+				}
 			}
 			$where .= implode (' AND ', $fields);
-		} else {
+		}
+		else {
 			$where .= $filter;
 		}
 	}
 	
 	if (empty ($details)) {
 		$details = "nombre";
-	} else {
+	}
+	else {
 		$details = safe_input ($details);
 	}
 	

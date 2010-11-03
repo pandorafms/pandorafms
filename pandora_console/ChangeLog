@@ -1,3 +1,32 @@
+2010-11-03  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_html.php: added the function
+	"print_autocomplete_modules". This function is same to magic-select box for
+	agents instead this for modules.
+	
+	* include/javascript/jquery.ui.datepicker.js,
+	include/javascript/jquery.ui.droppable.js: fixed end of lines that it
+	haven't semicolon end char.
+	
+	* include/ajax/module.php: fix version of file that responds to ajax
+	request for the magic-select box for modules.
+	
+	* include/functions_ui.php: in function "format_alert_row" use new call
+	for the "isAlertInPolicy2".
+	
+	* include/functions_db.php: added in function "get_agent_modules" for the
+	parameter $filter, the posibility to search with the "like" mysql operator.
+	
+	* images/lightning_blue.png: blue lighting for new magic-select box agents.
+	
+	* godmode/agentes/configurar_agente.php: cleaned source code style.
+	
+	* godmode/alerts/alert_list.list.php:  use new call for the
+	"isAlertInPolicy2". And fixed the column align for policies and actions.
+	
+	* godmode/reporting/reporting_builder.list_items.php: erased old source
+	code lines comments.
+
 2010-11-03  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Updated build

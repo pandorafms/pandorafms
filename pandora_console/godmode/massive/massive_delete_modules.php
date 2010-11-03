@@ -83,14 +83,13 @@ $delete = (bool) get_parameter_post ('delete');
 
 if ($delete) {
 	$result = process_manage_delete ($module_name, $id_agents);
-	
 	if ($result) {
-		pandora_audit("Masive management", "Delete module ", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_names);
+		pandora_audit("Massive management", "Delete module ", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
 	}
 	else {
-		pandora_audit("Masive management", "Fail try to delete module", false, false,
-			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_names);
+		pandora_audit("Massive management", "Fail try to delete module", false, false,
+			'Agent: ' . json_encode($id_agents) . ' Module: ' . $module_name);
 	}
 }
 

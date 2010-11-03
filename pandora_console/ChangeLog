@@ -1,3 +1,13 @@
+2010-11-03  Sergio Martin <sergio.martin@artica.es>
+
+	*  include/functions_modules.php
+	include/functions_reporting.php
+	include/functions.php
+	include/functions_db.php
+	operation/agentes/ver_agente.php
+	godmode/massive/massive_delete_modules.php: Fixed 
+	several html entities codifications with safe_input/safe_output
+
 2010-11-02  Sergio Martin <sergio.martin@artica.es>
 
 	* pandoradb_data.sql: Changed several spaces and parentheses

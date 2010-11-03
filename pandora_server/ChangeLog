@@ -1,3 +1,8 @@
+2010-11-03  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_sync_db.pl: Added the synchronization
+	script to the 3.1 adapted from trunk
+
 2010-10-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed a bug that made the server crash when

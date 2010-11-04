@@ -1,5 +1,17 @@
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/functions_db.php: in function __ fixed when the Pandora don't
+	have extensions.
+	
+	* operation/events/events_rss.php: cleaned source code.
+	
+	* operation/events/events_list.php: added more info in the hidden expanded
+	row.
+	
+	Fixes: #3102826
+
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/module_groups.php: fixed a unset $fired var.
 	
 	Fixes: #3102791

@@ -3018,6 +3018,7 @@ function __ ($string /*, variable arguments */) {
 	global $l10n;
 	
 	$extensions = get_extensions();
+	if (empty($extensions)) $extensions = array();
 	
 	global $config;
 	

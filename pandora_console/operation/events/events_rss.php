@@ -20,6 +20,7 @@ require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
 
+ini_set ('display_errors', 0); //Don't display other errors, messes up XML
 
 $ipOrigin = $_SERVER['REMOTE_ADDR'];
 
@@ -35,7 +36,7 @@ $hashup = get_parameter('hashup');
 $pss = get_user_info($user);
 $hashup2 = md5($user.$pss['password']);
 
-if($hashup != $hashup2){
+if ($hashup != $hashup2) {
 	exit;
 }
 
@@ -97,13 +98,13 @@ switch($status) {
 	
 if ($search != "")
 	$sql_post .= " AND `tevento`.`evento` LIKE '%$search%'";
-if ($event_type != ""){
+if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal"){
+	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
 		$sql_post .= " AND `tevento`.`event_type` LIKE '%$event_type%' ";
 	}
-	elseif ($event_type == "not_normal"){
+	elseif ($event_type == "not_normal") {
 		$sql_post .= " AND `tevento`.`event_type` LIKE '%warning%' OR `tevento`.`event_type` LIKE '%critical%' OR `tevento`.`event_type` LIKE '%unknown%' ";
 	}
 	else
@@ -176,7 +177,8 @@ $selfurl = $base.$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 
 if (empty ($result)) {
 	$lastbuild = 0; //Last build in 1970
-} else {
+}
+else {
 	$lastbuild = (int) $result[0]['unix_timestamp'];
 }
 

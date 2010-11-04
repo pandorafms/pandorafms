@@ -1,5 +1,11 @@
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* extensions/users_connected.php: fixed call to operation function.
+	
+	Fixes: #3102855
+
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_reporting.php: fixed warning in foreach loop.
 
 2010-11-04  Sergio Martin <sergio.martin@artica.es>

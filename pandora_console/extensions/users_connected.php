@@ -12,7 +12,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function users_extension_main_god () {
+function users_extension_main() {
+	users_extension_main_god(false);
+}
+
+function users_extension_main_god ($god = true) {
 	if (isset($config["id_user"])) {
 		if (!!give_acl ($config["id_user"], 0, "UM")) {
 			return;
@@ -20,7 +24,7 @@ function users_extension_main_god () {
 	}
 	
 	// Header
-	print_page_header (__("Users connected"), "images/extensions.png", false, "", true);
+	print_page_header (__("Users connected"), "images/extensions.png", false, "", $god);
 	
 	$sql = "SELECT id_usuario, ip_origen, fecha, accion FROM tsesion WHERE descripcion = 'Logged in' AND utimestamp > (UNIX_TIMESTAMP(NOW()) - 3600) GROUP BY id_usuario, ip_origen, accion";
 
@@ -72,6 +76,7 @@ if (isset($config["id_user"])) {
     }
 }
 
-add_extension_godmode_function ('users_extension_main_god');
+add_extension_godmode_function('users_extension_main_god');
+add_extension_main_function('users_extension_main');
 
 ?>

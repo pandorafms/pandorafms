@@ -118,7 +118,7 @@ function getLastLinesLog($file, $numLines = 2000) {
 	return $result;
 }
 
-function show_logfile($file_name, $numLines) {
+function show_logfile($file_name, $numLines = 2000) {
 	global $config;
 
 	if (!file_exists($file_name)){
@@ -135,6 +135,22 @@ function show_logfile($file_name, $numLines) {
 			echo "<textarea style='width: 95%; height: 200px;' name='$file_name'>";
 			echo shell_exec('tail -n ' . $numLines . '  ' . $file_name);
 			echo "</textarea>";
+		}
+	}
+}
+
+function logFilesLines($file_name, $numLines) {
+	global $config;
+
+	if (!file_exists($file_name)){
+		return '';
+	} 
+	else {
+		if (!is_readable($file_name)) {
+			return '';
+		}
+		else {
+			return shell_exec('tail -n ' . $numLines . '  ' . $file_name);
 		}
 	}
 }
@@ -204,6 +220,7 @@ function mainSystemInfo() {
     }
     
     $show = (bool) get_parameter('show');
+    $generate = (bool) get_parameter('generate');
     $pandora_diag = (bool) get_parameter('pandora_diag', 0);
     $system_info = (bool) get_parameter('system_info', 0);
     $log_info = (bool) get_parameter('log_info', 0);
@@ -247,7 +264,8 @@ function mainSystemInfo() {
     $table->data[3][1] = print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
     print_table($table);
     echo "<div style='width: " . $table->width . "; text-align: right;'>";
-   	print_submit_button(__('Show'), 'show', false, 'class="sub next"');
+   	//print_submit_button(__('Show'), 'show', false, 'class="sub next"');
+   	print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
    	echo "</div>";
     echo "</form>";
     
@@ -269,16 +287,126 @@ function mainSystemInfo() {
 	    	getLastLog($log_num_lines);
 	    }
     }
+    elseif ($generate) {
+		$tempDirSystem = sys_get_temp_dir();
+		$nameDir = 'dir_' . uniqid();
+		$tempDir = $tempDirSystem . '/' . $nameDir . '/';
+		mkdir($tempDir);
+		
+    	
+    	$zipArchive = $config['attachment_store'] . '/last_info.zip';
+    	@unlink($zipArchive);
+    	
+        if ($config['https']) {
+			$http = 'https://';
+		}
+		else {
+	        $http = "http://";
+	    }
+
+		$url = '<a href="' .$http.$_SERVER['HTTP_HOST'].$config["homeurl"].'/attachment/last_info.zip">' . __('System info file zipped') . '</a>';
+		echo '<b>' . __('File:') . '</b> ' . $url;
+    	
+		$zip = new ZipArchive;
+		
+    	if ($zip->open($zipArchive, ZIPARCHIVE::CREATE) === true) {
+	    	if ($pandora_diag) {
+				$systemInfo = array();
+				getPandoraDiagnostic($systemInfo);
+				
+				$file = fopen($tempDir . 'pandora_diagnostic.txt', 'w');
+				
+				if ($file !== false) {
+					ob_start();
+					foreach ($systemInfo as $index => $item) {
+						if (is_array($item)) {
+							foreach ($item as $secondIndex => $secondItem) {
+								echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+							}
+						}
+						else {
+							echo $index . ";" . $item . "\n";
+						}
+					}
+					$output = ob_get_clean();
+					fwrite($file, $output);
+					fclose($file);
+				}
+				
+				$zip->addFile($tempDir . 'pandora_diagnostic.txt', 'pandora_diagnostic.txt');
+			}
+			
+			if ($system_info) {
+		    	$info = array();
+		    	getSystemInfo($info);
+		    	
+		    	
+				$file = fopen($tempDir . 'system_info.txt', 'w');
+				
+				if ($file !== false) {
+					ob_start();
+					foreach ($info as $index => $item) {
+						if (is_array($item)) {
+							foreach ($item as $secondIndex => $secondItem) {
+								echo $index. ";" . $secondIndex . ";" . $secondItem . "\n";
+							}
+						}
+						else {
+							echo $index . ";" . $item . "\n";
+						}
+					}
+					$output = ob_get_clean();
+					fwrite($file, $output);
+					fclose($file);
+				}
+				
+				$zip->addFile($tempDir . 'system_info.txt', 'system_info.txt');
+		    }
+		    
+		    if ($log_info) {
+		    	file_put_contents($tempDir . 'pandora_console.log.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/pandora_console.log", $log_num_lines));
+		    	$zip->addFile($tempDir . 'pandora_console.log.lines_' . $log_num_lines, 'pandora_console.log.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'pandora_server.log.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.log", $log_num_lines));
+				$zip->addFile($tempDir . 'pandora_server.log.lines_' . $log_num_lines, 'pandora_server.log.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'pandora_server.error.lines_' . $log_num_lines, getLastLinesLog("/var/log/pandora/pandora_server.error", $log_num_lines));
+				$zip->addFile($tempDir . 'pandora_server.error.lines_' . $log_num_lines, 'pandora_server.error.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'my.cnf.lines_' . $log_num_lines, getLastLinesLog("/etc/mysql/my.cnf", $log_num_lines));
+				$zip->addFile($tempDir . 'my.cnf.lines_' . $log_num_lines, 'my.cnf.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'config.php.lines_' . $log_num_lines, getLastLinesLog($config["homedir"]."/include/config.php", $log_num_lines));
+				$zip->addFile($tempDir . 'config.php.lines_' . $log_num_lines, 'config.php.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, getLastLinesLog("/etc/pandora/pandora_server.conf", $log_num_lines));
+				$zip->addFile($tempDir . 'pandora_server.conf.lines_' . $log_num_lines, 'pandora_server.conf.lines_' . $log_num_lines);
+				file_put_contents($tempDir . 'syslog.lines_' . $log_num_lines, getLastLinesLog("/var/log/syslog", $log_num_lines));
+				$zip->addFile($tempDir . 'syslog.lines_' . $log_num_lines, 'syslog.lines_' . $log_num_lines);
+		    }
+    		
+			$zip->close();
+    	}
+//    	
+//    	    if ($pandora_diag) {
+//	    	$info = array();
+//	    	getPandoraDiagnostic($info);
+//	    	show_array(__('Pandora Diagnostic info'), 'diag_info', $info);
+//	    }
+//	    
+//	    if ($system_info) {
+//	    	$info = array();
+//	    	getSystemInfo($info);
+//	    	show_array(__('System info'), 'system_info', $info);
+//	    }
+//	    
+//	    if ($log_info) {
+//	    	echo "<h1><a name='log_info'>" . __('Log Info') . "</a></h1>";
+//	    	getLastLog($log_num_lines);
+//	    }
+    }
 }
 
 function consoleMode() {
 	//Execution across the shell
-	$dir = dirname($_SERVER['PHP_SELF']);
-	if (file_exists($dir . "/../include/config.php"))
-		include $dir . "/../include/config.php";
-		
 	global $config;
-		
+	global $argv;
+	
 	$tempDirSystem = sys_get_temp_dir();
 	$nameDir = 'dir_' . uniqid();
 	$tempDir = $tempDirSystem . '/' . $nameDir . '/';
@@ -478,9 +606,13 @@ function consoleMode() {
 if (!isset($argv)) {
 	//Execution across the browser
 	add_extension_godmode_function('mainSystemInfo');
-	add_godmode_menu_option(__('System Info'), 'PM', 'glog');
+	add_godmode_menu_option(__('System Info'), 'PM', 'gsetup');
 }
 else {
+	$dir = dirname($_SERVER['PHP_SELF']);
+	if (file_exists($dir . "/../include/config.php"))
+		include $dir . "/../include/config.php";
+	
 	consoleMode();
 }
 ?>

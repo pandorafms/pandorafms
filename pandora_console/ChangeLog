@@ -1,3 +1,7 @@
+2010-11-04  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/incidents/incident.php: Fixed incidents filter
+
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_config.php: fixed empty spaces the list of ACL IP.

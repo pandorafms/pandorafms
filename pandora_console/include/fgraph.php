@@ -296,7 +296,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 				$previous_data = $total;
 			// Compressed data
 			} else {
-				if ($uncompressed_module) {
+				if ($uncompressed_module || ($timestamp > time ())) {
 					$graph_values[$i][$timestamp] = 0;
 				} else {
 					$graph_values[$i][$timestamp] = $previous_data * $weight_list[$i];
@@ -1711,7 +1711,7 @@ function grafico_modulo_sparse_mobile ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			if ($uncompressed_module) {
+			if ($uncompressed_module || ($timestamp > time ())) {
 				$chart[$timestamp]['sum'] = 0;
 				$chart[$timestamp]['min'] = 0;
 				$chart[$timestamp]['max'] = 0;
@@ -1950,7 +1950,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 			$previous_data = $total;
 		// Compressed data
 		} else {
-			if ($uncompressed_module) {
+			if ($uncompressed_module || ($timestamp > time ())) {
 				$chart[$timestamp]['sum'] = 0;
 			} else {
 				$chart[$timestamp]['sum'] = $previous_data;

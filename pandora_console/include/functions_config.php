@@ -66,6 +66,8 @@ function update_config_value ($token, $value) {
 			$count = 0;
 			$lastInsert = false;
 			foreach ($ips as $ip) {
+				$ip = trim($ip);
+				
 				$lastInsert = false;
 				if (strlen($valueDB . ';' . $ip) < 100) {
 					//100 is the size of field 'value' in tconfig.

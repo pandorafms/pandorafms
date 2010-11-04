@@ -1,5 +1,10 @@
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/users/configure_user.php: fixed lost lines deleted in previous
+	commits (sorry).
+
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/system_info.php: change the funcionality of extension, now
 	generate a zip file in Pandora Console mode, and fixed the execution in the
 	term, and move to setup menu.

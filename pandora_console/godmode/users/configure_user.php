@@ -110,6 +110,8 @@ if ($create_user) {
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
 			' Laguage: ' . $values['language'];
+		
+		$result = create_user ($id, $password_new, $values);
 
 		pandora_audit("User management",
 			"Created user ".safe_input($id), false, false, $info);

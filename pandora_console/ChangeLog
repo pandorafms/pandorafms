@@ -1,3 +1,13 @@
+2010-11-04  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql
+	include/config_process.php: Updated version.
+	
+	* include/functions_db.php: Fixed problem in function for get agent
+	status on visual maps.
+
+	* index.php: Updated development mode set to 0.
+
 2010-11-02  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/ver_agente.php: fixed the ajax request for

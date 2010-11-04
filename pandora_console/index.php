@@ -21,7 +21,7 @@ if (function_exists ('mb_internal_encoding')) {
 
 // Set to 1 to do not check for installer or config file (for development!).
 // Activate gives more error information, not useful for production sites
-$develop_bypass = 1;
+$develop_bypass = 0;
 
 if ($develop_bypass != 1) {
 	// If no config file, automatically try to install

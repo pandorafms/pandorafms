@@ -1,3 +1,11 @@
+2010-11-04  Sancho Lerena <slerena@artica.es>
+
+	* NT4: New binary version of Unix perl agent for NT4, with some tools.
+	.exe compiled with ActiveState SDK 9.0
+	
+	* pandora_agent: Some small modifications to make it work nicely in 
+	windows boxes.
+
 2010-11-02  Raul Mateos  <raulofpandora@gmail.com>
 
 	* tentacle_client: Fixed year from last commit. Converted some spaces

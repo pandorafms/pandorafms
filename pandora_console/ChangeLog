@@ -1,3 +1,7 @@
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_config.php: fixed empty spaces the list of ACL IP.
+
 2010-11-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/fgraph.php: Do not propagate compressed data to dates in the

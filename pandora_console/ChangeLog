@@ -1,5 +1,11 @@
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* extensions/module_groups.php: fixed a unset $fired var.
+	
+	Fixes: #3102791
+
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* operation/events/events_marquee.php: fixed the error SQL message and
 	save corretly the audit.
 	

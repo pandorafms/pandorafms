@@ -119,6 +119,8 @@ function mainModuleGroups() {
 	//The content of table
 	$tableData = array();
 	
+	$fired = false;
+	
 	//Create rows and cells
 	foreach ($agentGroups as $idAgentGroup => $name) {
 		
@@ -139,7 +141,6 @@ function mainModuleGroups() {
 					$module = get_db_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
 					
 					if ($idModelGroup == $module['id_module_group']) {
-						$fired = false;
 						if ($alert["times_fired"] > 0) {
 							$fired = true;
 						}

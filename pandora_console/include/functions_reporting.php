@@ -791,6 +791,9 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 	
 	if (isset($alerts['simple'])) {
 		$i = 0;
+		if ($alerts['simple'] === false)
+			$alerts['simple'] = array();
+		
 		foreach ($alerts['simple'] as $alert) {
 			$data = array();
 			$data[0] = get_db_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
@@ -804,6 +807,10 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 			if ($actions === false) {
 				$actions = array();
 			}
+			
+			if ($actions === false)
+				$actions = array();
+			
 			foreach ($actions as $action) {
 				$data[2] .= '<li>' . $action['name'] . '</li>';
 			}
@@ -814,6 +821,10 @@ function alert_reporting_agent ($id_agent, $period = 0, $date = 0, $return = tru
 			if ($firedTimes === false) {
 				$firedTimes = array();
 			}
+			
+			if ($firedTimes === false)
+				$firedTimes = array();
+			
 			foreach ($firedTimes as $fireTime) {
 				$data[3] .= '<li>' . $fireTime['timestamp'] . '</li>';
 			}

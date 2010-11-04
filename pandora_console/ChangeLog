@@ -1,3 +1,8 @@
+2010-11-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_reporting.php: Merged from trunk. Order results
+	  before calculating the SLA.
+
 2010-11-04  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql

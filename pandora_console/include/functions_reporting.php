@@ -322,7 +322,7 @@ function get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $ma
 	// Get interval data
 	$sql = sprintf ('SELECT * FROM tagente_datos
 	                 WHERE id_agente_modulo = %d
-	                 AND utimestamp > %d AND utimestamp <= %d',
+	                 AND utimestamp > %d AND utimestamp <= %d ORDER BY utimestamp ASC',
 	                 $id_agent_module, $datelimit, $date);
 	$interval_data = get_db_all_rows_sql ($sql, true);
 	if ($interval_data === false) $interval_data = array ();

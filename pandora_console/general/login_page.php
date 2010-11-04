@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ echo '<div class="databox" id="login">';
 
 	//echo '<h1>Put here your custom welcome message</h1>";
 
-echo '<br><br>';
+echo '<br /><br />';
 echo '
 	<div class="databox" id="login_in">
 		<form method="post" action="index.php'.$url.'">

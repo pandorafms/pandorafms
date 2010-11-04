@@ -1,3 +1,7 @@
+2010-11-04  Raul Mateos <raulofpandora@gmail.com>
+
+	* general/login_page.php: Fixed validation for XHTML 1.0 Transitional.
+
 2010-11-03  Raul Mateos <raulofpandora@gmail.com>
 
 	* index.php: Updated year :-D

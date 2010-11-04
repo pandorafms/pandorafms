@@ -1,3 +1,11 @@
+2010-11-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/servers/manage_export.php,
+	  godmode/servers/manage_export_form.php: Moved to Pandora FMS
+	  Enteprise.
+
+	* godmode/menu.php: Removed the export targets menu entry.
+
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/users/configure_user.php: fixed lost lines deleted in previous

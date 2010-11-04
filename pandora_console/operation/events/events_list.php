@@ -478,25 +478,35 @@ foreach ($result as $event) {
 	
 	if ($event["id_agentmodule"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
 		$string .= '<b>' . __('Agent module source') . ':</b></td><td align="left">';
-		$string .= print_image ("images/bricks.png", true,
-			array ("title" => __('Go to data overview')));
+		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=data">';
+		$string .= get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $event["id_agentmodule"]);
 		$string .= '</a></td></tr><tr>';
 	}
 	
 	if ($event["id_alert_am"] != 0) {
 		$string .= '<td align="left" valign="top" width="15%">';
-		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$string .= '<b>' . __('Alert source') . ':</b></td><td align="left">';
+		$string .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$event["id_agente"].'&amp;tab=alert">';
 		$standby = get_db_value('standby', 'talert_template_modules', 'id', $event["id_alert_am"]);
 		if(!$standby) {
 			$string .= print_image ("images/bell.png", true,
 				array ("title" => __('Go to data overview')));
-		}else {
+		}
+		else {
 			$string .= print_image ("images/bell_pause.png", true,
 				array ("title" => __('Go to data overview')));
 		}
+		
+		$sql = 'SELECT name
+			FROM talert_templates
+			WHERE id IN (SELECT id_alert_template
+					FROM talert_template_modules
+					WHERE id = ' . $event["id_alert_am"] . ');';
+		
+		$templateName = get_db_sql($sql);
+		
+		$string .= $templateName;
 		
 		$string .= '</a></td></tr><tr>';
 	}

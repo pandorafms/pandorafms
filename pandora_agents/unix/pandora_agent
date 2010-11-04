@@ -56,8 +56,8 @@ if (!$@) {
 	$Sem = Thread::Semaphore->new;
 }	
 
-use constant AGENT_VERSION => '3.2dev';
-use constant AGENT_BUILD => '101015';
+use constant AGENT_VERSION => '3.2RC1';
+use constant AGENT_BUILD => '101103';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -105,6 +105,7 @@ use constant PART_CMDS => {
 	
 # OS and OS version
 my $OS = $^O;
+
 my $OS_VERSION;
 
 # Used to calculate the MD5 checksum of a string
@@ -184,6 +185,12 @@ my %Parts = (
 
 # Collections
 my %Collections;
+
+# $DevNull
+my $DevNull = '/dev/null';
+
+# Shell command separator
+my $CmdSep = ';';
 
 ################################################################################
 # Print usage information and exit.
@@ -453,14 +460,14 @@ sub send_file {
 	my $output;
 
 	if ($Conf{'transfer_mode'} eq 'tentacle') {
- 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >/dev/null`;
+ 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
- 		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >/dev/null`;
+ 		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
       	my $base = basename ($file);
       	my $dir = dirname ($file);
 
-		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >/dev/null <<FEOF1
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
 quote USER pandora
 quote PASS $Conf{'server_pwd'}
 lcd "$dir"
@@ -469,7 +476,7 @@ put "$base"
 quit
 FEOF1`
 	} elsif ($Conf{'transfer_mode'} eq 'local') {
-        $output = `cp $file $Conf{'server_path'}/ 2>&1 >/dev/null`;
+        $output = `cp $file $Conf{'server_path'}/ 2>&1 >$DevNull`;
 	}
 
 	# Get the errorlevel
@@ -510,14 +517,14 @@ sub recv_file ($) {
 	my $output;
 
 	if ($Conf{'transfer_mode'} eq 'tentacle') {
- 		$output = `cd "$Conf{'temporal'}"; tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >/dev/null`
+ 		$output = `cd "$Conf{'temporal'}"$CmdSep tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`
 	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
- 		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >/dev/null`;
+ 		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
       	my $base = basename ($file);
       	my $dir = dirname ($file);
 
-		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >/dev/null <<FEOF1
+		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
 quote USER pandora
 quote PASS $Conf{'server_pwd'}
 lcd "$Conf{'temporal'}"
@@ -526,7 +533,7 @@ get "$file"
 quit
 FEOF1`
 	} elsif ($Conf{'transfer_mode'} eq 'local') {
-		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >/dev/null`;
+		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
 	}
 
 	# Get the errorlevel
@@ -646,7 +653,7 @@ sub check_collections () {
 		# Download and unzip
 		next unless (recv_file ($collection_file) == 0);
 		rmrf ("$ConfDir/collections/$collection");
-		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>/dev/null`;
+		`unzip -d "$ConfDir/collections/$collection" "$Conf{'temporal'}/$collection_file" 2>$DevNull`;
 		unlink ("$Conf{'temporal'}/$collection_file");		
 		
 		# Save the new md5
@@ -780,10 +787,17 @@ sub guess_os_version ($) {
 
 	# Linux
 	if ($os eq 'linux') {
-		$os_version = `lsb_release -sd 2>/dev/null`;
+		$os_version = `lsb_release -sd 2>$DevNull`;
 	# AIX
 	} elsif ($os eq 'aix') {
 		$os_version = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+	# Windows
+	} elsif ($os =~ /win/i) {
+		$os_version = `ver`;
+		$DevNull = '/Nul';
+		$CmdSep = '\&';
+		$OS = "windows";
+
 	# Solaris, HP-UX, BSD and others
 	} else {
 		$os_version = `uname -r`;
@@ -930,10 +944,10 @@ sub module_exec ($) {
 
 	# Execute the command
 	if ($module->{'timeout'} == 0) {
-		@data = `$module->{'params'} 2> /dev/null`;
+		@data = `$module->{'params'} 2> $DevNull`;
 	} else {
 		my $cmd = quotemeta ($module->{'params'});
-		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> /dev/null`;
+		@data = `$Conf{'pandora_exec'} $module->{'timeout'} $cmd 2> $DevNull`;
 	}
 
 	# Something went wrong or no data
@@ -1037,7 +1051,7 @@ sub module_cpuusage ($) {
 
 	# Get CPU usage
 	my $cmd = CPUUSAGE_CMDS->{$OS};
-	my @data = `$cmd 2> /dev/null`;
+	my @data = `$cmd 2> $DevNull`;
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
@@ -1056,7 +1070,7 @@ sub module_freememory ($) {
 
 	# Get available memory
 	my $cmd = FREEMEMORY_CMDS->{$OS};
-	my @data = `$cmd 2> /dev/null`;
+	my @data = `$cmd 2> $DevNull`;
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
@@ -1075,7 +1089,7 @@ sub module_freepercentmemory ($) {
 
 	# Get CPU usage
 	my $cmd = TOTALMEMORY_CMDS->{$OS};
-	my @data = `$cmd 2> /dev/null`;
+	my @data = `$cmd 2> $DevNull`;
 
 	# Something went wrong or no data
 	return () unless ($? eq 0 && defined ($data[0]));
@@ -1104,7 +1118,7 @@ sub evaluate_module_conditions ($$) {
 			($condition->{'operator'} eq '!=' && $data != $condition->{'value_1'}) ||
 			($condition->{'operator'} eq '=~' && $data =~ /$condition->{'value_1'}/) ||
 			($condition->{'operator'} eq '()' && $data > $condition->{'value_1'} && $data < $condition->{'value_2'})) {
-				`$condition->{'command'} 2> /dev/null`;
+				`$condition->{'command'} 2> $DevNull`;
 		}
 	}
 }
@@ -1257,7 +1271,7 @@ sub udp_server ($$) {
 sub exec_plugin ($) {
 	my $plugin = shift;
 
-	my $output = `$plugin 2>/dev/null`;
+	my $output = `$plugin 2>$DevNull`;
 
 	# Do not save the output if there was an error
 	return unless ($? eq 0);

@@ -28,7 +28,11 @@ require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 require_once "../../include/functions_api.php";
 
+global $config;
+
 session_start ();
+
+$config["id_user"] = $_SESSION["id_usuario"];
 
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
@@ -43,10 +47,6 @@ if(!isInACL($_SERVER['REMOTE_ADDR'])){
 	require ("../../general/noaccess.php");
 	exit;
 }
-
-global $config;
-
-$config["id_user"] = $_SESSION["id_usuario"];
 
 $groups = get_user_groups ($config["id_user"], "AR");
 //Otherwise select all groups the user has rights to.

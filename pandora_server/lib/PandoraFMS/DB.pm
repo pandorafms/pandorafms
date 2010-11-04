@@ -32,6 +32,7 @@ our @EXPORT = qw(
 		db_disconnect
 		db_do
 		db_process_insert
+		db_process_update
 		db_insert
 		db_update
 		get_action_id
@@ -359,20 +360,56 @@ sub db_process_insert($$$;@) {
 		exit;
 	}
 	
-	my $columns_string = join(',',@columns_array);
-	
+	# Generate the '?' simbols to the Query like '(?,?,?,?,?)'
+	my $wildcards = '';
 	for (my $i=0; $i<=$#values_array; $i++) {
 		if(!defined($values_array[$i])) {
 			$values_array[$i] = '';
 		}
+		if($i > 0 && $i <= $#values_array) {
+			$wildcards = $wildcards.',';
+		}
+		$wildcards = $wildcards.'?';
 	}	
+	$wildcards = '('.$wildcards.')';
+			
+	my $columns_string = join(',',@columns_array);
+	
+	my $res = db_insert ($dbh, "INSERT INTO $table (".$columns_string.") VALUES ".$wildcards, @values_array);
 
-	my $values_string = "'".join("','",@values_array)."'";
+	return $res;
+}
+
+##########################################################################
+## SQL update.
+##########################################################################
+sub db_process_update($$$$$;@) {
+	my ($dbh, $table, $parameters, $where_column, $where_value, @values) = @_;
+		
+	my @columns_array = keys %$parameters;
+	my @values_array = values %$parameters;
+
+	if(!defined($table) || $#columns_array == -1) {
+		return -1;
+		exit;
+	}
 	
-	my $query = "INSERT INTO $table ($columns_string) VALUES ($values_string)";
+	my $fields = '';
+	for (my $i=0; $i<=$#values_array; $i++) {
+		if(!defined($values_array[$i])) {
+			$values_array[$i] = '';
+		}
+		if($i > 0 && $i <= $#values_array) {
+			$fields = $fields.',';
+		}
+		$fields = $fields." $columns_array[$i] = ?";
+	}	
 	
-	$dbh->do($query, undef, @values);
-	return $dbh->{'mysql_insertid'};
+	push(@values_array, $where_value);
+			
+	my $res = db_update ($dbh, "UPDATE $table SET$fields WHERE $where_column = ?", @values_array);
+
+	return $res;
 }
 
 ##########################################################################

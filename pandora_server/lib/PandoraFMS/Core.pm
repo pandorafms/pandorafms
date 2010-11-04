@@ -149,6 +149,7 @@ our @EXPORT = qw(
 	pandora_server_keep_alive
 	pandora_update_agent
 	pandora_update_module_on_error
+	pandora_update_module_from_hash
 	pandora_update_server
 	pandora_group_statistics
 	pandora_server_statistics
@@ -1096,7 +1097,7 @@ sub pandora_create_module ($$$$$$$$$$) {
 }
 
 ##########################################################################
-## Create an agent module
+## Create an agent module from hash
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
 	my ($pa_config, $parameters, $dbh) = @_;
@@ -1106,6 +1107,19 @@ sub pandora_create_module_from_hash ($$$) {
 	my $module_id = db_process_insert($dbh, 'tagente_modulo', $parameters);
 
 	db_do ($dbh, 'INSERT INTO tagente_estado (`id_agente_modulo`, `id_agente`, `last_try`) VALUES (?, ?, \'0000-00-00 00:00:00\')', $module_id, $parameters->{'id_agente'});
+	
+	return $module_id;
+}
+
+##########################################################################
+## Update an agent module from hash
+##########################################################################
+sub pandora_update_module_from_hash ($$$$$) {
+	my ($pa_config, $parameters, $where_column, $where_value, $dbh) = @_;
+			
+ 	logger($pa_config, "Updating module '$parameters->{'nombre'}' for agent ID $parameters->{'id_agente'}.", 10);
+
+	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
 	
 	return $module_id;
 }

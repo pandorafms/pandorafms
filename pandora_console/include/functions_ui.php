@@ -447,7 +447,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	
 	// Standby
 	$data[$index['standby']] = '';
-	if ($alert["standby"] == 1) {
+	if (isset ($alert["standby"]) && $alert["standby"] == 1) {
 		$data[$index['standby']] = print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
 	} 
 	

@@ -1,5 +1,11 @@
 2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/db/db_purge.php: fixed old value "1" for "All" groups.
+	
+	Fixes: #3102844
+
+2010-11-04  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/users_connected.php: fixed call to operation function.
 	
 	Fixes: #3102855

@@ -155,7 +155,7 @@ if (isset($_POST["purgedb"])) {
 }
 
 # Select Agent for further operations.
-$agents = get_group_agents (1, true);
+$agents = get_group_agents (0, true);
 $agents[-1] = __('Choose agent');
 $agents[0] = __('All agents'); 
 

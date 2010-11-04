@@ -140,7 +140,7 @@ if ($usuario != "")
 	$filter .= sprintf (" AND id_usuario = '%s'", $usuario);
 
 $estado = (int) get_parameter ("estado", -1);
-if ($estado > 0) //-1 = All
+if ($estado >= 0) //-1 = All
 	$filter .= sprintf (" AND estado = %d", $estado);
 
 $grupo = (int) get_parameter ("grupo", 0);

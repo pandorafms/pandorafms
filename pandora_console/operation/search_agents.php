@@ -105,7 +105,7 @@ switch ($sortField) {
 
 $agents = false;
 if ($searchAgents) {
-	$sql = "SELECT id_agente, tagente.nombre, tagente.id_os, tagente.intervalo, tagente.id_grupo, tagente.disabled
+	$sql = "SELECT id_agente, tagente.ultimo_contacto, tagente.nombre, tagente.id_os, tagente.intervalo, tagente.id_grupo, tagente.disabled
 		FROM tagente
 			INNER JOIN tgrupo
 				ON tgrupo.id_grupo = tagente.id_grupo
@@ -206,7 +206,12 @@ else {
 			else {
 				$cellName = print_agent_name ($agent["id_agente"], true, "upper");
 			}
-				
+			
+			$last_time = strtotime ($agent["ultimo_contacto"]);
+			$now = time ();
+			$diferencia = $now - $last_time;
+			$time = print_timestamp ($last_time, true);
+		
 			array_push($table->data, array(
 				$cellName,
 				print_os_icon ($agent["id_os"], false, true),
@@ -215,7 +220,7 @@ else {
 				$modulesCell,
 				$agent_info["status_img"],
 				$agent_info["alert_img"],
-				print_timestamp ($agent_info["last_contact"], true)));
+				'<b><span style="color: #ff0000">'.$time.'</span></b>'));
 		}
 		
 		echo "<br />";pagination ($totalAgents);

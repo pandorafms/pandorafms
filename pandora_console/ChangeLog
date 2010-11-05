@@ -1,5 +1,10 @@
 2010-11-05  Sergio Martin <sergio.martin@artica.es>
 
+	* operation/search_agents.php: Fixed the last contact
+	information in the agents search view for bug 3103501
+
+2010-11-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/javascript/pandora_modules.js: Changed the enable
 	condition to the snmp walk button in the network to improve
 	the usability for bug 3102823

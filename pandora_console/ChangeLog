@@ -1,3 +1,8 @@
+2010-11-05  Sergio Martin <sergio.martin@artica.es>
+
+	* include/fgraph.php: Fixed event graphs by user for
+	bug 3102830
+
 2010-11-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_ui.php: Check that the alert has a 'standby' column

@@ -1,3 +1,9 @@
+2010-11-05  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_sync_db.pl: Changed the tevento table
+	synchronization to sync it only when the flag sync_data 
+	is 1
+
 2010-11-05  Sancho Lerena <slerena@artica.es>
 
 	* Makefile.PL: Now default install for libs are the same than used in

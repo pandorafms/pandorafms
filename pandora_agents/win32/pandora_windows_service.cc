@@ -440,11 +440,24 @@ Pandora_Windows_Service::copyDataFile (string filename)
 		copy_to_secondary = 1;	
 	}
 
-	// Copy the file to the secondary server if needed
+	// Exit unless we have to send the file to a secondary server 
 	if (copy_to_secondary == 0) {
 		return rc;
 	}
 	
+	// Read secondary server configuration
+	mode = conf->getValue ("secondary_transfer_mode");
+	host = conf->getValue ("secondary_server_ip");
+	remote_path = conf->getValue ("secondary_server_path");
+
+	// Fix remote path
+	if (mode != "local" && remote_path[remote_path.length () - 1] != '/') {
+		remote_path += "/";
+	} else if (mode == "local" && remote_path[remote_path.length () - 1] != '\\') {
+		remote_path += "\\";
+	}
+
+	// Send the file to the secondary server
 	if (mode == "ftp") {
 		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
 	} else if (mode == "tentacle" || mode == "") {

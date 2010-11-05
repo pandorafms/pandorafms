@@ -1,3 +1,10 @@
+2010-11-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* installer/pandora.mpi: Updated installation messages.
+
+	* pandora_windows_service.cc: startup_delay after the service is
+	  started, not before. Read all secondary server parameters.
+
 2010-11-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/util/tentacle_client.exe: Updated the tentacle client.

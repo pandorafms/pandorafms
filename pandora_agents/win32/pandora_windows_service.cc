@@ -117,7 +117,6 @@ void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
-    int startup_delay = 0;
 
 	setPandoraDebug (true);
 	
@@ -163,13 +162,6 @@ Pandora_Windows_Service::pandora_init () {
 	
 	srand ((unsigned) time (0));
 	this->setSleepTime (this->interval);
-
- 	/* Sleep if a startup delay was specified */
- 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
- 	if (startup_delay > 0) {
-        pandoraLog ("Delaying startup %d miliseconds", startup_delay);
-        Sleep (startup_delay);
-    }
 
 	pandoraLog ("Pandora agent started");
 	
@@ -460,11 +452,24 @@ Pandora_Windows_Service::copyDataFile (string filename)
 		copy_to_secondary = 1;	
 	}
 
-	// Copy the file to the secondary server if needed
+	// Exit unless we have to send the file to a secondary server 
 	if (copy_to_secondary == 0) {
 		return rc;
 	}
 	
+	// Read secondary server configuration
+	mode = conf->getValue ("secondary_transfer_mode");
+	host = conf->getValue ("secondary_server_ip");
+	remote_path = conf->getValue ("secondary_server_path");
+
+	// Fix remote path
+	if (mode != "local" && remote_path[remote_path.length () - 1] != '/') {
+		remote_path += "/";
+	} else if (mode == "local" && remote_path[remote_path.length () - 1] != '\\') {
+		remote_path += "\\";
+	}
+
+	// Send the file to the secondary server
 	if (mode == "ftp") {
 		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
 	} else if (mode == "tentacle" || mode == "") {
@@ -1152,10 +1157,20 @@ void
 Pandora_Windows_Service::pandora_run () {
 	Pandora_Agent_Conf  *conf = NULL;
 	string server_addr;
+    	int startup_delay = 0;
+    	static unsigned char delayed = 0;
 
 	pandoraDebug ("Run begin");
 	
 	conf = this->getConf ();
+
+ 	/* Sleep if a startup delay was specified */
+ 	startup_delay = atoi (conf->getValue ("startup_delay").c_str ()) * 1000;
+ 	if (startup_delay > 0 && delayed == 0) {
+		delayed = 1;
+        	pandoraLog ("Delaying startup %d miliseconds", startup_delay);
+        	Sleep (startup_delay);
+    	}
 
 	/* Check for configuration changes */
 	if (getPandoraDebug () == false) {

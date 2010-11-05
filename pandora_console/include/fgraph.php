@@ -893,19 +893,20 @@ function grafico_eventos_usuario ($width, $height) {
 
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_evento),id_usuario
+	$sql = sprintf ('SELECT COUNT(id_evento) events,id_usuario
 			FROM tevento GROUP BY id_usuario
 			ORDER BY 1 DESC LIMIT %d', $max_items);
 	$events = get_db_all_rows_sql ($sql);
+
 	foreach ($events as $event) {
-		$data[$event[1]] = $event[0];
+		$data['id_usuario'] = $event['events'];
 	}
 	
 	if (! $graphic_type) {
 		return fs_3d_pie_chart ($data, $width, $height);
 	}
 
-	generic_pie_graph ($width, $height, $data);
+	//generic_pie_graph ($width, $height, $data);
 }
 
 /**

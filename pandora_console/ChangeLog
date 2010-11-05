@@ -1,5 +1,15 @@
 2010-11-05  Sergio Martin <sergio.martin@artica.es>
 
+	* include/languages/nb.po
+	include/languages/en.po
+	include/languages/mr.po
+	include/languages/nb.mo
+	include/languages/en.mo
+	include/languages/mr.mo: Added few new language
+	po and mo files
+
+2010-11-05  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/cs.po
 	include/languages/et.mo
 	include/languages/pt_BR.po

@@ -2429,7 +2429,7 @@ StopPandoraService
 }
 ::msgcat::mcmset en {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{This program will install  <%AppName%> v<%Version%> in your computer. When you finish this installation, probably you will need to edit the agent configuration file to add aditional modules or review main setup parameters. 
+{This program will install <%AppName%> (build <%Version%>) in your computer. When you finish this installation, probably you will need to edit the agent configuration file to add aditional modules or review main setup parameters. 
 
 Please click on Next button to continue, or Cancel to exit this setup.
 }
@@ -2650,7 +2650,7 @@ StopPandoraService
 }
 ::msgcat::mcmset es {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Este programa instalará <%AppName%> v<%Version%> en su equipo. 
+{Este programa instalará <%AppName%> (build <%Version%>) en su equipo. 
 
 Se recomienda cerrar las demas aplicaciones antes de continuar.
 

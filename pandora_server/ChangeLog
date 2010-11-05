@@ -1,3 +1,15 @@
+2010-11-05  Sancho Lerena <slerena@artica.es>
+
+	* Makefile.PL: Now install libs on the same place that RPM
+
+	* pandora_server.spec: Updated version
+
+	* lib/PandoraFMS/Config.pm: UPdated version.
+
+	* pandora_server.redhat.spec: Version update.
+
+	* util/pandora_sync_db.pl: Removed tevento from sync.
+
 2010-11-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Tools.pm: Merged from trunk. limpia_cadena removes

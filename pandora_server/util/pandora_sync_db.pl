@@ -178,7 +178,6 @@ sub pandora_sync_main ($$$) {
 		
 	# Mixed cases	
 	empty_table($dbh_dest, 'tlayout_data');
-	empty_table($dbh_dest, 'tevento');
 	
 	print "\n\n";
 	
@@ -192,7 +191,6 @@ sub pandora_sync_main ($$$) {
 	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tlayout_data', \@columns, \@types, @id_agent_comparation, @id_agentmodule_comparation, @id_server_export_comparation, @id_server_comparation]);
 	@columns = ('id_agentmodule', 'id_agente');
 	@types = ('module', 'agent');
-	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tevento', \@columns, \@types, @id_agent_comparation, @id_agentmodule_comparation, @id_server_export_comparation, @id_server_comparation]);
 
 	my $errors = $errors_agents + $errors_modules + $errors_servers + $errors_exportservers;
 

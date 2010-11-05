@@ -1,3 +1,11 @@
+2010-11-05  Sancho Lerena <slerena@artica.es>
+
+	* Makefile.PL: Now default install for libs are the same than used in
+	RPM, this will help to avoid problems of duped libs.
+
+	* pandora_server.spec,
+        pandora_server.redhat.spec: Update version and release.
+
 2010-11-04  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/DB.pm

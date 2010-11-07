@@ -3,6 +3,9 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	INSTALLSITELIB  => '/usr/lib/perl5',
+	(($^O eq 'freebsd')
+		? (INSTALLSITELIB => '') : ()
+	),
 	NAME            => 'PandoraFMS',
 	VERSION_FROM    => 'lib/PandoraFMS/Config.pm',
 	AUTHOR 			=> 'Artica ST <info@artica.es>',

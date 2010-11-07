@@ -1,3 +1,7 @@
+2010-11-07  Raúl Mateos <raulofpandora@gmail.com>
+
+	* DEBIAN/makde_deb_package.sh, DEBIAN/control: Updated year/version	
+
 2010-11-05  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/nb.po
@@ -752,20 +756,20 @@
 	* DEBIAN/control: Removed apache and apache php mod from deps, giving
 	user chance to use another HTTP server.
 
-    * pandoradb_migrate_v3.1_to_v3.2.sql: Variable for SQL custom reports has
-    more size now (custom SQL reports could be huge SQL sentences).
+	* pandoradb_migrate_v3.1_to_v3.2.sql: Variable for SQL custom reports has
+	more size now (custom SQL reports could be huge SQL sentences).
 
-    * godmode/reporting/reporting_builder.php, 
-    godmode/reporting/reporting_builder.item_editor.php: Added suppor for the 
-    new SQL graph reports (vbar, hbar and pie).
+	* godmode/reporting/reporting_builder.php, 
+	godmode/reporting/reporting_builder.item_editor.php: Added suppor for the 
+	new SQL graph reports (vbar, hbar and pie).
 
-    * include/fgraph.php: Support for new SQL graphs, with new function 
-    graph_custom_sql_graph().
+	* include/fgraph.php: Support for new SQL graphs, with new function 
+	graph_custom_sql_graph().
 
-    * include/functions_reporting.php:  Support for new SQL graphs.
+	* include/functions_reporting.php:  Support for new SQL graphs.
 
-    * operation/reporting/reporting_xml.php: Fixed some problems and added
-    support for graphs using session_id.
+	* operation/reporting/reporting_xml.php: Fixed some problems and added
+	support for graphs using session_id.
 
 2010-10-15  Ramon Novoa  <rnovoa@artica.es>
 

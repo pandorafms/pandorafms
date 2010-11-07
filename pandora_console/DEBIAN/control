@@ -1,5 +1,5 @@
 package: PandoraFMS-Console
-Version: 3.1
+Version: 3.2
 Architecture: all
 Priority: optional
 Section: admin

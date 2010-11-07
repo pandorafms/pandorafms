@@ -1,3 +1,7 @@
+2010-11-07  Junichi Satoh  <junichi@rworks.jp>
+
+	* Makefile.PL: Added 'INSTALLSITELIB' for FreeBSD. (undefined)
+
 2010-11-05  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_sync_db.pl: Changed the tevento table

@@ -1,3 +1,9 @@
+2010-11-08  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc,
+	  modules/pandora_module_logevent.h: Re-wrote the module to avoid
+	  using EVENTLOG_SEEK_READ, which seems to cause a lot of trouble.
+
 2010-11-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* installer/pandora.mpi: Updated installation messages.

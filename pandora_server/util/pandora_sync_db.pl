@@ -158,6 +158,14 @@ sub pandora_sync_main ($$$) {
 	my @types;
 	
 	print "\n[*] Cleaning destination database.\n";
+	
+	# Mixed and special cases deletion
+	empty_table($dbh_dest, 'tlayout_data');
+	if($sync_data == 1) {
+		empty_table($dbh_dest, 'tevento');
+	}
+	empty_table($dbh_dest, 'treport_content');
+	empty_table($dbh_dest, 'treport_content_sla_combined');
 
 	for(my $i = 0; $i <= $#{$tables_data[0]}; $i++) {
 		empty_table($dbh_dest, $tables_data[0]->[$i]) unless !defined $tables_data[0]->[$i];
@@ -174,12 +182,6 @@ sub pandora_sync_main ($$$) {
 		}
 		
 		print "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b[*] $percent % Completed" unless $percent > 100;
-	}
-		
-	# Mixed cases	
-	empty_table($dbh_dest, 'tlayout_data');
-	if($sync_data == 1) {
-		empty_table($dbh_dest, 'tevento');
 	}
 	
 	print "\n\n";
@@ -199,6 +201,14 @@ sub pandora_sync_main ($$$) {
 		enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tevento', \@columns, \@types, \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]);
 	}
 	
+	@columns = ('id_agent_module', 'id_agent');
+	@types = ('module', 'agent');
+	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'treport_content', \@columns, \@types, \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]);
+
+	#Special
+	#This case is not mixed but is here to respect the foreing key
+	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'treport_content_sla_combined', 'id_agent_module', 'module', \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]);
+
 	my $errors = $errors_agents + $errors_modules + $errors_servers + $errors_exportservers;
 
 	if($errors == 0) {

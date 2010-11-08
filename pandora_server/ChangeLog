@@ -1,3 +1,8 @@
+2010-11-08  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_sync_db.pl: Changed from DELETE to
+	TRUNCATE in empty tables operation
+
 2010-11-05  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_sync_db.pl: Changed the tevento table

@@ -126,7 +126,7 @@ sub pandora_load_credentials ($) {
 sub empty_table ($$) {
 	my ($dbh, $table_name) = @_;
 
-	return db_do ($dbh, "DELETE FROM $table_name");
+	return db_do ($dbh, "TRUNCATE TABLE $table_name");
 }
 
 ##############################################################################

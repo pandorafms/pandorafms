@@ -1,5 +1,11 @@
 2010-11-08  Sergio Martin <sergio.martin@artica.es>
 
+	* util/pandora_recode_db.pl: Checked if the tables exists
+	to avoid the recodification in case of purely open 
+	installations
+
+2010-11-08  Sergio Martin <sergio.martin@artica.es>
+
 	* util/pandora_sync_db.pl: Changed from DELETE to
 	TRUNCATE in empty tables operation
 

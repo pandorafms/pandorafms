@@ -185,18 +185,18 @@ sub pandora_sync_main ($$$) {
 	print "\n\n";
 	
 	for(my $i = 0; $i <= $#{$tables_data[0]}; $i++) {
-		enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, $tables_data[0]->[$i], $tables_data[1]->[$i], $tables_data[2]->[$i], @id_agent_comparation, @id_agentmodule_comparation, @id_server_export_comparation, @id_server_comparation]) unless !defined $tables_data[0]->[$i];
+		enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, $tables_data[0]->[$i], $tables_data[1]->[$i], $tables_data[2]->[$i], \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]) unless !defined $tables_data[0]->[$i];
 	}
 	
 	# Mixed cases	
 	@columns = ('id_agente_modulo', 'id_agent');
 	@types = ('module', 'agent');
-	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tlayout_data', \@columns, \@types, @id_agent_comparation, @id_agentmodule_comparation, @id_server_export_comparation, @id_server_comparation]);
+	enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tlayout_data', \@columns, \@types, \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]);
 	
 	if($sync_data == 1) {
 		@columns = ('id_agentmodule', 'id_agente');
 		@types = ('module', 'agent');
-		enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tevento', \@columns, \@types, @id_agent_comparation, @id_agentmodule_comparation, @id_server_export_comparation, @id_server_comparation]);
+		enterprise_hook('sync_clone_table', [$dbh_source, $dbh_dest, 'tevento', \@columns, \@types, \@id_agent_comparation, \@id_agentmodule_comparation, \@id_server_export_comparation, \@id_server_comparation]);
 	}
 	
 	my $errors = $errors_agents + $errors_modules + $errors_servers + $errors_exportservers;

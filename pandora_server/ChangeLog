@@ -1,3 +1,8 @@
+2010-11-08  Sergio Martin <srgio.martin@artica.es>
+
+	* util/pandora_sync_db.pl: Added two special 
+	synchronization cases
+
 2010-11-08  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_sync_db.pl: Fixed array pass

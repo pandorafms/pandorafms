@@ -81,12 +81,12 @@ Pandora_Module_Logevent::run () {
 		return;
 	}
 
-    // Open log event	
+	// Open log event	
 	this->openLogEvent();
     
-    // Read events
-    this->getLogEvents (event_list);
-	
+	// Read events
+	this->getLogEvents (event_list, 0);
+
 	// No data
 	if (event_list.size () < 1) {
 		return;
@@ -113,6 +113,7 @@ Pandora_Module_Logevent::run () {
  */
 HANDLE
 Pandora_Module_Logevent::openLogEvent () {
+    list<string> event_list;
 
     // Check whether the event log is already open
     if (this->log_event != NULL) {
@@ -127,7 +128,7 @@ Pandora_Module_Logevent::openLogEvent () {
     }
 
     // Discard existing events
-    this->discardLogEvents ();
+    this->getLogEvents (event_list, 1);
 
     return this->log_event;
 }
@@ -148,89 +149,105 @@ Pandora_Module_Logevent::closeLogEvent () {
 }
 
 /** 
- * Discards existing log events.
- */
-void
-Pandora_Module_Logevent::discardLogEvents () {
-    int rc;
-    BYTE bBuffer[BUFFER_SIZE];
-    DWORD read, needed;
-    DWORD oldest_event, newest_event, num_events;
-    EVENTLOGRECORD *pevlr;
-
-    if (this->log_event == NULL) {
-        return;
-    }
-
-    // Get the offset of the newest event
-    GetOldestEventLogRecord (this->log_event, &oldest_event);
-    GetNumberOfEventLogRecords (this->log_event, &num_events);
-    newest_event = (oldest_event + num_events) - 1;
-
-    // Initialize the event record buffer
-    pevlr = (EVENTLOGRECORD *)&bBuffer;
-
-    // Read the newest event, subsequent calls to ReadEventLog will read from here
-    rc = ReadEventLog(this->log_event, EVENTLOG_FORWARDS_READ | EVENTLOG_SEEK_READ,
-                      newest_event, pevlr, BUFFER_SIZE, &read, &needed);
-    
-    // Something went wrong (we need more information on error 997, ignore it for now)
-    if (rc != 0 && rc != 997) {
-        pandoraDebug ("ReadEventLog error %d", GetLastError ());
-    }
-}
-
-/** 
  * Reads available events from the event log.
  */
 int
-Pandora_Module_Logevent::getLogEvents (list<string> &event_list) {
-    char description[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
-    struct tm *time_info = NULL;
-    time_t epoch;
-    string event;
-    BYTE buffer[BUFFER_SIZE];
-    DWORD read, needed;
-    EVENTLOGRECORD *pevlr = NULL;
-    LPCTSTR source_name;
+Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char discard) {
+	char description[BUFFER_SIZE], timestamp[TIMESTAMP_LEN + 1];
+	struct tm *time_info = NULL;
+	time_t epoch;
+	string event;
+	BYTE *buffer = NULL, *new_buffer = NULL;
+	DWORD to_read, read, needed;
+	EVENTLOGRECORD *pevlr = NULL;
+	LPCTSTR source_name;
+	bool rc = false;
+	DWORD last_error;
 
-    if (this->log_event == NULL) {
-        return -1;
-    }
+	if (this->log_event == NULL) {
+	    return -1;
+	}
+	
+	// Initialize the event record buffer
+	to_read = BUFFER_SIZE;
+	buffer = (BYTE *) malloc (sizeof (BYTE) * BUFFER_SIZE);
+	if (buffer == NULL) {
+	    	return -1;
+	}
+	pevlr = (EVENTLOGRECORD *) buffer;
+	
+	// Read events
+	while (1) {
+		rc = ReadEventLog (this->log_event, EVENTLOG_FORWARDS_READ | EVENTLOG_SEQUENTIAL_READ, 0, pevlr, to_read, &read, &needed);
+		if (!rc) {
 
-    // Initialize the event record buffer
-    pevlr = (EVENTLOGRECORD *) &buffer;
+			// Get error details
+			last_error = GetLastError();
 
-    // Read events
-    while (ReadEventLog(this->log_event, EVENTLOG_FORWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
-                        0, pevlr, BUFFER_SIZE, &read, &needed)) {
-        while (read > 0) {           
+			// Not enough space in the buffer
+			if(last_error == ERROR_INSUFFICIENT_BUFFER) {
 
-            // Retrieve the event description
-            getEventDescription (pevlr, description);
+				// Initialize the new event record buffer
+				to_read = needed;
+				new_buffer = (BYTE *) realloc (buffer, sizeof (BYTE) * needed);
+				if (new_buffer == NULL) {
+					free ((void *) buffer);
+					return -1;
+				}
+				
+				buffer = new_buffer;
+				pevlr = (EVENTLOGRECORD *) buffer;
 
-            // Filter the event
-            if (filterEvent (pevlr, description) == 0) {
+				// Try to read the event again
+				continue;
+			}
+			// Unknown error
+			else {
+				free ((void *) buffer);
+				return -1;
+			}
+		}
+		
+		// No more events
+		if (read == 0) {
+			free ((void *) buffer);
+			return 0;
+		}
+		
+		// Discard existing events
+		if (discard == 1) {
+			continue;
+		}
 
-                 // Generate a timestamp for the event
-                 epoch = pevlr->TimeGenerated;
-                 time_info = localtime (&epoch);
-                 strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
-                 
-                 // Add the event to the list
-                 event = timestamp;
-                 event.append (description);
-                 event_list.push_back (event);
-            }
+		// Process read events
+		while (read > 0) {           
+	    
+			// Retrieve the event description
+			getEventDescription (pevlr, description);
+			
+			// Filter the event
+			if (filterEvent (pevlr, description) == 0) {
+			
+			     // Generate a timestamp for the event
+			     epoch = pevlr->TimeGenerated;
+			     time_info = localtime (&epoch);
+			     strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
+			     
+			     // Add the event to the list
+			     event = timestamp;
+			     event.append (description);
+			     event_list.push_back (event);
+			}
 
-            // Move to the next event
-            read -= pevlr->Length;
-            pevlr = (EVENTLOGRECORD *) ((LPBYTE) pevlr + pevlr->Length);
-        }
+			// Move to the next event
+			read -= pevlr->Length;
+			pevlr = (EVENTLOGRECORD *) ((LPBYTE) pevlr + pevlr->Length);
+		}
 
-        pevlr = (EVENTLOGRECORD *) &buffer;
-    }
+		pevlr = (EVENTLOGRECORD *) buffer;
+	}
 
+	free ((void *) buffer);
 	return 0;
 }
 

@@ -11,7 +11,7 @@ sudo rm -Rf /usr/src/rpm/SOURCES/pandorafms_*.tar.gz
 
 cd $CODEHOME/pandora_agents
 sudo tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz --exclude \.svn --exclude nohup linux
-sudo tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup unix
+sudo tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup --exclude NT4 unix
 
 cd $CODEHOME
 sudo tar zcvf $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz --exclude \.svn pandora_server

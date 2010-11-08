@@ -1,3 +1,7 @@
+2010-11-08  Sancho Lerena <slerena@artica.es>
+
+	* build_src.sh: Removed NT4 from the unix src package.
+
 2010-11-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_update_version.sh: Set the build in the InstallJammer mpi

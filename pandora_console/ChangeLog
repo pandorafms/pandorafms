@@ -1,3 +1,12 @@
+2010-11-08  Sancho Lerena <slerena@artica.es>
+
+	* pandora_console.spec: Updated version/build.
+
+	* extensions/update_manager/sql/update_manager.sql: Change URL of 
+	update manager to 3.2
+
+	* pandora_console.redhat.spec: Updated version/build
+
 2010-11-08  Raúl Mateos <raulofpandora@gmail.com>
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Updated database schema

@@ -110,6 +110,13 @@ sub recode_store_tables() {
 sub recode_table ($$$) {
 	my ($dbh, $table, $column) = @_;
 	my $encoded_values = 0;
+	
+	my @tablestatus = get_db_rows ($dbh, "SHOW TABLE STATUS WHERE name = '$table'");
+		
+	if($#tablestatus == -1) {
+		return 0;
+	}
+	
 	my @rows = get_db_rows ($dbh, "SELECT $column FROM $table");
 	
 	foreach my $row (@rows) {

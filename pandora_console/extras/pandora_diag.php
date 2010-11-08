@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2010 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ if (!isset($argc))
 	$console_mode = 0;
 	
 if ($console_mode == 1) {
-	echo "\nPandora FMS PHP diagnostic tool v3.1 (c) Artica ST 2009-2010 \n";
+	echo "\nPandora FMS PHP diagnostic tool v3.2 (c) Artica ST 2009-2010 \n";
 
 	if ($argc == 1 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 		echo "\nThis command line script gives information about Pandora FMS database. 
@@ -86,7 +86,7 @@ else {
 	// Header
 	print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
 
-	echo "<table with=600 cellpadding=4 cellspacing=4>";
+	echo "<table with='600px' cellpadding='4' cellspacing='4'>";
 	echo "<tr><th align=left>".__("Item")."</th>";
 	echo "<th>".__("Data value")."</th></tr>";
 }

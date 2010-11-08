@@ -1,5 +1,12 @@
 2010-11-08  Raúl Mateos <raulofpandora@gmail.com>
 
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Updated database schema
+	version when updating database.
+
+	* extras/pandora_diag.php: Small update.
+
+2010-11-08  Raúl Mateos <raulofpandora@gmail.com>
+
 	* pandora_console_install: Updated year/version and link to update script
 
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: Updated news to 3.2 version.

@@ -142,6 +142,8 @@ ALTER TABLE `tevento` MODIFY COLUMN `user_comment` TEXT NOT NULL;
 INSERT INTO tconfig (`token`, `value`) VALUES ('sound_alert', 'include/sounds/air_shock_alarm.wav');
 INSERT INTO tconfig (`token`, `value`) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
 INSERT INTO tconfig (`token`, `value`) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');
+UPDATE tconfig SET value='3.2RC1' WHERE token = 'db_scheme_version';
+UPDATE tconfig SET value='PD101103' WHERE token = 'db_scheme_build';
 
 -- -----------------------------------------------------
 -- Table `trecon_script`

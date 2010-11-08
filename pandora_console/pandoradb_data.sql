@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2009 Artica Soluciones Tecnologicas, http://www.artica.es
+-- Copyright (c) 2010 Artica Soluciones Tecnologicas, http://www.artica.es
 -- Please see http://www.pandorafms.org for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -14,7 +14,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--- Database Data for Pandora FMS 3.1
+-- Database Data for Pandora FMS 3.2
 
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
@@ -255,7 +255,7 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,0,'admin');
 
 INSERT INTO `tperfil` VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0),(2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0),(3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 3.1!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 3.2!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',NOW()),
 (2,'admin','New GIS Feature','Try our new GIS representation, activate GIS in Setup to see new available options.',NOW());
 
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');

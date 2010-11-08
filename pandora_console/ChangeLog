@@ -1,3 +1,8 @@
+2010-11-08  Raúl Mateos <raulofpandora@gmail.com>
+
+	* pandoradb.sql. pandoradb_data.sql, pandora_console_install: Updated
+	year/version
+
 2010-11-07  Raúl Mateos <raulofpandora@gmail.com>
 
 	* DEBIAN/makde_deb_package.sh, DEBIAN/control: Updated year/version	

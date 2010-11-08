@@ -168,3 +168,10 @@ ALTER TABLE trecon_task ADD FOREIGN KEY (`id_recon_script`) REFERENCES trecon_sc
 ALTER TABLE tagente_modulo MODIFY `descripcion` TEXT NOT NULL default '';
 ALTER TABLE tagente_modulo MODIFY `tcp_send` TEXT default '';
 ALTER TABLE tagente_modulo MODIFY `tcp_rcv` TEXT default '';
+
+
+-- -----------------------------------------------------
+-- Table `tnews`
+-- -----------------------------------------------------
+
+UPDATE tnews SET subject='Welcome to Pandora FMS 3.2!',text='This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',timestamp=NOW() WHERE id_news = '1';

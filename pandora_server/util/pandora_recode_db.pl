@@ -93,9 +93,11 @@ sub pandora_load_credentials ($) {
 
 sub recode_store_tables() {
 	# Storing tables names			
-	my @tables = ('tagente', 'tagente_modulo', 'tserver', 'tmodule', 'tperfil', 'tgrupo', 'tplugin', 'treport', 'tpolicies');
+	my @tables = ('tagente', 'tagente_modulo', 'tserver', 'tmodule', 'tperfil', 'tgrupo', 'tplugin', 'treport', 'tpolicies', 'talert_templates',
+					'talert_actions', 'ttipo_modulo', 'tconfig_os');
 						
-	my @columns = ('nombre', 'nombre', 'name', 'name', 'name', 'nombre', 'name', 'name', 'name');
+	my @columns = ('nombre', 'nombre', 'name', 'name', 'name', 'nombre', 'name', 'name', 'name', 'name',
+					'name', 'nombre', 'name');
 
 	my @data = (\@tables, \@columns);
 

@@ -1,3 +1,9 @@
+2010-11-10  Sancho Lerena <slerena@artica.es>
+
+	* pandora_server.spec
+	lib/PandoraFMS/Config.pm
+	pandora_server.redhat.spec:  Last details on specs.
+
 2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/postinst, DEBIAN/prerm, DEBIAN/make_deb_package.sh: fixed the use

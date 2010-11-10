@@ -618,9 +618,13 @@ function get_alert_times ($row2) {
  * @return array An array with all the possible reports in Pandora where the array index is the report id.
  */
 function get_report_types () {
+	global $config;
+	
 	$types = array ();
 	$types['simple_graph'] = __('Simple graph');
-	$types['simple_baseline_graph'] = __('Simple baseline graph');
+	if($config['enterprise_installed']) {
+		$types['simple_baseline_graph'] = __('Simple baseline graph');
+	}
 	$types['custom_graph'] = __('Custom graph');
 	$types['SLA'] = __('S.L.A.');
 	$types['monitor_report'] = __('Monitor report');

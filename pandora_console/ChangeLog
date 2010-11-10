@@ -1,5 +1,10 @@
 2010-11-10  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions.php: Check de enterprise version to
+	show the baseline graph option in reports
+
+2010-11-10  Sergio Martin <sergio.martin@artica.es>
+
 	* include/functions_reporting.php
 	include/functions.php
 	operation/reporting/reporting_xml.php

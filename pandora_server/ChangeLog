@@ -1,3 +1,10 @@
+2010-11-10  Junichi Satoh  <junichi@rworks.jp>
+
+	* lib/PandoraFMS/Tools.pm: Added a parameter of unsafe_chars, '<>&',
+	to encode_entities(). It is support for multibyte characters.
+	If it is not defined, records with multibyte characters on database
+	are destroyed by 'pandora_recode_db.pl'. :(
+
 2010-11-08  Sergio Martin <srgio.martin@artica.es>
 
 	* util/pandora_sync_db.pl: Added two special 

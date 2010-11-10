@@ -620,6 +620,7 @@ function get_alert_times ($row2) {
 function get_report_types () {
 	$types = array ();
 	$types['simple_graph'] = __('Simple graph');
+	$types['simple_baseline_graph'] = __('Simple baseline graph');
 	$types['custom_graph'] = __('Custom graph');
 	$types['SLA'] = __('S.L.A.');
 	$types['monitor_report'] = __('Monitor report');

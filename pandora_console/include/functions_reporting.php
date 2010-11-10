@@ -1661,6 +1661,29 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			break;
+			
+		case 'simple_baseline_graph':
+			//RUNNING
+			$table->colspan[1][0] = 4;
+			$data = array ();
+			$data[0] = $sizh.__('Simple baseline graph').$sizhfin;
+			$data[1] = $sizh.$agent_name.' - '.$module_name.$sizhfin;
+			$data[2] = $sizh.human_time_description ($content['period']).$sizhfin;
+			array_push ($table->data, $data);
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != ""){
+				$table->colspan[2][0] = 4;
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+			}
+			
+			$data = array ();
+			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&baseline=1&pure=1" border="0" alt="">';
+			array_push ($table->data, $data);
+			
+			break;
 
 		case 2:
 		case 'custom_graph':

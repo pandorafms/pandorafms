@@ -180,6 +180,10 @@ foreach ($contents as $content) {
 			$data["title"] = __('Simple graph');
 			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
 			break;
+		case 'simple_baseline_graph':	
+			$data["title"] = __('Simple baseline graph');
+			$data["objdata"]["img"] = 'include/fgraph.php?PHPSESSID='.$session_id.'&amp;tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;baseline=1&amp;pure=1';
+			break;
 		case 2:
 		case 'custom_graph':
 			$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);

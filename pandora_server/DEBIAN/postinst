@@ -55,6 +55,9 @@ get_distro () {
 	echo "$LINUX_DISTRO:$OS_VERSION:$LINUX"
 }
 
+echo "Linking pandora_exec..."
+ln -s /usr/bin/pandora_exec.server /usr/bin/pandora_exec 2> /dev/null
+
 
 echo "Creating common Pandora FMS directories"
 useradd pandora 2> /dev/null

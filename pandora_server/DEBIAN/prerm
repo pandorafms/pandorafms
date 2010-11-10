@@ -70,3 +70,9 @@ then
 	rm /etc/cron.daily/pandora_db
 fi
 
+rm /usr/bin/pandora_exec
+if [ -e /usr/bin/pandora_exec.agent ]
+then
+	ln -s /usr/bin/pandora_exec.agent /usr/bin/pandora_exec 2> /dev/null
+fi
+

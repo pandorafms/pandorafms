@@ -50,7 +50,7 @@ chmod 755 -R temp_package/DEBIAN
 #cp -aRf * temp_package/usr/share/pandora_agent/
 #but don't copy recursive the temp_package into temp_package
 
-for item in `ls | grep -v NT4 | grep -v temp_package`
+for item in `ls | grep -v NT4 | grep -v AIX | grep -v FreeBSD | grep -v HP-UX | grep -v SunOS | grep -v temp_package`
 do
 	#if  [ \( $item != 'temp_package' \) -a \( $item != 'NT4' \) ]
 	#then
@@ -59,7 +59,7 @@ do
 done
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
-cp -aRf pandora_exec temp_package/usr/bin/
+cp -aRf pandora_exec temp_package/usr/bin/pandora_exec.agent
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 

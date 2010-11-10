@@ -1,4 +1,4 @@
-2010-11-  Miguel de Dios  <miguel.dedios@artica.es>
+2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/postinst, DEBIAN/prerm, DEBIAN/make_deb_package.sh: fixed the use
 	pandora_exec for Pandora Server and Pandora Agent, now make a

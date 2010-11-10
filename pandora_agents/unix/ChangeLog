@@ -1,3 +1,8 @@
+2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/make_deb_package.sh: fixed the include the bigger NT4 files in the
+	DEB package.
+
 2010-11-04  Sancho Lerena <slerena@artica.es>
 
 	* NT4: New binary version of Unix perl agent for NT4, with some tools.

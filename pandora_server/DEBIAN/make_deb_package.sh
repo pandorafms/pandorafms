@@ -82,7 +82,7 @@ then
 	mkdir -p temp_package/usr/share/man/man1/
 	
 	cp -aRf bin/pandora_server temp_package/usr/bin/
-	cp -aRf bin/pandora_exec temp_package/usr/bin/
+	cp -aRf bin/pandora_exec temp_package/usr/bin/pandora_exec.server
 	cp -aRf bin/tentacle_server temp_package/usr/bin/
 	
 	cp -aRf conf/* temp_package/usr/share/pandora_server/conf/

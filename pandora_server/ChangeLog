@@ -1,3 +1,11 @@
+2010-11-  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/postinst, DEBIAN/prerm, DEBIAN/make_deb_package.sh: fixed the use
+	pandora_exec for Pandora Server and Pandora Agent, now make a
+	pandora_exec.server and try to link to pandora_exec.
+	
+	Fixes: #3106578
+
 2010-11-10  Junichi Satoh  <junichi@rworks.jp>
 
 	* lib/PandoraFMS/Tools.pm: Added a parameter of unsafe_chars, '<>&',

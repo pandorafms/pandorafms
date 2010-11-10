@@ -1,3 +1,11 @@
+2010-11-10  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_reporting.php
+	include/functions.php
+	operation/reporting/reporting_xml.php
+	godmode/reporting/reporting_builder.item_editor.php: Added the
+	simple baseline graph to the html and xml report exports
+
 2010-11-08  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.spec: Updated version/build.

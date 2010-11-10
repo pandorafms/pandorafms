@@ -62,6 +62,7 @@ switch ($action) {
 				$idAgentModule = $item['id_agent_module'];
 				$idAgent = get_db_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 				break;
+			case 'simple_baseline_graph':
 			case 'simple_graph':
 				$description = $item['description'];
 				$idAgentModule = $item['id_agent_module'];
@@ -600,6 +601,7 @@ function chooseType() {
 			$("#row_group").css('display', '');
 			break;
 		case 'simple_graph':
+		case 'simple_baseline_graph':
 			$("#row_description").css('display', '');
 			$("#row_agent").css('display', '');
 			$("#row_module").css('display', '');

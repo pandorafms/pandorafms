@@ -1,3 +1,12 @@
+2010-11-10  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql,
+	DEBIAN/control,
+	DEBIAN/make_deb_package.sh,
+	include/config_process.php,
+	pandora_console.redhat.spec: Last updates on version and
+	spec files for release.
+
 2010-11-10  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions.php: Check de enterprise version to

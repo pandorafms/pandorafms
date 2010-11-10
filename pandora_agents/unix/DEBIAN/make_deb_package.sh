@@ -50,12 +50,12 @@ chmod 755 -R temp_package/DEBIAN
 #cp -aRf * temp_package/usr/share/pandora_agent/
 #but don't copy recursive the temp_package into temp_package
 
-for item in `ls`
+for item in `ls | grep -v NT4 | grep -v temp_package`
 do
-	if  [ $item != 'temp_package' ]
-	then
+	#if  [ \( $item != 'temp_package' \) -a \( $item != 'NT4' \) ]
+	#then
 		cp -aRf $item temp_package/usr/share/pandora_agent/
-	fi
+	#fi
 done
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/

@@ -22,7 +22,6 @@ License:            GPL
 Vendor:             Artica ST <info@artica.es>
 #Source0:            %{name}-%{version}-%{revision}.tar.gz
 Source0:            %{name}-%{version}.tar.gz
-Source1:            extras/%{name}-logrotate
 URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
@@ -53,11 +52,9 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
 #mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -86,8 +83,6 @@ fi
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
 
-%defattr(0644,root,root)
-%{_sysconfdir}/logrotate.d/pandora_console
 
 %defattr(770,pandora,%{httpd_group})
 /var/spool/pandora/data_in

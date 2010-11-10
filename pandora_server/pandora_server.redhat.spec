@@ -12,7 +12,6 @@ Release:            %{release}
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
 Source0:            %{name}-%{version}.tar.gz
-Patch0:             %{name}-3.1-init.patch
 URL:                http://www.pandorafms.com
 Group:              System/Monitoring
 Packager:           Sancho Lerena <slerena@artica.es>
@@ -36,7 +35,6 @@ Pandora FMS is a monitoring system for big IT environments. It uses remote tests
 rm -rf $RPM_BUILD_ROOT
 
 %setup -q -n pandora_server
-%patch0 -p2 -b .init
 
 %build
 #$%{__perl} Makefile.PL INSTALLDIRS=vendor

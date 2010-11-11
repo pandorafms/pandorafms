@@ -1,5 +1,29 @@
 2010-11-11  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/javascript/jquery.ui.datepicker.js,
+	include/javascript/pandora_modules.js,
+	include/javascript/tiny_mce/plugins/autoresize/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/example/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/emotions/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advhr/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advlist/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advimage/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advimage/js/image.js,
+	include/javascript/tiny_mce/plugins/directionality/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/visualchars/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/wordcount/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/autosave/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advlink/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/fullpage/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/contextmenu/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/bbcode/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/xhtmlxtras/editor_plugin.js,
+	include/javascript/OpenLayers/OpenLayers.js,
+	include/javascript/jquery.ui.resizable.js: fixed end of lines that it
+	haven't semicolon end char.
+
+2010-11-11  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/insert_data.php: fixed to force include the "autocomplete"
 	library javascript.
 	

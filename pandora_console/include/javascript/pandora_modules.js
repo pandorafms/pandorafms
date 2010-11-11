@@ -5,7 +5,6 @@ var id_modules_snmp = Array (15, 16, 17, 18);
 
 function configure_modules_form () {
 	$("#id_module_type").change (function () {
-		$("#button-snmp_walk").enable ();
 		if (id_modules_icmp.in_array (this.value)) {
 			$("tr#simple-snmp_1, tr#simple-snmp_2, tr#advanced-tcp_send, tr#advanced-tcp_receive").hide ();
 			$("#text-tcp_port").attr ("disabled", "1");
@@ -84,8 +83,6 @@ function configure_modules_form () {
 	
 	$("#network_component_group").change (function () {
 		var $select = $("#network_component").hide ();
-		$("#button-snmp_walk").enable ();
-
 		$("#component").hide ();
 		if (this.value == 0)
 			return;
@@ -119,8 +116,6 @@ function configure_modules_form () {
 	});
 	
 	$("#network_component").change (function () {
-		$("#button-snmp_walk").enable ();
-
 		if (this.value == 0)
 			return;
 		$("#component_loading").show ();

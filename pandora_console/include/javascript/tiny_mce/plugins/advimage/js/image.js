@@ -195,7 +195,7 @@ var ImageDialog = {
 					break;
 
 				case 'hspace':
-					v = dom.getStyle(e, 'margin-left')
+					v = dom.getStyle(e, 'margin-left');
 					v2 = dom.getStyle(e, 'margin-right');
 
 					if (v && v == v2)
@@ -204,7 +204,7 @@ var ImageDialog = {
 					break;
 
 				case 'vspace':
-					v = dom.getStyle(e, 'margin-top')
+					v = dom.getStyle(e, 'margin-top');
 					v2 = dom.getStyle(e, 'margin-bottom');
 					if (v && v == v2)
 						return parseInt(v.replace(/[^0-9]/g, ''));

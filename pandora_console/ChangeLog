@@ -1,3 +1,8 @@
+2010-11-11  Sergio Martin <sergio.martin@artica.es>
+
+	* include/fgraph.php: Fixed session auth for 
+	external access
+
 2010-11-11  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* general/error_install.php, general/error_perms.php, general/header.php,

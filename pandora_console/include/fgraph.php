@@ -50,14 +50,15 @@ if (! isset ($config["id_user"])) {
 	if (isset($_SESSION["id_usuario"])) {
 		$config["id_user"] = $_SESSION["id_usuario"];
 	}
-}
-
-if (! isset ($config["id_user"])) {
-	require_once('../mobile/include/user.class.php');
-	session_start ();
-	session_write_close ();
-	$user = $_SESSION['user'];
-	$config["id_user"] = $user->getIdUser();
+	else if (! isset ($config["id_user"])) {
+		require_once('../mobile/include/user.class.php');
+		session_start ();
+		session_write_close ();
+		$user = $_SESSION['user'];
+		if(!empty($user)) {
+			$config["id_user"] = $user->getIdUser();
+		}
+	}
 }
 
 //Fixed the graph for cron (that it's login)

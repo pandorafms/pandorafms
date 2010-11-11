@@ -1,3 +1,10 @@
+2010-11-11  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extensions/insert_data.php: fixed to force include the "autocomplete"
+	library javascript.
+	
+	Fixes: #3103590
+
 2010-11-11  Sergio Martin <sergio.martin@artica.es>
 
 	* include/fgraph.php: Fixed session auth for 

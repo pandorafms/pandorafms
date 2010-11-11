@@ -147,6 +147,7 @@ function mainInsertData() {
 	require_jquery_file ('ui.core');
 	require_jquery_file ('ui.datepicker');
 	require_jquery_file ('timeentry');
+	require_jquery_file ('autocomplete');
     ?>
 	<script type="text/javascript">
 		/* <![CDATA[ */

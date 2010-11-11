@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -150,7 +150,7 @@ function print_menu (&$menu) {
 				if (array_key_exists('sec',$sub)) $secExtension = $sub["sec"];
 				if (strlen($secExtension) > 0) {
 					$secUrl = $secExtension;
-					$extensionInMenu = 'extension_in_menu='.$mainsec.'&';
+					$extensionInMenu = 'extension_in_menu='.$mainsec.'&amp;';
 				}
 				else {
 					$secUrl = $mainsec;

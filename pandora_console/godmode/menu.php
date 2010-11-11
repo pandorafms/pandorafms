@@ -49,11 +49,11 @@ if (give_acl ($config['id_user'], 0, "AW")) {
 	$menu["gmassive"]["id"] = "god-massive";
 		
 	$sub = array ();
-	$sub["godmode/massive/massive_operations&tab=massive_agents"]["text"] = __('Agents operations');
+	$sub["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
 	
-	$sub["godmode/massive/massive_operations&tab=massive_modules"]["text"] = __('Modules operations');
+	$sub["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
 	
-	$sub["godmode/massive/massive_operations&tab=massive_alerts"]["text"] = __('Alerts operations');
+	$sub["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
 	
 	enterprise_hook('massivepolicies_submenu');
 	

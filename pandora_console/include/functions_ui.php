@@ -437,7 +437,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 		else {
 			$img = 'images/policies.png';
 				
-			$data[$index['policy']] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id'] . '">' . 
+			$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
 				print_image($img,true, array('title' => $policyInfo['name'])) .
 				'</a>';
 		}
@@ -456,11 +456,11 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&id_alert='.$alert["id"].'&force_execution=1&refr=60"><img src="images/target.png" ></a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60"><img src="images/target.png" /></a>';
 		} 
 		else {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&id_alert='.$alert["id"].'&refr=60"><img src="images/refresh.png" /></a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60"><img src="images/refresh.png" /></a>';
 		}
 	}
 	
@@ -499,7 +499,7 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
-			$actionText .= '</li></span><br></div>';
+			$actionText .= '</li></span><br /></div>';
 		}
 		$actionText .= '</div></ul>';
 	}
@@ -1389,7 +1389,7 @@ if($hidde_default) {
 	$image_b = "images/go.png";
 }
 // Link to toggle
-echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br><br>';
+echo '<a href="#" id="tgl_ctrl_'.$uniqid.'"><b>'.$name.'</b>&nbsp;'.print_image ($image_b, true, array ("title" => $title, "id" => "image_".$uniqid)).'</a><br /><br />';
 
 // Code into a div
 echo "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
@@ -1571,11 +1571,11 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
 
-	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;<img src="'.$icon.'" style="margin-bottom: -3px;" class="bottom" border="0">&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;<img src="'.$icon.'" style="margin-bottom: -3px;" class="bottom" border="0" alt="" />&nbsp; ';
 	$buffer .= $title;
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);
-	$buffer .= '</ul></div>';
+	$buffer .= '</li></ul></div>';
 
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
@@ -1610,7 +1610,7 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 		}
 	}
 
-	$buffer .=  '</div><br><br><br>';
+	$buffer .=  '</div><br /><br /><br />';
 
 	if (!$return)
 		echo $buffer;

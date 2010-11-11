@@ -40,7 +40,7 @@ $offset = (int) get_parameter ('offset');
 $status = (int) get_parameter ('status', 4);
 $modulegroup = (int) get_parameter ('modulegroup');
 
-echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60">';
+echo '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60">';
 
 echo '<table cellspacing="4" cellpadding="4" width="750" class="databox">';
 echo '<tr><td valign="middle">'.__('Group').'</td>';
@@ -68,7 +68,7 @@ echo '<td valign="middle">';
 print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
 	'modulegroup', $modulegroup, '',__('All'), 0, false, false, true, false, 'width: 100px;');
 
-echo '</tr><tr><td valign="middle">'.__('Module name').'</td>';
+echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $user_groups = implode (",", array_keys (get_user_groups ()));
@@ -86,8 +86,9 @@ print_input_text ("ag_freestring", $ag_freestring, '', 15,30, false);
 echo '</td><td valign="middle">';
 print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');
 
-echo "</form>";
+echo "</td><tr>";
 echo "</table>";
+echo "</form>";
 
 // Begin Build SQL sentences
 $sql = " FROM tagente, tagente_modulo, tagente_estado 
@@ -249,13 +250,13 @@ foreach ($result as $row) {
 				}
 			}
 				
-			$data[0] = '<a href="?sec=gpolicies&sec2=enterprise/godmode/policies/policies&id=' . $policyInfo['id_policy'] . '">' . 
+			$data[0] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id_policy'] . '">' . 
 				print_image($img,true, array('title' => $title)) .
 				'</a>';
 		}
 	}
 	
-	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
+	$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
 	$data[1] .= substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
@@ -305,8 +306,8 @@ foreach ($result as $row) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".$row["module_name"]."&refresh=600','day_".$win_handle."')";
 
-		$data[6] = '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border=0></a>';
-		$data[6] .= "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agent"]."&tab=data_view&period=86400&id=".$row["id_agente_modulo"]."'><img border=0 src='images/binary.png'></a>";
+		$data[6] = '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border="0" alt="" /></a>';
+		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'><img src='images/binary.png' border='0' alt='' /></a>";
 	}
 
 	if (is_numeric($row["datos"]))

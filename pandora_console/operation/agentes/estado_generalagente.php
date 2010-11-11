@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -75,8 +75,8 @@ else {
 	$cellName = print_agent_name ($agent["id_agente"], true, "upper");
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
-echo '<td class="datos" width="40"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" /></a>&nbsp;';
-echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'" /></a></td></tr>';
+echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" alt="" /></a>&nbsp;';
+echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'"  alt="" /></a></td></tr>';
 
 //Addresses
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
@@ -100,7 +100,7 @@ echo '&nbsp;<i><span title="'.$agent["os_version"].'">'.substr($agent["os_versio
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
-echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_parent"].'">'.get_agent_name ($agent["id_parent"]).'</a></td></tr>';
+echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.get_agent_name ($agent["id_parent"]).'</a></td></tr>';
 
 // Agent Interval
 echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
@@ -132,7 +132,7 @@ if ($config['activate_gis']) {
     	echo __('There is no GIS data.');
     }
     else {
-    	echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.$dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'].'</a>';
+    	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">'.$dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'].'</a>';
     }
     echo '</td></tr>';
 }
@@ -158,7 +158,7 @@ if ($agent['timezone_offset'] != 0) {
 $progress = getNextAgentContact($id_agente);
 
 echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
-echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';
+echo '<td class="datos f9" colspan="2"><img src="include/fgraph.php?tipo=progress&amp;percent='.$progress.'&amp;height=20&amp;width=200"></td></tr>';
 
 // Custom fields
 $fields = get_db_all_rows_filter('tagent_custom_fields', array('display_on_front' => 1));

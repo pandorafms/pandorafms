@@ -78,11 +78,11 @@ function mainAgentsModules() {
 	$comborefr .= "</form>";
 	
 	if ($config["pure"] == 0) {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&pure=1&offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
+		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
 			. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
 	} else {
-		$fullscreen = '<a href="index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&refr=0&offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
+		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
 			. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
 		$config['refr'] = $refr;

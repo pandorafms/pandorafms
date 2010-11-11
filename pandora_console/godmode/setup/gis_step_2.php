@@ -206,7 +206,7 @@ if ($mapConnectionData != null) {
 // Open Street Map Connection
 $optionsConnectionOSMTable = '<table class="databox" border="0" cellpadding="4" cellspacing="4" width="50%">' .
 		'<tr class="row_0">' .
-			'<td>'  . htmlentities(__("Tile Server URL"), ENT_QUOTES) . ':</td>' .
+			'<td>'  . htmlentities(__("Tile Server URL"), ENT_QUOTES, "UTF-8") . ':</td>' .
 			'<td><input id="type" type="hidden" name="type" value="OSM" />' . print_input_text ('url', $mapConnectionDataUrl, '', 45, 90, true) . '</td>' .
 		'</tr>' . 
 	'</table>';

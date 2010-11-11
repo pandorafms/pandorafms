@@ -24,16 +24,16 @@ $msg_cnt = 0;
 		<a href="index.php?sec=main">
 <?php
 		if (!defined ('PANDORA_ENTERPRISE')){
-			echo "<img border='0' src='images/pandora_header_logo.png' alt='Pandora FMS Opensource'>";
+			echo "<img border='0' src='images/pandora_header_logo.png' alt='Pandora FMS Opensource' />";
 		} else {
-			echo "<img border='0' src='images/pandora_header_logo_enterprise.png' alt='Pandora FMS Enterprise'>";
+			echo "<img border='0' src='images/pandora_header_logo_enterprise.png' alt='Pandora FMS Enterprise' />";
 		}
 ?>
 		</a>
 		</td>
 		<td width="20%">
 			<img src="images/user_<?php if (is_user_admin ($config["id_user"]) == 1) echo 'suit'; else echo 'green'; ?>.png" class="bot" alt="user" />
-			<a href="index.php?sec=usuarios&sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
+			<a href="index.php?sec=usuarios&amp;sec2=operation/users/user_edit" class="white"> [<b><?php echo $config["id_user"];?></b>]</a>
 			<?php
 
 			if ($config["metaconsole"] == 0){
@@ -59,7 +59,7 @@ $msg_cnt = 0;
 
 <?php
 		if ($config["metaconsole"] == 0){
-			echo '<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">';
+			echo '<a class="white_bold" href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60">';
 
 			$servers["all"] = (int) get_db_value ('COUNT(id_server)','tserver');
 			$servers["up"] = (int) check_server_status ();
@@ -118,7 +118,8 @@ $msg_cnt = 0;
 		echo "<td width='20%' rowspan='2'>";
 		echo "<a href='index.php?sec=main'>";
 		if (isset($config["custom_logo"]))
-			echo "<img height='60' width='139' src='images/custom_logo/" . $config["custom_logo"] . "'>"; 
+			echo "<img height='60' width='139' src='images/custom_logo/" . $config["custom_logo"] . "' alt='Logo' />";
+		echo "</a>";
 ?>
 		</td>
 	</tr>
@@ -128,7 +129,7 @@ $msg_cnt = 0;
 <?php
 if ($config["metaconsole"] == 0){
 ?>
-	<form method="get" style="" name="quicksearch">
+	<form method="get" style="" name="quicksearch" action="">
 				<script type="text/javascript" language="javascript">
 				var fieldKeyWordEmpty = true;
 				</script>
@@ -143,7 +144,7 @@ if ($config["metaconsole"] == 0){
 					onfocus="javascript: if (fieldKeyWordEmpty) $('#keywords').val('');"
 					size="100" style="background: white url('images/lupa_15x15.png') no-repeat right; padding: 0; padding-left:0px; margin: 0; width: 90%; height: 19px; margin-bottom: 5px; margin-left: 2px;" />
 				<!-- onClick="javascript: document.quicksearch.submit()" -->					
-				<input type='hidden' name='head_search_keywords' value='abc'>
+				<input type='hidden' name='head_search_keywords' value='abc' />
 				</form>				
 <?php
 }
@@ -152,7 +153,7 @@ if ($config["metaconsole"] == 0){
 				<td>
 				 <?php
 if ($config["metaconsole"] == 0){
-                   echo '<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot">&nbsp;'.__('Events').'</a>';
+                   echo '<a class="white_bold" href="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr=5"><img src="images/lightning_go.png" alt="lightning_go" class="bot" />&nbsp;'.__('Events').'</a>';
 }
                  ?>
 				</td>

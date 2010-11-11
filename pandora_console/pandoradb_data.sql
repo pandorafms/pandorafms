@@ -170,9 +170,9 @@ LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
 (1,'Pandora FMS Manual','https://openideas.info/wiki/index.php?title=Pandora_3.x:Documentation'),
 (2,'Pandora FMS','http://pandorafms.org'),
-(3,'Report a bug','https://sourceforge.net/tracker/?func=add&group_id=155200&atid=794852'),
-(4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&atid=794855'),
-(5,'Module library','http://pandorafms.org/?sec=community&sec2=repository&lng=es');
+(3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
+(4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
+(5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es');
 UNLOCK TABLES;
 
 --

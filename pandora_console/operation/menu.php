@@ -134,7 +134,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	}
 
 	foreach ($servers as $serverItem) {
-		$sub["operation/servers/view_server_detail&server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
+		$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
 	}
 
 	$menu["estado_server"]["sub"] = $sub;
@@ -173,8 +173,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'].$pss['password']);
 	
-	$sub["operation/events/events_rss.php?user=".$config['id_user']."&hashup=".$hashup]["text"] = __('RSS');
-	$sub["operation/events/events_rss.php?user=".$config['id_user']."&hashup=".$hashup]["type"] = "direct";
+	$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup]["text"] = __('RSS');
+	$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup]["type"] = "direct";
 	
 	//CSV
 	$sub["operation/events/export_csv.php"]["text"] = __('CSV File');

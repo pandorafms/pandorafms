@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@
 <div id='login_f'>
 	<h1 id="log_f" class="error">Installer active</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"><br><font size="1">
+		<img src="images/pandora_logo.png" border="0" alt="Pandora FMS"><br><font size="1">
 		</font>
 	</div>
 	<div class="msg"><br><br>

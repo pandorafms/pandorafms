@@ -20,6 +20,7 @@ package PandoraFMS::DB;
 use strict;
 use warnings;
 use DBI;
+use PandoraFMS::Tools;	
 
 require Exporter;
 
@@ -31,6 +32,7 @@ our @EXPORT = qw(
 		db_disconnect
 		db_do
 		db_insert
+		db_update
 		get_action_id
 		get_agent_id
 		get_agent_name
@@ -70,6 +72,17 @@ sub db_connect ($$$$$$) {
 	}
 	
 	return undef;
+}
+
+##########################################################################
+## SQL update. Returns the number of updated rows.
+##########################################################################
+sub db_update ($$;@) {
+	my ($dbh, $query, @values) = @_;
+	
+	my $rows = $dbh->do($query, undef, @values);
+	
+	return $rows;
 }
 
 ##########################################################################

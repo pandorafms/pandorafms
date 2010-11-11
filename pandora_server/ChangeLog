@@ -1,5 +1,11 @@
 2010-11-11  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/DB.pm
+	lib/PandoraFMS/Tools.pm: Added missed functions
+	to recode script
+
+2010-11-11  Sergio Martin <sergio.martin@artica.es>
+
 	* lib/PandoraFMS/Tools.pm
 	util/pandora_recode_db.pl: Added the recode script
 	to the 3.1.1 version

@@ -48,6 +48,8 @@ our @EXPORT = qw(
 	disk_free
 	load_average
 	free_mem
+	safe_input
+	safe_output
 );
 
 ##########################################################################

@@ -14,10 +14,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="3.1"
+pandora_version="3.1.1"
 
-package_cpan=1
+package_cpan=0
 package_pandora=1
+
 for param in $@
 do
 	if [ $param = "-h" -o $param = "--help" ]

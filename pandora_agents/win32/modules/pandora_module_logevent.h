@@ -39,13 +39,13 @@ namespace Pandora_Modules {
 
 	class Pandora_Module_Logevent : public Pandora_Module {
 	private:
-        int id;
-		int type;
-		string source;
-		string application;
-		string pattern;
-		HANDLE log_event;
-		HANDLE messages_dll;
+        unsigned long id;
+	int type;
+	string source;
+	string application;
+	string pattern;
+	HANDLE log_event;
+	HANDLE messages_dll;
 
         HANDLE openLogEvent ();
         void closeLogEvent ();

@@ -59,7 +59,7 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
         this->type = -1;
     }
 
-	this->id = atoi (id.c_str ());
+	this->id = strtoul (id.c_str (), NULL, 0);
 	this->source = source;
 	this->pattern = pattern;
 	this->application = application;
@@ -224,7 +224,10 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 	    
 			// Retrieve the event description
 			getEventDescription (pevlr, description);
-			
+			if (description == "") {
+				strcpy (description, "N/A");
+			}
+
 			// Filter the event
 			if (filterEvent (pevlr, description) == 0) {
 			
@@ -310,6 +313,7 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
     module = LoadLibraryEx (exe_file_path, 0, DONT_RESOLVE_DLL_REFERENCES);
     if(module == NULL) {
         RegCloseKey(hk);
+    	pandoraDebug("LoadLibraryEx error %d. Exe file path %s.", GetLastError(), exe_file_path);
         return;
     }
 
@@ -331,8 +335,8 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
                }
            }
         }
-		strcpy(strings[i], (TCHAR *)pevlr + offset);
-		offset += len + 1;
+	strcpy(strings[i], (TCHAR *)pevlr + offset);
+	offset += len + 1;
     }
   
     // Get the description

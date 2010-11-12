@@ -311,6 +311,6 @@ UPDATE tincidencia SET id_grupo = 0 WHERE id_grupo = 1;
 UPDATE tlayout SET id_group = 0 WHERE id_group = 1;
 UPDATE tplanned_downtime SET id_group = 0 WHERE id_group = 1;
 
-UPDATE tconfig SET `value` = '3.1' WHERE `token` = 'db_scheme_version';
-UPDATE tconfig SET `value` = 'PD10609' WHERE `token` = 'db_scheme_build';
+UPDATE tconfig SET `value` = '3.1.1' WHERE `token` = 'db_scheme_version';
+UPDATE tconfig SET `value` = 'PD111110' WHERE `token` = 'db_scheme_build';
 

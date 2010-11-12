@@ -1,3 +1,14 @@
+2010-11-11  Sancho Lerena <slerena@artica.es>
+
+    * extras/pandoradb_migrate_v3.0_to_v3.1.sql,
+    pandoradb_data.sql: Version 3.1.1 update in DB.
+
+    * DEBIAN/make_deb_package.sh: Minor changes for version.
+    
+    * include/config_process.php: Set develop mode to 0.
+
+    * index.php: Try to delete install.php before stops with the notice message.
+
 2010-11-05  Sancho Lerena <slerena@artica.es>
 
 	* include/config_process.php

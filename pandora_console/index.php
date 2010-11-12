@@ -38,11 +38,15 @@ if ($develop_bypass != 1) {
 		include ("install.php");
 		exit;
 	}
-	// Check for installer presence
-	if (file_exists ("install.php")) {
-		include "general/error_install.php";
-		exit;
-	}
+
+    // Check for installer presence
+    if (file_exists ("install.php")) {
+        if (!unlink("install.php")){
+            include "general/error_install.php";
+            exit;
+        }
+    }
+
 	// Check perms for config.php
 	if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
 		(substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&

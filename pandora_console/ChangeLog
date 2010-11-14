@@ -1,3 +1,8 @@
+2010-11-14  Junichi Satoh  <junichi@rworks.jp>
+
+	* operation/agentes/status_monitor.php: Fixed unnecessary strings
+	(a part of html entities) are shown in module name.
+
 2010-11-11  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/javascript/jquery.ui.datepicker.js,

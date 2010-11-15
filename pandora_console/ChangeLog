@@ -1,5 +1,10 @@
 2010-11-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/agentes/estado_ultimopaquete.php: fixed the single quote instead
+	double quote.
+
+2010-11-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/javascript/tiny_mce/plugins/table/editor_plugin.js,
 	include/javascript/tiny_mce/plugins/advlink/editor_plugin.js,
 	include/javascript/tiny_mce/plugins/fullscreen/editor_plugin.js,

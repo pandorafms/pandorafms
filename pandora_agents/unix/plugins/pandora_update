@@ -37,46 +37,46 @@ use Digest::MD5 qw(md5);
 # This small function return the current base path (where this tool is stored)
 
 sub return_basepath () {
-    return $FindBin::Bin;
+	return $FindBin::Bin;
 }
 
 # Function to compare two binary files. Return 0 if different 1 if equal, 2 error
 
 sub compare_twofiles ($$) {
 
-    my $file1 = $_[0];
-    my $file2 = $_[1];
+	my $file1 = $_[0];
+	my $file2 = $_[1];
 
-    my $size1 = -s $file1;
-    my $size2 = -s $file2;
+	my $size1 = -s $file1;
+	my $size2 = -s $file2;
 
-    # Size matters;
+	# Size matters;
 
-    if ((!defined($size1)) || (!defined($size2))){
-        return 2;
-    }
+	if ((!defined($size1)) || (!defined($size2))){
+		return 2;
+	}
 
-    if ($size1 != $size2){
-        return 0;
-    }
+	if ($size1 != $size2){
+		return 0;
+	}
 
-    open FILE1, $file1;
-    binmode FILE1;
-    my $data1 = <FILE1>;
-    close FILE1;
-    my $hash1 = md5($data1);
+	open FILE1, $file1;
+	binmode FILE1;
+	my $data1 = <FILE1>;
+	close FILE1;
+	my $hash1 = md5($data1);
 
-    open FILE2, $file2;
-    binmode FILE2;
-    my $data2 = <FILE2>;
-    close FILE2;
-    my $hash2 = md5($data2);
+	open FILE2, $file2;
+	binmode FILE2;
+	my $data2 = <FILE2>;
+	close FILE2;
+	my $hash2 = md5($data2);
 
-    if ($hash1 eq $hash2){
-        return 1;
-    }
+	if ($hash1 eq $hash2){
+		return 1;
+	}
 
-    return 0;
+	return 0;
 }
 
 # -------------------------------------------------------------------------
@@ -132,21 +132,21 @@ my $local_log = "/tmp/pandora_update.log";
 # [SETUP END]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if (compare_twofiles ($running_binary, $updated_binary) == 0 ){
-    # Do the update
+	# Do the update
 
-    # Create the temp file to "acknoledge" a update has been succeed
-    open (FILE3,">$local_log");
-    close (FILE3);
+	# Create the temp file to "acknoledge" a update has been succeed
+	open (FILE3,">$local_log");
+	close (FILE3);
 
-    my $output = `$stop_pandora`;
-    copy($updated_binary, $running_binary) or die "Problems updating binary from $updated_binary";
-    $output = `$start_pandora`;
+	my $output = `$stop_pandora`;
+	copy($updated_binary, $running_binary) or die "Problems updating binary from $updated_binary";
+	$output = `$start_pandora`;
 
 } else {
-    if (-e $local_log){
-        print "Updated binary from $updated_binary\n";
-        unlink $local_log;
-    }  
+	if (-e $local_log){
+		print "Updated binary from $updated_binary\n";
+		unlink $local_log;
+	}
 }
 
 exit;

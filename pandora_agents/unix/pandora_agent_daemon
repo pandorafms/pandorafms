@@ -6,7 +6,7 @@
 # (c) 2008-2010 Sancho Lerena <slerena@gmail.com>
 #
 # Please see http://www.pandorafms.org
-# v3.1 Build 100515
+# v3.2 Build 101115
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -14,7 +14,7 @@
 # Provides: pandora_agent
 # Required-Start: $network
 # Required-Stop: $network
-# Default-Start:  2 3 5
+# Default-Start: 2 3 5
 # Default-Stop: 0 1 6
 # Short-Description: Startup script daemon for Pandora FMS agent
 # Description: Startup script daemon for Pandora FMS agent (linux)
@@ -93,7 +93,7 @@ case "$1" in
 			exit 1
 		else
 			echo "Stopping Pandora Agent."
-			kill -9 $PANDORA_PID > /dev/null 2>&1        
+			kill -9 $PANDORA_PID > /dev/null 2>&1
 		fi
 	;;
 
@@ -115,7 +115,7 @@ case "$1" in
 	;;
 	
 	*)
-        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|status}"
-        exit 1
+	echo "Usage: /etc/init.d/pandora_agent_daemon {start|stop|restart|status}"
+	exit 1
 esac
 

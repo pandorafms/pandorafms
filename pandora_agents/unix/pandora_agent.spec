@@ -2,7 +2,7 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     3.2dev
+%define version     3.2
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
 Version:            %{version}
@@ -58,7 +58,7 @@ fi
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
 
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
-    rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
+	rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
 fi
 
 %clean
@@ -75,7 +75,7 @@ if [ ! -d /etc/pandora ] ; then
 fi
 
 if [ ! -f /usr/share/pandora_agent/pandora_agent.conf ] ; then
-    	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
+	cp /usr/share/pandora_agent/pandora_agent.conf.rpmnew /usr/share/pandora_agent/pandora_agent.conf
 fi
 
 if [ ! -f /etc/pandora/pandora_agent.conf ] ; then
@@ -99,7 +99,7 @@ chkconfig pandora_agent_daemon on
 
 # Upgrading
 if [ "$1" = "1" ]; then
-        exit 0
+	exit 0
 fi
 
 chkconfig --del pandora_agent_daemon 

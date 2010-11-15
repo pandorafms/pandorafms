@@ -41,6 +41,7 @@ namespace Pandora_Modules {
 	private:
         unsigned long id;
 	int type;
+	unsigned char first_run;
 	string source;
 	string application;
 	string pattern;

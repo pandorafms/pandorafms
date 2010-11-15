@@ -1,3 +1,9 @@
+2010-11-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* modules/pandora_module_logevent.cc,
+	  modules/pandora_module_logevent.h: Search for event log descriptions
+	  in multiple DLLs if necessary. Improved event log error detection.
+
 2010-11-14  Sancho Lerena <slerena@artica.es>
 	
 	* bin/util/pandora_update.exe: This small binary (see the Unix

@@ -1,3 +1,11 @@
+2010-11-14  Sancho Lerena <slerena@artica.es>
+
+	* plugins/pandora_update: Small tool (in perl), used also in windows
+	(compiled as .exe), to auto-upgrade the software agents by stopping
+	replacing the binary, and starting again the service/process, and also
+	notifying the system about the upgrade. This will be possible using
+	the new filecollection mechanism in 3.2 version.
+
 2010-11-10  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/postinst, DEBIAN/prerm, DEBIAN/make_deb_package.sh: fixed the use

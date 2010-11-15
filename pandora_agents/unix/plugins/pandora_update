@@ -1,0 +1,152 @@
+#!/usr/bin/perl
+# Update binary tool
+# Copyright (c) 2010 Artica Soluciones Tecnologicas S.L.
+# Copyright (c) Sancho Lerena <slerena@artica.es>
+
+use strict;
+use warnings;
+use POSIX qw(strftime);
+use Cwd 'abs_path';
+use File::Basename;
+use File::Copy;
+use FindBin;
+use Digest::MD5 qw(md5);
+
+# This tool is intented to be used to update pandora agent binaries using
+# the file collection feature. This will work using a module like this:
+
+# Unix
+
+# module_begin
+# module_name Pandora_Update
+# module_type async_string
+# module_exec nohup pandora_update fc_1 2> /dev/null && tail -1 nohup.out 2> /dev/null
+# module_description Module to check new version of pandora agent and update itself
+# module_end
+
+# Windows:
+
+# module_begin
+# module_name Pandora_Update
+# module_type async_string
+# module_exec pandora_update.exe fc_1
+# module_description Module to check new version of pandora agent and update itself
+# module_end
+
+
+# This small function return the current base path (where this tool is stored)
+
+sub return_basepath () {
+    return $FindBin::Bin;
+}
+
+# Function to compare two binary files. Return 0 if different 1 if equal, 2 error
+
+sub compare_twofiles ($$) {
+
+    my $file1 = $_[0];
+    my $file2 = $_[1];
+
+    my $size1 = -s $file1;
+    my $size2 = -s $file2;
+
+    # Size matters;
+
+    if ((!defined($size1)) || (!defined($size2))){
+        return 2;
+    }
+
+    if ($size1 != $size2){
+        return 0;
+    }
+
+    open FILE1, $file1;
+    binmode FILE1;
+    my $data1 = <FILE1>;
+    close FILE1;
+    my $hash1 = md5($data1);
+
+    open FILE2, $file2;
+    binmode FILE2;
+    my $data2 = <FILE2>;
+    close FILE2;
+    my $hash2 = md5($data2);
+
+    if ($hash1 eq $hash2){
+        return 1;
+    }
+
+    return 0;
+}
+
+# -------------------------------------------------------------------------
+
+# MAIN CODE starts here
+
+
+# Get the required path (relative to basepath) to find pandora agent binary
+
+if ($#ARGV != 0) {
+	print "Usage: $0 <relative path (filecollection id) to updated binary \n";
+	print "For example: $0 fc2 \n\n";
+	exit 1;
+}
+
+my $fc_path = $ARGV[0];
+my $base_path = return_basepath();
+
+# Setup your particular paths / process settings here
+# [SETUP BEGIN] ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Location of binaries 
+
+# Unix 
+my $running_binary = "/usr/bin/pandora_agent";
+my $updated_binary = "/etc/pandora/collections/$fc_path/pandora_agent";
+
+# Windows 
+
+#my $running_binary = $base_path."/../PandoraAgent.exe";
+#my $updated_binary = $base_path."/../collections/$fc_path/PandoraAgent.exe";
+
+# Location of service start / stop commands
+
+# Unix style
+
+my $start_pandora = "/etc/init.d/pandora_agent_daemon start";
+my $stop_pandora = "/etc/init.d/pandora_agent_daemon stop";
+
+# Windows stuff
+
+#my $start_pandora = "net start \"Pandora FMS Agent\"";
+#my $stop_pandora = "net stop \"Pandora FMS Agent\"";
+
+# Local log/temp file
+
+# Unix
+my $local_log = "/tmp/pandora_update.log";
+
+# Windows
+#my $local_log = $base_path. "/../pandora_update.log";
+
+# [SETUP END]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+if (compare_twofiles ($running_binary, $updated_binary) == 0 ){
+    # Do the update
+
+    # Create the temp file to "acknoledge" a update has been succeed
+    open (FILE3,">$local_log");
+    close (FILE3);
+
+    my $output = `$stop_pandora`;
+    copy($updated_binary, $running_binary) or die "Problems updating binary from $updated_binary";
+    $output = `$start_pandora`;
+
+} else {
+    if (-e $local_log){
+        print "Updated binary from $updated_binary\n";
+        unlink $local_log;
+    }  
+}
+
+exit;

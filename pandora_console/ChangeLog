@@ -1,3 +1,8 @@
+2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* include/functions_events.php: Show text in Agent detail when no events
+	found. Commented old code.
+
 2010-11-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_ultimopaquete.php: fixed the single quote instead

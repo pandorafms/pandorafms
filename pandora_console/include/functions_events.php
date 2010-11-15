@@ -287,10 +287,10 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 	
 	if ($result === false) {
 		$return = '<div class="nf">'.__('No events').'</div>';
-		if ($return === false) {
-			echo $return;
-		}
-		return $return;
+#		if ($return === false) {
+#			echo $return;
+#		}
+		echo $return;
 	} else {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;

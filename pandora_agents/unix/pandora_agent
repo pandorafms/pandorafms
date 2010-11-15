@@ -48,7 +48,7 @@ eval {
 	require threads;
 	require threads::shared;
 	require Thread::Semaphore;
-    require IO::Socket;
+	require IO::Socket;
 };
 if (!$@) {
 	threads::shared::share (\$Xml);
@@ -61,7 +61,7 @@ use constant AGENT_BUILD => '101103';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
-	linux => 'cat /proc/meminfo  | grep MemTotal: | awk \'{ print $2 }\'',
+	linux => 'cat /proc/meminfo | grep MemTotal: | awk \'{ print $2 }\'',
 	solaris => 'MEM=`prtconf | grep Memory | awk \'{print $3}\'` bash -c \'echo $(( 1024 * $MEM ))\'',
 	hpux => 'swapinfo -t | grep memory | awk \'{print $2}\'',
 	freebsd => 'sysctl hw.physmem | awk \'{print $2 / 1024}\''
@@ -69,7 +69,7 @@ use constant TOTALMEMORY_CMDS => {
 
 # Commands to retrieve free memory information in kB
 use constant FREEMEMORY_CMDS => {
-	linux => 'cat /proc/meminfo  | grep MemFree: | awk \'{ print $2 }\'',
+	linux => 'cat /proc/meminfo | grep MemFree: | awk \'{ print $2 }\'',
 	solaris => 'vmstat 1 2 | tail -1 | awk \'{ print $5 }\'',
 	hpux => 'swapinfo -t | grep memory | awk \'{print $4}\'',
 	freebsd => 'vmstat -H 1 2 | tail -1 | awk \'{ print $5 }\''
@@ -150,9 +150,9 @@ my %Conf = (
 	'timezone_offset' => 0,
 	'pandora_exec' => 'pandora_exec',
 	'agent_threads' => 1,
-    'udp_server_port' => 41122,
-    'udp_server_auth_address' => '0.0.0.0',
-    'udp_server' => 0
+	'udp_server_port' => 41122,
+	'udp_server_auth_address' => '0.0.0.0',
+	'udp_server' => 0
 );
 
 # Modules
@@ -464,19 +464,19 @@ sub send_file {
 	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
  		$output = `scp -P $Conf{'server_port'} $file pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
-      	my $base = basename ($file);
-      	my $dir = dirname ($file);
+		my $base = basename ($file);
+		my $dir = dirname ($file);
 
 		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
-quote USER pandora
-quote PASS $Conf{'server_pwd'}
-lcd "$dir"
-cd "$Conf{'server_path'}"
-put "$base"                
-quit
-FEOF1`
+		quote USER pandora
+		quote PASS $Conf{'server_pwd'}
+		lcd "$dir"
+		cd "$Conf{'server_path'}"
+		put "$base"
+		quit
+		FEOF1`
 	} elsif ($Conf{'transfer_mode'} eq 'local') {
-        $output = `cp $file $Conf{'server_path'}/ 2>&1 >$DevNull`;
+		$output = `cp $file $Conf{'server_path'}/ 2>&1 >$DevNull`;
 	}
 
 	# Get the errorlevel
@@ -521,17 +521,17 @@ sub recv_file ($) {
 	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
  		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
 	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
-      	my $base = basename ($file);
-      	my $dir = dirname ($file);
+		my $base = basename ($file);
+		my $dir = dirname ($file);
 
 		$output = `ftp -n $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
-quote USER pandora
-quote PASS $Conf{'server_pwd'}
-lcd "$Conf{'temporal'}"
-cd "$Conf{'server_path'}"
-get "$file"
-quit
-FEOF1`
+		quote USER pandora
+		quote PASS $Conf{'server_pwd'}
+		lcd "$Conf{'temporal'}"
+		cd "$Conf{'server_path'}"
+		get "$file"
+		quit
+		FEOF1`
 	} elsif ($Conf{'transfer_mode'} eq 'local') {
 		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
 	}
@@ -554,11 +554,11 @@ sub check_remote_config () {
 
 	# Calculate the configuration file MD5 digest
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
-    binmode(CONF_FILE);
+	binmode(CONF_FILE);
 	my $conf_md5 = md5 (join ('', <CONF_FILE>));
-    close (CONF_FILE);
-    
-    # Get the remote MD5 file
+	close (CONF_FILE);
+
+	# Get the remote MD5 file
 	if (recv_file ($RemoteMD5File) != 0) {
 		open (MD5_FILE, "> $Conf{'temporal'}/$RemoteMD5File") || error ("Could not open file '$ConfDir/$RemoteMD5File' for writing: $!.");
 		print MD5_FILE $conf_md5;
@@ -1201,29 +1201,29 @@ sub write_module_xml ($@) {
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
-	$Xml .= "  <module>\n" .
-			"    <name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
-	        "    <description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
-			"    <type>" . $module->{'type'} . "</type>\n";
+	$Xml .= "	<module>\n" .
+		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
+		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
+		"	<type>" . $module->{'type'} . "</type>\n";
 
 	if ($module->{'interval'} > 1) {
-		$Xml .= "    <module_interval>" . $module->{'interval'} . "</module_interval>\n";
+		$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
 	}
 
 	# Data list
 	if ($#data > 0) {
-		$Xml .= "    <datalist>\n";
+		$Xml .= "	<datalist>\n";
 		foreach my $data_item (@data) {
 			chomp ($data_item);
-			$Xml .= "      <data><value><![CDATA[$data_item]]></value></data>\n";
+			$Xml .= "	<data><value><![CDATA[$data_item]]></value></data>\n";
 		}
-		$Xml .= "    </datalist>\n";
+		$Xml .= "	</datalist>\n";
 	# Single data
 	} else {
 		chomp ($data[0]);
-		$Xml .= "    <data><![CDATA[$data[0]]]></data>\n";
+		$Xml .= "	<data><![CDATA[$data[0]]]></data>\n";
 	}
-    $Xml .= "  </module>\n";
+	$Xml .= "	</module>\n";
 
  	$Sem->up () if (defined ($Sem));
 }
@@ -1232,7 +1232,7 @@ sub write_module_xml ($@) {
 # Receive a UDP server signal to restart agent
 ################################################################################
 sub udp_server_signal () {
-    log_message ('udp server', 'Received signal to restart the agent.');
+	log_message ('udp server', 'Received signal to restart the agent.');
 }
 
 ################################################################################
@@ -1240,29 +1240,29 @@ sub udp_server_signal () {
 ################################################################################
 sub udp_server ($$) {
 
-    my $udp_port = shift;
-    my $udp_auth_address = shift;
-    my $parent_pid = getppid();
+	my $udp_port = shift;
+	my $udp_auth_address = shift;
+	my $parent_pid = getppid();
 
-    my($sock, $oldmsg, $newmsg, $hisaddr, $hishost, $MAXLEN);
-    $MAXLEN = 1024;
+	my($sock, $oldmsg, $newmsg, $hisaddr, $hishost, $MAXLEN);
+	$MAXLEN = 1024;
 
-    log_message ('udp server', 'Starting UDP server listening on '.$udp_auth_address.":".$udp_port);
-    $sock = IO::Socket::INET->new(LocalPort => $udp_port, Proto => 'udp') or die "socket: $@";
+	log_message ('udp server', 'Starting UDP server listening on '.$udp_auth_address.":".$udp_port);
+	$sock = IO::Socket::INET->new(LocalPort => $udp_port, Proto => 'udp') or die "socket: $@";
 
-    while ($sock->recv($newmsg, $MAXLEN)) {
-	    my($port, $ipaddr) = sockaddr_in($sock->peername);
-	    $hishost = gethostbyaddr($ipaddr, AF_INET);
+	while ($sock->recv($newmsg, $MAXLEN)) {
+		my($port, $ipaddr) = sockaddr_in($sock->peername);
+		$hishost = gethostbyaddr($ipaddr, AF_INET);
 
-        log_message ('udp server', 'Received signal from '.$hishost);
+		log_message ('udp server', 'Received signal from '.$hishost);
 
-        if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
-            if ($newmsg =~ /REFRESH AGENT/){
-                # Send signal to restart agent
-                kill 'SIGINT' , $parent_pid;
-            }
-        }
-    } 
+		if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
+			if ($newmsg =~ /REFRESH AGENT/){
+				# Send signal to restart agent
+				kill 'SIGINT' , $parent_pid;
+			}
+		}
+	}
 }
 
 ################################################################################
@@ -1324,22 +1324,22 @@ $ENV{'PATH'} .= ":$ConfDir/plugins";
 
 # Start UDP server if configured
 if ($Conf{'udp_server'} == 1){
-    my $pid = fork();
+	my $pid = fork();
 
-    if ($pid == 0){
-        udp_server ($Conf{'udp_server_port'}, $Conf{'udp_server_auth_address'});
-        exit;
-    }
+	if ($pid == 0){
+		udp_server ($Conf{'udp_server_port'}, $Conf{'udp_server_auth_address'});
+		exit;
+	}
 }
 
 
 # Loop
 while (1) {
 
-    # Ignore signals from UDP server while processing execution
-    if ($Conf{'udp_server'} == 1){
-        $SIG{'INT'} = 'DEFAULT';
-    }
+	# Ignore signals from UDP server while processing execution
+	if ($Conf{'udp_server'} == 1){
+		$SIG{'INT'} = 'DEFAULT';
+	}
 
 	# Check for a new configuration
 	check_remote_config () unless ($Conf{'debug'} eq '1');
@@ -1348,16 +1348,16 @@ while (1) {
 	check_collections () unless ($Conf{'debug'} eq '1');
 
 	$Xml = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
-	       "<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
-		   "' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
-		   "' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" .  strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
-		   "' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
+		"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+		"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
+		"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
+		"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'}; 
 	
 	if (defined ($Conf{'parent_agent_name'})) {
 		$Xml .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
 	}
 	if (defined ($Conf{'longitude'}) && defined ($Conf{'latitude'})) {
-		$Xml .= "' longitude='" .$Conf{'longitude'} .  "' latitude='" .$Conf{'latitude'};
+		$Xml .= "' longitude='" .$Conf{'longitude'} . "' latitude='" .$Conf{'latitude'};
 		if (defined ($Conf{'altitude'})) {
 			$Xml .= "' altitude='" .$Conf{'altitude'};
 		}
@@ -1431,10 +1431,10 @@ while (1) {
 	# Cron mode
 	last if ($Conf{'cron_mode'} == 1);
 	
-    # Enable signal capture to break the Sleep interval on UDP signal
-    if ($Conf{'udp_server'} == 1){
-        $SIG{'INT'} = \&udp_server_signal;
-    }
+	# Enable signal capture to break the Sleep interval on UDP signal
+	if ($Conf{'udp_server'} == 1){
+		$SIG{'INT'} = \&udp_server_signal;
+	}
 
 	# Go to sleep
 	#

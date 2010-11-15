@@ -1,3 +1,8 @@
+2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* pandora_agent*, pandora_exec, plugins/pandora_update: Small changes:
+	Year, version, spaces to tabs.
+
 2010-11-14  Sancho Lerena <slerena@artica.es>
 
 	* plugins/pandora_update: Small tool (in perl), used also in windows

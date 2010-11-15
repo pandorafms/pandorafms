@@ -64,6 +64,7 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
 	this->pattern = pattern;
 	this->application = application;
 	this->log_event = NULL;
+	this->first_run = 1;
 	this->setKind (module_logevent_str);
 }
 
@@ -127,8 +128,11 @@ Pandora_Module_Logevent::openLogEvent () {
         return NULL;
     }
 
-    // Discard existing events
-    this->getLogEvents (event_list, 1);
+    // Discard existing events the first time the module is executed
+    if (this->first_run == 1) {
+        this->getLogEvents (event_list, 1);
+	this->first_run = 0;
+    }
 
     return this->log_event;
 }
@@ -200,6 +204,11 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 
 				// Try to read the event again
 				continue;
+			// File corrupted or cleared
+			} else if (last_error == ERROR_EVENTLOG_FILE_CORRUPT || last_error == ERROR_EVENTLOG_FILE_CHANGED) {
+				closeLogEvent ();
+				free ((void *) buffer);
+				return -1;
 			}
 			// Unknown error
 			else {
@@ -289,6 +298,7 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
     DWORD max_path, type;
     LPCSTR source_name;
     TCHAR **strings = NULL;
+    char *dll_start = NULL, *dll_end = NULL, *exe_file_path_end = NULL;
 
     message[0] = 0;
 
@@ -307,14 +317,6 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
     }
     if (ExpandEnvironmentStrings (exe_file, exe_file_path, _MAX_PATH + 1) == 0) {
         strncpy(exe_file_path, exe_file, _MAX_PATH + 1);
-    }
-
-    // Load the DLL
-    module = LoadLibraryEx (exe_file_path, 0, DONT_RESOLVE_DLL_REFERENCES);
-    if(module == NULL) {
-        RegCloseKey(hk);
-    	pandoraDebug("LoadLibraryEx error %d. Exe file path %s.", GetLastError(), exe_file_path);
-        return;
     }
 
     // Get the event strings
@@ -338,10 +340,36 @@ Pandora_Module_Logevent::getEventDescription (PEVENTLOGRECORD pevlr, char *messa
 	strcpy(strings[i], (TCHAR *)pevlr + offset);
 	offset += len + 1;
     }
-  
-    // Get the description
-    if (FormatMessage (FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_ARGUMENT_ARRAY, module, pevlr->EventID, 0, (LPTSTR)message, BUFFER_SIZE, strings) == 0) {
-        message[0] = 0;
+
+    // Move to the first DLL
+    dll_start = (char *) exe_file_path;
+    dll_end = strchr (exe_file_path, ';');
+    if (dll_end != NULL) {
+	*dll_end = '\0';
+    }
+    exe_file_path_end = ((char *) exe_file_path) + _MAX_PATH * sizeof (TCHAR);
+
+    while (1) {
+        // Load the DLL
+        module = LoadLibraryEx (dll_start, 0, DONT_RESOLVE_DLL_REFERENCES);
+        if(module == NULL) {
+            pandoraDebug("LoadLibraryEx error %d. Exe file path %s.", GetLastError(), exe_file_path);
+        } else {
+            // Get the description
+            FormatMessage (FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_ARGUMENT_ARRAY, module, pevlr->EventID, 0, (LPTSTR)message, BUFFER_SIZE, strings);
+	}
+
+	// No more DLLs
+	if (dll_end == NULL || dll_end >= exe_file_path_end) {
+		break;
+	}
+
+    	// Move to the next DLL
+	dll_start = dll_end + sizeof (TCHAR);
+    	dll_end = strchr (dll_start, ';');
+    	if (dll_end != NULL) {
+		*dll_end = '\0';
+	}
     }
 
     // Clean up 

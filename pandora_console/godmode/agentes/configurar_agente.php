@@ -282,7 +282,32 @@ if ($id_agente) {
 			$gistab['active'] = false;
 	}
 	
-	$onheader = array('view' => $viewtab, 'separator' => "", 'main' => $maintab, 'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab, 'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+	$onheader = array('view' => $viewtab, 'separator' => "", 'main' => $maintab,
+		'module' => $moduletab, 'alert' => $alerttab, 'template' => $templatetab,
+		'inventory' => $inventorytab, 'collection'=> $collectiontab, 'group' => $grouptab, 'gis' => $gistab);
+	
+	foreach($config['extensions'] as $extension) {
+		if (isset($extension['extension_god_tab'])) {
+			$image = $extension['extension_god_tab']['icon'];
+			$name = $extension['extension_god_tab']['name'];
+			$id = $extension['extension_god_tab']['id'];
+			
+			$id_extension = get_parameter('id_extension', '');
+			
+			if ($id_extension == $id) {
+				$active = true;
+			}
+			else {
+				$active = false;
+			}
+			
+			$url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+			
+			$extension_tab = array('text' => '<a href="' . $url .'">' . print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+			
+			$onheader = $onheader + array($id => $extension_tab);	
+		}
+	}
 
 	print_page_header (__('Agent configuration').' -&nbsp;'.printTruncateText(get_agent_name ($id_agente)), "images/setup.png", false, "", true, $onheader);
 	
@@ -651,6 +676,7 @@ if ($update_module) {
 }
 
 // MODULE INSERT
+// =================
 if ($create_module) {
 	if (isset ($_POST["combo_snmp_oid"])) {
 		$combo_snmp_oid = get_parameter_post ("combo_snmp_oid");
@@ -867,7 +893,8 @@ switch ($tab) {
 	case "module":
 		if ($id_agent_module || $edit_module) {
 			require ("module_manager_editor.php");
-		} else {
+		}
+		else {
 			require ("module_manager.php");
 		}
 		break;
@@ -881,10 +908,29 @@ switch ($tab) {
 	case "gis":
 		require("agent_conf_gis.php");
 		break;
+	case "extension":
+		$found = false;
+		foreach($config['extensions'] as $extension) {
+			if (isset($extension['extension_god_tab'])) {
+				$id = $extension['extension_god_tab']['id'];
+				$function = $extension['extension_god_tab']['function'];
+				
+				$id_extension = get_parameter('id_extension', '');
+				
+				if ($id_extension == $id) {
+					call_user_func_array($function, array());
+					$found = true;
+				}
+			}
+		}
+		if (!$found) {
+			print_error_message ("Invalid tab specified");
+		}
+		break;
 	default:
 		if (enterprise_hook ('switch_agent_tab', array ($tab)))
 			//This will make sure that blank pages will have at least some
 			//debug info in them - do not translate debug
-			print_error_message ("DEBUG: Invalid tab specified in ".__FILE__.":".__LINE__);
+			print_error_message ("Invalid tab specified");
 }
 ?>

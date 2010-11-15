@@ -1,3 +1,11 @@
+2010-11-14  Sancho Lerena <slerena@artica.es>
+	
+	* bin/util/pandora_update.exe: This small binary (see the Unix
+	perl version to see the sources), allow to replace the running
+	windows binary, by stopping the service and restarting it. Will
+	allow automatic upgrades of the agent using the fille collection
+	mechanism.
+
 2010-11-12  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc: isServiceRunning returns -1 for module

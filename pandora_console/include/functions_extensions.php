@@ -190,6 +190,46 @@ function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 }
 
 /**
+ * Add in the header tabs in godmode agent the extension tab.
+ * 
+ * @param $tabId
+ * @param $tabName
+ * @param $tabIcon
+ * @param $tabFunction
+ */
+function add_extension_godmode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+	global $config;
+	global $extension_file;
+	
+	$extension = &$config['extensions'][$extension_file];
+	$extension['extension_god_tab'] = array();
+	$extension['extension_god_tab']['id'] = $tabId;
+	$extension['extension_god_tab']['name'] = $tabName;
+	$extension['extension_god_tab']['icon'] = $tabIcon;
+	$extension['extension_god_tab']['function'] = $tabFunction;
+}
+
+/**
+ * Add in the header tabs in operation agent the extension tab.
+ * 
+ * @param unknown_type $tabId
+ * @param unknown_type $tabName
+ * @param unknown_type $tabIcon
+ * @param unknown_type $tabFunction
+ */
+function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunction) {
+	global $config;
+	global $extension_file;
+	
+	$extension = &$config['extensions'][$extension_file];
+	$extension['extension_ope_tab'] = array();
+	$extension['extension_ope_tab']['id'] = $tabId;
+	$extension['extension_ope_tab']['name'] = $tabName;
+	$extension['extension_ope_tab']['icon'] = $tabIcon;
+	$extension['extension_ope_tab']['function'] = $tabFunction;
+}
+
+/**
  * TODO: Document extensions
  *
  * @param string $function_name

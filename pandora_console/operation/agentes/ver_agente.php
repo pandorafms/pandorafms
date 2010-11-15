@@ -447,10 +447,34 @@ else {
 	$graphs['active'] = false;
 }
 
+
 $onheader = array('manage' => $managetab, 'separator' => "", 'main' => $maintab, 
 				'data' => $datatab, 'alert' => $alerttab, 'sla' => $slatab, 
 				'inventory' => $inventorytab, 'collection' => $collectiontab, 
 				'group' => $grouptab, 'gis' => $gistab, 'custom' => $custom_fields, 'graphs' => $graphs, 'policy' => $policyTab);
+
+foreach($config['extensions'] as $extension) {
+	if (isset($extension['extension_ope_tab'])) {
+		$image = $extension['extension_ope_tab']['icon'];
+		$name = $extension['extension_ope_tab']['name'];
+		$id = $extension['extension_ope_tab']['id'];
+		
+		$id_extension = get_parameter('id_extension', '');
+		
+		if ($id_extension == $id) {
+			$active = true;
+		}
+		else {
+			$active = false;
+		}
+		
+		$url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=extension&id_agente='.$id_agente . '&id_extension=' . $id;
+		
+		$extension_tab = array('text' => '<a href="' . $url .'">' . print_image ($image, true, array ( "title" => $name)) . '</a>', 'active' => $active);
+		
+		$onheader = $onheader + array($id => $extension_tab);	
+	}
+}
 
 print_page_header (__('Agent').'&nbsp;-&nbsp;'.mb_substr(get_agent_name($id_agente),0,25), $icon, false, "", false, $onheader);
 
@@ -494,6 +518,25 @@ switch ($tab) {
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");
+		break;
+	case "extension":
+		$found = false;
+		foreach($config['extensions'] as $extension) {
+			if (isset($extension['extension_ope_tab'])) {
+				$id = $extension['extension_ope_tab']['id'];
+				$function = $extension['extension_ope_tab']['function'];
+				
+				$id_extension = get_parameter('id_extension', '');
+				
+				if ($id_extension == $id) {
+					call_user_func_array($function, array());
+					$found = true;
+				}
+			}
+		}
+		if (!$found) {
+			print_error_message ("Invalid tab specified in ".__FILE__.":".__LINE__);
+		}
 		break;
 }
 

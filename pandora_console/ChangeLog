@@ -1,5 +1,14 @@
 2010-11-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/javascript/tiny_mce/plugins/table/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/advlink/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/fullscreen/editor_plugin.js,
+	include/javascript/tiny_mce/plugins/template/editor_plugin.js,
+	include/javascript/tiny_mce/themes/advanced/editor_template.js: fixed end of
+	lines that it haven't semicolon end char.
+
+2010-11-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_extensions.php: added functions
 	"add_extension_godmode_tab_agent" and "add_extension_opemode_tab_agent" to
 	add the extensions tab in the header in operation and godmode.

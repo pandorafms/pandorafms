@@ -1403,7 +1403,9 @@ sub subst_alert_macros ($$) {
 	my ($string, $macros) = @_;
 
 	while ((my $macro, my $value) = each (%{$macros})) {
-		$string =~ s/($macro)/$value/ig;
+		# Macro data may contain HTML entities
+		my $decoded_value = decode_entities ($value);
+		$string =~ s/($macro)/$decoded_value/ig;
 	}
 
 	return $string;

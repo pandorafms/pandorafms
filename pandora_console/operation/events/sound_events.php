@@ -62,7 +62,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 echo "</head>";
 echo "<body>";
 
-echo "<h1 style='background: #66AA44; color: #fff;'><img src='../../images/pandora_header_logo.png'/>" . __("Sound events") . "</h1>";
+echo "<h1 style='background: #66AA44; color: #fff;'><img src='../../images/pandora_header_logo.png'/>" . __("Sound Events") . "</h1>";
 
 $table = null;
 $table->width = '100%';

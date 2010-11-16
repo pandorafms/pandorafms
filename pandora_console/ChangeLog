@@ -1,3 +1,8 @@
+2010-11-16  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* operation/menu.php, operation/events/sound_events.php: Change string.
+	Use events in lower case, according with the menu criteria.
+
 2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* include/functions_events.php: Show text in Agent detail when no events

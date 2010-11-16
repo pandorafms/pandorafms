@@ -188,7 +188,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$javascript = "javascript: window.open('operation/events/sound_events.php');";
 	$javascript = 'javascript: alert(111);';
 	$javascript = 'javascript: openSoundEventWindow();';
-	$sub[$javascript]["text"] = __('Sound Events');
+	$sub[$javascript]["text"] = __('Sound events');
 	$sub[$javascript]["type"] = "direct";
 	
 	?>

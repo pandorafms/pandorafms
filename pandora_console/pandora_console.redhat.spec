@@ -51,7 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-#mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install

@@ -1,3 +1,8 @@
+2010-11-17  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extensions/vnc_view.php: added first version of extension of to VNC view
+	tab.
+
 2010-11-17  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* operation/reporting/reporting_viewer.php, operation/reporting/graph_viewer.php:

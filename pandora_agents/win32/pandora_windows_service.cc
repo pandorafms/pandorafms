@@ -344,7 +344,7 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 	
 	rc = ssh_client.scpFileFilename (remote_path + filename,
 					    filepath);
-	if (rc = PANDORA_EXCEPTION) {
+	if (rc == PANDORA_EXCEPTION) {
 		pandoraLog ("Unable to copy at %s%s", remote_path.c_str (),
 			    filename.c_str ());
 		ssh_client.disconnect();

@@ -1,3 +1,8 @@
+2010-11-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Fixed a typo in copyScpDataFile that made
+	  it always return PANDORA_EXCEPTION.
+
 2010-11-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* modules/pandora_module_logevent.cc,

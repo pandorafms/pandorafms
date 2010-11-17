@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -55,11 +55,11 @@ $time = (string) get_parameter ('time', date ('h:iA'));
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time";
 
 if ($config["pure"] == 0) {
-	$options[] = "<a href='$url&pure=1'>"
+	$options['screen'] = "<a href='$url&pure=1'>"
 		. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
 } else {
-	$options[] = "<a href='$url&pure=0'>"
+	$options['screen'] = "<a href='$url&pure=0'>"
 		. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";
 }
@@ -145,7 +145,7 @@ foreach ($contents as $content) {
 	$table->colspan = array ();
 	$table->rowstyle = array ();
 	
-    render_report_html_item ($content, $table, $report);
+	render_report_html_item ($content, $table, $report);
 
 	print_table ($table);
 	flush ();

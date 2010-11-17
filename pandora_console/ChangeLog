@@ -1,3 +1,8 @@
+2010-11-17  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandora_console.redhat.spec: re-enabled the check dir "data_in" in
+	spec file for package redhat-centos.
+
 2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* include/functions_events.php: Show text in Agent detail when no events

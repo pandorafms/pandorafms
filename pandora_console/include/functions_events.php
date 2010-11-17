@@ -286,11 +286,7 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 	$result = get_db_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		$return = '<div class="nf">'.__('No events').'</div>';
-#		if ($return === false) {
-#			echo $return;
-#		}
-		echo $return;
+		echo '<div class="nf">'.__('No events').'</div>';
 	} else {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;

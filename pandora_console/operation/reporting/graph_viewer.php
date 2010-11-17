@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -23,17 +23,17 @@ require_once ('include/functions_custom_graphs.php');
 
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
-$id = (int) get_parameter ('id');
+$id_graph = (int) get_parameter ('id');
 
 // Delete module SQL code
 if ($delete_graph) {
 	if (give_acl ($config['id_user'], 0, "AW")) {
-		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
+		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id_graph";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
 			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
-		$sql = "DELETE FROM tgraph WHERE id_graph = $id";
+		$sql = "DELETE FROM tgraph WHERE id_graph = $id_graph";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".__('Successfully deleted')."</h3>";
 		else
@@ -48,10 +48,10 @@ if ($delete_graph) {
 }
 
 if ($view_graph) {
-	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id";
+	$sql="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
 	$sources = get_db_all_rows_sql($sql);
 
-	$sql="SELECT * FROM tgraph WHERE id_graph = $id";
+	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
 	$graph = get_db_row_sql($sql);
 
 	$id_user = $graph["id_user"];
@@ -62,11 +62,11 @@ if ($view_graph) {
 	//Increase the height to fix the leyend rise
 	if ($zoom > 0) {
 		switch ($zoom) {
-		case 1: 
+		case 1:
 			$width = 500;
 			$height = 200 + count($sources) * 15;
 			break;
-		case 2:  
+		case 2:
 			$width = 650;
 			$height = 300 + count($sources) * 10;
 			break;
@@ -93,24 +93,38 @@ if ($view_graph) {
 		include ("general/noaccess.php");
 		exit;
 	}
-	
-	// Header
-	print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, "" );
 
-	echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
+	$url = "index.php?sec=reporting&sec2=operation/reporting/graph_viewer&id=$id_graph&view_graph=1";
+
+	if ($config["pure"] == 0) {
+		$options['screen'] = "<a href='$url&pure=1'>"
+			. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
+			. "</a>";
+	} else {
+		$options['screen'] = "<a href='$url&pure=0'>"
+			. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
+			. "</a>";
+	}
+
+	// Header
+	print_page_header (__('Reporting'). " &raquo;  ". __('Combined image render'), "images/reporting.png", false, "", false, $options);
+
+	echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
 	echo "<tr><td>";
-	print_custom_graph ($id, $height, $width, $period, $stacked);
+	print_custom_graph ($id_graph, $height, $width, $period, $stacked);
 	echo "</td></tr></table>";
 	$period_label = human_time_description ($period);
-	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'>";
-	echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
+	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
+	echo "<table class='databox_frame' cellpadding='4' cellspacing='4'>";
 	echo "<tr><td class='datos'>";
 	echo "<b>".__('Period')."</b>";
+	echo "</td>";
 	echo "<td class='datos'>";
 	
 	print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
 		'', '', 0, false, false, false);
 
+	echo "</td>";
 	echo "<td class='datos'>";
 	$stackeds = array ();
 	$stackeds[0] = __('Graph defined');
@@ -120,6 +134,7 @@ if ($view_graph) {
 	$stackeds[3] = __('Stacked line');
 	print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
+	echo "</td>";
 	echo "<td class='datos'>";
 	$zooms = array();
 	$zooms[0] = __('Graph defined');
@@ -128,8 +143,11 @@ if ($view_graph) {
 	$zooms[3] = __('Zoom x3');
 	print_select ($zooms, 'zoom', $zoom , '', '', 0);
 
+	echo "</td>";
 	echo "<td class='datos'>";
 	echo "<input type=submit value='".__('Update')."' class='sub upd'>";
+	echo "</td>";
+	echo "</tr>";
 	echo "</table>";
 	echo "</form>";	
 	return;

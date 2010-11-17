@@ -1,3 +1,8 @@
+2010-11-17  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/reporting/map_builder_wizard.php: deleted old file of old visual
+	console editor. 
+
 2010-11-17  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* include/functions_events.php: Deleted old code. Simplify.

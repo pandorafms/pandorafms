@@ -1,3 +1,7 @@
+2010-11-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/PandoraAgent.exe: Updated to r3583.
+
 2010-11-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Fixed a typo in copyScpDataFile that made

@@ -80,6 +80,8 @@ Exported Functions:
 
 =item * C<pandora_update_agent>
 
+=item * C<pandora_update_agent_address>
+
 =item * C<pandora_update_module_on_error>
 
 =item * C<pandora_update_server>
@@ -148,6 +150,7 @@ our @EXPORT = qw(
 	pandora_reset_server
 	pandora_server_keep_alive
 	pandora_update_agent
+	pandora_update_agent_address
 	pandora_update_module_on_error
 	pandora_update_module_from_hash
 	pandora_update_server
@@ -1006,6 +1009,20 @@ sub pandora_update_agent ($$$$$$$;$$$$$$) {
 		logger($pa_config, "Agent id $agent_id positional data ignored (update_gis_data = $update_gis_data)",10);
 	}
 
+}
+
+##########################################################################
+=head2 C<< pandora_update_agent_address(I<$pa_config>, I<$agent_id>, I<$address>, I<$dbh>) >>
+
+Update the address of an agent.
+
+=cut
+##########################################################################
+sub pandora_update_agent_address ($$$$$) {
+	my ($pa_config, $agent_id, $agent_name, $address, $dbh) = @_;
+
+	logger($pa_config, 'Updating address for agent ' . $agent_name . ' (' . $address . ')', 10);
+	db_do ($dbh, 'UPDATE tagente SET direccion = ? WHERE id_agente = ?', $address, $agent_id);
 }
 
 ##########################################################################

@@ -268,6 +268,10 @@ sub process_xml_data ($$$$$) {
 	# Check some variables
 	$interval = 300 if (! defined ($interval) || $interval eq '');
 	$os_version = 'N/A' if (! defined ($os_version) || $os_version eq '');
+	
+	# Get agent address from the XML if available
+	my $address = '' ;
+	$address = $data->{'address'} if (defined ($data->{'address'}));
 
 	# Get agent id
 	$AgentSem->down ();
@@ -290,12 +294,12 @@ sub process_xml_data ($$$$$) {
 		# Create the agent
 		if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0 ) {
 			logger($pa_config, "Creating agent $agent_name at long: $longitude lat: $latitude alt: $altitude", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', $group_id, $parent_id, $os, 
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
 												 $description, $interval, $dbh, $timezone_offset, $longitude, $latitude, $altitude, $position_description);
 		}
 		else { # Ignore agent positional data
 			logger($pa_config, "Creating agent $agent_name", 5);
-			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, '', $group_id, $parent_id, $os,
+			$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os,
 												 $description, $interval, $dbh, $timezone_offset);
 		}
 		if (! defined ($agent_id)) {
@@ -320,6 +324,11 @@ sub process_xml_data ($$$$$) {
 		$os_version = $agent->{'os_version'};
 		$agent_version = $agent->{'agent_version'};
 		$timezone_offset = $agent->{'timezone_offset'};
+	} else {
+		# Update agent address if necessary
+		if ($address ne '' && $address ne $agent->{'direccion'}) {
+			pandora_update_agent_address ($pa_config, $agent_id, $agent_name, $address, $dbh);
+		}
 	}
 
 	if ($valid_position_data == 1 && $pa_config->{'activate_gis'} != 0) {

@@ -1,3 +1,8 @@
+2010-11-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_windows_service.cc: Merged from trunk. Fixed a typo in
+	  copyScpDataFile that made it always return PANDORA_EXCEPTION.
+
 2010-11-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_windows_service.cc: Merged from trunk. Read all secondary

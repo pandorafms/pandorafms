@@ -1,3 +1,16 @@
+2010-11-19  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_extensions.php: added functions
+	"get_disabled_extensions" and "getExtensionInfo".
+
+	* operation/extensions.php: erased the delete extension option.
+
+	* images/dot_green.disabled.png, images/dot_red.disabled.png: added files
+	for the table of features extension.
+	
+	* godmode/extensions.php: show a table of extension with features and
+	action to disable and delete.
+
 2010-11-17  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extensions/vnc_view.php: added first version of extension of to VNC view

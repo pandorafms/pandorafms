@@ -44,10 +44,10 @@ if ($delete != ""){
 $table->width = '500px';
 $table->head = array ();
 $table->head[0] = __('Name');
-if (give_acl ($config['id_user'], 0, "PM")){
-	$table->head[1] = __('Delete');
-	$table->align[1] = "center";
-}
+//if (give_acl ($config['id_user'], 0, "PM")){
+//	$table->head[1] = __('Delete');
+//	$table->align[1] = "center";
+//}
 $table->data = array ();
 
 foreach ($config['extensions'] as $extension) {
@@ -59,9 +59,9 @@ foreach ($config['extensions'] as $extension) {
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=extensions&amp;sec2='.$extension['operation_menu']['sec2'].'" class="mn">'.$extension['operation_menu']['name'];
 
-	if (give_acl ($config['id_user'], 0, "PM")) {
-		$data[1] = '<a href="index.php?sec=extensions&amp;sec2=operation/extensions&delete='.$extension['operation_menu']['sec2'].'&name='.$extension['operation_menu']['name'].'" class="mn"><img src="images/cross.png"></a>';
-	}
+//	if (give_acl ($config['id_user'], 0, "PM")) {
+//		$data[1] = '<a href="index.php?sec=extensions&amp;sec2=operation/extensions&delete='.$extension['operation_menu']['sec2'].'&name='.$extension['operation_menu']['name'].'" class="mn"><img src="images/cross.png"></a>';
+//	}
 
 	array_push ($table->data, $data);
 }

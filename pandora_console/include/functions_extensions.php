@@ -128,6 +128,146 @@ function get_extensions ($enterprise = false) {
 	return $extensions;
 }
 
+function get_disabled_extensions() {
+	global $config;
+	
+	$extensions = array ();
+	
+	$dirs = array('open' => EXTENSIONS_DIR . '/disabled', 'enterprise' =>  ENTERPRISE_DIR . '/' . EXTENSIONS_DIR . '/disabled');
+	
+	foreach ($dirs as $type => $dir) {
+		$handle = false;
+			
+		if (file_exists ($dir))
+			$handle = @opendir ($dir);	
+		
+		if (empty ($handle))
+			continue;
+		
+		$ignores = array ('.', '..');
+		
+		$file = readdir ($handle);
+		while ($file !== false) {
+			if (in_array ($file, $ignores)) {
+				$file = readdir ($handle);
+				continue;
+			}
+			$filepath = realpath ($dir."/".$file);
+			if (! is_readable ($filepath) || is_dir ($filepath) || ! preg_match ("/.*\.php$/", $filepath)) {
+				$file = readdir ($handle);
+				continue;
+			}
+			
+			//$content = file_get_contents($filepath);
+			$content = '';
+			
+			$data = array();
+			
+			$data['operation_menu'] = false;
+			if (preg_match("/<?php(\n|.)*add_operation_menu_option(\n|.)*?>/", $content)) {
+				$data['operation_menu'] = true;
+			}
+			
+			$data['godmode_menu'] = false;
+			if (preg_match('/<\?php(\n|.)*add_godmode_menu_option(\n|.)*\?>/', $content)) {
+				$data['godmode_menu'] = true;
+			}
+			
+			$data['operation_function'] = false;
+			if (preg_match('/<\?php(\n|.)*add_extension_main_function(\n|.)*\?>/', $content)) {
+				$data['operation_function'] = true;
+			}
+			
+			$data['login_function'] = false;
+			if (preg_match('/<\?php(\n|.)*add_extension_login_function(\n|.)*\?>/', $content)) {
+				$data['login_function'] = true;
+			}
+			
+			$data['extension_ope_tab'] = false;
+			if (preg_match('/<\?php(\n|.)*add_extension_opemode_tab_agent(\n|.)*\?>/', $content)) {
+				$data['extension_ope_tab'] = true;
+			}
+			
+			$data['extension_god_tab'] = false;
+			if (preg_match('/<\?php(\n|.)*add_extension_godmode_tab_agent(\n|.)*\?>/', $content)) {
+				$data['extension_god_tab'] = true;
+			}
+			
+			$data['godmode_function'] = false;
+			if (preg_match('/<\?php(\n|.)*add_extension_godmode_function(\n|.)*\?>/', $content)) {
+				$data['godmode_function'] = true;
+			}
+			
+			$data['enterprise'] = false;
+			if ($type == 'enterprise') {
+				$data['enterprise'] = true;
+			}
+			
+			$data['enabled'] = false;
+			
+			$extensions[$file] = $data;
+			
+			$file = readdir ($handle);
+		}
+	}
+	
+	return $extensions;	
+}
+
+function getExtensionInfo() {
+	global $config;
+	
+	$return = array ();
+	
+	foreach($config['extensions'] as $extension) {
+		$data = array();
+		$data['godmode_function'] = false;
+		if (!empty($extension['godmode_function'])) {
+			$data['godmode_function'] = true;
+		}
+		
+		$data['godmode_menu'] = false;
+		if (!empty($extension['godmode_menu'])) {
+			$data['godmode_menu'] = true;
+		}
+		
+		$data['operation_function'] = false;
+		if (!empty($extension['main_function'])) {
+			$data['operation_function'] = true;
+		}
+		
+		$data['operation_menu'] = false;
+		if (!empty($extension['operation_menu'])) {
+			$data['operation_menu'] = true;
+		}
+		
+		$data['login_function'] = false;
+		if (!empty($extension['login_function'])) {
+			$data['login_function'] = true;
+		}
+		
+		$data['extension_ope_tab'] = false;
+		if (!empty($extension['extension_ope_tab'])) {
+			$data['extension_ope_tab'] = true;
+		}
+		
+		$data['extension_god_tab'] = false;
+		if (!empty($extension['extension_god_tab'])) {
+			$data['extension_god_tab'] = true;
+		}
+		
+		$data['enterprise'] = (bool)$extension['enterprise'];
+		
+		$data['enabled'] = true;
+		
+		$return[$extension['file']] = $data;
+	}
+	
+	$return = $return + get_disabled_extensions();
+	
+	return $return;
+}
+
 /**
  * TODO: Document extensions
  *
@@ -230,7 +370,7 @@ function add_extension_opemode_tab_agent($tabId, $tabName, $tabIcon, $tabFunctio
 }
 
 /**
- * TODO: Document extensions
+ * Add the function to call in OPERATION
  *
  * @param string $function_name
  */

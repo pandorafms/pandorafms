@@ -26,7 +26,7 @@ TENTACLE=/usr/bin/tentacle_client
 PANDORA_MAN=/usr/share/man
 
 MODE=$1
-PANDORA_BASE=$2
+PANDORA_BASE=`echo $2 | sed -e 's/\/$//'`
 PANDORA_USER=$3
 
 # Check for Perl 5.6.x or higher available
@@ -170,19 +170,75 @@ install () {
 		echo "Checking Pandora FMS Agent on $PANDORA_BASE$PANDORA_BIN...."
 	fi
 
-	echo "Creating Pandora FMS Agent home directory at $PANDORA_BASE$PANDORA_HOME"
-	if [ ! -z "$PANDORA_BASE" ]
+    # Alter dynamically the daemon launcher and setup the new path 
+    # if PANDORA_BASE is customized.
+
+    if [ ! -z "$PANDORA_BASE" ]
+    then
+	if [ "$OS_NAME" = "FreeBSD" ]
 	then
-		mkdir -p $PANDORA_BASE 2> /dev/null
-		mkdir -p $PANDORA_BASE/var/log 2> /dev/null
-		mkdir -p $PANDORA_BASE/$PANDORA_MAN/man1 2> /dev/null
-		if [ "$OS_NAME" = "FreeBSD" ]
-		then
-			mkdir -p $PANDORA_BASE/usr/local/bin 2> /dev/null
-		else
-			mkdir -p $PANDORA_BASE/usr/bin 2> /dev/null
-		fi
+	    DAEMON_SCRIPT=FreeBSD/pandora_agent
+            DAEMON_TEMP=pandora_agent_daemon_temp
+	else
+            DAEMON_SCRIPT=pandora_agent_daemon
+            DAEMON_TEMP=pandora_agent_daemon_temp
 	fi
+        
+        AGENT_CFG=$OS_NAME/pandora_agent.conf
+        AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
+
+        echo $PANDORA_BASE > PANDORA_BASE.temp
+        sed 's/\//\\\//g' PANDORA_BASE.temp > PANDORA_BASE.temp2
+
+        PANDORA_BASE_DECODED=`cat PANDORA_BASE.temp2`
+        rm PANDORA_BASE.temp PANDORA_BASE.temp2
+
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+	    sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/local\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
+
+	    sed -e "s/^command\=[.]*/command\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
+
+	    sed -e 's/^command_args\=\"[.]*/command_args\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
+
+	    sed -e 's/^required_files\=\"[.]*/required_files\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
+	    mv $DAEMON_TEMP $DAEMON_SCRIPT
+	else
+            sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^PANDORA_PATH\=[.]*/PANDORA_PATH\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^LOGFILE\=[.]*/LOGFILE\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+
+            sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
+	fi
+
+        sed -e "s/^temporal [.]*/temporal $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
+        mv $AGENT_CFG_TEMP $AGENT_CFG
+
+        sed -e "s/^logfile [.]*/logfile $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
+        mv $AGENT_CFG_TEMP $AGENT_CFG
+    fi
+    echo "Creating Pandora FMS Agent home directory at $PANDORA_BASE$PANDORA_HOME"
+    if [ ! -z "$PANDORA_BASE" ]
+    then
+	mkdir -p $PANDORA_BASE 2> /dev/null
+	mkdir -p $PANDORA_BASE/var/log 2> /dev/null
+	mkdir -p $PANDORA_BASE/$PANDORA_MAN/man1 2> /dev/null
+	if [ "$OS_NAME" = "FreeBSD" ]
+	then
+            mkdir -p $PANDORA_BASE/usr/local/bin 2> /dev/null
+	else
+            mkdir -p $PANDORA_BASE/usr/bin 2> /dev/null
+	fi
+    fi
 
 	mkdir -p $PANDORA_BASE$PANDORA_HOME 2> /dev/null
 
@@ -196,10 +252,10 @@ install () {
 	# Set the user the agent will run as
 	if [ "$PANDORA_USER" != "" ]
 	then
-		sed -e "s/^\s*PANDORA_USER=.*/PANDORA_USER=$PANDORA_USER/" pandora_agent_daemon > pandora_agent_daemon.tmp 	2> /dev/null && \
-		mv pandora_agent_daemon.tmp pandora_agent_daemon
-		rm -f pandora_agent_daemon.tmp 2> /dev/null
+		sed -e "s/.*pandora_user .*/pandora_user $PANDORA_USER/" $AGENT_CFG > $AGENT_CFG_TEMP 2> /dev/null && \
+		mv $AGENT_CFG_TEMP $AGENT_CFG
 		chmod 755 pandora_agent_daemon
+		chown -R $PANDORA_USER $PANDORA_BASE
 	else
 		PANDORA_USER="root"
 	fi
@@ -269,64 +325,7 @@ install () {
 		chown root:root $PANDORA_BASE$PANDORA_LOG_DIR/$PANDORA_LOG
 	fi
 
-	# Alter dynamically the daemon launcher and setup the new path 
-	# if PANDORA_BASE is customized.
-
-	if [ ! -z "$PANDORA_BASE" ]
-	then
-		if [ "$OS_NAME" = "FreeBSD" ]
-		then
-			DAEMON_SCRIPT=FreeBSD/pandora_agent
-			DAEMON_TEMP=pandora_agent_daemon_temp
-		else
-			DAEMON_SCRIPT=pandora_agent_daemon
-			DAEMON_TEMP=pandora_agent_daemon_temp
-		fi
-
-		AGENT_CFG=$OS_NAME/pandora_agent.conf
-		AGENT_CFG_TEMP=$OS_NAME/pandora_agent.conf.temp
-
-		echo $PANDORA_BASE > PANDORA_BASE.temp
-		sed 's/\//\\\//g' PANDORA_BASE.temp > PANDORA_BASE.temp2
-
-		PANDORA_BASE_DECODED=`cat PANDORA_BASE.temp2`
-		rm PANDORA_BASE.temp PANDORA_BASE.temp2
-
-		if [ "$OS_NAME" = "FreeBSD" ]
-		then
-			sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/local\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e "s/^command\=[.]*/command\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e 's/^command_args\=\"[.]*/command_args\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e 's/^required_files\=\"[.]*/required_files\=\"$PANDORA_BASE_DECODED/g' $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-		else
-			sed -e "s/^PATH\=[.]*/PATH\=$PANDORA_BASE_DECODED\/usr\/bin\:/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e "s/^PANDORA_PATH\=[.]*/PANDORA_PATH\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e "s/^LOGFILE\=[.]*/LOGFILE\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-
-			sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g" $DAEMON_SCRIPT > $DAEMON_TEMP
-			mv $DAEMON_TEMP $DAEMON_SCRIPT
-		fi
-
-		sed -e "s/^temporal [.]*/temporal $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
-		mv $AGENT_CFG_TEMP $AGENT_CFG
-
-		sed -e "s/^logfile [.]*/logfile $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
-		mv $AGENT_CFG_TEMP $AGENT_CFG
-	fi
-
-	echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
+    echo "Copying default agent configuration to $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf"
 
 	cp $OS_NAME/pandora_agent.conf $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf
 	chmod 600 $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf

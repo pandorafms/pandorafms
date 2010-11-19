@@ -1,3 +1,14 @@
+2010-11-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent, AIX/pandora_agent.conf,
+	  pandora_agent_daemon, Linux/pandora_agent.conf,
+	  HP-UX/pandora_agent.conf, NT4/pandora_agent.conf,
+	  SunOS/pandora_agent.conf, FreeBSD/pandora_agent.conf: Added a new
+	  configuration option that lets the agent run as a different user
+	  by changing the process' EUID.
+
+	* pandora_agent_installer: Several fixes.
+
 2010-11-15  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* pandora_agent*, pandora_exec, plugins/pandora_update: Small changes:

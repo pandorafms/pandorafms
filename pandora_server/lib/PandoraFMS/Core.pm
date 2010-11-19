@@ -298,16 +298,21 @@ sub pandora_evaluate_alert ($$$$$$$) {
 		return $status if ($alert->{'type'} eq "equal" && $data != $alert->{'value'});
 		return $status if ($alert->{'type'} eq "not_equal" && $data == $alert->{'value'});
 		if ($alert->{'type'} eq "regex") {
+
+			# Make sure the regexp is valid
 			eval {
 				local $SIG{'__DIE__'};
-				if ($alert->{'matches_value'} == 1) {
-					return $status if ($data !~ m/$alert->{'value'}/i);
-				} else {
-					return $status if ($data =~ m/$alert->{'value'}/i);
-				}
+				$data =~ m/$alert->{'value'}/i;
 			};
 			if ($@) {
 				logger ($pa_config, "Error evaluating alert '" . $alert->{'name'} . "' for agent '" . $agent->{'nombre'} . "': '" . $alert->{'value'} . "' is not a valid regular expression.", 10);
+				return $status;
+			}
+
+			if ($alert->{'matches_value'} == 1) {
+				return $status if ($data !~ m/$alert->{'value'}/i);
+			} else {
+				return $status if ($data =~ m/$alert->{'value'}/i);
 			}
 		}
 

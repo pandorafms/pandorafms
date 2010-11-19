@@ -2115,7 +2115,7 @@ sub pandora_module_unknown ($$) {
 
 		# Generate alerts
 		if (pandora_inhibit_alerts ($pa_config, $agent, $dbh, 0) == 0) {
-			pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, 0, 'unknown');
+			pandora_generate_alerts ($pa_config, 0, 3, $agent, $module, time (), $dbh, undef, undef, 0, 'unknown');
 		} else {
 			logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 		}

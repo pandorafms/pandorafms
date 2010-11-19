@@ -1,3 +1,8 @@
+2010-11-19  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_generalagente.php: Fixed the
+	show of the IP in the agent view merged from trunk
+
 2010-11-11  Sancho Lerena <slerena@artica.es>
 
     * extras/pandoradb_migrate_v3.0_to_v3.1.sql,

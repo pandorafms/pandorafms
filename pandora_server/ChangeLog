@@ -1,5 +1,11 @@
 2010-11-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Added a missing paremeter to
+	  pandora_generate_alert in pandora_module_unknown. Fixes
+	  bug #3111191.
+
+2010-11-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Core.pm: Fixed regexp alerts. The patch to detect
 	  malformed regular expressions made them malfunction.
 

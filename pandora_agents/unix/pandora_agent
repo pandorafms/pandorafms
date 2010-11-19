@@ -1293,6 +1293,20 @@ print_usage unless ($#ARGV == 0);
 $ConfDir = fix_directory ($ARGV[0]);
 error ("Directory '$ConfDir' does not exist.") unless (-d "$ConfDir");
 
+# Get user to run as
+my $pandora_user = read_config ('pandora_user');
+if (defined ($pandora_user)) {
+	# Change the EUID
+	my $pandora_user_uid = getpwnam ($pandora_user);
+	if (!defined ($pandora_user_uid)) {
+		error ("Cannot get uid for user $pandora_user. Does the user exist and can we read /etc/passwd?");
+	}
+	$> = $pandora_user_uid;
+	if ($> != $pandora_user_uid) {
+		error ("Cannot run as $pandora_user: Insufficient permissions.");
+	}
+}
+
 # Guess the OS version
 $OS_VERSION = guess_os_version ($OS);
 
@@ -1301,6 +1315,7 @@ md5_init ();
 
 # Start logging
 start_log ();
+log_message ('log', 'Running as user ' . getpwuid ($>));
 
 # Read configuration file
 read_config ();

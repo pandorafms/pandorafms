@@ -1,3 +1,8 @@
+2010-11-19  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/agentes/estado_generalagente.php: Fixed the
+	shows of IP in the agent view for bug 3111807
+
 2010-11-19  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/functions_extensions.php: added functions

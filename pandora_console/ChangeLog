@@ -1,3 +1,8 @@
+2010-11-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/extensions.php: fixed a lost javascript trace, and fixed
+	when all extensions is disabled.
+
 2010-11-19  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_generalagente.php: Fixed the

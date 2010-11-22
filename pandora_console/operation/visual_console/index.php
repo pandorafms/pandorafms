@@ -19,7 +19,7 @@
 check_login ();
 
 // Header
-print_page_header (__("Visual console"), "images/monitor.png");
+print_page_header (__("Visual console"), "images/monitor.png", false, "operation_visual_console");
 
 require_once ('include/functions_visual_map.php');
 $layouts = get_user_layouts ();

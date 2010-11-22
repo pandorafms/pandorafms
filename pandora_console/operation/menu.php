@@ -105,11 +105,23 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	}
 	$id = (int) get_parameter ('id', -1);
 	
+	$firstLetterNameVisualToShow = array('_', ',', '[', '(');
+	
 	foreach ($layouts as $layout) {
 		if (! give_acl ($config["id_user"], $layout["id_group"], "AR")) {
 			continue;
 		}
-		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($layout["name"], 0, 15);
+		$name = safe_output($layout['name']);
+		if (empty($name)) {
+			$firstLetter = '';
+		}
+		else {
+			$firstLetter = $name[0];
+		}
+		if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
+			continue;
+		}
+		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 15);
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 	}
 	

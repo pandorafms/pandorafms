@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 3.1
+# Version 3.2
 # Licensed under GPL license v2,
 # (c) 2003-2010 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
@@ -94,7 +94,7 @@ reconserver 1
 # DISABLED BY DEFAULT
 pluginserver 1
 
-# Pandora FMS Plugin exec tool filepath (by default at /usr/bin)
+# Pandora FMS Plugin exec tool filepath
 
 plugin_exec c:\pandora_server\bin/pandora_exec
 
@@ -172,9 +172,8 @@ recon_threads 2
 dataserver_threads 2
 
 # mta_address: External Mailer (MTA) IP Address to be used by Pandora FMS internal email capabilities
-#mta_address 192.168.50.1
 
-mta_address localhost
+#mta_address localhost
 
 # mta_port: MTA port (default 25)
 #mta_port 25
@@ -196,17 +195,17 @@ mta_address localhost
 # fingerprinting tecniques, much more accurates than stadard nmap.
 # If not provided, nmap is used insted xprobe2
 
-xprobe2 c:\pandora_server\bin\xprobe2
+#xprobe2 c:\pandora_server\bin\xprobe2
 
 # nmap: If provided, is used to detect OS type with recon server using 
 # advanded OS fingerprint technique. Xprobe2 gives more accurate results
 # Nmap is also used to do TCP port scanning in detected host.
 
-nmap c:\pandora_server\bin\nmap.exe
+#nmap c:\pandora_server\bin\nmap.exe
 
-# snmpget: Needed to do SNMP checks. By default is on /usr/bin/snmpget
+# snmpget: Needed to do SNMP checks.
 
-snmpget c:\pandora_server\bin\snmpget.exe
+#snmpget c:\pandora_server\bin\snmpget.exe
 
 # Default group id for new agents created with Pandora FMS Data Server
 autocreate_group 2

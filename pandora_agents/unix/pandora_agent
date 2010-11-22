@@ -48,12 +48,11 @@ eval {
 	require threads;
 	require threads::shared;
 	require Thread::Semaphore;
-	require IO::Socket;
 };
 if (!$@) {
+	$Sem = Thread::Semaphore->new;
 	threads::shared::share (\$Xml);
 	threads::shared::share (\$Sem);
-	$Sem = Thread::Semaphore->new;
 }	
 
 use constant AGENT_VERSION => '3.2RC1';

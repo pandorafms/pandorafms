@@ -1,3 +1,10 @@
+2010-11-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* Linux/pandora_agent.conf: Set root as the default pandora_user.
+
+	* pandora_agent: Share the semaphore after creating it. Removed
+	  an unnecessary require.
+
 2010-11-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent, AIX/pandora_agent.conf,

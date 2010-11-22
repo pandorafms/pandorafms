@@ -22,13 +22,16 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-if (sizeof ($config['extensions']) == 0) {
-	echo '<h3>'.__('There are no extensions defined').'</h3>';
-	return;
-}
-
 // Header
 print_page_header (__('Extensions'). " &raquo; ". __('Defined extensions'), "images/extensions.png", false, "", true, "" );
+
+if (sizeof ($config['extensions']) == 0) {
+	$extensions = getExtensionInfo();
+	if (empty($extensions)) {
+		echo '<h3>'.__('There are no extensions defined').'</h3>';
+		return;
+	}
+}
 
 $enterprise = (bool)get_parameter('enterprise', 0);
 $delete = get_parameter ("delete", "");
@@ -128,7 +131,6 @@ if ($disabled != '') {
 	$(document).ready(function() {
 			var href = location.href
 			href = href.replace(/&enterprise=(0|1)&disabled=.*/g, "");
-			console.log(href);
 			location = href;
 		}
 	);

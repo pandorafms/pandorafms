@@ -4,7 +4,7 @@
 # Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu and FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.1 Build 100223
+# v3.2 Build 101122
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -190,7 +190,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					chown -R pandora /home/pandora 
 				fi
 			else
-				echo "Please create the 'pandora' user manually according to your authentication scheme then restart the installation"
+				echo "Please create the 'pandora' user manually according to your authentication scheme, then start again the installation"
 				echo "Aborting..."
 				exit 1
 			fi
@@ -308,7 +308,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					echo "Installing tentacle server"
 					cp bin/tentacle_server /usr/bin
 					cp util/tentacle_serverd $TENTACLE_SERVER
-   				    update-rc.d tentacle_serverd defaults
+   					update-rc.d tentacle_serverd defaults
 				else
 					if [ "$DISTRO" = "SUSE" ]
 					then
@@ -479,7 +479,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 3.1 Server Installer (c) 2008-2010 Artica ST"
+echo "Pandora FMS 3.2 Server Installer (c) 2008-2010 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

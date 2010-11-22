@@ -60,6 +60,8 @@ print_input_hidden ('edit_module', 1);
 echo '</td>';
 echo '<td class="datos">';
 echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
+echo '</td>';
+echo '</tr>';
 echo "</form>";
 echo "</table>";
 

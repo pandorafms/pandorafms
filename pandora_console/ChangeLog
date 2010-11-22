@@ -1,3 +1,9 @@
+2010-11-22  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* gomode/agentes/module_manager.php: Closed HTML tags.
+
+	* images/status_sets/default/agent_no_monitors*.png: Added forgotten files.
+
 2010-11-22  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* include/help/en/help_operation_visual_console.php,

@@ -1,5 +1,18 @@
 2010-11-22  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/help/en/help_operation_visual_console.php,
+	include/help/es/help_operation_visual_console.php: added first
+	version of help file for the operation main page of Visual Console,
+	these have a explain for the especial name for visual consoles.
+	
+	* operation/visual_console/index.php: added link to help in header.
+	
+	operation/menu.php: added filter to hide the "Visual Console items"
+	in submenu that haven't first letter as "_", "," , "[" , "(". And
+	fixed the show name with safe_input entities.
+
+2010-11-22  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/extensions.php: fixed a lost javascript trace, and fixed
 	when all extensions is disabled.
 

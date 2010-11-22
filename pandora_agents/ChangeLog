@@ -1,3 +1,7 @@
+2010-11-22  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* LICENCE, Win32/README: Updated version
+
 2010-11-01  Sancho Lerena <slerena@artica.es>
 
 	* unix/tentacle_client: Updated tentacle client to 0.30 version, 
@@ -5,18 +9,18 @@
 
 2010-10-29  Sancho Lerena <slerena@artica.es>
 
-    * win32/bin/util/mibs: Added default mibs for the small snmpagent tool.
+	* win32/bin/util/mibs: Added default mibs for the small snmpagent tool.
 
-    * win32/bin/util/getsnmp.bat,
-    win32/bin/util/snmpget.exe: Added tool to get snmp info from the agent 
-    using tool from a module_exec.
+	* win32/bin/util/getsnmp.bat,
+	win32/bin/util/snmpget.exe: Added tool to get snmp info from the agent 
+	using tool from a module_exec.
 
-    * win32/installer/pandora.mpi: Updated installer to have snmpget and mibs
-    in the install process.
+	* win32/installer/pandora.mpi: Updated installer to have snmpget and mibs
+	in the install process.
 
-    * win32/pandora_windows_service.cc: Fixed bug 3098165.
+	* win32/pandora_windows_service.cc: Fixed bug 3098165.
 
-    * win32/pandora.cc: Updated version
+	* win32/pandora.cc: Updated version
 
 2010-10-19  Junichi Satoh  <junichi@rworks.jp>
 

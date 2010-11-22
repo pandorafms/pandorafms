@@ -1,7 +1,7 @@
-Pandora Agent Licence.
+Pandora FMS Agent Licence.
 ----------------------
 
-Pandora is under protection of GPL Licence, you can read in gpl.LICENCE file in this package.
+Pandora is under protection of GPL Licence, you can read in COPYING file in this package.
 
 Terms of Use
 ------------
@@ -13,12 +13,12 @@ no responsilbity for any damage that may unintentionally be caused
 through its use. 
 
 You may not distribute any of the Pandora Agent components without the express written permission of Sancho Lerena. If you are interested in licensing this tool for redistribution, or for licensing the source code
-for inclusion in a commercial product, send contact slerena@sourceforge.net
+for inclusion in a commercial product, send contact slerena@artica.es
 
 Reporting Problems
 ------------------
 
-If you encounter problems, please visit pandoramon.sourceforge.net
+If you encounter problems, please visit pandora.sourceforge.net
 and download the latest version to see if the issue has been resolved.
 If not, please send a bug report to:
 

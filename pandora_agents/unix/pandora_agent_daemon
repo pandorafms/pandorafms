@@ -37,6 +37,7 @@ pidof_pandora () {
 		if [ "$OS_NAME" = "SunOS" ]
 		then
 			ZONENAME_CMD="/bin/zonename"
+			TRUNCATED_DAEMON=`echo "$DAEMON $PANDORA_PATH" | cut -c1-40`
 			if [ -x $ZONENAME_CMD ]
 			then
 				ZONE=`$ZONENAME_CMD`
@@ -45,9 +46,9 @@ pidof_pandora () {
 			fi
 			if [ "$ZONE" = "global" ]
 			then
-				PANDORA_PID=`ps -f -z global | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+				PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
 			else
-				PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+				PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
 			fi
 		else
 			PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
@@ -72,7 +73,7 @@ case "$1" in
 			echo "Cannot launch again. Aborting."
 			exit 1
 		fi
-		nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
+		PATH=$PATH nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
 		rm nohup.out 2> /dev/null
 		sleep 2
 		PANDORA_PID=`pidof_pandora`

@@ -1,5 +1,9 @@
 2010-11-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_agent_daemon: Solaris specific fixes.
+
+2010-11-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* Linux/pandora_agent.conf: Set root as the default pandora_user.
 
 	* pandora_agent: Share the semaphore after creating it. Removed

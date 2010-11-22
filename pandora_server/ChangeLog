@@ -1,5 +1,9 @@
 2010-11-22  Raúl Mateos  <raulofpandora@gmail.com>
 
+	* pandora_server_upgrade, pandora_server_installer, README: Updated version
+
+2010-11-22  Raúl Mateos  <raulofpandora@gmail.com>
+
 	* conf/pandora_server.conf*: Updated version. Commented nmap/xprobe2 related
 	paths in Windows file.
 

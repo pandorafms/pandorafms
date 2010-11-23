@@ -1,5 +1,14 @@
 2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/fgraph.php: erased the deprecated function
+	"grafico_modulo_sparseOLD" and deprecated function
+	"grafico_modulo_sparse_mobile". And in the function added new
+	parameter $show_title with default value true for to show or no
+	the title. And when Pandora mobile for the graph now use the
+	function "grafico_modulo_sparse".
+
+2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/javascript/OpenLayers/OpenLayers.js: backport to previous
 	version in SVN, the library has a dumb mistakes.
 

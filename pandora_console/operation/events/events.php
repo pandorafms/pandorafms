@@ -226,7 +226,7 @@ else {
 	echo "&nbsp;";
 
 	echo '<a target="_top" href="'.$url.'&amp;pure=0">';
-	print_image ("images/fullscreen.png", false, array ("title" => __('Full screen')));
+	print_image ("images/normalscreen.png", false, array ("title" => __('Back to normal mode')));
 	echo '</a>';
 	echo "</h2>";
 }

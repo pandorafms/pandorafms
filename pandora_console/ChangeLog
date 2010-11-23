@@ -1,5 +1,15 @@
 2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/gis_maps/render_view.php: cleaned source code style.
+	
+	* include/functions_ui.php: fixed in the function
+	"print_page_header" the check if the option is a separator that it
+	was true when the key was zero.
+	
+	Fixes: #3115621
+
+2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extensions/extension_uploader.php: add first version of extension
 	to upload other extensions.
 

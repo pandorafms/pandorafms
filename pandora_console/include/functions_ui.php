@@ -1580,20 +1580,22 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 	if (is_array($options)) {
 		$buffer .= '<div id="menu_tab"><ul class="mn">';
 		foreach ($options as $key => $option) {
-			if ($key == 'separator') {
+			if ($key === 'separator') {
 				$buffer .= '<li class='.$separator_class.'>';
 				$buffer .= '</li>';
-			} else {
+			}
+			else {
 				if (is_array($option)) {
-				 $class = 'nomn';
-				 if ($option['active']) {
-				 	 $class = 'nomn_high';
-				 }
-				
-				 $buffer .= '<li class="' . $class . '">';
-				 $buffer .= $option['text'];
-				 $buffer .= '</li>';
-				} else {
+					$class = 'nomn';
+					if ($option['active']) {
+						$class = 'nomn_high';
+					}
+					
+					$buffer .= '<li class="' . $class . '">';
+					$buffer .= $option['text'];
+					$buffer .= '</li>';
+				}
+				else {
 					$buffer .= '<li class="nomn">';
 					$buffer .= $option;
 					$buffer .= '</li>';

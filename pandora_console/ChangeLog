@@ -1,3 +1,8 @@
+2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extensions/extension_uploader.php: add first version of extension
+	to upload other extensions.
+
 2010-11-22  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* gomode/agentes/module_manager.php: Closed HTML tags.

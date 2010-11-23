@@ -1,4 +1,4 @@
-# How to build Pandora Installer #
+# How to build Pandora FMS Installer for Windows #
 
 1) Install installjammer from http://installjammer.com/, then create the
 c:\pandora_installer folder.
@@ -9,51 +9,153 @@ Doing that, you must have the next directory structure:
 
 C:\pandora_installer
 
-		+--- pandora_1.3.1.mpi
-		+--- bin
-			  +--- LICENSE.txt
-			  +--- README.txt
-			  +--- logo.png
-			  +--- pandora.ico
-			  +--- libeay32.dll
-			  +--- libcurl.dll
-			  +--- PandoraAgent.exe
-			  +--- pandora_agent.conf
-			  +--- zlib1.dll
-			  +--- help
-			  |		+--- how_to_keys.html
-		      |		+--- images
-			  |			+--- 1.jpg
-			  |			+--- 2.jpg
-			  |			+--- 3.jpg
-			  |			+--- 4.jpg
-			  |			+--- 5.jpg
-			  |			+--- 6.jpg
-			  +--- util
-			  |		+--- cut.exe
-			  |		+--- date.exe
-			  |		+--- expr.exe
-			  |		+--- gawk.exe
-			  |		+--- grep.exe
-			  |		+--- head.exe
-			  |		+--- ls.exe
-			  |		+--- md5.exe
-			  |		+--- puttygen.exe
-			  |		+--- tail.exe
-			  |		+--- tentacle_client.exe
-			  |		+--- tr.exe
-			  |		+--- wc.exe
-			  +--- key
-			  |		+--- id_dsa
-			  |		+--- id_dsa.pub			  
-			  |		+--- PUT_SSH_KEYS_HERE
-			  +--- scripts
-			  		+--- start_pandora_agent.bat
-			  		+--- stop_pandora_agent.bat
+|-- How_to_create_installer.txt
+|-- LICENSE.txt
+|-- logo.png
+|-- pandora.ico
+|-- pandora.mpi
+|-- README.txt
+|-- scripts
+|   |-- install_service_restart.bat
+|   |-- restart_pandora_agent.bat
+|   |-- start_pandora_agent.bat
+|   `-- stop_pandora_agent.bat
+|-- collections
+|-- help
+|   |-- how_to_keys_es.html
+|   |-- how_to_keys.html
+|   `-- images
+|       |-- 1.jpg
+|       |-- 2.jpg
+|       |-- 3.jpg
+|       |-- 4.jpg
+|       |-- 5.jpg
+|       |-- 6.jpg
+|       `-- logo.png
+|-- key
+|   |-- id_dsa
+|   |-- id_dsa.pub
+|   `-- PUT_SSH_KEYS_HERE
+|-- libcurl.dll
+|-- libeay32.dll
+|-- libodbc++.dll
+|-- pandora_agent.conf
+|-- PandoraAgent.exe
+|-- util
+|   |-- cmp.exe
+|   |-- cut.exe
+|   |-- date.exe
+|   |-- df_percent.vbs
+|   |-- df.vbs
+|   |-- expr.exe
+|   |-- gawk.exe
+|   |-- getreg.exe
+|   |-- getsnmp.bat
+|   |-- grep.exe
+|   |-- head.exe
+|   |-- logevent_log4x.vbs
+|   |-- ls.exe
+|   |-- md5.exe
+|   |-- mibs
+|   |   |-- AGENTX-MIB.txt
+|   |   |-- DISMAN-EVENT-MIB.txt
+|   |   |-- DISMAN-EXPRESSION-MIB.txt
+|   |   |-- DISMAN-NSLOOKUP-MIB.txt
+|   |   |-- DISMAN-PING-MIB.txt
+|   |   |-- DISMAN-SCHEDULE-MIB.txt
+|   |   |-- DISMAN-SCRIPT-MIB.txt
+|   |   |-- DISMAN-TRACEROUTE-MIB.txt
+|   |   |-- EtherLike-MIB.txt
+|   |   |-- HCNUM-TC.txt
+|   |   |-- HOST-RESOURCES-MIB.txt
+|   |   |-- HOST-RESOURCES-TYPES.txt
+|   |   |-- IANA-ADDRESS-FAMILY-NUMBERS-MIB.txt
+|   |   |-- IANAifType-MIB.txt
+|   |   |-- IANA-LANGUAGE-MIB.txt
+|   |   |-- ianalist
+|   |   |-- IANA-RTPROTO-MIB.txt
+|   |   |-- IF-INVERTED-STACK-MIB.txt
+|   |   |-- IF-MIB.txt
+|   |   |-- INET-ADDRESS-MIB.txt
+|   |   |-- IP-FORWARD-MIB.txt
+|   |   |-- IP-MIB.txt
+|   |   |-- IPV6-ICMP-MIB.txt
+|   |   |-- IPV6-MIB.txt
+|   |   |-- IPV6-TCP-MIB.txt
+|   |   |-- IPV6-TC.txt
+|   |   |-- IPV6-UDP-MIB.txt
+|   |   |-- LM-SENSORS-MIB.txt
+|   |   |-- Makefile.in
+|   |   |-- Makefile.mib
+|   |   |-- makehtml.pl
+|   |   |-- mibfetch
+|   |   |-- MTA-MIB.txt
+|   |   |-- NET-SNMP-AGENT-MIB.txt
+|   |   |-- NET-SNMP-EXAMPLES-MIB.txt
+|   |   |-- NET-SNMP-EXTEND-MIB.txt
+|   |   |-- NET-SNMP-MIB.txt
+|   |   |-- NET-SNMP-MONITOR-MIB.txt
+|   |   |-- NET-SNMP-SYSTEM-MIB.txt
+|   |   |-- NET-SNMP-TC.txt
+|   |   |-- NETWORK-SERVICES-MIB.txt
+|   |   |-- nodemap
+|   |   |-- NOTIFICATION-LOG-MIB.txt
+|   |   |-- README.mibs
+|   |   |-- RFC1155-SMI.txt
+|   |   |-- RFC1213-MIB.txt
+|   |   |-- RFC-1215.txt
+|   |   |-- rfclist
+|   |   |-- rfcmibs.diff
+|   |   |-- RMON-MIB.txt
+|   |   |-- smistrip
+|   |   |-- SMUX-MIB.txt
+|   |   |-- SNMP-COMMUNITY-MIB.txt
+|   |   |-- SNMP-FRAMEWORK-MIB.txt
+|   |   |-- SNMP-MPD-MIB.txt
+|   |   |-- SNMP-NOTIFICATION-MIB.txt
+|   |   |-- SNMP-PROXY-MIB.txt
+|   |   |-- SNMP-TARGET-MIB.txt
+|   |   |-- SNMP-USER-BASED-SM-MIB.txt
+|   |   |-- SNMP-USM-AES-MIB.txt
+|   |   |-- SNMP-USM-DH-OBJECTS-MIB.txt
+|   |   |-- SNMPv2-CONF.txt
+|   |   |-- SNMPv2-MIB.txt
+|   |   |-- SNMPv2-SMI.txt
+|   |   |-- SNMPv2-TC.txt
+|   |   |-- SNMPv2-TM.txt
+|   |   |-- SNMP-VIEW-BASED-ACM-MIB.txt
+|   |   |-- TCP-MIB.txt
+|   |   |-- TRANSPORT-ADDRESS-MIB.txt
+|   |   |-- TUNNEL-MIB.txt
+|   |   |-- UCD-DEMO-MIB.inc
+|   |   |-- UCD-DEMO-MIB.txt
+|   |   |-- UCD-DISKIO-MIB.inc
+|   |   |-- UCD-DISKIO-MIB.txt
+|   |   |-- UCD-DLMOD-MIB.inc
+|   |   |-- UCD-DLMOD-MIB.txt
+|   |   |-- UCD-IPFILTER-MIB.inc
+|   |   |-- UCD-IPFILTER-MIB.txt
+|   |   |-- UCD-IPFWACC-MIB.inc
+|   |   |-- UCD-IPFWACC-MIB.txt
+|   |   |-- UCD-SNMP-MIB.inc
+|   |   |-- UCD-SNMP-MIB-OLD.txt
+|   |   |-- UCD-SNMP-MIB.txt
+|   |   `-- UDP-MIB.txt
+|   |-- pandora_update.exe
+|   |-- ps.vbs
+|   |-- puttygen.exe
+|   |-- snmpget.exe
+|   |-- sort.exe
+|   |-- tail.exe
+|   |-- tentacle_client.exe
+|   |-- tr.exe
+|   |-- unzip.exe
+|   `-- wc.exe
+`-- zlib1.dll
 
 3) Change any thing you want in your pandora_agent.conf file and also you can 
 (you MUST) change your own keys to distribute them with your agents.
 
-4) Execute InstallJammer program, and open the file C:\pandora_installer\pandora_1.3.1.mpi
+4) Execute InstallJammer program, and open the file C:\pandora_installer\pandora.mpi
 
 5) Just go to Build menu and select Build Install (Ctrl + B).

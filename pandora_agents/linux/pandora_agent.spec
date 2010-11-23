@@ -2,7 +2,7 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent
-%define version	    3.1rc1
+%define version	    3.2
 Summary:            Pandora FMS Linux agent
 Name:               %{name}
 Version:            %{version}

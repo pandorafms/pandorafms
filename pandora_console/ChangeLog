@@ -1,5 +1,10 @@
 2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* include/javascript/OpenLayers/OpenLayers.js: backport to previous
+	version in SVN, the library has a dumb mistakes.
+
+2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* operation/gis_maps/render_view.php: cleaned source code style.
 	
 	* include/functions_ui.php: fixed in the function

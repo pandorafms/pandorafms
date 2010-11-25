@@ -2,7 +2,7 @@
 # Pandora FMS Server 
 #
 %define name        pandorafms_server
-%define version     3.2RC1
+%define version     3.2rc2
 %define release     2
 
 Summary:            Pandora FMS Server
@@ -37,17 +37,11 @@ rm -rf $RPM_BUILD_ROOT
 %setup -q -n pandora_server
 
 %build
-#$%{__perl} Makefile.PL INSTALLDIRS=vendor
-%{__perl} Makefile.PL
-make
 
 %install
 
 rm -rf $RPM_BUILD_ROOT
-make install PERL_INSTALL_ROOT=$RPM_BUILD_ROOT
-find $RPM_BUILD_ROOT -type f -name .packlist -delete
-find $RPM_BUILD_ROOT -type d -depth -delete 2>/dev/null
-#mkdir -p $RPM_BUILD_ROOT%{_bindir}/
+mkdir -p $RPM_BUILD_ROOT%{_bindir}/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pandora/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
@@ -55,20 +49,20 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/conf
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/md5
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
-#mkdir -p $RPM_BUILD_ROOT%{perl_sitelib}/
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/pandora/.ssh
+mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
 
 # All binaries go to %{_bindir}
-#cp -aRf bin/pandora_server $RPM_BUILD_ROOT%{_bindir}/
-#cp -aRf bin/pandora_exec $RPM_BUILD_ROOT%{_bindir}/
+cp -aRf bin/pandora_server $RPM_BUILD_ROOT%{_bindir}/
+cp -aRf bin/pandora_exec $RPM_BUILD_ROOT%{_bindir}/
 install -m 0755 bin/tentacle_server $RPM_BUILD_ROOT%{_bindir}/
 
 cp -aRf conf/* $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 cp -aRf util $RPM_BUILD_ROOT%{prefix}/pandora_server/
-#cp -aRf lib/* $RPM_BUILD_ROOT%{perl_sitelib}/
+cp -aRf lib/* $RPM_BUILD_ROOT/usr/lib/perl5/
 
 install -m 0755 util/pandora_server $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
 install -m 0755 util/tentacle_serverd $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
@@ -142,13 +136,15 @@ exit 0
 %{_sysconfdir}/rc.d/init.d/tentacle_serverd
 %{_sysconfdir}/cron.daily/pandora_db
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_server
-%{perl_sitelib}/PandoraFMS/
+
+
+
+%defattr(755,pandora,root)
 %{prefix}/pandora_server
+/usr/lib/perl5/PandoraFMS
+
 %{_mandir}/man1/pandora_server.1.gz
 %{_mandir}/man1/tentacle_server.1.gz
-%{_mandir}/man3/PandoraFMS::Core.3pm.gz
-%{_mandir}/man3/PandoraFMS::GIS.3pm.gz
-%{_mandir}/man3/PandoraFMS::GeoIP.3pm.gz
 
 %defattr(-,pandora,root)
 %{_bindir}/pandora_exec

@@ -6,6 +6,11 @@
 
 2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* pandora_console.redhat.spec: erased unrequired dependecy
+	"graphviz-php" and upset the version required for php.
+
+2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: erase the problematic
 	foreign key in trecon_task.
 	

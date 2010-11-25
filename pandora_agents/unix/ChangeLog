@@ -1,3 +1,7 @@
+2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* pandora_agent.spec: change version number.
+
 2010-11-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_daemon: Solaris specific fixes.

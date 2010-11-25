@@ -1,6 +1,13 @@
-2010-11-23  Raúl Mateos  <raulofpandora@gmail.com>
-
-	* operation/events/events.php: Use "back not normal" icon in full screen.
+2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: erase the problematic
+	foreign key in trecon_task.
+	
+	Fixes: #3118273
+	
+	* godmode/servers/recon_script.php: when I readed source code for
+	to check that when delete a recon_script delete recon task that use
+	this. Cleaned source code style.
 
 2010-11-23  Miguel de Dios  <miguel.dedios@artica.es>
 	

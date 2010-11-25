@@ -91,17 +91,17 @@ if (($create != "") OR ($view != "")){
 	
 	if ($create != ""){
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
-	} else {
+	}
+	else {
 		echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 	}
 	echo '</form></table>';
 }
-
 else {
 	print_page_header (__('Recon scripts registered in Pandora FMS'), "", false, "", true);
 
 	// Update reconscript
-	if (isset($_GET["update_reconscript"])){ // if modified any parameter
+	if (isset($_GET["update_reconscript"])) { // if modified any parameter
 		$id_recon_script = get_parameter ("update_reconscript", 0);
 		$reconscript_name = get_parameter ("form_name", "");
 		$reconscript_description = get_parameter ("form_description", "");
@@ -122,7 +122,7 @@ else {
 	}
 
 	// Create reconscript
-	if (isset($_GET["create_reconscript"])){	 
+	if (isset($_GET["create_reconscript"])) {	 
 		$reconscript_name = get_parameter ("form_name", "");
 		$reconscript_description = get_parameter ("form_description", "");
 		$reconscript_script = get_parameter ("form_script", "");
@@ -145,7 +145,8 @@ else {
 		$result = process_sql($sql_delete);		
 		if (! $result){
 			echo "<h3 class='error'>".__('Problem deleting reconscript')."</h3>";
-		} else {
+		}
+		else {
 			echo "<h3 class='suc'>".__('reconscript deleted successfully')."</h3>";
 		}
 		if ($reconscript_id != 0){
@@ -158,7 +159,7 @@ else {
 	
 	$sql1='SELECT * FROM trecon_script ORDER BY name';
 	$result=mysql_query($sql1);
-	if (mysql_num_rows($result) > 0){
+	if (mysql_num_rows($result) > 0) {
 		echo '<table width="730" cellspacing="4" cellpadding="4" class="databox">';
 		echo "<th>".__('Name')."</th>";
 		echo "<th>".__('Command')."</th>";
@@ -175,20 +176,21 @@ else {
 				$color = 1;
 			}
 			echo "<tr>";
-			echo "<td class=$tdcolor>";
+			echo "<td class='$tdcolor'>";
 			echo "<b><a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&view=".$row["id_recon_script"]."'>";
 			echo $row["name"];
 			echo "</a></b></td>";
-			echo "</td><td class=$tdcolor>";
+			echo "</td><td class='$tdcolor'>";
 			echo $row["script"];
-			echo "</td><td class=$tdcolor>";
+			echo "</td><td class='$tdcolor'>";
 			echo $row["description"];
-			echo "</td><td class=$tdcolor>";
+			echo "</td><td align='center' class='$tdcolor'>";
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&kill_reconscript=".$row["id_recon_script"]."'><img src='images/cross.png' border=0></a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";
-	} else {
+	}
+	else {
 		echo '<div class="nf">'. __('There are no recon scripts in the system');
 		echo "<br>";
 	}

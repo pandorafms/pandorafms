@@ -5,11 +5,11 @@
 # FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
-# v3.0 Build 091224
+# v3.2 Build 101125
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=3.2.0
+PI_VERSION=3.2
 FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 MODE=$1
@@ -66,9 +66,9 @@ uninstall () {
 	DISTRO=`get_distro`
 
 	if [ "$DISTRO" = "UBUNTU" ]
-        then
+	then
 		PANDORA_HOME=/var/www/pandora
-        else
+	else
 		if [ "$DISTRO" = "RHEL_CENTOS" ]
 		then
 			PANDORA_HOME=/var/www/html/pandora_console

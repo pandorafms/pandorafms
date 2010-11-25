@@ -1,3 +1,8 @@
+2010-11-25  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agents/unix/pandora_agent.spec: Updated version
+	string for RPM.
+
 2010-11-23  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* Updated several strings, some of them old ones README.

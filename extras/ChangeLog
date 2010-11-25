@@ -1,3 +1,7 @@
+2010-11-26  Sancho Lerena <slerena@artica.es>
+
+	* extras/build_src.sh: Some fixes for agent SRC package.
+
 2010-07-02  Sancho Lerena <slerena@artica.es>
 
 	* build_src.sh: Updated script to build all source tarballs.

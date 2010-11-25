@@ -1,9 +1,9 @@
 #!/bin/bash
 
 CODEHOME=~/code/pandora/branches/pandora_3.1
-CODEHOME_ENT=~/code/artica/code/pandora/branches/3.1
-CODEHOME_ENT_KEYGEN=~/code/artica/code/updatemanager/keygen
-RPMHOME=/usr/src/redhat
+CODEHOME_ENT=~/code/artica/pandora/branches/3.1
+CODEHOME_ENT_KEYGEN=~/code/artica/updatemanager/keygen
+RPMHOME=/usr/src/packages
 
 VERSION=$(grep 'my $pandora_version =' $CODEHOME/pandora_server/lib/PandoraFMS/Config.pm | awk '{print substr($4, 2, length($4) - 3)}')
 KEYGEN_VERSION=$VERSION
@@ -13,7 +13,7 @@ sudo rm -Rf /usr/src/rpm/SOURCES/pandorafms_*.tar.gz
 
 echo "Unix agent"
 cd $CODEHOME/pandora_agents
-sudo tar zcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude SunOS --exclude AIX --exclude HP-UX --exclude FreeBSD --exclude pandora_agent_installer --exclude nohup unix
+sudo tar zcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup unix
 
 echo "Console OpenSource"
 cd $CODEHOME

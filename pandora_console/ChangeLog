@@ -1,3 +1,9 @@
+2010-11-25  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php: Version update.
+
+	* pandora_console.spec: Version update.
+
 2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* extras/pandoradb_migrate_v3.1_to_v3.2.sql: erase the problematic

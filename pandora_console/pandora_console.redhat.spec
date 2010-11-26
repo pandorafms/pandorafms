@@ -2,7 +2,7 @@
 # Pandora FMS Console
 #
 %define name        pandorafms_console
-%define version     3.2rc1
+%define version     3.2rc2
 %define release     1
 
 %define httpd_name      httpd

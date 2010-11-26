@@ -1,3 +1,11 @@
+2010-11-26  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* operation/agentes/exportdata.php: fixed the work_period to extract
+	data when the default work_period is greater than period between the
+	date to start and date to end.
+	
+	Fixes: #3119467
+
 2010-11-26  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* extensions/plugin_registration.php: Fixed a bug related with html

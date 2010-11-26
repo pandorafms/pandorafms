@@ -171,12 +171,15 @@ if (!empty ($export_btn) && !empty ($module)) {
 			foreach ($module as $selected) {
 
 				$output = "";
-				$work_period = 120000; 
+				$work_period = 120000;
+				if ($work_period > $period) {
+					$work_period = $period;
+				}
 
 				$work_end = $end - $period + $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
 
-				while ( $work_end < $end) {
+				while ($work_end <= $end) {
 					$work_end = $work_end + $work_period;
 
 					$data = array (); // Reinitialize array for each module chunk

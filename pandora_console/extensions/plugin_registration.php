@@ -89,7 +89,7 @@ function pluginreg_extension_main () {
 
 	// Verify if a plugin with the same name is already registered
 
-	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . mysql_escape_string ($ini_array["plugin_definition"]["name"]) . "'";
+	$sql0 = "SELECT COUNT(*) FROM tplugin WHERE name = '" . safe_input ($ini_array["plugin_definition"]["name"]) . "'";
 	$result = get_db_sql ($sql0);
 	
 	
@@ -100,10 +100,10 @@ function pluginreg_extension_main () {
 	}
 
 	$sql1 = "INSERT INTO tplugin (name, description, max_timeout, execute, net_dst_opt, net_port_opt, user_opt, pass_opt, plugin_type) VALUES (
-	'" . mysql_escape_string ($ini_array["plugin_definition"]["name"]) . "' ,
-	'" . mysql_escape_string ($ini_array["plugin_definition"]["description"]) . "' ,
+	'" . safe_input ($ini_array["plugin_definition"]["name"]) . "' ,
+	'" . safe_input ($ini_array["plugin_definition"]["description"]) . "' ,
 	'" . $ini_array["plugin_definition"]["timeout"] . "' ,
-	'" . mysql_escape_string ($exec_path) . "' ,
+	'" . safe_input ($exec_path) . "' ,
 	'" . $ini_array["plugin_definition"]["ip_opt"] . "' ,
 	'" . $ini_array["plugin_definition"]["port_opt"] . "' ,
 	'" . $ini_array["plugin_definition"]["user_opt"] . "' ,
@@ -118,8 +118,8 @@ function pluginreg_extension_main () {
 
 		$sql2 = "INSERT INTO tnetwork_component (name, description, id_group, type, max, min, module_interval, id_module_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, min_critical, min_ff_event, tcp_port, id_plugin) VALUES (
 
-		'".mysql_escape_string ($ini_array[$label]["name"])."', 
-		'".mysql_escape_string ($ini_array[$label]["description"]) ."', 
+		'".safe_input ($ini_array[$label]["name"])."', 
+		'".safe_input ($ini_array[$label]["description"]) ."', 
 		'".$ini_array[$label]["id_group"]."', 
 		'".$ini_array[$label]["type"]."', 
 		'".$ini_array[$label]["max"]."', 
@@ -127,9 +127,9 @@ function pluginreg_extension_main () {
 		'".$ini_array[$label]["module_interval"]."', 
 		'".$ini_array[$label]["id_module_group"]."', 
 		'".$ini_array[$label]["id_modulo"]."', 
-		'".mysql_escape_string ($ini_array[$label]["plugin_user"])."', 
-		'".mysql_escape_string ($ini_array[$label]["plugin_pass"])."', 
-		'".mysql_escape_string ($ini_array[$label]["plugin_parameter"])."', 
+		'".safe_input ($ini_array[$label]["plugin_user"])."', 
+		'".safe_input ($ini_array[$label]["plugin_pass"])."', 
+		'".safe_input ($ini_array[$label]["plugin_parameter"])."', 
 		'".$ini_array[$label]["max_timeout"]."', 
 		'".$ini_array[$label]["history_data"]."', 
 		'".$ini_array[$label]["min_warning"]."', 

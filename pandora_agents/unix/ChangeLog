@@ -1,3 +1,10 @@
+2010-11-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer: Remove all init symbolic links.
+
+	* plugins/pandora_update: Give the agent daemon some time to stop.
+	  Necessary on Windows.
+
 2010-11-25  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* pandora_agent.spec: change version number.

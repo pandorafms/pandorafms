@@ -110,7 +110,21 @@ uninstall () {
 	rm -Rf $PANDORA_BASE/etc/rc.pandora_agent_daemon 2> /dev/null
 	rm -Rf $PANDORA_BASE/etc/rc?.d/S90pandora_agent_daemon 2> /dev/null
 	rm -Rf $PANDORA_BASE/sbin/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf $PANDORA_BASE/sbin/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc.d/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf $PANDORA_BASE/etc/rc.d/rc?.d/S90pandora_agent 2> /dev/null
 	rm -Rf $PANDORA_BASE/usr/local/etc/rc.d/pandora_agent 2> /dev/null
+	rm -Rf /etc/init.d/pandora_agent_daemon 2> /dev/null
+	rm -Rf /sbin/init.d/pandora_agent_daemon 2> /dev/null
+	rm -Rf /etc/rc.pandora_agent_daemon 2> /dev/null
+	rm -Rf /etc/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf /sbin/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf /etc/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf /sbin/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf /etc/rc.d/rc?.d/S90pandora_agent_daemon 2> /dev/null
+	rm -Rf /etc/rc.d/rc?.d/S90pandora_agent 2> /dev/null
+	rm -Rf /usr/local/etc/rc.d/pandora_agent 2> /dev/null
 	
 	rm -Rf $PANDORA_BASE$PANDORA_HOME 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_LOG_DIR 2> /dev/null

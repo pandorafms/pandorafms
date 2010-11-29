@@ -12,6 +12,9 @@ use File::Copy;
 use FindBin;
 use Digest::MD5 qw(md5);
 
+# Time to wait before the service stops
+use constant SERVICE_STOP_WAIT => 5;
+
 # This tool is intented to be used to update pandora agent binaries using
 # the file collection feature. This will work using a module like this:
 
@@ -139,7 +142,8 @@ if (compare_twofiles ($running_binary, $updated_binary) == 0 ){
 	close (FILE3);
 
 	my $output = `$stop_pandora`;
-	copy($updated_binary, $running_binary) or die "Problems updating binary from $updated_binary";
+	sleep SERVICE_STOP_WAIT;
+	copy($updated_binary, $running_binary) or unlink $local_log;
 	$output = `$start_pandora`;
 
 } else {

@@ -213,7 +213,8 @@ foreach ($modules as $module) {
 	if ($write && $module["id_modulo"] > 1 && $module["id_tipo_modulo"] < 100) {
 		if ($module["flag"] == 0) {
 			echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."&amp;id_agente_modulo=".$module["id_agente_modulo"]."&amp;flag=1&amp;tab=data&amp;refr=60'><img src='images/target.png' border='0' alt='' /></a>";
-		} else {
+		}
+		else {
 			echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."&amp;id_agente_modulo=".$module["id_agente_modulo"]."&amp;tab=data&amp;refr=60'><img src='images/refresh.png' border='0' alt='' /></a>";
 		}
 	}
@@ -284,7 +285,8 @@ foreach ($modules as $module) {
 	if ($module["module_interval"] != 0){
 		echo $module["module_interval"];
 		$real_interval = $module["module_interval"];
-	} else {
+	}
+	else {
 		echo $intervalo_agente;
 		$real_interval = $intervalo_agente;
 	}
@@ -292,14 +294,14 @@ foreach ($modules as $module) {
 	if (($module["id_tipo_modulo"] != 3)
 	AND ($module["id_tipo_modulo"] != 10)
 	AND ($module["id_tipo_modulo"] != 17)
-	AND ($module["id_tipo_modulo"] != 23)){
+	AND ($module["id_tipo_modulo"] != 23)) {
 		echo "</td><td class='".$tdcolor."f9' title='".safe_output($module["descripcion"])."'>"; 
 		echo safe_output(substr($module["descripcion"],0,32));
 		if (strlen($module["descripcion"]) > 32){
 			echo "...";
 		}
 		echo "</td>";
-	} 
+	}
 	
 	if ($module["id_tipo_modulo"] == 24) { // Log4x
 		echo "<td class='".$tdcolor."f9' colspan='1'>&nbsp;</td>";
@@ -314,20 +316,23 @@ foreach ($modules as $module) {
 			case 60: echo "<td class=$tdcolor style='color:red; font-weight:bold;'>".__('FATAL')."</td>"; break;
 		}
 
-	} else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
+	}
+	else if (($module["id_tipo_modulo"] == 100) OR ($module['history_data'] == 0)) {
 		echo "<td class='".$tdcolor."f9' colspan='2' title='".$module["datos"]."'>";
 		echo substr(safe_output($module["datos"]),0,12);
-	} else {
-
+	}
+	else {
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-
-		if (is_numeric($module["datos"])){
+		
+		if ((is_numeric($module["datos"])) && ($module["id_tipo_modulo"] != 23)) {
 			echo "<td class=".$tdcolor.">";
 			echo format_for_graph($module["datos"] );
 		}
 		else {
+			
 			if (strlen($module["datos"]) > 0 ) $colspan = 2;
 			else $colspan= 1;
+			
 			echo "<td class='".$tdcolor."f9' colspan='" . $colspan . "' title='".safe_output($module["datos"])."'>";
 			echo substr(safe_output($module["datos"]),0,42);
 		}
@@ -353,20 +358,22 @@ foreach ($modules as $module) {
 	}
 	
 	
-	if ($module['history_data'] == 1){
+	if ($module['history_data'] == 1) {
 	// RAW Table data
 		echo "<td class=".$tdcolor." width=70>";
 		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=2592000&amp;id=".$module["id_agente_modulo"]."'><img src='images/data_m.png'border='0' alt='' /></a>&nbsp;&nbsp;";
 		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=604800&amp;id=".$module["id_agente_modulo"]."'><img src='images/data_w.png'border='0' alt='' /></a>&nbsp;&nbsp;";
 		echo "<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&amp;tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'><img src='images/data_d.png'border='0' alt='' /></a>";
-	} else {
+	}
+	else {
 		echo "<td class=".$tdcolor."></td>";
 	}
 
 	echo "<td class='".$tdcolor."f9'>";
 	if ($module["utimestamp"] == 0){ 
 		echo __('Never');
-	} else {
+	}
+	else {
 		$seconds = get_system_time () - $module["utimestamp"];
 		if ($module['id_tipo_modulo'] < 21 && $module["module_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["module_interval"] * 2)) {
 			echo '<span class="redb">';

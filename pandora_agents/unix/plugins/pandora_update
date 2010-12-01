@@ -65,13 +65,13 @@ sub compare_twofiles ($$) {
 
 	open FILE1, $file1;
 	binmode FILE1;
-	my $data1 = <FILE1>;
+	my $data1 = join ('', <FILE1>);
 	close FILE1;
 	my $hash1 = md5($data1);
 
 	open FILE2, $file2;
 	binmode FILE2;
-	my $data2 = <FILE2>;
+	my $data2 = join ('', <FILE2>);
 	close FILE2;
 	my $hash2 = md5($data2);
 

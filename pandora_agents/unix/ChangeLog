@@ -1,3 +1,7 @@
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* plugins/pandora_update: Fixed md5 calculation.
+
 2010-11-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer: Remove all init symbolic links.

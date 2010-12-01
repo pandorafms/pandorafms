@@ -1,5 +1,9 @@
 2010-12-01  Ramon Novoa  <rnovoa@artica.es>
 
+	* bin/util/pandora_update.exe: Fixed md5 calculation.
+
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
 	* bin/PandoraAgent.exe:
 
 	* installer/pandora.mpi, pandora.cc: Updated version strings.

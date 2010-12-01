@@ -1,3 +1,11 @@
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* unix/AIX/pandora_agent.conf, unix/pandora_agent,
+	  win32/ChangeLog, win32/installer/pandora.mpi,
+	  win32/pandora.cc: Updated version strings.
+	
+	* win32/bin/PandoraAgent.exe: Updated to r3644.
+
 2010-11-25  Sancho Lerena <slerena@artica.es>
 
 	* pandora_agents/unix/pandora_agent.spec: Updated version

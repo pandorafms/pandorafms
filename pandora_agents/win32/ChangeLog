@@ -1,3 +1,13 @@
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/PandoraAgent.exe:
+
+	* installer/pandora.mpi, pandora.cc: Updated version strings.
+
+2010-11-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/util/pandora_update.exe: Give the agent service some time to stop.
+
 2010-11-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/PandoraAgent.exe: Updated to r3583.

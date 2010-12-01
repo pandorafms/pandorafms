@@ -1,3 +1,8 @@
+2010-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_recode_db.pl: Redefine safe_input to avoid loading
+	  a buggy one from a 3.1 Tools.pm.
+
 2010-11-29  Dario Rodriguez  <dario.rodriguez@artica.es>
 
 	* lib/PandoraFMS/ReconServer.pm: Fixed a problem with HTML entities executing 

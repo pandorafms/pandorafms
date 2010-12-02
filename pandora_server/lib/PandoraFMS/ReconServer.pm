@@ -451,8 +451,8 @@ sub exec_recon_script ($$$) {
 	# Get recon plugin data	
 	my $script = get_db_single_row ($dbh, 'SELECT * FROM trecon_script WHERE id_recon_script = ?', $task->{'id_recon_script'});
 	return -1 unless defined ($script);
-	$name = safe_output($script->{'name'});
-	logger($pa_config, 'Executing recon script ' . $name, 10);
+
+	logger($pa_config, 'Executing recon script ' . safe_output($script->{'name'}), 10);
 
 	my $command = safe_output($script->{'script'});
 	my $field1 = safe_output($task->{'field1'}); 

@@ -10,6 +10,7 @@ f none usr/share/pandora_agent/plugins/grep_log 0755 root root
 f none usr/share/pandora_agent/plugins/inventory 0755 root root
 f none usr/share/pandora_agent/plugins/pandora_df 0755 root root
 f none usr/share/pandora_agent/plugins/nagios_plugin_wrapper 0755 root root
+f none usr/share/pandora_agent/plugins/pandora_update 0755 root root
 d none etc/pandora/ 0755 root root
 f none etc/pandora/pandora_agent.conf 0755 root root
 f none usr/man/man1/pandora_agent.1 0644 root root

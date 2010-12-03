@@ -191,6 +191,8 @@ else {
 			$agent_info = get_agent_module_info ($agent["id_agente"]);
 			
 			$modulesCell = '<b>'. $agent_info["modules"] . '</b>';
+			if ($agent_info["monitor_alertsfired"] > 0)
+				$modulesCell .= ' : <span class="orange">'.$agent_info["monitor_alertsfired"].'</span>';
 			if ($agent_info["monitor_normal"] > 0)
 				$modulesCell .= '</b> : <span class="green">'.$agent_info["monitor_normal"].'</span>';
 			if ($agent_info["monitor_warning"] > 0)
@@ -211,6 +213,9 @@ else {
 			$now = time ();
 			$diferencia = $now - $last_time;
 			$time = print_timestamp ($last_time, true);
+			$time_style = $time;
+			if ($diferencia > ($agent["intervalo"] * 2))
+				$time_style = '<b><span style="color: #ff0000">'.$time.'</span></b>';
 		
 			array_push($table->data, array(
 				$cellName,
@@ -220,7 +225,7 @@ else {
 				$modulesCell,
 				$agent_info["status_img"],
 				$agent_info["alert_img"],
-				'<b><span style="color: #ff0000">'.$time.'</span></b>'));
+				$time_style));
 		}
 		
 		echo "<br />";pagination ($totalAgents);

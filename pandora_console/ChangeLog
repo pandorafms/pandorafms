@@ -1,3 +1,9 @@
+2010-12-03  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/search_agents.php: Fixed alert fired number of modules
+	and colour of Last contact in the agent table main search for bugs
+	3126434 and 3126437
+
 2010-11-30  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* operation/agentes/estado_ultimopaquete.php: fixed when the string data of

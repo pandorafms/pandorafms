@@ -104,8 +104,15 @@ my $base_path = return_basepath();
 # Location of binaries 
 
 # Unix 
-my $running_binary = "/usr/bin/pandora_agent";
-my $updated_binary = "/etc/pandora/collections/$fc_path/pandora_agent";
+my $running_binary;
+my $updated_binary;
+if ($^O eq 'freebsd') {
+    $running_binary = "/usr/local/bin/pandora_agent";
+    $updated_binary = "/usr/local/etc/pandora/collections/$fc_path/pandora_agent";
+} else {
+    $running_binary = "/usr/bin/pandora_agent";
+    $updated_binary = "/etc/pandora/collections/$fc_path/pandora_agent";
+}
 
 # Windows 
 
@@ -116,8 +123,15 @@ my $updated_binary = "/etc/pandora/collections/$fc_path/pandora_agent";
 
 # Unix style
 
-my $start_pandora = "/etc/init.d/pandora_agent_daemon start";
-my $stop_pandora = "/etc/init.d/pandora_agent_daemon stop";
+my $start_pandora;
+my $stop_pandora;
+if ($^O eq 'freebsd') {
+    $start_pandora = "/usr/local/etc/rc.d/pandora_agent start";
+    $stop_pandora = "/usr/local/etc/rc.d/pandora_agent stop";
+} else {
+    $start_pandora = "/etc/init.d/pandora_agent_daemon start";
+    $stop_pandora = "/etc/init.d/pandora_agent_daemon stop";
+}
 
 # Windows stuff
 

@@ -27,7 +27,7 @@ my $target_interval = 600;
 ##########################################################################
 # Code begins here, do not touch
 ##########################################################################
-my $pandora_conf = "/etc/pandora/pandora_server.conf";
+my $pandora_conf = "/etc/pandora/pandora_server.conf.2010-11-11";
 my $task_id = $ARGV[0]; # Passed automatically by the server
 my $target_group = $ARGV[1]; # Defined by user
 my $create_incident = $ARGV[2]; # Defined by user
@@ -252,13 +252,13 @@ for (my $i = 1, $net_addr++; $net_addr < $net_addr->broadcast; $i++, $net_addr++
 	process_module_snmp ($dbh, $target_community, $addr, ".1.3.6.1.2.1.4.10.0", "", "Local OutRequests", "remote_snmp_inc", "System local outgoing traffic (bytes)", $conf);
 
 	# Process interface list
-	# Get interface limit
+	# Get interface indexes
+		
+	my $interface_indexes = `/usr/bin/snmpwalk -Ouvq -c '$target_community' -v 1 $addr ifIndex>/dev/null`;
 	
-	my $interface_limit = `/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr .1.3.6.1.2.1.2.1.0 2>/dev/null`;
-	
+	my @ids = split("\n", $interface_indexes);
 
-	for ($ax = 1; $ax<$interface_limit; $ax++){
-
+	foreach my $ax (@ids) {
 		
 		my $interface = `/usr/bin/snmpget -v 1 -r0 -t$target_timeout -OUevqt -c '$target_community' $addr RFC1213-MIB::ifDescr.$ax 2>/dev/null`;
 		

@@ -58,11 +58,30 @@ my $dbh_dest = db_connect ('mysql', $conf{'dbname_dest'}, $conf{'dbhost_dest'}, 
 my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
 		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 
-# Build the comparation arrays (the id_agents must be compare first, doesnt touch)
+print "\n[*] Preparing agents correlation.\n";
+
+# Build the comparison arrays (the id_agents must be compare first)
 my $id_agent_comparation = enterprise_hook('sync_compare_id_agents', [$dbh_source, $dbh_dest, \$errors_agents]);
 my @id_agent_comparation = @{$id_agent_comparation};
+
+print "\n[*] Checking destination agents missed on source.\n";
+
+my $agents_deleted = enterprise_hook('sync_delete_dst_missed_agents', [$dbh_source, $dbh_dest, \$errors_agents]);
+	
+print "\n[*] $agents_deleted agents deleted on destination.\n" unless $agents_deleted == 0;
+	
+print "\n[*] Preparing modules correlation.\n";
+
 my $id_agentmodule_comparation = enterprise_hook('sync_compare_id_agent_modules', [$dbh_source, $dbh_dest, $id_agent_comparation, \$errors_modules]);
 my @id_agentmodule_comparation = @{$id_agentmodule_comparation};
+
+print "\n[*] Checking destination modules missed on source.\n";
+my $modules_deleted = enterprise_hook('sync_delete_dst_missed_agent_modules', [$dbh_source, $dbh_dest, $id_agent_comparation, \$errors_modules]);
+
+print "\n[*] $modules_deleted modules deleted on destination.\n" unless $modules_deleted == 0;
+
+print "\n[*] Preparing servers correlation.\n";
+
 my $id_server_export_comparation = enterprise_hook('sync_compare_id_server_export', [$dbh_source, $dbh_dest, \$errors_exportservers]);
 my @id_server_export_comparation = @{$id_server_export_comparation};
 my $id_server_comparation = enterprise_hook('sync_compare_id_server', [$dbh_source, $dbh_dest, \$errors_servers]);
@@ -215,14 +234,14 @@ sub pandora_sync_main ($$$) {
 		print "\n[*] Nothing to do. Exiting !\n\n";
 	}
 	else {
-		print "\n[W] $errors errors in synchronization.\n\n";
+		print "\n[W] $errors errors fixed in synchronization.\n\n";
 	
 		print "Summary: \n";
 		if($errors_agents > 0) {
-			print "- $errors_agents Agents unsynchronized.\n";
+			print "- $errors_agents Agents unsynchronized fixed.\n";
 		}
 		if($errors_modules > 0) {
-			print "- $errors_modules Modules unsynchronized.\n";
+			print "- $errors_modules Modules unsynchronized fixed.\n";
 		}
 		if($errors_servers > 0) {
 			print "- $errors_servers Servers unsynchronized.\n";

@@ -132,6 +132,8 @@ our @EXPORT = qw(
 	pandora_create_incident
 	pandora_create_module
 	pandora_create_module_from_hash
+	pandora_delete_agent
+	pandora_delete_module
 	pandora_evaluate_alert
 	pandora_evaluate_compound_alert
 	pandora_evaluate_snmp_alerts
@@ -1119,6 +1121,27 @@ sub pandora_create_module ($$$$$$$$$$) {
 }
 
 ##########################################################################
+## Delete a module given its id.
+##########################################################################
+sub pandora_delete_module ($$) {
+        my ($dbh, $module_id) = @_;
+		      
+        # Delete Graphs, layouts & reports
+        db_do ($dbh, 'DELETE FROM tgraph_source WHERE id_agent_module = ?', $module_id);
+        db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo = ?', $module_id);
+        db_do ($dbh, 'DELETE FROM treport_content WHERE id_agent_module = ?', $module_id);
+        
+        # Delete the module state
+        db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
+        
+        # Delete templates asociated to the module
+        db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id_agent_module = ?', $module_id);
+        
+        # Set pending delete the module
+        db_do ($dbh, 'UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ?', $module_id);
+}
+
+##########################################################################
 ## Create an agent module from hash
 ##########################################################################
 sub pandora_create_module_from_hash ($$$) {
@@ -1191,6 +1214,42 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	logger ($pa_config, "Server '$server_name' CREATED agent '$agent_name' address '$address'.", 10);
 	pandora_event ($pa_config, "Agent [$agent_name] created by $server_name", $group_id, $agent_id, 2, 0, 0, 'new_agent', 0, $dbh);
 	return $agent_id;
+}
+
+##########################################################################
+## Delete an agent given its id.
+##########################################################################
+sub pandora_delete_agent ($$;$) {
+        my ($dbh, $agent_id, $conf) = @_;
+        my $agent_name = get_agent_name($dbh, $agent_id);
+
+        # Delete from all their policies
+        enterprise_hook('pandora_delete_agent_from_policies', [$agent_id, $dbh]);
+
+        # Delete the agent
+        db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
+        
+        # Delete agent access data
+        db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
+        
+        # Delete addresses
+        db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
+        
+        my @modules = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ?', $agent_id);
+                
+        if(defined $conf) {
+			# Delete the conf files
+			if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
+				unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+			}
+			if (-e $conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5') {
+				unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
+			}
+		}
+        
+        foreach my $module (@modules) {
+			pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
+        }
 }
 
 ##########################################################################

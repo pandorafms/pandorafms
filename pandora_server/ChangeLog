@@ -1,5 +1,13 @@
 2010-12-09  Sergio Martin <sergio.martin@artica.es>
 
+	* lib/PandoraFMS/Core.pm
+	util/pandora_manage.pl
+	util/pandora_sync_db.pl: Added agents and modules
+	existence checks on source and destination in 
+	sync db script. Added messages in execution time
+
+2010-12-09  Sergio Martin <sergio.martin@artica.es>
+
 	* util/recon_scripts/snmpdevices.pl: Fixed a typo from the
 	default server path in configuration
 

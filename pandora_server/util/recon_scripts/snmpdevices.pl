@@ -27,7 +27,7 @@ my $target_interval = 600;
 ##########################################################################
 # Code begins here, do not touch
 ##########################################################################
-my $pandora_conf = "/etc/pandora/pandora_server.conf.2010-11-11";
+my $pandora_conf = "/etc/pandora/pandora_server.conf";
 my $task_id = $ARGV[0]; # Passed automatically by the server
 my $target_group = $ARGV[1]; # Defined by user
 my $create_incident = $ARGV[2]; # Defined by user

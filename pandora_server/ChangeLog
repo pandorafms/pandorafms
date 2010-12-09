@@ -1,3 +1,8 @@
+2010-12-09  Sergio Martin <sergio.martin@artica.es>
+
+	* util/recon_scripts/snmpdevices.pl: Fixed a typo from the
+	default server path in configuration
+
 2010-12-07  Sergio Martin <sergio.martin@artica.es>
 
 	* util/recon_scripts/snmpdevices.pl: Fixed the snmp recon script 

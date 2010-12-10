@@ -1,10 +1,14 @@
+2010-12-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/util/pandora_update.exe: Updated. Some paths may have been wrong.
+
 2010-12-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/util/pandora_update.exe: Fixed md5 calculation.
 
 2010-12-01  Ramon Novoa  <rnovoa@artica.es>
 
-	* bin/PandoraAgent.exe:
+	* bin/PandoraAgent.exe: Updated ro r3644.
 
 	* installer/pandora.mpi, pandora.cc: Updated version strings.
 

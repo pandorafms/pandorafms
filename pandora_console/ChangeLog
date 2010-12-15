@@ -1,3 +1,8 @@
+2010-12-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_html.php, include/ajax/module.php: fixed when the module
+	have a scape html chars.
+
 2010-12-03  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/search_agents.php: Fixed alert fired number of modules

@@ -27,7 +27,7 @@ if ($search_modules) {
 	$modules = array_unique($modules);
 	
 	foreach ($modules as $module) {
-		echo $module . "\n";
+		echo safe_output($module) . "\n";
 	}
 }
 ?>

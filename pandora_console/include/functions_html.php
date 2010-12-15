@@ -1310,6 +1310,14 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 	
 	?>
 	<script type="text/javascript">
+	function escapeHTML (str)
+	{
+	   var div = document.createElement('div');
+	   var text = document.createTextNode(str);
+	   div.appendChild(text);
+	   return div.innerHTML;
+	};
+	
 		$(document).ready (function () {		
 			$("#text-<?php echo $name; ?>").autocomplete(
 				"ajax.php",
@@ -1331,7 +1339,7 @@ function print_autocomplete_modules($name = 'module', $default = '', $id_agents 
 						if (data == "")
 							return false;
 						
-						return data[0];
+						return escapeHTML(data[0]);
 					},
 					delay: 200
 				}

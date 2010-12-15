@@ -1,5 +1,12 @@
 2010-12-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: increment the
+	size of field "nombre" in table "tagente" for html entities.
+	
+	Fixes: #3136610
+
+2010-12-15  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_html.php, include/ajax/module.php: fixed when the module
 	have a scape html chars.
 

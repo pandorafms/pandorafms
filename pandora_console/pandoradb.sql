@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `taddress_agent` (
 
 CREATE TABLE IF NOT EXISTS `tagente` (
   `id_agente` int(10) unsigned NOT NULL auto_increment,
-  `nombre` varchar(100) BINARY NOT NULL default '',
+  `nombre` varchar(600) BINARY NOT NULL default '',
   `direccion` varchar(100) default NULL,
   `comentarios` varchar(255) default '',
   `id_grupo` int(10) unsigned NOT NULL default '0',

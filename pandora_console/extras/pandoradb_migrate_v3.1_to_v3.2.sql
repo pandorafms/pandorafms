@@ -19,6 +19,11 @@
 -- and fails creating database !!!
 
 -- -----------------------------------------------------
+-- Table `tagente`
+-- -----------------------------------------------------
+ALTER TABLE `tagente` MODIFY `nombre` varchar(600) BINARY NOT NULL default '';
+
+-- -----------------------------------------------------
 -- Table `tgrupo`
 -- -----------------------------------------------------
 ALTER TABLE `tgrupo` ADD COLUMN `propagate` tinyint(1) unsigned NOT NULL default '0';

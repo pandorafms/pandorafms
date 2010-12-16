@@ -1,3 +1,8 @@
+2010-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/control, DEBIAN/make_deb_package.sh, pandora_console.spec,
+	pandora_console.redhat.spec: update the version number.
+
 2010-12-04  Junichi Satoh  <junichi@rworks.jp>
 
 	* plugins/pandora_update: Added support for FreeBSD.

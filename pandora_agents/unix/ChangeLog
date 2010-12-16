@@ -1,3 +1,9 @@
+2010-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer, pandora_agent_daemon: Additional
+	  changes to run the agent as a different user. Starting and
+	  stopping the daemon did not work except as root.
+
 2010-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/control, DEBIAN/make_deb_package.sh, pandora_console.spec,

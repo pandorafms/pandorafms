@@ -1,3 +1,10 @@
+2010-12-16  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* DEBIAN/make_deb_package.sh: added source code for to delete ".svn" dirs
+	when to make the deb package.
+	
+	Fixes: #3119594, #3115604
+
 2010-12-15  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* pandoradb.sql, extras/pandoradb_migrate_v3.1_to_v3.2.sql: increment the

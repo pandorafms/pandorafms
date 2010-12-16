@@ -232,6 +232,9 @@ install () {
 
             sed -e "s/^DAEMON\=[.]*/DAEMON\=$PANDORA_BASE_DECODED/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
             mv  $DAEMON_TEMP $DAEMON_SCRIPT
+ 
+	    sed -e "s/^PANDORA_USER\=.*/PANDORA_USER\=$PANDORA_USER/g"  $DAEMON_SCRIPT > $DAEMON_TEMP
+            mv  $DAEMON_TEMP $DAEMON_SCRIPT
 	fi
 
         sed -e "s/^temporal [.]*/temporal $PANDORA_BASE_DECODED/g" $AGENT_CFG > $AGENT_CFG_TEMP
@@ -358,6 +361,8 @@ install () {
 	then
 		cp pandora_agent_daemon /etc/rc.pandora_agent_daemon		
 		ln -s /etc/rc.pandora_agent_daemon /etc/rc.d/rc2.d/S90pandora_agent_daemon
+		chmod 755 $PANDORA_STARTUP
+		chown root:root $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc.d/rc2.d/S90pandora_agent_daemon"
 	fi
 	
@@ -367,6 +372,8 @@ install () {
 		cp pandora_agent_daemon $PANDORA_STARTUP
 		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc3.d/S90pandora_agent_daemon 2> /dev/null
 		ln -s /sbin/init.d/pandora_agent_daemon /sbin/rc2.d/S90pandora_agent_daemon 2> /dev/null
+		chmod 755 $PANDORA_STARTUP
+		chown root:root $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /sbin/rcX.d/S90pandora_agent_daemon"
 	fi
 	
@@ -375,6 +382,8 @@ install () {
 		PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
 		cp pandora_agent_daemon $PANDORA_STARTUP 
 		ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent_daemon 2> /dev/null
+		chmod 755 $PANDORA_STARTUP
+		chown root:root $PANDORA_STARTUP
 		echo "Pandora FMS agent has been included in /etc/rc2.d/S90pandora_agent_daemon"
 	fi
 	
@@ -390,11 +399,13 @@ install () {
 			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
 			ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent 2> /dev/null
 		fi
+		chmod 755 $PANDORA_STARTUP
+		chown root:root $PANDORA_STARTUP
 	fi
 
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then
-	PANDORA_STARTUP=/usr/local/etc/rc.d/pandora_agent
+		PANDORA_STARTUP=/usr/local/etc/rc.d/pandora_agent
 		cp FreeBSD/pandora_agent $PANDORA_STARTUP
 		chmod 555 $PANDORA_STARTUP
 		chown root:wheel $PANDORA_STARTUP

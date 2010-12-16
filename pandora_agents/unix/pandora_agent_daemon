@@ -24,6 +24,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
 LOGFILE=/var/log/pandora/pandora_agent.log
+PANDORA_USER=root
 
 # This function replace pidof, not working in the same way in different linux distros
 
@@ -73,8 +74,7 @@ case "$1" in
 			echo "Cannot launch again. Aborting."
 			exit 1
 		fi
-		PATH=$PATH nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & 
-		rm nohup.out 2> /dev/null
+		su -c "PATH=$PATH nohup $DAEMON $PANDORA_PATH >/dev/null 2>$LOGFILE &" $PANDORA_USER
 		sleep 2
 		PANDORA_PID=`pidof_pandora`
 		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
@@ -88,7 +88,7 @@ case "$1" in
 			exit 1
 		else
 			echo "Stopping Pandora Agent."
-			kill -9 $PANDORA_PID > /dev/null 2>&1
+			su -c "kill -9 $PANDORA_PID >/dev/null 2>&1" $PANDORA_USER
 		fi
 	;;
 

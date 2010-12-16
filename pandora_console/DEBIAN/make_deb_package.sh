@@ -96,6 +96,27 @@ then
 	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
 	chmod 755 -R temp_package/DEBIAN
 	touch temp_package/var/www/pandora_console/include/config.php
+	
+	
+	echo "Remove the SVN files and other temp files."
+	for item in `find temp_package`
+	do
+		echo -n "."
+		echo $item | grep "svn" > /dev/null
+		#last command success
+		if [ $? -eq 0 ]
+		then
+			rm -rf $item
+		fi
+		
+		echo $item | grep "make_deb_package.sh" > /dev/null
+		#last command success
+		if [ $? -eq 0 ]
+		then
+			rm -rf $item
+		fi
+	done
+	echo "END"
 
 	echo "Calculate md5sum for md5sums package control file."
 	for item in `find temp_package`

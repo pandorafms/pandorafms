@@ -39,7 +39,7 @@ Requires:           graphviz
 Provides:           %{name}-%{version}
 
 %description
-The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the ﬁnal user, and that will allows you to administer the system.
+The Web Console is a web application that allows to see graphical reports, state of every agent, also to access to the information sent by the agent, to see every monitored parameter and to see its evolution throughout the time, to form the different nodes, groups and users of the system. It is the part that interacts with the final user, and that will allows you to administer the system.
 
 %prep
 rm -rf $RPM_BUILD_ROOT

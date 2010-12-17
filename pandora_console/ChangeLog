@@ -1,3 +1,7 @@
+2010-12-17  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* install.php: added to check "curl" dependency.
+
 2010-12-17 Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.spec,

@@ -36,6 +36,8 @@ $user->hackinjectConfig();
 ?>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  		<meta name = "viewport" content = "width = device-width" />
 		<title>Pandora FMS - <?php echo __('the Flexible Monitoring System (mobile version)'); ?></title>
 		<link rel="stylesheet" href="include/style/main.css" type="text/css" />
 		<link rel="stylesheet" href="../include/styles/tip.css" type="text/css" />

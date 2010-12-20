@@ -246,7 +246,14 @@ switch ($action) {
 						else {
 							$idItem = $result;
 							
-							$max = get_db_all_rows_sql('select max(`order`) as max from treport_content;'); $max = $max[0]['max'];
+							$max = get_db_all_rows_sql('SELECT max(`order`) AS max 
+								FROM treport_content WHERE id_report = ' . $idReport . ';');
+							if ($max === false) {
+								$max = 0;
+							}
+							else {
+								$max = $max[0]['max'];
+							}
 							process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
 							
 							$resultOperationDB = true;
@@ -368,7 +375,8 @@ switch ($action) {
 				}
 				
 				process_sql_begin();
-				$resultOperationDB = process_sql_update('treport_content', array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_rc' => $idReport));
+				$resultOperationDB = process_sql_update('treport_content',
+					array('`order`' => $oldOrder), array('`order`' => $newOrder, 'id_report' => $idReport));
 				if ($resultOperationDB !== false) {
 					$resultOperationDB = process_sql_update('treport_content', array('`order`' => $newOrder), array('id_rc' => $idItem));
 					if ($resultOperationDB !== false) {

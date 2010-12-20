@@ -1,5 +1,13 @@
 2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* godmode/reporting/reporting_builder.php: fixed the action to sort up or
+	down the items in the report, and improvement the order number and now
+	start to each new report.
+	
+	Fixes: #3140930
+
+2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* godmode/reporting/reporting_builder.item_editor.php: fixed the copy &
 	paste mistake with the name of var (month ago), now show the URL to edit in
 	the import.

@@ -1,3 +1,8 @@
+2010-12-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/reporting/graph_builder.preview.php: Fixed a typo.
+	  Fixes bug #3138641.
+
 2010-12-20  Dario Rodriguez  <dario.rodriguez@artica.es>
 	
 	* pandoradb.sql: Modify column external source of treport_content

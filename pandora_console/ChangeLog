@@ -1,3 +1,9 @@
+2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* godmode/reporting/reporting_builder.item_editor.php: fixed the copy &
+	paste mistake with the name of var (month ago), now show the URL to edit in
+	the import.
+
 2010-12-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* general/logon_ok.php: Decode HTML entities in session

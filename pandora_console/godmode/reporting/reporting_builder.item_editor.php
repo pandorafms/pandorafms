@@ -150,7 +150,7 @@ switch ($action) {
 				break;
 			case 'url':
 				$description = $item['description'];
-				$url = $item['column_separator'];
+				$url = $item['external_source'];
 				break;
 			case 'database_serialized':
 				$description = $item['description'];

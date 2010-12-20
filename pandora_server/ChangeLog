@@ -1,3 +1,7 @@
+2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* util/pandora_recode_db.pl: added to recode the table "tpolicy_modules".
+
 2010-12-16  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* DEBIAN/control, DEBIAN/make_deb_package.sh, pandora_console.spec,

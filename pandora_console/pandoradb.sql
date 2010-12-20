@@ -794,7 +794,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`description` mediumtext, 
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT default NULL,
-	`external_source` TinyText default NULL,
+	`external_source` TEXT default NULL,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,

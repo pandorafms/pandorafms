@@ -1,5 +1,10 @@
 2010-12-20  Ramon Novoa  <rnovoa@artica.es>
 
+	* general/logon_ok.php: Decode HTML entities in session
+	  information comments. Fixes bug #3139032.
+
+2010-12-20  Ramon Novoa  <rnovoa@artica.es>
+
 	* godmode/reporting/graph_builder.preview.php: Fixed a typo.
 	  Fixes bug #3138641.
 

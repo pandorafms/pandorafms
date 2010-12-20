@@ -168,7 +168,7 @@ foreach ($sessions as $session) {
 	$data[1] = $session['accion'];
 	$data[2] = $session['fecha'];
 	$data[3] = $session['ip_origen'];
-	$data[4] = $session['descripcion'];
+	$data[4] = safe_output ($session['descripcion']);
 	
 	array_push ($table->data, $data);
 }

@@ -319,13 +319,13 @@ $table->data[2][1] = print_select ($modules, "module_arr[]", array_keys ($module
 $table->data[3][0] = '<b>'.__('Begin date').'</b>';
 
 $table->data[3][1] = print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
-$table->data[3][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => 'scwShow(scwID("text-start_date"),this);'));
+$table->data[3][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
 $table->data[3][1] .= print_input_text ('start_time', date ("H:m", get_system_time () - 86400), false, 10, 5, true);
 	
 //End date selector
 $table->data[4][0] = '<b>'.__('End date').'</b>';
 $table->data[4][1] = print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
-$table->data[4][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => 'scwShow(scwID("text-end_date"),this);'));
+$table->data[4][1] .= print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
 $table->data[4][1] .= print_input_text ('end_time', date ("H:m", get_system_time ()), false, 10, 5, true);
 	
 //Export type

@@ -1,3 +1,9 @@
+2010-12-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh, build_deb.sh, build_rpm.sh: Small fixes to build scripts.
+	
+	* build_windows_agent.sh: Added to respository. Windows agent build script.
+
 2010-11-08  Sancho Lerena <slerena@artica.es>
 
 	* build_src.sh: Removed NT4 from the unix src package.

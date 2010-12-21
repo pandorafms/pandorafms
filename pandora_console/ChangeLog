@@ -1,5 +1,10 @@
 2010-12-21  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* images/image_problem.opaque.png: re-upload the lost file in previous
+	commit. 
+
+2010-12-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* include/functions_reporting.php, include/fgraph.php,
 	include/functions_db.php, images/image_problem.opaque.png: fixed the bug
 	because this bug was two things the access to graph with not login in the

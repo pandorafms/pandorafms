@@ -50,11 +50,12 @@ function check_login () {
 		require_once($config["homedir"].'/mobile/include/user.class.php');
 		session_start ();
 		session_write_close ();
-		$user = $_SESSION['user'];
-		$id_user = $user->getIdUser();
-		
-		if (is_user ($id_user)) {
-			return 0;
+		if (isset($_SESSION['user'])) {
+			$user = $_SESSION['user'];
+			$id_user = $user->getIdUser();
+			if (is_user ($id_user)) {
+				return 0;
+			}
 		}
 	}
 	pandora_audit("No session", "Trying to access without a valid session", "N/A");

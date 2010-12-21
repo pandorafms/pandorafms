@@ -1,3 +1,13 @@
+2010-12-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
+	* include/functions_reporting.php, include/fgraph.php,
+	include/functions_db.php, images/image_problem.opaque.png: fixed the bug
+	because this bug was two things the access to graph with not login in the
+	same machine to generate, and the transparent png that not crash with the
+	pdf library.
+	
+	Fixes: #3139079
+
 2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* godmode/reporting/reporting_builder.php: fixed the action to sort up or

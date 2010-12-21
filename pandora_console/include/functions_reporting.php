@@ -178,10 +178,16 @@ function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 	}
 
 	// Set initial conditions
-	if ($uncompressed_module || $interval_data[0]['utimestamp'] == $datelimit) {
-		$max = $interval_data[0]['datos'];
-	} else {
+	if (empty($iterval_data)) {
 		$max = 0;
+	}
+	else {
+		if ($uncompressed_module || $interval_data[0]['utimestamp'] == $datelimit) {
+			$max = $interval_data[0]['datos'];
+		}
+		else {
+			$max = 0;
+		}
 	}
 
 	foreach ($interval_data as $data) {

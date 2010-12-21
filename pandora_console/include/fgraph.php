@@ -18,8 +18,8 @@
  * @subpackage Graphs
  */
 
-
 if (isset($config)) {
+
 /**#@+
  * If is set global var $config include this files
  */
@@ -28,8 +28,10 @@ if (isset($config)) {
 	require_once ($config['homedir'].'/include/functions_fsgraph.php');
 	require_once ($config['homedir'].'/include/functions_reporting.php');
 /**#@-*/
+
 }
 else {
+
 /**#@+
  * If is not set global var $config include this files
  */
@@ -37,7 +39,9 @@ else {
 	require_once ($config['homedir'].'/include/pandora_graph.php');
 	require_once ($config['homedir'].'/include/functions_reporting.php');
 /**#@-*/
+
 }
+
 enterprise_include ('include/functions_reporting.php');
 
 set_time_limit (0);
@@ -54,9 +58,8 @@ if (! isset ($config["id_user"])) {
 		require_once('../mobile/include/user.class.php');
 		session_start ();
 		session_write_close ();
-		$user = $_SESSION['user'];
-		if(!empty($user)) {
-			$config["id_user"] = $user->getIdUser();
+		if (isset ($_SESSION['user'])) {
+			$config["id_user"] = $_SESSION['user']->getIdUser();
 		}
 	}
 }
@@ -73,13 +76,17 @@ if (($_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR'])
  * 
  * @param string image File that show when has a problem.
  */
-function graphic_error ($image = 'image_problem.png') {
+function graphic_error ($image = 'image_problem.opaque.png') {
 	global $config;
 	
 	Header ('Content-type: image/png');
-	$img = imagecreatefromPng ($config['homedir'].'/images/'.$image);
-	imagealphablending ($img, true);
-	imagesavealpha ($img, true);
+	
+	$image_file = $config['homedir'].'/images/'.$image;
+	
+	$img = imagecreatefromPng ($image_file);
+	
+	//imagealphablending ($img, true);
+	//imagesavealpha ($img, true);
 	imagepng ($img);
 	exit;
 }
@@ -2328,7 +2335,6 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 
 // Generic parameter handling
 // **************************
-
 $id_agent = (int) get_parameter ('id_agent');
 $tipo = (string) get_parameter ('tipo');
 $pure = (bool) get_parameter ('pure');
@@ -2362,132 +2368,132 @@ $baseline = (int) get_parameter ('baseline', 0);
 
 if ($graphic_type) {
 	switch ($graphic_type) {
-	case 'sparse': 
-		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-		$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
-		break;
-	case 'sparse_mobile':		
-		grafico_modulo_sparse($id, $period, $draw_events, $width, $height,
-			$label, $unit_name, $draw_alerts, $avg_only, $pure, $date,
-			0, 0, false);
-		break;
-	case "boolean":
-		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , 
-		$label, $unit_name, $draw_alerts, 1, $pure, $date);
-		
-		break;
-	case "estado_incidente":
-		graph_incidents_status ();
-		
-		break;
-	case "prioridad_incidente":
-		grafico_incidente_prioridad ();
-		
-		break;
-	case "db_agente_modulo":
-		graph_db_agentes_modulos ($width, $height);
-		
-		break;
-	case "db_agente_paquetes":
-		grafico_db_agentes_paquetes ($width, $height);
-		
-		break;
-	case "db_agente_purge":
-		grafico_db_agentes_purge ($id, $width, $height);
-		
-		break;
-	case "event_module":
-		graph_event_module ($width, $height, $id_agent);
-		
-		break;
-	case "group_events":
-		grafico_eventos_grupo ($width, $height,$url);
-		
-		break;
-	case "user_events":
-		grafico_eventos_usuario ($width, $height);
-		
-		break;
-	case "total_events":
-		grafico_eventos_total ();
-		
-		break;
-	case "group_incident":
-		graphic_incident_group ();
-		
-		break;
-	case "user_incident":
-		graphic_incident_user ();
-		
-		break;
-	case "source_incident":
-		graphic_incident_source ();
-		
-		break;
-	case "user_activity":
-		graphic_user_activity ($width, $height);
-		
-		break;
-	case "agentaccess":
-		graphic_agentaccess ($id, $width, $height, $period);
-		
-		break;
-	case "agentmodules":
-		graphic_agentmodules ($id, $width, $height);
-		
-		break;
-	case "progress": 
-		$percent = (int) get_parameter ('percent');
-		progress_bar ($percent,$width,$height, $mode);
-		
-		break;
-	case "combined":
-		// Split id to get all parameters
-		$module_list = array();
-		$module_list = explode (",", $id);
-		$weight_list = array();
-		$weight_list = explode (",", $weight_l);
-		graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
-					$label, $unit_name, $draw_events, $draw_alerts, $pure, $stacked, $date);
-		
-		break;
-	case "alerts_fired_pipe":
-		$data = array ();
-		$data[__('Alerts fired')] = (float) get_parameter ('fired');
-		$data[__('Alerts not fired')] = (float) get_parameter ('not_fired');
-		generic_pie_graph ($width, $height, $data);
-		
-		break;
-	case 'monitors_health_pipe':
-		$data = array ();
-		$data[__('Monitors OK')] = (float) get_parameter ('not_down');
-		$data[__('Monitors BAD')] = (float) get_parameter ('down');
-		generic_pie_graph ($width, $height, $data);
-		
-		break;
-	case 'string':
-		grafico_modulo_string ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
-		break;
-
-	case 'log4x':
-		grafico_modulo_log4x ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
-		break;
-
-    case 'sql_graph_vbar':
-        graph_custom_sql_graph ($report_id, $width, $height, 1);
-        break;
-
-    case 'sql_graph_hbar':
-        graph_custom_sql_graph ($report_id, $width, $height, 2);
-        break;
-
-    case 'sql_graph_pie':
-        graph_custom_sql_graph ($report_id, $width, $height, 3);
-        break;
-
-	case 'graphic_error':
-	default:
-		graphic_error ();
+		case 'sparse':
+			grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
+			$label, $unit_name, $draw_alerts, $avg_only, $pure, $date, $baseline);
+			break;
+		case 'sparse_mobile':		
+			grafico_modulo_sparse($id, $period, $draw_events, $width, $height,
+				$label, $unit_name, $draw_alerts, $avg_only, $pure, $date,
+				0, 0, false);
+			break;
+		case "boolean":
+			grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , 
+			$label, $unit_name, $draw_alerts, 1, $pure, $date);
+			
+			break;
+		case "estado_incidente":
+			graph_incidents_status ();
+			
+			break;
+		case "prioridad_incidente":
+			grafico_incidente_prioridad ();
+			
+			break;
+		case "db_agente_modulo":
+			graph_db_agentes_modulos ($width, $height);
+			
+			break;
+		case "db_agente_paquetes":
+			grafico_db_agentes_paquetes ($width, $height);
+			
+			break;
+		case "db_agente_purge":
+			grafico_db_agentes_purge ($id, $width, $height);
+			
+			break;
+		case "event_module":
+			graph_event_module ($width, $height, $id_agent);
+			
+			break;
+		case "group_events":
+			grafico_eventos_grupo ($width, $height,$url);
+			
+			break;
+		case "user_events":
+			grafico_eventos_usuario ($width, $height);
+			
+			break;
+		case "total_events":
+			grafico_eventos_total ();
+			
+			break;
+		case "group_incident":
+			graphic_incident_group ();
+			
+			break;
+		case "user_incident":
+			graphic_incident_user ();
+			
+			break;
+		case "source_incident":
+			graphic_incident_source ();
+			
+			break;
+		case "user_activity":
+			graphic_user_activity ($width, $height);
+			
+			break;
+		case "agentaccess":
+			graphic_agentaccess ($id, $width, $height, $period);
+			
+			break;
+		case "agentmodules":
+			graphic_agentmodules ($id, $width, $height);
+			
+			break;
+		case "progress": 
+			$percent = (int) get_parameter ('percent');
+			progress_bar ($percent,$width,$height, $mode);
+			
+			break;
+		case "combined":
+			// Split id to get all parameters
+			$module_list = array();
+			$module_list = explode (",", $id);
+			$weight_list = array();
+			$weight_list = explode (",", $weight_l);
+			graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
+						$label, $unit_name, $draw_events, $draw_alerts, $pure, $stacked, $date);
+			
+			break;
+		case "alerts_fired_pipe":
+			$data = array ();
+			$data[__('Alerts fired')] = (float) get_parameter ('fired');
+			$data[__('Alerts not fired')] = (float) get_parameter ('not_fired');
+			generic_pie_graph ($width, $height, $data);
+			
+			break;
+		case 'monitors_health_pipe':
+			$data = array ();
+			$data[__('Monitors OK')] = (float) get_parameter ('not_down');
+			$data[__('Monitors BAD')] = (float) get_parameter ('down');
+			generic_pie_graph ($width, $height, $data);
+			
+			break;
+		case 'string':
+			grafico_modulo_string ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+			break;
+	
+		case 'log4x':
+			grafico_modulo_log4x ($id, $period, $draw_events, $width, $height, $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+			break;
+	
+	    case 'sql_graph_vbar':
+	        graph_custom_sql_graph ($report_id, $width, $height, 1);
+	        break;
+	
+	    case 'sql_graph_hbar':
+	        graph_custom_sql_graph ($report_id, $width, $height, 2);
+	        break;
+	
+	    case 'sql_graph_pie':
+	        graph_custom_sql_graph ($report_id, $width, $height, 3);
+	        break;
+	
+		case 'graphic_error':
+		default:
+			graphic_error ();
 	}
 }
 

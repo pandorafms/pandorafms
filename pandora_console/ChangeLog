@@ -1,5 +1,12 @@
 2010-12-21  Miguel de Dios  <miguel.dedios@artica.es>
 	
+	* operation/agentes/exportdata.php: fixed the quotes in the script to
+	show the calendar.
+	
+	Fixes: #3141353
+
+2010-12-21  Miguel de Dios  <miguel.dedios@artica.es>
+	
 	* images/image_problem.opaque.png: re-upload the lost file in previous
 	commit. 
 

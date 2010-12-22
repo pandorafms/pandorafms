@@ -1322,7 +1322,7 @@ sub pandora_manage_main ($$$) {
 					delete $module->{'id_policy'};
 					
 					#Store the conf data
-					$configuration_data .= "\n\n$module->{'configuration_data'}";
+					$configuration_data .= safe_output("\n\n$module->{'configuration_data'}");
 
 					delete $module->{'configuration_data'};
 										
@@ -1366,8 +1366,8 @@ sub pandora_manage_main ($$$) {
 					}
 				
 					#Add the conf information to the agent conf file
-					enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data,$agent_name,$dbh]);
-				
+					enterprise_hook('pandora_create_policy_conf_info',[$conf, $policy_name, $configuration_data, $agent_name, $dbh]);
+
 					# Flag applyed the agent
 					enterprise_hook('pandora_apply_agent_policy',[$policy_id, $id_agent, $dbh]);
 				

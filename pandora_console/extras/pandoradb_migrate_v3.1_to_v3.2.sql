@@ -181,3 +181,42 @@ ALTER TABLE tagente_modulo MODIFY `tcp_rcv` TEXT default '';
 -- -----------------------------------------------------
 
 UPDATE tnews SET subject='Welcome to Pandora FMS 3.2!',text='This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.',timestamp=NOW() WHERE id_news = '1';
+
+-- Bigger fields due the HTML encoding
+
+alter table talert_templates modify field1 text;
+alter table talert_templates modify field2 text;
+alter table talert_templates modify field3 text;
+alter table talert_templates modify name text;
+
+alter table talert_templates modify field2_recovery text;
+alter table talert_templates modify field3_recovery text;
+
+alter table talert_actions modify field1 text;
+alter table talert_actions modify field2 text;
+alter table talert_actions modify field3 text;
+alter table talert_actions modify name text;
+
+alter table tagente_estado modify datos text;
+alter table tagente_modulo modify nombre text;
+alter table tagente_modulo modify plugin_user text;
+alter table tagente_modulo modify plugin_pass text;
+
+alter table talert_snmp modify al_field1 text;
+alter table talert_snmp modify al_field2 text;
+alter table talert_snmp modify al_field3 text;
+
+alter table tevento modify evento text;
+
+alter table tincidencia modify titulo text;
+alter table tincidencia modify descripcion text;
+
+alter table tnetwork_component modify tcp_send text;
+alter table tnetwork_component modify tcp_rcv text;
+alter table tnetwork_component modify plugin_user text;
+alter table tnetwork_component modify plugin_pass text;
+
+alter table tsesion modify descripcion text;
+alter table ttrap modify oid text;
+alter table ttrap modify oid_custom text;
+

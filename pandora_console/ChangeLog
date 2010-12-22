@@ -1,5 +1,11 @@
 2010-12-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* include/functions_reporting.php,
+	  operation/reporting/reporting_xml.php: Draw baseline reports
+	  in the future by default.
+
+2010-12-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* operation/agentes/exportdata.php: Fixed data average export.
 	  Fixes bug #3141351.
 

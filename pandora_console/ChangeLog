@@ -1,3 +1,10 @@
+2010-12-22  Sancho Lerena <slerena@artica.es>
+
+        * pandoradb_migrate_v3.1_to_v3.2.sql
+        pandoradb.sql: Some fields are now TEXT due the problem with new
+        HTML entities encoding.
+
+
 2010-12-22  Sergio Martin <sergio.martin@artica.es>
 
 	* godmode/massive/massive_edit_agents.php: Fixed the massive edition 

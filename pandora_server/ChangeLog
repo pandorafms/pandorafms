@@ -1,5 +1,10 @@
 2010-12-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Merged from trunk. Fixed day name
+	  array.
+
+2010-12-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* util/pandora_recode_db.pl: Merged from trunk.
 
 2010-11-21  Junichi Satoh  <junichi@rworks.jp>

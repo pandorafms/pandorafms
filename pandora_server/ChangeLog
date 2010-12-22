@@ -1,3 +1,8 @@
+2010-12-22  Sergio Martin <sergio.martin@artica.es>
+
+	* util/pandora_manage.pl: Improved the end of execution
+	message.
+
 2010-12-20  Miguel de Dios  <miguel.dedios@artica.es>
 	
 	* util/pandora_recode_db.pl: added to recode the table "tpolicy_modules".

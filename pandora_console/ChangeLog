@@ -1,3 +1,9 @@
+2010-12-22  Sancho Lerena <slerena@artica.es>
+
+	* operation/menu.php,
+	general/header.php: Fixed some anyoing autorefresh values on most
+	operational options.
+
 2010-12-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/events/events_list.php: Fixed event name search and

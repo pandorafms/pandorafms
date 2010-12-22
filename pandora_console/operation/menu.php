@@ -37,29 +37,29 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	//View agents
 	$menu["estado"]["text"] = __('View agents');
 	$menu["estado"]["sec2"] = "operation/agentes/tactical";
-	$menu["estado"]["refr"] = 60;
+	$menu["estado"]["refr"] = 0;
 	$menu["estado"]["id"] = "oper-agents";
 	
 	$sub = array ();
 	$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
-	$sub["operation/agentes/tactical"]["refr"] = 60;
+	$sub["operation/agentes/tactical"]["refr"] = 0;
 	
 	$sub["operation/agentes/group_view"]["text"] = __('Group view');
-	$sub["operation/agentes/group_view"]["refr"] = 60;
+	$sub["operation/agentes/group_view"]["refr"] = 0;
 	
 	$sub["operation/agentes/networkmap"]["text"] = __('Network map');
 	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
-	$sub["operation/agentes/estado_agente"]["refr"] = 60;
+	$sub["operation/agentes/estado_agente"]["refr"] = 0;
 				
 	$sub["operation/agentes/alerts_status"]["text"] = __('Alert detail');
-	$sub["operation/agentes/alerts_status"]["refr"] = 60;
+	$sub["operation/agentes/alerts_status"]["refr"] = 0;
 	
 	$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
-	$sub["operation/agentes/status_monitor"]["refr"] = 60;
+	$sub["operation/agentes/status_monitor"]["refr"] = 0;
 	
 	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
-	$sub["operation/agentes/exportdata"]["refr"] = 60;
+	$sub["operation/agentes/exportdata"]["refr"] = 0;
 
 	$menu["estado"]["sub"] = $sub;
 	//End of view agents
@@ -68,7 +68,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	if ($config['activate_gis']) {
 		$menu["gismaps"]["text"] = __('GIS Maps');
 		$menu["gismaps"]["sec2"] = "operation/gis_maps/index";
-		$menu["gismaps"]["refr"] = 60;
+		$menu["gismaps"]["refr"] = 0;
 		$menu["gismaps"]["id"] = "oper-gismaps";
 		
 		$sub = array ();
@@ -161,7 +161,7 @@ enterprise_hook ('inventory_menu');
 if (give_acl ($config['id_user'], 0, "IR") == 1) {
 	$menu["incidencias"]["text"] = __('Manage incidents');
 	$menu["incidencias"]["sec2"] = "operation/incidents/incident";
-	$menu["incidencias"]["refr"] = 60;
+	$menu["incidencias"]["refr"] = 0;
 	$menu["incidencias"]["id"] = "oper-incidents";
 	
 	$sub = array ();	
@@ -174,7 +174,7 @@ if (give_acl ($config['id_user'], 0, "IR") == 1) {
 if (give_acl ($config['id_user'], 0, "AR")) {
 	// Events
 	$menu["eventos"]["text"] = __('View events'); 
-	$menu["eventos"]["refr"] = 60;
+	$menu["eventos"]["refr"] = 0;
 	$menu["eventos"]["sec2"] = "operation/events/events";
 	$menu["eventos"]["id"] = "oper-events";
 	
@@ -229,13 +229,13 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 
 	//SNMP Console
 	$menu["snmpconsole"]["text"] = __('SNMP console');
-	$menu["snmpconsole"]["refr"] = 60;
+	$menu["snmpconsole"]["refr"] = 0;
 	$menu["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
 	$menu["snmpconsole"]["id"] = "oper-snmpc";
 	
 	// Messages
 	$menu["messages"]["text"] = __('Messages');
-	$menu["messages"]["refr"] = 60;
+	$menu["messages"]["refr"] = 0;
 	$menu["messages"]["sec2"] = "operation/messages/message";
 	$menu["messages"]["id"] = "oper-messages";
 	
@@ -285,7 +285,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 			if (array_key_exists('fatherId',$operationModeMenu)) {
 				if (strlen($operationModeMenu['fatherId']) > 0) {
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["text"] = __($operationModeMenu['name']);
-					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["refr"] = 60;
+					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["refr"] = 0;
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["icon"] = $operationModeMenu['icon'];
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["sec"] = 'extensions';
 					$menu[$operationModeMenu['fatherId']]['sub'][$operationModeMenu['sec2']]["extension"] = true;

@@ -1,3 +1,8 @@
+2010-12-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/events/events_list.php: Fixed event name search and
+	  search pagination.
+
 2010-12-22  Sancho Lerena <slerena@artica.es>
 
         * pandoradb_migrate_v3.1_to_v3.2.sql

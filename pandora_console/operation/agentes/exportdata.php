@@ -54,6 +54,7 @@ if (is_ajax ()) {
 // Load global vars
 require_once ("include/config.php");
 require_once ("include/functions_agents.php");
+require_once ("include/functions_reporting.php");
 
 check_login();
 
@@ -164,6 +165,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "data":
 		case "excel":
 		case "csv":
+		case "avg":
 
 			// Show header
 			echo $datastart;
@@ -183,9 +185,22 @@ if (!empty ($export_btn) && !empty ($module)) {
 					$work_end = $work_end + $work_period;
 
 					$data = array (); // Reinitialize array for each module chunk
-					$data_single = get_agentmodule_data ($selected, $work_period, $work_end);
-					if (!empty ($data_single)) {
-						$data = array_merge ($data, $data_single);
+					if ($export_type == "avg") {
+						$arr = array ();
+						$arr["data"] = get_agentmodule_data_average ($selected, $work_period, $work_end);
+						if ($arr["data"] === false) {
+							continue;
+						}	
+						$arr["module_name"] = get_agentmodule_name ($selected);
+						$arr["agent_name"] = get_agentmodule_agent_name ($selected);
+						$arr["agent_id"] = get_agentmodule_agent ($selected);
+						$arr["utimestamp"] = $end;				
+						array_push ($data, $arr);
+					} else {
+						$data_single = get_agentmodule_data ($selected, $work_period, $work_end);
+						if (!empty ($data_single)) {
+							$data = array_merge ($data, $data_single);
+						}
 					}
 
 /*
@@ -227,21 +242,6 @@ if (!empty ($export_btn) && !empty ($module)) {
 			} // main foreach
 			echo $dataend;
 			break;
-
-		case "avg":
-			foreach ($module as $selected) {
-				$arr = array ();
-				$arr["data"] = get_agentmodule_data_average ($selected, $period, $end);
-				if ($arr["data"] === false) {
-					continue;
-				}	
-				$arr["module_name"] = get_agentmodule_name ($selected);
-				$arr["agent_name"] = get_agentmodule_agent_name ($selected);
-				$arr["agent_id"] = get_agentmodule_agent ($selected);
-				$arr["utimestamp"] = $end;				
-				array_push ($data, $arr);
-			}
-		break;
 		default:
 			print_error_message (__('Invalid method supplied'));
 			return;

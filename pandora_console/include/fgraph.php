@@ -191,7 +191,7 @@ function graphic_combined_module ($module_list, $weight_list, $period, $width, $
 					"utimestamp > $datelimit",
 					"utimestamp < $date",
 					'order' => 'utimestamp ASC'),
-				array ('evento', 'utimestamp'));
+				array ('evento', 'utimestamp', 'event_type'));
 			if ($events === false) {
 				$events = array ();
 			}
@@ -1185,7 +1185,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp'));
+			array ('evento', 'utimestamp', 'event_type'));
 		if ($events === false) {
 			$events = array ();
 		}
@@ -1436,7 +1436,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp'));
+			array ('evento', 'utimestamp', 'event_type'));
 		if ($events === false) {
 			$events = array ();
 		}
@@ -1695,7 +1695,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 				"utimestamp > $datelimit",
 				"utimestamp < $date",
 				'order' => 'utimestamp ASC'),
-			array ('evento', 'utimestamp'));
+			array ('evento', 'utimestamp', 'event_type'));
 		if ($events === false) {
 			$events = array ();
 		}

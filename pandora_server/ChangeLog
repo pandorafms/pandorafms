@@ -1,3 +1,8 @@
+2010-12-22  Sergio Martin <sergio.martin@artica.es>
+
+	*  util/pandora_manage.pl: Fixed duplicate module creation
+	into config file
+
 2010-12-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Fixed day name array. 0 corresponds

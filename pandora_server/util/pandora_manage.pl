@@ -1389,6 +1389,9 @@ sub pandora_manage_main ($$$) {
 					enterprise_hook('pandora_delete_collection_agent_from_info',[$conf, $agent_name, $policy_id]);
 					enterprise_hook('pandora_create_collection_conf_info',[$conf, $policy_name, $collection_data,$agent_name,$dbh]);
 				}
+				
+				$configuration_data = '';
+				$collection_data = '';
 			}
 
 			# Get extern policy alerts and create it on modules

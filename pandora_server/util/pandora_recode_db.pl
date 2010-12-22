@@ -94,10 +94,10 @@ sub pandora_load_credentials ($) {
 sub recode_store_tables() {
 	# Storing tables names			
 	my @tables = ('tagente', 'tagente_modulo', 'tserver', 'tmodule', 'tperfil', 'tgrupo', 'tplugin', 'treport', 'tpolicies', 'talert_templates',
-					'talert_actions', 'ttipo_modulo', 'tconfig_os');
+					'talert_actions', 'ttipo_modulo', 'tconfig_os', 'tpolicy_modules');
 						
 	my @columns = ('nombre', 'nombre', 'name', 'name', 'name', 'nombre', 'name', 'name', 'name', 'name',
-					'name', 'nombre', 'name');
+					'name', 'nombre', 'name', 'name');
 
 	my @data = (\@tables, \@columns);
 
@@ -148,6 +148,49 @@ sub help_screen{
 	print "Usage: \n\n$0 <dbname> <dbhost> <dbuser> <dbpass> \n\n";
 		
 	exit;
+}
+
+##########################################################################
+## Convert the $value encode in html entity to clear char string.
+##########################################################################
+sub safe_input($) {
+        my $value = shift;
+
+        $value = encode_entities ($value, "'<>&");
+
+        #//Replace the character '\' for the equivalent html entitie
+        $value =~ s/\\/&#92;/gi;
+
+    #// First attempt to avoid SQL Injection based on SQL comments
+    #// Specific for MySQL.
+        $value =~ s/\/\*/&#47;&#42;/gi;
+        $value =~ s/\*\//&#42;&#47;/gi;
+
+        #//Replace ( for the html entitie
+        $value =~ s/\(/&#40;/gi;
+
+        #//Replace ( for the html entitie
+        $value =~ s/\)/&#41;/gi;
+
+        #//Replace some characteres for html entities
+        for (my $i=0;$i<33;$i++) {
+                my $pattern = chr($i);
+                my $hex = ascii_to_html($i);
+                $value =~ s/$pattern/$hex/gi;
+        }
+
+        return $value;
+}
+
+##########################################################################
+# SUB ascii_to_html (string)
+# Convert an ascii string to hexadecimal
+##########################################################################
+
+sub ascii_to_html($) {
+        my $ascii = shift;
+
+        return "&#x".substr(unpack("H*", pack("N", $ascii)),6,3).";";
 }
 
 ###############################################################################

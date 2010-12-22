@@ -1433,7 +1433,7 @@ sub pandora_manage_main ($$$) {
 		}
 	}
 
-     print "\n[*] Nothing to do. Exiting !\n\n";
+     print "\n[*] Successful execution. Exiting !\n\n";
 
     exit;
 }

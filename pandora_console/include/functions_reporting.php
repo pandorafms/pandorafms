@@ -1686,7 +1686,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			}
 			
 			$data = array ();
-			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.$report["datetime"].'&avg_only=1&baseline=1&pure=1" border="0" alt="">';
+			$data[0] = '<img src="include/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height='.$sizgraph_h.'&width='.$sizgraph_w.'&period='.$content['period'].'&date='.($report["datetime"] + $content['period']).'&avg_only=1&baseline=1&pure=1" border="0" alt="">';
 			array_push ($table->data, $data);
 			
 			break;

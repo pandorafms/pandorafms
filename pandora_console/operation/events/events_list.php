@@ -93,7 +93,7 @@ switch($status) {
 }
 
 if ($search != "") {
-	$sql_post .= " AND evento LIKE '%".$search."%'";
+	$sql_post .= " AND evento LIKE '%".base64_decode($search)."%'";
 }
 
 if ($event_type != "") {
@@ -127,7 +127,7 @@ if ($event_view_hr > 0) {
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;search=" .
-	rawurlencode($search) . "&amp;event_type=" . $event_type .
+	$search . "&amp;event_type=" . $event_type .
 	"&amp;severity=" . $severity . "&amp;status=" . $status . "&amp;ev_group=" .
 	$ev_group . "&amp;refr=" . $config["refr"] . "&amp;id_agent=" .
 	$id_agent . "&amp;id_event=" . $id_event . "&amp;pagination=" .
@@ -346,7 +346,7 @@ foreach ($result as $event) {
 	
 	// Event description
 	$data[1] = '<span title="'.$event["evento"].'" class="f9">';
-	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;pure='.$config["pure"].'&amp;search='.rawurlencode ($event["evento"]).'">';
+	$data[1] .= '<a href="'.$url.'&amp;group_rep=0&amp;offset=0&amp;pure='.$config["pure"].'&amp;search='.base64_encode ($event["evento"]).'">';
 	if (strlen ($event["evento"]) > 50) {
 		$data[1] .= mb_substr ($event["evento"], 0, 50)."...";
 	}

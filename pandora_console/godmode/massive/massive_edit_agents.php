@@ -51,7 +51,6 @@ $update_agents = get_parameter ('update_agents', 0);
 
 if ($update_agents) {
 	$values = array();
-	
 	if (get_parameter ('group', '') != -1)
 		$values['id_grupo'] = get_parameter ('group');
 	if (get_parameter ('interval', '') != '')
@@ -59,7 +58,7 @@ if ($update_agents) {
 	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
 	if (get_parameter ('id_parent', '') != '')
-		$values['id_parent'] = get_parameter ('id_parent');
+		$values['id_parent'] = get_agent_id(get_parameter ('id_parent'));
 	if (get_parameter ('server_name', '') != -1)
 		$values['server_name'] = get_parameter ('server_name');
 	if (get_parameter ('description', '') != '')

@@ -1,3 +1,7 @@
+2010-12-22  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_reporting.php: cleaned source code style.
+
 2010-12-22  Sancho Lerena <slerena@artica.es>
 
 	* operation/menu.php,

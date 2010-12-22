@@ -1678,7 +1678,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			array_push ($table->data, $data);
 			
 			// Put description at the end of the module (if exists)
-			if ($content["description"] != ""){
+			if ($content["description"] != "") {
 				$table->colspan[2][0] = 4;
 				$data_desc = array();
 				$data_desc[0] = $content["description"];

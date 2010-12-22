@@ -1,3 +1,8 @@
+2010-12-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Core.pm: Fixed day name array. 0 corresponds
+	  to Sunday. Fixes bug #3122177.
+
 2010-12-22  Sergio Martin <sergio.martin@artica.es>
 
 	* util/pandora_manage.pl: Fixed codification bug in the

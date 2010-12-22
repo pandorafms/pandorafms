@@ -64,11 +64,13 @@ else {
 if ($ev_group > 0 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
 	$sql_post = " AND id_grupo = $ev_group";
-} else {
+}
+else {
 	if (is_user_admin ($config["id_user"])) {
 		//Do nothing if you're admin, you get full access
 		$sql_post = "";
-	} else {
+	}
+	else {
 		//Otherwise select all groups the user has rights to.
 		$sql_post = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";
 	}
@@ -380,7 +382,8 @@ foreach ($result as $event) {
 		$data[4] .= print_image ("images/ok.png", true,
 			array ("title" => __('Validate event')));
 		$data[4] .= '</a>&nbsp;';
-	}else {
+	}
+	else {
 		$data[4] .= print_image ("images/tick.png", true,
 			array ("title" => __('Event validated'))).'&nbsp;';
 	}
@@ -391,7 +394,8 @@ foreach ($result as $event) {
 			$data[4] .= print_image ("images/cross.png", true,
 				array ("title" => __('Delete event')));
 			$data[4] .= '</a>&nbsp;';
-		}else {
+		}
+		else {
 			$data[4] .= print_image ("images/cross.disabled.png", true,
 				array ("title" => __('Is not allowed delete events in process'))).'&nbsp;';
 		}

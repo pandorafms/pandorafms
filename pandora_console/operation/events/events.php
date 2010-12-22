@@ -271,21 +271,23 @@ if ($validate) {
 if ($delete) {
 	$ids = (array) get_parameter ("eventid", -1);
 		
-	if($ids[0] != -1){
+	if ($ids[0] != -1) {
 		$return = delete_event ($ids, ($group_rep == 1));
 		print_result_message ($return,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
+	require_once('operation/events/events_list.php');
 }
-
-switch($section) {
-	case 'list':
-		require_once('operation/events/events_list.php');
-		break;
-	case 'validate':
-		require_once('operation/events/events_validate.php');
-		break;
+else {
+	switch($section) {
+		case 'list':
+			require_once('operation/events/events_list.php');
+			break;
+		case 'validate':
+			require_once('operation/events/events_validate.php');
+			break;
+	}
 }
 
 require_jquery_file ('bgiframe');

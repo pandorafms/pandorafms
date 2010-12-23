@@ -1,3 +1,8 @@
+2010-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/alerts_status.php: Fixed alert search
+	  filters. Fixes bug #3140249.
+
 2010-12-22  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_reporting.php: cleaned source code style.

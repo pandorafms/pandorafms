@@ -190,9 +190,8 @@ if($filter_standby == 'standby_on') {
 	$filter_alert['disabled'] = $filter;
 	$filter_alert['standby'] = '0';
 }else {
-	$filter_alert = $filter;
+	$filter_alert['disabled'] = $filter;
 }
-
 $alerts['alerts_simple'] = get_agent_alerts_simple ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup);
 $countAlertsSimple = get_agent_alerts_simple ($agents, $filter, false, $whereAlertSimple, false, false, $idGroup, true);
 

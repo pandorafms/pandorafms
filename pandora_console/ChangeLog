@@ -1,5 +1,11 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb_data.sql: added custom sql for reports a some sqls querys:
+	Monitoring Report Agent, Monitoring Report Modules and
+	Monitoring Report Alerts.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: cleaned source code style.
 
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>

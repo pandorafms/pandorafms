@@ -1,5 +1,9 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_agents.php: fixed when the filter stanby not exist.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: in function "check_sql" added some changes in
 	the regular expression for pass the pandora field "delete_pending".
 

@@ -114,7 +114,12 @@ function get_agent_alerts_simple ($id_agent = false, $filter = '', $options = fa
 	
 	if (is_array($filter)) {
 		$disabled = $filter['disabled'];
-		$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
+		if (isset($filter['standby'])) {
+			$filter = ' AND talert_template_modules.standby = "'.$filter['standby'].'"';
+		}
+		else {
+			$filter = '';
+		}
 	}
 	else {
 		$filter = '';

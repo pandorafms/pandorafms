@@ -71,7 +71,7 @@ if ($add_sla) {
 if ($get_custom_sql) {
 	$sql = get_db_value_filter('`sql`', 'treport_custom_sql', array('id' => $id));
 	
-	if ($result === false) {
+	if ($sql === false) {
 		$data['correct'] = 0;
 	}
 	else {

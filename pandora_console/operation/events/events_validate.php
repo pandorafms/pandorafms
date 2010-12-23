@@ -45,9 +45,43 @@ $event_list .= '';
 $event_list .= "<ul>";
 $any_alert = false;
 $any_inprocess = false;
+
+
+$table->width = '80%';
+$table->id = "listtovalidate";
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+$table->head = array ();
+$table->data = array ();
+
+$table->head[0] = __('Events to validate');
+$table->align[0] = 'center';
+
+$table->data = array();
 foreach($ids as $key => $id) {
 	$event = get_event($id);
-	$event_list .= "<il>".$event['evento']."</il><br>";
+	// Colored box
+	switch($event["estado"]) {
+		case 0:
+			$img_st = "images/star.png";
+			$title_st = __('New event');
+			break;
+		case 2:
+			$img_st = "images/hourglass.png";
+			$title_st = __('Event in process');
+			break;
+	}
+
+	$icon = print_image ($img_st, true, 
+		array ("class" => "image_status",
+			"width" => 16,
+			"height" => 16,
+			"title" => $title_st,
+			"id" => 'status_img_'.$event["id_evento"]));
+			
+	$table->data[$key][0] = $icon." ".$event['evento'];
+	$table->align[$key][0] = 'left';
 	if($event['id_alert_am'] != 0) {
 		$any_alert = true;
 	}
@@ -55,7 +89,6 @@ foreach($ids as $key => $id) {
 		$any_inprocess = true;
 	}
 }
-$event_list .= "</ul>";
 
 //Hiden row with description form
 $string = '<form  method="post" action="'.$url_val.'">';
@@ -79,6 +112,6 @@ $string .= '</td></tr></table></form>';
 
 echo $string;
 
-echo "<br><br>".$event_list;
+print_table($table);
 
 ?>

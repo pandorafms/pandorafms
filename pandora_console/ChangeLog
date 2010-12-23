@@ -1,3 +1,8 @@
+2010-12-23  Sergio Martin <sergio.martin@artica.es>
+
+	* operation/events/events_validate.php: Fixed the style of
+	the list of events to validate for bug 3141995
+
 2010-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/alerts_status.php: Fixed alert search

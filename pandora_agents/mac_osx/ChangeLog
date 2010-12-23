@@ -1,0 +1,8 @@
+2010-12-23 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* mac_osx/pandora_agent_installer: Fixed some problems settings permissions
+	* mac_osx/pandora_agent: Fixed some problems with md5sum -> openssl md5 command 
+	* mac_osx/pandora_agent.conf: Commented some trouble modules 
+	* mac_osx/pandora_fms/pandora_fms: Fixed some problems starting / stoping daemon
+
+ 

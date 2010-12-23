@@ -33,7 +33,7 @@ function js_html_entity_decode (str) {
 	str2 = str.replace (/</g, "&lt;").
 	replace (/>/g,"&gt;").replace(/&lt;/g,'<').replace(/&gt;/g,'>')
 	.replace(/&#92;/g,'\\').replace(/&quot;/g,'\"').replace(/&#039;/g,'\'')
-	.replace(/&amp;/g,'&')
+	.replace(/&amp;/g,'&').replace(/&#x20;/g,' ')
 	.replace(/&#13;/g, '\r').replace(/&#10;/g, '\n');
 	
 	return str2;

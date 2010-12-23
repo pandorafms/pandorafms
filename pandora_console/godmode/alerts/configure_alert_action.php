@@ -72,7 +72,7 @@ $table->data[2][1] .= __('Create Command');
 $table->data[2][1] .= '</a>';
 
 $table->data[3][0] = __('Field 1');
-$table->data[3][1] = print_input_text ('field1', $field1, '', 35, 255, true);
+$table->data[3][1] = print_input_text ('field1', $field1, '', 35, 255, true) . print_help_icon ('alert_macros', true);
 
 $table->data[4][0] = __('Field 2');
 $table->data[4][1] = print_input_text ('field2', $field2, '', 80, 255, true);

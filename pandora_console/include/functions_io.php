@@ -160,7 +160,13 @@ function safe_output($value, $utf8 = true)
 	$valueHtmlEncode = str_replace("&#40;", '(', $valueHtmlEncode);
 	
 	//Replace the html entitie of ) for the char
-	$valueHtmlEncode = str_replace("&#41;", ')', $valueHtmlEncode);		
+	$valueHtmlEncode = str_replace("&#41;", ')', $valueHtmlEncode);
+
+	//Replace the html entitie of < for the char
+	$valueHtmlEncode = str_replace("&lt;", '<', $valueHtmlEncode);
+
+	//Replace the html entitie of > for the char
+	$valueHtmlEncode = str_replace("&gt;", '>', $valueHtmlEncode);			
 	
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {
@@ -195,7 +201,13 @@ function safe_output_html($value, $utf8 = true)
 	$value = str_replace("&#40;", '(', $value);
 	
 	//Replace the html entitie of ) for the char
-	$value = str_replace("&#41;", ')', $value);		
+	$value = str_replace("&#41;", ')', $value);	
+
+	//Replace the <
+	$value = str_replace("&lt;", "<", $value);
+	
+	//Replace the <
+	$value = str_replace("&gt;", ">", $value);
 	
 	//Revert html entities to chars
 	for ($i=0;$i<33;$i++) {

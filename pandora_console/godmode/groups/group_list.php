@@ -162,13 +162,12 @@ if ($delete_group) {
 		echo "<h3 class='error'>" .
 			sprintf(__('The group is not empty. It is use in %s.'), implode(', ', $usedGroup['tables'])) . "</h3>";
 	}
-
 	
-	if ((!$result) || (!$usedGroup['return'])) {
-		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
+	if ($result && (!$usedGroup['return'])) {
+		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 	} 
 	else {
-		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>";
 	}
 		 
 }

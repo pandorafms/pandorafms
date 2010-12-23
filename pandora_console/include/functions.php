@@ -1175,7 +1175,9 @@ function string2image($string, $width, $height, $fontsize = 3,
 function check_sql ($sql){
         // We remove "*" to avoid things like SELECT * FROM tusuario
 
-        if (preg_match("/\*|delete|drop|alter|modify|union|password|pass|insert|update/i", $sql)){
+		//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).
+	
+        if (preg_match("/\*|delete[^_]|drop|alter|modify|union|password|pass|insert|update/i", $sql)) {
                 return "";
         }
         return $sql;

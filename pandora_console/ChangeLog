@@ -1,3 +1,11 @@
+2010-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/javascript/pandora.js: Translate space HTML entities.
+	  Fixes bug #3142670.
+
+	* godmode/alerts/configure_alert_action.php: Added a link to the
+	  macro help page.
+
 2010-12-23  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/events/events_validate.php: Fixed the style of

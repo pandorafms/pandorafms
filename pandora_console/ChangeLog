@@ -1,5 +1,9 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/ajax/reporting.ajax.php: fixed copy&paste mistake.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions.php: in function "string2image" fixed when the string
 	have slash characters.
 	

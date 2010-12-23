@@ -1152,8 +1152,12 @@ function string2image($string, $width, $height, $fontsize = 3,
 	imagestring($im, $fontsize, $padding_left, $padding_top, $string, ImageColorAllocate($im,$textrgb[0],$textrgb[1],$textrgb[2]));
 	// Rotates the image
 	$rotated = imagerotate($im, $degrees, 0) ; 
+	
+	//Cleaned string file name (as the slash)
+	$stringFile = str_replace('/', '___', $string);
+	
 	// Generate the image
-	$file_url = 'attachment/string2image-'.$string.'.gif';
+	$file_url = 'attachment/string2image-'.$stringFile.'.gif';
 	imagegif($rotated, $file_url);
 	imagedestroy($rotated);
 	

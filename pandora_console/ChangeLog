@@ -1,3 +1,10 @@
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: in function "string2image" fixed when the string
+	have slash characters.
+	
+	* extensions/agents_modules.php: cleaned source code style.
+
 2010-12-23  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/cs.po

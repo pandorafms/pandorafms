@@ -1172,7 +1172,7 @@ function string2image($string, $width, $height, $fontsize = 3,
 * @return string SQL code validated (it will return empty if SQL is not ok)
 **/
 
-function check_sql ($sql){
+function check_sql ($sql) {
         // We remove "*" to avoid things like SELECT * FROM tusuario
 
 		//Check that it not delete_ as "delete_pending" (this is a common field in pandora tables).

@@ -1,5 +1,9 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions.php: cleaned source code style.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_agents.php: fixed when the filter stanby not exist.
 
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>

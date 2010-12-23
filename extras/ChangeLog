@@ -1,3 +1,8 @@
+2010-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* build_src.sh, build_windows_agent.sh,
+	  build_deb.sh, build_rpm.sh: Return error codes and exclude .po files.
+
 2010-12-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_src.sh, build_deb.sh, build_rpm.sh: Small fixes to build scripts.

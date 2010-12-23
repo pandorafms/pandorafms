@@ -2,35 +2,27 @@
 CODEHOME=~/code/pandora/trunk
 CODEHOME_ENT=~/code/artica/code
 RPMHOME=/usr/src/packages
-START_DIR=`pwd`
 
-mkdir -p $RPMHOME/DEB
+if [ ! -d $RPMHOME/DEB ]; then
+	mkdir -p $RPMHOME/DEB || exit 1
+fi
 
 echo "Creating DEB packages in $RPMHOME/DEB"
-cd $CODEHOME/pandora_console/DEBIAN
-bash ./make_deb_package.sh 
-cd ..
-mv *.deb $RPMHOME/DEB
 
-cd $CODEHOME/pandora_server/DEBIAN
-bash ./make_deb_package.sh
-cd ..
-mv *.deb $RPMHOME/DEB
+# Console
+cd $CODEHOME/pandora_console/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
-cd $CODEHOME/pandora_agents/unix/DEBIAN
-bash ./make_deb_package.sh
-cd ..
-mv *.deb $RPMHOME/DEB
+# Server
+cd $CODEHOME/pandora_server/DEBIAN  && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
-cd $CODEHOME_ENT/pandora/trunk/pandora_console/DEBIAN
-bash ./make_deb_package.sh
-cd ..
-mv *.deb $RPMHOME/DEB
+# Unix agent
+cd $CODEHOME/pandora_agents/unix/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
-cd $CODEHOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN
-bash ./make_deb_package.sh
-cd ..
-mv *.deb $RPMHOME/DEB
+# Enterprise console
+cd $CODEHOME_ENT/pandora/trunk/pandora_console/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
 
-cd $START_DIR
+# Enterprise server
+cd $CODEHOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN && bash ./make_deb_package.sh && mv ../*.deb $RPMHOME/DEB || exit 1
+
+exit 0
 

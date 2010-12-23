@@ -1,3 +1,8 @@
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php: fixed error message show in the successful
+	delete group operation.
+
 2010-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/javascript/pandora.js: Translate space HTML entities.

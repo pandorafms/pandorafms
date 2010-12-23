@@ -35,7 +35,8 @@ function mainAgentsModules() {
 		if (give_acl ($config['id_user'], $group, "AW")) {
 			$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
 			process_sql ($sql);
-		} else {
+		}
+		else {
 			pandora_audit("ACL Violation", "Trying to set flag for groups");
 			require ("general/noaccess.php");
 			exit;
@@ -43,9 +44,10 @@ function mainAgentsModules() {
 	}
 
 
-	if ($config["realtimestats"] == 0){
+	if ($config["realtimestats"] == 0) {
 		$updated_info = __('Last update'). " : ". print_timestamp (get_db_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
-	} else {
+	}
+	else {
 		$updated_info = __("Updated at realtime");
 	}
 	
@@ -81,7 +83,8 @@ function mainAgentsModules() {
 		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;pure=1&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
 			. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 			. "</a>";
-	} else {
+	}
+	else {
 		$fullscreen = '<a href="index.php?extension_in_menu=estado&amp;sec=extensions&amp;sec2=extensions/agents_modules&amp;refr=0&amp;offset='.$offset.'&group_id='.$group_id.'&modulegroup='.$modulegroup.'">'
 			. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 			. "</a>";
@@ -121,10 +124,10 @@ function mainAgentsModules() {
 	$cont = 0;
 
 	foreach($all_modules as $key => $module) {
-		if($module == $name){
+		if($module == $name) {
 			$modules_by_name[$cont-1]['id'][] = $key;
 		}
-		else{
+		else {
 			$name = $module;
 			$modules_by_name[$cont]['name'] = $name;
 			$modules_by_name[$cont]['id'][] = $key;

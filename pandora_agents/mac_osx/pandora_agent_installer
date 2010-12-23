@@ -129,12 +129,12 @@ install () {
         chown -R root $PANDORA_HOME
         #chmod -R 600 $PANDORA_TEMP/data_out
         chmod 640 $PANDORA_LOG
-        chgrp root $PANDORA_LOG
+        chgrp admin $PANDORA_LOG
 
         echo "Linking start-up daemon script at $PANDORA_STARTUP";
         cp -R pandora_fms $PANDORA_STARTUP
 
-        chown -R root:root $PANDORA_BIN
+        chown -R root:admin $PANDORA_BIN
         
         echo "Done."
         echo " "

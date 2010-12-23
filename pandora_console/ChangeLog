@@ -1,5 +1,12 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb_data.sql: added custom sql for reports, "Group view".
+	
+	* include/functions_io.php: fixed the "safe_output" function when decode
+	the html entity &lt; or &gt; for < or > char.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb_data.sql: added custom sql for reports a some sqls querys:
 	Monitoring Report Agent, Monitoring Report Modules and
 	Monitoring Report Alerts.

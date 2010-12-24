@@ -1,5 +1,9 @@
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* DEBIAN/control: added php5-curl dependency.
+
+2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb_data.sql: added custom sql for reports, "Group view".
 	
 	* include/functions_io.php: fixed the "safe_output" function when decode

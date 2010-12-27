@@ -1,3 +1,7 @@
+2010-12-27  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_sync_db.pl: Fixed a undefined condition.
+
 2010-12-22  Sergio Martin <sergio.martin@artica.es>
 
 	*  util/pandora_manage.pl: Fixed duplicate module creation

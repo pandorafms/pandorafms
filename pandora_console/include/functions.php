@@ -1108,7 +1108,7 @@ function array_key_to_offset($array, $key) {
  */
 function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_auth_user = '',
 				$snmp3_security_level = '', $snmp3_auth_method = '', $snmp3_auth_pass = '',
-				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0) {
+				$snmp3_privacy_method = '', $snmp3_privacy_pass = '', $quick_print = 0, $base_oid = NULL) {
 					
 	snmp_set_quick_print ($quick_print);
 	
@@ -1116,15 +1116,15 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '', $snmp3_au
 		case '3':
 			$snmpwalk = @snmp3_real_walk ($ip_target, $snmp3_auth_user,
 				$snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass,
-				$snmp3_privacy_method, $snmp3_privacy_pass, null);
+				$snmp3_privacy_method, $snmp3_privacy_pass, $base_oid);
 			break;
 		case '2':
 		case '2c':
-			$snmpwalk = @snmp2_real_walk ($ip_target, $snmp_community, NULL);
+			$snmpwalk = @snmp2_real_walk ($ip_target, $snmp_community, $base_oid);
 			break;
 		case '1':
 		default:
-			$snmpwalk = @snmprealwalk($ip_target, $snmp_community, null);	
+			$snmpwalk = @snmprealwalk($ip_target, $snmp_community, $base_oid);	
 			break;
 	}
 	

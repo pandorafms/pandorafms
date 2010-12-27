@@ -73,7 +73,12 @@ print "\n[*] $agents_deleted agents deleted on destination.\n" unless $agents_de
 print "\n[*] Preparing modules correlation.\n";
 
 my $id_agentmodule_comparation = enterprise_hook('sync_compare_id_agent_modules', [$dbh_source, $dbh_dest, $id_agent_comparation, \$errors_modules]);
-my @id_agentmodule_comparation = @{$id_agentmodule_comparation};
+
+my @id_agentmodule_comparation;
+if ($id_agentmodule_comparation ne ""){
+	@id_agentmodule_comparation = @{$id_agentmodule_comparation};
+} 
+
 
 print "\n[*] Checking destination modules missed on source.\n";
 my $modules_deleted = enterprise_hook('sync_delete_dst_missed_agent_modules', [$dbh_source, $dbh_dest, $id_agent_comparation, \$errors_modules]);

@@ -1,5 +1,7 @@
 2010-12-27  Sancho Lerena <slerena@artica.es>
 
+	* pandora_console.redhat.spec: Some package deps. was missing for redhat.
+
 	* include/functions.php: get_snmpwalk() now accepts a specific part of
 	the SNMP MIB, that allow to do not search the full mib on user selection.
 	(Used on the enterprise massive SNMP module adition).

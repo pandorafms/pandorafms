@@ -1193,12 +1193,12 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$) {
 	# Test if the optional positional parameters are defined or GIS is disabled
 	if (!defined ($timezone_offset) ) {
 		$agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, `modo`)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, $description, $group_id, $os_id, safe_input($server_name), $interval, $parent_id);
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, $description, $group_id, $os_id, $server_name, $interval, $parent_id);
 	}
 	else {
 		 $agent_id = db_insert ($dbh, 'INSERT INTO tagente (`nombre`, `direccion`, `comentarios`, `id_grupo`, `id_os`, `server_name`, `intervalo`, `id_parent`, 
 				`timezone_offset`, `modo` ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)', safe_input($agent_name), $address, 
-				 $description, $group_id, $os_id, safe_input($server_name), $interval, $parent_id, $timezone_offset);	
+				 $description, $group_id, $os_id, $server_name, $interval, $parent_id, $timezone_offset);	
 	}
 	if (defined ($longitude) && defined ($latitude ) && $pa_config->{'activate_gis'} == 1 ) {
 		if (!defined($altitude)) {

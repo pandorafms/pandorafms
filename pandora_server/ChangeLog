@@ -1,5 +1,11 @@
 2010-12-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/DB.pm, lib/PandoraFMS/Core.pm: Removed calls to
+	  safe_input related to tserver.name. Server names are not
+	  converted to HTML entities yet.
+
+2010-12-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* lib/PandoraFMS/Config.pm: Updated version strings for the 3.2
 	  release.
 

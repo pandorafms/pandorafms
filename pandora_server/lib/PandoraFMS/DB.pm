@@ -115,7 +115,7 @@ sub get_server_id ($$$) {
 
 	my $rc = get_db_value ($dbh, "SELECT id_server FROM tserver
 					WHERE name = ? AND server_type = ?",
-					safe_input($server_name), $server_type);
+					$server_name, $server_type);
 	return defined ($rc) ? $rc : -1;
 }
 

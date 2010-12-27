@@ -1,3 +1,8 @@
+2010-12-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql, include/config_process.php: Updated
+	  version strings for the 3.2 release.
+
 2010-12-27  Sancho Lerena <slerena@artica.es>
 
 	* pandora_console.redhat.spec: Some package deps. was missing for redhat.

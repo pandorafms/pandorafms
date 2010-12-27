@@ -1,5 +1,10 @@
 2010-12-27  Ramon Novoa  <rnovoa@artica.es>
 
+	* lib/PandoraFMS/Config.pm: Updated version strings for the 3.2
+	  release.
+
+2010-12-27  Ramon Novoa  <rnovoa@artica.es>
+
 	* util/pandora_recode_db.pl: Added back to the repository until
 	  version 3.2 is released.
 

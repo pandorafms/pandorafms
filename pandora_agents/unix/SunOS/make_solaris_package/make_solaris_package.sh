@@ -42,7 +42,7 @@ mkdir -p /tmp/pandora/usr/share/pandora_agent/plugins
 cp ../../pandora_agent /tmp/pandora/usr/bin
 cp ../../tentacle_client /tmp/pandora/usr/bin
 cp ../../pandora_agent_daemon /tmp/pandora/etc/init.d
-cp ../../pandora_exec /tmp/pandora/usr/bin
+cp ../../pandora_agent_exec /tmp/pandora/usr/bin
 
 # copy plugin files
 cp ../../plugins/* /tmp/pandora/usr/share/pandora_agent/plugins

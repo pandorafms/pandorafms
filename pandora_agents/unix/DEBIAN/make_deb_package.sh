@@ -59,7 +59,7 @@ do
 done
 cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
-cp -aRf pandora_exec temp_package/usr/bin/pandora_exec.agent
+cp -aRf pandora_agent_exec temp_package/usr/bin/pandora_agent_exec
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 

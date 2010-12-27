@@ -2,7 +2,7 @@ i pkginfo
 i copyright
 f none usr/bin/pandora_agent 0755 root root
 f none usr/bin/tentacle_client 0755 root root
-f none usr/bin/pandora_exec 0755 root root
+f none usr/bin/pandora_agent_exec 0755 root root
 d none usr/share/pandora_agent 0755 root root
 d none usr/share/pandora_agent/plugins 0755 root root
 f none usr/share/pandora_agent/plugins/files_indir 0755 root root

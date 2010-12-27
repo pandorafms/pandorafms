@@ -9,9 +9,3 @@ PANDORA_CFG=/etc/pandora
 #rm -rf $PANDORA_CFG/pandora_agent.conf
 
 update-rc.d -f pandora_agent_daemon remove
-
-rm /usr/bin/pandora_exec
-if [ -e /usr/bin/pandora_exec.server ]
-then
-	ln -s /usr/bin/pandora_exec.server /usr/bin/pandora_exec 2> /dev/null
-fi

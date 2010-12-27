@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 ##########################################################################
-# pandora_exec
+# pandora_agent_exec
 #
 # Executes the given command and prints its output to stdout. If the
 # execution times out or the command does not exist nothing is printed
 # to stdout. This is part of Pandora FMS Plugin server, do not delete!.
 #
-# Usage: pandora_exec <timeout in seconds> <command>
+# Usage: pandora_agent_exec <timeout in seconds> <command>
 ##########################################################################
 # Copyright (c) 2008-2010 Ramon Novoa, rnovoa@gmail.com
 #           (c) 2008-2010 Artica Soluciones Tecnologicas S.L

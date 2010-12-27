@@ -1,3 +1,9 @@
+2010-12-27  Sancho Lerena <slerena@artica.es>
+
+	* include/functions.php: get_snmpwalk() now accepts a specific part of
+	the SNMP MIB, that allow to do not search the full mib on user selection.
+	(Used on the enterprise massive SNMP module adition).
+
 2010-12-23  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* DEBIAN/control: added php5-curl dependency.

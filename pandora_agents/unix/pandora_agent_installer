@@ -17,7 +17,7 @@ FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 PANDORA_HOME=/usr/share/pandora_agent
 PANDORA_BIN=/usr/bin/pandora_agent
-PANDORA_EXEC_BIN=/usr/bin/pandora_exec
+PANDORA_EXEC_BIN=/usr/bin/pandora_agent_exec
 PANDORA_TEMP=/var/spool/pandora
 PANDORA_CFG=/etc/pandora
 PANDORA_LOG_DIR=/var/log/pandora
@@ -85,7 +85,7 @@ uninstall () {
 	then
 		PANDORA_HOME=/usr/local/share/pandora_agent
 		PANDORA_BIN=/usr/local/bin/pandora_agent
-		PANDORA_EXEC_BIN=/usr/local/bin/pandora_exec
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
 		PANDORA_MAN=/usr/local/man
@@ -158,7 +158,7 @@ install () {
 	then
 		PANDORA_HOME=/usr/local/share/pandora_agent
 		PANDORA_BIN=/usr/local/bin/pandora_agent
-		PANDORA_EXEC_BIN=/usr/local/bin/pandora_exec
+		PANDORA_EXEC_BIN=/usr/local/bin/pandora_agent_exec
 		PANDORA_CFG=/usr/local/etc/pandora
 		TENTACLE=/usr/local/bin/tentacle_client
 		PANDORA_MAN=/usr/local/man
@@ -290,7 +290,7 @@ install () {
 	echo "Copying Pandora FMS Agent to $PANDORA_BASE$PANDORA_BIN..."
 	cp pandora_agent $PANDORA_BASE$PANDORA_BIN
 	chmod 755 $PANDORA_BASE$PANDORA_BIN
-	cp pandora_exec $PANDORA_BASE$PANDORA_EXEC_BIN
+	cp pandora_agent_exec $PANDORA_BASE$PANDORA_EXEC_BIN
 	chmod 755 $PANDORA_BASE$PANDORA_EXEC_BIN
 	if [ "$OS_NAME" = "FreeBSD" ]
 	then

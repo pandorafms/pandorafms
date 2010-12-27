@@ -1,3 +1,13 @@
+2010-12-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent_installer, DEBIAN/postinst, DEBIAN/prerm,
+	  DEBIAN/make_deb_package.sh, pandora_agent.spec,
+	  pandora_agent, SunOS/make_solaris_package/prototype,
+	  SunOS/make_solaris_package/make_solaris_package.sh,
+	  pandora_agent_exec: Renamed pandora_exec to
+	  pandora_agent_exec to avoid conflicts with the pandora_exec
+	  script installed by the server.
+
 2010-12-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent_installer, pandora_agent_daemon: Additional

@@ -13,9 +13,6 @@ echo "Copy new version of plugins into dir"
 cp -i /tmp/plugins/* /usr/share/pandora_agent/plugins/
 rm /tmp/plugins -rf
 
-echo "Linking pandora_exec..."
-ln -s /usr/bin/pandora_exec.agent /usr/bin/pandora_exec 2> /dev/null
-
 echo "Linking Pandora FMS Agent plugins directory to $PANDORA_CFG/plugins..."
 rm $PANDORA_CFG/plugins 2> /dev/null
 ln -s $PANDORA_HOME/plugins $PANDORA_CFG 2> /dev/null

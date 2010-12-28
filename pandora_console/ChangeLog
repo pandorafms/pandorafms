@@ -1,3 +1,11 @@
+2010-12-28  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Fixed link for current documentation page at 
+	openideas.info Wiki.
+
+	* operation/agentes/graphs.php: Removed divs which makes the empty graphs
+	render badly.
+
 2010-12-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql, include/config_process.php: Updated

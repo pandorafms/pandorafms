@@ -122,7 +122,6 @@ else
 	$date = $utime;
 
 foreach ($modulesChecked as $idModuleShowGraph => $value) {
-	echo '<div style="float: left; padding-left: 15px;">';
 	echo "<h3>" . $modules[$idModuleShowGraph] . '</h3>';
 	if ($config['flash_charts']) {
 		echo grafico_modulo_sparse ($idModuleShowGraph, $period, $draw_events, $width, $height,
@@ -144,7 +143,6 @@ foreach ($modulesChecked as $idModuleShowGraph => $value) {
 	
 		print_image ($image, false, array ("border" => 0));
 	}
-	echo '</div>';
 }
 
 echo "<div style='clear: both;'></div>";

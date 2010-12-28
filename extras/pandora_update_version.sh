@@ -17,7 +17,7 @@ VERSION=$2
 if [ $# == 2 ]; then
 	BUILD=`date +%g%m%d`
 else
-	BUILD=$2
+	BUILD=$3
 fi
 TEMP_FILE="/tmp/pandora_update_version.tmp"
 CODE_HOME=~/code/pandora/trunk
@@ -35,6 +35,7 @@ $CODE_HOME_ENT/pandora/trunk/pandora_server/PandoraFMS-Enterprise/DEBIAN"
 SERVER_FILE="$CODE_HOME/pandora_server/lib/PandoraFMS/Config.pm"
 CONSOLE_DB_FILE="$CODE_HOME/pandora_console/pandoradb_data.sql"
 CONSOLE_FILE="$CODE_HOME/pandora_console/include/config_process.php"
+CONSOLE_INSTALL_FILE="$CODE_HOME/pandora_console/install.php"
 AGENT_UNIX_FILE="$CODE_HOME/pandora_agents/unix/pandora_agent"
 AGENT_WIN_FILE="$CODE_HOME/pandora_agents/win32/pandora.cc"
 AGENT_WIN_MPI_FILE="$CODE_HOME/pandora_agents/win32/installer/pandora.mpi"
@@ -87,7 +88,9 @@ sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),
 sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE"
 echo "Updating Pandora Console version..."
 sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
-sed -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
+echo "Updating Pandora Console installer version..."
+sed -e "s/\s*\$version\s*=.*/\$version = '$VERSION';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"
+sed -e "s/\s*\$build\s*=.*/\$build = '$BUILD';/" "$CONSOLE_INSTALL_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_INSTALL_FILE"
 echo "Setting develop_bypass to 0..."
 sed -e "s/\s*if\s*(\s*[!]\s*isset\s*(\s*$develop_bypass\s*)\s*)\s*$develop_bypass\s*=.*/if ([!]isset($develop_bypass)) $develop_bypass = 0;/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
 

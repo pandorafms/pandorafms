@@ -1,3 +1,8 @@
+2010-12-28  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_update_version.sh: Update the console installer version. Fixed
+	  a bug when reading the build number.
+
 2010-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* build_src.sh, build_windows_agent.sh,

@@ -1,3 +1,23 @@
+2010-01-05  Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/help/en/help_create_agent.php
+	include/help/en/help_reconscript_definition.php
+	include/help/en/help_warning_status.php
+	include/help/en/help_manage_alert_list.php
+	include/help/en/help_critical_status.php
+	include/help/es/help_create_agent.php
+	include/help/es/help_reconscript_definition.php
+	include/help/es/help_warning_status.php
+	include/help/es/help_manage_alert_list.php
+	include/help/es/help_critical_status.php: Added new help menus. 
+
+	* include/functions.php: Added new constants.
+
+	* godmode/agentes/module_manager_editor_common.php
+	godmode/agentes/agent_manager.php
+	godmode/servers/manage_recontask_form.php
+	godmode/alerts/configure_alert_template.php: Added contextual helps.
+
 2010-12-28  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Fixed link for current documentation page at 

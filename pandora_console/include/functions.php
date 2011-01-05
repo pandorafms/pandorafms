@@ -27,6 +27,15 @@ require_once('functions_io.php');
 
 define ('ENTERPRISE_NOT_HOOK', -1);
 
+/* Events state constants */
+define ('EVENT_NEW', 0);
+define ('EVENT_VALIDATE', 1);
+define ('EVENT_PROCESS', 2);
+
+/* Agents disabled status */
+define ('AGENT_ENABLED',0);
+define ('AGENT_DISABLED',1);
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

@@ -415,7 +415,7 @@ if ($step == 2) {
 	$table->data[4][0] = __('Default action');
 	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
 		'default_action', $default_action, '', __('None'), 0,
-		true, false, false);
+		true, false, false).print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 } else if ($step == 3) {
 	/* Alert recover */
 	if (! $recovery_notify) {

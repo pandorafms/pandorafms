@@ -165,14 +165,14 @@ $table_simple->data[1][3] = print_select_from_sql ('SELECT id_mg, name FROM tmod
 	'id_module_group', $id_module_group, '', __('Not assigned'), '0',
 	true, false, true, $disabledBecauseInPolicy);
 
-$table_simple->data[2][0] = __('Warning status');
+$table_simple->data[2][0] = __('Warning status').' '.print_help_icon ('warning_status', true);
 $table_simple->data[2][1] = '<em>'.__('Min.').'</em>';
 $table_simple->data[2][1] .= print_input_text ('min_warning', $min_warning,
 	'', 5, 255, true, $disabledBecauseInPolicy);
 $table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
 $table_simple->data[2][1] .= print_input_text ('max_warning', $max_warning,
 	'', 5, 255, true, $disabledBecauseInPolicy);
-$table_simple->data[2][2] = __('Critical status');
+$table_simple->data[2][2] = __('Critical status').' '.print_help_icon ('critical_status', true);
 $table_simple->data[2][3] = '<em>'.__('Min.').'</em>';
 $table_simple->data[2][3] .= print_input_text ('min_critical', $min_critical,
 	'', 5, 255, true, $disabledBecauseInPolicy);
@@ -208,7 +208,7 @@ $table_advanced->data[1][1] = print_input_text ('custom_id', $custom_id,
 
 $table_advanced->data[2][0] = __('Interval');
 $table_advanced->data[2][1] = print_input_text ('module_interval', $interval,
-	'', 5, 10, true, $disabledBecauseInPolicy);
+	'', 5, 10, true, $disabledBecauseInPolicy).print_help_tip (__('Module execution time interval (in secs).'), true);
 	
 $table_advanced->data[2][2] = __('Post process').' '.print_help_icon ('postprocess', true);
 $table_advanced->data[2][3] = print_input_text ('post_process',
@@ -221,6 +221,6 @@ $table_advanced->data[3][3] = print_input_text ('max', $max, '', 5, 15, true, $d
 
 $table_advanced->data[4][0] = __('Export target');
 $table_advanced->data[4][1] = print_select_from_sql ('SELECT id, name FROM tserver_export ORDER BY name',
-	'id_export', $id_export, '',__('None'),'0', true, false, false, $disabledBecauseInPolicy);
+	'id_export', $id_export, '',__('None'),'0', true, false, false, $disabledBecauseInPolicy).print_help_tip (__('In case you use an Export server you can link this module and export data to one these.'), true);
 $table_advanced->colspan[4][1] = 3;
 ?>

@@ -205,7 +205,8 @@ if (!$new_agent) {
 		$table->data[3][1] = date ("F d Y H:i:s", fileatime ($filename['md5']));
 		// Delete remote configuration
 		$table->data[3][1] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;disk_conf_delete=1&amp;id_agente='.$id_agente.'">';
-		$table->data[3][1] .= print_image ("images/cross.png", true).'</a>';
+		$table->data[3][1] .= print_image ("images/cross.png", true, array ('title' => __('Delete remote configuration file'), 'style' => 'vertical-align: middle;')).'</a>';
+		$table->data[3][1] .= '</a>'.print_help_tip (__('Delete this conf file implies that for restore you must reactive remote config in the local agent.'), true);
 	}
 	else
 		$table->data[3][1] = '<em>'.__('Not available').'</em>';		

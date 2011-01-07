@@ -195,7 +195,7 @@ sub generate_random_data ($$$$$) {
 
 	# Proc
 	if ($module_type =~ m/proc/) {
-		return int rand (2);
+		return int (rand ($max - $min + 1) + $min);
 	}
 	
 	# Generic data

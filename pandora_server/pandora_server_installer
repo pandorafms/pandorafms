@@ -213,7 +213,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 		then
 			chown -R pandora:www-data $PANDORA_SPOOL
 		else
-			id -g www 2> /dev/null
+			id -g wwwrun 2> /dev/null
 			if [ $? -eq 0 ]
 			then
 				chown -R pandora:www $PANDORA_SPOOL

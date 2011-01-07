@@ -1,4 +1,10 @@
 2010-01-07  Juan Manuel Ramon  <juanmanuel.ramon@artica.es>
+
+	* pandora_server_upgrade: Changed permissions in this file to make it executable by default.
+
+	Fixes bug #3146314.
+
+2010-01-07  Juan Manuel Ramon  <juanmanuel.ramon@artica.es>
        
 	* pandora_server_installer: Installer applies correct permissions 
 	  to /var/spool/pandora directory using pandora_server_installer in Suse. 

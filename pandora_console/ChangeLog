@@ -1,3 +1,9 @@
+2010-01-07  Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pandora_console_upgrade: Changed permissions in this file to make it executable by default.
+
+	Fixes bug #3146314.
+
 2010-01-05  Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/help/en/help_create_agent.php

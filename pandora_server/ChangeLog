@@ -1,3 +1,8 @@
+2011-01-07  Sancho Lerena <slerena@artica.es>
+
+	* util/pandora_xml_stress.pl: There is no reason why proc modules
+	cannot be redefined to operate with min/max
+
 2010-12-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm, lib/PandoraFMS/Core.pm: Removed calls to

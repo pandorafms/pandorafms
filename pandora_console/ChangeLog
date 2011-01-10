@@ -1,3 +1,12 @@
+2010-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* pchart_graph.php: Remove axis values and legend in small graphs.
+	* functions_visual_map.php: Added marks (div borders) for beautify visual console graphs.
+	* fgraph.php: Dont show caption graphs in small graphs.
+	* functions.php: Added constants for visual console.
+
+	Fixes bug #3152673.
+
 2010-01-07  Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pandora_console_upgrade: Changed permissions in this file to make it executable by default.

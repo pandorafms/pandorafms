@@ -1381,8 +1381,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$time_format = 'M j';
 	}
 
+    // Only show caption if graph is not small
+    if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
     // Flash chart
 	$caption = __('Max. Value') . ': ' . $max_value . '    ' . __('Avg. Value') . ': ' . $avg_value . '    ' . __('Min. Value') . ': ' . $min_value;
+    else
+	$caption = array();
+
 	if (! $graphic_type) {
 		return fs_module_chart ($chart, $width, $height, $avg_only, $resolution / 10, $time_format, $show_events, $show_alerts, $caption, $baseline);
 	}

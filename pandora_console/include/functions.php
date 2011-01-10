@@ -27,6 +27,11 @@ require_once('functions_io.php');
 
 define ('ENTERPRISE_NOT_HOOK', -1);
 
+/* Visual console constants */
+define("MIN_WIDTH",300);
+define("MIN_HEIGHT",120);
+define("MIN_WIDTH_CAPTION",420);
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

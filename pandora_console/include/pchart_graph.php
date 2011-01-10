@@ -223,10 +223,19 @@ class PchartGraph extends PandoraGraphAbstract {
 		$this->graph->drawGraphArea (254, 254, 254, false);
 
 		$this->xaxis_interval = ($this->xaxis_interval / 7 >= 1) ? ($this->xaxis_interval / 7) : 10;
-		$this->graph->drawScale ($this->dataset->GetData (),
-				$this->dataset->GetDataDescription (), SCALE_START0,
-				80, 80, 80, $this->show_axis, 0, 50, false,
-				$this->xaxis_interval);
+		
+		// Remove axis values if graph is small 
+		if ($this->width > MIN_WIDTH && $this->height > MIN_HEIGHT){
+			$this->graph->drawScale ($this->dataset->GetData (),
+					$this->dataset->GetDataDescription (), SCALE_START0,
+					80, 80, 80, $this->show_axis, 0, 50, false,
+					$this->xaxis_interval);
+		}else{
+			$this->graph->drawScale ($this->dataset->GetData (),
+					$this->dataset->GetDataDescription (), SCALE_START0,
+					80, 80, 80, "", 0, 50, false,
+					$this->xaxis_interval);
+		}
 				
 		/* NOTICE: The final "false" is a Pandora modificaton of pChart to avoid showing vertical lines. */
 		if ($this->show_grid)
@@ -235,7 +244,9 @@ class PchartGraph extends PandoraGraphAbstract {
 		// Draw the graph
 		$this->graph->drawFilledLineGraph ($this->dataset->GetData(), $this->dataset->GetDataDescription(), 50, true);
 	
-		$this->add_legend ();
+		// Remove legends if graph is small 		
+		if ($this->width > MIN_WIDTH && $this->height > MIN_HEIGHT)
+			$this->add_legend ();
 		$this->add_events ("AVG");
 		$this->add_alert_levels ();
 		

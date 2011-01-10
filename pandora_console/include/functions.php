@@ -36,6 +36,11 @@ define ('EVENT_PROCESS', 2);
 define ('AGENT_ENABLED',0);
 define ('AGENT_DISABLED',1);
 
+/* Visual console constants */
+define("MIN_WIDTH",300);
+define("MIN_HEIGHT",120);
+define("MIN_WIDTH_CAPTION",420);
+
 /**
  * Cleans an object or an array and casts all values as integers
  *

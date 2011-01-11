@@ -287,9 +287,9 @@ foreach ($modules as $module) {
 
 	$data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&edit_module=1&id_agent_module='.$module['id_agente_modulo'].'">';
 	if ($module["disabled"])
-		$data[0] .= '<em class="disabled_module">'.$module['nombre'].'</em>';
+		$data[0] .= '<em class="disabled_module">'.printTruncateText($module['nombre'], 25, false).'</em>';
 	else
-		$data[0] .= $module['nombre'];
+		$data[0] .= printTruncateText($module['nombre'], 25, false);
 	$data[0] .= '</a>';
 	
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {

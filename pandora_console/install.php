@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,8 +33,8 @@
 
 <?php
 
-$version = "3.2-dev";
-$build = "100924";
+$version = "4.0-dev";
+$build = "110111";
 $banner = "v$version Build $build";
 
 error_reporting(0);
@@ -242,7 +242,7 @@ function install_step1() {
 		</div>
 	</div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
+		<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
@@ -280,7 +280,7 @@ function install_step1_licence() {
 	echo "</div>
 	<div style='clear: both;height: 1px;'><!-- --></div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
+		<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
@@ -338,7 +338,7 @@ function install_step2() {
 		<div style='clear: both;'><!-- --></div>
 	</div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an OpenSource Software project registered at 
+		<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
@@ -544,7 +544,7 @@ function install_step4() {
 		</div>
 	</div>
 	<div id='foot_install'>
-			<i>Pandora FMS is an Open Source Software project registered at 
+		<i>Pandora FMS is an Open Source Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";

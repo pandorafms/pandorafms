@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ if (function_exists ('mb_internal_encoding')) {
 
 // Set to 1 to do not check for installer or config file (for development!).
 // Activate gives more error information, not useful for production sites
-$develop_bypass = 0;
+$develop_bypass = 1;
 
 if ($develop_bypass != 1) {
 	// If no config file, automatically try to install

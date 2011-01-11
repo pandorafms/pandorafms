@@ -1,3 +1,11 @@
+2010-01-11 Raúl Mateos  <raulofpandora@gmail.com>
+
+	* install.php: Updated build and year.
+
+	* index.php: Enable developer mode. Updated year.
+
+	* include/config_process.php: Updated build and year.
+
 2010-01-11 Javier Lanz <javier.lanz@artica.es>
 	*godmode/agentes/module_manager.php: Fixed an error truncating module name
 

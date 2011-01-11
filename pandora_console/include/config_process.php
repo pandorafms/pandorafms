@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC101227';
-$pandora_version = 'v3.2';
+$build_version = 'PC110111';
+$pandora_version = 'v4.0dev';
 
 /* Help to debug problems. Override global PHP configuration */
 if (!isset($develop_bypass)) $develop_bypass = 0;
@@ -46,13 +46,13 @@ if ($develop_bypass != 1) {
 else {
 	// Develop mode, show all notices and errors on Console (and log it)
 	if (version_compare(PHP_VERSION, '5.3.0') >= 0)
-        {
-                error_reporting(E_ALL & ~E_DEPRECATED);
-        }
-        else
-        {
-                error_reporting(E_ALL);
-        }
+	{
+		error_reporting(E_ALL & ~E_DEPRECATED);
+	}
+	else
+	{
+		error_reporting(E_ALL);
+	}
 	ini_set("display_errors", 1);
 	ini_set("error_log", $config["homedir"]."/pandora_console.log");
 }

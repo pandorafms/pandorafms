@@ -1,3 +1,8 @@
+2010-01-11 Javier Lanz <javier.lanz@artica.es>
+	*godmode/agentes/module_manager.php: Fixed an error truncating module name
+
+	Fixes bug #3138420
+
 2010-01-10 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* pchart_graph.php: Remove axis values and legend in small graphs.

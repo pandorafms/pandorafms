@@ -157,7 +157,7 @@ if ($config['flash_charts'] && $graph_type != "log4x") {
 	}
 }
 else {
-	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=".$label."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
+	$image = "../../include/fgraph.php?tipo=".$graph_type."&draw_alerts=".$draw_alerts."&draw_events=".$draw_events."&id=".$id."&zoom=".$zoom."&label=". base64_encode ($label) ."&height=".$height."&width=".$width."&period=".$period."&avg_only=".$avg_only."&baseline=".$baseline;
 
 	$image .= "&date=" . $date;
 

@@ -608,7 +608,7 @@ function createItem(type, values, id_data) {
 			
 			var item = $('<div id="' + id_data + '" class="item module_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" />' +
+					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
 				'</div>'
 			);
 			break;

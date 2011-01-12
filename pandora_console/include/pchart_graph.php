@@ -213,13 +213,17 @@ class PchartGraph extends PandoraGraphAbstract {
 		}
 
 		// White background 
-		$this->graph->drawFilledRoundedRectangle(1,1,$this->width,$this->height,0,254,254,254);  
+		$this->graph->drawFilledRoundedRectangle(1,1,$this->width,$this->height+2,0,254,254,254);  
 		
 		// Graph border
-		$this->graph->drawRoundedRectangle(1,1,$this->width-1,$this->height+4,5,230,230,230);  
+		// Now graph border is in the style image attribute
+		//$this->graph->drawRoundedRectangle(1,1,$this->width-1,$this->height+4,5,230,230,230);  
 
 			
-		$this->add_background ();		
+		$this->add_background ();
+		// If graph is small remove blank spaces
+		if ($this->width < MIN_WIDTH || $this->height < MIN_HEIGHT)
+			$this->graph->setGraphArea (5,5,$this->width-5,$this->height-5);		
 		$this->graph->drawGraphArea (254, 254, 254, false);
 
 		$this->xaxis_interval = ($this->xaxis_interval / 7 >= 1) ? ($this->xaxis_interval / 7) : 10;
@@ -233,7 +237,7 @@ class PchartGraph extends PandoraGraphAbstract {
 		}else{
 			$this->graph->drawScale ($this->dataset->GetData (),
 					$this->dataset->GetDataDescription (), SCALE_START0,
-					80, 80, 80, "", 0, 50, false,
+					80, 80, 80, false, 0, 50, false,
 					$this->xaxis_interval);
 		}
 				

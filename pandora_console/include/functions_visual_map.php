@@ -104,11 +104,11 @@ function printItemInVisualConsole($layoutData) {
 			
 			break;
 		case MODULE_GRAPH:
-			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . $label . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . '" />';
+			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . base64_encode ($label) . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . ' " style="border:1px solid #808080;" />';
 			
 			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
-			echo '<table style="border:1px solid #808080;"><tr><td>' . $img . '</td></tr></table>';
+			echo $img;
 			echo '</div>';
 			break;
 		case SIMPLE_VALUE:
@@ -739,9 +739,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					
 					if ($show_links) {
 						if (($layout_data['id_layout_linked'] == "") || ($layout_data['id_layout_linked'] == 0)) {
-							echo '<table style="border:1px solid #808080;"><tr><td><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
+							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$layout_data["id_agent"].'&amp;tab=data">';
 						} else {
-							echo '<table style="border:1px solid #808080;"><tr><td><a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
+							echo '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;pure='.$config["pure"].'&amp;id='.$layout_data['id_layout_linked'].'">';
 						}
 					}
 					if ($resizedMap)
@@ -749,10 +749,10 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// ATTENTION: DO NOT USE &amp; here because is bad-translated and doesnt work
 					// resulting fault image links :(
 
-						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".((integer)($proportion * $layout_data['height']))."&pure=1&width=".((integer)($proportion * $layout_data['width']))."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
+						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".((integer)($proportion * $layout_data['height']))."&pure=1&width=".((integer)($proportion * $layout_data['width']))."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0, "style" => "border:1px solid #808080;"));
 					else
-						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".$layout_data['height']."&pure=1&width=".$layout_data['width']."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0));
-					echo "</a></tr></td></table>";
+						print_image ("include/fgraph.php?tipo=sparse&id=".$layout_data['id_agente_modulo']."&label=". base64_encode ($layout_data['label'])."&height=".$layout_data['height']."&pure=1&width=".$layout_data['width']."&period=".$layout_data['period'], false, array ("title" => $layout_data['label'], "border" => 0, "style" => "border:1px solid #808080;"));
+					echo "</a>";
 					echo "</div>";
 					break;
 			}

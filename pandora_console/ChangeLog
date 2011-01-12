@@ -1,5 +1,11 @@
 2010-01-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
+	* include/pchart_graph.php
+	* include/functions_visual_map.php: Removed blank spaces when graphs are resized 
+	in Visual console.
+
+2010-01-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
 	* include/functions_visual_map.php: Changed the way of create marks 
 	for graphs in visual console from divs to tables. Label parameter is 
 	now coded in base 64 codification when pgraph.php page is requested. 

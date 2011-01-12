@@ -2349,7 +2349,8 @@ $id = (string) get_parameter ('id');
 $weight_l = (string) get_parameter ('weight_l');
 $width = (int) get_parameter ('width', 450);
 $height = (int) get_parameter ('height', 200);
-$label = (string) get_parameter ('label', '');
+// Decode received parameter ($label) in base 64 codification
+$label = base64_decode((string) get_parameter ('label', ''));
 $color = (string) get_parameter ('color', '#226677');
 $percent = (int) get_parameter ('percent', 100);
 $zoom = (int) get_parameter ('zoom', 100);

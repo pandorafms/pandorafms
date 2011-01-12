@@ -101,7 +101,7 @@ $weights = implode(',', $weight_array);
 			echo graphic_combined_module (explode (',', $modules), explode (',', $weights), $period, $graph_width, $graph_height,
 					'Combined%20Sample%20Graph', '', $events, 0, 0, $stacked);
 		} else {
-			echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$graph_height&width=$graph_width&stacked=$stacked&period=$period' border=1 alt=''>";
+			echo "<img src='include/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=" . base64_encode ("Combined%20Sample%20Graph") . "&height=$graph_height&width=$graph_width&stacked=$stacked&period=$period' border=1 alt=''>";
 		}
 	}
 	else {

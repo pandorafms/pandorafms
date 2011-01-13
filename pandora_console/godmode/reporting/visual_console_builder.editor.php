@@ -265,6 +265,8 @@ require_javascript_file('wz_jsgraphics');
 require_javascript_file('pandora_visual_console');
 require_jquery_file ('autocomplete');
 require_javascript_file('visual_console_builder.editor', 'godmode/reporting/');
+// Javascript file for base 64 encoding of label parameter 
+require_javascript_file ('encode_decode_base64');
 ?>
 <style type="text/css">
 .ui-resizable-handle {

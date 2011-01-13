@@ -1,3 +1,13 @@
+2011-01-13  Junichi Satoh  <junichi@rworks.jp>
+
+	* include/help/ja/help_create_agent.php,
+	include/help/ja/help_reconscript_definition.php,
+	include/help/ja/help_warning_status.php,
+	include/help/ja/help_manage_alert_list.php,
+	include/help/ja/help_critical_status.php: Added new help files in Japanese.
+
+	* include/help/ja/help_manage_alerts.php: Added a missing help file.
+
 2010-01-12 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/pchart_graph.php

@@ -474,8 +474,8 @@ function getModuleGraph(id_data) {
 			period = data['period'];
 		}
 	});
-	
-	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + '&label=' + label + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
+	// Base64.encode function is in /include/javascript/encode_decode_base64.js 
+	var img = 'include/fgraph.php?tipo=sparse&id=' + id_agente_modulo + '&label=' + Base64.encode(label) + '&height=' + height + '&pure=1&width=' + width + '&period=' + period;
 	
 	return img;
 }

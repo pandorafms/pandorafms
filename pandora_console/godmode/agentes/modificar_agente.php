@@ -271,7 +271,7 @@ if ($agents !== false) {
 		echo '<span class="left">';
 		echo "<strong><a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&tab=main&
-		id_agente=".$agent["id_agente"]."'>".$agent["nombre"]."</a></strong>";
+		id_agente=".$agent["id_agente"]."'>".printTruncateText($agent["nombre"], 30, true)."</a></strong>";
 		if ($agent["disabled"]) {
 			print_help_tip(__('Disabled'));
 			echo "</em>";

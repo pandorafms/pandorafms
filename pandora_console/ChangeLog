@@ -1,3 +1,15 @@
+2010-01-14 Javier Lanz <javier.lanz@artica.es>
+
+	* trunk/pandora_console/include/functions_html.php: print_select function edited to deal with long fields.
+	* trunk/pandora_console/include/functions_ui.php: printTruncateText function edited to truncate in the middle of the word.
+	* trunk/pandora_console/pandoradb.sql: changed type for field "nombre" in "tgrupo" table.
+	* trunk/pandora_console/pandora_console_install: added support for Fedora. Thanks to philipmbrown.
+	* trunk/pandora_console/extensions/agents_modules.php: truncated text to 19 characters showing agent names
+	* trunk/pandora_console/operation/agentes/group_view.php: Truncated group name to deal with long fields.
+	* trunk/pandora_console/extras/pandoradb_migrate_v3.2_to_v4.0.sql: changed type for field "nombre" in "tgrupo" table.
+	* trunk/pandora_console/godmode/groups/group_list.php: Truncated group name to deal with long fields.
+	* trunk/pandora_console/godmode/agentes/modificar_agente.php: truncated agent names to deal with long fields.
+
 2010-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_db.php: In get_group_agents function, now agent's name search is not case sensitive.

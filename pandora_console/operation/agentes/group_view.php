@@ -58,19 +58,9 @@ print_page_header (__("Group view"), "images/bricks.png", false, "", false, $upd
 $groups_info = array ();
 $counter = 1;
 
-// Old style table, we need a lot of special formatting,don't use table function
-// Prepare old-style table
+$agents = get_group_agents(array_keys($groups));
 
-foreach ($groups as $id_group) {
-	$data = get_group_stats($id_group);
-
-	if ($data["total_agents"] == 0) {
-		$agents = 0;
-	} else {
-		$agents = 1;
-	}
-}
-if ($agents == 1) {
+if (count($agents) > 0) {
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="98%">';
 
@@ -124,7 +114,7 @@ foreach ($groups as $id_group => $group_name) {
 	echo "</td>";
 	echo "<td style='font-weight: bold; font-size: 12px;'>";
 	echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_group'>";
-	echo $group_name;
+	echo printTruncateText($group_name, 35);
 	echo "</a>";
 	echo "</td>";
 	echo "<td style='text-align: center; vertica-align: middle;'>";

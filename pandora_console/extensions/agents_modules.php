@@ -218,7 +218,7 @@ function mainAgentsModules() {
 		
 		echo "<tr style='height: 35px;'>";
 		
-		$file_name = string2image(printTruncateText($agent['nombre'],17, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
+		$file_name = string2image(printTruncateText($agent['nombre'],19, false, true, false, '...'), 140, 15, 3, 0, $rowcolor, $textcolor, 4, 0);
 		echo "<td style='background-color: ".$rowcolor.";'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent['id_agente']."'>".print_image($file_name, true, array('title' => $agent['nombre']))."</a></td>";
 		$agent_modules = get_agent_modules($agent['id_agente']);
 		

@@ -550,14 +550,14 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 		unset ($search["disabled"]);
 		if (isset ($search["string"])) {
 			$string = safe_input ($search["string"]);
-			$search_sql .= ' AND (nombre LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
+			$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
 			
 			unset ($search["string"]);
 		}
 		
 		if (isset ($search["name"])) {
 			$name = safe_input ($search["name"]);
-			$search_sql .= ' AND nombre LIKE "' . $name . '" ';
+			$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
 			
 			unset ($search["name"]);
 		}

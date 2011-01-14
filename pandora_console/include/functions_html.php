@@ -248,10 +248,10 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	}
 	
 	if ($style === false) {
-		$styleText = '';
+		$styleText = 'style="max-width: 180px"';
 	}
 	else {
-		$styleText = 'style="' . $style . '"';
+		$styleText = 'style="max-width: 180px; ' .$style . '"';
 	}
 
 	$output .= '<select id="'.$id.'" name="'.$name.'"'.$attributes.' ' . $styleText . '>';

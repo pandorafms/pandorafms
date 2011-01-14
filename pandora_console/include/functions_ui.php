@@ -24,16 +24,21 @@
  * true the html artifal to show the tooltip with rest of text.
  * 
  * @param string $text The text to truncate.
- * @param integer $numChars Number chars (-1 for char "...") max the text. 
+ * @param integer $numChars Number chars (-3 for char "[...]") max the text. 
  * @param boolean $showTextInAToopTip Flag to show the tooltip.
  * @param boolean $return Flag to return as string or not.
  * @param boolean $showTextInTitle Flag to show the text on title.
  * @param string $suffix String at the end of a strimmed string.
  */
-function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '&hellip;') {
+function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]') {
 	$text = safe_output_html($text);
-	if (strlen($text) > ($numChars - 1)) {
-		$truncateText = mb_strimwidth($text, 0, ($numChars - 1)) . $suffix;
+	if ((strlen($text)) > ($numChars)) {
+		$l=intval(($numChars-3)/2); // '/2' because [...] is in the middle of the word.
+		$truncateText2 = mb_strimwidth($text, (strlen($text)-$l), strlen($text));
+		// In case $numChars were an odd number.
+		$l=$numChars-$l-3;
+		$truncateText = mb_strimwidth($text, 0, $l) . $suffix;
+		$truncateText=$truncateText . $truncateText2;
 		
 		if ($showTextInTitle) {
 			$truncateText = '<span title="'.$text.'">'.$truncateText.'</span>';

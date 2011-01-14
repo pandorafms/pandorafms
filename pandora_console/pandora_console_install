@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Pandora FMS Console Installer (c) 2008-2010 Artica ST
-# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu, RHEL/CentOS and
-# FreeBSD only
+# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu, RHEL/CentOS,
+# Fedora and FreeBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
 # v3.2 Build 101125
@@ -73,11 +73,16 @@ uninstall () {
 		then
 			PANDORA_HOME=/var/www/html/pandora_console
 		else
-			if [ "$DISTRO" = "FreeBSD" ]
+			if [ "$DISTRO" = "FEDORA" ]
 			then
-				PANDORA_HOME="/usr/local/www/data/pandora_console /usr/local/www/apache22/data/pandora_console"
+				PANDORA_HOME=/var/www/html/pandora_console
 			else
-				PANDORA_HOME=/srv/www/htdocs/pandora
+				if [ "$DISTRO" = "FreeBSD" ]
+				then
+					PANDORA_HOME="/usr/local/www/data/pandora_console /usr/local/www/apache22/data/pandora_console"
+				else
+					PANDORA_HOME=/srv/www/htdocs/pandora
+				fi
 			fi
 		fi
 	fi
@@ -103,18 +108,24 @@ install () {
 			PANDORA_HOME=/var/www/html/pandora_console
 			PANDORA_CONF=$PANDORA_HOME/include/config.php
 		else
-			if [ "$DISTRO" = "FreeBSD" ]
+			if [ "$DISTRO" = "FEDORA" ]
 			then
-				if [ -d /usr/local/www/apache22 ]
-				then
-					PANDORA_HOME=/usr/local/www/apache22/data/pandora_console
-				else
-					PANDORA_HOME=/usr/local/www/data/pandora_console
-				fi
+				PANDORA_HOME=/var/www/html/pandora_console
 				PANDORA_CONF=$PANDORA_HOME/include/config.php
 			else
-				PANDORA_HOME=/srv/www/htdocs/pandora
-				PANDORA_CONF=$PANDORA_HOME/include/config.php
+				if [ "$DISTRO" = "FreeBSD" ]
+				then
+					if [ -d /usr/local/www/apache22 ]
+					then
+						PANDORA_HOME=/usr/local/www/apache22/data/pandora_console
+					else
+						PANDORA_HOME=/usr/local/www/data/pandora_console
+					fi
+					PANDORA_CONF=$PANDORA_HOME/include/config.php
+				else
+					PANDORA_HOME=/srv/www/htdocs/pandora
+					PANDORA_CONF=$PANDORA_HOME/include/config.php
+				fi
 			fi
 		fi
 	fi
@@ -173,15 +184,21 @@ install () {
 		then
 			chown -R apache:apache $PANDORA_HOME
 			chown -R pandora:apache /var/spool/pandora/	
-		else
-			if [ "$DISTRO" = "FreeBSD" ]
+		else 
+			if [ "$DISTRO" = "FEDORA" ]
 			then
-				chown -R www:www $PANDORA_HOME
-				chown -R pandora:www /var/spool/pandora/
+				chown -R apache:apache $PANDORA_HOME
+				chown -R pandora:apache /var/spool/pandora/	
 			else
-				# Assuming SUSE
-				chown -R wwwrun:root $PANDORA_HOME
-				chown -R pandora:www /var/spool/pandora/
+				if [ "$DISTRO" = "FreeBSD" ]
+				then
+					chown -R www:www $PANDORA_HOME
+					chown -R pandora:www /var/spool/pandora/
+				else
+					# Assuming SUSE
+					chown -R wwwrun:root $PANDORA_HOME
+					chown -R pandora:www /var/spool/pandora/
+				fi
 			fi
 		fi
 	fi

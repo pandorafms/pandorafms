@@ -1,3 +1,9 @@
+2010-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_db.php: In get_group_agents function, now agent's name search is not case sensitive.
+
+	Fixes bug #3158022.
+
 2010-01-13 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/reporting/visual_console_builder.editor.js: Label parameter is now coded 

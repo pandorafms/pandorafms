@@ -1,4 +1,8 @@
 2010-01-14 Javier Lanz <javier.lanz@artica.es>
+	* :In the last commit, in the trunk/pandora_console/operation/agentes/group_view.php file
+	 was fixed as well the way to obtain the number of agents which have associated agents.
+
+2010-01-14 Javier Lanz <javier.lanz@artica.es>
 
 	* trunk/pandora_console/include/functions_html.php: print_select function edited to deal with long fields.
 	* trunk/pandora_console/include/functions_ui.php: printTruncateText function edited to truncate in the middle of the word.

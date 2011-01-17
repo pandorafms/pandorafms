@@ -351,7 +351,7 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '',
 	$agent_name = (string) get_agent_name ($id_agent);
 	$agent_name_full = $agent_name;
 	if($cutname) {
-		$agent_name = printTruncateText($agent_name, $cutname);
+		$agent_name = printTruncateText($agent_name, $cutoff);
 	}
 	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';
 	

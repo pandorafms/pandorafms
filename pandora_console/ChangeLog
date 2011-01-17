@@ -1,3 +1,10 @@
+2010-01-17 Javier Lanz <javier.lanz@artica.es>
+
+	* trunk/pandora_console/include/functions_ui.php: Fixed an error in print_agent_name
+	* trunk/pandora_console/extensions/module_groups.php: Fixed extension, now works properly. Fix #3160077
+	* trunk/pandora_console/operation/agentes/estado_generalagente.php: Truncated agent & module names
+	* trunk/pandora_console/godmode/reporting/visual_console_builder.elements.php: Fixed table style
+
 2010-01-16 Raúl Mateos <raulofpandora@gmail.com>
 	
 	* pandoradb.sql, extras/pandoradb_migrate_v3.2_to_v4.0.sql: Updated

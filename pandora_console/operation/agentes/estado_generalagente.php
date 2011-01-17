@@ -69,10 +69,10 @@ echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
 //Agent name
 echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
 if ($agent['disabled']) {
-	$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, "upper") .print_help_tip(__('Disabled'), true) . "</em>";
+	$cellName = "<em>" . print_agent_name ($agent["id_agente"], true, 35, "upper", true) .print_help_tip(__('Disabled'), true) . "</em>";
 }
 else {
-	$cellName = print_agent_name ($agent["id_agente"], true, "upper");
+	$cellName = print_agent_name ($agent["id_agente"], true, 35, "upper", true);
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
 echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" alt="" /></a>&nbsp;';
@@ -115,7 +115,7 @@ echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
 echo print_group_icon ($agent["id_grupo"], true);
 echo '&nbsp;(<b>';
-echo get_group_name ($agent["id_grupo"]);
+echo printTruncateText(get_group_name ($agent["id_grupo"]));
 echo '</b>)</td></tr>';
 
 // Agent version

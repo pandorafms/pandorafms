@@ -126,7 +126,7 @@ function mainModuleGroups() {
 		
 		$row = array();
 		
-		array_push($row, $name);
+		array_push($row, printTruncateText($name, 20));
 		
 		foreach ($modelGroups as $idModelGroup => $modelGroup) {
 			$query = sprintf($sql,$idAgentGroup, $idModelGroup);
@@ -157,7 +157,7 @@ function mainModuleGroups() {
 			
 			$count = 0;
 			foreach ($states as $idState => $state) {
-				$count = $state;
+				$count += $state;
 			}
 			
 			$color = 'transparent'; //Defaut color for cell

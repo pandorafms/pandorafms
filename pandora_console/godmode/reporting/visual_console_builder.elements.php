@@ -66,10 +66,17 @@ $table->head = array ();
 $table->head['icon'] = '';
 $table->head[0] = __('Label') . ' / ' . __('Agent');
 $table->head[1] = __('Image') . ' / ' . __('Module');
-$table->head[2] = __('Width x Height - Max value');
+$table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
 $table->head[4] = __('Parent') . ' / ' . __('Map linked');
 $table->head[5] = __('Action');
+
+$table->align[0] = "center";
+$table->align[1] = "center";
+$table->align[2] = "center";
+$table->align[3] = "center";
+$table->align[4] = "center";
+$table->align[5] = "center";
 
 $table->data = array();
 

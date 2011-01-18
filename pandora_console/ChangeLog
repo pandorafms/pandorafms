@@ -1,3 +1,8 @@
+2011-01-18  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions.php: in function "format_for_graph" added the units
+	"exa", "zetta" and "yotta".
+	
 2010-01-17 Javier Lanz <javier.lanz@artica.es>
 
 	* trunk/pandora_console/include/functions_ui.php: Fixed an error in print_agent_name

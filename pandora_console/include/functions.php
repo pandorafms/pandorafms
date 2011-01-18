@@ -249,7 +249,7 @@ function format_numeric ($number, $decimals = 1) {
  * @return string A string with the number and the multiplier
  */
 function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
-	$shorts = array ("","K","M","G","T","P");
+	$shorts = array ("", "K", "M", "G", "T", "P", "E", "Z", "Y");
 	$pos = 0;
 	while ($number >= 1000) { //as long as the number can be divided by 1000
 		$pos++; //Position in array starting with 0

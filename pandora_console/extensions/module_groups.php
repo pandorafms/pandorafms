@@ -105,7 +105,11 @@ function mainModuleGroups() {
 	$agentGroups = get_user_groups ($config['id_user'], "AR", false);
 	$modelGroups = get_all_model_groups();
 	array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
-	
+
+	foreach ($modelGroups as $i => $n) {
+		$modelGroups[$i] = printTruncateText($n, 20);
+	}
+
 	$head = $modelGroups;
 	array_unshift($head, '&nbsp;');
 	
@@ -204,8 +208,9 @@ function mainModuleGroups() {
 		array_push($tableData,$row);
 	}
 	$table->data = $tableData;
-	
+	echo "<div style='width:98%; overflow-x:scroll;'>";
 	print_table($table);
+	echo "</div>";
 	
 	echo "<p>" . __("The colours meaning:") .
 		"<ul style='float: left;'>" .

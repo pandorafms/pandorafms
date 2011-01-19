@@ -80,7 +80,9 @@ function printItemInVisualConsole($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" 
+				class="item static_graph"
+				style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' style="'.$borderStyle.'" /><br />';
 			}
@@ -97,7 +99,7 @@ function printItemInVisualConsole($layoutData) {
 			
 			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=progress&height=15&width=' . $width . '&mode=1&percent=' . $percentile . '" />';
 			
-			echo '<div id="' . $id . '" class="item percentile_bar" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
 			echo $img;
 			echo '</div>';
@@ -106,19 +108,19 @@ function printItemInVisualConsole($layoutData) {
 		case MODULE_GRAPH:
 			$img = '<img class="image" id="image_' . $id . '" src="include/fgraph.php?tipo=sparse&id=' . $id_module . '&label=' . base64_encode ($label) . '&height=' . $height . '&pure=1&width=' . $width . '&period=' . $period . ' " style="border:1px solid #808080;" />';
 			
-			echo '<div id="' . $id . '" class="item module_graph" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item module_graph" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text . '<br />'; 
 			echo $img;
 			echo '</div>';
 			break;
 		case SIMPLE_VALUE:
-			echo '<div id="' . $id . '" class="item simple_value" style="color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
+			echo '<div id="' . $id . '" class="item simple_value" style="left: 0px; top: 0px; color: ' . $color . '; text-align: center; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top .  'px; margin-left: ' . $left .  'px;">';
 			echo $text; 
 			echo ' <strong>' . get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_module) . '</strong>';
 			echo '</div>';
 			break;
 		case LABEL:
-			echo '<div id="' . $id . '" class="item label" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item label" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			echo $text;
 			echo "</div>";
 			break;
@@ -131,7 +133,7 @@ function printItemInVisualConsole($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item icon" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item icon" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
 			}
@@ -400,7 +402,8 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	}
 	
 	echo '<div id="layout_map"
-		style="z-index: 0; position:relative; background: url(\'' . $backgroundImage .'\'); width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
+		style="z-index: 0; position:relative; width:'.$mapWidth.'px; height:'.$mapHeight.'px;">';
+	echo "<img  src='" . $backgroundImage . "' width='100%' height='100%' />";
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
@@ -494,9 +497,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				
 				// Draw image
 				if ($resizedMap)
-					echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
-					echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">'; 
 				
 				if (!isset ($id_agent))
 					$id_agent = 0;
@@ -597,9 +600,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// ****************************************************************
 					$z_index = 4;
 					if ($resizedMap)
-						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
-						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					
 					$endTagA = false;
 					if ($show_links) {
@@ -628,9 +631,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// ****************************************************************
 					$z_index = 4;
 					if ($resizedMap)
-						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
-						echo '<div style="text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					
 					$endTagA = false;
 					if ($show_links) {
@@ -691,9 +694,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// SIMPLE DATA VALUE (type = 2)
 					// ****************************************************************
 					if ($resizedMap)
-						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
-						echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					echo '<strong>'.$layout_data['label']. ' ';
 					echo get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $layout_data['id_agente_modulo']);
 					echo '</strong></div>';
@@ -703,9 +706,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// Progress bar
 					// ****************************************************************	
 					if ($resizedMap)
-						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
-						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					$valor = get_db_sql ('SELECT datos FROM tagente_estado WHERE id_agente_modulo = '.$layout_data['id_agente_modulo']);
 					$width = $layout_data['width'];
 					if ( $layout_data['height'] > 0)
@@ -729,9 +732,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 					// ****************************************************************
 					// SINGLE GRAPH (type = 1)
 					if ($resizedMap)
-						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					else
-						echo '<div style="text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+						echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 					
 					echo $layout_data['label'];
 					echo "<br>";

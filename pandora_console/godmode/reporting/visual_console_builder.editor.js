@@ -123,7 +123,8 @@ function updateAction() {
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
 			
-			$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
+			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
+			$("#background_img").attr('src', 'images/console/background/' + values['background']);
 			var idElement = 0;
 			break;
 		case 'static_graph':
@@ -379,6 +380,66 @@ function loadFieldsFromDB(item) {
 		});	
 }
 
+function setOriginalSizeBackground() {
+	$.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
+        async:false,
+        dataType: "json",
+        success: function(data){			
+			var values = {};
+			values['width'] = data[0];
+			values['height'] = data[1];
+			
+			updateDB('background', 0, values);
+        }
+	});
+	
+	actionClick();
+}
+
+function setAspectRatioBackground(side) {
+	$.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: "page=godmode/reporting/visual_console_builder.editor&get_original_size_background=1&background=" + $("#background_img").attr('src'),
+        async:false,
+        dataType: "json",
+        success: function(data){
+        	old_width = parseInt($("#background").css('width').replace('px', ''));
+			old_height = parseInt($("#background").css('height').replace('px', ''));
+			
+			img_width = data[0];
+        	img_height = data[1];
+        	
+        	
+        	if (side == 'width') {
+        		ratio = old_width / img_width;
+        		
+        		width = old_width;
+        		height = img_height * ratio;
+        	}
+        	else if (side == 'height') {
+        		ratio = old_height / img_height;
+        		
+        		width = img_width * ratio;
+        		height = old_height;	
+        	}
+        	
+			var values = {};
+			values['width'] = width;
+			values['height'] = height;
+			
+			
+			
+			updateDB('background', 0, values);
+        }
+	});
+	
+	actionClick();
+}
+
 function hiddenFields(item) {
 	$(".title_panel_span").css('display', 'none');
 	$("#title_panel_span_"  + item).css('display', 'inline'); 
@@ -401,8 +462,17 @@ function hiddenFields(item) {
 	$("#module_row").css('display', 'none');
 	$("#module_row."  + item).css('display', '');
 	
-	$("#background_row").css('display', 'none');
-	$("#background_row."  + item).css('display', '');
+	$("#background_row_1").css('display', 'none');
+	$("#background_row_1."  + item).css('display', '');
+	
+	$("#background_row_2").css('display', 'none');
+	$("#background_row_2."  + item).css('display', '');
+	
+	$("#background_row_3").css('display', 'none');
+	$("#background_row_3."  + item).css('display', '');
+	
+	$("#background_row_4").css('display', 'none');
+	$("#background_row_4."  + item).css('display', '');
 	
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1."  + item).css('display', '');
@@ -586,7 +656,7 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' +
 				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 				'</div>'
@@ -596,7 +666,7 @@ function createItem(type, values, id_data) {
 			var sizeStyle = '';
 			var imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item percentile_bar" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
 					'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data)  + '" />' +
 					'</div>'
@@ -606,7 +676,7 @@ function createItem(type, values, id_data) {
 			var sizeStyle = '';
 			var imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item module_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item module_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
 				'</div>'
@@ -616,14 +686,14 @@ function createItem(type, values, id_data) {
 			var sizeStyle = '';
 			var imageSize = '';
 			
-			var item = $('<div id="' + id_data + '" class="item simple_value" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item simple_value" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span>' +
 					'<strong>' + getModuleValue(id_data) + '</strong>' +
 				'</div>'
 			);
 			break;
 		case 'label':
-			var item = $('<div id="' + id_data + '" class="item label" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item label" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
 					'</div>'
 				);
@@ -637,7 +707,7 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-			var item = $('<div id="' + id_data + '" class="item static_graph" style="color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
@@ -711,10 +781,15 @@ function updateDB(type, idElement , values) {
 		
 		top = top + parseInt(values['mov_top']);
 		left = left + parseInt(values['mov_left']);
-		
-		parameter.push ({name: 'top', value: top});
-		parameter.push ({name: 'left', value: left});
 	}
+	else if ((typeof(values['absolute_left']) != 'undefined') &&
+		(typeof(values['absolute_top']) != 'undefined')) {
+		var top = values['absolute_top'];
+		var left = values['absolute_left'];
+	}
+	
+	parameter.push ({name: 'top', value: top});
+	parameter.push ({name: 'left', value: left});
 	
 	jQuery.ajax({
 		url: "ajax.php",
@@ -735,6 +810,11 @@ function updateDB(type, idElement , values) {
 							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
 							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
 						}
+						else if ((typeof(values['absolute_left']) != 'undefined') &&
+								(typeof(values['absolute_top']) != 'undefined')) {
+							$("#" + idElement).css('top', '0px').css('margin-top', top + 'px');
+							$("#" + idElement).css('left', '0px').css('margin-left', left + 'px');
+						}
 						$("#" + idElement).css('color', values['label_color']);
 						jQuery.each(lines, function(i, line) {
 							if (lines[i]['id'] == idElement) {
@@ -743,7 +823,11 @@ function updateDB(type, idElement , values) {
 								}
 								else {
 									if ((typeof(values['mov_left']) == 'undefined') &&
-											(typeof(values['mov_top']) == 'undefined')) {
+										(typeof(values['mov_top']) == 'undefined') && 
+										(typeof(values['absolute_left']) == 'undefined') &&
+										(typeof(values['absolute_top']) == 'undefined')) {
+										console.log(666);
+										console.log(values['parent']);
 										lines[i]['node_begin'] = values['parent'];
 									}
 								}
@@ -954,6 +1038,33 @@ function eventsItems() {
 	});
 }
 
+function move_elements_resize(original_width, original_height, width, height) {
+	jQuery.each($(".item"), function(key, value) {
+		item = value;
+		idItem = $(item).attr('id');
+		classItem = $(item).attr('class').replace('item', '').replace('ui-draggable', '').replace(/^\s+/g,'').replace(/\s+$/g,'')
+		
+		old_height = parseInt($(item).css('margin-top').replace('px', ''));
+		old_width = parseInt($(item).css('margin-left').replace('px', ''));
+		
+		ratio_width =  width / original_width;
+		ratio_height =  height / original_height;
+		
+		new_height = old_height * ratio_height;
+		new_width = old_width * ratio_width;
+		
+		//$(item).css('margin-top', new_height);
+		//$(item).css('margin-left', new_width);
+		
+		var values = {};
+		
+		values['absolute_left'] = new_width; 
+		values['absolute_top'] = new_height; 
+		
+		updateDB(classItem, idItem, values);
+	});
+}
+
 function eventsBackground() {
 	$("#background").resizable();
 	
@@ -972,6 +1083,14 @@ function eventsBackground() {
 			values['height'] = $('#background').css('height').replace('px', '');
 			
 			updateDB('background', 0, values);
+			
+			width = ui.size['width'];
+			height = ui.size['height'];
+			
+			original_width = ui.originalSize['width'];
+			original_height = ui.originalSize['height'];
+			
+			move_elements_resize(original_width, original_height, width, height);
 		}
 	});
 	

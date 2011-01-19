@@ -1,3 +1,15 @@
+2011-01-19  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_visual_map.php, 
+	godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: fixed the resize
+	background, and now the visualmap the background resize. And now the items
+	move with resize the background.
+	
+	Fixes: #3156131
+	
+	Pending task: #2996500
+
 2011-01-19 Javier Lanz <javier.lanz@artica.es>
 	* extensions/module_groups.php: Added truncation and scroll bar
 	* operation/agentes/status_monitor.php: Fixed combobox functionality

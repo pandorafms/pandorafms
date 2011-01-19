@@ -27,6 +27,17 @@ if (! give_acl ($config['id_user'], 0, "IW")) {
 require_once('godmode/reporting/visual_console_builder.constans.php');
 require_once ('include/functions_visual_map.php');
 
+if (is_ajax ()) {
+	$get_original_size_background = get_parameter('get_original_size_background', false);
+	
+	if ($get_original_size_background) {
+		$background = get_parameter('background', '');
+		$size = getimagesize($background);
+		echo json_encode($size);
+		return;
+	}
+}
+
 //Arrays for select box.
 $backgrounds_list = list_files('images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
@@ -121,9 +132,21 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 			<td><?php echo __('Module');?></td>
 			<td><?php print_select (array (), 'module', '', '', __('Any'), 0);?></td>
 		</tr>
-		<tr id="background_row" class="background datos">
+		<tr id="background_row_1" class="background datos">
 			<td><?php echo __('Background');?></td>
 			<td><?php print_select($backgrounds_list, 'background_image', $background, '', 'None', '');?></td>
+		</tr>
+		<tr id="background_row_2" class="background datos">
+			<td><?php echo __('Original Size');?></td>
+			<td><?php print_button(__('Apply'), 'original_false', false, 'setOriginalSizeBackground()', 'class="sub"');?></td>
+		</tr>
+		<tr id="background_row_3" class="background datos">
+			<td><?php echo __('Aspect ratio');?></td>
+			<td><?php print_button(__('Width proportional'), 'original_false', false, "setAspectRatioBackground('width')", 'class="sub"');?></td>
+		</tr>
+		<tr id="background_row_4" class="background datos">
+			<td></td>
+			<td><?php print_button(__('Height proportional'), 'original_false', false, "setAspectRatioBackground('height')", 'class="sub"');?></td>
 		</tr>
 		<tr id="percentile_bar_row_1" class="percentile_bar datos">
 			<td><?php echo __('Width');?></td>
@@ -222,8 +245,11 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 //------------------------------------------------------------------------------
 echo '</div>';
 echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll;">';
-echo '<div id="background" class="ui-widget-content" style="background: url(images/console/background/' . $background . ');
+//echo '<div id="background" class="ui-widget-content" style="background: url(images/console/background/' . $background . ');
+//	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
+echo '<div id="background" class="ui-widget-content" style="
 	border: 2px black solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';
+echo "<img id='background_img' src='images/console/background/" . $background . "' width='100%' height='100%' />";
 
 foreach ($layoutDatas as $layoutData) {
 			

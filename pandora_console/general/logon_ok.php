@@ -172,6 +172,8 @@ foreach ($sessions as $session) {
 	
 	array_push ($table->data, $data);
 }
+echo "<div style='width:100%; overflow-x:scroll;'>";
 print_table ($table);
+echo "</div>";
 echo "</div>"; // activity
 ?>

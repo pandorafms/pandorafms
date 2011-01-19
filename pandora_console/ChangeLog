@@ -1,3 +1,9 @@
+2011-01-19 Javier Lanz <javier.lanz@artica.es>
+	* extensions/module_groups.php: Added truncation and scroll bar
+	* operation/agentes/status_monitor.php: Fixed combobox functionality
+	* general/logon_ok.php: Added a scroll bar at the bottom
+	* godmode/groups/modu_group_list.php: Truncated module groups name
+
 2011-01-18  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions.php: in function "format_for_graph" added the units

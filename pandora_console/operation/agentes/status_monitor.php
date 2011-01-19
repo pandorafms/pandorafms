@@ -66,22 +66,22 @@ echo '</td>';
 echo '<td valign="middle">'.__('Module group').'</td>';
 echo '<td valign="middle">';
 print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-	'modulegroup', $modulegroup, '',__('All'), 0, false, false, true, false, 'width: 100px;');
+	'modulegroup', $modulegroup, 'this.form.submit();',__('All'), 0, false, false, true, false, 'width: 100px;');
 
 echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $user_groups = implode (",", array_keys (get_user_groups ()));
-$user_agents = implode (",", array_keys (get_group_agents($user_groups)));
+$user_agents = array_keys (get_group_agents($user_groups));
 
 $modules = get_db_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
 print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
 
-echo '</td><td valign="middle">'.__('Search').'</td>';
+echo '</td><td valign="middle" align="right">'.__('Search').'</td>';
 
 echo '<td valign="middle">';
-print_input_text ("ag_freestring", $ag_freestring, '', 15,30, false);
+print_input_text ("ag_freestring", $ag_freestring, '', 20,30, false);
 
 echo '</td><td valign="middle">';
 print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"');

@@ -72,9 +72,38 @@ echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
 echo '<td valign="middle">';
 
 $user_groups = implode (",", array_keys (get_user_groups ()));
-$user_agents = array_keys (get_group_agents($user_groups));
+//$user_agents = array_keys (get_group_agents($user_groups));
 
-$modules = get_db_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
+//$modules = get_db_all_rows_filter ('tagente_modulo', array('id_agente' => $user_agents, 'nombre' => '<>delete_pending'), 'DISTINCT(nombre)');
+
+$sql = '
+select distinct(nombre) 
+from tagente_modulo 
+where nombre <> "delete_pending" and id_agente in 
+(
+	select id_agente 
+	from tagente where id_grupo IN (
+		select id_grupo 
+		from tusuario_perfil 
+		where id_usuario = "' . $config['id_user'] . '" 
+		and id_perfil IN (
+			select id_perfil 
+			from tperfil where agent_view = 1
+		)
+	)
+	OR 0 IN (
+		select id_grupo
+		from tusuario_perfil
+		where id_usuario = "' . $config['id_user'] . '"
+		and id_perfil IN (
+			select id_perfil
+			from tperfil where agent_view = 1
+		)
+	)
+)';
+
+$modules = get_db_all_rows_sql($sql);
+
 print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, 'this.form.submit();', __('All'), '', false, false, true, '', false, 'width: 150px;');
 

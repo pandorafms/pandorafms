@@ -31,13 +31,22 @@
  * @param string $suffix String at the end of a strimmed string.
  */
 function printTruncateText($text, $numChars = 25, $showTextInAToopTip = true, $return = true, $showTextInTitle = true, $suffix = '[&hellip;]') {
+	if ($numChars == 0) {
+		if ($return == true) {
+			return $text;
+		}
+		else {
+			echo $text;
+		}
+	} 
+	
 	$text = safe_output_html($text);
 	if ((strlen($text)) > ($numChars)) {
-		$l=intval(($numChars-3)/2); // '/2' because [...] is in the middle of the word.
-		$truncateText2 = mb_strimwidth($text, (strlen($text)-$l), strlen($text));
+		$half_lenght = intval(($numChars - 3) / 2); // '/2' because [...] is in the middle of the word.
+		$truncateText2 = mb_strimwidth($text, (strlen($text) - $half_lenght), strlen($text));
 		// In case $numChars were an odd number.
-		$l=$numChars-$l-3;
-		$truncateText = mb_strimwidth($text, 0, $l) . $suffix;
+		$half_lenght = $numChars - $half_lenght - 3;
+		$truncateText = mb_strimwidth($text, 0, $half_lenght) . $suffix;
 		$truncateText=$truncateText . $truncateText2;
 		
 		if ($showTextInTitle) {
@@ -350,7 +359,7 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
 	$agent_name = (string) get_agent_name ($id_agent);
 	$agent_name_full = $agent_name;
-	if($cutname) {
+	if ($cutname) {
 		$agent_name = printTruncateText($agent_name, $cutoff);
 	}
 	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';

@@ -91,6 +91,9 @@ if ($multiple_delete) {
 			exit;
 		}
 		
+		enterprise_include_once('include/functions_config_agents.php');
+		enterprise_hook('deleteLocalModuleInConf', array(get_agentmodule_agent($id_agent_module_del), get_agentmodule_name($id_agent_module_del)));
+		
 		//Init transaction
 		$error = 0;
 		process_sql_begin ();

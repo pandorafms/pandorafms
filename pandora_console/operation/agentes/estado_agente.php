@@ -297,7 +297,7 @@ foreach ($agents as $agent) {
 		$data[0] .= '</a>&nbsp;';
 	}
 		
-	$data[0] .= print_agent_name ($agent["id_agente"], true, "none", '', 23);
+	$data[0] .= print_agent_name($agent["id_agente"], true, 0, 'none', true);
 	
 	$data[1] = print_os_icon ($agent["id_os"], false, true);
 

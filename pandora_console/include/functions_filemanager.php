@@ -392,18 +392,12 @@ function read_recursive_dir($dir, $relative_path = '') {
 	{
 		while (false !== ($entry = readdir($handle))) {
 			if (($entry != ".") && ($entry != "..")) {
-				
-//				debugPrint($entry);
-//				debugPrint($return);
-				
 				if (is_dir($dir . $entry))
 				{
-//					debugPrint('dir');
 					$return = array_merge($return, read_recursive_dir($dir . $entry . '/', $relative_path . $entry . '/' ));
 				}
 				else
 				{
-//					debugPrint('file');
 					$return[] = array('relative' => $relative_path . $entry, 'absolute' => $dir . $entry);
 				}
 			}

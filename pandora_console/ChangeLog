@@ -1,5 +1,23 @@
 2011-01-19  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager.php: added to call to enterprise functions
+	to delete "pseudo code" of local module when delete in multiple delete
+	action.
+	
+	Fixes: #3161621
+
+	* include/functions_filemanager.php: cleaned source code old unused
+	comments.
+	
+	* include/functions_ui.php: in function "printTruncateText" fixed when pass
+	0 character to trunk, now return all text. And in function
+	"print_agent_name" cleaned source code style.
+	
+	* operation/agentes/estado_agente.php: fixed order of params in the call
+	of function "print_agent_name".
+
+2011-01-19  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php, 
 	godmode/reporting/visual_console_builder.editor.js,
 	godmode/reporting/visual_console_builder.editor.php: fixed the resize

@@ -1,5 +1,10 @@
 2011-01-20  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/agentes/status_monitor.php: fixed and optimized the extract the
+	list of Module name for the select box in the filter.
+
+2011-01-20  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/agentes/estado_generalagente.php: fixed when the agent haven't
 	ip address.
 	

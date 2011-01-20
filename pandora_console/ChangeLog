@@ -1,4 +1,11 @@
-2011-01-19  Miguel de Dios  <miguel.dedios@artica.es>
+2011-01-20  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/estado_generalagente.php: fixed when the agent haven't
+	ip address.
+	
+	Fixes: #3162646
+
+2011-01-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager.php: added to call to enterprise functions
 	to delete "pseudo code" of local module when delete in multiple delete

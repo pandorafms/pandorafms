@@ -81,7 +81,21 @@ echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;fl
 //Addresses
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
 echo '<td class="datos2" colspan="2">';
-print_select (array_unique(array_merge((array)get_agent_address ($id_agente),get_agent_addresses ($id_agente))), "not_used", get_agent_address ($id_agente));
+$ips = array();
+$addresses = get_agent_addresses ($id_agente);
+$address = get_agent_address($id_agente);
+
+if (!empty($addresses)) {
+	$ips = $addresses;
+}
+
+if (!empty($address)) {
+	$ips = array_merge((array)get_agent_address ($id_agente), $ips);
+}
+
+$ips = array_unique($ips);
+
+print_select($ips, "not_used", get_agent_address ($id_agente));
 echo '</td></tr>';
 
 //OS

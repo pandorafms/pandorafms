@@ -1,3 +1,10 @@
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/reporting/visual_console_builder.elements.php: fixed the show
+	disabled modules in the list of element tab of the visual console editor.
+	
+	Fixes: #3155701
+
 2011-01-20  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/status_monitor.php: fixed and optimized the extract the

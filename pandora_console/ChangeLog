@@ -1,3 +1,43 @@
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* ChangeLog: added lost lines.
+	
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
+	* operation/agentes/status_monitor.php: fixed and optimized the extract the
+	list of Module name for the select box in the filter.
+
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
+	* operation/agentes/estado_generalagente.php: fixed when the agent haven't
+	ip address.
+	
+	Fixes: #3162646
+
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
+	* godmode/agentes/module_manager.php: added to call to enterprise functions
+	to delete "pseudo code" of local module when delete in multiple delete
+	action.
+	
+	Fixes: #3161621
+
+	* include/functions_filemanager.php: cleaned source code old unused
+	comments.
+
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
+	* include/functions.php: in function "format_for_graph" added the units
+	"exa", "zetta" and "yotta".
+
 2010-01-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_db.php: In get_group_agents function, now agent's name search is not case sensitive.

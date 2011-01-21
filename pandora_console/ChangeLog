@@ -2,6 +2,15 @@
 
 	Merged bugfix from trunk
 	
+	* operation/agentes/estado_generalagente.php: fixed when the agent haven't
+	ip address.
+	
+	Fixes: #3162646
+
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
 	* godmode/agentes/module_manager.php: added to call to enterprise functions
 	to delete "pseudo code" of local module when delete in multiple delete
 	action.

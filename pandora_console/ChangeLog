@@ -1,3 +1,10 @@
+2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
+	* include/functions.php: in function "format_for_graph" added the units
+	"exa", "zetta" and "yotta".
+
 2010-11-19  Sergio Martin <sergio.martin@artica.es>
 
 	* operation/agentes/estado_generalagente.php: Fixed the

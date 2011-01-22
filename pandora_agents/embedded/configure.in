@@ -1,0 +1,35 @@
+AC_PREREQ(2.59)
+
+m4_define([pandora_major_version], [1])
+m4_define([pandora_minor_version], [0])
+m4_define([pandora_micro_version], [0])
+m4_define([pandora_build_version], [])
+m4_define([pandora_version], m4_format('%s.%s.%s%s', pandora_major_version, pandora_minor_version, pandora_micro_version, pandora_build_version))
+
+AC_INIT([pandora], [pandora_version], [http://pandorafms.org], [pandora])
+AC_CONFIG_SRCDIR([pandora_agent.c])
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
+
+AM_CONFIG_HEADER(config.h)
+AM_MAINTAINER_MODE
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_STDC_HEADERS
+
+if test "x${prefix}" = "xNONE"; then
+   AC_DEFINE_UNQUOTED(CONF_FILE, "${ac_default_prefix}/etc/pandora/pandora_agent.conf", [Path to the configuracion file will be installed])
+else
+   AC_DEFINE_UNQUOTED(CONF_FILE, "${prefix}/etc/pandora/pandora_agent.conf", [Path to the configuration file will be installed])
+fi
+
+
+AC_SUBST(PANDORA_CFLAGS)
+AC_SUBST(PANDORA_LIBS)
+
+AC_CONFIG_FILES([Makefile])
+
+AC_OUTPUT

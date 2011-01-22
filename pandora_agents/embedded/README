@@ -1,0 +1,16 @@
+Pandora FMS agent for embedded devices
+--------------------------------------
+
+This is a first approach to a specific development for embedded devices
+running Linux, specifically ARM-based devices. 
+
+This Pandora FMS agent will not have all the features on the standard
+Pandora FMS agents, and will have a different approach due it's developed in
+C and have a completely different target. It's main goal is to have a plattform
+to access serial devices connected to embedded Linux and report it's information
+to a central Pandora FMS server.
+
+In the future also will be used as a "cheap" hardware concentrator for other devices
+to send information to a single point, being like a tentacle proxy. Tentacle server should
+be developed prior to implement this mode (called Drone mode).
+

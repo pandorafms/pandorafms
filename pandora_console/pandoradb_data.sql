@@ -46,8 +46,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_compact','15'),
 ('graph_res','5'),
 ('step_compact','1'),
-('db_scheme_version','3.2'),
-('db_scheme_build','PD101227'),
+('db_scheme_version','4.0-dev'),
+('db_scheme_build','PD110122'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),
@@ -96,7 +96,8 @@ INSERT INTO `tconfig_os` VALUES
 (10,'Other','Other SO','so_other.png'),
 (11,'Network','Pandora FMS Network Agent','network.png'),
 (12,'Web Server','Web Server/Application','network.png'),
-(13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png');
+(13,'Octopods','Octopods Pandora FMS Hardware Agent','network.png'),
+(14,'Embedded','Embedded device running a Pandora FMS agent','embedded.png');
 UNLOCK TABLES;
 
 
@@ -172,7 +173,9 @@ INSERT INTO `tlink` VALUES
 (2,'Pandora FMS','http://pandorafms.org'),
 (3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
 (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es');
+(5,'Module library','http://pandorafms.org/?sec=community&amp;sec2=repository&amp;lng=es'),
+(6,'Commercial support','http://pandorafms.com');
+
 UNLOCK TABLES;
 
 --
@@ -187,7 +190,9 @@ INSERT INTO `tmodule_group` VALUES
 (4,'System'),
 (5,'Miscellaneous'),
 (6,'Performance'),
-(7,'Database');
+(7,'Database'),
+(8,'Enviromental'),
+(9,'Users');
 
 UNLOCK TABLES;
 

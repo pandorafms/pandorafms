@@ -1,0 +1,32 @@
+This file is used to describe what needs to be implemented and how:
+
+Design for embedded agent
+-------------------------
+
+1. Absolutely NO USE of big libraries (glib!) or even unnecessary small ones, like libpopt, because porting could be a problem (and crosscompiling!). Issues about dependencies and size are key factors in embedded system. 
+
+2. All memory management should be dynamic, just to have the smallest impact on system performance / resources. Forget to reserve big arrays instead using malloc() :-)
+
+3. Disk usage / access should be minimal and I/O operations on disk shoud be configurable to let user choose a I/O media not critical (NAND disk devices should be avoided).
+
+4. When we talk "embedded" devices we are assuming systems using embedded Linux with Busybox. This is the "easier" enviroment, but we could use any other enviroment in the future.
+
+Todo
+----
+
+1. Read a complete .conf file (remote mode, and other parameters (group, description...).
+
+2. Read a complete module especification, using a linked list (yes, forget to do using a big array :-), and supporting the parsing of vales with blank spaces in lines (forget to use an external library). This includes normal modules AND plugin modules.
+
+3. Implement the remote configuration mode.
+
+4. Implement file collection operations
+
+5. Implement post-condition rules (in order to actuate from the agent to a attached serial device, for example).
+
+6. Implement a "native" module in Pandora Embedded agent to read from a given device (i.e /dev/ttyUSB0) with a given parameters, with a timeout.
+
+7. Implement the full drone mode (needs to implement the tentacle server first).
+
+
+

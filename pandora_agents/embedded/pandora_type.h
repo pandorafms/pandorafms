@@ -11,10 +11,6 @@
 //     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //     GNU General Public License for more details.
 
-// (TODO) Que coño es esto ??
-#define MOD_FILE 1
-#define MOD_ITEM 2
-
 // Structs for Pandora Agent
 
 struct pandora_agent {
@@ -46,7 +42,7 @@ struct pandora_setup {
 	char *server_ip;
 	char *temporal;
 	int server_port;
-
+	int remote_config;
 	char *sancho_test;
 };
 

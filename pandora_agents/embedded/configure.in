@@ -1,7 +1,7 @@
 AC_PREREQ(2.59)
 
-m4_define([pandora_major_version], [1])
-m4_define([pandora_minor_version], [0])
+m4_define([pandora_major_version], [4])
+m4_define([pandora_minor_version], [dev])
 m4_define([pandora_micro_version], [0])
 m4_define([pandora_build_version], [])
 m4_define([pandora_version], m4_format('%s.%s.%s%s', pandora_major_version, pandora_minor_version, pandora_micro_version, pandora_build_version))

@@ -16,7 +16,7 @@
 #include <stdlib.h> 
 #include <time.h>
 #include <string.h>
-#include "module_type.h"
+#include "pandora_type.h"
 #include "pandora_util.h"
 
 
@@ -31,6 +31,21 @@ pandora_free (void *pointer){
 	}
 }
 
+char *
+return_time (char *formatstring) {
+
+	char 	buffer[256];
+	char 	*output;
+	time_t 	curtime;
+	struct tm *loctime;
+
+	curtime = time (NULL);
+	loctime = localtime (&curtime);
+	strftime (buffer, 256, formatstring, loctime);
+	asprintf (&output, buffer);
+
+	return output;
+}
 
 int
 pandora_return_unixtime () {
@@ -139,19 +154,28 @@ char *
 pandora_write_xml_header (struct pandora_setup *pandorasetup) {
 
 	char *os_version;
+	char *date;
 	char *buffer;
 	char *buffer2;
 	char *buffer3;
 
 	os_version = trim(pandora_exec ("uname -m"));
 
+	if (pandorasetup->autotime == 1){
+		asprintf (&date, "AUTO");
+	} else {
+		date = return_time("%Y/%m/%d %H:%M:%S");
+	}
+
+			
 	asprintf (&buffer, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
-	asprintf (&buffer2, "<agent_data os_name='embedded' os_version='%s' interval='%d' version='4.0dev' timestamp='AUTO' agent_name='%s' >\n", os_version, pandorasetup->interval, pandorasetup->agent_name);
+	asprintf (&buffer2, "<agent_data os_name='embedded' os_version='%s' interval='%d' version='4.0dev' timestamp='%s' agent_name='%s' >\n", os_version, pandorasetup->interval, date, pandorasetup->agent_name);
 	asprintf (&buffer3, "%s%s",buffer, buffer2);
 
 	pandora_free (os_version);
 	pandora_free (buffer2);
 	pandora_free (buffer);
+	pandora_free (date);
 	return buffer3;
 }
 
@@ -216,7 +240,6 @@ pandora_write_xml_disk (struct pandora_setup *pandorasetup){
 	fprintf (pandora_xml, footer);
 
 	fclose (pandora_xml);
-
 
 	pandora_free (header);
 	pandora_free (footer);

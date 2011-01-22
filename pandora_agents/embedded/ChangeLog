@@ -1,4 +1,23 @@
 2011-01-22 Sancho Lerena <slerena@artica.es>
 
+	* pandora_agent.c: Uses pandora_types.h instead module_types.h
+
+	* configure.in: Change version.
+
+	* pandora_config.c: Read remote_config variable and other small changes.
+
+	* pandora_util.c: New function to produce timestamp strings, now report
+	timestamp in XML.
+
+	* TODO: Small doc about design goals and pending things to implement.
+
+	* pandora_type.h: Renamed file with contains all structs.
+
+	* util/pandora_agent_installer: Specific installer for Busybox.
+
+	* util/pandora_agent_daemon: Specific daemon launcher for Busybox.
+
+2011-01-21 Sancho Lerena <slerena@artica.es>
+
 	* First version of Pandora FMS Embedded C agent :-)
 

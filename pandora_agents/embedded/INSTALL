@@ -1,0 +1,107 @@
+Copyright (C) 2011 Artica ST http://artica.es
+Copyright (C) 2011 Sancho Lerena <slerena@artica.es>
+
+Build and link Pandora FMS Embedded Agent
+-----------------------------------------
+
+To build Pandora FMS you need to have binary and developer packages
+for:
+
+  * GNU C extensions (standard in linux, not in AIX or Solaris).
+  * autotools (autoconf, automake, pkg-config, etc...)
+
+In a ubuntu/debian linux package names are 
+
+  * autoconf
+  * automake1.9
+  * pkg-config
+
+Cross compiling
+---------------
+
+Edit apt sources (debian only, sorry!)
+
+  deb http://www.emdebian.org/debian/ lenny main
+
+Download a specific packages for crosscompiling (in my case ARM for GCC-4.3)
+
+   apt-get install g++-4.3-arm-linux-gnueabi gcc-4.3-arm-linux-gnueabi libc6-armel-cross \
+   libc6-dev-armel-cross libgcc1-armel-cross libstdc++6-4.3-dev-armel-cross \
+   libstdc++6-4.3-pic-armel-cross linux-libc-dev-armel-cross zlib1g-armel-cross
+  
+Build for ARM: 
+
+   ./configure --host=arm-linuxº
+   ./make 
+
+Check your GCC version is using the ARM binary.
+
+Basic installation
+--------------
+
+The simplest way to compile this package is:
+
+  1. `cd' to the directory containing the package's source code and type
+     `./configure' to configure the package for your system.  If you're
+     using `csh' on an old version of System V, you might need to type
+     `sh ./configure' instead to prevent `csh' from trying to execute
+     `configure' itself.
+
+     Running `configure' takes awhile.  While running, it prints some
+     messages telling which features it is checking for.
+
+  2. Type `make' to compile the package.
+
+  3. Optionally, type `make check' to run any self-tests that come with
+     the package.
+
+  4. Type `make install' to install the programs and any data files and
+     documentation.
+
+  5. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'.  To also remove the
+     files that `configure' created (so you can compile the package for
+     a different kind of computer), type `make distclean'.  There is
+     also a `make maintainer-clean' target, but that is intended mainly
+     for the package's developers.  If you use it, you may have to get
+     all sorts of other programs in order to regenerate files that came
+     with the distribution.
+
+Installation Names
+------------------
+
+   By default, `make install' will install the package's files in
+`/usr/local/bin', `/usr/local/etc', etc.  You can specify an
+installation prefix other than `/usr/local' by giving `configure' the
+option `--prefix=PATH'. Make install will install these files by default
+
+  /usr/local/etc/pandora/pandora_agent.conf
+  /usr/local/bin/pandora/pandora_agent
+
+
+   You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If you
+give `configure' the option `--exec-prefix=PATH', the package will use
+PATH as the prefix for installing programs and libraries.
+Documentation and other data files will still use the regular prefix.
+
+   In addition, if you use an unusual directory layout you can give
+options like `--bindir=PATH' to specify different values for particular
+kinds of files.  Run `configure --help' for a list of the directories
+you can set and what kinds of files go in them.
+
+   If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure' the
+option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+
+Copyright of this file
+----------------------
+
+This text is based on the INSTALL file provided by the FSF.
+
+Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
+
+   This file is free documentation; the Free Software Foundation gives
+unlimited permission to copy, distribute and modify it.
+

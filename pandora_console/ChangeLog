@@ -1,3 +1,12 @@
+2011-01-22  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Updated SQL with version and new embedded "so".
+
+	* include/config_process.php: Version.
+
+	* images/os_icons/embedded.png,
+	images/networkmap/14.png: New embedded agent icon.
+
 2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/reporting/visual_console_builder.elements.php: fixed the show

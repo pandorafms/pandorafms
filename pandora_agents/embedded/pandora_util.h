@@ -21,3 +21,6 @@ pandora_free (void *pointer);
 int
 isdatafile (char *filename);
 
+
+char *
+return_time (char *formatstring);

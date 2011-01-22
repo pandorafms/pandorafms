@@ -1,0 +1,110 @@
+#!/bin/sh
+
+# Pandora FMS Embedded Agent Installer (c) 2011 Artica ST
+# Embedded Version (generic), for Busybox enviroments only
+# Please see http://www.pandorafms.org
+# v4.0 Build 110121
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+PI_VERSION=4.0
+PANDORA_BIN=/usr/bin/pandora_agent
+PANDORA_TEMP=/tmp
+PANDORA_CFG=/etc/pandora
+PANDORA_LOG=/dev/null
+PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
+TENTACLE=/usr/bin/tentacle_client
+PANDORA_CFG_FILE=/etc/pandora/pandora_agent.conf
+
+FORCE=0
+LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+
+MODE=$1
+
+if [ ! -f "pandora_agent" ]
+then
+	echo " "
+	echo "You need to place pandora_agent file on main distribution directory before install"
+	echo " "
+	exit 1
+fi
+
+get_distro () {
+	echo ""
+}
+
+uninstall () {
+	DISTRO=`get_distro`
+        echo "Removing Pandora FMS Agent..."
+        rm -Rf $PANDORA_BIN
+        rm -Rf $PANDORA_CFG_FILE
+        rm -Rf $PANDORA_STARTUP
+	rm -Rf $TENTACLE
+        echo "Done"
+}
+
+install () {
+	DISTRO=`get_distro`
+		
+	# Create directories
+	mkdir $PANDORA_CFG 2> /dev/null
+
+	# Copying agent and securing it
+	echo "Copying Pandora FMS Agent to $PANDORA_BIN..."
+	cp pandora_agent $PANDORA_BIN
+	chmod 700 $PANDORA_BIN
+
+	echo "Copying Pandora FMS Agent daemon to /etc/init.d"
+	cp pandora_agent_daemon /etc/init.d
+
+	echo "Copying Pandora FMS Agent configuration file to /etc/pandora_agent.conf..."
+	if [ -e /etc/pandora/pandora_agent.conf ]
+	then
+		cat /etc/pandora/pandora_agent.conf > /etc/pandora/pandora_agent.conf.old
+		echo "Backing up old configuration file to /etc/pandora_agent.conf.old"
+	fi
+        
+	cp pandora_agent.conf /etc/pandora/pandora_agent.conf
+	chmod 600 /etc/pandora/pandora_agent.conf
+
+	echo "Copying tentacle client to $TENTACLE"
+	cp tentacle_client $TENTACLE
+
+	echo "NOTICE: You need to run the start-up script manually at /etc/init.d/pandora_agent_daemon";
+
+	chown -R root:root $PANDORA_BIN
+
+	echo "NOTICE: You need to setup your /etc/pandora_agent.conf config file"
+	echo " "
+	echo "Done"
+
+}
+
+help () {
+	echo "     --install           To install Pandora FMS Agent on this system"
+	echo "     --uninstall         To uninstall and remove Pandora FMS Agent on this System"
+	echo " "
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS Agent Installer $PI_VERSION (c) 2008-2011 ArticaST"
+echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
+echo " "
+
+case "$MODE" in
+
+'--install')
+	install
+	exit
+	;;
+
+'--uninstall')
+	uninstall
+	exit
+	;;
+
+*)
+	help
+esac
+

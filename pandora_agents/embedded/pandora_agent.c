@@ -20,7 +20,7 @@
 #include <errno.h>
 #include <dirent.h> 
 #include <unistd.h>
-#include "module_type.h"
+#include "pandora_type.h"
 #include "pandora_util.h"
 #include "pandora_config.h"
 
@@ -93,6 +93,11 @@ main(int argc, char **argv) {
 		}
 
 	 	tentacle_copy (xml_filename, pandorasetup);
+
+		// Embedded agents Doesnt implement the "buffered" sending, 
+		// if it cannot send, just drop the file
+
+		unlink (xml_filename);
 		pandora_free(xml_filename);
   		sleep(pandorasetup->interval);
 	}

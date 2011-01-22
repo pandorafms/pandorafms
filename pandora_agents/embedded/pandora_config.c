@@ -19,7 +19,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <ctype.h>
-#include "module_type.h"
+#include "pandora_type.h"
 #include "pandora_util.h"
 
 #define MAXLEN 1024
@@ -88,6 +88,9 @@ parse_config (struct pandora_setup* pandorasetup, char *config_file)
 		}
 		else if (strcmp(name, "autotime")==0){
 			pandorasetup->autotime = atoi(value);
+		}
+		else if (strcmp(name, "remote_config")==0){
+			pandorasetup->remote_config = atoi(value);
 		}
 		else if (strcmp(name, "server_port")==0){
 			pandorasetup->server_port = atoi(value);

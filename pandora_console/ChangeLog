@@ -1,4 +1,9 @@
-2011-01-21  Miguel de Dios  <miguel.dedios@artica.es>
+2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/search_agents.php: fixed the pagination in the global search
+	result.
+
+2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/javascript/pandora.js, operation/agentes/exportdata.php,
 	operation/agentes/ver_agente.php,

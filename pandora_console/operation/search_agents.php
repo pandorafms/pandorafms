@@ -105,43 +105,43 @@ switch ($sortField) {
 
 $agents = false;
 if ($searchAgents) {
-	$sql = "SELECT id_agente, tagente.ultimo_contacto, tagente.nombre, tagente.id_os, tagente.intervalo, tagente.id_grupo, tagente.disabled
-		FROM tagente
+	$sql = "
+		FROM tagente AS t1
 			INNER JOIN tgrupo
-				ON tgrupo.id_grupo = tagente.id_grupo
-		WHERE tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
-			tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'
-		ORDER BY " . $order['field'] . " " . $order['order'] . " 
-		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$agents = process_sql($sql);
+				ON tgrupo.id_grupo = t1.id_grupo
+		WHERE (t1.id_grupo IN (
+				SELECT id_grupo 
+				FROM tusuario_perfil 
+				WHERE id_usuario = '" . $config['id_user'] . "' 
+					AND id_perfil IN (
+						SELECT id_perfil 
+						FROM tperfil WHERE agent_view = 1
+					)
+			)
+			OR 0 IN (
+				SELECT id_grupo
+				FROM tusuario_perfil
+				WHERE id_usuario = '" . $config['id_user'] . "'
+				AND id_perfil IN (
+					SELECT id_perfil
+					FROM tperfil WHERE agent_view = 1
+				) 
+			)
+		) AND
+		t1.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
+			tgrupo.nombre LIKE '%" . $stringSearchSQL . "%'";
+
+	
+	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
+	$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
+		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+	
+	$agents = process_sql($select . $sql . $limit);
 	
 	if($agents !== false) {
-		// ACLs check
-		$agents_id = array();
-		foreach($agents as $key => $agent){
-				if (!give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
-					unset($agents[$key]);
-				} else {
-					$agents_id[] = $agent["id_agente"];
-				}
-		}
+		$totalAgents = get_db_row_sql('SELECT COUNT(id_agente) AS agent_count ' . $sql);
 		
-		if(!$agents_id) {
-			$agent_condition = "";
-		}else {
-			// Condition with the visible agents
-			$agent_condition = " AND id_agente IN (".implode(',',$agents_id).")";
-		}
-		
-		$sql = "SELECT count(id_agente) AS count
-			FROM tagente
-				INNER JOIN tgrupo
-					ON tgrupo.id_grupo = tagente.id_grupo
-			WHERE (tagente.nombre COLLATE utf8_general_ci LIKE '%" . $stringSearchSQL . "%' OR
-				tgrupo.nombre LIKE '%" . $stringSearchSQL . "%')".$agent_condition;
-		$totalAgents = get_db_row_sql($sql);
-		
-		$totalAgents = $totalAgents['count'];
+		$totalAgents = $totalAgents['agent_count'];
 	}
 }
 

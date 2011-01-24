@@ -2,6 +2,13 @@
 
 	Merged bugfix from trunk
 	
+	* operation/search_agents.php: fixed the pagination in the global search
+	result.
+	
+2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+	
 	* include/javascript/pandora.js, operation/agentes/exportdata.php,
 	operation/agentes/ver_agente.php,
 	godmode/reporting/visual_console_builder.wizard.php,

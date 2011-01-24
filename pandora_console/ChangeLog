@@ -1,5 +1,10 @@
 2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/pChart/pChart.class: fixed in the function "drawTextBox" when
+	pass a empty $Text as empty array.
+
+2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/search_agents.php: fixed the pagination in the global search
 	result.
 

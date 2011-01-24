@@ -1193,6 +1193,10 @@
    /* Draw a text box with text align & alpha properties */
    function drawTextBox($X1,$Y1,$X2,$Y2,$Text,$Angle=0,$R=255,$G=255,$B=255,$Align=ALIGN_LEFT,$Shadow=TRUE,$BgR=-1,$BgG=-1,$BgB=-1,$Alpha=100)
     {
+     if (empty($Text)) {
+      $Text = '';
+     }
+    
      $Position   = imageftbbox($this->FontSize,$Angle,$this->FontName,$Text);
      $TextWidth  = $Position[2]-$Position[0];
      $TextHeight = $Position[5]-$Position[3];

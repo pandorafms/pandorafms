@@ -143,7 +143,8 @@ foreach ($layoutDatas as $layoutData) {
 		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;"><img src="images/cross.png" /></a>';
 	
 	$table->data[$i + 2]['icon'] = '';
-	$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
+	$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
+		print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
 		array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
 	$sql = 'SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE disabled = 0 AND id_agente = ' . $layoutData['id_agent'];
 	$table->data[$i + 2][1] = print_select_from_sql($sql,
@@ -216,6 +217,7 @@ $(".text-agent").autocomplete(
 		scroll:true,
 		extraParams: {
 			page: "operation/agentes/exportdata",
+			all: "enabled",
 			search_agents: 1,
 			id_group: function() { return $("#group").val(); }
 		},

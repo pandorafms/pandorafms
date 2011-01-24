@@ -106,8 +106,20 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
+		$all = (string)get_parameter('all', 'all');
+		switch ($all) {
+			default:
+			case 'all':
+				$enabled = '1 = 1';
+				break;
+			case 'enabled':
+				$enabled = 'disabled = 0';
+				break;
+		}
 		
-		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre) FROM tagente_modulo t1 WHERE delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
+			FROM tagente_modulo t1
+			WHERE ' . $enabled . ' AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
 		
 		$result = array();
 		foreach($nameModules as $nameModule) {

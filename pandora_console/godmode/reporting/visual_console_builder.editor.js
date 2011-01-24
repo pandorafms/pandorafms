@@ -53,6 +53,7 @@ function eventsTextAgent() {
 				scroll:true,
 				extraParams: {
 					page: "operation/agentes/exportdata",
+					all: "enabled",
 					search_agents: 1,
 					id_group: function() { return $("#group").val(); }
 				},

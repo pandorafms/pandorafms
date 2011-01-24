@@ -123,13 +123,23 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		idAgents.push($(val).val());
 	});
 	
+	//Hack to find only enabled modules
+	//Pass a flag as global var
+	find_modules = 'all';
+	if (typeof(show_only_enabled_modules) != "undefined") {
+		if (show_only_enabled_modules == true) {
+			find_modules = 'enabled';
+		}
+	}
+	
 	$('#module').attr ('disabled', 1);
 	$('#module').empty ();
 	$('#module').append ($('<option></option>').html ("Loading...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
 				 {"page": "operation/agentes/ver_agente",
 				 "get_agent_modules_json_for_multiple_agents": 1,
-				 "id_agent[]": idAgents
+				 "id_agent[]": idAgents,
+				 "all": find_modules
 				 },
 				 function (data) {
 					 $('#module').empty ();

@@ -25,6 +25,7 @@ if (is_ajax ()) {
 		$id_group = (int) get_parameter('id_group');
 		$addedItems = html_entity_decode((string) get_parameter('add'));
 		$addedItems = json_decode($addedItems);
+		$all = (string)get_parameter('all', 'all');
 		
 		if ($addedItems != null) {
 			foreach ($addedItems as $item) {
@@ -35,6 +36,12 @@ if (is_ajax ()) {
 		$filter = array ();
 		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
 		$filter['id_grupo'] = $id_group; 
+		
+		switch ($all) {
+			case 'enabled':
+				$filter['disabled'] = 0;
+				break;
+		}
 		
 		$agents = get_agents ($filter, array ('nombre', 'direccion'));
 		if ($agents === false)

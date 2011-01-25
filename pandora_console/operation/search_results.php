@@ -18,13 +18,13 @@ require_once ("include/functions_reporting.php");
 // Load enterprise extensions
 enterprise_include ('operation/reporting/custom_reporting.php');
 
-$searchAgents = $searchAlerts = check_acl($config['id_user'], 0, "AR");
+$searchAgents = $searchAlerts = $searchModules = check_acl($config['id_user'], 0, "AR");
 $searchUsers = check_acl($config['id_user'], 0, "UM");
 $searchMaps = $searchReports = $searchGraphs = check_acl($config["id_user"], 0, "IR");
 
 $arrayKeywords = explode(' ', $config['search_keywords']);
 $temp = array();
-foreach($arrayKeywords as $keyword)
+foreach ($arrayKeywords as $keyword)
 	array_push($temp, "%" . safe_input($keyword) . "%");
 $stringSearchSQL = implode(" ",$temp);
 
@@ -34,10 +34,10 @@ else
 	$searchTab = $config['search_category'];
 
 //INI SECURITY ACL
-if((!$searchAgents && !$searchUsers && !$searchMaps) ||
+if ((!$searchAgents && !$searchUsers && !$searchMaps) ||
 	(!$searchUsers && $searchTab == 'users') ||
 	(!$searchAgents && ($searchTab == 'agents' || $searchTab == 'alerts')) ||
-	(!$searchGraphs && ($searchTab == 'graphs' || $searchTab == 'maps' || $searchTab == 'reports'))){
+	(!$searchGraphs && ($searchTab == 'graphs' || $searchTab == 'maps' || $searchTab == 'reports'))) {
 	
 	$searchTab = "";
 }
@@ -50,51 +50,66 @@ $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $selected = 'border: 1px solid black;';
 
-if($searchAgents) {
+if ($searchAgents) {
 	$agents_tab = array('text' => "<a href='index.php?search_category=agents&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/bricks.png", true, array ("title" => __('Agents'))) . "</a>", 'active' => $searchTab == "agents");
-}else {
+}
+else {
 	$agents_tab = '';
 }
 
-if($searchUsers) {
+if ($searchUsers) {
 	$users_tab = array('text' => "<a href='index.php?search_category=users&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/group.png", true, array ("title" => __('Users'))) . "</a>", 'active' => $searchTab == "users");
-}else {
+}
+else {
 	$users_tab = '';
 }
 
-if($searchAlerts) {
+if ($searchAlerts) {
 	$alerts_tab = array('text' => "<a href='index.php?search_category=alerts&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/god2.png", true, array ("title" => __('Alerts'))) . "</a>", 'active' => $searchTab == "alerts");
-}else {
+}
+else {
 	$alerts_tab = '';
 }				
 		
-if($searchGraphs) {
+if ($searchGraphs) {
 	$graphs_tab = array('text' => "<a href='index.php?search_category=graphs&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/chart_curve.png", true, array ("title" => __('Graphs'))) . "</a>", 'active' => $searchTab == "graphs");
-}else {
+}
+else {
 	$graphs_tab = '';
 }
 
-if($searchReports) {
+if ($searchReports) {
 	$reports_tab = array('text' => "<a href='index.php?search_category=reports&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/reporting.png", true, array ("title" => __('Reports'))) . "</a>", 'active' => $searchTab == "reports");
-}else {
+}
+else {
 	$reports_tab = '';
 }
 
-if($searchMaps) {
+if ($searchMaps) {
 	$maps_tab = array('text' => "<a href='index.php?search_category=maps&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
 			. print_image ("images/camera.png", true, array ("title" => __('Maps'))) . "</a>", 'active' => $searchTab == "maps");
-}else {
+}
+else {
 	$maps_tab = '';
+}
+
+if ($searchModules) {
+	$modules_tab = array('text' => "<a href='index.php?search_category=modules&keywords=".$config['search_keywords']."&head_search_keywords=Search'>"
+			. print_image ("images/lightbulb.png", true, array ("title" => __('Modules'))) . "</a>", 'active' => $searchTab == "modules");
+}
+else {
+	$modules_tab = '';
 }
 
 $onheader = array('agents' => $agents_tab, 'users' => $users_tab, 
 				'alerts' => $alerts_tab, 'graphs' => $graphs_tab,
-				'reports' => $reports_tab, 'maps' => $maps_tab);
+				'reports' => $reports_tab, 'maps' => $maps_tab,
+				'modules' => $modules_tab);
 		
 print_page_header (__("Search").": \"".$config['search_keywords']."\"", "images/zoom.png", false, "", false, $onheader);
 
@@ -116,6 +131,9 @@ switch ($searchTab) {
 		break;
 	case 'maps':
 		require_once('search_maps.php');
+		break;
+	case 'modules':
+		require_once('search_modules.php');
 		break;
 }
 ?>

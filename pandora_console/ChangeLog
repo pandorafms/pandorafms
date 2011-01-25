@@ -1,3 +1,14 @@
+2011-01-25  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/search_results.php: added the tab to show search list for
+	modules. And cleaned source code style.
+	
+	* operation/search_modules.php: added the page to list the searched modules.
+	
+	* operation/search_agents.php: cleaned source code style.
+
+	Pending task: #3141623
+
 2011-01-24  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/pChart/pChart.class: fixed in the function "drawTextBox" when

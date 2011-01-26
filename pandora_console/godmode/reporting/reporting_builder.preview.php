@@ -70,7 +70,7 @@ if ($report['description'] != '') {
 	$table->data[0][1] = $report['name'];
 }
 $table->data[1][0] = __('Date');
-$table->data[1][1] = print_input_text ('date', $date, '', 10, 10, true). ' ';
+$table->data[1][1] = print_input_text ('date', $date, '', 12, 10, true). ' ';
 $table->data[1][1] .= print_input_text ('time', $time, '', 7, 7, true). ' ';
 $table->data[1][1] .= print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 

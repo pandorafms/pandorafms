@@ -1,3 +1,14 @@
+2011-01-26 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_custom_graphs.php: Added 'date' parameter
+	* operation/reporting/reporting_viewer.php: Longer text box
+	* operation/reporting/graph_viewer.php: Added date control
+	* godmode/reporting/reporting_builder.preview.php: Longer text box
+	* godmode/reporting/graph_builder.preview.php: Added bottom controls
+	
+	Pending task: #3137696
+
+
 2011-01-25  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/search_results.php: added the tab to show search list for

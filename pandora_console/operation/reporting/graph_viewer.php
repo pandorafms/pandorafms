@@ -76,6 +76,12 @@ if ($view_graph) {
 			break;
 		}
 	}
+
+	// Get different date to search the report.
+	$date = (string) get_parameter ('date', date ('Y-m-j'));
+	$time = (string) get_parameter ('time', date ('h:iA'));
+	$unixdate = strtotime ($date.' '.$time);
+
 	$period = (int) get_parameter ('period');
 	if (! $period)
 		$period = $graph["period"];
@@ -111,12 +117,22 @@ if ($view_graph) {
 
 	echo "<table class='databox_frame' cellpadding='0' cellspacing='0'>";
 	echo "<tr><td>";
-	print_custom_graph ($id_graph, $height, $width, $period, $stacked);
+	print_custom_graph ($id_graph, $height, $width, $period, $stacked, false, $unixdate);
 	echo "</td></tr></table>";
 	$period_label = human_time_description ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
 	echo "<table class='databox_frame' cellpadding='4' cellspacing='4'>";
-	echo "<tr><td class='datos'>";
+	echo "<tr>";
+	echo "<td>";
+	echo "<b>".__('Date')."</b>"." ";
+	echo "</td>";
+	echo "<td>";
+	echo print_input_text ('date', $date, '', 12, 10, true). ' ';
+	echo "</td>";
+	echo "<td>";
+	echo print_input_text ('time', $time, '', 7, 7, true). ' ';
+	echo "</td>";
+	echo "<td class='datos'>";
 	echo "<b>".__('Period')."</b>";
 	echo "</td>";
 	echo "<td class='datos'>";
@@ -150,6 +166,32 @@ if ($view_graph) {
 	echo "</tr>";
 	echo "</table>";
 	echo "</form>";	
+	/* We must add javascript here. Otherwise, the date picker won't 
+   work if the date is not correct because php is returning. */
+
+	require_css_file ('datepicker');
+	require_jquery_file ('ui.core');
+	require_jquery_file ('ui.datepicker');
+	require_jquery_file ('timeentry');
+	?>
+	<script language="javascript" type="text/javascript">
+
+	$(document).ready (function () {
+		$("#loading").slideUp ();
+		$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
+		$("#text-date").datepicker ();
+		$.datepicker.regional["<?php echo $config['language']; ?>"];
+	});
+	</script>
+
+	<?php
+	$datetime = strtotime ($date.' '.$time);
+	$report["datetime"] = $datetime;
+
+	if ($datetime === false || $datetime == -1) {
+		echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
+		return;
+	}
 	return;
 }
 

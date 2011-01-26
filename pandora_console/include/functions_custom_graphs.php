@@ -82,8 +82,9 @@ function get_user_custom_graphs ($id_user = 0, $only_names = false) {
  * @param $period Period of time to get data in seconds.
  * @param $stacked Wheter the graph is stacked or not.
  * @param $return Whether to return an output string or echo now (optional, echo by default).
+ * @param $date Date to start printing the graph
  */
-function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $return = false) {
+function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $return = false, $date = 0) {
 	global $config;
 	
 	$sources = get_db_all_rows_field_filter ('tgraph_source', 'id_graph', $id_graph);
@@ -102,11 +103,11 @@ function print_custom_graph ($id_graph, $height, $width, $period, $stacked, $ret
 
 	if ($config['flash_charts']) {
 		$output = graphic_combined_module ($modules, $weights, $period, $width, $height,
-				'', '', 0, 0, 0, $stacked);
+				'', '', 0, 0, 0, $stacked, $date);
 	} else {
 		$modules = implode (',', $modules);
 		$weights = implode (',', $weights);
-		$output = '<img src="include/fgraph.php?tipo=combined&height='.$height.'&width='.$width.'&id='.$modules.'&period='.$period.'&weight_l='.$weights.'&stacked='.$stacked.'">';
+		$output = '<img src="include/fgraph.php?tipo=combined&height='.$height.'&width='.$width.'&id='.$modules.'&period='.$period.'&weight_l='.$weights.'&stacked='.$stacked.'&date='.$date.'">';
 	}
 	
 	if ($return)

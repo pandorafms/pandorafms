@@ -2,6 +2,15 @@
 
 	Merged bugfix from trunk
 
+	* operation/search_results.php: added the tab to show search list for
+	modules. And cleaned source code style.
+	
+	* operation/search_modules.php: added the page to list the searched modules.
+
+2011-01-26  Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
 	* operation/agentes/status_monitor.php: fixed the ACL in the Module name for
 	the select box in the filter.
 

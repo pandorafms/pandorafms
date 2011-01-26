@@ -1,3 +1,135 @@
+2011-01-26  Sergio Martin <sergio.martin@artica.es>
+
+	* android
+	bsd-ipso
+	bsd-ipso/AUTHORS
+	bsd-ipso/pandora_agent_daemon
+	bsd-ipso/pandora_agent.conf
+	bsd-ipso/pandora_user.conf
+	bsd-ipso/COPYING
+	bsd-ipso/pandora_agent.sh
+	bsd-ipso/README
+	aix
+	aix/pandora_agent_installer
+	aix/pandora_agent
+	aix/AUTHORS
+	aix/pandora_agent_daemon
+	aix/pandora_agent.conf
+	aix/pandora_user.conf
+	aix/COPYING
+	aix/README
+	mac_osx
+	mac_osx/pandora_agent_installer
+	mac_osx/plugins
+	mac_osx/plugins/ipmi2xml
+	mac_osx/plugins/ipmi2xml/ipmi2xml.php
+	mac_osx/plugins/ipmi2xml/README.txt
+	mac_osx/plugins/XServeRAID
+	mac_osx/plugins/XServeRAID/xserve-raid-tools-1.2-1.uwhep.sl4.i386.rpm
+	mac_osx/plugins/XServeRAID/xserve-raid-tools-1.2-1.rhel3.i386.rpm
+	mac_osx/plugins/XServeRAID/pandora_agent.conf
+	mac_osx/plugins/XServeRAID/check_xserve
+	mac_osx/plugins/XServeRAID/xserve-raid-tools-1.2.tar.gz
+	mac_osx/plugins/XServeRAID/README.txt
+	mac_osx/plugins/SGE
+	mac_osx/plugins/SGE/SGEStatus.sh
+	mac_osx/plugins/SGE/README
+	mac_osx/plugins/grep_log
+	mac_osx/plugins/ppc_sensors
+	mac_osx/pandora_agent
+	mac_osx/AUTHORS
+	mac_osx/pandora_agent.conf
+	mac_osx/ChangeLog
+	mac_osx/COPYING
+	mac_osx/pandora_fms
+	mac_osx/pandora_fms/StartupParameters.plist
+	mac_osx/pandora_fms/pandora_fms
+	mac_osx/Pandora FMS.pmdoc
+	mac_osx/Pandora FMS.pmdoc/01pandora-contents.xml
+	mac_osx/Pandora FMS.pmdoc/01pandora.xml
+	mac_osx/Pandora FMS.pmdoc/index.xml
+	mac_osx/README
+	mac_osx/tentacle_client
+	shellscript
+	shellscript/linux
+	shellscript/bsd-ipso
+	shellscript/hp-ux
+	shellscript/aix
+	shellscript/meta_agent
+	shellscript/mac_osx
+	shellscript/solaris
+	shellscript/openWRT
+	openWRT
+	openWRT/pandora_agent_async
+	openWRT/pandora_serialread
+	openWRT/contrib
+	openWRT/contrib/pandora_agent_installer
+	openWRT/contrib/S55pandora
+	openWRT/contrib/pandora_agent_daemon
+	openWRT/pandora_getsync
+	openWRT/pandora_agent
+	openWRT/AUTHORS
+	openWRT/pandora_agent.conf
+	openWRT/pandora_arduino.c
+	openWRT/pandora_user.conf
+	openWRT/COPYING
+	openWRT/README.openwrt
+	openWRT/README
+	linux
+	linux/pandora_agent_installer
+	linux/plugins
+	linux/plugins/inventory
+	linux/plugins/pandora_df
+	linux/plugins/grep_log
+	linux/DEBIAN
+	linux/DEBIAN/control
+	linux/DEBIAN/postinst
+	linux/DEBIAN/prerm
+	linux/DEBIAN/conffiles
+	linux/DEBIAN/make_deb_package.sh
+	linux/DEBIAN/md5sums
+	linux/pandora_agent
+	linux/AUTHORS
+	linux/pandora_agent_daemon
+	linux/pandora_agent.conf
+	linux/COPYING
+	linux/pandora_agent.spec
+	linux/README
+	linux/tentacle_client
+	hp-ux
+	hp-ux/pandora_agent_installer
+	hp-ux/pandora_agent
+	hp-ux/AUTHORS
+	hp-ux/pandora_agent_daemon
+	hp-ux/pandora_agent.conf
+	hp-ux/COPYING
+	hp-ux/README
+	meta_agent
+	meta_agent/data_out
+	meta_agent/pandora_agent_sim.sh
+	meta_agent/AUTHORS
+	meta_agent/pandora_agent_daemon
+	meta_agent/INSTALL
+	meta_agent/pandora_agent_1.conf
+	meta_agent/pandora_agent_2.conf
+	meta_agent/COPYING
+	meta_agent/pandora_agent_3.conf
+	meta_agent/pandora_agent_4.conf
+	meta_agent/pandora_agent_5.conf
+	meta_agent/README
+	meta_agent/muestra_config.sh
+	solaris
+	solaris/pandora_agent_installer
+	solaris/data_out
+	solaris/pandora_agent
+	solaris/AUTHORS
+	solaris/pandora_agent_daemon
+	solaris/pandora_agent.conf
+	solaris/pandora_user.conf
+	solaris/COPYING
+	solaris/README: Reorganise the shellscript moving
+	all the sh scripts to one folder
+
 2010-12-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* unix/pandora_agent, win32/pandora.cc,

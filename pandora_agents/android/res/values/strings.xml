@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Pandroid Agent</string>
+	<string name="interval">Interval:</string>
+	<string name="update">Update conf.</string>
+	<string name="reset">Set default</string>
+	<string name="serverAddr">Server Address:</string>
+	<string name="serverPort">Server Port:</string>
+	<string name="confTitle">Pandroid Agent Configuration</string>
+	<string name="agent">Agent name:</string>
+	<string name="gpsReport">Report GPS data</string>
+	<string name="gpsMode">GPS Mode</string>
+	<string name="gpsCurrent">Current position (high battery cost)</string>
+	<string name="summary">Current configuration:</string>
+	<string name="starStop">Restart</string>
+	<string name="gpsLast">Last known position</string>
+	<string name="loading">Loading...</string>
+</resources>

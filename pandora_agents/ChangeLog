@@ -1,6 +1,63 @@
 2011-01-26  Sergio Martin <sergio.martin@artica.es>
 
 	* android
+	android/default.properties
+	android/.classpath
+	android/proguard.cfg
+	android/assets
+	android/.project
+	android/AndroidManifest.xml
+	android/src
+	android/src/pandroid
+	android/src/pandroid/agent
+	android/src/pandroid/agent/PandroidAgentTentacle.java
+	android/src/pandroid/agent/PandroidAgent.java
+	android/bin
+	android/bin/pandroid
+	android/bin/pandroid/agent
+	android/bin/pandroid/agent/PandroidAgent$8.class
+	android/bin/pandroid/agent/PandroidAgent$9.class
+	android/bin/pandroid/agent/PandroidAgent.class
+	android/bin/pandroid/agent/R$id.class
+	android/bin/pandroid/agent/PandroidAgent$MyLocationListener.class
+	android/bin/pandroid/agent/R$string.class
+	android/bin/pandroid/agent/tentacle_client.class
+	android/bin/pandroid/agent/R$attr.class
+	android/bin/pandroid/agent/R.class
+	android/bin/pandroid/agent/R$layout.class
+	android/bin/pandroid/agent/PandroidAgent$1.class
+	android/bin/pandroid/agent/PandroidAgent$2.class
+	android/bin/pandroid/agent/PandroidAgent$3.class
+	android/bin/pandroid/agent/PandroidAgent$4.class
+	android/bin/pandroid/agent/R$drawable.class
+	android/bin/pandroid/agent/PandroidAgent$5.class
+	android/bin/pandroid/agent/PandroidAgent$6.class
+	android/bin/pandroid/agent/PandroidAgent$7.class
+	android/bin/resources.ap_
+	android/bin/Copy of Copy of Pandroid Agent.apk
+	android/bin/classes.dex
+	android/res
+	android/res/values
+	android/res/values/strings.xml
+	android/res/drawable-hdpi
+	android/res/drawable-hdpi/logo.png
+	android/res/drawable-hdpi/icon.png
+	android/res/drawable-ldpi
+	android/res/drawable-ldpi/icon.png
+	android/res/drawable-mdpi
+	android/res/drawable-mdpi/icon.png
+	android/res/layout
+	android/res/layout/main.xml
+	android/gen
+	android/gen/pandroid
+	android/gen/pandroid/agent
+	android/gen/pandroid/agent/R.java: Created the
+	first android agent with report of battery level 
+	and basic GPS location coordinates report
+
+2011-01-26  Sergio Martin <sergio.martin@artica.es>
+
+	* android
 	bsd-ipso
 	bsd-ipso/AUTHORS
 	bsd-ipso/pandora_agent_daemon

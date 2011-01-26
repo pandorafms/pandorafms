@@ -1084,6 +1084,16 @@ function print_checkbox ($name, $value, $checked = false, $return = false, $disa
  * @return string HTML code if return parameter is true.
  */
 function print_image ($src, $return = false, $options = false) {
+
+	/* Checks if user's skin is available */
+	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$skin_path = enterprise_hook('get_image_skin_path',array($src));
+		if ($skin_path)
+			$src = $skin_path;		
+	}
+
 	$output = '<img src="'.safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';
 	
@@ -1118,7 +1128,7 @@ function print_image ($src, $return = false, $options = false) {
 		//Valid attributes (invalid attributes get skipped)
 		$attrs = array ("height", "longdesc", "usemap","width","id","class","title","lang","xml:lang", 
 						"onclick", "ondblclick", "onmousedown", "onmouseup", "onmouseover", "onmousemove", 
-						"onmouseout", "onkeypress", "onkeydown", "onkeyup");
+						"onmouseout", "onkeypress", "onkeydown", "onkeyup","pos_tree");
 		
 		foreach ($attrs as $attribute) {
 			if (isset ($options[$attribute])) {

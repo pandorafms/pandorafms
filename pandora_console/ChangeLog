@@ -1,3 +1,8 @@
+2011-01-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	* include/functions_html.php: In print_image function checks if skin 
+	path is set for the current user and if it exists add it to the image path. 
+	Added pos_tree option on print_image function.
+
 2011-01-26 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_custom_graphs.php: Added 'date' parameter

@@ -91,6 +91,11 @@ where nombre <> "delete_pending" and id_agente in
 			from tperfil where agent_view = 1
 		)
 	)
+	OR
+	(1 = (
+                 SELECT is_admin FROM tusuario WHERE id_user = "' . $config['id_user'] . '"
+             )
+        )
 	OR 0 IN (
 		select id_grupo
 		from tusuario_perfil

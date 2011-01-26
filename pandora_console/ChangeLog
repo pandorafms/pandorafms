@@ -1,3 +1,10 @@
+2011-01-26  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* operation/agentes/status_monitor.php: fixed the ACL in the Module name for
+	the select box in the filter.
+
+	* operation/search_agents.php: fixed the ACL in the search of agent.
+
 2011-01-26 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	* include/functions_html.php: In print_image function checks if skin 
 	path is set for the current user and if it exists add it to the image path. 

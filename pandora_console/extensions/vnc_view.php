@@ -17,7 +17,7 @@ function vnc_view() {
 	$idAgent = (int)get_parameter('id_agente', 0);
 	$ipAgent = get_db_value('direccion', 'tagente', 'id_agente', $idAgent);
 	?>
-	<iframe width="95%" height="500px" src="http://<?php echo $ipAgent;?>:5800"></iframe>
+	<iframe width="95%" height="500px" src="http://<?php echo $ipAgent;?>:5801"></iframe>
 	<?php
 }
 

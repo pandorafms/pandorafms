@@ -1,3 +1,11 @@
+2011-01-26  Sancho Lerena <slerena@artica.es>
+
+	* ssh_console: new ssh extension (agent tab extension) it will exec a
+	ssh java plugin to connect agent using it's main IP address. Requires 
+	an external download (Mindterm SSH Applet), free for individual use.
+
+	* vnc_view.php: Now uses VNC/HTTP port by default.
+
 2011-01-26  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/status_monitor.php: fixed the ACL in the Module name for

@@ -1,0 +1,14 @@
+You have several options to use a SSH Java Plugin for SSH access from pandora:
+
+OpenSource (GPL).
+
+https://sourceforge.net/projects/gsi-sshterm/
+http://freshmeat.net/projects/sshtools-sshterm/
+
+Commercial (we cannot redistribute the binary)
+
+http://www.cryptzone.com/products/agmindterm/
+
+In this extension we use Mindterm as default. just Get the JAR file and put on the extension/ssh_console directory with "mindterm.jar" filename. It will work.
+
+

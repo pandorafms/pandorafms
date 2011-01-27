@@ -74,7 +74,7 @@ case "$1" in
 			echo "Cannot launch again. Aborting."
 			exit 1
 		fi
-		su -c "PATH=$PATH nohup $DAEMON $PANDORA_PATH >/dev/null 2>$LOGFILE &" $PANDORA_USER
+		su $PANDORA_USER -c "PATH=$PATH nohup $DAEMON $PANDORA_PATH >/dev/null 2>$LOGFILE &"
 		sleep 2
 		PANDORA_PID=`pidof_pandora`
 		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
@@ -88,7 +88,7 @@ case "$1" in
 			exit 1
 		else
 			echo "Stopping Pandora Agent."
-			su -c "kill -9 $PANDORA_PID >/dev/null 2>&1" $PANDORA_USER
+			su $PANDORA_USER -c "kill -9 $PANDORA_PID >/dev/null 2>&1"
 		fi
 	;;
 

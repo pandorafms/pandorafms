@@ -1,5 +1,15 @@
 2011-01-27  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php,
+	godmode/modules/manage_network_templates_form.php: cleaned source style.
+	
+	* extensions/resource_registration.php: added extensión to import by xml
+	file the network component, wmi component, smnp component and local
+	component. And if the xml content a template, this component add into
+	template.
+
+2011-01-27  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: fixed the check ACL in function
 	"get_agent_modules", the global search alert fixed with this, and I think
 	that fixed in other places.

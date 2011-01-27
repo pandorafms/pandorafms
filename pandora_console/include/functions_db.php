@@ -655,21 +655,46 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * If multiple rows are selected, they will be in an array
  */
 function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
+	global $config;
+	
 	$id_agent = safe_int ($id_agent, 1);
 
-	$where = '';
+	$where = " WHERE (
+			1 = (
+				SELECT is_admin
+				FROM tusuario
+				WHERE id_user = '" . $config['id_user'] . "'
+			)
+			OR 
+			tagente_modulo.id_agente IN (
+				SELECT id_agente
+				FROM tagente
+				WHERE id_grupo IN (
+					SELECT id_grupo 
+					FROM tusuario_perfil 
+					WHERE id_usuario = '" . $config['id_user'] . "' 
+						AND id_perfil IN (
+							SELECT id_perfil 
+							FROM tperfil WHERE agent_view = 1
+						)
+					)
+			)
+			OR 0 IN (
+				SELECT id_grupo
+				FROM tusuario_perfil
+				WHERE id_usuario = '" . $config['id_user'] . "'
+					AND id_perfil IN (
+						SELECT id_perfil
+						FROM tperfil WHERE agent_view = 1
+					)
+				)
+		)";
+	
 	if (! empty ($id_agent)) {
-		$where = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
+		$where .= sprintf (' AND id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
 	
-	if ($where != '') {
-		$where .= ' AND ';
-	}
-	else {
-		$where .= ' WHERE ';
-	}
-	
-	$where .= 'delete_pending = 0 ';
+	$where .= ' AND delete_pending = 0 ';
 	
 	if (! empty ($filter)) {
 		$where .= ' AND ';

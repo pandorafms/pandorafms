@@ -1,5 +1,11 @@
 2011-01-27  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: fixed the check ACL in function
+	"get_agent_modules", the global search alert fixed with this, and I think
+	that fixed in other places.
+
+2011-01-27  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/search_agents.php: refixed the order of parentheses.
 
 2011-01-26  Sancho Lerena <slerena@artica.es>

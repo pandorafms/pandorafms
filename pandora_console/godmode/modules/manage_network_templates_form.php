@@ -48,7 +48,8 @@ if (isset ($_GET["delete_module"])) {
 	print_result_message (($errors < 1),
 		__('Successfully deleted module from profile'),
 		__('Error deleting module from profile'));
-} elseif (isset ($_GET["add_module"])) {
+}
+elseif (isset ($_GET["add_module"])) {
 	// Add module to profile
 	$errors = 0;
 	foreach ($id_nc as $component) {
@@ -76,7 +77,8 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 		print_result_message ($result !== false,
 			__('Successfully updated network profile'),
 			__('Error updating network profile'));
-	} else {
+	}
+	else {
 		//Profile doesn't exist
 		$sql = sprintf ("INSERT INTO tnetwork_profile (name, description) VALUES ('%s', '%s')", $name, $description);
 		$result = process_sql ($sql, "insert_id");
@@ -86,14 +88,16 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 		$id_np = (int) $result; //Will return either 0 (in case of error) or an int
 	}
 
-} elseif ($id_np > 0) {
+}
+elseif ($id_np > 0) {
 	//Profile exists
 	$row = get_db_row ("tnetwork_profile", "id_np", $id_np);
 		
 	$description = $row["description"];
 	$name = $row["name"];
 
-} else {
+}
+else {
 	//Profile has to be created
 	$description = "";
 	$name = "";
@@ -102,7 +106,8 @@ if (isset ($_GET["create"]) || isset ($_GET["update"])) {
 
 if ($id_np < 1) {
 	echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';
-} else {
+}
+else {
 	echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
 }
 
@@ -119,7 +124,8 @@ echo "</td></tr>";
 echo '<tr><td></td><td style="text-align:right;">';
 if ($id_np > 0) {
 	print_submit_button (__("Update"), "updbutton", false, 'class="sub upd"');
-} else {
+}
+else {
 	print_submit_button (__("Create"), "crtbutton", false, 'class="sub wand"');
 }
 echo "</td></tr></table></form>";

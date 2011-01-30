@@ -23,7 +23,7 @@ function main_ssh_console () {
 
 ?>
 <div>
-<APPLET CODE="com.mindbright.application.MindTerm.class" style="border: 2px;" ARCHIVE="extensions/ssh_console/mindterm.jar" WIDTH=600 HEIGHT=400>
+<APPLET CODE="com.mindbright.application.MindTerm.class" style="border: 2px;" ARCHIVE="extensions/ssh_console/mindterm.jar" WIDTH=720 HEIGHT=500>
 <PARAM NAME="sepframe" value="false">
 <PARAM NAME="debug" value="false">
 <param name="verbose" value="false">
@@ -31,7 +31,7 @@ function main_ssh_console () {
 <param name="fg-color" value="white">
 <param name="resizable" value="true">
 <param name="save-lines" value="2000">
-<param name="menus" value="pop2">
+<param name="menus" value="pop2"5>
 <param name="exit-on-logout" value="true">
 <PARAM NAME="server" value="<?PHP echo $ip; ?>">
 </applet>

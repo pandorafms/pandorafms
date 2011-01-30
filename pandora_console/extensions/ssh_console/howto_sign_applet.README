@@ -1,0 +1,8 @@
+Follow the steps here: http://www-personal.umich.edu/~lsiden/tutorials/signed-applet/signed-applet.html
+
+ keytool -genkey 
+ keytool -selfcert 
+ jarsigner mindterm.jar mykey
+
+Voila ! :-) 
+

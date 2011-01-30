@@ -1,3 +1,14 @@
+2011-01-27  Sancho Lerena <slerena@artica.es>
+
+	* ssh_console/howto_sign_applet.README,
+	ssh_console/ssh_console.readme,
+	vnc/VncViewer.jar,
+	vnc/howto_selfsign_applet.README,
+	ssh_console.php,
+	vnc_view.php: VNC Extension now uses a signed Java applet to see
+	remote servers. Added how to sign the cert on the SSH applet also.
+
+
 2011-01-27  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php,

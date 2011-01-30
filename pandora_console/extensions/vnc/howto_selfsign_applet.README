@@ -1,0 +1,9 @@
+Get the original VNC Applet from the Tightvnc website.
+
+Follow the steps here: http://www-personal.umich.edu/~lsiden/tutorials/signed-applet/signed-applet.html
+
+ keytool -genkey 
+ keytool -selfcert 
+ jarsigner VncViewer.jar mykey
+
+Voila ! :-) 

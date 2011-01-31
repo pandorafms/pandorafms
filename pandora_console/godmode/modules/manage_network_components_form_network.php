@@ -78,6 +78,12 @@ $data[3] = print_select(array('noAuthNoPriv' => __('Not auth and not privacy met
 	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_security_level', $snmp3_security_level, '', '', '', true);
 push_table_row($data, 'field_snmpv3_row3');
 
+$data = array();
+$data[0] = __('Post process').' '.print_help_icon ('postprocess', true);
+$data[1] = print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[2] = $data[3] = '';
+push_table_row($data, 'field_process');
+
 
 
 /* Advanced stuff */

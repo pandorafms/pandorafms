@@ -52,6 +52,12 @@ $data[3] = print_input_password ('plugin_pass', $plugin_pass, '', 25, 255, true)
 
 push_table_row ($data, 'wmi_3');
 
+$data = array();
+$data[0] = __('Post process').' '.print_help_icon ('postprocess', true);
+$data[1] = print_input_text ('post_process', $post_process, '', 12, 25, true);
+$data[2] = $data[3] = '';
+push_table_row($data, 'field_process');
+
 return;
 // Update an existing component
 if (! $id) {
@@ -194,7 +200,8 @@ if ($id) {
 	print_input_hidden ('update_component', 1);
 	print_input_hidden ('id', $id);
 	print_submit_button (__('Update'), 'crt', false, 'class="sub upd"');
-} else {
+}
+else {
 	print_input_hidden ('create_component', 1);
 	print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 }

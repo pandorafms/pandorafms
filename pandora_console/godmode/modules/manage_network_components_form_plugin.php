@@ -40,7 +40,8 @@ $data = array ();
 $data[0] = __('Plugin parameters');
 $data[0] .= print_help_icon ('plugin_parameters', true);
 $data[1] = print_input_text ('plugin_parameter', $plugin_parameter, '', 30, 255, true);
-$table->colspan['plugin_3'][1] = 3;
+$data[2] = __('Post process').' '.print_help_icon ('postprocess', true);
+$data[3] = print_input_text ('post_process', $post_process, '', 12, 25, true);
 
 push_table_row ($data, 'plugin_3');
 

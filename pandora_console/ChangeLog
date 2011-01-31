@@ -1,5 +1,11 @@
 2011-01-31  Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/modules/manage_network_components_form_wmi.php,
+	godmode/modules/manage_network_components_form_plugin.php: added the field
+	"Post process".
+
+2011-01-31  Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/javascript/pandora_modules.js, pandoradb.sql,
 	extras/pandoradb_migrate_v3.2_to_v4.0.sql,
 	godmode/modules/manage_network_components_form.php,

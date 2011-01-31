@@ -1,3 +1,13 @@
+2011-01-31  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/javascript/pandora_modules.js, pandoradb.sql,
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	godmode/modules/manage_network_components_form.php,
+	godmode/modules/manage_network_components_form_network.php,
+	godmode/modules/manage_network_components.php: added the "post process"
+	parameter to network component and use in network component editor and
+	module editor.
+
 2011-01-27  Sancho Lerena <slerena@artica.es>
 
 	* ssh_console/howto_sign_applet.README,

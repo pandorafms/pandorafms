@@ -526,6 +526,7 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `custom_string_3` text default '',
   `custom_integer_1` int(10) default 0,
   `custom_integer_2` int(10) default 0,
+  `post_process` double(18,13) default 0,
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

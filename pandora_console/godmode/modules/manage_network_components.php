@@ -55,6 +55,7 @@ $min_critical = (int) get_parameter ('min_critical');
 $max_critical = (int) get_parameter ('max_critical');
 $ff_event = (int) get_parameter ('ff_event');
 $history_data = (bool) get_parameter ('history_data');
+$post_process = (float) get_parameter('post_process');
 $id = (int) get_parameter ('id');
 
 $snmp_version = (string) get_parameter('snmp_version');
@@ -128,7 +129,8 @@ if ($create_component) {
 			'min_ff_event' => $ff_event,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
-			'custom_string_3' => $custom_string_3));
+			'custom_string_3' => $custom_string_3,
+			'post_process' => $post_process));
 	if ($id === false) {
 		print_error_message (__('Could not be created'));
 		include_once ('godmode/modules/manage_network_components_form.php');
@@ -183,7 +185,8 @@ if ($update_component) {
 			'min_ff_event' => $ff_event,
 			'custom_string_1' => $custom_string_1,
 			'custom_string_2' => $custom_string_2,
-			'custom_string_3' => $custom_string_3));
+			'custom_string_3' => $custom_string_3,
+			'post_process' => $post_process));
 	if ($result === false) {
 		print_error_message (__('Could not be updated'));
 		include_once ('godmode/modules/manage_network_components_form.php');

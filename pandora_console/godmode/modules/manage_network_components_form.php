@@ -54,6 +54,7 @@ if (isset ($id)) {
 		$min_critical = $component["min_critical"];
 		$ff_event = $component["min_ff_event"];
 		$history_data = $component["history_data"];
+		$post_process = $component["post_process"];
 		
 		
 		if ($type >= 15 && $type <= 18) {
@@ -90,6 +91,7 @@ if (isset ($id)) {
 		$min_critical = 0;
 		$ff_event = 0;
 		$history_data = true;
+		$post_process = 0;
 		
 		$snmp_version = 1;
 		$snmp3_auth_user = '';

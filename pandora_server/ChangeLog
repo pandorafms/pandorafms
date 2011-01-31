@@ -1,3 +1,8 @@
+2011-01-31  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Fixed a codification bug with
+	the CLI policy apply
+
 2011-01-22  Sancho Lerena <slerena@artica.es>
 
 	* lib/PandoraFMS/Config.pm: Updated version, we're on 4.0-dev !

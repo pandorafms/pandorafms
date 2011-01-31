@@ -165,7 +165,7 @@ sub get_module_name ($$) {
 sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", safe_input($module_name), $agent_id);
+	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ? AND id_agente = ?", safe_input(safe_output($module_name)), $agent_id);
 	return defined ($rc) ? $rc : -1;
 }
 

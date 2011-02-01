@@ -1,3 +1,34 @@
+2011-02-01  Sergio Martin <sergio.martin@artica.es>
+
+	* android/AndroidManifest.xml
+	android/src/pandroid/agent/PandroidAgent.java
+	android/src/pandroid/agent/PandroidAgentTentacle.java
+	android/src/pandroid/agent/PandroidAgentListener.java
+	android/src/pandroid/agent/EventReceiver.java
+	android/bin/Pandroid Agent v0.3.apk
+	android/bin/pandroid/agent/PandroidAgentListener$MyLocationListener.class
+	android/bin/pandroid/agent/PandroidAgentListener$1.class
+	android/bin/pandroid/agent/PandroidAgent.class
+	android/bin/pandroid/agent/R$id.class
+	android/bin/pandroid/agent/PandroidAgentListener.class
+	android/bin/pandroid/agent/R$string.class
+	android/bin/pandroid/agent/tentacle_client.class
+	android/bin/pandroid/agent/R$layout.class
+	android/bin/pandroid/agent/PandroidAgent$1.class
+	android/bin/pandroid/agent/PandroidAgent$2.class
+	android/bin/pandroid/agent/EventReceiver.class
+	android/bin/pandroid/agent/PandroidAgent$3.class
+	android/bin/pandroid/agent/PandroidAgent$4.class
+	android/bin/pandroid/agent/PandroidAgent$5.class
+	android/bin/pandroid/agent/PandroidAgent$6.class
+	android/bin/pandroid/agent/PandroidAgent$7.class
+	android/bin/resources.ap_
+	android/bin/classes.dex
+	android/res/layout/main.xml
+	android/gen/pandroid/agent/R.java: Coded the heavy part of app to
+	background in a service and changed the way of do the contact from
+	loops to android alarms to fix the app sleep when screen off.
+
 2011-02-01  Junichi Satoh  <junichi@rworks.jp>
 
 	* unix/FreeBSD/pandora_agent.conf: Fixed invalid cpu usage data is

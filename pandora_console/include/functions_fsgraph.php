@@ -170,7 +170,7 @@ function fs_module_chart ($data, $width, $height, $avg_only = 1, $step = 10, $ti
 		} else {
 			$show_name = '0';
 		}
-		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $value['timestamp_bottom']) . ';showName=' . $show_name);
+		$chart->addCategory(date($time_format, $value['timestamp_bottom']), 'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $value['timestamp_bottom']) .  ';showName=' . $show_name);
 	}
 
     if ($count > 0)
@@ -288,7 +288,7 @@ function fs_combined_chart ($data, $categories, $sets, $width, $height, $type = 
 			$show_name = '0';
 		}
 
-		$chart->addCategory(date($time_format, $category['timestamp_bottom']), 'hoverText=' . date ($config['date_format'], $category['timestamp_bottom']) . ';showName=' . $show_name);
+		$chart->addCategory(date($time_format, $category['timestamp_bottom']), 'hoverText=' . date (html_entity_decode ($config['date_format'], ENT_QUOTES, "UTF-8"), $category['timestamp_bottom']) . ';showName=' . $show_name);
 	}
 
 	// Stack charts

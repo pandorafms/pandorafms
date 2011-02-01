@@ -117,30 +117,10 @@ android:orientation="vertical">
 	android:textColor="#bbbbbb"
 	>
 </CheckBox>
-<RadioGroup android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		android:padding="15dp"
-		android:orientation="vertical"
-		android:id="@+id/groupRadioGpsReport"
-		android:layout_below="@id/checkGpsReport" >
-    <RadioButton android:checked="false"
-            android:text="@string/gpsLast" 
-            android:id="@+id/radioGpsLast"
-            android:textSize="14dip"
-            android:textColor="#bbbbbb"
-             />
-    <RadioButton android:checked="false"
-            android:text="@string/gpsCurrent" 
-            android:id="@+id/radioGpsCurrent"
-            android:textSize="14dip"
-            android:textColor="#bbbbbb"
-            android:visibility="gone"
-             />
-</RadioGroup>
 <Button android:id="@+id/update" 
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_below="@id/groupRadioGpsReport"
+    android:layout_below="@id/checkGpsReport"
     android:layout_alignParentRight="true"
     android:gravity="right"
     android:text="@string/update"

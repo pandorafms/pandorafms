@@ -1,13 +1,13 @@
 package pandroid.agent;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Button;
-import android.widget.RadioGroup;
-import android.widget.RadioButton;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,23 +16,13 @@ import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.content.ComponentName;
 import android.graphics.Color;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.List;
 import java.lang.Thread;
 
 public class PandroidAgent extends Activity {
@@ -42,63 +32,54 @@ public class PandroidAgent extends Activity {
     String defaultServerPort = "41121";
     String defaultServerAddr = "10.0.2.2";
     String defaultAgentName = "pandroidAgent";
-    String defaultGpsMode = "last"; // "last" or "current"
     String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
     
     boolean showLastXML = true;
-    boolean contactError = false;
     
     String lastGpsContactDateTime = "";
     Thread thread = new Thread();
+    ComponentName service = null;
+    PendingIntent sender = null;
+    AlarmManager am = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {	
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.main);
         
-//        defaultGpsMode = "last";
-//        String gpsMode = getSharedData("PANDROID_DATA", "gpsMode", defaultGpsMode, "string");
-//
-//        if(gpsMode.equals(gpsMode)) {
-//		    LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-//		    LocationListener mlocListener = new MyLocationListener();
-//		         //Use the LocationManager class to obtain GPS locations
-//	        mlocManager.requestLocationUpdates( 
-//	        		LocationManager.GPS_PROVIDER, 
-//	        		0, // minTime in ms 
-//	        		0, // minDistance in meters
-//		        		mlocListener);
-//        }
-        
         //resetValues();
         
-        initViews();
-        
-        updateConf();
-        
+        // Load the stored data into views
+        loadViews();
+                
+        // Set the cleaning returns listener
         setCleanReturns();
         
+        // Set the button events listener
         setButtonEvents();
         
-        thread = new Thread(null, BGProcess, "Background");
-        thread.start();
-    }
-    
-    private Runnable BGProcess = new Runnable() {
-    	public void run() {
-    		backGroundOpps();
-    	}
-    };
-    
-    private void backGroundOpps() {
+        // Start the agent listener service
+		//ComponentName service = startService(new Intent(this, PandroidAgentListener.class));
+		
+		// Setting an alarm to call service
+        Intent intentReceiver = new Intent(this, EventReceiver.class);
+        sender = PendingIntent.getBroadcast(this, 0, intentReceiver, 0);
+        
+        am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        
+        // Start the alert listener
+		startAgentListener();
+
+		// Update the UI each second
         h.post(new Runnable() {
         	@Override
         	public void run() {
-        		updateLastContact();
+        		updateUI();
         		h.postDelayed(this, 1000);
         	}
         });
     }
+    
     
     private void putSharedData(String preferenceName, String tokenName, String data, String type) {
 		int mode = Activity.MODE_PRIVATE;
@@ -177,6 +158,19 @@ public class PandroidAgent extends Activity {
 	            return false;
 	        }
 	    });
+	    
+	    EditText serverPortInput = (EditText) findViewById(R.id.serverPortInput);
+	    serverPortInput.setOnKeyListener(new OnKeyListener() {
+	        public boolean onKey(View v, int keyCode, KeyEvent event) {
+	            if(keyCode == 66) {
+	        	    EditText serverPortInput = (EditText) findViewById(R.id.serverPortInput);
+	        	    if(serverPortInput.getText().toString().length() > 0) {
+	        	    	serverPortInput.setText(serverPortInput.getText().toString().replaceAll("[\\r\\n]", ""));
+	        	    }
+	            }
+	            return false;
+	        }
+	    });
 	   
 	    EditText agentNameInput = (EditText) findViewById(R.id.agentNameInput);
 	    agentNameInput.setOnKeyListener(new OnKeyListener() {
@@ -198,10 +192,9 @@ public class PandroidAgent extends Activity {
         
         updateButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) { 
-        		contactError = false;
         	    updateConf();
-        	    contact();
-        		updateLastContact();
+        	    updateUI();
+				restartAgentListener();
         		hideKeyboard();
         	}
         });
@@ -212,8 +205,9 @@ public class PandroidAgent extends Activity {
         resetButton.setOnClickListener(new OnClickListener() {
         	public void onClick(View view) {
         	    resetValues();
-        		initViews();
+        		loadViews();
         		updateConf();
+        		restartAgentListener();
         	    hideKeyboard();
         	}
         });
@@ -226,25 +220,7 @@ public class PandroidAgent extends Activity {
 //        	    thread.stop();
 //        	}
 //        });
-        
-        CheckBox checkGpsReport = (CheckBox) findViewById(R.id.checkGpsReport);
-        
-        checkGpsReport.setOnClickListener(new OnClickListener() {
-        	public void onClick(View view) {
-                CheckBox checkGpsReport = (CheckBox) findViewById(R.id.checkGpsReport);
-	            RadioGroup gpsRadio = (RadioGroup) findViewById(R.id.groupRadioGpsReport);
-
-    	        if(checkGpsReport.isChecked()) {
-    	        	gpsRadio.setVisibility(gpsRadio.VISIBLE);
-    	        	putSharedData("PANDROID_DATA", "gpsStatus", "enabled", "string");
-    	        }
-    	        else {
-    	        	gpsRadio.setVisibility(gpsRadio.GONE);
-    	        	putSharedData("PANDROID_DATA", "gpsStatus", "disabled", "string");
-    	        }
-        	}
-        });
-        
+                
 	}
 	
 	private void resetValues() {
@@ -255,7 +231,6 @@ public class PandroidAgent extends Activity {
 		putSharedData("PANDROID_DATA", "latitude", "181", "float");
 		putSharedData("PANDROID_DATA", "longitude", "181", "float");
 		putSharedData("PANDROID_DATA", "gpsStatus", defaultGpsStatus, "string");
-		putSharedData("PANDROID_DATA", "gpsMode", defaultGpsMode, "string");
 		putSharedData("PANDROID_DATA", "lastContact", "-1", "long");
 	}
 	
@@ -278,21 +253,13 @@ public class PandroidAgent extends Activity {
 
 	    CheckBox checkGpsReport = (CheckBox) findViewById(R.id.checkGpsReport);
 	    
-	    String gpsMode = "Disabled";
 	    if(checkGpsReport.isChecked()) {
-	        RadioButton radioGpsLast = (RadioButton) findViewById(R.id.radioGpsLast);
-	        if(radioGpsLast.isChecked()) {
-	        	putSharedData("PANDROID_DATA", "gpsMode", "last", "string");
-	        	gpsMode = "Last position";
-	        }
-	        else {
-	        	putSharedData("PANDROID_DATA", "gpsMode", "current", "string");
-	        	gpsMode = "Current position";
-	        }
+	        putSharedData("PANDROID_DATA", "gpsStatus", "enabled", "string");
+	    }
+	    else {
+	        putSharedData("PANDROID_DATA", "gpsStatus", "disabled", "string");
 	    }
         
-		TextView summary = (TextView) this.findViewById(R.id.fieldSummary);
-		summary.setText("Server: " + serverAddr + "\nPort: " + serverPort + "\nInterval: " + interval + " seconds\nAgent name: " + agentName + "\nGPS Mode: " + gpsMode);
 	}
 	
 	private void hideKeyboard() {
@@ -301,38 +268,18 @@ public class PandroidAgent extends Activity {
 		imm.hideSoftInputFromWindow(serverAddrInput.getWindowToken(), 0);
 	}
 	
-	private void updateLastContact(){
-		//long lastContact = Long.parseLong("5");
-		long lastContact = Long.parseLong(getSharedData("PANDROID_DATA", "lastContact", "-1", "long"));
-
-		if(lastContact == -1) {
-	        contact();
-		}
+	private void updateUI() {
+		// Update connection data summary
+		updateSummary();
 		
-		updateValues();
+		// Update the last contact info
+		updateLastContactInfo();
 		
-        Date date = new Date();
-        long timestamp = date.getTime() / 1000;
-        long timeAgo = timestamp - lastContact;
-        
-		int interval = Integer.parseInt(getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer"));
-
-        if(timeAgo >= interval) {
-        	contact();
-        	timeAgo = 0;
-        }
-        
-        if(contactError) {
-        	changeContactInfo("Contact error", "#FF0000");
-        }
-        else {
-        	String stringAgo = timeAgo + " seconds ago.";
-        	if(timeAgo == 0) {
-        		stringAgo = "Now.";
-        	}
-        	changeContactInfo("Last Contact: " + stringAgo, "#00FF00");
-        }
-        
+		// Update the last XML sended info
+		updateLastXML();
+	}
+	
+	private void updateLastXML() {
 		TextView xml = (TextView) this.findViewById(R.id.xml);
 		if(showLastXML) {
 			String lastXML = getSharedData("PANDROID_DATA", "lastXML", "[no data]", "string");
@@ -343,6 +290,60 @@ public class PandroidAgent extends Activity {
 		}
 	}
 	
+	private void stopAgentListener() {
+	    am.cancel(sender);
+	}
+	
+	private void startAgentListener() {
+		int interval = Integer.parseInt(getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer"));
+
+        // Set the alarm with the interval frequency
+        am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), (interval * 1000), sender);
+	}
+	
+	private void restartAgentListener() {
+		stopAgentListener();
+		startAgentListener();
+	}
+	
+	private void updateLastContactInfo() {
+		//putSharedData("PANDROID_DATA", "lastContact", "-1", "long");
+		long lastContact = Long.parseLong(getSharedData("PANDROID_DATA", "lastContact", "-1", "long"));
+		int contactError = Integer.parseInt(getSharedData("PANDROID_DATA", "contactError", "0", "integer"));
+
+        Date date = new Date();
+        long timestamp = date.getTime() / 1000;
+        long timeAgo = -1;
+        if(lastContact != -1){
+            timeAgo = timestamp - lastContact;
+        }
+        
+		int interval = Integer.parseInt(getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer"));
+
+        if(timeAgo >= interval) {
+        	timeAgo = 0;
+        }
+        
+    	String stringAgo = "";
+    	
+    	if(lastContact == -1) {
+    		stringAgo = "Never.";
+    	}
+    	else if(timeAgo == 0) {
+    		stringAgo = "Now.";
+    	}
+    	else {
+        	stringAgo = timeAgo + " seconds ago.";
+    	}
+    	
+        if(contactError == 1) {
+        	changeContactInfo("Contact error", "#FF0000");
+        }
+        else {
+        	changeContactInfo("Last Contact: " + stringAgo, "#00FF00");
+        }
+	}
+	
 	private void changeContactInfo(String msg, String colorCode) {
 		TextView lastContactInfo = (TextView) this.findViewById(R.id.lastContactInfo);
 		lastContactInfo.setTextColor(Color.parseColor(colorCode));
@@ -350,31 +351,19 @@ public class PandroidAgent extends Activity {
 		
 	}
 	
-	private void updateSharedData() {
-		TextView summary = (TextView) this.findViewById(R.id.fieldSummary);
+	private void updateSummary() {
 		String serverAddr = getSharedData("PANDROID_DATA", "serverAddr", "[no data]", "string");
 		String serverPort = getSharedData("PANDROID_DATA", "serverPort", "[no data]", "string");
 		String interval = getSharedData("PANDROID_DATA", "interval", "300", "integer");
 		String agentName = getSharedData("PANDROID_DATA", "agentName", "[no data]", "string");
-		summary.setText("Server: " + serverAddr + "\nPort: " + serverPort + "\nInterval: " + interval + "\nAgent name: " + agentName);
+		String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", "[no data]", "string");
+	
+		// Update the connection summary
+		TextView summary = (TextView) this.findViewById(R.id.fieldSummary);
+		summary.setText("Server: " + serverAddr + "\nPort: " + serverPort + "\nInterval: " + interval + " seconds\nAgent name: " + agentName + "\nGPS Report: " + gpsStatus);	
 	}
 	
-	private void contact(){
-        Date date = new Date();
-        
-        putSharedData("PANDROID_DATA", "lastContact", Long.toString(date.getTime() / 1000), "long");
-        
-        // Keep lastXML sended if is not empty (empty means error sending it)
-        String lastXML = buildXML();
-
-        if(!lastXML.equals("")) {
-            putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
-        }
-        
-		updateValues();
-	}
-	
-	private void initViews(){
+	private void loadViews(){
         // Init form values
 	    EditText serverAddrInput = (EditText) findViewById(R.id.serverAddrInput);
         serverAddrInput.setText(getSharedData("PANDROID_DATA", "serverAddr", defaultServerAddr, "string"));
@@ -394,264 +383,7 @@ public class PandroidAgent extends Activity {
         String gpsStatus = getSharedData("PANDROID_DATA", "gpsStatus", defaultGpsStatus, "string");
         boolean gpsEnabled = gpsStatus.equals("enabled");
         checkGpsReport.setChecked(gpsEnabled);
-        
-        RadioGroup gpsRadio = (RadioGroup) findViewById(R.id.groupRadioGpsReport);
 
-        if(gpsEnabled) {
-	        gpsRadio.setVisibility(gpsRadio.VISIBLE);
-        }
-        else {
-	        gpsRadio.setVisibility(gpsRadio.GONE);
-        }
-        
-        RadioButton radioGpsCurrent = (RadioButton) findViewById(R.id.radioGpsCurrent);
-        RadioButton radioGpsLast = (RadioButton) findViewById(R.id.radioGpsLast);
-
-	        	
-        if(getSharedData("PANDROID_DATA", "gpsMode", defaultGpsMode, "string").equals("current")) {
-        	radioGpsCurrent.setChecked(true);
-        }
-        else {
-        	radioGpsLast.setChecked(true);
-        }
-
-        updateValues();
 	}
 	
-	private String buildXML(){
-		String buffer = "";
-		String gpsData = "";
-		buffer += "<?xml version='1.0' encoding='utf-8'?>\n";
-		
-		String latitude = getSharedData("PANDROID_DATA", "latitude", "181", "float");
-		String longitude = getSharedData("PANDROID_DATA", "longitude", "181", "float");
-
-		if(!latitude.equals("181.0") && !longitude.equals("181.0")) {
-			gpsData = " latitude='" + latitude + "' longitude='" + longitude + "'";
-		}
-		
-		String agentName = getSharedData("PANDROID_DATA", "agentName", defaultAgentName, "string");
-		String interval = getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer");
-		
-		buffer += "<agent_data description='' group='' os_name='android' os_version='2.1' interval='"+ interval +"' version='3.2RC1(Build 101103)' timestamp='" + getHumanDateTime(-1) + "' agent_name='" + agentName + "' timezone_offset='0'" + gpsData +">\n";
-		
-		// Modules
-		buffer += buildmoduleXML("battery_level", "The actually device battery level", "generic_data", getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer"));		
-		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
-		
-		// End_Modules
-		
-		buffer += "</agent_data>";
-		
-		String destFileName = agentName + "." + System.currentTimeMillis() + ".data";
-		
-		writeFile(destFileName, buffer);
-
-		String[] tentacleData = {
-				  "-a",
-				  getSharedData("PANDROID_DATA", "serverAddr", "", "string"),
-				  "-p",
-				  defaultServerPort,
-				  "-v",
-				  "/data/data/pandroid.agent/files/" + destFileName
-	    		  };
-
-		int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
-		
-		if(tentacleRet == 0) {
-			contactError = false;
-		}
-		else {
-			contactError = true;
-			buffer = "";
-		}
-		
-		return buffer;
-	}
-	
-	
-	private String buildmoduleXML(String name, String description, String type, String data){
-		String buffer = "";
-		buffer += "  <module>\n";
-		buffer += "    <name><![CDATA[" + name + "]]></name>\n";
-		buffer += "    <description><![CDATA[" + description + "]]></description>\n";
-		buffer += "    <type><![CDATA[" + type + "]]></type>\n";
-		buffer += "    <data><![CDATA[" + data + "]]></data>\n";
-		buffer += "  </module>\n";
-		
-		return buffer;
-	}
-	
-	////////////////////////////////////////////////////////////
-	// Get human date time from unixtime in milliseconds. 
-	// If unixtime = -1 is returned the current datetime
-	////////////////////////////////////////////////////////////
-    private String getHumanDateTime(long unixtime){
-        Calendar dateTime = Calendar.getInstance();
-        if(unixtime != -1) {
-        	dateTime.setTimeInMillis(unixtime);
-        }
-        String humanDateTime;
-        
-        humanDateTime = dateTime.get(Calendar.YEAR) + "/";
-        
-        int month = dateTime.get(Calendar.MONTH) + 1;
-        if(month < 10) {
-        	humanDateTime += "0";
-        }
-    	humanDateTime += month + "/";
-
-    	int day = dateTime.get(Calendar.DAY_OF_MONTH);
-        if(day < 10) {
-        	humanDateTime += "0";
-        }
-    	humanDateTime += day + " ";
-    	
-    	int hour = dateTime.get(Calendar.HOUR_OF_DAY);
-        if(hour < 10) {
-        	humanDateTime += "0";
-        }
-    	humanDateTime += hour + ":";
-    	
-    	int minute = dateTime.get(Calendar.MINUTE);
-        if(minute < 10) {
-        	humanDateTime += "0";
-        }
-    	humanDateTime += minute + ":";
-        
-    	int second = dateTime.get(Calendar.SECOND);
-        if(second < 10) {
-        	humanDateTime += "0";
-        }
-    	humanDateTime += second;
-    	
-        return humanDateTime;
-    }
-    
-    
-    private void showToast (String msg) {
-    	Context context = getApplicationContext();
-    	int duration = Toast.LENGTH_SHORT;
-
-    	Toast toast = Toast.makeText(context, msg, duration);
-    	toast.show();
-    }
-    
-    ///////////////////////////////////////////
-    // Getting values from device functions
-    ///////////////////////////////////////////
-    
-    private void gpsLocation() {
-    	// Starts with GPS, if no GPS then gets network location
-    	
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);  
-		List<String> providers = lm.getProviders(true);
-
-		/* Loop over the array backwards, and if you get an accurate location, then break out the loop*/
-		Location loc = null;
-
-		for (int i=providers.size()-1; i>=0; i--) {
-		    loc = lm.getLastKnownLocation(providers.get(i));
-		    if (loc != null) break;
-		}
-
-		if (loc != null) {
-			//if(latitude != loc.getLatitude() || longitude != loc.getLongitude()) {
-				lastGpsContactDateTime = getHumanDateTime(-1);
-			//}
-            putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
-            putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");
-		}
-		else {             
-            putSharedData("PANDROID_DATA", "latitude", "181", "float");
-            putSharedData("PANDROID_DATA", "longitude", "181", "float");
-		}
-		
-    }
-    
-    private void batteryLevel() {
-        BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                context.unregisterReceiver(this);
-                int rawlevel = intent.getIntExtra("level", -1);
-                int scale = intent.getIntExtra("scale", -1);
-                if (rawlevel >= 0 && scale > 0) {
-                    putSharedData("PANDROID_DATA", "batteryLevel", new Integer((rawlevel * 100) / scale).toString(), "integer");
-                }
-            }
-        };
-        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
-    }
-
-	private void updateValues() {
-        batteryLevel();
-        String gpsMode = getSharedData("PANDROID_DATA", "gpsMode", defaultGpsMode, "string");
-        
-        if(gpsMode.equals("last")) {
-			gpsLocation();
-        }
-	}
-    
-    private void writeFile(String fileName, String textToWrite) {
-    	try { // catches IOException below
-    	                        FileOutputStream fOut = openFileOutput(fileName,
-    	                                                                MODE_WORLD_READABLE);
-    	                        OutputStreamWriter osw = new OutputStreamWriter(fOut); 
-    	 
-    	                        // Write the string to the file
-    	                        osw.write(textToWrite);
-    	                        /* ensure that everything is
-    	                         * really written out and close */
-    	                        osw.flush();
-    	                        osw.close();
-    	} catch (IOException e) {
-
-    	}
-
-    }
-    
-    private String readFile(String fileName) {
-    	String readString = "";
-    	try { // catches IOException below
-    		      FileInputStream fIn = openFileInput(fileName);
-                  InputStreamReader isr = new InputStreamReader(fIn);
-                  /* Prepare a char-Array that will
-                   * hold the chars we read back in. */
-                  char[] inputBuffer = new char[100];
-                  // Fill the Buffer with data from the file
-                  isr.read(inputBuffer);
-                  // Transform the chars to a String
-                  readString = new String(inputBuffer);
-
-	          } catch (IOException ioe) {
-	          }
-	          
-	    return readString;
-    }
-
-    public class MyLocationListener implements LocationListener {
-
-	    @Override
-	    public void onLocationChanged(Location loc) {
-            putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
-            putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");
-	    }
-	    
-	    @Override	
-	    public void onProviderDisabled(String provider) {
-            putSharedData("PANDROID_DATA", "latitude", "181", "float");
-            putSharedData("PANDROID_DATA", "longitude", "181", "float");
-	    }
-	
-	    @Override
-	    public void onProviderEnabled(String provider) {
-	    }
-	
-	    @Override
-	
-	    public void onStatusChanged(String provider, int status, Bundle extras) {
-	    }
-
-    }/* End of Class MyLocationListener */
 }

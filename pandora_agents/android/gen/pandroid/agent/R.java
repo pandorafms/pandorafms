@@ -22,19 +22,16 @@ public final class R {
         public static final int field3=0x7f050009;
         public static final int field4=0x7f05000b;
         public static final int fieldSummary=0x7f050003;
-        public static final int groupRadioGpsReport=0x7f05000e;
         public static final int header=0x7f050001;
         public static final int intervalInput=0x7f05000a;
         public static final int lastContactInfo=0x7f050004;
         public static final int logo=0x7f050002;
-        public static final int radioGpsCurrent=0x7f050010;
-        public static final int radioGpsLast=0x7f05000f;
-        public static final int reset=0x7f050012;
+        public static final int reset=0x7f05000f;
         public static final int serverAddrInput=0x7f050006;
         public static final int serverPortInput=0x7f050008;
         public static final int title=0x7f050000;
-        public static final int update=0x7f050011;
-        public static final int xml=0x7f050013;
+        public static final int update=0x7f05000e;
+        public static final int xml=0x7f050010;
     }
     public static final class layout {
         public static final int main=0x7f030000;

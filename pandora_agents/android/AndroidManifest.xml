@@ -11,9 +11,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+    	<service android:enabled="true" android:name="pandroid.agent.PandroidAgentListener" />
+		<receiver android:name="pandroid.agent.EventReceiver" />
     </application>
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
-<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 

@@ -1,3 +1,8 @@
+2011-02-01  Junichi Satoh  <junichi@rworks.jp>
+
+	* FreeBSD/pandora_agent.conf: Fixed invalid cpu usage data is returned
+	when system has only one disk device.
+
 2011-01-27  Junichi Satoh  <junichi@rworks.jp>
 
 	* pandora_agent_daemon: Changed order of 'su' argument.

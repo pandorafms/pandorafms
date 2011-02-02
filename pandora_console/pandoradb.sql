@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2011 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2010 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -430,7 +430,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 
 CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
-	`nombre` text NOT NULL default '',
+	`nombre` varchar(100) NOT NULL default '',
 	`icon` varchar(50) default NULL default 'world',
 	`parent` mediumint(4) unsigned NOT NULL default '0',
 	`propagate` tinyint(1) unsigned NOT NULL default '0',
@@ -795,7 +795,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`description` mediumtext, 
 	`id_agent` int(10) unsigned NOT NULL default 0,
 	`text` TEXT default NULL,
-	`external_source` TinyText default NULL,
+	`external_source` Text default NULL,
 	`treport_custom_sql_id` INTEGER UNSIGNED default 0,
 	`header_definition` TinyText default NULL,
 	`column_separator` TinyText default NULL,

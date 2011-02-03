@@ -818,13 +818,22 @@ sub exec_module ($) {
 	my $module = shift;
 
 	# Need something to execute
-	return unless ($module->{'func'} != 0);
+	if ($module->{'func'} == 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 	
 	# Check module interval
-	return unless (++($module->{'counter'}) >= $module->{'interval'});
+	if (++($module->{'counter'}) < $module->{'interval'}) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 
 	# Check module cron
-	return unless (check_module_cron ($module) == 1);
+	if (check_module_cron ($module) != 1) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 	
 	# Reset module counter
 	$module->{'counter'} = 0;
@@ -1273,7 +1282,10 @@ sub exec_plugin ($) {
 	my $output = `$plugin 2>$DevNull`;
 
 	# Do not save the output if there was an error
-	return unless ($? eq 0);
+	if ($? != 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 
 	# Critical section
 	$Sem->down () if (defined ($Sem));

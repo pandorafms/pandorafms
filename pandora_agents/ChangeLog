@@ -1,3 +1,8 @@
+2011-02-03  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/installer/pandora.mpi, win32/pandora.cc, unix/pandora_agent: Free
+	  the threads semaphore when a module or plugin does not execute.
+
 2011-02-01  Sergio Martin <sergio.martin@artica.es>
 
 	* android/AndroidManifest.xml

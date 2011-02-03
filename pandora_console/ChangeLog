@@ -1,3 +1,8 @@
+2011-02-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	* operation/search_alerts.php: Actions_name array now is initialized to void value.
+
+	 Fixes: #3171506
+
 2011-02-02  Sancho lerena <slerena@artica.es>
 
         * pandoradb.sql: Altered lenght for custom SQL reports.

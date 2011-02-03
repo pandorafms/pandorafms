@@ -117,6 +117,7 @@ if($searchAlerts) {
 		$alerts[$key]['template_name'] = $alert['template_name'];
 		$actions = get_alert_agent_module_actions($alert['id']);
 		
+		$actions_name = array();
 		foreach($actions as $action) {
 			$actions_name[] = $action['name'];
 		}

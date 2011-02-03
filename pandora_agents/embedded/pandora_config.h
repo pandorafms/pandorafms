@@ -15,10 +15,13 @@
 void
 init_parameters (struct pandora_setup* pandorasetup);
 
-char *
-trim (char * s);
+int
+fill_pandora_setup (struct pandora_setup *ps, char *field, char *value);
 
 int
-parse_config (struct pandora_setup* pandorasetup, char *config_file);
+fill_pandora_module (struct pandora_module *pm, char *field, char *value);
+
+int
+parse_config (struct pandora_setup *pandorasetup, struct pandora_module **list, char *config_file);
 
 

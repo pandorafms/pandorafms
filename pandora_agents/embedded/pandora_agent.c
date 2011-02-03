@@ -32,27 +32,29 @@
 
 int 
 main(int argc, char **argv) {
-   	DIR 			*pDIR;
-   	struct dirent 		*pDirEnt;
-	struct pandora_setup 	*pandorasetup;
-	char			*config_file;
-	char  			*fullpath;
-	char			*buffer;
-	long int 		 id_audit;
-	char                     c;
-	char			*xml_filename;
+   	DIR						*pDIR=NULL;
+   	struct dirent			*pDirEnt=NULL;
+	struct pandora_setup	*pandorasetup=NULL;
+	struct pandora_module	*list=NULL;
+	char					*config_file=NULL;
+	char					*fullpath=NULL;
+	char					*buffer=NULL;
+	long int				id_audit;
+	char					c;
+	char					*xml_filename=NULL;
 
 
 	printf ("Pandora FMS Embedded Agent v%s (c) 2011 http://pandorafms.org\n", VERSION);
 
 	config_file = NULL;
-
-	if (argc < 2 && argc > 3){
+	list=NULL;
+	
+	if (argc < 2 || argc > 3){
 		printf ("Syntax is:\n\n    pandora_agent <path_to_pandora_agent.conf> \n\n");
 		exit (0);
 	}
 	
-        char *cmd = *argv++;
+	char *cmd = *argv++;
 	config_file = *argv++;
 
 	if (config_file == NULL) {
@@ -61,12 +63,17 @@ main(int argc, char **argv) {
 	}
 	
 	pandorasetup = malloc(sizeof(struct pandora_setup));
+	pandorasetup->logfile=NULL;
+	pandorasetup->agent_name=NULL;
+	pandorasetup->server_ip=NULL;
+	pandorasetup->temporal=NULL;
+	pandorasetup->sancho_test=NULL;
 
 	// Initialize to default parameters
 	init_parameters (pandorasetup);
 
 	// Load config file using first parameter
-  	parse_config (pandorasetup, config_file);
+  	parse_config (pandorasetup, &list, config_file);
 	
 	asprintf (&buffer,"Starting %s v%s", PACKAGE_NAME, VERSION);
 	pandora_log (3, buffer, pandorasetup);
@@ -86,7 +93,7 @@ main(int argc, char **argv) {
 
 
 	while (1){  // Main loop
-		xml_filename = pandora_write_xml_disk (pandorasetup);
+		xml_filename = pandora_write_xml_disk (pandorasetup, list);
 		if (pandorasetup->debug == 1){
 			printf ("Debug mode activated. Exiting now! \n");
 			exit (0);
@@ -101,7 +108,5 @@ main(int argc, char **argv) {
 		pandora_free(xml_filename);
   		sleep(pandorasetup->interval);
 	}
-
-	pandora_free(config_file);
 	return (0);
 }

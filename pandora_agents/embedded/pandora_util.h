@@ -18,6 +18,15 @@ pandora_log (int level, char *message, struct pandora_setup *pandorasetup );
 void
 pandora_free (void *pointer);
 
+char *
+rtrim(char* string, char junk);
+
+char *
+ltrim(char *string, char junk);
+
+char *
+trim (char * s);
+
 int
 isdatafile (char *filename);
 

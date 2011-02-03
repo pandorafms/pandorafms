@@ -30,6 +30,7 @@ struct pandora_module {
 	char *module_exec;
 	char *module_data;
 	char *module_plugin;
+	struct pandora_module *next;
 };
 
 struct pandora_setup {

@@ -26,7 +26,8 @@
 
 void
 pandora_free (void *pointer){
-	if (pointer != NULL){
+	if (pointer != NULL)
+	{
 		free(pointer);
 	}
 }
@@ -63,31 +64,40 @@ pandora_return_unixtime () {
 }
 
 
-/*
- * trim: get rid of trailing and leading whitespace...
- *       ...including the annoying "\n" from fgets()
- */
+char* rtrim(char* string, char junk)
+{
+    char* original = string + strlen(string);
+    while(original != string && *--original == junk);
+    *(original + 1) = '\0';
+    return string;
+}
 
-// (TODO) I think is function is a memory hole (leak), check it out !
+char* ltrim(char *string, char junk)
+{
+    char* original = string;
+    char *p = original;
+    int trimmed = 0;
+    do
+    {
+        if (*original != junk || trimmed)
+        {
+            trimmed = 1;
+            *p++ = *original;
+        }
+    }
+    while (*original++ != '\0');
+    return string;
+}
 
 char *
 trim (char * s)
 {
-	/* Initialize start, end pointers */
-	char *s1 = s, *s2 = &s[strlen (s) - 1];
-	
-	/* Trim and delimit right side */
-	while ( (isspace (*s2)) && (s2 >= s1) )
-	s2--;
-	*(s2+1) = '\0';
-	
-	/* Trim left side */
-	while ( (isspace (*s1)) && (s1 < s2) )
-	s1++;
-	
-	/* Copy finished string */
-	strcpy (s, s1);
-	return s;
+	s=rtrim(s, ' ');
+	s=rtrim(s, '\t');
+	s=rtrim(s, '\n');
+	s=ltrim(s, ' ');
+	s=ltrim(s, '\t');
+	s=ltrim(s, '\n');
 }
 
 // ==========================================================================
@@ -95,16 +105,18 @@ trim (char * s)
 
 char *
 pandora_exec (char *commandline) {
-
+	//printf("CommandLine :%s:\n", commandline);
 	/* Output buffer */
 	char *data = NULL;
+	
+	int read;
 	
 	/* File descriptor */
 	FILE *fc = NULL;
 
 	int MAXBUF = 8192; // I will only read the first 8192 bytes of output.
 
-	char buffer[MAXBUF]; 
+	char buffer[MAXBUF];
 
    	/* Open output of execution as a readonline file handle */
 	/* if NULL is a problem in the execution or empty exec output */
@@ -122,7 +134,9 @@ pandora_exec (char *commandline) {
 	
 	data = malloc ((MAXBUF + 1) * sizeof(char)) ;
 
-	fread (data, sizeof(char), MAXBUF, fc); /* Read the entire file, buffers are for weaks :-) */
+	read = fread (data, sizeof(char), MAXBUF, fc); /* Read the entire file, buffers are for weaks :-) */
+	
+	data[read]='\0';
 
 	pclose (fc);
 
@@ -137,12 +151,13 @@ pandora_exec (char *commandline) {
 void
 tentacle_copy (char *filename, struct pandora_setup *pandorasetup){
 	
-	char * cmd;
+	char * cmd=NULL;
+	char * aux=NULL;
 
 	asprintf (&cmd, "tentacle_client -a %s -p %d %s", pandorasetup->server_ip, pandorasetup->server_port, filename);
-	printf ("DEBUG CMD: %s", cmd);
 
-	pandora_exec (cmd);
+	aux=pandora_exec (cmd);
+	pandora_free(aux);
 	pandora_free (cmd);
 
 }
@@ -153,23 +168,24 @@ tentacle_copy (char *filename, struct pandora_setup *pandorasetup){
 char *
 pandora_write_xml_header (struct pandora_setup *pandorasetup) {
 
-	char *os_version;
-	char *date;
-	char *buffer;
-	char *buffer2;
-	char *buffer3;
-
-	os_version = trim(pandora_exec ("uname -m"));
-
-	if (pandorasetup->autotime == 1){
+	char *os_version=NULL;
+	char *date=NULL;
+	char *buffer=NULL;
+	char *buffer2=NULL;
+	char *buffer3=NULL;
+	os_version=pandora_exec ("uname -m");
+	trim(os_version);
+	if (pandorasetup->autotime == 1)
+	{
 		asprintf (&date, "AUTO");
-	} else {
+	}
+	else
+	{
 		date = return_time("%Y/%m/%d %H:%M:%S");
 	}
-
-			
+	
 	asprintf (&buffer, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
-	asprintf (&buffer2, "<agent_data os_name='embedded' os_version='%s' interval='%d' version='4.0dev' timestamp='%s' agent_name='%s' >\n", os_version, pandorasetup->interval, date, pandorasetup->agent_name);
+	asprintf (&buffer2, "<agent_data os_name='embedded' os_version='%s' interval='%d' version='4.0dev' timestamp='%s' agent_name='%s'>\n", os_version, pandorasetup->interval, date, pandorasetup->agent_name);
 	asprintf (&buffer3, "%s%s",buffer, buffer2);
 
 	pandora_free (os_version);
@@ -185,7 +201,7 @@ pandora_write_xml_header (struct pandora_setup *pandorasetup) {
 char *
 pandora_write_xml_footer () {
 
-	char *buffer;
+	char *buffer=NULL;
 	asprintf (&buffer, "</agent_data>\n");
 	return buffer;
 }
@@ -193,13 +209,56 @@ pandora_write_xml_footer () {
 // ==========================================================================
 // ==========================================================================
 
+char *
+pandora_write_xml_module (struct pandora_module *ptmodule)
+{
+	char *data=NULL;
+	char *buffer=NULL;
+	char *name=NULL;
+	char *type=NULL;
+	char *desc=NULL;
+		
+	if (ptmodule->module_name==NULL)
+		asprintf(&name, "");
+	else
+		asprintf(&name, ptmodule->module_name);
+	
+	if (ptmodule->module_type==NULL)
+		asprintf(&type, "");
+	else
+		asprintf(&type, ptmodule->module_type);
+	
+	if (ptmodule->module_description==NULL)
+		asprintf(&desc, "");
+	else
+		asprintf(&desc, ptmodule->module_description);
+		
+	data=pandora_exec(ptmodule->module_exec);
+	trim(data);
+		
+	asprintf (&buffer, "\t<module>\n\t<name><![CDATA[%s]]></name>\n\t<description><![CDATA[%s]]></description>\n\t<type>%s</type>\n\t<data><![CDATA[%s]]></data>\n\t</module>\n", name, desc, type, data);
+	pandora_free(data);
+	pandora_free(name);
+	pandora_free(type);
+	pandora_free(desc);
+	return buffer;
+}
+
+char *
+pandora_write_xml_module_plugin (struct pandora_module *ptmodule)
+{
+	char *buffer=pandora_exec(ptmodule->module_plugin);
+	return buffer;
+}
+
 char * 
-pandora_write_xml_disk (struct pandora_setup *pandorasetup){
+pandora_write_xml_disk (struct pandora_setup *pandorasetup, struct pandora_module *list){
 
 	int fileseed;
-	char *filename;
-	char *header;
-	char *footer;
+	char *filename=NULL;
+	char *header=NULL;
+	char *buffer=NULL;
+	char *footer=NULL;
 	FILE *pandora_xml;
 
 	// Set pseudorandom number
@@ -212,38 +271,43 @@ pandora_write_xml_disk (struct pandora_setup *pandorasetup){
 	if (pandorasetup->debug == 1){
 		printf ("[DEBUG] XML Filename is %s \n", filename);
 	}
-
+	
 	pandora_xml = fopen (filename, "w");
-
+	
 	if (pandora_xml == NULL){
-		printf ("ERROR: Cannot open xmlile at %s for writing. ABORTING\n", filename);
+		printf ("ERROR: Cannot open xmlfile at %s for writing. ABORTING\n", filename);
 		exit (-1);
 	}
-
+	
  	header = pandora_write_xml_header (pandorasetup);
-
- 	fprintf (pandora_xml, header);
-
-	// (TODO): Write here each module output
-
-	// This is a just a concept to execute and put the results of a single plugin execution
-
-	char *sancho_test_buffer;
-	sancho_test_buffer = pandora_exec (pandorasetup->sancho_test);
-	fprintf (pandora_xml, sancho_test_buffer);
-	pandora_free (sancho_test_buffer);	
-
-	// End of crap code :-)
+	
+ 	fprintf (pandora_xml, "%s", header);
+	struct pandora_module *ptaux=list;
+	while (ptaux!=NULL)
+	{
+		if (ptaux->module_type!=NULL)
+		{
+			buffer = pandora_write_xml_module(ptaux);
+			fprintf(pandora_xml, "%s", buffer);
+		}
+		else if (ptaux->module_plugin!=NULL)
+		{
+			buffer = pandora_write_xml_module_plugin(ptaux);
+			fprintf(pandora_xml, "%s", buffer);
+		}
+		ptaux=ptaux->next;
+		pandora_free(buffer);
+	}
 	
   	footer = pandora_write_xml_footer ();
 
-	fprintf (pandora_xml, footer);
+	fprintf (pandora_xml, "%s", footer);
 
 	fclose (pandora_xml);
 
 	pandora_free (header);
 	pandora_free (footer);
-	return (filename);	
+	return filename;
 }
 
 
@@ -302,7 +366,7 @@ pandora_log (int level, char *message, struct pandora_setup *pandorasetup ){
 			exit(-1);
 		}
 
-		fprintf (pandora_log, buff_timedate2);
+		fprintf (pandora_log, "%s", buff_timedate2);
 
 		// Free mem
 

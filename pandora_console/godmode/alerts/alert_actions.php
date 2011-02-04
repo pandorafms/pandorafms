@@ -180,11 +180,11 @@ foreach ($actions as $action) {
 		$action['name'].'</a>';
 	$data[1] = print_group_icon ($action["id_group"], true) .'&nbsp;'. get_group_name ($action["id_group"], true);
 	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&copy_action=1&id='.$action['id'].'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		'<img src="images/copy.png"></a>';
+		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+		print_image("images/copy.png", true) . '</a>';
 	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		'<img src="images/cross.png"></a>';
+		print_image("images/cross.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }

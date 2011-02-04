@@ -471,7 +471,7 @@ if ($step == 2) {
 			
 			$alert = get_alert_agent_module ($condition['id_alert_template_module']);
 			$data[0] = '<a href="#" class="remove_alert" id="alert-'.$alert['id'].'" />';
-			$data[0] .= '<img src="images/delete.png" />';
+			$data[0] .= print_image("images/delete.png", true);
 			$data[0] .= '</a>';
 			$idAgent = get_agent_module_id($alert['id_agent_module']);
 			$nameAgent = get_agent_name($idAgent);
@@ -542,12 +542,12 @@ if ($step == 1) {
 	$table->data[0][3] = print_select (get_group_agents ($id_group, false, "none"),
 		'search_id_agent', $id_agent, false, __('Select'), 0, true);
 	$table->data[0][3] .= '<span id="agent_loading" class="invisible">';
-	$table->data[0][3] .= '<img src="images/spinner.png" />';
+	$table->data[0][3] .= print_image('images/spinner.png', true);
 	$table->data[0][3] .= '</span>';
 	
 	print_table ($table);
 	echo '<div id="alerts_loading" class="loading invisible">';
-	echo '<img src="images/spinner.png" />';
+	echo print_image('images/spinner.png', true);
 	echo __('Loading').'&hellip;';
 	echo '</div>';
 	
@@ -572,7 +572,7 @@ if ($step == 1) {
 			$data = array ();
 			
 			$data[0] = '<a href="#" class="add_alert" id="add-'.$alert['id'].'" />';
-			$data[0] .= '<img src="images/add.png" />';
+			$data[0] .= print_image('images/add.png', true);
 			$data[0] .= '</a>';
 			$data[1] = get_agentmodule_name ($alert['id_agent_module']);
 			$data[2] = get_alert_template_name ($alert['id_alert_template']);
@@ -586,11 +586,11 @@ if ($step == 1) {
 	/* Pager for alert list using Javascript */
 	echo '<div id="alerts_pager" class="'.($id_agent ? '' : 'invisible ').'pager">';
 	echo '<form>';
-	echo '<img src="images/go_first.png" class="first" />';
-	echo '<img src="images/go_previous.png" class="prev" />';
+	echo print_image("images/go_first.png", true, array("class" => "first"));
+	echo print_image("images/go_previous.png", true, array("class" => "prev"));
 	echo '<input type="text" class="pagedisplay" />';
-	echo '<img src="images/go_next.png" class="next" />';
-	echo '<img src="images/go_last.png" class="last" />';
+	echo print_image("images/go_next.png", true, array("class" => "next"));
+	echo print_image("images/go_last.png", true, array("class" => "last"));
 	echo '<select class="pagesize invisible">';
 	echo '<option selected="selected" value="'.$config['block_size'].'">'.$config['block_size'].'</option>';
 	echo '</select>';

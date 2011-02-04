@@ -1079,11 +1079,12 @@ function print_checkbox ($name, $value, $checked = false, $return = false, $disa
  * @param string $src Image source filename.
  * @param bool $return Whether to return or print
  * @param array $options Array with optional HTML options to set. At this moment, the 
- * following options are supported: alt, style, title, width, height, class.
+ * following options are supported: alt, style, title, width, height, class, pos_tree.
  *
  * @return string HTML code if return parameter is true.
  */
 function print_image ($src, $return = false, $options = false) {
+	global $config;
 
 	/* Checks if user's skin is available */
 	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
@@ -1093,6 +1094,9 @@ function print_image ($src, $return = false, $options = false) {
 		if ($skin_path)
 			$src = $skin_path;		
 	}
+	// absolute path to image 
+	$urlImage = ($config['https'])?'https://':'http://';
+	$src = $urlImage . $config["dbhost"] . $config["homeurl"] . '/' . $src;
 
 	$output = '<img src="'.safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';

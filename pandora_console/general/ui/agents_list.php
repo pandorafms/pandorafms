@@ -116,7 +116,7 @@ unset ($filter['offset']);
 
 if (! is_ajax ()) {
 	echo '<div id="agents_loading" class="loading invisible">';
-	echo '<img src="images/spinner.png" />';
+	echo print_image('images/spinner.png', true);
 	echo __('Loading').'&hellip;';
 	echo '</div>';
 }

@@ -24,7 +24,7 @@ if (file_exists("images/noaccess.png")){
 
 <?php
     if (file_exists("images/noaccess.png")){
-        echo "<img src='images/noaccess.png' alt='No access'>";
+        echo print_image('images/noaccess.png', true, array("alt" => __('No access')));
     }
 ?>
 

@@ -186,9 +186,9 @@ if ($result !== false) {
 		}
 		
 		// ACTION
-		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'><img src='images/eye.png'></a>&nbsp;".
-			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'"><img src="images/cross.png" border="0" /></a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">
-			<img src="images/config.png"/></a>';
+		$data[8] = "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$row["id_recon_server"]."'>" . print_image("images/eye.png", true) . "</a>&nbsp;".
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .
+			print_image("images/config.png", true) . '</a>';
 		
 		$table->data[] = $data;
 	}

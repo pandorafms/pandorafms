@@ -226,7 +226,7 @@ $table->data[0][3] = __('Select agents first').' '.print_radio_button_extended (
 $table->rowclass[1] = 'select_modules_row';
 $table->data[1][0] = __('Module type');
 $table->data[1][0] .= '<span id="module_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $types[0] = __('All');
 $table->colspan[1][1] = 2;

@@ -271,7 +271,7 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
 	if (empty ($icon))
 		$output .= '<span title="'. get_group_name($id_group, true).'">&nbsp;-&nbsp</span>';
 	else
-		$output .= '<img style="' . $style . '" class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group, true).'" title="'.get_group_name ($id_group, true).'" />';
+		$output .= print_image("images/" . $path . "/" . $icon . ".png", true, array("style" => $style, "class" => "bot", "alt" => get_group_name($id_group, true), "title" => get_group_name ($id_group, true)));
 	
 	if ($link) 
 		$output .= '</a>';
@@ -291,7 +291,7 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small", $
  *
  * @return string HTML code if return parameter is true.
  */
-function print_group_icon2($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
+function print_group_icon_with_path ($id_group, $return = false, $path = "images/groups_small", $style='', $link = true) {
 	if($id_group > 0)
 		$icon = (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 	else
@@ -334,7 +334,7 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 		return "-";
 	}
 	
-	$output = '<img src="images/os_icons/'.$icon.'" alt="'.$os_name.'" title="'.$os_name.'" />';
+	$output = print_image("images/os_icons/".$icon, true, array("alt" => $os_name, "title" => $os_name)); 
 	
 	if ($name === true) {
 		$output .= ' - '.$os_name;
@@ -470,11 +470,11 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	if (! $compound) {
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60"><img src="images/target.png" /></a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . print_image("images/target.png", true) . '</a>';
 		} 
 		else {
 			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60"><img src="images/refresh.png" /></a>';
+				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . print_image("images/refresh.png", true) . '</a>';
 		}
 	}
 	
@@ -596,7 +596,7 @@ function print_string_substr ($string, $cutoff = 16, $return = false) {
 function print_alert_template_example ($id_alert_template, $return = false, $print_values = true) {
 	$output = '';
 	
-	$output .= '<img src="images/information.png" /> ';
+	$output .= print_image("images/information.png", true);
 	$output .= '<span id="example">';
 	$template = get_alert_template ($id_alert_template);
 	
@@ -1585,7 +1585,7 @@ function print_page_header ($title, $icon = "", $return = false, $help = "", $go
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
 
-	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;<img src="'.$icon.'" style="margin-bottom: -3px;" class="bottom" border="0" alt="" />&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="'.$type.'">&nbsp;' . print_image($icon, true, array("style" => "margin-bottom: -3px;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
 	$buffer .= $title;
 	if ($help != "")
 		$buffer .= "&nbsp;&nbsp;" . print_help_icon ($help, true);

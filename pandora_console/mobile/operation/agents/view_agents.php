@@ -109,7 +109,7 @@ class ViewAgents {
 			
 			$truncName = printTruncateText($agent['nombre'], 25, true, true);
 			
-			$data[] = print_group_icon2($agent["id_grupo"], true, "../images/groups_small", '', false);
+			$data[] = print_group_icon_with_path($agent["id_grupo"], true, "../images/groups_small", '', false);
 			$data[] = '<a href="index.php?page=agent&id=' . $agent['id_agente'] . '">' . $truncName . '</a>';
 			
 			$moduleInfo = '<b>';

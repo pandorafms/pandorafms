@@ -82,11 +82,11 @@ $data[1] = '<span class="left"; style="width: 50%">';
 $data[1] .= print_input_text ('snmp_oid', $snmp_oid, '', 30, 255, true, $disabledBecauseInPolicy);
 $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true, false, false, '', $disabledBecauseInPolicy);
-$data[1] .= '<img src="images/edit.png" class="invisible clickable" id="edit_oid" />';
+$data[1] .= print_image("images/edit.png", true, array("class" => "invisible clickable", "id" => "edit_oid"));
 $data[1] .= '</span>';
 $data[1] .= '<span id="no_snmp" class="error invisible">'.__('Unable to do SNMP walk').'</span>';
 $data[1] .= '</span> <span class="right" style="width: 50%; text-align: right"><span id="oid_loading" class="invisible">';
-$data[1] .= '<img src="images/spinner.gif" />';
+$data[1] .= print_image('images/spinner.gif', true);
 $data[1] .= '</span>';
 if ($disabledBecauseInPolicy)
 	$disableButton = true;

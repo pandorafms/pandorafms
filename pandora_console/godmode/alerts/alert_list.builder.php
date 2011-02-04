@@ -59,7 +59,7 @@ $table->data[0][1] = print_select ($modules, 'id_agent_module', 0, true,
 $table->data[0][1] .= ' <span id="latest_value" class="invisible">'.__('Latest value').': ';
 $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
-$table->data[0][1] .= '<img src="images/spinner.png" /></span>';
+$table->data[0][1] .= print_image('images/spinner.png', true) . '</span>';
 
 $table->data[1][0] = __('Template');
 
@@ -68,8 +68,8 @@ $templates = get_alert_templates (false, array ('id', 'name'));
 
 $table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
-$table->data[1][1] .= ' <a class="template_details invisible" href="#">
-	<img class="img_help" src="images/zoom.png" /></a>';
+$table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
+	print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
 
 $table->data[1][1] .= print_image ('images/add.png', true);
 $table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
@@ -83,7 +83,7 @@ $actions = array ('0' => __('None'));
 $table->data[2][1] = '<div class="actions_container">';
 $table->data[2][1] = print_select($actions,'action_select','','','','',true);
 $table->data[2][1] .= ' <span id="action_loading" class="invisible">';
-$table->data[2][1] .= '<img src="images/spinner.png" /></span>';
+$table->data[2][1] .= print_image('images/spinner.png', true) . '</span>';
 $table->data[2][1] .= ' <span id="advanced_action" class="advanced_actions invisible">';
 $table->data[2][1] .= __('Number of alerts match from').' ';
 $table->data[2][1] .= print_input_text ('fires_min', '', '', 4, 10, true);

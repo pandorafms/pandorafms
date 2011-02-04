@@ -87,14 +87,14 @@ echo __('Pandora FMS Sanity tool is used to remove bad database structure data, 
 	
 echo "<br><br>";
 echo "<b><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity&sanity=1'>";
-echo "<img src='images/status_away.png'> &nbsp;";
+echo print_image('images/status_away.png', true) . "&nbsp;&nbsp;";
 echo __('Sanitize my database now');
 echo "</a></b>";
 
 
 echo "<br><br>";
 echo "<b><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity&sanity=2'>";
-echo "<img src='images/status_away.png'> &nbsp;";
+echo print_image('images/status_away.png', true) . "&nbsp;&nbsp;";
 echo __('Delete non-initialized modules now');
 echo "</a></b>";
 

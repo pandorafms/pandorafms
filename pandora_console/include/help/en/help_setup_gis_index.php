@@ -9,5 +9,5 @@
 This page is the place where the admin can configure <strong>connections to GIS Map Servers</strong>.
 </p>
 <p>
-Here it is possible to see the list of defined connections, <strong>edit</strong> any one of them by clicking on their name, <strong>delete</strong> any connection by clicking on the delete icon (<img src="../images/cross.png" alt="delete icon" />) or <strong>create</strong> new connections using the create button.
+Here it is possible to see the list of defined connections, <strong>edit</strong> any one of them by clicking on their name, <strong>delete</strong> any connection by clicking on the delete icon (<?php print_image("images/cross.png", false, array("alt" => "delete icon")); ?>) or <strong>create</strong> new connections using the create button.
 </p>

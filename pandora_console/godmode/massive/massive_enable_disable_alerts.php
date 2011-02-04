@@ -127,20 +127,20 @@ $table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_grou
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= print_image("images/spinner.png", true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
         'id_agents[]', 0, false, '', '', true, true);
 
 $table->data[2][0] = __('Alert template');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
-$table->data[2][0] .= '<img src="images/spinner.png" />';
+$table->data[2][0] .= print_image("images/spinner.png", true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = print_select ('',  'id_alert_templates[]', '', '', '', '', true, true, true, '', true);
 	
 $table->data[3][0] = __('Enabled alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[3][0] .= '<span id="alerts_loading" class="invisible">';
-$table->data[3][0] .= '<img src="images/spinner.png" />';
+$table->data[3][0] .= print_image("images/spinner.png", true);
 $table->data[3][0] .= '</span>';
 $agents_alerts = get_agents_with_alert_template ($id_alert_templates, $id_group,
 	false, array ('tagente.nombre', 'tagente.id_agente'));
@@ -157,7 +157,7 @@ $table->data[4][1] .= print_input_image ('enable_alerts', 'images/darrowup.png',
 
 $table->data[5][0] = __('Disabled alerts').print_help_tip(__('Format').":<br> ".__('Agent')." - ".__('Module'), true);
 $table->data[5][0] .= '<span id="alerts_loading2" class="invisible">';
-$table->data[5][0] .= '<img src="images/spinner.png" />';
+$table->data[5][0] .= print_image("images/spinner.png", true);
 $table->data[5][0] .= '</span>';
 $table->data[5][1] = print_select (index_array ($agents_alerts, 'id_agente2', 'nombre'),
 	'id_disabled_alerts[]', '', '', '', '', true, true, true, '', $id_alert_templates == 0);

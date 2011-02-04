@@ -266,8 +266,8 @@ foreach ($groups as $id_group => $group) {
 		$data[3] = '';
 	}
 	else {
-		$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'"><img border="0" src="images/config.png" alt="' . __('Edit') . '" title="' . __('Edit') . '" /></a>';
-		$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img alt="' . __('Delete') . '" alt="' . __('Delete') . '" border="0" src="images/cross.png"></a>';
+		$data[3] = '<a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$group['id_grupo'].'">' . print_image("images/config.png", true, array("alt" => __('Edit'), "title" => __('Edit'), "border" => '0'));
+		$data[3] .= '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("alt" => __('Delete'), "border" => '0'));
 	}
 	
 	array_push ($table->data, $data);

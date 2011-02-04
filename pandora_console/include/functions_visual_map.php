@@ -80,11 +80,13 @@ function printItemInVisualConsole($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" 
-				class="item static_graph"
-				style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item static_graph" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
-				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' style="'.$borderStyle.'" /><br />';
+				if (($width != 0) && ($height != 0)) 
+					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height", "style" => $borderStyle));
+				else
+					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "style" => $borderStyle));
+				echo '<br />';
 			}
 			echo $text;
 			echo "</div>";
@@ -133,9 +135,14 @@ function printItemInVisualConsole($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item icon" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item icon" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
-				echo '<img class="image" id="image_' . $id . '" src="' . $img . '" ' . $imageSize . ' /><br />';
+
+				if (($width != 0) && ($height != 0)) 
+					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id, "width" => "$width", "height" => "$height"));
+				else
+					echo print_image($img, true, array("class" => "image", "id" => "image_" . $id));
+				echo '<br />';
 			}
 			echo "</div>";
 			break;

@@ -252,10 +252,9 @@ if ($create_downtime || $update_downtime) {
 			$data[3] = $downtime["ultimo_contacto"];
 	
 			$data[4] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
-				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">
-				<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
+				$id_agent.'&amp;delete_downtime_agent=1&amp;first_update=1&amp;id_downtime_agent='.$downtime["id"].'&amp;id_downtime='.$id_downtime.'">' .
+				print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 	
-			
 			array_push ($table->data, $data);
 		}
 			print_table ($table);
@@ -299,10 +298,10 @@ if ($create_downtime || $update_downtime) {
 				$data[4] = date ("Y-m-d H:i", $downtime['date_to']);
 				if ($downtime["executed"] == 0){
 					$data[5] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;id_agent='.
-					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">
-					<img src="images/cross.png" border="0" alt="'.__('Delete').'" /></a>';
-					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">
-					<img src="images/config.png" border="0" alt="'.__('Update').'" /></a>';
+					$id_agent.'&amp;delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+					print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+					$data[6] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime&amp;edit_downtime=1&amp;first_update=1&amp;id_downtime='.$downtime['id'].'">' .
+					print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
 				} else {
 					$data[5]= "N/A";
 					$data[6]= "N/A";

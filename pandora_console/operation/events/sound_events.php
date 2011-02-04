@@ -62,7 +62,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 echo "</head>";
 echo "<body>";
 
-echo "<h1 style='background: #66AA44; color: #fff;'><img src='../../images/pandora_header_logo.png'/>" . __("Sound Events") . "</h1>";
+echo "<h1 style='background: #66AA44; color: #fff;'>" . print_image('images/pandora_header_logo.png', true) . __("Sound Events") . "</h1>";
 
 $table = null;
 $table->width = '100%';
@@ -78,8 +78,8 @@ $table->data[1][1] = print_checkbox('alert_fired', 'alert_fired', true, true, fa
 	print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
 	print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />' .
 $table->data[2][0] = '';
-$table->data[2][1] = '<a href="javascript: toggleButton();"><img id="button" src="../../images/play.button.png" /></a>';
-$table->data[2][1] .= '<a href="javascript: ok();"><img style="margin-left: 10px;" src="../../images/ok.button.png" /></a>';
+$table->data[2][1] = '<a href="javascript: toggleButton();">' . print_image("images/play.button.png", true, array("id" => "button")) . '</a>';
+$table->data[2][1] .= '<a href="javascript: ok();">' . print_image("images/ok.button.png", true, array("style" => "margin-left: 10px;")) . '</a>';
 
 print_table($table);
 ?>

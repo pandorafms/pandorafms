@@ -1,7 +1,7 @@
 <h1>Protección en Cascada</h1>
 
 
-<img src='../images/help/cascade_protection_ilustration.png'>
+<?php print_image("images/help/cascade_protection_ilustration.png", false); ?>
 <br>
 <p>
 Esta opción se designa para evitar una "tormenta" de alertas que entren porque un grupo de agentes son inalcanzables. Este tipo de comportamiento ocurre cuando un dispositivo intermedio, como por ejemplo un router, está caido, y todos los dispositivos que están tras él no se pueden alcanzar. Probablemente estos dispositivos no estén caídos e incluso estos dispositivos estén trabajando junto con otro router, en modo HA. Pero si no hace nada, probablemente Pandora FMS piense que estén caídos porque no los pueden testar con un Remote ICMP Proc Test (un ping).

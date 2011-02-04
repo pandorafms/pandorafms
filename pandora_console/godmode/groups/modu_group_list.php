@@ -134,7 +134,7 @@ foreach ($groups as $id_group ) {
 	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_modu_group&id_group='.$id_group["id_mg"].'">'.printTruncateText($id_group["name"], 50).'</a></strong>';
 //	$data[2] = get_group_name ($group["parent"]);
 //	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
-	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border="0" src="images/cross.png"></a>';
+	$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/groups/modu_group_list&id_group='.$id_group["id_mg"].'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	
 	array_push ($table->data, $data);
 }

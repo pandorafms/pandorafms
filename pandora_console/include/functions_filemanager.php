@@ -602,7 +602,7 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 			
 			if (($editor) && (!$readOnly)) {
 				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'><img src='images/edit.png' style='margin-top: 2px;' /></a>";
+					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'>" . print_image('images/edit.png', true, array("style" => 'margin-top: 2px;')) . "</a>";
 				}
 			}
 		}
@@ -615,13 +615,13 @@ function file_explorer($real_directory, $relative_directory, $url, $father = '',
 		if (is_writable ($real_directory)) {
 			echo "<div style='text-align: right; width: " . $table->width . ";'>";
 			echo "<a href='javascript:show_form_create_folder();' style='margin-right: 3px;' title='" . __('Create directory') . "'>";
-			echo "<img src='images/mimetypes/directory.png' />";
+			echo print_image('images/mimetypes/directory.png', true); 
 			echo "</a>";
 			echo "<a href='javascript: show_create_text_file();' style='margin-right: 3px;' title='" . __('Create text') . "'>";
-			echo "<img src='images/mimetypes/text.png' />";
+			echo print_image('images/mimetypes/text.png', true);
 			echo "</a>";
 			echo "<a href='javascript: show_upload_file();'  title='" . __('Upload file/s') . "'>";
-			echo "<img src='images/mimetypes/unknown.png' />";
+			echo print_image('images/mimetypes/unknown.png', true); 
 			echo "</a>";
 			echo "</div>";
 		}

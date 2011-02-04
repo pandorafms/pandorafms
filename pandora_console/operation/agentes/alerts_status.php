@@ -229,14 +229,14 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[3] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=agent&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 		$table->head[4] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" =>$selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[5] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" =>$selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
@@ -259,11 +259,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
@@ -288,14 +288,14 @@ else
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Agent') . ' ' .
-			'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=agent&sort=up">'. print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 		$table->head[3] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[4] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
@@ -316,11 +316,11 @@ else
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		$table->head[2] = __('Module') . ' ' .
-			'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 		$table->head[3] = __('Template') . ' ' .
-			'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-			'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+			'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+			'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');

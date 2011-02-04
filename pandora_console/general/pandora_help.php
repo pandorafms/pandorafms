@@ -16,6 +16,7 @@
 
 require_once ("../include/config.php");
 require_once ("../include/functions.php");
+require_once ("../include/functions_html.php");
 ?>
 <html><head><title>
 <?php
@@ -48,7 +49,7 @@ if (! $id || ! file_exists ($help_file)) {
 	echo __('Help system error');
 	echo "</h1>";
 	echo "<div class='noa'>";
-	echo '<a href="../index.php"><img src="../images/pandora_logo.png" border="0"></a><br>';
+	echo '<a href="../index.php">' . print_image("../images/pandora_logo.png", array("border" => '0')) . '</a><br>';
 	echo "</div>";
 	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
 	return;
@@ -57,7 +58,7 @@ if (! $id || ! file_exists ($help_file)) {
 /* Show help */
 echo '<div>';
 echo '<span style="float:left; margin: 0px; padding: 0px">';
-echo '<img src="../images/pandora_textlogo.png" border=0>';
+echo print_image('../images/pandora_textlogo.png', true, array("border" => '0'));
 echo "</span>";
 echo '<p style="text-align: right"><strong>'.__('Pandora FMS help system').'</strong></p>';
 echo '</div>';

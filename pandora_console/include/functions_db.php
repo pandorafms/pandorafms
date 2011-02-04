@@ -1746,22 +1746,22 @@ function show_server_type ($id) {
 	global $config;
 	switch ($id) {
 	case 1:
-		return '<img src="images/database.png" title="Pandora FMS Data server">';
+		return print_image("images/database.png", true, array("title" => "Pandora FMS Data server")); 
 		break;
 	case 2:
-		return '<img src="images/network.png" title="Pandora FMS Network server">';
+		return print_image("images/network.png", true, array("title" => "Pandora FMS Network server")); 
 		break;
 	case 4:
-		return '<img src="images/plugin.png" title="Pandora FMS Plugin server">';
+		return print_image("images/plugin.png", true, array("title" => "Pandora FMS Plugin server"));
 		break;
 	case 5:
-		return '<img src="images/chart_bar.png" title="Pandora FMS Prediction server">';
+		return print_image("images/chart_bar.png", true, array("title" => "Pandora FMS Prediction server"));
 		break;
 	case 6:
-		return '<img src="images/wmi.png" title="Pandora FMS WMI server">';
+		return print_image("images/wmi.png", true, array("title" => "Pandora FMS WMI server"));
 		break;
 	case 7: 
-		return '<img src="images/server_web.png" title="Pandora FMS WEB server">';
+		return print_image("images/server_web.png", true, array("title" => "Pandora FMS WEB server"));
 		break;
 	default:
 		return "--";
@@ -3203,9 +3203,9 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Fired ?
 		if ($row2["times_fired"]>0) {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('Alert fired')."'></td>";
+			echo "<td class='".$tdcolor."' align='center'>" . print_image('images/pixel_red.png', true, array("title" => __('Alert fired'), "width" => '20', "height" => '9')) . "</td>";
 		} else {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".__('Alert not fired')."'></td>";
+			echo "<td class='".$tdcolor."' align='center'>" . print_image('images/pixel_green.png', true, array("title" => __('Alert not fired'), "width" => '20', "height" => '9')) . "</td>";
 		}
 	}
 	echo "</table>";

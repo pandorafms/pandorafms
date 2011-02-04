@@ -170,7 +170,7 @@ function print_menu (&$menu) {
 
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).'" id="icon_'.$id.'">';
-		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a><img class="toggle" src="include/styles/images/toggle.png" alt="toggle" />';
+		$output .= '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'">'.$main["text"].'</a>' . print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
 		if ($submenu_output != '') {
 			//WARNING: IN ORDER TO MODIFY THE VISIBILITY OF MENU'S AND SUBMENU'S (eg. with cookies) YOU HAVE TO ADD TO THIS ELSEIF. DON'T MODIFY THE CSS
 			if ($visible || in_array ("selected", $classes)) {

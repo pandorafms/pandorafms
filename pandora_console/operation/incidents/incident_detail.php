@@ -329,7 +329,7 @@ if (isset ($id_inc)) {
 	
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = '<img src="images/page_white_text.png" border="0" />';
+		$data[0] = print_image("images/page_white_text.png", true, array("border" => '0')); 
 		$data[1] = __('Author').': '.print_username ($row["id_usuario"], true).' ('.print_timestamp ($row["timestamp"], true).')';
 		array_push ($table->data, $data);
 		
@@ -373,7 +373,7 @@ if (isset ($id_inc)) {
 	$table->align[3] = "center";
 
 	foreach ($result as $row) {
-		$data[0] = '<img src="images/disk.png" border="0" align="top" />&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
+		$data[0] = print_image("images/disk.png", true, array("border" => '0', "align" => "top")) . '&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
 		$data[1] = $row["description"];
 		$data[2] = format_for_graph ($row["size"])."B";
 		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {

@@ -92,10 +92,10 @@ echo "</td>";
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 echo "<td rowspan=4>";
 if (is_user_admin ($id)) {
-	echo "<img src='images/people_1.png'>";
+	echo print_image('images/people_1.png', true); 
 } 
 else {
-	echo "<img src='images/people_2.png'>";
+	echo print_image('images/people_2.png', true); 
 }
 
 echo '</td></tr><tr><td class="datos2">'.__('Full (display) name').'</td><td class="datos2">';

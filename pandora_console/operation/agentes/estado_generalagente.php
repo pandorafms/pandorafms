@@ -75,8 +75,8 @@ else {
 	$cellName = print_agent_name ($agent["id_agente"], true, 35, "upper", true);
 }
 echo '<td class="datos"><b>'.$cellName.'</b></td>';
-echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" alt="" /></a>&nbsp;';
-echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'"  alt="" /></a></td></tr>';
+echo '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
+echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . print_image("images/target.png", true, array("border" => '0', "title" => __('Flag'), "alt" => "")) . '</a></td></tr>';
 
 //Addresses
 echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';

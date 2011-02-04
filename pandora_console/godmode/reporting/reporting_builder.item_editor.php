@@ -414,7 +414,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 								<td>' . $item['sla_max'] . '</td>
 								<td>' . $item['sla_limit'] . '</td>
 								<td style="text-align: center;">
-									<a href="javascript: deleteSLARow(' . $item['id'] . ');"><img src="images/cross.png" /></a>
+									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
 					}
@@ -427,7 +427,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_min"></td>
 							<td class="sla_max"></td>
 							<td class="sla_limit"></td>
-							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteSLARow(0);"><img src="images/cross.png"></a></td>
+							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteSLARow(0);"><?php print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<tbody>
@@ -439,7 +439,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
 							<td><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
-							<td style="text-align: center;"><a href="javascript: addSLARow();"><img src="images/disk.png"></a></td>
+							<td style="text-align: center;"><a href="javascript: addSLARow();"><?php print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
 					<?php

@@ -362,7 +362,7 @@ function clean_flash_string ($string) {
 function fs_error_image () {
 	global $config;
 
-	return '<img border="0" src="' . $config['homeurl'] . '/images/image_problem.png" />';
+	return print_image("images/image_problem.png", true, array("border" => '0'));
 }
 
 ?>

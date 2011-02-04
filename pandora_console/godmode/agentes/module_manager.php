@@ -224,19 +224,19 @@ if ($modules === false) {
 $table->width = '95%';
 $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
-	'<a href="' . $url . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=name&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 $table->head[2] = "<span title='" . __('Server') . "'>" . __('S.') . "</span>" . ' ' .
-	'<a href="' . $url . '&sort_field=server&sort=up"><img src="images/sort_up.png" style="' . $selectServerUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=server&sort=down"><img src="images/sort_down.png" style="' . $selectServerDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=server&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectServerUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=server&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectServerDown)) . '</a>';
 $table->head[3] = __('Type') . ' ' .
-	'<a href="' . $url . '&sort_field=type&sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=type&sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=type&sort=up">' .  print_image("images/sort_up.png", true, array("style" => $selectTypeUp)) .'</a>' .
+	'<a href="' . $url . '&sort_field=type&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTypeDown)) . '</a>';
 $table->head[4] = __('Interval') . ' ' .
-	'<a href="' . $url . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=interval&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=interval&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
 $table->head[5] = __('Description');
 $table->head[6] = __('Max/Min');
 $table->head[7] = __('Action');

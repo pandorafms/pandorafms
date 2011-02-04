@@ -308,7 +308,7 @@ $table->rowspan[0][2] = 9;
 $iconError = '';
 if (isset($invalidFields['map_connection_list'])) {
 	if ($invalidFields['map_connection_list']) {
-		$iconError = '<img src="images/dot_red.png" />';
+		$iconError = print_image("images/dot_red.png", true);
 	}
 }
 
@@ -445,7 +445,7 @@ echo "</form>";
 		<tr class="row_0">
 			<td><?php print_input_text ('map_connection_name', $map_name, '', 20, 40, false, true); ?></td>
 			<td><?php print_radio_button_extended('map_connection_default', '', '', true, false, 'changeDefaultConection(this.value)', '');?></td>
-			<td><a id="delete_row" href="none"><img src="images/cross.png" alt=""></a></td>
+			<td><a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a></td>
 		</tr>
 	</tbody>
 </table>
@@ -456,7 +456,7 @@ echo "</form>";
 			<td class="col1">XXXX</td>
 			<td class="col2">
 				<input type="hidden" id="name_agent" name="name_agent" value="" />
-				<a id="delete_row" href="none"><img src="images/cross.png" alt=""></a>
+				<a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a>
 			</td>
 		</tr>
 	</tbody>
@@ -466,14 +466,14 @@ echo "</form>";
 		<tbody id="chuck_layer_item">
 			<tr>
 				<td class="col1">XXXXXXXXXXXXXXXXXX</td>
-				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><img src="images/up.png" alt=""></a></td>
-				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><img src="images/down.png" alt=""></a></td>
+				<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer();"><?php print_image("images/up.png", false, array("alt" => ""));?></a></td>
+				<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer();"><?php print_image("images/down.png", false, array("alt" => ""));?></a></td>
 				<td class="col3">
-					<a id="edit_layer" href="javascript: editLayer(none);"><img src="images/config.png" alt="" /></a>
+					<a id="edit_layer" href="javascript: editLayer(none);"><?php print_image("images/config.png", false, array("alt" => ""));?></a>
 				</td>
 				<td class="col4">
 					<input type="hidden" name="layer_values" id="layer_values" />
-					<a id="delete_row" href="none"><img src="images/cross.png" alt=""></a>
+					<a id="delete_row" href="none"><?php print_image("images/cross.png", false, array("alt" => ""));?></a>
 				</td>
 			</tr>
 		</tbody>

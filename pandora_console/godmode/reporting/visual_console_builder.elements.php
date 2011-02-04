@@ -140,7 +140,7 @@ foreach ($layoutDatas as $layoutData) {
 		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
 	$table->data[$i + 1][5] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;"><img src="images/cross.png" /></a>';
+		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . print_image('images/cross.png', true) . '</a>';
 	
 	$table->data[$i + 2]['icon'] = '';
 	$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 

@@ -111,17 +111,17 @@ $table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 25,
 $sounds = get_sounds();
 $table->data[20][0] = __('Sound for Alert fired');
 $table->data[20][1] = print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
-$table->data[20][1] .= ' <a href="javascript: toggleButton(\'alert\');"><img id="button_sound_alert" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
+$table->data[20][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
 $table->data[20][1] .= '<div id="layer_sound_alert"></div>';
 
 $table->data[21][0] = __('Sound for Monitor critical');
 $table->data[21][1] = print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
-$table->data[21][1] .= ' <a href="javascript: toggleButton(\'critical\');"><img id="button_sound_critical" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
+$table->data[21][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
 $table->data[21][1] .= '<div id="layer_sound_critical"></div>';
 
 $table->data[22][0] = __('Sound for Monitor warning');
 $table->data[22][1] = print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
-$table->data[22][1] .= ' <a href="javascript: toggleButton(\'warning\');"><img id="button_sound_warning" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
+$table->data[22][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
 $table->data[22][1] .= '<div id="layer_sound_warning"></div>';
 ?>
 <script type="text/javascript">

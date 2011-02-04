@@ -63,7 +63,7 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '50px';
 $table->data = array ();
-$table->data[0][0] = '<img src="images/reporting.png" width="32" height="32" />';
+$table->data[0][0] = print_image("images/reporting.png", true, array("width" => '32', "height" => '32'));
 if ($report['description'] != '') {
 	$table->data[0][1] = $report['description'];
 } else {
@@ -80,7 +80,7 @@ print_input_hidden ('id_report', $id_report);
 echo '</form>';
 
 echo '<div id="loading">';
-echo '<img src="images/wait.gif" border="0" /><br />';
+echo print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
 

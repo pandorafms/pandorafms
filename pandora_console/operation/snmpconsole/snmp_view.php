@@ -40,10 +40,10 @@ $offset = (int) get_parameter ('offset',0);
 $url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&pagination=".$pagination."&offset=".$offset;
 
 if ($config["pure"]) {
-	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30"><img src="images/normalscreen.png" title="'.__('Normal screen').'" /></a>';
+	$link = '<a target="_top" href="'.$url.'&pure=0&refr=30">' . print_image("images/normalscreen.png", true, array("title" => __('Normal screen')))  . '</a>';
 } else {
 	// Fullscreen
-	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0"><img src="images/fullscreen.png" title="'.__('Full screen').'"/></a>';
+	$link = '<a target="_top" href="'.$url.'&pure=1&refr=0">' . print_image("images/fullscreen.png", true, array("title" => __('Full screen'))) . '</a>';
 }
 
 // Header
@@ -119,7 +119,7 @@ if (empty ($traps)) {
 }
 
 // Toggle filters
-echo '<a href="#" onmousedown="toggleDiv(\'filters\');"><b>'.__('Toggle filter(s)').'</b>&nbsp;<img src="images/down.png" /></a>';
+echo '<a href="#" onmousedown="toggleDiv(\'filters\');"><b>'.__('Toggle filter(s)').'</b>&nbsp;' . print_image("images/down.png", true) . '</a>';
 
 echo '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $table->width = '90%';
@@ -305,9 +305,9 @@ if ($traps !== false) {
 		
 		//Status
 		if ($trap["status"] == 0) {
-			$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
+			$data[0] = print_image("images/pixel_red.png", true, array("title" => __('Not validated'), "width" => "20", "height" => "20"));
 		} else {
-			$data[0] = '<img src="images/pixel_green.png" title="'.__('Validated').'" width="20" height="20" />';
+			$data[0] = print_image("images/pixel_green.png", true, array("title" => __('Validated'), "width" => "20", "height" => "20"));
 		}
 	
 		// Agent matching source address
@@ -364,9 +364,9 @@ if ($traps !== false) {
 		
 		// Use alert severity if fired
 		if (!empty ($trap["alerted"])) {
-			$data[7] = '<img src="images/pixel_yellow.png" width="20" height="20" border="0" title="'.__('Alert fired').'" />';		
+			$data[7] = print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert fired'))); 		
 		} else {
-			$data[7] = '<img src="images/pixel_gray.png" width="20" height="20" border="0" title="'.__('Alert not fired').'" />';
+			$data[7] = print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20", "border" => "0", "title" => __('Alert not fired')));
 		}
 	
 		// Severity	
@@ -376,12 +376,12 @@ if ($traps !== false) {
 		$data[8] = "";
 		
 		if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'">' . print_image("images/ok.png", true, array("border" => '0', "title" => __('Validate'))) . '</a>';
 		}
 		if (give_acl ($config["id_user"], 0, "IM")) {
-			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+			$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a>';
 		}
-		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');"><img src="images/eye.png" alt="' . __('Show more') . '" title="' . __('Show more') . '"/></a>';
+		$data[8] .= '<a href="javascript: toggleVisibleExtendedInfo(' . $trap["id_trap"] . ');">' . print_image("images/eye.png", true, array("alt" => __('Show more'), "title" => __('Show more'))) .'</a>';
 		
 		$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 	
@@ -428,21 +428,21 @@ echo "</div></form>";
 
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Status') . '</h3>';
-echo '<img src="images/pixel_green.png" width="20" height="20" /> - ' . __('Validated');
+echo print_image("images/pixel_green.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Validated');
 echo '<br />';
-echo '<img src="images/pixel_red.png" width="20" height="20" /> - ' . __('Not validated');
+echo print_image("images/pixel_red.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Not validated');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Alert') . '</h3>';
-echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - ' .__('Fired');
+echo print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20")) . ' - ' .__('Fired');
 echo '<br />';
-echo '<img src="images/pixel_gray.png" width="20" height="20" /> - ' . __('Not fired');
+echo print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Not fired');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Action') . '</h3>';
-echo '<img src="images/ok.png" width="18" height="18" /> - ' .__('Validate');
+echo print_image("images/ok.png", true, array("width" => "20", "height" => "20")) . ' - ' .__('Validate');
 echo '<br />';
-echo '<img src="images/cross.png" width="18" height="18" /> - ' . __('Delete');
+echo print_image("images/cross.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Delete');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>'.__('Legend').'</h3>';

@@ -158,7 +158,7 @@ $table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_grou
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);
@@ -170,7 +170,7 @@ if (empty($id_agents)) {
 }
 $table->data[2][0] = __('Alert templates');
 $table->data[2][0] .= '<span id="template_loading" class="invisible">';
-$table->data[2][0] .= '<img src="images/spinner.png" />';
+$table->data[2][0] .= print_image('images/spinner.png', true);
 $table->data[2][0] .= '</span>';
 $table->data[2][1] = print_select (index_array ($alert_templates, 'id_alert_template', 'template_name'), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
 
@@ -188,7 +188,7 @@ if (empty($id_agents)) {
 }
 $table->data[3][0] = __('Alert compounds');
 $table->data[3][0] .= '<span id="compound_loading" class="invisible">';
-$table->data[3][0] .= '<img src="images/spinner.png" />';
+$table->data[3][0] .= print_image('images/spinner.png', true);
 $table->data[3][0] .= '</span>';
 $table->data[3][1] = print_select (index_array ($alert_compounds, 'id', 'name'), 'id_alert_compounds[]', '', false, '', '', true, true, true, '', $alert_compounds == 0);
 

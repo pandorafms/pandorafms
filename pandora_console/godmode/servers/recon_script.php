@@ -185,7 +185,7 @@ else {
 			echo "</td><td class='$tdcolor'>";
 			echo $row["description"];
 			echo "</td><td align='center' class='$tdcolor'>";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&kill_reconscript=".$row["id_recon_script"]."'><img src='images/cross.png' border=0></a>";
+			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/recon_script&kill_reconscript=".$row["id_recon_script"]."'>" . print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";

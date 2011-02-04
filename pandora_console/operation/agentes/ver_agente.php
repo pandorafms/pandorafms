@@ -169,7 +169,7 @@ if (is_ajax ()) {
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
-		echo '<img src="images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png" /> ';
+		echo print_image('images/groups_small/'.get_group_icon ($agent['id_grupo']).'.png', true); 
 		echo get_group_name ($agent['id_grupo']).'<br />';
 
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
@@ -246,12 +246,12 @@ if (is_ajax ()) {
 		$id_module = (int) get_parameter ('id_module');
 		$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_module);
 		echo '<h3>';
-		echo '<img src="images/brick.png" />&nbsp;';
+		echo print_image("images/brick.png", true) . '&nbsp;'; 
 		echo printTruncateText($module['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Type').':</strong> ';
 		$agentmoduletype = get_agentmodule_type ($module['id_agente_modulo']);
 		echo get_moduletype_name ($agentmoduletype).'&nbsp;';
-		echo '<img src="images/'.get_module_type_icon ($agentmoduletype).'" /> <br />';
+		echo print_image("images/" . get_module_type_icon ($agentmoduletype), true) . '<br />';
 		echo '<strong>'.__('Module group').':</strong> ';
 		$modulegroup =  get_modulegroup_name (get_agentmodule_modulegroup ($module['id_agente_modulo']));
 		if($modulegroup === false){
@@ -269,7 +269,7 @@ if (is_ajax ()) {
 	if ($get_group_status_tooltip) {
 		$id_group = (int) get_parameter ('id_group');
 		$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
-		echo '<h3><img src="images/groups_small/'.get_group_icon ($group['id_grupo']).'.png" /> ';
+		echo '<h3>' . print_image("images/groups_small/" . get_group_icon ($group['id_grupo']) . ".png", true);
 		echo printTruncateText($group['nombre'],25,false,true,false).'</h3>';
 		echo '<strong>'.__('Parent').':</strong> ';
 		if($group['parent'] == 0) {
@@ -277,7 +277,7 @@ if (is_ajax ()) {
 		}
 		else {
 			$group_parent = get_db_row ('tgrupo', 'id_grupo', $group['parent']);
-			echo '<img src="images/groups_small/'.get_group_icon ($group['parent']).'.png" /> ';
+			echo print_image("images/groups_small/" . get_group_icon ($group['parent']) . ".png", true); 
 			echo $group_parent['nombre'].'<br />';
 		}
 		echo '<strong>'.__('Sons').':</strong> ';
@@ -288,7 +288,7 @@ if (is_ajax ()) {
 		else{
 			echo '<br /><br />';
 			foreach($groups_sons as $group_son) {
-				echo '<img src="images/groups_small/'.get_group_icon ($group_son['id_grupo']).'.png" /> ';
+				echo print_image("images/groups_small/" . get_group_icon ($group_son['id_grupo']) . ".png", true);
 				echo $group_son['nombre'].'<br />';
 			}
 		}

@@ -129,7 +129,7 @@ echo "<td></td>";
 echo "<td style='vertical-align: top;'>".__('Modules')."</td>";
 echo "</tr><tr>";
 echo "<td>".print_select (get_group_agents(), 'id_agents[]', 0, false, '', '', true, true, true, '', false, 'width:200px;')."</td>";
-echo "<td style='vertical-align: center; text-align: center;'><img src='images/darrowright.png' /></td>";
+echo "<td style='vertical-align: center; text-align: center;'>" . print_image("images/darrowright.png", true) . "</td>";
 echo "<td>".print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:200px;')."</td>";
 echo "</tr><tr>";
 echo "<td colspan='3'>";

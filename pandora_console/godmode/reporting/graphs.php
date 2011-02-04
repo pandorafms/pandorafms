@@ -85,7 +85,7 @@ if (! empty ($graphs)) {
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
-			$graph['id_graph'].'">' . "<img src='images/eye.png'></a>" . '</a>';
+			$graph['id_graph'].'">' . print_image('images/eye.png', true) . "</a>" . '</a>';
 		$data[1] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.$graph['name'].'</a>';
 		$data[2] = $graph["description"];
@@ -96,7 +96,7 @@ if (! empty ($graphs)) {
 		if (give_acl ($config['id_user'], 0, "AW")) {
 			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;"><img src="images/cross.png" /></a>';
+					return false;">' . print_image("images/cross.png", true) . '</a>';
 		}
 		
 		array_push ($table->data, $data);

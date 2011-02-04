@@ -693,9 +693,9 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	foreach ($events as $event) {
 		$data = array ();
 		if ($event["estado"] == 0)
-			$data[0] = '<img src="images/dot_red.png" />';
+			$data[0] = print_image("images/dot_red.png", true);
 		else
-			$data[0] = '<img src="images/dot_green.png" />';
+			$data[0] = print_image("images/dot_green.png", true);
 		$data[1] = $event['evento'];
 		$data[2] = $event['id_usuario'] != '0' ? $event['id_usuario'] : '';
 		$data[3] = $event["timestamp"];
@@ -1825,12 +1825,12 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$monitor_value = format_numeric ($monitor_value);
 			}
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #000000;">';
-			$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
+			$data[0] .= $monitor_value.' % ' . print_image("images/b_green.png", true, array("height" => "32", "width" => "32")) . '</p>';
 			if ($monitor_value !== __('Unknown')) {
 				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
 			}
 			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: #ff0000;">';
-			$data[1] .= $monitor_value.' % <img src="images/b_red.png" height="32" width="32" /></p>';
+			$data[1] .= $monitor_value.' % ' . print_image("images/b_red.png", true, array("height" => "32", "width" => "32")) . '</p>';
 			array_push ($table->data, $data);
 			
 			break;

@@ -67,10 +67,9 @@ while ($row = mysql_fetch_array ($result)){
 	}
 	echo "
 	<tr>
-		<td class='$tdcolor' align='center'>
-		<img src='images/".$row["icon"]."' 
-		border='0'>
-		</td>
+		<td class='$tdcolor' align='center'>" .
+		print_image("images/".$row["icon"], true, array("border" => '0')) .
+		"</td>
 		<td class='$tdcolor'>
 		<b>".$row[0]."
 		</b></td>

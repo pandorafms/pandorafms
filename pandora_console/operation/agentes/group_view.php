@@ -119,7 +119,7 @@ foreach ($groups as $id_group => $group_name) {
 	echo "</td>";
 	echo "<td style='text-align: center; vertica-align: middle;'>";
 	if (give_acl ($config['id_user'], $id_group, "AW")) {
-		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'"><img src="images/target.png" border="0"></a>';
+		echo '<a href="index.php?sec=estado&sec2=operation/agentes/group_view&update_netgroup='.$id_group.'">' . print_image("images/target.png", true, array("border" => '0')) . '</a>';
 	}
 	echo "</td>";
 

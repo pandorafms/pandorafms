@@ -123,14 +123,14 @@ $table->align = array ();
 $table->size = array ();
 
 $table->head[0] = __('User ID') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up"><img src="images/sort_up.png" style="' . $selectUserIDUp . '" /></a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down"><img src="images/sort_down.png" style="' . $selectUserIDDown . '" /></a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=id_user&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectUserIDDown)) . '</a>';
 $table->head[1] = __('Name') . ' ' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up"><img src="images/sort_up.png" style="' . $selectFullnameUp . '" /></a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down"><img src="images/sort_down.png" style="' . $selectFullnameDown . '" /></a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectFullnameUp )) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=fullname&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectFullnameDown)) . '</a>';
 $table->head[2] = __('Last contact') . ' ' . 
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up"><img src="images/sort_up.png" style="' . $selectLastConnectUp . '" /></a>' .
-	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down"><img src="images/sort_down.png" style="' . $selectLastConnectDown . '" /></a>';
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
+	'<a href="?sec=gusuarios&sec2=godmode/users/user_list&sort_field=last_connect&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
 $table->head[3] = __('Profile');
 $table->head[4] = __('Description');
 $table->head[5] = __('Delete');
@@ -261,7 +261,7 @@ foreach ($profiles as $profile) {
 	$data[8] = ($profile["db_management"] ? $img : '');
 	$data[9] = ($profile["alert_management"] ? $img : '');
 	$data[10] = ($profile["pandora_management"] ? $img : '');
-	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img src="images/cross.png"></a>';	
+	$data[11] = '<a href="index.php?sec=gagente&sec2=godmode/users/configure_profile&delete_profile=1&id='.$profile["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. print_image("images/cross.png", true) . '</a>';	
 	array_push ($table->data, $data);
 }
 	

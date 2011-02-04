@@ -99,7 +99,7 @@ $table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_grou
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $table->data[1][1] = print_select (get_group_agents ($id_group, false, "none"),
 	'id_agents[]', 0, false, '', '', true, true);

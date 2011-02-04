@@ -132,7 +132,7 @@ function popup_help ($help_id, $return = false) {
 function no_permission () {
 	require ("config.php");
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
-	echo "<img src='images/noaccess.png' alt='No access' width='120'><br /><br />";
+	echo print_image('images/noaccess.png', true, array("alt" => 'No access', "width" => '120')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('You don\'t have enough permission to access this resource');
@@ -151,7 +151,7 @@ function no_permission () {
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
-	echo "<img src='images/error.png' alt='error'><br /><br />";
+	echo print_image('images/error.png', true, array("alt" => 'error')) . "<br /><br />";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('Unmanaged error');

@@ -107,7 +107,7 @@ $data[0] .= print_select (get_profiles (), 'profiles_id[]', '', '', '',
 $data[1] = print_select_groups($config['id_user'], "UM", true,
 	'groups_id[]', '', '', '', '', true, false, false, '', false, 'width: 100%');
 $data[2] = '<span id="users_loading" class="invisible">';
-$data[2] .= '<img src="images/spinner.png" />';
+$data[2] .= print_image('images/spinner.png', true);
 $data[2] .= '</span>';
 $users_profiles = "";
 

@@ -82,8 +82,8 @@ else {
 		$data = array(
 			$reportstring,
 			$report['description'],
-			'<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'"><img src="images/reporting.png" /></a>',
-			'<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'"><img src="images/database_lightning.png" /></a>'
+			'<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">' . print_image("images/reporting.png", true) . '</a>',
+			'<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'">' . print_image("images/database_lightning.png", true) . '</a>'
 		);
 		enterprise_hook ('load_custom_reporting_2');
 		

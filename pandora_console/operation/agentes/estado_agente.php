@@ -247,23 +247,23 @@ $table->class = "databox";
 
 $table->head = array ();
 $table->head[0] = __('Agent'). ' ' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" alt="up" /></a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" alt="down" /></a>';
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=name&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->head[1] = __('OS'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=up"><img src="images/sort_up.png" style="' . $selectOsUp . '" alt="up" /></a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=down"><img src="images/sort_down.png" style="' . $selectOsDown . '" alt="down" /></a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=os&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
 $table->head[2] = __('Interval'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" alt="up" /></a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" alt="down" /></a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=interval&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
 $table->head[3] = __('Group'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=up"><img src="images/sort_up.png" style="' . $selectGroupUp . '" alt="up" /></a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=down"><img src="images/sort_down.png" style="' . $selectGroupDown . '" alt="down" /></a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=group&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
 $table->head[4] = __('Modules');
 $table->head[5] = __('Status');
 $table->head[6] = __('Alerts');
 $table->head[7] = __('Last contact'). ' ' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" alt="up" /></a>' .
-		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" alt="down" /></a>';
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+		'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;search=' . $search . '&amp;sort_field=last_contact&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array ();
 $table->align[1] = "center";

@@ -154,7 +154,7 @@ foreach ($commands as $command) {
 	if (! $command['internal'])
 		$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&delete_command=1&id='.$command['id'].'"
 			onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-			'<img src="images/cross.png"></a>';
+			print_image("images/cross.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }

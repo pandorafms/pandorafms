@@ -173,20 +173,20 @@ else {
 	
 	$table->head = array ();
 	$table->head[0] = __('User ID') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=up"><img src="images/sort_up.png" style="' . $selectUserIDUp . '" /></a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=down"><img src="images/sort_down.png" style="' . $selectUserIDDown . '" /></a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectUserIDUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=id_user&sort=down">' . print_image("images/sort_down.png", true, array("style"=> $selectUserIDDown)) . '</a>';
 	$table->head[1] = __('Name') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . print_image("images/sort_up.png", true, "style" => $selectNameUp) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	$table->head[2] = __('Email') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=up"><img src="images/sort_up.png" style="' . $selectEmailUp . '" /></a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=down"><img src="images/sort_down.png" style="' . $selectEmailDown . '" /></a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectEmailUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=email&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectEmailDown)) . '</a>';
 	$table->head[3] = __('Last contact') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown)) . '</a>';
 	$table->head[4] = __('Profile') . ' ' . 
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up"><img src="images/sort_up.png" style="' . $selectProfileUp . '" /></a>' .
-		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down"><img src="images/sort_down.png" style="' . $selectProfileDown . '" /></a>';
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectProfileUp)) . '</a>' .
+		'<a href="index.php?search_category=users&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=profile&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectProfileDown)) . '</a>';
 	$table->head[5] = __('Description');
 
 	$table->data = array ();

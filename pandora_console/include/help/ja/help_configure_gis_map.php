@@ -16,7 +16,7 @@
 <p>
 最初のステップは、GIS マップで利用する<strong>メインのマップ</strong>を定義することです。
 GIS マップを設定するためには、少なくとも一つ選択されている必要があります。
-<img src="../images/add.png" alt="Add" />(追加)アイコンをクリックして、追加することも可能です。
+<?php print_image("images/add.png", false, array("alt" => "Add")); ?>(追加)アイコンをクリックして、追加することも可能です。
 </p>
 <p>
 意図しない設定情報の再入力を防ぐために、利用マップが設定されると、それを Pandora FMS はデフォルトのマップとして利用するかどうか尋ねます。
@@ -57,7 +57,7 @@ GIS マップを設定するためには、少なくとも一つ選択されて�
 <p>
 レイヤは、<strong>表示</strong>、<strong>非表示</strong>の設定ができ、<strong>グループ</strong>を選択や<strong>エージェント</strong>の追加ができます。
 一度レイヤが定義されると、左側の定義済レイヤに移ります。(定義は、マップ全体が保存されるまでは保存されません。)
-ここでは、再度、<strong>順番の変更</strong> (<img src="../images/up.png" alt="move up icon"/>、<img src="../images/down.png" alt="move down icon" />)、<strong>削除</strong> (<img src="../images/cross.png" alt="delete icon"/>)、<strong>編集</strong> (<img src="../images/config.png" alt="edit icon" />) ができます。
+ここでは、再度、<strong>順番の変更</strong> (<?php print_image("images/up.png", false, array("alt" => "move up icon")); ?>、<?php print_image("images/down.png", false, array("alt" => "move down icon")); ?>)、<strong>削除</strong> (<?php print_image("images/cross.png", false, array("alt" => "delete icon")); ?>)、<strong>編集</strong> (<?php print_image("images/config.png", false, array("alt" => "edit icon")); ?>) ができます。
 </p>
 <hr/>
 <sup><span style="font-size:75%;">1</span></sup> <span style="font-size:85%;">デフォルトマップでは、エージェント名で一つのレイヤしか表示しない場合は、レイヤを持たない設定も可能です。</span>

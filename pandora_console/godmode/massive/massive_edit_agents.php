@@ -192,7 +192,7 @@ $table->data[0][1] = print_select_groups(false, "AR", true, 'id_group', $id_grou
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= '<img src="images/spinner.png" />';
+$table->data[1][0] .= print_image('images/spinner.png', true);
 $table->data[1][0] .= '</span>';
 $enabled_agents = get_group_agents ($id_group, array('disabled' => 0), "none");
 $all_agents = get_group_agents ($id_group, array('disabled' => 1), "none") + $enabled_agents;
@@ -323,11 +323,10 @@ $path = 'images/gis_map/icons/'; //TODO set better method the path
 
 $table->data[4][0] = __('Agent icon');
 $table->data[4][1] = print_select($arraySelectIcon, "icon_path", $icon_path, "changeIcons();", __('None'), '', true) .
-	'&nbsp;' . __('Without status') . ': <img id="icon_without_status" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
-	'&nbsp;' . __('Default') . ': <img id="icon_default" src="' . $path . $icon_path . 'default.png" style="display:none;" />' .
-	'&nbsp;' . __('Ok') . ': <img id="icon_ok" src="' . $path . $icon_path . 'ok.png" style="display:none;" />' .
-	'&nbsp;' . __('Bad') . ': <img id="icon_bad" src="' . $path . $icon_path . 'bad.png" style="display:none;" />' .
-	'&nbsp;' . __('Warning') . ': <img id="icon_warning" src="' . $path . $icon_path . 'warning.png" style="display:none;" />';
+	'&nbsp;' . __('Without status') . ': ' . print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_without_status',"style" => 'display:none;')) .
+	'&nbsp;' . __('Default') . ': ' . print_image($path . $icon_path . 'default.png', true, array("id" => 'icon_default',"style" => 'display:none;')) .
+	'&nbsp;' . __('Ok') . ': ' .  print_image($path . $icon_path . 'ok.png', true, array("id" => 'icon_ok',"style" => 'display:none;')) .
+	'&nbsp;' . __('Bad') . ': ' . print_image($path . $icon_path . 'bad.png', true, array("id" => 'icon_bad',"style" => 'display:none;')) . 		'&nbsp;' . __('Warning') . ': ' .  print_image($path . $icon_path . 'warning.png', true, array("id" => 'icon_warning',"style" => 'display:none;'));
 
 if ($config['activate_gis']) {
 	$table->data[5][0] = __('Ignore new GIS data:');

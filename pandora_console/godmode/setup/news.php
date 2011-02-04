@@ -147,7 +147,7 @@ else {
 		echo "<td class='$tdcolor'>".$row["author"]."</b></td>";
 		echo "<td class='$tdcolor'>".$row["timestamp"]."</b></td>";
 		
-		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border=0 src="images/cross.png"></a></td></tr>';
+		echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row["id_news"].'&borrar='.$row["id_news"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . print_image("images/cross.png", true, array("border" => '0')) . '</a></td></tr>';
 	}
 	echo "</table>";
 	echo "<table width='90%'>";

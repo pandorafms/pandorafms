@@ -240,7 +240,7 @@ else {
 			echo "</td><td class=$tdcolor>";
 			echo $row["execute"];
 			echo "</td><td class=$tdcolor>";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'><img src='images/cross.png' border=0></a>";
+			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'>" . print_image("images/cross.png", true, array("border" => '0')) . "</a>";
 			echo "</td></tr>";
 		}
 		echo "</table>";

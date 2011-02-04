@@ -69,7 +69,7 @@ $files = list_files ('images/groups_small/', "png", 1, 0);
 $table->data[1][1] = print_select ($files, 'icon', $icon, '', 'None', '', true);
 $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {
-	$table->data[1][1] .= '<img src="images/groups_small/'.$icon.'" />';
+	$table->data[1][1] .= print_image("images/groups_small/".$icon, true); 
 }
 $table->data[1][1] .= '</span>';
 
@@ -86,7 +86,7 @@ else {
 	$table->data[2][1] = print_select_groups(false, "AR", true, 'id_parent', $id_parent, '', '', '', true);
 }
 $table->data[2][1] .= ' <span id="parent_preview">';
-$table->data[2][1] .= '<img src="images/groups_small/'.get_group_icon ($id_parent).'.png" />';
+$table->data[2][1] .= print_image("images/groups_small/".get_group_icon ($id_parent).".png", true); 
 $table->data[2][1] .= '</span>';
 
 $table->data[3][0] = __('Alerts');

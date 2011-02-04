@@ -151,22 +151,22 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 }
 
 $table->head[2] = __('Type') . ' ' .
-	'<a href="' . $url . '&sort_field=type&amp;sort=up"><img src="images/sort_up.png" style="' . $selectTypeUp . '" alt="up" /></a>' .
-	'<a href="' . $url . '&sort_field=type&amp;sort=down"><img src="images/sort_down.png" style="' . $selectTypeDown . '" alt="down" /></a>';
+	'<a href="' . $url . '&sort_field=type&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTypeUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=type&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTypeDown, "alt" => "down")) . '</a>';
 $table->head[3] = __('Module name') . ' ' .
-	'<a href="' . $url . '&sort_field=name&amp;sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" alt="up" /></a>' .
-	'<a href="' . $url . '&sort_field=name&amp;sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" alt="down" /></a>';
+	'<a href="' . $url . '&sort_field=name&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=name&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->head[4] = __('Description');
 $table->head[5] = __('Status') . ' ' .
-	'<a href="' . $url . '&sort_field=status&amp;sort=up"><img src="images/sort_up.png" style="' . $selectStatusUp . '" alt="up" /></a>' .
-	'<a href="' . $url . '&sort_field=status&amp;sort=down"><img src="images/sort_down.png" style="' . $selectStatusDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=status&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=status&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
 $table->head[6] = __('Data') . ' ' .
-	'<a href="' . $url . '&sort_field=data&amp;sort=up"><img src="images/sort_up.png" style="' . $selectDataUp . '" alt="up" /></a>' .
-	'<a href="' . $url . '&sort_field=data&amp;sort=down"><img src="images/sort_down.png" style="' . $selectDataDown . '" alt="down" /></a>';
+	'<a href="' . $url . '&sort_field=data&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=data&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
 $table->head[7] = __('Graph');
 $table->head[8] = __('Last contact') . ' ' .
-	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" alt="up" /></a>' .
-	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" alt="down" /></a>';
+	'<a href="' . $url . '&sort_field=last_contact&amp;sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
+	'<a href="' . $url . '&sort_field=last_contact&amp;sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 $table->align = array("left","left","left","left","left","center");
 
@@ -191,10 +191,10 @@ foreach ($modules as $module) {
 	$data = array ();
 	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 		if ($module["flag"] == 0) {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60"><img src="images/target.png" border="0" alt="target" /></a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;flag=1&amp;refr=60">' . print_image("images/target.png", true, array("border" => '0', "alt" => "target")) . '</a>';
 		}
 		else {
-			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60"><img src="images/refresh.png" border="0" alt="refresh" /></a>';
+			$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => "0", "alt" => "refresh")) . '</a>';
 		}
 	}
 	else {
@@ -246,7 +246,7 @@ foreach ($modules as $module) {
 	$data[2] = show_server_type ($module['id_modulo']);
 
 	if (give_acl ($config['id_user'], $id_grupo, "AW")) 
-	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'"><img src="images/config.png" alt="" border="0" /></a>';
+	  $data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . print_image("images/config.png", true, array("alt" => '0', "border" => "")) . '</a>';
 	  
 	$data[3] = print_string_substr ($module["nombre"], 25, true);
 	$data[4] = print_string_substr ($module["descripcion"], 30, true);
@@ -326,8 +326,8 @@ foreach ($modules as $module) {
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&amp;period=86400&amp;id=".$module["id_agente_modulo"]."&amp;label=".$module["nombre"]."&amp;refresh=600','day_".$win_handle."')";
 
 	//	if ($nombre_tipo_modulo != "log4x")
-			$data[7] .= '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border="0" alt="" /></a>';
-		$data[7] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=$id_agente&tab=data_view&amp;period=86400&amp;id=".$module["id_agente_modulo"]."'><img border='0' src='images/binary.png' alt='' /></a>";
+			$data[7] .= '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a>';
+		$data[7] .= '<td class="datos" width="40"><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a>&nbsp;';
 	}
 	
 	if ($module['estado'] == 3) {

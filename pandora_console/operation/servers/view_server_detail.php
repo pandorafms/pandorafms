@@ -21,7 +21,7 @@ check_login ();
 
 $id_server = (int) get_parameter ("server_id", -1);
 
-$options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'><img src='images/refresh.png'></a></li>";
+$options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>" . print_image("images/refresh.png", true) . "</a></li>";
 
 print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
 

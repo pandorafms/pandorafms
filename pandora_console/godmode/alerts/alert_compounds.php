@@ -115,7 +115,7 @@ $table->data[0][1] = print_select_groups(0, "LM", true, 'id_group', $id_group, f
 	'', true);
 $table->data[0][2] = __('Agent');
 $table->data[0][2] .= ' <span id="agent_loading" class="invisible">';
-$table->data[0][2] .= '<img src="images/spinner.png" />';
+$table->data[0][2] .= print_image("images/spinner.png", true);
 $table->data[0][2] .= '</span>';
 $table->data[0][3] = print_select ($agents, 'id_agent', $id_agent, false,
 	__('All'), 0, true);
@@ -202,7 +202,7 @@ foreach ($id_alerts as $alert) {
 	$data[2] = get_agent_name ($alert['id_agent']);
 	$data[3] = '<a href="'.$url.'&delete_alert=1&id='.$alert['id'].'"
 		onClick="javascript:confirm(\''.__('Are you sure?').'\')">';
-	$data[3] .= '<img src="images/cross.png" title="'.__('Delete').'" />';
+	$data[3] .= print_image("images/cross.png", true, array("title" => __('Delete'))); 
 	$data[3] .= '</a>';
 	
 	array_push ($table->data, $data);

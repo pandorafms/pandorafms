@@ -294,7 +294,7 @@ foreach ($result as $row) {
 	$data[1] .= substr ($row["agent_name"], 0, 25);
 	$data[1] .= '</a></strong>';
 	
-	$data[2] = '<img src="images/'.show_icon_type ($row["module_type"]).'" border="0" />';
+	$data[2] = print_image("images/" . show_icon_type ($row["module_type"]), true); 
 	
 	$data[3] = mb_strimwidth (safe_output($row["module_name"]), 0, 30);
 
@@ -340,8 +340,8 @@ foreach ($result as $row) {
 
 		$link ="winopeng('operation/agentes/stat_win.php?type=$graph_type&period=86400&id=".$row["id_agente_modulo"]."&label=".$row["module_name"]."&refresh=600','day_".$win_handle."')";
 
-		$data[6] = '<a href="javascript:'.$link.'"><img src="images/chart_curve.png" border="0" alt="" /></a>';
-		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'><img src='images/binary.png' border='0' alt='' /></a>";
+		$data[6] = '<a href="javascript:'.$link.'">' . print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) .  '</a>';
+		$data[6] .= "&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$row["id_agent"]."&amp;tab=data_view&period=86400&amp;id=".$row["id_agente_modulo"]."'>" . print_image('images/binary.png', true, array("style" => '0', "alt" => '')) . "</a>";
 	}
 
 	if (is_numeric($row["datos"]))

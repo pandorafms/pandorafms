@@ -277,17 +277,17 @@ $table->align[1] = 'center';
 
 $table->head = array ();
 $table->head[0] = "<span title='" . __('Enabled / Disabled') . "'>" . __('E/D') . "</span><br>" .
-	'<a href="' . $url . '&sort_field=disabled&sort=up"><img src="images/sort_up.png" style="' . $selectDisabledUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=disabled&sort=down"><img src="images/sort_down.png" style="' . $selectDisabledDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=disabled&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectDisabledUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=disabled&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectDisabledDown)) . '</a>';
 $table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span><br>" .
-	'<a href="' . $url . '&sort_field=standby&sort=up"><img src="images/sort_up.png" style="' . $selectStandbyUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=standby&sort=down"><img src="images/sort_down.png" style="' . $selectStandbyDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=standby&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectStandbyUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=standby&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectStandbyDown)) . '</a>';
 if (! $id_agente) {
 	$table->style = array ();
 	$table->style[2] = 'font-weight: bold';
 	$table->head[2] = __('Agent') . '<br>' .
-		'<a href="' . $url . '&sort_field=agent&sort=up"><img src="images/sort_up.png" style="' . $selectAgentUp . '" /></a>' .
-		'<a href="' . $url . '&sort_field=agent&sort=down"><img src="images/sort_down.png" style="' . $selectAgentDown . '" /></a>';
+		'<a href="' . $url . '&sort_field=agent&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
+		'<a href="' . $url . '&sort_field=agent&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
 	$table->size[0] = '6%';
 	$table->size[1] = '6%';
 	$table->size[2] = '20%';
@@ -313,11 +313,11 @@ else {
 }
 
 $table->head[3] = __('Module') . '<br>' .
-	'<a href="' . $url . '&sort_field=module&sort=up"><img src="images/sort_up.png" style="' . $selectModuleUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=module&sort=down"><img src="images/sort_down.png" style="' . $selectModuleDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=module&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=module&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
 $table->head[4] = __('Template') . '<br>' .
-	'<a href="' . $url . '&sort_field=template&sort=up"><img src="images/sort_up.png" style="' . $selectTemplateUp . '" /></a>' .
-	'<a href="' . $url . '&sort_field=template&sort=down"><img src="images/sort_down.png" style="' . $selectTemplateDown . '" /></a>';
+	'<a href="' . $url . '&sort_field=template&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
+	'<a href="' . $url . '&sort_field=template&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	$table->head[5] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 }
@@ -398,8 +398,8 @@ foreach ($simple_alerts as $alert) {
 	}
 	$data[3] = printTruncateText(get_agentmodule_name ($alert['id_agent_module']), 25, false);
 	$data[4] = ' <a class="template_details"
-		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">
-		<img id="template-details-'.$alert['id_alert_template'].'" class="img_help" src="images/zoom.png"/></a> ';
+		href="ajax.php?page=godmode/alerts/alert_templates&get_template_tooltip=1&id_template='.$alert['id_alert_template'].'">' .
+		print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help")) . '</a> ';
 
 	$data[4] .= "<a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&id=".$alert['id_alert_template']."'>";
 	$data[4] .= printTruncateText(get_alert_template_name ($alert['id_alert_template']), 15, false);

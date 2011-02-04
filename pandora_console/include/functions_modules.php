@@ -283,7 +283,7 @@ function format_delete($id)
 	$txt = "";
 
 	if (give_acl ($config['id_user'], $group, "AW") ==1) {
-		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'"><img src="images/cross.png" border="0" /></a>';
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$id.'">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
 	return $txt;
 }
@@ -295,7 +295,7 @@ function format_delete_string($id)
 	$txt = "";
 
 	if (give_acl ($config['id_user'], $group, "AW") ==1) {
-		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'"><img src="images/cross.png" border="0" /></a>';
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$id.'">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
 	return $txt;
 }
@@ -307,7 +307,7 @@ function format_delete_log4x($id)
 	$txt = "";
 
 	if (give_acl ($config['id_user'], $group, "AW") ==1) {
-		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'"><img src="images/cross.png" border="0" /></a>';
+		$txt = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_log4x='.$id.'">' . print_image("images/cross.png", true, array("border" => '0')) . '</a>';
 	}
 	return $txt;
 }

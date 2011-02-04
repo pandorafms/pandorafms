@@ -1056,7 +1056,7 @@ function addConectionMapsInForm($map_connection_list) {
 				<tr class="row_0">
 					<td>' . print_input_text ('map_connection_name_' . $mapConnection['id_conection'], $mapConnectionRowDB['conection_name'], '', 20, 40, true, true) . '</td>
 					<td>' . $radioButton . '</td>
-					<td><a id="delete_row" href="javascript: deleteConnectionMap(\'' . $mapConnection['id_conection'] . '\')"><img src="images/cross.png" alt=""></a></td>
+					<td><a id="delete_row" href="javascript: deleteConnectionMap(\'' . $mapConnection['id_conection'] . '\')">' . print_image("images/cross.png", true, array("alt" => "")) . '</a></td>
 				</tr>
 			</tbody>
 			<script type="text/javascript">
@@ -1114,14 +1114,14 @@ function addLayerList($layer_list) {
 			<tbody id="layer_item_' . $count . '">
 				<tr>
 					<td class="col1">' . $layer['layer_name'] . '</td>
-					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');"><img src="images/up.png" alt=""></a></td>
-					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');"><img src="images/down.png" alt=""></a></td>
+					<td class="up_arrow"><a id="up_arrow" href="javascript: upLayer(' . $count . ');">' . print_image("images/up.png", true, array("alt" => "")) . '</a></td>
+					<td class="down_arrow"><a id="down_arrow" href="javascript: downLayer(' . $count . ');">' . print_image("images/down.png", true, array("alt" => "")) . '</a></td>
 					<td class="col3">
-						<a id="edit_layer" href="javascript: editLayer(' . $count . ');"><img src="images/config.png" alt="" /></a>
+						<a id="edit_layer" href="javascript: editLayer(' . $count . ');">' . print_image("images/config.png", true, array("alt" => "")) . '</a>
 					</td>
 					<td class="col4">
 						<input type="hidden" name="layer_values_' . $count . '" value=\'' . $layerDataJSON . '\' id="layer_values_' . $count . '" />
-						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')"><img src="images/cross.png" alt=""></a>
+						<a id="delete_row" href="javascript: deleteLayer(' . $count . ')">' . print_image("images/cross.png", true, array("alt" => "")) . '</a>
 					</td>
 				</tr>
 			</tbody>

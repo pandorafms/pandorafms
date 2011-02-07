@@ -8,13 +8,21 @@ import android.app.Service;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.Criteria;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+
 
 import android.os.Handler;
 
@@ -41,8 +49,12 @@ public class PandroidAgentListener extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        wakeLock.acquire();
 		updateValues();
 		contact();
+		wakeLock.release();
 		stopSelf(startId);
 	    return START_NOT_STICKY;
 	}
@@ -85,6 +97,8 @@ public class PandroidAgentListener extends Service {
         else {
         	putSharedData("PANDROID_DATA", "contactError", "1", "integer");
         }
+        
+        updateValues();
 	}
 	
 	private String buildXML(){
@@ -106,6 +120,15 @@ public class PandroidAgentListener extends Service {
 		
 		// Modules
 		buffer += buildmoduleXML("battery_level", "The actually device battery level", "generic_data", getSharedData("PANDROID_DATA", "batteryLevel", "-1", "integer"));		
+		String orientation = getSharedData("PANDROID_DATA", "orientation", "361", "float");
+		String proximity = getSharedData("PANDROID_DATA", "proximity", "-1.0", "float");
+			
+		if(!orientation.equals("361.0")) {
+			buffer += buildmoduleXML("orientation", "The actually device orientation (in degrees)", "generic_data", orientation);		
+		}
+		if(!proximity.equals("-1.0")) {
+			buffer += buildmoduleXML("proximity", "The actually device proximity detector (0/1)", "generic_data", proximity);		
+		}
 		//buffer += buildmoduleXML("last_gps_contact", "Datetime of the last geo-location contact", "generic_data", lastGpsContactDateTime);
 		
 		// End_Modules
@@ -166,9 +189,24 @@ public class PandroidAgentListener extends Service {
             putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
             putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");
 		}
-		else {             
-            putSharedData("PANDROID_DATA", "latitude", "181", "float");
-            putSharedData("PANDROID_DATA", "longitude", "181", "float");
+		else {
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+			criteria.setPowerRequirement(Criteria.POWER_LOW);
+			criteria.setAltitudeRequired(false);
+			criteria.setBearingRequired(false);
+			criteria.setCostAllowed(true);
+			String bestProvider = lm.getBestProvider(criteria, true);
+			loc = lm.getLastKnownLocation(bestProvider);
+			if(loc != null) {
+		        putSharedData("PANDROID_DATA", "latitude", new Double(loc.getLatitude()).toString(), "float");
+		        putSharedData("PANDROID_DATA", "longitude", new Double(loc.getLongitude()).toString(), "float");			
+		        }
+			else {	
+	            putSharedData("PANDROID_DATA", "latitude", "181", "float");
+	            putSharedData("PANDROID_DATA", "longitude", "181", "float");
+	        }
+
 		}
 		
     }
@@ -187,6 +225,62 @@ public class PandroidAgentListener extends Service {
         IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(batteryLevelReceiver, batteryLevelFilter);
     }
+    
+    private void sensors() {
+    	
+    	// Sensor listeners
+    	
+        SensorEventListener orientationLevelReceiver = new SensorEventListener() {
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                putSharedData("PANDROID_DATA", "orientation", Float.toString(sensorEvent.values[0]), "float");
+            }
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        
+        SensorEventListener proximityLevelReceiver = new SensorEventListener() {
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                putSharedData("PANDROID_DATA", "proximity", Float.toString(sensorEvent.values[0]), "float");
+            }
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        
+        // Sensor management
+        
+    	SensorManager sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);  
+
+        sensorManager = 
+            (SensorManager)getSystemService( SENSOR_SERVICE  );
+        List<Sensor> sensors = sensorManager.getSensorList( Sensor.TYPE_ALL );
+        Sensor proxSensor = null;
+        Sensor orientSensor = null;
+        
+        for( int i = 0 ; i < sensors.size() ; ++i ) {
+        	switch(sensors.get( i ).getType()) {
+	    		case Sensor.TYPE_ORIENTATION:
+	                orientSensor = sensors.get( i );
+	                break;
+	    		case Sensor.TYPE_PROXIMITY:
+	                proxSensor = sensors.get( i );
+	                break;
+        	}
+        }
+        
+        if( orientSensor != null ) {
+                sensorManager.registerListener( 
+                        orientationLevelReceiver, 
+                        orientSensor,
+                        SensorManager.SENSOR_DELAY_UI );
+        }
+        
+        if( proxSensor != null ) {
+            sensorManager.registerListener( 
+                    proximityLevelReceiver, 
+                    proxSensor,
+                    SensorManager.SENSOR_DELAY_UI );
+        }
+    }
 
 	private void updateValues() {
         batteryLevel();
@@ -199,6 +293,8 @@ public class PandroidAgentListener extends Service {
             putSharedData("PANDROID_DATA", "latitude", "181.0", "float");
             putSharedData("PANDROID_DATA", "longitude", "181.0", "float");
         }
+        
+        sensors();
 	}
 	
     private void putSharedData(String preferenceName, String tokenName, String data, String type) {

@@ -1,3 +1,27 @@
+2011-02-07  Sergio Martin <sergio.martin@artica.es>
+
+	* android/AndroidManifest.xml
+	android/src/pandroid/agent/PandroidAgent.java
+	android/src/pandroid/agent/PandroidAgentListener.java
+	android/bin/pandroid/agent/PandroidAgentListener$2.class
+	android/bin/pandroid/agent/PandroidAgentListener$3.class
+	android/bin/pandroid/agent/PandroidAgentListener$MyLocationListener.class
+	android/bin/pandroid/agent/PandroidAgentListener$1.class
+	android/bin/pandroid/agent/PandroidAgent.class
+	android/bin/pandroid/agent/PandroidAgentListener.class
+	android/bin/pandroid/agent/PandroidAgent$1.class
+	android/bin/pandroid/agent/PandroidAgent$2.class
+	android/bin/pandroid/agent/PandroidAgent$3.class
+	android/bin/pandroid/agent/PandroidAgent$4.class
+	android/bin/pandroid/agent/PandroidAgent$5.class
+	android/bin/pandroid/agent/PandroidAgent$6.class
+	android/bin/pandroid/agent/PandroidAgent$7.class
+	android/bin/resources.ap_
+	android/bin/classes.dex
+	android/res/drawable-hdpi/icon.png: Clean the code, changed the 
+	app icon, added modules to the proximity and orientation sensors
+	and fixed little bugs
+
 2011-02-03  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/installer/pandora.mpi, win32/pandora.cc, unix/pandora_agent: Free

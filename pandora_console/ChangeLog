@@ -1,3 +1,13 @@
+2011-02-11  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Added new OS: android.
+	
+	* operation/agentes/estado_generalagente.php: Show description in GIS
+	data when it's available.
+
+	* images/os_icons/android.png,
+	images/networkmap/15.png: New icons for Android OStype.
+
 2011-02-07  Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.sql: cleaned source code.

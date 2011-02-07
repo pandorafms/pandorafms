@@ -1,3 +1,12 @@
+2011-02-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* extensions/update_manager.php
+	extensions/update_manager/main.php
+	operation/search_modules.php
+	operation/search_agents.php
+	operation/gis_maps/render_view.php: Changed the way of print images from "<src=.." 
+	html tag to print_image function.
+
 2011-02-03 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
  
 	*     include/functions_menu.php

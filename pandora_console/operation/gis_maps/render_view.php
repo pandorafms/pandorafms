@@ -116,13 +116,13 @@ $buttons[] = '&nbsp;' . __('Refresh: ') . print_select($times, 'refresh_time', 6
 $buttons[] = '<a id="button_status_all" href="javascript: changeShowStatus(\'all\');" style="border: 1px black solid;">' .
 	__('All') . '</a>';
 $buttons[] = '<a id="button_status_bad" href="javascript: changeShowStatus(\'bad\');"><div style="height: 18px;">' . 
-	'<img src="images/status_sets/default/agent_critical_ball.png" title="' . __('Critical') . '"/></div></a>';
+	print_image("images/status_sets/default/agent_critical_ball.png", true, array("title" => __('Critical'))) . '</div></a>';
 $buttons[] = '<a id="button_status_warning" href="javascript: changeShowStatus(\'warning\');"><div style="height: 18px;">' .
-	'<img src="images/status_sets/default/agent_warning_ball.png" title="' . __('Warning') . '"/></div></a>';
+	print_image("images/status_sets/default/agent_warning_ball.png", true, array("title" => __('Warning'))) . '</div></a>';
 $buttons[] = '<a id="button_status_ok" href="javascript: changeShowStatus(\'ok\');"><div style="height: 18px;">' .
-	'<img src="images/status_sets/default/agent_ok_ball.png" title="' . __('Ok') . '"/></div></a>';
+	print_image("images/status_sets/default/agent_ok_ball.png", true, array("title" => __('Ok'))) . '</div></a>';
 $buttons[] = '<a id="button_status_default" href="javascript: changeShowStatus(\'default\');"><div style="height: 18px;">' .
-	'<img src="images/status_sets/default/agent_no_monitors_ball.png" title="' . __('Other') . '"/></div></a>';
+	print_image("images/status_sets/default/agent_no_monitors_ball.png", true, array("title" => __('Other'))) . '</div></a>';
 $buttons[] = __('Show agents by state: ');
 
 

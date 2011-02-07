@@ -21,7 +21,7 @@ BuildArchitectures: noarch
 Requires(pre):      /usr/sbin/useradd
 AutoReq:            0
 Provides:           %{name}-%{version}
-Requires:           perl-DBI perl-DBD-mysql 
+Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools
 Requires:           nmap wmic sudo perl-HTML-Tree perl-XML-SAX
 

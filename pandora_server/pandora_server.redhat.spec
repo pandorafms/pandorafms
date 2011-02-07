@@ -24,7 +24,7 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 Requires:           coreutils
 Requires:           perl-DBI perl-DBD-mysql 
-Requires:           perl-XML-Simple perl-XML-SAX
+Requires:           perl-XML-Simple perl-XML-SAX perl-libwww-perl
 Requires:           perl-NetAddr-IP net-snmp net-tools
 Requires:           nmap wmic sudo
 

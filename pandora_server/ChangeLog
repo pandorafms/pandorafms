@@ -1,5 +1,10 @@
 2011-02-07  Sancho Lerena <slerena@artica.es>
 
+	* pandora_server/DEBIAN/control,
+	pandora_server/pandora_server.spec,
+	pandora_server/pandora_server.redhat.spec: Added LWP dependency for
+	reverse Geocoding feature. This is included on all distros.
+
 	* pandora_server/conf/pandora_server.conf,
 	pandora_server/lib/PandoraFMS/Config.pm,
 	pandora_server/lib/PandoraFMS/DataServer.pm: Added support for reverse geocoding using

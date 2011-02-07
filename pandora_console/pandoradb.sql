@@ -866,12 +866,12 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS tplugin (
+CREATE TABLE IF NOT EXISTS `tplugin` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` varchar(200) NOT NULL,
     `description` mediumtext,
     `max_timeout` int(4) UNSIGNED NOT NULL default 0,
-    `execute`varchar(250) NOT NULL,
+    `execute` varchar(250) NOT NULL,
     `net_dst_opt` varchar(50) default '',
     `net_port_opt` varchar(50) default '',
     `user_opt` varchar(50) default '',
@@ -901,13 +901,12 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
   `port` int(4) unsigned default '0',
   `directory` varchar(100) NOT NULL default '',
   `options` varchar(100) NOT NULL default '',
-  `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Nuber of hours of diference with the server timezone' ,
+  `timezone_offset` TINYINT(2) NULL DEFAULT '0' COMMENT 'Number of hours of diference with the server timezone' ,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the "destination" server to export
-
 CREATE TABLE IF NOT EXISTS `tserver_export_data` (
   `id` int(20) unsigned NOT NULL auto_increment,
   `id_export_server` int(10) unsigned default NULL,

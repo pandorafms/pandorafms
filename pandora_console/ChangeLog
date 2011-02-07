@@ -1,3 +1,7 @@
+2011-02-07  Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.sql: cleaned source code.
+
 2011-02-07 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* extensions/update_manager.php

@@ -23,4 +23,6 @@
 	
 	<uses-feature android:name="android.hardware.sensor.light" />
 	<uses-feature android:name="android.hardware.location" />
+	
+    <uses-sdk android:minSdkVersion="1"/>
 </manifest> 

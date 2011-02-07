@@ -1,5 +1,11 @@
 2011-02-07  Sergio Martin <sergio.martin@artica.es>
 
+	* android/.project
+	android/AndroidManifest.xml: Adding a neccesary directive 
+	for market on manifest and update the pandroid agent version 
+
+2011-02-07  Sergio Martin <sergio.martin@artica.es>
+
 	* android/AndroidManifest.xml
 	android/src/pandroid/agent/PandroidAgent.java
 	android/src/pandroid/agent/PandroidAgentListener.java

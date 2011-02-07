@@ -14,8 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +32,8 @@ public class PandroidAgent extends Activity {
     String defaultAgentName = "pandroidAgent";
     String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
     
+    boolean alarmEnabled;
+    
     boolean showLastXML = true;
     
     String lastGpsContactDateTime = "";
@@ -41,14 +41,12 @@ public class PandroidAgent extends Activity {
     ComponentName service = null;
     PendingIntent sender = null;
     AlarmManager am = null;
-
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {	
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.main);
-        
-        //resetValues();
-        
+                
         // Load the stored data into views
         loadViews();
                 
@@ -61,23 +59,27 @@ public class PandroidAgent extends Activity {
         // Start the agent listener service
 		//ComponentName service = startService(new Intent(this, PandroidAgentListener.class));
 		
-		// Setting an alarm to call service
-        Intent intentReceiver = new Intent(this, EventReceiver.class);
-        sender = PendingIntent.getBroadcast(this, 0, intentReceiver, 0);
         
-        am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        
-        // Start the alert listener
-		startAgentListener();
-
-		// Update the UI each second
-        h.post(new Runnable() {
-        	@Override
-        	public void run() {
-        		updateUI();
-        		h.postDelayed(this, 1000);
-        	}
-        });
+        if(!alarmEnabled) {
+	        // Setting an alarm to call service
+	        Intent intentReceiver = new Intent(this, EventReceiver.class);
+	        sender = PendingIntent.getBroadcast(this, 0, intentReceiver, 0);
+	        
+	        am = (AlarmManager) getSystemService(ALARM_SERVICE);
+	        
+	        // Start the alert listener
+			restartAgentListener();
+	
+			// Update the UI each second
+	        h.post(new Runnable() {
+	        	@Override
+	        	public void run() {
+	        		updateUI();
+	        		
+	        		h.postDelayed(this, 1000);
+	        	}
+	        });
+        }
     }
     
     
@@ -290,15 +292,18 @@ public class PandroidAgent extends Activity {
 		}
 	}
 	
-	private void stopAgentListener() {
+	private void stopAgentListener() {	
 	    am.cancel(sender);
+	    alarmEnabled = false;
 	}
 	
 	private void startAgentListener() {
+	    alarmEnabled = true;
+
 		int interval = Integer.parseInt(getSharedData("PANDROID_DATA", "interval", Integer.toString(defaultInterval), "integer"));
 
         // Set the alarm with the interval frequency
-        am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), (interval * 1000), sender);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (interval * 1000), sender);
 	}
 	
 	private void restartAgentListener() {
@@ -338,6 +343,7 @@ public class PandroidAgent extends Activity {
     	
         if(contactError == 1) {
         	changeContactInfo("Contact error", "#FF0000");
+        	stopAgentListener();
         }
         else {
         	changeContactInfo("Last Contact: " + stringAgo, "#00FF00");

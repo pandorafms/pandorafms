@@ -164,25 +164,25 @@ else {
 	$table->width = "98%";
 	$table->class = "databox";
 	
-	$table->head = array ();
-	$table->head[0] = __('Agent') . ' ' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up"><img src="images/sort_up.png" style="' . $selectNameUp . '" /></a>' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down"><img src="images/sort_down.png" style="' . $selectNameDown . '" /></a>';
-	$table->head[1] = __('OS'). ' ' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=up"><img src="images/sort_up.png" style="' . $selectOsUp . '" /></a>' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=down"><img src="images/sort_down.png" style="' . $selectOsDown . '" /></a>';
-	$table->head[2] = __('Interval'). ' ' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=up"><img src="images/sort_up.png" style="' . $selectIntervalUp . '" /></a>' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=down"><img src="images/sort_down.png" style="' . $selectIntervalDown . '" /></a>';
-	$table->head[3] = __('Group'). ' ' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=up"><img src="images/sort_up.png" style="' . $selectGroupUp . '" /></a>' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=down"><img src="images/sort_down.png" style="' . $selectGroupDown . '" /></a>';
+		$table->head = array ();
+		$table->head[0] = __('Agent') . ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=name&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
+		$table->head[1] = __('OS'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=os&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
+		$table->head[2] = __('Interval'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectIntervalUp)) . '</a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=interval&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectIntervalDown)) . '</a>';
+		$table->head[3] = __('Group'). ' ' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectGroupUp)) . '</a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=group&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 	$table->head[4] = __('Modules');
 	$table->head[5] = __('Status');
 	$table->head[6] = __('Alerts');
 	$table->head[7] = __('Last contact'). ' ' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up"><img src="images/sort_up.png" style="' . $selectLastContactUp . '" /></a>' .
-		'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down"><img src="images/sort_down.png" style="' . $selectLastContactDown . '" /></a>';
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=up">' . print_image("images/sort_up.png", true, array("style" => $selectLastContactUp)) . '</a>' .
+			'<a href="index.php?search_category=agents&keywords=' . $config['search_keywords'] . '&head_search_keywords=abc&offset=' . $offset . '&sort_field=last_contact&sort=down">' . print_image("images/sort_down.png", true, array("style" => $selectLastContactDown)) . '</a>';
 	$table->head[8] = '';
 	
 	$table->align = array ();
@@ -231,7 +231,7 @@ else {
 		$manage_agent = '';
 		if (check_acl ($config['id_user'], $agent['id_grupo'], "AW")) {
 			$manage_agent = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='. $agent["id_agente"] . '">' .
-				'<img title="' . __('Manage') . '" alt="' . __('Manage') . '" src="images/setup.png" /></a>';
+				print_image("images/setup.png", true, array("title" =>  __('Manage'), "alt" => __('Manage'))) . '</a>';
 		}
 	
 		array_push($table->data, array(

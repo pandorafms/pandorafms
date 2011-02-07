@@ -142,12 +142,19 @@ if ($config['activate_gis']) {
 	
 	echo '<tr><td class="datos2"><b>'.__('Position (Long, Lat)'). '</b></td>';
     echo '<td class="datos2" colspan="2">';
+
     if ($dataPositionAgent === false) {
-    	echo __('There is no GIS data.');
+        echo __('There is no GIS data.');
     }
     else {
-    	echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">'.$dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'].'</a>';
+        echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente.'">';
+        if ($dataPositionAgent['description'] != "")
+                echo $dataPositionAgent['description'];
+        else
+                echo $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'];
+        echo "</a>";
     }
+
     echo '</td></tr>';
 }
 // Last contact

@@ -199,6 +199,9 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/embedded/i){
 			return 14;
 		}
+		elsif ($command =~ m/android/i){
+			return 15;
+		}
 		elsif ($command =~ m/BSD/i){
 			return 4;
 		}

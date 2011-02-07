@@ -28,6 +28,9 @@ use Time::Local;
 use XML::Simple;
 use POSIX qw(setsid strftime);
 
+# For Reverse Geocoding
+use LWP::Simple;
+
 # Default lib dir for RPM and DEB packages
 use lib '/usr/lib/perl5';
 
@@ -229,7 +232,18 @@ sub process_xml_data ($$$$$) {
                 }
 
                 if (!defined($position_description) ) { #FIXME: Validate the data with a regexp
-                        $position_description = ''; # Default value
+
+                        # This code gets description (Reverse Geocoding) from a current GPS coordinates using Google maps API
+                        # This requires a connection to internet and could be very slow and have a huge impact in performance.
+                        # Other methods for reverse geocoding will be supplied in the future (openstreetmaps in a local server)
+
+                        if ($pa_config->{'google_maps_description'}){
+                                my $content = get ('http://maps.google.com/maps/geo?q='.$latitude.','.$longitude.'&output=csv&sensor=false');
+                                my @address = split (/\"/,$content);
+                                $position_description = $address[1];
+                        } else {
+                                $position_description = ''; # Default value
+                        }
                 }
 
 		logger($pa_config, "Getting GIS Data=timezone_offset=$timezone_offset longitude=$longitude latitude=$latitude altitude=$altitude position_description=$position_description", 8);

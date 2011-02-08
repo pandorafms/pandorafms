@@ -1,3 +1,10 @@
+2011-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_html.php: Image path in function print_image is now 
+	relative.
+
+	Fixes: #3175265
+
 2011-02-11  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Added new OS: android.

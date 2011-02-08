@@ -1,3 +1,11 @@
+2011-02-08  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm
+	util/pandora_recode_db.pl: Added characters to translate
+	to html entities into safe_input and safe_output. Clean
+	repeated code into recode script.
+	Merged from Trunk
+
 2011-02-07  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server/DEBIAN/control,

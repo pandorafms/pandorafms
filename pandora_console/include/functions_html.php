@@ -1094,9 +1094,8 @@ function print_image ($src, $return = false, $options = false) {
 		if ($skin_path)
 			$src = $skin_path;		
 	}
-	// absolute path to image 
-	$urlImage = ($config['https'])?'https://':'http://';
-	$src = $urlImage . $config["dbhost"] . $config["homeurl"] . '/' . $src;
+	// path to image 
+	$src = $config["homeurl"] . '/' . $src;
 
 	$output = '<img src="'.safe_input ($src).'" '; //safe input necessary to strip out html entities correctly
 	$style = '';

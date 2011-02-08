@@ -763,7 +763,7 @@ sub pandora_manage_main ($$$) {
 			$parameters{'post_process'} = $post_process unless !defined ($post_process);
 			$parameters{'module_interval'} = $interval unless !defined ($interval);	
 
-			$parameters{'id_modulo'} = 1;	
+			$parameters{'id_modulo'} = 2;	
 			
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}

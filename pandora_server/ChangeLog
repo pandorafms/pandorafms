@@ -1,3 +1,8 @@
+2011-02-08  Junichi Satoh <junichi@rworks.jp>
+
+	* util/pandora_manage.pl: Fixed invalid module id with creation of
+	network module. Network module should be 2.
+
 2011-02-07  Sancho Lerena <slerena@artica.es>
 
 	* pandora_server/DEBIAN/control,

@@ -107,6 +107,15 @@ sub safe_input($) {
 		my $hex = ascii_to_html($i);
 		$value =~ s/$pattern/$hex/gi;		
 	}
+
+	#//Replace characteres for tildes and others
+	my $trans = get_html_entities();
+	
+	foreach(keys(%$trans))
+	{
+		my $pattern = chr($_);
+		$value =~ s/$pattern/$trans->{$_}/gi;
+	}
 	
 	return $value;
 }
@@ -139,10 +148,54 @@ sub safe_output($) {
 		my $hex = ascii_to_html($i);
 		$value =~ s/$hex/$pattern/gi;		
 	}
+		
+	#//Replace characteres for tildes and others
+	my $trans = get_html_entities();
+	
+	foreach(keys(%$trans))
+	{
+		my $pattern = chr($_);
+		$value =~ s/$trans->{$_}/$pattern/gi;
+	}
 	
 	return $value;
 }
 
+##########################################################################
+# SUB get_html_entities
+# Returns a hash table with the acute and special html entities
+# Usefull for future chars addition:
+# http://cpansearch.perl.org/src/GAAS/HTML-Parser-3.68/lib/HTML/Entities.pm
+##########################################################################
+
+sub get_html_entities {
+	my %trans = (
+		225 => '&aacute;',
+		233 => '&eacute;', 
+		237 => '&iacute;',
+		243 => '&oacute;',
+		250 => '&uacute;',
+		193 => '&Aacute;',
+		201 => '&Eacute;', 
+		205 => '&Iacute;',
+		211 => '&Oacute;',
+		218 => '&Uacute;',
+		228 => '&auml;',
+		235 => '&euml;',
+		239 => '&iuml;',
+		246 => '&ouml;',
+		252 => '&uuml;',
+		196 => '&Auml;',
+		203 => '&Euml;',
+		207 => '&Iuml;',
+		214 => '&Ouml;',
+		220 => '&Uuml;',
+		241 => '&ntilde;',
+		209 => '&Ntilde;'
+	);
+	
+	return \%trans;
+}
 ##########################################################################
 # SUB ascii_to_html (string)
 # Convert an ascii string to hexadecimal

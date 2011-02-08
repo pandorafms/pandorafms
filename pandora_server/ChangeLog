@@ -1,3 +1,10 @@
+2011-02-08  Sergio Martin <sergio.martin@artica.es>
+
+	* lib/PandoraFMS/Tools.pm
+	util/pandora_recode_db.pl: Added characters to translate
+	to html entities into safe_input and safe_output. Clean
+	repeated code into recode script.
+
 2011-02-08  Junichi Satoh <junichi@rworks.jp>
 
 	* util/pandora_manage.pl: Fixed invalid module id with creation of

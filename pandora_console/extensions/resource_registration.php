@@ -113,6 +113,7 @@ function resource_registration_extension_main() {
 		$namespace = safe_input((string)$componentElement->namespace);
 		$wmi_user = safe_input((string)$componentElement->wmi_user);
 		$wmi_password = safe_input((string)$componentElement->wmi_password);
+		$post_process = safe_input((float)$componentElement->post_process);
 		
 		$idComponent = false;
 		switch ((int)$componentElement->module_source) {
@@ -170,7 +171,8 @@ function resource_registration_extension_main() {
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,
-						'custom_string_3' => $custom_string_3));
+						'custom_string_3' => $custom_string_3,
+						'post_process' => $post_process));
 				if ((bool)$idComponent) {
 					$components[] = $idComponent; 
 				}
@@ -202,7 +204,8 @@ function resource_registration_extension_main() {
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,
-						'custom_string_3' => $custom_string_3));
+						'custom_string_3' => $custom_string_3,
+						'post_process' => $post_process));
 				if ((bool)$idComponent) {
 					$components[] = $idComponent; 
 				}
@@ -236,7 +239,8 @@ function resource_registration_extension_main() {
 						'min_ff_event' => $ff_treshold,
 						'custom_string_1' => $custom_string_1,
 						'custom_string_2' => $custom_string_2,
-						'custom_string_3' => $custom_string_3));
+						'custom_string_3' => $custom_string_3,
+						'post_process' => $post_process));
 				if ((bool)$idComponent) {
 					$components[] = $idComponent; 
 				}

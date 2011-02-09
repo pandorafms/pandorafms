@@ -171,6 +171,7 @@ switch ($action) {
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
 						$values['type'] = get_parameter('type', null);
+						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
 						$values['wednesday'] = get_parameter('wednesday', 0);
@@ -210,6 +211,7 @@ switch ($action) {
 						$values['id_gs'] = get_parameter('id_custom_graph');
 						$values['text'] = get_parameter('text');
 						$values['id_agent_module'] = get_parameter('id_agent_module');
+						$values['only_display_wrong'] = get_parameter('checkbox_only_display_wrong');
 						$values['monday'] = get_parameter('monday', 0);
 						$values['tuesday'] = get_parameter('tuesday', 0);
 						$values['wednesday'] = get_parameter('wednesday', 0);

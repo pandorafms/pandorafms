@@ -39,7 +39,7 @@ switch ($action) {
 		$description = null;
 		$sql = null;
 		$group = null;
-		
+		$only_display_wrong = 0;
 		$monday = true;
 		$tuesday = true;
 		$wednesday = true;
@@ -77,7 +77,7 @@ switch ($action) {
 			case 'SLA':
 				$description = $item['description'];
 				$period = $item['period'];
-				
+				$only_display_wrong = $item['only_display_wrong'];
 				$monday = $item['monday'];
 				$tuesday = $item['tuesday'];
 				$wednesday = $item['wednesday'];
@@ -254,6 +254,10 @@ print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Period'); ?></td>
 			<td style=""><?php print_extended_select_for_time ($intervals, 'period', $period, '', '', '0', 10); echo __(" seconds."); ?></td>
 		</tr>
+		<tr id="row_only_display_wrong" style="" class="datos">
+			<td><?php echo __('Only display wrong SLAs');?></td>
+			<td><?php print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);?></td>
+		</tr>
 		<tr id="row_working_time">
 			<td style="vertical-align: top;"><?php echo __('Working time');?></td>
 			<td>
@@ -350,6 +354,10 @@ print_input_hidden('id_item', $idItem);
 		<tr id="row_line_separator" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Line separator'); ?></td>
 			<td style=""><?php print_input_text('line', $line, '', 2, 4); ?></td>
+		</tr>
+		<tr id="row_quantity" style="" class="datos">
+			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
+			<td style=""><?php print_input_text('quantity', $quantity, '', 2, 4); ?></td>
 		</tr>
 	</tbody>
 </table>
@@ -593,6 +601,7 @@ function chooseType() {
 	$("#row_custom_example").css('display', 'none');
 	$("#row_group").css('display', 'none');
 	$("#row_working_time").css('display', 'none');
+	$("#row_only_display_wrong").css('display', 'none');
 	
 	switch (type) {
 		case 'event_report_group':
@@ -617,6 +626,7 @@ function chooseType() {
 			$("#row_period").css('display', '');
 			$("#sla_list").css('display', '');
 			$("#row_working_time").css('display', '');
+			$("#row_only_display_wrong").css('display', '');
 			break;
 		case 'monitor_report':
 			$("#row_description").css('display', '');

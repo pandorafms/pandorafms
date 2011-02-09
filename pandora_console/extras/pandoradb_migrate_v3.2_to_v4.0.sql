@@ -27,3 +27,8 @@ ALTER TABLE `tgrupo` MODIFY `nombre` text;
 -- Table `tnetwork_component`
 -- -----------------------------------------------------
 ALTER TABLE `tnetwork_component` ADD COLUMN `post_process` double(18,13) default 0;
+
+-- -----------------------------------------------------
+-- Table `treport_content`
+-- -----------------------------------------------------
+ALTER TABLE treport_content ADD only_display_wrong tinyint(1) unsigned DEFAULT 0 NOT NULL;

@@ -1758,6 +1758,13 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 			
 			$sla_failed = false;
 			foreach ($slas as $sla) {
+				//Get the sla_value in % and store it on $sla_value
+				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
+				$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'],
+				$content['time_to']);
+				//Do not show right modules if 'only_display_wrong' is active
+				if ($content['only_display_wrong'] == 1 && $sla_value >= $sla['sla_limit']) continue;
+				
 				$data = array ();
 				
 				$data[0] = '<strong>'.__('Agent')."</strong> : ";
@@ -1770,8 +1777,7 @@ function render_report_html_item ($content, $table, $report, $mini = false) {
 				$data[0] .= $sla['sla_min']."<br />";
 				$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
 				$data[0] .= $sla['sla_limit'];
-				$sla_value = get_agentmodule_sla ($sla['id_agent_module'], $content['period'],
-					$sla['sla_min'], $sla['sla_max'], $report["datetime"], $content, $content['time_from'], $content['time_to']);
+				
 				if ($sla_value === false) {
 					$data[1] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: #0000FF;">';
 					$data[1] .= __('Unknown');

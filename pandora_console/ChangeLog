@@ -1,3 +1,16 @@
+2011-02-09 Javier Lanz <javier.lanz@artica.es>
+
+	* include/functions_reportings.php: Added functionality to show only
+	wrong modules
+	* pandoradb.sql: Added column 'only_display_wrong" to treports_content
+	* operation/agentes/estado_agente.php: Truncated agent name to 25 chars
+	* extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added column
+	'only_display_wrong" to treports_content
+	* godmode/reporting/reporting_builder.php: Added functionality to show
+	only wrong modules
+	* godmode/reporting/reporting_builder.item_editor.php: Added functionality
+	to show only wrong modules
+
 2011-02-08 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_html.php: Image path in function print_image is now 

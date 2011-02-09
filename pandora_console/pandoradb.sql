@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2005-2010 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2011 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -809,6 +809,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
 	`friday` tinyint(1) default 1,
 	`saturday` tinyint(1) default 1,
 	`sunday` tinyint(1) default 1,
+	`only_display_wrong` tinyint (1) unsigned default 0 not null,
 	PRIMARY KEY(`id_rc`),
 	FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
 		ON UPDATE CASCADE ON DELETE CASCADE

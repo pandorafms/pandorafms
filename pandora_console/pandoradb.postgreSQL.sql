@@ -740,7 +740,8 @@ CREATE TABLE "treport_content" (
 	"thursday" SMALLINT NOT NULL default 1,
 	"friday" SMALLINT NOT NULL default 1,
 	"saturday" SMALLINT NOT NULL default 1,
-	"sunday" SMALLINT NOT NULL default 1
+	"sunday" SMALLINT NOT NULL default 1,
+	"only_display_wrong" SMALLINT NOT NULL default 0
 );
 
 CREATE TABLE "treport_content_sla_combined" (

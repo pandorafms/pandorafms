@@ -1,3 +1,11 @@
+2011-02-09 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.postgreSQL.sql: added first version of schema of Pandora DB for
+	PostgreSQL.
+	
+	* extensions/resource_registration.php: added lost lines of my previous
+	commit on this file. 
+
 2011-02-09 Javier Lanz <javier.lanz@artica.es>
 
 	* include/functions_reportings.php: Added functionality to show only

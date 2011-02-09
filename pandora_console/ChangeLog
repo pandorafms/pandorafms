@@ -1,5 +1,10 @@
 2011-02-09 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb.data.postgreSQL.sql: added the first version of data of Pandora
+	DB for PostgreSQL.
+
+2011-02-09 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.postgreSQL.sql: added the column "only_display_wrong" in the
 	table "treport_content" from the changes in the main SQL in function mysql.
 

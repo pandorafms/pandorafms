@@ -39,9 +39,6 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-# Thread list
-my @Threads;
-
 # Load thread support
 eval {
 	local $SIG{__DIE__};
@@ -1403,7 +1400,7 @@ while (1) {
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
-				push (@Threads, $thr);
+				$thr->detach();
 			}
 		# Execute the module
 		} else {
@@ -1421,7 +1418,7 @@ while (1) {
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
-				push (@Threads, $thr);
+				$thr->detach();
 			}
 		# Execute the plugin
 		} else {
@@ -1430,11 +1427,9 @@ while (1) {
 	}
 
 	# Wait for all the threads
-	foreach my $thread (@Threads) {
-		$thread->join ();
-	}
-	@Threads = ();
-
+	$ThreadSem->down ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	$ThreadSem->up ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	
 	$Xml .= "</agent_data>";
 
 	# Save XML data file

@@ -1,3 +1,8 @@
+2011-02-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Detach threads to avoid excessive resource usage,
+	  since threads were not joined until all modules were executed.
+
 2011-02-01  Junichi Satoh  <junichi@rworks.jp>
 
 	* FreeBSD/pandora_agent.conf: Fixed invalid cpu usage data is returned

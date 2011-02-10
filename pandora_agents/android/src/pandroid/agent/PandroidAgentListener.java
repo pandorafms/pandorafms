@@ -28,7 +28,10 @@ import android.os.Handler;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.Calendar;
 
 public class PandroidAgentListener extends Service {
@@ -89,7 +92,10 @@ public class PandroidAgentListener extends Service {
 	    		  };
 
 		int tentacleRet = new tentacle_client().tentacle_client(tentacleData);
-		//int tentacleRet = 0;
+    	
+		// Deleting the file after send it
+		File file = new File("/data/data/pandroid.agent/files/" + destFileName);
+    	file.delete();
 		
         if(tentacleRet == 0) {
             putSharedData("PANDROID_DATA", "lastXML", lastXML, "string");
@@ -143,7 +149,7 @@ public class PandroidAgentListener extends Service {
     	                        FileOutputStream fOut = openFileOutput(fileName,
     	                                                                MODE_WORLD_READABLE);
     	                        OutputStreamWriter osw = new OutputStreamWriter(fOut); 
-    	 
+    	                        
     	                        // Write the string to the file
     	                        osw.write(textToWrite);
     	                        /* ensure that everything is

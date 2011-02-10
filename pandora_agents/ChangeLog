@@ -1,3 +1,15 @@
+2011-02-10  Sergio Martin <sergio.martin@artica.es>
+
+	* android/src/pandroid/agent/PandroidAgent.java
+	android/bin/Copy of Copy of Pandroid Agent.apk
+	android/res/drawable-ldpi/logo.png
+	android/res/drawable-ldpi/icon.png
+	android/res/drawable-mdpi/logo.png
+	android/res/drawable-mdpi/icon.png: Removed an unecessary apk
+	file, added icons and logos to low and middle quality, 
+	fixed xml file deletion, setted farscape as default host 
+	and added to the default agent name a unique identifier
+
 2011-02-07  Sergio Martin <sergio.martin@artica.es>
 
 	* android/.project

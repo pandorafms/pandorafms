@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.ComponentName;
 import android.graphics.Color;
+import android.telephony.TelephonyManager;
 
 import java.util.Date;
 import java.lang.Thread;
@@ -28,8 +29,8 @@ public class PandroidAgent extends Activity {
     
     int defaultInterval = 300;
     String defaultServerPort = "41121";
-    String defaultServerAddr = "10.0.2.2";
-    String defaultAgentName = "pandroidAgent";
+    String defaultServerAddr = "farscape.artica.es";
+    String defaultAgentName = "pandroid";
     String defaultGpsStatus = "disabled"; // "disabled" or "enabled"
     
     boolean alarmEnabled;
@@ -46,7 +47,10 @@ public class PandroidAgent extends Activity {
     public void onCreate(Bundle savedInstanceState) {	
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.main);
-                
+        
+        // Customize the agent name with the unique Sim ID
+        defaultAgentName += getSimID();
+        
         // Load the stored data into views
         loadViews();
                 
@@ -82,6 +86,13 @@ public class PandroidAgent extends Activity {
         }
     }
     
+    public String getSimID() {
+        String simID = null;
+        String serviceName = Context.TELEPHONY_SERVICE;
+        TelephonyManager m_telephonyManager = (TelephonyManager) getSystemService(serviceName);
+        simID = m_telephonyManager.getSimSerialNumber();
+        return simID;
+   }
     
     private void putSharedData(String preferenceName, String tokenName, String data, String type) {
 		int mode = Activity.MODE_PRIVATE;

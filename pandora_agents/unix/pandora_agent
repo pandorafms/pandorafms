@@ -39,9 +39,6 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-# Thread list
-my @Threads;
-
 # Load thread support
 eval {
 	local $SIG{__DIE__};
@@ -818,13 +815,22 @@ sub exec_module ($) {
 	my $module = shift;
 
 	# Need something to execute
-	return unless ($module->{'func'} != 0);
+	if ($module->{'func'} == 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 	
 	# Check module interval
-	return unless (++($module->{'counter'}) >= $module->{'interval'});
+	if (++($module->{'counter'}) < $module->{'interval'}) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 
 	# Check module cron
-	return unless (check_module_cron ($module) == 1);
+	if (check_module_cron ($module) != 1) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 	
 	# Reset module counter
 	$module->{'counter'} = 0;
@@ -1273,7 +1279,10 @@ sub exec_plugin ($) {
 	my $output = `$plugin 2>$DevNull`;
 
 	# Do not save the output if there was an error
-	return unless ($? eq 0);
+	if ($? != 0) {
+		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+		return;
+	}
 
 	# Critical section
 	$Sem->down () if (defined ($Sem));
@@ -1391,7 +1400,7 @@ while (1) {
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
-				push (@Threads, $thr);
+				$thr->detach();
 			}
 		# Execute the module
 		} else {
@@ -1409,7 +1418,7 @@ while (1) {
 			if (! defined ($thr)) {
 				$ThreadSem->up ();
 			} else {
-				push (@Threads, $thr);
+				$thr->detach();
 			}
 		# Execute the plugin
 		} else {
@@ -1418,11 +1427,9 @@ while (1) {
 	}
 
 	# Wait for all the threads
-	foreach my $thread (@Threads) {
-		$thread->join ();
-	}
-	@Threads = ();
-
+	$ThreadSem->down ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	$ThreadSem->up ($Conf{'agent_threads'}) if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+	
 	$Xml .= "</agent_data>";
 
 	# Save XML data file

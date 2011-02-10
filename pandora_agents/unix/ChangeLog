@@ -1,3 +1,7 @@
+2011-02-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_agent: Merged from trunk. Thread related fixes.
+
 2010-12-28  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent.spec: Added a release variable as in the rest of the

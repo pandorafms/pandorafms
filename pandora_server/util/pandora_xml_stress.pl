@@ -215,7 +215,7 @@ sub copy_xml_file ($$) {
 	my $tentacle_opts = get_conf_token ($conf, 'tentacle_opts', '');
 	
 	# Send the file and delete it
-	`tentacle_client -a $server_ip -p $server_port $tentacle_opts $file > /dev/null 2>&1`;
+	`tentacle_client -a $server_ip -p $server_port $tentacle_opts "$file" > /dev/null 2>&1`;
 	unlink ($file);
 
 }

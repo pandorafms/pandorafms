@@ -1,3 +1,8 @@
+2011-02-14  Junichi Satoh <junichi@rworks.jp>
+
+	* util/pandora_manage.pl: Merged from trunk. Fixed invalid module
+	id with creation of network module. Network module should be 2.
+
 2011-02-08  Sergio Martin <sergio.martin@artica.es>
 
 	* lib/PandoraFMS/Tools.pm

@@ -1,5 +1,12 @@
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_config.php, include/api.php, godmode/setup/setup.php:
+	added the check by password the actions on API.
+	
+	Pending tasks: #3180793
+
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: fixed the include of extensions, mysql or
 	postgresql for the api call or Pandora Mobile.
 

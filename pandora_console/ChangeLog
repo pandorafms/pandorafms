@@ -1,4 +1,10 @@
 2011-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+	
+	* pandoradb.sql
+	extras/pandoradb_migrate_v3.2_to_v4.0.sql: Added "block_size" and 
+	"flash_chart" columns on tusuario table.
+
+2011-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_config.php: Loads relative_path variable in user 
 	session.

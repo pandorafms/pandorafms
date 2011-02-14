@@ -32,3 +32,10 @@ ALTER TABLE `tnetwork_component` ADD COLUMN `post_process` double(18,13) default
 -- Table `treport_content`
 -- -----------------------------------------------------
 ALTER TABLE treport_content ADD only_display_wrong tinyint(1) unsigned DEFAULT 0 NOT NULL;
+
+-- -----------------------------------------------------
+-- Table `tusuario`
+-- -----------------------------------------------------
+ALTER TABLE `tusuario` ADD COLUMN `block_size` int(4) NOT NULL DEFAULT 20;
+ALTER TABLE `tusuario` ADD COLUMN `flash_chart` int(4) NOT NULL DEFAULT 1;
+

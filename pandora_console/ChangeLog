@@ -1,3 +1,8 @@
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* pandoradb.postgreSQL.sql: added "block_size" and "flash_chart" columns on
+	tusuario table.
+
 2011-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	
 	* pandoradb.sql

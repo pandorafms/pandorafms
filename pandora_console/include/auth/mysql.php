@@ -78,7 +78,14 @@ function process_user_login ($login, $pass) {
 	if (strtolower ($config["auth"]) == 'mysql' || is_user_admin ($login)) {
 	
 		// Connect to Database
-		$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s'", $login);
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = sprintf ("SELECT `id_user`, `password` FROM `tusuario` WHERE `id_user` = '%s'", $login);
+				break;
+			case "postgresql":
+				$sql = sprintf ('SELECT "id_user", "password" FROM "tusuario" WHERE "id_user" = \'%s\'', $login);
+				break;
+		}
 		$row = get_db_row_sql ($sql);
 		
 		//Check that row exists, that password is not empty and that password is the same hash

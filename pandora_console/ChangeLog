@@ -1,5 +1,20 @@
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php: fixed in function "postgresql_insert_id" the
+	lost var. Erased traces in the function "postgresql_process_sql". Added
+	function "postgresql_escape_string_sql".
+	
+	* include/db/mysql.php: fixed duplicated function "mysql_process_sql". And
+	added function "mysql_escape_string_sql".
+	
+	* include/auth/mysql.php: added method to autenticate with postgreSQL.
+	
+	* include/functions_db.php: added functions "select_db_engine",
+	"connect_db". And divided the function "escape_string_sql" into avaliable
+	engines.
+
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php, include/db/mysql.php,
 	include/functions_db.php: initial division of the DB core in several
 	engines, at the moment mysql and postgreSQL (not complete).

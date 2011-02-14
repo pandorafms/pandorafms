@@ -86,12 +86,12 @@ function postgresql_insert_id($dbconnection = '') {
 	if ($dbconnection !== '') {
 		$insert_query = pg_query($dbconnection, "SELECT lastval();");
 		$insert_id = pg_fetch_row($insert_query);
-		$result = $insert_row[0];
+		$result = $insert_id[0];
 	}
 	else {
 		$insert_query = pg_query($config['dbconnection'], "SELECT lastval();");
 		$insert_id = pg_fetch_row($insert_query);
-		$result = $insert_row[0];
+		$result = $insert_id[0];
 	}
 	
 	return $result;
@@ -120,11 +120,6 @@ function postgresql_process_sql($sql, $rettype = "affected_rows", $dbconnection 
 		else {
 			pg_send_query($config['dbconnection'], $sql);
 			$result = pg_get_result($config['dbconnection']);
-			
-			debugPrint($sql);
-			$insert_query = pg_query($config['dbconnection'], "SELECT LASTVAL();");
-			$insert_id = pg_fetch_row($insert_query);
-			debugPrint($insert_row[0]);
 		}
 		$time = microtime (true) - $start;
 		if ($result === false) {
@@ -253,5 +248,19 @@ function postgresql_process_sql_insert($table, $values) {
 	$query .= ' VALUES (' . $values_str . ')';
 	
 	return process_sql($query, 'insert_id');
+}
+
+/**
+ * 
+ * Escape string to set it properly to use in sql queries
+ * 
+ * @param string String to be cleaned.
+ * 
+ * @return string String cleaned.
+ */
+function postgresql_escape_string_sql($string) {
+	$str = pg_escape_string($string);
+
+	return $str;
 }
 ?>

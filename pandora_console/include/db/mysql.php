@@ -80,74 +80,6 @@ function mysql_get_db_all_rows_sql ($sql, $search_history_db = false, $cache = t
 	return false;
 }
 
-function mysql_process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
-	global $config;
-	global $sql_cache;
-	
-	$retval = array();
-	
-	if ($sql == '')
-		return false;
-	
-	if ($cache && ! empty ($sql_cache[$sql])) {
-		$retval = $sql_cache[$sql];
-		$sql_cache['saved']++;
-		add_database_debug_trace ($sql);
-	}
-	else {
-		$start = microtime (true);
-		if ($dbconnection == '') {
-			$result = mysql_query ($sql);
-		}
-		else {
-			$result = mysql_query ($sql, $dbconnection);
-		}
-		$time = microtime (true) - $start;
-		if ($result === false) {
-			$backtrace = debug_backtrace ();
-			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
-				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			add_database_debug_trace ($sql, mysql_error ());
-			set_error_handler ('sql_error_handler');
-			trigger_error ($error);
-			restore_error_handler ();
-			
-			return false;
-		}
-		elseif ($result === true) {
-			if ($rettype == "insert_id") {
-				$result = mysql_insert_id ();
-			}
-			elseif ($rettype == "info") {
-				$result = mysql_info ();
-			}
-			else {
-				$result = mysql_affected_rows ();
-			}
-			
-			add_database_debug_trace ($sql, $result, mysql_affected_rows (),
-				array ('time' => $time));
-			return $result;
-		}
-		else {
-			add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
-				array ('time' => $time));
-			while ($row = mysql_fetch_assoc ($result)) {
-				array_push ($retval, $row);
-			}
-
-			if ($cache === true)
-				$sql_cache[$sql] = $retval;
-			mysql_free_result ($result);
-		}
-	}
-	
-	if (! empty ($retval))
-		return $retval;
-	//Return false, check with === or !==
-	return false;
-}
-
 /**
  * Get all the rows in a table of the database.
  * 
@@ -303,5 +235,19 @@ function mysql_process_sql($sql, $rettype = "affected_rows", $dbconnection = '',
 		return $retval;
 	//Return false, check with === or !==
 	return false;
+}
+
+/**
+ * 
+ * Escape string to set it properly to use in sql queries
+ * 
+ * @param string String to be cleaned.
+ * 
+ * @return string String cleaned.
+ */
+function mysql_escape_string_sql($string) {
+	$str = mysql_real_escape_string($string);
+
+	return $str;
 }
 ?>

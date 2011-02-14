@@ -21,6 +21,32 @@
 
 include_once("include/functions_extensions.php");
 
+function select_db_engine() {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			require_once ('include/db/mysql.php');
+			break;
+		case "postgresql":
+			require_once ('include/db/postgresql.php');
+			break;
+	}
+}
+
+function connect_db($host = null, $db = null, $user = null, $pass = null) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_connect_db($host, $db, $user, $pass);
+			break;
+		case "postgresql":
+			return postgresql_connect_db($host, $db, $user, $pass);
+			break;
+	}
+}
+
 /**
  * When you delete (with the function "process_sql_delete" or other) any row in
  * any table, some times the cache save the data just deleted, because you
@@ -73,11 +99,17 @@ function check_login () {
  * 
  * @return string String cleaned.
  */
-function escape_string_sql ($string) {
+function escape_string_sql($string) {
+	global $config;
 	
-	$str = mysql_real_escape_string($string);
-	
-	return $str;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_escape_string_sql($string);
+			break;
+		case "postgresql":
+			return postgresql_escape_string_sql($string);
+			break;
+	}
 }
 
 

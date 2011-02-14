@@ -1,3 +1,8 @@
+2011-02-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* embedded/INSTALL: Added instructions to cross-compile for
+	  OpenWRT (x86).
+
 2011-02-10  Sergio Martin <sergio.martin@artica.es>
 
 	* android/src/pandroid/agent/PandroidAgent.java

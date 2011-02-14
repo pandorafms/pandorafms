@@ -1,3 +1,7 @@
+2011-02-14  Sancho Lerena <slerena@artica.es>
+
+	* OpenWRT: Special files for OpenWRT/Perl version.
+
 2011-02-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Detach threads to avoid excessive resource usage,

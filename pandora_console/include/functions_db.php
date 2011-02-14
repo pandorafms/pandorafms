@@ -3488,11 +3488,14 @@ function process_sql_insert ($table, $values) {
 		
 		if (is_null ($value)) {
 			$values_str .= "NULL";
-		} elseif (is_int ($value) || is_bool ($value)) {
+		}
+		elseif (is_int ($value) || is_bool ($value)) {
 			$values_str .= sprintf ("%d", $value);
-		} else if (is_float ($value) || is_double ($value)) {
+		}
+		else if (is_float ($value) || is_double ($value)) {
 			$values_str .= sprintf ("%f", $value);
-		} else {
+		}
+		else {
 			$values_str .= sprintf ("'%s'", $value);
 		}
 		

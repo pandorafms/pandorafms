@@ -101,28 +101,32 @@ $table->data[15][0] = __('IP list with API access') .
 $list_ACL_IPs_for_API = get_parameter('list_ACL_IPs_for_API', implode("\n", $config['list_ACL_IPs_for_API']));
 $table->data[15][1] = print_textarea('list_ACL_IPs_for_API', 2, 25, $list_ACL_IPs_for_API, 'style="height: 50px; width: 300px"', true);
 
-$table->data[16][0] = __('Enable GIS features in Pandora Console');
-$table->data[16][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
-$table->data[16][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
+$table->data[16][0] = __('API password') . 
+	print_help_tip (__("Please be careful if you put a password put https access."), true);
+$table->data[16][1] = print_input_text('api_password', $config['api_password'], '', 25, 255, true);
 
-$table->data[19][0] = __('Timezone setup');
-$table->data[19][1] = print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
+$table->data[17][0] = __('Enable GIS features in Pandora Console');
+$table->data[17][1] = __('Yes').'&nbsp;'.print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';
+$table->data[17][1] .= __('No').'&nbsp;'.print_radio_button ('activate_gis', 0, '', $config["activate_gis"], true);
+
+$table->data[20][0] = __('Timezone setup');
+$table->data[20][1] = print_input_text ('timezone', $config["timezone"], '', 25, 25, true);
 
 $sounds = get_sounds();
-$table->data[20][0] = __('Sound for Alert fired');
-$table->data[20][1] = print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
-$table->data[20][1] .= ' <a href="javascript: toggleButton(\'alert\');"><img id="button_sound_alert" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
-$table->data[20][1] .= '<div id="layer_sound_alert"></div>';
+$table->data[21][0] = __('Sound for Alert fired');
+$table->data[21][1] = print_select($sounds, 'sound_alert', $config['sound_alert'], 'replaySound(\'alert\');', '', '', true);
+$table->data[21][1] .= ' <a href="javascript: toggleButton(\'alert\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_alert", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[21][1] .= '<div id="layer_sound_alert"></div>';
 
-$table->data[21][0] = __('Sound for Monitor critical');
-$table->data[21][1] = print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
-$table->data[21][1] .= ' <a href="javascript: toggleButton(\'critical\');"><img id="button_sound_critical" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
-$table->data[21][1] .= '<div id="layer_sound_critical"></div>';
+$table->data[22][0] = __('Sound for Monitor critical');
+$table->data[22][1] = print_select($sounds, 'sound_critical', $config['sound_critical'], 'replaySound(\'critical\');', '', '', true);
+$table->data[22][1] .= ' <a href="javascript: toggleButton(\'critical\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_critical", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[22][1] .= '<div id="layer_sound_critical"></div>';
 
-$table->data[22][0] = __('Sound for Monitor warning');
-$table->data[22][1] = print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
-$table->data[22][1] .= ' <a href="javascript: toggleButton(\'warning\');"><img id="button_sound_warning" style="vertical-align: middle;" src="images/control_play.png" width="16" /></a>';
-$table->data[22][1] .= '<div id="layer_sound_warning"></div>';
+$table->data[23][0] = __('Sound for Monitor warning');
+$table->data[23][1] = print_select($sounds, 'sound_warning', $config['sound_warning'], 'replaySound(\'warning\');', '', '', true);
+$table->data[23][1] .= ' <a href="javascript: toggleButton(\'warning\');">' . print_image("images/control_play.png", true, array("id" => "button_sound_warning", "style" => "vertical-align: middle;", "width" => "16")) . '</a>';
+$table->data[23][1] .= '<div id="layer_sound_warning"></div>';
 ?>
 <script type="text/javascript">
 function toggleButton(type) {

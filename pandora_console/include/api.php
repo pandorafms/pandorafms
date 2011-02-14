@@ -27,10 +27,25 @@ $id2 = get_parameter('id2');
 $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
+$password = get_parameter('pass', '');
 
 $other = parseOtherParameter($otherSerialize, $otherMode);
 
-if (isInACL($ipOrigin)) {
+$apiPassword = get_db_value_filter('value', 'tconfig', array('token' => 'api_password'));
+
+$correctLogin = false;
+if (!empty($apiPassword)) {
+	if ($password === $apiPassword) {
+		$correctLogin = true;
+	}
+}
+else {
+	if (isInACL($ipOrigin)) {
+		$correctLogin = true;
+	}
+}
+
+if ($correctLogin) {
 	if (($op !== 'get') && ($op !== 'set') && ($op !== 'help'))
 			returnError('no_set_no_get_no_help', $returnType);
 	else {

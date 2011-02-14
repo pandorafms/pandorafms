@@ -1,3 +1,12 @@
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged pending task from trunk
+
+	* include/functions_config.php, include/api.php, godmode/setup/setup.php:
+	added the check by password the actions on API.
+	
+	Pending tasks: #3180793
+
 2011-02-07  Sancho Lerena <slerena@artica.es>
 
 	* operation/agentes/estado_generalagente.php: Show description in GIS information

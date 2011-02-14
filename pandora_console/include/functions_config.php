@@ -222,6 +222,8 @@ function update_config () {
 	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 	
+	update_config_value ('api_password', get_parameter('api_password', $config['api_password']));
+	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$locked = enterprise_hook('semaphore_policy_test_and_set');
@@ -588,6 +590,10 @@ function process_config () {
 	
 	if (!isset ($config['can_block_policies'])) {
 		update_config_value ( 'can_block_policies', 0);
+	}
+	
+	if (!isset ($config['api_password'])) {
+		update_config_value( 'api_password', '');
 	}
 
 	/* Finally, check if any value was overwritten in a form */

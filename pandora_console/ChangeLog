@@ -1,3 +1,9 @@
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php: fixed the module search.
+	
+	Fixes: #3181086
+
 2011-02-14 Javier Lanz <javier.lanz@artica.es>
 	* godmode/reporting/reporting_builder.main.php: Table size changed to 90%
 	* godmode/reporting/reporting_builder.item_editor.php: Fixed a small

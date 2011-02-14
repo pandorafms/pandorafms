@@ -355,10 +355,6 @@ print_input_hidden('id_item', $idItem);
 			<td style="vertical-align: top;"><?php echo __('Line separator'); ?></td>
 			<td style=""><?php print_input_text('line', $line, '', 2, 4); ?></td>
 		</tr>
-		<tr id="row_quantity" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
-			<td style=""><?php print_input_text('quantity', $quantity, '', 2, 4); ?></td>
-		</tr>
 	</tbody>
 </table>
 <?php

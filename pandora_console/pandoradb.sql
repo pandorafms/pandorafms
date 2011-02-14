@@ -720,6 +720,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `is_admin` tinyint(1) unsigned NOT NULL default '0',
   `language` varchar(10) default NULL,
   `timezone` varchar(50) default '',
+  `block_size` int(4) NOT NULL DEFAULT 20,
+  `flash_chart` int(4) NOT NULL DEFAULT 1,
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

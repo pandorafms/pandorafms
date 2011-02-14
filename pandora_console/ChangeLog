@@ -1,5 +1,16 @@
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/db/postgresql.php, include/db/mysql.php,
+	include/functions_db.php: initial division of the DB core in several
+	engines, at the moment mysql and postgreSQL (not complete).
+	
+	* include/functions_config.php, include/config_process.php: change source
+	code to use new functions.
+	
+	* install.php: mark the mysql engine (in future select).
+
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* pandoradb.postgreSQL.sql: added "block_size" and "flash_chart" columns on
 	tusuario table.
 

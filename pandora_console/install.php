@@ -495,8 +495,10 @@ function install_step4() {
 					$cfgin = fopen ("include/config.inc.php","r");
 					$cfgout = fopen ($pandora_config,"w");
 					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+					$dbtype = 'mysql'; //TODO set other types
 					$config_new = '<?php
 					// Begin of automatic config file
+					$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgres)
 					$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
 					$config["dbuser"]="pandora";			// DB User
 					$config["dbpass"]="'.$random_password.'";	// DB Password

@@ -59,15 +59,14 @@ else {
 
 $config['start_time'] = microtime (true);
 
-// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
-// If you want persistent connections change it to mysql_pconnect(). 
-$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
-if (! $config['dbconnection']) {
-	include ($config["homedir"]."/general/error_authconfig.php");
-	exit;
-}
-
 $ownDir = dirname(__FILE__) . '/';
+
+require_once ($ownDir . 'functions_db.php');
+require_once ($ownDir . 'functions.php');
+
+select_db_engine();
+connect_db();
+
 
 if (! defined ('EXTENSIONS_DIR'))
 	define ('EXTENSIONS_DIR', 'extensions');
@@ -75,12 +74,9 @@ if (! defined ('EXTENSIONS_DIR'))
 if (! defined ('ENTERPRISE_DIR'))
 	define ('ENTERPRISE_DIR', 'enterprise');
 
-mysql_select_db ($config["dbname"]);
-require_once ($ownDir . 'functions.php');
-require_once ($ownDir . 'functions_db.php');
 require_once ($ownDir. 'functions_config.php');
 
-process_config ();
+process_config();
 
 require_once ($ownDir . 'streams.php');
 require_once ($ownDir . 'gettext.php');
@@ -141,12 +137,13 @@ else {
 // Connect to the history DB
 if (isset($config['history_db_enabled'])) {
 	if ($config['history_db_enabled']) {
-		$config['history_db_connection'] = mysql_connect ($config['history_db_host'] . ':' . $config['history_db_port'], $config['history_db_user'], $config['history_db_pass']);
-		mysql_select_db ($config['history_db_name'], $config['history_db_connection']);
+		$config['history_db_connection'] = connect_db(
+			$config['history_db_host'] . ':' . $config['history_db_port'],
+			$config['history_db_user'],
+			$config['history_db_pass']);
 	}
 }
 
 // Make dbconnection the default connection again (the link identifier of the already opened link will be returned)
-$config['dbconnection'] = mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"]);
-
+connect_db();
 ?>

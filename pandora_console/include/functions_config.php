@@ -231,6 +231,8 @@ function update_config () {
 	update_config_value ('sound_critical', get_parameter('sound_critical', $config['sound_critical']));
 	update_config_value ('sound_warning', get_parameter('sound_warning', $config['sound_warning']));
 	
+	update_config_value ('api_password', get_parameter('api_password', $config['api_password']));
+	
 	$enterprise = enterprise_include_once('include/functions_policies.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
 		$locked = enterprise_hook('semaphore_policy_test_and_set');
@@ -326,7 +328,7 @@ function process_config () {
 	if (!isset ($config['status_images_set'])) {
 		update_config_value ('status_images_set', 'default');
 	}
-
+	
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
@@ -399,6 +401,7 @@ function process_config () {
 			
 			unset($config[$keyConfig]);
 		}
+	
 
 	// This is not set here. The first time, when no
 	// setup is done, update_manager extension manage it
@@ -601,6 +604,10 @@ function process_config () {
 	if (!isset ($config['can_block_policies'])) {
 		update_config_value ( 'can_block_policies', 0);
 	}
+	
+	if (!isset ($config['api_password'])) {
+		update_config_value( 'api_password', '');
+	}
 
 	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user']))) {
 
@@ -614,6 +621,6 @@ function process_config () {
 		}
 	}	
 	/* Finally, check if any value was overwritten in a form */
-	update_config ();
+	update_config();
 }
 ?>

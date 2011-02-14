@@ -2168,44 +2168,17 @@ function get_db_sql ($sql, $field = 0, $search_history_db = false) {
  * @return mixed A matrix with all the values returned from the SQL statement or
  * false in case of empty result
  */
-function get_db_all_rows_sql ($sql, $search_history_db = false, $cache = true) {
+function get_db_all_rows_sql($sql, $search_history_db = false, $cache = true) {
 	global $config;
-	$history = array ();
-
-	// To disable globally SQL cache depending on global variable.
-	// Used in several critical places like Metaconsole trans-server queries
-	if (isset($config["dbcache"]))
-		$cache = $config["dbcache"];
-
-	// Read from the history DB if necessary
-	if ($search_history_db) {
-		$cache = false;
-		$history = false;
-		
-		if (isset($config['history_db_connection']))
-			$history = process_sql ($sql, 'affected_rows', $config['history_db_connection'], false);
-			
-		if ($history === false) {
-			$history = array ();
-		}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_rows_sql($sql, $search_history_db, $cache);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_rows_sql($sql, $search_history_db, $cache);
+			break;
 	}
-
-	$return = process_sql ($sql, 'affected_rows', $config['dbconnection'], $cache);
-	if ($return === false) {
-		return false;
-	}
-
-	// Append result to the history DB data
-	if (! empty ($return)) {
-		foreach ($return as $row) {
-			array_push ($history, $row);
-		}
-	}
-
-	if (! empty ($history))
-		return $history;
-	//Return false, check with === or !==
-	return false;
 }
 
 /** 
@@ -2374,71 +2347,17 @@ function clean_cache() {
  *
  * @return mixed An array with the rows, columns and values in a multidimensional array or false in error
  */
-function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
+function process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $cache = true) {
 	global $config;
-	global $sql_cache;
 	
-	$retval = array();
-	
-	if ($sql == '')
-		return false;
-	
-	if ($cache && ! empty ($sql_cache[$sql])) {
-		$retval = $sql_cache[$sql];
-		$sql_cache['saved']++;
-		add_database_debug_trace ($sql);
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_process_sql($sql, $rettype, $dbconnection, $cache);
+			break;
+		case "postgresql":
+			return postgresql_process_sql($sql, $rettype, $dbconnection, $cache);
+			break;
 	}
-	else {
-		$start = microtime (true);
-		if ($dbconnection == '') {
-			$result = mysql_query ($sql);
-		}
-		else {
-			$result = mysql_query ($sql, $dbconnection);
-		}
-		$time = microtime (true) - $start;
-		if ($result === false) {
-			$backtrace = debug_backtrace ();
-			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
-				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
-			add_database_debug_trace ($sql, mysql_error ());
-			set_error_handler ('sql_error_handler');
-			trigger_error ($error);
-			restore_error_handler ();
-			return false;
-		}
-		elseif ($result === true) {
-			if ($rettype == "insert_id") {
-				$result = mysql_insert_id ();
-			}
-			elseif ($rettype == "info") {
-				$result = mysql_info ();
-			}
-			else {
-				$result = mysql_affected_rows ();
-			}
-			
-			add_database_debug_trace ($sql, $result, mysql_affected_rows (),
-				array ('time' => $time));
-			return $result;
-		}
-		else {
-			add_database_debug_trace ($sql, 0, mysql_affected_rows (), 
-				array ('time' => $time));
-			while ($row = mysql_fetch_assoc ($result)) {
-				array_push ($retval, $row);
-			}
-
-			if ($cache === true)
-				$sql_cache[$sql] = $retval;
-			mysql_free_result ($result);
-		}
-	}
-	
-	if (! empty ($retval))
-		return $retval;
-	//Return false, check with === or !==
-	return false;
 }
 
 /**
@@ -2451,10 +2370,15 @@ function process_sql ($sql, $rettype = "affected_rows", $dbconnection = '', $cac
  * @return mixed A matrix with all the values in the table
  */
 function get_db_all_rows_in_table ($table, $order_field = "", $order = 'ASC') {
-	if ($order_field != "") {
-		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY ".$order_field . " " . $order);
-	} else {	
-		return get_db_all_rows_sql ("SELECT * FROM `".$table."`");
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_get_db_all_rows_in_table($table, $order_field, $order);
+			break;
+		case "postgresql":
+			return postgresql_get_db_all_rows_in_table($table, $order_field, $order);
+			break;
 	}
 }
 
@@ -3470,48 +3394,16 @@ function get_modulegroup_name ($modulegroup_id) {
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function process_sql_insert ($table, $values) {
-	 //Empty rows or values not processed
-	if (empty ($values))
-		return false;
+	global $config;
 	
-	$values = (array) $values;
-		
-	$query = sprintf ("INSERT INTO `%s` ", $table);
-	$fields = array ();
-	$values_str = '';
-	$i = 1;
-	$max = count ($values);
-	foreach ($values as $field => $value) { //Add the correct escaping to values
-		if ($field[0] != "`") {
-			$field = "`".$field."`";
-		}
-		
-		array_push ($fields, $field);
-		
-		if (is_null ($value)) {
-			$values_str .= "NULL";
-		}
-		elseif (is_int ($value) || is_bool ($value)) {
-			$values_str .= sprintf ("%d", $value);
-		}
-		else if (is_float ($value) || is_double ($value)) {
-			$values_str .= sprintf ("%f", $value);
-		}
-		else {
-			$values_str .= sprintf ("'%s'", $value);
-		}
-		
-		if ($i < $max) {
-			$values_str .= ",";
-		}
-		$i++;
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_process_sql_insert ($table, $values);
+			break;
+		case "postgresql":
+			return postgresql_process_sql_insert ($table, $values);
+			break;
 	}
-	
-	$query .= '('.implode (', ', $fields).')';
-	
-	$query .= ' VALUES ('.$values_str.')';
-	
-	return process_sql ($query, 'insert_id');
 }
 
 /**

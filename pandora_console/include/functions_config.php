@@ -46,9 +46,18 @@ function update_config_value ($token, $value) {
 	
 	switch ($token) {
 		case 'list_ACL_IPs_for_API':
-			$rows = get_db_all_rows_sql('SELECT id_config
-				FROM tconfig 
-				WHERE token LIKE "%list_ACL_IPs_for_API_%"');
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$rows = get_db_all_rows_sql('SELECT id_config
+						FROM tconfig 
+						WHERE token LIKE "%list_ACL_IPs_for_API_%"');
+					break;
+				case "postgresql":
+					$rows = get_db_all_rows_sql("SELECT id_config
+						FROM tconfig 
+						WHERE token LIKE '%list_ACL_IPs_for_API_%'");
+					break;
+			}
 			
 			if ($rows !== false) {
 				foreach ($rows as $row)

@@ -37,7 +37,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '80%';
+$table->width = '90%';
 $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->head = array ();

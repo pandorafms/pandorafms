@@ -1,3 +1,8 @@
+2011-02-14 Javier Lanz <javier.lanz@artica.es>
+	* godmode/reporting/reporting_builder.main.php: Table size changed to 90%
+	* godmode/reporting/reporting_builder.item_editor.php: Fixed a small
+	problem with an old field
+
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_config.php, include/api.php, godmode/setup/setup.php:

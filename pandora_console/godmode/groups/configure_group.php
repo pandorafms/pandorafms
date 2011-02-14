@@ -31,6 +31,7 @@ $id_parent = 0;
 $alerts_disabled = 0;
 $custom_id = "";
 $propagate = 0;
+$skin = 0;
 
 $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
@@ -44,6 +45,7 @@ if ($id_group) {
 		$id_parent = $group["parent"];
 		$custom_id = $group["custom_id"];
 		$propagate = $group["propagate"];
+		$skin = $group["id_skin"];
 	} else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
 		echo "</table>"; 
@@ -97,6 +99,12 @@ $table->data[4][1] = print_checkbox('propagate', 1, $propagate, true);
 
 $table->data[5][0] = __('Custom ID');
 $table->data[5][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
+
+$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+	$table->data[6][0] = __('Skin');
+	$table->data[6][1] = print_select_skins($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
+}
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';
 print_table ($table);

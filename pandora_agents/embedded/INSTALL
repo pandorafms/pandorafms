@@ -16,8 +16,8 @@ In a ubuntu/debian linux package names are
   * automake1.9
   * pkg-config
 
-Cross compiling
----------------
+Cross compiling for ARM
+-----------------------
 
 Edit apt sources (debian only, sorry!)
 
@@ -31,13 +31,30 @@ Download a specific packages for crosscompiling (in my case ARM for GCC-4.3)
   
 Build for ARM: 
 
-   ./configure --host=arm-linuxº
-   ./make 
+   ./configure --host=arm-linux
+   make 
 
 Check your GCC version is using the ARM binary.
 
+
+Cross compiling for OpenWRT (x86)
+---------------------------------
+
+Get the OpenWRT SDK:
+ 
+ cd /root
+ wget -c http://downloads.openwrt.org/kamikaze/8.09.2/x86/OpenWrt-SDK-x86-for-Linux-i686.tar.bz2
+ tar jxvf OpenWrt-SDK-x86-for-Linux-i686.tar.bz2
+ export PATH=$PATH:/root/OpenWrt-SDK-x86-for-Linux-i686/staging_dir/toolchain-i386_gcc4.1.2/bin
+
+Compile:
+
+ ./configure --host=i386-linux-uclibc
+ make
+
+
 Basic installation
---------------
+------------------
 
 The simplest way to compile this package is:
 

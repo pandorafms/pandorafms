@@ -1,0 +1,58 @@
+Perl Agent
+===========
+
+Dependencies
+------------
+
+This is the generic Unix package, developed in Perl. In order to use it, you need to install a few packages first. This will be done using opkg (command line packager tool):
+
+opkg install perl
+opkg install perlbase-autoloader
+opkg install perlbase-base 
+opkg install perlbase-config 
+opkg install perlbase-errno
+opkg install perlbase-essential 
+opkg install perlbase-fcntl 
+opkg install perlbase-file 
+opkg install perlbase-hostname 
+opkg install perlbase-io 
+opkg install perlbase-posix 
+opkg install perlbase-selectsaver 
+opkg install perlbase-socket 
+opkg install perlbase-symbol 
+opkg install perlbase-sys 
+opkg install perlbase-tie 
+opkg install perlbase-xsloader 
+opkg install coreutils-nohup
+opkg install perlbase-getopt
+
+Install procedure
+-----------------
+
+Step 1 - Get the latest package and copy to /tmp, you can get the latest package at:
+
+  http://sourceforge.net/projects/pandora/files/Pandora%20FMS%203.2/Stable%20release/Unix%20%28Tarball%29/pandorafms_agent_unix-3.2.tar.gz/download
+
+Note: You will get a special version of the launcher, you can get it from our SVN repository and replace the perl daemon launcher with this special version for OpenWRT. Just replace it after do the package install for the Unix/Perl generic agent.
+
+Step 2 - Install it
+
+ cd /tmp
+ tar xvzf pandorafms_agent_unix-3.2.tar.gz
+ cd unix
+ ./pandora_agent --install 
+
+Step 3 - Create the startup link to run pandora agent when device restarts
+
+ ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/S99pandora_agent
+
+Step 4 - Customize the agent name and server_ip for this device
+
+ vi /etc/pandora/pandora_agent.conf
+
+Alter line "agent_name" for the devicename you want
+
+Step 5 - Start it manually:
+
+  /etc/init.d/pandora_agent_daemon start
+

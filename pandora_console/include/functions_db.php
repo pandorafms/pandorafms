@@ -19,17 +19,17 @@
  * @subpackage DataBase
  */
 
-include_once("include/functions_extensions.php");
+include_once($config['homedir'] . "/include/functions_extensions.php");
 
 function select_db_engine() {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			require_once ('include/db/mysql.php');
+			require_once ($config['homedir'] . '/include/db/mysql.php');
 			break;
 		case "postgresql":
-			require_once ('include/db/postgresql.php');
+			require_once ($config['homedir'] . '/include/db/postgresql.php');
 			break;
 	}
 }

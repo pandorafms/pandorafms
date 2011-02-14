@@ -659,7 +659,9 @@ CREATE TABLE "tusuario" (
 	"phone" varchar(100) default NULL,
 	"is_admin" SMALLINT NOT NULL default 0,
 	"language" varchar(10) default NULL,
-	"timezone" varchar(50) default ''
+	"timezone" varchar(50) default '',
+	"block_size" INTEGER NOT NULL default 20,
+	"flash_chart" INTEGER NOT NULL default 1,
 );
 
 CREATE TABLE "tusuario_perfil" (

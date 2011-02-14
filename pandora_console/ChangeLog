@@ -1,5 +1,10 @@
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/functions_db.php: fixed the include of extensions, mysql or
+	postgresql for the api call or Pandora Mobile.
+
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/db/postgresql.php: fixed in function "postgresql_insert_id" the
 	lost var. Erased traces in the function "postgresql_process_sql". Added
 	function "postgresql_escape_string_sql".

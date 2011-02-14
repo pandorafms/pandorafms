@@ -1,4 +1,12 @@
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	Merged bugfix from trunk
+
+	* include/functions_db.php: fixed the module search.
+	
+	Fixes: #3181086
+
+2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged pending task from trunk
 

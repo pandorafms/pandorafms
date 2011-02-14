@@ -704,6 +704,9 @@ function get_agent_modules ($id_agent, $details = false, $filter = false, $index
 				if ($value[0] == '%') {
 					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
+				else if ($value[0] . $value[1] == '<>') {
+					array_push($fields, $field.' <> ' . substr($value, 2));
+				}
 				else if (substr($value, -1) == '%') {
 					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}

@@ -19,6 +19,8 @@
  * @subpackage DataBase
  */
 
+include_once("include/functions_extensions.php");
+
 /**
  * When you delete (with the function "process_sql_delete" or other) any row in
  * any table, some times the cache save the data just deleted, because you

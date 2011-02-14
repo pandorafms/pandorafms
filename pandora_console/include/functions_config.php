@@ -240,6 +240,10 @@ function update_config () {
 	else {
 		update_config_value ('can_block_policies', get_parameter('can_block_policies', $config['can_block_policies']));
 	}
+	$enterprise = enterprise_include_once ('include/functions_skins.php');
+	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
+		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
+	}
 	
 }
 
@@ -313,7 +317,7 @@ function process_config () {
 	if (!isset ($config['status_images_set'])) {
 		update_config_value ('status_images_set', 'default');
 	}
-	
+
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];
@@ -386,7 +390,6 @@ function process_config () {
 			
 			unset($config[$keyConfig]);
 		}
-	
 
 	// This is not set here. The first time, when no
 	// setup is done, update_manager extension manage it
@@ -590,6 +593,17 @@ function process_config () {
 		update_config_value ( 'can_block_policies', 0);
 	}
 
+	if (!isset ($config['relative_path']) && (isset ($_POST['nick']) || isset ($config['id_user']))) {
+
+		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+		if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {		
+			if(isset($config['id_user']))
+				$relative_path = enterprise_hook('set_image_skin_path',array($config['id_user']));
+			else
+				$relative_path = enterprise_hook('set_image_skin_path',array($_POST['nick']));
+			$config['relative_path'] = $relative_path;
+		}
+	}	
 	/* Finally, check if any value was overwritten in a form */
 	update_config ();
 }

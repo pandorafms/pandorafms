@@ -1,3 +1,16 @@
+2011-02-14 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_config.php: Loads relative_path variable in user 
+	session.
+	* include/functions_db.php: Added include call to 
+	functions_extensions.php.
+	* godmode/groups/configure_group.php 
+	godmode/groups/group_list.php: Added functionality to assign a skin to 
+	a group.   
+	* godmode/menu.php: Added an entry to skins submenu.
+	* godmode/users/configure_user.php: Added functionality to assign a skin to 
+	a user.   
+
 2011-02-09 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.data.postgreSQL.sql: added the first version of data of Pandora

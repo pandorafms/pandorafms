@@ -62,6 +62,7 @@ if ($new_user && $config['admin_can_add_user']) {
 	$user_info['comments'] = '';
 	$user_info['is_admin'] = 0;
 	$user_info['language'] = $config["language"];
+	$user_info['id_skin'] = '';
 }
 
 if ($create_user) {
@@ -82,6 +83,7 @@ if ($create_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0);
 	$values['language'] = get_parameter ('language', $config["language"]);
+	$values['id_skin'] = get_parameter ('skin', 0);
 	
 	if ($id == '') {
 		print_error_message (__('User ID cannot be empty'));
@@ -109,7 +111,7 @@ if ($create_user) {
 			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
-			' Laguage: ' . $values['language'];
+			' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'];
 		
 		$result = create_user ($id, $password_new, $values);
 
@@ -145,6 +147,7 @@ if ($update_user) {
 	$values['comments'] = (string) get_parameter ('comments');
 	$values['is_admin'] = get_parameter ('is_admin', 0 );
 	$values['language'] = (string) get_parameter ('language', $config["language"]);
+	$values['id_skin'] = get_parameter ('skin', 0);
 
 	$res1 = update_user ($id, $values);
 	
@@ -167,7 +170,7 @@ if ($update_user) {
 				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 				' Is_admin: ' . $values['is_admin'] .
-				' Laguage: ' . $values['language'];
+				' Language: ' . $values['language'] . ' Skin: ' . $values['id_skin'];
 			
 			pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
@@ -278,6 +281,25 @@ $table->data[8][1] = print_input_text_extended ("phone", $user_info['phone'],
 $table->data[9][0] = __('Comments');
 $table->data[9][1] = print_textarea ("comments", 2, 65, $user_info['comments'],
 	($view_mode ? 'readonly="readonly"' : ''), true);
+
+// If we want to create a new user, skins displayed are the skins of the creator's group. If we want to update, skins displayed are the skins of the modified user.  
+if ($new_user){
+	$usr_groups = (get_user_groups($config['id_user']));
+	$id_usr = $config['id_user'];
+}else{
+	$usr_groups = (get_user_groups($id));
+	$id_usr = $id;
+}
+
+// User only can change skins if has more than one group 
+if (count($usr_groups) > 1){
+
+	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$table->data[10][0] = __('Skin');
+		$table->data[10][1] = print_select_skins($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+	}
+}
 
 echo '<form method="post">';
 

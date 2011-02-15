@@ -1,3 +1,8 @@
+2011-02-15 Javier Lanz <javier.lanz@argica.es>
+	* godmode/groups/group_list.php: Fixed ACL checkings
+
+	Fix #3175824
+
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: added in function "get_agent_modules" the

@@ -1,4 +1,17 @@
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* include/functions_db.php: added in function "get_agent_modules" the
+	default value null for get modules of agents in user's group.
+	
+	* godmode/massive/massive_delete_modules.php: fixed the select of modules
+	now get only the modules of agents in user's group and now you can delete
+	and view correcly the modules with acent or other not ascii characters.
+
+	Fixes: #3182143 and #3175722
+
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	Merged bugfix from trunk
 	

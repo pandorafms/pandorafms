@@ -22,7 +22,11 @@ check_login();
 require_once("include/functions_groups.php");
 
 if (is_ajax ()) {
-	check_acl($config['id_user'], 0, "AR");
+	if (! give_acl($config['id_user'], 0, "AR")) {
+		pandora_audit("ACL Violation", "Trying to access Group Management");
+		require ("general/noaccess.php");
+		return;
+	}
 	
 	$get_group_json = (bool) get_parameter ('get_group_json');
 	$get_group_agents = (bool) get_parameter ('get_group_agents');

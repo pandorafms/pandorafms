@@ -109,7 +109,7 @@ if ($create_user) {
 			' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 			' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 			' Is_admin: ' . $values['is_admin'] .
-			' Laguage: ' . $values['language'];
+			' Language: ' . $values['language'];
 		
 		$result = create_user ($id, $password_new, $values);
 
@@ -167,7 +167,7 @@ if ($update_user) {
 				' Lastname: ' . $values['lastname'] . ' Email: ' . $values['email'] . 
 				' Phone: ' . $values['phone'] . ' Comments: ' . $values['comments'] .
 				' Is_admin: ' . $values['is_admin'] .
-				' Laguage: ' . $values['language'];
+				' Language: ' . $values['language'];
 			
 			pandora_audit("User management", "Updated user ".safe_input($id),
 				false, false, $info);
@@ -255,13 +255,16 @@ if ($config['user_can_update_password']) {
 		'', 15, 255, $view_mode, '', '', true, true);
 }
 
+$own_info = get_user_info ($config['id_user']);
 if ($config['admin_can_make_admin']) {
 	$table->data[6][0] = __('Global Profile');
-	$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
-	$table->data[6][1] .= __('Administrator');
-	$table->data[6][1] .= print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
-	$table->data[6][1] .= '<br />';
-	
+	$table->data[6][1] = '';
+	if ($own_info['is_admin'] || $user_info['is_admin']){
+		$table->data[6][1] = print_radio_button ('is_admin', 1, '', $user_info['is_admin'], true);
+		$table->data[6][1] .= __('Administrator');
+		$table->data[6][1] .= print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"), true);
+		$table->data[6][1] .= '<br />';
+	}
 	$table->data[6][1] .= print_radio_button ('is_admin', 0, '', $user_info['is_admin'], true);
 	$table->data[6][1] .= __('Standard User');
 	$table->data[6][1] .= print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"), true);
@@ -341,7 +344,7 @@ $data = array ();
 $data[0] = '<form method="post">';
 $data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
 	0, true, false, false);
-$data[1] = print_select_groups($config['id_user'], "UM", true,
+$data[1] = print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
 	'assign_group', -1, '', __('None'), -1, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);
 $data[2] .= print_input_hidden ('id', $id, true);

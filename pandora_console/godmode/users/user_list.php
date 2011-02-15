@@ -140,11 +140,22 @@ $table->align[3] = "center";
 $table->align[5] = "center";
 $table->size[5] = 40;
 
-$info = array ();
+$info1 = array ();
 
-$info = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
+$info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
 			'limit' => (int) $config['block_size']));
-			
+
+$info = array();
+$own_info = get_user_info ($config['id_user']);	
+
+if ($own_info['is_admin'])
+	$info = $info1;
+// If user is not admin then don't display admin users.
+else
+	foreach ($info1 as $key => $usr)
+		if (!$usr['is_admin'])
+			$info[$key] = $usr;
+
 // Prepare pagination
 pagination (count(get_users ()));
 

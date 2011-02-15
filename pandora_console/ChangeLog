@@ -1,3 +1,13 @@
+2011-02-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/users/user_list.php: Only display administrator users if
+	current user is administrator too. 
+	* godmode/users/configure_user.php: Only administrator can create
+	administrator users. Only administrator users can assign group "All" to
+	a profile.  
+
+	Fixes: #3180761
+
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* pandoradb.postgreSQL.sql, pandoradb.data.postgreSQL.sql: added column

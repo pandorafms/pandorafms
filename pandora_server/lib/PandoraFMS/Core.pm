@@ -571,7 +571,16 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 
 	# Execute actions
 	foreach my $action (@actions) {
-		pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
+		
+		# Check the action threshold (template_action_threshold takes precedence over action_threshold)
+		my $threshold = 0;
+		$threshold = $action->{'action_threshold'} if (defined ($action->{'action_threshold'}) && $action->{'action_threshold'} > 0);
+		$threshold = $action->{'module_action_threshold'} if (defined ($action->{'module_action_threshold'}) && $action->{'module_action_threshold'} > 0);
+		if (time () >= ($action->{'last_execution'} + $threshold)) {
+			pandora_execute_action ($pa_config, $data, $agent, $alert, $alert_mode, $action, $module, $dbh, $timestamp, $extra_macros);
+		} else {
+			logger ($pa_config, "Skipping action " . $action->{'name'} . " for alert '" . $alert->{'name'} . "' module '" . $module->{'nombre'} . "'.", 10);
+		}
 	}
 
 	# Generate an event
@@ -675,6 +684,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	# Unknown
 	} else {
 		logger($pa_config, "Unknown action '" . $action->{'name'} . "' for alert '". $alert->{'name'} . "' agent '" . (defined ($agent) ? $agent->{'nombre'} : 'N/A') . "'.", 3);
+	}
+	
+	# Update action last execution date
+	if (defined ($action->{'last_execution'}) && defined ($action->{'id'})) {
+		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ? WHERE id = ?', time (), $alert->{'id'});
 	}
 }
 

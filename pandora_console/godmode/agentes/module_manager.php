@@ -55,6 +55,12 @@ if ($prediction_available)
 	$modules['predictionserver'] = __('Create a new prediction server module');
 
 enterprise_hook ('set_enterprise_module_types', array (&$modules));
+
+$sec2 = get_parameter('sec2', '');
+if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
+	unset($modules['predictionserver']);
+}
+
 print_select ($modules, 'moduletype', '', '', '', '', false, false, false);
 print_input_hidden ('edit_module', 1);
 echo '</td>';

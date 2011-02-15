@@ -93,10 +93,11 @@ if (give_acl ($config['id_user'], 0, "LM")) {
 	
 	$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 	
-	$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
-	
+	if (give_acl ($config['id_user'], 0, "PM")) {
+		$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
+	}
 	$sub["godmode/alerts/alert_compounds"]["text"] = __('Correlation');
-	
+
 	$menu["galertas"]["sub"] = $sub;
 }
 

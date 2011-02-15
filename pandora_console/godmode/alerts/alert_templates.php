@@ -106,11 +106,13 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
-// Header
-print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-
 $update_template = (bool) get_parameter ('update_template');
 $delete_template = (bool) get_parameter ('delete_template');
+
+// This prevents to duplicate the header in case delete_templete action is performed
+if (!$delete_template) 
+// Header
+print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
 
 if ($update_template) {
 	$id = (int) get_parameter ('id');
@@ -129,9 +131,28 @@ if ($update_template) {
 		__('Could not be updated'));
 }
 
+// If user tries to delete a template with group=ALL then must have "PM" access privileges
 if ($delete_template) {
 	$id = get_parameter ('id');
-	
+	$al_template = get_alert_template($id);
+
+	if ($al_template !== false){
+		if ($al_template['id_group'] == 0){
+			if (! give_acl ($config['id_user'], 0, "PM")) {
+				pandora_audit("ACL Violation",
+					"Trying to access Alert Management");
+				require ("general/noaccess.php");
+				exit;
+			}else
+				// Header
+				print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+		}else
+			// Header
+			print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);		
+	}else
+		// Header
+		print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+
 	$result = delete_alert_template ($id);
 	
 	if ($result) {

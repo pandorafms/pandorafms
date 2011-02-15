@@ -1,5 +1,10 @@
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* operation/visual_console/render_view.php: fixed the link to edit
+	visual console.
+
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/search_users.php: fixed unclose parentheses.
 
 2011-02-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>

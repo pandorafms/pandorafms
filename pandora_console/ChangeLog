@@ -1,3 +1,10 @@
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+	
+	Merged bugfix from trunk
+	
+	* godmode/groups/group_list.php: refixed the position of check login for
+	check in normal access and ajax access.
+
 2011-02-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/menu.php: "godmode > manage alert > commands" tab only 

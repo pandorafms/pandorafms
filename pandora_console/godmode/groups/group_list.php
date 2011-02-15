@@ -17,6 +17,8 @@
 // Load global vars
 global $config;
 
+check_login();
+
 require_once("include/functions_groups.php");
 
 if (is_ajax ()) {
@@ -70,8 +72,6 @@ if (is_ajax ()) {
 
 	return;
 }
-
-check_login();
 
 if (! give_acl($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",

@@ -1,3 +1,20 @@
+2011-02-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/menu.php: "godmode > manage alert > commands" tab only 
+	displayed when user privileges are "PM".
+	* pandoradb_data.sql: Changed "Alert management" field to 1 in 
+	"Chief Operator" row of tperfil table.
+	* godmode/alerts/alert_templates.php: If user tries to delete a 
+	template with group=ALL then must have "PM" access privileges.
+	* godmode/alerts/configure_alert_template.php: If user tries to duplicate
+	/edit a template with group=ALL then must have "PM" access privileges.
+	* godmode/alerts/alert_actions.php: If user tries to duplicate/delete an 
+	action with group=ALL then must have "PM" access privileges.
+	* godmode/alerts/configure_alert_action.php: If user tries to edit an 
+	action with group=ALL then must have "PM" access privileges.
+
+	Fixes: #3180735	
+
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 	
 	Merged bugfix from trunk

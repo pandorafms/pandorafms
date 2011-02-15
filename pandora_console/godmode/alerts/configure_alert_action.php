@@ -29,6 +29,26 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 
 $id = (int) get_parameter ('id');
 
+$al_action = get_alert_action ($id);
+
+if ($al_action !== false){
+	if ($al_action['id_group'] == 0){
+		if (! give_acl ($config['id_user'], 0, "PM")) {
+			pandora_audit("ACL Violation",
+				"Trying to access Alert Management");
+			require ("general/noaccess.php");
+			exit;
+		}else
+			// Header
+			print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+	
+	}else
+		// Header
+		print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+}else
+	// Header
+	print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	
+
 $name = '';
 $id_command = '';
 $field1 = '';
@@ -45,8 +65,6 @@ if ($id) {
 	$field3 = $action['field3'];
 	$group = $action ['id_group'];
 }
-// Header
-print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
 
 $table->width = '90%';
 $table->style = array ();

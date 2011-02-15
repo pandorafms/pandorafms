@@ -26,12 +26,36 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
-// Header
-print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
-
 
 $duplicate_template = (bool) get_parameter ('duplicate_template');
 $id = (int) get_parameter ('id');
+
+// If user tries to duplicate/edit a template with group=ALL then must have "PM" access privileges 
+if ($duplicate_template) {
+	$source_id = (int) get_parameter ('source_id');
+	$a_template = get_alert_template($source_id);
+}else{
+	$a_template = get_alert_template($id);
+}
+
+if ($a_template !== false){
+	if ($a_template['id_group'] == 0){
+		if (! give_acl ($config['id_user'], 0, "PM")) {
+			pandora_audit("ACL Violation",
+				"Trying to access Alert Management");
+			require ("general/noaccess.php");
+			exit;
+		}else
+			// Header
+			print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+	}else
+		// Header
+		print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);		
+// This prevents to duplicate the header in case duplicate/edit_template action is performed
+}else
+	// Header
+	print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+
 
 if ($duplicate_template) {
 	$source_id = (int) get_parameter ('source_id');

@@ -39,16 +39,37 @@ if (is_ajax ()) {
 	return;
 }
 
-// Header
-print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
-
 $update_action = (bool) get_parameter ('update_action');
 $create_action = (bool) get_parameter ('create_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $copy_action = (bool) get_parameter ('copy_action');
 
+if ((!$copy_action) && (!$delete_action))
+	// Header
+	print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+
 if ($copy_action) {
 	$id = get_parameter ('id');
+
+	$al_action = get_alert_action ($id);
+
+	if ($al_action !== false){
+		if ($al_action['id_group'] == 0){
+			if (! give_acl ($config['id_user'], 0, "PM")) {
+				pandora_audit("ACL Violation",
+					"Trying to access Alert Management");
+				require ("general/noaccess.php");
+				exit;
+			}else
+				// Header
+				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		}else
+			// Header
+			print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);		
+	}else
+		// Header
+		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+
 	
 	$result = clone_alert_action ($id);
 	
@@ -95,6 +116,25 @@ if ($create_action) {
 
 if ($update_action) {
 	$id = (string) get_parameter ('id');
+
+	$al_action = get_alert_action ($id);
+
+	if ($al_action !== false){
+		if ($al_action['id_group'] == 0){
+			if (! give_acl ($config['id_user'], 0, "PM")) {
+				pandora_audit("ACL Violation",
+					"Trying to access Alert Management");
+				require ("general/noaccess.php");
+				exit;
+			}else
+				// Header
+				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		}
+	}else
+		// Header
+		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+
+
 	$name = (string) get_parameter ('name');
 	$id_alert_command = (int) get_parameter ('id_command');
 	$field1 = (string) get_parameter ('field1');
@@ -129,7 +169,27 @@ if ($update_action) {
 
 if ($delete_action) {
 	$id = get_parameter ('id');
-	
+
+	$al_action = get_alert_action ($id);
+
+	if ($al_action !== false){
+		if ($al_action['id_group'] == 0){
+			if (! give_acl ($config['id_user'], 0, "PM")) {
+				pandora_audit("ACL Violation",
+					"Trying to access Alert Management");
+				require ("general/noaccess.php");
+				exit;
+			}else
+				// Header
+				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+		}else
+				// Header
+				print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);	
+	}else
+		// Header
+		print_page_header (__('Alerts').' &raquo; '.__('Alert actions'), "images/god2.png", false, "", true);
+
+
 	$result = delete_alert_action ($id);
 	
 	if ($result) {
@@ -180,11 +240,11 @@ foreach ($actions as $action) {
 		$action['name'].'</a>';
 	$data[1] = print_group_icon ($action["id_group"], true) .'&nbsp;'. get_group_name ($action["id_group"], true);
 	$data[2] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&copy_action=1&id='.$action['id'].'"
-		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		'<img src="images/copy.png"></a>';
+		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">' .
+		print_image("images/copy.png", true) . '</a>';
 	$data[3] = '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_actions&delete_action=1&id='.$action['id'].'"
 		onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">'.
-		'<img src="images/cross.png"></a>';
+		print_image("images/cross.png", true) . '</a>';
 	
 	array_push ($table->data, $data);
 }

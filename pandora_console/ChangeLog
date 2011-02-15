@@ -1,3 +1,7 @@
+2011-02-15 Javier Lanz <javier.lanz@artica.es>
+	* godmode/users/configure_user.php: Truncated group name on user detail
+	editor
+
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/agentes/module_manager.php: erased the "prediction module" for

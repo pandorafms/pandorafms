@@ -108,9 +108,13 @@ $table->size[1] = '85%';
 $table->data = array ();
 
 $table->data[0][0] = __('Modules');
-$modules = array ();
-$modules = get_db_all_rows_filter ('tagente_modulo', false, 'DISTINCT(nombre)');
-$table->data[0][1] = print_select (index_array ($modules, 'nombre', 'nombre'),
+
+$modules = get_agent_modules();
+$modulesSelect = array();
+foreach ($modules as $module) {
+	$modulesSelect[$module] = $module;
+}
+$table->data[0][1] = print_select($modulesSelect,
 	'module_name', $module_name, false, __('Select'), '', true);
 
 $table->data[1][0] = __('Group');

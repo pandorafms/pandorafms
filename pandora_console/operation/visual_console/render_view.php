@@ -54,8 +54,8 @@ if (! give_acl ($config["id_user"], $id_group, "AR")) {
 // Render map
 $options = array();
 
-if (give_acl ($config["id_user"], $id_group, "AW")){
-	$options['setup']['text'] = '<a href="index.php?sec=gmap&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
+if (give_acl ($config["id_user"], $id_group, "AW")) {
+	$options['setup']['text'] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=data&action=edit&id_visual_console='.$id_layout.'">'.print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$options['setup']['active'] = false;
 }
 
@@ -63,7 +63,8 @@ if ($config["pure"] == 0) {
 	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'&amp;pure=1">'
 		. print_image ("images/fullscreen.png", true, array ("title" => __('Full screen mode')))
 		. "</a>";
-} else {
+}
+else {
 	$options['pure']['text'] = '<a href="index.php?sec=visualc&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.$config["refr"].'">'
 		. print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode')))
 		. "</a>";

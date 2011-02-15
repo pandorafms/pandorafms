@@ -204,8 +204,23 @@ function clone_alert_action ($id_alert_action) {
 	
 }
 
-function get_alert_actions ($only_names = true) {
-	$all_actions = get_db_all_rows_in_table ('talert_actions');
+/**
+ * Get all alert actions in Pandora DB.
+ * 
+ * @param bool $only_names Return only names, by default is true.
+ * @param bool $acl Check the ACL, by default is false
+ * 
+ * @return array The list of actions.
+ */
+function get_alert_actions ($only_names = true, $acl = false) {
+	$groups = get_user_groups(false, "AR", true);
+	
+	if ($groups === false) {
+		$groups = array();
+	}
+	$id_groups = array_keys($groups);
+	
+	$all_actions = get_db_all_rows_filter('talert_actions', array('id_group' => $id_groups));
 	
 	if ($all_actions === false)
 		return array ();

@@ -95,6 +95,10 @@ if (is_ajax ()) {
 		
 		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre) FROM tagente_modulo t1, talert_template_modules t2 WHERE t2.id_agent_module = t1.id_agente_modulo AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t3, talert_template_modules t4 WHERE t4.id_agent_module = t3.id_agente_modulo AND delete_pending = 0 AND t1.nombre = t3.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
 		
+		if ($nameModules == false) {
+			$nameModules = array();
+		}
+		
 		$result = array();
 		foreach($nameModules as $nameModule) {
 			$result[] = $nameModule['nombre'];
@@ -120,6 +124,10 @@ if (is_ajax ()) {
 		$nameModules = get_db_all_rows_sql('SELECT DISTINCT(nombre)
 			FROM tagente_modulo t1
 			WHERE ' . $enabled . ' AND delete_pending = 0 AND id_agente IN (' . implode(',', $idAgents) . ') AND (SELECT count(nombre) FROM tagente_modulo t2 WHERE delete_pending = 0 AND t1.nombre = t2.nombre AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')');
+		
+		if ($nameModules == false) {
+			$nameModules = array();
+		}
 		
 		$result = array();
 		foreach($nameModules as $nameModule) {

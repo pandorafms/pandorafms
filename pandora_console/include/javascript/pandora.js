@@ -109,6 +109,22 @@ function agent_changed (event, id_agent, selected) {
 }
 
 /**
+ * Util for check is empty object
+ * 
+ * @param obj the object to check
+ * @returns {Boolean} True it is empty
+ */
+function isEmptyObject(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+
+    return true;
+}
+
+
+/**
  * Fill up select box with id "module" with modules after agent has been selected, but this not empty the select box.s
  *
  * @param event that has been triggered
@@ -143,6 +159,18 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				 },
 				 function (data) {
 					 $('#module').empty ();
+					 
+					 if (isEmptyObject(data)) {
+						 var noneText = $("#none_text").html(); //Trick for catch the translate text.
+						 
+						 if (anyText == null) {
+							 anyText = 'None';
+						 }
+						 
+						 $('#module').append ($('<option></option>').html (anyText).attr ("None", "").attr('selected', true));
+						 
+						 return;
+					 }
 					 
 					 if (typeof($(document).data('text_for_module')) != 'undefined') {
 						 $('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));

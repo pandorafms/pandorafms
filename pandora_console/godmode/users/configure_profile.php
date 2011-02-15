@@ -171,7 +171,17 @@ if ($id_profile || $new_profile) {
 			exit;
 		}
 		
-		
+		$name = $profile["name"];
+		$incident_view = (bool) $profile["incident_view"];
+		$incident_edit = (bool) $profile["incident_edit"];
+		$incident_management = (bool) $profile["incident_management"];
+		$agent_view = (bool) $profile["agent_view"];
+		$agent_edit = (bool) $profile["agent_edit"];
+		$alert_edit = (bool) $profile["alert_edit"];
+		$user_management = (bool) $profile["user_management"];
+		$db_management = (bool) $profile["db_management"];
+		$alert_management = (bool) $profile["alert_management"];
+		$pandora_management = (bool) $profile["pandora_management"];
 		
 		$id_audit = pandora_audit("User management",
 			"Edit profile ".safe_input($name));
@@ -184,19 +194,6 @@ if ($id_profile || $new_profile) {
 			' Pandora Management: ' . $pandora_management;
 		enterprise_hook('pandora_audit_enterprise', array($id_audit, $info));
 		
-		
-		
-		$name = $profile["name"];
-		$incident_view = (bool) $profile["incident_view"];
-		$incident_edit = (bool) $profile["incident_edit"];
-		$incident_management = (bool) $profile["incident_management"];
-		$agent_view = (bool) $profile["agent_view"];
-		$agent_edit = (bool) $profile["agent_edit"];
-		$alert_edit = (bool) $profile["alert_edit"];
-		$user_management = (bool) $profile["user_management"];
-		$db_management = (bool) $profile["db_management"];
-		$alert_management = (bool) $profile["alert_management"];
-		$pandora_management = (bool) $profile["pandora_management"];
 		
 		$page_title = __('Update profile');
 	}

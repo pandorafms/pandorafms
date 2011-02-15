@@ -230,7 +230,8 @@ CREATE TABLE "talert_actions" (
 	"field1" text NOT NULL default '',
 	"field2" text default '',
 	"field3" text default '',
-	"id_group" BIGINT NOT NULL default 0
+	"id_group" BIGINT NOT NULL default 0,
+	"action_threshold" BIGINT NOT NULL default 0
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown');

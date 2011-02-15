@@ -39,3 +39,14 @@ ALTER TABLE treport_content ADD only_display_wrong tinyint(1) unsigned DEFAULT 0
 ALTER TABLE `tusuario` ADD COLUMN `block_size` int(4) NOT NULL DEFAULT 20;
 ALTER TABLE `tusuario` ADD COLUMN `flash_chart` int(4) NOT NULL DEFAULT 1;
 
+-- -----------------------------------------------------
+-- Table `talert_actions`
+-- -----------------------------------------------------
+ALTER TABLE `talert_actions` ADD COLUMN `action_threshold` int(10) NOT NULL DEFAULT '0';
+
+-- -----------------------------------------------------
+-- Table `talert_template_module_actions`
+-- -----------------------------------------------------
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `module_action_threshold` int(10) NOT NULL DEFAULT '0';
+ALTER TABLE `talert_template_module_actions` ADD COLUMN `last_execution` bigint(20) NOT NULL DEFAULT '0';
+

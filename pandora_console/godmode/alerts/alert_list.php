@@ -97,6 +97,7 @@ if ($create_alert) {
 				$values = array();
 				$values['fires_min'] = get_parameter ('fires_min');
 				$values['fires_max'] = get_parameter ('fires_max');
+				$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold');
 				
 				add_alert_agent_module_action ($id, $action_select, $values);
 			}
@@ -138,6 +139,7 @@ if ($add_action) {
 		$values['fires_min'] = $fires_min;
 	if ($fires_max != -1)
 		$values['fires_max'] = $fires_max;
+	$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold');
 	
 	$result = add_alert_agent_module_action ($id_alert_module, $id_action, $values);
 	

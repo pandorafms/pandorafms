@@ -1,3 +1,11 @@
+2011-02-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql, include/functions_alerts.php,
+	  pandoradb.sql, extras/pandoradb_migrate_v3.2_to_v4.0.sql,
+	  godmode/alerts/alert_list.list.php, godmode/alerts/alert_list.php,
+	  godmode/alerts/configure_alert_action.php, godmode/alerts/alert_actions.php,
+	  godmode/alerts/alert_list.builder.php: Added support for action thresholds.
+
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_alerts.php, operation/agentes/estado_agente.php: added

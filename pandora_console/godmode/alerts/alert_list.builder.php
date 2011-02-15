@@ -32,8 +32,8 @@ $table->head = array ();
 $table->data = array ();
 $table->size = array ();
 $table->size = array ();
-$table->size[0] = '10%';
-$table->size[1] = '90%';
+$table->size[0] = '20%';
+$table->size[1] = '80%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 $table->align[0] = 'left';
 $table->align[1] = 'left';
@@ -96,6 +96,8 @@ $table->data[2][1] .= print_image ('images/add.png', true);
 $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
 $table->data[2][1] .= __('Create Action');
 $table->data[2][1] .= '</a>';
+$table->data[3][0] = __('Threshold');
+$table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
 
 echo '<form class="add_alert_form" method="post">';
 

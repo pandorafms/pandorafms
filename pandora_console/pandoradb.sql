@@ -237,6 +237,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `field2` text default '',
   `field3` text default '',
   `id_group` mediumint(8) unsigned NULL default 0,
+  `action_threshold` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
@@ -306,6 +307,8 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
   `id_alert_action` int(10) unsigned NOT NULL,
   `fires_min` int(3) unsigned default 0,
   `fires_max` int(3) unsigned default 0,
+  `module_action_threshold` int(10) NOT NULL default '0',
+  `last_execution` bigint(20) NOT NULL default '0',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`id_alert_template_module`) REFERENCES talert_template_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,

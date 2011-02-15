@@ -1,3 +1,10 @@
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_alerts.php, operation/agentes/estado_agente.php: added
+	check ACL in the show actions in the creation and edit of alerts.
+	
+	Fixes: #3166657
+
 2011-02-15 Javier Lanz <javier.lanz@argica.es>
 	* godmode/groups/group_list.php: Fixed ACL checkings
 

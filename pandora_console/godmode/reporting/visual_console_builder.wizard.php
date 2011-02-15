@@ -78,11 +78,11 @@ echo '</form>';
 
 //Trick for it have a traduct text for javascript.
 echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
+echo '<span id="none_text" style="display: none;">' . __('None') . '</span>';
 ?>
 <script language="javascript" type="text/javascript">
 var show_only_enabled_modules = true;
 $(document).ready (function () {
-	//$("#id_agents").change (agent_changed);
 	$("#id_agents").change (agent_changed_by_multiple_agents);
 });
 </script>

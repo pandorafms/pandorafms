@@ -664,7 +664,7 @@ function get_agentmodule_is_init ($id_agentmodule) {
 /**
  * Get all the modules in an agent. If an empty list is passed it will select all
  *
- * @param mixed Agent id to get modules. It can also be an array of agent id's.
+ * @param mixed Agent id to get modules. It can also be an array of agent id's, by default is null and this mean that use the ids of agents in user's groups.
  * @param mixed Array, comma delimited list or singular value of rows to
  * select. If nothing is specified, nombre will be selected. A special
  * character "*" will select all the values.
@@ -688,8 +688,16 @@ $modules = get_agent_modules ($id_agent, '*', 'disabled = 0 AND history_data = 0
  * @return array An array with all modules in the agent.
  * If multiple rows are selected, they will be in an array
  */
-function get_agent_modules ($id_agent, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
+function get_agent_modules ($id_agent = null, $details = false, $filter = false, $indexed = true, $get_not_init_modules = true) {
 	global $config;
+	
+	if ($id_agent === null) {
+		//Extract the agents of group user.
+		$groups = get_user_groups(false, 'AR', false);
+		$id_groups = array_keys($groups);
+		
+		$id_agent = get_db_sql("SELECT id_agente FROM tagente WHERE id_grupo IN (" . implode(',', $id_groups) . ")");
+	}
 	
 	$id_agent = safe_int ($id_agent, 1);
 

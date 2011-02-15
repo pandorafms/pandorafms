@@ -1,5 +1,12 @@
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/agentes/module_manager.php: erased the "prediction module" for
+	policy view.
+	
+	Fixes: #3175826
+
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/groups/group_list.php: moved check ACL bottom the ajax call and
 	added other check ACL in the ajax call.
 	

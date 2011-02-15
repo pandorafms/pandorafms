@@ -547,9 +547,23 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 25
  * @return string HTML code if return parameter is true.
  */
 function print_input_image ($name, $src, $value, $style = '', $return = false, $options = false) {
+	global $config;
 	static $idcounter = 0;
 	
 	++$idcounter;
+	
+	/* Checks if user's skin is available */
+	$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
+
+	if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+		$skin_path = enterprise_hook('get_image_skin_path',array($src));
+		if ($skin_path)
+			$src = $skin_path;		
+	}
+
+	// path to image 
+	$src = $config["homeurl"] . '/' . $src;
+
 	$output = '<input id="image-'.$name.$idcounter.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image"';
 	
 	//Valid attributes (invalid attributes get skipped)
@@ -1094,6 +1108,7 @@ function print_image ($src, $return = false, $options = false) {
 		if ($skin_path)
 			$src = $skin_path;		
 	}
+
 	// path to image 
 	$src = $config["homeurl"] . '/' . $src;
 

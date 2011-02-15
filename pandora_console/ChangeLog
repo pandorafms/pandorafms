@@ -1,3 +1,10 @@
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/groups/group_list.php: moved check ACL bottom the ajax call and
+	added other check ACL in the ajax call.
+	
+	Fixes: #3180588
+
 2011-02-15 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 	* include/functions_html.php: print_input_image function now uses skins.
 	* godmode/users/configure_profile.php: Added some variable initialization after

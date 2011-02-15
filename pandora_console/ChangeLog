@@ -1,5 +1,12 @@
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/javascript/pandora.js, operation/agentes/ver_agente.php,
+	godmode/reporting/visual_console_builder.wizard.php,
+	godmode/reporting/visual_console_builder.php: fixed when the agent haven't
+	any module and fixed when to try to create items without modules selected.
+
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* operation/visual_console/render_view.php: fixed the link to edit
 	visual console.
 

@@ -30,6 +30,12 @@ if (is_ajax ()) {
 	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
 	$get_actions_alert_template = (bool) get_parameter("get_actions_alert_template");
 	
+	$groups = get_user_groups(false, "AR", true);
+	if ($groups === false) {
+		$groups = array();
+	}
+	$id_groups = array_keys($groups);
+	
 	if ($get_actions_alert_template) {
 		$id_template = get_parameter("id_template");
 		$sql = sprintf ("SELECT t1.id, t1.name,
@@ -37,7 +43,8 @@ if (is_ajax ()) {
 					FROM talert_templates AS t2 
 					WHERE t2.id =  %d 
 						AND t2.id_alert_action = t1.id) as 'sort_order'
-			FROM talert_actions AS t1 
+			FROM talert_actions AS t1
+			WHERE id_group IN (" . implode(',', $id_groups) . ")
 			ORDER BY sort_order DESC", $id_template);
 			
 		$rows = get_db_all_rows_sql($sql);

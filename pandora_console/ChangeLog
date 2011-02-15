@@ -1,5 +1,10 @@
 2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* pandoradb.postgreSQL.sql, pandoradb.data.postgreSQL.sql: added column
+	threshold from changes in last Ramon commit in MySQL.
+
+2011-02-15 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/alerts/alert_list.php: fixed the lost var in the audit.
 	
 	Fixes: #3182470

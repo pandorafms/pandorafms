@@ -489,6 +489,8 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= ' '.__('to').' ';
 	$data[6] .= print_input_text ('fires_max', -1, '', 4, 10, true);
 	$data[6] .= print_help_icon ("alert-matches", true);
+	$data[6] .= '<br />' . __('Threshold');
+	$data[6] .= print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
 	$data[6] .= '</span>';
 	$data[6] .= '<div class="right">';
 	$data[6] .= print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);

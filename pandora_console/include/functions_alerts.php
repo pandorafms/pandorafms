@@ -573,6 +573,7 @@ function add_alert_agent_module_action ($id_alert_template_module, $id_alert_act
 	$values['id_alert_action'] = (int) $id_alert_action;
 	$values['fires_max'] = 0;
 	$values['fires_min'] = 0;
+	$values['module_action_threshold'] = 0;
 	if ($options) {
 		$max = 0;
 		$min = 0;
@@ -580,6 +581,8 @@ function add_alert_agent_module_action ($id_alert_template_module, $id_alert_act
 			$max = (int) $options['fires_max'];
 		if (isset ($options['fires_min']))
 			$min = (int) $options['fires_min'];
+		if (isset ($options['module_action_threshold']))
+			$values['module_action_threshold'] = (int) $options['module_action_threshold'];
 		
 		$values['fires_max'] = max ($max, $min);
 		$values['fires_min'] = min ($max, $min);

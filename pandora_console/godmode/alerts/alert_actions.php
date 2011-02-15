@@ -92,15 +92,18 @@ if ($create_action) {
 	$field2 = (string) get_parameter ('field2');
 	$field3 = (string) get_parameter ('field3');
 	$group = (string) get_parameter ('group');
+	$action_threshold = (int) get_parameter ('action_threshold');
 
 	$result = create_alert_action ($name, $id_alert_command,
 		array ('field1' => $field1,
 			'field2' => $field2,
 			'field3' => $field3,
-			'id_group' => $group));
+			'id_group' => $group,
+			'action_threshold' => $action_threshold));
 		
 	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group;
+		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+		' Action threshold: ' . $action_threshold;
 		
 	if ($result) {
 		pandora_audit("Command management", "Create alert action " . $result, false, false, $info);
@@ -141,6 +144,7 @@ if ($update_action) {
 	$field2 = (string) get_parameter ('field2');
 	$field3 = (string) get_parameter ('field3');
 	$group = get_parameter ('group');
+	$action_threshold = (int) get_parameter ('action_threshold');
 
 	$values = array ();
 	$values['name'] = $name;
@@ -149,11 +153,13 @@ if ($update_action) {
 	$values['field2'] = $field2;
 	$values['field3'] = $field3;
 	$values['id_group'] = $group;
+	$values['action_threshold'] = $action_threshold;
 
 	$result = update_alert_action ($id, $values);
 	
 	$info = 'Name: ' . $name . ' ID alert Command: ' . $id_alert_command .
-		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group;
+		' Field1: ' . $field1 . ' Field2: ' . $field2 . ' Field3: ' . $field3 . ' Group: ' . $group .
+		' Action threshold: ' . $action_threshold;
 		
 	if ($result) {
 		pandora_audit("Command management", "Update alert action " . $id, false, false, json_encode($values));

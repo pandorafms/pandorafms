@@ -1,3 +1,6 @@
+2011-02-05 Javier Lanz <javier.lanz@artica.es>
+	* pandora_console/images/wand_sla.png: Added sla wizard tab icon
+
 2011-02-14 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php: fixed the module search.

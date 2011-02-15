@@ -160,10 +160,10 @@ if ($delete_action) {
 	$result = delete_alert_agent_module_action ($id_action);
 	
 	if ($result) {
-		pandora_audit("Alert management", 'Delete action ' . $id_action . ' in alert ' . $id_alert_module);
+		pandora_audit("Alert management", 'Delete action ' . $id_action . ' in alert ' . $id_alert);
 	}
 	else {
-		pandora_audit("Alert management", 'Fail to delete action ' . $id_action . ' in alert ' . $id_alert_module);
+		pandora_audit("Alert management", 'Fail to delete action ' . $id_action . ' in alert ' . $id_alert);
 	}
 	
 	$messageAction = print_result_message ($result, __('Successfully deleted'), __('Could not be deleted'), '', true);

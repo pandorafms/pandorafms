@@ -119,7 +119,7 @@ function print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'"' . $title . '>'.$sub["text"]."</a></li>";
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>";
 			}
 			else {
 				//This is an internal link

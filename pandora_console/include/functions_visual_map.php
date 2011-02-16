@@ -504,8 +504,25 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 				if ($show_links) {
 					if (($id_agent > 0) && ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0)) {
 
-						// Link to an agent
-						echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+						//Extract id service if it is a prediction module.
+						$id_service = get_db_value_filter('custom_integer_1',
+							'tagente_modulo',
+							array('id_agente_modulo' => $layout_data['id_agente_modulo'],
+								'prediction_module' => 1));
+						
+						if ($id_service === false) {
+							$id_service = 0;
+						}
+						
+						if ($id_service != 0) {
+							//Link to an service page
+							echo '<a href="index.php?sec=services&sec2=enterprise/operation/services/services&id_service=' . 
+								$id_service . '&offset=0">';
+						}
+						else {
+							// Link to an agent
+							echo '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'">';
+						}
 					} elseif ($layout_data['id_layout_linked'] > 0) {
 
 						// Link to a map

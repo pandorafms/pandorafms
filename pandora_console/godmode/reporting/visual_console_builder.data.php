@@ -48,7 +48,15 @@ $table->data[0][0] = __('Name:');
 $table->data[0][1] = print_input_text ('name', $visualConsoleName, '', 15, 50, true);
 $table->data[1][0] = __('Group:');
 $groups = get_user_groups ($config['id_user']);
-$table->data[1][1] = print_select_groups($config['id_user'], "AR", true, 'id_group', $idGroup, '', '', '', true);
+
+$own_info = get_user_info($config['id_user']);
+// Only display group "All" if user is administrator or has "PM" privileges
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else	
+	$display_all_group = false;
+
+$table->data[1][1] = print_select_groups($config['id_user'], "AR", $display_all_group, 'id_group', $idGroup, '', '', '', true);
 $backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
 $backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');

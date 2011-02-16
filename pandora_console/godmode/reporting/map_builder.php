@@ -15,6 +15,8 @@
 
 global $config;
 
+require_once ('include/functions_visual_map.php');
+
 print_page_header (__('Visual console builder'), "", false, "map_builder", true);
 
 $id_layout = (int) get_parameter ('id_layout');
@@ -113,7 +115,13 @@ $table->align[2] = 'center';
 $table->align[3] = 'center';
 $table->align[4] = 'center';
 
-$maps = get_db_all_rows_in_table ('tlayout','name');
+// Only display maps of "All" group if user is administrator or has "PM" privileges, otherwise show only maps of user group
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$maps = get_user_layouts ();	
+else
+	$maps = get_user_layouts ($config['id_user'], false, false, false);
+
 if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 } else {

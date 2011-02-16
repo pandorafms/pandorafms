@@ -236,6 +236,38 @@ function get_alert_actions ($only_names = true, $acl = false) {
 	return $actions;
 }
 
+/**
+ * Get actions alerts filtered.
+ * 
+ * @param bool Return all fields or not.
+ * @param variant String with SQL filter or false in case you don't want to filter.
+ *
+ * @return mixed A matrix with all the values returned from the SQL statement or
+ * false in case of empty result
+ */
+function get_alert_actions_filter ($only_names = true, $filter = false) {
+
+	if (!$filter)
+		$all_actions = get_db_all_rows_in_table ('talert_actions');
+	elseif (is_string($filter))
+		$all_actions = get_db_all_rows_filter ('talert_actions', $filter);
+	else
+		$all_actions = false;
+	
+	if ($all_actions === false)
+		return array ();
+	
+	if (! $only_names)
+		return $all_actions;
+	
+	$actions = array ();
+	foreach ($all_actions as $action) {
+		$actions[$action['id']] = $action['name'];
+	}
+	
+	return $actions;
+}
+
 function get_alert_action ($id_alert_action) {
 	$id_alert_action = safe_int ($id_alert_action, 1);
 	if (empty ($id_alert_action))

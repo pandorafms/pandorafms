@@ -30,22 +30,28 @@ if (is_ajax ()) {
 	$get_agent_module_last_value = (bool) get_parameter ('get_agent_module_last_value');
 	$get_actions_alert_template = (bool) get_parameter("get_actions_alert_template");
 	
-	$groups = get_user_groups(false, "AR", true);
-	if ($groups === false) {
-		$groups = array();
-	}
-	$id_groups = array_keys($groups);
-	
 	if ($get_actions_alert_template) {
 		$id_template = get_parameter("id_template");
+
+		$own_info = get_user_info ($config['id_user']);
+		$usr_groups = array();
+		if ($own_info['is_admin'])
+			$usr_groups = get_user_groups ($config['id_user'], 'LW', true);
+			
+		else
+			$usr_groups = get_user_groups($config['id_user'], 'LW', false);
+		
+		$filter_groups = '';
+		$filter_groups = implode(',', array_keys($usr_groups));		
+
 		$sql = sprintf ("SELECT t1.id, t1.name,
 				(SELECT COUNT(t2.id) 
 					FROM talert_templates AS t2 
 					WHERE t2.id =  %d 
 						AND t2.id_alert_action = t1.id) as 'sort_order'
 			FROM talert_actions AS t1
-			WHERE id_group IN (" . implode(',', $id_groups) . ")
-			ORDER BY sort_order DESC", $id_template);
+			WHERE id_group IN (%s) 
+			ORDER BY sort_order DESC", $id_template, $filter_groups);
 			
 		$rows = get_db_all_rows_sql($sql);
 		

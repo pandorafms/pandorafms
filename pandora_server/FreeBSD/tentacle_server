@@ -22,7 +22,7 @@ rcvar=`set_rcvar`
 
 # read configuration and set defaults
 tentacle_server_enable=${tentacle_server_enable:-"NO"}
-tentacle_server_flags=${tentacle_server_flags:-"-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -d"}
+tentacle_server_flags=${tentacle_server_flags:-"-a 0.0.0.0 -p 41121 -s /var/spool/pandora/data_in -i.*\.conf:conf\;.*\.md5:md5\;.*\.zip:collections -d"}
 tentacle_server_user=${tentacle_server_user:-"pandora"}
 load_rc_config $name
 

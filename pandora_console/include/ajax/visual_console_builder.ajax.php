@@ -259,9 +259,11 @@ switch ($action) {
 			$return['correct'] = 0;
 		}
 		else {
+			$text = createInternalNameItem($label, $type, $image, $agent, $id_module, $idData);
+			
 			$return['correct'] = 1;
 			$return['id_data'] = $idData;
-			$return['text'] = $label;
+			$return['text'] = $text;
 		}
 		echo json_encode($return);
 		break;

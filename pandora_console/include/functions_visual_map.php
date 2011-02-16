@@ -914,4 +914,92 @@ function get_layout_status ($id_layout = 0, $depth = 0) {
 	
 	return $temp_total;
 }
+
+/**
+ * Make a text for the parent select, when the label is not empty put this for
+ * the return text. Instead for the empty labels make the text with next form
+ * (<Type>) - <name_image> ( <agent_name> - <module_name> ) (<id item>) 
+ * 
+ * @param string $label The label of item in visual map.
+ * @param string $type The label of type in visual map.
+ * @param string $image The image of item in visual map.
+ * @param string $agent The agent name of item in visual map.
+ * @param string $id_module The module name of item in visual map.
+ * @param int $idData The id of item in visual map.
+ * 
+ * @return string The text for the parent.
+ */
+function createInternalNameItem($label = null, $type, $image, $agent = null, $id_module, $idData) {
+	$text = '';
+	
+	if (empty($label))
+	{
+		switch ($type) {
+			case 'module_graph':
+			case MODULE_GRAPH:
+				$text = __('Module graph');
+				break;
+			case 'percentile_bar':
+			case PERCENTILE_BAR:
+				$text = __('Percentile bar');
+				break;
+			case 'static_graph':
+			case STATIC_GRAPH:
+				$text = __('Static graph') . " - " .
+					$image;
+				break;
+			case 'simple_value':
+			case SIMPLE_VALUE:
+				$text = __('Simple Value');
+				break;
+			case 'label':
+			case LABEL:
+				$text = __('Label');
+				break;
+			case 'icon':
+			case ICON:
+				$text = __('Icon') . " - " .
+					$image;
+				break;
+		}
+		
+		if (!empty($agent)) {
+			$text .= " (" . printTruncateText($agent, 10, false);
+			
+			$moduleName = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module);
+			if (!empty($moduleName)) {
+				$text .= " - " . printTruncateText($moduleName, 10, false);
+			}
+
+			$text .= ")"; 
+		}
+		$text .= ' (' . $idData . ')'; 
+	}
+	else {
+		$text = $label;
+	}
+	
+	return $text;
+}
+
+function get_items_parents($idVisual) {
+	$items = get_db_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
+	if ($items == false) {
+		$items = array();
+	}
+	
+	$return = array();
+	foreach ($items as $item) {
+		$agent = null;
+		if ($item['id_agent'] != 0) {
+			$agent = get_agent_name($item['id_agent']);
+		}
+		
+		$return[$item['id']] = createInternalNameItem($item['label'],
+			$item['type'], $item['image'], $agent, $item['id_agente_modulo'],
+			$item['id']);
+	}
+	
+	return $return;
+}
 ?>

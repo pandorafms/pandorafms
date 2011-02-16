@@ -80,16 +80,24 @@ $table->data[0][1] = print_input_text ('name', $name, '', 35, 255, true);
 $table->data[1][0] = __('Group');
 
 $groups = get_user_groups ();
-$table->data[1][1] = print_select_groups(false, "AR", true, 'group', $group, '', '', 0, true);
+$own_info = get_user_info ($config['id_user']);
+// Only display group "All" if user is administrator or has "PM" privileges
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else	
+	$display_all_group = false;
+$table->data[1][1] = print_select_groups(false, "LW", $display_all_group, 'group', $group, '', '', 0, true);
 
 $table->data[2][0] = __('Command');
 $table->data[2][1] = print_select_from_sql ('SELECT id, name FROM talert_commands',
 	'id_command', $id_command, '', __('None'), 0, true);
 $table->data[2][1] .= ' ';
-$table->data[2][1] .= print_image ('images/add.png', true);
-$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
-$table->data[2][1] .= __('Create Command');
-$table->data[2][1] .= '</a>';
+if (give_acl ($config['id_user'], 0, "PM")){
+	$table->data[2][1] .= print_image ('images/add.png', true);
+	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_command">';
+	$table->data[2][1] .= __('Create Command');
+	$table->data[2][1] .= '</a>';
+}
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
 $table->data[3][1] .= ' '.__('seconds') . print_help_icon ('action_threshold', true);

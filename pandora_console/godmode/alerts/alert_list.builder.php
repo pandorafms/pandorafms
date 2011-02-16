@@ -64,7 +64,15 @@ $table->data[0][1] .= print_image('images/spinner.png', true) . '</span>';
 $table->data[1][0] = __('Template');
 
 $table->data[1][0] = __('Template');
-$templates = get_alert_templates (false, array ('id', 'name'));
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'])
+	$templates = get_alert_templates (false, array ('id', 'name'));
+else{
+	$usr_groups = get_user_groups($config['id_user'], 'LW', false);
+	$filter_groups = '';
+	$filter_groups = implode(',', array_keys($usr_groups));
+	$templates = get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
+}	
 
 $table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);

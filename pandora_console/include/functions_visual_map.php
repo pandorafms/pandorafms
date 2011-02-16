@@ -135,7 +135,7 @@ function printItemInVisualConsole($layoutData) {
 				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
 				$imageSize = 'width="' . $width . '" height="' . $height . '"';
 			}
-			echo '<div id="' . $id . '" class="item icon" style="text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
+			echo '<div id="' . $id . '" class="item icon" style="left: 0px; top: 0px; text-align: center; color: ' . $color . '; position: absolute; ' . $sizeStyle . ' margin-top: ' . $top . 'px; margin-left: ' . $left . 'px;">';
 			if ($layoutData['image'] != null) {
 
 				if (($width != 0) && ($height != 0)) 

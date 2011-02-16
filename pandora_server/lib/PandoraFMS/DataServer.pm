@@ -567,7 +567,7 @@ sub update_module_configuration ($$$$) {
 	    $module->{'module_interval'} != $module_conf->{'module_interval'}) {
 			logger($pa_config, "Updating configuration for module '" . $module->{'nombre'}	. "'.", 10);
 			db_do ($dbh, 'UPDATE tagente_modulo SET min = ?, max = ?, descripcion = ?, post_process = ?, module_interval = ?
-			              WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'},
+			              WHERE id_agente_modulo = ?', $module_conf->{'min'}, $module_conf->{'max'}, $module_conf->{'descripcion'} eq '' ? $module->{'descripcion'} : $module_conf->{'descripcion'},
 			       $module_conf->{'post_process'}, $module_conf->{'module_interval'}, $module->{'id_agente_modulo'});
 			return;
 	}

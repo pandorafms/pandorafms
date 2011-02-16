@@ -84,6 +84,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 				continue;
 			}
 			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr ($gisMap["map_name"], 0, 15);
+			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = $gisMap["map_name"];
 			$sub["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
 		}
 		
@@ -122,6 +123,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 			continue;
 		}
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 15);
+		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 	}
 	

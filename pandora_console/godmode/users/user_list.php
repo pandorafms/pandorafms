@@ -147,14 +147,21 @@ $info1 = get_users ($order, array ('offset' => (int) get_parameter ('offset'),
 
 $info = array();
 $own_info = get_user_info ($config['id_user']);	
+$own_groups = get_user_groups ($config['id_user'], 'AR', $own_info['is_admin']);
 
 if ($own_info['is_admin'])
 	$info = $info1;
-// If user is not admin then don't display admin users.
+// If user is not admin then don't display admin users and user of others groups.
 else
-	foreach ($info1 as $key => $usr)
-		if (!$usr['is_admin'])
+	foreach ($info1 as $key => $usr){
+		$u = get_user_info ($key);
+		$g = get_user_groups ($key, 'AR', $u['is_admin']);
+		$result = array_intersect($g, $own_groups);
+		if (!$usr['is_admin'] && !empty($result))
 			$info[$key] = $usr;
+		unset($u);
+		unset($g);
+	}
 
 // Prepare pagination
 pagination (count(get_users ()));

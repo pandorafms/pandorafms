@@ -119,7 +119,7 @@ function print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"]."</a></li>";
+				$submenu_output .= '<li class="'.$class.'"><a href="'.$subsec2.'"' . $title . '>'.$sub["text"]."</a></li>";
 			}
 			else {
 				//This is an internal link
@@ -157,7 +157,12 @@ function print_menu (&$menu) {
 					$extensionInMenu = '';
 				}
 				
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr=0' : '').$link_add.'">'.$sub["text"].'</a>';
+				if (isset ($sub["title"])) {
+					$title = ' title="' . $sub["title"] . ' "';
+				} else {
+					$title = '';
+				}
+				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($main["refr"] ? '&amp;refr=0' : '').$link_add.'"' . $title . '>'.$sub["text"].'</a>';
 				$submenu_output .= '</li>';
 			}
 		}

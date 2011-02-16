@@ -1,3 +1,8 @@
+2011-02-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions_menu.php, operation/menu.php: Added a title to GIS
+	  maps and Visual console maps in the menu. Fixes bug #3182148.
+
 2011-02-16 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: added links to services in the items in

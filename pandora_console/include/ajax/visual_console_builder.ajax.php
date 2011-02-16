@@ -177,14 +177,14 @@ switch ($action) {
 			case 'label':
 			case 'icon':
 				$elementFields = get_db_row_filter('tlayout_data', array('id' => $id_element));
-				$elementFields['agent_name'] = get_agent_name($elementFields['id_agent']);
+				$elementFields['agent_name'] = safe_output(get_agent_name($elementFields['id_agent']));
 				//Make the html of select box of modules about id_agent.
 				if ($elementFields['id_agent'] != 0) {
-					$modules = get_agent_modules ($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
+					$modules = get_agent_modules($elementFields['id_agent'], false, array('disabled' => 0, 'id_agente' => $elementFields['id_agent']));
 					
 					$elementFields['modules_html'] = '<option value="0">--</option>';
 					foreach ($modules as $id => $name) {
-						$elementFields['modules_html'] .= '<option value="' . $id . '">' . $name . '</option>';
+						$elementFields['modules_html'] .= '<option value="' . $id . '">' . safe_output($name) . '</option>';
 					}
 				}
 				else  {

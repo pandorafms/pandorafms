@@ -1,5 +1,10 @@
 2011-02-16 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/ajax/visual_console_builder.ajax.php: fixed other safe_ouput in
+	the editor.
+
+2011-02-16 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_visual_map.php: added lost safe_ouput in the extract
 	DB fields.
 

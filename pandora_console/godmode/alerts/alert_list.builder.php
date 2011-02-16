@@ -64,7 +64,15 @@ $table->data[0][1] .= '<img src="images/spinner.png" /></span>';
 $table->data[1][0] = __('Template');
 
 $table->data[1][0] = __('Template');
-$templates = get_alert_templates (false, array ('id', 'name'));
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'])
+	$templates = get_alert_templates (false, array ('id', 'name'));
+else{
+	$usr_groups = get_user_groups($config['id_user'], 'LW', false);
+	$filter_groups = '';
+	$filter_groups = implode(',', array_keys($usr_groups));
+	$templates = get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
+}	
 
 $table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
@@ -96,6 +104,8 @@ $table->data[2][1] .= print_image ('images/add.png', true);
 $table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
 $table->data[2][1] .= __('Create Action');
 $table->data[2][1] .= '</a>';
+$table->data[3][0] = __('Threshold');
+$table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
 
 echo '<form class="add_alert_form" method="post">';
 

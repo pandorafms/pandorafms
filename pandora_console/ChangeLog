@@ -1,3 +1,38 @@
+2011-02-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk
+
+	* include/functions_alerts.php: New function get_alert_actions_filter.
+	* operation/agentes/estado_agente.php: If user is not admin or doesn't have
+	'PM' privileges then don't display alerts of others groups.
+	* godmode/alerts/configure_alert_template.php: If user is not admin or doesn't have
+	'PM' privileges then don't display templates of others groups.
+	* godmode/alerts/configure_alert_action.php: Don't show "create command" option
+	in this view if current user is not administrator or or doesn't have
+	'PM' privileges.
+	* godmode/alerts/alert_list.builder.php: If user is not admin or doesn't have
+	'PM' privileges then don't display alerts of others groups.
+
+	Fixes: #3182557, 3182566 	
+
+	Merged bugfix from trunk
+
+	* include/functions_visual_map.php: Added a parameter in function get_user_layouts for 
+	return All group or not.
+	* godmode/reporting/visual_console_builder.data.php: In map creation only display "All"
+	group if user has 'PM' privileges or is administrator.
+	* godmode/reporting/map_builder.php: If user is not admin or doesn't have
+	'PM' privileges then don't display maps of others groups.
+	* operation/visual_console/index.php: If user is not admin or doesn't have
+	'PM' privileges then don't display maps of others groups.
+
+	Fixes: #3175721, 3175730	
+
+      	* godmode/users/configure_user.php: Only are shown "pandora management" and 
+	"database management" profiles if current user is not administrator or or doesn't have
+	'PM' privileges.	
+	* godmode/alerts/alert_list.list.php: Fixed query for alert search. 
+
 2011-02-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions_menu.php, operation/menu.php: Merged from trunk.

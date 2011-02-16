@@ -497,7 +497,13 @@ if ($step == 2) {
 
 	$table->data[0][1] .= "&nbsp;&nbsp;". __("Group");
 	$groups = get_user_groups ();
-	$table->data[0][1] .= "&nbsp;".print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', 0, true);
+	$own_info = get_user_info($config['id_user']);
+	// Only display group "All" if user is administrator or has "PM" privileges
+	if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+		$display_all_group = true;
+	else	
+		$display_all_group = false;
+	$table->data[0][1] .= "&nbsp;".print_select_groups(false, "AR", $display_all_group, 'id_group', $id_group, '', '', 0, true);
 
 	$table->data[1][0] = __('Description');
 	$table->data[1][1] =  print_textarea ('description', 10, 30,

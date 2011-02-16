@@ -840,10 +840,11 @@ function get_layout_data_types () {
  * @param bool Wheter to return all the fields or only the name (to use in
  * print_select() directly)
  * @param array Additional filters to filter the layouts.
+ * @param bool Whether to return All group or not.
  *
  * @return array A list of layouts the user can see.
  */
-function get_user_layouts ($id_user = 0, $only_names = false, $filter = false) {
+function get_user_layouts ($id_user = 0, $only_names = false, $filter = false, $returnAllGroup = true) {
 	if (! is_array ($filter))
 		$filter = array ();
 	
@@ -851,7 +852,10 @@ function get_user_layouts ($id_user = 0, $only_names = false, $filter = false) {
 	if ($where != '') {
 		$where .= ' AND ';
 	}
-	$groups = get_user_groups ($id_user);
+	if ($returnAllGroup)
+		$groups = get_user_groups ($id_user);
+	else
+		$groups = get_user_groups ($id_user, 'IR', false);
 	$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	
 	$layouts = get_db_all_rows_filter ('tlayout', $where);

@@ -131,7 +131,7 @@ if ($searchFlag) {
 			FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
 			WHERE t1.nombre LIKE '" . trim($agentName) . "')";
 	if ($actionID != -1)
-		$where .= " AND id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
+		$where .= " AND talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions WHERE id_alert_action = " . $actionID . ")";
 	if ($enabledisable != -1)
 		$where .= " AND talert_template_modules.disabled =" . $enabledisable;
 	if ($standby != -1)
@@ -479,7 +479,11 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= '<form id="add_action_form-'.$alert['id'].'" method="post" class="invisible">';
 	$data[6] .= print_input_hidden ('add_action', 1, true);
 	$data[6] .= print_input_hidden ('id_alert_module', $alert['id'], true);
-	$actions = get_alert_actions ();
+	$own_info = get_user_info($config['id_user']);
+	$own_groups = get_user_groups($config['id_user'], 'LW', $own_info['is_admin']);
+	$filter_groups = '';
+	$filter_groups = implode(',', array_keys($own_groups));
+	$actions = get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
 	$data[6] .= print_select ($actions, 'action', '', '', __('None'), 0, true);
 	$data[6] .= '<br />';
 	$data[6] .= '<span><a href="#" class="show_advanced_actions">'.__('Advanced options').' &raquo; </a></span>';
@@ -489,6 +493,8 @@ foreach ($simple_alerts as $alert) {
 	$data[6] .= ' '.__('to').' ';
 	$data[6] .= print_input_text ('fires_max', -1, '', 4, 10, true);
 	$data[6] .= print_help_icon ("alert-matches", true);
+	$data[6] .= '<br />' . __('Threshold');
+	$data[6] .= print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
 	$data[6] .= '</span>';
 	$data[6] .= '<div class="right">';
 	$data[6] .= print_submit_button (__('Add'), 'add_action', false, 'class="sub next"', true);

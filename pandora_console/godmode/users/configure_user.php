@@ -342,8 +342,12 @@ foreach ($result as $profile) {
 
 $data = array ();
 $data[0] = '<form method="post">';
-$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
-	0, true, false, false);
+if (give_acl ($config['id_user'], 0, "PM"))
+	$data[0] .= print_select (get_profiles (), 'assign_profile', 0, '', __('None'),
+		0, true, false, false);
+else
+	$data[0] .= print_select (get_profiles_filter ('pandora_management <> 1 and db_management <> 1'), 'assign_profile', 0, '', __('None'),
+		0, true, false, false);
 $data[1] = print_select_groups($config['id_user'], "UM", $own_info['is_admin'],
 	'assign_group', -1, '', __('None'), -1, true, false, false);
 $data[2] = print_input_image ('add', 'images/add.png', 1, '', true);

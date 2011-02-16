@@ -202,7 +202,12 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="parent_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
 			<td><?php echo __('Parent');?></td>
-			<td><?php print_select_from_sql('SELECT id, label FROM tlayout_data WHERE id_layout = ' . $visualConsole['id'], 'parent', '', '', __('None'), 0);?></td>
+			<td>
+				<?php
+				$parents = get_items_parents($visualConsole['id']);
+				print_select($parents, 'parent', '', '', __('None'), 0);
+				?>
+			</td>
 		</tr>
 		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td><?php echo __('Map linked');?></td>

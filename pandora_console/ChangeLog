@@ -1,3 +1,10 @@
+2011-02-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/users/user_list.php: If user is not admin then don't 
+	display users of others groups.
+
+	Fixes: #3175670	
+
 2011-02-16 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_visual_map.php: fixed the position of items in visual

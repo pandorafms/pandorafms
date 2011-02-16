@@ -1,3 +1,10 @@
+2011-02-16 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* include/functions_db.php: fixed check "<>" in other case as the ajax
+	calls in the visual map.
+	
 2011-02-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk

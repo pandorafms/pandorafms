@@ -709,10 +709,18 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 		if (is_array ($filter)) {
 			$fields = array ();
 			foreach ($filter as $field => $value) {
+				//Check <> operator
+				$operatorDistin = false;
+				if (strlen($value) > 2) {
+					if ($value[0] . $value[1] == '<>') {
+						$operatorDistin = true;
+					}
+				}
+				
 				if ($value[0] == '%') {
 					array_push ($fields, $field.' LIKE "'.$value.'"');
 				}
-				else if ($value[0] . $value[1] == '<>') {
+				else if ($operatorDistin) {
 					array_push($fields, $field.' <> ' . substr($value, 2));
 				}
 				else if (substr($value, -1) == '%') {

@@ -36,7 +36,7 @@ $id_element = get_parameter('id_element', null);
 
 $image = get_parameter('image', null);
 $background = get_parameter('background', null);
-$label = get_parameter('label', null);
+$label = get_parameter('label', '');
 $left = get_parameter('left', null);
 $top = get_parameter('top', null);
 $agent = get_parameter('agent', null);

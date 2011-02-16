@@ -956,7 +956,7 @@ function createInternalNameItem($label = null, $type, $image, $agent = null, $id
 		if (!empty($agent)) {
 			$text .= " (" . printTruncateText($agent, 10, false);
 			
-			$moduleName = get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module);
+			$moduleName = safe_output(get_db_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_module));
 			if (!empty($moduleName)) {
 				$text .= " - " . printTruncateText($moduleName, 10, false);
 			}
@@ -982,7 +982,7 @@ function get_items_parents($idVisual) {
 	foreach ($items as $item) {
 		$agent = null;
 		if ($item['id_agent'] != 0) {
-			$agent = get_agent_name($item['id_agent']);
+			$agent = safe_output(get_agent_name($item['id_agent']));
 		}
 		
 		$return[$item['id']] = createInternalNameItem($item['label'],

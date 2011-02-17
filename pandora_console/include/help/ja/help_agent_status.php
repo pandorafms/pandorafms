@@ -19,7 +19,6 @@
 
 	</tr><tr>
 
-	<td class="f9i"><?php print_image("images/status_sets/default/agent_no_monitors.png", false, array("title" => "監視対象外エージェント", "alt" => "監視対象外エージェント")); ?></td><td>監視対象外エージェント</td>
 	<td class="f9i"><?php print_image("images/status_sets/default/agent_no_data.png", false, array("title" => "データ収集対象外エージェント", "alt" => "データ収集対象外エージェント")); ?></td><td>データ収集対象外エージェント</td>
 	<td class="f9i"><?php print_image("images/status_sets/default/agent_down.png", false, array("title" => "エージェント停止中", "alt" => "エージェント停止中")); ?></td><td>エージェント停止中</td>
 	

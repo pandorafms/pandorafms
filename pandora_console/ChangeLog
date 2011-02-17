@@ -1,3 +1,8 @@
+2011-02-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/functions.php: Merged from trunk. Hide custom SQL reports
+	  from non PM users when creating reports.
+
 2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

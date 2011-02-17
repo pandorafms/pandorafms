@@ -28,7 +28,6 @@ Los valores posibles del <b>estado de un agente </b> son:
 	<td class="f9i"><?php print_image("images/status_sets/default/agent_ok.png", false, array("title" => "All Monitors OK", "alt" => "All Monitors OK")); ?><?php print_image("images/status_sets/faces/agent_ok.png", false, array("title" => "All Monitors OK", "alt" => "All Monitors OK")); ?></td><td>Todos los monitores están OK</td>
 
 </tr><tr>
-	<td class="f9i"><?php print_image("images/status_sets/default/agent_no_monitors.png", false, array("title" => "Agent without monitors", "alt" => "Agent without monitors")); ?><?php print_image("images/status_sets/faces/agent_no_monitors.png", false, array("title" => "Agent without monitors", "alt" => "Agent without monitors")); ?></td><td>Agente sin monitores</td>
 	<td class="f9i"><?php print_image("images/status_sets/default/agent_no_data.png", false, array("title" => "Agent without data", "alt" => "Agent without data")); ?><?php print_image("images/status_sets/faces/agent_no_data.png", false, array("title" => "Agent without data", "alt" => "Agent without data")); ?></td><td>Agente sin datos</td>
 	<td class="f9i"><?php print_image("images/status_sets/default/agent_down.png", false, array("title" => "Agent down", "alt" => "Agent down")); ?><?php print_image("images/status_sets/faces/agent_down.png", false, array("title" => "Agent down", "alt" => "Agent down")); ?></td><td>Agente caído</td>
 </tr>

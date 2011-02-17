@@ -1,3 +1,10 @@
+2011-02-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_agent_status.php,
+	  include/help/es/help_agent_status.php,
+	  include/help/ja/help_agent_status.php: The 'no monitors' status does
+	  not make sense now that all modules have a status.
+
 2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* operation/agentes/estado_agente.php: fixed the re-apply the safe_input in

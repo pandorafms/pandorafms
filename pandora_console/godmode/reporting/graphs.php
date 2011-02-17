@@ -56,7 +56,13 @@ if ($delete_graph) {
 	}
 }
 
-$graphs = get_user_custom_graphs ();
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$return_all_group = true;
+else
+	$return_all_group = false;
+	
+$graphs = get_user_custom_graphs ($config['id_user'], false, $return_all_group, "IW");
 
 if (! empty ($graphs)) {
 	$table->width = '720px';

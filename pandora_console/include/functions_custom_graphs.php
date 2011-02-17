@@ -34,31 +34,36 @@ if ($config['flash_charts']) {
  * @param $id_user User id to check.
  * @param $only_names Wheter to return only graphs names in an associative array
  * or all the values.
+ * @param $returnAllGroup Wheter to return graphs of group All or not.
+ * @param $privileges Privileges to check in user group
  *
  * @return Custom graphs of a an user. Empty array if none.
  */
-function get_user_custom_graphs ($id_user = 0, $only_names = false) {
+function get_user_custom_graphs ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'IR') {
 	global $config;
 	
 	if (!$id_user) {
 		$id_user = $config['id_user'];
 	}
 
-    $groups = get_user_groups ($id_user, "AR", false);
-	
+    	$groups = get_user_groups ($id_user, $privileges, $returnAllGroup);
+
 	$all_graphs = get_db_all_rows_in_table ('tgraph', 'name');
 	if ($all_graphs === false)
 		return array ();
-	
+
 	$graphs = array ();
 	foreach ($all_graphs as $graph) {
+		if (!in_array($graph['id_group'], array_keys($groups)))
+			continue;
+
 		if ($graph["id_user"] != $id_user && $graph['private'])
 			continue;
 
-        if ($graph["id_group"] > 0)
-            if (!isset($groups[$graph["id_group"]])){
-                continue;
-            }
+		if ($graph["id_group"] > 0)
+		    if (!isset($groups[$graph["id_group"]])){
+		        continue;
+		    }
 
 		if ($only_names) {
 			$graphs[$graph['id_graph']] = $graph['name'];

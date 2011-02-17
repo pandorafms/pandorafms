@@ -1,3 +1,14 @@
+2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk
+
+	* include/functions_reports.php
+	godmode/reporting/reporting_builder.main.php
+	godmode/reporting/reporting_builder.php:Only administrator users can select and see 
+	group All in this views. 
+
+	Fix: #3183412, 3183413 
+
 2011-02-07 Javier Lanz <javier.lanz@artica.es>
 	* godmode/gis_maps/index.php: Only display Default column to an admin
 	user

@@ -52,7 +52,12 @@ $table->data['name'][0] = __('Name');
 $table->data['name'][1] = print_input_text('name', $reportName, __('Name'), 20, 40, true);
 
 $table->data['group'][0] = __('Group');
-$table->data['group'][1] = print_select_groups(false, "AR", true, 'id_group', $idGroupReport, false, '', '', true);
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$return_all_groups = true;
+else	
+	$return_all_groups = false;
+$table->data['group'][1] = print_select_groups(false, "AR", $return_all_groups, 'id_group', $idGroupReport, false, '', '', true);
 
 $table->data['description'][0] = __('Description');
 $table->data['description'][1] = print_textarea('description', 5, 15, $description, '', true);

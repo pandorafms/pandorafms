@@ -50,8 +50,14 @@ switch ($action) {
 				__('Could not be deleted'));
 		}
 	
+		$own_info = get_user_info ($config['id_user']);
+		if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			$return_all_group = true;
+		else
+			$return_all_group = false;
+		
 		$reports = get_reports (array ('order' => 'name'),
-			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'));
+			array ('name', 'id_report', 'description', 'private', 'id_user', 'id_group'), $return_all_group, 'IW');
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';

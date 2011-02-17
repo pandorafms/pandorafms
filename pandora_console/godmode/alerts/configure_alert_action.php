@@ -32,7 +32,9 @@ $id = (int) get_parameter ('id');
 $al_action = get_alert_action ($id);
 
 if ($al_action !== false){
+	// If user tries to edit an action with group=ALL
 	if ($al_action['id_group'] == 0){
+		// then must have "PM" access privileges
 		if (! give_acl ($config['id_user'], 0, "PM")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -41,10 +43,25 @@ if ($al_action !== false){
 		}else
 			// Header
 			print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
-	
-	}else
-		// Header
-		print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+	// If user tries to edit an action of others groups
+	}else{
+		$own_info = get_user_info ($config['id_user']);
+		if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+		else
+			$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+		$is_in_group = in_array($al_action['id_group'], $own_groups);
+		// Then action group have to be in his own groups
+		if ($is_in_group)
+			// Header
+			print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);
+		else{
+			pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+			require ("general/noaccess.php");
+			exit;
+		}	
+	}
 }else
 	// Header
 	print_page_header (__('Alerts').' &raquo; '.__('Configure alert action'), "images/god2.png", false, "", true);	

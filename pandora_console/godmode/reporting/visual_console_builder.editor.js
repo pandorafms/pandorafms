@@ -16,6 +16,7 @@ var openPropertiesPanel = false;
 var idItem = 0;
 var selectedItem = null;
 var lines = Array();
+var toolbuttonActive = null
 
 function showAdvanceOptions(close) {
 	if ($("#advance_options").css('display') == 'none') {
@@ -59,9 +60,9 @@ function eventsTextAgent() {
 				},
 				formatItem: function (data, i, total) {
 					if (total == 0)
-						$("#text-agent").css ('background-color', '#cc0000');
+						$("#text-agent").css('background-color', '#cc0000');
 					else
-						$("#text-agent").css ('background-color', '');
+						$("#text-agent").css('background-color', '');
 					if (data == "")
 						return false;
 					return data[0]+'<br><span class="ac_extra_field">' + idText + ': '+data[1]+'</span>';
@@ -302,6 +303,8 @@ function actionClick() {
 	activeToolboxButton('delete_item', false);
 	
 	if (creationItem != null) {
+		//Create a item
+		
 		activeToolboxButton(creationItem, true);
 		item = creationItem;
 		$("#button_update_row").css('display', 'none');
@@ -310,7 +313,10 @@ function actionClick() {
 		unselectAll();
 	}
 	else if (selectedItem != null) {
+		//Edit a item
+		
 		item = selectedItem;
+		toolbuttonActive = item;
 		$("#button_create_row").css('display', 'none');
 		$("#button_update_row").css('display', '');
 		cleanFields();
@@ -348,8 +354,9 @@ function loadFieldsFromDB(item) {
 					if (key == 'height') $("input[name=height]").val(val);
 					if (key == 'label') $("input[name=label]").val(val);
 					if (key == 'image') {
+						//Load image preview
 						$("select[name=image]").val(val);
-						showPreviewStaticGraph(val);
+						showPreview(val);
 					}
 					if (key == 'pos_x') $("input[name=left]").val(val);
 					if (key == 'pos_y') $("input[name=top]").val(val);
@@ -381,6 +388,14 @@ function loadFieldsFromDB(item) {
 }
 
 function hiddenFields(item) {
+	//The method to hidden and show is
+	//a row have a id and multiple class
+	//then the steps is
+	//- hide the row with <tr id="<id>">...</tr>
+	//  or hide <tr class="title_panel_span">...</tr>
+	//- unhide the row with <tr id="<id>" class="<item> ...">...</tr>
+	//  or <tr id="title_panel_span_<item>">...</tr>
+	
 	$(".title_panel_span").css('display', 'none');
 	$("#title_panel_span_"  + item).css('display', 'inline'); 
 	
@@ -822,6 +837,10 @@ function deleteItem() {
 	selectedItem = null;
 }
 
+/**
+ * All events in the visual map, resize map, click item, double click, drag and
+ * drop.
+ */
 function eventsItems() {
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
@@ -882,6 +901,7 @@ function eventsItems() {
 		}
 	});
 	
+	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
 		if (!openPropertiesPanel) {
@@ -1007,27 +1027,27 @@ function unselectAll() {
 function click2(id) {
 	switch (id) {
 		case 'static_graph':
-			creationItem = 'static_graph';
+			toolbuttonActive = creationItem = 'static_graph';
 			actionClick();
 			break;
 		case 'percentile_bar':
-			creationItem = 'percentile_bar';
+			toolbuttonActive = creationItem = 'percentile_bar';
 			actionClick();
 			break;
 		case 'module_graph':
-			creationItem = 'module_graph';
+			toolbuttonActive = creationItem = 'module_graph';
 			actionClick();
 			break;
 		case 'simple_value':
-			creationItem = 'simple_value';
+			toolbuttonActive = creationItem = 'simple_value';
 			actionClick();
 			break;
 		case 'label':
-			creationItem = 'label';
+			toolbuttonActive = creationItem = 'label';
 			actionClick();
 			break;
 		case 'icon':
-			creationItem = 'icon';
+			toolbuttonActive = creationItem = 'icon';
 			actionClick();
 			break;
 			
@@ -1040,14 +1060,36 @@ function click2(id) {
 	}
 }
 
+function showPreview(image) {
+	switch (toolbuttonActive) {
+		case 'static_graph':
+			showPreviewStaticGraph(image);
+			break;
+		case 'icon':
+			showPreviewIcon(image);
+			break;
+	}
+}
+
 function showPreviewStaticGraph(staticGraph) {
 	$("#preview").empty();
+	$("#preview").css('text-align', 'right');
 	
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
 		$("#preview").append("<img src='" + imgBase + "_bad.png' />");
 		$("#preview").append("<img src='" + imgBase + "_ok.png' />");
 		$("#preview").append("<img src='" + imgBase + "_warning.png' />");
+		$("#preview").append("<img src='" + imgBase + ".png' />");
+	}
+}
+
+function showPreviewIcon(icon) {
+	$("#preview").empty();
+	$("#preview").css('text-align', 'left');
+	
+	if (icon != '') {
+		imgBase = "images/console/icons/" + icon;
 		$("#preview").append("<img src='" + imgBase + ".png' />");
 	}
 }

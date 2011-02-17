@@ -1,3 +1,12 @@
+2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* godmode/reporting/visual_console_builder.editor.js,
+	godmode/reporting/visual_console_builder.editor.php: fixed the panel
+	propierties for icon in the edition and creation, now it haven't label color
+	and have preview icon and map link.
+
 2011-02-16 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk

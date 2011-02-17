@@ -1,3 +1,10 @@
+2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* images/os_icons/android_small.png,
+	images/os_icons/embedded_small.png: added lost image files.
+	
+	Fixes: #3183495
+
 2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/alerts/configure_alert_template.php

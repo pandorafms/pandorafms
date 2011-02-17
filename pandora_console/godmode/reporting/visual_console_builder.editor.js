@@ -723,7 +723,7 @@ function createItem(type, values, id_data) {
 				var sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				var imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-			var item = $('<div id="' + id_data + '" class="item static_graph" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
+			var item = $('<div id="' + id_data + '" class="item icon" style="left: 0px; top: 0px; color: ' + values['label_color'] + '; text-align: center; position: absolute; ' + sizeStyle + ' margin-top: ' + values['top'] + 'px; margin-left: ' + values['left'] + 'px;">' +
 				'<img id="image_' + id_data + '" class="image" src="' + getImageElement(id_data) + '" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
@@ -842,8 +842,6 @@ function updateDB(type, idElement , values) {
 										(typeof(values['mov_top']) == 'undefined') && 
 										(typeof(values['absolute_left']) == 'undefined') &&
 										(typeof(values['absolute_top']) == 'undefined')) {
-										console.log(666);
-										console.log(values['parent']);
 										lines[i]['node_begin'] = values['parent'];
 									}
 								}

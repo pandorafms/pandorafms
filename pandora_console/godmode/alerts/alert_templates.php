@@ -137,6 +137,7 @@ if ($delete_template) {
 	$al_template = get_alert_template($id);
 
 	if ($al_template !== false){
+		// If user tries to delete a template with group=ALL then must have "PM" access privileges
 		if ($al_template['id_group'] == 0){
 			if (! give_acl ($config['id_user'], 0, "PM")) {
 				pandora_audit("ACL Violation",
@@ -146,9 +147,25 @@ if ($delete_template) {
 			}else
 				// Header
 				print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
-		}else
-			// Header
-			print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);		
+		// If user tries to delete a template of others groups
+		}else{
+			$own_info = get_user_info ($config['id_user']);
+			if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+				$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+			else
+				$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+			$is_in_group = in_array($al_template['id_group'], $own_groups);
+			// Then template group have to be is his own groups
+			if ($is_in_group)
+				// Header
+				print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);
+			else{
+				pandora_audit("ACL Violation",
+				"Trying to access Alert Management");
+				require ("general/noaccess.php");
+				exit;
+			}
+		}	
 	}else
 		// Header
 		print_page_header (__('Alerts')." &raquo; ". __('Alert templates'), "images/god2.png", false, "", true);

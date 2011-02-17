@@ -102,9 +102,14 @@ if ($edit_graph) {
 }
 echo ">";
 
-$group_select = get_user_groups ($config['id_user']);
+$own_info = get_user_info ($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$return_all_groups = true;
+else	
+	$return_all_groups = false;
+	
 echo "<td><b>".__('Group')."</b></td><td>" .
-	print_select_groups($config['id_user'], "AR", true, 'graph_id_group', $id_group, '', '', '', true) .
+	print_select_groups($config['id_user'], "AR", $return_all_groups, 'graph_id_group', $id_group, '', '', '', true) .
 	"</td></tr>";
 echo "<tr>";
 echo "<td class='datos2'><b>".__('Description')."</b></td>";

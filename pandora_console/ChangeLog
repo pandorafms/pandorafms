@@ -2,6 +2,17 @@
 
 	Merged bugfix from trunk
 
+	* include/functions_custom_graphs.php
+	godmode/reporting/graph_builder.main.php
+	godmode/reporting/graphs.php: Only administrator users can select and see 
+	group All in this views.
+	
+	Fix: #3183419, 3183421
+
+2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk
+
         * operation/agentes/estado_agente.php
         godmode/alerts/configure_alert_template.php
         godmode/alerts/alert_list.builder.php: Now users can see alerts and templates

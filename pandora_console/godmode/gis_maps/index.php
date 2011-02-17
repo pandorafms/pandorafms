@@ -49,6 +49,11 @@ if (is_ajax ()) {
 
 
 $action = get_parameter('action');
+$own_info = get_user_info($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$display_default_column = true;
+else
+	$display_default_column = false;
 
 switch ($action) {
 	case 'delete_map':
@@ -63,7 +68,8 @@ $table->width = '500px';
 $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('View');
-$table->head[3] = __('Default');
+if ($display_default_column)
+	$table->head[3] = __('Default');
 $table->head[4] = __('Delete');
 
 $table->align[1] = 'center';
@@ -93,11 +99,16 @@ if (!$maps) {
 			$defaultMapId = $map['id_tgis_map'];
 		}
 		
-		$table->data[] = array('<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
+		$table_info = array('<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&map_id='.$map['id_tgis_map'].'&amp;action=edit_map">' . $map['map_name'] . '</a>',
 			print_group_icon ($map['group_id'], true),
-			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>',
-			print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true),
-			'<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . print_image ("images/cross.png", true).'</a>'); 
+			'<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id='.$map['id_tgis_map'].'">' . print_image ("images/eye.png", true).'</a>');
+		if ($display_default_column) {
+			$default_button = print_radio_button_extended('default_map', $map['id_tgis_map'], '', $checked, false, "setDefault(" . $map['id_tgis_map'] . ");", '', true);
+			array_push($table_info, $default_button);
+		}
+		$delete_button = '<a href="index.php?sec=godgismaps&amp;sec2=godmode/gis_maps/index&amp;map_id='.$map['id_tgis_map'].'&amp;action=delete_map" onclick="return confirmDelete();">' . print_image ("images/cross.png", true).'</a>';
+		array_push ($table_info, $delete_button);
+		$table->data[] = $table_info;
 	}
 	print_table($table);
 }

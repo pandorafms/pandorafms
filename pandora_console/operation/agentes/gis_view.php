@@ -2,7 +2,7 @@
 /**
  * Pandora FMS- http://pandorafms.com
  * ==================================================
- * Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+ * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,10 +18,10 @@ global $config;
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
-	pandora_audit("ACL Violation", "Trying to access Visual Setup Management");
-	require ("general/noaccess.php");
-	return;
+if (! give_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
+        pandora_audit("ACL Violation", "Trying to access GIS Agent view");
+        require ("general/noaccess.php");
+        return;
 }
 
 require_once ('include/functions_gis.php');
@@ -87,12 +87,12 @@ echo "</form>";
 
 echo "<h3>" . __("Positional data from the last") . " " . human_time_description ($period) ."</h3>";
 /* Get the total number of Elements for the pagination */ 
-$sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > %d ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
+$sqlCount = sprintf ("SELECT COUNT(*) FROM tgis_data_history WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d) ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
 $countData = get_db_value_sql($sqlCount);
 /* Get the elements to present in this page */
 $sql = sprintf ("SELECT longitude, latitude, altitude, start_timestamp, end_timestamp, description, number_of_packages, manual_placement
 	FROM tgis_data_history
-	WHERE tagente_id_agente = %d AND end_timestamp > %d 
+	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)  
 	ORDER BY end_timestamp DESC
 	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], get_parameter ('offset'));
 

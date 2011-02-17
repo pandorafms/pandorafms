@@ -1,3 +1,11 @@
+2011-02-18 Sancho Lerena <slerena@artica.es>
+
+	Merged bugfix from trunk.
+
+	* operation/agentes/gis_view.php: Fixed ACL Problems in operation
+	view (Was looking for PM instead AR!). Fixed search by date in data
+	view for GIS data. 
+	
 2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk

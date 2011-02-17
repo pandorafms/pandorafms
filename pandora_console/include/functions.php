@@ -647,11 +647,16 @@ function get_report_types () {
 	$types['min_value'] = __('Min. Value');
 	$types['sumatory'] = __('Summatory');
 	//$types['agent_detailed'] = __('Agent detailed view');
-	$types['text'] = __('Text');
-	$types['sql'] = __('SQL query');
-	$types['sql_graph_vbar'] = __('SQL vertical bar graph');
-	$types['sql_graph_pie'] = __('SQL pie graph');
-	$types['sql_graph_hbar'] = __('SQL horizonal bar graph');
+	$types['text'] = __ ('Text');
+	
+	# Only pandora managers have access to the whole database
+	if (give_acl ($config['id_user'], 0, "PM")) {
+		$types['sql'] = __('SQL query');
+		$types['sql_graph_vbar'] = __('SQL vertical bar graph');
+		$types['sql_graph_pie'] = __('SQL pie graph');
+		$types['sql_graph_hbar'] = __('SQL horizonal bar graph');
+	}
+
 	$types['url'] = __('Import text from URL');
 	$types['database_serialized'] = __('Serialize data');
 	$types['TTRT'] = __('TTRT');

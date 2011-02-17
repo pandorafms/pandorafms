@@ -1,3 +1,10 @@
+2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+        * operation/agentes/estado_agente.php
+        godmode/alerts/configure_alert_template.php
+        godmode/alerts/alert_list.builder.php: Now users can see alerts and templates
+        of their groups and group "All".
+
 2011-02-17 Javier Lanz <javier.lanz@artica.es>
 	* godmode/gis_maps/index.php: Show only user's GIS maps
 	

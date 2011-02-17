@@ -39,7 +39,9 @@ if ($duplicate_template) {
 }
 
 if ($a_template !== false){
+	// If user tries to duplicate/edit a template with group=ALL
 	if ($a_template['id_group'] == 0){
+		// then must have "PM" access privileges
 		if (! give_acl ($config['id_user'], 0, "PM")) {
 			pandora_audit("ACL Violation",
 				"Trying to access Alert Management");
@@ -48,9 +50,25 @@ if ($a_template !== false){
 		}else
 			// Header
 			print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
-	}else
-		// Header
-		print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);		
+	// If user tries to duplicate/edit a template of others groups 
+	}else{
+		$own_info = get_user_info ($config['id_user']);
+		if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+			$own_groups = array_keys(get_user_groups($config['id_user'], "LM"));
+		else
+			$own_groups = array_keys(get_user_groups($config['id_user'], "LM", false));
+		$is_in_group = in_array($a_template['id_group'], $own_groups);
+		// Then template group have to be in his own groups
+		if ($is_in_group)
+			// Header
+			print_page_header (__('Alerts').' &raquo; '.__('Configure alert template'), "", false, "", true);
+		else{
+			pandora_audit("ACL Violation",
+			"Trying to access Alert Management");
+			require ("general/noaccess.php");
+			exit;
+		}	
+	}		
 // This prevents to duplicate the header in case duplicate/edit_template action is performed
 }else
 	// Header

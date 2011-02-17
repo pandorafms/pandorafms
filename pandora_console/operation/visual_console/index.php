@@ -23,12 +23,7 @@ print_page_header (__("Visual console"), "images/monitor.png", false, "operation
 
 require_once ('include/functions_visual_map.php');
 
-// Only display maps of "All" group if user is administrator or has "PM" privileges, otherwise show only maps of user group
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
-	$layouts = get_user_layouts ();	
-else
-	$layouts = get_user_layouts ($config['id_user'], false, false, false);
+$layouts = get_user_layouts ();	
 
 $table->width = "70%";
 $table->data = array ();

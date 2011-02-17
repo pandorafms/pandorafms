@@ -65,7 +65,7 @@ $table->data[1][0] = __('Template');
 
 $table->data[1][0] = __('Template');
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'])
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
 	$templates = get_alert_templates (false, array ('id', 'name'));
 else{
 	$usr_groups = get_user_groups($config['id_user'], 'LW', false);

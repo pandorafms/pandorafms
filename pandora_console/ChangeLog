@@ -1,3 +1,10 @@
+2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk
+
+	* operation/visual_console/index.php: Correction for my last commit. Now in this 
+	view users can see maps of group "All".
+
 2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk

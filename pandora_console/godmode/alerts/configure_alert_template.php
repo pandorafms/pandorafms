@@ -455,7 +455,9 @@ if ($step == 2) {
 	$table->data['field3'][1] = print_textarea ('field3', 10, 30, $field3, '', true);
 	
 	$table->data[4][0] = __('Default action');
-	$table->data[4][1] = print_select_from_sql ('SELECT id, name FROM talert_actions ORDER BY name',
+	$usr_groups = implode(',', array_keys(get_user_groups($config['id_user'], 'LM', true)));
+	$sql_query = sprintf('SELECT id, name FROM talert_actions WHERE id_group IN (%s) ORDER BY name', $usr_groups);
+	$table->data[4][1] = print_select_from_sql ($sql_query,
 		'default_action', $default_action, '', __('None'), 0,
 		true, false, false);
 } else if ($step == 3) {

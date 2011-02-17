@@ -35,11 +35,7 @@ if (is_ajax ()) {
 
 		$own_info = get_user_info ($config['id_user']);
 		$usr_groups = array();
-		if ($own_info['is_admin'])
-			$usr_groups = get_user_groups ($config['id_user'], 'LW', true);
-			
-		else
-			$usr_groups = get_user_groups($config['id_user'], 'LW', false);
+		$usr_groups = get_user_groups($config['id_user'], 'LW', true);
 		
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($usr_groups));		

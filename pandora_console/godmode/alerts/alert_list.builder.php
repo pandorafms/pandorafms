@@ -68,7 +68,7 @@ $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
 	$templates = get_alert_templates (false, array ('id', 'name'));
 else{
-	$usr_groups = get_user_groups($config['id_user'], 'LW', false);
+	$usr_groups = get_user_groups($config['id_user'], 'LW', true);
 	$filter_groups = '';
 	$filter_groups = implode(',', array_keys($usr_groups));
 	$templates = get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));

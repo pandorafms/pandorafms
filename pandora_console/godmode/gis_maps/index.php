@@ -80,8 +80,13 @@ $defaultMapId = null;
 if (!$maps) {
 	echo '<div class="nf">'.('No maps defined').'</div>';
 } else {
+	$own_info = get_user_info($config['id_user']);
 	foreach ($maps as $map) {
-		
+		if (!check_acl ($config["id_user"], $map["group_id"], "IR")) {
+			continue;
+		}
+		if ($map['group_id'] == 0 && (!$own_info['is_admin'] || !give_acl ($config['id_user'], 0, "PM")))
+			continue;
 		$checked = false;
 		if ($map['default_map']) {
 			$checked = true;

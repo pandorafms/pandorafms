@@ -1,3 +1,14 @@
+2011-02-17 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk
+
+	* operation/agentes/estado_agente.php: fixed the re-apply the safe_input in
+	the search.
+	
+	Fixes: #3184647
+	
+	* include/functions_db.php: cleaned source code style.
+
 2011-02-17 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk

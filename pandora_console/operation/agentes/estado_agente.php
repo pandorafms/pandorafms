@@ -82,7 +82,7 @@ if (is_ajax ()) {
 
 // Take some parameters (GET)
 $group_id = (int) get_parameter ("group_id", 0);
-$search = get_parameter ("search", "");
+$search = safe_output(get_parameter ("search", ""));
 $offset = get_parameter('offset', 0);
 $refr = get_parameter('refr', 0);
 
@@ -113,7 +113,7 @@ print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub searc
 echo '</td><td style="width:40%;">&nbsp;</td></tr></table></form>';
 
 if ($search != ""){
-	$filter = array ("string" => '%'.$search.'%');
+	$filter = array ("string" => '%' . $search . '%');
 }
 else {
 	$filter = array ();
@@ -215,11 +215,13 @@ switch ($sortField) {
 if ($group_id > 0) {
 	$groups = $group_id;
 	$agent_names = get_group_agents ($group_id, $filter, "upper");
-// Not selected any specific group
-} else {
-	$user_group = get_user_groups ($config["id_user"], "AR");
-	$groups = array_keys ($user_group);
-	$agent_names = get_group_agents (array_keys ($user_group), $filter, "upper");
+}
+else {
+	// Not selected any specific group
+	
+	$user_group = get_user_groups($config["id_user"], "AR");
+	$groups = array_keys($user_group);
+	$agent_names = get_group_agents(array_keys ($user_group), $filter, "upper");
 }
 
 $total_agents = 0;

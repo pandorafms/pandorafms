@@ -118,9 +118,9 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 		</tr>
 		<tr id="image_row" style="" class="static_graph icon datos">
 			<td><?php echo __('Image');?></td>
-			<td><?php print_select ($images_list, 'image', '', 'showPreviewStaticGraph(this.value);', 'None', '');?></td>
+			<td><?php print_select ($images_list, 'image', '', 'showPreview(this.value);', 'None', '');?></td>
 		</tr>
-		<tr id="preview_row" style="" class="static_graph datos">
+		<tr id="preview_row" style="" class="static_graph datos icon">
 			<td colspan="2" style="text-align: right;"><div id="preview" style="text-align: right;"></div></td>
 		</tr>
 		<tr id="agent_row" class="static_graph percentile_bar module_graph simple_value datos">
@@ -232,7 +232,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value label datos">
+		<tr id="map_linked_row" class="static_graph percentile_bar module_graph simple_value icon label datos">
 			<td><?php echo __('Map linked');?></td>
 			<td>
 				<?php
@@ -240,7 +240,7 @@ echo '<div id="properties_panel" style="display: none; position: absolute; borde
 				?>
 			</td>
 		</tr>
-		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value label icon datos">
+		<tr id="label_color_row" class="static_graph percentile_bar module_graph simple_value label datos">
 			<td><?php echo __('Label color');?></td>
 			<td><?php print_input_text_extended ('label_color', '#000000', 'text-'.'label_color', '', 7, 7, false, '', 'class="label_color"', false);?></td>
 		</tr>				

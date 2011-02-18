@@ -1,3 +1,7 @@
+2011-02-18  Sancho Lerena <slerena@artica.es>
+
+	* pandora_agent_daemon: Ported some changes related to "su" from trunk
+
 2011-02-10  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_agent: Merged from trunk. Thread related fixes.

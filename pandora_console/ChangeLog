@@ -1,3 +1,11 @@
+2011-02-18 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/ajax/visual_console_builder.ajax.php,
+	godmode/reporting/visual_console_builder.editor.js: fixed bug that erase the
+	label of items when moving in other position.
+
 2011-02-18 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/gis_maps/configure_gis_map.php: Adding layer, group combo only

@@ -778,10 +778,21 @@ function insertDB(type, values) {
 		});
 }
 
-function updateDB(type, idElement , values) {
+function updateDB(type, idElement , values, event) {
+	action = "update";
+	
+	//Check if the event parameter in function is passed in the call.
+	if (event != null) {
+		switch (event) {
+			case 'dragstop':
+				action = "move";
+				break;
+		}
+	}
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "update"});
+	parameter.push ({name: "action", value: action});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	parameter.push ({name: "type", value: type});
 	parameter.push ({name: "id_element", value: idElement});
@@ -1053,7 +1064,7 @@ function eventsItems() {
 		values['mov_left'] = ui.position.left; 
 		values['mov_top'] = ui.position.top; 
 		
-		updateDB(selectedItem, idItem, values);
+		updateDB(selectedItem, idItem, values, 'dragstop');
 	});
 }
 

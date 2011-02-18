@@ -84,6 +84,7 @@ switch ($action) {
 		echo json_encode($return);
 		break;
 	case 'update':
+	case 'move':
 		switch ($type) {
 			case 'background':
 				$values = array();
@@ -160,6 +161,12 @@ switch ($action) {
 						}
 						break;
 				}
+				
+				if ($action == 'move') {
+					//Don't change the label because only change the positions
+					unset($values['label']);
+				}
+				
 				$result = process_sql_update('tlayout_data', $values, array('id' => $id_element));
 				break;
 		}

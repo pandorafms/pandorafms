@@ -1,4 +1,10 @@
 2011-02-18 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/gis_maps/configure_gis_map.php: Adding layer, group combo only
+	displays user's groups.
+
+2011-02-18 Javier Lanz <javier.lanz@artica.es>
+
 	* godmode/gis_maps/configure_gis_map.php: Group combo now only displays
 	user's groups.
 

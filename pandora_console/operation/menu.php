@@ -132,7 +132,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 }
 
 // Agent read, Server read
-if (give_acl ($config['id_user'], 0, "PM")) {
+if (give_acl ($config['id_user'], 0, "AR")) {
 
 	// Server view
 	$menu["estado_server"]["text"] = __('Pandora servers');
@@ -146,12 +146,12 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	if ($servers === false) {
 		$servers = array ();
 	}
-
-	foreach ($servers as $serverItem) {
-		$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
+	if (give_acl ($config['id_user'], 0, "PM")) {
+		foreach ($servers as $serverItem) {
+			$sub["operation/servers/view_server_detail&amp;server_id=".$serverItem["id_server"]]["text"] = $serverItem["name"];
+		}
+		$menu["estado_server"]["sub"] = $sub;
 	}
-
-	$menu["estado_server"]["sub"] = $sub;
 	//End of server view
 
 	//End of server view

@@ -2094,11 +2094,12 @@ sub pandora_self_monitoring ($$) {
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
 	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = 0 AND name = '".$pa_config->{"servername"}."'");
 
-	my $agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
-
-    if (!defined($agents_unknown)){
-        $agents_unknown = 0;
-    }
+	# Number of unknown agents
+	my $agents_unknown = 0;
+	if (defined ($my_data_server)) {
+		$agents_unknown = get_db_value ($dbh, "SELECT * FROM tagente_estado, tagente WHERE tagente.disabled =0 AND tagente.id_agente = tagente_estado.id_agente AND running_by = $my_data_server AND utimestamp < NOW() - (current_interval * 2) limit 10;");
+    		$agents_unknown = 0 if (!defined($agents_unknown));
+    	}
     
     my $queued_modules = get_db_value ($dbh, "SELECT SUM(queued_modules) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
 

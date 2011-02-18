@@ -116,13 +116,40 @@ if ($searchAgents) {
 				WHERE id_user = '" . $config['id_user'] . "'
 			)
 			OR t1.id_grupo IN (
-				SELECT id_grupo 
-				FROM tusuario_perfil 
-				WHERE id_usuario = '" . $config['id_user'] . "' 
-					AND id_perfil IN (
-						SELECT id_perfil 
-						FROM tperfil WHERE agent_view = 1
-					)
+				SELECT id_grupo
+				FROM tagente
+				WHERE id_grupo IN (
+							SELECT id_grupo 
+							FROM tusuario_perfil 
+							WHERE id_usuario = '" . $config['id_user'] . "' 
+								AND id_perfil IN (
+									SELECT id_perfil 
+									FROM tperfil WHERE agent_view = 1
+								)
+						)
+						OR (
+							parent IN (
+								SELECT id_grupo 
+								FROM tusuario_perfil 
+								WHERE id_usuario = '" . $config['id_user'] . "' 
+									AND id_perfil IN (
+										SELECT id_perfil 
+										FROM tperfil WHERE agent_view = 1
+									)
+							) AND 1 = (
+								SELECT propagate
+								FROM tgrupo
+								WHERE id_grupo IN (
+									SELECT id_grupo 
+									FROM tusuario_perfil 
+									WHERE id_usuario = '" . $config['id_user'] . "' 
+										AND id_perfil IN (
+											SELECT id_perfil 
+											FROM tperfil WHERE agent_view = 1
+										)
+								)
+							)
+						)
 			)
 			OR 0 IN (
 				SELECT id_grupo

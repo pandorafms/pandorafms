@@ -333,9 +333,13 @@ $table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
 		</td>
 	</tr> " . addConectionMapsInForm($map_connection_list) . "
 </table>";
-
+$own_info = get_user_info($config['id_user']);
+if ($own_info['is_admin'] || give_acl ($config['id_user'], 0, "PM"))
+	$display_all_group = true;
+else
+	$display_all_group = false;
 $table->data[2][0] = __('Group') . print_help_tip (__('Group that owns the map'), true). ':';
-$table->data[2][1] = print_select_groups(false, false, false, 'map_group_id', $map_group_id, '', __('All'), '0', true);
+$table->data[2][1] = print_select_groups(false, 'AW', $display_all_group, 'map_group_id', $map_group_id, '', '', '', true);
 
 $table->data[3][0] = __('Default zoom') . print_help_tip (__('Default zoom level when opening the map'), true). ':';
 $table->data[3][1] = print_input_text ('map_zoom_level', $map_zoom_level, '', 2, 4, true) . print_input_hidden('map_levels_zoom', $map_levels_zoom, true);

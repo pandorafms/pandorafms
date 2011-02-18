@@ -1,3 +1,11 @@
+2011-02-18 Javier Lanz <javier.lanz@artica.es>
+
+	* operation/servers/view_server.php: Fixed ACL permissions
+	* operation/servers/view_server_detail.php: Fixed ACL permissions
+	* operation/menu.php: Let an "AR" user view 'Pandora servers' menu
+	
+	Fix: #3183477
+
 2011-02-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

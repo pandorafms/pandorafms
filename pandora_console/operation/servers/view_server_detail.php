@@ -26,10 +26,10 @@ $options = "<li><a href='index.php?sec=estado_server&sec2=operation/servers/view
 print_page_header (__('Pandora servers'), "images/server.png", false, "", false, $options);
 
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+if (! give_acl ($config['id_user'], 0, "PM")) {
 	pandora_audit("ACL Violation",
 		"Trying to access recon task viewer");
-	require ("/general/noaccess.php");
+	require ("general/noaccess.php");
 	return;
 }
 

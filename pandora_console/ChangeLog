@@ -1,6 +1,14 @@
 2011-02-18 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* include/functions_db.php, operation/search_modules.php,
+	operation/search_agents.php: sorry, I didn't think about the subgroups may
+	have other subgroups (and this may be recursive), rewrite the SQL for
+	search with groups, now the groups come from the PHP function to get
+	all groups, children groups, grandchildren groups...
+
+2011-02-18 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* include/functions_db.php, operation/search_modules.php,
 	operation/search_agents.php: fixed SQL querys, this querys in previous
 	version haven't lines SQL code for to search into subgroups.
 

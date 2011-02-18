@@ -105,6 +105,9 @@ switch ($sortField) {
 
 $agents = false;
 if ($searchAgents) {
+	$userGroups = get_user_groups($config['id_user'], 'AR', false);
+	$id_userGroups = array_keys($userGroups);
+	
 	$sql = "
 		FROM tagente AS t1
 			INNER JOIN tgrupo AS t2
@@ -116,40 +119,7 @@ if ($searchAgents) {
 				WHERE id_user = '" . $config['id_user'] . "'
 			)
 			OR t1.id_grupo IN (
-				SELECT id_grupo
-				FROM tagente
-				WHERE id_grupo IN (
-							SELECT id_grupo 
-							FROM tusuario_perfil 
-							WHERE id_usuario = '" . $config['id_user'] . "' 
-								AND id_perfil IN (
-									SELECT id_perfil 
-									FROM tperfil WHERE agent_view = 1
-								)
-						)
-						OR (
-							parent IN (
-								SELECT id_grupo 
-								FROM tusuario_perfil 
-								WHERE id_usuario = '" . $config['id_user'] . "' 
-									AND id_perfil IN (
-										SELECT id_perfil 
-										FROM tperfil WHERE agent_view = 1
-									)
-							) AND 1 = (
-								SELECT propagate
-								FROM tgrupo
-								WHERE id_grupo IN (
-									SELECT id_grupo 
-									FROM tusuario_perfil 
-									WHERE id_usuario = '" . $config['id_user'] . "' 
-										AND id_perfil IN (
-											SELECT id_perfil 
-											FROM tperfil WHERE agent_view = 1
-										)
-								)
-							)
-						)
+				" . implode(',', $id_userGroups) . "
 			)
 			OR 0 IN (
 				SELECT id_grupo

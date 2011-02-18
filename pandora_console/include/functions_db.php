@@ -668,6 +668,9 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 	}
 	
 	$id_agent = safe_int ($id_agent, 1);
+	
+	$userGroups = get_user_groups($config['id_user'], 'AR', false);
+	$id_userGroups = array_keys($userGroups);
 
 	$where = " WHERE (
 			1 = (
@@ -680,40 +683,7 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				SELECT id_agente
 				FROM tagente
 				WHERE id_grupo IN (
-					SELECT id_grupo
-					FROM tgrupo 
-					WHERE id_grupo IN (
-							SELECT id_grupo 
-							FROM tusuario_perfil 
-							WHERE id_usuario = '" . $config['id_user'] . "' 
-								AND id_perfil IN (
-									SELECT id_perfil 
-									FROM tperfil WHERE agent_view = 1
-								)
-						)
-						OR (
-							parent IN (
-								SELECT id_grupo 
-								FROM tusuario_perfil 
-								WHERE id_usuario = '" . $config['id_user'] . "' 
-									AND id_perfil IN (
-										SELECT id_perfil 
-										FROM tperfil WHERE agent_view = 1
-									)
-							) AND 1 = (
-								SELECT propagate
-								FROM tgrupo
-								WHERE id_grupo IN (
-									SELECT id_grupo 
-									FROM tusuario_perfil 
-									WHERE id_usuario = '" . $config['id_user'] . "' 
-										AND id_perfil IN (
-											SELECT id_perfil 
-											FROM tperfil WHERE agent_view = 1
-										)
-								)
-							)
-						)
+						" . implode(',', $id_userGroups) . "
 					)
 			)
 			OR 0 IN (

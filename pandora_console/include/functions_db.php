@@ -714,12 +714,39 @@ function get_agent_modules ($id_agent = null, $details = false, $filter = false,
 				SELECT id_agente
 				FROM tagente
 				WHERE id_grupo IN (
-					SELECT id_grupo 
-					FROM tusuario_perfil 
-					WHERE id_usuario = '" . $config['id_user'] . "' 
-						AND id_perfil IN (
-							SELECT id_perfil 
-							FROM tperfil WHERE agent_view = 1
+					SELECT id_grupo
+					FROM tgrupo 
+					WHERE id_grupo IN (
+							SELECT id_grupo 
+							FROM tusuario_perfil 
+							WHERE id_usuario = '" . $config['id_user'] . "' 
+								AND id_perfil IN (
+									SELECT id_perfil 
+									FROM tperfil WHERE agent_view = 1
+								)
+						)
+						OR (
+							parent IN (
+								SELECT id_grupo 
+								FROM tusuario_perfil 
+								WHERE id_usuario = '" . $config['id_user'] . "' 
+									AND id_perfil IN (
+										SELECT id_perfil 
+										FROM tperfil WHERE agent_view = 1
+									)
+							) AND 1 = (
+								SELECT propagate
+								FROM tgrupo
+								WHERE id_grupo IN (
+									SELECT id_grupo 
+									FROM tusuario_perfil 
+									WHERE id_usuario = '" . $config['id_user'] . "' 
+										AND id_perfil IN (
+											SELECT id_perfil 
+											FROM tperfil WHERE agent_view = 1
+										)
+								)
+							)
 						)
 					)
 			)

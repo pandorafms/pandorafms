@@ -309,7 +309,7 @@ if ($id_agente) {
 		}
 	}
 
-	print_page_header (__('Agent configuration').' -&nbsp;'.printTruncateText(get_agent_name ($id_agente)), "images/setup.png", false, "", true, $onheader);
+	print_page_header (__('Agent configuration').' -&nbsp;'.printTruncateText(get_agent_name ($id_agente), 25, false), "images/setup.png", false, "", true, $onheader);
 	
 }
 // Create agent 

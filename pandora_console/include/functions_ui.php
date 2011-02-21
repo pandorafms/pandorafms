@@ -359,8 +359,8 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 function print_agent_name ($id_agent, $return = false, $cutoff = 0, $style = '', $cutname = false) {
 	$agent_name = (string) get_agent_name ($id_agent);
 	$agent_name_full = $agent_name;
-	if($cutname) {
-		$agent_name = printTruncateText($agent_name, $cutname);
+	if ($cutname) {
+		$agent_name = printTruncateText($agent_name, $cutoff);
 	}
 	$output = '<a style="' . $style . '" href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent.'" title="'.$agent_name_full.'"><b>'.$agent_name.'</b></a>';
 	
@@ -507,15 +507,15 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
 
 	if (!empty($actions)) {
-		$actionText = '<ul class="action_list">';
+		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
 		foreach ($actions as $action) {
-			$actionText .= '<li><div><span class="action_name">' . $action['name'];
+			$actionText .= '<div><span class="action_name"><li>' . $action['name'];
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
 			$actionText .= '</li></span><br /></div>';
 		}
-		$actionText .= '</div></ul>';
+		$actionText .= '</ul></div>';
 	}
 	else {
 		if ($actionDefault != "")

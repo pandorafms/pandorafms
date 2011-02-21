@@ -1,3 +1,11 @@
+2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk.
+
+	* functions_ui.php: Fixed a graphical error displaying action list.
+
+	Fixes: #3182502 
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.
@@ -48,6 +56,14 @@
 	of course update too.
 	
 	Fixes: #3188080
+
+2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	Merged bugfix from trunk.
+
+	* functions_ui.php: Fixed a graphical error displaying action list.
+
+	Fixes: #3182502 
 
 2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 

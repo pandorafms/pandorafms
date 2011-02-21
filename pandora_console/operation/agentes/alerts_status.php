@@ -52,7 +52,7 @@ $idAgent = get_parameter_get('id_agente', 0);
 if ($idAgent != 0) {
 	$url = $url.'&id_agente='.$idAgent;
 	
-	$id_group = get_group_agents ($idAgent);
+	$id_group = get_agent_group ($idAgent);
 	
 	if (give_acl ($config["id_user"], $id_group, "AR") == 0) {
 		pandora_audit("ACL Violation","Trying to access alert view");

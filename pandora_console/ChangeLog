@@ -1,3 +1,10 @@
+2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* godmode/agentes/modificar_agente.php: Lost commit from trunk. Truncated
+	agent name in this view.
+
+	Fixes: #3175780
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

@@ -1,3 +1,13 @@
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* operation/agentes/estado_agente.php: fixed the search/filter in the
+	agent view, uncomment line...I didn't know the reason by this line
+	was comment.
+	
+	Fixes: #3175137
+
 2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	Merged bugfix from trunk.

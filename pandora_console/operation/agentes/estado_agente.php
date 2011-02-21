@@ -223,7 +223,7 @@ else {
 $total_agents = 0;
 $agents = false;
 if (! empty ($agent_names)) {
-	$total_agents = get_agents (array (//'id_agente' => array_keys ($agent_names),
+	$total_agents = get_agents (array ('id_agente' => array_keys ($agent_names),
 		'order' => 'nombre ASC',
 		'disabled' => 0,
 		'id_grupo' => $groups),

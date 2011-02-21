@@ -117,7 +117,6 @@ function generate_dot ($pandora_name, $group = 0, $simple = 0, $font_size = 12, 
 
 // Generate a dot graph definition for graphviz with groups
 function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0, $zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0, $modwithalerts = 0, $module_group = 0, $hidepolicymodules = 0, $depth = 'all', $id_networkmap = 0) {
-	
 	global $config;
 
 	$parents = array();
@@ -128,14 +127,21 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	
 	// Get groups data
 	if ($group > 0) {
-		$filter['id_grupo'] = $group;
-		$groups[0] = get_db_row ('tgrupo', 'id_grupo', $group);
+		$groups = array();
+		$id_groups = get_id_groups_recursive($group, true);
+		
+		foreach($id_groups as $id_group) {
+			if(check_acl($config["id_user"], $id_group, 'AR')) {
+				$groups[] = get_db_row ('tgrupo', 'id_grupo', $id_group);
+			}
+		}
+				
+		$filter['id_grupo'] = $id_groups;
 	}
 	else {
 		$groups = get_db_all_rows_in_table ('tgrupo');
 	}
 	
-
 	// Open Graph
 	$graph = open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);
 	
@@ -144,13 +150,13 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 	// Parse groups
 	$nodes = array ();
 	$nodes_groups = array();
-	foreach ($groups as $group) {
+	foreach ($groups as $group2) {
 		$node_count ++;
-		$group['type'] = 'group';
-		$group['id_node'] = $node_count;
+		$group2['type'] = 'group';
+		$group2['id_node'] = $node_count;
 
 		// Add node
-		$nodes_groups[$group['id_grupo']] = $group;
+		$nodes_groups[$group2['id_grupo']] = $group2;
 	}
 	
 	$node_count = 0;
@@ -160,7 +166,7 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 		$node_count++;
 		
 		// Save node parent information to define edges later
-		if ($node_group['parent'] != "0") {
+		if ($node_group['parent'] != "0" && $node_group['id_grupo'] != $group) {
 			$parents[$node_count] = $nodes_groups[$node_group['parent']]['id_node'];
 		} else {
 			$orphans[$node_count] = 1;
@@ -173,8 +179,9 @@ function generate_dot_groups ($pandora_name, $group = 0, $simple = 0, $font_size
 		// Get agents data
 		$agents = get_agents ($filter,
 			array ('id_grupo, nombre, id_os, id_agente'));
+			
 		if ($agents === false)
-			return false;
+			$agents = array();
 		
 		// Parse agents
 		$nodes_agents = array();

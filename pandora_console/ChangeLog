@@ -1,3 +1,9 @@
+2011-02-21  Sergio Martin <sergio.martin@artica.es>
+
+	* include/functions_networkmap.php: Fixed the group maps
+	when the root group has not agents. Bug: 3152679
+	Merged from trunk
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

@@ -1,9 +1,14 @@
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* ChangeLog: Change the number of item in tracker in previus commit. Sorry
+	I have a mistake.  
+
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* godmode/agentes/agent_manager.php: fixed the return of ajax call to
 	search parents, now the agent names is without html entities.
 	
-	Fixes: #3174872
+	Fixes: #3174918
 
 2011-02-21  Sergio Martin <sergio.martin@artica.es>
 

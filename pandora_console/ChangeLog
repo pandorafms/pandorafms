@@ -1,3 +1,12 @@
+2011-02-21  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Version update (3.2.1)
+
+	* include/config_process.php: Version update.
+
+	* extensions/ssh_console,
+	extensions/vnc: Ported SSH and VNC extensions from trunk.
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

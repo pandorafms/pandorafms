@@ -78,11 +78,12 @@ $table->data[1][1] = print_select (index_array ($templates, 'id', 'name'),
 	'template', '', '', __('Select'), 0, true);
 $table->data[1][1] .= ' <a class="template_details invisible" href="#">' .
 	print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
-
-$table->data[1][1] .= print_image ('images/add.png', true);
-$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
-$table->data[1][1] .= __('Create Template');
-$table->data[1][1] .= '</a>';
+if (give_acl ($config['id_user'], 0, "LM")) {
+	$table->data[1][1] .= print_image ('images/add.png', true);
+	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template">';
+	$table->data[1][1] .= __('Create Template');
+	$table->data[1][1] .= '</a>';
+}
 
 $table->data[2][0] = __('Actions');
 
@@ -100,10 +101,12 @@ $table->data[2][1] .= print_input_text ('fires_max', '', '', 4, 10, true);
 $table->data[2][1] .= print_help_icon ("alert-matches", true);
 $table->data[2][1] .= '</span>';
 $table->data[2][1] .= '</div>';
-$table->data[2][1] .= print_image ('images/add.png', true);
-$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
-$table->data[2][1] .= __('Create Action');
-$table->data[2][1] .= '</a>';
+if (give_acl ($config['id_user'], 0, "LM")) {
+	$table->data[2][1] .= print_image ('images/add.png', true);
+	$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action">';
+	$table->data[2][1] .= __('Create Action');
+	$table->data[2][1] .= '</a>';
+}
 $table->data[3][0] = __('Threshold');
 $table->data[3][1] = print_input_text ('module_action_threshold', '', '', 4, 10, true) . print_help_icon ('action_threshold', true);
 

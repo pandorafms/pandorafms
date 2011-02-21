@@ -1,3 +1,10 @@
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	* godmode/alerts/alert_list.builder.php: added the conditional to hide the
+	create template or action when the user haven't privileges for this action.
+	
+	Fixes: #3182535
+
 2011-02-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/alerts_status.php: Fixed ACL check for alerts.

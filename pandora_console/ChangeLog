@@ -1,3 +1,18 @@
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/functions_db.php: added in function "get_group_agents" the
+	parameter "$childGroups" for get the child groups. And in the function
+	"get_user_groups" added the parameter "$id_groups" for to get groups. Add
+	the function "get_id_groups_recursive" for to get groups in the tree groups.
+	 
+	* godmode/reporting/visual_console_builder.wizard.php: fixed the select box
+	of agents when user have agents in subgroup in any subgroup in the tree
+	group.
+	
+	Fixes: #3180902
+
 2011-02-21 Javier Lanz <javier.lanz@artica.es>
 
 	* godmode/alerts/alert_templates.php: Truncated Group name
@@ -25,6 +40,21 @@
 
 	* extensions/ssh_console,
 	extensions/vnc: Ported SSH and VNC extensions from trunk.
+
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* include/functions_db.php: added in function "get_group_agents" the
+	parameter "$childGroups" for get the child groups. And in the function
+	"get_user_groups" added the parameter "$id_groups" for to get groups. Add
+	the function "get_id_groups_recursive" for to get groups in the tree groups.
+	 
+	* godmode/reporting/visual_console_builder.wizard.php: fixed the select box
+	of agents when user have agents in subgroup in any subgroup in the tree
+	group.
+	
+	Fixes: #3180902
 
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 

@@ -738,7 +738,14 @@ function updateDB(type, idElement , values, event) {
 		
 		top = top + parseInt(values['mov_top']);
 		left = left + parseInt(values['mov_left']);
-		
+	}
+	else if ((typeof(values['absolute_left']) != 'undefined') &&
+		(typeof(values['absolute_top']) != 'undefined')) {
+		var top = values['absolute_top'];
+		var left = values['absolute_left'];
+	}
+	
+	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
 		parameter.push ({name: 'top', value: top});
 		parameter.push ({name: 'left', value: left});
 	}

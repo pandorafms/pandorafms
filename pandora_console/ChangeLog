@@ -1,3 +1,12 @@
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* godmode/reporting/visual_console_builder.editor.js: fixed the update the
+	items, now don't change the position if the data haven't the position.
+	
+	Fixes: #3188069
+
 2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Lost commit from trunk. Truncated

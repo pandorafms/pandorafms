@@ -1,3 +1,14 @@
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
+	Merged bugfix from trunk.
+
+	* godmode/reporting/visual_console_builder.elements.php: fixed the show
+	icons for "label" and "icon", show tooltip on the type icons, hidde some
+	fields as type of row. And now the image field show to icon type item and
+	of course update too.
+	
+	Fixes: #3188080
+
 2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
 
 	* include/functions_ui.php: Lost commit from trunk. Modified function

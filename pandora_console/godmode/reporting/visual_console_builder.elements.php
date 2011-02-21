@@ -66,10 +66,17 @@ $table->head = array ();
 $table->head['icon'] = '';
 $table->head[0] = __('Label') . ' / ' . __('Agent');
 $table->head[1] = __('Image') . ' / ' . __('Module');
-$table->head[2] = __('Width x Height - Max value');
+$table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
 $table->head[4] = __('Parent') . ' / ' . __('Map linked');
 $table->head[5] = __('Action');
+
+$table->align[0] = "center";
+$table->align[1] = "center";
+$table->align[2] = "center";
+$table->align[3] = "center";
+$table->align[4] = "center";
+$table->align[5] = "center";
 
 $table->data = array();
 
@@ -97,58 +104,105 @@ foreach ($layoutDatas as $layoutData) {
 	
 	switch ($layoutData['type']) {
 		case STATIC_GRAPH:
-			$table->data[$i + 1]['icon'] = print_image('images/camera.png', true);
+			$table->data[$i + 1]['icon'] = print_image('images/camera.png', true, array('title' => __('Static Graph')));
 			break;
 		case PERCENTILE_BAR:
-			$table->data[$i + 1]['icon'] = print_image('images/chart_bar.png', true);
+			$table->data[$i + 1]['icon'] = print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
 			break;
 		case MODULE_GRAPH:
-			$table->data[$i + 1]['icon'] = print_image('images/chart_curve.png', true);
+			$table->data[$i + 1]['icon'] = print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
 			break;
 		case SIMPLE_VALUE:
-			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true);
+			$table->data[$i + 1]['icon'] = print_image('images/binary.png', true, array('title' => ___('Simple Value')));
+			break;
+		case LABEL:
+			$table->data[$i + 1]['icon'] = print_image('images/tag_red.png', true, array('title' => ___('Label')));
+			break;
+		case ICON:
+			$table->data[$i + 1]['icon'] = print_image('images/photo.png', true, array('title' => __('Icon')));
 			break;
 		default:
 			$table->data[$i + 1]['icon'] = '';
 			break;
 	}
 	
-	$table->data[$i + 1][0] = '<span style="width: 130px; display: block;">' .
-		print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
-		print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
-		'</span>';
-	if ($layoutData['type'] == STATIC_GRAPH) {
+	//First row
+	
+	//Label and color label
+	if ($layoutData['type'] != ICON) {
+		$table->data[$i + 1][0] = '<span style="width: 130px; display: block;">' .
+			print_input_text ('label_' . $idLayoutData, $layoutData['label'], '', 10, 200, true) . 
+			print_input_text_extended ('label_color_' . $idLayoutData, $layoutData['label_color'], 'text-'.'label_color_' . $idLayoutData, '', 7, 7, false, '', 'style="visibility: hidden; width: 0px;" class="label_color"', true) . 
+			'</span>';
+	}
+	else {
+		//Icon haven't the label.
+		$table->data[$i + 1][0] = '';
+	}
+	
+	//Image
+	if (($layoutData['type'] == STATIC_GRAPH) || ($layoutData['type'] == ICON)) {
 		$table->data[$i + 1][1] = print_select ($images_list, 'image_' . $idLayoutData, $layoutData['image'], '', 'None', '', true);
 	}
 	else {
 		$table->data[$i + 1][1] = '';
 	}
+	
+	//Width and height
 	$table->data[$i + 1][2] = print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 3, 5, true) .
 		'x' .
 		print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 3, 5, true);
+	
+	//Position
 	$table->data[$i + 1][3] = '(' . print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 3, 5, true) .
 		',' . print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 3, 5, true) .
 		')';
+	
+	//Parent
 	$table->data[$i + 1][4] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '. $idVisualConsole . ' AND id !=' . $idLayoutData,
 		'parent_' . $idLayoutData, $layoutData['parent_item'], '', 'None', 0, true);
+	
+	//Delete row button
 	$table->data[$i + 1][5] = '<a href="index.php?sec=gmap&sec2=godmode/reporting/visual_console_builder&tab=' .
 		$activeTab  . '&action=delete&id_visual_console=' . $visualConsole["id"] . '&id_element=' . $idLayoutData . '" ' . 
-		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;"><img src="images/cross.png" /></a>';
+		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . print_image('images/cross.png', true) . '</a>';
 	
+	//Second row
+		
 	$table->data[$i + 2]['icon'] = '';
-	$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
-		print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
-		array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
-	$sql = 'SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE disabled = 0 AND id_agente = ' . $layoutData['id_agent'];
-	$table->data[$i + 2][1] = print_select_from_sql($sql,
-		'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
-	$table->data[$i + 2][2] = '';	
+	
+	//Agent
+	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
+		$table->data[$i + 2][0] = '<a href="#" class="tip">&nbsp;<span>' . __("Type at least two characters to search.") . '</span></a>' . 
+			print_input_text_extended ('agent_' . $idLayoutData, get_agent_name($layoutData['id_agent']), 'text-agent_' . $idLayoutData, '', 15, 100, false, '',
+			array('class' => 'text-agent', 'style' => 'background: #ffffff url(images/lightning.png) no-repeat right;'), true);
+	}
+	else {
+		$table->data[$i + 2][0] = '';
+	}
+	
+	//Modules
+	if (($layoutData['type'] != ICON) && ($layoutData['type'] != LABEL)) {
+		$sql = 'SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE disabled = 0 AND id_agente = ' . $layoutData['id_agent'];
+		$table->data[$i + 2][1] = print_select_from_sql($sql,
+			'module_' . $idLayoutData, $layoutData['id_agente_modulo'], '', '---', 0, true);
+	}
+	else {
+		$table->data[$i + 2][1] = '';
+	}
+	
+	//Empty
+	$table->data[$i + 2][2] = '';
+	
+	//Period
 	if ($layoutData['type'] == MODULE_GRAPH) {
 		$table->data[$i + 2][3] = print_select ($intervals, 'period_' . $idLayoutData, $layoutData['period'], '', '--', 0, true);
 	}
 	else {
 		$table->data[$i + 2][3] = '';
 	}
+	
+	//Map linked
 	$table->data[$i + 2][4] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != ' . $idVisualConsole,
 					'map_linked_' . $idLayoutData, $layoutData['id_layout_linked'], '', 'None', '', true);
 	$table->data[$i + 2][5] = '';

@@ -1,5 +1,12 @@
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/styles/pandora.css, godmode/servers/modificar_server.php: added
+	lost icons in the legend of servers.
+	
+	Fixes: #3174880
+
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/ajax/agent.php: fixed the return of call ajax, now it haven't
 	html entities.
 	

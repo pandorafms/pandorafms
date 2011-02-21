@@ -1,5 +1,14 @@
 2011-02-21  Sancho Lerena <slerena@artica.es>
 
+	* pandoradb_data.sql: Support for android and embedded agents.
+
+	* images/os_icons/android_small.png
+	images/os_icons/android.png
+	images/os_icons/embedded_small.png
+	images/os_icons/embedded.png
+	images/networkmap/14.png
+	images/networkmap/15.png: New icons for embedded & android.
+
 	* pandoradb_data.sql: Version update (3.2.1)
 
 	* include/config_process.php: Version update.

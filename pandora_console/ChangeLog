@@ -1,3 +1,8 @@
+2011-02-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/massive/massive_edit_agents.php: Check for false instead of
+	  the number of updated agents.
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	* godmode/alerts/alert_list.builder.php: added the conditional to hide the

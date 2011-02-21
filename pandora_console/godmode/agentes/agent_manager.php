@@ -31,7 +31,7 @@ if (is_ajax ()) {
 			return;
 		
 		foreach ($agents as $agent) {
-			echo $agent['nombre']."|".$agent['direccion']."\n";
+			echo safe_output($agent['nombre']) . "|" . safe_output($agent['direccion'])  . "\n";
 		}
 		
 		return;

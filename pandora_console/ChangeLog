@@ -1,5 +1,12 @@
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* godmode/reporting/visual_console_builder.editor.js: fixed the update the
+	items, now don't change the position if the data haven't the position.
+	
+	Fixes: #3188069
+
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* include/functions_db.php: added in function "get_group_agents" the
 	parameter "$childGroups" for get the child groups. And in the function
 	"get_user_groups" added the parameter "$id_groups" for to get groups. Add

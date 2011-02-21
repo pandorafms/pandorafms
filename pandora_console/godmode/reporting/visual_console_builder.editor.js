@@ -815,8 +815,10 @@ function updateDB(type, idElement , values, event) {
 		var left = values['absolute_left'];
 	}
 	
-	parameter.push ({name: 'top', value: top});
-	parameter.push ({name: 'left', value: left});
+	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
+		parameter.push ({name: 'top', value: top});
+		parameter.push ({name: 'left', value: left});
+	}
 	
 	jQuery.ajax({
 		url: "ajax.php",

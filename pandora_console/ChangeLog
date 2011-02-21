@@ -1,5 +1,12 @@
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
+	* include/ajax/agent.php: fixed the return of call ajax, now it haven't
+	html entities.
+	
+	Fixes: #3174872
+
+2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
+
 	* ChangeLog: Change the number of item in tracker in previus commit. Sorry
 	I have a mistake.  
 

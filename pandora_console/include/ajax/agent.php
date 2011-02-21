@@ -48,7 +48,7 @@ if ($search_agents) {
         return;
 
     foreach ($agents as $agent) {
-        echo $agent['nombre']."|".$agent['id_agente']."|".$agent['direccion']."\n";
+        echo safe_output($agent['nombre']) . "|" . safe_output($agent['id_agente']) . "|" . safe_output($agent['direccion']) . "\n";
     }
 
     return;

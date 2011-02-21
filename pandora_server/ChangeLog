@@ -1,5 +1,8 @@
 2011-02-22  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/Tools.pm: Ported support of Android and Embedded
+	devices from trunk.
+
 	* DEBIAN/postinst: Fixed permissions on /incoming dirs for www-data
 	
 	* lib/PandoraFMS/Config.pm: Updated version.

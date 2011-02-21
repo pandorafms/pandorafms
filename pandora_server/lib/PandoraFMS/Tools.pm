@@ -249,6 +249,12 @@ sub pandora_get_os ($) {
 		elsif ($command =~ m/Octopods/i){
 			return 13;
 		}
+		elsif ($command =~ m/embedded/i){
+			return 14;
+		}
+		elsif ($command =~ m/android/i){
+			return 15;
+		}
 		elsif ($command =~ m/BSD/i){
 			return 4;
 		}

@@ -126,12 +126,19 @@ if (isset($_GET["server"])) {
 		
 		//Legend
 		echo "<table>";
+		echo "<tr><td colspan='5'>" . __('Legend') . "</td></tr>";
 		echo "<tr>";
 		echo '<td><span class="net">'.__('Network server').'</span></td>';
 		echo '<td><span class="master">'.__('Master').'</span></td>';
 		echo '<td><span class="data">'.__('Data server').'</span></td>';
 		echo '<td><span class="binary">'.__('MD5 check').'</span></td>';
 		echo '<td><span class="snmp">'.__('SNMP console').'</span></td>';
+		echo "</tr><tr>";
+		echo '<td><span class="recon_server">'.__('Recon server').'</span></td>';
+		echo '<td><span class="wmi_server">'.__('WMI server').'</span></td>';
+		echo '<td><span class="export_server">'.__('Export server').'</span></td>';
+		echo '<td><span class="inventory_server">'.__('Inventory server').'</span></td>';
+		echo '<td><span class="web_server">'.__('Web server').'</span></td>';
 		echo "</tr></table>";
 	} else {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";

@@ -696,12 +696,28 @@ span.rmess {
 span.nrmess {
 	background: url(../../images/email.png) no-repeat;
 }
+span.recon_server {
+	background: url(../../images/recon.png) no-repeat;
+}
+span.wmi_server {
+	background: url(../../images/wmi.png) no-repeat;
+}
+span.export_server {
+	background: url(../../images/server_export.png) no-repeat;
+}
+span.inventory_server {
+	background: url(../../images/page_white_text.png) no-repeat;
+}
+span.web_server {
+	background: url(../../images/world.png) no-repeat;
+}
 /* This kind of span do not have any sense, should be replaced on PHP code
 by a real img in code. They are not useful because insert too much margin around
 (for example, not valid to use in the table of server view */
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
 span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
-span.plugin, span.plugin, span.export {
+span.plugin, span.plugin, span.export, span.recon_server, span.wmi_server,
+span.export_server, span.inventory_server, span.web_server {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;

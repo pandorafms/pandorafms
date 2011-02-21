@@ -1,3 +1,9 @@
+2011-02-22  Sancho Lerena <slerena@artica.es>
+
+	* DEBIAN/postinst: Fixed permissions on /incoming dirs for www-data
+	
+	* lib/PandoraFMS/Config.pm: Updated version.
+
 2011-02-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Merged from trunk. Verify that there is a

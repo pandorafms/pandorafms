@@ -1,3 +1,8 @@
+2011-02-21 Javier Lanz <javier.lanz@artica.es>
+
+	* godmode/alerts/alert_templates.php: Truncated Group name
+	* godmode/alerts/alert_actions.php: Truncated Group name
+
 2011-02-21  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/massive/massive_edit_agents.php: Merged from trunk. Check for

@@ -547,19 +547,25 @@ function isAllGroups($idGroups) {
  * @param mixed $search to add Default: False. If True will return disabled agents as well. If searching array (disabled => (bool), string => (string))
  * @param string $case Which case to return the agentname as (lower, upper, none)
  * @param boolean $noACL jump the ACL test.
+ * @param boolean $childGroups The flag to get agents in the child group of group parent passed. By default false.
  *
  * @return array An array with all agents in the group or an empty array
  */
-function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false) {
+function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
 	global $config;
 	
+	
 	if (!$noACL) {
-		$id_group = safe_acl_group ($config["id_user"], $id_group, "AR");
+		$id_group = safe_acl_group($config["id_user"], $id_group, "AR");
 		
 		if (empty ($id_group)) {
 			//An empty array means the user doesn't have access
 			return array ();
 		}
+	}
+	
+	if ($childGroups) {
+		$id_group = array_keys(get_user_groups(false, "AR", true, false, (array)$id_group));
 	}
 	
 	if (is_array($id_group)) {
@@ -571,6 +577,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	else {
 		$search_sql = sprintf ('WHERE id_grupo = %d', $id_group);
 	}
+	
 
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
@@ -578,7 +585,8 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	elseif (is_array ($search)) {
 		if (isset ($search["disabled"])) {
 			$search_sql .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
-		} else {
+		}
+		else {
 			$search_sql .= ' AND disabled = 0';
 		}
 		unset ($search["disabled"]);
@@ -603,6 +611,7 @@ function get_group_agents ($id_group = 0, $search = false, $case = "lower", $noA
 	else {
 		$search_sql .= ' AND disabled = 0';
 	}
+	
 	
 	$sql = sprintf ("SELECT id_agente, nombre FROM tagente %s ORDER BY nombre", $search_sql);
 	
@@ -1653,17 +1662,32 @@ function get_all_model_groups () {
  * @param string The privilege to evaluate, and it is false then no check ACL.
  * @param boolean $returnAllGroup Flag the return group, by default true.
  * @param boolean $returnAllColumns Flag to return all columns of groups.
+ * @param array $id_groups The list of group to scan to bottom child. By default null.
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false) {
+function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null) {
 	if (empty ($id_user)) {
 		global $config;
 		$id_user = $config['id_user'];
 	}
 	
+	if (isset($id_groups)) {
+		//Get recursive id groups
+		$list_id_groups = array();
+		foreach ((array)$id_groups as $id_group) {
+			$list_id_groups = array_merge($list_id_groups, get_id_groups_recursive($id_group));
+		}
+		
+		$list_id_groups = array_unique($list_id_groups);
+		
+		$groups = get_db_all_rows_filter('tgrupo', array('id_grupo' => $list_id_groups));
+	}
+	else {
+		$groups = get_db_all_rows_in_table ('tgrupo', 'nombre');
+	}
+	
 	$user_groups = array ();
-	$groups = get_db_all_rows_in_table ('tgrupo', 'nombre');
 
 	if (!$groups)
 		return $user_groups;
@@ -1688,7 +1712,7 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 				$user_groups[$group['id_grupo']] = $group['nombre'];
 			}
 		}
-		else if (give_acl ($id_user, $group["id_grupo"], $privilege)) {
+		else if (check_acl($id_user, $group["id_grupo"], $privilege)) {
 			if ($returnAllColumns) {
 				$user_groups[$group['id_grupo']] = $group;
 			}
@@ -1701,6 +1725,35 @@ function get_user_groups ($id_user = false, $privilege = "AR", $returnAllGroup =
 	ksort($user_groups);
 	
 	return $user_groups;
+}
+
+function get_id_groups_recursive($id_parent, $all = false) {
+	$return = array();
+	
+	$return = array_merge($return, array($id_parent));
+	
+	//Check propagate
+	$id = get_db_value_filter('id_grupo', 'tgrupo', array('id_grupo' => $id_parent, 'propagate' => 1));
+	
+	if (($id !== false) || $all) {
+		$children = get_db_all_rows_filter("tgrupo", array('parent' => $id_parent, 'disabled' => 0), array('id_grupo'));
+		if ($children === false) {
+			$children = array();
+		}
+		else {
+			$temp = array();
+			foreach ($children as $id_children) {
+				$temp = array_merge($temp, array($id_children['id_grupo']));
+			}
+			$children = $temp;
+		}
+		
+		foreach ($children as $id_children) {
+			$return = array_merge($return, get_id_groups_recursive($id_children, $all));			
+		}
+	}
+	
+	return $return;
 }
 
 /**

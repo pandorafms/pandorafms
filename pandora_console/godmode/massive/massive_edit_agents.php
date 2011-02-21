@@ -158,7 +158,7 @@ if ($update_agents) {
 	}
 	
 	
-	if ($n_edited > 0) {
+	if ($result !== false) {
 		pandora_audit("Masive management", "Update agent " . $id_agent, false, false, json_encode($fields));
 	}
 	else {
@@ -166,7 +166,7 @@ if ($update_agents) {
 	}
 	
 	
-	print_result_message ($n_edited > 0,
+	print_result_message ($result !== false,
 			__('Agents updated successfully').'('.$n_edited.')',
 			__('Agents cannot be updated'));
 	

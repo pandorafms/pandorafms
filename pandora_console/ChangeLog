@@ -1,3 +1,8 @@
+2011-02-21  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/massive/massive_edit_agents.php: Merged from trunk. Check for
+	  false instead of the number of updated agents.
+
 2011-02-21  Sancho Lerena <slerena@artica.es>
 
 	* pandoradb_data.sql: Support for android and embedded agents.

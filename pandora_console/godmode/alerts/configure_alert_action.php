@@ -72,7 +72,6 @@ $field1 = '';
 $field2 = '';
 $field3 = '';
 $group = 0; //All group is 0
-$action_threshold = 0; //All group is 0
 
 if ($id) {
 	$action = get_alert_action ($id);
@@ -82,7 +81,6 @@ if ($id) {
 	$field2 = $action['field2'];
 	$field3 = $action['field3'];
 	$group = $action ['id_group'];
-	$action_threshold = $action ['action_threshold'];
 }
 
 $table->width = '90%';
@@ -115,20 +113,18 @@ if (give_acl ($config['id_user'], 0, "PM")){
 	$table->data[2][1] .= __('Create Command');
 	$table->data[2][1] .= '</a>';
 }
-$table->data[3][0] = __('Threshold');
-$table->data[3][1] = print_input_text ('action_threshold', $action_threshold, '', 5, 7, true);
-$table->data[3][1] .= ' '.__('seconds') . print_help_icon ('action_threshold', true);
-$table->data[4][0] = __('Field 1');
-$table->data[4][1] = print_input_text ('field1', $field1, '', 35, 255, true) . print_help_icon ('alert_macros', true);
-
-$table->data[5][0] = __('Field 2');
-$table->data[5][1] = print_input_text ('field2', $field2, '', 80, 255, true);
-
-$table->data[6][0] = __('Field 3');
-$table->data[6][1] = print_textarea ('field3', 10, 30, $field3, '', true);
-
-$table->data[7][0] = __('Command preview');
-$table->data[7][1] = print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true);
+	
+$table->data[3][0] = __('Field 1');
+$table->data[3][1] = print_input_text ('field1', $field1, '', 35, 255, true) . print_help_icon ('alert_macros', true);
+ 	
+$table->data[4][0] = __('Field 2');
+$table->data[4][1] = print_input_text ('field2', $field2, '', 80, 255, true);
+ 	
+$table->data[5][0] = __('Field 3');
+$table->data[5][1] = print_textarea ('field3', 10, 30, $field3, '', true);
+ 	
+$table->data[6][0] = __('Command preview');
+$table->data[6][1] = print_textarea ('command_preview', 10, 30, '', 'disabled="disabled"', true); 
 
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_actions">';
 print_table ($table);

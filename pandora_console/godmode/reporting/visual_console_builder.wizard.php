@@ -60,7 +60,7 @@ $table->data[2][1] = __('Width').': '.print_input_text ('width', 0, '', 5, 5, tr
 $table->data[2][1] .= '<br />'.__('Height').': '.print_input_text ('height', 0, '', 5, 5, true);
 
 $table->data[3][0] = __('Agents');
-$table->data[3][1] = print_select (get_group_agents ($visualConsole['id_group'], false, "none"),
+$table->data[3][1] = print_select (get_group_agents ($visualConsole['id_group'], false, "none", false, true),
 	'id_agents[]', 0, false, '', '', true, true);
 	
 $table->data[4][0] = __('Modules');

@@ -507,15 +507,15 @@ function format_alert_row ($alert, $compound = false, $agent = true, $url = '') 
 	$actions = get_alert_agent_module_actions ($alert['id'], false, $compound);
 
 	if (!empty($actions)) {
-		$actionText = '<ul class="action_list">';
+		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
 		foreach ($actions as $action) {
-			$actionText .= '<li><div><span class="action_name">' . $action['name'];
+			$actionText .= '<div><span class="action_name"><li>' . $action['name'];
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
 			$actionText .= '</li></span><br /></div>';
 		}
-		$actionText .= '</div></ul>';
+		$actionText .= '</ul></div>';
 	}
 	else {
 		if ($actionDefault != "")

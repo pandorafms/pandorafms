@@ -1,3 +1,7 @@
+2011-02-21  Sancho lerena <slerena@artica.es>
+
+	* DEBIAN/postinst: Fixed bad ownership for /inconming/* subdirs.
+
 2011-02-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/Core.pm: Verify that there is a data server running

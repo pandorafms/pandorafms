@@ -1,3 +1,10 @@
+2011-02-21 Juan Manuel Ramon <juanmanuel.ramon@artica.es>
+
+	* include/functions_ui.php: Lost commit from trunk. Modified function
+	printTruncateText function.
+
+	Fixes: #3175780  
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

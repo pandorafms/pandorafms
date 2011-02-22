@@ -2,7 +2,7 @@
 
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,6 +26,6 @@ if (! extension_loaded ('mysql'))
 
 require_once ('libupdate_manager.php');
 
-$db =& um_db_connect (DB_BACKEND, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+um_db_connect (DB_BACKEND, DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 flush ();
 ?>

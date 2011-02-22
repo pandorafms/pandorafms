@@ -2,7 +2,7 @@
 
 //Pandora FMS- http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2009 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -11,7 +11,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-
 
 /* Change to E_ALL for development/debugging */
 error_reporting (E_ALL);
@@ -59,7 +58,7 @@ function get_user_key ($settings) {
 	 */
 	global $build_version;
 	global $pandora_version; 
-	
+
 	$n = (int) get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
 	$m = (int) get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
 				'disabled', 0);
@@ -69,4 +68,5 @@ function get_user_key ($settings) {
 }
 
 flush ();
+
 ?>

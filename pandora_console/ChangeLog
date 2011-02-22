@@ -1,5 +1,26 @@
 2011-02-22  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/update_manager.php
+	extensions/update_manager/load_updatemanager.php
+	extensions/update_manager/lib/load_updatemanager.php
+	extensions/update_manager/lib/db
+	extensions/update_manager/lib/db/functions_db.mysql.php
+	extensions/update_manager/lib/xmlrpc
+	extensions/update_manager/lib/xmlrpc/xmlrpcs.inc
+	extensions/update_manager/lib/xmlrpc/xmlrpc_wrappers.inc
+	extensions/update_manager/lib/xmlrpc/xmlrpc.inc
+	extensions/update_manager/lib/libupdate_manager_client.php
+	extensions/update_manager/lib/libupdate_manager.php
+	extensions/update_manager/lib/libupdate_manager_utils.php
+	extensions/update_manager/lib/libupdate_manager_components.php
+	extensions/update_manager/lib/libupdate_manager_updates.php
+	extensions/update_manager/settings.php
+	extensions/update_manager/main.php: Upgraded open update manager 
+	client to 2.0 version deleting PEAR dependences and adding offline
+	packages loader.
+
+2011-02-22  Sergio Martin <sergio.martin@artica.es>
+
 	* include/languages/cs.po
 	include/languages/et.mo
 	include/languages/pt_BR.po

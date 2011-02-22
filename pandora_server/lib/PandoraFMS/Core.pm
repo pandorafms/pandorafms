@@ -2110,7 +2110,7 @@ sub pandora_self_monitoring ($$) {
 	my $dbmaintance = get_db_value ($dbh, "SELECT COUNT(*) FROM tconfig WHERE token = 'db_maintance' AND `value` > UNIX_TIMESTAMP() - 86400");
 
 	$xml_output .=" <module>";
-	$xml_output .=" <name>Database Maintance</name>";
+	$xml_output .=" <name>Database Maintenance</name>";
 	$xml_output .=" <type>generic_proc</type>";
 	$xml_output .=" <data>$dbmaintance</data>";
 	$xml_output .=" </module>";

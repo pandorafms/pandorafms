@@ -1,3 +1,7 @@
+2011-02-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_server_installer: Change tentacle_server permissions.
+
 2011-02-22  Sancho Lerena <slerena@artica.es>
 
 	* Core.pm: Fixed bug #3175575

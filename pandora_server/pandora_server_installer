@@ -307,6 +307,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					# Tentacle server install (Ubuntu)
 					echo "Installing tentacle server"
 					cp bin/tentacle_server /usr/bin
+					chown pandora /usr/bin/tentacle_server
 					cp util/tentacle_serverd $TENTACLE_SERVER
    					update-rc.d tentacle_serverd defaults
 				else
@@ -314,12 +315,14 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 					then
 						echo "Creating Tentacle startup daemon"
 						cp bin/tentacle_server /usr/bin
+						chown pandora /usr/bin/tentacle_server
 						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
 						insserv tentacle_serverd
 					else
 						# Tentacle server install (Other Distros)
 						echo "Installing tentacle server in /etc/rc.d/rc$INITLV.d/S80tentacle_serverd"
 						cp bin/tentacle_server /usr/bin
+						chown pandora /usr/bin/tentacle_server
 						cp util/tentacle_serverd /etc/init.d/tentacle_serverd
 						ln -s $TENTACLE_SERVER /etc/rc.d/rc$INITLV.d/S80tentacle_serverd
 					fi
@@ -335,6 +338,7 @@ perl-TimeDate perl-XML-Simple perl-libwww-perl mysql-client"
 				then
 					echo "Installing tentacle server"
 					cp bin/tentacle_server /usr/local/bin
+					chown pandora /usr/local/bin/tentacle_server
 					cp FreeBSD/tentacle_server $TENTACLE_SERVER
 					chmod 555 $TENTACLE_SERVER
 					echo "Installing Tentacle Server manual"

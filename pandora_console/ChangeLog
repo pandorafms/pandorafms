@@ -1,3 +1,7 @@
+2011-02-22 Sancho Lerena <slerena@artica.es>
+
+        * include/streams.php: Fixed bug 3184746.
+
 2011-02-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/languages/et.mo

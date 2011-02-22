@@ -1,10 +1,10 @@
 <?php
-/**
- * @package Include
- * @subpackage External_Scripts
- */
-
-/*
+/*l Library: StreamReader classes
+ *
+ * @package External
+ * @subpackage PHP-gettext
+ *
+ * @internal
    Copyright (c) 2003, 2005 Danilo Segan <danilo@kvota.net>.
 
    This file is part of PHP-gettext.
@@ -23,40 +23,39 @@
    along with PHP-gettext; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-*/
-
-/**
- * Simple class to wrap file streams, string streams, etc.
- * seek is essential, and it should be byte stream
- * @package Include
- * @subpackage Streams
  */
+
+ //------------------------------------ BUGFIX related to WordPress 2.5.x upto 2.6.0 -----------------------------------------------------------
+ // all contained patches have been marked with BUGFIX-HR handling the the issues of "mbstring.func_overload = x" 
+ // where x & 2 != 0 (str* function overloads)
+ // this bug at WordPress forces any translation file to fail with gettext / unpack errors and maximum runtime exceeded fatal stop
+ // Autor: Heiko Rabe  info@code-styling.de
+ //-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Simple class to wrap file streams, string streams, etc.
+// seek is essential, and it should be byte stream
 class StreamReader {
   // should return a string [FIXME: perhaps return array of bytes?]
   function read($bytes) {
     return false;
   }
-  
+
   // should return new position
   function seekto($position) {
     return false;
   }
-  
+
   // returns current position
   function currentpos() {
     return false;
   }
-  
+
   // returns length of entire stream (limit for seekto()s)
   function length() {
     return false;
   }
 }
 
-/**
- * @package Include
- * @subpackage Streams
- */
 class StringReader {
   var $_pos;
   var $_str;
@@ -64,9 +63,13 @@ class StringReader {
   function StringReader($str='') {
     $this->_str = $str;
     $this->_pos = 0;
+	//BUGFIX-HR: 2008-07-21 we have to detect, if we need mb_str* functions instead of normal functions !
+	$this->is_overloaded = ((ini_get("mbstring.func_overload") & 2) != 0) && function_exists('mb_substr');
   }
 
   function read($bytes) {
+	//BUGFIX-HR: 2008-07-21 if we are overloaded, use the mb_str* functions
+	if ($this->is_overloaded) return $this->mb_read($bytes);
     $data = substr($this->_str, $this->_pos, $bytes);
     $this->_pos += $bytes;
     if (strlen($this->_str)<$this->_pos)
@@ -74,28 +77,52 @@ class StringReader {
 
     return $data;
   }
+  
+  //BUGFIX-HR: 2008-07-21 corresponding multi byte method
+  function mb_read($bytes) {
+    $data = mb_substr($this->_str, $this->_pos, $bytes, 'ascii');
+    $this->_pos += $bytes;
+    if (mb_strlen($this->_str, 'ascii')<$this->_pos)
+      $this->_pos = mb_strlen($this->_str, 'ascii');
+
+    return $data;
+  }
 
   function seekto($pos) {
+	//BUGFIX-HR: 2008-07-21 if we are overloaded, use the mb_str* functions
+	if ($this->is_overloaded) return $this->mb_seekto($pos);
     $this->_pos = $pos;
     if (strlen($this->_str)<$this->_pos)
       $this->_pos = strlen($this->_str);
+    return $this->_pos;
+  }
+  
+  //BUGFIX-HR: 2008-07-21 corresponding multi byte method
+  function mb_seekto($pos) {
+    $this->_pos = $pos;
+    if (mb_strlen($this->_str, 'ascii')<$this->_pos)
+      $this->_pos = mb_strlen($this->_str, 'ascii');
     return $this->_pos;
   }
 
   function currentpos() {
     return $this->_pos;
   }
-
+  
   function length() {
+	//BUGFIX-HR: 2008-07-21 if we are overloaded, use the mb_str* functions
+	if ($this->is_overloaded) return $this->mb_length();
     return strlen($this->_str);
   }
 
+  //BUGFIX-HR: 2008-07-21 corresponding multi byte method
+  function mb_length() {
+	return mb_strlen($this->str, 'ascii');
+  }
+  
 }
 
-/**
- * @package Include
- * @subpackage Streams
- */
+
 class FileReader {
   var $_pos;
   var $_fd;
@@ -129,7 +156,7 @@ class FileReader {
         $bytes -= strlen($chunk);
       }
       $this->_pos = ftell($this->_fd);
-      
+
       return $data;
     } else return '';
   }
@@ -154,25 +181,24 @@ class FileReader {
 
 }
 
-/**
- * Preloads entire file in memory first, then creates a StringReader 
- * over it (it assumes knowledge of StringReader internals)
- * @package Include
- * @subpackage Streams
- */
+// Preloads entire file in memory first, then creates a StringReader
+// over it (it assumes knowledge of StringReader internals)
 class CachedFileReader extends StringReader {
   function CachedFileReader($filename) {
+	parent::StringReader(); //BUGFIX-HR: 2008-07-21 missing parent constructor call
     if (file_exists($filename)) {
 
       $length=filesize($filename);
       $fd = fopen($filename,'rb');
 
       if (!$fd) {
-	$this->error = 3; // Cannot read file, probably permissions
-	return false;
+		$this->error = 3; // Cannot read file, probably permissions
+		return false;
       }
       $this->_str = fread($fd, $length);
-      fclose($fd);
+//BUGFIX-HR: 2008-07-21 not longer nessessary, cause parent contructor properly called now
+//	  $this->_pos = 0;
+	  fclose($fd);
 
     } else {
       $this->error = 2; // File doesn't exist

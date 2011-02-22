@@ -1,5 +1,9 @@
 2011-02-22  Sancho Lerena <slerena@artica.es>
 
+	* lib/PandoraFMS/Core.pm: Fixed bug 3175575
+
+2011-02-22  Sancho Lerena <slerena@artica.es>
+
 	* lib/PandoraFMS/Tools.pm: Ported support of Android and Embedded
 	devices from trunk.
 

@@ -1,3 +1,11 @@
+2011-02-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql,
+	  DEBIAN/control,
+	  DEBIAN/make_deb_package.sh,
+	  install.php,
+	  pandora_console.spec: Updated version strings.
+
 2011-02-22  Sergio Martin <sergio.martin@artica.es>
 
 	* include/functions_db.php: Added connect_db function

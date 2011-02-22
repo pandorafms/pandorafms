@@ -1,5 +1,10 @@
 2011-02-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* pandora_server_installer: Merged from trunk. Change tentacle_server
+	  permissions.
+
+2011-02-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* DEBIAN/control, DEBIAN/make_deb_package.sh,
 	  pandora_server.spec, lib/PandoraFMS/Config.pm: Updated version
 	  strings.

@@ -1,3 +1,7 @@
+2011-02-22  Sancho Lerena <slerena@artica.es>
+
+	* install.php: Installer version update (3.2.1)
+
 2011-02-22  Sergio Martin <sergio.martin@artica.es>
 
 	* extensions/update_manager.php

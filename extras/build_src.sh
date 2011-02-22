@@ -17,8 +17,11 @@ cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_console-$VERSION.tar.gz --e
 # Server
 cd $CODEHOME && tar zcvf $RPMHOME/SOURCES/pandorafms_server-$VERSION.tar.gz --exclude \.svn pandora_server || exit 1
 
-# Linux and Unix agents
-cd $CODEHOME/pandora_agents && tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz --exclude \.svn --exclude nohup linux && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup --exclude NT4 unix || exit 1
+# Linux agent
+cd $CODEHOME/pandora_agents/shellscript && tar zcvf $RPMHOME/SOURCES/pandorafms_agent-$VERSION.tar.gz --exclude \.svn --exclude nohup linux || exit 1
+
+# Unix agent
+cd $CODEHOME/pandora_agents && tar zvcf $RPMHOME/SOURCES/pandorafms_agent_unix-$VERSION.tar.gz --exclude \.svn --exclude nohup --exclude NT4 unix || exit 1
 
 # Enterprise console
 cd $CODEHOME_ENT/pandora/trunk/pandora_console && tar zcvf $RPMHOME/SOURCES/pandorafms_console_enterprise-$VERSION.tar.gz --exclude \.svn enterprise/* || exit 1

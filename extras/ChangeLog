@@ -1,5 +1,9 @@
 2011-02-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* build_windows_agent.sh: Updated to build from branches.
+
+2011-02-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* build_src.sh, pandora_update_version.sh: Updated to build from
 	  branches.
 

@@ -64,6 +64,14 @@ function check_login () {
 }
 
 /**
+ * Connect to a database and select it 
+ */
+function connect_db ($db_server, $db_user, $db_password, $db_name) {
+	mysql_connect($db_server, $db_user, $db_password);
+	return mysql_select_db($db_name);
+}
+
+/**
  * 
  * Escape string to set it properly to use in sql queries
  * 

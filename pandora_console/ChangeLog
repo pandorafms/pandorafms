@@ -1,5 +1,17 @@
 2011-02-22  Sergio Martin <sergio.martin@artica.es>
 
+	* include/functions_db.php: Added connect_db function
+	from update_manager db library to pandora_db
+
+	* extensions/update_manager/sql/update_manager.sql: Changed
+	the open update manager server path from 32 to 321
+
+	* extensions/update_manager/lib/db
+	extensions/update_manager/lib/db/functions_db.mysql.php: 
+	Deleted db library to use the pandora functions_db
+
+2011-02-22  Sergio Martin <sergio.martin@artica.es>
+
 	* install.php: Removed the PEAR dependences
 	checking in install
 

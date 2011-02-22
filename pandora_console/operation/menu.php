@@ -122,7 +122,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
 			continue;
 		}
-		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 15);
+		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
 		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 	}

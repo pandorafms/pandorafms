@@ -297,7 +297,8 @@ function add_operation_menu_option ($name, $fatherId = null, $icon = null) {
 	/* $config['extension_file'] is set in load_extensions(), since that function must
 	   be called before any function the extension call, we are sure it will 
 	   be set. */
-	$option_menu['name'] = mb_substr ($name, 0, 15);
+	$option_menu['name'] = $name;
+
 	$extension = &$config['extensions'][$extension_file];
 	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
@@ -321,7 +322,7 @@ function add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null) {
 	   be called before any function the extension call, we are sure it will 
 	   be set. */
 	$option_menu['acl'] = $acl;
-	$option_menu['name'] = mb_substr ($name, 0, 15);
+	$option_menu['name'] = $name;
 	$extension = &$config['extensions'][$extension_file];
 	$option_menu['sec2'] = $extension['dir'].'/'.mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;

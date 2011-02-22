@@ -44,8 +44,9 @@ switch ($action) {
 
 $table->width = '70%';
 $table->data = array ();
-$table->data[0][0] = __('Name:');
-$table->data[0][1] = print_input_text ('name', $visualConsoleName, '', 15, 50, true);
+$table->data[0][0] = __('Name:'). print_help_tip (__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
+
+$table->data[0][1] = print_input_text ('name', $visualConsoleName, '', 21, 30, true);
 $table->data[1][0] = __('Group:');
 $groups = get_user_groups ($config['id_user']);
 

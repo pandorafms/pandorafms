@@ -1,3 +1,15 @@
+2011-02-22 Sancho Lerena <slerena@artica.es>
+
+	* include/functions_extensions.php: Extension menu entries text not
+	being stripped.
+
+	* operation/menu.php: Extension menu entries for visualconsole a bit
+	wider.
+
+	* godmode/reporting/visual_console_builder.data.php: Show a hint on
+	first letter of Visualconsole map to put the name in the menu.
+	Shortened input box, to avoid people enter long names and later be
+	cutted off.
 
 2011-02-22 Sancho Lerena <slerena@artica.es>
 

@@ -1,3 +1,9 @@
+
+2011-02-22 Sancho Lerena <slerena@artica.es>
+
+        * include/streams.php: Fixed bug 3184746.
+
+
 2011-02-21 Miguel de Dios  <miguel.dedios@artica.es>
 
 	Merged bugfix from trunk.

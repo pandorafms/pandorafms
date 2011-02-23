@@ -1,5 +1,11 @@
 2011-02-23  Sergio Martin <sergio.martin@artica.es>
 
+	* extensions/update_manager/lib/libupdate_manager_client.php
+	extensions/update_manager/main.php: Fixed force bit for
+	offline updates and restore sql begin and commit
+
+2011-02-23  Sergio Martin <sergio.martin@artica.es>
+
 	* extensions/update_manager.php
 	extensions/update_manager/lib/libupdate_manager_client.php
 	extensions/update_manager/lib/libupdate_manager.php

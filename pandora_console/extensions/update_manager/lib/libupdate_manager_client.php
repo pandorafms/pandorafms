@@ -197,7 +197,7 @@ function um_client_db_save_update ($update) {
 	return true;
 }
 
-function um_client_apply_update_file (&$update, $destiny_filename, $force = false) {
+function um_client_apply_update_file (&$update, $destiny_filename, $force = true) {
 	@mkdir (dirname ($destiny_filename), 0755, true);
 	
 	if (file_exists ($destiny_filename)) {
@@ -249,7 +249,7 @@ function um_client_apply_update_database (&$update) {
 	return true;
 }
 
-function um_client_apply_update (&$update, $settings, $force = false) {
+function um_client_apply_update (&$update, $settings, $force = true) {
 	if ($update->type == 'code') {
 		// We use the Pandora Home dir of config to code files
 		$filename = HOME_DIR.'/'.$update->filename;
@@ -462,7 +462,7 @@ function um_client_update_from_paths ($file_paths, $tmpDir, $num_package, $type)
 	return $update;
 }
 
-function um_client_upgrade_to_package ($package, $settings, $force = false, $update_offline = false) {
+function um_client_upgrade_to_package ($package, $settings, $force = true, $update_offline = false) {
 	$applied_updates = array ();
 	$rollback = false;
 	
@@ -500,6 +500,8 @@ function um_client_upgrade_to_package ($package, $settings, $force = false, $upd
 		}
 
 		um_db_update_setting ('current_update', $package->id);
+		
+		process_sql_commit();
 	}
 	else {
 		$data_queries = '';
@@ -602,8 +604,9 @@ function um_client_upgrade_to_package ($package, $settings, $force = false, $upd
 	return true;
 }
 
-function um_client_upgrade_to_latest ($user_key, $force) {
+function um_client_upgrade_to_latest ($user_key, $force = true) {
 	$settings = um_db_load_settings ();
+	process_sql_begin();
 	do {
 		$package = um_client_get_package ($settings, $user_key);
 

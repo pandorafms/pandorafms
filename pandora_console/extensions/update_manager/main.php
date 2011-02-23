@@ -127,7 +127,7 @@ if (isset($_FILES["fileloaded"]["error"]) && !$_FILES["fileloaded"]["error"]) {
 
 			$settings = um_db_load_settings ();
 
-			if(um_client_upgrade_to_package ($package, $settings)) {
+			if(um_client_upgrade_to_package ($package, $settings, true)) {
 					echo '<h5 class="suc">'.__('Successfully upgraded').'.</h5>';
 					$settings = um_db_load_settings ();
 			}

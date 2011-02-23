@@ -1,3 +1,10 @@
+2011-02-03 Javier Lanz <javier.lanz@artica.es>
+
+	* extensions/agents_modules.php: Fixed an error in the header of
+	Agent/Module extension
+
+	Fix: #3152681
+
 2011-02-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql,
